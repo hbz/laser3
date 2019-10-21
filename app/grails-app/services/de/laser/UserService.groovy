@@ -124,7 +124,7 @@ class UserService {
     }
 
     void setupAdminAccounts(Map<String,Org> orgs) {
-        List<String> adminUsers = ['selbach', 'engels', 'konze', 'rupp', 'galffy', 'klober', 'bluoss', 'albin', 'djebeniani', 'test']
+        List<String> adminUsers = ['selbach', 'engels', 'konze', 'rupp', 'galffy', 'klober', 'bluoss', 'albin', 'djebeniani', 'test', 'oberknapp', 'jaegle', 'beh', 'lauer']
         List<String> customerTypes = ['konsorte','institut','singlenutzer','kollektivnutzer','konsortium']
         //the Aninas, Rahels and Violas ... if my women get chased from online test environments, I feel permitted to keep them internally ... for more women in IT branch!!!
         Map<String,Role> userRights = ['benutzer':Role.findByAuthority('INST_USER'), //internal 'Anina'

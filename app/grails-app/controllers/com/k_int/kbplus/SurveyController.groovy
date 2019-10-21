@@ -252,7 +252,7 @@ class SurveyController {
 
         if (!params.status) {
             if (params.isSiteReloaded != "yes") {
-                params.status = RDStore.SUBSCRIPTION_CURRENT.id
+                params.status = RDStore.SUBSCRIPTION_INTENDED.id
                 result.defaultSet = true
             } else {
                 params.status = 'FETCH_ALL'
@@ -524,7 +524,7 @@ class SurveyController {
 
 
         base_qry += " and ie.status = :current "
-        qry_params.current = TIPP_STATUS_CURRENT
+        qry_params.current = RDStore.TIPP_STATUS_CURRENT
 
         base_qry += "order by lower(ie.tipp.title.title) asc"
 

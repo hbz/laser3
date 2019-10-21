@@ -48,7 +48,7 @@
                 <br/>
                 <p>
                     <a href="mailto:laser_support@hbz-nrw.de?${mailString}">
-                        E-Mail an Support verschicken
+                        <g:message code="serverCode.error.sendSupportMail"/>
                     </a>
                 </p>
                 <br/>

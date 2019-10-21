@@ -108,7 +108,7 @@
   padding: 0.67857143em 1em;
   font-size: 1em;
   background: #FFFFFF;
-  border: 1px solid #004678;
+  border: 1px solid #d3dae3;
   color: rgba(0, 0, 0, 0.87);
   border-radius: 0;
   -webkit-box-shadow: 0em 0em 0em 0em transparent inset;
@@ -124,7 +124,7 @@
   tap-highlight-color: rgba(255, 255, 255, 0);
   padding: 0.78571429em 1em;
   background: #FFFFFF;
-  border: 1px solid #004678;
+  border: 1px solid #d3dae3;
   outline: none;
   color: rgba(0, 0, 0, 0.87);
   border-radius: 0;
@@ -163,7 +163,7 @@
   height: auto;
   width: 100%;
   background: #FFFFFF;
-  border: 1px solid #004678;
+  border: 1px solid #d3dae3;
   border-radius: 0;
   -webkit-box-shadow: 0em 0em 0em 0em transparent inset;
           box-shadow: 0em 0em 0em 0em transparent inset;
@@ -1066,6 +1066,9 @@
 .ui.massive.form {
   font-size: 1.71428571rem;
 }
+form {
+  margin: 0 0 20px;
+}
 
 /* Field */
 .ui.form .inline.fields {
@@ -1111,16 +1114,6 @@
 .ui.form .fields:last-child .field.la-modal-fieldset-margin .field,
 .ui.form .fields:last-child .field.la-modal-fieldset-no-margin .field {
   margin-bottom: 1em;
-}
-.la-filter-selected {
-  background: #004678 !important;
-}
-.la-calendar-selected input {
-  background: #004678 !important;
-}
-.ui.selection.dropdown.la-filter-dropdown-selected {
-  background: #004678 !important;
-  border: 1px solid #FFFFFF;
 }
 .ui.icon.input > i.icon#btn-search:not(.link) {
   pointer-events: auto;

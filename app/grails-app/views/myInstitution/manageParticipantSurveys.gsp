@@ -24,7 +24,7 @@
 
 <semui:filter>
     <g:form action="manageParticipantSurveys" controller="myInstitution" method="post" id="${params.id}"
-            params="[tab: params.tab]" class="form-inline ui small form">
+            params="[tab: params.tab]" class="ui small form">
 
         <div class="three fields">
             <div class="field">

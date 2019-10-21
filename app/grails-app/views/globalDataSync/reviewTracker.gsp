@@ -92,7 +92,7 @@
                   <strong><em>${i.tipp?.title?.name}</em></strong> <br>(<g:each in="${i.tipp?.title?.identifiers}" var="id"><strong>${id.namespace}</strong>: ${id.value} </g:each>) <br/>
                   <table class="ui table">
                     <tr><th></th><th>Volume</th><th>Issue</th><th>Date</th></tr>
-                    <g:each in="${i.tipp.coverage}" var="c">
+                    <g:each in="${i.tipp.coverages}" var="c">
                       <tr><th>Start</th> <td>${c.startVolume}</td><td>${c.startIssue}</td>
                           <td>${c.startDate}</td></tr>
                       <tr><th>End</th> <td>${c.endVolume}</td><td> ${c.endIssue}</td><td>${c.endDate}</td></tr>
@@ -104,7 +104,7 @@
                   <strong><em>${i.oldtipp?.title?.name}</em></strong> <br>(<g:each in="${i.oldtipp?.title?.identifiers}" var="id"><strong>${id.namespace}</strong>: ${id.value} </g:each>) <br/>
                   <table class="ui table">
                     <tr><th></th><th>Volume</th><th>Issue</th><th>Date</th></tr>
-                    <g:each in="${i.oldtipp.coverage}" var="c">
+                    <g:each in="${i.oldtipp.coverages}" var="c">
                       <tr><th>Start</th> <td>${c.startVolume}</td><td>${c.startIssue}</td>
                           <td>${c.startDate}</td></tr>
                       <tr><th>End</th> <td>${c.endVolume}</td><td> ${c.endIssue}</td><td>${c.endDate}</td></tr>

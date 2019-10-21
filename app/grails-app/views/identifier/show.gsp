@@ -9,7 +9,7 @@
 	</head>
 	<body>
 		<semui:breadcrumbs>
-			<semui:crumb text="Identifikator anzeigen" class="active"/>
+			<semui:crumb text="${message(code: 'default.identifier.show')}" class="active"/>
 		</semui:breadcrumbs>
 
 		<h1 class="ui left aligned icon header"><semui:headerIcon /><g:message code="default.show.label" args="[entityName]" /></h1>

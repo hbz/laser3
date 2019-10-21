@@ -189,7 +189,8 @@
                                       model="${[roleLinks    : visibleOrgRelations,
                                                 roleObject   : surveyConfig?.subscription,
                                                 roleRespValue: 'Specific subscription editor',
-                                                editmode     : false
+                                                editmode     : false,
+                                                showPersons: false
                                       ]}"/>
 
                         </div>

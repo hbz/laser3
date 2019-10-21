@@ -1009,3 +1009,16 @@ ol.ui.horizontal.list li:before,
   width: 100%;
   padding: 0 0 .2em .5em;
 }
+dl {
+  margin-bottom: 20px;
+}
+dt,
+dd {
+  line-height: 20px;
+}
+dt {
+  font-weight: bold;
+}
+dd {
+  margin-left: 10px;
+}

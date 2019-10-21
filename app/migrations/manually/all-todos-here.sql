@@ -31,3 +31,7 @@ ALTER TABLE system_message RENAME sm_lastupdated TO sm_last_updated;
 ALTER TABLE system_message RENAME sm_shownow TO sm_show_now;
 ALTER TABLE user_folder RENAME uf_datecreated TO uf_date_created;
 ALTER TABLE user_folder RENAME uf_lastupdated TO uf_last_updated;
+
+-- 2019-10-18
+ALTER TABLE subscription ADD sub_is_multi_year boolean;
+UPDATE subscription set sub_is_multi_year = FALSE;

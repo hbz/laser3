@@ -22,6 +22,17 @@
   background: #f1ebe5;
   border: none;
 }
+// Filter Selected
+
+.la-filter-selected {
+  background:  @laFilterChosen!important;
+}
+.la-calendar-selected input {
+  background: @laFilterChosen!important;
+}
+.la-filter-dropdown-selected {
+  background: @laFilterChosen!important;
+}
 
 /* Grey */
 .ui.grey.segment:not(.inverted) {

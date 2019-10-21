@@ -2,8 +2,11 @@
 <semui:actionsDropdown>
     <g:if test="${springSecurityService.getCurrentUser().hasAffiliation("INST_ADM")}">
         <g:if test="${actionName == 'currentSurveysConsortia'}">
-            <semui:actionsDropdownItem controller="survey" action="createGeneralSurvey"
-                                       message="createGeneralSurvey.label"/>
+            %{--<semui:actionsDropdownItem controller="survey" action="createGeneralSurvey"
+                                       message="createGeneralSurvey.label"/>--}%
+
+            <semui:actionsDropdownItemDisabled controller="survey" action="createGeneralSurvey"
+                                               message="createGeneralSurvey.label" tooltip="${message(code: "createGeneralSurvey.label.disable")}"/>
 
             <semui:actionsDropdownItem controller="survey" action="createSubscriptionSurvey"
                                        message="createSubscriptionSurvey.label"/>

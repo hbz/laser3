@@ -1,5 +1,5 @@
 <semui:filter>
-    <g:form action="linkAccessPoint" controller="platform" method="get" class="form-inline ui small form">
+    <g:form action="linkAccessPoint" controller="platform" method="get" class="ui small form">
         <input type="hidden" name="platform_id" value="${platformInstance.id}">
         <div class="fields">
             <div class="field">

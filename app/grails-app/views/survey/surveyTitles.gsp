@@ -53,6 +53,15 @@
 <g:link controller="subscription" class="ui button" action="index" id="${surveyConfig?.subscription?.id}">
     ${surveyConfig?.subscription?.name} (${surveyConfig?.subscription?.status?.getI10n('value')})
 </g:link>
+
+<g:link controller="subscription" class="ui button" action="linkPackage" id="${surveyConfig?.subscription?.id}">
+    <g:message code="subscription.details.linkPackage.label"/>
+</g:link>
+
+<g:link controller="subscription" class="ui button" action="addEntitlements" id="${surveyConfig?.subscription?.id}">
+    <g:message code="subscription.details.addEntitlements.label"/>
+</g:link>
+
 </div>
 
 </div>
@@ -153,14 +162,10 @@
                                 <g:each in="${ie.coverages}" var="covStmt">
                                     <div class="ui card">
                                         <g:render template="/templates/tipps/coverageStatement"
-                                                  model="${[covStmt: covStmt]}"/>
+                                                  model="${[covStmt: covStmt, overwriteEditable: false]}"/>
                                     </div>
                                 </g:each>
-                            </div><br>
-                            <g:link action="addCoverage" params="${[issueEntitlement: ie.id]}"
-                                    class="ui compact icon button positive tiny"><i
-                                    class="ui icon plus"
-                                    data-content="Lizenzzeitraum hinzufügen"></i></g:link>
+                            </div>
                         </g:else>
 
                     </td>

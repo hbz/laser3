@@ -13,7 +13,7 @@
     <div class="ui grid">
         <div class="eleven wide column">
             <div class="ui la-search segment">
-                <g:form action="gasco" controller="public" method="get" class="form-inline ui small form">
+                <g:form action="gasco" controller="public" method="get" class="ui small form">
 
                     <div class="field">
                         <label for="search">${message(code: 'gasco.filter.search')}</label>
