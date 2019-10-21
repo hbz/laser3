@@ -2,7 +2,7 @@
 <laser:serviceInjection />
 <%
     SimpleDateFormat sdf = new SimpleDateFormat(message(code:'default.date.format.notime'))
-    Date startOfYear = new SimpleDateFormat('yyyy-MM-dd').parse('2019-01-01')
+    Date startOfYear = new SimpleDateFormat('yyyy-MM-dd').parse(Calendar.getInstance().get(Calendar.YEAR)+'-01-01')
 %>
 <semui:modal id="${formId ?: 'create_number'}" text="${message(code: 'readerNumber.create.label')}" isEditModal="${formId ?: null}">
 
