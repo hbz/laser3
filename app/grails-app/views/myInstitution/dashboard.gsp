@@ -270,16 +270,12 @@
             <g:if test="${editable}">
                 <div class="ui right aligned grid">
                     <div class="right floated right aligned sixteen wide column">
-                        <input type="submit" class="ui button" value="${message(code:'task.create.new')}" data-semui="modal" data-href="#modalCreateTask" />
-                        <g:link controller="myInstitution" action="modal_create" >
+                        <a onclick="taskcreate();" class="ui icon button">
                             ${message(code:'task.create.new')}
-                        </g:link>
-                        <g:link controller="ajax" action="TaskCreate" >
-                            TaskCreate
-                        </g:link>
-                        <g:link controller="ajax" action="TaskEdit" >
-                            TaskEdit
-                        </g:link>
+                        </a>
+                        %{--<a onclick="taskedit(268);" class="ui icon button">--}%
+                            %{--TaskEdit 268--}%
+                        %{--</a>--}%
                     </div>
                 </div>
             </g:if>
@@ -371,13 +367,33 @@
         </div>
     </g:if>
 --}%
-        <g:render template="/templates/tasks/modal_create" />
+        %{--<g:render template="/templates/tasks/modal_create" />--}%
     <% def ende = System.currentTimeMillis()
     def dauer = ende-start
     %>
     ****************** DAUER: ${dauer} ******************
-
+    %{--<g:render template="/templates/tasks/js_taskcreate"/>--}%
     <g:javascript>
+        function taskcreate() {
+
+            $.ajax({
+                url: '<g:createLink controller="ajax" action="TaskCreate"/>',
+                success: function(result){
+                    $("#dynamicModalContainer").empty();
+                    $("#modalCreateTask").remove();
+
+                    $("#dynamicModalContainer").html(result);
+                    $("#dynamicModalContainer .ui.modal").modal({
+                        onVisible: function () {
+                            r2d2.initDynamicSemuiStuff('#modalCreateTask');
+                            r2d2.initDynamicXEditableStuff('#modalCreateTask');
+
+                            ajaxPostFunc()
+                        }
+                    }).modal('show');
+                }
+            });
+        }
         function taskedit(id) {
 
             $.ajax({

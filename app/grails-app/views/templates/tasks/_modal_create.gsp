@@ -5,7 +5,7 @@
 <semui:modal id="modalCreateTask" message="task.create.new">
 
     <g:form class="ui form" id="create_task" url="[controller: 'task', action: 'create']" method="post">
-        <g:if test="${controllerName != 'myInstitution'}">
+        <g:if test="${controllerName != 'myInstitution' && controllerName != 'ajax'}">
             <g:hiddenField name="${owntp}" value="${(owntp == 'surveyConfig') ? ownobj?.id : params.id}"/>
             <g:hiddenField name="linkto" value="${owntp}"/>
         </g:if>
@@ -24,7 +24,7 @@
             <g:textArea name="description" value="${taskInstance?.description}" rows="5" cols="40"/>
         </div>
 
-        <g:if test="${controllerName == 'myInstitution'}">
+        <g:if test="${controllerName == 'myInstitution' || controllerName == 'ajax'}">
             <div class="field fieldcontain required">
                 <label for="typ">
                     <g:message code="task.typ" default="Task Typ"/>
@@ -33,27 +33,28 @@
                     <input id="generalradio" type="radio" value="general" name="linkto" tabindex="0" class="hidden" checked="">
                     <label for="generalradio">${message(code: 'task.general')}</label>
                 </div>
-
+                &nbsp &nbsp
                 <div class="ui radio checkbox">
                     <input id="licenseradio" type="radio" value="license" name="linkto" tabindex="0" class="hidden">
                     <label for="licenseradio">
                         <g:message code="task.license.label" default="License"/>
                     </label>
                 </div>
-
+                &nbsp &nbsp
                 <div class="ui radio checkbox">
                     <input id="pkgradio" type="radio" value="pkg" name="linkto" tabindex="0" class="hidden">
                     <label for="pkgradio">
                         <g:message code="task.pkg.label" default="Pkg"/>
                     </label>
                 </div>
-
+                &nbsp &nbsp
                 <div class="ui radio checkbox">
                     <input id="subscriptionradio" type="radio" value="subscription" name="linkto" tabindex="0" class="hidden">
                     <label for="subscriptionradio">
                         <g:message code="task.subscription.label" default="Subscription"/>
                     </label>
                 </div>
+                &nbsp &nbsp
                 <div class="ui radio checkbox">
                     <input id="orgradio" type="radio" value="org" name="linkto" tabindex="0" class="hidden">
                     <label for="orgradio">
@@ -88,10 +89,10 @@
                       name="org"
                       from="${validOrgs}"
                       optionKey="id"
+                      optionValue="${{it?.dropdownNamingConvention(contextService?.org)}}"
                       value="${ownobj?.id}"
                       class="ui dropdown search many-to-one"
                       noSelection="[null: '']"/>
-                      %{--optionValue="${{it?.dropdownNamingConvention(contextService?.org)}}"--}%
 
         </div>
 
@@ -108,6 +109,7 @@
                 <label for="subscription">
                     <g:message code="task.linkto" default="Task link to "/><g:message code="task.subscription.label" default="Subscription"/>
                 </label>
+                %{--TODO instanceOf--}%
                 %{--<g:set var="consortialLicense" value="${message('gasco.filter.consortialLicence')}" />--}%
                 <g:select class="ui dropdown search many-to-one"
                           id="subscription"
@@ -124,7 +126,6 @@
                           value="${ownobj?.id}"
                           noSelection="[null: '']"/>
 
-                          %{--optionValue="${{it ? (it[1] +  ' ' + (dateFormatter.format(new Date(((java.sql.Timestamp)it[2]).getTime()))) +  '-' + it[3] + it[4]  ) : null}}"--}%
             </div>
 
         </g:if>
@@ -195,8 +196,8 @@
         def dauer = ende-start
     %>
     ****************** DAUER: ${dauer} ******************
-    <g:if test="${controllerName == 'myInstitution'}">
-        <r:script>
+    <g:if test="${controllerName == 'myInstitution' || controllerName == 'ajax'}">
+        <script>
             // initial side call
             $("#generalradio").prop( "checked", true );
             $("#licensediv, #orgdiv, #pkgdiv, #subscriptiondiv").hide();
@@ -235,9 +236,9 @@
             );
 
 
-        </r:script>
+        </script>
     </g:if>
-    <r:script>
+    <script>
             $("#radioresponsibleOrg").change(function () {
                 $('#radioGroup').find("#responsibleUser").toggle();
 
@@ -295,5 +296,51 @@
 
 
 
-    </r:script>
+    </script>
+    <script>
+        var ajaxPostFunc = function () {
+
+            $("#radioresponsibleOrgEdit").change(function () {
+                $("#responsibleUserEdit").hide();
+            });
+
+            $("#radioresponsibleUserEdit").change(function () {
+                $("#responsibleUserEdit").show();
+            });
+
+            if ($("#radioresponsibleUserEdit").is(':checked')) {
+                $("#responsibleUserEdit").show();
+            } else {
+                $("#responsibleUserEdit").hide();
+            }
+
+            $('#edit_task')
+                .form({
+                    on: 'blur',
+                    inline: true,
+                    fields: {
+                        title: {
+                            identifier: 'title',
+                            rules: [
+                                {
+                                    type: 'empty',
+                                    prompt: '{name} <g:message code="validation.needsToBeFilledOut" default=" muss ausgefüllt werden" />'
+                                }
+                            ]
+                        },
+
+                        endDate: {
+                            identifier: 'endDate',
+                            rules: [
+                                {
+                                    type: 'empty',
+                                    prompt: '{name} <g:message code="validation.needsToBeFilledOut" default=" muss ausgefüllt werden" />'
+                                }
+                            ]
+                        }
+                    }
+                });
+        }
+    </script>
+
 </semui:modal>

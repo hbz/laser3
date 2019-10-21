@@ -2278,7 +2278,7 @@ class AjaxController {
     @Secured(['ROLE_USER'])
     def TaskEdit() {
         def contextOrg = contextService.getOrg()
-        def result     = taskService.getPreconditions(contextOrg)
+        def result     = taskService.getPreconditionsWithoutTargets(contextOrg)
         result.params = params
         result.taskInstance = Task.get(params.id)
 
@@ -2291,6 +2291,7 @@ class AjaxController {
         def result     = taskService.getPreconditions(contextOrg)
 
         render template:"../templates/tasks/modal_create", model: result
+
     }
 
     @Secured(['ROLE_USER'])

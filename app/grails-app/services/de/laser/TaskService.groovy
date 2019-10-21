@@ -280,4 +280,12 @@ class TaskService {
         print "Dauer in Millis: " + dauer
         result
     }
+    def getPreconditionsWithoutTargets(Org contextOrg) {
+        def result = [:]
+        def responsibleUsersQuery   = "select u from User as u where exists (select uo from UserOrg as uo where uo.user = u and uo.org = ? and (uo.status=1 or uo.status=3)) order by lower(u.display)"
+        def validResponsibleUsers   = contextOrg ? User.executeQuery(responsibleUsersQuery, [contextOrg]) : []
+        result.taskCreator          = springSecurityService.getCurrentUser()
+        result.validResponsibleUsers = validResponsibleUsers
+        result
+    }
 }

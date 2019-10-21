@@ -2277,8 +2277,8 @@ AND EXISTS (
         result.tasks    = taskService.getTasksByResponsibles(springSecurityService.getCurrentUser(), contextOrg, query)
         result.tasksCount    = result.tasks.size()
         result.enableMyInstFormFields = true // enable special form fields
-        def preCon      = taskService.getPreconditions(contextOrg)
-        result << preCon
+//        def preCon      = taskService.getPreconditions(contextOrg)
+//        result << preCon
 
 
         /*def announcement_type = RefdataValue.getByValueAndCategory('Announcement', 'Document Type')
@@ -2324,19 +2324,10 @@ AND EXISTS (
             response.sendError(401)
             return;
         }
-        def messageSource = Holders.grailsApplication.mainContext.getBean('messageSource')
-        SimpleDateFormat sdf = new SimpleDateFormat(messageSource.getMessage('default.date.format.notime',null, LocaleContextHolder.getLocale()))
-
-        // tasks
 
         def preCon      = taskService.getPreconditions(result.institution)
         result << preCon
 
-//        result.validSubscriptionsList = new ArrayList()
-//        result.validSubscriptionIds.each{
-//            result.validSubscriptionsList.add([it, Subscription.dropdownNamingConvention(it, sdf)])
-//        }
-//        result
         render template: '/templates/tasks/modal_create', model: result
     }
 

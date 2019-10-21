@@ -3433,7 +3433,7 @@ class SubscriptionController extends AbstractDebugController {
 
             def contextOrg = contextService.getOrg()
             result.tasks = taskService.getTasksByResponsiblesAndObject(result.user, contextOrg, result.subscriptionInstance)
-            def preCon = taskService.getPreconditions(contextOrg)
+            def preCon = taskService.getPreconditionsWithoutTargets(contextOrg)
             result << preCon
 
             // restrict visible for templates/links/orgLinksAsList
@@ -4654,7 +4654,7 @@ class SubscriptionController extends AbstractDebugController {
         // tasks
         def contextOrg = contextService.getOrg()
         result.tasks = taskService.getTasksByResponsiblesAndObject(result.user, contextOrg, result.subscriptionInstance)
-        def preCon = taskService.getPreconditions(contextOrg)
+        def preCon = taskService.getPreconditionsWithoutTargets(contextOrg)
         result << preCon
 
 
