@@ -801,7 +801,7 @@ class FinanceService {
                         if(!pkgMatches) {
                             pkgMatches.addAll(Package.findAllByGlobalUID(subPkgIdentifier))
                             if(!pkgMatches) {
-                                pkgMatches = Package.executeQuery("select distinct idOcc.pkg from IdentifierOccurrence idOcc where (idOcc.identifier.ns = :isil and idOcc.identifier.value = :idCandidate)")
+                                pkgMatches = Package.executeQuery("select distinct ident.pkg from Identifier ident where (ident.ns = :isil and ident.value = :idCandidate)")
                                 if(!pkgMatches)
                                     mappingErrorBag.noValidPackage = subPkgIdentifier
                             }

@@ -97,22 +97,22 @@ class TitleInstance extends AbstractBaseDomain implements AuditableTrait {
   String getIdentifierValue(idtype) {
     def result=null
     ids?.each { id ->
-      if ( id.identifier?.ns?.ns?.toLowerCase() == idtype.toLowerCase() )
-        result = id.identifier?.value
+      if ( id.ns?.ns?.toLowerCase() == idtype.toLowerCase() )
+        result = id.value
     }
     result
   }
 
   String joinIdentfiers(String namespace,String separator) {
     String joined = ' '
-    List identifiers = []
+    List values = []
     ids?.each { id ->
-      if(id.identifier?.ns?.ns?.equalsIgnoreCase(namespace)) {
-        identifiers.add(id.identifier.value)
+      if(id.ns?.ns?.equalsIgnoreCase(namespace)) {
+        values.add(id.value)
       }
     }
-    if(identifiers)
-      joined = identifiers.join(separator)
+    if(values)
+      joined = values.join(separator)
     joined
   }
 
@@ -136,10 +136,10 @@ class TitleInstance extends AbstractBaseDomain implements AuditableTrait {
 
     switch ( idstr_components.size() ) {
       case 1:
-        qr = executeQuery('select t from TitleInstance as t join t.ids as io where io.identifier.value = ?',[idstr_components[0]])
+        qr = executeQuery('select t from TitleInstance as t join t.ids as ident where ident.value = ?',[idstr_components[0]])
         break;
       case 2:
-        qr = executeQuery('select t from TitleInstance as t join t.ids as io where io.identifier.value = ? and lower(io.identifier.ns.ns) = ?',[idstr_components[1],idstr_components[0]?.toLowerCase()])
+        qr = executeQuery('select t from TitleInstance as t join t.ids as ident where ident.value = ? and lower(ident.ns.ns) = ?',[idstr_components[1],idstr_components[0]?.toLowerCase()])
         break;
       default:
         // static_logger.debug("Unable to split");

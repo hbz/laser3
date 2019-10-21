@@ -252,7 +252,9 @@ where tipp.title = ? and orl.roleType.value=?''', [title, 'Content Provider']);
             def name_components = params.orgid.split(':')
             if (name_components.length == 2) {
                 // Lookup org by ID
-                def orghql = "select org from Org org where exists ( select io from IdentifierOccurrence io, Identifier id, IdentifierNamespace ns where io.org = org and id.ns = ns and io.identifier = id and ns.ns = ? and id.value like ? )"
+                // TODO [ticket=1789]
+                def orghql = "select distinct ident.org from Identifier ident where ident.org is not null and ident.ns.ns = ? and ident.value like ? )"
+                // def orghql = "select org from Org org where exists ( select io from IdentifierOccurrence io, Identifier id, IdentifierNamespace ns where io.org = org and id.ns = ns and io.identifier = id and ns.ns = ? and id.value like ? )"
                 def orgs = Org.executeQuery(orghql, [name_components[0], name_components[1]])
                 if (orgs.size() == 1) {
                     def org = orgs[0]
