@@ -106,8 +106,10 @@ class ApiController extends AbstractDebugController {
                             log.debug("Add identifier identifier ${jid}");
                             if (jid != null) {
                                 result.message = "Adding jusp ID ${jid.id}to title";
-                                def new_jusp_id = Identifier.lookupOrCreateCanonicalIdentifier('jusp', "${jid.id}");
-                                def new_io = new IdentifierOccurrence(identifier: new_jusp_id, ti: title).save(flush: true);
+                                // TODO [ticket=1789]
+                                //def new_jusp_id = Identifier.lookupOrCreateCanonicalIdentifier('jusp', "${jid.id}");
+                                //def new_io = new IdentifierOccurrence(identifier: new_jusp_id, ti: title).save(flush: true);
+                                def new_jusp_id = Identifier.construct([value: "${jid.id}", reference: title, namespace: 'jusp'])
                             } else {
                                 result.message = "Unable to locate JID in BibJson record";
                             }

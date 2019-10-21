@@ -962,14 +962,16 @@ select ie from IssueEntitlement as ie JOIN ie.subscription.orgRelations as o
     }
 
     if ( !found ) {
-      Identifier id = Identifier.lookupOrCreateCanonicalIdentifier(ns, value)
-      List<IdentifierOccurrence> id_occ = IdentifierOccurrence.executeQuery("select io from IdentifierOccurrence as io where io.identifier = :id and io.ti = :ti", [id:id,ti:this])
+      // TODO [ticket=1789]
+      Identifier id = Identifier.construct([value: value, reference: this, namespace: ns])
+      //Identifier id = Identifier.lookupOrCreateCanonicalIdentifier(ns, value)
+      //List<IdentifierOccurrence> id_occ = IdentifierOccurrence.executeQuery("select io from IdentifierOccurrence as io where io.identifier = :id and io.ti = :ti", [id:id,ti:this])
 
       static_logger.debug("Create new identifier occurrence for tid:${getId()} ns:${ns} value:${value}");
 
-      if ( !id_occ || id_occ.size() == 0 ){
-        new IdentifierOccurrence(identifier:id, ti:this).save()
-      }
+      //if ( !id_occ || id_occ.size() == 0 ){
+       // new IdentifierOccurrence(identifier:id, ti:this).save()
+      //}
     }
   }
 

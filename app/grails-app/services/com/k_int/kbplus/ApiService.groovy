@@ -147,10 +147,13 @@ class ApiService {
 
             identifiers.each{ it ->
                 it.each { k, v ->
-                    def ns = IdentifierNamespace.findByNsIlike(k)
-                    if (null == Identifier.findByNsAndValue(ns, v)) {
-                        new IdentifierOccurrence(org: org, identifier: Identifier.lookupOrCreateCanonicalIdentifier(k, v)).save()
-                    }
+                    // TODO [ticket=1789]
+                    Identifier ident = Identifier.construct([value: v, reference: org, namespace: k])
+
+                    //def ns = IdentifierNamespace.findByNsIlike(k)
+                    //if (null == Identifier.findByNsAndValue(ns, v)) {
+                    //    new IdentifierOccurrence(org: org, identifier: Identifier.lookupOrCreateCanonicalIdentifier(k, v)).save()
+                    //}
                 }
             }
 

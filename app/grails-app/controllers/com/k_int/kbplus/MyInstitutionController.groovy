@@ -1390,12 +1390,16 @@ from License as l where (
                 if (params.newEmptySubId) {
                   def sub_id_components = params.newEmptySubId.split(':');
                   if ( sub_id_components.length == 2 ) {
-                    def sub_identifier = Identifier.lookupOrCreateCanonicalIdentifier(sub_id_components[0],sub_id_components[1]);
-                      new IdentifierOccurrence(sub: new_sub, identifier: sub_identifier).save()
+                      // TODO [ticket=1789]
+                      //def sub_identifier = Identifier.lookupOrCreateCanonicalIdentifier(sub_id_components[0],sub_id_components[1]);
+                      //new IdentifierOccurrence(sub: new_sub, identifier: sub_identifier).save()
+                      Identifier ident = Identifier.construct([value: sub_id_components[1], reference: new_sub, namespace: sub_id_components[0]])
                   }
                   else {
-                    def sub_identifier = Identifier.lookupOrCreateCanonicalIdentifier('Unknown', params.newEmptySubId);
-                      new IdentifierOccurrence(sub: new_sub, identifier: sub_identifier).save()
+                      // TODO [ticket=1789]
+                      //def sub_identifier = Identifier.lookupOrCreateCanonicalIdentifier('Unknown', params.newEmptySubId);
+                      //new IdentifierOccurrence(sub: new_sub, identifier: sub_identifier).save()
+                      Identifier ident = Identifier.construct([value: params.newEmptySubId, reference: new_sub, namespace: 'Unkown'])
                   }
                 }
 

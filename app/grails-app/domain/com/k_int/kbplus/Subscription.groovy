@@ -754,6 +754,7 @@ class Subscription
     this.orgRelations.add(or)
   }
 
+/*-- not used
   def addNamespacedIdentifier(ns,value) {
       log.debug("Add Namespaced identifier ${ns}:${value}")
 
@@ -763,6 +764,7 @@ class Subscription
     this.ids.add(new IdentifierOccurrence(sub:this,identifier:canonical_id))
 
   }
+--*/
 
   def getCommaSeperatedPackagesIsilList() {
       def result = []

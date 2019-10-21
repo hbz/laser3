@@ -663,10 +663,12 @@ class DataloadService {
             }
 
             if ( matched && suncat_identifier ) {
+                // TODO [ticket=1789]
               log.debug("set suncat identifier to ${suncat_identifier}");
-              def canonical_identifier = Identifier.lookupOrCreateCanonicalIdentifier('SUNCAT',suncat_identifier);
-              ti.ids.add(new IdentifierOccurrence(identifier:canonical_identifier, ti:ti));
-              ti.save(flush:true);
+              //def canonical_identifier = Identifier.lookupOrCreateCanonicalIdentifier('SUNCAT',suncat_identifier);
+              //ti.ids.add(new IdentifierOccurrence(identifier:canonical_identifier, ti:ti));
+              //ti.save(flush:true);
+                def canonical_identifier = Identifier.construct([value: suncat_identifier, reference: ti, namespace: 'SUNCAT'])
             }
             else {
               log.debug("No match for title ${ti.title}, ${ti.id}");

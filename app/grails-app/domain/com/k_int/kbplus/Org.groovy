@@ -502,14 +502,18 @@ class Org
             if (identifiers instanceof ArrayList) {
                 identifiers.each{ it ->
                     it.each { k, v ->
-                        def io = new IdentifierOccurrence(org: result, identifier: Identifier.lookupOrCreateCanonicalIdentifier(k, v)).save()
+                        // TODO [ticket=1789]
+                        //def io = new IdentifierOccurrence(org: result, identifier: Identifier.lookupOrCreateCanonicalIdentifier(k, v)).save()
+                        Identifier ident = Identifier.construct([value: v, reference: result, namespace: k])
                     }
                 }
             }
             // DEFAULT LOGIC
             else {
                 identifiers.each { k, v ->
-                    def io = new IdentifierOccurrence(org: result, identifier: Identifier.lookupOrCreateCanonicalIdentifier(k, v)).save()
+                    // TODO [ticket=1789]
+                    //def io = new IdentifierOccurrence(org: result, identifier: Identifier.lookupOrCreateCanonicalIdentifier(k, v)).save()
+                    Identifier ident = Identifier.construct([value: v, reference: result, namespace: k])
                 }
             }
 
@@ -674,10 +678,12 @@ class Org
         if ( ! found ) {
             value = value?.trim()
             ns = ns?.trim()
-            def namespace = IdentifierNamespace.findByNsIlike(ns) ?: new IdentifierNamespace(ns:ns).save()
-            def id = new Identifier(ns:namespace, value:value).save()
-            log.debug("Create new identifier occurrence for pid:${id.getId()} ns:${ns} value:${value}")
-            new IdentifierOccurrence(identifier: id, org: this).save()
+            //def namespace = IdentifierNamespace.findByNsIlike(ns) ?: new IdentifierNamespace(ns:ns).save()
+            // TODO [ticket=1789]
+            Identifier ident = Identifier.construct([value: value, reference: this, namespace: ns])
+            //def id = new Identifier(ns:namespace, value:value).save()
+            //new IdentifierOccurrence(identifier: id, org: this).save()
+            log.debug("Create new identifier: ${ident.getId()} ns:${ns} value:${value}")
         }
     }
 

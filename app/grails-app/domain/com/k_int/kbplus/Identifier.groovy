@@ -68,6 +68,34 @@ class Identifier {
         occurrences   batchSize: 10
     }
 
+    static Identifier construct(Map<String, Object> map) {
+
+        String value        = map.get('value')
+        Object reference    = map.get('reference')
+        def namespace       = map.get('namespace')
+
+		IdentifierNamespace ns
+		if (namespace instanceof IdentifierNamespace) {
+			ns = namespace
+		} else {
+			ns = IdentifierNamespace.findByNsIlike(namespace?.trim())
+
+			if(! ns) {
+				ns = new IdentifierNamespace(ns:ns, isUnique: false, isHidden: false)
+				ns.save()
+			}
+		}
+
+        Identifier ident = Identifier.findByValueAndNamespaceAndReference(value, ns, reference)
+        if (!ident) {
+            ident = new Identifier(ns: ns, value: value)
+            ident.setReference(reference)
+            ident.save()
+        }
+
+        ident
+    }
+
     void setReference(def owner) {
         lic  = owner instanceof License ? owner : lic
         org  = owner instanceof Org ? owner : org
