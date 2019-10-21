@@ -180,7 +180,7 @@ class SemanticUiTagLib {
 
     def systemInfo = { attrs, body ->
 
-        def systemChecks = systemService.serviceCheck()
+        def systemChecks = systemService?.serviceCheck()
 
         if (systemChecks) {
 
