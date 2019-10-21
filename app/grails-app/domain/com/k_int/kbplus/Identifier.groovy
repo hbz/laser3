@@ -58,8 +58,8 @@ class Identifier {
        org  column:'id_org_fk'
        pkg  column:'id_pkg_fk'
        sub  column:'id_sub_fk'
-       ti   column:'id_ti_fk',  index:'io_title_idx'
-       tipp column:'id_tipp_fk'
+       ti   column:'id_ti_fk',      index:'io_title_idx'
+       tipp column:'id_tipp_fk',    index:'io_tipp_idx'
        cre  column:'id_cre_fk'
 
         dateCreated column: 'id_date_created'

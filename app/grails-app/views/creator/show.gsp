@@ -59,11 +59,11 @@
                                                      uniqueWarningText="${message(code: 'creator.gnd_id.duplicate.warn')}">
                             </semui:formAddIdentifier>
                         </g:if>
-
+<%-- TODO [ticket=1789]
                             <g:link controller="identifierOccurrence" action="show"
                                     id="${creatorInstance?.gnd_id?.id}">${creatorInstance?.gnd_id}</g:link></dd>
 
-
+--%>
                         <dt><g:message code="creator.globalUID.label" default="Global UID"/></dt>
                         <dd>${creatorInstance.globalUID}</dd>
 
