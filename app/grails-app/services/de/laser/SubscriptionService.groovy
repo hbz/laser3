@@ -1098,7 +1098,7 @@ class SubscriptionService {
             }
             //provider
             if(colMap.provider != null) {
-                String providerIdCandidate = cols[colMap.provider].trim()
+                String providerIdCandidate = cols[colMap.provider]?.trim()
                 if(providerIdCandidate) {
                     Long idCandidate = providerIdCandidate.isLong() ? Long.parseLong(providerIdCandidate) : null
                     Org provider = Org.findByIdOrGlobalUID(idCandidate,providerIdCandidate)
@@ -1111,7 +1111,7 @@ class SubscriptionService {
             }
             //agency
             if(colMap.agency != null) {
-                String agencyIdCandidate = cols[colMap.agency].trim()
+                String agencyIdCandidate = cols[colMap.agency]?.trim()
                 if(agencyIdCandidate) {
                     Long idCandidate = agencyIdCandidate.isLong() ? Long.parseLong(agencyIdCandidate) : null
                     Org agency = Org.findByIdOrGlobalUID(idCandidate,agencyIdCandidate)
@@ -1208,7 +1208,7 @@ class SubscriptionService {
             propMap.each { String k, Map propInput ->
                 Map defPair = propInput.definition
                 Map propData = [:]
-                if(cols[defPair.colno].trim()) {
+                if(cols[defPair.colno]) {
                     def v
                     if(defPair.refCategory) {
                         v = refdataService.retrieveRefdataValueOID(cols[defPair.colno].trim(),defPair.refCategory)

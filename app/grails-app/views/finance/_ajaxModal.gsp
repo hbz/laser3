@@ -213,8 +213,8 @@
                                   value="${costItem?.billingCurrency?.id}" />
                     </div><!-- .field -->
                     <div class="field">
-                        <label>Endpreis</label>
-                        <input title="Rechnungssumme nach Steuer (in EUR)" type="text" readonly="readonly"
+                        <label><g:message code="financials.newCosts.totalAmountInEuro"/></label>
+                        <input title="${g.message(code:'financials.newCosts.totalAmount')}" type="text" readonly="readonly"
                                name="newCostInBillingCurrencyAfterTax" id="newCostInBillingCurrencyAfterTax"
                                value="<g:formatNumber number="${fromConsortia ? 0.0 : costItem?.costInBillingCurrencyAfterTax}" minFractionDigits="2" maxFractionDigits="2" />" />
 
@@ -290,7 +290,7 @@
 
                 <div class="field">
                     <div class="ui checkbox">
-                        <label>Finalen Preis runden</label>
+                        <label><g:message code="financials.newCosts.finalSumRounded"/></label>
                         <input name="newFinalCostRounding" class="hidden calc" type="checkbox"
                                <g:if test="${costItem?.finalCostRounding}"> checked="checked" </g:if>
                         />

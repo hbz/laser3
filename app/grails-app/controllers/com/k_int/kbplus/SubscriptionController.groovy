@@ -2331,6 +2331,9 @@ class SubscriptionController extends AbstractDebugController {
                                 }
                                 else {
                                     new OrgRole(org: cm, sub: memberSub, roleType: role_sub).save()
+                                    if(cm.hasPerm("ORG_INST_COLLECTIVE")) {
+                                        new OrgRole(org: cm, sub: memberSub, roleType: role_sub_coll).save()
+                                    }
                                 }
                                 new OrgRole(org: result.institution, sub: memberSub, roleType: role_sub_cons).save()
 
@@ -5078,21 +5081,23 @@ class SubscriptionController extends AbstractDebugController {
                     }
                     //process subscription properties
                     entry.properties.each { k, v ->
-                        log.debug("${k}:${v.propValue}")
-                        PropertyDefinition propDef = (PropertyDefinition) genericOIDService.resolveOID(k)
-                        List<String> valueList
-                        if(propDef.multipleOccurrence) {
-                            valueList = v?.propValue?.split(',')
-                        }
-                        else valueList = [v.propValue]
-                        //in most cases, valueList is a list with one entry
-                        valueList.each { value ->
-                            try {
-                                createProperty(propDef,sub,contextOrg,value,v.propNote)
+                        if(v.propValue?.trim()) {
+                            log.debug("${k}:${v.propValue}")
+                            PropertyDefinition propDef = (PropertyDefinition) genericOIDService.resolveOID(k)
+                            List<String> valueList
+                            if(propDef.multipleOccurrence) {
+                                valueList = v?.propValue?.split(',')
                             }
-                            catch (Exception e) {
-                                withErrors = true
-                                flash.error += e.getMessage()
+                            else valueList = [v.propValue]
+                            //in most cases, valueList is a list with one entry
+                            valueList.each { value ->
+                                try {
+                                    createProperty(propDef,sub,contextOrg,value,v.propNote)
+                                }
+                                catch (Exception e) {
+                                    withErrors = true
+                                    flash.error += e.getMessage()
+                                }
                             }
                         }
                     }

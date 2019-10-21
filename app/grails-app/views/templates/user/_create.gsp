@@ -99,7 +99,7 @@
                 method: 'POST'
             }).done(function(response){
                 if(response.result) {
-                    addError($("#username"),'<span id="usernameError"><g:message code="user.not.created.message"/></span>');
+                    addError($("#username"),"<span id=\"usernameError\"><g:message code="user.not.created.message"/></span>");
                 }
                 else if($("#username").val().length > 0) {
                     removeError($("#username"),$("#usernameError"));

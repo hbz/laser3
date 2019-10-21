@@ -587,13 +587,13 @@ class SemanticUiTagLib {
         String id        = attrs.id ? ' id="' + attrs.id + '" ' : ''
         String modalSize = attrs.modalSize ? attrs.modalSize  : ''
         String text      = attrs.text ? attrs.text : ''
-        String message   = attrs.message ? "${message(code: attrs.message)}" : ''
+        String message   = attrs.message ? "${g.message(code: attrs.message)}" : ''
         String title     = (text && message) ? text + " - " + message : text + message
         String isEditModal = attrs.isEditModal
 
-        String msgClose    = attrs.msgClose ?: "Schließen"
-        String msgSave     = attrs.msgSave ?: (isEditModal ? "Änderungen speichern" : "Anlegen")
-        String msgDelete   = attrs.msgDelete ?: "Löschen"
+        String msgClose    = attrs.msgClose ?: "${g.message(code:'default.button.close.label')}"
+        String msgSave     = attrs.msgSave ?: (isEditModal ? "${g.message(code:'default.button.save_changes')}" : "${g.message(code:'default.button.create.label')}")
+        String msgDelete   = attrs.msgDelete ?: "${g.message(code:'default.button.delete.label')}"
 
         out << '<div class="ui modal ' + modalSize + '"' + id + '>'
         out << '<div class="header">' + title + '</div>'
@@ -606,7 +606,7 @@ class SemanticUiTagLib {
         if (attrs.showDeleteButton) {
 
             out << '<input type="submit" class="ui negative button" name="delete" value="' + msgDelete + '" onclick="'
-            out << 'return confirm(\'Wollen Sie den Löschvorgang wirklich durchführen?\')?'
+            out << "return confirm('${g.message(code:'default.button.delete.confirmDeletion.message')}')?"
             out << '$(\'#' + attrs.id + '\').find(\'#' + attrs.deleteFormID + '\').submit():null'
             out << '"/>'
         }
