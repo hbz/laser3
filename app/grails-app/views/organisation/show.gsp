@@ -555,104 +555,55 @@ ${orgInstance.name} - ${message(code:'profile.errorOverview.label')}</h1>
                     </div>
                 </div><!-- .card -->
 
-            %{--<g:if test="${orgInstance?.outgoingCombos && ((orgInstance.id == contextService.getOrg().id) || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN'))}">
-                <g:if test="${orgInstance.id == contextService.getOrg().id}">
-                    <div class="ui card">
+                <g:if test="${contextService.getUser().isAdmin() || contextService.getOrg().getCustomerType() in ['ORG_CONSORTIUM', 'ORG_CONSORTIUM_SURVEY']}">
+                    <g:if test="${createdByOrgGeneralContacts || legallyObligedByOrgGeneralContacts}">
+                        <div class="ui card">
+                            <div class="content">
+                                <g:if test="${createdByOrgGeneralContacts}">
+                                    <dl>
+                                        <dt>
+                                            <g:message code="org.createdBy.label" default="createdBy"/>
+                                        </dt>
+                                        <dd>
+                                            <g:each in="${createdByOrgGeneralContacts}" var="cbogc">
+                                                <g:render template="/templates/cpa/person_full_details" model="${[
+                                                        person              : cbogc,
+                                                        personContext       : createdByOrg,
+                                                        tmplShowFunctions       : true,
+                                                        tmplShowPositions       : true,
+                                                        tmplShowResponsiblities : true,
+                                                        tmplConfigShow      : ['E-Mail', 'Mail', 'Url', 'Phone', 'Fax', 'address'],
+                                                        editable            : false
+                                                ]}"/>
+                                            </g:each>
+                                        </dd>
+                                    </dl>
+                                </g:if>
+                                <g:if test="${legallyObligedByOrgGeneralContacts}">
+                                    <dl>
+                                        <dt>
+                                            <g:message code="org.legallyObligedBy.label" default="legallyObligedBy"/>
+                                        </dt>
+                                        <dd>
+                                            <g:each in="${legallyObligedByOrgGeneralContacts}" var="lobogc">
+                                                <g:render template="/templates/cpa/person_full_details" model="${[
+                                                        person              : lobogc,
+                                                        personContext       : legallyObligedByOrg,
+                                                        tmplShowFunctions       : true,
+                                                        tmplShowPositions       : true,
+                                                        tmplShowResponsiblities : true,
+                                                        tmplConfigShow      : ['E-Mail', 'Mail', 'Url', 'Phone', 'Fax', 'address'],
+                                                        editable            : false
+                                                ]}"/>
+                                            </g:each>
+                                        </dd>
+                                    </dl>
+                                </g:if>
+                            </div>
+                        </div><!-- .card -->
+                    </g:if>
                 </g:if>
-                <g:elseif test="${SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')}">
-                    <div class="ui card la-role-admin">
-                </g:elseif>
-                <g:else>
-                    <div class="ui card la-role-yoda">
-                </g:else>
-                <div class="content">
-                    <dl>
-                        <dt><g:message code="org.outgoingCombos.label" default="Outgoing Combos"/></dt>
-                        <dd>
-                            <g:each in="${orgInstance.outgoingCombos.sort { it.toOrg.name }}" var="i">
-                                <g:link controller="organisation" action="show"
-                                        id="${i.toOrg.id}">${i.toOrg?.name}</g:link>
-                                <g:each in="${i?.toOrg?.ids?.sort { it?.identifier?.ns?.ns }}" var="id_out">
-                                    <span class="ui small teal image label">
-                                        ${id_out.identifier.ns.ns}: <div
-                                            class="detail">${id_out.identifier.value}</div>
-                                    </span>
-                                </g:each>
-                                <br/>
-                            </g:each>
-                        </dd>
-                    </dl>
-                </div>
-                </div><!--.card-->
-            </g:if>
 
-            <g:if test="${orgInstance?.incomingCombos}">
-
-                <g:if test="${SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')}">
-                    <div class="ui card la-role-admin">
-                        <div class="content">
-                            <dl>
-                                <dt><g:message code="org.incomingCombos.label" default="Incoming Combos"/></dt>
-                                <dd>
-                                    <g:each in="${orgInstance.incomingCombos.sort { it.fromOrg.name }}" var="i">
-                                        <g:link controller="organisation" action="show"
-                                                id="${i.fromOrg.id}">${i.fromOrg?.name}</g:link>
-                                        <g:each in="${i?.fromOrg?.ids?.sort { it?.identifier?.ns?.ns }}"
-                                                var="id_in">
-                                            <span class="ui small teal image label">
-                                                ${id_in.identifier.ns.ns}: <div
-                                                    class="detail">${id_in.identifier.value}</div>
-                                            </span>
-                                        </g:each>
-                                        <br/>
-                                    </g:each>
-                                </dd>
-                            </dl>
-                        </div>
-                    </div><!--.card-->
-                </g:if>
-                <g:elseif test="${SpringSecurityUtils.ifAnyGranted('ROLE_YODA')}">
-                    <div class="ui card la-role-yoda">
-                        <div class="content">
-                            <dl>
-                                <dt><g:message code="org.incomingCombos.label" default="Incoming Combos"/></dt>
-                                <dd>
-                                    <g:each in="${orgInstance.incomingCombos.sort { it.fromOrg.name }}" var="i">
-                                        <g:link controller="organisation" action="show"
-                                                id="${i.fromOrg.id}">${i.fromOrg?.name}</g:link>
-                                        <g:each in="${i?.fromOrg?.ids?.sort { it?.identifier?.ns?.ns }}"
-                                                var="id_in">
-                                            <span class="ui small teal image label">
-                                                ${id_in.identifier.ns.ns}: <div
-                                                    class="detail">${id_in.identifier.value}</div>
-                                            </span>
-                                        </g:each>
-                                        <br/>
-                                    </g:each>
-                                </dd>
-                            </dl>
-                        </div>
-                    </div><!--.card-->
-                </g:elseif>
-
-            </g:if><%-- incomingCombos --%>
-
-            <g:if test="${sorted_links}">
-                <g:if test="${SpringSecurityUtils.ifAnyGranted('ROLE_YODA')}">
-                    <div class="ui card la-role-yoda">
-                        <div class="content">
-                            <g:render template="/templates/links/orgRoleContainer"
-                                      model="[listOfLinks: sorted_links]"/>
-                        </div>
-                </g:if>
-                <g:elseif test="${orgInstance.id == contextService.getOrg().id && user.hasAffiliation('INST_EDITOR')}">
-                    <div class="ui card">
-                        <div class="content">
-                            <g:render template="/templates/links/orgRoleContainer"
-                                      model="[listOfLinks: sorted_links]"/>
-                        </div>
-                </g:elseif>
-            </g:if><%-- sorted_links --%>--}%
             </g:if>
 
             <g:if test="${accessService.checkPerm("ORG_INST,ORG_CONSORTIUM")}">

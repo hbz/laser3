@@ -54,6 +54,8 @@ class PropertyDefinition extends AbstractI10nTranslatable implements Serializabl
     final static String PRS_PROP    = 'Person Property'
     @Transient
     final static String ORG_PROP    = 'Organisation Property'
+    @Transient
+    final static String PLA_PROP    = 'Platform Property'
 
     @Transient
     final static String[] AVAILABLE_CUSTOM_DESCR = [

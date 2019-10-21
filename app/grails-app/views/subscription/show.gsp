@@ -3,7 +3,7 @@
 <%@ page import="com.k_int.kbplus.RefdataCategory" %>
 <%@ page import="grails.plugin.springsecurity.SpringSecurityUtils" %>
 <laser:serviceInjection />
-<r:require module="annotations" />
+<%-- r:require module="annotations" / --%>
 
 <!doctype html>
 <html>
@@ -301,7 +301,8 @@
                                   model="${[roleLinks: visibleOrgRelations,
                                             roleObject: subscriptionInstance,
                                             roleRespValue: 'Specific subscription editor',
-                                            editmode: editable
+                                            editmode: editable,
+                                            showPersons: true
                                   ]}" />
 
                         <div class="ui la-vertical buttons la-js-hide-this-card">

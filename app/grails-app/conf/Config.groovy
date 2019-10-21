@@ -11,6 +11,8 @@ grails.config.locations = ["file:${userHome}/.grails/${appName}-config.groovy"]
 
 laserSystemId = 'local'
 documentStorageLocation = '/tmp/laser'
+dbBackupLocation = documentStorageLocation + '/laserDatabaseBackups'
+
 featureSurvey = false
 
 globalDataSync = [
@@ -451,7 +453,6 @@ environments {
     }
 }
 
-basicDataPath = documentStorageLocation+'/basic_data_dumps/'
 basicDataFileName = 'basicDataDump.xml'
 orgDumpFileNamePattern = 'orgDump_'
 orgDumpFileExtension = '.xml'

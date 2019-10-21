@@ -25,7 +25,7 @@
 <semui:messages data="${flash}"/>
 
 <semui:filter>
-    <g:form action="currentSurveys" controller="myInstitution" method="post" class="form-inline ui small form" params="[tab: params.tab ]">
+    <g:form action="currentSurveys" controller="myInstitution" method="post" class="ui small form" params="[tab: params.tab ]">
         <div class="three fields">
             <div class="field">
                 <label for="name">${message(code: 'surveyInfo.name.label')}
@@ -183,7 +183,6 @@
 
                     <semui:surveyFinishIcon participant="${institution}" surveyConfig="${surveyConfig}" surveyOwnerView="${false}"/>
 
-
                 </td>
                 <g:if test="${params.tab == 'finish'}">
                     <td class="center aligned">
@@ -197,8 +196,8 @@
                         <g:if test="${surveyConfig?.pickAndChoose}">
                             <span class="la-popup-tooltip la-delay"
                                   data-content="${message(code: 'surveyInfo.toIssueEntitlementsSurvey')}">
-                                <g:link controller="subscription" action="renewEntitlementsWithSurvey" id="${surveyConfig.subscription?.getDerivedSubscriptionBySubscribers(institution)?.id}"
-                                        params="${[targetSubscriptionId: surveyConfig.subscription?.getDerivedSubscriptionBySubscribers(institution)?.id, surveyConfigID: surveyConfig?.id]}" class="ui icon button">
+                                <g:link controller="myInstitution" action="surveyInfosIssueEntitlements" id="${surveyConfig?.id}"
+                                        params="${[targetSubscriptionId: surveyConfig.subscription?.getDerivedSubscriptionBySubscribers(institution)?.id]}" class="ui icon button">
                                     <i class="write icon"></i>
                                 </g:link>
                             </span>

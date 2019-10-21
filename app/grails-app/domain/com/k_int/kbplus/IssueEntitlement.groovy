@@ -40,6 +40,9 @@ class IssueEntitlement extends AbstractBaseDomain implements Comparable {
   @RefdataAnnotation(cat = 'IE ACCEPT STATUS')
   RefdataValue acceptStatus
 
+  Date dateCreated
+  Date lastUpdated
+
   static belongsTo = [subscription: Subscription, tipp: TitleInstancePackagePlatform]
 
   static hasOne =    [priceItem: PriceItem]
@@ -81,6 +84,10 @@ class IssueEntitlement extends AbstractBaseDomain implements Comparable {
       coverageDepth column:'ie_coverage_depth'
       coverageNote column:'ie_coverage_note',type: 'text'
       */
+
+    dateCreated column: 'ie_date_created'
+    lastUpdated column: 'ie_last_updated'
+
   }
 
   static constraints = {
@@ -108,6 +115,10 @@ class IssueEntitlement extends AbstractBaseDomain implements Comparable {
       coverageDepth (nullable:true, blank:true)
       coverageNote  (nullable:true, blank:true)
        */
+
+    // Nullable is true, because values are already in the database
+    lastUpdated (nullable: true, blank: false)
+    dateCreated (nullable: true, blank: false)
   }
 
   Date getDerivedAccessStartDate() {

@@ -24,7 +24,7 @@ class GOKbService {
             }else {
                 json = geElasticsearchFindings(apiSource.baseUrl+apiSource.fixToken, esQuery, "Package", null, max)
             }
-
+            log.info("getting Package map from gokb (${apiSource.baseUrl+apiSource.fixToken})")
             result.records = []
 
             if (json?.info?.records) {
@@ -79,7 +79,7 @@ class GOKbService {
                     pkg.lastUpdatedDisplay = r.lastUpdatedDisplay
 
                     pkg.url = apiSource.baseUrl
-
+                    pkg.editUrl = apiSource.editUrl
 
                     if(r.uuid && r.uuid != "null") {
                         result.records << pkg
@@ -140,7 +140,7 @@ class GOKbService {
                     pkg.lastUpdatedDisplay = r.lastUpdatedDisplay
 
                     pkg.url = apiSource.baseUrl
-
+                    pkg.editUrl = apiSource.editUrl
 
                     if(r.uuid && r.uuid != "null") {
                         result.records << pkg

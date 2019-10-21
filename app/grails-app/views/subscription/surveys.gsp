@@ -45,7 +45,7 @@
             <g:sortableColumn params="${params}" property="surInfo.endDate"
                               title="${message(code: 'default.endDate.label', default: 'End Date')}"/>
             <th>${message(code: 'surveyInfo.type.label')}</th>
-            <th>${message(code: 'surveyInfo.finished')}</th>
+            <th>${message(code: 'surveyInfo.status.label')}</th>
             <th>${message(code: 'surveyInfo.finishedDate')}</th>
             <th class="la-action-info">${message(code: 'default.actions')}</th>
 

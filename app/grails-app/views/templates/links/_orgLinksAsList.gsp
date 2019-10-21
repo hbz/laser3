@@ -43,6 +43,14 @@
                                 <i class="unlink icon"></i>
                             </g:link>
                         </g:if>
+
+                        <g:if test="${!role.isShared && role.sharedFrom}">
+                            <span  class="la-popup-tooltip la-delay" data-content="${message(code:'property.share.tooltip.sharedFrom')}">
+                                <i class="green alternate share icon"></i>
+                            </span>
+                        </g:if>
+
+                        <g:if test="${showPersons}">
                          <button class="ui icon button la-selectable-button" data-semui="modal" data-href="#${cssId}">
                              <i class="address plus icon"></i>
                          </button>
@@ -53,15 +61,15 @@
                                           parent: roleObject.class.name + ':' + roleObject.id,
                                           role: modalPrsLinkRole.class.name + ':' + modalPrsLinkRole.id
                                   ]"/>
+                        </g:if>
                     </g:if>
                 </td>
 
             </tr>
-            <g:if test="${  Person.getPublicByOrgAndFunc(role.org, 'General contact person') ||
+            <g:if test="${showPersons && (Person.getPublicByOrgAndFunc(role.org, 'General contact person') ||
                             Person.getPublicByOrgAndObjectResp(role.org, roleObject, roleRespValue) ||
                             Person.getPrivateByOrgAndFuncFromAddressbook(role.org, 'General contact person', contextService.getOrg()) ||
-                            Person.getPrivateByOrgAndObjectRespFromAddressbook(role.org, roleObject, roleRespValue, contextService.getOrg())
-            }">
+                            Person.getPrivateByOrgAndObjectRespFromAddressbook(role.org, roleObject, roleRespValue, contextService.getOrg()))}">
                 <tr>
                     <td></td>
                     <td>
@@ -105,8 +113,7 @@
 
                         <%-- private --%>
                         <g:if test="${ Person.getPrivateByOrgAndFuncFromAddressbook(role.org, 'General contact person', contextService.getOrg()) ||
-                                Person.getPrivateByOrgAndObjectRespFromAddressbook(role.org, roleObject, roleRespValue, contextService.getOrg())
-                        }">
+                                Person.getPrivateByOrgAndObjectRespFromAddressbook(role.org, roleObject, roleRespValue, contextService.getOrg())}">
                             <div class="ui list">
                                 <g:each in="${Person.getPrivateByOrgAndFuncFromAddressbook(role.org, 'General contact person', contextService.getOrg())}" var="func">
                                     <div class="item">

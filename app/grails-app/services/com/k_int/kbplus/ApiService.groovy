@@ -718,10 +718,6 @@ class ApiService {
                     user.accountLocked = userData.accountLocked.text().toBoolean()
                     //log.debug("passwordExpired: ${userData.passwordExpired.text().toBoolean()}")
                     user.passwordExpired = userData.passwordExpired.text().toBoolean()
-                    if (userData.apikey.text())
-                        user.apikey = userData.apikey.text()
-                    if (userData.apisecret.text())
-                        user.apisecret = userData.apisecret.text()
                     if(userData.dateCreated.text())
                         user.dateCreated = sdf.parse(userData.dateCreated.text())
                     if(userData.lastUpdated.text())
@@ -782,10 +778,6 @@ class ApiService {
                         //log.debug("passwordExpired: ${userData.passwordExpired.text().toBoolean()}")
                         user.passwordExpired = userData.passwordExpired.text().toBoolean()
                     }
-                    if (user.apikey != userData.apikey.text())
-                        user.apikey = userData.apikey.text()
-                    if (user.apisecret != userData.apisecret.text())
-                        user.apisecret = userData.apisecret.text()
                 }
             }
             //insert all user affiliations

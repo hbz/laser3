@@ -87,10 +87,11 @@ class UserService {
 
         if (! user.save()) {
             Set errMess = []
+            Object[] withArticle = new Object[messageSource.getMessage('user.withArticle.label',null,locale)]
             user.errors.fieldErrors.each { FieldError e ->
                 if(e.field == 'username' && e.code == 'unique')
                     errMess.add(messageSource.getMessage('user.not.created.message',null,locale))
-                else errMess.add(messageSource.getMessage('default.not.created.message',[messageSource.getMessage('user.withArticle.label',null,locale)],locale))
+                else errMess.add(messageSource.getMessage('default.not.created.message',withArticle,locale))
             }
             errMess
         }
@@ -139,8 +140,10 @@ class UserService {
                         user = addNewUser([username: username, password: "${username}${grailsApplication.config.passwordSuffix}", display: username, email: "${userKey}@hbz-nrw.de", enabled: true, org: orgs[customerKey]],null)
                     }
                     if(user && !user.hasAffiliationForForeignOrg(rightKey,orgs[customerKey])) {
-                        if(orgs[customerKey])
+                        if(orgs[customerKey]) {
                             instAdmService.createAffiliation(user,orgs[customerKey],userRole,UserOrg.STATUS_APPROVED,null)
+                            user.getSetting(UserSettings.KEYS.DASHBOARD,orgs[customerKey])
+                        }
                         else log.debug("appropriate inst missing for affiliation key, skipping")
                     }
                 }

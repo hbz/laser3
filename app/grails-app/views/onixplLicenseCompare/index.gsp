@@ -1,6 +1,7 @@
 <%@ page contentType="text/html;charset=UTF-8" %>
 <%@ page import="com.k_int.kbplus.onixpl.OnixPLService" %>
 <!doctype html>
+<r:require module="scaffolding" />
 <html>
 <head>
 <meta name="layout" content="semanticUI" />

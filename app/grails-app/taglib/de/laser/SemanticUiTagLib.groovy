@@ -18,6 +18,7 @@ class SemanticUiTagLib {
     def springSecurityService
     def yodaService
     def auditService
+    def systemService
 
     //static defaultEncodeAs = [taglib:'html']
     //static encodeAsForTags = [tagName: [taglib:'html'], otherTagName: [taglib:'none']]
@@ -172,6 +173,35 @@ class SemanticUiTagLib {
             out << '</div>'
             out << '<div class="actions">'
             out << '<a href="#" class="ui button" onclick="$(\'#debugInfo\').modal(\'hide\')">Schließen</a>'
+            out << '</div>'
+            out << '</div>'
+        }
+    }
+
+    def systemInfo = { attrs, body ->
+
+        def systemChecks = systemService?.serviceCheck()
+
+        if (systemChecks) {
+
+            out << '<a href="#systemInfo" id="showSystemInfo" aria-label="System Info" class="ui button big icon" data-semui="modal">'
+            out << '<i class="red fire extinguisher icon"></i>'
+            out << '</a>'
+
+            out << '<div id="systemInfo" class="ui modal">'
+            out << '<h4 class="ui red header"> <i class="bug icon"></i> SYSTEM-INFORMATION</h4>'
+            out << '<div class="scrolling content">'
+            out << '<div class="ui list">'
+            systemChecks.each {systemCheck ->
+                out << '<div class="item">'
+                out << "${systemCheck.key}: ${systemCheck.value}"
+                out << '</div>'
+            }
+            out << '</div>'
+            out << '<br />'
+            out << '</div>'
+            out << '<div class="actions">'
+            out << '<a href="#" class="ui button" onclick="$(\'#systemInfo\').modal(\'hide\')">Schließen</a>'
             out << '</div>'
             out << '</div>'
         }

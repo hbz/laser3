@@ -158,7 +158,7 @@
                         <g:if test="${tipp?.gokbId}">
                             <a class="ui icon tiny blue button la-js-dont-hide-button la-popup-tooltip la-delay"
                                data-content="${message(code: 'gokb')}"
-                               href="${gokbAPI.baseUrl ? gokbAPI.baseUrl + '/gokb/resource/show/' + tipp?.gokbId : '#'}"
+                               href="${gokbAPI.editUrl ? gokbAPI.editUrl + '/gokb/resource/show/' + tipp?.gokbId : '#'}"
                                target="_blank"><i class="la-gokb  icon"></i>
                             </a>
                         </g:if>

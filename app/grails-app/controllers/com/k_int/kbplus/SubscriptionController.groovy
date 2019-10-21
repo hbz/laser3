@@ -621,12 +621,12 @@ class SubscriptionController extends AbstractDebugController {
         if (params.startsBefore && params.startsBefore.length() > 0) {
             def sdf = new java.text.SimpleDateFormat(message(code: 'default.date.format.notime', default: 'yyyy-MM-dd'));
             def d = sdf.parse(params.startsBefore)
-            base_qry += " and ie.startDate <= ?"
+            base_qry += " and (select min(ic.startDate) from IssueEntitlementCoverage ic where ic.ie = ie) <= ?"
             qry_params.add(d)
         }
 
         if (asAt != null) {
-            base_qry += " and ( ( ? >= coalesce(ie.tipp.accessStartDate, ie.startDate) ) and ( ( ? <= ie.tipp.accessEndDate ) or ( ie.tipp.accessEndDate is null ) ) ) "
+            base_qry += " and ( ( ? >= coalesce(ie.tipp.accessStartDate, (select min(ic.startDate) from IssueEntitlementCoverage ic where ic.ie = ie)) ) and ( ( ? <= ie.tipp.accessEndDate ) or ( ie.tipp.accessEndDate is null ) ) ) "
             qry_params.add(asAt);
             qry_params.add(asAt);
         }
@@ -763,14 +763,14 @@ class SubscriptionController extends AbstractDebugController {
             if (params.endsAfter && params.endsAfter.length() > 0) {
                 def sdf = new java.text.SimpleDateFormat(message(code: 'default.date.format.notime', default: 'yyyy-MM-dd'));
                 def d = sdf.parse(params.endsAfter)
-                basequery += " and tipp.endDate >= ?"
+                basequery += " and (select max(tc.endDate) from TIPPCoverage tc where tc.tipp = tipp) >= ?"
                 qry_params.add(d)
             }
 
             if (params.startsBefore && params.startsBefore.length() > 0) {
                 def sdf = new java.text.SimpleDateFormat(message(code: 'default.date.format.notime', default: 'yyyy-MM-dd'));
                 def d = sdf.parse(params.startsBefore)
-                basequery += " and tipp.startDate <= ?"
+                basequery += " and (select min(tc.startDate) from TIPPCoverage tc where tc.tipp = tipp) <= ?"
                 qry_params.add(d)
             }
 
@@ -1051,11 +1051,83 @@ class SubscriptionController extends AbstractDebugController {
     def renewEntitlementsWithSurvey() {
         params.id = params.targetSubscriptionId
         params.sourceSubscriptionId = Subscription.get(params.targetSubscriptionId)?.instanceOf?.id
-        def result = loadDataFor_PackagesEntitlements()
+        params.offset = 0
+        params.max = 2000
+
+        def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
+        Subscription baseSub = Subscription.get(params.sourceSubscriptionId ?: params.id)
+        Subscription newSub = params.targetSubscriptionId ? Subscription.get(params.targetSubscriptionId) : null
+        result.sourceIEs = subscriptionService.getIssueEntitlementsWithFilter(baseSub, params)
+        result.targetIEs = subscriptionService.getIssueEntitlementsWithFilter(newSub, params)
+        result.newSub = newSub
+        result.subscription = baseSub
         result.surveyConfig = SurveyConfig.get(params.surveyConfigID)
         result.subscriber = result.newSub.getSubscriber()
         result.editable = surveyService.isEditableIssueEntitlementsSurvey(result.institution, result.surveyConfig)
-        //result.comparisonMap = comparisonService.buildTIPPComparisonMap(result.sourceIEs+result.targetIEs)
+
+        def filename = "${escapeService.escapeString(message(code:'renewEntitlementsWithSurvey.selectableTitles')+'_'+result.newSub.dropdownNamingConvention())}"
+
+        if (params.exportKBart) {
+            response.setHeader("Content-disposition", "attachment; filename=${filename}.tsv")
+            response.contentType = "text/tsv"
+            ServletOutputStream out = response.outputStream
+            Map<String, List> tableData = titleStreamService.generateTitleExportList(result.sourceIEs)
+            out.withWriter { writer ->
+                writer.write(exportService.generateSeparatorTableString(tableData.titleRow, tableData.columnData, '\t'))
+            }
+            out.flush()
+            out.close()
+        }else if(params.exportXLS) {
+            response.setHeader("Content-disposition", "attachment; filename=\"${filename}.xlsx\"")
+            response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+            List titles = [
+                    g.message(code:'title'),
+                    g.message(code:'tipp.volume'),
+                    g.message(code:'author.slash.editor'),
+                    g.message(code:'title.editionStatement.label'),
+                    g.message(code:'title.summaryOfContent.label'),
+                    g.message(code:'identifier.label'),
+                    g.message(code:'title.dateFirstInPrint.label'),
+                    g.message(code:'title.dateFirstOnline.label'),
+                    g.message(code:'tipp.price')
+            ]
+            List rows = []
+            result.sourceIEs.each { ie ->
+                List row = []
+                row.add([field: ie?.tipp?.title?.title ?: '', style:null])
+                row.add([field: ie?.tipp?.title?.volume ?: '', style:null])
+                row.add([field: ie?.tipp?.title?.getEbookFirstAutorOrFirstEditor() ?: '', style:null])
+                row.add([field: ie?.tipp?.title?.editionStatement ?: '', style:null])
+                row.add([field: ie?.tipp?.title?.summaryOfContent ?: '', style:null])
+
+                def identifiers = []
+                ie?.tipp?.title?.ids?.sort { it?.identifier?.ns?.ns }.each{ id ->
+                    identifiers << "${id.identifier.ns.ns}: ${id.identifier.value}"
+                }
+                row.add([field: identifiers ? identifiers.join(', ') : '', style:null])
+
+                row.add([field: ie?.tipp?.title?.dateFirstInPrint ? g.formatDate(date: ie?.tipp?.title?.dateFirstInPrint, format: message(code: 'default.date.format.notime')): '', style:null])
+                row.add([field: ie?.tipp?.title?.dateFirstOnline ? g.formatDate(date: ie?.tipp?.title?.dateFirstOnline, format: message(code: 'default.date.format.notime')): '', style:null])
+
+                row.add([field: ie.priceItem?.listPrice ? g.formatNumber(number: ie?.priceItem?.listPrice, type: 'currency', currencySymbol: ie?.priceItem?.listCurrency, currencyCode: ie?.priceItem?.listCurrency) : '', style:null])
+                row.add([field: ie.priceItem?.localPrice ? g.formatNumber(number: ie?.priceItem?.localPrice, type: 'currency', currencySymbol: ie?.priceItem?.localCurrency, currencyCode: ie?.priceItem?.localCurrency) : '', style:null])
+
+                rows.add(row)
+            }
+            Map sheetData = [:]
+            sheetData[g.message(code:'renewEntitlementsWithSurvey.selectableTitles')] = [titleRow:titles,columnData:rows]
+            SXSSFWorkbook workbook = exportService.generateXLSXWorkbook(sheetData)
+            workbook.write(response.outputStream)
+            response.outputStream.flush()
+            response.outputStream.close()
+            workbook.dispose()
+            return
+        }
+        else {
+            withFormat {
+                html result
+            }
+        }
 
         result
 
@@ -1641,37 +1713,43 @@ class SubscriptionController extends AbstractDebugController {
         validSubChilds.each { subChild ->
 
             subChild.packages.pkg.each { pkg ->
-                if(!CostItem.executeQuery('select ci from CostItem ci where ci.subPkg.pkg = :sp',[sp:pkg])) {
-                    def query = "from IssueEntitlement ie, Package pkg where ie.subscription =:sub and pkg.id =:pkg_id and ie.tipp in ( select tipp from TitleInstancePackagePlatform tipp where tipp.pkg.id = :pkg_id ) "
-                    def queryParams = [sub: subChild, pkg_id: pkg.id]
+
+                def pkg_to_unlink = params.package_All ? SubscriptionPackage.get(params.package_All).pkg : null
+
+                if(pkg_to_unlink == null || pkg_to_unlink == pkg) {
+
+                    if(!CostItem.executeQuery('select ci from CostItem ci where ci.subPkg.subscription = :sub and ci.subPkg.pkg = :pkg',[pkg:pkg,sub:subChild])) {
+                        def query = "from IssueEntitlement ie, Package pkg where ie.subscription =:sub and pkg.id =:pkg_id and ie.tipp in ( select tipp from TitleInstancePackagePlatform tipp where tipp.pkg.id = :pkg_id ) "
+                        def queryParams = [sub: subChild, pkg_id: pkg.id]
 
 
+                        if (subChild.isEditableBy(result.user)) {
+                            result.editable = true
+                            if (params.withIE) {
+                                //delete matches
+                                IssueEntitlement.withTransaction { status ->
+                                    removePackagePendingChanges(pkg.id, subChild.id, params.withIE)
+                                    def deleteIdList = IssueEntitlement.executeQuery("select ie.id ${query}", queryParams)
 
-                    if (subChild.isEditableBy(result.user)) {
-                        result.editable = true
-                        if (params.withIE) {
-                            //delete matches
-                            IssueEntitlement.withTransaction { status ->
-                                removePackagePendingChanges(pkg.id, subChild.id, params.withIE)
-                                def deleteIdList = IssueEntitlement.executeQuery("select ie.id ${query}", queryParams)
+                                    if (deleteIdList) {
+                                        IssueEntitlementCoverage.executeUpdate("delete from IssueEntitlementCoverage ieCov where ieCov.issueEntitlement.id in (:delList)", [delList: deleteIdList])
+                                        PriceItem.executeUpdate("delete from PriceItem pi where pi.issueEntitlement.id in (:delList)", [delList: deleteIdList])
+                                        IssueEntitlement.executeUpdate("delete from IssueEntitlement ie where ie.id in (:delList)", [delList: deleteIdList])
+                                    }
+                                    SubscriptionPackage.executeUpdate("delete from SubscriptionPackage sp where sp.pkg=? and sp.subscription=? ", [pkg, subChild])
 
-                                if (deleteIdList) {
-                                    IssueEntitlementCoverage.executeUpdate("delete from IssueEntitlementCoverage ieCov where ieCov.issueEntitlement.id in (:delList)", [delList: deleteIdList])
-                                    PriceItem.executeUpdate("delete from PriceItem pi where pi.issueEntitlement.id in (:delList)",[delList: deleteIdList])
-                                    IssueEntitlement.executeUpdate("delete from IssueEntitlement ie where ie.id in (:delList)", [delList: deleteIdList])
+                                    flash.message = message(code: 'subscription.linkPackagesMembers.unlinkInfo.withIE.successful')
                                 }
+                            } else {
                                 SubscriptionPackage.executeUpdate("delete from SubscriptionPackage sp where sp.pkg=? and sp.subscription=? ", [pkg, subChild])
 
-                                flash.message = message(code: 'subscription.linkPackagesMembers.unlinkInfo.withIE.successful')
+                                flash.message = message(code: 'subscription.linkPackagesMembers.unlinkInfo.onlyPackage.successful')
                             }
-                        } else {
-                            SubscriptionPackage.executeUpdate("delete from SubscriptionPackage sp where sp.pkg=? and sp.subscription=? ", [pkg, subChild])
-
-                            flash.message = message(code: 'subscription.linkPackagesMembers.unlinkInfo.onlyPackage.successful')
                         }
-                    }
+                    } else {
+                        flash.error += "Für das Paket ${pkg.name} von ${subChild.getSubscriber().name} waren noch Kosten anhängig. Das Paket wurde daher nicht entknüpft."
+                        }
                 }
-                else flash.error += "Für das Paket ${pkg.name} von ${subChild.getSubscriber().name} waren noch Kosten anhängig. Das Paket wurde daher nicht entknüpft."
             }
         }
 
@@ -1754,6 +1832,8 @@ class SubscriptionController extends AbstractDebugController {
             redirect(url: request.getHeader('referer'))
         }
 
+        params.tab = params.tab ?: 'generalProperties'
+
         result.parentSub = result.subscriptionInstance.instanceOf && result.subscription.getCalculatedType() != TemplateSupport.CALCULATED_TYPE_PARTICIPATION_AS_COLLECTIVE ? result.subscriptionInstance.instanceOf : result.subscriptionInstance
 
         def validSubChilds = Subscription.findAllByInstanceOf(result.parentSub)
@@ -1780,6 +1860,19 @@ class SubscriptionController extends AbstractDebugController {
             if (filteredSubscr) {
                 result.filteredSubChilds << [sub: sub, orgs: filteredSubscr]
             }
+        }
+
+        if(params.tab == 'providerAgency') {
+
+            result.modalPrsLinkRole = RefdataValue.findByValue('Specific subscription editor')
+            result.modalVisiblePersons = addressbookService.getPrivatePersonsByTenant(contextService.getOrg())
+            result.visibleOrgRelations = []
+            result.parentSub.orgRelations?.each { or ->
+                if (!(or.org?.id == contextService.getOrg()?.id) && !(or.roleType.id in [OR_SUBSCRIBER.id, OR_SUBSCRIBER_CONS.id, OR_SUBSCRIBER_COLLECTIVE.id])) {
+                    result.visibleOrgRelations << or
+                }
+            }
+            result.visibleOrgRelations.sort { it?.org?.sortname }
         }
 
         params.id = oldID
@@ -3045,6 +3138,7 @@ class SubscriptionController extends AbstractDebugController {
                     }
                 }
 
+                log.debug("linkPackage. Global Record Source URL: " +gri.source.baseUrl)
                 //if(Package.findByGokbId(grt.owner.uuid)) {
                 String addType = params.addType
                     executorWrapperService.processClosure({

@@ -58,75 +58,30 @@
               </g:if>
 
 
-              <g:if test="${titleInstancePackagePlatformInstance?.startDate}">
-                  <dl>
+              <dl>
+                  <g:each in="${titleInstancePackagePlatformInstance?.coverages}" var="covStmt">
                       <dt><g:message code="tipp.startDate" default="Start Date" /></dt>
-                      <dd><g:formatDate format="${message(code:'default.date.format.notime', default:'yyyy-MM-dd')}" date="${titleInstancePackagePlatformInstance.startDate}" /></dd>    
-                  </dl>
-              </g:if>
-
-              <g:if test="${titleInstancePackagePlatformInstance?.startVolume}">
-                  <dl>
+                      <dd><g:formatDate format="${message(code:'default.date.format.notime', default:'yyyy-MM-dd')}" date="${covStmt.startDate}" /></dd>
                       <dt><g:message code="tipp.startVolume" default="Start Volume" /></dt>
-                      <dd><g:fieldValue bean="${titleInstancePackagePlatformInstance}" field="startVolume"/></dd>
-                  </dl>
-              </g:if>
-
-              <g:if test="${titleInstancePackagePlatformInstance?.startIssue}">
-                  <dl>
+                      <dd><g:fieldValue bean="${covStmt}" field="startVolume"/></dd>
                       <dt><g:message code="tipp.startIssue" default="Start Issue" /></dt>
-                      <dd><g:fieldValue bean="${titleInstancePackagePlatformInstance}" field="startIssue"/></dd>
-                  </dl>
-              </g:if>
-
-              <g:if test="${titleInstancePackagePlatformInstance?.endDate}">
-                  <dl>
+                      <dd><g:fieldValue bean="${covStmt}" field="startIssue"/></dd>
                       <dt><g:message code="tipp.endDate" default="End Date" /></dt>
-
-                      <dd><g:formatDate format="${message(code:'default.date.format.notime', default:'yyyy-MM-dd')}" date="${titleInstancePackagePlatformInstance.endDate}" /></dd>
-                  </dl>
-              </g:if>
-
-              <g:if test="${titleInstancePackagePlatformInstance?.endVolume}">
-                  <dl>
+                      <dd><g:formatDate format="${message(code:'default.date.format.notime', default:'yyyy-MM-dd')}" date="${covStmt.endDate}" /></dd>
                       <dt><g:message code="tipp.endVolume" default="End Volume" /></dt>
-
-                      <dd><g:fieldValue bean="${titleInstancePackagePlatformInstance}" field="endVolume"/></dd>
-                  </dl>
-              </g:if>
-
-              <g:if test="${titleInstancePackagePlatformInstance?.endIssue}">
-                  <dl>
+                      <dd><g:fieldValue bean="${covStmt}" field="endVolume"/></dd>
                       <dt><g:message code="tipp.endIssue" default="End Issue" /></dt>
-
-                      <dd><g:fieldValue bean="${titleInstancePackagePlatformInstance}" field="endIssue"/></dd>
-                  </dl>
-              </g:if>
-
-              <g:if test="${titleInstancePackagePlatformInstance?.embargo}">
-                  <dl>
+                      <dd><g:fieldValue bean="${covStmt}" field="endIssue"/></dd>
                       <dt><g:message code="tipp.embargo" default="Embargo" /></dt>
-                      <dd><g:fieldValue bean="${titleInstancePackagePlatformInstance}" field="embargo"/></dd>
-                      <dl>
-                          </g:if>
+                      <dd><g:fieldValue bean="${covStmt}" field="embargo"/></dd>
+                      <dt><g:message code="tipp.coverageDepth" default="Coverage Depth" /></dt>
+                      <dd><g:fieldValue bean="${covStmt}" field="coverageDepth"/></dd>
+                      <dt><g:message code="tipp.coverageNote" default="Coverage Note" /></dt>
+                      <dd><g:fieldValue bean="${covStmt}" field="coverageNote"/></dd>
+                  </g:each>
+              </dl>
 
-                          <g:if test="${titleInstancePackagePlatformInstance?.coverageDepth}">
-                              <dl>
-                                  <dt><g:message code="tipp.coverageDepth" default="Coverage Depth" /></dt>
-
-                                  <dd><g:fieldValue bean="${titleInstancePackagePlatformInstance}" field="coverageDepth"/></dd>
-                              </dl>
-                          </g:if>
-
-                          <g:if test="${titleInstancePackagePlatformInstance?.coverageNote}">
-                              <dl>
-                                  <dt><g:message code="tipp.coverageNote" default="Coverage Note" /></dt>
-
-                                  <dd><g:fieldValue bean="${titleInstancePackagePlatformInstance}" field="coverageNote"/></dd>
-                              </dl>
-                          </g:if>
-
-                          </div>
+          </div>
 
         <g:form>
           <sec:ifAnyGranted roles="ROLE_ADMIN">

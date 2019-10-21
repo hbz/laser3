@@ -1,6 +1,6 @@
 <%@ page import="de.laser.helper.RDStore; com.k_int.properties.PropertyDefinition;de.laser.interfaces.TemplateSupport" %>
 <!doctype html>
-<r:require module="annotations" />
+<%-- r:require module="annotations" / --%>
 <laser:serviceInjection />
 
 <html>
@@ -247,7 +247,8 @@
                                   model="${[roleLinks: visibleOrgLinks,
                                             roleObject: license,
                                             roleRespValue: 'Specific license editor',
-                                            editmode: editable
+                                            editmode: editable,
+                                            showPersons: true
                                   ]}" />
 
                         <g:render template="/templates/links/orgLinksSimpleModal"

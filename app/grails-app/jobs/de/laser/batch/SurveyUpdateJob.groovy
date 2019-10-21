@@ -1,6 +1,5 @@
 package de.laser.batch
 
-import com.k_int.kbplus.EventLog
 import de.laser.SystemEvent
 import de.laser.quartz.AbstractJob
 
@@ -29,21 +28,15 @@ class SurveyUpdateJob extends AbstractJob {
         jobIsRunning = true
 
         try {
-            new EventLog(event:'Execute::SurveyUpdateJob', message:'Start', tstp:new Date(System.currentTimeMillis())).save(flush:true)
-
-            log.info("Execute::SurveyUpdateJob - Start");
-
+            log.info("Execute::SurveyUpdateJob - Start")
             SystemEvent.createEvent('SURVEY_UPDATE_JOB_START')
 
             if (! surveyUpdateService.surveyCheck()) {
                 log.warn('Failed. Maybe ignored due blocked surveyUpdateService')
             }
 
-            log.info("Execute::SurveyUpdateJob - Finished");
-
+            log.info("Execute::SurveyUpdateJob - Finished")
             SystemEvent.createEvent('SURVEY_UPDATE_JOB_COMPLETE')
-
-            new EventLog(event:'Execute::SurveyUpdateJob', message:'Finished', tstp:new Date(System.currentTimeMillis())).save(flush:true)
         }
         catch (Exception e) {
             log.error(e)

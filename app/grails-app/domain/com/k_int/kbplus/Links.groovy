@@ -21,6 +21,7 @@ class Links {
     String objectType
     RefdataValue linkType
     Org owner
+    Date dateCreated
     Date lastUpdated
     User createdBy
     User lastUpdatedBy
@@ -33,6 +34,8 @@ class Links {
         linkType    column: 'l_link_type_rv_fk'
         owner       column: 'l_owner_fk'
         autoTimestamp true
+
+        dateCreated column: 'l_date_created'
     }
 
     static constraints = {
@@ -43,6 +46,10 @@ class Links {
         owner         (nullable: false, blank: false)
         lastUpdatedBy (nullable: true)
         createdBy     (nullable: true)
+
+        // Nullable is true, because values are already in the database
+        dateCreated (nullable: true, blank: false)
+
     }
 
     def beforeInsert() {

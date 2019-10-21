@@ -125,6 +125,17 @@
                                     </div>
                                 </g:if>
 
+                                <%-- TODO; @moe: check merge conflict --%>
+                                <g:link controller="tipp" action="show" id="${tipp.id}">${message(code: 'platform.show.full_tipp', default: 'Full TIPP Details')}</g:link>&nbsp;&nbsp;&nbsp;
+                                <g:each in="${ApiSource.findAllByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true)}" var="gokbAPI">
+                                    <g:if test="${tipp?.gokbId}">
+                                        <a target="_blank" href="${gokbAPI.editUrl ? gokbAPI.editUrl + '/gokb/resource/show/' + tipp?.gokbId : '#'}">
+                                            <i title="${gokbAPI.name} Link" class="external alternate icon"></i>
+                                        </a>
+                                    </g:if>
+                                </g:each>
+                                <%-- TODO; @moe: check merge conflict --%>
+
                                 <g:if test="${tipp?.title instanceof com.k_int.kbplus.BookInstance}">
                                     <div class="item">
                                         <i class="grey icon copy la-popup-tooltip la-delay" data-content="${message(code: 'title.editionStatement.label')}"></i>

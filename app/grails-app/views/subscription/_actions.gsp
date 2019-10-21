@@ -81,7 +81,12 @@
 
         <g:if test="${editable}">
             <semui:actionsDropdownItem controller="subscription" action="linkPackage" params="${[id:params.id]}" message="subscription.details.linkPackage.label" />
-            <semui:actionsDropdownItem controller="subscription" action="addEntitlements" params="${[id:params.id]}" message="subscription.details.addEntitlements.label" />
+            <g:if test="${subscriptionInstance.packages}">
+                <semui:actionsDropdownItem controller="subscription" action="addEntitlements" params="${[id:params.id]}" message="subscription.details.addEntitlements.label" />
+            </g:if>
+            <g:else>
+                <semui:actionsDropdownItemDisabled message="subscription.details.addEntitlements.label" tooltip="${message(code:'subscription.details.addEntitlements.noPackagesYetAdded')}"/>
+            </g:else>
         </g:if>
 
         <%-- TODO: once the hookup has been decided, the ifAnyGranted securing can be taken down --%>

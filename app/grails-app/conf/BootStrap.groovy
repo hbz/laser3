@@ -2,6 +2,7 @@ import com.k_int.kbplus.*
 
 import com.k_int.kbplus.auth.*
 import com.k_int.properties.PropertyDefinition
+import de.laser.ContextService
 import de.laser.SystemEvent
 import de.laser.domain.I10nTranslation
 import grails.converters.JSON
@@ -48,13 +49,7 @@ class BootStrap {
             def system_object = SystemObject.findBySysId(grailsApplication.config.laserSystemId) ?: new SystemObject(sysId: grailsApplication.config.laserSystemId).save(flush: true)
         }
 
-        // TODO: remove due SystemEvent
-        def evt_startup   = new EventLog(event: 'kbplus.startup', message: 'Normal startup', tstp: new Date(System.currentTimeMillis())).save(flush: true)
-
         SystemEvent.createEvent('BOOTSTRAP_STARTUP')
-
-        def so_filetype   = DataloadFileType.findByName('Subscription Offered File') ?: new DataloadFileType(name: 'Subscription Offered File')
-        def plat_filetype = DataloadFileType.findByName('Platforms File') ?: new DataloadFileType(name: 'Platforms File')
 
         // Reset harddata flag for given refdata and properties
 
@@ -171,18 +166,13 @@ class BootStrap {
 
         if (grailsApplication.config.localauth) {
             log.debug("localauth is set.. ensure user accounts present (From local config file) ${grailsApplication.config.sysusers}")
-
+            //Org hbz = Org.findByName('hbz Konsortialstelle Digitale Inhalte')
             grailsApplication.config.sysusers.each { su ->
-                log.debug("test ${su.name} ${su.pass} ${su.display} ${su.roles}")
+                log.debug("test ${su.name} ${su.display} ${su.roles}")
                 def user = User.findByUsername(su.name)
                 if (user) {
-                    if (user.password != su.pass) {
-                        log.debug("hard change of user password from config ${user.password} -> ${su.pass}")
-                        user.password = su.pass;
-                        user.save(failOnError: true)
-                    } else {
-                        log.debug("${su.name} present and correct")
-                    }
+                    log.debug("${su.name} present and correct")
+                    //user.getSetting(UserSettings.KEYS.DASHBOARD,hbz)
                 } else {
                     log.debug("create user ..")
                     user = new User(
@@ -248,6 +238,9 @@ class BootStrap {
         log.debug("createLicenseProperties ..")
         createLicenseProperties()
 
+        log.debug("createPlatformProperties ..")
+        createPlatformProperties()
+
         log.debug("createSubscriptionProperties ..")
         createSubscriptionProperties()
 
@@ -263,7 +256,7 @@ class BootStrap {
         log.debug("checking database ..")
         if (!Org.findAll() && !Person.findAll() && !Address.findAll() && !Contact.findAll()) {
             log.debug("database is probably empty; setting up essential data ..")
-            File f = new File(grailsApplication.config.basicDataPath+grailsApplication.config.basicDataFileName)
+            File f = new File("${grailsApplication.config.basicDataPath}${grailsApplication.config.basicDataFileName}")
             if(f.exists())
                 apiService.setupBasicData(f)
             else {
@@ -1253,6 +1246,95 @@ class BootStrap {
         createPropertyDefinitionsWithI10nTranslations(requiredARCProps)
     }
 
+    def createPlatformProperties(){
+
+        def allDescr = [en: PropertyDefinition.PLA_PROP, de: PropertyDefinition.PLA_PROP]
+
+        def requiredPlatformProperties = [
+            [
+                name: [key: "Access Method: IPv4: Supported", en: "IPv4: Supported", de: "IPv4: Unterstützt"],
+                expl: [en: "", de: ""],
+                descr:allDescr, type: OT.Rdv, cat:'YN', multiple: false, isUsedForLogic: true
+            ],
+            [
+                name: [key: "Access Method: IPv6: Supported", en: "IPv6: Supported", de: "IPv6: Unterstützt"],
+                expl: [en: "", de: ""],
+                descr:allDescr, type: OT.Rdv, cat:'YN', multiple: false, isUsedForLogic: true
+            ],
+            [
+                name: [key: "Access Method: Proxy: Supported", en: "Proxy: Supported", de: "Proxy: Unterstützt"],
+                expl: [en: "", de: ""],
+                descr:allDescr, type: OT.Rdv, cat:'YN', multiple: false, isUsedForLogic: true
+            ],
+            [
+                name: [key: "Access Method: Shibboleth: Supported", en: "Shibboleth: Supported", de: "Shibboleth: Unterstützt"],
+                expl: [en: "", de: ""],
+                descr:allDescr, type: OT.Rdv, cat:'YN', multiple: false, isUsedForLogic: true
+            ],
+            [
+                name: [key: "Access Method: Shibboleth: SP entityID", en: "Shibboleth: SP entityID", de: "Shibboleth: SP entityID"],
+                expl: [en: "", de: ""],
+                descr:allDescr, type: OT.String, multiple: false, isUsedForLogic: true
+            ],
+            [
+                name: [key: "Usage Reporting: COUNTER R3: Reports supported", en: "COUNTER R3: Reports supported", de: "COUNTER R3: Reports unterstützt"],
+                expl: [en: "", de: ""],
+                descr:allDescr, type: OT.Rdv, cat:'YN', multiple: false, isUsedForLogic: true
+            ],
+            [
+                name: [key: "Usage Reporting: COUNTER R4: Reports supported", en: "COUNTER R4: Reports supported", de: "COUNTER R4: Reports unterstützt"],
+                expl: [en: "", de: ""],
+                descr:allDescr, type: OT.Rdv, cat:'YN', multiple: false, isUsedForLogic: true
+            ],
+            [
+                name: [key: "Usage Reporting: COUNTER R4: COUNTER_SUSHI API supported", en: "COUNTER R4: COUNTER_SUSHI API supported", de: "COUNTER R4: COUNTER_SUSHI API unterstützt"],
+                expl: [en: "", de: ""],
+                descr:allDescr, type: OT.Rdv, cat:'YN', multiple: false, isUsedForLogic: false
+            ],
+            [
+                name: [key: "Usage Reporting: COUNTER R4: SUSHI Server URL", en: "COUNTER R4: SUSHI Server URL", de: "COUNTER R4: SUSHI Server URL"],
+                expl: [en: "", de: ""],
+                descr:allDescr, type: OT.URL, multiple: false, isUsedForLogic: false
+            ],
+            [
+                name: [key: "Usage Reporting: COUNTER R4: Usage Statistics URL", en: "COUNTER R4: Usage Statistics URL", de: "COUNTER R4: Webzugang Statistik"],
+                expl: [en: "", de: ""],
+                descr:allDescr, type: OT.URL, multiple: false, isUsedForLogic: false
+            ],
+            [
+                name: [key: "Usage Reporting: COUNTER R5: Reports supported", en: "COUNTER R5: Reports supported", de: "COUNTER R5: Reports unterstützt"],
+                expl: [en: "", de: ""],
+                descr:allDescr, type: OT.Rdv, cat:'YN', multiple: false, isUsedForLogic: true
+            ],
+            [
+                name: [key: "Usage Reporting: COUNTER R5: COUNTER_SUSHI API supported", en: "COUNTER R5: COUNTER_SUSHI API supported", de: "COUNTER R5: COUNTER_SUSHI API unterstützt"],
+                expl: [en: "", de: ""],
+                descr:allDescr, type: OT.Rdv, cat:'YN', multiple: false, isUsedForLogic: false
+            ],
+            [
+                name: [key: "Usage Reporting: COUNTER R5: SUSHI Server URL", en: "COUNTER R5: SUSHI Server URL", de: "COUNTER R5: SUSHI Server URL"],
+                expl: [en: "", de: ""],
+                descr:allDescr, type: OT.URL, multiple: false, isUsedForLogic: false
+            ],
+            [
+                name: [key: "Usage Reporting: COUNTER R5: Usage Statistics URL", en: "COUNTER R5: Usage Statistics URL", de: "COUNTER R5: Webzugang Statistik"],
+                expl: [en: "", de: ""],
+                descr:allDescr, type: OT.URL, multiple: false, isUsedForLogic: false
+            ],
+            [
+                name: [key: "Usage Reporting: NatStat Supplier ID", en: "NatStat Supplier ID", de: "NatStat Anbietername"],
+                expl: [en: "", de: ""],
+                descr:allDescr, type: OT.String, multiple: false, isUsedForLogic: true
+            ],
+            [
+                name: [key: "Usage Reporting: COUNTER Registry URL", en: "COUNTER Registry URL", de: "COUNTER Registry URL"],
+                expl: [en: "", de: ""],
+                descr:allDescr, type: OT.URL, multiple: false, isUsedForLogic: false
+            ],
+        ]
+        createPropertyDefinitionsWithI10nTranslations(requiredPlatformProperties)
+    }
+
     def createSubscriptionProperties() {
 
         def allDescr = [en: PropertyDefinition.SUB_PROP, de: PropertyDefinition.SUB_PROP]
@@ -1839,6 +1921,7 @@ class BootStrap {
         RefdataCategory.loc('CoreStatus',           	                    [en: 'Core Status', de: 'Kerntitel-Status'], BOOTSTRAP)
         RefdataCategory.loc('Cost configuration',                        [en: 'Cost configuration', de: 'Kostenkonfiguration'], BOOTSTRAP)
         RefdataCategory.loc('Country',              	                    [en: 'Country', de: 'Land'], BOOTSTRAP)
+        RefdataCategory.loc('CustomerIdentifier.Type',             	        [en: 'Customer Identifier Type', de: 'Kategorie der Kundennummer'], BOOTSTRAP)
         RefdataCategory.loc('FactType',             	                    [en: 'FactType', de: 'FactType'], BOOTSTRAP)
         RefdataCategory.loc('Federal State',        	                    [en: 'Federal State', de: 'Bundesland'], BOOTSTRAP)
         RefdataCategory.loc('Funder Type',          	                    [en: 'Funder Type', de: 'Trägerschaft'], BOOTSTRAP)
@@ -2233,6 +2316,8 @@ class BootStrap {
         RefdataValue.loc('Country', [key: 'ZA', en: 'South Africa', de: 'Südafrika'], BOOTSTRAP)
         RefdataValue.loc('Country', [key: 'ZM', en: 'Zambia', de: 'Sambia'], BOOTSTRAP)
         RefdataValue.loc('Country', [key: 'ZW', en: 'Zimbabwe', de: 'Zimbabwe'], BOOTSTRAP)
+
+        RefdataValue.loc('CustomerIdentifier.Type', [key: 'Default', en: 'Default', de: 'Default'], BOOTSTRAP)
 
         RefdataValue.loc('FactType', [en: 'JR1R4'], BOOTSTRAP)
         RefdataValue.loc('FactType', [en: 'JR1GOAR4'], BOOTSTRAP)
@@ -3221,6 +3306,7 @@ No Host Platform URL Content
         def namespaces = [
                             [ns: "GND", typ: "com.k_int.kbplus.Creator"],
                             [ns: "ISIL"],
+                            [ns: "ISIL_Paketsigel"],
                             [ns: "uri"],
                             [ns: "zdb"],
                             [ns: "zdb_ppn"],
@@ -3232,7 +3318,8 @@ No Host Platform URL Content
         namespaces.each { namespaceproperties ->
             def namespace = namespaceproperties["ns"]
             def typ = namespaceproperties["typ"]?:null
-            IdentifierNamespace.findByNsIlike(namespace) ?: new IdentifierNamespace(ns: namespace, nsType: typ).save(flush: true);
+            //TODO isUnique/isHidden flags are set provisorically to "false", adaptations may be necessary
+            IdentifierNamespace.findByNsIlike(namespace) ?: new IdentifierNamespace(ns: namespace, nsType: typ, isUnique: false, isHidden: false).save(flush: true);
 
         }
 

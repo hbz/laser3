@@ -21,7 +21,7 @@
 
         <semui:objectStatus object="${orgInstance}" status="${orgInstance.status}" />
 
-        <g:render template="nav" model="${[orgInstance: orgInstance, inContextOrg: orgInstance.id == contextService.getOrg().id]}"/>
+        <g:render template="nav" model="${[orgInstance: orgInstance, inContextOrg: inContextOrg]}"/>
 
         <semui:messages data="${flash}" />
 
@@ -30,28 +30,6 @@
             <div class="sixteen wide column">
 
                 <div class="la-inline-lists">
-
-                    <div class="ui card la-dl-no-table la-js-hideable">
-                        <div class="content">
-                            <h5 class="ui header">
-                                ${message(code:'org.confProperties')}
-                            </h5>
-
-                            <div id="custom_props_div_1">
-                                <g:render template="/templates/properties/custom" model="${[
-                                        prop_desc: PropertyDefinition.ORG_CONF,
-                                        ownobj: orgInstance,
-                                        orphanedProperties: orgInstance.customProperties,
-                                        custom_props_div: "custom_props_div_1" ]}"/>
-                            </div>
-                        </div><!-- .content -->
-                    </div><!-- .card -->
-
-                    <r:script language="JavaScript">
-                        $(document).ready(function(){
-                            c3po.initProperties("<g:createLink controller='ajax' action='lookup'/>", "#custom_props_div_1");
-                        });
-                    </r:script>
 
                     <div class="ui card la-dl-no-table la-js-hideable">
                         <div class="content">
@@ -109,12 +87,12 @@
                                         </td>
                                         <td>
 
-                                            <g:if test="${os.key in OrgSettings.getEditableSettings()}">
+                                            <g:if test="${(inContextOrg || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN,ROLE_ORG_EDITOR')) && os.key in OrgSettings.getEditableSettings()}">
                                             <%-- Refdata YN --%>
                                                 <g:if test="${os?.key?.rdc=='YN'}">
                                                 <%-- Validation through user is necessary --%>
                                                     <g:if test="${'OAMONITOR_SERVER_ACCESS'.equals(os.key.toString())}">
-                                                        <semui:xEditableRefData owner="${os}" field="rdValue"  id="oamonitor_server_access" config="${os.key.rdc}" />
+                                                        <semui:xEditableRefData owner="${os}" field="rdValue" id="oamonitor_server_access" config="${os.key.rdc}" />
                                                     </g:if>
                                                 <%-- Other Refdata YN --%>
                                                     <g:else>
@@ -126,7 +104,7 @@
                                                         ${os.getValue()?.getI10n('authority')} (Editierfunktion deaktiviert) <%-- TODO --%>
                                                     </g:if>
                                                     <g:else>
-                                                        <semui:xEditable owner="${os}"  field="strValue" />
+                                                        <semui:xEditable owner="${os}" field="strValue" />
                                                     </g:else>
                                                 </g:else>
                                             </g:if>
@@ -147,6 +125,116 @@
                                 </tbody>
                         </table>
                         </div><!-- .content -->
+                    </div>
+
+
+                    <div class="ui card la-dl-no-table la-js-hideable">
+                        <div class="content">
+                            <h5 class="ui header">
+                                ${message(code:'org.confProperties')}
+                            </h5>
+
+                            <div id="custom_props_div_1">
+                                <g:render template="/templates/properties/custom" model="${[
+                                        prop_desc: PropertyDefinition.ORG_CONF,
+                                        ownobj: orgInstance,
+                                        orphanedProperties: orgInstance.customProperties,
+                                        custom_props_div: "custom_props_div_1" ]}"/>
+                            </div>
+                        </div><!-- .content -->
+                    </div><!-- .card -->
+
+                    <r:script language="JavaScript">
+                                $(document).ready(function(){
+                                    c3po.initProperties("<g:createLink controller='ajax' action='lookup'/>", "#custom_props_div_1");
+                                });
+                    </r:script>
+
+
+                    <div class="ui card la-dl-no-table la-js-hideable">
+                        <div class="content">
+                            <h5 class="ui header">
+                                ${message(code:'org.customerIdentifier')}
+                            </h5>
+
+                            <table class="ui la-table table">
+                                <thead>
+                                <tr>
+                                    <th>Anbieter</th>
+                                    <th>Plattform</th>
+                                    <th>Kundennummer</th>
+                                    <th></th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                    <g:each in="${customerIdentifier}" var="ci">
+                                        <tr>
+                                            <td>
+                                                ${ci.getProvider()}
+                                            </td>
+                                            <td>
+                                                ${ci.platform}
+                                            <td>
+                                                <g:if test="${editable}">
+                                                    <semui:xEditable owner="${ci}" field="value" />
+                                                </g:if>
+                                                <g:else>
+                                                    ${ci.value}
+                                                </g:else>
+                                            </td>
+                                            <td>
+                                            <g:if test="${editable}">
+                                                <g:link controller="organisation" action="settings" id="${orgInstance.id}"
+                                                    params="${[deleteCI:ci.class.name + ':' + ci.id]}"
+                                                    class="ui button icon red"><i class="trash alternate icon"></i></g:link>
+                                            </g:if>
+                                            </td>
+                                        </tr>
+                                    </g:each>
+                                </tbody>
+                                <g:if test="${editable}">
+                                <tfoot>
+                                <tr>
+                                    <td colspan="4">
+                                        <g:form class="ui form" controller="organisation" action="settings" id="${orgInstance.id}">
+                                            <div class="ui grid">
+                                                <%--
+                                                <g:select id="addCIProvider" name="addCIProvider" class="ui dropdown selection"
+                                                          from="${formAllProviders}"
+                                                          optionKey="${{'com.k_int.kbplus.Org:' + it.id}}" optionValue="${{'(' + it.sortname +') ' + it.name}}" />
+                                                --%>
+
+                                                <div class="eight wide column">
+                                                <div class="field">
+                                                    <label for="addCIPlatform">Anbieter : Plattform</label>
+                                                    <g:select id="addCIPlatform" name="addCIPlatform" class="ui dropdown fluid search selection"
+                                                              from="${allPlatforms}"
+                                                              optionKey="${{'com.k_int.kbplus.Platform:' + it.id}}"
+                                                              optionValue="${{ it.org.name + (it.org.sortname ? " (${it.org.sortname})" : '') + ' : ' + it.name}}" />
+                                                </div>
+                                            </div>
+
+                                                <div class="four wide column">
+                                                    <div class="field">
+                                                    <label for="addCIValue">Kundennummer</label>
+                                                    <input type="text" id="addCIValue" name="addCIValue" value=""/>
+                                                </div>
+                                                </div>
+
+                                                <div class="four wide column">
+                                                    <div class="field">
+                                                    <label>&nbsp;</label>
+                                                    <input type="submit" class="ui button" value="${message(code:'default.button.add.label')}" />
+                                                </div>
+                                                </div>
+                                            </div>
+                                        </g:form>
+                                    </td>
+                                </tr>
+                                </tfoot>
+                                </g:if>
+                            </table>
+                        </div>
                     </div>
 
                 </div><!-- .la-inline-lists -->

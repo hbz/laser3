@@ -1136,22 +1136,19 @@ class GlobalSourceSyncService extends AbstractLockableService {
     }
 
     def private doOAISync(sync_job) {
-        log.debug("doOAISync");
+        log.debug("doOAISync")
+
         if (parallel_jobs) {
             def future = executorService.submit({ intOAI(sync_job.id) } as java.util.concurrent.Callable)
         } else {
             intOAI(sync_job.id)
         }
-        log.debug("doneOAISync");
+        log.debug("doneOAISync")
     }
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     def intOAI(sync_job_id) {
-
-        log.debug("internalOAI processing ${sync_job_id}");
-
-        // TODO: remove due SystemEvent
-        new EventLog(event: 'kbplus.doOAISync', message: "internalOAI processing ${sync_job_id}", tstp: new Date(System.currentTimeMillis())).save()
+        log.debug("internalOAI processing ${sync_job_id}")
 
         SystemEvent.createEvent('GSSS_OAI_START', ['jobId': sync_job_id])
 
@@ -1164,7 +1161,6 @@ class GlobalSourceSyncService extends AbstractLockableService {
         def max_timestamp = 0
 
         try {
-
             log.debug("Rectype: ${rectype} == config ${cfg}");
 
             log.debug("internalOAISync records from [job ${sync_job_id}] ${sync_job.uri} since ${sync_job.haveUpTo} using ${sync_job.fullPrefix}");
@@ -1343,8 +1339,6 @@ class GlobalSourceSyncService extends AbstractLockableService {
         catch (Exception e) {
             log.error("Problem", e);
             log.error("Problem running job ${sync_job_id}, conf=${cfg}", e);
-            // TODO: remove due SystemEvent
-            //new EventLog(event: 'kbplus.doOAISync', message: "Problem running job ${sync_job_id}, conf=${cfg}", tstp: new Date(System.currentTimeMillis())).save()
 
             SystemEvent.createEvent('GSSS_OAI_ERROR', ['jobId': sync_job_id])?.save()
 
@@ -1359,12 +1353,8 @@ class GlobalSourceSyncService extends AbstractLockableService {
             }
         }
         finally {
-            log.debug("internalOAISync completed for job ${sync_job_id}");
-
+            log.debug("internalOAISync completed for job ${sync_job_id}")
             SystemEvent.createEvent('GSSS_OAI_COMPLETE', ['jobId': sync_job_id])
-
-            // TODO: remove due SystemEvent
-            //new EventLog(event: 'kbplus.doOAISync', message: "internalOAISync completed for job ${sync_job_id}", tstp: new Date(System.currentTimeMillis())).save()
         }
     }
 

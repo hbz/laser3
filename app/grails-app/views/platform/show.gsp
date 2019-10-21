@@ -7,6 +7,7 @@
     <g:set var="entityName" value="${message(code: 'platform.label', default: 'Platform')}"/>
     <title>${message(code: 'laser', default: 'LAS:eR')} : <g:message code="default.show.label"
                                                                      args="[entityName]"/></title>
+    <g:javascript src="properties.js"/>
 </head>
 
 <body>
@@ -34,68 +35,92 @@
 <g:render template="nav"/>
 
 <semui:messages data="${flash}"/>
-
-
-<fieldset class="inline-lists">
-    <dl>
-
-        <dt>${message(code: 'platform.name', default: 'Platform Name')}</dt>
-        <dd><semui:xEditable owner="${platformInstance}" field="name"/></dd>
-
-        <dt>GOKb ID</dt>
-        <dd>
-            ${platformInstance?.gokbId}
-
-            <g:each in="${com.k_int.kbplus.ApiSource.findAllByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true)}"
-                    var="gokbAPI">
-                <g:if test="${platformInstance?.gokbId}">
-                    <a target="_blank"
-                       href="${gokbAPI.baseUrl ? gokbAPI.baseUrl + '/gokb/resource/show/' + platformInstance?.gokbId : '#'}"><i
+<div id="collapseableSubDetails" class="ui stackable grid">
+    <div class="twelve wide column">
+        <div class="la-inline-lists">
+          <div class="ui two stackable cards">
+            <div class="ui card la-time-card">
+              <div class="content">
+                <dl>
+                  <dt>${message(code: 'platform.name', default: 'Platform Name')}</dt>
+                  <dd><semui:xEditable owner="${platformInstance}" field="name"/></dd>
+                </dl>
+                <dl>
+                  <dt>GOKb ID</dt>
+                  <dd>
+                    ${platformInstance?.gokbId}
+                    <g:each in="${com.k_int.kbplus.ApiSource.findAllByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true)}"
+                            var="gokbAPI">
+                      <g:if test="${platformInstance?.gokbId}">
+                        <a target="_blank"
+                           href="${gokbAPI.editUrl ? gokbAPI.editUrl + '/gokb/resource/show/' + platformInstance?.gokbId : '#'}"><i
                             title="${gokbAPI.name} Link" class="external alternate icon"></i></a>
+                      </g:if>
+                    </g:each>
+                  </dd>
+                </dl>
+                <dl>
+                  <dt>${message(code: 'platform.org', default: 'Platform Provider')}</dt>
+                  <dd>
+                    <g:if test="${platformInstance.org}">
+                      <g:link controller="organisation" action="show"
+                              id="${platformInstance.org.id}">${platformInstance.org.name}</g:link>
+                    </g:if>
+                  </dd>
+                </dl>
+              </div>
+            </div>
+            <div class="ui card">
+              <div class="content">
+                <dl>
+                  <dt>${message(code: 'platform.primaryUrl', default: 'Primary URL')}</dt>
+                  <dd>
+                    <semui:xEditable owner="${platformInstance}" field="primaryUrl"/>
+                    <g:if test="${platformInstance?.primaryUrl}">
+                      <a class="ui icon mini blue button la-js-dont-hide-button la-popup-tooltip la-delay"
+                         data-content="${message(code: 'tipp.tooltip.callUrl')}"
+                         href="${platformInstance?.primaryUrl?.contains('http') ? platformInstance?.primaryUrl : 'http://' + platformInstance?.primaryUrl}"
+                         target="_blank"><i class="share square icon"></i></a>
+                    </g:if>
+                  </dd>
+                </dl>
+                <dl>
+                  <dt>${message(code: 'platform.serviceProvider', default: 'Service Provider')}</dt>
+                  <dd><semui:xEditableRefData owner="${platformInstance}" field="serviceProvider" config="YN"/></dd>
+                </dl>
+                <dl>
+                  <dt>${message(code: 'platform.softwareProvider', default: 'Software Provider')}</dt>
+                  <dd><semui:xEditableRefData owner="${platformInstance}" field="softwareProvider" config="YN"/></dd>
+                </dl>
+                <g:if test="${params.mode == 'advanced'}">
+                  <dl>
+                    <dt>${message(code: 'platform.type', default: 'Type')}</dt>
+                    <dd><semui:xEditableRefData owner="${platformInstance}" field="type" config="YNO"/></dd>
+                  </dl>
+                  <dl>
+                    <dt>${message(code: 'platform.status', default: 'Status')}</dt>
+                    <dd><semui:xEditableRefData owner="${platformInstance}" field="status"
+                                                config="UsageStatus"/></dd>
+                  </dl>
+                  <dl>
+                    <dt><g:message code="platform.globalUID.label" default="Global UID"/></dt>
+                    <dd><g:fieldValue bean="${platformInstance}" field="globalUID"/></dd>
+                  </dl>
                 </g:if>
-            </g:each>
-        </dd>
+              </div>
+            </div>
+          </div>
+            <div id="new-dynamic-properties-block">
 
-        <dt>${message(code: 'platform.org', default: 'Platform Provider')}</dt>
-        <dd>
-            <g:if test="${platformInstance.org}">
-            <g:link controller="organisation" action="show"
-                    id="${platformInstance.org.id}">${platformInstance.org.name}</g:link>
-            </g:if>
-        </dd>
+                <g:render template="properties" model="${[
+                    platform: platformInstance,
+                    /*authorizedOrgs: authorizedOrgs*/
+                ]}"/>
 
-        <dt>${message(code: 'platform.primaryUrl', default: 'Primary URL')}</dt>
-        <dd>
-            <semui:xEditable owner="${platformInstance}" field="primaryUrl"/>
-            <g:if test="${platformInstance?.primaryUrl}">
-                <a class="ui icon mini blue button la-js-dont-hide-button la-popup-tooltip la-delay"
-                   data-content="${message(code: 'tipp.tooltip.callUrl')}"
-                   href="${platformInstance?.primaryUrl?.contains('http') ? platformInstance?.primaryUrl : 'http://' + platformInstance?.primaryUrl}"
-                   target="_blank"><i class="share square icon"></i></a>
-            </g:if>
-        </dd>
-
-        <dt>${message(code: 'platform.serviceProvider', default: 'Service Provider')}</dt>
-        <dd><semui:xEditableRefData owner="${platformInstance}" field="serviceProvider" config="YN"/></dd>
-
-        <dt>${message(code: 'platform.softwareProvider', default: 'Software Provider')}</dt>
-        <dd><semui:xEditableRefData owner="${platformInstance}" field="softwareProvider" config="YN"/></dd>
-
-        <g:if test="${params.mode == 'advanced'}">
-
-            <dt>${message(code: 'platform.type', default: 'Type')}</dt>
-            <dd><semui:xEditableRefData owner="${platformInstance}" field="type" config="YNO"/></dd>
-
-            <dt>${message(code: 'platform.status', default: 'Status')}</dt>
-            <dd><semui:xEditableRefData owner="${platformInstance}" field="status" config="UsageStatus"/></dd>
-
-            <dt><g:message code="platform.globalUID.label" default="Global UID"/></dt>
-            <dd><g:fieldValue bean="${platformInstance}" field="globalUID"/></dd>
-
-        </g:if>
-    </dl>
-</fieldset>
-
-
+            </div><!-- #new-dynamic-properties-block -->
+            <div class="clearfix"></div>
+        </div>
+    </div>
+</div>
 </body>
 </html>

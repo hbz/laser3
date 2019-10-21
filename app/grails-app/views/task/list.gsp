@@ -1,5 +1,6 @@
 <%@ page import="com.k_int.kbplus.Task" %>
 <!doctype html>
+
 <html>
 	<head>
 		<meta name="layout" content="semanticUI">

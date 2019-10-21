@@ -104,7 +104,7 @@
     </g:if>
     <g:else>
         <semui:subNav>
-            <semui:complexSubNavItem controller="subscription" action="copyElementsIntoSubscription" params="${params << [workFlowPart: WORKFLOW_DATES_OWNER_RELATIONS]}" >
+            <semui:complexSubNavItem  class="${workFlowPart == WORKFLOW_DATES_OWNER_RELATIONS ? 'active' : ''}" controller="subscription" action="copyElementsIntoSubscription" params="${params << [workFlowPart: WORKFLOW_DATES_OWNER_RELATIONS]}" >
                 <div class="content" >
                     <div class="title">${message(code: 'subscription.details.copyElementsIntoSubscription.general_data.label')}</div>
                     <div class="description">
@@ -115,7 +115,7 @@
                 </div>
             </semui:complexSubNavItem>
 
-            <semui:complexSubNavItem controller="subscription" action="copyElementsIntoSubscription" params="${params << [workFlowPart: WORKFLOW_PACKAGES_ENTITLEMENTS]}" >
+            <semui:complexSubNavItem  class="${workFlowPart == WORKFLOW_PACKAGES_ENTITLEMENTS ? 'active' : ''}" controller="subscription" action="copyElementsIntoSubscription" params="${params << [workFlowPart: WORKFLOW_PACKAGES_ENTITLEMENTS]}" >
                 <div class="content" >
                     <div class="title">${message(code: 'subscription.details.copyElementsIntoSubscription.inventory.label')}</div>
                     <div class="description">
@@ -125,7 +125,7 @@
                 </div>
             </semui:complexSubNavItem>
 
-            <semui:complexSubNavItem controller="subscription" action="copyElementsIntoSubscription" params="${params << [workFlowPart: WORKFLOW_DOCS_ANNOUNCEMENT_TASKS]}" >
+            <semui:complexSubNavItem class="${workFlowPart == WORKFLOW_DOCS_ANNOUNCEMENT_TASKS ? 'active' : ''}" controller="subscription" action="copyElementsIntoSubscription" params="${params << [workFlowPart: WORKFLOW_DOCS_ANNOUNCEMENT_TASKS]}" >
                 <div class="content">
                     <div class="title">${message(code: 'subscription.details.copyElementsIntoSubscription.attachements.label')}</div>
                     <div class="description">
@@ -137,7 +137,7 @@
             </semui:complexSubNavItem>
 
             <g:if test="${isSubscriberVisible && accessService.checkPermAffiliation("ORG_CONSORTIUM_SURVEY,ORG_CONSORTIUM,ORG_INST_COLLECTIVE", "INST_USER")}">
-                <semui:complexSubNavItem controller="subscription" action="copyElementsIntoSubscription" params="${params << [workFlowPart: WORKFLOW_SUBSCRIBER]}" >
+                <semui:complexSubNavItem class="${workFlowPart == WORKFLOW_SUBSCRIBER ? 'active' : ''}" controller="subscription" action="copyElementsIntoSubscription" params="${params << [workFlowPart: WORKFLOW_SUBSCRIBER]}" >
                     <div class="content">
                         <div class="title">
                             ${message(code: 'consortium.subscriber')}
@@ -149,7 +149,7 @@
                 </semui:complexSubNavItem>
             </g:if>
 
-            <semui:complexSubNavItem controller="subscription" action="copyElementsIntoSubscription" params="${params << [workFlowPart: WORKFLOW_PROPERTIES]}" >
+            <semui:complexSubNavItem class="${workFlowPart == WORKFLOW_PROPERTIES ? 'active' : ''}" controller="subscription" action="copyElementsIntoSubscription" params="${params << [workFlowPart: WORKFLOW_PROPERTIES]}" >
                 <div class="content">
                     <div class="title">${message(code: 'properties')}</div>
                     <div class="description">
@@ -161,7 +161,11 @@
         </semui:subNav>
     </g:else>
     <br>
-
+    <div class="la-legend">
+        <span class="la-key"><strong>${message(code: 'subscription.renewSubscriptionConsortia.workFlowSteps.legend.key')}: </strong></span>
+        <span class="la-added">${message(code: 'subscription.renewSubscriptionConsortia.workFlowSteps.legend.willStay')}</span>
+        <span class="la-removed">${message(code: 'subscription.renewSubscriptionConsortia.workFlowSteps.legend.willBeReplaced')}</span>
+    </div>
     <g:if test="${workFlowPart == WORKFLOW_DOCS_ANNOUNCEMENT_TASKS}">
         <g:render template="copyDocsAndTasks" />
     </g:if>
@@ -251,11 +255,11 @@
             }
         }
 
-        // $(takeProperty).each(function( index, elem ) {
-        //     if (elem.checked){
-        //         markAffectedTake(elem)
-        //     }
-        // });
+        $(takeProperty).each(function( index, elem ) {
+             if (elem.checked){
+                 markAffectedTake(elem)
+             }
+         });
 
     </r:script>
 </body>

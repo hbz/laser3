@@ -14,6 +14,9 @@ class GlobalRecordInfo {
   Set trackers 
   byte[] record
 
+    Date dateCreated
+    Date lastUpdated
+
     @RefdataAnnotation(cat = '?')
     RefdataValue kbplusCompliant
 
@@ -38,6 +41,9 @@ class GlobalRecordInfo {
       kbplusCompliant column:'gri_kbplus_compliant'
       globalRecordInfoStatus column: 'gri_status_rv_fk'
 
+      dateCreated column: 'gri_date_created'
+      lastUpdated column: 'gri_last_updated'
+
             trackers  batchSize: 10
   }
 
@@ -49,6 +55,9 @@ class GlobalRecordInfo {
                     ts(nullable:true, blank:false)
        kbplusCompliant(nullable:true, blank:false)
       globalRecordInfoStatus(nullable: true, blank: false)
+      // Nullable is true, because values are already in the database
+      lastUpdated (nullable: true, blank: false)
+      dateCreated (nullable: true, blank: false)
   }
 
   transient String getDisplayRectype() {

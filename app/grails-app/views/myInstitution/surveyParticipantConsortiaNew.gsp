@@ -220,7 +220,8 @@ ${surveyInfo.name}
                                   model="${[roleLinks    : visibleOrgRelations,
                                             roleObject   : subscriptionInstance,
                                             roleRespValue: 'Specific subscription editor',
-                                            editmode     : false
+                                            editmode     : false,
+                                            showPersons: false
                                   ]}"/>
 
                     </div>

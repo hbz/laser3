@@ -252,7 +252,7 @@ class SurveyController {
 
         if (!params.status) {
             if (params.isSiteReloaded != "yes") {
-                params.status = RDStore.SUBSCRIPTION_CURRENT.id
+                params.status = RDStore.SUBSCRIPTION_INTENDED.id
                 result.defaultSet = true
             } else {
                 params.status = 'FETCH_ALL'

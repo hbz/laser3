@@ -215,11 +215,11 @@ class MyInstitutionController extends AbstractDebugController {
         }
         else {
             currentSubIds = orgTypeService.getCurrentSubscriptions(contextService.getOrg()).collect{ it.id }
-            allLocals     = OrgRole.findAllWhere(org: contextService.getOrg(), roleType: RDStore.OR_SUBSCRIBER).collect{ it -> it.sub.id }
-            allSubscrCons = OrgRole.findAllWhere(org: contextService.getOrg(), roleType: RDStore.OR_SUBSCRIBER_CONS).collect{ it -> it.sub.id }
-            allSubscrColl = OrgRole.findAllWhere(org: contextService.getOrg(), roleType: RDStore.OR_SUBSCRIBER_COLLECTIVE).collect{ it -> it.sub.id }
-            allConsOnly   = OrgRole.findAllWhere(org: contextService.getOrg(), roleType: RDStore.OR_SUBSCRIPTION_CONSORTIA).collect{ it -> it.sub.id }
-            allCollOnly   = OrgRole.findAllWhere(org: contextService.getOrg(), roleType: RDStore.OR_SUBSCRIPTION_COLLECTIVE).collect{ it -> it.sub.id }
+            allLocals     = OrgRole.findAllWhere(org: contextService.getOrg(), roleType: RDStore.OR_SUBSCRIBER).collect{ it -> it?.sub?.id }
+            allSubscrCons = OrgRole.findAllWhere(org: contextService.getOrg(), roleType: RDStore.OR_SUBSCRIBER_CONS).collect{ it -> it?.sub?.id }
+            allSubscrColl = OrgRole.findAllWhere(org: contextService.getOrg(), roleType: RDStore.OR_SUBSCRIBER_COLLECTIVE).collect{ it -> it?.sub?.id }
+            allConsOnly   = OrgRole.findAllWhere(org: contextService.getOrg(), roleType: RDStore.OR_SUBSCRIPTION_CONSORTIA).collect{ it -> it?.sub?.id }
+            allCollOnly   = OrgRole.findAllWhere(org: contextService.getOrg(), roleType: RDStore.OR_SUBSCRIPTION_COLLECTIVE).collect{ it -> it?.sub?.id }
 
             cache.put('currentSubInfo', [
                     currentSubIds: currentSubIds,
@@ -2288,15 +2288,13 @@ AND EXISTS (
         result.dueDates = DashboardDueDate.findAllByResponsibleUserAndResponsibleOrg(contextService.user, contextService.org, [max: result.max, offset: result.dashboardDueDatesOffset])
         result.dueDatesCount = DashboardDueDate.findAllByResponsibleUserAndResponsibleOrg(contextService.user, contextService.org).size()
 
-        def currentDate = new Date(System.currentTimeMillis())
+        def activeSurveyConfigs = SurveyConfig.executeQuery("from SurveyConfig surConfig where exists (select surOrg from SurveyOrg surOrg where surOrg.surveyConfig = surConfig AND surOrg.org = :org and surOrg.finishDate is null and surConfig.pickAndChoose = true and surConfig.surveyInfo.status = :status) " +
+                " or exists (select surResult from SurveyResult surResult where surResult.surveyConfig = surConfig and surConfig.surveyInfo.status = :status and surResult.dateCreated = surResult.lastUpdated and surResult.finishDate is null and surResult.participant = :org) " +
+                " order by surConfig.surveyInfo.name",
+                [org: result.institution,
+                 status: RDStore.SURVEY_SURVEY_STARTED])
 
-        def newParams = [:]
-        newParams.tab = "new"
-
-        def fsq = filterService.getParticipantSurveyQuery(newParams, sdFormat, result.institution)
-
-        def surveyResults = SurveyResult.executeQuery(fsq.query, fsq.queryParams, newParams)
-        result.surveys = surveyResults.groupBy {it.id[1]}
+        result.surveys = activeSurveyConfigs.groupBy {it?.id}
         result.countSurvey = result.surveys.size()
 
         result.surveysConsortia = []
@@ -2581,11 +2579,11 @@ AND EXISTS (
 
         DateFormat sdFormat = new DateUtil().getSimpleDateFormat_NoTime()
 
-        def fsq = filterService.getParticipantSurveyQuery(params, sdFormat, result.institution)
+        def fsq = filterService.getParticipantSurveyQuery_New(params, sdFormat, result.institution)
 
         result.surveyResults = SurveyResult.executeQuery(fsq.query, fsq.queryParams, params)
         result.surveyResults = result.surveyResults.groupBy {it.id[1]}
-        result.countSurveys = getSurveyParticipantCounts(result.institution)
+        result.countSurveys = getSurveyParticipantCounts_New(result.institution)
 
         result
     }
@@ -3357,6 +3355,12 @@ AND EXISTS (
             qarams.put('member', params.long('member'))
         }
 
+        if (params.identifier?.length() > 0) {
+            query += " and exists (select io from IdentifierOccurrence io join io.org ioorg join io.identifier ioid " +
+                    " where ioorg = roleT.org and LOWER(ioid.value) like LOWER(:identifier)) "
+            qarams.put('identifier', "%${params.identifier}%")
+        }
+
         if (params.validOn?.size() > 0) {
             result.validOn = params.validOn
 
@@ -3759,11 +3763,11 @@ AND EXISTS (
 
         params.consortiaOrg = result.institution
 
-        def fsq = filterService.getParticipantSurveyQuery(params, sdFormat, result.participant)
+        def fsq = filterService.getParticipantSurveyQuery_New(params, sdFormat, result.participant)
 
         result.surveyResults = SurveyResult.executeQuery(fsq.query, fsq.queryParams, params)
         result.surveyResults = result.surveyResults.groupBy {it.id[1]}
-        result.countSurveys = getSurveyParticipantCounts(result.participant)
+        result.countSurveys = getSurveyParticipantCounts_New(result.participant)
 
         result
     }
@@ -4206,23 +4210,25 @@ AND EXISTS (
     private def getSurveyParticipantCounts_New(Org participant){
         def result = [:]
 
-        result.new = SurveyInfo.executeQuery("from SurveyInfo surInfo left join surInfo.surveyConfigs surConfig left join surConfig.orgs surOrgs where surOrgs.org = :participant and (surInfo.status = :status and (not exists (select surResult from surConfig.surResults surResult) or exists (select surResult from surConfig.surResults surResult where surResult.dateCreated = surResult.lastUpdated and surResult.finishDate is null)))",
+        result.new = SurveyInfo.executeQuery("from SurveyInfo surInfo left join surInfo.surveyConfigs surConfig where (exists (select surOrg from SurveyOrg surOrg where surOrg.surveyConfig = surConfig AND surOrg.org = :org and surOrg.finishDate is null and surConfig.pickAndChoose = true and surConfig.surveyInfo.status = :status) " +
+                "or exists (select surResult from SurveyResult surResult where surResult.surveyConfig = surConfig and surConfig.surveyInfo.status = :status and surResult.dateCreated = surResult.lastUpdated and surResult.finishDate is null and surResult.participant = :org))",
                 [status: RDStore.SURVEY_SURVEY_STARTED,
-                 participant: participant]).groupBy {it.id[1]}.size()
+                 org : participant]).groupBy {it?.id[1]}.size()
 
 
-        result.processed = SurveyInfo.executeQuery("from SurveyInfo surInfo left join surInfo.surveyConfigs surConfig left join surConfig.orgs surOrgs where surOrgs.org = :participant and (surInfo.status = :status and (not exists (select surResult from surConfig.surResults surResult) or exists (select surResult from surConfig.surResults surResult where surResult.dateCreated < surResult.lastUpdated and surResult.finishDate is null)))",
-                [status: RDStore.SURVEY_SURVEY_STARTED,
-                 participant: participant]).groupBy {it.id[1]}.size()
+        result.processed = SurveyInfo.executeQuery("from SurveyInfo surInfo left join surInfo.surveyConfigs surConfig where (surInfo.status = :status and exists (select surResult from SurveyResult surResult where surResult.surveyConfig = surConfig and surResult.participant = :org and surResult.dateCreated < surResult.lastUpdated and surResult.finishDate is null))",
+               [status: RDStore.SURVEY_SURVEY_STARTED,
+                org: participant]).groupBy {it?.id[1]}.size()
 
-        result.finish = SurveyInfo.executeQuery("from SurveyInfo surInfo left join surInfo.surveyConfigs surConfig left join surConfig.orgs surOrgs where surOrgs.org = :participant and not exists (select surResult from surConfig.surResults surResult where surResult.finishDate is null)",
-                [participant: participant]).groupBy {it.id[1]}.size()
+        result.finish = SurveyInfo.executeQuery("from SurveyInfo surInfo left join surInfo.surveyConfigs surConfig where exists (select surResult from SurveyResult surResult where surResult.surveyConfig = surConfig and surResult.participant = :org and surResult.finishDate is not null) " +
+                "or exists (select surOrg from SurveyOrg surOrg where surOrg.surveyConfig = surConfig AND surOrg.org = :org and surOrg.finishDate is not null and surConfig.pickAndChoose = true)",
+                [org: participant]).groupBy {it?.id[1]}.size()
 
-        result.notFinish = SurveyInfo.executeQuery("from SurveyInfo surInfo left join surInfo.surveyConfigs surConfig left join surConfig.orgs surOrgs where surOrgs.org = :participant and ((surInfo.status = :status or surInfo.status = :status2 or surInfo.status = :status3) and exists (select surResult from surConfig.surResults surResult where surResult.finishDate is null))",
+        result.notFinish = SurveyInfo.executeQuery("from SurveyInfo surInfo left join surInfo.surveyConfigs surConfig left join surConfig.orgs surOrgs where ((surInfo.status = :status or surInfo.status = :status2 or surInfo.status = :status3) and exists (select surResult from SurveyResult surResult where surResult.surveyConfig = surConfig and surResult.participant = :org and surResult.finishDate is null))",
                 [status: RDStore.SURVEY_SURVEY_COMPLETED,
                  status2: RDStore.SURVEY_IN_EVALUATION,
                  status3: RDStore.SURVEY_COMPLETED,
-                 participant: participant]).groupBy {it.id[1]}.size()
+                 org : participant]).groupBy {it?.id[1]}.size()
 
 
         return result

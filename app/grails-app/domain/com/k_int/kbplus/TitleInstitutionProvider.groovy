@@ -2,7 +2,10 @@ package com.k_int.kbplus
 import javax.persistence.Transient
 
 class TitleInstitutionProvider {
-  
+
+  Date dateCreated
+  Date lastUpdated
+
   static belongsTo = [
                       title: TitleInstance, 
                       institution: Org, 
@@ -24,6 +27,15 @@ class TitleInstitutionProvider {
     version     column:'title_inst_prov_ver'
 
     coreDates   batchSize: 10
+
+    dateCreated column: 'tttnp_date_created'
+    lastUpdated column: 'tttnp_last_updated'
+  }
+
+  static constraints = {
+    // Nullable is true, because values are already in the database
+    lastUpdated (nullable: true, blank: false)
+    dateCreated (nullable: true, blank: false)
   }
 
   @Transient

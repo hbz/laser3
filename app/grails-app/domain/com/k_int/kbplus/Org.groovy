@@ -52,6 +52,8 @@ class Org
     String scope
     Date dateCreated
     Date lastUpdated
+    Org createdBy
+    Org legallyObligedBy
     String categoryId
 
     @RefdataAnnotation(cat = 'OrgSector')
@@ -143,6 +145,8 @@ class Org
     lastImportDate          column:'org_last_import_date'
        dateCreated          column:'org_date_created'
        lastUpdated          column:'org_last_updated'
+        createdBy           column:'org_created_by_fk'
+        legallyObligedBy    column:'org_legally_obliged_by_fk'
     costConfigurationPreset column:'org_config_preset_rv_fk'
 
         orgType             joinTable: [
@@ -189,6 +193,8 @@ class Org
          libraryType(nullable:true, blank:true)
         importSource(nullable:true, blank:true)
       lastImportDate(nullable:true, blank:true)
+           createdBy(nullable:true, blank:true)
+    legallyObligedBy(nullable:true, blank:true)
       costConfigurationPreset(nullable:true, blank:false)
              orgType(nullable:true, blank:true)
              gokbId (nullable:true, blank:true)
@@ -213,10 +219,6 @@ class Org
         return RDStore.ORG_DELETED.id == status?.id
     }
 
-    void afterInsert() {
-        //organisationService.initMandatorySettings(this)
-    }
-
     @Override
     def beforeInsert() {
         if ( !shortcode ) {
@@ -224,9 +226,13 @@ class Org
         }
         
         if (impId == null) {
-          impId = java.util.UUID.randomUUID().toString();
+            impId = java.util.UUID.randomUUID().toString();
         }
-        
+
+        if (contextService.getOrg()) {
+            createdBy = contextService.getOrg()
+        }
+
         super.beforeInsert()
     }
 
@@ -251,6 +257,32 @@ class Org
             result = oss.roleValue?.authority
         }
         result
+    }
+
+    /*
+	    gets OrgSettings
+	    creating new one (with value) if not existing
+     */
+    def getSetting(OrgSettings.KEYS key, def defaultValue) {
+        def os = OrgSettings.get(this, key)
+        (os == OrgSettings.SETTING_NOT_FOUND) ? OrgSettings.add(this, key, defaultValue) : os
+    }
+
+    /*
+        gets VALUE of OrgSettings
+        creating new OrgSettings (with value) if not existing
+     */
+    def getSettingsValue(OrgSettings.KEYS key, def defaultValue) {
+        def setting = getSetting(key, defaultValue)
+        setting.getValue()
+    }
+
+    /*
+        gets VALUE of OrgSettings
+        creating new OrgSettings if not existing
+     */
+    def getSettingsValue(OrgSettings.KEYS key) {
+        getSettingsValue(key, null)
     }
 
     @Override

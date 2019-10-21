@@ -1,7 +1,7 @@
 <%@ page import="com.k_int.kbplus.RefdataCategory"%>
 
 <!doctype html>
-<r:require module="annotations" />
+<%-- r:require module="annotations" / --%>
 
 <html>
     <head>

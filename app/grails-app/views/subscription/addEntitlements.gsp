@@ -207,7 +207,7 @@ ${message(code: 'subscription.details.availableTitles', default: 'Available Titl
                     var="gokbAPI">
                 <g:if test="${tipp?.gokbId}">
                     <a target="_blank"
-                       href="${gokbAPI.baseUrl ? gokbAPI.baseUrl + '/gokb/resource/show/' + tipp?.gokbId : '#'}"><i
+                       href="${gokbAPI.editUrl ? gokbAPI.editUrl + '/gokb/resource/show/' + tipp?.gokbId : '#'}"><i
                             title="${gokbAPI.name} Link" class="external alternate icon"></i></a>
                 </g:if>
             </g:each>
