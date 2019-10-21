@@ -2310,6 +2310,9 @@ class SubscriptionController extends AbstractDebugController {
                                 }
                                 else {
                                     new OrgRole(org: cm, sub: memberSub, roleType: role_sub).save()
+                                    if(cm.hasPerm("ORG_INST_COLLECTIVE")) {
+                                        new OrgRole(org: cm, sub: memberSub, roleType: role_sub_coll).save()
+                                    }
                                 }
                                 new OrgRole(org: result.institution, sub: memberSub, roleType: role_sub_cons).save()
 

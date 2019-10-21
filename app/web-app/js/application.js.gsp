@@ -10,7 +10,8 @@ var currLanguage = $('html').attr('lang');
         'statusbar.hideButtons.tooltip',
         'statusbar.showButtons.tooltip',
         'default.informations',
-        'default.actions'
+        'default.actions',
+        'property.select.placeholder'
     ]
 
 println """
