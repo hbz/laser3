@@ -77,7 +77,7 @@ c3po = {
         }
 
         $(cssId + " .customPropSelect").select2({
-            placeholder: "Merkmal suchen ..",
+            placeholder: "Merkmal suchen ... / Search property ...", //TODO internationalise
             minimumInputLength: 0,
             width: 300,
             ajax: { // instead of writing the function to execute the request we use Select2's convenient helper

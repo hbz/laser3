@@ -2,6 +2,7 @@
 <laser:serviceInjection />
 <%
     SimpleDateFormat sdf = new SimpleDateFormat(message(code:'default.date.format.notime'))
+    Date startOfYear = new SimpleDateFormat('yyyy-MM-dd').parse('2019-01-01')
 %>
 <semui:modal id="${formId ?: 'create_number'}" text="${message(code: 'readerNumber.create.label')}" isEditModal="${formId ?: null}">
 
@@ -12,7 +13,7 @@
             <div class="two fields">
                 <div class="field three wide">
                     <semui:datepicker label="readerNumber.dueDate.label" id="dueDate" name="dueDate"
-                                      placeholder="default.date.label" value="${numbersInstance?.dueDate ?: sdf.format(sdf.parse('01.01.'+Calendar.getInstance().get(Calendar.YEAR)))}" required=""
+                                      placeholder="default.date.label" value="${numbersInstance?.dueDate ?: sdf.format(startOfYear)}" required=""
                                       bean="${numbersInstance}"/>
                 </div>
 

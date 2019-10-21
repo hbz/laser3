@@ -10,7 +10,7 @@ grails.project.groupId  = appName // change this to alter the default package na
 grails.config.locations = ["file:${userHome}/.grails/${appName}-config.groovy"]
 
 laserSystemId = 'local'
-documentStorageLocation = '/tmp/laser'
+//documentStorageLocation = '/tmp/laser'
 featureSurvey = false
 
 globalDataSync = [

@@ -1085,7 +1085,7 @@ class FinanceService {
                 costItem.reference = cols[colMap.reference]
             //budgetCode -> to budget code
             if(colMap.budgetCode != null) {
-                budgetCodes[r] = cols[colMap.budgetCode].trim()
+                budgetCodes[r] = cols[colMap.budgetCode]?.trim()
             }
             //startDate(nullable: true, blank: false) -> to date from
             if(colMap.dateFrom != null) {
