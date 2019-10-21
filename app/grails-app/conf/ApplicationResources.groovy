@@ -34,7 +34,7 @@ modules = {
     }
 
     deprecated {
-        //resource url:'css/deprecated/datatables.css', attrs: [media: 'screen,print'] // not used any longer
+
         //resource url:'css/select2.css'
 
 
@@ -61,6 +61,10 @@ modules = {
         resource url:'semantic/accessibility/semantic.min.css', attrs: [media: 'screen,print']       // new stuff
 
     }
+    datatables {
+        resource url:'js/libs/datatables.min.js'
+        resource url:'css/datatables.css', attrs: [media: 'screen,print']
+    }
     base {
         dependsOn 'jquery'
         dependsOn 'deprecated'
@@ -76,7 +80,7 @@ modules = {
         resource url:'js/libs/moment-with-locales.min.js'
         resource url:'js/libs/moment.min.js'
 
-        //resource url:'js/libs/datatables.min.js'            // not used any longer
+
 
 
 
