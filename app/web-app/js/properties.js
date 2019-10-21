@@ -1,12 +1,3 @@
-dict = {
-    get: function(key,lang) {
-        return dict[key][lang];
-    },
-    'property.select.placeholder': {
-        de: 'Merkmal suchen ...',
-        en: 'Search property ...'
-    }
-};
 
 c3po = {
     loadJsAfterAjax: function () {
@@ -86,7 +77,7 @@ c3po = {
         }
 
         $(cssId + " .customPropSelect").select2({
-            placeholder: dict.get('property.select.placeholder',$('html').attr('lang')),
+            placeholder: dict.get('property.select.placeholder',currLanguage),
             minimumInputLength: 0,
             width: 300,
             ajax: { // instead of writing the function to execute the request we use Select2's convenient helper
