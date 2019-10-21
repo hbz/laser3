@@ -100,7 +100,7 @@ class Org
     ]
 
     static hasMany = [
-        ids:                IdentifierOccurrence,
+        ids:                Identifier,
         outgoingCombos:     Combo,
         incomingCombos:     Combo,
         links:              OrgRole,
@@ -383,8 +383,9 @@ class Org
             }
         }
         */
+        // TODO [ticket=1789]
         def result = Identifier.executeQuery(
-                'select id from Identifier id join id.ns ns join id.occurrences oc where oc.org = :org and lower(ns.ns) = :idtype',
+                'select id from Identifier id join id.ns ns where id.org = :org and lower(ns.ns) = :idtype',
                 [org: this, idtype: idtype.toLowerCase()]
         )
 

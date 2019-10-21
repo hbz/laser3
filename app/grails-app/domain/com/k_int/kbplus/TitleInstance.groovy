@@ -52,7 +52,7 @@ class TitleInstance extends AbstractBaseDomain implements AuditableTrait {
                      ]
   static hasMany = [
                     tipps:  TitleInstancePackagePlatform,
-                    ids:    IdentifierOccurrence,
+                    ids:    Identifier,
                     orgs:   OrgRole,
                     historyEvents: TitleHistoryEventParticipant,
                     prsLinks: PersonRole,
@@ -1003,8 +1003,8 @@ select ie from IssueEntitlement as ie JOIN ie.subscription.orgRelations as o
       TitleInstance.executeUpdate('delete from IssueEntitlement ie where ie.tipp in ( select tipp from TitleInstancePackagePlatform tipp where tipp.title.id = ? )',[title_id])
       log.debug("  -> TIPPs");
       TitleInstance.executeUpdate('delete from TitleInstancePackagePlatform tipp where tipp.title.id = ?',[title_id])
-      log.debug("  -> IdentifierOccurrence");
-      TitleInstance.executeUpdate('delete from IdentifierOccurrence io where io.ti.id = ?',[title_id])
+      log.debug("  -> Identifier");
+      TitleInstance.executeUpdate('delete from Identifier i where i.ti.id = ?',[title_id])
       log.debug("  -> OrgRole");
       TitleInstance.executeUpdate('delete from OrgRole orl where orl.title.id = ?',[title_id])
       log.debug("  -> TitleHistoryEventParticipant");

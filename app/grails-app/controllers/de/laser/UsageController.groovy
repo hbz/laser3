@@ -134,7 +134,7 @@ class UsageController extends AbstractDebugController {
             }
         }.collect {"'$it'"}.join(',')
 
-        def hql = "select io.org, i from IdentifierOccurrence as io join io.identifier as i where i.value in (${institutionsForQuery})"
+        def hql = "select ident.org, ident from Identifier as ident where ident.value in (${institutionsForQuery})"
         result.natstatInstitutions = institutionsForQuery ? Org.executeQuery(hql) : []
         result.cursorCount = factService.getSupplierCursorCount()
 

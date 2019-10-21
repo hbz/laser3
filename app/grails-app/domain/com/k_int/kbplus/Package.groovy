@@ -74,7 +74,7 @@ static hasMany = [  tipps:     TitleInstancePackagePlatform,
                     documents: DocContext,
                     subscriptions:  SubscriptionPackage,
                     pendingChanges: PendingChange,
-                    ids: IdentifierOccurrence ]
+                    ids: Identifier ]
 
   static mappedBy = [tipps:     'pkg',
                      orgs:      'pkg',
@@ -590,15 +590,17 @@ static hasMany = [  tipps:     TitleInstancePackagePlatform,
     }
 
     if ( ! found ) {
-      def id = Identifier.lookupOrCreateCanonicalIdentifier(ns, value)
-        println "before execute query"
-      def id_occ = IdentifierOccurrence.executeQuery("select io from IdentifierOccurrence as io where io.identifier = ? and io.pkg = ?", [id,this])
-        println "id_occ query executed"
+        // TODO [ticket=1789]
+      //def id = Identifier.lookupOrCreateCanonicalIdentifier(ns, value)
+      //  println "before execute query"
+      //def id_occ = IdentifierOccurrence.executeQuery("select io from IdentifierOccurrence as io where io.identifier = ? and io.pkg = ?", [id,this])
+      //  println "id_occ query executed"
 
-      if ( !id_occ || id_occ.size() == 0 ){
-        println "Create new identifier occurrence for pid:${getId()} ns:${ns} value:${value}"
-        new IdentifierOccurrence(identifier:id, pkg:this).save()
-      }
+      //if ( !id_occ || id_occ.size() == 0 ){
+      //  println "Create new identifier occurrence for pid:${getId()} ns:${ns} value:${value}"
+      //  new IdentifierOccurrence(identifier:id, pkg:this).save()
+      //}
+        Identifier.construct([value:value, reference:this, namespace:ns])
     }
   }
 

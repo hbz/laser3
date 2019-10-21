@@ -200,7 +200,7 @@ class SubscriptionController extends AbstractDebugController {
                 qry_params.startDate = date_filter
                 qry_params.endDate = date_filter
             }
-            base_qry += "and ( ( lower(ie.tipp.title.title) like :title ) or ( exists ( from IdentifierOccurrence io where io.ti.id = ie.tipp.title.id and io.identifier.value like :identifier ) ) ) "
+            base_qry += "and ( ( lower(ie.tipp.title.title) like :title ) or ( exists ( from Identifier ident where ident.ti.id = ie.tipp.title.id and ident.value like :identifier ) ) ) "
             qry_params.title = "%${params.filter.trim().toLowerCase()}%"
             qry_params.identifier = "%${params.filter}%"
         } else {
@@ -613,7 +613,7 @@ class SubscriptionController extends AbstractDebugController {
         }
 
         if (params.filter) {
-            base_qry += " and ( ( lower(ie.tipp.title.title) like ? ) or ( exists ( from IdentifierOccurrence io where io.ti.id = ie.tipp.title.id and io.identifier.value like ? ) ) )"
+            base_qry += " and ( ( lower(ie.tipp.title.title) like ? ) or ( exists ( from Identifier ident where ident.ti.id = ie.tipp.title.id and ident.value like ? ) ) )"
             qry_params.add("%${params.filter.trim().toLowerCase()}%")
             qry_params.add("%${params.filter}%")
         }
@@ -753,7 +753,7 @@ class SubscriptionController extends AbstractDebugController {
 
             if (params.filter) {
                 log.debug("Filtering....");
-                basequery = "from TitleInstancePackagePlatform tipp where tipp.pkg in ( select pkg from SubscriptionPackage sp where sp.subscription = ? ) and tipp.status = ? and ( not exists ( select ie from IssueEntitlement ie where ie.subscription = ? and ie.tipp.id = tipp.id and ie.status = ? ) ) and ( ( lower(tipp.title.title) like ? ) OR ( exists ( select io from IdentifierOccurrence io where io.ti.id = tipp.title.id and io.identifier.value like ? ) ) ) "
+                basequery = "from TitleInstancePackagePlatform tipp where tipp.pkg in ( select pkg from SubscriptionPackage sp where sp.subscription = ? ) and tipp.status = ? and ( not exists ( select ie from IssueEntitlement ie where ie.subscription = ? and ie.tipp.id = tipp.id and ie.status = ? ) ) and ( ( lower(tipp.title.title) like ? ) OR ( exists ( select ident from Identifier ident where ident.ti.id = tipp.title.id and ident.value like ? ) ) ) "
                 qry_params.add("%${params.filter.trim().toLowerCase()}%")
                 qry_params.add("%${params.filter}%")
             } else {
@@ -899,7 +899,7 @@ class SubscriptionController extends AbstractDebugController {
                         //is title in LAS:eR?
                         //List tiObj = TitleInstancePackagePlatform.executeQuery('select tipp from TitleInstancePackagePlatform tipp join tipp.title ti join ti.ids identifiers where identifiers.identifier.value in :idCandidates',[idCandidates:idCandidates])
                         //log.debug(idCandidates)
-                        def tiObj = TitleInstance.executeQuery('select ti from TitleInstance ti join ti.ids ids where ids in (select io from IdentifierOccurrence io join io.identifier id where id.ns in :namespaces and id.value = :value)',[namespaces:idCandidate.namespaces,value:idCandidate.value])
+                        def tiObj = TitleInstance.executeQuery('select ti from TitleInstance ti join ti.ids ids where ids in (select ident from Identifier ident where ident.ns in :namespaces and ident.value = :value)',[namespaces:idCandidate.namespaces,value:idCandidate.value])
                         if(tiObj) {
                             //is title already added?
                             if(addedTipps.get(tiObj)) {

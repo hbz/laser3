@@ -490,10 +490,12 @@ class DataloadService {
     result
   }
 
-  def lookupOrCreateCanonicalIdentifier(ns, value) {
-    log.debug("lookupOrCreateCanonicalIdentifier(${ns},${value})");
-    def namespace = IdentifierNamespace.findByNs(ns) ?: new IdentifierNamespace(ns:ns).save();
-    Identifier.findByNsAndValue(namespace,value) ?: new Identifier(ns:namespace, value:value).save();
+    def lookupOrCreateCanonicalIdentifier(ns, value) {
+        // TODO [ticket=1789]
+        log.debug("lookupOrCreateCanonicalIdentifier(${ns},${value})");
+        //def namespace = IdentifierNamespace.findByNs(ns) ?: new IdentifierNamespace(ns:ns).save();
+        //Identifier.findByNsAndValue(namespace,value) ?: new Identifier(ns:namespace, value:value).save();
+        Identifier.construct([value:value, reference:null, namespace:ns])
   }
 
 

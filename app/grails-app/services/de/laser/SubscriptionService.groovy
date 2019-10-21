@@ -173,7 +173,7 @@ class SubscriptionService {
                     qry_params.startDate = date_filter
                     qry_params.endDate = date_filter
                 }
-                base_qry += "and ( ( lower(ie.tipp.title.title) like :title ) or ( exists ( from IdentifierOccurrence io where io.ti.id = ie.tipp.title.id and io.identifier.value like :identifier ) ) ) "
+                base_qry += "and ( ( lower(ie.tipp.title.title) like :title ) or ( exists ( from Identifier ident where ident.ti.id = ie.tipp.title.id and ident.value like :identifier ) ) ) "
                 qry_params.title = "%${params.filter.trim().toLowerCase()}%"
                 qry_params.identifier = "%${params.filter}%"
             } else {

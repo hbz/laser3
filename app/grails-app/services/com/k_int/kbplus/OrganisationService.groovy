@@ -92,7 +92,7 @@ class OrganisationService {
         }
         List orgData = []
         Map<Org,Map<String,String>> identifiers = [:]
-        List identifierList = Identifier.executeQuery("select i, io.org from IdentifierOccurrence io join io.identifier i where io.org in (:orgs) and i.ns.ns in (:namespaces)",[orgs:orgs,namespaces:['wibid','ezb','ISIL']])
+        List identifierList = Identifier.executeQuery("select ident, ident.org from Identifier ident where ident.org in (:orgs) and ident.ns.ns in (:namespaces)",[orgs:orgs,namespaces:['wibid','ezb','ISIL']])
         identifierList.each { row ->
             Identifier io = (Identifier) row[0]
             Org o = (Org) row[1]

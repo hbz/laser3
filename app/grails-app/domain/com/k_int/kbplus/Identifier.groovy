@@ -13,9 +13,6 @@ class Identifier {
     Date dateCreated
     Date lastUpdated
 
-    static hasMany = [ occurrences:IdentifierOccurrence]
-    static mappedBy = [ occurrences:'identifier']
-
     static belongsTo = [
             lic:    License,
             org:    Org,
@@ -64,8 +61,6 @@ class Identifier {
 
         dateCreated column: 'id_date_created'
         lastUpdated column: 'id_last_updated'
-
-        occurrences   batchSize: 10
     }
 
     static Identifier construct(Map<String, Object> map) {
@@ -144,6 +139,7 @@ class Identifier {
 
   }
 
+    @Deprecated
   static Identifier lookupOrCreateCanonicalIdentifier(ns, value) {
       println "loc canonical identifier"
       value = value?.trim()

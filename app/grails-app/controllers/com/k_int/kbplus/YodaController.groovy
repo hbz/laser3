@@ -376,7 +376,7 @@ class YodaController {
 
     @Secured(['ROLE_YODA'])
     def remapOriginEditUrl() {
-        List<IdentifierOccurrence> originEditUrls = IdentifierOccurrence.executeQuery("select io from IdentifierOccurrence io join io.identifier id where lower(id.ns.ns) = 'originediturl'")
+        List<Identifier> originEditUrls = Identifier.executeQuery("select ident from Identifier ident where lower(ident.ns.ns) = 'originediturl'")
         originEditUrls.each { originEditUrl ->
             def obj
             if(originEditUrl.tipp) {
@@ -626,10 +626,13 @@ class YodaController {
     @Secured(['ROLE_YODA'])
     def migratePackageIdentifiers() {
         IdentifierNamespace isilPaketsigel = IdentifierNamespace.findByNs('ISIL_Paketsigel')
-        Set<Identifier> idList = Identifier.executeQuery("select io.identifier from IdentifierOccurrence io where io.pkg != null and lower(io.identifier.ns.ns) = 'isil'")
+        Set<Identifier> idList = Identifier.executeQuery("select ident from Identifier ident where ident.pkg != null and lower(ident.ns.ns) = 'isil'")
         if(idList) {
-            Identifier.executeUpdate("update IdentifierOccurrence io set io.identifier.ns = :isilPaketsigel where io.pkg != null and lower(io.identifier.ns.ns) = 'isil'",[isilPaketsigel: isilPaketsigel])
-            flash.message = "Changes performed on ${idList.size()} package identifiers ..."
+            // TODO [ticket=1789] important
+            // TODO [disabled]
+            //Identifier.executeUpdate("update IdentifierOccurrence io set io.identifier.ns = :isilPaketsigel where io.pkg != null and lower(io.identifier.ns.ns) = 'isil'",[isilPaketsigel: isilPaketsigel])
+            //flash.message = "Changes performed on ${idList.size()} package identifiers ..."
+            flash.message = "WARNING: Changes NOT performed on ${idList.size()} package identifiers ..."
         }
         redirect controller: 'home'
     }

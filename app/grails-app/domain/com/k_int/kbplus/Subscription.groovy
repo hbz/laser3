@@ -84,7 +84,7 @@ class Subscription
   static transients = [ 'subscriber', 'providers', 'agencies', 'consortia' ]
 
   static hasMany = [
-                     ids: IdentifierOccurrence,
+                     ids: Identifier,
                      packages : SubscriptionPackage,
                      issueEntitlements: IssueEntitlement,
                      documents: DocContext,

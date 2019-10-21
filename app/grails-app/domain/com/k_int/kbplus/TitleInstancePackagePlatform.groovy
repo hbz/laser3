@@ -80,7 +80,7 @@ class TitleInstancePackagePlatform extends AbstractBaseDomain implements Auditab
   //TitleInstancePackagePlatform masterTipp
 
   static mappedBy = [ids: 'tipp', additionalPlatforms: 'tipp']
-  static hasMany = [ids: IdentifierOccurrence, 
+  static hasMany = [ids: Identifier,
                     additionalPlatforms: PlatformTIPP,
                     coverages: TIPPCoverage]
 

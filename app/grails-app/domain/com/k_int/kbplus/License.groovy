@@ -79,7 +79,7 @@ class License
   static hasOne = [onixplLicense: OnixplLicense]
 
   static hasMany = [
-          ids: IdentifierOccurrence,
+          ids: Identifier,
           pkgs:         Package,
           subscriptions:Subscription,
           documents:    DocContext,

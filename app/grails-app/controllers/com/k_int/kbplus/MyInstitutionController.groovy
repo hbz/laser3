@@ -925,7 +925,7 @@ from License as l where (
         Map costItemCounts = [:]
         List allProviders = OrgRole.findAllByRoleTypeAndSubIsNotNull(RDStore.OR_PROVIDER)
         List allAgencies = OrgRole.findAllByRoleTypeAndSubIsNotNull(RDStore.OR_AGENCY)
-        List allIdentifiers = IdentifierOccurrence.findAllBySubIsNotNull()
+        List allIdentifiers = Identifier.findAllBySubIsNotNull()
         List allCostItems = CostItem.executeQuery('select count(ci.id),s.instanceOf.id from CostItem ci join ci.sub s where s.instanceOf != null and (ci.costItemStatus != :ciDeleted or ci.costItemStatus = null) and ci.owner = :owner group by s.instanceOf.id',[ciDeleted:RDStore.COST_ITEM_DELETED,owner:contextOrg])
         allProviders.each { provider ->
             Set subProviders
@@ -2074,9 +2074,9 @@ ORDER BY p.platform.name""", sub_params);
         if (params.filter) {
             title_query.append("\
   AND ( ( Lower(ie.tipp.title.title) like :filterTrim ) \
-  OR ( EXISTS ( FROM IdentifierOccurrence io \
-  WHERE io.ti.id = ie.tipp.title.id \
-  AND io.identifier.value like :filter ) ) )")
+  OR ( EXISTS ( FROM Identifier ident \
+  WHERE ident.ti.id = ie.tipp.title.id \
+  AND ident.value like :filter ) ) )")
             qry_params.filterTrim = "%${params.filter.trim().toLowerCase()}%"
             qry_params.filter = "%${params.filter}%"
         }
@@ -3341,8 +3341,8 @@ AND EXISTS (
         }
 
         if (params.identifier?.length() > 0) {
-            query += " and exists (select io from IdentifierOccurrence io join io.org ioorg join io.identifier ioid " +
-                    " where ioorg = roleT.org and LOWER(ioid.value) like LOWER(:identifier)) "
+            query += " and exists (select ident from Identifier ident join ident.org ioorg " +
+                    " where ioorg = roleT.org and LOWER(ident.value) like LOWER(:identifier)) "
             qarams.put('identifier', "%${params.identifier}%")
         }
 
