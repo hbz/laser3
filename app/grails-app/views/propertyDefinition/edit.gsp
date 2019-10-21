@@ -1,6 +1,7 @@
 <%@ page import="com.k_int.kbplus.RefdataValue; com.k_int.properties.PropertyDefinition" %>
 
 <!doctype html>
+<r:require module="scaffolding" />
 <html>
 <head>
     <meta name="layout" content="semanticUI">

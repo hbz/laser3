@@ -166,18 +166,13 @@ class BootStrap {
 
         if (grailsApplication.config.localauth) {
             log.debug("localauth is set.. ensure user accounts present (From local config file) ${grailsApplication.config.sysusers}")
-
+            //Org hbz = Org.findByName('hbz Konsortialstelle Digitale Inhalte')
             grailsApplication.config.sysusers.each { su ->
-                log.debug("test ${su.name} ${su.pass} ${su.display} ${su.roles}")
+                log.debug("test ${su.name} ${su.display} ${su.roles}")
                 def user = User.findByUsername(su.name)
                 if (user) {
-                    if (user.password != su.pass) {
-                        log.debug("hard change of user password from config ${user.password} -> ${su.pass}")
-                        user.password = su.pass;
-                        user.save(failOnError: true)
-                    } else {
-                        log.debug("${su.name} present and correct")
-                    }
+                    log.debug("${su.name} present and correct")
+                    //user.getSetting(UserSettings.KEYS.DASHBOARD,hbz)
                 } else {
                     log.debug("create user ..")
                     user = new User(
@@ -200,12 +195,28 @@ class BootStrap {
                 }
             }
         }
-        else if(grailsApplication.config.getCurrentServer() == ContextService.SERVER_DEV) { //include SEVER_LOCAL and remove 'else' when testing locally
-            log.debug("DEV environment, lookup or create set of user accounts ...")
-            Org hbz = Org.findByName('hbz Konsortialstelle Digitale Inhalte')
-            if(hbz)
-                userService.setupAdminAccounts([konsortium:hbz])
+        if(grailsApplication.config.getCurrentServer() == ContextService.SERVER_QA) {
+            log.debug("check if all user accounts are existing on QA ...")
+            Map<String,Org> modelOrgs = [konsorte: Org.findByName('Musterkonsorte'),
+                                         institut: Org.findByName('Musterinstitut'),
+                                         singlenutzer: Org.findByName('Mustereinrichtung'),
+                                         kollektivnutzer: Org.findByName('Mustereinrichtung Kollektiv'),
+                                         konsortium: Org.findByName('Musterkonsortium')]
+            Map<String,Org> testOrgs = [konsorte: Org.findByName('Testkonsorte'),
+                                        institut: Org.findByName('Testinstitut'),
+                                        singlenutzer: Org.findByName('Testeinrichtung'),
+                                        kollektivnutzer: Org.findByName('Testeinrichtung Kollektiv'),
+                                        konsortium: Org.findByName('Testkonsortium')]
+            Map<String,Org> QAOrgs = [konsorte: Org.findByName('QA-Konsorte'),
+                                      institut: Org.findByName('QA-Institut'),
+                                      singlenutzer: Org.findByName('QA-Einrichtung'),
+                                      kollektivnutzer: Org.findByName('QA-Einrichtung Kollektiv'),
+                                      konsortium: Org.findByName('QA-Konsortium')]
+            userService.setupAdminAccounts(modelOrgs)
+            userService.setupAdminAccounts(testOrgs)
+            userService.setupAdminAccounts(QAOrgs)
         }
+
         // def auto_approve_memberships = Setting.findByName('AutoApproveMemberships') ?: new Setting(name: 'AutoApproveMemberships', tp: Setting.CONTENT_TYPE_BOOLEAN, defvalue: 'true', value: 'true').save()
 
         def mailSent = Setting.findByName('MailSentDisabled') ?: new Setting(name: 'MailSentDisabled', tp: Setting.CONTENT_TYPE_BOOLEAN, defvalue: 'false', value: (grailsApplication.config.grails.mail.disabled ?: "false")).save()
@@ -266,7 +277,7 @@ class BootStrap {
         log.debug("checking database ..")
         if (!Org.findAll() && !Person.findAll() && !Address.findAll() && !Contact.findAll()) {
             log.debug("database is probably empty; setting up essential data ..")
-            File f = new File(grailsApplication.config.basicDataPath+grailsApplication.config.basicDataFileName)
+            File f = new File("${grailsApplication.config.basicDataPath}${grailsApplication.config.basicDataFileName}")
             if(f.exists())
                 apiService.setupBasicData(f)
             else {
@@ -535,8 +546,8 @@ class BootStrap {
                     descr:allDescr, type: OT.Rdv, cat:'YN'
             ],
             [
-                    name: [key: "Shibboleth Usage", en: "Shibboleth Usage", de: "Shibboleth: Nutzung"],
-                    expl : [en: "", de: "Nutzt die Organisation Shibboleth?"],
+                    name: [key: "Shibboleth Usage", en: "Shibboleth Usage", de: "Shibboleth: Nutzung für Bibliotheksangebote"],
+                    expl : [en: "", de: "Nutzt die Organisation Shibboleth für Bibliotheksangebote?"],
                     descr:allDescr, type: OT.Rdv, cat:'YNU'
             ],
             [
@@ -2387,20 +2398,20 @@ class BootStrap {
         RefdataValue.loc('Library Network',   [en: 'SWB', de: 'SWB'], BOOTSTRAP)
         RefdataValue.loc('Library Network',   [en: 'No Network', de: 'Keine Zugehörigkeit'], BOOTSTRAP)
 
-        RefdataValue.loc('Library Type',   [en: 'Fachhochschule', de: 'Fachhochschule'], BOOTSTRAP)
-        RefdataValue.loc('Library Type',   [en: 'Forschungseinrichtung', de: 'Forschungseinrichtung'], BOOTSTRAP)
-        RefdataValue.loc('Library Type',   [en: 'Institutsbibliothek', de: 'Institutsbibliothek'], BOOTSTRAP)
-        RefdataValue.loc('Library Type',   [en: 'Kunst- und Musikhochschule', de: 'Kunst- und Musikhochschule'], BOOTSTRAP)
-        RefdataValue.loc('Library Type',   [en: 'Öffentliche Bibliothek', de: 'Öffentliche Bibliothek'], BOOTSTRAP)
-        RefdataValue.loc('Library Type',   [en: 'Universität', de: 'Universität'], BOOTSTRAP)
-        RefdataValue.loc('Library Type',   [en: 'Staats-/ Landes-/ Regionalbibliothek', de: 'Staats-/ Landes-/ Regionalbibliothek'], BOOTSTRAP)
-        RefdataValue.loc('Library Type',   [en: 'Wissenschaftliche Spezialbibliothek', de: 'Wissenschaftliche Spezialbibliothek'], BOOTSTRAP)
-        RefdataValue.loc('Library Type',   [en: 'Sonstige', de: 'Sonstige'], BOOTSTRAP)
-        RefdataValue.loc('Library Type',   [en: 'keine Angabe', de: 'keine Angabe'], BOOTSTRAP)
+        RefdataValue.loc('Library Type',   [key: 'Fachhochschule', en: 'University of applied science', de: 'Fachhochschule'], BOOTSTRAP)
+        RefdataValue.loc('Library Type',   [key: 'Forschungseinrichtung', en: 'Research institution', de: 'Forschungseinrichtung'], BOOTSTRAP)
+        RefdataValue.loc('Library Type',   [key: 'Institutsbibliothek', en: 'Department library', de: 'Institutsbibliothek'], BOOTSTRAP)
+        RefdataValue.loc('Library Type',   [key: 'Kunst- und Musikhochschule', en: 'College of Art or Music', de: 'Kunst- und Musikhochschule'], BOOTSTRAP)
+        RefdataValue.loc('Library Type',   [key: 'Öffentliche Bibliothek', en: 'Public library', de: 'Öffentliche Bibliothek'], BOOTSTRAP)
+        RefdataValue.loc('Library Type',   [key: 'Universität', en: 'University', de: 'Universität'], BOOTSTRAP)
+        RefdataValue.loc('Library Type',   [key: 'Staats-/ Landes-/ Regionalbibliothek', en: 'National / state / regional library', de: 'Staats-/ Landes-/ Regionalbibliothek'], BOOTSTRAP)
+        RefdataValue.loc('Library Type',   [key: 'Wissenschaftliche Spezialbibliothek', en: 'Special scientific library', de: 'Wissenschaftliche Spezialbibliothek'], BOOTSTRAP)
+        RefdataValue.loc('Library Type',   [key: 'Sonstige', en: 'Other', de: 'Sonstige'], BOOTSTRAP)
+        RefdataValue.loc('Library Type',   [key: 'keine Angabe', en: 'not specified', de: 'keine Angabe'], BOOTSTRAP)
 
-        RefdataValue.loc('Link Type', [en: 'follows',de: '... ist Nachfolger von|... ist Vorgänger von'], BOOTSTRAP)
-        RefdataValue.loc('Link Type', [en: 'references',de: '... referenziert|... wird referenziert durch'], BOOTSTRAP)
-        RefdataValue.loc('Link Type', [en: 'is condition for',de: '... ist Bedingung für|... ist bedingt durch'], BOOTSTRAP)
+        RefdataValue.loc('Link Type', [key: 'follows',en:'... follows|... precedes',de: '... ist Nachfolger von|... ist Vorgänger von'], BOOTSTRAP)
+        RefdataValue.loc('Link Type', [key: 'references',en: '... references|... is referenced by',de: '... referenziert|... wird referenziert durch'], BOOTSTRAP)
+        RefdataValue.loc('Link Type', [key: 'is condition for',en: '... ist condition für|... ist conditioned by', de: '... ist Bedingung für|... ist bedingt durch'], BOOTSTRAP)
 
         RefdataValue.loc('OrgStatus',      [en: 'Current', de: 'Aktuell'], BOOTSTRAP)
         RefdataValue.loc('OrgStatus',      [en: 'Deleted', de: 'Gelöscht'], BOOTSTRAP)

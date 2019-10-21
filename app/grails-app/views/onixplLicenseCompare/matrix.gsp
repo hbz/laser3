@@ -25,6 +25,7 @@
 
 
 	  <r:script language="JavaScript">
+/*
 	  	// //we replace cell-inner-undefined with call inner and our new icon
 	  	  //  $(function(){
 	  	  //  	$(".onix-pl-undefined").replaceWith("<span title='Not defined by the license' style='height:1em' class='onix-status fa-stack fa-4x'> <i class='fa fa-info-circle fa-stack-1x' style='color:#166fe7;' ></i> <i class='fa fa-ban fa-stack-1x' style='color:#FF0000'></i> </span>")
@@ -37,6 +38,7 @@
 			  {placement: 'left', trigger:'hover', html: true, container: 'body'}
 			);
 	  	    //});
+*/
 
 	  </r:script>
 </body>

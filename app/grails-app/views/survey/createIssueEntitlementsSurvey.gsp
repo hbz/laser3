@@ -36,7 +36,7 @@
 </h1>
 
 <semui:filter>
-    <g:form action="createIssueEntitlementsSurvey" controller="survey" method="get" class="form-inline ui small form">
+    <g:form action="createIssueEntitlementsSurvey" controller="survey" method="get" class="ui small form">
         <input type="hidden" name="isSiteReloaded" value="yes"/>
         <input type="hidden" name="id" value="${params.id}"/>
 

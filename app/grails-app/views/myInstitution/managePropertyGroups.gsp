@@ -34,11 +34,11 @@
     <table class="ui celled sortable table la-table la-table-small">
         <thead>
             <tr>
-                <th>Name</th>
-                <th>Beschreibung</th>
-                <th>Merkmale</th>
-                <th>Typ</th>
-                <th>Anzeigen (Voreinstellung)</th>
+                <th><g:message code="propertyDefinitionGroup.table.header.name"/></th>
+                <th><g:message code="propertyDefinitionGroup.table.header.description"/></th>
+                <th><g:message code="propertyDefinitionGroup.table.header.properties"/></th>
+                <th><g:message code="propertyDefinitionGroup.table.header.type"/></th>
+                <th><g:message code="propertyDefinitionGroup.table.header.presetShow"/></th>
                 <th class="la-action-info">${message(code:'default.actions')}</th>
             </tr>
         </thead>

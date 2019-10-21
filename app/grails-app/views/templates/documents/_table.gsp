@@ -1,4 +1,4 @@
-<%@page import="de.laser.helper.RDStore; com.k_int.kbplus.*" %>
+<%@page import="de.laser.helper.RDStore; com.k_int.kbplus.*; de.laser.interfaces.TemplateSupport" %>
 <laser:serviceInjection/>
 <%
     boolean parentAtChild = false
@@ -42,7 +42,7 @@
                     documentSet.addAll(orgDocumentService.getTargettedDocuments(instance))
                 }
             %>
-            <g:each in="${documentSet}" var="docctx">
+            <g:each in="${documentSet.sort{it?.owner?.title}}" var="docctx">
                 <%
                     boolean visible = false
                     boolean inOwnerOrg = false

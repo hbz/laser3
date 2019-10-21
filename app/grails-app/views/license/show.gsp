@@ -1,6 +1,6 @@
 <%@ page import="de.laser.helper.RDStore; com.k_int.properties.PropertyDefinition;de.laser.interfaces.TemplateSupport" %>
 <!doctype html>
-<r:require module="annotations" />
+<%-- r:require module="annotations" / --%>
 <laser:serviceInjection />
 
 <html>
@@ -247,7 +247,8 @@
                                   model="${[roleLinks: visibleOrgLinks,
                                             roleObject: license,
                                             roleRespValue: 'Specific license editor',
-                                            editmode: editable
+                                            editmode: editable,
+                                            showPersons: true
                                   ]}" />
 
                         <g:render template="/templates/links/orgLinksSimpleModal"
@@ -256,9 +257,9 @@
                                             property: 'orgLinks',
                                             recip_prop: 'lic',
                                             tmplRole: RDStore.OR_LICENSOR,
-                                            tmplEntity: 'Lizenzgeber',
-                                            tmplText: 'Lizenzgeber mit diesem Vertrag verknüpfen',
-                                            tmplButtonText: 'Lizenzgeber verknüpfen',
+                                            tmplEntity: message(code:'license.details.tmplEntity'),
+                                            tmplText: message(code:'license.details.tmplText'),
+                                            tmplButtonText: message(code:'license.details.tmplButtonText'),
                                             tmplModalID:'osel_add_modal_lizenzgeber',
                                             editmode: editable,
                                             orgList: availableLicensorList,

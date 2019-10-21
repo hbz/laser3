@@ -18,7 +18,7 @@
 
 <h3 class="ui header">${message(code: 'default.usage.adminPage.formHeader')}</h3>
 <semui:filter>
-    <g:form action="index" controller="usage" method="get" class="form-inline ui small form">
+    <g:form action="index" controller="usage" method="get" class="ui small form">
         <div class="three fields">
             <div class="field fieldcontain">
                 <label for="supplier">${message(code: 'default.usage.adminPage.supplierLabel')}</label>
@@ -88,7 +88,7 @@
 </table>
 
 <semui:filter>
-    <g:form action="index" controller="usage" method="get" class="form-inline ui small form">
+    <g:form action="index" controller="usage" method="get" class="ui small form">
 
         <div class="two fields">
             <div class="field fieldcontain">

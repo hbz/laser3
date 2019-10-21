@@ -1,6 +1,7 @@
 <%@ page import="com.k_int.kbplus.Package;com.k_int.kbplus.RefdataCategory;org.springframework.web.servlet.support.RequestContextUtils" %>
 <laser:serviceInjection/>
 <!doctype html>
+<r:require module="datatables" />
 <html>
     <head>
         <meta name="layout" content="semanticUI">
@@ -143,7 +144,8 @@
                                   model="${[roleLinks: visibleOrgs,
                                             roleObject: packageInstance,
                                             roleRespValue: 'Specific package editor',
-                                            editmode: editable
+                                            editmode: editable,
+                                            showPersons: true
                                   ]}" />
 
                         <g:render template="/templates/links/orgLinksModal"

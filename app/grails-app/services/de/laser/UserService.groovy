@@ -19,6 +19,7 @@ class UserService {
     def instAdmService
     def contextService
     def messageSource
+    def grailsApplication
     Locale locale = LocaleContextHolder.getLocale()
 
     void initMandatorySettings(User user) {
@@ -123,7 +124,7 @@ class UserService {
     }
 
     void setupAdminAccounts(Map<String,Org> orgs) {
-        List<String> adminUsers = ['selbach', 'engels', 'konze', 'rupp', 'galffy', 'klober', 'bluoss', 'albin', 'djebeniani', 'test']
+        List<String> adminUsers = ['selbach', 'engels', 'konze', 'rupp', 'galffy', 'klober', 'bluoss', 'albin', 'djebeniani', 'test', 'oberknapp', 'jaegle', 'beh', 'lauer']
         List<String> customerTypes = ['konsorte','institut','singlenutzer','kollektivnutzer','konsortium']
         //the Aninas, Rahels and Violas ... if my women get chased from online test environments, I feel permitted to keep them internally ... for more women in IT branch!!!
         Map<String,Role> userRights = ['benutzer':Role.findByAuthority('INST_USER'), //internal 'Anina'
@@ -136,11 +137,13 @@ class UserService {
                     User user = User.findByUsername(username)
                     if(!user) {
                         log.debug("create new user ${username}")
-                        user = addNewUser([username: username, password: "${username}_skywalker", display: username, email: "${userKey}@hbz-nrw.de", enabled: true, org: orgs[customerKey]],null)
+                        user = addNewUser([username: username, password: "${username}${grailsApplication.config.passwordSuffix}", display: username, email: "${userKey}@hbz-nrw.de", enabled: true, org: orgs[customerKey]],null)
                     }
                     if(user && !user.hasAffiliationForForeignOrg(rightKey,orgs[customerKey])) {
-                        if(orgs[customerKey])
+                        if(orgs[customerKey]) {
                             instAdmService.createAffiliation(user,orgs[customerKey],userRole,UserOrg.STATUS_APPROVED,null)
+                            user.getSetting(UserSettings.KEYS.DASHBOARD,orgs[customerKey])
+                        }
                         else log.debug("appropriate inst missing for affiliation key, skipping")
                     }
                 }

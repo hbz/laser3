@@ -1,5 +1,9 @@
 <%@ page import="com.k_int.kbplus.Subscription" %>
 <g:if test="${! (sourceSubscription && targetSubscription)}">
+    <% if (params){
+        params.remove('sourceSubscriptionId')
+        params.remove('targetSubscriptionId')
+    } %>
     <g:form action="copyElementsIntoSubscription" controller="subscription" id="${params.id}"
             params="${params << [workFlowPart: workFlowPart]}"
             method="post" class="ui form newLicence"  onsubmit="enableSubmit();">

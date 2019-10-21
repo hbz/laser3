@@ -60,7 +60,7 @@
 <semui:messages data="${flash}"/>
 
 <semui:filter>
-    <g:form action="manageConsortiaSubscriptions" controller="myInstitution" method="get" class="form-inline ui small form">
+    <g:form action="manageConsortiaSubscriptions" controller="myInstitution" method="get" class="ui small form">
 
         <div class="three fields">
             <div class="field">

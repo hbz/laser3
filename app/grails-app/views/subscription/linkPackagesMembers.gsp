@@ -5,7 +5,7 @@
 <html>
 <head>
     <meta name="layout" content="semanticUI"/>
-    <title>${message(code: 'laser', default: 'LAS:eR')} : ${message(code: 'subscription.details.subscriberManagement.label', args:args.memberType)}</title>
+    <title>${message(code: 'laser', default: 'LAS:eR')} : ${message(code: 'subscription.details.subscriberManagement.label', args: args.memberType)}</title>
 </head>
 
 <body>
@@ -17,18 +17,19 @@
     <semui:crumb controller="subscription" action="show" id="${subscriptionInstance.id}"
                  text="${subscriptionInstance.name}"/>
 
-    <semui:crumb class="active" text="${message(code: 'subscription.details.subscriberManagement.label',args:args.memberType)}"/>
+    <semui:crumb class="active"
+                 text="${message(code: 'subscription.details.subscriberManagement.label', args: args.memberType)}"/>
 
 </semui:breadcrumbs>
 
 <h1 class="ui left aligned icon header">
-    ${message(code: 'subscription.details.subscriberManagement.label',args:args.memberType)}
+    ${message(code: 'subscription.details.subscriberManagement.label', args: args.memberType)}
 </h1>
 
-<g:render template="navSubscriberManagement" model="${[args:args]}"/>
+<g:render template="navSubscriberManagement" model="${[args: args]}"/>
 
 <h3 class="ui left aligned icon header"><semui:headerIcon/>
-${message(code: 'subscription.linkPackagesMembers.header',args:args.memberTypeGenitive)}
+${message(code: 'subscription.linkPackagesMembers.header', args: args.memberTypeGenitive)}
 </h3>
 
 <semui:messages data="${flash}"/>
@@ -72,9 +73,10 @@ ${message(code: 'subscription.linkPackagesMembers.header',args:args.memberTypeGe
 
 
             <div class="field required">
-                <h4>${message(code: 'subscription.linkPackagesMembers.info',args: args.memberType)}</h4>
+                <h4>${message(code: 'subscription.linkPackagesMembers.info', args: args.memberType)}</h4>
 
-                <label><g:message code="subscription.linkPackagesMembers.package.label" args="${args.superOrgType}"/></label>
+                <label><g:message code="subscription.linkPackagesMembers.package.label"
+                                  args="${args.superOrgType}"/></label>
                 <g:if test="${validPackages}">
                     <g:select class="ui search dropdown"
                               optionKey="id" optionValue="${{ it.getPackageName() }}"
@@ -99,20 +101,56 @@ ${message(code: 'subscription.linkPackagesMembers.header',args:args.memberTypeGe
     <div class="ui segment">
         <h4>${message(code: 'subscription.linkPackagesMembers.unlinkInfo')}</h4>
 
-    <div class="ui buttons">
-        <g:link class="ui button js-open-confirm-modal"
-                data-confirm-term-content = "${message(code: 'subscription.linkPackagesMembers.unlinkInfo.onlyPackage.confirm')}"
-                data-confirm-term-how="ok" action="processUnLinkPackagesConsortia" id="${params.id}" params="[withIE: false]">${message(code: 'subscription.linkPackagesMembers.unlinkInfo.onlyPackage')}</g:link>
-        <div class="or"></div>
-        <g:link class="ui button js-open-confirm-modal"
-                data-confirm-term-content = "${message(code: 'subscription.linkPackagesMembers.unlinkInfo.withIE.confirm')}"
-                data-confirm-term-how="ok" action="processUnLinkPackagesConsortia" id="${params.id}" params="[withIE: true]">${message(code: 'subscription.linkPackagesMembers.unlinkInfo.withIE')}</g:link>
+        <div class="ui buttons">
+            <g:link class="ui button js-open-confirm-modal"
+                    data-confirm-term-content="${message(code: 'subscription.linkPackagesMembers.unlinkInfo.onlyPackage.confirm')}"
+                    data-confirm-term-how="ok" action="processUnLinkPackagesConsortia" id="${params.id}"
+                    params="[withIE: false]">${message(code: 'subscription.linkPackagesMembers.unlinkInfo.onlyPackage')}</g:link>
+            <div class="or"></div>
+            <g:link class="ui button js-open-confirm-modal"
+                    data-confirm-term-content="${message(code: 'subscription.linkPackagesMembers.unlinkInfo.withIE.confirm')}"
+                    data-confirm-term-how="ok" action="processUnLinkPackagesConsortia" id="${params.id}"
+                    params="[withIE: true]">${message(code: 'subscription.linkPackagesMembers.unlinkInfo.withIE')}</g:link>
+        </div>
+
     </div>
+
+    <div class="ui segment">
+        <g:form action="processUnLinkPackagesConsortia" method="post" class="ui form">
+            <g:hiddenField name="id" value="${params.id}"/>
+            <div class="field required">
+                <h4>${message(code: 'subscription.linkPackagesMembers.unlinkInfoforPackage')}:</h4>
+                <label><g:message code="subscription.linkPackagesMembers.package.label"
+                                  args="${args.superOrgType}"/></label>
+                <g:if test="${validPackages}">
+                    <g:select class="ui search dropdown"
+                              optionKey="id" optionValue="${{ it.getPackageName() }}"
+                              from="${validPackages}" name="package_All" value=""
+                              required=""
+                              noSelection='["": "${message(code: 'subscription.linkPackagesMembers.unlinknoSelection')}"]'/>
+                </g:if>
+                <g:else>
+                    <g:message code="subscription.linkPackagesMembers.noValidLicenses" args="${args.superOrgType}"/>
+                </g:else>
+            </div>
+
+            <div class="ui buttons">
+                <button class="ui button "
+                        data-confirm-term-content="${message(code: 'subscription.linkPackagesMembers.unlinkInfo.onlyPackage.confirm')}"
+                        data-confirm-term-how="ok" type="submit" name="withIE"
+                        value="${false}">${message(code: 'subscription.linkPackagesMembers.unlinkInfo.onlyPackage')}</button>
+
+                <div class="or"></div>
+                <button class="ui button "
+                        data-confirm-term-content="${message(code: 'subscription.linkPackagesMembers.unlinkInfo.withIE.confirm')}"
+                        data-confirm-term-how="ok" type="submit" name="withIE"
+                        value="${true}">${message(code: 'subscription.linkPackagesMembers.unlinkInfo.withIE')}</button>
+            </div>
+        </g:form>
 
     </div>
 
     <div class="divider"></div>
-
 
 
     <div class="ui segment">
@@ -143,7 +181,8 @@ ${message(code: 'subscription.linkPackagesMembers.header',args:args.memberTypeGe
 
                             <g:if test="${sub.isSlaved}">
                                 <span data-position="top right"
-                                       class="la-popup-tooltip la-delay" data-content="${message(code: 'license.details.isSlaved.tooltip')}">
+                                      class="la-popup-tooltip la-delay"
+                                      data-content="${message(code: 'license.details.isSlaved.tooltip')}">
                                     <i class="thumbtack blue icon"></i>
                                 </span>
                             </g:if>
@@ -162,7 +201,8 @@ ${message(code: 'subscription.linkPackagesMembers.header',args:args.memberTypeGe
 
                         <div class="ui middle aligned selection list">
                             <g:each in="${sub.packages.sort { it.pkg.name }}" var="sp">
-                                <g:set var="childPkgHasCostItems" value="${CostItem.executeQuery('select ci from CostItem ci where ci.subPkg.id = :sp',[sp:sp.id])}"/>
+                                <g:set var="childPkgHasCostItems"
+                                       value="${CostItem.executeQuery('select ci from CostItem ci where ci.subPkg.id = :sp', [sp: sp.id])}"/>
                                 <div class="item">
                                     <div class="right floated content">
                                         <g:if test="${editable && !childPkgHasCostItems}">
@@ -209,7 +249,8 @@ ${message(code: 'subscription.linkPackagesMembers.header',args:args.memberTypeGe
 
                                 <div class="field ">
                                     <input type="checkbox" class="ui checkbox" name="withIssueEntitlements">
-                                    <g:message code="subscription.linkPackagesMembers.linkwithIE" args="${args.superOrgType}"/>
+                                    <g:message code="subscription.linkPackagesMembers.linkwithIE"
+                                               args="${args.superOrgType}"/>
 
                                 </div>
                                 <button class="ui button"
@@ -217,9 +258,10 @@ ${message(code: 'subscription.linkPackagesMembers.header',args:args.memberTypeGe
 
                             </g:form>
 
-                        </g:if><g:else>
-                        ${message(code: 'subscription.linkPackagesMembers.noValidLicenses')}
-                    </g:else>
+                        </g:if>
+                        <g:else>
+                            <g:message code="subscription.linkPackagesMembers.noValidLicenses" args="${args.superOrgType}"/>
+                        </g:else>
                     </td>
 
                     <td class="x">

@@ -20,7 +20,7 @@
 </div> --}%
 
 <script language="JavaScript">
-    function showHelp() {
+/*    function showHelp() {
         var helpStr = "${message(code: "spotlight.search.help")}"
     	alert(helpStr)
     }
@@ -48,6 +48,6 @@
         }
     });
 	
-	$("#spotlight_text").focus()
+	$("#spotlight_text").focus()*/
 
 </script>

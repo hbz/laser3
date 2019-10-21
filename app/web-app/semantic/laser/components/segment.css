@@ -889,6 +889,15 @@
   background: #f1ebe5;
   border: none;
 }
+.la-filter-selected {
+  background: #d3dae3 !important;
+}
+.la-calendar-selected input {
+  background: #d3dae3 !important;
+}
+.la-filter-dropdown-selected {
+  background: #d3dae3 !important;
+}
 
 /* Grey */
 .ui.grey.segment:not(.inverted) {

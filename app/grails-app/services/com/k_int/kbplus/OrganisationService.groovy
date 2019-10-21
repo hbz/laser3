@@ -9,6 +9,7 @@ import com.k_int.properties.PropertyDefinitionGroup
 import com.k_int.properties.PropertyDefinitionGroupItem
 import de.laser.AuditConfig
 import de.laser.ContextService
+import de.laser.domain.IssueEntitlementCoverage
 import de.laser.exceptions.CreationException
 import de.laser.helper.RDStore
 import de.laser.interfaces.ShareSupport
@@ -31,8 +32,8 @@ class OrganisationService {
     def exportService
     def institutionsService
     def grailsApplication
-    def userService
     def instAdmService
+    def userService
     List<String> errors = []
 
     void initMandatorySettings(Org org) {
@@ -440,18 +441,18 @@ class OrganisationService {
                         'Job-related': RefdataValue.getByValueAndCategory('Job-related','ContactType')
                 ]
                 Map<String,Org> exampleOrgs = [
-                        'Musteranbieter A': Org.findByGlobalUID('org:e54e95c8-7aed-443d-ac8b-5d0fc2b6a0da'),
-                        'Musteranbieter B': Org.findByGlobalUID('org:6580cb0e-fe72-4156-b26b-05054317970f'),
-                        'Musteranbieter E-Books': Org.findByGlobalUID('org:4c439fa3-7a2f-4b35-88a1-ffa083977c7b'),
-                        'Musteranbieter E-Journals': Org.findByGlobalUID('org:da08b534-1155-4fc0-84df-d5af279302aa')
+                        'Musteranbieter A': Org.findByGlobalUID('org:c188b5ab-9867-4c6c-ba22-3a134a9aaee8'), //check
+                        'Musteranbieter B': Org.findByGlobalUID('org:ceab4b2c-e02c-4218-9841-6d4de7f45ef3'), //check
+                        'Musteranbieter E-Books': Org.findByGlobalUID('org:91da75a1-0d6c-44c6-8ca0-42a00f8ac7e2'), //check
+                        'Musteranbieter E-Journals': Org.findByGlobalUID('org:0b90d99f-9621-422a-8696-0dbfedac4cb2')  //check
                 ]
                 Map<String,Package> examplePackages = [
-                        'duz: Deutsche Universitätszeitung': Package.findByGlobalUID('package:018739b7-6a48-4c1f-84f0-19cc435c25e9'),
-                        'Brepols: Bibliography of British and Irish History': Package.findByGlobalUID('package:53af32d6-c183-46f5-95f7-67d7f2dbf197'),
-                        'Naxos: Naxos Music Library World': Package.findByGlobalUID('package:ea781079-02f5-4205-bac7-a2d6ca96fd7e'),
-                        'Thieme: Thieme eRef Lehrbuecher': Package.findByGlobalUID('package:a101ebd3-3886-482b-b162-1c68c53db27a'),
-                        'American Chemical Society: American Chemical Society Journals': Package.findByGlobalUID('package:16fdec2c-adba-4dc4-bab6-e012853fa7b8'),
-                        'EBSCO: SportDiscus': Package.findByGlobalUID('package:2f8adf87-b113-4311-bfbb-22c8fbe77c12')
+                        'duz: Deutsche Universitätszeitung': Package.findByGlobalUID('package:af054973-443d-42d9-b561-9e80f0f234ba'), //check
+                        'Brepols: Bibliography of British and Irish History': Package.findByGlobalUID('package:1e8092c7-494b-4633-b06f-1a22708b7a7a'), //check
+                        'Naxos: Naxos Music Library World': Package.findByGlobalUID('package:8a6f1483-6231-49dd-b3df-dbb418f84563'), //check
+                        'Thieme: Thieme eRef Lehrbuecher': Package.findByGlobalUID('package:a414de1e-358e-4889-b982-e6f6741a61d6'), //check
+                        'American Chemical Society: American Chemical Society Journals': Package.findByGlobalUID('package:b108178b-f27c-455d-9061-c8837905dc65'), //check
+                        'EBSCO: SportDiscus': Package.findByGlobalUID('package:348a270f-715d-4ee1-b3b2-e28db9e8c0a3') //check
                 ]
                 RefdataValue licenseType = RefdataValue.getByValueAndCategory('Actual','License Type')
                 Map generalData = [dates:dates,
@@ -492,11 +493,12 @@ class OrganisationService {
 
     boolean setupTestDataForInst(Map generalData,Org current) {
         //set up parent subscriptions
-        Subscription underConsiderationDatenAParent = Subscription.findByGlobalUID("subscription:550361c5-bc89-415e-b9ff-8505aa39d2c3") //pray that there will be no UID change on the example objects!!
-        Subscription currentDatenAParent = Subscription.findByGlobalUID("subscription:314c14f2-53f9-475b-80a8-34fd58828cc3")
+        //pray that there will be no UID change on the example objects!! - there was. Damn it. Reset everything ...
+        Subscription underConsiderationDatenAParent = Subscription.findByGlobalUID("subscription:550361c5-bc89-415e-b9ff-8505aa39d2c3")
+        Subscription currentDatenAParent = Subscription.findByGlobalUID("subscription:0f43143c-851b-4623-b3d9-063d86d30640") //check
         Subscription eBookPickParent = Subscription.findByGlobalUID("subscription:b9db1e2f-7ea6-4e28-8284-1a1a3ce960fb")
         Subscription journalPaketExtremParent = Subscription.findByGlobalUID('subscription:833c5da6-b77a-4c36-98cc-32292adde93c')
-        Org consortium = Org.findByGlobalUID('org:fe0cc5f7-21a4-4047-8c11-842da0d23277')
+        Org consortium = Org.findByGlobalUID('org:0b3311f1-a307-476c-91c9-ee5b44765bd2') //check
         log.info("creating cost item element configurations ...")
         Set<CostItemElementConfiguration> ciecs = [
                 new CostItemElementConfiguration(forOrganisation: current,
@@ -732,7 +734,7 @@ class OrganisationService {
                              impId: UUID.randomUUID().toString(),
                              form: RefdataValue.getByValueAndCategory('purchaseOngoing','Subscription Form'),
                              resource: RefdataValue.getByValueAndCategory('ejournalPackage','Subscription Resource')],
-                addParams: [packages:[[pkg: Package.findByGlobalUID('package:f7f44d9f-f1c7-4be2-89af-303fe82fff2a')]],
+                addParams: [packages:[[pkg: Package.findByGlobalUID('package:b108178b-f27c-455d-9061-c8837905dc65')]], //check
                             provider:generalData.exampleOrgs.get('Musteranbieter E-Journals'),
                             customProperties:[[type:PropertyDefinition.findByName('DBIS-Link').id,urlValue:'https://dbis..de']]
                 ]
@@ -820,11 +822,11 @@ class OrganisationService {
         log.info("creating consortia member licenses ...")
         Map rahmenvertragChildParams = [
                 ownedSubscriptions: [currentDatenAChildIdentifier, journalPaketExtremChildIdentifier],
-                baseLicense: License.findByGlobalUID("license:06700ed7-3b76-496d-866c-74daee74064b")
+                baseLicense: License.findByGlobalUID("license:5de157bc-e13c-44f3-8c23-eaabccfad1d1") //check
         ]
         Map rahmenvertragEbooksChildParams = [
                 ownedSubscriptions: [eBookPickChildIdentifier],
-                baseLicense: License.findByGlobalUID("license:48b5cf70-11b3-46d6-b9c1-dfac3b45120c")
+                baseLicense: License.findByGlobalUID("license:ae64e09e-e462-46cb-939d-ffd1a7d5d0df") //check
         ]
         Map journalVertragParams = [
                 mainParams: [reference: "Journal_Vertrag",
@@ -842,7 +844,7 @@ class OrganisationService {
                                     [type:PropertyDefinition.findByName('Walk-in Access').id,refValue: RDStore.PERM_PERM_EXPL],
                                     [type:PropertyDefinition.findByName('Wifi Access').id,refValue:RDStore.YN_YES]
                             ],
-                            licenseDocuments: [[docstoreUUID:'bdcd4684-2a56-4a7f-b06e-20ffaa431ff1']]
+                            licenseDocuments: [[docstoreUUID:'ce60e58d-1009-4c1b-bd0c-1bbb8f6910d3']]
                 ]
         ]
         Map datenbankMusterParams = [
@@ -867,7 +869,7 @@ class OrganisationService {
                                      responsibleOrg: current,
                                      description:'Es sollte mit der nächsten Lizenzverlängerung auch eine Mehrjahresvariante geben, die vertraglich festgehalten wird.']
                             ],
-                            licenseDocuments: [[docstoreUUID:'4628f269-abe7-488d-b602-04df2fb8140c'],[docstoreUUID:'aaf878d5-bca6-4472-964b-085a2cd122fd']]
+                            licenseDocuments: [[docstoreUUID:'d633d527-27f0-43a7-adfd-5ad316a211e7'],[docstoreUUID:'31af3209-d681-4d21-854d-089ddcf76731']]
                 ]
         ]
         Set<Map> consortialLicenseSet = [rahmenvertragChildParams,
@@ -987,12 +989,12 @@ class OrganisationService {
                 libraryType: RefdataValue.getByValueAndCategory('Universität','Library Type'),
                 libraryNetwork: RefdataValue.getByValueAndCategory('No Network','Library Network'),
                 federalState: current.federalState ,country: current.country,
+                orgType: [RDStore.OT_INSTITUTION],
                 sector: RefdataValue.getByValueAndCategory('Higher Education','OrgSector'))
         if(!modelMember.save()) {
             errors.add(modelMember.errors.toString())
             return false
         }
-        modelMember.addToOrgType(RDStore.OT_INSTITUTION)
         modelMember.setDefaultCustomerType()
         OrgPrivateProperty opp = new OrgPrivateProperty(owner: modelMember, type: privateProperties.get('BGA'), refValue: RDStore.YN_YES)
         if(!opp.save()) {
@@ -1001,7 +1003,7 @@ class OrganisationService {
         }
         Map legalPatronAddressMap = [type:RefdataValue.getByValueAndCategory('Legal patron address','AddressType'),
                                      name:'Rechtlicher Träger',
-                                     street_1:'Univesitätsstraße',
+                                     street_1:'Universitätsstraße',
                                      street_2:'1',
                                      zipcode:'55555',
                                      city:'Musterhausen',
@@ -1026,11 +1028,11 @@ class OrganisationService {
                 return false
             }
         }
-        Org member1Aachen = Org.findByGlobalUID('org:d0b6c3c0-58b5-4fc3-8791-0dafa51f62da')
-        Org member2Zittau = Org.findByGlobalUID('org:c76f73dc-fb33-4b04-b0b7-4934f7a75572')
-        Org member3Munich = Org.findByGlobalUID('org:d7fa36bd-5b91-4c21-887c-db9c73440455')
-        Org member4Greifswald = Org.findByGlobalUID('org:7f8f28a0-7af8-4229-a554-aceca1cb1c27')
-        Org member5Bremen = Org.findByGlobalUID('org:876920e0-2f7a-41fc-9a09-b0a0d3817409')
+        Org member1Aachen = Org.findByGlobalUID('org:51c0f85a-0e96-43d4-ad6f-70011114643f') //check
+        Org member2Zittau = Org.findByGlobalUID('org:31e65f48-a279-403e-8b58-42605a88e9a3') //check
+        Org member3Munich = Org.findByGlobalUID('org:da7fedd0-c5c3-4430-a249-12450d55efd5') //check
+        Org member4Greifswald = Org.findByGlobalUID('org:e1c1179f-29d0-4dcd-853e-f28c25476f17') //check
+        Org member5Bremen = Org.findByGlobalUID('org:e6b3bd22-1a93-47c7-aa92-a8ad9b607b46') //check
         Set<Org> consortialMembers = [member1Aachen,member2Zittau,member3Munich,member4Greifswald,member5Bremen,modelMember]
         consortialMembers.each { member ->
             Combo memberCombo = new Combo(fromOrg:member,toOrg:current,type:RDStore.COMBO_TYPE_CONSORTIUM)
@@ -1077,7 +1079,7 @@ class OrganisationService {
                 contactType: RDStore.CONTACT_TYPE_FUNCTIONAL,
                 tenant: current,
                 isPublic: false
-        ],
+                ],
                          addParams: [
                                  contact: [[contentType: RDStore.CCT_EMAIL,
                                             type: generalData.contactTypes.get('Job-related'),
@@ -1094,7 +1096,7 @@ class OrganisationService {
                 contactType: RDStore.CONTACT_TYPE_PERSONAL,
                 tenant: current,
                 isPublic: false
-        ],
+                ],
                           addParams: [
                                   contact: [[contentType: RDStore.CCT_EMAIL,
                                              type: generalData.contactTypes.get('Job-related'),
@@ -1114,7 +1116,7 @@ class OrganisationService {
                 contactType: RDStore.CONTACT_TYPE_PERSONAL,
                 tenant: current,
                 isPublic: false
-        ],
+                ],
                           addParams: [
                                   contact: [[contentType: RDStore.CCT_EMAIL,
                                              type: generalData.contactTypes.get('Job-related'),
@@ -1130,7 +1132,7 @@ class OrganisationService {
                 contactType: RDStore.CONTACT_TYPE_PERSONAL,
                 tenant: current,
                 isPublic: false
-        ],
+                ],
                         addParams: [
                                 contact: [[contentType: RDStore.CCT_EMAIL,
                                            type: generalData.contactTypes.get('Job-related'),
@@ -1146,7 +1148,7 @@ class OrganisationService {
                 contactType: RDStore.CONTACT_TYPE_PERSONAL,
                 tenant: current,
                 isPublic: false
-        ],
+                ],
                            addParams: [
                                    contact: [[contentType: RDStore.CCT_EMAIL,
                                               type: generalData.contactTypes.get('Job-related'),
@@ -1264,7 +1266,7 @@ class OrganisationService {
                                     [type:PropertyDefinition.findByName('Invoicing').id,dateValue: null,paragraph: 'Immer im Laufzeitjahr...']
                             ],
                             createMemberLicense: true,
-                            licenseDocuments: [[docstoreUUID:'f81a8371-7b2b-46f5-9608-bc2f3b3b80f7',isShared:true],[docstoreUUID:'24b8fd93-1297-4bca-bb91-3d0c582da808']]
+                            licenseDocuments: [[docstoreUUID:'c39aef73-5dae-48ab-9656-08d8a2d4dea3',isShared:true],[docstoreUUID:'3d08595f-2069-44e6-ae27-ad31b499e365']]
                 ]
         ]
         Map rahmenvertragEBookParams = [
@@ -1282,7 +1284,7 @@ class OrganisationService {
                                     [type:PropertyDefinition.findByName('Metadata delivery').id,stringValue: null]
                             ],
                             createMemberLicense: true,
-                            licenseDocuments: [[docstoreUUID:'82f60372-b993-4415-959c-a8f4613405a8',isShared:true],[docstoreUUID:'3ae2fd52-6572-46d3-af47-bdb7ea32033a']]
+                            licenseDocuments: [[docstoreUUID:'7a3384ac-a5f4-4e06-a2af-dbb63062ef02',isShared:true],[docstoreUUID:'ac0de3a6-a726-4da1-b17a-782fc225a3fc']]
                 ]
         ]
         Set<Map> consortialLicenseParamsSet = [rahmenvertragParams,rahmenvertragEBookParams]
@@ -1376,7 +1378,7 @@ class OrganisationService {
                 addParams: [packages: [[pkg:generalData.examplePackages.get('duz: Deutsche Universitätszeitung')]],
                             provider: generalData.exampleOrgs.get('Musteranbieter A'),
                             sharedProperties:['name','form','resource'],
-                            subscriptionDocuments:[[docstoreUUID:'e45afb86-b5ef-49af-bd52-e93a7871a7b1']],
+                            subscriptionDocuments:[[docstoreUUID:'cef94ff5-16b4-4470-8165-4e198865d232']],
                             customProperties: [
                                     [type:PropertyDefinition.findByName('GASCO Entry').id,refValue:RDStore.YN_YES],
                                     [type:PropertyDefinition.findByName('GASCO-Information-Link').id,urlValue:'https://www...'],
@@ -1613,7 +1615,7 @@ class OrganisationService {
                 addParams: [packages: [[pkg:generalData.examplePackages.get('Naxos: Naxos Music Library World')]],
                             provider: generalData.exampleOrgs.get('Musteranbieter A'),
                             sharedProperties:['name','form','resource'],
-                            subscriptionDocuments:[[docstoreUUID:'b2a5135f-97e6-4c27-ad04-419dfb5987df',isShared:true]],
+                            subscriptionDocuments:[[docstoreUUID:'dc9a8b48-355e-4c47-8ffb-6bcbed527ba0',isShared:true]],
                             customProperties: [
                                     [type:PropertyDefinition.findByName('GASCO Entry').id,refValue:RDStore.YN_YES],
                                     [type:PropertyDefinition.findByName('GASCO-Information-Link').id,urlValue:null,isShared:true],
@@ -1720,7 +1722,7 @@ class OrganisationService {
                 addParams: [packages: [[pkg:generalData.examplePackages.get('Naxos: Naxos Music Library World')]],
                             provider: generalData.exampleOrgs.get('Musteranbieter A'),
                             sharedProperties:['name','form','resource'],
-                            subscriptionDocuments:[[docstoreUUID:'bddb3e64-4c15-4861-ac9f-8b7e1fd8f609',isShared:true]],
+                            subscriptionDocuments:[[docstoreUUID:'1b28ccb2-9fd4-4652-8c6c-02f9df41f653',isShared:true]],
                             customProperties: [
                                     [type:PropertyDefinition.findByName('GASCO Entry').id,refValue:RDStore.YN_YES],
                                     [type:PropertyDefinition.findByName('GASCO-Information-Link').id,urlValue:null,isShared:true],
@@ -2072,15 +2074,6 @@ class OrganisationService {
                                                         tipp: tipp,
                                                         accessStartDate: tipp.accessStartDate,
                                                         accessEndDate: tipp.accessEndDate,
-                                                        startDate: tipp.startDate,
-                                                        startVolume: tipp.startVolume,
-                                                        startIssue: tipp.startIssue,
-                                                        endDate: tipp.endDate,
-                                                        endVolume: tipp.endVolume,
-                                                        endIssue: tipp.endIssue,
-                                                        embargo: tipp.embargo,
-                                                        coverageDepth: tipp.coverageDepth,
-                                                        coverageNote: tipp.coverageNote,
                                                         ieReason: 'Automatically copied when creating subscription',
                                                         acceptStatus: RDStore.IE_ACCEPT_STATUS_FIXED
                                                 )
@@ -2088,6 +2081,23 @@ class OrganisationService {
                                                     throw new CreationException(ie.errors)
                                                 }
                                                 else {
+                                                    tipp.coverages.each { tippCoverage ->
+                                                        IssueEntitlementCoverage ieCoverage = new IssueEntitlementCoverage(
+                                                                startDate: tippCoverage.startDate,
+                                                                startVolume: tippCoverage.startVolume,
+                                                                startIssue: tippCoverage.startIssue,
+                                                                endDate: tippCoverage.endDate,
+                                                                endVolume: tippCoverage.endVolume,
+                                                                endIssue: tippCoverage.endIssue,
+                                                                embargo: tippCoverage.embargo,
+                                                                coverageDepth: tippCoverage.coverageDepth,
+                                                                coverageNote: tippCoverage.coverageNote,
+                                                                issueEntitlement: ie
+                                                        )
+                                                        if(!ieCoverage.save()) {
+                                                            throw new CreationException(ieCoverage.errors)
+                                                        }
+                                                    }
                                                     log.info("issue entitlement ${ie} added to subscription ${obj}")
                                                 }
                                             }
@@ -2289,7 +2299,7 @@ class OrganisationService {
                                 }
                                 break
                             case 'tasks': v.each { t ->
-                                    Task task = new Task(license: obj,title: t.title,description: t.description,endDate: t.endDate,status: t.status,responsibleOrg: t.responsibleOrg ?: null, responsibleUser: t.responsibleUser ?: null, creator: contextService.user, createDate: new Date())
+                                    Task task = new Task(license: obj,title: t.title,description: t.description,endDate: t.endDate,status: t.status,responsibleOrg: t.responsibleOrg ?: null, responsibleUser: t.responsibleUser ?: null, creator: contextService.user, createDate: new Date(), systemCreateDate: new Date())
                                     if(!task.save()) {
                                         throw new CreationException(task.errors)
                                     }
@@ -2483,6 +2493,7 @@ class OrganisationService {
                 grailsApplication.config.sysusers.each { su ->
                     User admin = User.findByUsername(su.name)
                     instAdmService.createAffiliation(admin,hbz,Role.findByAuthority('INST_ADM'),UserOrg.STATUS_APPROVED,null)
+                    admin.getSetting(UserSettings.KEYS.DASHBOARD,hbz)
                 }
             }
             else if(hbz.hasErrors()) {
@@ -2501,7 +2512,12 @@ class OrganisationService {
                                         singlenutzer: [name:'Testeinrichtung',sortname:'Teststadt, Uni',orgType: [institution]],
                                         kollektivnutzer: [name:'Testeinrichtung Kollektiv',shortname:'Testeinrichtung Kollektiv',sortname:'Teststadt, Kollektiv',orgType: [institution]],
                                         konsortium: [name:'Testkonsortium',shortname:'Testkonsortium',orgType: [consortium]]]
-            [modelOrgs,testOrgs].each { Map<String,Map> orgs ->
+            Map<String,Map> QAOrgs = [konsorte: [name:'QA-Konsorte',shortname:'QA', sortname:'QA-Stadt, QA',orgType: [institution]],
+                                      institut: [name:'QA-Institut',orgType: [department]],
+                                      singlenutzer: [name:'QA-Einrichtung',sortname:'QA-Stadt, Uni',orgType: [institution]],
+                                      kollektivnutzer: [name:'QA-Einrichtung Kollektiv',shortname:'QA-Einrichtung Kollektiv',sortname:'QA-Stadt, Kollektiv',orgType: [institution]],
+                                      konsortium: [name:'QA-Konsortium',shortname:'QA-Konsortium',orgType: [consortium]]]
+            [modelOrgs,testOrgs,QAOrgs].each { Map<String,Map> orgs ->
                 Map<String,Org> orgMap = [:]
                 orgs.each { String customerType, Map orgData ->
                     Org org = createOrg(orgData)
@@ -2538,4 +2554,5 @@ class OrganisationService {
         }
         obj
     }
+
 }

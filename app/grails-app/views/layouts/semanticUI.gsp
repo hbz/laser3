@@ -739,6 +739,12 @@
             <div class="ui text loader active">Loading</div>
         </div>
 
+        <sec:ifAnyGranted roles="ROLE_ADMIN">
+            <semui:systemInfo>
+
+            </semui:systemInfo>
+        </sec:ifAnyGranted>
+
         <%-- global confirmation modal --%>
         <semui:confirmationModal  />
 

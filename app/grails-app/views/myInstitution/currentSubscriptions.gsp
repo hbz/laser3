@@ -2,7 +2,7 @@
 <laser:serviceInjection />
 <!doctype html>
 
-<r:require module="annotations" />
+<%-- r:require module="annotations" / --%>
 
 <html>
     <head>
@@ -59,13 +59,13 @@
         </h1>
 
 <semui:filter>
-    <g:form action="currentSubscriptions" controller="myInstitution" method="get" class="form-inline ui small form">
+    <g:form action="currentSubscriptions" controller="myInstitution" method="get" class="ui small form">
         <input type="hidden" name="isSiteReloaded" value="yes"/>
         <div class="three fields">
         %{--<div class="four fields">--}%
             <!-- 1-1 -->
             <div class="field">
-                <label for="search-title"">${message(code: 'default.search.text', default: 'Search text')}
+                <label for="search-title">${message(code: 'default.search.text', default: 'Search text')}
                     <span data-position="right center" data-variation="tiny"  class="la-popup-tooltip la-delay" data-content="${message(code:'default.search.tooltip.subscription')}">
                         <i class="question circle icon"></i>
                     </span>

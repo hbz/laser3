@@ -58,49 +58,51 @@ class ApiKbartConverter {
 
         def data = new JsonSlurper().parseText(json.toString())
         data.each{ ie ->
-            String[] row = new String[KBART2_HEADER.size()]
+            ie.coverages.each { covStmt ->
+                String[] row = new String[KBART2_HEADER.size()]
 
-            row[ KBART2_HEADER.indexOf("publication_title") ]        = normValue( ie.tipp?.title?.title )
-            row[ KBART2_HEADER.indexOf("print_identifier") ]         = normValue( ie.tipp?.title?.identifiers?.find{ it.namespace == "issn" }?.value )
-            row[ KBART2_HEADER.indexOf("online_identifier") ]        = normValue( ie.tipp?.title?.identifiers?.find{ it.namespace == "eissn" }?.value )
+                row[ KBART2_HEADER.indexOf("publication_title") ]        = normValue( ie.tipp?.title?.title )
+                row[ KBART2_HEADER.indexOf("print_identifier") ]         = normValue( ie.tipp?.title?.identifiers?.find{ it.namespace == "issn" }?.value )
+                row[ KBART2_HEADER.indexOf("online_identifier") ]        = normValue( ie.tipp?.title?.identifiers?.find{ it.namespace == "eissn" }?.value )
 
-            row[ KBART2_HEADER.indexOf("date_first_issue_online") ]  = normValue( ie.tipp?.startDate )
-            row[ KBART2_HEADER.indexOf("num_first_vol_online") ]     = normValue( ie.tipp?.startVolume )
-            row[ KBART2_HEADER.indexOf("num_first_issue_online") ]   = normValue( ie.tipp?.startIssue )
-            row[ KBART2_HEADER.indexOf("date_last_issue_online") ]   = normValue( ie.tipp?.endDate )
-            row[ KBART2_HEADER.indexOf("num_last_vol_online") ]      = normValue( ie.tipp?.endVolume )
-            row[ KBART2_HEADER.indexOf("num_last_issue_online") ]    = normValue( ie.tipp?.endIssue )
+                row[ KBART2_HEADER.indexOf("date_first_issue_online") ]  = normValue( covStmt.startDate )
+                row[ KBART2_HEADER.indexOf("num_first_vol_online") ]     = normValue( covStmt.startVolume )
+                row[ KBART2_HEADER.indexOf("num_first_issue_online") ]   = normValue( covStmt.startIssue )
+                row[ KBART2_HEADER.indexOf("date_last_issue_online") ]   = normValue( covStmt.endDate )
+                row[ KBART2_HEADER.indexOf("num_last_vol_online") ]      = normValue( covStmt.endVolume )
+                row[ KBART2_HEADER.indexOf("num_last_issue_online") ]    = normValue( covStmt.endIssue )
 
-            row[ KBART2_HEADER.indexOf("title_url") ]                = normValue( ie.tipp?.hostPlatformURL )
-            row[ KBART2_HEADER.indexOf("first_author") ]             = ""
-            row[ KBART2_HEADER.indexOf("title_id") ]                 = ""
+                row[ KBART2_HEADER.indexOf("title_url") ]                = normValue( ie.tipp?.hostPlatformURL )
+                row[ KBART2_HEADER.indexOf("first_author") ]             = ""
+                row[ KBART2_HEADER.indexOf("title_id") ]                 = ""
 
-            row[ KBART2_HEADER.indexOf("embargo_info") ]             = normValue( ie.embargo )
-            row[ KBART2_HEADER.indexOf("coverage_depth") ]           = normValue( ie.coverageDepth )
-            row[ KBART2_HEADER.indexOf("notes") ]                    = normValue( ie.coverageNote )
+                row[ KBART2_HEADER.indexOf("embargo_info") ]             = normValue( covStmt.embargo )
+                row[ KBART2_HEADER.indexOf("coverage_depth") ]           = normValue( covStmt.coverageDepth )
+                row[ KBART2_HEADER.indexOf("notes") ]                    = normValue( covStmt.coverageNote )
 
-            row[ KBART2_HEADER.indexOf("publisher_name") ]                   = normValue( ie.tipp?.title?.publisher?.name )
-            row[ KBART2_HEADER.indexOf("publication_type") ]                 = ""
-            row[ KBART2_HEADER.indexOf("date_monograph_published_print") ]   = ""
-            row[ KBART2_HEADER.indexOf("date_monograph_published_online") ]  = ""
-            row[ KBART2_HEADER.indexOf("monograph_volume") ]                 = ""
-            row[ KBART2_HEADER.indexOf("monograph_edition") ]                = ""
-            row[ KBART2_HEADER.indexOf("first_editor") ]                     = ""
-            row[ KBART2_HEADER.indexOf("parent_publication_title_id") ]      = ""
-            row[ KBART2_HEADER.indexOf("preceding_publication_title_id") ]   = ""
-            row[ KBART2_HEADER.indexOf("access_type") ]                      = ""
+                row[ KBART2_HEADER.indexOf("publisher_name") ]                   = normValue( ie.tipp?.title?.publisher?.name )
+                row[ KBART2_HEADER.indexOf("publication_type") ]                 = ""
+                row[ KBART2_HEADER.indexOf("date_monograph_published_print") ]   = ""
+                row[ KBART2_HEADER.indexOf("date_monograph_published_online") ]  = ""
+                row[ KBART2_HEADER.indexOf("monograph_volume") ]                 = ""
+                row[ KBART2_HEADER.indexOf("monograph_edition") ]                = ""
+                row[ KBART2_HEADER.indexOf("first_editor") ]                     = ""
+                row[ KBART2_HEADER.indexOf("parent_publication_title_id") ]      = ""
+                row[ KBART2_HEADER.indexOf("preceding_publication_title_id") ]   = ""
+                row[ KBART2_HEADER.indexOf("access_type") ]                      = ""
 
-            row[ KBART2_HEADER.indexOf("DOI") ]      = normValue( ie.tipp?.title?.identifiers?.find{ it.namespace == "doi" }?.value )
-            row[ KBART2_HEADER.indexOf("ISSNs") ]    = normValue( ie.tipp?.title?.identifiers?.findAll{ it.namespace == "issn" }?.value.join(", ") )
-            row[ KBART2_HEADER.indexOf("eISSNs") ]   = normValue( ie.tipp?.title?.identifiers?.findAll{ it.namespace == "eissn" }?.value.join(", ") )
-            row[ KBART2_HEADER.indexOf("ISBNs") ]    = normValue( ie.tipp?.title?.identifiers?.findAll{ it.namespace == "isbn" }?.value.join(", ") )
-            row[ KBART2_HEADER.indexOf("eISBNs") ]   = normValue( ie.tipp?.title?.identifiers?.findAll{ it.namespace == "eisbn" }?.value.join(", ") )
+                row[ KBART2_HEADER.indexOf("DOI") ]      = normValue( ie.tipp?.title?.identifiers?.find{ it.namespace == "doi" }?.value )
+                row[ KBART2_HEADER.indexOf("ISSNs") ]    = normValue( ie.tipp?.title?.identifiers?.findAll{ it.namespace == "issn" }?.value.join(", ") )
+                row[ KBART2_HEADER.indexOf("eISSNs") ]   = normValue( ie.tipp?.title?.identifiers?.findAll{ it.namespace == "eissn" }?.value.join(", ") )
+                row[ KBART2_HEADER.indexOf("ISBNs") ]    = normValue( ie.tipp?.title?.identifiers?.findAll{ it.namespace == "isbn" }?.value.join(", ") )
+                row[ KBART2_HEADER.indexOf("eISBNs") ]   = normValue( ie.tipp?.title?.identifiers?.findAll{ it.namespace == "eisbn" }?.value.join(", ") )
 
-            row[ KBART2_HEADER.indexOf("access_start_date") ]        = normValue( ie.accessStartDate )
-            row[ KBART2_HEADER.indexOf("access_end_date") ]          = normValue( ie.accessEndDate )
-            row[ KBART2_HEADER.indexOf("access_status") ]            = normValue( ie.status ) // ?
+                row[ KBART2_HEADER.indexOf("access_start_date") ]        = normValue( ie.accessStartDate )
+                row[ KBART2_HEADER.indexOf("access_end_date") ]          = normValue( ie.accessEndDate )
+                row[ KBART2_HEADER.indexOf("access_status") ]            = normValue( ie.status ) // ?
 
-            kbart.add(row.join("\t"))
+                kbart.add(row.join("\t"))
+            }
         }
 
         output = kbart.join("\n")
