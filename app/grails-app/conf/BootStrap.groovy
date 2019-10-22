@@ -2681,16 +2681,18 @@ class BootStrap {
         RefdataValue.loc('Access Method',      [key: 'ip4', en: 'IPv4', de: 'IPv4'], BOOTSTRAP)
         RefdataValue.loc('Access Method',      [key: 'ip6', en: 'IPv6', de: 'IPv6'], BOOTSTRAP)
         RefdataValue.loc('Access Method',      [key: 'proxy', en: 'Proxy', de: 'Proxy'], BOOTSTRAP)
-        RefdataValue.loc('Access Method',      [key: 'shibb', en: 'Shibboleth', de: 'Shibboleth'], BOOTSTRAP)
+        RefdataValue.loc('Access Method',      [key: 'shibboleth', en: 'Shibboleth', de: 'Shibboleth'], BOOTSTRAP)
         RefdataValue.loc('Access Method',      [key: 'up', en: 'Username/Password', de: 'Benutzername/Passwort'], BOOTSTRAP)
         RefdataValue.loc('Access Method',      [key: 'oa', en: 'Open Athens', de: 'OpenAthens'], BOOTSTRAP)
         RefdataValue.loc('Access Method',      [key: 'ref', en: 'Referrer', de: 'Referrer'], BOOTSTRAP)
 
         RefdataValue.loc('Access Method IP',      [en: 'IPv4', de: 'IPv4'], BOOTSTRAP)
         RefdataValue.loc('Access Method IP',      [en: 'IPv6', de: 'IPv6'], BOOTSTRAP)
-
         RefdataValue.loc('Access Point Type',      [key: 'ip', en: 'IP', de: 'IP'], BOOTSTRAP)
-        //RefdataValue.loc('Access Point Type',      [key: 'shibb', en: 'Shibboleth', de: 'Shibboleth'], BOOTSTRAP)
+        RefdataValue.loc('Access Point Type',      [key: 'ezproxy', en: 'EZproxy', de: 'EZproxy'], BOOTSTRAP)
+        RefdataValue.loc('Access Point Type',      [key: 'proxy', en: 'Proxy', de: 'Proxy'], BOOTSTRAP)
+        RefdataValue.loc('Access Point Type',      [key: 'vpn', en: 'VPN', de: 'VPN'], BOOTSTRAP)
+        RefdataValue.loc('Access Point Type',      [key: 'shibboleth', en: 'Shibboleth', de: 'Shibboleth'], BOOTSTRAP)
 
         RefdataValue.loc('IPv4 Address Format',      [key: 'v4cidr',   en: 'IPv4 (CIDR)', de: 'IPv4 (CIDR)'], BOOTSTRAP)
         RefdataValue.loc('IPv4 Address Format',      [key: 'v4ranges', en: 'IPv4 (Ranges)', de: 'IPv4 (Bereiche)'], BOOTSTRAP)
