@@ -90,7 +90,7 @@
         </g:form>
     </semui:filter>
 
-
+<g:if test="${members}">
 <g:form action="manageMembers" controller="myInstitution" method="post" class="ui form">
         <g:render template="/templates/filter/orgFilterTable"
                   model="[orgList: members,
@@ -105,6 +105,16 @@
                    data-confirm-term-how="delete" value="${message(code: 'default.button.revoke.label')}"/>
         </g:if>
     </g:form>
+</g:if>
+<g:else>
+    <g:if test="${filterSet}">
+        <br><strong><g:message code="filter.result.empty.object" args="${[message(code:"myinst.consortiaSubscriptions.consortia")]}"/></strong>
+    </g:if>
+    <g:else>
+        <br><strong><g:message code="result.empty.object" args="${message(code:"myinst.consortiaSubscriptions.consortia")}"/></strong>
+    </g:else>
+</g:else>
+
     <g:render template="../templates/copyEmailaddresses" model="[orgList: totalMembers]"/>
     <semui:paginate action="manageMembers" controller="myInstitution" params="${params}" next="${message(code:'default.paginate.next', default:'Next')}" prev="${message(code:'default.paginate.prev', default:'Prev')}" max="${max}" total="${membersCount}" />
 

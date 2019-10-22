@@ -149,97 +149,107 @@
     </semui:filter>
 
         <div class="license-results">
-          <table class="ui sortable celled la-table table">
-            <thead>
-              <tr>
-                  <th>${message(code:'sidewide.number')}</th>
-                <g:sortableColumn params="${params}" property="reference" title="${message(code:'license.slash.name')}" />
-                <g:if test="${params.orgRole == 'Licensee'}">
-                    <th>${message(code:'license.licensor.label', default:'Licensor')}</th>
-                </g:if>
-                  <g:if test="${params.orgRole == 'Licensing Consortium'}">
-                      <th>${message(code:'license.details.incoming.childs',args:[message(code:'consortium.superOrgType')])}</th>
-                  </g:if>
-                  <th>${message(code:'license.status')}</th>
-                <g:sortableColumn params="${params}" property="startDate" title="${message(code:'license.start_date', default:'Start Date')}" />
-                <g:sortableColumn params="${params}" property="endDate" title="${message(code:'license.end_date', default:'End Date')}" />
-                  <th class="la-action-info">${message(code:'default.actions')}</th>
-              </tr>
-            </thead>
-            <tbody>
-              <g:each in="${licenses}" var="l" status="jj">
-                <tr>
-                    <td>${ (params.int('offset') ?: 0)  + jj + 1 }</td>
-                  <td>
-                    <g:link action="show" class="la-main-object" controller="license" id="${l.id}">
-                      ${l.reference?:message(code:'missingLicenseReference', default:'** No License Reference Set **')}
-                    </g:link>
-                    <g:if test="${l.subscriptions && ( l.subscriptions.size() > 0 )}">
-                        <g:each in="${l.subscriptions.sort{it.name}}" var="sub">
-                          <g:if test="${sub.status?.value == 'Current'}">
-                                  <g:if test="${institution?.id in sub.orgRelations?.org?.id || accessService.checkPerm("ORG_CONSORTIUM")}">
-                                  <div class="la-flexbox">
-                                      <i class="icon clipboard outline outline la-list-icon"></i>
-                                      <g:link controller="subscription" action="show" id="${sub.id}">${sub.name}</g:link><br/>
-                                  </div>
-                                  </g:if>
-                          </g:if>
-                        </g:each>
-                    </g:if>
-                    <g:else>
-                      <br/>${message(code:'myinst.currentLicenses.no_subs', default:'No linked subscriptions.')}
-                    </g:else>
-                  </td>
-
+        <g:if test="${licenses}">
+              <table class="ui sortable celled la-table table">
+                <thead>
+                  <tr>
+                      <th>${message(code:'sidewide.number')}</th>
+                    <g:sortableColumn params="${params}" property="reference" title="${message(code:'license.slash.name')}" />
                     <g:if test="${params.orgRole == 'Licensee'}">
-                        <td>
-                            ${l.licensor?.name}
-                        </td>
+                        <th>${message(code:'license.licensor.label', default:'Licensor')}</th>
                     </g:if>
-                    <g:if test="${params.orgRole == 'Licensing Consortium'}">
-                        <td>
-                            <g:each in="${com.k_int.kbplus.License.findAllWhere(instanceOf: l)}" var="lChild">
-
-                                <g:link controller="license" action="show" id="${lChild.id}">
-                                    ${lChild}
-                                </g:link>
-                                <br/>
-
+                      <g:if test="${params.orgRole == 'Licensing Consortium'}">
+                          <th>${message(code:'license.details.incoming.childs',args:[message(code:'consortium.superOrgType')])}</th>
+                      </g:if>
+                      <th>${message(code:'license.status')}</th>
+                    <g:sortableColumn params="${params}" property="startDate" title="${message(code:'license.start_date', default:'Start Date')}" />
+                    <g:sortableColumn params="${params}" property="endDate" title="${message(code:'license.end_date', default:'End Date')}" />
+                      <th class="la-action-info">${message(code:'default.actions')}</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <g:each in="${licenses}" var="l" status="jj">
+                    <tr>
+                        <td>${ (params.int('offset') ?: 0)  + jj + 1 }</td>
+                      <td>
+                        <g:link action="show" class="la-main-object" controller="license" id="${l.id}">
+                          ${l.reference?:message(code:'missingLicenseReference', default:'** No License Reference Set **')}
+                        </g:link>
+                        <g:if test="${l.subscriptions && ( l.subscriptions.size() > 0 )}">
+                            <g:each in="${l.subscriptions.sort{it.name}}" var="sub">
+                              <g:if test="${sub.status?.value == 'Current'}">
+                                      <g:if test="${institution?.id in sub.orgRelations?.org?.id || accessService.checkPerm("ORG_CONSORTIUM")}">
+                                      <div class="la-flexbox">
+                                          <i class="icon clipboard outline outline la-list-icon"></i>
+                                          <g:link controller="subscription" action="show" id="${sub.id}">${sub.name}</g:link><br/>
+                                      </div>
+                                      </g:if>
+                              </g:if>
                             </g:each>
-                        </td>
-                    </g:if>
-                  <td>${l.status.getI10n('value')}</td>
-                  <td><g:formatDate format="${message(code:'default.date.format.notime', default:'yyyy-MM-dd')}" date="${l.startDate}"/></td>
-                  <td><g:formatDate format="${message(code:'default.date.format.notime', default:'yyyy-MM-dd')}" date="${l.endDate}"/></td>
-                  <td class="x">
-                    <g:if test="${editable && accessService.checkPerm('ORG_INST,ORG_CONSORTIUM')}">
-                        %{-- bug: erms-459
-                        <span data-position="top right" data-content="${message(code:'license.details.copy.tooltip')}">
-                            <g:link controller="myInstitution" action="actionLicenses" params="${[baselicense:l.id, 'copy-license':'Y']}" class="ui icon button">
+                        </g:if>
+                        <g:else>
+                          <br/>${message(code:'myinst.currentLicenses.no_subs', default:'No linked subscriptions.')}
+                        </g:else>
+                      </td>
+
+                        <g:if test="${params.orgRole == 'Licensee'}">
+                            <td>
+                                ${l.licensor?.name}
+                            </td>
+                        </g:if>
+                        <g:if test="${params.orgRole == 'Licensing Consortium'}">
+                            <td>
+                                <g:each in="${com.k_int.kbplus.License.findAllWhere(instanceOf: l)}" var="lChild">
+
+                                    <g:link controller="license" action="show" id="${lChild.id}">
+                                        ${lChild}
+                                    </g:link>
+                                    <br/>
+
+                                </g:each>
+                            </td>
+                        </g:if>
+                      <td>${l.status.getI10n('value')}</td>
+                      <td><g:formatDate format="${message(code:'default.date.format.notime', default:'yyyy-MM-dd')}" date="${l.startDate}"/></td>
+                      <td><g:formatDate format="${message(code:'default.date.format.notime', default:'yyyy-MM-dd')}" date="${l.endDate}"/></td>
+                      <td class="x">
+                        <g:if test="${editable && accessService.checkPerm('ORG_INST,ORG_CONSORTIUM')}">
+                            %{-- bug: erms-459
+                            <span data-position="top right" data-content="${message(code:'license.details.copy.tooltip')}">
+                                <g:link controller="myInstitution" action="actionLicenses" params="${[baselicense:l.id, 'copy-license':'Y']}" class="ui icon button">
+                                    <i class="copy icon"></i>
+                                </g:link>
+                            </span>
+                            --}%
+                            <span data-position="top right"  class="la-popup-tooltip la-delay" data-content="${message(code:'license.details.copy.tooltip')}">
+                            <g:link controller="myInstitution" action="copyLicense" params="${[id:l.id]}" class="ui icon button">
                                 <i class="copy icon"></i>
                             </g:link>
-                        </span>
-                        --}%
-                        <span data-position="top right"  class="la-popup-tooltip la-delay" data-content="${message(code:'license.details.copy.tooltip')}">
-                        <g:link controller="myInstitution" action="copyLicense" params="${[id:l.id]}" class="ui icon button">
-                            <i class="copy icon"></i>
-                        </g:link>
-                        </span>
-                        <%
-                            boolean isLicTenant = false
-                            if(l.getCalculatedType() == TemplateSupport.CALCULATED_TYPE_CONSORTIAL && l.getLicensingConsortium().id == institution.id) {
-                                isLicTenant = true
-                            }
-                            else if(l.getCalculatedType() == TemplateSupport.CALCULATED_TYPE_LOCAL && orgRoles.get(l) in [RDStore.OR_LICENSEE]) {
-                                isLicTenant = true
-                            }
-                        %>
-                </g:if>
-              </td>
-            </tr>
-          </g:each>
-        </tbody>
-      </table>
+                            </span>
+                            <%
+                                boolean isLicTenant = false
+                                if(l.getCalculatedType() == TemplateSupport.CALCULATED_TYPE_CONSORTIAL && l.getLicensingConsortium().id == institution.id) {
+                                    isLicTenant = true
+                                }
+                                else if(l.getCalculatedType() == TemplateSupport.CALCULATED_TYPE_LOCAL && orgRoles.get(l) in [RDStore.OR_LICENSEE]) {
+                                    isLicTenant = true
+                                }
+                            %>
+                    </g:if>
+                  </td>
+                </tr>
+              </g:each>
+            </tbody>
+          </table>
+        </g:if>
+        <g:else>
+            <g:if test="${filterSet}">
+                <br><strong><g:message code="filter.result.empty.object" args="${[message(code:"license.plural")]}"/></strong>
+            </g:if>
+            <g:else>
+                <br><strong><g:message code="result.empty.object" args="${message(code:"license.plural")}"/></strong>
+            </g:else>
+        </g:else>
     </div>
 
       <semui:paginate action="currentLicenses" controller="myInstitution" params="${params}" next="${message(code:'default.paginate.next', default:'Next')}" prev="${message(code:'default.paginate.prev', default:'Prev')}" max="${max}" total="${licenseCount}" />

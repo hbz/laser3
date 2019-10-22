@@ -191,9 +191,10 @@
 
 <div>
     <div>
-        <span>${message(code: 'title.plural', default: 'Titles')} ( ${message(code: 'default.paginate.offset', args: [(offset + 1), (offset + (titles.size())), num_ti_rows])} )</span>
+        %{--<span>${message(code: 'title.plural', default: 'Titles')} ( ${message(code: 'default.paginate.offset', args: [(offset + 1), (offset + (titles.size())), num_ti_rows])} )</span>--}%
 
         <div>
+            <g:if test="${titles}">
             <g:form action="subscriptionBatchUpdate" params="${[id: subscriptionInstance?.id]}" class="ui form">
                 <g:set var="counter" value="${offset + 1}"/>
                 <table class="ui sortable celled la-table table ">
@@ -420,6 +421,15 @@
 
                 </table>
             </g:form>
+            </g:if>
+            <g:else>
+                <g:if test="${filterSet}">
+                    <br><strong><g:message code="filter.result.empty.object" args="${[message(code:"title.plural")]}"/></strong>
+                </g:if>
+                <g:else>
+                    <br><strong><g:message code="result.empty.object" args="${message(code:"title.plural")}"/></strong>
+                </g:else>
+            </g:else>
         </div>
     </div>
 
