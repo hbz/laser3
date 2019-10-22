@@ -1123,7 +1123,7 @@ class AdminController extends AbstractDebugController {
               if ( nl[i].trim().length() > 0 ) {
                 if ( disjunction_ctr++ > 0 ) { whereclause += ' OR ' }
                 joinclause = " join t.ids as id "
-                whereclause += " ( id.identifier.ns.ns = ? AND id.identifier.value = ? ) "
+                whereclause += " ( id.ns.ns = ? AND id.value = ? ) "
                 bindvars.add(cn.substring(9))
                 bindvars.add(nl[i])
               }

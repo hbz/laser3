@@ -81,8 +81,18 @@ class Identifier {
 			}
 		}
 
-        Identifier ident = Identifier.findByValueAndNamespaceAndReference(value, ns, reference)
+        String attr = Identifier.getAttributeName(reference)
+
+        def ident = Identifier.executeQuery(
+                'select ident from Identifier ident where ident.value = :val and ident.ns = :ns and ident.' + attr + ' = :ref',
+                [val: value, ns: ns, ref: reference]
+
+        )
+        if (ident instanceof List && ident.size() > 1) {
+            print ("WARNING: multiple matches found for ( ${value}, ${ns}, ${reference.class} )")
+        }
         if (!ident) {
+            print ("WARNING: no matches found; creating new identifier for ( ${value}, ${ns}, ${reference.class} )")
             ident = new Identifier(ns: ns, value: value)
             ident.setReference(reference)
             ident.save()
@@ -234,10 +244,10 @@ class Identifier {
             def idstrParts = identifierString.split(':');
             switch (idstrParts.size()) {
                 case 1:
-                    result = executeQuery('select t from ' + objType + ' as t join t.ids as io where io.identifier.value = ?', [idstrParts[0]])
+                    result = executeQuery('select t from ' + objType + ' as t join t.ids as ident where ident.value = ?', [idstrParts[0]])
                     break
                 case 2:
-                    result = executeQuery('select t from ' + objType + ' as t join t.ids as io where io.identifier.value = ? and io.identifier.ns.ns = ?', [idstrParts[1], idstrParts[0]])
+                    result = executeQuery('select t from ' + objType + ' as t join t.ids as ident where ident.value = ? and ident.ns.ns = ?', [idstrParts[1], idstrParts[0]])
                     break
                 default:
                     break

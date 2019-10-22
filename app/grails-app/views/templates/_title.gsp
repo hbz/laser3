@@ -33,11 +33,11 @@
     </div>
   </g:if>
 </div>
-<g:each in="${item?.tipp?.title?.ids?.sort { t?.identifier?.ns?.ns }}" var="title_id">
-  <g:if test="${title_id.identifier.ns.ns.toLowerCase() != 'originediturl'}">
+<g:each in="${item?.tipp?.title?.ids?.sort { t?.ns?.ns }}" var="title_id">
+  <g:if test="${title_id.ns.ns.toLowerCase() != 'originediturl'}">
     <span class="ui small teal image label">
-      ${title_id.identifier.ns.ns}: <div
-            class="detail">${title_id.identifier.value}</div>
+      ${title_id.ns.ns}: <div
+            class="detail">${title_id.value}</div>
     </span>
   </g:if>
 </g:each>

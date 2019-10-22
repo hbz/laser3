@@ -434,7 +434,7 @@ class Org
             identifiers.each { it ->
                 it.each { k, v ->
                     if (v != null) {
-                        def o = Org.executeQuery("select o from Org as o join o.ids as io where io.identifier.ns.ns = ? and io.identifier.value = ?", [k, v])
+                        def o = Org.executeQuery("select o from Org as o join o.ids as ident where ident.ns.ns = ? and ident.value = ?", [k, v])
 
                         if (o.size() > 0) result << o[0]
                     }
@@ -446,7 +446,7 @@ class Org
             // See if we can uniquely match on any of the identifiers
             identifiers.each { k, v ->
                 if (v != null) {
-                    def o = Org.executeQuery("select o from Org as o join o.ids as io where io.identifier.ns.ns = ? and io.identifier.value = ?", [k, v])
+                    def o = Org.executeQuery("select o from Org as o join o.ids as ident where ident.ns.ns = ? and ident.value = ?", [k, v])
 
                     if (o.size() > 0) result << o[0]
                 }
@@ -671,7 +671,7 @@ class Org
     def addOnlySpecialIdentifiers(ns,value) {
         boolean found = false
         this.ids.each {
-            if ( it?.identifier?.ns?.ns == ns && it.identifier.value == value ) {
+            if ( it?.ns?.ns == ns && it.value == value ) {
                 found = true
             }
         }

@@ -498,7 +498,7 @@ class FactService {
   def providersWithStatssid()
   {
     def hql = "select provider from Org as provider" +
-        " where exists (select 1 from provider.ids as oid where oid.identifier.ns.ns = 'statssid')"
+        " where exists (select 1 from provider.ids as ident where ident.ns.ns = 'statssid')"
     return Org.executeQuery(hql)
   }
 

@@ -402,8 +402,8 @@
                       </a><br>
                   </g:if>
 
-                  <g:each in="${t?.title?.ids?.sort{it?.identifier?.ns?.ns}}" var="id">
-                      <g:if test="${id.identifier.ns.ns == 'originEditUrl'}">
+                  <g:each in="${t?.title?.ids?.sort{it?.ns?.ns}}" var="id">
+                      <g:if test="${id.ns.ns == 'originEditUrl'}">
                           <%--<span class="ui small teal image label">
                               ${id.identifier.ns.ns}: <div class="detail"><a href="${id.identifier.value}"><g:message code="package.show.openLink"/></a></div>
                           </span>
@@ -413,7 +413,7 @@
                       </g:if>
                       <g:else>
                           <span class="ui small teal image label">
-                              ${id.identifier.ns.ns}: <div class="detail">${id.identifier.value}</div>
+                              ${id.ns.ns}: <div class="detail">${id.value}</div>
                           </span>
                       </g:else>
                   </g:each>

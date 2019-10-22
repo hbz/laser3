@@ -151,9 +151,9 @@ class DataloadService {
             result.cpname = pkg.getContentProvider()?.name
 
             result.identifiers = []
-            pkg.ids?.each { id ->
+            pkg.ids?.each { ident ->
                 try{
-                    result.identifiers.add([type:id.identifier.ns.ns, value:id.identifier.value])
+                    result.identifiers.add([type:ident.ns.ns, value:ident.value])
                 } catch(Exception e) {
                     log.error(e)
                 }

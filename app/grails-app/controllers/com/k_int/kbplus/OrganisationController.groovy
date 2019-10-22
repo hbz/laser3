@@ -612,17 +612,14 @@ class OrganisationController extends AbstractDebugController {
             def foundWibid = false
             def foundEZB = false
 
-            result.orgInstance.ids.each {io ->
-                if(io?.identifier?.ns?.ns == 'ISIL')
-                {
+            result.orgInstance.ids.each {ident ->
+                if(ident.ns?.ns == 'ISIL') {
                     foundIsil = true
                 }
-                if(io?.identifier?.ns?.ns == 'wibid')
-                {
+                if(ident.ns?.ns == 'wibid') {
                     foundWibid = true
                 }
-                if(io?.identifier?.ns?.ns == 'ezb')
-                {
+                if(ident.ns?.ns == 'ezb') {
                     foundEZB = true
                 }
             }

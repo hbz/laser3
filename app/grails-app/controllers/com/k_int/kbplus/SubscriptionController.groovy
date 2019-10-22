@@ -1101,8 +1101,8 @@ class SubscriptionController extends AbstractDebugController {
                 row.add([field: ie?.tipp?.title?.summaryOfContent ?: '', style:null])
 
                 def identifiers = []
-                ie?.tipp?.title?.ids?.sort { it?.identifier?.ns?.ns }.each{ id ->
-                    identifiers << "${id.identifier.ns.ns}: ${id.identifier.value}"
+                ie?.tipp?.title?.ids?.sort { it?.ns?.ns }?.each{ ident ->
+                    identifiers << "${ident.ns?.ns}: ${ident.value}"
                 }
                 row.add([field: identifiers ? identifiers.join(', ') : '', style:null])
 
@@ -1190,8 +1190,8 @@ class SubscriptionController extends AbstractDebugController {
                 row.add([field: ie?.tipp?.title?.summaryOfContent ?: '', style:null])
 
                 def identifiers = []
-                ie?.tipp?.title?.ids?.sort { it?.identifier?.ns?.ns }.each{ id ->
-                    identifiers << "${id.identifier.ns.ns}: ${id.identifier.value}"
+                ie?.tipp?.title?.ids?.sort { it.ns?.ns }?.each{ ident ->
+                    identifiers << "${ident.ns?.ns}: ${ident.value}"
                 }
                 row.add([field: identifiers ? identifiers.join(', ') : '', style:null])
 

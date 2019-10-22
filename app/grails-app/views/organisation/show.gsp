@@ -133,14 +133,14 @@ ${orgInstance.name} - ${message(code:'profile.errorOverview.label')}</h1>
                             <dt>ISIL</dt>
                             <dd>
                                 <g:set var="isils"
-                                       value="${orgInstance.ids.findAll { it?.identifier?.ns?.ns == 'ISIL' }}"/>
+                                       value="${orgInstance.ids.findAll { it?.ns?.ns == 'ISIL' }}"/>
                                 <g:if test="${isils}">
                                     <div class="ui divided middle aligned selection list la-flex-list">
                                         <g:each in="${isils}" var="isil">
                                             <div class="ui item">
 
                                                 <div class="content la-space-right">
-                                                    <semui:xEditable owner="${isil.identifier}" field="value"/>
+                                                    <semui:xEditable owner="${isil}" field="value"/>
                                                 </div>
 
                                                 <div class="content">
@@ -169,18 +169,18 @@ ${orgInstance.name} - ${message(code:'profile.errorOverview.label')}</h1>
                         <dl>
                             <dt>WIB-ID</dt>
                             <dd>
-                                <g:set var="wibid" value="${orgInstance.ids.find { it?.identifier?.ns?.ns == 'wibid' }}"/>
+                                <g:set var="wibid" value="${orgInstance.ids.find { it?.ns?.ns == 'wibid' }}"/>
                                 <g:if test="${wibid}">
-                                    <semui:xEditable owner="${wibid.identifier}" field="value"/>
+                                    <semui:xEditable owner="${wibid}" field="value"/>
                                 </g:if>
                             </dd>
                         </dl>
                         <dl>
                             <dt>EZB-ID</dt>
                             <dd>
-                                <g:set var="ezb" value="${orgInstance.ids.find { it?.identifier?.ns?.ns == 'ezb' }}"/>
+                                <g:set var="ezb" value="${orgInstance.ids.find { it?.ns?.ns == 'ezb' }}"/>
                                 <g:if test="${ezb}">
-                                    <semui:xEditable owner="${ezb.identifier}" field="value"/>
+                                    <semui:xEditable owner="${ezb}" field="value"/>
                                 </g:if>
                             </dd>
                         </dl>

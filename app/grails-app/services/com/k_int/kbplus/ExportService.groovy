@@ -334,7 +334,7 @@ class ExportService {
 				if(max_nb_ie<current_nb_ie) max_nb_ie = current_nb_ie
 				current_nb_ie = 1
 				//Add namespace
-				ti.ids.each(){ id -> namespaces.add(id.identifier.ns.ns) }
+				ti.ids.each(){ id -> namespaces.add(id.ns.ns) }
 			}else{
 				current_nb_ie ++
 			}
@@ -678,8 +678,8 @@ class ExportService {
 			
 			def orgIDsElem = addXMLElementInto(doc, orgElem, "OrgIDs", null)
 			or.org.ids.each(){ id ->
-				def value = id.identifier.value
-				def ns = id.identifier.ns.ns
+				def value = id.value
+				def ns = id.ns.ns
 				def idElem = addXMLElementInto(doc, orgIDsElem, "ID", value)
 				addXMLAttr(doc, idElem, "namespace", ns)
 			}
@@ -783,8 +783,8 @@ class ExportService {
 			
 				def ids = [:]
 				ti.ids.each(){ id ->
-					def value = id.identifier.value
-					def ns = id.identifier.ns.ns
+					def value = id.value
+					def ns = id.ns.ns
 					if(ids.containsKey(ns)){
 						def current = ids[ns]
 						def newval = []
@@ -868,8 +868,8 @@ class ExportService {
 			
 			def ids = [:]
 			or.org.ids.each(){ id ->
-				def value = id.identifier.value
-				def ns = id.identifier.ns.ns
+				def value = id.value
+				def ns = id.ns.ns
 				if(ids.containsKey(ns)){
 					def current = ids[ns]
 					def newval = []

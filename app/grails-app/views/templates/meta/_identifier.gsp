@@ -63,25 +63,25 @@
                         </tr>
                         </thead>
                         <tbody>
-                        <g:each in="${object.ids?.sort { it?.identifier?.ns?.ns }}" var="io">
+                        <g:each in="${object.ids?.sort { it?.ns?.ns }}" var="ident">
                             <tr>
                                 <td>
-                                    ${io.identifier.ns.ns}
+                                    ${ident.ns.ns}
                                 </td>
                                 <td>
-                                    <g:if test="${io.identifier.value =~ /^http/}">
-                                        <a href="${io.identifier.value}" target="_blank">
-                                            ${message(code: 'component.originediturl.label', default: "${io.identifier.value}")}
+                                    <g:if test="${ident.value =~ /^http/}">
+                                        <a href="${ident.value}" target="_blank">
+                                            ${message(code: 'component.originediturl.label', default: "${ident.value}")}
                                         </a>
                                     </g:if>
                                     <g:else>
-                                        ${io.identifier.value}
+                                        ${ident.value}
                                     </g:else>
                                 </td>
                                 <td>
                                     <g:if test="${editable}">
                                         <g:link controller="ajax" action="deleteThrough"
-                                                params='${[contextOid: "${object.class.name}:${object.id}", contextProperty: "ids", targetOid: "${io.class.name}:${io.id}"]}'>
+                                                params='${[contextOid: "${object.class.name}:${object.id}", contextProperty: "ids", targetOid: "${ident.class.name}:${ident.id}"]}'>
                                             ${message(code: 'default.delete.label', args: ["${message(code: 'identifier.label')}"])}</g:link>
                                     </g:if>
                                 </td>

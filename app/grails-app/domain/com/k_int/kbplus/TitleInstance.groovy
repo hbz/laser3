@@ -154,10 +154,10 @@ class TitleInstance extends AbstractBaseDomain implements AuditableTrait {
             static_logger.debug("No matches - trying to locate via identifier group");
           switch ( idstr_components.size() ) {
             case 1:
-              qr = executeQuery('select t from TitleInstance as t join t.ids as io where exists ( select i from Identifier i where i.value = ? and i.ig = io.identifier.ig )',[idstr_components[0]])
+              qr = executeQuery('select t from TitleInstance as t join t.ids as ident where ident.value = ?', [idstr_components[0]])
               break;
             case 2:
-              qr = executeQuery('select t from TitleInstance as t join t.ids as io where exists ( select i from Identifier i where i.value = ? and i.ns.ns = ? and i.ig = io.identifier.ig )',[idstr_components[1],idstr_components[0]?.toLowerCase()])
+              qr = executeQuery('select t from TitleInstance as t join t.ids as ident where ident.value = ? and ident.ns.ns = ?', [idstr_components[1], idstr_components[0]?.toLowerCase()])
               break;
             default:
               // static_logger.debug("Unable to split");
@@ -184,15 +184,14 @@ class TitleInstance extends AbstractBaseDomain implements AuditableTrait {
   static def findByIdentifier(candidate_identifiers) {
     def matched = []
     candidate_identifiers.each { i ->
-      List<IdentifierOccurrence> ioList = IdentifierOccurrence.executeQuery('select io from IdentifierOccurrence io join io.identifier id where id.ns = :namespace and id.value = :value',[namespace:i.namespace,value:i.value])
-      if(ioList.size() > 0) {
-        IdentifierOccurrence io = ioList.get(0)
-        if ( ( io != null ) && ( io.ti != null ) ) {
-          if ( matched.contains(io.ti) ) {
-            // Already in the list
-          }
-          else {
-            matched.add(io.ti);
+      // TODO [ticket=1789]
+      //List<IdentifierOccurrence> ioList = IdentifierOccurrence.executeQuery('select io from IdentifierOccurrence io join io.identifier id where id.ns = :namespace and id.value = :value',[namespace:i.namespace,value:i.value])
+      List<Identifier> identifiers = Identifier.executeQuery('select ident from Identifier ident where ident.ns = :namespace and ident.value = :value', [namespace:i.namespace, value:i.value])
+      if(identifiers.size() > 0) {
+        Identifier ident = identifiers.get(0)
+        if ( ( ident != null ) && ( ident.ti != null ) ) {
+          if (! matched.contains(ident.ti) ) {
+            matched.add(ident.ti)
           }
         }
       }
@@ -201,14 +200,13 @@ class TitleInstance extends AbstractBaseDomain implements AuditableTrait {
     // Didn't match anything - see if we can match based on identifier without namespace [In case of duff supplier data]
     if ( matched.size() == 0 ) {
       candidate_identifiers.each { i ->
-        def id1 = Identifier.executeQuery('Select io from IdentifierOccurrence as io where io.identifier.value = ?',[i.value]);
+        // TODO [ticket=1789]
+        //def id1 = Identifier.executeQuery('Select io from IdentifierOccurrence as io where io.identifier.value = ?',[i.value]);
+        def id1 = Identifier.executeQuery('select ident from Identifier as ident where ident.value = ?', [i.value])
         id1.each {
           if ( it.ti != null ) {
-            if ( matched.contains(it.ti) ) {
-              // Already in the list
-            }
-            else {
-              matched.add(it.ti);
+            if ( ! matched.contains(it.ti) ) {
+              matched.add(it.ti)
             }
           }
         }
@@ -271,7 +269,9 @@ class TitleInstance extends AbstractBaseDomain implements AuditableTrait {
           if(i.namespace.toLowerCase() == 'uri'){
             origin_uri = i.value
           }
-
+          // TODO [ticket=1789] check and adapt LOGIC here
+          // TODO [ticket=1789] check and adapt LOGIC here
+          // TODO [ticket=1789] check and adapt LOGIC here
           def id = Identifier.lookupOrCreateCanonicalIdentifier(i.namespace, i.value)
 
           if(id && id.ns.ns && id.value){
@@ -316,13 +316,13 @@ class TitleInstance extends AbstractBaseDomain implements AuditableTrait {
 
         cti.ids.each { ctio ->
 
-          if ( !canonical_ids.contains(ctio.identifier) ){
-            if ( ctio.identifier.ns.ns != 'originediturl' && ctio.identifier.ns.ns != 'uri'){
+          if ( !canonical_ids.contains(ctio) ){
+            if ( ctio.ns.ns != 'originediturl' && ctio.ns.ns != 'uri'){
               full_match = false
             }
           }else{
 
-            if ( ctio.identifier.ns.ns == 'uri' && canonical_ids.contains(ctio.identifier) ){
+            if ( ctio.ns.ns == 'uri' && canonical_ids.contains(ctio) ){
               origin_uri_match = true
             }
             intersection++;
@@ -413,6 +413,9 @@ class TitleInstance extends AbstractBaseDomain implements AuditableTrait {
       result.ids=[]
 
       canonical_ids.each {
+        // TODO [ticket=1789] check and adapt LOGIC here
+        // TODO [ticket=1789] check and adapt LOGIC here
+        // TODO [ticket=1789] check and adapt LOGIC here
         def new_io = new IdentifierOccurrence(identifier:it, ti:result)
         if ( new_io.save() ) {
           static_logger.debug("Created new IO");
@@ -437,6 +440,9 @@ class TitleInstance extends AbstractBaseDomain implements AuditableTrait {
         if(cid.ns.ns.toLowerCase() != 'originediturl'){
           static_logger.debug("looking for identifier ${cid.ns.ns}:${cid.value}");
 
+          // TODO [ticket=1789] check and adapt LOGIC here
+          // TODO [ticket=1789] check and adapt LOGIC here
+          // TODO [ticket=1789] check and adapt LOGIC here
           def matched_io = IdentifierOccurrence.executeQuery("select io from IdentifierOccurrence as io where io.identifier = ? and io.ti = ?",[cid,result])
 
           if ( !matched_io || matched_io && matched_io.size() == 0){
@@ -472,6 +478,9 @@ class TitleInstance extends AbstractBaseDomain implements AuditableTrait {
            ( i.key.length() > 0 ) &&
            ( i.value.length() > 0 ) ) {
 
+        // TODO [ticket=1789] check and adapt LOGIC here
+        // TODO [ticket=1789] check and adapt LOGIC here
+        // TODO [ticket=1789] check and adapt LOGIC here
         def id = Identifier.lookupOrCreateCanonicalIdentifier(i.key, i.value)
         if ( id != null ) {
           ids.add(id);
@@ -481,6 +490,9 @@ class TitleInstance extends AbstractBaseDomain implements AuditableTrait {
             // Namespace is marked as non-unique, don't perform a uniqueness check
           }
           else {
+            // TODO [ticket=1789] check and adapt LOGIC here
+            // TODO [ticket=1789] check and adapt LOGIC here
+            // TODO [ticket=1789] check and adapt LOGIC here
             def io = IdentifierOccurrence.findByIdentifier(id)
             if ( io && io.ti ) {
               if ( result == null ) {
@@ -505,6 +517,9 @@ class TitleInstance extends AbstractBaseDomain implements AuditableTrait {
 
       result.ids=[]
       ids.each {
+        // TODO [ticket=1789] check and adapt LOGIC here
+        // TODO [ticket=1789] check and adapt LOGIC here
+        // TODO [ticket=1789] check and adapt LOGIC here
         result.ids.add(new IdentifierOccurrence(identifier:it, ti:result).save(flush: true));
       }
       if ( ! result.save() ) {
@@ -519,6 +534,9 @@ class TitleInstance extends AbstractBaseDomain implements AuditableTrait {
         // it == an ID
         // Does result.ids contain an identifier occurrence that matches this ID
         // def existing_id = result.ids.find { it -> it.identifier == identifier }
+        // TODO [ticket=1789] check and adapt LOGIC here
+        // TODO [ticket=1789] check and adapt LOGIC here
+        // TODO [ticket=1789] check and adapt LOGIC here
         def existing_id = IdentifierOccurrence.findByIdentifierAndTi(identifier,result)
 
         if ( existing_id == null ) {

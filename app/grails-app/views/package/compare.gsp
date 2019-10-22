@@ -211,9 +211,9 @@
 				<semui:listIcon type="${currentTitle[0]?.type?.value}"/><strong><g:link action="show" controller="title" id="${currentTitle[0].id}">${entry.key}</g:link></strong>
                           <i onclick="showMore('${currentTitle[0].id}')" class="icon-info-sign"></i>
 
-                          <g:each in="${currentTitle[0].ids?.sort{it?.identifier?.ns?.ns}}" var="id">
-                            <g:if test="${id.identifier.ns.ns != 'originediturl'}">
-                              <br>${id.identifier.ns.ns}: ${id.identifier.value}
+                          <g:each in="${currentTitle[0].ids?.sort{it?.ns?.ns}}" var="id">
+                            <g:if test="${id.ns.ns != 'originediturl'}">
+                              <br>${id.ns.ns}: ${id.value}
                             </g:if>
                           </g:each>
 			</td>

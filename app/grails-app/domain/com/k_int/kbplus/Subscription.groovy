@@ -788,7 +788,7 @@ class Subscription
                   "join orole.pkg as pa "+
                   "join orole.roleType as roletype "+
                   "where pa.id = :package_id and roletype.value='Content Provider' "+
-                  "and exists (select oid from orole.org.ids as oid where oid.identifier.ns.ns='statssid')"
+                  "and exists (select ident from orole.org.ids as ident where ident.ns.ns='statssid')"
           def queryResult = OrgRole.executeQuery(hql, ['package_id':it.pkg.id])
           if (queryResult[0] > 0){
               hasUsageSupplier = true
