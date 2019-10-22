@@ -524,7 +524,7 @@ class SurveyController {
 
 
         base_qry += " and ie.status = :current "
-        qry_params.current = TIPP_STATUS_CURRENT
+        qry_params.current = RDStore.TIPP_STATUS_CURRENT
 
         base_qry += "order by lower(ie.tipp.title.title) asc"
 

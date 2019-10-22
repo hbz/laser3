@@ -794,10 +794,19 @@ class FinanceService {
                     if(subscription == null)
                         mappingErrorBag.packageWithoutSubscription = true
                     else {
-                        List<Package> pkgMatches = Package.executeQuery("select distinct idOcc.pkg from IdentifierOccurrence idOcc join idOcc.identifier id where cast(idOcc.pkg.id as string) = :idCandidate or idOcc.pkg.globalUID = :idCandidate or (id.value = :idCandidate and id.ns = :isil)",[idCandidate:subPkgIdentifier,isil:namespaces.isil])
-                        if(!pkgMatches)
-                            mappingErrorBag.noValidPackage = subPkgIdentifier
-                        else if(pkgMatches.size() > 1)
+                        //List<Package> pkgMatches = Package.executeQuery("select distinct idOcc.pkg from IdentifierOccurrence idOcc join idOcc.identifier id where cast(idOcc.pkg.id as string) = :idCandidate or idOcc.pkg.globalUID = :idCandidate or (id.value = :idCandidate and id.ns = :isil)",[idCandidate:subPkgIdentifier,isil:namespaces.isil])
+                        List<Package> pkgMatches = []
+                        if(subPkgIdentifier.isLong())
+                            pkgMatches.add(Package.get(subPkgIdentifier))
+                        if(!pkgMatches) {
+                            pkgMatches.addAll(Package.findAllByGlobalUID(subPkgIdentifier))
+                            if(!pkgMatches) {
+                                pkgMatches = Package.executeQuery("select distinct idOcc.pkg from IdentifierOccurrence idOcc where (idOcc.identifier.ns = :isil and idOcc.identifier.value = :idCandidate)")
+                                if(!pkgMatches)
+                                    mappingErrorBag.noValidPackage = subPkgIdentifier
+                            }
+                        }
+                        if(pkgMatches.size() > 1)
                             mappingErrorBag.multipleSubPkgError = pkgMatches.collect { pkg -> pkg.name }
                         else if(pkgMatches.size() == 1) {
                             subPkg = SubscriptionPackage.findBySubscriptionAndPkg(subscription,pkgMatches[0])
@@ -1076,7 +1085,7 @@ class FinanceService {
                 costItem.reference = cols[colMap.reference]
             //budgetCode -> to budget code
             if(colMap.budgetCode != null) {
-                budgetCodes[r] = cols[colMap.budgetCode].trim()
+                budgetCodes[r] = cols[colMap.budgetCode]?.trim()
             }
             //startDate(nullable: true, blank: false) -> to date from
             if(colMap.dateFrom != null) {
