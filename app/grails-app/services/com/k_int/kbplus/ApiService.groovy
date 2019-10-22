@@ -508,13 +508,15 @@ class ApiService {
                             ciec.save()
                         }
                         orgData.ids.id.each { idData ->
+                            // TODO [ticket=1789] check setup basic data
                             log.debug("----- processing identifiers -----")
                             //log.debug("ns: ${IdentifierNamespace.findByNs(idData.@namespace.text())}")
                             //log.debug("value: ${idData.@value.text()}")
                             //new Identifier(ns: IdentifierNamespace.findByNs(idData.@namespace.text()), value: idData.@value.text()).save(flush: true)
-                            Identifier id = Identifier.lookupOrCreateCanonicalIdentifier(idData.@namespace.text(), idData.@value.text())
+                            //Identifier id = Identifier.lookupOrCreateCanonicalIdentifier(idData.@namespace.text(), idData.@value.text())
+                            Identifier id = Identifier.construct([value: idData.@value.text(), reference: org, namespace: idData.@namespace.text()])
                             //log.debug("org: ${orgData.globalUID.text()}")
-                            new IdentifierOccurrence(org: org, identifier: id).save()
+                            //new IdentifierOccurrence(org: org, identifier: id).save()
                         }
                         orgData.settings.setting.each { st ->
                             log.debug("name: ${OrgSettings.KEYS.valueOf(st.name.text())}")
@@ -667,13 +669,15 @@ class ApiService {
                             }
                         }
                         else {
-                            Identifier id = Identifier.lookupOrCreateCanonicalIdentifier(idData.@namespace.text(), idData.@value.text())
+                            // TODO [ticket=1789] check setup basic data
+                            Identifier id = Identifier.construct([value: idData.@value.text(), reference: org, namespace: idData.@namespace.text()])
+                            //Identifier id = Identifier.lookupOrCreateCanonicalIdentifier(idData.@namespace.text(), idData.@value.text())
                             //log.debug("org: ${orgData.globalUID.text()}")
-                            IdentifierOccurrence idOcc = IdentifierOccurrence.findByOrgAndIdentifier(org, id)
-                            if(!idOcc) {
-                                idOcc = new IdentifierOccurrence()
-                                idOcc.save()
-                            }
+                            //IdentifierOccurrence idOcc = IdentifierOccurrence.findByOrgAndIdentifier(org, id)
+                            //if(!idOcc) {
+                            //    idOcc = new IdentifierOccurrence()
+                            //    idOcc.save()
+                            //}
                         }
                     }
                     orgData.settings.setting.each { st ->

@@ -1,7 +1,6 @@
 package com.k_int.kbplus.processing
 
 import com.k_int.kbplus.Identifier
-import com.k_int.kbplus.IdentifierOccurrence
 import org.apache.commons.logging.LogFactory
 
 public class OrgsProcessing {
@@ -16,9 +15,6 @@ public class OrgsProcessing {
         //def identifier = Identifier.lookupOrCreateCanonicalIdentifier(type,value);
         //domain_object.ids.add(new IdentifierOccurrence(identifier:identifier,org:domain_object));
         def identifier = Identifier.construct([value: value, reference: domain_object, namespace:type])
-      }
-      else {
-        // Should we make sure there is no identifier attached?
       }
     }
     else {

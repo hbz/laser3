@@ -628,11 +628,10 @@ class YodaController {
         IdentifierNamespace isilPaketsigel = IdentifierNamespace.findByNs('ISIL_Paketsigel')
         Set<Identifier> idList = Identifier.executeQuery("select ident from Identifier ident where ident.pkg != null and lower(ident.ns.ns) = 'isil'")
         if(idList) {
-            // TODO [ticket=1789] important
-            // TODO [disabled]
+            // TODO [ticket=1789]
+            Identifier.executeUpdate("update Identifier ident set ident.ns = :isilPaketsigel where ident.pkg != null and lower(ident.ns.ns) = 'isil'",[isilPaketsigel: isilPaketsigel])
             //Identifier.executeUpdate("update IdentifierOccurrence io set io.identifier.ns = :isilPaketsigel where io.pkg != null and lower(io.identifier.ns.ns) = 'isil'",[isilPaketsigel: isilPaketsigel])
-            //flash.message = "Changes performed on ${idList.size()} package identifiers ..."
-            flash.message = "WARNING: Changes NOT performed on ${idList.size()} package identifiers ..."
+            flash.message = "Changes performed on ${idList.size()} package identifiers ..."
         }
         redirect controller: 'home'
     }
@@ -1032,8 +1031,9 @@ class YodaController {
                                     }
                                     ids {
                                         o.ids.each { idObj ->
-                                            IdentifierOccurrence idOcc = (IdentifierOccurrence) idObj
-                                            id (namespace: idOcc.identifier.ns.ns, value: idOcc.identifier.value)
+                                            // TODO [ticket=1789]
+                                            //IdentifierOccurrence idOcc = (IdentifierOccurrence) idObj
+                                            id (namespace: idObj.ns.ns, value: idObj.value)
                                         }
                                     }
                                     //outgoing/ingoingCombos: assembled in branch combos
@@ -1702,7 +1702,9 @@ class YodaController {
                 }
                 else {
 
-                    def tiObj = TitleInstance.executeQuery('select ti from TitleInstance ti join ti.ids ids where ids in (select io from IdentifierOccurrence io join io.identifier id where id.ns in :namespaces and id.value = :value)',[namespaces:idCandidate.namespaces,value:idCandidate.value])
+                    // TODO [ticket=1789]
+                    //def tiObj = TitleInstance.executeQuery('select ti from TitleInstance ti join ti.ids ids where ids in (select io from IdentifierOccurrence io join io.identifier id where id.ns in :namespaces and id.value = :value)',[namespaces:idCandidate.namespaces,value:idCandidate.value])
+                    def tiObj = TitleInstance.executeQuery('select ti from TitleInstance ti join ti.ids ident where ident.ns in :namespaces and ident.value = :value', [namespaces:idCandidate.namespaces, value:idCandidate.value])
                     if(tiObj) {
 
                         tiObj?.each { titleInstance ->

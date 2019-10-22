@@ -766,8 +766,9 @@ class AdminController extends AbstractDebugController {
                     }
                     ids {
                       o.ids.each { idObj ->
-                        IdentifierOccurrence idOcc = (IdentifierOccurrence) idObj
-                        id (namespace: idOcc.identifier.ns.ns, value: idOcc.identifier.value)
+                        // TODO [ticket=1789]
+                        //IdentifierOccurrence idOcc = (IdentifierOccurrence) idObj
+                        id (namespace: idObj.ns.ns, value: idObj.value)
                       }
                     }
                     //outgoing/ingoingCombos: assembled in branch combos

@@ -2042,14 +2042,19 @@ class AjaxController {
     def owner = resolveOID2(params.owner)
     def identifier = resolveOID2(params.identifier)
 
-    def owner_type = IdentifierOccurrence.getAttributeName(owner)
+    // TODO [ticket=1789]
+    def owner_type = Identifier.getAttributeName(owner)
     if (!owner_type) {
       log.error("Unexpected Identifier Owner ${owner.class}")
       return null
     }
 
     // TODO: BUG !? multiple occurrences on the same object allowed
-    def duplicates = identifier?.occurrences.findAll{it."${owner_type}" != owner && it."${owner_type}" != null}?.collect{it."${owner_type}"}
+    //def duplicates = identifier?.occurrences.findAll{it."${owner_type}" != owner && it."${owner_type}" != null}?.collect{it."${owner_type}"}
+    def duplicates = identifier?.findAll{
+        it.value == identifier.value && it."${owner_type}" != owner && it."${owner_type}" != null
+    }?.collect{ it."${owner_type}" }
+
     if(duplicates){
       result.duplicates = duplicates
     }

@@ -128,18 +128,13 @@ class ApiWriterHelper {
     }
 
     static getIdentifiers(def data, def owner) {
-        def idenfifierOccurences = []
+        List<Identifier> idenfifiers = []
 
-        data.each { it ->
-            def identifier = Identifier.lookupOrCreateCanonicalIdentifier(it.namespace, it.value)
-            def idenfifierOccurence = new IdentifierOccurrence(
-                    identifier: identifier
-            )
-            idenfifierOccurence.setReference(owner)
-            idenfifierOccurences << idenfifierOccurence
+        data?.each { it ->
+            identifiers << Identifier.construct([value:it.value, reference:owner, namespace:it.key])
         }
 
-        idenfifierOccurences
+        idenfifiers
     }
 
     static getOrgLinks(def data, def owner, Org context) {

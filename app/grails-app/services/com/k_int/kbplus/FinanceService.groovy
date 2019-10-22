@@ -740,7 +740,9 @@ class FinanceService {
                 orgIdentifier = cols[colMap.institution]
             else if(orgIdentifier){
                 //fetch possible identifier namespaces
-                List<Org> orgMatches = Org.executeQuery("select distinct idOcc.org from IdentifierOccurrence idOcc join idOcc.identifier id where cast(idOcc.org.id as string) = :idCandidate or idOcc.org.globalUID = :idCandidate or (id.value = :idCandidate and id.ns = :wibid)",[idCandidate:orgIdentifier,wibid:namespaces.wibid])
+                // TODO [ticket=1789]
+                //List<Org> orgMatches = Org.executeQuery("select distinct idOcc.org from IdentifierOccurrence idOcc join idOcc.identifier id where cast(idOcc.org.id as string) = :idCandidate or idOcc.org.globalUID = :idCandidate or (id.value = :idCandidate and id.ns = :wibid)",[idCandidate:orgIdentifier,wibid:namespaces.wibid])
+                List<Org> orgMatches = Org.executeQuery("select distinct id.org from Identifier id where cast(id.org.id as string) = :idCandidate or id.org.globalUID = :idCandidate or (id.value = :idCandidate and id.ns = :wibid)", [idCandidate:orgIdentifier, wibid:namespaces.wibid])
                 if(orgMatches.size() > 1)
                     mappingErrorBag.multipleOrgsError = orgMatches.collect { org -> org.sortname ?: org.name }
                 else if(orgMatches.size() == 1) {
@@ -832,7 +834,9 @@ class FinanceService {
                     if(subscription == null || subPkg == null)
                         mappingErrorBag.entitlementWithoutPackageOrSubscription = true
                     else {
-                        List<TitleInstance> titleMatches = TitleInstance.executeQuery("select distinct idOcc.ti from IdentifierOccurrence idOcc join idOcc.identifier id where id.value = :idCandidate and id.ns in :namespaces",[idCandidate: ieIdentifier, namespaces: [namespaces.isbn,namespaces.doi,namespaces.zdb,namespaces.issn,namespaces.eissn]])
+                        // TODO [ticket=1789]
+                        // List<TitleInstance> titleMatches = TitleInstance.executeQuery("select distinct idOcc.ti from IdentifierOccurrence idOcc join idOcc.identifier id where id.value = :idCandidate and id.ns in :namespaces",[idCandidate: ieIdentifier, namespaces: [namespaces.isbn,namespaces.doi,namespaces.zdb,namespaces.issn,namespaces.eissn]])
+                        List<TitleInstance> titleMatches = TitleInstance.executeQuery("select distinct id.ti from Identifier id where id.value = :idCandidate and id.ns in :namespaces", [idCandidate: ieIdentifier, namespaces: [namespaces.isbn,namespaces.doi,namespaces.zdb,namespaces.issn,namespaces.eissn]])
                         if(!titleMatches)
                             mappingErrorBag.noValidTitle = ieIdentifier
                         else if(titleMatches.size() > 1)
