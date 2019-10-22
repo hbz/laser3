@@ -10,7 +10,18 @@
         <g:javascript src="properties.js"/>
     </head>
     <body>
-    <g:render template="breadcrumb" model="${[ orgInstance:orgInstance, params:params ]}"/>
+
+    <semui:breadcrumbs>
+        <semui:crumb controller="organisation" action="show" id="${orgInstance.id}" text="${orgInstance.getDesignation()}" />
+        <semui:crumb message="org.nav.accessPoints" class="active"/>
+    </semui:breadcrumbs>
+
+    <g:if test="${accessService.checkPerm('ORG_INST,ORG_CONSORTIUM')}">
+        <semui:controlButtons>
+            <g:render template="actions" model="[org:org]" />
+        </semui:controlButtons>
+    </g:if>
+
     <h1 class="ui left aligned icon header"><semui:headerIcon />
         ${orgInstance.name} - ${message(code:'org.nav.accessPoints')}</h1>
     </h1>
@@ -63,55 +74,30 @@
                                 <g:each in="${accessPoint.getIpRangeStrings('ipv6', 'ranges')}" var="ipv6Range">
                                     <div >${ipv6Range}</div>
                                 </g:each>
+                                <div>
+                                    <g:if test="${accessPoint.hasProperty('url')}">
+                                        URL: ${accessPoint.url}
+                                    </g:if>
+                                </div>
+                                <div>
+                                    <g:if test="${accessPoint.hasProperty('entityId')}">
+                                        EntityId: ${accessPoint.entityId}
+                                    </g:if>
+                                </div>
                             </td>
                             <td class="center aligned">
                                 <g:link action="edit_${accessPoint.accessMethod.value.toLowerCase()}" controller="accessPoint" id="${accessPoint?.id}" class="ui icon button">
                                     <i class="write icon"></i>
                                 </g:link>
-                                <g:link action="delete" controller="accessPoint" id="${accessPoint?.id}" class="ui negative icon button"
-                                        onclick="return confirm('${message(code: 'accessPoint.details.delete.confirm', args: [(accessPoint.name ?: 'this access point')])}')">
-                                    <i class="delete icon"></i>
+                                <g:link action="delete" controller="accessPoint" id="${accessPoint?.id}" class="ui negative icon button js-open-confirm-modal"
+                                        data-confirm-term-what="${message(code: 'accessPoint.delete.what', args: [accessPoint.name])}"
+                                        data-confirm-term-content="${message(code: 'accessPoint.details.delete.confirm', args: [(accessPoint.name ?: 'this access point')])}">
+                                    <i class="trash alternate icon"></i>
                                 </g:link>
                             </td>
                         </tr>
                     </g:each>
-
-                    <tr>
-                        <td>
-                            <div class="${hasErrors(bean: accessPoint, field: 'name', 'error')} required ui form search">
-                                <g:set var="cwra" value="${message(code:'accessPoint.option.remoteAccess')}" />
-                                <g:set var="cwora" value="${message(code:'accessPoint.option.woRemoteAccess')}" />
-                                <select name="name" required="" class="ui fluid search dropdown">
-                                    <option value="">${message(code:'accessPoint.option.placeHolder')}</option>
-                                    <option value="${cwra}">${cwra}</option>
-                                    <option value="${cwora}">${cwora}</option>
-                                </select>
-                                <r:script>
-                                    $(document).ready(function() {
-                                        $('.ui.search.dropdown').dropdown({
-                                            allowAdditions: true,
-                                            forceSelection: false,
-                                            hideAdditions: false,
-                                            message: {addResult: '${message(code:'accessPoint.addCustomName.label')}'}
-                                        });
-                                    });
-                                </r:script>
-                            </div>
-                        </td>
-                        <td colspan="2">
-                            <laser:select class="ui dropdown values" id="accessMethod"
-                                          name="accessMethod"
-                                          from="${com.k_int.kbplus.OrgAccessPoint.getAllRefdataValues('Access Point Type')}"
-                                          optionKey="id"
-                                          optionValue="value"
-                            />
-                        </td>
-                        <td class="center aligned">
-                            <input type="hidden" name="orgId" value="${orgInstance.id}" />
-                            <input type="Submit" class="ui tiny button" value="${message(code:'accessPoint.button.create', default:'Create')}" onClick="this.form.submit()"class="ui button"/>
-                        </td>
-                    </tr>
-                </tbody>
+                 </tbody>
             </table>
         </g:form>
     </body>

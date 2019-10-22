@@ -29,6 +29,10 @@
                                        href="#personFormModal" message="person.create_new.contactPerson.label" />
         </g:if>
 
+        <g:if test="${actionName == 'accessPoints'}">
+            <semui:actionsDropdownItem controller="accessPoint" action="create" message="accessPoint.create"/>
+        </g:if>
+
 
     </g:if>
     <g:if test="${actionName in ['documents','show'] && (editable || accessService.checkPermAffiliationX('ORG_INST,ORG_CONSORTIUM','INST_EDITOR','ROLE_ORG_EDITOR'))}">
