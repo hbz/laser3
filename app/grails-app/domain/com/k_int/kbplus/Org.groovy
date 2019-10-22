@@ -406,6 +406,7 @@ class Org
     result
   }
 
+    // called from AjaxController.resolveOID2()
   static def refdataCreate(value) {
     return new Org(name:value)
   }

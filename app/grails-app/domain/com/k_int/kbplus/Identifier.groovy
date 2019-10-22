@@ -127,26 +127,21 @@ class Identifier {
 
   def beforeUpdate() {
     value = value?.trim()
-      boolean forOrg = IdentifierOccurrence.findByIdentifier(this)
-
-      if(forOrg) {
-          if(this.ns?.ns == 'wibid')
-          {
-              if(!(this.value =~ /^WIB/) && this.value != '')
-              {
+      // TODO [ticket=1789]
+      //boolean forOrg = IdentifierOccurrence.findByIdentifier(this)
+      //if(forOrg) {
+      if (org != null) {
+          if(this.ns?.ns == 'wibid') {
+              if(!(this.value =~ /^WIB/) && this.value != '') {
                   this.value = 'WIB'+this.value.trim()
               }
           }
-
-          if(this.ns?.ns == 'ISIL')
-          {
-              if(!(this.value =~ /^DE-/ || this.value =~ /^[A-Z]{2}-/) && this.value != '')
-              {
+          if(this.ns?.ns == 'ISIL') {
+              if(!(this.value =~ /^DE-/ || this.value =~ /^[A-Z]{2}-/) && this.value != '') {
                   this.value = 'DE-'+this.value.trim()
               }
           }
       }
-
   }
 
     @Deprecated
@@ -225,10 +220,13 @@ class Identifier {
         result
     }
 
+    // called from AjaxController.resolveOID2()
+    @Deprecated
+    // front end creation broken
     static def refdataCreate(value) {
         // value is String[] arising from  value.split(':');
         if ( ( value.length == 4 ) && ( value[2] != '' ) && ( value[3] != '' ) )
-            return lookupOrCreateCanonicalIdentifier(value[2],value[3]);
+            return lookupOrCreateCanonicalIdentifier(value[2],value[3]); // ns, value
 
         return null;
     }
@@ -260,21 +258,8 @@ class Identifier {
 
     @Transient
     def afterInsert = {
-
-
-        if(this.ns?.ns == 'wibid')
-        {
-            if(this.value == 'Unknown')
-            {
-                this.value = ''
-                this.save()
-            }
-        }
-
-        if(this.ns?.ns == 'ezb')
-        {
-            if(this.value == 'Unknown')
-            {
+        if(this.ns?.ns in ['wibid','ezb']) {
+            if(this.value == 'Unknown') {
                 this.value = ''
                 this.save()
             }
@@ -291,10 +276,6 @@ class Identifier {
             {
                 this.value = 'DE-'+this.value.trim()
             }
-
         }
     }
-
-
-
 }

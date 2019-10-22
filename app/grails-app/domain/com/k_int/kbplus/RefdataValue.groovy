@@ -115,6 +115,7 @@ class RefdataValue extends AbstractI10nTranslatable implements Comparable<Refdat
         matches
     }
 
+    // called from AjaxController.resolveOID2()
     static def refdataCreate(value) {
         // return new RefdataValue(value:value);
         return null;
