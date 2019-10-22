@@ -243,6 +243,27 @@
                 </div>
                 </g:if>
             </div>
+            <div class="field">
+                <label>${message(code: 'myinst.currentSubscriptions.subscription.runTime')}</label>
+                <div class="inline fields la-filter-inline">
+                    <div class="inline field">
+                        <div class="ui checkbox">
+                            <label for="checkSubRunTimeMultiYear">${message(code: 'myinst.currentSubscriptions.subscription.runTime.multiYear')}</label>
+                            <input id="checkSubRunTimeMultiYear" name="subRunTimeMultiYear" type="checkbox" <g:if test="${params.subRunTimeMultiYear}">checked=""</g:if>
+                                   tabindex="0">
+                        </div>
+                    </div>
+                    <div class="inline field">
+                        %{--<div class="ui checkbox">
+                            <label for="checkSubRunTimeNoMultiYear">${message(code: 'myinst.currentSubscriptions.subscription.runTime.NoMultiYear')}</label>
+                            <input id="checkSubRunTimeNoMultiYear" name="subRunTime" type="checkbox" value="${params.subRunTime}"
+                                   tabindex="0">
+                        </div>--}%
+                    </div>
+                </div>
+            </div>
+
+            </div>
 
             <div class="field la-field-right-aligned">
                 <a href="${request.forwardURI}" class="ui reset primary button">${message(code:'default.button.reset.label')}</a>
@@ -254,6 +275,7 @@
 </semui:filter>
 
 <div class="subscription-results">
+<g:if test="${subscriptions}">
     <table class="ui celled sortable table table-tworow la-table">
         <thead>
         <tr>
@@ -481,6 +503,16 @@
             </tr>
         </g:each>
     </table>
+</g:if>
+    <g:else>
+        <g:if test="${filterSet}">
+            <br><strong><g:message code="filter.result.empty.object" args="${[message(code:"subscription.plural")]}"/></strong>
+        </g:if>
+        <g:else>
+            <br><strong><g:message code="result.empty.object" args="${message(code:"subscription.plural")}"/></strong>
+        </g:else>
+    </g:else>
+
 </div>
 
     <g:if test="${subscriptions}">

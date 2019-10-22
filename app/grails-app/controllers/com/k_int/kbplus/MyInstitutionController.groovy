@@ -3385,6 +3385,10 @@ AND EXISTS (
             query += " and subT.type.id in (:subTypes) "
             qarams.put('subTypes', params.list('subTypes').collect { it -> Long.parseLong(it) })
         }
+        if (params.subRunTimeMultiYear) {
+            query += " and subT.isMultiYear = :subRunTimeMultiYear "
+            qarams.put('subRunTimeMultiYear', params.subRunTimeMultiYear ? true : false )
+        }
 
         String orderQuery = " order by roleT.org.sortname, subT.name"
         if (params.sort?.size() > 0) {
