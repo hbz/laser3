@@ -16,7 +16,7 @@ class Fact {
   RefdataValue factMetric
 
   TitleInstance relatedTitle
-  Org supplier
+  Platform supplier
   Org inst
   IdentifierOccurrence juspio
 

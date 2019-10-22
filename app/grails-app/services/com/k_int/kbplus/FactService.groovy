@@ -498,7 +498,7 @@ class FactService {
   def platformsWithNatstatId()
   {
     def hql = "select platform from Platform as platform" +
-        " where exists (select 1 from platform.customProperties as pcp where pcp.owner = platform.id)"
+        " where exists (select 1 from platform.customProperties as pcp where pcp.owner = platform.id and pcp.type.name = 'NatStat Supplier ID')"
     return Platform.executeQuery(hql)
   }
 

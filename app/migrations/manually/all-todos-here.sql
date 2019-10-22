@@ -48,3 +48,12 @@ ALTER TABLE org DROP COLUMN org_origin_edit_url;
 --DELETE FROM identifier_occurrence where io_canonical_id in (select id_id from identifier left join identifier_namespace "in" on identifier.id_ns_fk = "in".idns_id where "in".idns_ns in ('originEditUrl','originediturl'));
 --DELETE FROM identifier where id_ns_fk = (select idns_id from identifier_namespace where idns_ns in ('originEditUrl','originediturl'));
 --DELETE FROM identifier_namespace where idns_ns in ('originEditUrl','originediturl');
+
+UPDATE subscription set sub_is_multi_year = FALSE;
+
+-- 2019-10-21
+DELETE FROM stats_triple_cursor;
+DELETE FROM fact;
+-- execute before startup / local dev environment only
+ALTER TABLE fact DROP COLUMN supplier_id;
+

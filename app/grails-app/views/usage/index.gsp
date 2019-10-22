@@ -61,10 +61,10 @@
 <div class="ui mini message">
     <i class="close icon"></i>
     <ul class="list">
-        <li>Anbieter sind nur auswählbar, wenn ein Anbieter mit konfiguriertem statssid Identifier existiert</li>
+        <li>Platformen sind nur auswählbar, wenn zu der Platform das Merkmal "NatStat Anbieter" konfiguriert wurde</li>
         <li>Einrichtungen sind nur auswählbar, wenn ein wibid Identifier dafür gespeichert ist</li>
-        <li>statssid und WIBID müssen für einen erfolgreichen Abruf zu den IDs im Statistikserver passen</li>
-        <li>Das Matching der Titel erfolgt über die Titel ZDB ID. Diese IDs müssen sowohl im Statistikserver als auch in LAS:eR existieren</li>
+        <li>Das "NatStat Anbieter" Merkmal und die WIBID müssen für einen erfolgreichen Abruf zu den IDs im Statistikserver passen (Vendor/WIBID)</li>
+        <li>Das Matching der Titel erfolgt über die Titel ZDB ID oder bei Büchern über den DOI. Diese IDs müssen sowohl im Statistikserver als auch in LAS:eR existieren</li>
         <li>Für den Abruf von Statistiken ist pro Einrichtung eine Requestor ID und ein API Key erforderlich</li>
     </ul>
 </div>
