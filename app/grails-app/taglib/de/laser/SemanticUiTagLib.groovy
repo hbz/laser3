@@ -644,6 +644,9 @@ class SemanticUiTagLib {
         out << '<span id="js-confirmation-term-where"></span> '
         out << '<span id="js-confirmation-term-where-detail"></span> '
         out << '<span id="js-confirmation-term-how"></span>'
+        out << '//////////////////////////'
+        out << '<span class="confirmation-term" id="js-confirmation-term"></span>'
+        out << '//////////////////////////'
         out << '?</div>'
         out << '<span class="content" id="js-confirmation-term-content"></span> '
 

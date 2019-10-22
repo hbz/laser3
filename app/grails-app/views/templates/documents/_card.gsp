@@ -142,6 +142,7 @@
                                                       data-confirm-term-what-detail="${docctx.owner.title}"
                                                       data-confirm-term-where="member"
                                                       data-confirm-term-how="share"
+
                                                       data-done=""
                                                       data-always="bb8.init('#container-documents')"
                                                       data-update="container-documents"

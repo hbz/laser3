@@ -11,7 +11,8 @@ var currLanguage = $('html').attr('lang');
         'statusbar.showButtons.tooltip',
         'default.informations',
         'default.actions',
-        'property.select.placeholder'
+        'property.select.placeholder',
+        'confirm.dialog.delete'
     ]
 
 println """
@@ -455,6 +456,9 @@ r2d2 = {
                 var whereDetail = that.getAttribute("data-confirm-term-where-detail")? that.getAttribute("data-confirm-term-where-detail"):false;
                 var how = that.getAttribute("data-confirm-term-how") ? that.getAttribute("data-confirm-term-how"):"delete";
                 var content = that.getAttribute("data-confirm-term-content")? that.getAttribute("data-confirm-term-content"):false;
+
+                var tokenMsg = that.getAttribute("data-confirm-tokenMsg")? that.getAttribute("data-confirm-tokenMsg"):false;
+
                 var messageHow;
 
                 switch (how) {
@@ -630,10 +634,20 @@ r2d2 = {
                 whereDetail ? $('#js-confirmation-term-where-detail').text(whereDetail) : $("#js-confirmation-term-where-detail").remove();
                 where ? $('#js-confirmation-term-where').text(messageWhere) : $("#js-confirmation-term-where").remove();
                 content ? $('#js-confirmation-term-content').text(messageContent) : $("#js-confirmation-term-content").remove();
+                ///////////////////
+                //tokenMsg ? $('#js-confirmation-term').text(dict.get('confirm.dialog.1',currLanguage)) : $("#js-confirmation-term").remove();
+                tokenMsg ? $('#js-confirmation-term').html(tokenMsg) : $("#js-confirmation-term").remove();
+
+
+                ///////////////////
+
+
+
                 $('#js-confirmation-term-how').text(messageHow); // Should be always set - otherwise "delete"
+                
                 switch (how) {
                     case "delete":
-                        $('#js-confirmation-button').html('Löschen<i class="trash alternate icon"></i>');
+                        $('#js-confirmation-button').html(dict.get('confirm.dialog.delete',currLanguage) + '<i class="trash alternate icon"></i>');
                         break;
                     case "unlink":
                         $('#js-confirmation-button').html('Aufheben<i class="la-chain broken icon"></i>');
