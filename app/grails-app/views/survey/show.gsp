@@ -78,12 +78,11 @@
                     </div>
                 </div>
             </div>
-
-            <g:if test="${!config?.pickAndChoose}">
+            <g:if test="${surveyInfo?.type == de.laser.helper.RDStore.SURVEY_TYPE_TITLE_SELECTION}">
                 <g:set var="finish"
-                       value="${com.k_int.kbplus.SurveyResult.findAllBySurveyConfigInListAndFinishDateIsNotNull(surveyInfo?.surveyConfigs).size()}"/>
+                       value="${com.k_int.kbplus.SurveyOrg.findAllByFinishDateIsNotNullAndSurveyConfigInList(surveyInfo?.surveyConfigs).size()}"/>
                 <g:set var="total"
-                       value="${com.k_int.kbplus.SurveyResult.findAllBySurveyConfigInList(surveyInfo?.surveyConfigs).size()}"/>
+                       value="${com.k_int.kbplus.SurveyOrg.findAllBySurveyConfigInList(surveyInfo?.surveyConfigs).size()}"/>
 
                 <g:set var="finishProcess" value="${(finish != 0 && total != 0) ? (finish / total) * 100 : 0}"/>
                 <g:if test="${finishProcess > 0 || surveyInfo?.status?.id == de.laser.helper.RDStore.SURVEY_SURVEY_STARTED.id}">
@@ -106,8 +105,36 @@
                         </div>
                     </div>
                 </g:if>
-
             </g:if>
+            <g:else>
+                <g:set var="finish"
+                       value="${com.k_int.kbplus.SurveyResult.findAllBySurveyConfigInListAndFinishDateIsNotNull(surveyInfo?.surveyConfigs).size()}"/>
+                <g:set var="total"
+                       value="${com.k_int.kbplus.SurveyResult.findAllBySurveyConfigInList(surveyInfo?.surveyConfigs).size()}"/>
+
+                <g:set var="finishProcess" value="${(finish != 0 && total != 0) ? (finish / total) * 100 : 0}"/>
+                <g:if test="${finishProcess > 0 || surveyInfo?.status?.id == de.laser.helper.RDStore.SURVEY_SURVEY_STARTED.id}">
+                    <div class="ui card">
+
+                        <div class="content">
+                            <div class="ui indicating progress" id="finishProcess2" data-value="${finishProcess}"
+                                 data-total="100">
+                                <div class="bar">
+                                    <div class="progress">${finishProcess}</div>
+                                </div>
+
+                                <div class="label"
+                                     style="background-color: transparent"><g:formatNumber number="${finishProcess}"
+                                                                                           type="number"
+                                                                                           maxFractionDigits="2"
+                                                                                           minFractionDigits="2"/>% <g:message
+                                        code="surveyInfo.finished"/></div>
+                            </div>
+                        </div>
+                    </div>
+                </g:if>
+
+            </g:else>
 
             <br>
             <g:if test="${surveyConfigs}">
