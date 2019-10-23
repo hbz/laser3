@@ -570,7 +570,7 @@ class Org
         }
         builder.'identifiers' () {
           ids?.each { id_oc ->
-            builder.identifier([namespace:id_oc.identifier?.ns.ns, value:id_oc.identifier?.value])
+            builder.identifier([namespace:id_oc.ns.ns, value:id_oc.value])
           }
         }
       }

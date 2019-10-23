@@ -950,7 +950,7 @@ from License as l where (
             if(identifiers.get(identifier.sub))
                 subIdentifiers = identifiers.get(identifier.sub)
             else subIdentifiers = new TreeSet()
-            subIdentifiers.add("(${identifier.identifier.ns.ns}) ${identifier.identifier.value}")
+            subIdentifiers.add("(${identifier.ns.ns}) ${identifier.value}")
             identifiers.put(identifier.sub,subIdentifiers)
         }
         allCostItems.each { row ->

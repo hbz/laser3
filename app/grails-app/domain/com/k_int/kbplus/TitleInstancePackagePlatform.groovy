@@ -204,9 +204,9 @@ class TitleInstancePackagePlatform extends AbstractBaseDomain implements Auditab
 
   String getIdentifierValue(idtype) {
     def result=null
-    ids?.each { id ->
-      if ( id.identifier?.ns?.ns?.toLowerCase() == idtype.toLowerCase() )
-        result = id.identifier?.value
+    ids?.each { ident ->
+      if ( ident.ns?.ns?.toLowerCase() == idtype.toLowerCase() )
+        result = ident.value
     }
     result
   }

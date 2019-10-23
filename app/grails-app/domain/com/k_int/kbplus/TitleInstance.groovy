@@ -888,7 +888,7 @@ class TitleInstance extends AbstractBaseDomain implements AuditableTrait {
   def identifiersAsString() {
     def result = new StringWriter()
     ids.each { id ->
-      result.write("${id.identifier.ns.ns}:${id.identifier.value} ");
+      result.write("${id.ns.ns}:${id.value} ");
     }
     return result.toString()
   }

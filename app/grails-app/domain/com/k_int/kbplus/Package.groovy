@@ -546,7 +546,7 @@ static hasMany = [  tipps:     TitleInstancePackagePlatform,
           println "processing IDs ..."
       tip?.title?.ids.each { id ->
           println "adding identifier ${id}"
-        newtip.title.identifiers.add([namespace:id.identifier.ns.ns, value:id.identifier.value]);
+        newtip.title.identifiers.add([namespace:id.ns.ns, value:id.value]);
       }
 
       result.tipps.add(newtip)
@@ -617,12 +617,11 @@ static hasMany = [  tipps:     TitleInstancePackagePlatform,
 
     def getIdentifierByType(idtype) {
         def result = null
-        ids.each { id ->
-            if ( id.identifier.ns.ns.equalsIgnoreCase(idtype) ) {
-                result = id.identifier;
+        ids.each { ident ->
+            if ( ident.ns.ns.equalsIgnoreCase(idtype) ) {
+                result = ident;
             }
         }
         result
     }
-
 }
