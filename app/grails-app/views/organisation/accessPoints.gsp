@@ -18,7 +18,7 @@
 
     <g:if test="${accessService.checkPerm('ORG_INST,ORG_CONSORTIUM')}">
         <semui:controlButtons>
-            <g:render template="actions" model="[org:org]" />
+            <g:render template="actions" />
         </semui:controlButtons>
     </g:if>
 
