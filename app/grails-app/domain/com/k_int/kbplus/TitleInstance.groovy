@@ -1,6 +1,7 @@
 package com.k_int.kbplus
 
 import de.laser.domain.AbstractBaseDomain
+import de.laser.helper.RDStore
 import de.laser.helper.RefdataAnnotation
 import de.laser.traits.AuditableTrait
 import groovy.util.logging.Log4j
@@ -226,17 +227,18 @@ class TitleInstance extends AbstractBaseDomain implements AuditableTrait {
     return result;
   }
 
-  static def lookupOrCreate(List candidate_identifiers, String title, String imp_uuid) {
-    lookupOrCreate(candidate_identifiers, title, false, null, imp_uuid)
+  static def lookupOrCreate(List candidate_identifiers, String title, String imp_uuid, String status) {
+    lookupOrCreate(candidate_identifiers, title, false, null, imp_uuid, status)
   }
 
-  static def lookupOrCreate(List candidate_identifiers, String title, String titletyp, String imp_uuid) {
-        lookupOrCreate(candidate_identifiers, title, false, titletyp, imp_uuid)
+  static def lookupOrCreate(List candidate_identifiers, String title, String titletyp, String imp_uuid, String status) {
+        lookupOrCreate(candidate_identifiers, title, false, titletyp, imp_uuid, status)
     }
 
-  static TitleInstance lookupOrCreate(List candidate_identifiers, String title, boolean enrich, String titletyp, String imp_uuid) {
+  static TitleInstance lookupOrCreate(List candidate_identifiers, String title, boolean enrich, String titletyp, String imp_uuid, String status) {
     def result = null
     def origin_uri = null
+    String gokbUUID = null
     def skip_creation = false
     def valid_match = false
     List<TitleInstance> ti_candidates = []
@@ -257,8 +259,10 @@ class TitleInstance extends AbstractBaseDomain implements AuditableTrait {
     }
 
     if(!result){
-
-      candidate_identifiers.each { i ->
+        TitleInstance ti_candidate = TitleInstance.findByGokbId(gokbUUID)
+        if(ti_candidate)
+            ti_candidates << ti_candidate
+        candidate_identifiers.each { i ->
           if(i.namespace.toLowerCase() == 'uri'){
             origin_uri = i.value
           }
@@ -283,7 +287,7 @@ class TitleInstance extends AbstractBaseDomain implements AuditableTrait {
           else {
             static_logger.debug("error processing candidate identifier ${i}");
           }
-      }
+        }
     }
 
     if( ti_candidates.size() > 0 ) {
@@ -300,6 +304,9 @@ class TitleInstance extends AbstractBaseDomain implements AuditableTrait {
         boolean origin_match = false
         boolean origin_uri_match = false
 
+        if(cti.gokbId == gokbUUID)
+            origin_match = true
+
         cti.ids.each { ctio ->
 
           if ( !canonical_ids.contains(ctio.identifier) ){
@@ -314,16 +321,15 @@ class TitleInstance extends AbstractBaseDomain implements AuditableTrait {
             intersection++;
           }
         }
-        /* origin_match is based on originediturl which has been taken off
         if ( origin_match ) {
           if( !result ) {
             result = cti
             valid_match = true
-            log.debug("Matched TI by originediturl.")
+            log.debug("Matched TI by gokb uuid.")
           }else{
-            log.warn("Multiple TIs with the same originediturl found: ${result} AND ${cti}! This should not be possible!")
+            log.warn("Multiple TIs with the same gokb uuid found: ${result} AND ${cti}! This should not be possible!")
           }
-        }*/
+        }
 
         if ( full_match ){
           full_matches.add(cti)
@@ -390,7 +396,7 @@ class TitleInstance extends AbstractBaseDomain implements AuditableTrait {
     //TODO: Import ID ersetzen
     if (!valid_match && !skip_creation) {
       static_logger.debug("No valid match - creating new title");
-      def ti_status = RefdataValue.loc(RefdataCategory.TI_STATUS, [en: 'Current', de: 'Aktuell'])
+      def ti_status = RefdataValue.getByValueAndCategory(status, RDStore.TITLE_STATUS_CURRENT)
       //result = new TitleInstance(title:title, impId:java.util.UUID.randomUUID().toString(), status:ti_status);
       result = ((titletyp=='BookInstance') ? new BookInstance(title:title, impId:imp_uuid ?: java.util.UUID.randomUUID().toString(), gokbId: imp_uuid ?: null, status:ti_status, type: RefdataValue.loc(RefdataCategory.TI_TYPE, [en: 'EBook', de: 'EBook'])) :
               (titletyp=='DatabaseInstance' ? new DatabaseInstance(title:title, impId:imp_uuid ?: java.util.UUID.randomUUID().toString(), gokbId: imp_uuid ?: null, status:ti_status, type: RefdataValue.loc(RefdataCategory.TI_TYPE, [en: 'Database', de: 'Database'])) :
@@ -427,8 +433,8 @@ class TitleInstance extends AbstractBaseDomain implements AuditableTrait {
           def matched_io = IdentifierOccurrence.executeQuery("select io from IdentifierOccurrence as io where io.identifier = ? and io.ti = ?",[cid,result])
 
           if ( !matched_io || matched_io && matched_io.size() == 0){
-            static_logger.debug("adding link to identifier ${cid}");
-            def new_io = new IdentifierOccurrence(identifier:cid, ti:result).save(flush:true, failOnError: true);
+            static_logger.debug("adding link to identifier ${cid}")
+            def new_io = new IdentifierOccurrence(identifier:cid, ti:result).save(failOnError: true)
             modified=true;
           }
         //}
@@ -948,7 +954,7 @@ select ie from IssueEntitlement as ie JOIN ie.subscription.orgRelations as o
       }
     }
 
-    if ( !found ) {
+    if ( !found && ns.toLowerCase() != 'originediturl' ) {
       Identifier id = Identifier.lookupOrCreateCanonicalIdentifier(ns, value)
       List<IdentifierOccurrence> id_occ = IdentifierOccurrence.executeQuery("select io from IdentifierOccurrence as io where io.identifier = :id and io.ti = :ti", [id:id,ti:this])
 
@@ -957,6 +963,9 @@ select ie from IssueEntitlement as ie JOIN ie.subscription.orgRelations as o
       if ( !id_occ || id_occ.size() == 0 ){
         new IdentifierOccurrence(identifier:id, ti:this).save()
       }
+    }
+    else if(ns.toLowerCase() == 'originediturl') {
+      log.debug("identifier namespace of ${value} is deprecated originediturl .. ignoring")
     }
   }
 

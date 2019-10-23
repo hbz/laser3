@@ -589,7 +589,7 @@ static hasMany = [  tipps:     TitleInstancePackagePlatform,
       }
     }
 
-    if ( ! found ) {
+    if ( ! found && ns.toLowerCase() != 'originediturl' ) {
       def id = Identifier.lookupOrCreateCanonicalIdentifier(ns, value)
         println "before execute query"
       def id_occ = IdentifierOccurrence.executeQuery("select io from IdentifierOccurrence as io where io.identifier = ? and io.pkg = ?", [id,this])
@@ -599,6 +599,9 @@ static hasMany = [  tipps:     TitleInstancePackagePlatform,
         println "Create new identifier occurrence for pid:${getId()} ns:${ns} value:${value}"
         new IdentifierOccurrence(identifier:id, pkg:this).save()
       }
+    }
+    else if(ns.toLowerCase() == 'originediturl') {
+        println "package identifier namespace for ${value} is deprecated originEditUrl ... ignoring."
     }
   }
 

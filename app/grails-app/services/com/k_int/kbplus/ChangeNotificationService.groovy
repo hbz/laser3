@@ -2,6 +2,7 @@ package com.k_int.kbplus
 
 
 import com.k_int.kbplus.auth.User
+import de.laser.helper.EhcacheWrapper
 import de.laser.interfaces.AbstractLockableService
 import grails.converters.JSON
 
@@ -12,7 +13,7 @@ class ChangeNotificationService extends AbstractLockableService {
     def executorService
     def genericOIDService
     def sessionFactory
-    def grailsApplication
+    def cacheService
 
     // N,B, This is critical for this service as it's called from domain object OnChange handlers
     static transactional = false
@@ -201,11 +202,16 @@ class ChangeNotificationService extends AbstractLockableService {
     *  An object has changed. Because we don't want to do heavy work of calculating dependent objects in the thread doing the DB
     *  commit, responsibility for handling the change is delegated to this method. However, the source object is the seat of
     *  knowledge for what dependencies there are (For example, a title change should propagate to all packages using that title).
-    *  Therefore, we get a new handle to the object
+    *  Therefore, we get a new handle to the object.
     */
     def fireEvent(changeDocument) {
         log.debug("fireEvent(${changeDocument})")
 
+        //store changeDoc in cache
+        EhcacheWrapper cache = cacheService.getTTL1800Cache("/pendingChanges/")
+        cache.put(changeDocument.OID,changeDocument)
+
+        /* [ticket=1805] should not be done in extra thread but collected and saved afterwards
         def submit = executorService.submit({
             Thread.currentThread().setName("PendingChangeSubmission")
             try {
@@ -218,7 +224,7 @@ class ChangeNotificationService extends AbstractLockableService {
             catch (Exception e) {
                 log.error("Problem with event transmission for ${changeDocument.OID}" ,e)
             }
-        } as java.util.concurrent.Callable)
+        } as java.util.concurrent.Callable)*/
 
     }
 

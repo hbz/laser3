@@ -502,14 +502,18 @@ class Org
             if (identifiers instanceof ArrayList) {
                 identifiers.each{ it ->
                     it.each { k, v ->
-                        def io = new IdentifierOccurrence(org: result, identifier: Identifier.lookupOrCreateCanonicalIdentifier(k, v)).save()
+                        if(k.toLowerCase() != 'originediturl')
+                            def io = new IdentifierOccurrence(org: result, identifier: Identifier.lookupOrCreateCanonicalIdentifier(k, v)).save()
+                        else println "org identifier ${v} is deprecated namespace originEditUrl .. ignoring"
                     }
                 }
             }
             // DEFAULT LOGIC
             else {
                 identifiers.each { k, v ->
-                    def io = new IdentifierOccurrence(org: result, identifier: Identifier.lookupOrCreateCanonicalIdentifier(k, v)).save()
+                    if(k.toLowerCase() != 'originediturl')
+                        def io = new IdentifierOccurrence(org: result, identifier: Identifier.lookupOrCreateCanonicalIdentifier(k, v)).save()
+                    else println "org identifier ${v} is deprecated namespace originEditUrl .. ignoring"
                 }
             }
 
