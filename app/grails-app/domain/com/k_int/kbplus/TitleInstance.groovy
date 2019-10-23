@@ -396,7 +396,7 @@ class TitleInstance extends AbstractBaseDomain implements AuditableTrait {
     //TODO: Import ID ersetzen
     if (!valid_match && !skip_creation) {
       static_logger.debug("No valid match - creating new title");
-      def ti_status = RefdataValue.getByValueAndCategory(status, RDStore.TITLE_STATUS_CURRENT)
+      def ti_status = RDStore.TITLE_STATUS_CURRENT
       //result = new TitleInstance(title:title, impId:java.util.UUID.randomUUID().toString(), status:ti_status);
       result = ((titletyp=='BookInstance') ? new BookInstance(title:title, impId:imp_uuid ?: java.util.UUID.randomUUID().toString(), gokbId: imp_uuid ?: null, status:ti_status, type: RefdataValue.loc(RefdataCategory.TI_TYPE, [en: 'EBook', de: 'EBook'])) :
               (titletyp=='DatabaseInstance' ? new DatabaseInstance(title:title, impId:imp_uuid ?: java.util.UUID.randomUUID().toString(), gokbId: imp_uuid ?: null, status:ti_status, type: RefdataValue.loc(RefdataCategory.TI_TYPE, [en: 'Database', de: 'Database'])) :
