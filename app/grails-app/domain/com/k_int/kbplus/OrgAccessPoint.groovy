@@ -1,5 +1,6 @@
 package com.k_int.kbplus
 
+
 import de.laser.domain.AbstractBaseDomain
 import de.laser.helper.RDStore
 import de.laser.helper.RefdataAnnotation
@@ -10,7 +11,7 @@ import groovy.util.logging.Log4j
 
 @Log4j
 class OrgAccessPoint extends AbstractBaseDomain {
-    
+
     String name
     Org org
     Date dateCreated
@@ -18,11 +19,11 @@ class OrgAccessPoint extends AbstractBaseDomain {
 
     def orgTypeService
 
-    @RefdataAnnotation(cat = '?')
+    @RefdataAnnotation(cat = 'Access Point Type')
     RefdataValue accessMethod
 
     static belongsTo = [
-        org:Org
+        Org
     ]
 
     static hasMany = [
@@ -81,7 +82,8 @@ class OrgAccessPoint extends AbstractBaseDomain {
         String qry = "select distinct p from SubscriptionPackage subPkg join subPkg.subscription s join subPkg.pkg pkg, " +
             "TitleInstancePackagePlatform tipp join tipp.platform p " +
             "where tipp.pkg = pkg and s.id in (:currentSubIds) " +
-            " and not exists (select 1 from OrgAccessPointLink oapl where oapl.platform = p and oapl.active = true)"
+            " and not exists (select 1 from OrgAccessPointLink oapl where oapl.platform = p and oapl.active = true and oapl.oap = :orgAccessPoint) "
+
         qry += " and ((pkg.packageStatus is null) or (pkg.packageStatus != :pkgDeleted))"
         qry += " and ((p.status is null) or (p.status != :platformDeleted))"
         qry += " and ((tipp.status is null) or (tipp.status != :tippDeleted))"
@@ -91,10 +93,13 @@ class OrgAccessPoint extends AbstractBaseDomain {
             currentSubIds: currentSubIds,
             pkgDeleted: RDStore.PACKAGE_DELETED,
             platformDeleted: RDStore.PLATFORM_DELETED,
-            tippDeleted: RDStore.TIPP_DELETED
+            tippDeleted: RDStore.TIPP_DELETED,
+            orgAccessPoint: this
         ]
 
-        return Subscription.executeQuery(qry, qryParams)
+        def result = Subscription.executeQuery(qry, qryParams)
+
+        return result
     }
 
     def getNotLinkedSubscriptions()
