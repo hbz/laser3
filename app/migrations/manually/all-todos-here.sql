@@ -33,16 +33,18 @@
 -- ALTER TABLE user_folder RENAME uf_lastupdated TO uf_last_updated;
 
 -- 2019-10-18
+-- changesets in changelog-2019-10-21.groovy
 ALTER TABLE subscription ADD sub_is_multi_year boolean;
 --UPDATE subscription set sub_is_multi_year = FALSE;
 
 -- 2019-10-22
+-- changesets in changelog-2019-10-23.groovy
 -- ERMS-1785: purge originEditUrl as it is never used
 ALTER TABLE package DROP COLUMN pkg_origin_edit_url;
 ALTER TABLE title_instance_package_platform DROP COLUMN tipp_origin_edit_url;
 ALTER TABLE title_instance DROP COLUMN ti_origin_edit_url;
 ALTER TABLE platform DROP COLUMN plat_origin_edit_url;
 ALTER TABLE org DROP COLUMN org_origin_edit_url;
-DELETE FROM identifier_occurrence where io_canonical_id in (select id_id from identifier left join identifier_namespace "in" on identifier.id_ns_fk = "in".idns_id where "in".idns_ns in ('originEditUrl','originediturl'));
-DELETE FROM identifier where id_ns_fk = (select idns_id from identifier_namespace where idns_ns in ('originEditUrl','originediturl'));
-DELETE FROM identifier_namespace where idns_ns in ('originEditUrl','originediturl');
+--DELETE FROM identifier_occurrence where io_canonical_id in (select id_id from identifier left join identifier_namespace "in" on identifier.id_ns_fk = "in".idns_id where "in".idns_ns in ('originEditUrl','originediturl'));
+--DELETE FROM identifier where id_ns_fk = (select idns_id from identifier_namespace where idns_ns in ('originEditUrl','originediturl'));
+--DELETE FROM identifier_namespace where idns_ns in ('originEditUrl','originediturl');
