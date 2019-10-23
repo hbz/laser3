@@ -49,8 +49,6 @@ ALTER TABLE org DROP COLUMN org_origin_edit_url;
 --DELETE FROM identifier where id_ns_fk = (select idns_id from identifier_namespace where idns_ns in ('originEditUrl','originediturl'));
 --DELETE FROM identifier_namespace where idns_ns in ('originEditUrl','originediturl');
 
-UPDATE subscription set sub_is_multi_year = FALSE;
-
 -- 2019-10-23
 -- need to refetch usage data delete contents of tables
 DELETE FROM stats_triple_cursor;
