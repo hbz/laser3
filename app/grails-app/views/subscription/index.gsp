@@ -1,7 +1,7 @@
 <%@ page import="com.k_int.kbplus.Subscription" %>
 <%@ page import="com.k_int.kbplus.Package; com.k_int.kbplus.RefdataCategory; com.k_int.kbplus.ApiSource;" %>
 
-<%--<r:require module="annotations"/> [ticket-1800] deactivated as of pull request #829 --%>
+<%-- r:require module="annotations" --%>
 
 <!doctype html>
 <html>

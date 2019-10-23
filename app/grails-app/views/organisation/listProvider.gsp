@@ -64,11 +64,22 @@
                           ]"/>
             </g:form>
         </semui:filter>
-        <g:render template="/templates/filter/orgFilterTable"
-              model="[orgList: orgList,
-                      tmplShowCheckbox: false,
-                      tmplConfigShow: ['lineNumber', 'shortname', 'name', 'country']
-              ]"/>
+        <g:if test="${orgList}">
+            <g:render template="/templates/filter/orgFilterTable"
+                  model="[orgList: orgList,
+                          tmplShowCheckbox: false,
+                          tmplConfigShow: ['lineNumber', 'shortname', 'name', 'country']
+                  ]"/>
+        </g:if>
+        <g:else>
+            <g:if test="${filterSet}">
+                <br><strong><g:message code="filter.result.empty.object" args="${[message(code:"default.ProviderAgency.label")]}"/></strong>
+            </g:if>
+            <g:else>
+                <br><strong><g:message code="result.empty.object" args="${message(code:"default.ProviderAgency.label")}"/></strong>
+            </g:else>
+        </g:else>
+
         <semui:paginate total="${orgListTotal}" params="${params}" />
 
     </body>

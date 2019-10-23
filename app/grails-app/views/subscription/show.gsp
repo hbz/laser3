@@ -84,6 +84,11 @@
                                 <dd><semui:xEditable owner="${subscriptionInstance}" field="manualCancellationDate" type="date"/></dd>
                                 <dd class="la-js-editmode-container"><semui:auditButton auditable="[subscriptionInstance, 'manualCancellationDate']" /></dd>
                             </dl>
+                            <dl>
+                                <dt class="control-label">${message(code: 'subscription.isMultiYear.label')}</dt>
+                                <dd><semui:xEditableBoolean owner="${subscriptionInstance}" field="isMultiYear" /></dd>
+                                <dd class="la-js-editmode-container"><semui:auditButton auditable="[subscriptionInstance, 'isMultiYear']"/></dd>
+                            </dl>
 
                         </div>
                     </div>
