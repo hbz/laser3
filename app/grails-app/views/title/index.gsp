@@ -70,9 +70,7 @@
                           </td>
                           <td>
                             <g:each in="${hit.getSource().identifiers}" var="id">
-                              <g:if test="${id.type != 'originediturl'}">
                                 <div style="white-space:nowrap"><span>${id.type}:</span><span>${id.value}</span></div>
-                              </g:if>
                             </g:each>
                           </td>
                         </tr>
