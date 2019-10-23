@@ -157,9 +157,10 @@ public class GokbDiffEngine {
 
             def title_of_tipp_to_update = TitleInstance.findByGokbId(newTipp.title.gokbId)
             if (!title_of_tipp_to_update) {
-                title_of_tipp_to_update = TitleInstance.lookupOrCreate(newTipp.title.identifiers, newTipp.title.name, newTipp.title.titleType, newTipp.title.gokbId)
+                title_of_tipp_to_update = TitleInstance.lookupOrCreate(newTipp.title.identifiers, newTipp.title.name, newTipp.title.titleType, newTipp.title.gokbId, newTipp.title.status)
             }
 
+            //continue here: use this occasion of needing TitleInstance diff check to check out whether the API gives title information
             if (Holders.config.globalDataSync.replaceLocalImpIds.TitleInstance && title_of_tipp_to_update && newTipp.title.gokbId &&
                     (title_of_tipp_to_update?.gokbId != newTipp.title.gokbId || !title_of_tipp_to_update?.gokbId)) {
                 title_of_tipp_to_update.impId = (title_of_tipp_to_update.impId == newTipp.title.gokbId) ? title_of_tipp_to_update.impId : newTipp.title.gokbId

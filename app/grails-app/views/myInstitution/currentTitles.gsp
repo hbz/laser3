@@ -265,23 +265,9 @@
                                 </g:each>
 
                                 <g:each in="${ti?.ids?.sort { it?.identifier?.ns?.ns }}" var="id">
-                                    <g:if test="${id.identifier.ns.ns == 'originediturl'}">
-                                        <%--<span class="ui small teal image label">
-                                            ${id.identifier.ns.ns}: <div class="detail"><a
-                                                href="${id.identifier.value}">${message(code: 'package.show.openLink', default: 'Open Link')}</a>
-                                        </div>
-                                        </span>
-                                        <span class="ui small teal image label">
-                                            ${id.identifier.ns.ns}: <div class="detail"><a
-                                                href="${id.identifier.value.toString().replace("resource/show", "public/packageContent")}">${message(code: 'package.show.openLink', default: 'Open Link')}</a>
-                                        </div>
-                                        </span>--%>
-                                    </g:if>
-                                    <g:else>
-                                        <span class="ui small teal image label">
-                                            ${id.identifier.ns.ns}: <div class="detail">${id.identifier.value}</div>
-                                        </span>
-                                    </g:else>
+                                    <span class="ui small teal image label">
+                                        ${id.identifier.ns.ns}: <div class="detail">${id.identifier.value}</div>
+                                    </span>
                                 </g:each>
                                 <br/>
 
