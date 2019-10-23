@@ -78,6 +78,9 @@
                                                 params='${[contextOid: "${object.class.name}:${object.id}", contextProperty: "ids", targetOid: "${ident.class.name}:${ident.id}"]}'>
                                             ${message(code: 'default.delete.label', args: ["${message(code: 'identifier.label')}"])}</g:link>
                                         --%>
+                                        <g:link controller="ajax" action="deleteIdentifier"
+                                                params='${[owner: "${object.class.name}:${object.id}", target: "${ident.class.name}:${ident.id}"]}'>
+                                            ${message(code: 'default.delete.label', args: ["${message(code: 'identifier.label')}"])}</g:link>
                                     </g:if>
                                 </td>
                             </tr>
@@ -86,10 +89,17 @@
                     </table>
                 </dd>
 
-                <g:if test="${editable}">
+                <%
+                    List<IdentifierNamespace> nsList = IdentifierNamespace.where{(nsType == object.class.name || nsType == null)}
+                            .list(sort: 'ns')
+                            .sort { a,b -> a.ns.compareToIgnoreCase b.ns }
+                            .collect{ it }
+                %>
+                <g:if test="${editable && nsList}">
                     <dt class="la-js-hideMe">
                         Identifikfator hinzufügen
                     </dt>
+
                     <dd class="la-js-hideMe">
                         <g:if test="${object.class.simpleName == 'License'}">
                             ${message(code: 'identifier.select.text', args: ['gasco-lic:0815'])}
@@ -105,17 +115,13 @@
                         </g:if>
 
                         <g:form controller="ajax" action="addIdentifier" class="ui form">
-                            <%
-                                List<IdentifierNamespace> nsList = IdentifierNamespace.where{(nsType == object.class.name || nsType == null)}
-                                                        .list(sort: 'ns')
-                                                        .sort { a,b -> a.ns.compareToIgnoreCase b.ns }
-                            %>
                             <input name="owner" type="hidden" value="${object.class.name}:${object.id}" />
+
                             <div class="fields two">
                                 <div class="field">
                                     <label for="namespace">Namensraum</label>
                                     <g:select name="namespace" id="namespace" class="ui search dropdown"
-                                              from="${nsList}" optionKey="id" optionValue="ns" />
+                                              from="${nsList}" optionKey="${{'com.k_int.kbplus.IdentifierNamespace:' + it.id}}" optionValue="ns" />
                                 </div>
                                 <div class="field">
                                     <label for="value">Identifikator</label>

@@ -1964,6 +1964,37 @@ class AjaxController {
     }
 
     @Secured(['ROLE_USER'])
+    def addIdentifier() {
+        log.debug("AjaxController::addIdentifier ${params}")
+        def owner = genericOIDService.resolveOID(params.owner)
+        def namespace = genericOIDService.resolveOID(params.namespace)
+        String value = params.value?.trim()
+
+        if (owner && namespace && value) {
+            Identifier.construct([value: value, reference: owner, namespace: namespace])
+        }
+        redirect(url: request.getHeader('referer'))
+    }
+
+    @Secured(['ROLE_USER'])
+    def deleteIdentifier() {
+        log.debug("AjaxController::deleteIdentifier ${params}")
+        def owner = genericOIDService.resolveOID(params.owner)
+        def target = genericOIDService.resolveOID(params.target)
+
+        log.debug('owner: ' + owner)
+        log.debug('target: ' + target)
+
+        if (owner && target) {
+            if (target."${Identifier.getAttributeName(owner)}" == owner.id) {
+                log.debug("Identifier deleted: ${params}")
+                target.delete()
+            }
+        }
+        redirect(url: request.getHeader('referer'))
+    }
+
+    @Secured(['ROLE_USER'])
   def addToCollection() {
     log.debug("AjaxController::addToCollection ${params}");
 

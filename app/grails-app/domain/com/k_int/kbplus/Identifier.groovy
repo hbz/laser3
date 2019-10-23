@@ -1,7 +1,6 @@
 package com.k_int.kbplus
 
 import org.apache.commons.logging.LogFactory
-
 import javax.persistence.Transient
 
 class Identifier {
@@ -84,15 +83,18 @@ class Identifier {
         String attr = Identifier.getAttributeName(reference)
 
         def ident = Identifier.executeQuery(
-                'select ident from Identifier ident where ident.value = :val and ident.ns = :ns and ident.' + attr + ' = :ref',
+                'select ident from Identifier ident where ident.value = :val and ident.ns = :ns and ident.' + attr + ' = :ref order by ident.id',
                 [val: value, ns: ns, ref: reference]
 
         )
-        if (ident instanceof List && ident.size() > 1) {
-            print ("WARNING: multiple matches found for ( ${value}, ${ns}, ${reference.class} )")
+        if (! ident.isEmpty()) {
+            if (ident.size() > 1) {
+                print ("WARNING: multiple matches found for ( ${value}, ${ns}, ${reference.class} )")
+            }
+            ident = ident.first()
         }
-        if (!ident) {
-            print ("WARNING: no matches found; creating new identifier for ( ${value}, ${ns}, ${reference.class} )")
+        if (! ident) {
+            print ("INFO: no match found; creating new identifier for ( ${value}, ${ns}, ${reference.class} )")
             ident = new Identifier(ns: ns, value: value)
             ident.setReference(reference)
             ident.save()
