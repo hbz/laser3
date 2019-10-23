@@ -13,7 +13,7 @@ class ChangeNotificationService extends AbstractLockableService {
     def executorService
     def genericOIDService
     def sessionFactory
-    def cacheService
+    //def cacheService
 
     // N,B, This is critical for this service as it's called from domain object OnChange handlers
     static transactional = false
@@ -208,10 +208,10 @@ class ChangeNotificationService extends AbstractLockableService {
         log.debug("fireEvent(${changeDocument})")
 
         //store changeDoc in cache
-        EhcacheWrapper cache = cacheService.getTTL1800Cache("/pendingChanges/")
-        cache.put(changeDocument.OID,changeDocument)
+        //EhcacheWrapper cache = cacheService.getTTL1800Cache("/pendingChanges/")
+        //cache.put(changeDocument.OID,changeDocument)
 
-        /* [ticket=1805] should not be done in extra thread but collected and saved afterwards
+        // TODO [ticket=1807] should not be done in extra thread but collected and saved afterwards
         def submit = executorService.submit({
             Thread.currentThread().setName("PendingChangeSubmission")
             try {
@@ -224,7 +224,7 @@ class ChangeNotificationService extends AbstractLockableService {
             catch (Exception e) {
                 log.error("Problem with event transmission for ${changeDocument.OID}" ,e)
             }
-        } as java.util.concurrent.Callable)*/
+        } as java.util.concurrent.Callable)
 
     }
 

@@ -27,7 +27,7 @@ import java.text.SimpleDateFormat
 class GlobalSourceSyncService extends AbstractLockableService {
 
 
-    def cacheService
+    //def cacheService
     def genericOIDService
     def executorService
     def sessionFactory
@@ -878,7 +878,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
         }
 
         com.k_int.kbplus.GokbDiffEngine.diff(pkg, oldpkg, newpkg, onNewTipp, onUpdatedTipp, onDeletedTipp, onPkgPropChange, onTippUnchanged, auto_accept_flag)
-
+        /* TODO [ticket=1807] further tests needed; should be done along larger refactoring
         EhcacheWrapper cacheWrapper = cacheService.getTTL1800Cache("/pendingChanges/")
         if(cacheWrapper) {
             Cache cache = cacheWrapper.getCache()
@@ -887,7 +887,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
                 def contextObject = genericOIDService.resolveOID(changeDocumentOID)
                 contextObject?.notifyDependencies_trait(cache.get(changeDocumentOID))
             }
-        }
+        }*/
     }
 
     def testTitleCompliance = { json_record ->
