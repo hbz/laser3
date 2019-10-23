@@ -184,7 +184,7 @@ class SemanticUiTagLib {
 
         if (systemChecks) {
 
-            out << '<a href="#systemInfo" id="showSystemInfo" aria-label="System Info" class="ui button big icon" data-semui="modal">'
+            out << '<a href="#systemInfo" id="showSystemInfo" aria-label="System Info" class="ui button icon" data-semui="modal">'
             out << '<i class="red fire extinguisher icon"></i>'
             out << '</a>'
 
