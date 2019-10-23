@@ -229,11 +229,9 @@ ${message(code: 'subscription.details.availableTitles', default: 'Available Titl
             </g:if>
             <br>
             <g:each in="${tipp?.title?.ids?.sort { it?.ns?.ns }}" var="id">
-                <g:if test="${id.ns.ns != 'originEditUrl'}">
-                    <span class="ui small teal image label">
-                        ${id.ns.ns}: <div class="detail">${id.value}</div>
-                    </span>
-                </g:if>
+                <span class="ui small teal image label">
+                    ${id.ns.ns}: <div class="detail">${id.value}</div>
+                </span>
             </g:each>
 
 

@@ -481,7 +481,7 @@
                                 <div class="menu">
                                     <g:link class="item" controller="yoda" action="migrateCollectiveSubscriptions">Migrate Collective Subscriptions (0.20)</g:link>
                                     <g:link class="item" controller="yoda" action="migrateNatStatSettings">Migrate NatStat Settings (0.20)</g:link>
-                                    <g:link class="item" controller="yoda" action="remapOriginEditUrl">Remap OriginEditUrl (0.20)</g:link>
+                                    <%--<g:link class="item" controller="yoda" action="remapOriginEditUrl">Remap OriginEditUrl (0.20)</g:link>--%>
                                     <g:link class="item" controller="yoda" action="checkIssueEntitlementPackages"><g:message code="menu.admin.checkIssueEntitlementPackages"/> (0.20)</g:link>
                                     <g:link class="item" controller="yoda" action="surveyCheck">Update Survey Status</g:link>
                                     <g:link class="item" controller="yoda" action="dbmFixPrivateProperties">Fix Private Properties</g:link>

@@ -1256,7 +1256,13 @@ class SubscriptionController extends AbstractDebugController {
                 }
             }
             if (filteredSubscr) {
-                result.filteredSubChilds << [sub: sub, orgs: filteredSubscr]
+                if (params.subRunTimeMultiYear) {
+                    if(sub?.isMultiYear) {
+                        result.filteredSubChilds << [sub: sub, orgs: filteredSubscr]
+                    }
+                }else {
+                    result.filteredSubChilds << [sub: sub, orgs: filteredSubscr]
+                }
             }
         }
 
@@ -3148,7 +3154,7 @@ class SubscriptionController extends AbstractDebugController {
                         Thread.currentThread().setName("PackageSync_"+result.subscriptionInstance?.id)
                         globalSourceSyncService.initialiseTracker(grt)
                         //Update INDEX ES
-                        dataloadService.updateFTIndexes()
+                        //dataloadService.updateFTIndexes()
 
                         def pkg_to_link = Package.findByGokbId(grt.owner.uuid)
                         def sub_instances = Subscription.executeQuery("select s from Subscription as s where s.instanceOf = ? ", [result.subscriptionInstance])
@@ -3245,7 +3251,16 @@ class SubscriptionController extends AbstractDebugController {
             params.sort = params.sort ?: 'name'
             params.order = params.order ?: 'asc'
 
-            result.records = gokbRecords ? gokbRecords.flatten().sort() : null
+            result.records = null
+            if(gokbRecords) {
+                Map filteredMap = [:]
+                gokbRecords.each { apiRes ->
+                    apiRes.each { rec ->
+                        filteredMap[rec.uuid] = rec
+                    }
+                }
+                result.records = filteredMap.values().toList().flatten()
+            }
 
             result.records?.sort { x, y ->
                 if (params.order == 'desc') {

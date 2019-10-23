@@ -239,6 +239,12 @@ class SubscriptionsQueryService {
             filterSet = true
         }
 
+        if (params.subRunTimeMultiYear) {
+            base_qry += "and s.isMultiYear = :subRunTimeMultiYear "
+            qry_params.put('subRunTimeMultiYear', params.subRunTimeMultiYear ? true : false )
+            filterSet = true
+        }
+
         //ERMS-584: the symbol "§" means that the given sort parameter should not be considered in base query
         if ((params.sort != null) && (params.sort.length() > 0) && params.sort.indexOf("§") < 0) {
             base_qry += (params.sort=="s.name") ? " order by LOWER(${params.sort}) ${params.order}":" order by ${params.sort} ${params.order}"

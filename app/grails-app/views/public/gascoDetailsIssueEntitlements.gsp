@@ -101,10 +101,8 @@
 
                     <td>
                         <g:each in="${tipp.title?.ids?.sort{it?.ns?.ns}}" var="title_id">
-                            <g:if test="${title_id.ns.ns.toLowerCase() != 'originediturl'}">
-                                ${title_id.ns.ns}: <strong>${title_id.value}</strong>
-                                <br />
-                            </g:if>
+                            ${title_id.ns.ns}: <strong>${title_id.value}</strong>
+                            <br />
                         </g:each>
                     </td>
                 </tr>

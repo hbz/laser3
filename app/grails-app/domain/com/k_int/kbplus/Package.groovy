@@ -31,7 +31,7 @@ class Package
   String sortName
   String impId
   String gokbId
-     URL originEditUrl
+   //URL originEditUrl
   String vendorURL
   String cancellationAllowances
 
@@ -96,7 +96,7 @@ static hasMany = [  tipps:     TitleInstancePackagePlatform,
                 sortName column:'pkg_sort_name'
                    impId column:'pkg_imp_id', index:'pkg_imp_id_idx'
                   gokbId column:'pkg_gokb_id', type:'text'
-           originEditUrl column:'pkg_origin_edit_url'
+         //originEditUrl column:'pkg_origin_edit_url'
              packageType column:'pkg_type_rv_fk'
            packageStatus column:'pkg_status_rv_fk'
        packageListStatus column:'pkg_list_status_rv_fk'
@@ -139,7 +139,7 @@ static hasMany = [  tipps:     TitleInstancePackagePlatform,
                    forumId(nullable:true, blank:false)
                      impId(nullable:true, blank:false)
                     gokbId(nullable:true, blank:false)
-             originEditUrl(nullable:true, blank:false)
+           //originEditUrl(nullable:true, blank:false)
                  vendorURL(nullable:true, blank:false)
     cancellationAllowances(nullable:true, blank:false)
                   sortName(nullable:true, blank:false)
@@ -589,7 +589,7 @@ static hasMany = [  tipps:     TitleInstancePackagePlatform,
       }
     }
 
-    if ( ! found ) {
+    if ( ! found && ns.toLowerCase() != 'originediturl' ) {
         // TODO [ticket=1789]
       //def id = Identifier.lookupOrCreateCanonicalIdentifier(ns, value)
       //  println "before execute query"
@@ -601,6 +601,9 @@ static hasMany = [  tipps:     TitleInstancePackagePlatform,
       //  new IdentifierOccurrence(identifier:id, pkg:this).save()
       //}
         Identifier.construct([value:value, reference:this, namespace:ns])
+    }
+    else if(ns.toLowerCase() == 'originediturl') {
+        println "package identifier namespace for ${value} is deprecated originEditUrl ... ignoring."
     }
   }
 

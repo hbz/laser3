@@ -59,8 +59,9 @@
                     <dt><g:message code="title.identifiers.label" /></dt>
                     <dd><ul>
                       <g:each in="${issueEntitlementInstance?.tipp.title?.ids?.sort{it?.ns?.ns}}" var="i">
-                          <li>${i.ns.ns}: <g:if test="${i.ns.ns == 'originediturl'}"><a href="${i.value}">${i.value}</a></g:if><g:else>${i.value}</g:else>
-<!--                            <g:if test="${i.ns.ns.equalsIgnoreCase('issn')}">
+                          <li>
+                              ${i.ns.ns}:${i.value}
+                              <!--<g:if test="${i.ns.ns.equalsIgnoreCase('issn')}">
                               (<a href="http://suncat.edina.ac.uk/F?func=find-c&ccl_term=022=${i.value}">search on SUNCAT</a>)
                             </g:if>
                             <g:if test="${i.ns.ns.equalsIgnoreCase('eissn')}">

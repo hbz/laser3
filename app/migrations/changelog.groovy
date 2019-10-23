@@ -1,11 +1,10 @@
 databaseChangeLog = {
 
-	changeSet(author: "kloberd (generated)", id: "changelog") {
-		// TODO add changes and preconditions here
-	}
+	changeSet(author: "kloberd (generated)", id: "changelog") {}
 
-	include file: 'pre1.0/changelog-0.groovy'		// migration to postgresql
+	// migration to postgresql
 
+	include file: 'pre1.0/changelog-0.groovy'
 	include file: 'pre1.0/changelog-10.groovy'		// v0.12
 	include file: 'pre1.0/changelog-20.groovy'		// v0.13
 	// include file: 'pre1.0/changelog-20-qa.groovy' 	// QA only
@@ -29,9 +28,12 @@ databaseChangeLog = {
 	include file: 'pre1.0/changelog-100.groovy'		// v1.0
 	include file: 'pre1.0/changelog-101.groovy'
 
-	include file: 'changelog-2019-10-07.groovy'		// new deployment strategy
+	// new deployment strategy
+
+	include file: 'changelog-2019-10-07.groovy'
 	include file: 'changelog-2019-10-08.groovy'
 	include file: 'changelog-2019-10-10.groovy'
 	include file: 'changelog-2019-10-14.groovy'
 	include file: 'changelog-2019-10-21.groovy'
+	include file: 'changelog-2019-10-23.groovy'
 }

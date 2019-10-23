@@ -1,6 +1,7 @@
 package com.k_int.kbplus
 
 import de.laser.domain.AbstractBaseDomain
+import de.laser.helper.RDStore
 import de.laser.helper.RefdataAnnotation
 import de.laser.traits.AuditableTrait
 import groovy.util.logging.Log4j
@@ -32,7 +33,7 @@ class TitleInstance extends AbstractBaseDomain implements AuditableTrait {
   String sortTitle
   String impId
   String gokbId
-  URL originEditUrl
+  //URL originEditUrl
 
   @RefdataAnnotation(cat = 'TitleInstanceStatus')
   RefdataValue status
@@ -68,7 +69,7 @@ class TitleInstance extends AbstractBaseDomain implements AuditableTrait {
           version column:'ti_version'
             impId column:'ti_imp_id', index:'ti_imp_id_idx'
            gokbId column:'ti_gokb_id', type:'text'
-    originEditUrl column:'ti_origin_edit_url'
+    //originEditUrl column:'ti_origin_edit_url'
            status column:'ti_status_rv_fk'
              type column:'ti_type_rv_fk'
             //tipps sort:'startDate', order: 'asc', batchSize: 10
@@ -91,7 +92,7 @@ class TitleInstance extends AbstractBaseDomain implements AuditableTrait {
         keyTitle(nullable:true, blank:false,maxSize:2048)
         creators(nullable:true, blank:false)
         gokbId (nullable:true, blank:false)
-        originEditUrl(nullable:true, blank:false)
+        //originEditUrl(nullable:true, blank:false)
     }
 
   String getIdentifierValue(idtype) {
@@ -224,18 +225,18 @@ class TitleInstance extends AbstractBaseDomain implements AuditableTrait {
     return result;
   }
 
-  static def lookupOrCreate(List candidate_identifiers, String title, String imp_uuid) {
-    lookupOrCreate(candidate_identifiers, title, false, null, imp_uuid)
+  static def lookupOrCreate(List candidate_identifiers, String title, String imp_uuid, String status) {
+    lookupOrCreate(candidate_identifiers, title, false, null, imp_uuid, status)
   }
 
-  static def lookupOrCreate(List candidate_identifiers, String title, String titletyp, String imp_uuid) {
-        lookupOrCreate(candidate_identifiers, title, false, titletyp, imp_uuid)
+  static def lookupOrCreate(List candidate_identifiers, String title, String titletyp, String imp_uuid, String status) {
+        lookupOrCreate(candidate_identifiers, title, false, titletyp, imp_uuid, status)
     }
 
-  static TitleInstance lookupOrCreate(List candidate_identifiers, String title, boolean enrich, String titletyp, String imp_uuid) {
+  static TitleInstance lookupOrCreate(List candidate_identifiers, String title, boolean enrich, String titletyp, String imp_uuid, String status) {
     def result = null
     def origin_uri = null
-    URL originEditUrl = null
+    String gokbUUID = null
     def skip_creation = false
     def valid_match = false
     List<TitleInstance> ti_candidates = []
@@ -256,16 +257,10 @@ class TitleInstance extends AbstractBaseDomain implements AuditableTrait {
     }
 
     if(!result){
-
-      candidate_identifiers.each { i ->
-        if(i.namespace == 'originEditUrl') {
-          originEditUrl = new URL(i.value)
-          //the qualified reference is needed here, we should normally deploy this method into a service ...
-          TitleInstance ti_candidate = TitleInstance.findByOriginEditUrl(originEditUrl)
-          if(ti_candidate)
+        TitleInstance ti_candidate = TitleInstance.findByGokbId(gokbUUID)
+        if(ti_candidate)
             ti_candidates << ti_candidate
-        }
-        else {
+        candidate_identifiers.each { i ->
           if(i.namespace.toLowerCase() == 'uri'){
             origin_uri = i.value
           }
@@ -293,7 +288,6 @@ class TitleInstance extends AbstractBaseDomain implements AuditableTrait {
             static_logger.debug("error processing candidate identifier ${i}");
           }
         }
-      }
     }
 
     if( ti_candidates.size() > 0 ) {
@@ -310,14 +304,13 @@ class TitleInstance extends AbstractBaseDomain implements AuditableTrait {
         boolean origin_match = false
         boolean origin_uri_match = false
 
-        if ( cti.originEditUrl == originEditUrl ){
-          origin_match = true
-        }
+        if(cti.gokbId == gokbUUID)
+            origin_match = true
 
         cti.ids.each { ctio ->
 
           if ( !canonical_ids.contains(ctio) ){
-            if ( ctio.ns.ns != 'originediturl' && ctio.ns.ns != 'uri'){
+            if ( ctio.ns.ns != 'uri'){
               full_match = false
             }
           }else{
@@ -332,9 +325,9 @@ class TitleInstance extends AbstractBaseDomain implements AuditableTrait {
           if( !result ) {
             result = cti
             valid_match = true
-            log.debug("Matched TI by originediturl.")
+            log.debug("Matched TI by gokb uuid.")
           }else{
-            log.warn("Multiple TIs with the same originediturl found: ${result} AND ${cti}! This should not be possible!")
+            log.warn("Multiple TIs with the same gokb uuid found: ${result} AND ${cti}! This should not be possible!")
           }
         }
 
@@ -403,7 +396,7 @@ class TitleInstance extends AbstractBaseDomain implements AuditableTrait {
     //TODO: Import ID ersetzen
     if (!valid_match && !skip_creation) {
       static_logger.debug("No valid match - creating new title");
-      def ti_status = RefdataValue.loc(RefdataCategory.TI_STATUS, [en: 'Current', de: 'Aktuell'])
+      def ti_status = RDStore.TITLE_STATUS_CURRENT
       //result = new TitleInstance(title:title, impId:java.util.UUID.randomUUID().toString(), status:ti_status);
       result = ((titletyp=='BookInstance') ? new BookInstance(title:title, impId:imp_uuid ?: java.util.UUID.randomUUID().toString(), gokbId: imp_uuid ?: null, status:ti_status, type: RefdataValue.loc(RefdataCategory.TI_TYPE, [en: 'EBook', de: 'EBook'])) :
               (titletyp=='DatabaseInstance' ? new DatabaseInstance(title:title, impId:imp_uuid ?: java.util.UUID.randomUUID().toString(), gokbId: imp_uuid ?: null, status:ti_status, type: RefdataValue.loc(RefdataCategory.TI_TYPE, [en: 'Database', de: 'Database'])) :
@@ -437,7 +430,7 @@ class TitleInstance extends AbstractBaseDomain implements AuditableTrait {
       boolean modified = false;
       // Check that all the identifiers listed are present
       canonical_ids.each { cid ->
-        if(cid.ns.ns.toLowerCase() != 'originediturl'){
+        //if(cid.ns.ns.toLowerCase() != 'originediturl'){
           static_logger.debug("looking for identifier ${cid.ns.ns}:${cid.value}");
 
           // TODO [ticket=1789] check and adapt LOGIC here
@@ -446,11 +439,11 @@ class TitleInstance extends AbstractBaseDomain implements AuditableTrait {
           def matched_io = IdentifierOccurrence.executeQuery("select io from IdentifierOccurrence as io where io.identifier = ? and io.ti = ?",[cid,result])
 
           if ( !matched_io || matched_io && matched_io.size() == 0){
-            static_logger.debug("adding link to identifier ${cid}");
-            def new_io = new IdentifierOccurrence(identifier:cid, ti:result).save(flush:true, failOnError: true);
+            static_logger.debug("adding link to identifier ${cid}")
+            def new_io = new IdentifierOccurrence(identifier:cid, ti:result).save(failOnError: true)
             modified=true;
           }
-        }
+        //}
       }
       if ( modified ) {
         result.save(failOnError: true);
@@ -979,7 +972,7 @@ select ie from IssueEntitlement as ie JOIN ie.subscription.orgRelations as o
       }
     }
 
-    if ( !found ) {
+    if ( ! found && ns.toLowerCase() != 'originediturl' ) {
       // TODO [ticket=1789]
       Identifier id = Identifier.construct([value: value, reference: this, namespace: ns])
       //Identifier id = Identifier.lookupOrCreateCanonicalIdentifier(ns, value)
@@ -990,6 +983,9 @@ select ie from IssueEntitlement as ie JOIN ie.subscription.orgRelations as o
       //if ( !id_occ || id_occ.size() == 0 ){
        // new IdentifierOccurrence(identifier:id, ti:this).save()
       //}
+    }
+    else if(ns.toLowerCase() == 'originediturl') {
+      log.debug("identifier namespace of ${value} is deprecated originediturl .. ignoring")
     }
   }
 

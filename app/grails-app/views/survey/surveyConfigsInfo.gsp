@@ -2,7 +2,7 @@
 <laser:serviceInjection/>
 <!doctype html>
 
-<r:require module="annotations"/>
+
 
 <html>
 <head>

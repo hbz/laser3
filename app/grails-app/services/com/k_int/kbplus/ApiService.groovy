@@ -662,23 +662,15 @@ class ApiService {
                     orgData.ids.id.each { idData ->
                         //log.debug("ns: ${IdentifierNamespace.findByNs(idData.@namespace.text())}")
                         //log.debug("value: ${idData.@value.text()}")
-                        if(idData.@namespace.text() == 'originEditUrl') {
-                            URL originEditUrl = new URL(idData.@value.text())
-                            if(org.originEditUrl != originEditUrl) {
-                                org.originEditUrl = originEditUrl
-                            }
-                        }
-                        else {
-                            // TODO [ticket=1789] check setup basic data
-                            Identifier id = Identifier.construct([value: idData.@value.text(), reference: org, namespace: idData.@namespace.text()])
-                            //Identifier id = Identifier.lookupOrCreateCanonicalIdentifier(idData.@namespace.text(), idData.@value.text())
-                            //log.debug("org: ${orgData.globalUID.text()}")
-                            //IdentifierOccurrence idOcc = IdentifierOccurrence.findByOrgAndIdentifier(org, id)
-                            //if(!idOcc) {
-                            //    idOcc = new IdentifierOccurrence()
-                            //    idOcc.save()
-                            //}
-                        }
+						// TODO [ticket=1789] check setup basic data
+						Identifier id = Identifier.construct([value: idData.@value.text(), reference: org, namespace: idData.@namespace.text()])
+						//Identifier id = Identifier.lookupOrCreateCanonicalIdentifier(idData.@namespace.text(), idData.@value.text())
+						//log.debug("org: ${orgData.globalUID.text()}")
+						//IdentifierOccurrence idOcc = IdentifierOccurrence.findByOrgAndIdentifier(org, id)
+						//if(!idOcc) {
+						//    idOcc = new IdentifierOccurrence()
+						//    idOcc.save()
+						//}
                     }
                     orgData.settings.setting.each { st ->
                         log.debug("name: ${OrgSettings.KEYS.valueOf(st.name.text())}")

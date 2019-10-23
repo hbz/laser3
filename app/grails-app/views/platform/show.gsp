@@ -1,5 +1,4 @@
 <%@ page import="com.k_int.kbplus.ApiSource; com.k_int.kbplus.Platform" %>
-<r:require module="annotations"/>
 <!doctype html>
 <html>
 <head>
@@ -118,9 +117,50 @@
                 ]}"/>
 
             </div><!-- #new-dynamic-properties-block -->
+
+            <div class="ui card">
+                <div class="content">
+                    <table class="ui three column table">
+                        <g:each in="${orgAccessPointList}" var="orgAccessPoint">
+                            <tr>
+                                <th scope="row" class="control-label la-js-dont-hide-this-card">${message(code: 'platform.accessPoint', default: 'Access Configuration')}</th>
+                                <td>
+                                    <g:link controller="accessPoint" action="edit_${orgAccessPoint.oap.accessMethod}"  id="${orgAccessPoint.oap.id}">
+                                        ${orgAccessPoint.oap.name}  (${orgAccessPoint.oap.accessMethod.getI10n('value')})
+                                    </g:link>
+                                </td>
+                                <td class="right aligned">
+                                    <g:link class="ui negative icon button button js-open-confirm-modal" controller="accessPoint" action="unlinkPlatform" id="${orgAccessPoint.id}"
+                                            data-confirm-term-what="${message(code: 'accessPoint.unlink.what', args: [orgAccessPoint.oap.name, platformInstance.name])}"
+                                    >
+                                        <i class="unlink icon"></i>
+                                    </g:link>
+
+                                </td>
+                            </tr>
+                        </g:each>
+                    </table>
+
+
+                    <div class="ui la-vertical buttons">
+                        <g:render template="/templates/links/accessPointLinksModal"
+                                  model="${[tmplText:message(code:'platform.link.accessPoint.button.label'),
+                                            tmplID:'addLink',
+                                            tmplButtonText:message(code:'platform.link.accessPoint.button.label'),
+                                            tmplModalID:'platf_link_ap',
+                                            editmode: editable,
+                                            accessPointList: accessPointList,
+                                            institution:institution,
+                                            selectedInstitution:selectedInstitution
+                                  ]}" />
+                    </div>
+                </div>
+            </div>
+
             <div class="clearfix"></div>
         </div>
     </div>
 </div>
+
 </body>
 </html>

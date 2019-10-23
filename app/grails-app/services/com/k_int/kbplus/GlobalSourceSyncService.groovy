@@ -3,10 +3,12 @@ package com.k_int.kbplus
 import com.k_int.kbplus.auth.User
 import de.laser.SystemEvent
 import de.laser.domain.TIPPCoverage
+import de.laser.helper.EhcacheWrapper
 import de.laser.helper.RDStore
 import de.laser.interfaces.AbstractLockableService
 import de.laser.oai.OaiClient
 import de.laser.oai.OaiClientLaser
+import net.sf.ehcache.Cache
 import org.springframework.context.i18n.LocaleContext
 import org.springframework.context.i18n.LocaleContextHolder
 import org.springframework.transaction.annotation.Propagation
@@ -25,7 +27,7 @@ import java.text.SimpleDateFormat
 class GlobalSourceSyncService extends AbstractLockableService {
 
 
-    def dataloadService
+    //def cacheService
     def genericOIDService
     def executorService
     def sessionFactory
@@ -211,9 +213,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
             result.parsed_rec.publishers.add(publisher)
         }
         md.gokb.title.identifiers.identifier.each { id ->
-            if(id.'@namespace'.text() == 'originEditUrl')
-                result.parsed_rec.originEditUrl = id.'@value'.text()
-            else result.parsed_rec.identifiers.add([namespace: id.'@namespace'.text(), value: id.'@value'.text()])
+            result.parsed_rec.identifiers.add([namespace: id.'@namespace'.text(), value: id.'@value'.text()])
         }
         result.parsed_rec.identifiers.add([namespace: 'uri', value: md.gokb.title.'@id'.text()]);
 
@@ -323,7 +323,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
             }
             //oldpkg is the pkg in Laser
             oldpkg = pkg ? pkg.toComparablePackage() : oldpkg;
-            if(!pkg.save())
+            if(!pkg.save(flush:true)) //TODO rework conception so that we do not have to rely any more on existing package entry
                 log.error(pkg.errors)
         } else {
             // create a new package
@@ -882,7 +882,16 @@ class GlobalSourceSyncService extends AbstractLockableService {
         }
 
         com.k_int.kbplus.GokbDiffEngine.diff(pkg, oldpkg, newpkg, onNewTipp, onUpdatedTipp, onDeletedTipp, onPkgPropChange, onTippUnchanged, auto_accept_flag)
-
+        /* TODO [ticket=1807] further tests needed; should be done along larger refactoring
+        EhcacheWrapper cacheWrapper = cacheService.getTTL1800Cache("/pendingChanges/")
+        if(cacheWrapper) {
+            Cache cache = cacheWrapper.getCache()
+            cache?.getKeys()?.each { changeDocumentOID ->
+                log.debug("ex inside executor task submission - process pending changes for ... ${changeDocumentOID}")
+                def contextObject = genericOIDService.resolveOID(changeDocumentOID)
+                contextObject?.notifyDependencies_trait(cache.get(changeDocumentOID))
+            }
+        }*/
     }
 
     def testTitleCompliance = { json_record ->
@@ -963,9 +972,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
         result.parsed_rec.nominalPlatformPrimaryUrl = md.gokb.package.nominalPlatform.primaryUrl.text() ?: null
 
         md.gokb.package.identifiers.identifier.each { id ->
-            if(id.'@namespace'.text() == 'originEditUrl')
-                result.parsed_rec.originEditUrl = id.'@value'.text()
-            else result.parsed_rec.identifiers.add([namespace: id.'@namespace'.text(), value: id.'@value'.text()])
+            result.parsed_rec.identifiers.add([namespace: id.'@namespace'.text(), value: id.'@value'.text()])
         }
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'")
         int ctr = 0
@@ -977,6 +984,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
                     title       : [
                             name       : tip.title.name.text(),
                             identifiers: [],
+                            status     : tip.title.status.text() ?: null,
                             impId      : tip.title.'@uuid'?.text() ?: null,
                             gokbId     : tip.title.'@uuid'?.text() ?: null,
                             titleType  : title_simplename ?: null
@@ -1014,9 +1022,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
             newtip.coverage = newtip.coverage.toSorted { a, b -> a.startDate <=> b.startDate }
 
             tip.title.identifiers.identifier.each { id ->
-                if(id.'@namespace'.text() == 'originEditUrl')
-                    newtip.title.originEditUrl = id.'@value'.text()
-                else newtip.title.identifiers.add([namespace: id.'@namespace'.text(), value: id.'@value'.text()])
+                newtip.title.identifiers.add([namespace: id.'@namespace'.text(), value: id.'@value'.text()])
             }
             newtip.title.identifiers.add([namespace: 'uri', value: newtip.titleId]);
 
@@ -1059,10 +1065,8 @@ class GlobalSourceSyncService extends AbstractLockableService {
 
             // merge in any new identifiers we have
             newtitle.identifiers.each {
-                log.debug("Checking title has ${it.namespace}:${it.value}");
-                if(it.namespace == 'originEditUrl')
-                    title_instance.originEditUrl = new URL(it.value)
-                else title_instance.checkAndAddMissingIdentifier(it.namespace, it.value);
+                log.debug("Checking title has ${it.namespace}:${it.value}")
+                title_instance.checkAndAddMissingIdentifier(it.namespace, it.value)
             }
             title_instance.save()
 
@@ -1530,10 +1534,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
 
             titleinfo.identifiers.each {
                 log.debug("Checking title has ${it.namespace}:${it.value}")
-                if(it.namespace == 'originEditUrl')
-                    title_instance.originEditUrl = new URL(it.value)
-                else
-                    title_instance.checkAndAddMissingIdentifier(it.namespace, it.value)
+                title_instance.checkAndAddMissingIdentifier(it.namespace, it.value)
             }
             title_instance.save();
 

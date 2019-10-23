@@ -551,6 +551,11 @@
           description: Mapping RefdataCategory "YN"
           enum:
             [${ com.k_int.kbplus.RefdataCategory.getAllRefdataValues('YN').collect{ it.value }.join(', ') }]
+        isMultiYear:
+          type: string #mapped to boolean
+          description: Mapping RefdataCategory "YN"
+          enum:
+            [${ com.k_int.kbplus.RefdataCategory.getAllRefdataValues('YN').collect{ it.value }.join(', ') }]
         lastUpdated:
           type: string
           format: date-time

@@ -279,6 +279,7 @@ aside.metaboxContent + .metaboxContent-spacer {
     position: fixed;
     bottom: 3px;
     left: 0;
+    z-index: 1000;
 }
 
 /* grid hover @ cpa */

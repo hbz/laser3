@@ -191,9 +191,10 @@
 
 <div>
     <div>
-        <span>${message(code: 'title.plural', default: 'Titles')} ( ${message(code: 'default.paginate.offset', args: [(offset + 1), (offset + (titles.size())), num_ti_rows])} )</span>
+        %{--<span>${message(code: 'title.plural', default: 'Titles')} ( ${message(code: 'default.paginate.offset', args: [(offset + 1), (offset + (titles.size())), num_ti_rows])} )</span>--}%
 
         <div>
+            <g:if test="${titles}">
             <g:form action="subscriptionBatchUpdate" params="${[id: subscriptionInstance?.id]}" class="ui form">
                 <g:set var="counter" value="${offset + 1}"/>
                 <table class="ui sortable celled la-table table ">
@@ -264,23 +265,9 @@
                                 </g:each>
 
                                 <g:each in="${ti?.ids?.sort { it?.ns?.ns }}" var="id">
-                                    <g:if test="${id.ns.ns == 'originediturl'}">
-                                        <%--<span class="ui small teal image label">
-                                            ${id.identifier.ns.ns}: <div class="detail"><a
-                                                href="${id.identifier.value}">${message(code: 'package.show.openLink', default: 'Open Link')}</a>
-                                        </div>
-                                        </span>
-                                        <span class="ui small teal image label">
-                                            ${id.identifier.ns.ns}: <div class="detail"><a
-                                                href="${id.identifier.value.toString().replace("resource/show", "public/packageContent")}">${message(code: 'package.show.openLink', default: 'Open Link')}</a>
-                                        </div>
-                                        </span>--%>
-                                    </g:if>
-                                    <g:else>
-                                        <span class="ui small teal image label">
-                                            ${id.ns.ns}: <div class="detail">${id.value}</div>
-                                        </span>
-                                    </g:else>
+                                    <span class="ui small teal image label">
+                                        ${id.ns.ns}: <div class="detail">${id.value}</div>
+                                    </span>
                                 </g:each>
                                 <br/>
 
@@ -420,6 +407,15 @@
 
                 </table>
             </g:form>
+            </g:if>
+            <g:else>
+                <g:if test="${filterSet}">
+                    <br><strong><g:message code="filter.result.empty.object" args="${[message(code:"title.plural")]}"/></strong>
+                </g:if>
+                <g:else>
+                    <br><strong><g:message code="result.empty.object" args="${message(code:"title.plural")}"/></strong>
+                </g:else>
+            </g:else>
         </div>
     </div>
 

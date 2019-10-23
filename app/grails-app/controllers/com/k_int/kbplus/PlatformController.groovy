@@ -14,6 +14,7 @@ class PlatformController extends AbstractDebugController {
     def springSecurityService
     def contextService
     def filterService
+    def orgTypeService
 
     static allowedMethods = [create: ['GET', 'POST'], edit: ['GET', 'POST'], delete: 'POST']
 
@@ -146,7 +147,46 @@ class PlatformController extends AbstractDebugController {
       [platformInstance: platformInstance, packages:package_list, crosstab:crosstab, titles:title_list, editable: editable, tipps: plattformTipps]
       */
 
-        result
+
+
+        List currentSubIds = orgTypeService.getCurrentSubscriptions(contextService.getOrg()).collect{ it.id }
+
+        //"    SubscriptionPackage subPkg join subPkg.subscriptionPackageOrgAccessPoint  spoap join spoap.orgAccessPoint ap" +
+
+        String qry = ""
+        qry = "select distinct(ap) , spoap.id" +
+                " from " +
+                "    TitleInstancePackagePlatform tipp join tipp.platform platf join tipp.pkg pkg, " +
+                "    SubscriptionPackage subPkg join subPkg.subscriptionPackageOrgAccessPoint spoap join spoap.orgAccessPoint ap " +
+                " where " +
+                "    subPkg.pkg = pkg and "+
+                "    platf.id =  (:platformId) and " +
+                "    subPkg.subscription.id in (:currentSubIds)"
+
+        def qryParams = [
+                platformId : platformInstance.id,
+                currentSubIds : currentSubIds
+        ]
+        //List orgAccessPointList = OrgAccessPoint.executeQuery(qry, qryParams)
+
+        //def result = [:]
+        def selectedInstitution = contextService.getOrg()
+
+        def authorizedOrgs = contextService.getUser().getAuthorizedOrgs()
+        def hql = "select oapl from OrgAccessPointLink oapl join oapl.oap as ap "
+        hql += "where ap.org =:institution and oapl.active=true and oapl.platform.id=${platformInstance.id}"
+        List orgAccessPointList = OrgAccessPointLink.executeQuery(hql,[institution : selectedInstitution])
+
+        def notActiveAPLinkQuery = "select oap from OrgAccessPoint oap where oap.org =:institution "
+        notActiveAPLinkQuery += "and not exists ("
+        notActiveAPLinkQuery += "select 1 from oap.oapp as oapl where oapl.oap=oap and oapl.active=true "
+        notActiveAPLinkQuery += "and oapl.platform.id = ${platformInstance.id})"
+
+        def accessPointList = OrgAccessPoint.executeQuery(notActiveAPLinkQuery, [institution : selectedInstitution])
+
+        [platformInstance: platformInstance, editable: editable, orgAccessPointList: orgAccessPointList, accessPointList: accessPointList,
+         institution: authorizedOrgs, selectedInstitution: selectedInstitution.id
+        ]
 
     }
     @Secured(['ROLE_USER'])
@@ -174,7 +214,6 @@ class PlatformController extends AbstractDebugController {
         result.tipps = platformTipps.drop(result.offset).take(result.max)
 
         result
-
     }
 
     //@DebugAnnotation(test='hasAffiliation("INST_EDITOR")')
@@ -246,6 +285,55 @@ class PlatformController extends AbstractDebugController {
         }
     }
 
+    @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
+    def accessMethods() {
+        def editable
+        def platformInstance = Platform.get(params.id)
+        if (!platformInstance) {
+            flash.message = message(code: 'default.not.found.message',
+                    args: [message(code: 'platform.label', default: 'Platform'), params.id])
+            redirect action: 'list'
+            return
+        }
+
+        def platformAccessMethodList = PlatformAccessMethod.findAllByPlatf(platformInstance, [sort: ["accessMethod": 'asc', "validFrom" : 'asc']])
+
+        [platformInstance: platformInstance, platformAccessMethodList: platformAccessMethodList, editable: editable, params: params]
+    }
+
+    @DebugAnnotation(test='hasAffiliation("INST_EDITOR")')
+    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_EDITOR") })
+    def link() {
+        def result = [:]
+        def platformInstance = Platform.get(params.id)
+        if (!platformInstance) {
+            flash.message = message(code: 'default.not.found.message',
+                args: [message(code: 'platform.label', default: 'Platform'), params.id])
+            redirect action: 'list'
+            return
+        }
+        def selectedInstitution = contextService.getOrg()
+
+        def authorizedOrgs = contextService.getUser().getAuthorizedOrgs()
+        def hql = "select oapl from OrgAccessPointLink oapl join oapl.oap as ap "
+            hql += "where ap.org =:institution and oapl.active=true and oapl.platform.id=${platformInstance.id}"
+        def results = OrgAccessPointLink.executeQuery(hql,[institution : selectedInstitution])
+
+        def notActiveAPLinkQuery = "select oap from OrgAccessPoint oap where oap.org =:institution "
+            notActiveAPLinkQuery += "and not exists ("
+            notActiveAPLinkQuery += "select 1 from oap.oapp as oapl where oapl.oap=oap and oapl.active=true "
+            notActiveAPLinkQuery += "and oapl.platform.id = ${platformInstance.id})"
+
+        def accessPointList = OrgAccessPoint.executeQuery(notActiveAPLinkQuery, [institution : selectedInstitution])
+
+        result.accessPointLinks = results
+        result.platformInstance = platformInstance
+        result.institution = authorizedOrgs
+        result.accessPointList = accessPointList
+        result.selectedInstitution = selectedInstitution.id
+        result
+    }
+
     @DebugAnnotation(test='hasAffiliation("INST_EDITOR")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_EDITOR") })
     def dynamicApLink(){
@@ -302,15 +390,12 @@ class PlatformController extends AbstractDebugController {
         }
         if (!existingActiveAP.isEmpty()){
             flash.error = "Existing active AccessPoint for platform"
-            redirect action: 'link', params: [id:params.platform_id]
-            return
         }
         if (! oapl.save()) {
             flash.error = "Existing active AccessPoint for platform"
-            redirect action: 'link', params: [id:params.platform_id]
-            return
         }
-        redirect action: 'link', params: [id:params.platform_id]
+
+        redirect(url: request.getHeader('referer'))
     }
 
     @DebugAnnotation(test='hasAffiliation("INST_EDITOR")')
