@@ -379,49 +379,6 @@ class AccessPointController extends AbstractDebugController {
     }
 
     @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
-    def linkSubscriptionPackage() {
-        def result          = [:]
-        def accessPoint = OrgAccessPoint.get(params.accessPointId)
-
-        List currentSubIds = orgTypeService.getCurrentSubscriptions(contextService.getOrg()).collect{ it.id }
-
-        String qry = ""
-        qry = "select distinct(subPkg) " +
-                " from " +
-                "    TitleInstancePackagePlatform tipp join tipp.platform platf join tipp.pkg pkg, " +
-                "    SubscriptionPackage subPkg join subPkg.pkg " +
-                " where " +
-                "    subPkg.pkg = pkg and "+
-                "    platf.id =  (:platformId) and " +
-                "    subPkg.subscription.id in (:currentSubIds)"
-
-        def qryParams = [
-                platformId : params.platforms as Long,
-                currentSubIds : currentSubIds
-        ]
-
-        List subscriptionPackageList = Subscription.executeQuery(qry, qryParams)
-
-        subscriptionPackageList?.each { subscriptionPackage ->
-            def spoap = new SubscriptionPackageOrgAccessPoint()
-            spoap.orgAccessPoint = accessPoint
-            spoap.subscriptionPackage = subscriptionPackage
-            spoap.save();
-        }
-
-        redirect controller: 'accessPoint', action: 'edit_'+params.accessMethod, id: accessPoint.id, params: [autofocus: true]
-    }
-
-    @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
-    def unlinkSubscriptionPackage() {
-        def subscriptionPackageOrgAccessPoint = SubscriptionPackageOrgAccessPoint.get(params.id)
-        def orgAccessPoint = subscriptionPackageOrgAccessPoint.orgAccessPoint
-        subscriptionPackageOrgAccessPoint.delete(flush: true)
-
-        redirect(url: request.getHeader('referer'))
-    }
-
-    @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
     def linkPlatform() {
         def accessPoint = OrgAccessPoint.get(params.accessPointId)
         def oapl = new OrgAccessPointLink()
