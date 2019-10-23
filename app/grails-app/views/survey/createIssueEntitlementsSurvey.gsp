@@ -138,6 +138,7 @@
 </semui:filter>
 <semui:form>
     <div class="subscription-results">
+    <g:if test="${subscriptions}">
         <table class="ui celled sortable table table-tworow la-table">
             <thead>
             <tr>
@@ -289,6 +290,15 @@
                 </g:if>
             </g:each>
         </table>
+        </g:if>
+            <g:else>
+                <g:if test="${filterSet}">
+                    <br><strong><g:message code="filter.result.empty.object" args="${[message(code:"subscription.plural")]}"/></strong>
+                </g:if>
+                <g:else>
+                    <br><strong><g:message code="result.empty.object" args="${message(code:"subscription.plural")}"/></strong>
+                </g:else>
+            </g:else>
     </div>
 
 </semui:form>

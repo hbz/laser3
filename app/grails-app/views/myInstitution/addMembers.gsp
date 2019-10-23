@@ -62,6 +62,7 @@
         </g:form>
     </semui:filter>
 
+    <g:if test="${availableOrgs}">
     <g:form action="addMembers" controller="myInstitution" method="post" class="ui form">
 
         <g:render template="/templates/filter/orgFilterTable"
@@ -74,6 +75,15 @@
         <br/>
         <input type="submit" class="ui button" value="${message(code:'default.button.add.label', default:'Add')}" />
     </g:form>
+    </g:if>
+    <g:else>
+        <g:if test="${filterSet}">
+            <br><strong><g:message code="filter.result.empty.object" args="${[message(code:"myinst.consortiaSubscriptions.consortia")]}"/></strong>
+        </g:if>
+        <g:else>
+            <br><strong><g:message code="result.empty.object" args="${message(code:"myinst.consortiaSubscriptions.consortia")}"/></strong>
+        </g:else>
+    </g:else>
 
   </body>
 </html>
