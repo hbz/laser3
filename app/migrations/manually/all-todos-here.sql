@@ -51,7 +51,8 @@ ALTER TABLE org DROP COLUMN org_origin_edit_url;
 
 UPDATE subscription set sub_is_multi_year = FALSE;
 
--- 2019-10-21
+-- 2019-10-23
+-- need to refetch usage data delete contents of tables
 DELETE FROM stats_triple_cursor;
 DELETE FROM fact;
 -- execute before startup / local dev environment only
