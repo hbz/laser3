@@ -160,8 +160,7 @@ ${personInstance}
                                                         <g:if test="${personInstance.roleLinks?.size() > 1}">
                                                             <div class="ui mini icon buttons">
                                                                 <g:link class="ui negative button js-open-confirm-modal"
-                                                                        data-confirm-term-what="function"
-                                                                        data-confirm-term-what-detail="${link.functionType?.getI10n('value')}"
+                                                                        data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.function", args: [link.functionType?.getI10n('value')])}"
                                                                         data-confirm-term-how="delete"
                                                                         controller="person" action="deletePersonRole" id="${personInstance.id}"  params="[oid: oid]">
                                                                     <i class="trash alternate icon"></i>
@@ -183,7 +182,7 @@ ${personInstance}
                                                                 %{--<g:form controller="person" action="_delete" data-confirm-id="${personInstance?.id?.toString()+ '_form'}">--}%
                                                                 %{--<g:hiddenField name="id" value="${personInstance?.id}" />--}%
                                                                 %{--<div class="ui icon negative button js-open-confirm-modal"--}%
-                                                                %{--data-confirm-term-what="contact"--}%
+                                                                %{--data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.contact", args: [personInstance?.toString()])}"--}%
                                                                 %{--data-confirm-term-what-detail="${personInstance?.toString()}"--}%
                                                                 %{--data-confirm-term-how="delete"--}%
                                                                 %{--data-confirm-id="${personInstance?.id}" >--}%
@@ -228,8 +227,7 @@ ${personInstance}
                                                         <g:if test="${personInstance.roleLinks?.size() > 1}">
                                                             <div class="ui mini icon buttons">
                                                                 <g:link class="ui negative button js-open-confirm-modal"
-                                                                        data-confirm-term-what="function"
-                                                                        data-confirm-term-what-detail="${link.positionType?.getI10n('value')}"
+                                                                        data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.function", args: [link.positionType?.getI10n('value')])}"
                                                                         data-confirm-term-how="delete"
                                                                         controller="person" action="deletePersonRole" id="${personInstance.id}"  params="[oid: oid]">
                                                                     <i class="trash alternate icon"></i>
@@ -251,7 +249,7 @@ ${personInstance}
                                                                 %{--<g:form controller="person" action="_delete" data-confirm-id="${personInstance?.id?.toString()+ '_form'}">--}%
                                                                     %{--<g:hiddenField name="id" value="${personInstance?.id}" />--}%
                                                                     %{--<div class="ui icon negative button js-open-confirm-modal"--}%
-                                                                         %{--data-confirm-term-what="contact"--}%
+                                                                         %{--data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.contact", args: [personInstance?.toString()])}"--}%
                                                                          %{--data-confirm-term-what-detail="${personInstance?.toString()}"--}%
                                                                          %{--data-confirm-term-how="delete"--}%
                                                                          %{--data-confirm-id="${personInstance?.id}" >--}%

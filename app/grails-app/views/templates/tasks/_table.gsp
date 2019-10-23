@@ -76,7 +76,7 @@
                         </g:if>
                         <g:if test="${(user == taskInstance.creator) || contextService.getUser().hasAffiliation("INST_ADM")}">
                             <g:link class="ui icon negative button js-open-confirm-modal"
-                                    data-confirm-term-what="task"
+                                    data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.task")}"
                                     data-confirm-term-how="delete"
                                     action="tasks" params="[deleteId:taskInstance.id, id: params.id]" >
                                 <i class="trash alternate icon"></i>

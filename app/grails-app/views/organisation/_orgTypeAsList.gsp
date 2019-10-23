@@ -10,9 +10,7 @@
                     <div class="content la-space-right">
                         <div class="ui mini icon buttons">
                             <g:link class="ui negative button js-open-confirm-modal"
-                                    data-confirm-term-what="organisationtype"
-                                    data-confirm-term-what-detail="${type?.getI10n('value')}"
-                                    data-confirm-term-where="organisation"
+                                    data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.organisationtype.organisation", args: [type?.getI10n('value')])}"
                                     data-confirm-term-how="delete"
                                     controller="organisation" action="deleteOrgType" params="[org: org.id, removeOrgType: type.id]">
                                 <i class="trash alternate icon"></i>

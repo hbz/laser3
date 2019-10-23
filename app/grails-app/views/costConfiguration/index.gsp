@@ -68,8 +68,7 @@
                             </td>
                             <td>
                                 <g:link class="ui icon negative button js-open-confirm-modal"
-                                        data-confirm-term-what="costItemElementConfiguration"
-                                        data-confirm-term-what-detail="${ciec.costItemElement.getI10n("value")}"
+                                        data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.costItemElementConfiguration", args: [ciec.costItemElement.getI10n("value")])}"
                                         data-confirm-term-how="delete"
                                         controller="costConfiguration" action="deleteCostConfiguration"
                                         params="${[ciec: ciec.id]}">

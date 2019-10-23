@@ -48,8 +48,7 @@
                 <div class="ui mini icon buttons">
                     <g:set var="oid" value="${address.class.name}:${address.id}" />
                     <g:link class="ui negative button js-open-confirm-modal"
-                            data-confirm-tokenMsg="${message(code: "address"
-                            data-confirm-term-where="addressbook"
+                            data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.address.addressbook")}"
                             data-confirm-term-how="delete"
                             controller="ajax" action="delete" params="[cmd: 'deleteAddress', oid: oid]"  >
                         <i class="trash alternate icon"></i>
