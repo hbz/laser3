@@ -971,12 +971,12 @@ class OrganisationService {
                 libraryType: RefdataValue.getByValueAndCategory('Universität','Library Type'),
                 libraryNetwork: RefdataValue.getByValueAndCategory('No Network','Library Network'),
                 federalState: current.federalState ,country: current.country,
+                orgType: [RDStore.OT_INSTITUTION],
                 sector: RefdataValue.getByValueAndCategory('Higher Education','OrgSector'))
         if(!modelMember.save()) {
             errors.add(modelMember.errors.toString())
             return false
         }
-        modelMember.addToOrgType(RDStore.OT_INSTITUTION)
         modelMember.setDefaultCustomerType()
         OrgPrivateProperty opp = new OrgPrivateProperty(owner: modelMember, type: privateProperties.get('BGA'), refValue: RDStore.YN_YES)
         if(!opp.save()) {

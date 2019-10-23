@@ -14,7 +14,7 @@
         <div class="field">
             <g:if test="${orgList.size() > 0}">
                 <p>
-                    Es wurden ${orgList.size()} verfügbare ${tmplEntity} gefunden.
+                    <g:message code="template.orgLinksModal.found" args="${[orgList.size(),tmplEntity]}"/>
                     <%--
                     <br />
                     Bereits von Ihnen verwendete ${tmplEntity} sind durch ein Symbol (&#10004;) gekennzeichnet.
@@ -25,7 +25,9 @@
                 <semui:signedDropdown name="orm_orgOid" noSelection="${varSelectOne}" from="${orgList}" signedIds="${signedIdList}" />
             </g:if>
             <g:else>
-                <p>Es wurden leider keine gültigen ${tmplEntity} gefunden.</p>
+                <p>
+                    <g:message code="template.orgLinksModal.noEntityFound" args="${[tmplEntity]}"/>
+                </p>
             </g:else>
         </div>
     </g:form>

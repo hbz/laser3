@@ -1713,7 +1713,7 @@ class SubscriptionController extends AbstractDebugController {
         validSubChilds.each { subChild ->
 
             subChild.packages.pkg.each { pkg ->
-                if(!CostItem.executeQuery('select ci from CostItem ci where ci.subPkg.sub = :sub and ci.subPkg.pkg = :pkg',[pkg:pkg,sub:subChild])) {
+                if(!CostItem.executeQuery('select ci from CostItem ci where ci.subPkg.subscription = :sub and ci.subPkg.pkg = :pkg',[pkg:pkg,sub:subChild])) {
                     def query = "from IssueEntitlement ie, Package pkg where ie.subscription =:sub and pkg.id =:pkg_id and ie.tipp in ( select tipp from TitleInstancePackagePlatform tipp where tipp.pkg.id = :pkg_id ) "
                     def queryParams = [sub: subChild, pkg_id: pkg.id]
 
@@ -2310,6 +2310,9 @@ class SubscriptionController extends AbstractDebugController {
                                 }
                                 else {
                                     new OrgRole(org: cm, sub: memberSub, roleType: role_sub).save()
+                                    if(cm.hasPerm("ORG_INST_COLLECTIVE")) {
+                                        new OrgRole(org: cm, sub: memberSub, roleType: role_sub_coll).save()
+                                    }
                                 }
                                 new OrgRole(org: result.institution, sub: memberSub, roleType: role_sub_cons).save()
 
@@ -4979,7 +4982,8 @@ class SubscriptionController extends AbstractDebugController {
     def addSubscriptions() {
         boolean withErrors = false
         Org contextOrg = contextService.org
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'")
+        SimpleDateFormat databaseDateFormatParser = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'")
+        SimpleDateFormat sdf = new SimpleDateFormat(message(code:'default.date.format.notime'))
         flash.error = ""
         def candidates = JSON.parse(params.candidates)
         candidates.eachWithIndex{ entry, int s ->
@@ -4992,9 +4996,9 @@ class SubscriptionController extends AbstractDebugController {
                         resource: genericOIDService.resolveOID(entry.resource),
                         identifier: UUID.randomUUID(),
                         isPublic: YN_NO)
-                sub.startDate = entry.startDate ? sdf.parse(entry.startDate) : null
-                sub.endDate = entry.endDate ? sdf.parse(entry.endDate) : null
-                sub.manualCancellationDate = entry.manualCancellationDate ? sdf.parse(entry.manualCancellationDate) : null
+                sub.startDate = entry.startDate ? databaseDateFormatParser.parse(entry.startDate) : null
+                sub.endDate = entry.endDate ? databaseDateFormatParser.parse(entry.endDate) : null
+                sub.manualCancellationDate = entry.manualCancellationDate ? databaseDateFormatParser.parse(entry.manualCancellationDate) : null
                 if(sub.type == SUBSCRIPTION_TYPE_ADMINISTRATIVE)
                     sub.administrative = true
                 sub.owner = entry.owner ? genericOIDService.resolveOID(entry.owner) : null
@@ -5056,26 +5060,28 @@ class SubscriptionController extends AbstractDebugController {
                     }
                     //process subscription properties
                     entry.properties.each { k, v ->
-                        log.debug("${k}:${v.propValue}")
-                        PropertyDefinition propDef = (PropertyDefinition) genericOIDService.resolveOID(k)
-                        List<String> valueList
-                        if(propDef.multipleOccurrence) {
-                            valueList = v?.propValue?.split(',')
-                        }
-                        else valueList = [v.propValue]
-                        //in most cases, valueList is a list with one entry
-                        valueList.each { value ->
-                            try {
-                                createProperty(propDef,sub,contextOrg,value,v.propNote)
+                        if(v.propValue?.trim()) {
+                            log.debug("${k}:${v.propValue}")
+                            PropertyDefinition propDef = (PropertyDefinition) genericOIDService.resolveOID(k)
+                            List<String> valueList
+                            if(propDef.multipleOccurrence) {
+                                valueList = v?.propValue?.split(',')
                             }
-                            catch (Exception e) {
-                                withErrors = true
-                                flash.error += e.getMessage()
+                            else valueList = [v.propValue]
+                            //in most cases, valueList is a list with one entry
+                            valueList.each { value ->
+                                try {
+                                    createProperty(propDef,sub,contextOrg,value,v.propNote)
+                                }
+                                catch (Exception e) {
+                                    withErrors = true
+                                    flash.error += e.getMessage()
+                                }
                             }
                         }
                     }
                     if(entry.notes) {
-                        Doc docContent = new Doc(contentType: Doc.CONTENT_TYPE_STRING, title: entry.notes, type: RefdataValue.getByValueAndCategory('Note','Document Type'), owner: contextOrg, user: contextService.user)
+                        Doc docContent = new Doc(contentType: Doc.CONTENT_TYPE_STRING, content: entry.notes, title: message(code:'myinst.subscriptionImport.notes.title',args:[sdf.format(new Date())]), type: RefdataValue.getByValueAndCategory('Note','Document Type'), owner: contextOrg, user: contextService.user)
                         if(docContent.save()) {
                             DocContext dc = new DocContext(subscription: sub, owner: docContent, doctype: RefdataValue.getByValueAndCategory('Note','Document Type'))
                             dc.save()

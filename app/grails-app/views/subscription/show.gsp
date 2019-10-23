@@ -144,8 +144,7 @@
                 <div class="ui card">
                     <div class="content">
                         <h5 class="ui header">
-                           Aktuelle Lizenz...
-
+                           <g:message code="subscription.details.linksHeader"/>
                         </h5>
                         <g:if test="${links.entrySet()}">
                             <table class="ui three column table">
@@ -312,9 +311,9 @@
                                                 property: 'orgs',
                                                 recip_prop: 'sub',
                                                 tmplRole: RDStore.OR_PROVIDER,
-                                                tmplEntity:'Anbieter',
-                                                tmplText:'Anbieter mit dieser Lizenz verknüpfen',
-                                                tmplButtonText:'Anbieter verknüpfen',
+                                                tmplEntity:message(code:'subscription.details.linkProvider.tmplEntity'),
+                                                tmplText:message(code:'subscription.details.linkProvider.tmplText'),
+                                                tmplButtonText:message(code:'subscription.details.linkProvider.tmplButtonText'),
                                                 tmplModalID:'modal_add_provider',
                                                 editmode: editable,
                                                 orgList: availableProviderList,
@@ -327,9 +326,9 @@
                                                 property: 'orgs',
                                                 recip_prop: 'sub',
                                                 tmplRole: RDStore.OR_AGENCY,
-                                                tmplEntity: 'Lieferanten',
-                                                tmplText: 'Lieferanten mit dieser Lizenz verknüpfen',
-                                                tmplButtonText: 'Lieferant verknüpfen',
+                                                tmplEntity: message(code:'subscription.details.linkAgency.tmplEntity'),
+                                                tmplText: message(code:'subscription.details.linkAgency.tmplText'),
+                                                tmplButtonText: message(code:'subscription.details.linkAgency.tmplButtonText'),
                                                 tmplModalID:'modal_add_agency',
                                                 editmode: editable,
                                                 orgList: availableAgencyList,
