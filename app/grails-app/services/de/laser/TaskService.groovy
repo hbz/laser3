@@ -201,15 +201,15 @@ class TaskService {
         def validResponsibleOrgs    = contextOrg ? [contextOrg] : []
         def validResponsibleUsers   = contextOrg ? User.executeQuery(responsibleUsersQuery, [contextOrg]) : []
 
-        //TODO: MAX und OFFSET anders festlegen
-//        Map maxOffset = [max: 1000, offset: 0]
         if (contextOrg) {
-            // Anbieter und Lieferanten
+            boolean isInstitution = (RDStore.OT_INSTITUTION == contextOrg.getCustomerType())
+                // Anbieter und Lieferanten
             def params       = [:]
-            params.sort      = " LOWER(o.shortname), LOWER(o.name)"
+            params.sort      = isInstitution ? " LOWER(o.name), LOWER(o.shortname)" : " LOWER(o.sortname), LOWER(o.name)"
             def fsq          = filterService.getOrgQuery(params)
-            result.validOrgs = Org.findAll(fsq.query, fsq.queryParams)
+            result.validOrgsDropdown = Org.executeQuery('select o.id, o.name, o.shortname, o.sortname from Org o where (o.status is null or o.status != :orgStatus) order by  LOWER(o.sortname), LOWER(o.name) asc', fsq.queryParams)
 
+            String licensesQuery = 'select lic.id, lic.reference, lic.status, lic.startDate, lic.endDate from License lic where exists ( select o.id from OrgRole o where o.lic = lic.id AND o.org = :lic_org and o.roleType IN (:org_roles) ) order by lic.sortableReference asc'
             if(accessService.checkPerm("ORG_CONSORTIUM") || accessService.checkPerm("ORG_CONSORTIUM_SURVEY")){
                 def qry_params_for_lic = [
                     lic_org:    contextOrg,
@@ -218,7 +218,7 @@ class TaskService {
                             RDStore.OR_LICENSING_CONSORTIUM
                     ]
                 ]
-                result.validLicenses = License.executeQuery('select l ' + INSTITUTIONAL_LICENSES_QUERY +' order by l.sortableReference asc', qry_params_for_lic)//, maxOffset)
+                result.validLicensesDropdown = License.executeQuery(licensesQuery, qry_params_for_lic)//, maxOffset)
 
             } else if (accessService.checkPerm("ORG_INST")) {
                 def qry_params_for_lic = [
@@ -229,25 +229,23 @@ class TaskService {
                             RDStore.OR_LICENSEE_COLL
                     ]
                 ]
-                result.validLicenses = License.executeQuery('select l ' + INSTITUTIONAL_LICENSES_QUERY +' order by l.sortableReference asc', qry_params_for_lic)//, maxOffset)
+                result.validLicensesDropdown = License.executeQuery(licensesQuery, qry_params_for_lic)
 
             } else {
                 result.validLicenses = []
             }
+            String comboQuery = 'select o.id, o.name, o.shortname, o.sortname, c.id from Org o, Combo c join org o on c.fromOrg = o.org_id where c.toOrg = :toOrg and c.type = :type order by '+params.sort
             if (contextOrg.orgType == RDStore.OT_CONSORTIUM){
-                //TODO Sortierung!
-                result.validOrgs << Combo.findAllWhere(
-                        toOrg: contextOrg,
-                        type:  RDStore.COMBO_TYPE_CONSORTIUM)
-//                result.validOrgs.sort{it.sortname+it.name}
+                result.validOrgsDropdown << Combo.executeQuery(comboQuery,
+                        [toOrg: contextOrg,
+                        type:  RDStore.COMBO_TYPE_CONSORTIUM])
+//                result.validOrgs.unique().sort{it.sortname.toLowerCase() + it.name}
             } else if (contextOrg.orgType == RDStore.OT_INSTITUTION){
-                //TODO Sortierung!
-                result.validOrgs << Combo.findAllWhere(
-                        toOrg: contextOrg,
-                        type:  RDStore.COMBO_TYPE_DEPARTMENT)
-//                result.validOrgs.sort{it.name+it.shortname}
+                result.validOrgsDropdown << Combo.executeQuery(comboQuery,
+                        [toOrg: contextOrg,
+                        type:  RDStore.COMBO_TYPE_DEPARTMENT])
+//                result.validOrgs.unique().sort{it.name.toLowerCase() + it.shortname}
             }
-            result.validOrgs.sort{it.name}
 
             def qry_params_for_sub = [
                 'roleTypes' : [
@@ -269,7 +267,6 @@ class TaskService {
 //            result.validOrgs          = Org.list().sort(it.name+it.shortname)
         }
 
-//        result.validOrgs?.sort{it.dropdownNamingConvention(contextOrg)}
         result.validPackages        = Package.findAll("from Package p where p.name != '' and p.name != null order by lower(p.sortName) asc") // TODO
 
         result.taskCreator          = springSecurityService.getCurrentUser()

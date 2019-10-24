@@ -2,7 +2,7 @@
 
 <!doctype html>
 <%-- r:require module="annotations" / --%>
-
+%{--<% long start = System.currentTimeMillis() %>--}%
 <html>
     <head>
         <meta name="layout" content="semanticUI"/>
@@ -63,7 +63,9 @@
 
         <g:render template="/templates/tasks/js_taskedit"/>
 
-
+%{--<% long ende = java.lang.System.currentTimeMillis()--}%
+ %{--long dauer = ende - start %>--}%
+    %{--************************* Dauer: ${dauer} *************************--}%
 
   </body>
 </html>

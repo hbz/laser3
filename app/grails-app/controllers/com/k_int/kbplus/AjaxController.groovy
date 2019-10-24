@@ -2303,8 +2303,10 @@ class AjaxController {
 
     @Secured(['ROLE_USER'])
     def TaskCreate() {
+        long backendStart = System.currentTimeMillis()
         def contextOrg = contextService.getOrg()
         def result     = taskService.getPreconditions(contextOrg)
+        result.backendStart = backendStart
 
         render template:"../templates/tasks/modal_create", model: result
 

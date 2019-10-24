@@ -2,7 +2,6 @@
 <g:set var="simpleDateFormat" value="${new java.text.SimpleDateFormat("yyyyMMdd")}"/>
 <!doctype html>
 <html>
-<% def start = System.currentTimeMillis() %>
 <html>
     <head>
         <meta name="layout" content="semanticUI"/>
@@ -368,10 +367,6 @@
     </g:if>
 --}%
         %{--<g:render template="/templates/tasks/modal_create" />--}%
-    <% def ende = System.currentTimeMillis()
-    def dauer = ende-start
-    %>
-    ****************** DAUER: ${dauer} ******************
     %{--<g:render template="/templates/tasks/js_taskcreate"/>--}%
     <g:javascript>
         function taskcreate() {
