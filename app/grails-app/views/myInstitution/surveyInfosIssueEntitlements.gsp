@@ -48,7 +48,7 @@ ${message(code: 'issueEntitlementsSurvey.label')} - ${surveyInfo.name}
 
             <p>
                 <%-- <g:message code="surveyInfo.finishOrSurveyCompleted"/> --%>
-                <g:message code="renewEntitlementsWithSurvey.finish.info"/>.
+                <g:message code="renewEntitlementsWithSurvey.finish.info"/>
             </p>
         </div>
     </div>

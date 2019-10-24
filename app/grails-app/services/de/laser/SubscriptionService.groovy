@@ -226,8 +226,8 @@ class SubscriptionService {
 
     List getIssueEntitlementsUnderConsideration(Subscription subscription) {
         List<IssueEntitlement> ies = subscription?
-                IssueEntitlement.executeQuery("select ie from IssueEntitlement as ie where ie.subscription = :sub and ie.acceptStatus = :acceptStat",
-                        [sub: subscription, acceptStat: RDStore.IE_ACCEPT_STATUS_UNDER_CONSIDERATION])
+                IssueEntitlement.executeQuery("select ie from IssueEntitlement as ie where ie.subscription = :sub and ie.acceptStatus = :acceptStat and ie.status = :ieStatus",
+                        [sub: subscription, acceptStat: RDStore.IE_ACCEPT_STATUS_UNDER_CONSIDERATION, ieStatus: RDStore.TIPP_STATUS_CURRENT])
                 : []
         ies.sort {it.tipp.title.title}
         ies
@@ -235,8 +235,8 @@ class SubscriptionService {
 
     List getIssueEntitlementsNotFixed(Subscription subscription) {
         List<IssueEntitlement> ies = subscription?
-                IssueEntitlement.executeQuery("select ie from IssueEntitlement as ie where ie.subscription = :sub and ie.acceptStatus != :acceptStat",
-                        [sub: subscription, acceptStat: RDStore.IE_ACCEPT_STATUS_FIXED])
+                IssueEntitlement.executeQuery("select ie from IssueEntitlement as ie where ie.subscription = :sub and ie.acceptStatus != :acceptStat and ie.status = :ieStatus",
+                        [sub: subscription, acceptStat: RDStore.IE_ACCEPT_STATUS_FIXED, ieStatus: RDStore.TIPP_STATUS_CURRENT])
                 : []
         ies.sort {it.tipp.title.title}
         ies
