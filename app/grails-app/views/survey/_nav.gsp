@@ -3,7 +3,7 @@
 <semui:subNav actionName="${actionName}">
 
     <g:set var="evalutionsViews"
-           value="['evaluationConfigsInfo', 'evaluationConfigResult', 'evaluationParticipantInfo']"/>
+           value="['evaluationConfigsInfo', 'evaluationConfigResult', 'evaluationParticipantInfo', 'surveyEvaluation']"/>
     <g:set var="surveyConfigsViews" value="['surveyConfigsInfo']"/>
 
 
@@ -86,6 +86,11 @@
         <semui:subNavItem controller="survey" disabled="${subNavDisable}" action="surveyParticipants"
                           params="${[id: params.id, surveyConfigID: surveyConfig?.id]}"
                           message="surveyParticipants.label"/>
+
+        <semui:subNavItem controller="survey" disabled="${subNavDisable}" action="surveyTitlesEvaluation"
+                          params="${[id: params.id, surveyConfigID: surveyConfig?.id]}"
+                          message="surveyTitlesEvaluation.label"
+                          class="${(actionName in evalutionsViews) ? "active" : ""}"/>
 
     </g:else>
 
