@@ -30,15 +30,41 @@ databaseChangeLog = {
                 mapping['3a8f1652-f88c-4908-bf63-e0985a3cb73e'] = 'Wiley Online Library' //Cochrane Library
 
                 mapping.each() {
-                    def owner = sql.rows("select plat_id from platform where plat_gokb_id='${it.key}'")
-                    def existingProperty = sql.firstRow("select * from platform_custom_property where string_value='${it.value}'")
+                    def owner = sql.rows("select plat_id from platform where plat_gokb_id = ?", it.key)
+                    def existingProperty = sql.firstRow("select * from platform_custom_property where string_value = ?", it.value)
                     if (owner.plat_id[0] && !existingProperty) {
                         sql.execute("insert into platform_custom_property (version, owner_id, string_value, type_id) values (1,${owner.plat_id[0]},${it.value},${propDefId.pd_id[0]})")
                     }
                 }
-
             }
         }
     }
 
+    changeSet(author: "kloberd (generated)", id: "1571927484417-2") {
+        dropForeignKeyConstraint(baseTableName: "fact", baseTableSchemaName: "public", constraintName: "fk2fd66c40c7d5b5")
+    }
+
+    changeSet(author: "kloberd (generated)", id: "1571927484417-3") {
+        dropColumn(columnName: "supplier_id", tableName: "fact")
+    }
+
+    changeSet(author: "kloberd (generated)", id: "1571927484417-4") {
+        addColumn(schemaName: "public", tableName: "fact") {
+            column(name: "supplier_id", type: "int8")
+        }
+    }
+
+    changeSet(author: "kloberd (generated)", id: "1571927484417-5") {
+        createIndex(indexName: "fact_access_idx", schemaName: "public", tableName: "fact") {
+            column(name: "inst_id")
+
+            column(name: "related_title_id")
+
+            column(name: "supplier_id")
+        }
+    }
+
+    changeSet(author: "kloberd (generated)", id: "1571927484417-6") {
+        addForeignKeyConstraint(baseColumnNames: "supplier_id", baseTableName: "fact", baseTableSchemaName: "public", constraintName: "FK2FD66CA859705E", deferrable: "false", initiallyDeferred: "false", referencedColumnNames: "plat_id", referencedTableName: "platform", referencedTableSchemaName: "public", referencesUniqueColumn: "false")
+    }
 }
