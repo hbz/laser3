@@ -3323,13 +3323,15 @@ AND EXISTS (
                 " join subK.orgRelations roleK join subT.orgRelations roleTK join subT.orgRelations roleT " +
                 " where roleK.org = :org and roleK.roleType = :rdvCons " +
                 " and roleTK.org = :org and roleTK.roleType = :rdvCons " +
-                " and roleT.roleType = :rdvSubscr " +
+                " and ( roleT.roleType = :rdvSubscr or roleT.roleType = :rdvSubscrHidden ) " +
                 " and ( ci is null or ci.owner = :org )"
 
 
         Map qarams = [org      : result.institution,
                       rdvCons  : RDStore.OR_SUBSCRIPTION_CONSORTIA,
-                      rdvSubscr: RDStore.OR_SUBSCRIBER_CONS]
+                      rdvSubscr: RDStore.OR_SUBSCRIBER_CONS,
+                      rdvSubscrHidden: RDStore.OR_SUBSCRIBER_CONS_HIDDEN
+        ]
 
         if (params.member?.size() > 0) {
             query += " and roleT.org.id = :member "

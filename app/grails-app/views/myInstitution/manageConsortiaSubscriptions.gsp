@@ -263,6 +263,11 @@
                         <g:if test="${subscr.sortname}">${subscr.sortname}</g:if>
                         (${subscr.name})
                     </g:link>
+                    <g:if test="${OrgRole.findBySubAndOrgAndRoleType(subCons, subscr, RDStore.OR_SUBSCRIBER_CONS_HIDDEN)}">
+                        <span data-position="top left" class="la-popup-tooltip la-delay" data-content="${message(code:'financials.isNotVisibleForSubscriber')}">
+                            <i class="low vision grey icon"></i>
+                        </span>
+                    </g:if>
                 </td>
                 <td>
 
@@ -271,7 +276,7 @@
                         <i class="icon clipboard outline outline la-list-icon"></i>
                         <g:link controller="subscription" action="show" id="${subCons.id}">${subCons.name}</g:link>
                         <g:if test="${subCons.getCalculatedPrevious()}">
-                            <span data-position="top left"  class="la-popup-tooltip la-delay" data-content="${message(code:'subscription.hasPreviousSubscription')}">
+                            <span data-position="top left" class="la-popup-tooltip la-delay" data-content="${message(code:'subscription.hasPreviousSubscription')}">
                                 <i class="arrow left grey icon"></i>
                             </span>
                         </g:if>
