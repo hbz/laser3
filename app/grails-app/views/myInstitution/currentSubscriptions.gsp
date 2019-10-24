@@ -21,7 +21,7 @@
                 <g:if test="${filterSet || defaultSet}">
                     <semui:exportDropdownItem>
                         <g:link class="item js-open-confirm-modal"
-                                data-confirm-term-content = "${message(code: 'confirmation.content.exportPartial')}"
+                                data-confirm-tokenMsg = "${message(code: 'confirmation.content.exportPartial')}"
                                 data-confirm-term-how="ok" controller="myInstitution" action="currentSubscriptions"
                                 params="${params+[exportXLS:true]}">
                             ${message(code:'default.button.exports.xls')}
@@ -29,7 +29,7 @@
                     </semui:exportDropdownItem>
                     <semui:exportDropdownItem>
                         <g:link class="item js-open-confirm-modal"
-                                data-confirm-term-content = "${message(code: 'confirmation.content.exportPartial')}"
+                                data-confirm-tokenMsg = "${message(code: 'confirmation.content.exportPartial')}"
                                 data-confirm-term-how="ok" controller="myInstitution" action="currentSubscriptions"
                                 params="${params+[format:'csv']}">
                             ${message(code:'default.button.exports.csv')}

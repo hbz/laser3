@@ -103,12 +103,12 @@ ${message(code: 'subscription.linkPackagesMembers.header', args: args.memberType
 
         <div class="ui buttons">
             <g:link class="ui button js-open-confirm-modal"
-                    data-confirm-term-content="${message(code: 'subscription.linkPackagesMembers.unlinkInfo.onlyPackage.confirm')}"
+                    data-confirm-tokenMsg="${message(code: 'subscription.linkPackagesMembers.unlinkInfo.onlyPackage.confirm')}"
                     data-confirm-term-how="ok" action="processUnLinkPackagesConsortia" id="${params.id}"
                     params="[withIE: false]">${message(code: 'subscription.linkPackagesMembers.unlinkInfo.onlyPackage')}</g:link>
             <div class="or"></div>
             <g:link class="ui button js-open-confirm-modal"
-                    data-confirm-term-content="${message(code: 'subscription.linkPackagesMembers.unlinkInfo.withIE.confirm')}"
+                    data-confirm-tokenMsg="${message(code: 'subscription.linkPackagesMembers.unlinkInfo.withIE.confirm')}"
                     data-confirm-term-how="ok" action="processUnLinkPackagesConsortia" id="${params.id}"
                     params="[withIE: true]">${message(code: 'subscription.linkPackagesMembers.unlinkInfo.withIE')}</g:link>
         </div>
@@ -136,13 +136,13 @@ ${message(code: 'subscription.linkPackagesMembers.header', args: args.memberType
 
             <div class="ui buttons">
                 <button class="ui button "
-                        data-confirm-term-content="${message(code: 'subscription.linkPackagesMembers.unlinkInfo.onlyPackage.confirm')}"
+                        data-confirm-tokenMsg="${message(code: 'subscription.linkPackagesMembers.unlinkInfo.onlyPackage.confirm')}"
                         data-confirm-term-how="ok" type="submit" name="withIE"
                         value="${false}">${message(code: 'subscription.linkPackagesMembers.unlinkInfo.onlyPackage')}</button>
 
                 <div class="or"></div>
                 <button class="ui button "
-                        data-confirm-term-content="${message(code: 'subscription.linkPackagesMembers.unlinkInfo.withIE.confirm')}"
+                        data-confirm-tokenMsg="${message(code: 'subscription.linkPackagesMembers.unlinkInfo.withIE.confirm')}"
                         data-confirm-term-how="ok" type="submit" name="withIE"
                         value="${true}">${message(code: 'subscription.linkPackagesMembers.unlinkInfo.withIE')}</button>
             </div>

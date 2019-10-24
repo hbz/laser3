@@ -27,7 +27,7 @@
                 <g:if test="${params.submit || params.filterSubStatus}">
                     <semui:exportDropdownItem>
                         <g:link  class="item js-open-confirm-modal"
-                                 data-confirm-term-content = "${message(code: 'confirmation.content.exportPartial')}"
+                                 data-confirm-tokenMsg = "${message(code: 'confirmation.content.exportPartial')}"
                                  data-confirm-term-how="ok"
                                  controller="finance"
                                  action="financialsExport"
@@ -36,7 +36,7 @@
                     </semui:exportDropdownItem>
                     <semui:exportDropdownItem>
                         <g:link class="item exportCSV js-open-confirm-modal"
-                                 data-confirm-term-content = "${message(code: 'confirmation.content.exportPartialCSV')}"
+                                 data-confirm-tokenMsg = "${message(code: 'confirmation.content.exportPartialCSV')}"
                                  data-confirm-term-how="ok"
                                  controller="finance"
                                  action="financialsExport"
@@ -50,7 +50,7 @@
                     </semui:exportDropdownItem>
                     <semui:exportDropdownItem>
                         <g:link class="item exportCSV js-open-confirm-modal"
-                                 data-confirm-term-content = "${message(code: 'confirmation.content.exportCSV')}"
+                                 data-confirm-tokenMsg = "${message(code: 'confirmation.content.exportCSV')}"
                                  data-confirm-term-how="ok"
                                  controller="finance"
                                  action="financialsExport"

@@ -116,8 +116,7 @@
                                     %{--<g:form controller="person" action="_delete" data-confirm-id="${person?.id?.toString()+ '_form'}">--}%
                                         %{--<g:hiddenField name="id" value="${person?.id}" />--}%
                                         %{--<div class="ui mini icon negative button js-open-confirm-modal"--}%
-                                             %{--data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.contact")}"--}%
-                                             %{--data-confirm-term-what-detail="${person?.toString()}"--}%
+                                             %{--data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.contact", args: [person?.toString()])}"--}%
                                              %{--data-confirm-term-how="delete"--}%
                                              %{--data-confirm-id="${person?.id}" >--}%
                                             %{--<i class="unlink icon"></i>--}%
@@ -190,7 +189,7 @@
         <td class="right aligned">
             <<g:set var="oid" value="${tmplUnlinkedObj?.class.name}:${tmplUnlinkedObj?.id}"/>
             <g:link class="ui icon negative button js-open-confirm-modal"
-                    data-confirm-tokenMsg="${message(code: "confirm.dialog.unlink.contact.organisation")}"
+                    data-confirm-tokenMsg="${message(code: "confirm.dialog.unlink.contact")}"
                     data-confirm-term-how="unlink"
                     controller="ajax" action="delete" params="[cmd: 'deletePersonRole', oid: oid]">
                 <i class="unlink icon"></i>

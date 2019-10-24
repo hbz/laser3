@@ -60,7 +60,7 @@
                             </td>
                             <td>
                                 <g:link class="button js-open-confirm-modal"
-                                            data-confirm-term-content="${message(code:'confirmation.content.bulkCostConfiguration')}"
+                                            data-confirm-tokenMsg="${message(code:'confirmation.content.bulkCostConfiguration')}"
                                             data-confirm-term-how="ok"
                                             action="setAllCostItems" params="${[cie:ciec.costItemElement.class.name+":"+ciec.costItemElement.id]}">
                                         ${message(code:'costConfiguration.configureAllCostItems')}
