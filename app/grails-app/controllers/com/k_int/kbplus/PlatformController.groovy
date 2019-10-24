@@ -1,6 +1,7 @@
 package com.k_int.kbplus
 
 import com.k_int.kbplus.auth.User
+import de.laser.AccessService
 import de.laser.controller.AbstractDebugController
 import de.laser.helper.DebugAnnotation
 import de.laser.helper.RDStore
@@ -15,6 +16,7 @@ class PlatformController extends AbstractDebugController {
     def contextService
     def filterService
     def orgTypeService
+    def accessService
 
     static allowedMethods = [create: ['GET', 'POST'], edit: ['GET', 'POST'], delete: 'POST']
 
@@ -86,6 +88,7 @@ class PlatformController extends AbstractDebugController {
 
     @Secured(['ROLE_USER'])
     def show() {
+      Map result = setResultGenerics()
       def editable
       def platformInstance = Platform.get(params.id)
       if (!platformInstance) {
@@ -95,8 +98,9 @@ class PlatformController extends AbstractDebugController {
         return
       }
 
-      editable = SpringSecurityUtils.ifAllGranted('ROLE_ADMIN')
-        Map result = [platformInstance: platformInstance, editable: editable, user: springSecurityService.getCurrentUser()]
+      editable = accessService.checkMinUserOrgRole(result.user, result.orgInstance, 'INST_EDITOR') || SpringSecurityUtils.ifAllGranted('ROLE_ADMIN')
+
+        result = [platformInstance: platformInstance, editable: editable, user: springSecurityService.getCurrentUser()]
      /*// Build up a crosstab array of title-platforms under this package
       def packages = [:]
       def package_list = []
@@ -410,6 +414,13 @@ class PlatformController extends AbstractDebugController {
             // TODO flash
         }
         redirect action: 'link', params: [id:params.id]
+    }
+
+    private Map setResultGenerics() {
+        def result = [:]
+        result.user = User.get(springSecurityService.principal.id)
+        result.orgInstance = contextService.org
+        result
     }
 
 }

@@ -457,7 +457,7 @@
                             </g:else>
                         </g:link>
                     </g:if>
-                    <g:if test="${statsWibid && (s.getCommaSeperatedPackagesIsilList()?.trim()) && s.hasOrgWithUsageSupplierId()}">
+                    <g:if test="${statsWibid && (s.getCommaSeperatedPackagesIsilList()?.trim()) && s.hasPlatformWithUsageSupplierId()}">
                         <laser:statsLink class="ui icon button"
                                          base="${grailsApplication.config.statsApiUrl}"
                                          module="statistics"

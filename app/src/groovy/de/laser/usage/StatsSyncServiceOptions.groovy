@@ -24,14 +24,14 @@ class StatsSyncServiceOptions {
     String statsTitleIdentifier
     String identifierType
     TitleInstance title_inst
-    Org supplier_inst
+    Platform supplier_inst
     Org org_inst
     IdentifierOccurrence title_io_inst
 
     void setItemObjects(objectList)
     {
         title_inst = (TitleInstance)objectList[0]
-        supplier_inst = (Org)objectList[1]
+        supplier_inst = (Platform)objectList[1]
         org_inst = (Org)objectList[2]
         title_io_inst = (IdentifierOccurrence)objectList[3]
         statsTitleIdentifier = title_io_inst?.identifier?.value
@@ -73,11 +73,13 @@ class StatsSyncServiceOptions {
     }
 
     LinkedHashMap getQueryParams(org_inst, supplier_inst) {
-        def platform = supplier_inst.getIdentifierByType('statssid').value
+        def platform = supplier_inst.customProperties.find(){
+            it.type.name = "NatStat Supplier ID"
+        }
         def customer = org_inst.getIdentifierByType('wibid').value
         def apiKey = OrgSettings.get(org_inst, OrgSettings.KEYS.NATSTAT_SERVER_API_KEY)?.getValue()
         def requestor = OrgSettings.get(org_inst, OrgSettings.KEYS.NATSTAT_SERVER_REQUESTOR_ID)?.getValue()
-        [platform:platform, customer:customer, apiKey: apiKey, requestor:requestor]
+        [platform:platform.stringValue, customer:customer, apiKey: apiKey, requestor:requestor]
     }
 
     Boolean identifierTypeAllowedForAPICall()

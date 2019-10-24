@@ -64,17 +64,19 @@ class StatsSyncService {
     }
 
     private String getTitleInstancesForUsageQuery() {
-        // Distinct list of titles ids, the content provider, subscribing organisation and the zdbid
-       def hql =  "select distinct ie.tipp.title.id, po.org.id, orgrel.org.id, zdbtitle.id from IssueEntitlement as ie " +
+        // Distinct list of titles ids, the platform, subscribing organisation and the zdbid
+        def hql =  "select distinct ie.tipp.title.id, pf.id, orgrel.org.id, zdbtitle.id from IssueEntitlement as ie " +
+            "join ie.tipp.platform as pf " +
             "join ie.tipp.pkg.orgs as po " +
             "join ie.subscription.orgRelations as orgrel "+
-            "join ie.tipp.title.ids as zdbtitle where zdbtitle.identifier.ns.ns in ('zdb','doi') "+
+            "join ie.tipp.title.ids as zdbtitle "+
+            "where zdbtitle.identifier.ns.ns in ('zdb','doi') "+
             "and po.roleType.value='Content Provider' "+
-            "and exists ( select oid from po.org.ids as oid where oid.identifier.ns.ns = 'statssid' ) " +
+            "and exists (select cp from pf.customProperties as cp where cp.type.name = 'NatStat Supplier ID')" +
             "and (orgrel.roleType.value = 'Subscriber_Consortial' or orgrel.roleType.value = 'Subscriber') " +
-            "and exists (select 1 from OrgSettings as os where os.org=orgrel.org and os.key='${OrgSettings.KEYS.NATSTAT_SERVER_REQUESTOR_ID}' ) "
+            "and exists (select 1 from OrgSettings as os where os.org=orgrel.org and os.key='${OrgSettings.KEYS.NATSTAT_SERVER_REQUESTOR_ID}' and os.strValue<>'') "
         if (queryParams['supplier'] != null){
-            hql += "and po.org.id =:supplier "
+            hql += "and pf.id =:supplier "
         }
         if (queryParams['institution'] != null){
             hql += "and orgrel.org.id =:institution"
@@ -187,7 +189,7 @@ class StatsSyncService {
     ArrayList getObjectsForItem(listItem) {
        [
             TitleInstance.get(listItem[0]),
-            Org.get(listItem[1]),
+            Platform.get(listItem[1]),
             Org.get(listItem[2]),
             IdentifierOccurrence.get(listItem[3])
         ]
