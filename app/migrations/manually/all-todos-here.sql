@@ -48,3 +48,9 @@ ALTER TABLE org DROP COLUMN org_origin_edit_url;
 --DELETE FROM identifier_occurrence where io_canonical_id in (select id_id from identifier left join identifier_namespace "in" on identifier.id_ns_fk = "in".idns_id where "in".idns_ns in ('originEditUrl','originediturl'));
 --DELETE FROM identifier where id_ns_fk = (select idns_id from identifier_namespace where idns_ns in ('originEditUrl','originediturl'));
 --DELETE FROM identifier_namespace where idns_ns in ('originEditUrl','originediturl');
+
+-- 2019-10-22 (mbeh)
+--  new column class in org_access_point is initially null
+-- need to set to  com.k_int.kbplus.OrgAccessPoint for all existing rows
+-- see pull request for Update access point management - ad7500ef0534c4b414e5e7cb0c9acc1acd4f8283"
+update org_access_point set class = 'com.k_int.kbplus.OrgAccessPoint';
