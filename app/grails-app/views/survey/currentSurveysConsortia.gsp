@@ -285,6 +285,28 @@
                                     </div>
                                 </g:link>
                             </g:if>
+                            <g:if test="${surveyConfig && surveyConfig?.type == 'Subscription' && surveyConfig?.pickAndChoose}">
+
+                                <g:set var="participantsTitleSurveyFinish"
+                                       value="${com.k_int.kbplus.SurveyOrg.findAllBySurveyConfigAndFinishDateIsNotNull(surveyConfig)}"/>
+
+                                <g:set var="participantsTitleSurveyTotal"
+                                       value="${com.k_int.kbplus.SurveyOrg.findAllBySurveyConfig(surveyConfig)}"/>
+                                <g:link controller="survey" action="surveyTitlesEvaluation" id="${surveyInfo?.id}"
+                                        params="[surveyConfigID: surveyConfig?.id]"
+                                        class="ui icon">
+                                    <div class="ui circular ${(participantsTitleSurveyFinish.size() == participantsTitleSurveyTotal.size()) ? "green" : (participantsTitleSurveyFinish.size() > 0) ? "yellow" :""} label">
+                                        <g:if
+                                                test="${participantsTitleSurveyFinish && participantsTitleSurveyTotal}">
+                                            <g:formatNumber number="${(participantsTitleSurveyFinish.size() / participantsTitleSurveyTotal.size()) * 100}" minFractionDigits="2"
+                                                            maxFractionDigits="2"/>%
+                                        </g:if>
+                                        <g:else>
+                                            0%
+                                        </g:else>
+                                    </div>
+                                </g:link>
+                            </g:if>
                         </td>
                     </g:if>
                     <g:if test="${params.tab == "finish"}">
