@@ -183,6 +183,13 @@ class Platform extends AbstractBaseDomain {
 
     result
   }
+
+  def getContextOrgAccessPoints(contextOrg) {
+    def hql = "select oap from OrgAccessPoint oap " +
+        "join oap.oapp as oapp where oap.org=:org and oapp.active = true and oapp.platform.id =${this.id}"
+    def result = OrgAccessPoint.executeQuery(hql, ['org' : contextOrg])
+    return result
+  }
   
   static def refdataFind(params) {
     def result = [];

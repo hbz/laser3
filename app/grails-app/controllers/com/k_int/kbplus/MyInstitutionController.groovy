@@ -191,6 +191,7 @@ class MyInstitutionController extends AbstractDebugController {
         result.user = User.get(springSecurityService.principal.id)
         result.max = params.max ?: result.user.getDefaultPageSizeTMP()
         result.offset = params.offset ?: 0
+        result.contextOrg = contextService.org
 
         def cache = contextService.getCache('MyInstitutionController/currentPlatforms/', contextService.ORG_SCOPE)
 
