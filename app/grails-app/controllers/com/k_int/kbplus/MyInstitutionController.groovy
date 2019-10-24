@@ -710,7 +710,6 @@ from License as l where (
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
     def currentProviders() {
         long timestamp = System.currentTimeMillis()
-
         def result = setResultGenerics()
 
         def cache = contextService.getCache('MyInstitutionController/currentProviders/', contextService.ORG_SCOPE)
@@ -734,8 +733,8 @@ from License as l where (
 
 //        result.user = User.get(springSecurityService.principal.id)
         params.sort = params.sort ?: " LOWER(o.shortname), LOWER(o.name)"
-        result.max  = params.max ? Integer.parseInt(params.max) : result.user?.getDefaultPageSizeTMP()
-        result.offset = params.offset ? Integer.parseInt(params.offset) : 0
+		result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeTMP()
+		result.offset = params.offset ? Integer.parseInt(params.offset) : 0
 
         def fsq  = filterService.getOrgQuery([constraint_orgIds: orgIds] << params)
         result.filterSet = params.filterSet ? true : false
@@ -3323,13 +3322,15 @@ AND EXISTS (
                 " join subK.orgRelations roleK join subT.orgRelations roleTK join subT.orgRelations roleT " +
                 " where roleK.org = :org and roleK.roleType = :rdvCons " +
                 " and roleTK.org = :org and roleTK.roleType = :rdvCons " +
-                " and roleT.roleType = :rdvSubscr " +
+                " and ( roleT.roleType = :rdvSubscr or roleT.roleType = :rdvSubscrHidden ) " +
                 " and ( ci is null or ci.owner = :org )"
 
 
         Map qarams = [org      : result.institution,
                       rdvCons  : RDStore.OR_SUBSCRIPTION_CONSORTIA,
-                      rdvSubscr: RDStore.OR_SUBSCRIBER_CONS]
+                      rdvSubscr: RDStore.OR_SUBSCRIBER_CONS,
+                      rdvSubscrHidden: RDStore.OR_SUBSCRIBER_CONS_HIDDEN
+        ]
 
         if (params.member?.size() > 0) {
             query += " and roleT.org.id = :member "

@@ -104,9 +104,7 @@
                     <tr>
                     <td>${counter++}</td>
                     <td class="titleCell">
-                        <g:if test="${side == 'target' && targetIE}">
-                            <semui:ieAcceptStatusIcon status="${targetIE?.acceptStatus}"/>
-                        </g:if>
+                        <semui:ieAcceptStatusIcon status="${ie?.acceptStatus}"/>
 
                         <semui:listIcon type="${tipp.title?.type?.value}"/>
                         <strong><g:link controller="title" action="show"
