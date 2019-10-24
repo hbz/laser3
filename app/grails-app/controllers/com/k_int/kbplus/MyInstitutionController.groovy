@@ -710,7 +710,6 @@ from License as l where (
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
     def currentProviders() {
         long timestamp = System.currentTimeMillis()
-
         def result = setResultGenerics()
 
         def cache = contextService.getCache('MyInstitutionController/currentProviders/', contextService.ORG_SCOPE)
@@ -734,8 +733,8 @@ from License as l where (
 
 //        result.user = User.get(springSecurityService.principal.id)
         params.sort = params.sort ?: " LOWER(o.shortname), LOWER(o.name)"
-        result.max  = params.max ? Integer.parseInt(params.max) : result.user?.getDefaultPageSizeTMP()
-        result.offset = params.offset ? Integer.parseInt(params.offset) : 0
+		result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeTMP()
+		result.offset = params.offset ? Integer.parseInt(params.offset) : 0
 
         def fsq  = filterService.getOrgQuery([constraint_orgIds: orgIds] << params)
         result.filterSet = params.filterSet ? true : false
