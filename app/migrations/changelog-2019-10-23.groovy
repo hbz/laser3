@@ -66,4 +66,13 @@ databaseChangeLog = {
 			rollback {}
 		}
 	}
+
+	changeSet(author: "kloberd (modified)", id: "1571820746491-14") {
+		grailsChange {
+			change {
+				sql.execute("update org_access_point set class = 'com.k_int.kbplus.OrgAccessPoint' where class is null")
+			}
+			rollback {}
+		}
+	}
 }
