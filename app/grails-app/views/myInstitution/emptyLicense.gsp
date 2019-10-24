@@ -183,8 +183,14 @@
     });
 
     function formatDate(input) {
-        var inArr = input.split(/[\.-]/g);
-        return inArr[2]+"-"+inArr[1]+"-"+inArr[0];
+        if(input.match(/^\d{2}[\.\/-]\d{2}[\.\/-]\d{2,4}$/)) {
+            var inArr = input.split(/[\.\/-]/g);
+            return inArr[2]+"-"+inArr[1]+"-"+inArr[0];
+        }
+        else {
+            console.log(input);
+            return input;
+        }
     }
     $.fn.form.settings.rules.endDateNotBeforeStartDate = function() {
                 if($("#licenseStartDate").val() !== '' && $("#licenseEndDate").val() !== '') {
