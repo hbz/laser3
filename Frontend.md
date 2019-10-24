@@ -60,7 +60,7 @@ data-confirm-term-how="cancel"
 ##### with content
 ```
 <g:link  class="item js-open-confirm-modal"
-        data-confirm-term-content = "${message(code: 'confirmation.content.exportPartial', default: 'Achtung!  Dennoch fortfahren?')}"
+        data-confirm-tokenMsg = "${message(code: 'confirmation.content.exportPartial', default: 'Achtung!  Dennoch fortfahren?')}"
         data-confirm-term-how="ok"
         action="index"
         id="${params.id}"
