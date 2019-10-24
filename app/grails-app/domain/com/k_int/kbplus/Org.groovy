@@ -40,7 +40,7 @@ class Org
     String sortname
     String url
     String urlGov
-    URL originEditUrl
+    //URL originEditUrl
 
     String importSource         // "nationallizenzen.de", "edb des hbz"
     Date lastImportDate
@@ -126,7 +126,7 @@ class Org
           sortname          column:'org_sortname',  index:'org_sortname_idx'
                url          column:'org_url'
             urlGov          column:'org_url_gov'
-     originEditUrl          column:'org_origin_edit_url'
+   //originEditUrl          column:'org_origin_edit_url'
            comment          column:'org_comment'
            ipRange          column:'org_ip_range'
          shortcode          column:'org_shortcode', index:'org_shortcode_idx'
@@ -176,7 +176,7 @@ class Org
             sortname(nullable:true, blank:true, maxSize:255)
                  url(nullable:true, blank:true, maxSize:512)
               urlGov(nullable:true, blank:true, maxSize:512)
-       originEditUrl(nullable:true, blank:false)
+     //originEditUrl(nullable:true, blank:false)
                impId(nullable:true, blank:true, maxSize:255)
              comment(nullable:true, blank:true, maxSize:2048)
              ipRange(nullable:true, blank:true, maxSize:1024)
@@ -502,14 +502,18 @@ class Org
             if (identifiers instanceof ArrayList) {
                 identifiers.each{ it ->
                     it.each { k, v ->
-                        def io = new IdentifierOccurrence(org: result, identifier: Identifier.lookupOrCreateCanonicalIdentifier(k, v)).save()
+                        if(k.toLowerCase() != 'originediturl')
+                            def io = new IdentifierOccurrence(org: result, identifier: Identifier.lookupOrCreateCanonicalIdentifier(k, v)).save()
+                        else println "org identifier ${v} is deprecated namespace originEditUrl .. ignoring"
                     }
                 }
             }
             // DEFAULT LOGIC
             else {
                 identifiers.each { k, v ->
-                    def io = new IdentifierOccurrence(org: result, identifier: Identifier.lookupOrCreateCanonicalIdentifier(k, v)).save()
+                    if(k.toLowerCase() != 'originediturl')
+                        def io = new IdentifierOccurrence(org: result, identifier: Identifier.lookupOrCreateCanonicalIdentifier(k, v)).save()
+                    else println "org identifier ${v} is deprecated namespace originEditUrl .. ignoring"
                 }
             }
 
