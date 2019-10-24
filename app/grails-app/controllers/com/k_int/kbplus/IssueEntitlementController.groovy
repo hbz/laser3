@@ -67,13 +67,15 @@ class IssueEntitlementController extends AbstractDebugController {
       // Get usage statistics
       def title_id = result.issueEntitlementInstance.tipp.title?.id
       def org = result.issueEntitlementInstance.subscription.getSubscriber() // TODO
-      def supplier = result.issueEntitlementInstance.tipp.pkg.contentProvider
+      def supplier =  result.issueEntitlementInstance.tipp.platform
       def supplier_id = supplier?.id
 
       if (title_id != null &&
            org != null &&
            supplier_id != null ) {
-          result.natStatSupplierId = supplier.getIdentifierByType('statssid')?.value
+          def platform = PlatformCustomProperty.findByOwnerAndType(Platform.get(supplier_id),
+              PropertyDefinition.findByName('NatStat Supplier ID'))
+          result.natStatSupplierId = platform?.stringValue ?: null
           def fsresult = factService.generateUsageData(org.id, supplier_id, result.issueEntitlementInstance.subscription, title_id)
           def fsLicenseResult = factService.generateUsageDataForSubscriptionPeriod(org.id, supplier_id, result.issueEntitlementInstance.subscription, title_id)
           result.institutional_usage_identifier = OrgSettings.get(org, OrgSettings.KEYS.NATSTAT_SERVER_REQUESTOR_ID)
