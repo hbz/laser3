@@ -75,4 +75,41 @@ databaseChangeLog = {
 			rollback {}
 		}
 	}
+
+	changeSet(author: "kloberd (modified)", id: "1571820746491-15") {
+		grailsChange {
+			change {
+				sql.execute("update identifier_namespace set idns_is_hidden = false where idns_is_hidden is null")
+			}
+			rollback {}
+		}
+	}
+
+	changeSet(author: "kloberd (generated)", id: "1571820746491-16") {
+		addNotNullConstraint(columnDataType: "bool", columnName: "idns_is_hidden", tableName: "identifier_namespace")
+	}
+
+	changeSet(author: "kloberd (generated)", id: "1571820746491-17") {
+		addNotNullConstraint(columnDataType: "int8", columnName: "version", tableName: "price_item")
+	}
+
+	changeSet(author: "kloberd (generated)", id: "1571820746491-18") {
+		addNotNullConstraint(columnDataType: "bool", columnName: "surconf_evaluation_finish", tableName: "survey_config")
+	}
+
+	changeSet(author: "kloberd (generated)", id: "1571820746491-19") {
+		addNotNullConstraint(columnDataType: "bool", columnName: "surconf_is_subscription_survey_fix", tableName: "survey_config")
+	}
+
+	changeSet(author: "kloberd (generated)", id: "1571820746491-20") {
+		addNotNullConstraint(columnDataType: "bool", columnName: "surin_is_subscription_survey", tableName: "survey_info")
+	}
+
+	changeSet(author: "kloberd (generated)", id: "1571820746491-21") {
+		addNotNullConstraint(columnDataType: "bool", columnName: "surre_is_required", tableName: "survey_result")
+	}
+
+	changeSet(author: "kloberd (generated)", id: "1571820746491-22") {
+		addNotNullConstraint(columnDataType: "varchar(255)", columnName: "class", tableName: "org_access_point")
+	}
 }

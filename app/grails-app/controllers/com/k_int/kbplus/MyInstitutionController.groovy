@@ -77,15 +77,6 @@ class MyInstitutionController extends AbstractDebugController {
     def renewals_reversemap = ['subject': 'subject', 'provider': 'provid', 'pkgname': 'tokname']
     def reversemap = ['subject': 'subject', 'provider': 'provid', 'studyMode': 'presentations.studyMode', 'qualification': 'qual.type', 'level': 'qual.level']
 
-    def possible_date_formats = [
-            new SimpleDateFormat('yyyy/MM/dd'),
-            new SimpleDateFormat('dd.MM.yyyy'),
-            new SimpleDateFormat('dd/MM/yyyy'),
-            new SimpleDateFormat('dd/MM/yy'),
-            new SimpleDateFormat('yyyy/MM'),
-            new SimpleDateFormat('yyyy')
-    ]
-
     @DebugAnnotation(test='hasAffiliation("INST_ADM")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_ADM") })
     def index() {
@@ -191,6 +182,7 @@ class MyInstitutionController extends AbstractDebugController {
         result.user = User.get(springSecurityService.principal.id)
         result.max = params.max ?: result.user.getDefaultPageSizeTMP()
         result.offset = params.offset ?: 0
+        result.contextOrg = contextService.org
 
         def cache = contextService.getCache('MyInstitutionController/currentPlatforms/', contextService.ORG_SCOPE)
 
@@ -746,7 +738,7 @@ from License as l where (
         result.orgList = orgListTotal.drop((int) result.offset).take((int) result.max)
 
         def message = g.message(code: 'export.my.currentProviders')
-        SimpleDateFormat sdf = new SimpleDateFormat(g.message(code:'default.date.format.notime', default:'yyyy-MM-dd'))
+        SimpleDateFormat sdf = new SimpleDateFormat(g.message(code:'default.date.format.notime'))
         String datetoday = sdf.format(new Date(System.currentTimeMillis()))
         String filename = message+"_${datetoday}"
 
@@ -862,7 +854,7 @@ from License as l where (
         result.subscriptions = subscriptions.drop((int) result.offset).take((int) result.max)
 
         // Write the output to a file
-        sdf = new SimpleDateFormat(g.message(code: 'default.date.format.notimenopoint'));
+        sdf = new SimpleDateFormat(g.message(code: 'default.date.format.notimenopoint'))
         String datetoday = sdf.format(new Date(System.currentTimeMillis()))
         String filename = "${datetoday}_" + g.message(code: "export.my.currentSubscriptions")
 
@@ -1489,8 +1481,8 @@ from License as l where (
                     render view: 'editLicense', model: [licenseInstance: copyLicense]
                 } else {
                     copyLicense.reference = params.licenseName
-                    copyLicense.startDate = parseDate(params.licenseStartDate,possible_date_formats)
-                    copyLicense.endDate = parseDate(params.licenseEndDate,possible_date_formats)
+                    copyLicense.startDate = escapeService.parseDate(params.licenseStartDate)
+                    copyLicense.endDate = escapeService.parseDate(params.licenseEndDate)
                     copyLicense.status = RefdataValue.get(params.status)
 
                     if (copyLicense.save(flush: true)) {

@@ -667,7 +667,7 @@ class SemanticUiTagLib {
         def id = attrs.id ? "${message(code: attrs.id)}" : ''
         def placeholder = attrs.placeholder ? "${message(code: attrs.placeholder)}" : 'Date'
 
-        def sdf = new java.text.SimpleDateFormat(message(code: 'default.date.format.notime', default: 'yyyy-MM-dd'))
+        def sdf = new java.text.SimpleDateFormat(message(code: 'default.date.format.notime'))
         def value = ''
         try {
             value = attrs.value ? sdf.format(attrs.value) : value

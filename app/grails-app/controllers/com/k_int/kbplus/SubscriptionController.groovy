@@ -3613,14 +3613,15 @@ class SubscriptionController extends AbstractDebugController {
         //def task_usage = task {
 
             // usage
-            def suppliers = result.subscriptionInstance.issueEntitlements?.tipp.pkg.contentProvider?.id.unique()
+            def suppliers = result.subscriptionInstance.issueEntitlements?.tipp.platform?.id.unique()
 
             if (suppliers) {
                 if (suppliers.size() > 1) {
-                    log.debug('Found different content providers, cannot show usage')
+                    log.debug('Found different content platforms for this subscription, cannot show usage')
                 } else {
                     def supplier_id = suppliers[0]
-                    result.natStatSupplierId = Org.get(supplier_id).getIdentifierByType('statssid')?.value
+                    def platform = PlatformCustomProperty.findByOwnerAndType(Platform.get(supplier_id), PropertyDefinition.findByName('NatStat Supplier ID'))
+                    result.natStatSupplierId = platform?.stringValue ?: null
                     result.institutional_usage_identifier = OrgSettings.get(result.institution, OrgSettings.KEYS.NATSTAT_SERVER_REQUESTOR_ID)
                     if (result.institutional_usage_identifier) {
 
