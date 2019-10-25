@@ -90,8 +90,8 @@
                                     <i class="write icon"></i>
                                 </g:link>
                                 <g:link action="delete" controller="accessPoint" id="${accessPoint?.id}" class="ui negative icon button js-open-confirm-modal"
-                                        data-confirm-term-what="${message(code: 'accessPoint.delete.what', args: [accessPoint.name])}"
-                                        data-confirm-tokenMsg="${message(code: 'accessPoint.details.delete.confirm', args: [(accessPoint.name ?: 'this access point')])}">
+                                        data-confirm-tokenMsg="${message(code: 'confirm.dialog.delete.accessPoint', args: [accessPoint.name])}"
+                                        data-confirm-term-how="delete">
                                     <i class="trash alternate icon"></i>
                                 </g:link>
                             </td>

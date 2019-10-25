@@ -489,8 +489,7 @@
                             </g:if>
                             <g:else>
                                 <g:link class="ui icon negative button js-open-confirm-modal"
-                                        data-confirm-term-what="subscription"
-                                        data-confirm-term-what-detail="${s.name}"
+                                        data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.subscription", args: [s.name])}"
                                         data-confirm-term-how="delete"
                                         controller="myInstitution" action="actionCurrentSubscriptions"
                                         params="${[curInst: institution.id, basesubscription: s.id]}">
