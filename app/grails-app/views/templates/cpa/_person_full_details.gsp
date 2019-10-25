@@ -150,7 +150,7 @@
                                             data-confirm-tokenMsg="${message(code: "confirm.dialog.unlink.contact.organisation")}"
                                             data-confirm-term-how="unlink"
                                             controller="ajax" action="delete" params="[cmd: 'deletePersonRole', oid: oid]">
-                                        --------<i class="unlink icon"></i>
+                                        <i class="unlink icon"></i>
                                     </g:link>
                                 </g:if>
                                 <g:else>
