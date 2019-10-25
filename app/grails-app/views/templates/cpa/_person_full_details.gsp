@@ -93,11 +93,12 @@
                         </div>
 
                         <div class="content">
+
                             <g:if test="${editable && tmplShowDeleteButton}">
                                 <g:set var="oid" value="${personRole?.class.name}:${personRole?.id}"/>
                                 <g:if test="${person.roleLinks.size() > 1}">
                                     <g:link class="ui mini icon negative button js-open-confirm-modal"
-                                            data-confirm-tokenMsg="xyz ${message(code: "confirm.dialog.unlink.contact.organisation")}"
+                                            data-confirm-tokenMsg="${message(code: "confirm.dialog.unlink.contact.organisation")}"
                                             data-confirm-term-how="unlink"
                                             controller="ajax" action="delete" params="[cmd: 'deletePersonRole', oid: oid]">
                                         <i class="unlink icon"></i>
@@ -143,12 +144,26 @@
                         <div class="content">
                             <g:if test="${editable && tmplShowDeleteButton}">
                                 <g:set var="oid" value="${personRole?.class.name}:${personRole?.id}"/>
-                                <g:link class="ui mini icon negative button js-open-confirm-modal"
-                                        data-confirm-tokenMsg="${message(code: "confirm.dialog.unlink.contact.organisation")}"
-                                        data-confirm-term-how="unlink"
-                                        controller="ajax" action="delete" params="[cmd: 'deletePersonRole', oid: oid]">
-                                    <i class="unlink icon"></i>
-                                </g:link>
+
+                                <g:if test="${person.roleLinks.size() > 1}">
+                                    <g:link class="ui mini icon negative button js-open-confirm-modal"
+                                            data-confirm-tokenMsg="${message(code: "confirm.dialog.unlink.contact.organisation")}"
+                                            data-confirm-term-how="unlink"
+                                            controller="ajax" action="delete" params="[cmd: 'deletePersonRole', oid: oid]">
+                                        --------<i class="unlink icon"></i>
+                                    </g:link>
+                                </g:if>
+                                <g:else>
+                                    <g:link class="ui mini icon negative button"
+                                            controller="person"
+                                            action="_delete"
+                                            id="${person?.id}"
+                                            onclick="return confirm('${message( code: 'org.deletePrsLinksAndContact.button.confirm',
+                                                    default: 'Do you want to delete the whole contact?',
+                                                    args:[personRole?.functionType?.getI10n('value'), person.toString()])}')">
+                                        <i class="unlink icon"></i>
+                                    </g:link>
+                                </g:else>
                             </g:if>
                         </div>
                     </div><!-- .person-details -->
