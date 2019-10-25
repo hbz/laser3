@@ -60,7 +60,7 @@
                             </td>
                             <td>
                                 <g:link class="button js-open-confirm-modal"
-                                            data-confirm-term-content="${message(code:'confirmation.content.bulkCostConfiguration')}"
+                                            data-confirm-tokenMsg="${message(code:'confirmation.content.bulkCostConfiguration')}"
                                             data-confirm-term-how="ok"
                                             action="setAllCostItems" params="${[cie:ciec.costItemElement.class.name+":"+ciec.costItemElement.id]}">
                                         ${message(code:'costConfiguration.configureAllCostItems')}
@@ -68,8 +68,7 @@
                             </td>
                             <td>
                                 <g:link class="ui icon negative button js-open-confirm-modal"
-                                        data-confirm-term-what="costItemElementConfiguration"
-                                        data-confirm-term-what-detail="${ciec.costItemElement.getI10n("value")}"
+                                        data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.costItemElementConfiguration", args: [ciec.costItemElement.getI10n("value")])}"
                                         data-confirm-term-how="delete"
                                         controller="costConfiguration" action="deleteCostConfiguration"
                                         params="${[ciec: ciec.id]}">

@@ -35,7 +35,7 @@
             <tfoot>
                 <tr>
                     <td colspan="2">
-                        <g:link action="createSubscriptionPackagesFromIssueEntitlements" params="${[doIt: true]}" class="ui negative button js-open-confirm-modal" data-confirm-term-content = "${message(code: 'confirmation.content.createSubscriptionPackages')}"
+                        <g:link action="createSubscriptionPackagesFromIssueEntitlements" params="${[doIt: true]}" class="ui negative button js-open-confirm-modal" data-confirm-tokenMsg = "${message(code: 'confirmation.content.createSubscriptionPackages')}"
                                 data-confirm-term-how="ok">Lizenzen verknüpfen (bitte mit EXTREMER VORSICHT betätigen!!!)</g:link>
                     </td>
                     <td colspan="2">

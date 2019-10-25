@@ -638,13 +638,9 @@ class SemanticUiTagLib {
         String msgCancel = "Abbrechen"
 
         out << '<div class="ui tiny modal">'
-        out << '<div class="header">Wollen Sie wirklich '
-        out << '<span id="js-confirmation-term-what"></span> '
-        out << '<span id="js-confirmation-term-what-detail"></span> '
-        out << '<span id="js-confirmation-term-where"></span> '
-        out << '<span id="js-confirmation-term-where-detail"></span> '
-        out << '<span id="js-confirmation-term-how"></span>'
-        out << '?</div>'
+        out << '<div class="header">'
+        out << '<span class="confirmation-term" id="js-confirmation-term"></span>'
+        out << '</div>'
         out << '<span class="content" id="js-confirmation-term-content"></span> '
 
 

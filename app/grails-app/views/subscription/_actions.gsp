@@ -25,7 +25,7 @@
         <semui:exportDropdownItem>
             <g:if test="${params.filter || params.asAt}">
                 <g:link  class="item js-open-confirm-modal"
-                         data-confirm-term-content = "${message(code: 'confirmation.content.exportPartial')}"
+                         data-confirm-tokenMsg = "${message(code: 'confirmation.content.exportPartial')}"
                          data-confirm-term-how="ok"
                          action="index"
                          id="${params.id}"
@@ -40,7 +40,7 @@
             <semui:exportDropdownItem>
                 <g:if test="${params.filter || params.asAt}">
                     <g:link  class="item js-open-confirm-modal"
-                            data-confirm-term-content = "${message(code: 'confirmation.content.exportPartial')}"
+                            data-confirm-tokenMsg = "${message(code: 'confirmation.content.exportPartial')}"
                             data-confirm-term-how="ok"
                             action="index"
                             id="${params.id}"

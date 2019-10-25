@@ -92,7 +92,8 @@
                                 <g:if test="${!docctx.isShared && accessService.checkMinUserOrgRole(user,docctx.owner.owner,"INST_EDITOR")}">
                                 <%-- START Second Button --%>
                                     <g:link controller="${controllerName}" action="deleteDocuments" class="ui icon mini negative button js-open-confirm-modal"
-                                            data-confirm-term-what="document" data-confirm-term-what-detail="${docctx.owner.title}" data-confirm-term-how="delete"
+                                            data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.document", args: [docctx.owner.title])}"
+                                            data-confirm-term-how="delete"
                                             params='[instanceId:"${ownobj.id}", deleteId:"${docctx.id}", redirectAction:"show"]'>
                                         <i class="trash alternate icon"></i>
                                     </g:link>
@@ -138,10 +139,9 @@
                                                       action="toggleShare"
                                                       params='[owner:"${ownobj.class.name}:${ownobj.id}", sharedObject:"${docctx.class.name}:${docctx.id}", tmpl:"documents"]'
                                                       data-content="${message(code:'property.share.tooltip.off')}"
-                                                      data-confirm-term-what="element"
-                                                      data-confirm-term-what-detail="${docctx.owner.title}"
-                                                      data-confirm-term-where="member"
+                                                      data-confirm-tokenMsg="${message(code: "confirm.dialog.share.element.member", args: [docctx.owner.title])}"
                                                       data-confirm-term-how="share"
+
                                                       data-done=""
                                                       data-always="bb8.init('#container-documents')"
                                                       data-update="container-documents"

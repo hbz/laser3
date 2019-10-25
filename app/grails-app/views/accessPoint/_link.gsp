@@ -43,7 +43,8 @@
                 <td></td>
                 <td class="center aligned">
                     <g:link class="ui negative icon button button js-open-confirm-modal" controller="accessPoint" action="unlinkPlatform" id="${linkedPlatform.aplink.id}"
-                            data-confirm-term-what="${message(code: 'accessPoint.unlink.what', args: [accessPoint.name, linkedPlatform.platform.name])}"
+                            data-confirm-tokenMsg="${message(code: 'confirm.dialog.unlink.accessPoint.platform', args: [accessPoint.name, linkedPlatform.platform.name])}"
+                            data-confirm-term-how="unlink"
                     >
                         <i class="unlink icon"></i>
                     </g:link>

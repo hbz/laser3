@@ -11,7 +11,13 @@ var currLanguage = $('html').attr('lang');
         'statusbar.showButtons.tooltip',
         'default.informations',
         'default.actions',
-        'property.select.placeholder'
+        'property.select.placeholder',
+        'confirm.dialog.delete',
+        'confirm.dialog.unlink',
+        'confirm.dialog.share',
+        'confirm.dialog.inherit',
+        'confirm.dialog.ok',
+        'confirm.dialog.concludeBinding'
     ]
 
 println """
@@ -448,207 +454,31 @@ r2d2 = {
         var buildConfirmationModal =
             function(that){
                 var dataAttr = that.getAttribute("data-confirm-id")? that.getAttribute("data-confirm-id")+'_form':false;
-                var what = that.getAttribute("data-confirm-term-what")? that.getAttribute("data-confirm-term-what"):"";
-                var whatDetail = that.getAttribute("data-confirm-term-what-detail")? that.getAttribute("data-confirm-term-what-detail"):false;
-
-                var where = that.getAttribute("data-confirm-term-where")? that.getAttribute("data-confirm-term-where"):false;
-                var whereDetail = that.getAttribute("data-confirm-term-where-detail")? that.getAttribute("data-confirm-term-where-detail"):false;
                 var how = that.getAttribute("data-confirm-term-how") ? that.getAttribute("data-confirm-term-how"):"delete";
-                var content = that.getAttribute("data-confirm-term-content")? that.getAttribute("data-confirm-term-content"):false;
-                var messageHow;
+                var tokenMsg = that.getAttribute("data-confirm-tokenMsg")? that.getAttribute("data-confirm-tokenMsg"):false;
 
-                switch (how) {
-                    case "delete":
-                        messageHow = "löschen";
-                        break;
-                    case "unlink":
-                        messageHow = "aufheben";
-                        break;
-                    case "share":
-                        messageHow = "teilen";
-                        break;
-                    case "inherit":
-                        messageHow = "ändern";
-                        break;
-                    case "ok":
-                        messageHow = "fortfahren";
-                        break;
-                    case "concludeBinding":
-                        messageHow = "verbindlich abschließen";
-                        break;
-                    default:
-                        messageHow = "löschen";
-                }
                 var url = that.getAttribute('href') && (that.getAttribute('class').indexOf('la-js-remoteLink') == -1) && (that.getAttribute('class') != 'js-gost') ? that.getAttribute('href'): false; // use url only if not remote link
 
-                // INHERIT BUTTON
-
-                var messageContent = content;
-                var messageWhat = what;
-
-
-
-                // CONCLUDEBINDING BUTTON
-                if (how == "concludeBinding"){
-                     switch (what) {
-                        case "renewal":
-                             var messageWhat = "die Verlängerung";
-                             break;
-                        case "renewalEntitlements":
-                             var messageWhat = "die Titelauswahl";
-                             break;
-                        case "survey":
-                             var messageWhat = "die Umfrage";
-                             break;
-                        default:
-                             var messageWhat = what;
-                    }
-                }
-                if (how == "inherit"){
-                    switch (what) {
-                        case "property":
-                            var messageWhat = "die Vererbung des Merkmals";
-                            break;
-                        default:
-                            var messageWhat = "die Vererbung des Merkmals";
-                    }
-                }
-                // UNLINK BUTTON
-                if (how == "unlink"){
-                    switch (what) {
-                        case "organisationtype":
-                            var messageWhat = "die Verknüpfung des Organisationstyps";
-                            break;
-                        case "contact":
-                            var messageWhat = "die Verknüpfung des Kontakts";
-                            break;
-                        case "membershipSubscription" :
-                            var messageWhat = "die Teilnahme von";
-                            break;
-                        case "subscription":
-                            var messageWhat = "die Verknüpfung der Lizenz";
-                            break;
-                        default:
-                            var messageWhat = "die Verknüpfung des Objektes";
-                    }
-                    switch (where) {
-                        case "organisation":
-                            var messageWhere = "mit der Organisation";
-                            break;
-                        case "subscription":
-                            var messageWhere = "mit der Lizenz";
-                            break;
-                        default:
-                            var messageWhere = where;
-                    }
-                }
-                // SHARE BUTTON
-                if (how == "share"){
-                    switch (what) {
-                        case "element":
-                            var messageWhat = "das Element";
-                            break;
-                        default:
-                            var messageWhat = "das Element";
-                    }
-                    switch (where) {
-                        case "member":
-                            var messageWhere = "mit den Teilnehmern";
-                            break;
-                        default:
-                            var messageWhere = where;
-                    }
-                }
-                // DELETE BUTTON
-                if (how == "delete"){
-                    switch (what) {
-                        case "document":
-                            var messageWhat = "das Dokument";
-                            break;
-                        case "department":
-                            var messageWhat = "das Institut";
-                            break;
-                        case "organisationtype":
-                            var messageWhat = "den Organisationstyp";
-                            break;
-                        case "task":
-                            var messageWhat = "die Aufgabe";
-                            break;
-                        case "person":
-                            var messageWhat = "die Person";
-                            break;
-                        case "contactItems":
-                            var messageWhat = "die Kontaktdaten";
-                            break;
-                        case "contact":
-                            var messageWhat = "den Kontakt";
-                            break;
-                        case "address":
-                            var messageWhat = "die Adresse";
-                            break;
-                        case "subscription":
-                            var messageWhat = "die Lizenz";
-                            break;
-                        case "license":
-                            var messageWhat = "den Vertrag";
-                            break;
-                        case "property":
-                            var messageWhat = "das Merkmal";
-                            break;
-                        case "function":
-                            var messageWhat = "die Funktion";
-                            break;
-                        case "user":
-                            var messageWhat = "den Benutzer";
-                            break;
-                        case "costItemElementConfiguration":
-                            var messageWhat = "die Kostenkonfiguration für";
-                            break;
-                        default:
-                            var messageWhat = what;
-                    }
-                    switch (where) {
-                        case "organisation":
-                            var messageWhere = "aus der Organisation";
-                            break;
-                        case "institution":
-                            var messageWhere = "von Ihrer Einrichtung";
-                            break;
-                        case "addressbook":
-                            var messageWhere = "aus dem Adressbuch";
-                            break;
-                        case "system":
-                            var messageWhere = "aus dem System";
-                            break;
-                        default:
-                            var messageWhere = "aus dem System";
-                    }
-                }
-                $('#js-confirmation-term-what').text(messageWhat); // Should be always set - otherwise "dieses Element"
-                //whatDetail ? $('#js-confirmation-term-what').text(messageWhat) : $("#js-confirmation-term-what").remove();
-                whatDetail ? $('#js-confirmation-term-what-detail').text(whatDetail) : $("#js-confirmation-term-what-detail").remove();
-                whereDetail ? $('#js-confirmation-term-where-detail').text(whereDetail) : $("#js-confirmation-term-where-detail").remove();
-                where ? $('#js-confirmation-term-where').text(messageWhere) : $("#js-confirmation-term-where").remove();
-                content ? $('#js-confirmation-term-content').text(messageContent) : $("#js-confirmation-term-content").remove();
-                $('#js-confirmation-term-how').text(messageHow); // Should be always set - otherwise "delete"
+                tokenMsg ? $('#js-confirmation-term').html(tokenMsg) : $("#js-confirmation-term").remove();
+                
                 switch (how) {
                     case "delete":
-                        $('#js-confirmation-button').html('Löschen<i class="trash alternate icon"></i>');
+                        $('#js-confirmation-button').html(dict.get('confirm.dialog.delete',currLanguage) + '<i class="trash alternate icon"></i>');
                         break;
                     case "unlink":
-                        $('#js-confirmation-button').html('Aufheben<i class="la-chain broken icon"></i>');
+                        $('#js-confirmation-button').html(dict.get('confirm.dialog.unlink',currLanguage) + '<i class="la-chain broken icon"></i>');
                         break;
                     case "share":
-                        $('#js-confirmation-button').html('Teilen<i class="la-share icon"></i>');
+                        $('#js-confirmation-button').html(dict.get('confirm.dialog.share',currLanguage) + '<i class="la-share icon"></i>');
                         break;
                     case "inherit":
-                        $('#js-confirmation-button').html('Vererbung ändern<i class="thumbtack icon"></i>');
+                        $('#js-confirmation-button').html(dict.get('confirm.dialog.inherit',currLanguage) + '<i class="thumbtack icon"></i>');
                         break;
                     case "ok":
-                        $('#js-confirmation-button').html('OK<i class="check icon"></i>');
+                        $('#js-confirmation-button').html(dict.get('confirm.dialog.ok',currLanguage) + '<i class="check icon"></i>');
                         break;
                     case "concludeBinding":
-                        $('#js-confirmation-button').html('Abschließen<i class="check icon"></i>');
+                        $('#js-confirmation-button').html(dict.get('confirm.dialog.concludeBinding',currLanguage) + '<i class="check icon"></i>');
                         break;
                     default:
                         $('').html('Entfernen<i class="x icon"></i>');

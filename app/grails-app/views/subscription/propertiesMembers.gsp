@@ -158,7 +158,7 @@ ${message(code: 'subscription.propertiesMembers.header',args:args.memberTypeGeni
         <h4>${message(code: 'subscription.propertiesMembers.deletePropertyInfo',args:args.memberType)}</h4>
 
             <g:link class="ui button js-open-confirm-modal"
-                    data-confirm-term-content = "${message(code: 'subscription.propertiesMembers.deleteProperty.button.confirm')}"
+                    data-confirm-tokenMsg = "${message(code: 'subscription.propertiesMembers.deleteProperty.button.confirm')}"
                     data-confirm-term-how="ok" action="processDeletePropertiesMembers" id="${params.id}" params="[filterPropDef: filterPropDef]">${message(code: 'subscription.propertiesMembers.deleteProperty.button', args: [filterPropDef?.getI10n('name')])}</g:link>
 
     </div>

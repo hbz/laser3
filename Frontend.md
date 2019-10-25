@@ -3,15 +3,15 @@
 ### Confirmation Modal to confirm Delete / Unlink / Cancel
 
 #### Set Terms by HTML 5 data attributes
-- data-confirm-term-what
-- data-confirm-term-where
-#### Set Concrete Objects
-- data-confirm-term-what-detail
-- data-confirm-term-where-detail
+- data-confirm-tokenMsg
+
 #### Set Delete / Unlink / Cancel Mode
 - data-confirm-term-how="delete"
 - data-confirm-term-how="unlink"
-- data-confirm-term-how="cancel"
+- data-confirm-term-how="share":
+- data-confirm-term-how="inherit":
+- data-confirm-term-how="ok":
+- data-confirm-term-how="concludeBinding":
 #### Used in this context
 - Button is **Link** calls action to delete / unlink / cancel
 - Button is inside a **Form**
@@ -19,20 +19,19 @@
 
 
 #### Examples
-#### Set Terms
+#### Setting Message Terms
 
 ```
-data-confirm-term-what="contact"
-data-confirm-term-where="addressbook"
+data-confirm-tokenMsg="${message(code: 'confirm.dialog.unlink.accessPoint.platform')}"
 ```
-There need to be a case for that **keyword** "contact" in `app/web-app/js/application.js.gsp`
 
-#### Set Concrete Objects
+
+#### Setting Concrete Objects
 
 ```
-data-confirm-term-what-detail="${person?.toString()}"
+data-confirm-tokenMsg="${message(code: 'confirm.dialog.unlink.accessPoint.platform', args: [accessPoint.name, linkedPlatform.platform.name])}"
 ```
-#### Set Delete / Unlink / Cancel Mode
+#### Setting the modes of delete / unlink / share/ inherit / ok /conclude binding
 
 ```
 data-confirm-term-how="delete"
@@ -41,44 +40,42 @@ data-confirm-term-how="delete"
 data-confirm-term-how="unlink"
 ```
 ```
-data-confirm-term-how="cancel"
+data-confirm-term-how="share":
 ```
-#### Use in Link
+```
+data-confirm-term-how="inherit":
+```
+```
+data-confirm-term-how="ok":
+```
+```
+data-confirm-term-how="concludeBinding":
+```
 
-##### no content 
+
+#### Use in Link
 
 ```
 <g:link class="ui icon negative button js-open-confirm-modal"
-        data-confirm-term-what="subscription"
-        data-confirm-term-what-detail="${s.name}"
+        data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.costItemElementConfiguration", args: [ciec.costItemElement.getI10n("value")])}"
         data-confirm-term-how="delete"
-        controller="myInstitution" action="actionCurrentSubscriptions"
-        params="${[curInst: institution.id, basesubscription: s.id]}">
+        controller="costConfiguration" action="deleteCostConfiguration"
+        params="${[ciec: ciec.id]}">
     <i class="trash alternate icon"></i>
 </g:link>
+
 ```
-##### with content
-```
-<g:link  class="item js-open-confirm-modal"
-        data-confirm-term-content = "${message(code: 'confirmation.content.exportPartial', default: 'Achtung!  Dennoch fortfahren?')}"
-        data-confirm-term-how="ok"
-        action="index"
-        id="${params.id}"
-        params="${[format:'xml', transformId:transkey, mode: params.mode, filter: params.filter, asAt: params.asAt]}">${transval.name}
-</g:link>
-```
+
 #### Use in Form
 
 ```
-<g:form controller="person" action="delete" data-confirm-id="${person?.id?.toString()+ '_form'}">
+<g:form controller="person" action="_delete" data-confirm-id="${person?.id?.toString()+ '_form'}">
     <g:hiddenField name="id" value="${person?.id}" />
         <g:link class="ui icon button" controller="person" action="show" id="${person?.id}">
             <i class="write icon"></i>
         </g:link>
         <div class="ui icon negative button js-open-confirm-modal"
-             data-confirm-term-what="contact"
-             data-confirm-term-what-detail="${person?.toString()}"
-             data-confirm-term-where="addressbook"
+             data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.contact.addressbook", args: [person?.toString()])}"
              data-confirm-term-how="delete"
              data-confirm-id="${person?.id}" >
             <i class="trash alternate icon"></i>
@@ -88,19 +85,22 @@ data-confirm-term-how="cancel"
 #### Use in Link with AJAX Call
 
 ```
-<button class="ui icon negative button js-open-confirm-modal-copycat">
-    <i class="trash alternate icon"></i>
+<button class="ui mini icon button js-open-confirm-modal-copycat js-no-wait-wheel">
+    <i class="la-share slash icon"></i>
 </button>
-<g:remoteLink class="js-gost"
-    style="visibility: hidden"
-    data-confirm-term-what="property"
-    data-confirm-term-what-detail="${prop.type.getI10n('name')}"
-    data-confirm-term-how="delete"
-    controller="ajax" action="deletePrivateProperty"
-    params='[propClass: prop.getClass(),ownerId:"${ownobj.id}", ownerClass:"${ownobj.class}", editable:"${editable}"]' id="${prop.id}"
-    onComplete="c3po.initProperties('${createLink(controller:'ajax', action:'lookup')}', '#${custom_props_div}', ${tenant?.id}), c3po.loadJsAfterAjax()"
-    update="${custom_props_div}" >
+<g:remoteLink class="js-gost la-popup-tooltip la-delay"
+              controller="ajax" action="toggleShare"
+              params='[owner: "${ownobj.class.name}:${ownobj.id}", sharedObject: "${docctx.class.name}:${docctx.id}", tmpl: "documents"]'
+              onSuccess=""
+              onComplete=""
+              update="container-documents"
+              data-position="top right"
+              data-content="${message(code: 'property.share.tooltip.off')}"
+
+              data-confirm-tokenMsg="${message(code: "confirm.dialog.share.element.member", args: [docctx.owner.title])}"
+              data-confirm-term-how="share">
 </g:remoteLink>
+
 ```
 
 ### Function 'deckSaver'

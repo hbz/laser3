@@ -74,9 +74,7 @@
                                                       data-position="top right"
                                                       data-content="${message(code: 'property.share.tooltip.off')}"
 
-                                                      data-confirm-term-what="element"
-                                                      data-confirm-term-what-detail="${docctx.owner.title}"
-                                                      data-confirm-term-where="member"
+                                                      data-confirm-tokenMsg="${message(code: "confirm.dialog.share.element.member", args: [docctx.owner.title])}"
                                                       data-confirm-term-how="share">
                                         </g:remoteLink>
                                     </g:else>

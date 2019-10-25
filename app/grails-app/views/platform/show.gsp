@@ -132,7 +132,8 @@
                                 <td class="right aligned">
                                 <g:if test="${editable}">
                                     <g:link class="ui negative icon button button js-open-confirm-modal" controller="accessPoint" action="unlinkPlatform" id="${orgAccessPoint.id}"
-                                            data-confirm-term-what="${message(code: 'accessPoint.unlink.what', args: [orgAccessPoint.oap.name, platformInstance.name])}"
+                                            data-confirm-tokenMsg="${message(code: 'confirm.dialog.unlink.accessPoint.platform', args: [orgAccessPoint.oap.name, platformInstance.name])}"
+                                            data-confirm-term-how="unlink"
                                     >
                                         <i class="unlink icon"></i>
                                     </g:link>

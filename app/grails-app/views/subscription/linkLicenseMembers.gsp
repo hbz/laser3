@@ -78,7 +78,7 @@ ${message(code: 'subscription.linkLicenseMembers.header', args: args.memberTypeG
         <h4>${message(code: 'subscription.linkLicenseMembers.deleteLicensesInfo', args: args.memberType)}</h4>
 
         <g:link class="ui button js-open-confirm-modal"
-                data-confirm-term-content = "${message(code: 'subscription.linkLicenseMembers.deleteLicenses.button.confirm')}"
+                data-confirm-tokenMsg = "${message(code: 'subscription.linkLicenseMembers.deleteLicenses.button.confirm')}"
                 data-confirm-term-how="ok" action="processUnLinkLicenseMembers" id="${params.id}" params="[filterPropDef: filterPropDef]">${message(code: 'subscription.linkLicenseMembers.deleteLicenses.button')}</g:link>
 
     </div>

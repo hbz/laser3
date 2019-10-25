@@ -43,8 +43,10 @@ or
 
 ## Theming
 
-- we got the theme 'laser'
+- we got the themes 'laser' and 'accessibility'
 - all changes in css we make by changing inside the theme!
+- the original semantic ui file for gulp bilding 'app/semantic/tasks/build.js' is changed in order to build two themes at the same time (laser & accessibility)
+- meanwile the gulp build process temp files are builded and moved around
 
 ## Example
 

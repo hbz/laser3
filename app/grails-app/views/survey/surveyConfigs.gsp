@@ -160,8 +160,7 @@
                             </g:elseif>
                             <g:elseif test="${editable}">
                                 <g:link class="ui icon negative button js-open-confirm-modal"
-                                        data-confirm-term-what="Abfrage-Elemente"
-                                        data-confirm-term-what-detail="${config?.getConfigNameShort()}"
+                                        data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.surveyElements", args: [config?.getConfigNameShort()])}"
                                         data-confirm-term-how="delete"
                                         controller="survey" action="deleteSurveyConfig"
                                         id="${config?.id}">
@@ -275,8 +274,7 @@
                             </g:if>
                             <g:elseif test="${editable}">
                                 <g:link class="ui icon negative button js-open-confirm-modal"
-                                        data-confirm-term-what="Abfrage-Elemente"
-                                        data-confirm-term-what-detail="${config?.getConfigNameShort()}"
+                                        data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.surveyElements", args: [config?.getConfigNameShort()])}"
                                         data-confirm-term-how="delete"
                                         controller="survey" action="deleteSurveyConfig"
                                         id="${config?.id}">
