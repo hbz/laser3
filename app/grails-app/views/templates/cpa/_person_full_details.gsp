@@ -202,7 +202,7 @@
     </div><!-- .la-flex-list -->
     <g:if test="${editable && tmplUnlinkedObj}">
         <td class="right aligned">
-            <<g:set var="oid" value="${tmplUnlinkedObj?.class.name}:${tmplUnlinkedObj?.id}"/>
+            <g:set var="oid" value="${tmplUnlinkedObj?.class.name}:${tmplUnlinkedObj?.id}"/>
             <g:link class="ui icon negative button js-open-confirm-modal"
                     data-confirm-tokenMsg="${message(code: "confirm.dialog.unlink.contact")}"
                     data-confirm-term-how="unlink"
