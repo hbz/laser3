@@ -2268,8 +2268,6 @@ AND EXISTS (
         result.tasks    = taskService.getTasksByResponsibles(springSecurityService.getCurrentUser(), contextOrg, query)
         result.tasksCount    = result.tasks.size()
         result.enableMyInstFormFields = true // enable special form fields
-//        def preCon      = taskService.getPreconditions(contextOrg)
-//        result << preCon
 
 
         /*def announcement_type = RefdataValue.getByValueAndCategory('Announcement', 'Document Type')

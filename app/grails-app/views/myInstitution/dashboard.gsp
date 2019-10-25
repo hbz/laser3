@@ -366,8 +366,6 @@
         </div>
     </g:if>
 --}%
-        %{--<g:render template="/templates/tasks/modal_create" />--}%
-    %{--<g:render template="/templates/tasks/js_taskcreate"/>--}%
     <g:javascript>
         function taskcreate() {
 

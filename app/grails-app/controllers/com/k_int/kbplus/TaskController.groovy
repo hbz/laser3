@@ -96,59 +96,6 @@ class TaskController extends AbstractDebugController {
 		result.validSubscriptions.each{
 			result.validSubscriptionsList.add([it.id, it.dropdownNamingConvention(contextService.org)])
 		}
-
-//		def sdf = new java.text.SimpleDateFormat(message(code:'default.date.format.notime', default:'yyyy-MM-dd'))
-
-//		if (params.endDate)
-//			params.endDate = sdf.parse(params.endDate)
-//
-//		switch (request.method) {
-//			/*case 'GET':
-//				result.taskInstance = new Task(params)
-//				result
-//				break*/
-//			case 'POST':
-//				def taskInstance = new Task(title: params.title, description: params.description, status: params.status.id, systemCreateDate: new Date(), endDate: params.endDate)
-//				taskInstance.creator = contextService.getUser()
-//				taskInstance.createDate = new Date()
-//
-//				//Bearbeiter festlegen
-//				if (params.responsible == "Org") {
-//					taskInstance.responsibleOrg = contextOrg
-//				}
-//				else if (params.responsible == "User") {
-//					taskInstance.responsibleUser = (params.responsibleUser.id != 'null') ? User.get(params.responsibleUser.id): contextService.getUser()
-//				}
-//
-//				if (params.linkto == "license" && params.license && params.license != 'null') {
-//					taskInstance.license = License.get(params.license) ?: null
-//				}
-//				else if (params.linkto == "pkg" && params.pkg && params.pkg != 'null') {
-//					taskInstance.pkg = Package.get(params.pkg) ?: null
-//				}
-//				else if (params.linkto == "subscription" && params.subscription && params.subscription != 'null') {
-//					taskInstance.subscription = Subscription.get(params.subscription) ?: null
-//				}
-//				else if (params.linkto == "org" && params.org && params.org != 'null') {
-//					taskInstance.org = Org.get(params.org) ?: null
-//				}
-//				else if (params.linkto == "surveyConfig" && params.surveyConfig && params.surveyConfig != 'null') {
-//					taskInstance.surveyConfig = SurveyConfig.get(params.surveyConfig) ?: null
-//				}
-//
-//				if (!taskInstance.save(flush: true)) {
-//					/*result.taskInstance = taskInstance
-//					render view: 'create', model: result*/
-//					flash.error = message(code: 'default.not.created.message', args: [message(code: 'task.label', default: 'Task')])
-//					redirect(url: request.getHeader('referer'))
-//					return
-//				}
-//
-//				flash.message = message(code: 'default.created.message', args: [message(code: 'task.label', default: 'Task'), taskInstance.title])
-//
-//				redirect(url: request.getHeader('referer'))
-//				break
-//		}
 		render template:"../templates/tasks/modal_create", model: result
     }
 
