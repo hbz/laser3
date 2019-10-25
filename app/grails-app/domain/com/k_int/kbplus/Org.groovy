@@ -154,8 +154,8 @@ class Org
                 key:    'org_id',
                 column: 'refdata_value_id', type:   'BIGINT'
         ], lazy: false
-        addresses   lazy: false
-        contacts    lazy: false
+//        addresses   lazy: false
+//        contacts    lazy: false
 
         ids                 batchSize: 10
         outgoingCombos      batchSize: 10

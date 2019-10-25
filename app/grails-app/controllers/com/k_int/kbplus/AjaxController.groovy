@@ -2294,11 +2294,22 @@ class AjaxController {
     @Secured(['ROLE_USER'])
     def TaskEdit() {
         def contextOrg = contextService.getOrg()
-        def result     = taskService.getPreconditions(contextOrg)
+        def result     = taskService.getPreconditionsWithoutTargets(contextOrg)
         result.params = params
         result.taskInstance = Task.get(params.id)
 
         render template:"../templates/tasks/modal_edit", model: result
+    }
+
+    @Secured(['ROLE_USER'])
+    def TaskCreate() {
+        long backendStart = System.currentTimeMillis()
+        def contextOrg = contextService.getOrg()
+        def result     = taskService.getPreconditions(contextOrg)
+        result.backendStart = backendStart
+
+        render template:"../templates/tasks/modal_create", model: result
+
     }
 
     @Secured(['ROLE_USER'])

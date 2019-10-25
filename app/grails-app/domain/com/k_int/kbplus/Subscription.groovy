@@ -12,6 +12,7 @@ import de.laser.interfaces.*
 import de.laser.traits.AuditableTrait
 import de.laser.traits.ShareableTrait
 import grails.util.Holders
+import org.apache.lucene.index.DocIDMerger
 import org.springframework.context.i18n.LocaleContextHolder
 import org.springframework.dao.TransientDataAccessResourceException
 

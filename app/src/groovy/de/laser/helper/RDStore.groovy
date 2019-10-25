@@ -148,6 +148,7 @@ class RDStore {
 
     static final PENDING_CHANGE_STATUS          = getRefdataValue('Pending', 'PendingChangeStatus')
 
+    static final TASK_STATUS_OPEN               = getRefdataValue('Open', 'Task Status')
     static final TASK_STATUS_DONE               = getRefdataValue('Done', 'Task Status')
 
     static final SHARE_CONF_ALL                 = getRefdataValue('everyone','Share Configuration')
