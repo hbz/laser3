@@ -64,10 +64,10 @@
 
 
             <g:set var="participantsFinish"
-                   value="${com.k_int.kbplus.SurveyResult.findAllBySurveyConfigAndFinishDateIsNotNull(surveyConfig)}"/>
+                   value="${surveyConfig.pickAndChoose ? com.k_int.kbplus.SurveyOrg.findAllBySurveyConfigAndFinishDateIsNotNull(surveyConfig) : com.k_int.kbplus.SurveyResult.findAllBySurveyConfigAndFinishDateIsNotNull(surveyConfig)?.participant?.flatten()?.unique { a, b -> a.id <=> b.id }}"/>
 
             <g:set var="participantsTotal"
-                   value="${com.k_int.kbplus.SurveyResult.findAllBySurveyConfig(surveyConfig)}"/>
+                   value="${surveyConfig.pickAndChoose ?  com.k_int.kbplus.SurveyOrg.findAllBySurveyConfig(surveyConfig) : com.k_int.kbplus.SurveyResult.findAllBySurveyConfig(surveyConfig)?.participant?.flatten()?.unique { a, b -> a.id <=> b.id }}"/>
 
             <tr>
                 <td class="center aligned">
@@ -155,8 +155,8 @@
                     <g:if test="${surveyConfig}">
                         <g:link controller="survey" action="surveyParticipants" id="${surveyInfo?.id}"
                                 params="[surveyConfigID: surveyConfig?.id]" class="ui icon">
-                            <div class="ui circular ${participantsFinish == participantsTotal ? "green" : surveyConfig?.configFinish ? "yellow" : ""} label">
-                                ${participantsFinish?.participant?.flatten()?.unique { a, b -> a.id <=> b.id }?.size() ?: 0} / ${surveyConfig?.orgs?.org?.flatten()?.unique { a, b -> a.id <=> b.id }?.size() ?: 0}
+                            <div class="ui circular ${participantsFinish?.size() == participantsTotal?.size() ? "green" : surveyConfig?.configFinish ? "yellow" : ""} label">
+                                ${participantsFinish?.size() ?: 0} / ${surveyConfig?.orgs?.org?.flatten()?.unique { a, b -> a.id <=> b.id }?.size() ?: 0}
                             </div>
                         </g:link>
                     </g:if>
@@ -179,11 +179,11 @@
                         <g:link controller="survey" action="evaluationConfigsInfo" id="${surveyInfo?.id}"
                                 params="[surveyConfigID: surveyConfig?.id]"
                                 class="ui icon">
-                            <div class="ui circular ${(participantsFinish.size() == participantsTotal.size()) ? "green" : (participantsFinish.size() > 0) ? "yellow" : ""} label">
+                            <div class="ui circular ${(participantsFinish?.size() == participantsTotal?.size()) ? "green" : (participantsFinish?.size() > 0) ? "yellow" : ""} label">
                                 <g:if
                                         test="${participantsFinish && participantsTotal}">
                                     <g:formatNumber
-                                            number="${(participantsFinish.size() / participantsTotal.size()) * 100}"
+                                            number="${(participantsFinish?.size() / participantsTotal?.size()) * 100}"
                                             minFractionDigits="2"
                                             maxFractionDigits="2"/>%
                                 </g:if>
@@ -193,6 +193,26 @@
                             </div>
                         </g:link>
                     </g:if>
+
+                    <g:if test="${surveyConfig && surveyConfig.pickAndChoose}">
+                        <g:link controller="survey" action="surveyTitlesEvaluation" id="${surveyInfo?.id}"
+                                params="[surveyConfigID: surveyConfig?.id]"
+                                class="ui icon">
+                            <div class="ui circular ${(participantsFinish?.size() == participantsTotal?.size()) ? "green" : (participantsFinish?.size() > 0) ? "yellow" : ""} label">
+                                <g:if
+                                        test="${participantsFinish && participantsTotal}">
+                                    <g:formatNumber
+                                            number="${(participantsFinish?.size() / participantsTotal?.size()) * 100}"
+                                            minFractionDigits="2"
+                                            maxFractionDigits="2"/>%
+                                </g:if>
+                                <g:else>
+                                    0%
+                                </g:else>
+                            </div>
+                        </g:link>
+                    </g:if>
+
                 </td>
                 <td>
                     <g:if test="${surveyConfig && !surveyConfig.pickAndChoose}">
@@ -206,7 +226,14 @@
                         </span>
                     </g:if>
                     <g:if test="${surveyConfig && surveyConfig.pickAndChoose}">
-
+                        <span class="la-popup-tooltip la-delay"
+                              data-content="${message(code: 'surveyInfo.toSurveyInfos')}">
+                            <g:link controller="survey" action="show" id="${surveyInfo?.id}"
+                                    params="[surveyConfigID: surveyConfig?.id]"
+                                    class="ui button icon">
+                                <i class="write icon"></i>
+                            </g:link>
+                        </span>
                     </g:if>
                 </td>
             </tr>

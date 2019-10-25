@@ -283,10 +283,23 @@ ${message(code: 'issueEntitlementsSurvey.label')} - ${surveyInfo.name}
 
             <div class="ui card la-time-card">
                 <div class="content">
-                    <div class="header"><g:message code="renewEntitlementsWithSurvey.currentEntitlements"/></div>
+                    <div class="header"><g:message code="subscription.entitlement.plural"/></div>
                 </div>
 
                 <div class="content">
+                    <div class="header"><g:message code="renewEntitlementsWithSurvey.currentFixedEntitlements"/></div>
+                    <dl>
+                        <dt class="control-label">${message(code: 'myinst.selectPackages.pkg_titles')}</dt>
+                        <dd>${iesFix?.size() ?: 0}</dd>
+                    </dl>
+                    <dl>
+                        <dt class="control-label">${message(code: 'tipp.listPrice')}</dt>
+                        <dd><g:formatNumber number="${iesFixListPriceSum}" type="currency"/></dd>
+                    </dl>
+                </div>
+
+                <div class="content">
+                    <div class="header"><g:message code="renewEntitlementsWithSurvey.currentEntitlements"/></div>
                     <dl>
                         <dt class="control-label">${message(code: 'myinst.selectPackages.pkg_titles')}</dt>
                         <dd>${ies?.size() ?: 0}</dd>

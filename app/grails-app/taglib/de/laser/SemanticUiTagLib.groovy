@@ -189,7 +189,7 @@ class SemanticUiTagLib {
             out << '</a>'
 
             out << '<div id="systemInfo" class="ui modal">'
-            out << '<h4 class="ui red header"> <i class="bug icon"></i> SYSTEM-INFORMATION</h4>'
+            out << '<h4 class="ui red header"> <i class="red fire extinguisher icon"></i> SYSTEM-INFORMATION</h4>'
             out << '<div class="scrolling content">'
             out << '<div class="ui list">'
             systemChecks.each {systemCheck ->
