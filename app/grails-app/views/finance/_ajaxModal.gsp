@@ -213,8 +213,8 @@
                                   value="${costItem?.billingCurrency?.id}" />
                     </div><!-- .field -->
                     <div class="field">
-                        <label>Endpreis</label>
-                        <input title="Rechnungssumme nach Steuer (in EUR)" type="text" readonly="readonly"
+                        <label><g:message code="financials.newCosts.totalAmountInEuro"/></label>
+                        <input title="${g.message(code:'financials.newCosts.totalAmount')}" type="text" readonly="readonly"
                                name="newCostInBillingCurrencyAfterTax" id="newCostInBillingCurrencyAfterTax"
                                value="<g:formatNumber number="${fromConsortia ? 0.0 : costItem?.costInBillingCurrencyAfterTax}" minFractionDigits="2" maxFractionDigits="2" />" />
 
@@ -290,7 +290,7 @@
 
                 <div class="field">
                     <div class="ui checkbox">
-                        <label>Finalen Preis runden</label>
+                        <label><g:message code="financials.newCosts.finalSumRounded"/></label>
                         <input name="newFinalCostRounding" class="hidden calc" type="checkbox"
                                <g:if test="${costItem?.finalCostRounding}"> checked="checked" </g:if>
                         />
@@ -670,20 +670,26 @@
                 //console.log("input: "+input+", typeof: "+typeof(input));
                 var output;
                 //determine locale from server
-                var locale = "${LocaleContextHolder.getLocale()}";
+                var userLang = "${contextService.user.getSettingsValue(UserSettings.KEYS.LANGUAGE,null)}";
+                //console.log(userLang);
                 if(typeof(input) === 'number') {
                     output = input.toFixed(2);
-                    if(locale.indexOf("de") > -1)
+                    if(userLang !== 'en')
                         output = output.replace(".",",");
                 }
                 else if(typeof(input) === 'string') {
                     output = 0.0;
-                    if(input.match(/(\d{1-3}\.?)*\d+(,\d{2})?/g))
-                        output = parseFloat(input.replace(/\./g,"").replace(/,/g,"."));
-                    else if(input.match(/(\d{1-3},?)*\d+(\.\d{2})?/g)) {
-                        output = parseFloat(input.replace(/,/g, ""));
+                    if(userLang === 'en') {
+                        output = parseFloat(input);
                     }
-                    else console.log("Please check over regex!");
+                    else {
+                        if(input.match(/(\d{1-3}\.?)*\d+(,\d{2})?/g))
+                            output = parseFloat(input.replace(/\./g,"").replace(/,/g,"."));
+                        else if(input.match(/(\d{1-3},?)*\d+(\.\d{2})?/g)) {
+                            output = parseFloat(input.replace(/,/g, ""));
+                        }
+                        else console.log("Please check over regex!");
+                    }
                     //console.log("string input parsed, output is: "+output);
                 }
                 return output;

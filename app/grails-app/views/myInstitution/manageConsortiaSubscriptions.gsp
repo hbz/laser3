@@ -160,6 +160,27 @@
                     </div>
                 </fieldset>
             </div>
+        </div>
+        <div class="two fields">
+            <div class="field">
+                <label>${message(code: 'myinst.currentSubscriptions.subscription.runTime')}</label>
+                <div class="inline fields la-filter-inline">
+                    <div class="inline field">
+                        <div class="ui checkbox">
+                            <label for="checkSubRunTimeMultiYear">${message(code: 'myinst.currentSubscriptions.subscription.runTime.multiYear')}</label>
+                            <input id="checkSubRunTimeMultiYear" name="subRunTimeMultiYear" type="checkbox" <g:if test="${params.subRunTimeMultiYear}">checked=""</g:if>
+                                   tabindex="0">
+                        </div>
+                    </div>
+                    <div class="inline field">
+                        %{--<div class="ui checkbox">
+                            <label for="checkSubRunTimeNoMultiYear">${message(code: 'myinst.currentSubscriptions.subscription.runTime.NoMultiYear')}</label>
+                            <input id="checkSubRunTimeNoMultiYear" name="subRunTime" type="checkbox" value="${params.subRunTime}"
+                                   tabindex="0">
+                        </div>--}%
+                    </div>
+                </div>
+            </div>
 
             <div class="field">
                 <div class="two fields">
@@ -202,6 +223,7 @@
     </table>
 </g:if>
 
+<g:if test="${costItems}">
 <table class="ui celled sortable table table-tworow la-table la-ignore-fixed">
     <thead>
         <tr>
@@ -241,6 +263,11 @@
                         <g:if test="${subscr.sortname}">${subscr.sortname}</g:if>
                         (${subscr.name})
                     </g:link>
+                    <g:if test="${OrgRole.findBySubAndOrgAndRoleType(subCons, subscr, RDStore.OR_SUBSCRIBER_CONS_HIDDEN)}">
+                        <span data-position="top left" class="la-popup-tooltip la-delay" data-content="${message(code:'financials.isNotVisibleForSubscriber')}">
+                            <i class="low vision grey icon"></i>
+                        </span>
+                    </g:if>
                 </td>
                 <td>
 
@@ -249,7 +276,7 @@
                         <i class="icon clipboard outline outline la-list-icon"></i>
                         <g:link controller="subscription" action="show" id="${subCons.id}">${subCons.name}</g:link>
                         <g:if test="${subCons.getCalculatedPrevious()}">
-                            <span data-position="top left"  class="la-popup-tooltip la-delay" data-content="${message(code:'subscription.hasPreviousSubscription')}">
+                            <span data-position="top left" class="la-popup-tooltip la-delay" data-content="${message(code:'subscription.hasPreviousSubscription')}">
                                 <i class="arrow left grey icon"></i>
                             </span>
                         </g:if>
@@ -359,6 +386,15 @@
 
     </tfoot>
 </table>
+</g:if>
+<g:else>
+    <g:if test="${filterSet}">
+        <br><strong><g:message code="filter.result.empty"/></strong>
+    </g:if>
+    <g:else>
+        <br><strong><g:message code="result.empty"/></strong>
+    </g:else>
+</g:else>
 
 <semui:paginate action="manageConsortiaSubscriptions" controller="myInstitution" params="${params}"
                 next="${message(code:'default.paginate.next', default:'Next')}"

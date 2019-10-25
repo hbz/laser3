@@ -12,12 +12,12 @@
             <div class="column">
 
                 <div class="field">
-                    <label>Name</label>
+                    <label><g:message code="propertyDefinitionGroup.editModal.name"/></label>
                     <input type="text" name="name" value="${pdGroup?.name}"/>
                 </div>
 
                 <div class="field">
-                    <label>Kategorie</label>
+                    <label><g:message code="propertyDefinitionGroup.editModal.category"/></label>
                     <select name="prop_descr" id="prop_descr_selector" class="ui dropdown">
                         <g:each in="${PropertyDefinition.AVAILABLE_GROUPS_DESCR}" var="pdDescr">
                             <%-- TODO: REFACTORING: x.class.name with pd.desc --%>
@@ -41,7 +41,7 @@
 
             <div class="column">
                 <div class="field">
-                    <label>Beschreibung</label>
+                    <label><g:message code="propertyDefinitionGroup.editModal.description"/></label>
                     <textarea name="description">${pdGroup?.description}</textarea>
                 </div>
             </div><!-- .column -->
@@ -52,7 +52,7 @@
 
         <div class="ui grid">
                 <div class="field" style="width:100%">
-                    <label>Merkmale</label>
+                    <label><g:message code="propertyDefinitionGroup.editModal.properties"/></label>
 
                     <div class="scrollWrapper">
 

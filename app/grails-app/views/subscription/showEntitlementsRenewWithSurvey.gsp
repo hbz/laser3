@@ -37,7 +37,7 @@
     <semui:messages data="${flash}"/>
 </g:if>
 
-<g:if test="${com.k_int.kbplus.SurveyOrg.findBySurveyConfigAndOrg(surveyConfig, subscriber)?.finishDate != null}">
+<g:if test="${com.k_int.kbplus.SurveyOrg.findBySurveyConfigAndOrg(surveyConfig, institution)?.finishDate != null}">
     <div class="ui icon positive message">
         <i class="info icon"></i>
 
@@ -46,7 +46,7 @@
 
             <p>
                 <%-- <g:message code="surveyInfo.finishOrSurveyCompleted"/> --%>
-                <g:message code="renewEntitlementsWithSurvey.finish.info"/>.
+                <g:message code="renewEntitlementsWithSurvey.finish.info"/>
             </p>
         </div>
     </div>
@@ -89,9 +89,7 @@
                     <tr>
                     <td>${counter++}</td>
                     <td class="titleCell">
-                        <g:if test="${side == 'target' && targetIE}">
-                            <semui:ieAcceptStatusIcon status="${targetIE?.acceptStatus}"/>
-                        </g:if>
+                        <semui:ieAcceptStatusIcon status="${ie?.acceptStatus}"/>
 
                         <semui:listIcon type="${tipp.title?.type?.value}"/>
                         <strong><g:link controller="title" action="show"
@@ -154,23 +152,9 @@
                         </div>
 
                         <g:each in="${tipp?.title?.ids?.sort { it?.identifier?.ns?.ns }}" var="id">
-                            <g:if test="${id.identifier.ns.ns == 'originEditUrl'}">
-                            <%--<span class="ui small teal image label">
-                                ${id.identifier.ns.ns}: <div class="detail"><a
-                                    href="${id.identifier.value}">${message(code: 'package.show.openLink', default: 'Open Link')}</a>
-                            </div>
-                            </span>
                             <span class="ui small teal image label">
-                                ${id.identifier.ns.ns}: <div class="detail"><a
-                                    href="${id.identifier.value.toString().replace("resource/show", "public/packageContent")}">${message(code: 'package.show.openLink', default: 'Open Link')}</a>
-                            </div>
-                            </span>--%>
-                            </g:if>
-                            <g:else>
-                                <span class="ui small teal image label">
-                                    ${id.identifier.ns.ns}: <div class="detail">${id.identifier.value}</div>
-                                </span>
-                            </g:else>
+                                ${id.identifier.ns.ns}: <div class="detail">${id.identifier.value}</div>
+                            </span>
                         </g:each>
 
                         <div class="la-icon-list">

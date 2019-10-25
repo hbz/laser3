@@ -78,15 +78,6 @@ class MyInstitutionController extends AbstractDebugController {
     def renewals_reversemap = ['subject': 'subject', 'provider': 'provid', 'pkgname': 'tokname']
     def reversemap = ['subject': 'subject', 'provider': 'provid', 'studyMode': 'presentations.studyMode', 'qualification': 'qual.type', 'level': 'qual.level']
 
-    def possible_date_formats = [
-            new SimpleDateFormat('yyyy/MM/dd'),
-            new SimpleDateFormat('dd.MM.yyyy'),
-            new SimpleDateFormat('dd/MM/yyyy'),
-            new SimpleDateFormat('dd/MM/yy'),
-            new SimpleDateFormat('yyyy/MM'),
-            new SimpleDateFormat('yyyy')
-    ]
-
     @DebugAnnotation(test='hasAffiliation("INST_ADM")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_ADM") })
     def index() {
@@ -192,6 +183,7 @@ class MyInstitutionController extends AbstractDebugController {
         result.user = User.get(springSecurityService.principal.id)
         result.max = params.max ?: result.user.getDefaultPageSizeTMP()
         result.offset = params.offset ?: 0
+        result.contextOrg = contextService.org
 
         def cache = contextService.getCache('MyInstitutionController/currentPlatforms/', contextService.ORG_SCOPE)
 
@@ -711,7 +703,6 @@ from License as l where (
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
     def currentProviders() {
         long timestamp = System.currentTimeMillis()
-
         def result = setResultGenerics()
 
         def cache = contextService.getCache('MyInstitutionController/currentProviders/', contextService.ORG_SCOPE)
@@ -735,8 +726,8 @@ from License as l where (
 
 //        result.user = User.get(springSecurityService.principal.id)
         params.sort = params.sort ?: " LOWER(o.shortname), LOWER(o.name)"
-        result.max  = params.max ? Integer.parseInt(params.max) : result.user?.getDefaultPageSizeTMP()
-        result.offset = params.offset ? Integer.parseInt(params.offset) : 0
+		result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeTMP()
+		result.offset = params.offset ? Integer.parseInt(params.offset) : 0
 
         def fsq  = filterService.getOrgQuery([constraint_orgIds: orgIds] << params)
         result.filterSet = params.filterSet ? true : false
@@ -748,7 +739,7 @@ from License as l where (
         result.orgList = orgListTotal.drop((int) result.offset).take((int) result.max)
 
         def message = g.message(code: 'export.my.currentProviders')
-        SimpleDateFormat sdf = new SimpleDateFormat(g.message(code:'default.date.format.notime', default:'yyyy-MM-dd'))
+        SimpleDateFormat sdf = new SimpleDateFormat(g.message(code:'default.date.format.notime'))
         String datetoday = sdf.format(new Date(System.currentTimeMillis()))
         String filename = message+"_${datetoday}"
 
@@ -864,7 +855,7 @@ from License as l where (
         result.subscriptions = subscriptions.drop((int) result.offset).take((int) result.max)
 
         // Write the output to a file
-        sdf = new SimpleDateFormat(g.message(code: 'default.date.format.notimenopoint'));
+        sdf = new SimpleDateFormat(g.message(code: 'default.date.format.notimenopoint'))
         String datetoday = sdf.format(new Date(System.currentTimeMillis()))
         String filename = "${datetoday}_" + g.message(code: "export.my.currentSubscriptions")
 
@@ -1487,8 +1478,8 @@ from License as l where (
                     render view: 'editLicense', model: [licenseInstance: copyLicense]
                 } else {
                     copyLicense.reference = params.licenseName
-                    copyLicense.startDate = parseDate(params.licenseStartDate,possible_date_formats)
-                    copyLicense.endDate = parseDate(params.licenseEndDate,possible_date_formats)
+                    copyLicense.startDate = escapeService.parseDate(params.licenseStartDate)
+                    copyLicense.endDate = escapeService.parseDate(params.licenseEndDate)
                     copyLicense.status = RefdataValue.get(params.status)
 
                     if (copyLicense.save(flush: true)) {
@@ -3342,13 +3333,15 @@ AND EXISTS (
                 " join subK.orgRelations roleK join subT.orgRelations roleTK join subT.orgRelations roleT " +
                 " where roleK.org = :org and roleK.roleType = :rdvCons " +
                 " and roleTK.org = :org and roleTK.roleType = :rdvCons " +
-                " and roleT.roleType = :rdvSubscr " +
+                " and ( roleT.roleType = :rdvSubscr or roleT.roleType = :rdvSubscrHidden ) " +
                 " and ( ci is null or ci.owner = :org )"
 
 
         Map qarams = [org      : result.institution,
                       rdvCons  : RDStore.OR_SUBSCRIPTION_CONSORTIA,
-                      rdvSubscr: RDStore.OR_SUBSCRIBER_CONS]
+                      rdvSubscr: RDStore.OR_SUBSCRIBER_CONS,
+                      rdvSubscrHidden: RDStore.OR_SUBSCRIBER_CONS_HIDDEN
+        ]
 
         if (params.member?.size() > 0) {
             query += " and roleT.org.id = :member "
@@ -3403,6 +3396,10 @@ AND EXISTS (
         if (params.subTypes?.size() > 0) {
             query += " and subT.type.id in (:subTypes) "
             qarams.put('subTypes', params.list('subTypes').collect { it -> Long.parseLong(it) })
+        }
+        if (params.subRunTimeMultiYear) {
+            query += " and subT.isMultiYear = :subRunTimeMultiYear "
+            qarams.put('subRunTimeMultiYear', params.subRunTimeMultiYear ? true : false )
         }
 
         String orderQuery = " order by roleT.org.sortname, subT.name"

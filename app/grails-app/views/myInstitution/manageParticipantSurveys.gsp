@@ -218,14 +218,11 @@
                         </g:if>
 
                         <g:if test="${surveyConfig?.pickAndChoose}">
-                            %{--<span class="la-popup-tooltip la-delay"
-                                  data-content="${message(code: 'surveyInfo.toIssueEntitlementsSurvey')}">
-                                <g:link controller="subscription" action="surveyInfosIssueEntitlements" id="${surveyConfig.subscription?.getDerivedSubscriptionBySubscribers(participant)?.id}"
-                                        params="${[targetSubscriptionId: surveyConfig.subscription?.getDerivedSubscriptionBySubscribers(participant)?.id]}"
-                                        class="ui icon button">
-                                    <i class="write icon"></i>
-                                </g:link>
-                            </span>--}%
+                            <g:link controller="survey" action="showEntitlementsRenew"
+                                    id="${surveyConfig?.id}" params="[participant: participant?.id]"
+                                    class="ui icon button"><i
+                                    class="write icon"></i>
+                            </g:link>
                         </g:if>
 
                     </td>

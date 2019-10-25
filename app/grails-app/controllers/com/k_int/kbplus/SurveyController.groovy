@@ -16,6 +16,7 @@ import org.codehaus.groovy.runtime.InvokerHelper
 import org.springframework.context.i18n.LocaleContextHolder
 import org.springframework.dao.DataIntegrityViolationException
 
+import javax.servlet.ServletOutputStream
 import java.text.DateFormat
 import java.text.NumberFormat
 import java.text.SimpleDateFormat
@@ -47,6 +48,8 @@ class SurveyController {
     def subscriptionService
     def comparisonService
     def surveyUpdateService
+    def escapeService
+    def titleStreamService
 
     public static final String WORKFLOW_DATES_OWNER_RELATIONS = '1'
     public static final String WORKFLOW_PACKAGES_ENTITLEMENTS = '5'
@@ -524,7 +527,7 @@ class SurveyController {
 
 
         base_qry += " and ie.status = :current "
-        qry_params.current = TIPP_STATUS_CURRENT
+        qry_params.current = RDStore.TIPP_STATUS_CURRENT
 
         base_qry += "order by lower(ie.tipp.title.title) asc"
 
@@ -743,6 +746,121 @@ class SurveyController {
 
         result
 
+    }
+
+    @DebugAnnotation(perm = "ORG_CONSORTIUM_SURVEY", affil = "INST_EDITOR", specRole = "ROLE_ADMIN")
+    @Secured(closure = {
+        ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM_SURVEY", "INST_EDITOR", "ROLE_ADMIN")
+    })
+    def surveyTitlesEvaluation() {
+        def result = setResultGenericsAndCheckAccess()
+        if (!result.editable) {
+            response.sendError(401); return
+        }
+
+
+
+        def orgs = result.surveyConfig?.orgs.org.flatten().unique { a, b -> a.id <=> b.id }
+        result.participants = orgs.sort { it.sortname }
+
+        result.participantsNotFinish = SurveyOrg.findAllByFinishDateIsNullAndSurveyConfig(result.surveyConfig)?.org.flatten().unique { a, b -> a.id <=> b.id }?.sort {
+            it?.sortname
+        }
+        result.participantsFinish = SurveyOrg.findAllByFinishDateIsNotNullAndSurveyConfig(result.surveyConfig)?.org.flatten().unique { a, b -> a.id <=> b.id }?.sort {
+            it?.sortname
+        }
+
+        result
+
+    }
+
+    @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
+    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
+    def showEntitlementsRenew() {
+        def result = [:]
+
+        result.institution = contextService.getOrg()
+        result.participant = params.participant ? Org.get(params.participant) : null
+
+        result.user = User.get(springSecurityService.principal.id)
+
+        result.editable = accessService.checkMinUserOrgRole(result.user, result.institution, 'INST_EDITOR')
+
+        if (!result.editable) {
+            flash.error = g.message(code: "default.notAutorized.message")
+            redirect(url: request.getHeader('referer'))
+        }
+
+        result.surveyConfig = SurveyConfig.get(params.id)
+        result.surveyInfo = result.surveyConfig.surveyInfo
+
+        result.subscriptionInstance =  result.surveyConfig?.subscription
+
+        result.ies = subscriptionService.getIssueEntitlementsNotFixed(result.surveyConfig.subscription?.getDerivedSubscriptionBySubscribers(result.participant))
+
+        def filename = "renewEntitlements_${escapeService.escapeString(result.subscriptionInstance.dropdownNamingConvention(result.participant))}"
+
+        if (params.exportKBart) {
+            response.setHeader("Content-disposition", "attachment; filename=${filename}.tsv")
+            response.contentType = "text/tsv"
+            ServletOutputStream out = response.outputStream
+            Map<String, List> tableData = titleStreamService.generateTitleExportList(result.ies)
+            out.withWriter { writer ->
+                writer.write(exportService.generateSeparatorTableString(tableData.titleRow, tableData.columnData, '\t'))
+            }
+            out.flush()
+            out.close()
+        }else if(params.exportXLS) {
+            response.setHeader("Content-disposition", "attachment; filename=\"${filename}.xlsx\"")
+            response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+            List titles = [
+                    g.message(code:'title'),
+                    g.message(code:'tipp.volume'),
+                    g.message(code:'author.slash.editor'),
+                    g.message(code:'title.editionStatement.label'),
+                    g.message(code:'title.summaryOfContent.label'),
+                    g.message(code:'identifier.label'),
+                    g.message(code:'title.dateFirstInPrint.label'),
+                    g.message(code:'title.dateFirstOnline.label'),
+                    g.message(code:'tipp.price')
+            ]
+            List rows = []
+            result.ies.each { ie ->
+                List row = []
+                row.add([field: ie?.tipp?.title?.title ?: '', style:null])
+                row.add([field: ie?.tipp?.title?.volume ?: '', style:null])
+                row.add([field: ie?.tipp?.title?.getEbookFirstAutorOrFirstEditor() ?: '', style:null])
+                row.add([field: ie?.tipp?.title?.editionStatement ?: '', style:null])
+                row.add([field: ie?.tipp?.title?.summaryOfContent ?: '', style:null])
+
+                def identifiers = []
+                ie?.tipp?.title?.ids?.sort { it?.identifier?.ns?.ns }.each{ id ->
+                    identifiers << "${id.identifier.ns.ns}: ${id.identifier.value}"
+                }
+                row.add([field: identifiers ? identifiers.join(', ') : '', style:null])
+
+                row.add([field: ie?.tipp?.title?.dateFirstInPrint ? g.formatDate(date: ie?.tipp?.title?.dateFirstInPrint, format: message(code: 'default.date.format.notime')): '', style:null])
+                row.add([field: ie?.tipp?.title?.dateFirstOnline ? g.formatDate(date: ie?.tipp?.title?.dateFirstOnline, format: message(code: 'default.date.format.notime')): '', style:null])
+
+                row.add([field: ie.priceItem?.listPrice ? g.formatNumber(number: ie?.priceItem?.listPrice, type: 'currency', currencySymbol: ie?.priceItem?.listCurrency, currencyCode: ie?.priceItem?.listCurrency) : '', style:null])
+                row.add([field: ie.priceItem?.localPrice ? g.formatNumber(number: ie?.priceItem?.localPrice, type: 'currency', currencySymbol: ie?.priceItem?.localCurrency, currencyCode: ie?.priceItem?.localCurrency) : '', style:null])
+
+                rows.add(row)
+            }
+            Map sheetData = [:]
+            sheetData[g.message(code:'subscription.details.renewEntitlements.label')] = [titleRow:titles,columnData:rows]
+            SXSSFWorkbook workbook = exportService.generateXLSXWorkbook(sheetData)
+            workbook.write(response.outputStream)
+            response.outputStream.flush()
+            response.outputStream.close()
+            workbook.dispose()
+            return
+        }
+        else {
+            withFormat {
+                html result
+            }
+        }
     }
 
     @DebugAnnotation(perm = "ORG_CONSORTIUM_SURVEY", affil = "INST_EDITOR", specRole = "ROLE_ADMIN")

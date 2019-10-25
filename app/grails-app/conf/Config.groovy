@@ -10,8 +10,8 @@ grails.project.groupId  = appName // change this to alter the default package na
 grails.config.locations = ["file:${userHome}/.grails/${appName}-config.groovy"]
 
 laserSystemId = 'local'
-documentStorageLocation = '/tmp/laser'
-dbBackupLocation = documentStorageLocation + '/laserDatabaseBackups'
+documentStorageLocation = '/tmp/laser' // for uploaded documents
+deployBackupLocation = documentStorageLocation + '/laserDeployBackups' // for database backups in context of deploys
 
 featureSurvey = false
 

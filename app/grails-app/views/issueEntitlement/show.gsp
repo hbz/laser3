@@ -59,7 +59,8 @@
                     <dt><g:message code="title.identifiers.label" /></dt>
                     <dd><ul>
                       <g:each in="${issueEntitlementInstance?.tipp.title?.ids?.sort{it?.identifier?.ns?.ns}}" var="i">
-                          <li>${i.identifier.ns.ns}: <g:if test="${i.identifier.ns.ns == 'originediturl'}"><a href="${i.identifier.value}">${i.identifier.value}</a></g:if><g:else>${i.identifier.value}</g:else>
+                          <li>${i.identifier.ns.ns}:
+                              ${i.identifier.value}
 <!--                            <g:if test="${i.identifier.ns.ns.equalsIgnoreCase('issn')}">
                               (<a href="http://suncat.edina.ac.uk/F?func=find-c&ccl_term=022=${i.identifier.value}">search on SUNCAT</a>)
                             </g:if>
@@ -185,6 +186,29 @@
     </laser:statsLink>
 </span>
 <h3 class="ui header">${message(code:'default.usage.header')}</h3>
+<h4 class="ui">${message(code: 'default.usage.licenseGrid.header')}</h4>
+<table class="ui celled la-table table">
+    <thead>
+    <tr>
+      <th>${message(code: 'default.usage.reportType')}</th>
+      <g:each in="${l_x_axis_labels}" var="l">
+        <th>${l}</th>
+      </g:each>
+    </tr>
+    </thead>
+    <tbody>
+    <g:set var="counter" value="${0}"/>
+    <g:each in="${lusage}" var="v">
+      <tr>
+        <td>${l_y_axis_labels[counter++]}</td>
+        <g:each in="${v}" var="v2">
+          <td>${v2}</td>
+        </g:each>
+      </tr>
+    </g:each>
+    </tbody>
+  </table>
+<h4 class="ui">${message(code: 'default.usage.allUsageGrid.header')}</h4>
 <table class="ui celled la-table table">
     <thead>
     <tr>
@@ -224,32 +248,9 @@
     </g:each>
     </tbody>
 </table>
-<h3 class="ui">${message(code: 'default.usage.licenseGrid.header')}</h3>
-<table class="ui celled la-table table">
-    <thead>
-    <tr>
-        <th>${message(code: 'default.usage.reportType')}</th>
-        <g:each in="${l_x_axis_labels}" var="l">
-            <th>${l}</th>
-        </g:each>
-    </tr>
-    </thead>
-    <tbody>
-    <g:set var="counter" value="${0}"/>
-    <g:each in="${lusage}" var="v">
-        <tr>
-            <td>${l_y_axis_labels[counter++]}</td>
-            <g:each in="${v}" var="v2">
-                <td>${v2}</td>
-            </g:each>
-        </tr>
-    </g:each>
-    </tbody>
-</table>
 </g:if>
 
 <g:if test="${issueEntitlementInstance.tipp.title?.tipps}">
-
   <br/>
 
   <h3 class="ui header"><strong><g:message code="titleInstance.tipps.label" default="Occurrences of this title against Packages / Platforms" /></strong></h3>

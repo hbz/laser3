@@ -195,6 +195,27 @@ class BootStrap {
                 }
             }
         }
+        if(grailsApplication.config.getCurrentServer() == ContextService.SERVER_QA) {
+            log.debug("check if all user accounts are existing on QA ...")
+            Map<String,Org> modelOrgs = [konsorte: Org.findByName('Musterkonsorte'),
+                                         institut: Org.findByName('Musterinstitut'),
+                                         singlenutzer: Org.findByName('Mustereinrichtung'),
+                                         kollektivnutzer: Org.findByName('Mustereinrichtung Kollektiv'),
+                                         konsortium: Org.findByName('Musterkonsortium')]
+            Map<String,Org> testOrgs = [konsorte: Org.findByName('Testkonsorte'),
+                                        institut: Org.findByName('Testinstitut'),
+                                        singlenutzer: Org.findByName('Testeinrichtung'),
+                                        kollektivnutzer: Org.findByName('Testeinrichtung Kollektiv'),
+                                        konsortium: Org.findByName('Testkonsortium')]
+            Map<String,Org> QAOrgs = [konsorte: Org.findByName('QA-Konsorte'),
+                                      institut: Org.findByName('QA-Institut'),
+                                      singlenutzer: Org.findByName('QA-Einrichtung'),
+                                      kollektivnutzer: Org.findByName('QA-Einrichtung Kollektiv'),
+                                      konsortium: Org.findByName('QA-Konsortium')]
+            userService.setupAdminAccounts(modelOrgs)
+            userService.setupAdminAccounts(testOrgs)
+            userService.setupAdminAccounts(QAOrgs)
+        }
 
         // def auto_approve_memberships = Setting.findByName('AutoApproveMemberships') ?: new Setting(name: 'AutoApproveMemberships', tp: Setting.CONTENT_TYPE_BOOLEAN, defvalue: 'true', value: 'true').save()
 
@@ -525,8 +546,8 @@ class BootStrap {
                     descr:allDescr, type: OT.Rdv, cat:'YN'
             ],
             [
-                    name: [key: "Shibboleth Usage", en: "Shibboleth Usage", de: "Shibboleth: Nutzung"],
-                    expl : [en: "", de: "Nutzt die Organisation Shibboleth?"],
+                    name: [key: "Shibboleth Usage", en: "Shibboleth Usage", de: "Shibboleth: Nutzung für Bibliotheksangebote"],
+                    expl : [en: "", de: "Nutzt die Organisation Shibboleth für Bibliotheksangebote?"],
                     descr:allDescr, type: OT.Rdv, cat:'YNU'
             ],
             [
@@ -2377,20 +2398,20 @@ class BootStrap {
         RefdataValue.loc('Library Network',   [en: 'SWB', de: 'SWB'], BOOTSTRAP)
         RefdataValue.loc('Library Network',   [en: 'No Network', de: 'Keine Zugehörigkeit'], BOOTSTRAP)
 
-        RefdataValue.loc('Library Type',   [en: 'Fachhochschule', de: 'Fachhochschule'], BOOTSTRAP)
-        RefdataValue.loc('Library Type',   [en: 'Forschungseinrichtung', de: 'Forschungseinrichtung'], BOOTSTRAP)
-        RefdataValue.loc('Library Type',   [en: 'Institutsbibliothek', de: 'Institutsbibliothek'], BOOTSTRAP)
-        RefdataValue.loc('Library Type',   [en: 'Kunst- und Musikhochschule', de: 'Kunst- und Musikhochschule'], BOOTSTRAP)
-        RefdataValue.loc('Library Type',   [en: 'Öffentliche Bibliothek', de: 'Öffentliche Bibliothek'], BOOTSTRAP)
-        RefdataValue.loc('Library Type',   [en: 'Universität', de: 'Universität'], BOOTSTRAP)
-        RefdataValue.loc('Library Type',   [en: 'Staats-/ Landes-/ Regionalbibliothek', de: 'Staats-/ Landes-/ Regionalbibliothek'], BOOTSTRAP)
-        RefdataValue.loc('Library Type',   [en: 'Wissenschaftliche Spezialbibliothek', de: 'Wissenschaftliche Spezialbibliothek'], BOOTSTRAP)
-        RefdataValue.loc('Library Type',   [en: 'Sonstige', de: 'Sonstige'], BOOTSTRAP)
-        RefdataValue.loc('Library Type',   [en: 'keine Angabe', de: 'keine Angabe'], BOOTSTRAP)
+        RefdataValue.loc('Library Type',   [key: 'Fachhochschule', en: 'University of applied science', de: 'Fachhochschule'], BOOTSTRAP)
+        RefdataValue.loc('Library Type',   [key: 'Forschungseinrichtung', en: 'Research institution', de: 'Forschungseinrichtung'], BOOTSTRAP)
+        RefdataValue.loc('Library Type',   [key: 'Institutsbibliothek', en: 'Department library', de: 'Institutsbibliothek'], BOOTSTRAP)
+        RefdataValue.loc('Library Type',   [key: 'Kunst- und Musikhochschule', en: 'College of Art or Music', de: 'Kunst- und Musikhochschule'], BOOTSTRAP)
+        RefdataValue.loc('Library Type',   [key: 'Öffentliche Bibliothek', en: 'Public library', de: 'Öffentliche Bibliothek'], BOOTSTRAP)
+        RefdataValue.loc('Library Type',   [key: 'Universität', en: 'University', de: 'Universität'], BOOTSTRAP)
+        RefdataValue.loc('Library Type',   [key: 'Staats-/ Landes-/ Regionalbibliothek', en: 'National / state / regional library', de: 'Staats-/ Landes-/ Regionalbibliothek'], BOOTSTRAP)
+        RefdataValue.loc('Library Type',   [key: 'Wissenschaftliche Spezialbibliothek', en: 'Special scientific library', de: 'Wissenschaftliche Spezialbibliothek'], BOOTSTRAP)
+        RefdataValue.loc('Library Type',   [key: 'Sonstige', en: 'Other', de: 'Sonstige'], BOOTSTRAP)
+        RefdataValue.loc('Library Type',   [key: 'keine Angabe', en: 'not specified', de: 'keine Angabe'], BOOTSTRAP)
 
-        RefdataValue.loc('Link Type', [en: 'follows',de: '... ist Nachfolger von|... ist Vorgänger von'], BOOTSTRAP)
-        RefdataValue.loc('Link Type', [en: 'references',de: '... referenziert|... wird referenziert durch'], BOOTSTRAP)
-        RefdataValue.loc('Link Type', [en: 'is condition for',de: '... ist Bedingung für|... ist bedingt durch'], BOOTSTRAP)
+        RefdataValue.loc('Link Type', [key: 'follows',en:'... follows|... precedes',de: '... ist Nachfolger von|... ist Vorgänger von'], BOOTSTRAP)
+        RefdataValue.loc('Link Type', [key: 'references',en: '... references|... is referenced by',de: '... referenziert|... wird referenziert durch'], BOOTSTRAP)
+        RefdataValue.loc('Link Type', [key: 'is condition for',en: '... ist condition für|... ist conditioned by', de: '... ist Bedingung für|... ist bedingt durch'], BOOTSTRAP)
 
         RefdataValue.loc('OrgStatus',      [en: 'Current', de: 'Aktuell'], BOOTSTRAP)
         RefdataValue.loc('OrgStatus',      [en: 'Deleted', de: 'Gelöscht'], BOOTSTRAP)
@@ -2514,11 +2535,11 @@ class BootStrap {
         RefdataValue.loc('Subscription Status',      [key: 'Deferred', en: 'Deferred', de: 'Zurückgestellt'])
         RefdataValue.loc('Subscription Status',      [en: 'Status not defined', de: 'Status nicht festgelegt'], BOOTSTRAP)
 
-        RefdataValue.loc('Subscription Type',      [en: 'Alliance Licence', de: 'Allianzlizenz'], BOOTSTRAP)
-        RefdataValue.loc('Subscription Type',      [en: 'National Licence', de: 'Nationallizenz'], BOOTSTRAP)
-		RefdataValue.loc('Subscription Type',      [en: 'Local Licence', de: 'Lokale Lizenz'], BOOTSTRAP)
-		RefdataValue.loc('Subscription Type',      [en: 'Consortial Licence', de: 'Konsortiallizenz'], BOOTSTRAP)
-        RefdataValue.loc('Subscription Type',      [en: 'Administrative Subscription', de: 'Verwaltungslizenz'], BOOTSTRAP)
+        RefdataValue.loc('Subscription Type',      [key: 'Alliance Licence', en: 'Alliance Subscription', de: 'Allianzlizenz'], BOOTSTRAP)
+        RefdataValue.loc('Subscription Type',      [key: 'National Licence', en: 'National Subscription', de: 'Nationallizenz'], BOOTSTRAP)
+		RefdataValue.loc('Subscription Type',      [key: 'Local Licence', en: 'Local Subscription', de: 'Lokale Lizenz'], BOOTSTRAP)
+		RefdataValue.loc('Subscription Type',      [key: 'Consortial Licence', en: 'Consortial Subscription', de: 'Konsortiallizenz'], BOOTSTRAP)
+        RefdataValue.loc('Subscription Type',      [key: 'Administrative Subscription', en: 'Administrative Subscription', de: 'Verwaltungslizenz'], BOOTSTRAP)
         //RefdataValue.loc('Subscription Type',      [en: 'Collective Subscription', de: 'Kollektivlizenz'], BOOTSTRAP)
 
         RefdataValue.loc('Task Priority',   [en: 'Trivial', de: 'Trivial'], BOOTSTRAP)
@@ -2660,16 +2681,18 @@ class BootStrap {
         RefdataValue.loc('Access Method',      [key: 'ip4', en: 'IPv4', de: 'IPv4'], BOOTSTRAP)
         RefdataValue.loc('Access Method',      [key: 'ip6', en: 'IPv6', de: 'IPv6'], BOOTSTRAP)
         RefdataValue.loc('Access Method',      [key: 'proxy', en: 'Proxy', de: 'Proxy'], BOOTSTRAP)
-        RefdataValue.loc('Access Method',      [key: 'shibb', en: 'Shibboleth', de: 'Shibboleth'], BOOTSTRAP)
+        RefdataValue.loc('Access Method',      [key: 'shibboleth', en: 'Shibboleth', de: 'Shibboleth'], BOOTSTRAP)
         RefdataValue.loc('Access Method',      [key: 'up', en: 'Username/Password', de: 'Benutzername/Passwort'], BOOTSTRAP)
         RefdataValue.loc('Access Method',      [key: 'oa', en: 'Open Athens', de: 'OpenAthens'], BOOTSTRAP)
         RefdataValue.loc('Access Method',      [key: 'ref', en: 'Referrer', de: 'Referrer'], BOOTSTRAP)
 
         RefdataValue.loc('Access Method IP',      [en: 'IPv4', de: 'IPv4'], BOOTSTRAP)
         RefdataValue.loc('Access Method IP',      [en: 'IPv6', de: 'IPv6'], BOOTSTRAP)
-
         RefdataValue.loc('Access Point Type',      [key: 'ip', en: 'IP', de: 'IP'], BOOTSTRAP)
-        //RefdataValue.loc('Access Point Type',      [key: 'shibb', en: 'Shibboleth', de: 'Shibboleth'], BOOTSTRAP)
+        RefdataValue.loc('Access Point Type',      [key: 'ezproxy', en: 'EZproxy', de: 'EZproxy'], BOOTSTRAP)
+        RefdataValue.loc('Access Point Type',      [key: 'proxy', en: 'Proxy', de: 'Proxy'], BOOTSTRAP)
+        RefdataValue.loc('Access Point Type',      [key: 'vpn', en: 'VPN', de: 'VPN'], BOOTSTRAP)
+        RefdataValue.loc('Access Point Type',      [key: 'shibboleth', en: 'Shibboleth', de: 'Shibboleth'], BOOTSTRAP)
 
         RefdataValue.loc('IPv4 Address Format',      [key: 'v4cidr',   en: 'IPv4 (CIDR)', de: 'IPv4 (CIDR)'], BOOTSTRAP)
         RefdataValue.loc('IPv4 Address Format',      [key: 'v4ranges', en: 'IPv4 (Ranges)', de: 'IPv4 (Bereiche)'], BOOTSTRAP)

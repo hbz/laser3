@@ -66,6 +66,10 @@ class RDStore {
     static final SURVEY_SURVEY_STARTED      = getRefdataValue('Survey started', 'Survey Status')
     static final SURVEY_SURVEY_COMPLETED    = getRefdataValue('Survey completed', 'Survey Status')
 
+    static final SURVEY_TYPE_RENEWAL        = getRefdataValue('renewal', 'Survey Type')
+    static final SURVEY_TYPE_INTEREST       = getRefdataValue('interest', 'Survey Type')
+    static final SURVEY_TYPE_TITLE_SELECTION= getRefdataValue('selection', 'Survey Type')
+
     static final LICENSE_CURRENT            = getRefdataValue('Current','License Status')
 
     static final COST_ITEM_ACTUAL           = getRefdataValue('Actual','CostItemStatus')

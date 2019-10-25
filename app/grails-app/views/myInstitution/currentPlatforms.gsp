@@ -40,6 +40,7 @@
         <g:sortableColumn property="name" title="${message(code: 'platform.name.label', default: 'Name')}" />
         <th>${message(code:'default.provider.label')}</th>
         <th>${message(code:'org.url.label')}</th>
+        <th>${message(code:'accessPoint.plural')}</th>
         <th>Zugeordnete aktive Lizenzen</th>
     </tr>
     </thead>
@@ -62,6 +63,11 @@
                     ${platformInstance.primaryUrl}
                     <a href="<g:createLink url="${platformInstance.primaryUrl}" />" target="_blank"><i class="external alternate icon"></i></a>
                 </g:if>
+            </td>
+            <td>
+                <g:each in="${platformInstance.getContextOrgAccessPoints(contextOrg)}" var="oap" >
+                    <g:link controller="accessPoint" action="edit_${oap.accessMethod}" id=" ${oap.id}">${oap.name} (${oap.accessMethod.getI10n('value')})</g:link> <br />
+                </g:each>
             </td>
             <td>
                 <g:each in="${subscriptionMap.get('platform_' + platformInstance.id)}" var="sub">

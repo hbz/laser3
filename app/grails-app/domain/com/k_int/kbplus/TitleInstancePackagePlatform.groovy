@@ -51,7 +51,7 @@ class TitleInstancePackagePlatform extends AbstractBaseDomain implements Auditab
     String rectype="so"
     String impId
     String gokbId
-     URL originEditUrl
+    //URL originEditUrl
 
     @RefdataAnnotation(cat = 'TIPP Status')
     RefdataValue status
@@ -102,7 +102,7 @@ class TitleInstancePackagePlatform extends AbstractBaseDomain implements Auditab
              title column:'tipp_ti_fk',     index: 'tipp_idx'
              impId column:'tipp_imp_id',        index: 'tipp_imp_id_idx'
             gokbId column:'tipp_gokb_id',       type:'text'
-     originEditUrl column:'tipp_origin_edit_url'
+     //originEditUrl column:'tipp_origin_edit_url'
             status column:'tipp_status_rv_fk'
          delayedOA column:'tipp_delayedoa_rv_fk'
           hybridOA column:'tipp_hybridoa_rv_fk'
@@ -138,7 +138,7 @@ class TitleInstancePackagePlatform extends AbstractBaseDomain implements Auditab
         globalUID(nullable:true, blank:false, unique:true, maxSize:255)
         impId(nullable:true, blank:true)
         gokbId (nullable:true, blank:false)
-        originEditUrl(nullable:true, blank:false)
+        //originEditUrl(nullable:true, blank:false)
         status(nullable:true, blank:false)
         delayedOA(nullable:true, blank:false)
         hybridOA(nullable:true, blank:false)

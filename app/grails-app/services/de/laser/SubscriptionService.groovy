@@ -226,8 +226,8 @@ class SubscriptionService {
 
     List getIssueEntitlementsUnderConsideration(Subscription subscription) {
         List<IssueEntitlement> ies = subscription?
-                IssueEntitlement.executeQuery("select ie from IssueEntitlement as ie where ie.subscription = :sub and ie.acceptStatus = :acceptStat",
-                        [sub: subscription, acceptStat: RDStore.IE_ACCEPT_STATUS_UNDER_CONSIDERATION])
+                IssueEntitlement.executeQuery("select ie from IssueEntitlement as ie where ie.subscription = :sub and ie.acceptStatus = :acceptStat and ie.status = :ieStatus",
+                        [sub: subscription, acceptStat: RDStore.IE_ACCEPT_STATUS_UNDER_CONSIDERATION, ieStatus: RDStore.TIPP_STATUS_CURRENT])
                 : []
         ies.sort {it.tipp.title.title}
         ies
@@ -235,8 +235,8 @@ class SubscriptionService {
 
     List getIssueEntitlementsNotFixed(Subscription subscription) {
         List<IssueEntitlement> ies = subscription?
-                IssueEntitlement.executeQuery("select ie from IssueEntitlement as ie where ie.subscription = :sub and ie.acceptStatus != :acceptStat",
-                        [sub: subscription, acceptStat: RDStore.IE_ACCEPT_STATUS_FIXED])
+                IssueEntitlement.executeQuery("select ie from IssueEntitlement as ie where ie.subscription = :sub and ie.acceptStatus != :acceptStat and ie.status = :ieStatus",
+                        [sub: subscription, acceptStat: RDStore.IE_ACCEPT_STATUS_FIXED, ieStatus: RDStore.TIPP_STATUS_CURRENT])
                 : []
         ies.sort {it.tipp.title.title}
         ies
@@ -1098,7 +1098,7 @@ class SubscriptionService {
             }
             //provider
             if(colMap.provider != null) {
-                String providerIdCandidate = cols[colMap.provider].trim()
+                String providerIdCandidate = cols[colMap.provider]?.trim()
                 if(providerIdCandidate) {
                     Long idCandidate = providerIdCandidate.isLong() ? Long.parseLong(providerIdCandidate) : null
                     Org provider = Org.findByIdOrGlobalUID(idCandidate,providerIdCandidate)
@@ -1111,7 +1111,7 @@ class SubscriptionService {
             }
             //agency
             if(colMap.agency != null) {
-                String agencyIdCandidate = cols[colMap.agency].trim()
+                String agencyIdCandidate = cols[colMap.agency]?.trim()
                 if(agencyIdCandidate) {
                     Long idCandidate = agencyIdCandidate.isLong() ? Long.parseLong(agencyIdCandidate) : null
                     Org agency = Org.findByIdOrGlobalUID(idCandidate,agencyIdCandidate)
@@ -1208,7 +1208,7 @@ class SubscriptionService {
             propMap.each { String k, Map propInput ->
                 Map defPair = propInput.definition
                 Map propData = [:]
-                if(cols[defPair.colno].trim()) {
+                if(cols[defPair.colno]) {
                     def v
                     if(defPair.refCategory) {
                         v = refdataService.retrieveRefdataValueOID(cols[defPair.colno].trim(),defPair.refCategory)
