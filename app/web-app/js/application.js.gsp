@@ -12,7 +12,12 @@ var currLanguage = $('html').attr('lang');
         'default.informations',
         'default.actions',
         'property.select.placeholder',
-        'confirm.dialog.delete'
+        'confirm.dialog.delete',
+        'confirm.dialog.unlink',
+        'confirm.dialog.share',
+        'confirm.dialog.inherit',
+        'confirm.dialog.ok',
+        'confirm.dialog.concludeBinding'
     ]
 
 println """
@@ -650,19 +655,19 @@ r2d2 = {
                         $('#js-confirmation-button').html(dict.get('confirm.dialog.delete',currLanguage) + '<i class="trash alternate icon"></i>');
                         break;
                     case "unlink":
-                        $('#js-confirmation-button').html('Aufheben<i class="la-chain broken icon"></i>');
+                        $('#js-confirmation-button').html(dict.get('confirm.dialog.unlink',currLanguage) + '<i class="la-chain broken icon"></i>');
                         break;
                     case "share":
-                        $('#js-confirmation-button').html('Teilen<i class="la-share icon"></i>');
+                        $('#js-confirmation-button').html(dict.get('confirm.dialog.share',currLanguage) + '<i class="la-share icon"></i>');
                         break;
                     case "inherit":
-                        $('#js-confirmation-button').html('Vererbung ändern<i class="thumbtack icon"></i>');
+                        $('#js-confirmation-button').html(dict.get('confirm.dialog.inherit',currLanguage) + '<i class="thumbtack icon"></i>');
                         break;
                     case "ok":
-                        $('#js-confirmation-button').html('OK<i class="check icon"></i>');
+                        $('#js-confirmation-button').html(dict.get('confirm.dialog.ok',currLanguage) + '<i class="check icon"></i>');
                         break;
                     case "concludeBinding":
-                        $('#js-confirmation-button').html('Abschließen<i class="check icon"></i>');
+                        $('#js-confirmation-button').html(dict.get('confirm.dialog.concludeBinding',currLanguage) + '<i class="check icon"></i>');
                         break;
                     default:
                         $('').html('Entfernen<i class="x icon"></i>');

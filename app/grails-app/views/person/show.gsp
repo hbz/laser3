@@ -183,7 +183,6 @@ ${personInstance}
                                                                 %{--<g:hiddenField name="id" value="${personInstance?.id}" />--}%
                                                                 %{--<div class="ui icon negative button js-open-confirm-modal"--}%
                                                                 %{--data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.contact", args: [personInstance?.toString()])}"--}%
-                                                                %{--data-confirm-term-what-detail="${personInstance?.toString()}"--}%
                                                                 %{--data-confirm-term-how="delete"--}%
                                                                 %{--data-confirm-id="${personInstance?.id}" >--}%
                                                                 %{--<i class="trash alternate icon"></i>--}%
@@ -250,7 +249,6 @@ ${personInstance}
                                                                     %{--<g:hiddenField name="id" value="${personInstance?.id}" />--}%
                                                                     %{--<div class="ui icon negative button js-open-confirm-modal"--}%
                                                                          %{--data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.contact", args: [personInstance?.toString()])}"--}%
-                                                                         %{--data-confirm-term-what-detail="${personInstance?.toString()}"--}%
                                                                          %{--data-confirm-term-how="delete"--}%
                                                                          %{--data-confirm-id="${personInstance?.id}" >--}%
                                                                 %{--<i class="trash alternate icon"></i>--}%
