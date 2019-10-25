@@ -104,7 +104,7 @@ class LicenseController extends AbstractDebugController {
 
             // tasks
             result.tasks = taskService.getTasksByResponsiblesAndObject(result.user, result.contextOrg, result.license)
-            def preCon = taskService.getPreconditions(result.contextOrg)
+            def preCon = taskService.getPreconditionsWithoutTargets(result.contextOrg)
             result << preCon
 
             // restrict visible for templates/links/orgLinksAsList
@@ -917,7 +917,7 @@ from Subscription as s where
 
         def contextOrg = contextService.getOrg()
         result.tasks = taskService.getTasksByResponsiblesAndObject(result.user, contextOrg, result.license)
-        def preCon = taskService.getPreconditions(contextOrg)
+        def preCon = taskService.getPreconditionsWithoutTargets(contextOrg)
         result << preCon
 
 

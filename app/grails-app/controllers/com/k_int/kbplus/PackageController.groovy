@@ -499,7 +499,7 @@ class PackageController extends AbstractDebugController {
         // tasks
         def contextOrg = contextService.getOrg()
         result.tasks = taskService.getTasksByResponsiblesAndObject(User.get(springSecurityService.principal.id), contextOrg, packageInstance)
-        def preCon = taskService.getPreconditions(contextOrg)
+        def preCon = taskService.getPreconditionsWithoutTargets(contextOrg)
         result << preCon
 
         result.contextOrg = contextOrg

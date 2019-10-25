@@ -32,7 +32,7 @@ class TaskController extends AbstractDebugController {
 	@Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_EDITOR") })
     def create() {
         def contextOrg  = contextService.getOrg()
-		def result      = taskService.getPreconditions(contextOrg)
+//		def result      = taskService.getPreconditions(contextOrg)
 
 		def sdf = new java.text.SimpleDateFormat(message(code:'default.date.format.notime', default:'yyyy-MM-dd'))
 
@@ -87,6 +87,17 @@ class TaskController extends AbstractDebugController {
 				break
 		}
     }
+	@DebugAnnotation(test='hasAffiliation("INST_EDITOR")')
+	@Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_EDITOR") })
+    def _modal_create() {
+        def contextOrg  = contextService.getOrg()
+		def result      = taskService.getPreconditions(contextOrg)
+		result.validSubscriptionsList = new ArrayList()
+		result.validSubscriptions.each{
+			result.validSubscriptionsList.add([it.id, it.dropdownNamingConvention(contextService.org)])
+		}
+		render template:"../templates/tasks/modal_create", model: result
+    }
 
     @Secured(['ROLE_ADMIN'])
     def show() {
@@ -105,7 +116,7 @@ class TaskController extends AbstractDebugController {
 	@Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_EDITOR") })
     def edit() {
         def contextOrg = contextService.getOrg()
-        def result     = taskService.getPreconditions(contextOrg)
+        def result     = taskService.getPreconditionsWithoutTargets(contextOrg)
 
 		def sdf = new java.text.SimpleDateFormat(message(code:'default.date.format.notime', default:'yyyy-MM-dd'))
 
@@ -184,7 +195,7 @@ class TaskController extends AbstractDebugController {
 	@Secured(['permitAll']) // TODO
 	def ajaxEdit() {
 		def contextOrg = contextService.getOrg()
-		def result     = taskService.getPreconditions(contextOrg)
+		def result     = taskService.getPreconditionsWithoutTargets(contextOrg)
 		result.params = params
 		result.taskInstance = Task.get(params.id)
 

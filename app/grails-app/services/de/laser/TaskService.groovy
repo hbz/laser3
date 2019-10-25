@@ -2,8 +2,12 @@ package de.laser
 
 import com.k_int.kbplus.*
 import com.k_int.kbplus.auth.User
+import com.k_int.kbplus.OrgRole
 import de.laser.helper.RDStore
+import de.laser.interfaces.TemplateSupport
 import grails.transaction.Transactional
+import org.springframework.context.i18n.LocaleContextHolder
+
 import static com.k_int.kbplus.MyInstitutionController.INSTITUTIONAL_LICENSES_QUERY
 import static com.k_int.kbplus.MyInstitutionController.INSTITUTIONAL_SUBSCRIPTION_QUERY
 
@@ -14,6 +18,8 @@ class TaskService {
 
     def springSecurityService
     def accessService
+    def filterService
+    def messageSource
 
     def getTasksByCreator(User user, Map queryMap, flag) {
         def tasks = []
@@ -192,23 +198,80 @@ class TaskService {
     }
 
     def getPreconditions(Org contextOrg) {
+        long start = System.currentTimeMillis()
         def result = [:]
-        def responsibleUsersQuery   = "select u from User as u where exists (select uo from UserOrg as uo where uo.user = u and uo.org = ? and (uo.status=1 or uo.status=3))"
+        def responsibleUsersQuery   = "select u from User as u where exists (select uo from UserOrg as uo where uo.user = u and uo.org = ? and (uo.status=1 or uo.status=3)) order by lower(u.display)"
         def validResponsibleOrgs    = contextOrg ? [contextOrg] : []
         def validResponsibleUsers   = contextOrg ? User.executeQuery(responsibleUsersQuery, [contextOrg]) : []
 
-        //TODO: MAX und OFFSET anders festlegen
-        Map maxOffset = [max: 1000, offset: 0]
         if (contextOrg) {
+            boolean isInstitution = (RDStore.OT_INSTITUTION == contextOrg.getCustomerType())
+                // Anbieter und Lieferanten
+            def params       = [:]
+            params.sort      = isInstitution ? " LOWER(o.name), LOWER(o.shortname)" : " LOWER(o.sortname), LOWER(o.name)"
+            def fsq          = filterService.getOrgQuery(params)
+            result.validOrgsDropdown = Org.executeQuery('select o.id, o.name, o.shortname, o.sortname from Org o where (o.status is null or o.status != :orgStatus) order by  LOWER(o.sortname), LOWER(o.name) asc', fsq.queryParams)
+
+            String comboQuery = 'select o.id, o.name, o.shortname, o.sortname, c.id from Org o, Combo c join org o on c.fromOrg = o.org_id where c.toOrg = :toOrg and c.type = :type order by '+params.sort
+            if (contextOrg.orgType == RDStore.OT_CONSORTIUM){
+                result.validOrgsDropdown << Combo.executeQuery(comboQuery,
+                        [toOrg: contextOrg,
+                        type:  RDStore.COMBO_TYPE_CONSORTIUM])
+//                result.validOrgs.unique().sort{it.sortname.toLowerCase() + it.name}
+            } else if (contextOrg.orgType == RDStore.OT_INSTITUTION){
+                result.validOrgsDropdown << Combo.executeQuery(comboQuery,
+                        [toOrg: contextOrg,
+                        type:  RDStore.COMBO_TYPE_DEPARTMENT])
+//                result.validOrgs.unique().sort{it.name.toLowerCase() + it.shortname}
+            }
+
+            def qry_params_for_sub = [
+                'roleTypes' : [
+                        RDStore.OR_SUBSCRIBER,
+                        RDStore.OR_SUBSCRIBER_CONS,
+                        RDStore.OR_SUBSCRIPTION_CONSORTIA,
+                        RDStore.OR_SUBSCRIPTION_COLLECTIVE
+                ],
+                'activeInst': contextOrg
+            ]
+            String i10value = LocaleContextHolder.getLocale().getLanguage()== Locale.GERMAN.getLanguage() ? 'valueDe' : 'valueEn'
+
+            result.validSubscriptionDropdown = Subscription.executeQuery("select s.id, s.name, s.startDate, s.endDate, i10."+i10value+", s.instanceOf from Subscription s,  I10nTranslation i10 where s.status.id = i10.referenceId and ( ( exists ( select o from s.orgRelations as o where ( o.roleType IN (:roleTypes) AND o.org = :activeInst ) ) ) )  and i10.referenceField=:referenceField order by lower(s.name), s.endDate", qry_params_for_sub << [referenceField: 'value'])
+
+        }
+
+        result.validPackages        = Package.findAll("from Package p where p.name != '' and p.name != null order by lower(p.sortName) asc") // TODO
+
+        result.taskCreator          = springSecurityService.getCurrentUser()
+        result.validResponsibleOrgs = validResponsibleOrgs
+        result.validResponsibleUsers = validResponsibleUsers
+        result.validLicensesDropdown = getLicensesDropdown(contextOrg)
+        long ende = System.currentTimeMillis()
+        long dauer = ende-start
+        print "Dauer in Millis: " + dauer
+        result
+    }
+
+    private def getLicensesDropdown(Org contextOrg) {
+        List validLicensesOhneInstanceOf = []
+        List validLicensesMitInstanceOf = []
+        List validLicensesDropdown = []
+
+        if (contextOrg) {
+            String licensesQueryMitInstanceOf = 'SELECT lic.id, lic.reference, lic.status, lic.startDate, lic.endDate, o.roleType, licinstanceof.type from License lic left join lic.orgLinks o left join lic.instanceOf licinstanceof WHERE  o.org = :lic_org AND o.roleType.id IN (:org_roles) and lic.instanceOf is not null order by lic.sortableReference asc'
+
+            String licensesQueryOhneInstanceOf = 'SELECT lic.id, lic.reference, lic.status, lic.startDate, lic.endDate, o.roleType from License lic left join lic.orgLinks o WHERE  o.org = :lic_org AND o.roleType.id IN (:org_roles) and lic.instanceOf is null order by lic.sortableReference asc'
+
             if(accessService.checkPerm("ORG_CONSORTIUM") || accessService.checkPerm("ORG_CONSORTIUM_SURVEY")){
                 def qry_params_for_lic = [
                     lic_org:    contextOrg,
                     org_roles:  [
-                            RDStore.OR_LICENSEE,
-                            RDStore.OR_LICENSING_CONSORTIUM
+                            RDStore.OR_LICENSEE?.id,
+                            RDStore.OR_LICENSING_CONSORTIUM?.id
                     ]
                 ]
-                result.validLicenses = License.executeQuery('select l ' + INSTITUTIONAL_LICENSES_QUERY +' order by l.sortableReference asc', qry_params_for_lic, maxOffset)
+                validLicensesOhneInstanceOf = License.executeQuery(licensesQueryOhneInstanceOf, qry_params_for_lic)
+                validLicensesMitInstanceOf = License.executeQuery(licensesQueryMitInstanceOf, qry_params_for_lic)
 
             } else if (accessService.checkPerm("ORG_INST")) {
                 def qry_params_for_lic = [
@@ -219,34 +282,42 @@ class TaskService {
                             RDStore.OR_LICENSEE_COLL
                     ]
                 ]
-                result.validLicenses = License.executeQuery('select l ' + INSTITUTIONAL_LICENSES_QUERY +' order by l.sortableReference asc', qry_params_for_lic, maxOffset)
+                validLicensesOhneInstanceOf = License.executeQuery(licensesQueryOhneInstanceOf, qry_params_for_lic)
+                validLicensesMitInstanceOf = License.executeQuery(licensesQueryMitInstanceOf, qry_params_for_lic)
 
             } else {
-                result.validLicenses = []
+                validLicensesOhneInstanceOf = []
+                validLicensesMitInstanceOf = []
             }
-            def qry_params_for_sub = [
-                'roleTypes' : [
-                        RDStore.OR_SUBSCRIBER,
-                        RDStore.OR_SUBSCRIBER_CONS,
-                        RDStore.OR_SUBSCRIPTION_CONSORTIA,
-                        RDStore.OR_SUBSCRIPTION_COLLECTIVE
-                ],
-                'activeInst': contextOrg
-            ]
-            result.validSubscriptions = Subscription.executeQuery("select s " + INSTITUTIONAL_SUBSCRIPTION_QUERY + ' order by s.name asc', qry_params_for_sub,  maxOffset)
-        }
-        else { // TODO: admin and datamanager without contextOrg possible ?
-            result.validLicenses = License.list()
-            result.validSubscriptions = Subscription.list()
         }
 
-        result.validOrgs            = Org.list() // TODO
-        result.validPackages        = Package.findAll("from Package p where p.name != '' and p.name != null order by p.sortName asc") // TODO
+        String member = ' - ' +messageSource.getMessage('license.member', null, LocaleContextHolder.getLocale())
+        validLicensesDropdown = validLicensesMitInstanceOf?.collect{
 
+            def optionKey = it[0]
+            String optionValue = it[1] + ' ' + (it[2].getI10n('value')) + ' (' + (it[3] ? it[3]?.format('dd.MM.yy') : '') + ('-') + (it[4] ? it[4]?.format('dd.MM.yy') : '') + ')'
+            boolean isLicensingConsortium = 'Licensing Consortium' == it[5]?.value
+            boolean hasTemplate2 = (it[6] != null) && (it[6] == RDStore.LICENSE_TYPE_TEMPLATE)
+            if (isLicensingConsortium && ! hasTemplate2) {
+                optionValue += member
+            }
+            return [optionKey: optionKey, optionValue: optionValue]
+        }
+        validLicensesOhneInstanceOf?.collect{
+
+            def optionKey = it[0]
+            String optionValue = it[1] + ' ' + (it[2].getI10n('value')) + ' (' + (it[3] ? it[3]?.format('dd.MM.yy') : '') + ('-') + (it[4] ? it[4]?.format('dd.MM.yy') : '') + ')'
+            validLicensesDropdown << [optionKey: optionKey, optionValue: optionValue]
+        }
+        validLicensesDropdown.sort{it.optionValue.toLowerCase()}
+    }
+
+    def getPreconditionsWithoutTargets(Org contextOrg) {
+        def result = [:]
+        def responsibleUsersQuery   = "select u from User as u where exists (select uo from UserOrg as uo where uo.user = u and uo.org = ? and (uo.status=1 or uo.status=3)) order by lower(u.display)"
+        def validResponsibleUsers   = contextOrg ? User.executeQuery(responsibleUsersQuery, [contextOrg]) : []
         result.taskCreator          = springSecurityService.getCurrentUser()
-        result.validResponsibleOrgs = validResponsibleOrgs
         result.validResponsibleUsers = validResponsibleUsers
-
         result
     }
 }

@@ -565,6 +565,9 @@ ${orgInstance.name} - ${message(code:'profile.errorOverview.label')}</h1>
                                             <g:message code="org.createdBy.label" default="createdBy"/>
                                         </dt>
                                         <dd>
+                                            <h5 class="ui header">
+                                                <g:link controller="organisation" action="show" id="${createdByOrg.id}">${createdByOrg.name}</g:link>
+                                            </h5>
                                             <g:each in="${createdByOrgGeneralContacts}" var="cbogc">
                                                 <g:render template="/templates/cpa/person_full_details" model="${[
                                                         person              : cbogc,
@@ -585,6 +588,9 @@ ${orgInstance.name} - ${message(code:'profile.errorOverview.label')}</h1>
                                             <g:message code="org.legallyObligedBy.label" default="legallyObligedBy"/>
                                         </dt>
                                         <dd>
+                                            <h5 class="ui header">
+                                                <g:link controller="organisation" action="show" id="${legallyObligedByOrg.id}">${legallyObligedByOrg.name}</g:link>
+                                            </h5>
                                             <g:each in="${legallyObligedByOrgGeneralContacts}" var="lobogc">
                                                 <g:render template="/templates/cpa/person_full_details" model="${[
                                                         person              : lobogc,

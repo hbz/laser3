@@ -10,8 +10,8 @@ grails.project.groupId  = appName // change this to alter the default package na
 grails.config.locations = ["file:${userHome}/.grails/${appName}-config.groovy"]
 
 laserSystemId = 'local'
-documentStorageLocation = '/tmp/laser'
-dbBackupLocation = documentStorageLocation + '/laserDatabaseBackups'
+documentStorageLocation = '/tmp/laser' // for uploaded documents
+deployBackupLocation = documentStorageLocation + '/laserDeployBackups' // for database backups in context of deploys
 
 featureSurvey = false
 
@@ -60,16 +60,6 @@ getCurrentServer = {
             break
     }
 }
-
-customProperties =[
-    "org":[
-        "journalAccess":[
-            "name"  : "Public Journal Access",
-            "class" : String.toString(),
-            "note"  : "Set the required rights for accessing the public Journals page. For example 'Staff,Student,Public' or leave empty/delete for no public access."
-        ]
-    ]
-]
 
 onix = [
   "codelist" : "ONIX_PublicationsLicense_CodeLists.xsd",

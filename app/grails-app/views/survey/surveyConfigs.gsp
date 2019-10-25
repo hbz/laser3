@@ -119,7 +119,7 @@
                         <td class="center aligned">
                             <g:link controller="survey" action="surveyParticipants" id="${surveyInfo.id}"
                                     params="[surveyConfigID: config?.id]" class="ui icon">
-                                <div class="ui circular ${participantsFinish == participantsTotal ? "green" : config?.configFinish ? "yellow" : ""} label">
+                                <div class="ui circular ${participantsFinish?.size() == participantsTotal?.size() ? "green" : config?.configFinish ? "yellow" : ""} label">
                                     ${participantsFinish?.participant?.flatten()?.unique { a, b -> a.id <=> b.id }?.size()}/${config?.orgs?.org?.flatten()?.unique { a, b -> a.id <=> b.id }?.size()}
                                 </div>
                             </g:link>

@@ -1152,7 +1152,7 @@ class SubscriptionController extends AbstractDebugController {
 
         result.subscriptionInstance =  result.surveyConfig?.subscription
 
-        result.ies = subscriptionService.getIssueEntitlementsNotFixed(result.surveyConfig.subscription?.getDerivedSubscriptionBySubscribers(result.institution))
+        result.ies = subscriptionService.getCurrentIssueEntitlements(result.surveyConfig.subscription?.getDerivedSubscriptionBySubscribers(result.institution))
 
         def filename = "renewEntitlements_${escapeService.escapeString(result.subscriptionInstance.dropdownNamingConvention())}"
 
@@ -1178,10 +1178,12 @@ class SubscriptionController extends AbstractDebugController {
                     g.message(code:'identifier.label'),
                     g.message(code:'title.dateFirstInPrint.label'),
                     g.message(code:'title.dateFirstOnline.label'),
+                    g.message(code:'default.status.label'),
                     g.message(code:'tipp.price')
+
             ]
             List rows = []
-            result.ies.each { ie ->
+            result.ies?.each { ie ->
                 List row = []
                 row.add([field: ie?.tipp?.title?.title ?: '', style:null])
                 row.add([field: ie?.tipp?.title?.volume ?: '', style:null])
@@ -1198,8 +1200,11 @@ class SubscriptionController extends AbstractDebugController {
                 row.add([field: ie?.tipp?.title?.dateFirstInPrint ? g.formatDate(date: ie?.tipp?.title?.dateFirstInPrint, format: message(code: 'default.date.format.notime')): '', style:null])
                 row.add([field: ie?.tipp?.title?.dateFirstOnline ? g.formatDate(date: ie?.tipp?.title?.dateFirstOnline, format: message(code: 'default.date.format.notime')): '', style:null])
 
+                row.add([field: ie?.acceptStatus?.getI10n('value') ?: '', style:null])
+
                 row.add([field: ie.priceItem?.listPrice ? g.formatNumber(number: ie?.priceItem?.listPrice, type: 'currency', currencySymbol: ie?.priceItem?.listCurrency, currencyCode: ie?.priceItem?.listCurrency) : '', style:null])
                 row.add([field: ie.priceItem?.localPrice ? g.formatNumber(number: ie?.priceItem?.localPrice, type: 'currency', currencySymbol: ie?.priceItem?.localCurrency, currencyCode: ie?.priceItem?.localCurrency) : '', style:null])
+
 
                 rows.add(row)
             }
@@ -3545,7 +3550,7 @@ class SubscriptionController extends AbstractDebugController {
 
             def contextOrg = contextService.getOrg()
             result.tasks = taskService.getTasksByResponsiblesAndObject(result.user, contextOrg, result.subscriptionInstance)
-            def preCon = taskService.getPreconditions(contextOrg)
+            def preCon = taskService.getPreconditionsWithoutTargets(contextOrg)
             result << preCon
 
             // restrict visible for templates/links/orgLinksAsList
@@ -3613,14 +3618,15 @@ class SubscriptionController extends AbstractDebugController {
         //def task_usage = task {
 
             // usage
-            def suppliers = result.subscriptionInstance.issueEntitlements?.tipp.pkg.contentProvider?.id.unique()
+            def suppliers = result.subscriptionInstance.issueEntitlements?.tipp.platform?.id.unique()
 
             if (suppliers) {
                 if (suppliers.size() > 1) {
-                    log.debug('Found different content providers, cannot show usage')
+                    log.debug('Found different content platforms for this subscription, cannot show usage')
                 } else {
                     def supplier_id = suppliers[0]
-                    result.natStatSupplierId = Org.get(supplier_id).getIdentifierByType('statssid')?.value
+                    def platform = PlatformCustomProperty.findByOwnerAndType(Platform.get(supplier_id), PropertyDefinition.findByName('NatStat Supplier ID'))
+                    result.natStatSupplierId = platform?.stringValue ?: null
                     result.institutional_usage_identifier = OrgSettings.get(result.institution, OrgSettings.KEYS.NATSTAT_SERVER_REQUESTOR_ID)
                     if (result.institutional_usage_identifier) {
 
@@ -4766,7 +4772,7 @@ class SubscriptionController extends AbstractDebugController {
         // tasks
         def contextOrg = contextService.getOrg()
         result.tasks = taskService.getTasksByResponsiblesAndObject(result.user, contextOrg, result.subscriptionInstance)
-        def preCon = taskService.getPreconditions(contextOrg)
+        def preCon = taskService.getPreconditionsWithoutTargets(contextOrg)
         result << preCon
 
 

@@ -189,7 +189,7 @@ class SemanticUiTagLib {
             out << '</a>'
 
             out << '<div id="systemInfo" class="ui modal">'
-            out << '<h4 class="ui red header"> <i class="bug icon"></i> SYSTEM-INFORMATION</h4>'
+            out << '<h4 class="ui red header"> <i class="red fire extinguisher icon"></i> SYSTEM-INFORMATION</h4>'
             out << '<div class="scrolling content">'
             out << '<div class="ui list">'
             systemChecks.each {systemCheck ->
@@ -663,7 +663,7 @@ class SemanticUiTagLib {
         def id = attrs.id ? "${message(code: attrs.id)}" : ''
         def placeholder = attrs.placeholder ? "${message(code: attrs.placeholder)}" : 'Date'
 
-        def sdf = new java.text.SimpleDateFormat(message(code: 'default.date.format.notime', default: 'yyyy-MM-dd'))
+        def sdf = new java.text.SimpleDateFormat(message(code: 'default.date.format.notime'))
         def value = ''
         try {
             value = attrs.value ? sdf.format(attrs.value) : value

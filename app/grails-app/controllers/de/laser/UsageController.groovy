@@ -3,6 +3,7 @@ package de.laser
 import com.k_int.kbplus.Fact
 import com.k_int.kbplus.Org
 import com.k_int.kbplus.OrgCustomProperty
+import com.k_int.kbplus.Platform
 import com.k_int.kbplus.Subscription
 import com.k_int.kbplus.auth.User
 import com.k_int.properties.PropertyDefinition
@@ -105,14 +106,16 @@ class UsageController extends AbstractDebugController {
         result.institution = contextService.getOrg()
         result.institutionList = factService.institutionsWithRequestorIDAndAPIKey()
         result.user = User.get(springSecurityService.principal.id)
-        def providersWithStatssid = factService.providersWithStatssid()
+
+        def platformsWithNatstatId = factService.platformsWithNatstatId()
+
         def providerList = []
         if (!result.institutionList.isEmpty()) {
             def joinedInstitutions = result.institutionList.id.join(',')
-            providersWithStatssid.each {
+            platformsWithNatstatId.each {
                 def hql = "select s.id from Subscription s join s.orgRelations as institution " +
-                    "where institution.org.id in (${joinedInstitutions}) and exists (select 1 from IssueEntitlement as ie INNER JOIN ie.tipp.pkg.orgs as orgrel where ie.subscription=s and orgrel.org.id=:supplierId)"
-                def subsWithIssueEntitlements = Subscription.executeQuery(hql, [supplierId: it.id])
+                    "where institution.org.id in (${joinedInstitutions}) and exists (select 1 from IssueEntitlement as ie INNER JOIN ie.tipp.platform  as platform where ie.subscription=s and platform.id=:platform_id)"
+                def subsWithIssueEntitlements = Subscription.executeQuery(hql, [platform_id: it.id])
                 def listItem = [:]
                 listItem.id = it.id
                 listItem.name = it.name
@@ -186,12 +189,14 @@ class UsageController extends AbstractDebugController {
     {
         statsSyncService.setErrors([])
         def result = initResult()
-        def wibid, supplier, supplierOrg, instOrg
+        def wibid, supplier, platform, instOrg
 
         if (params.supplier != 'null'){
-            supplierOrg = Org.get(params.supplier)
-            supplier = supplierOrg?.getIdentifierByType('statssid')?.value
-
+            platform = Platform.get(params.supplier)
+            def cp = platform.customProperties.find(){
+                it.type.name = "NatStat Supplier ID"
+            }
+            supplier = cp.stringValue
         }
         if (params.institution != 'null'){
             instOrg = Org.get(params.institution)
@@ -205,7 +210,7 @@ class UsageController extends AbstractDebugController {
         if (supplier) {
             factAndWhereCondition += " and t1.supplier = :supplier_id"
             cursorAndWhereCondition += " and t1.supplierId =:supplierName"
-            factParams.supplier_id = supplierOrg
+            factParams.supplier_id = platform
             cursorParams.supplierName = supplier
         }
         if (wibid) {

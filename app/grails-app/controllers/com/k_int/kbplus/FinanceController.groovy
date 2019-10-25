@@ -185,7 +185,7 @@ class FinanceController extends AbstractDebugController {
         // I need the consortial data as well ...
         def orgRoleCons = accessService.checkPerm('ORG_INST_COLLECTIVE,ORG_CONSORTIUM')
         def orgRoleSubscr = OrgRole.findByRoleTypeInList([RDStore.OR_SUBSCRIBER_CONS,RDStore.OR_SUBSCRIBER_COLLECTIVE])
-        Map financialData = result.subscription ? financeService.getCostItemsForSubscription(result.subscription,params,Long.MAX_VALUE,0) : financeService.getCostItems(params,Long.MAX_VALUE)
+        Map financialData = result.subscription ? financeService.getCostItemsForSubscription(result.subscription,params,Integer.MAX_VALUE,0) : financeService.getCostItems(params,Long.MAX_VALUE)
         result.cost_item_tabs = [:]
         if(accessService.checkPerm('ORG_INST,ORG_CONSORTIUM')) {
             result.cost_item_tabs["own"] = financialData.own

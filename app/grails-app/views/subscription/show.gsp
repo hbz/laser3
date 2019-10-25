@@ -84,11 +84,14 @@
                                 <dd><semui:xEditable owner="${subscriptionInstance}" field="manualCancellationDate" type="date"/></dd>
                                 <dd class="la-js-editmode-container"><semui:auditButton auditable="[subscriptionInstance, 'manualCancellationDate']" /></dd>
                             </dl>
-                            <dl>
-                                <dt class="control-label">${message(code: 'subscription.isMultiYear.label')}</dt>
-                                <dd><semui:xEditableBoolean owner="${subscriptionInstance}" field="isMultiYear" /></dd>
-                                <dd class="la-js-editmode-container"><semui:auditButton auditable="[subscriptionInstance, 'isMultiYear']"/></dd>
-                            </dl>
+
+                            <g:if test="${subscriptionInstance.type == de.laser.helper.RDStore.SUBSCRIPTION_TYPE_CONSORTIAL && subscriptionInstance.getCalculatedType() == de.laser.interfaces.TemplateSupport.CALCULATED_TYPE_PARTICIPATION}">
+                                <dl>
+                                    <dt class="control-label">${message(code: 'subscription.isMultiYear.label')}</dt>
+                                    <dd><semui:xEditableBoolean owner="${subscriptionInstance}" field="isMultiYear" /></dd>
+                                    <dd class="la-js-editmode-container"><semui:auditButton auditable="[subscriptionInstance, 'isMultiYear']"/></dd>
+                                </dl>
+                            </g:if>
 
                         </div>
                     </div>

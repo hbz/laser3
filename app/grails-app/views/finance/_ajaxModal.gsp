@@ -670,20 +670,26 @@
                 //console.log("input: "+input+", typeof: "+typeof(input));
                 var output;
                 //determine locale from server
-                var locale = "${LocaleContextHolder.getLocale()}";
+                var userLang = "${contextService.user.getSettingsValue(UserSettings.KEYS.LANGUAGE,null)}";
+                //console.log(userLang);
                 if(typeof(input) === 'number') {
                     output = input.toFixed(2);
-                    if(locale.indexOf("de") > -1)
+                    if(userLang !== 'en')
                         output = output.replace(".",",");
                 }
                 else if(typeof(input) === 'string') {
                     output = 0.0;
-                    if(input.match(/(\d{1-3}\.?)*\d+(,\d{2})?/g))
-                        output = parseFloat(input.replace(/\./g,"").replace(/,/g,"."));
-                    else if(input.match(/(\d{1-3},?)*\d+(\.\d{2})?/g)) {
-                        output = parseFloat(input.replace(/,/g, ""));
+                    if(userLang === 'en') {
+                        output = parseFloat(input);
                     }
-                    else console.log("Please check over regex!");
+                    else {
+                        if(input.match(/(\d{1-3}\.?)*\d+(,\d{2})?/g))
+                            output = parseFloat(input.replace(/\./g,"").replace(/,/g,"."));
+                        else if(input.match(/(\d{1-3},?)*\d+(\.\d{2})?/g)) {
+                            output = parseFloat(input.replace(/,/g, ""));
+                        }
+                        else console.log("Please check over regex!");
+                    }
                     //console.log("string input parsed, output is: "+output);
                 }
                 return output;

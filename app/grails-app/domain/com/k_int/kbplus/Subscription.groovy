@@ -12,6 +12,7 @@ import de.laser.interfaces.*
 import de.laser.traits.AuditableTrait
 import de.laser.traits.ShareableTrait
 import grails.util.Holders
+import org.apache.lucene.index.DocIDMerger
 import org.springframework.context.i18n.LocaleContextHolder
 import org.springframework.dao.TransientDataAccessResourceException
 
@@ -779,15 +780,15 @@ class Subscription
       result.join(',')
   }
 
-  def hasOrgWithUsageSupplierId() {
+  def hasPlatformWithUsageSupplierId() {
       def hasUsageSupplier = false
       packages.each { it ->
-          def hql = "select count(orole.id) from OrgRole as orole "+
-                  "join orole.pkg as pa "+
-                  "join orole.roleType as roletype "+
-                  "where pa.id = :package_id and roletype.value='Content Provider' "+
-                  "and exists (select oid from orole.org.ids as oid where oid.identifier.ns.ns='statssid')"
-          def queryResult = OrgRole.executeQuery(hql, ['package_id':it.pkg.id])
+          def hql="select count(distinct sp) from SubscriptionPackage sp "+
+              "join sp.subscription.orgRelations as or "+
+              "join sp.pkg.tipps as tipps "+
+              "where sp.id=:sp_id "
+              "and exists (select 1 from CustomProperties as cp where cp.owner = tipps.platform.id and cp.type.name = 'NatStat Supplier ID')"
+          def queryResult = OrgRole.executeQuery(hql, ['sp_id':it.id])
           if (queryResult[0] > 0){
               hasUsageSupplier = true
           }

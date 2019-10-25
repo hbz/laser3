@@ -1,5 +1,6 @@
 <%@ page import="com.k_int.kbplus.RefdataCategory;com.k_int.kbplus.SurveyProperty;com.k_int.kbplus.SurveyConfig;com.k_int.kbplus.RefdataValue" %>
 <laser:serviceInjection/>
+<g:set var="subscriptionService" bean="subscriptionService"/>
 
 <!doctype html>
 <html>
@@ -56,8 +57,14 @@
 
                 <h2 class="ui left aligned icon header"><g:message code="surveyEvaluation.participants"/><semui:totalNumber
                         total="${participantsFinish?.size()}"/></h2>
+                <g:if test="${surveyInfo && surveyInfo.status?.id == de.laser.helper.RDStore.SURVEY_IN_EVALUATION?.id}">
+                                <g:link controller="survey" action="completeIssueEntitlementsSurvey" id="${surveyConfig?.id}"
+                                        class="ui icon button right floated">
+                                    <g:message code="completeIssueEntitlementsSurvey.forFinishParticipant.label"/>
+                                </g:link>
+                </g:if>
                 <br>
-
+                <br>
                 <semui:form>
 
                     <h4><g:message code="surveyParticipants.hasAccess"/></h4>
@@ -94,6 +101,9 @@
                                 ${message(code: 'surveyInfo.finishedDate')}
                             </th>
                             <th>
+                                ${message(code: 'surveyTitlesEvaluation.currentAndFixedEntitlements')}
+                            </th>
+                            <th>
                                 ${message(code: 'default.actions')}
                             </th>
                             <th></th>
@@ -117,6 +127,13 @@
                                 </td>
                                 <td>
                                     <semui:surveyFinishDate participant="${participant}" surveyConfig="${surveyConfig}"/>
+                                </td>
+                                <td class="center aligned">
+                                    <g:set var="subParticipant" value="${surveyConfig.subscription?.getDerivedSubscriptionBySubscribers(participant)}"/>
+                                    <div class="ui circular label">
+                                    ${subscriptionService.getIssueEntitlementsFixed(subParticipant)?.size()?:0 } / ${subscriptionService.getIssueEntitlementsNotFixed(subParticipant)?.size()?:0 }
+                                    </div>
+
                                 </td>
                                 <td>
 
@@ -164,6 +181,9 @@
                             <th>
                                 ${message(code: 'surveyInfo.finishedDate')}
                             </th>
+                            <th>
+                                ${message(code: 'surveyTitlesEvaluation.currentAndFixedEntitlements')}
+                            </th>
                             <th> ${message(code: 'default.actions')}</th>
                         </tr>
                         </thead>
@@ -185,6 +205,12 @@
                                 </td>
                                 <td>
                                     <semui:surveyFinishDate participant="${participant}" surveyConfig="${surveyConfig}"/>
+                                </td>
+                                <td class="center aligned">
+                                    <g:set var="subParticipant" value="${surveyConfig.subscription?.getDerivedSubscriptionBySubscribers(participant)}"/>
+                                    <div class="ui circular label">
+                                        ${subscriptionService.getIssueEntitlementsFixed(subParticipant)?.size()?:0 } / ${subscriptionService.getIssueEntitlementsNotFixed(subParticipant)?.size()?:0 }
+                                    </div>
                                 </td>
                                 <td>
 
@@ -247,6 +273,9 @@
                             ${message(code: 'surveyInfo.finishedDate')}
                         </th>
                         <th>
+                            ${message(code: 'surveyTitlesEvaluation.currentAndFixedEntitlements')}
+                        </th>
+                        <th>
                             ${message(code: 'default.actions')}
                         </th>
                         <th></th>
@@ -270,6 +299,12 @@
                             </td>
                             <td>
                                 <semui:surveyFinishDate participant="${participant}" surveyConfig="${surveyConfig}"/>
+                            </td>
+                            <td class="center aligned">
+                                <g:set var="subParticipant" value="${surveyConfig.subscription?.getDerivedSubscriptionBySubscribers(participant)}"/>
+                                <div class="ui circular label">
+                                    ${subscriptionService.getIssueEntitlementsFixed(subParticipant)?.size()?:0 } / ${subscriptionService.getIssueEntitlementsNotFixed(subParticipant)?.size()?:0 }
+                                </div>
                             </td>
                             <td>
 
@@ -317,6 +352,9 @@
                         <th>
                             ${message(code: 'surveyInfo.finishedDate')}
                         </th>
+                        <th>
+                            ${message(code: 'surveyTitlesEvaluation.currentAndFixedEntitlements')}
+                        </th>
                         <th> ${message(code: 'default.actions')}</th>
                     </tr>
                     </thead>
@@ -338,6 +376,12 @@
                             </td>
                             <td>
                                 <semui:surveyFinishDate participant="${participant}" surveyConfig="${surveyConfig}"/>
+                            </td>
+                            <td class="center aligned">
+                                <g:set var="subParticipant" value="${surveyConfig.subscription?.getDerivedSubscriptionBySubscribers(participant)}"/>
+                                <div class="ui circular label">
+                                    ${subscriptionService.getIssueEntitlementsFixed(subParticipant)?.size()?:0 } / ${subscriptionService.getIssueEntitlementsNotFixed(subParticipant)?.size()?:0 }
+                                </div>
                             </td>
                             <td>
 
@@ -400,6 +444,9 @@
                             ${message(code: 'surveyInfo.finishedDate')}
                         </th>
                         <th>
+                            ${message(code: 'surveyTitlesEvaluation.currentAndFixedEntitlements')}
+                        </th>
+                        <th>
                             ${message(code: 'default.actions')}
                         </th>
                         <th></th>
@@ -423,6 +470,12 @@
                             </td>
                             <td>
                                 <semui:surveyFinishDate participant="${participant}" surveyConfig="${surveyConfig}"/>
+                            </td>
+                            <td class="center aligned">
+                                <g:set var="subParticipant" value="${surveyConfig.subscription?.getDerivedSubscriptionBySubscribers(participant)}"/>
+                                <div class="ui circular label">
+                                    ${subscriptionService.getIssueEntitlementsFixed(subParticipant)?.size()?:0 } / ${subscriptionService.getIssueEntitlementsNotFixed(subParticipant)?.size()?:0 }
+                                </div>
                             </td>
                             <td>
 
@@ -470,6 +523,9 @@
                         <th>
                             ${message(code: 'surveyInfo.finishedDate')}
                         </th>
+                        <th>
+                            ${message(code: 'surveyTitlesEvaluation.currentAndFixedEntitlements')}
+                        </th>
                         <th> ${message(code: 'default.actions')}</th>
                     </tr>
                     </thead>
@@ -491,6 +547,12 @@
                             </td>
                             <td>
                                 <semui:surveyFinishDate participant="${participant}" surveyConfig="${surveyConfig}"/>
+                            </td>
+                            <td class="center aligned">
+                                <g:set var="subParticipant" value="${surveyConfig.subscription?.getDerivedSubscriptionBySubscribers(participant)}"/>
+                                <div class="ui circular label">
+                                    ${subscriptionService.getIssueEntitlementsFixed(subParticipant)?.size()?:0 } / ${subscriptionService.getIssueEntitlementsNotFixed(subParticipant)?.size()?:0 }
+                                </div>
                             </td>
                             <td>
 

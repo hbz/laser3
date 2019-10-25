@@ -13,6 +13,7 @@ import de.laser.helper.*
 import grails.converters.JSON
 import grails.plugin.springsecurity.SpringSecurityUtils
 import grails.plugin.springsecurity.annotation.Secured
+import grails.util.Holders
 import groovy.sql.Sql
 import org.apache.commons.collections.BidiMap
 import org.apache.commons.collections.bidimap.DualHashBidiMap
@@ -76,15 +77,6 @@ class MyInstitutionController extends AbstractDebugController {
     // Map the parameter names we use in the webapp with the ES fields
     def renewals_reversemap = ['subject': 'subject', 'provider': 'provid', 'pkgname': 'tokname']
     def reversemap = ['subject': 'subject', 'provider': 'provid', 'studyMode': 'presentations.studyMode', 'qualification': 'qual.type', 'level': 'qual.level']
-
-    def possible_date_formats = [
-            new SimpleDateFormat('yyyy/MM/dd'),
-            new SimpleDateFormat('dd.MM.yyyy'),
-            new SimpleDateFormat('dd/MM/yyyy'),
-            new SimpleDateFormat('dd/MM/yy'),
-            new SimpleDateFormat('yyyy/MM'),
-            new SimpleDateFormat('yyyy')
-    ]
 
     @DebugAnnotation(test='hasAffiliation("INST_ADM")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_ADM") })
@@ -191,6 +183,7 @@ class MyInstitutionController extends AbstractDebugController {
         result.user = User.get(springSecurityService.principal.id)
         result.max = params.max ?: result.user.getDefaultPageSizeTMP()
         result.offset = params.offset ?: 0
+        result.contextOrg = contextService.org
 
         def cache = contextService.getCache('MyInstitutionController/currentPlatforms/', contextService.ORG_SCOPE)
 
@@ -710,7 +703,6 @@ from License as l where (
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
     def currentProviders() {
         long timestamp = System.currentTimeMillis()
-
         def result = setResultGenerics()
 
         def cache = contextService.getCache('MyInstitutionController/currentProviders/', contextService.ORG_SCOPE)
@@ -734,8 +726,8 @@ from License as l where (
 
 //        result.user = User.get(springSecurityService.principal.id)
         params.sort = params.sort ?: " LOWER(o.shortname), LOWER(o.name)"
-        result.max  = params.max ? Integer.parseInt(params.max) : result.user?.getDefaultPageSizeTMP()
-        result.offset = params.offset ? Integer.parseInt(params.offset) : 0
+		result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeTMP()
+		result.offset = params.offset ? Integer.parseInt(params.offset) : 0
 
         def fsq  = filterService.getOrgQuery([constraint_orgIds: orgIds] << params)
         result.filterSet = params.filterSet ? true : false
@@ -747,7 +739,7 @@ from License as l where (
         result.orgList = orgListTotal.drop((int) result.offset).take((int) result.max)
 
         def message = g.message(code: 'export.my.currentProviders')
-        SimpleDateFormat sdf = new SimpleDateFormat(g.message(code:'default.date.format.notime', default:'yyyy-MM-dd'))
+        SimpleDateFormat sdf = new SimpleDateFormat(g.message(code:'default.date.format.notime'))
         String datetoday = sdf.format(new Date(System.currentTimeMillis()))
         String filename = message+"_${datetoday}"
 
@@ -863,7 +855,7 @@ from License as l where (
         result.subscriptions = subscriptions.drop((int) result.offset).take((int) result.max)
 
         // Write the output to a file
-        sdf = new SimpleDateFormat(g.message(code: 'default.date.format.notimenopoint'));
+        sdf = new SimpleDateFormat(g.message(code: 'default.date.format.notimenopoint'))
         String datetoday = sdf.format(new Date(System.currentTimeMillis()))
         String filename = "${datetoday}_" + g.message(code: "export.my.currentSubscriptions")
 
@@ -1486,8 +1478,8 @@ from License as l where (
                     render view: 'editLicense', model: [licenseInstance: copyLicense]
                 } else {
                     copyLicense.reference = params.licenseName
-                    copyLicense.startDate = parseDate(params.licenseStartDate,possible_date_formats)
-                    copyLicense.endDate = parseDate(params.licenseEndDate,possible_date_formats)
+                    copyLicense.startDate = escapeService.parseDate(params.licenseStartDate)
+                    copyLicense.endDate = escapeService.parseDate(params.licenseEndDate)
                     copyLicense.status = RefdataValue.get(params.status)
 
                     if (copyLicense.save(flush: true)) {
@@ -2275,9 +2267,8 @@ AND EXISTS (
         def contextOrg  = contextService.getOrg()
         result.tasks    = taskService.getTasksByResponsibles(springSecurityService.getCurrentUser(), contextOrg, query)
         result.tasksCount    = result.tasks.size()
-        def preCon      = taskService.getPreconditions(contextOrg)
         result.enableMyInstFormFields = true // enable special form fields
-        result << preCon
+
 
         /*def announcement_type = RefdataValue.getByValueAndCategory('Announcement', 'Document Type')
         result.recentAnnouncements = Doc.findAllByType(announcement_type, [max: result.max,offset:result.announcementOffset, sort: 'dateCreated', order: 'desc'])
@@ -2308,6 +2299,23 @@ AND EXISTS (
                  endDate: new Date(System.currentTimeMillis())])*/
 
         result
+    }
+    @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
+    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
+    def modal_create() {
+
+        def result = setResultGenerics()
+
+        if (! accessService.checkUserIsMember(result.user, result.institution)) {
+            flash.error = "You do not have permission to access ${result.institution.name} pages. Please request access on the profile page";
+            response.sendError(401)
+            return;
+        }
+
+        def preCon      = taskService.getPreconditions(result.institution)
+        result << preCon
+
+        render template: '/templates/tasks/modal_create', model: result
     }
 
     private getTodoForInst(result, Integer periodInDays){
@@ -2693,6 +2701,14 @@ AND EXISTS (
             result.iesListPriceSum = result.iesListPriceSum + (it?.priceItem ? (it?.priceItem?.listPrice ? it?.priceItem?.listPrice : 0) : 0)
         }
 
+
+        result.iesFix = subscriptionService.getIssueEntitlementsFixed(result.surveyConfig.subscription?.getDerivedSubscriptionBySubscribers(result.institution))
+        result.iesFixListPriceSum = 0
+        result.iesFix?.each{
+            result.iesFixListPriceSum = result.iesFixListPriceSum + (it?.priceItem ? (it?.priceItem?.listPrice ? it?.priceItem?.listPrice : 0) : 0)
+        }
+
+
         result.ownerId = result.surveyConfig.surveyInfo.owner?.id ?: null
 
         result.subscriptionInstance = result.surveyConfig.subscription?.getDerivedSubscriptionBySubscribers(result.institution)
@@ -2738,7 +2754,7 @@ AND EXISTS (
             def surveyOrg = SurveyOrg.findByOrgAndSurveyConfig(result.institution, surveyConfig)
 
             def ies = subscriptionService.getIssueEntitlementsUnderConsideration(surveyConfig.subscription?.getDerivedSubscriptionBySubscribers(result.institution))
-            ies.each { ie ->
+            ies?.each { ie ->
                 ie.acceptStatus = RDStore.IE_ACCEPT_STATUS_UNDER_NEGOTIATION
                 ie.save(flush: true)
             }
@@ -3323,13 +3339,15 @@ AND EXISTS (
                 " join subK.orgRelations roleK join subT.orgRelations roleTK join subT.orgRelations roleT " +
                 " where roleK.org = :org and roleK.roleType = :rdvCons " +
                 " and roleTK.org = :org and roleTK.roleType = :rdvCons " +
-                " and roleT.roleType = :rdvSubscr " +
+                " and ( roleT.roleType = :rdvSubscr or roleT.roleType = :rdvSubscrHidden ) " +
                 " and ( ci is null or ci.owner = :org )"
 
 
         Map qarams = [org      : result.institution,
                       rdvCons  : RDStore.OR_SUBSCRIPTION_CONSORTIA,
-                      rdvSubscr: RDStore.OR_SUBSCRIBER_CONS]
+                      rdvSubscr: RDStore.OR_SUBSCRIBER_CONS,
+                      rdvSubscrHidden: RDStore.OR_SUBSCRIBER_CONS_HIDDEN
+        ]
 
         if (params.member?.size() > 0) {
             query += " and roleT.org.id = :member "
