@@ -72,11 +72,11 @@
         List configShowTable = []
         if(comboType.id == RDStore.COMBO_TYPE_CONSORTIUM.id) {
             configShowFilter = [['name', 'identifier', 'libraryType'], ['federalState', 'libraryNetwork','property']]
-            configShowTable = ['sortname', 'name', 'mainContact', 'numberOfSubscriptions', 'numberOfSurveys', 'libraryType', 'hasInstAdmin']
+            configShowTable = ['sortname', 'name', 'mainContact', 'legalInformation', 'numberOfSubscriptions', 'numberOfSurveys', 'libraryType', 'hasInstAdmin']
         }
         else if(comboType.id == RDStore.COMBO_TYPE_DEPARTMENT.id) {
             configShowFilter = [['name', 'identifier'], ['property']]
-            configShowTable = ['name', 'mainContact', 'numberOfSubscriptions']
+            configShowTable = ['name', 'mainContact', 'legalInformation', 'numberOfSubscriptions']
         }
     %>
     <semui:filter>

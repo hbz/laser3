@@ -99,14 +99,14 @@ class OrganisationController extends AbstractDebugController {
         // collecting visible settings by customer type, role and/or combo
         List<OrgSettings> allSettings = OrgSettings.findAllByOrg(org)
 
-        List<OrgSettings.KEYS> openSet = [
+        List<OrgSettings.KEYS> ownerSet = [
                 OrgSettings.KEYS.API_LEVEL,
                 OrgSettings.KEYS.API_KEY,
                 OrgSettings.KEYS.API_PASSWORD,
                 OrgSettings.KEYS.CUSTOMER_TYPE,
                 OrgSettings.KEYS.GASCO_ENTRY
         ]
-        List<OrgSettings.KEYS> privateSet = [
+        List<OrgSettings.KEYS> accessSet = [
                 OrgSettings.KEYS.OAMONITOR_SERVER_ACCESS,
                 OrgSettings.KEYS.NATSTAT_SERVER_ACCESS
         ]
@@ -115,29 +115,29 @@ class OrganisationController extends AbstractDebugController {
                 OrgSettings.KEYS.NATSTAT_SERVER_REQUESTOR_ID
         ]
 
-        result.settings = allSettings.findAll { it.key in openSet }
+        result.settings = []
 
         if (SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN,ROLE_ORG_EDITOR')) {
-            result.settings.addAll(allSettings.findAll { it.key in privateSet })
+            result.settings.addAll(allSettings.findAll { it.key in ownerSet })
+            result.settings.addAll(allSettings.findAll { it.key in accessSet })
             result.settings.addAll(allSettings.findAll { it.key in credentialsSet })
             result.customerIdentifier = CustomerIdentifier.findAllByOwner(org)
         }
         else if (inContextOrg) {
             log.debug( 'settings for own org')
+            result.settings.addAll(allSettings.findAll { it.key in ownerSet })
 
-            if (['FAKE', 'ORG_BASIC_MEMBER'].contains(org.getCustomerType())) {
-                result.settings.addAll(allSettings.findAll { it.key == OrgSettings.KEYS.NATSTAT_SERVER_ACCESS })
-            }
-            else if (org.hasPerm('ORG_CONSORTIUM,ORG_INST')) {
-                result.settings.addAll(allSettings.findAll { it.key in privateSet })
+            if (org.hasPerm('ORG_CONSORTIUM,ORG_INST')) {
+                result.settings.addAll(allSettings.findAll { it.key in accessSet })
                 result.settings.addAll(allSettings.findAll { it.key in credentialsSet })
                 result.customerIdentifier = CustomerIdentifier.findAllByOwner(org)
+            }
+            else if (['FAKE', 'ORG_BASIC_MEMBER'].contains(org.getCustomerType())) {
+                result.settings.addAll(allSettings.findAll { it.key == OrgSettings.KEYS.NATSTAT_SERVER_ACCESS })
             }
         }
         else if (isComboRelated){
             log.debug( 'settings for combo related org: consortia or collective')
-
-            result.settings.addAll(allSettings.findAll { it.key in privateSet })
         }
 
         result.allPlatforms = Platform.executeQuery('select p from Platform p join p.org o where p.org is not null order by o.name, o.sortname, p.name')
@@ -641,19 +641,17 @@ class OrganisationController extends AbstractDebugController {
         }
 
         if (result.orgInstance.createdBy) {
-			result.createdByOrg = result.orgInstance.createdBy
 			result.createdByOrgGeneralContacts = PersonRole.executeQuery(
 					"select distinct(prs) from PersonRole pr join pr.prs prs join pr.org oo " +
 							"where oo = :org and pr.functionType = :ft and prs.isPublic = true",
-					[org: result.createdByOrg, ft: RDStore.PRS_FUNC_GENERAL_CONTACT_PRS]
+					[org: result.orgInstance.createdBy, ft: RDStore.PRS_FUNC_GENERAL_CONTACT_PRS]
 			)
         }
 		if (result.orgInstance.legallyObligedBy) {
-			result.legallyObligedByOrg = result.orgInstance.legallyObligedBy
 			result.legallyObligedByOrgGeneralContacts = PersonRole.executeQuery(
 					"select distinct(prs) from PersonRole pr join pr.prs prs join pr.org oo " +
 							"where oo = :org and pr.functionType = :ft and prs.isPublic = true",
-					[org: result.legallyObligedByOrg, ft: RDStore.PRS_FUNC_GENERAL_CONTACT_PRS]
+					[org: result.orgInstance.legallyObligedBy, ft: RDStore.PRS_FUNC_GENERAL_CONTACT_PRS]
 			)
 		}
 
