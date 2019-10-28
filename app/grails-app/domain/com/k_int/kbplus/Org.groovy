@@ -675,7 +675,7 @@ class Org
             }
         }
 
-        if ( ! found ) {
+        if ( !found && value != '') {
             value = value?.trim()
             ns = ns?.trim()
             def namespace = IdentifierNamespace.findByNsIlike(ns) ?: new IdentifierNamespace(ns:ns).save()
