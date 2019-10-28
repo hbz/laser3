@@ -71,6 +71,7 @@ class OrgSettings {
         dateCreated (nullable: true, blank: false)
     }
 
+    // only these settings are editable by orgs themselves
     static List<OrgSettings.KEYS> getEditableSettings() {
         [
                 OrgSettings.KEYS.OAMONITOR_SERVER_ACCESS,
