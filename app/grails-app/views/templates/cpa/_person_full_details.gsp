@@ -98,21 +98,20 @@
                                 <g:set var="oid" value="${personRole?.class.name}:${personRole?.id}"/>
                                 <g:if test="${person.roleLinks.size() > 1}">
                                     <g:link class="ui mini icon negative button js-open-confirm-modal"
-                                            data-confirm-tokenMsg="${message(code: "confirm.dialog.unlink.contact.organisation")}"
+                                            data-confirm-tokenMsg="${message(code: "confirm.dialog.unlink.function.contact", args: [personRole?.functionType?.getI10n('value'), person.toString()])}"
                                             data-confirm-term-how="unlink"
                                             controller="ajax" action="delete" params="[cmd: 'deletePersonRole', oid: oid]">
                                         <i class="unlink icon"></i>
                                     </g:link>
                                 </g:if>
                                 <g:else>
-                                    <g:link class="ui mini icon negative button"
+                                    <g:link class="ui mini icon negative button js-open-confirm-modal"
                                             controller="person"
                                             action="_delete"
                                             id="${person?.id}"
-                                            onclick="return confirm('${message( code: 'org.deletePrsLinksAndContact.button.confirm',
-                                                    default: 'Do you want to delete the whole contact?',
-                                                    args:[personRole?.functionType?.getI10n('value'), person.toString()])}')">
-                                        <i class="unlink icon"></i>
+                                            data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.org.PrsLinksAndContact.function", args: [personRole?.functionType?.getI10n('value'), person.toString()])}"
+                                            data-confirm-term-how="delete">
+                                        <i class="trash alternate icon"></i>
                                     </g:link>
                                     %{--<g:form controller="person" action="_delete" data-confirm-id="${person?.id?.toString()+ '_form'}">--}%
                                         %{--<g:hiddenField name="id" value="${person?.id}" />--}%
@@ -147,21 +146,20 @@
 
                                 <g:if test="${person.roleLinks.size() > 1}">
                                     <g:link class="ui mini icon negative button js-open-confirm-modal"
-                                            data-confirm-tokenMsg="${message(code: "confirm.dialog.unlink.contact.organisation")}"
+                                            data-confirm-tokenMsg="${message(code: "confirm.dialog.unlink.position.contact", args: [personRole?.positionType?.getI10n('value'), person.toString()])}"
                                             data-confirm-term-how="unlink"
                                             controller="ajax" action="delete" params="[cmd: 'deletePersonRole', oid: oid]">
                                         <i class="unlink icon"></i>
                                     </g:link>
                                 </g:if>
                                 <g:else>
-                                    <g:link class="ui mini icon negative button"
+                                    <g:link class="ui mini icon negative button js-open-confirm-modal"
                                             controller="person"
                                             action="_delete"
                                             id="${person?.id}"
-                                            onclick="return confirm('${message( code: 'org.deletePrsLinksAndContact.button.confirm',
-                                                    default: 'Do you want to delete the whole contact?',
-                                                    args:[personRole?.functionType?.getI10n('value'), person.toString()])}')">
-                                        <i class="unlink icon"></i>
+                                            data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.org.PrsLinksAndContact.position", args: [personRole?.positionType?.getI10n('value'), person.toString()])}"
+                                            data-confirm-term-how="delete">
+                                        <i class="trash alternate icon"></i>
                                     </g:link>
                                 </g:else>
                             </g:if>
