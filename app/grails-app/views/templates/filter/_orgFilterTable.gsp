@@ -32,6 +32,14 @@
         <g:if test="${tmplConfigShow?.contains('hasInstAdmin')}">
             <th>${message(code: 'org.hasInstAdmin.label')}</th>
         </g:if>
+        <g:if test="${tmplConfigShow?.contains('legalInformation')}">
+            <th>
+                <span class="la-popup-tooltip la-delay" data-position="top right"
+                      data-content="${message(code:'org.legalInformation.tooltip')}" >
+                        <i class="handshake outline icon"></i>
+                </span>
+            </th>
+        </g:if>
         <g:if test="${tmplConfigShow?.contains('publicContacts')}">
             <th>${message(code: 'org.publicContacts.label', default: 'Public Contacts')}</th>
         </g:if>
@@ -75,9 +83,6 @@
         </g:if>
         <g:if test="${tmplConfigShow?.contains('libraryType')}">
             <th>${message(code: 'org.libraryType.label')}</th>
-        </g:if>
-        <g:if test="${tmplConfigShow?.contains('legalInformation')}">
-            <th><%--${message(code: 'org.legalInformation.label')}--%></th>
         </g:if>
         <g:if test="${tmplConfigShow?.contains('country')}">
             <th>${message(code: 'org.country.label')}</th>
@@ -251,6 +256,28 @@
                 </g:else>
             </td>
         </g:if>
+        <g:if test="${tmplConfigShow?.contains('legalInformation')}">
+            <td>
+                <g:if test="${org.createdBy && org.legallyObligedBy}">
+                    <span class="la-popup-tooltip la-delay" data-position="top right"
+                          data-content="${message(code:'org.legalInformation.1.tooltip', args:[org.createdBy, org.legallyObligedBy])}" >
+                        <i class="ui icon green check circle"></i>
+                    </span>
+                </g:if>
+                <g:elseif test="${org.createdBy}">
+                    <span class="la-popup-tooltip la-delay" data-position="top right"
+                          data-content="${message(code:'org.legalInformation.2.tooltip', args:[org.createdBy])}" >
+                        <i class="ui icon grey outline circle"></i>
+                    </span>
+                </g:elseif>
+                <g:elseif test="${org.legallyObligedBy}">
+                    <span class="la-popup-tooltip la-delay" data-position="top right"
+                          data-content="${message(code:'org.legalInformation.3.tooltip', args:[org.legallyObligedBy])}" >
+                        <i class="ui icon grey circle"></i>
+                    </span>
+                </g:elseif>
+            </td>
+        </g:if>
         <g:if test="${tmplConfigShow?.contains('publicContacts')}">
             <td>
                 <g:each in="${org?.prsLinks?.toSorted()}" var="pl">
@@ -400,28 +427,6 @@
         </g:if>
         <g:if test="${tmplConfigShow?.contains('libraryType')}">
             <td>${org.libraryType?.getI10n('value')}</td>
-        </g:if>
-        <g:if test="${tmplConfigShow?.contains('legalInformation')}">
-            <td>
-                <g:if test="${org.createdBy && org.legallyObligedBy}">
-                    <span class="la-popup-tooltip la-delay" data-position="top right"
-                          data-content="${message(code:'org.legalInformation.1.tooltip', args:[org.createdBy, org.legallyObligedBy])}" >
-                        <i class="ui icon green check circle"></i>
-                    </span>
-                </g:if>
-                <g:elseif test="${org.createdBy}">
-                    <span class="la-popup-tooltip la-delay" data-position="top right"
-                          data-content="${message(code:'org.legalInformation.2.tooltip', args:[org.createdBy])}" >
-                        <i class="ui icon grey outline circle"></i>
-                    </span>
-                </g:elseif>
-                <g:elseif test="${org.legallyObligedBy}">
-                    <span class="la-popup-tooltip la-delay" data-position="top right"
-                          data-content="${message(code:'org.legalInformation.3.tooltip', args:[org.legallyObligedBy])}" >
-                        <i class="ui icon grey circle"></i>
-                    </span>
-                </g:elseif>
-            </td>
         </g:if>
         <g:if test="${tmplConfigShow?.contains('country')}">
             <td>${org.country?.getI10n('value')}</td>
