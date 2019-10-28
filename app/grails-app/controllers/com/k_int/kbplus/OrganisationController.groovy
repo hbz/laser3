@@ -641,19 +641,17 @@ class OrganisationController extends AbstractDebugController {
         }
 
         if (result.orgInstance.createdBy) {
-			result.createdByOrg = result.orgInstance.createdBy
 			result.createdByOrgGeneralContacts = PersonRole.executeQuery(
 					"select distinct(prs) from PersonRole pr join pr.prs prs join pr.org oo " +
 							"where oo = :org and pr.functionType = :ft and prs.isPublic = true",
-					[org: result.createdByOrg, ft: RDStore.PRS_FUNC_GENERAL_CONTACT_PRS]
+					[org: result.orgInstance.createdBy, ft: RDStore.PRS_FUNC_GENERAL_CONTACT_PRS]
 			)
         }
 		if (result.orgInstance.legallyObligedBy) {
-			result.legallyObligedByOrg = result.orgInstance.legallyObligedBy
 			result.legallyObligedByOrgGeneralContacts = PersonRole.executeQuery(
 					"select distinct(prs) from PersonRole pr join pr.prs prs join pr.org oo " +
 							"where oo = :org and pr.functionType = :ft and prs.isPublic = true",
-					[org: result.legallyObligedByOrg, ft: RDStore.PRS_FUNC_GENERAL_CONTACT_PRS]
+					[org: result.orgInstance.legallyObligedBy, ft: RDStore.PRS_FUNC_GENERAL_CONTACT_PRS]
 			)
 		}
 
