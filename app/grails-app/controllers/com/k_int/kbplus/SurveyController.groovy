@@ -3195,6 +3195,49 @@ class SurveyController {
         redirect(uri: request.getHeader('referer'))
     }
 
+    @DebugAnnotation(perm = "ORG_CONSORTIUM_SURVEY", affil = "INST_EDITOR", specRole = "ROLE_ADMIN")
+    @Secured(closure = {
+        ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM_SURVEY", "INST_EDITOR", "ROLE_ADMIN")
+    })
+    def transferParticipants() {
+        def result = setResultGenericsAndCheckAccess()
+        if (!result.editable) {
+            response.sendError(401); return
+        }
+
+        result.parentSubscription = result.surveyConfig?.subscription
+        result.parentSubChilds = subscriptionService.getCurrentValidSubChilds(result.parentSubscription)
+        result.parentSuccessorSubscription = result.surveyConfig?.subscription?.getCalculatedSuccessor()
+        result.parentSuccessorSubChilds = result.parentSuccessorSubscription ? subscriptionService.getValidSubChilds(result.parentSuccessorSubscription) : null
+
+        result.participantsList = []
+
+        result.parentParticipantsList = []
+        result.parentSuccessortParticipantsList = []
+
+        result.parentSubChilds.each { sub ->
+            def org = sub.getSubscriber()
+            result.participantsList << org
+            result.parentParticipantsList << org
+
+        }
+
+        result.parentSuccessorSubChilds.each { sub ->
+            def org = sub.getSubscriber()
+            result.participantsList << org
+            result.parentSuccessortParticipantsList << org
+
+        }
+
+        result.participantsList = result.participantsList.sort{it.sortname}
+
+
+        result.participationProperty = SurveyProperty.findByNameAndOwnerIsNull("Participation")
+
+        result
+
+    }
+
     private getSurveyProperties(Org contextOrg) {
         def props = []
 

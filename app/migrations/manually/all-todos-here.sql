@@ -64,3 +64,7 @@ DELETE FROM fact;
 ALTER TABLE fact DROP COLUMN supplier_id;
 
 
+
+-- 2019-10-25
+-- Set sub_is_multi_year on all subscription where the periode more than 724 days
+update subscription set sub_is_multi_year = true where sub_id in(select sub_id from subscription where DATE_PART('day', sub_end_date - sub_start_date) >= 724 and sub_end_date is not null);
