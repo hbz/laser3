@@ -5,8 +5,7 @@
 <html>
     <head>
         <meta name="layout" content="semanticUI">
-        <g:set var="entityName" value="${message(code: 'package', default: 'Package')}" />
-        <title>${message(code:'laser', default:'LAS:eR')} : ${message(code:'package', default:'Package Details')}</title>
+        <title>${message(code:'laser', default:'LAS:eR')} : ${message(code:'package.details')}</title>
     </head>
     <body>
 
