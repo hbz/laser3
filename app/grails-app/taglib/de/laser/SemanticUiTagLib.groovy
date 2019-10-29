@@ -641,9 +641,6 @@ class SemanticUiTagLib {
         out << '<div class="header">'
         out << '<span class="confirmation-term" id="js-confirmation-term"></span>'
         out << '</div>'
-        out << '<span class="content" id="js-confirmation-term-content"></span> '
-
-
         out << '<div class="actions">'
         out << '<div class="ui deny button">' + msgCancel + '</div>'
         out << '<button id="js-confirmation-button" class="ui positive right labeled icon button">' + msgDelete
