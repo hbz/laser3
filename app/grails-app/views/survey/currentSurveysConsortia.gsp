@@ -248,7 +248,7 @@
                         <g:if test="${surveyConfig}">
                             <g:link controller="survey" action="surveyParticipants" id="${surveyInfo?.id}"
                                     params="[surveyConfigID: surveyConfig?.id]" class="ui icon">
-                                <div class="ui circular ${participantsFinish == participantsTotal ? "green" : surveyConfig?.configFinish ? "yellow" : ""} label">
+                                <div class="ui circular ${participantsFinish?.size() == participantsTotal?.size() ? "green" : surveyConfig?.configFinish ? "yellow" : ""} label">
                                     ${participantsFinish?.participant?.flatten()?.unique { a, b -> a.id <=> b.id }?.size() ?: 0} / ${surveyConfig?.orgs?.org?.flatten()?.unique { a, b -> a.id <=> b.id }?.size() ?: 0}
                                 </div>
                             </g:link>
@@ -273,10 +273,10 @@
                                 <g:link controller="survey" action="evaluationConfigsInfo" id="${surveyInfo?.id}"
                                         params="[surveyConfigID: surveyConfig?.id]"
                                         class="ui icon">
-                                    <div class="ui circular ${(participantsFinish.size() == participantsTotal.size()) ? "green" : (participantsFinish.size() > 0) ? "yellow" :""} label">
+                                    <div class="ui circular ${(participantsFinish?.size() == participantsTotal?.size()) ? "green" : (participantsFinish?.size() > 0) ? "yellow" :""} label">
                                         <g:if
                                             test="${participantsFinish && participantsTotal}">
-                                        <g:formatNumber number="${(participantsFinish.size() / participantsTotal.size()) * 100}" minFractionDigits="2"
+                                        <g:formatNumber number="${(participantsFinish?.size() / participantsTotal?.size()) * 100}" minFractionDigits="2"
                                                         maxFractionDigits="2"/>%
                                     </g:if>
                                     <g:else>

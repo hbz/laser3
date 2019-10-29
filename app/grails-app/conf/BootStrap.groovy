@@ -2535,11 +2535,11 @@ class BootStrap {
         RefdataValue.loc('Subscription Status',      [key: 'Deferred', en: 'Deferred', de: 'Zurückgestellt'])
         RefdataValue.loc('Subscription Status',      [en: 'Status not defined', de: 'Status nicht festgelegt'], BOOTSTRAP)
 
-        RefdataValue.loc('Subscription Type',      [en: 'Alliance Licence', de: 'Allianzlizenz'], BOOTSTRAP)
-        RefdataValue.loc('Subscription Type',      [en: 'National Licence', de: 'Nationallizenz'], BOOTSTRAP)
-		RefdataValue.loc('Subscription Type',      [en: 'Local Licence', de: 'Lokale Lizenz'], BOOTSTRAP)
-		RefdataValue.loc('Subscription Type',      [en: 'Consortial Licence', de: 'Konsortiallizenz'], BOOTSTRAP)
-        RefdataValue.loc('Subscription Type',      [en: 'Administrative Subscription', de: 'Verwaltungslizenz'], BOOTSTRAP)
+        RefdataValue.loc('Subscription Type',      [key: 'Alliance Licence', en: 'Alliance Subscription', de: 'Allianzlizenz'], BOOTSTRAP)
+        RefdataValue.loc('Subscription Type',      [key: 'National Licence', en: 'National Subscription', de: 'Nationallizenz'], BOOTSTRAP)
+		RefdataValue.loc('Subscription Type',      [key: 'Local Licence', en: 'Local Subscription', de: 'Lokale Lizenz'], BOOTSTRAP)
+		RefdataValue.loc('Subscription Type',      [key: 'Consortial Licence', en: 'Consortial Subscription', de: 'Konsortiallizenz'], BOOTSTRAP)
+        RefdataValue.loc('Subscription Type',      [key: 'Administrative Subscription', en: 'Administrative Subscription', de: 'Verwaltungslizenz'], BOOTSTRAP)
         //RefdataValue.loc('Subscription Type',      [en: 'Collective Subscription', de: 'Kollektivlizenz'], BOOTSTRAP)
 
         RefdataValue.loc('Task Priority',   [en: 'Trivial', de: 'Trivial'], BOOTSTRAP)

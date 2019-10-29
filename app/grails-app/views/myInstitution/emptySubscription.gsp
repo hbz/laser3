@@ -5,14 +5,14 @@
 <html>
     <head>
         <meta name="layout" content="semanticUI"/>
-        <title>${message(code:'laser', default:'LAS:eR')} : ${message(code:'myinst.addSubscription.label')}</title>
+        <title>${message(code:'laser', default:'LAS:eR')} : ${message(code:'myinst.emptySubscription.label')}</title>
         </head>
     <body>
 
         <semui:breadcrumbs>
             <semui:crumb controller="myInstitution" action="dashboard" text="${institution?.getDesignation()}" />
             <semui:crumb controller="myInstitution" action="currentSubscriptions" message="myinst.currentSubscriptions.label" />
-            <semui:crumb message="myinst.addSubscription.label" class="active" />
+            <semui:crumb message="myinst.emptySubscription.label" class="active" />
         </semui:breadcrumbs>
 
         <g:render template="actions" />
@@ -158,13 +158,20 @@
      --%>
         <r:script language="JavaScript">
             function formatDate(input) {
-                var inArr = input.split(/[\.-]/g);
-                return inArr[2]+"-"+inArr[1]+"-"+inArr[0];
+                if(input.match(/^\d{2}[\.\/-]\d{2}[\.\/-]\d{2,4}$/)) {
+                    var inArr = input.split(/[\.\/-]/g);
+                    return inArr[2]+"-"+inArr[1]+"-"+inArr[0];
+                }
+                else {
+                    console.log(input);
+                    return input;
+                }
             }
              $.fn.form.settings.rules.endDateNotBeforeStartDate = function() {
                 if($("#valid_from").val() !== '' && $("#valid_to").val() !== '') {
                     var startDate = Date.parse(formatDate($("#valid_from").val()));
                     var endDate = Date.parse(formatDate($("#valid_to").val()));
+                    console.log(formatDate($("#valid_from").val())+' '+formatDate($("#valid_to").val()));
                     return (startDate < endDate);
                 }
                 else return true;

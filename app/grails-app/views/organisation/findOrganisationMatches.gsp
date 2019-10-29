@@ -116,9 +116,8 @@
 											</g:if>
 											<g:else>
 												<g:link class="ui icon negative button la-popup-tooltip la-delay"
-														data-confirm-term-what="department"
-														data-confirm-term-what-detail="${organisationInstance.name}"
-														data-confirm-term-where="institution"
+														data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.department.institution", args: [organisationInstance.name.institution])}"
+														data-confirm-term-how="delete"
 														data-content="${message(code:'org.departmentRemoval.remove.label')}"
 														controller="myInstitution" action="removeDepartment"
 														params="${[dept:organisationInstance.id]}">

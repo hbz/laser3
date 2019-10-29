@@ -41,9 +41,7 @@
     </semui:controlButtons>
 </g:if>
 
-<h1 class="ui left aligned icon header"><semui:headerIcon/>
-${orgInstance.name} - ${message(code:'profile.errorOverview.label')}</h1>
-</h1>
+<h1 class="ui left aligned icon header"><semui:headerIcon/>${orgInstance.name}</h1>
 
 <g:render template="nav" model="${[orgInstance: orgInstance, inContextOrg: inContextOrg]}"/>
 
@@ -573,46 +571,56 @@ ${orgInstance.name} - ${message(code:'profile.errorOverview.label')}</h1>
                 </div><!-- .card -->
 
                 <g:if test="${contextService.getUser().isAdmin() || contextService.getOrg().getCustomerType() in ['ORG_CONSORTIUM', 'ORG_CONSORTIUM_SURVEY']}">
-                    <g:if test="${createdByOrgGeneralContacts || legallyObligedByOrgGeneralContacts}">
+                    <g:if test="${orgInstance.createdBy || orgInstance.legallyObligedBy}">
                         <div class="ui card">
                             <div class="content">
-                                <g:if test="${createdByOrgGeneralContacts}">
+                                <g:if test="${orgInstance.createdBy}">
                                     <dl>
                                         <dt>
                                             <g:message code="org.createdBy.label" default="createdBy"/>
                                         </dt>
                                         <dd>
-                                            <g:each in="${createdByOrgGeneralContacts}" var="cbogc">
-                                                <g:render template="/templates/cpa/person_full_details" model="${[
-                                                        person              : cbogc,
-                                                        personContext       : createdByOrg,
-                                                        tmplShowFunctions       : true,
-                                                        tmplShowPositions       : true,
-                                                        tmplShowResponsiblities : true,
-                                                        tmplConfigShow      : ['E-Mail', 'Mail', 'Url', 'Phone', 'Fax', 'address'],
-                                                        editable            : false
-                                                ]}"/>
-                                            </g:each>
+                                            <h5 class="ui header">
+                                                <g:link controller="organisation" action="show" id="${orgInstance.createdBy.id}">${orgInstance.createdBy.name}</g:link>
+                                            </h5>
+                                            <g:if test="${createdByOrgGeneralContacts}">
+                                                    <g:each in="${createdByOrgGeneralContacts}" var="cbogc">
+                                                        <g:render template="/templates/cpa/person_full_details" model="${[
+                                                                person              : cbogc,
+                                                                personContext       : orgInstance.createdBy,
+                                                                tmplShowFunctions       : true,
+                                                                tmplShowPositions       : true,
+                                                                tmplShowResponsiblities : true,
+                                                                tmplConfigShow      : ['E-Mail', 'Mail', 'Url', 'Phone', 'Fax', 'address'],
+                                                                editable            : false
+                                                        ]}"/>
+                                                    </g:each>
+                                            </g:if>
                                         </dd>
                                     </dl>
                                 </g:if>
-                                <g:if test="${legallyObligedByOrgGeneralContacts}">
+                                <g:if test="${orgInstance.legallyObligedBy}">
                                     <dl>
                                         <dt>
                                             <g:message code="org.legallyObligedBy.label" default="legallyObligedBy"/>
                                         </dt>
                                         <dd>
-                                            <g:each in="${legallyObligedByOrgGeneralContacts}" var="lobogc">
-                                                <g:render template="/templates/cpa/person_full_details" model="${[
-                                                        person              : lobogc,
-                                                        personContext       : legallyObligedByOrg,
-                                                        tmplShowFunctions       : true,
-                                                        tmplShowPositions       : true,
-                                                        tmplShowResponsiblities : true,
-                                                        tmplConfigShow      : ['E-Mail', 'Mail', 'Url', 'Phone', 'Fax', 'address'],
-                                                        editable            : false
-                                                ]}"/>
-                                            </g:each>
+                                            <h5 class="ui header">
+                                                <g:link controller="organisation" action="show" id="${orgInstance.legallyObligedBy.id}">${orgInstance.legallyObligedBy.name}</g:link>
+                                            </h5>
+                                            <g:if test="${legallyObligedByOrgGeneralContacts}">
+                                                <g:each in="${legallyObligedByOrgGeneralContacts}" var="lobogc">
+                                                    <g:render template="/templates/cpa/person_full_details" model="${[
+                                                            person              : lobogc,
+                                                            personContext       : orgInstance.legallyObligedBy,
+                                                            tmplShowFunctions       : true,
+                                                            tmplShowPositions       : true,
+                                                            tmplShowResponsiblities : true,
+                                                            tmplConfigShow      : ['E-Mail', 'Mail', 'Url', 'Phone', 'Fax', 'address'],
+                                                            editable            : false
+                                                    ]}"/>
+                                                </g:each>
+                                            </g:if>
                                         </dd>
                                     </dl>
                                 </g:if>

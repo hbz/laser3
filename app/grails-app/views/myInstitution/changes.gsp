@@ -3,7 +3,7 @@
 <html>
     <head>
         <meta name="layout" content="semanticUI"/>
-        <title>${message(code:'laser', default:'LAS:eR')} : ${message(code:'myinst.todo.label', default:'ToDo List')}</title>
+        <title>${message(code:'laser', default:'LAS:eR')} : ${message(code:'myinst.todo.label')}</title>
     </head>
 
     <body>
@@ -14,10 +14,11 @@
             <semui:crumb message="myinst.todo.label" class="active" />
         </semui:breadcrumbs>
 
-        <h1 class="ui left aligned icon header"><semui:headerIcon />
-            ${message(code:'myinst.todo.label', default:'ToDo List')}
+        <h1 class="ui left aligned icon header"><semui:headerIcon />${institution.name}</h1>
+        <h2 class="ui left aligned icon header"><semui:headerIcon />
+            ${message(code:'myinst.todo.label')}
             <%--${message(code:'myinst.todo.pagination', args:[(params.offset?:1), (java.lang.Math.min(num_todos,(params.int('offset')?:0)+10)), num_todos])}--%>
-        </h1>
+        </h2>
 
         <%--<g:if test="${changes != null}" >
           <semui:paginate  action="todo" controller="myInstitution" params="${params}" next="${message(code:'default.paginate.next', default:'Next')}" prev="${message(code:'default.paginate.prev', default:'Prev')}" max="${max}" total="${num_todos}" />

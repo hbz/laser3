@@ -78,6 +78,14 @@ ${message(code: 'subscription.subscriptionPropertiesMembers.header', args: args.
 
         </g:link>
 
+        <g:link class="item ${params.tab == 'multiYear' ? 'active' : ''}"
+                controller="subscription" action="subscriptionPropertiesMembers"
+                id="${parentSub?.id}"
+                params="[tab: 'multiYear']">
+            <g:message code="subscription.isMultiYear.label"/>
+
+        </g:link>
+
     </div>
 
 
@@ -444,6 +452,119 @@ ${message(code: 'subscription.subscriptionPropertiesMembers.header', args: args.
                                 <g:render template="/templates/notes/table"
                                           model="${[instance: sub, redirect: 'notes']}"/>
 
+                            </td>
+                            <td class="x">
+                                <g:link controller="subscription" action="show" id="${sub.id}"
+                                        class="ui icon button"><i
+                                        class="write icon"></i></g:link>
+                            </td>
+                        </tr>
+                    </g:each>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </g:if>
+    <g:if test="${params.tab == 'multiYear'}">
+        <div class="ui bottom attached tab segment active">
+            <div class="ui segment ">
+                <h3><g:message code="subscription.propertiesMembers.subscription" args="${args.superOrgType}"/></h3>
+
+                <table class="ui celled la-table table">
+                    <thead>
+                    <tr>
+                        <th>${message(code: 'subscription')}</th>
+                        <th>${message(code: 'default.startDate.label')}</th>
+                        <th>${message(code: 'default.endDate.label')}</th>
+                        <th>${message(code: 'subscription.details.status')}</th>
+                        <th></th>
+                    </tr>
+                    </thead>
+                    <tbody>
+
+                    <td>${parentSub.name}</td>
+
+                    <td>
+                        <g:formatDate formatName="default.date.format.notime" date="${parentSub?.startDate}"/>
+                        <semui:auditButton auditable="[parentSub, 'startDate']"/>
+                    </td>
+                    <td>
+                        <g:formatDate formatName="default.date.format.notime" date="${parentSub?.endDate}"/>
+                        <semui:auditButton auditable="[parentSub, 'endDate']"/>
+                    </td>
+                    <td>
+                        ${parentSub.status.getI10n('value')}
+                        <semui:auditButton auditable="[parentSub, 'status']"/>
+                    </td>
+                    <td class="x">
+                        <g:link controller="subscription" action="show" id="${parentSub.id}"
+                                class="ui icon button"><i
+                                class="write icon"></i></g:link>
+                    </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="ui segment">
+                <h3>${message(code: 'subscription.propertiesMembers.subscriber')} <semui:totalNumber
+                        total="${filteredSubChilds?.size()}"/></h3>
+                <table class="ui celled la-table table">
+                    <thead>
+                    <tr>
+                        <th>${message(code: 'sidewide.number')}</th>
+                        <th>${message(code: 'default.sortname.label')}</th>
+                        <th>${message(code: 'subscriptionDetails.members.members')}</th>
+                        <th>${message(code: 'default.startDate.label')}</th>
+                        <th>${message(code: 'default.endDate.label')}</th>
+                        <th>${message(code: 'subscription.details.status')}</th>
+                        <th>${message(code: 'subscription.isMultiYear.label')}</th>
+                        <th></th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <g:each in="${filteredSubChilds}" status="i" var="zeile">
+                        <g:set var="sub" value="${zeile.sub}"/>
+                        <tr>
+                            <td>${i + 1}</td>
+                            <g:set var="filteredSubscribers" value="${zeile.orgs}"/>
+                            <g:each in="${filteredSubscribers}" var="subscr">
+                                <td>${subscr.sortname}</td>
+                                <td>
+                                    <g:link controller="organisation" action="show"
+                                            id="${subscr.id}">${subscr}</g:link>
+
+                                    <g:if test="${sub.isSlaved}">
+                                        <span data-position="top right"
+                                              class="la-popup-tooltip la-delay"
+                                              data-content="${message(code: 'license.details.isSlaved.tooltip')}">
+                                            <i class="thumbtack blue icon"></i>
+                                        </span>
+                                    </g:if>
+
+                                </td>
+                            </g:each>
+                            <g:if test="${!sub.getAllSubscribers()}">
+                                <td></td>
+                                <td></td>
+                            </g:if>
+                            <td>
+                                <semui:xEditable owner="${sub}" field="startDate" type="date"
+                                                 />
+                                <semui:auditButton auditable="[sub, 'startDate']"/>
+                            </td>
+                            <td><semui:xEditable owner="${sub}" field="endDate" type="date"
+                                                 />
+                            <semui:auditButton auditable="[sub, 'endDate']"/>
+                            </td>
+                            <td>
+                                <semui:xEditableRefData owner="${sub}" field="status" config='Subscription Status'
+                                                        constraint="removeValue_deleted"
+                                                        />
+                                <semui:auditButton auditable="[sub, 'status']"/>
+                            </td>
+                            <td>
+                                <semui:xEditableBoolean owner="${sub}" field="isMultiYear" />
                             </td>
                             <td class="x">
                                 <g:link controller="subscription" action="show" id="${sub.id}"

@@ -170,7 +170,7 @@ class License
 
     @Override
     boolean isTemplate() {
-        return (type != null) && (type == RefdataValue.getByValueAndCategory('Template', 'License Type'))
+        return (type != null) && (type == RDStore.LICENSE_TYPE_TEMPLATE)
     }
 
     @Override

@@ -495,11 +495,11 @@ class FactService {
     return OrgSettings.executeQuery(hql)
   }
 
-  def providersWithStatssid()
+  def platformsWithNatstatId()
   {
-    def hql = "select provider from Org as provider" +
-        " where exists (select 1 from provider.ids as ident where ident.ns.ns = 'statssid')"
-    return Org.executeQuery(hql)
+    def hql = "select platform from Platform as platform" +
+        " where exists (select 1 from platform.customProperties as pcp where pcp.owner = platform.id and pcp.type.name = 'NatStat Supplier ID')"
+    return Platform.executeQuery(hql)
   }
 
   def getFactInstitutionList()

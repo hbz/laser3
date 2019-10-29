@@ -103,11 +103,10 @@
                                               action="deletePrivateProperty"
                                               params='[propClass: prop.getClass(),ownerId:"${ownobj.id}", ownerClass:"${ownobj.class}", editable:"${editable}"]'
                                               id="${prop.id}"
-                                              data-confirm-term-what="property"
-                                              data-confirm-term-what-detail="${prop.type.getI10n('name')}"
+                                              data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.property", args: [prop.type.getI10n('name')])}"
                                               data-confirm-term-how="delete"
                                               data-done="c3po.initProperties('${createLink(controller:'ajax', action:'lookup')}', '#${custom_props_div}', ${tenant?.id})"
-                                              data-always="c3po.loadJsAfterAjax(); bb8.init('#${custom_props_div}') "
+                                              data-always="c3po.loadJsAfterAjax(); bb8.init('#${custom_props_div}')"
                                               data-update="${custom_props_div}"
                                               role="button"
                             >

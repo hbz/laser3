@@ -53,4 +53,18 @@ ALTER TABLE org DROP COLUMN org_origin_edit_url;
 --  new column class in org_access_point is initially null
 -- need to set to  com.k_int.kbplus.OrgAccessPoint for all existing rows
 -- see pull request for Update access point management - ad7500ef0534c4b414e5e7cb0c9acc1acd4f8283"
-update org_access_point set class = 'com.k_int.kbplus.OrgAccessPoint' where class is null;
+--update org_access_point set class = 'com.k_int.kbplus.OrgAccessPoint' where class is null;
+
+-- 2019-10-23
+-- need to refetch usage data delete contents of tables
+DELETE FROM stats_triple_cursor;
+DELETE FROM fact;
+-- execute before startup / local dev environment only
+-- changed Fact.supplier without mapping from Org to Platform!
+ALTER TABLE fact DROP COLUMN supplier_id;
+
+
+
+-- 2019-10-25
+-- Set sub_is_multi_year on all subscription where the periode more than 724 days
+update subscription set sub_is_multi_year = true where sub_id in(select sub_id from subscription where DATE_PART('day', sub_end_date - sub_start_date) >= 724 and sub_end_date is not null);

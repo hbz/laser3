@@ -131,7 +131,7 @@
             <div class="ui grid">
                 <div class="row">
                     <div class="sixteen wide column">
-                        <g:link action="purgeDuplicatePackages" params="${[doIt: true, toDelete: toDelete as JSON]}" class="ui negative button js-open-confirm-modal" data-confirm-term-content = "${message(code: 'confirmation.content.deleteDuplicatePackages')}"
+                        <g:link action="purgeDuplicatePackages" params="${[doIt: true, toDelete: toDelete as JSON]}" class="ui negative button js-open-confirm-modal" data-confirm-tokenMsg = "${message(code: 'confirmation.content.deleteDuplicatePackages')}"
                                 data-confirm-term-how="ok">Daten bereinigen (bitte mit EXTREMER VORSICHT betätigen!!!)</g:link>
                         <g:link action="purgeDuplicatePackages" params="${[doIt: false, toDelete: toDelete as JSON]}" class="ui button">Testlauf (gefahrlos)</g:link>
                     </div>

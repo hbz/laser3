@@ -21,7 +21,7 @@
                 <g:if test="${filterSet || defaultSet}">
                     <semui:exportDropdownItem>
                         <g:link class="item js-open-confirm-modal"
-                                data-confirm-term-content = "${message(code: 'confirmation.content.exportPartial')}"
+                                data-confirm-tokenMsg = "${message(code: 'confirmation.content.exportPartial')}"
                                 data-confirm-term-how="ok" controller="myInstitution" action="currentSubscriptions"
                                 params="${params+[exportXLS:true]}">
                             ${message(code:'default.button.exports.xls')}
@@ -29,7 +29,7 @@
                     </semui:exportDropdownItem>
                     <semui:exportDropdownItem>
                         <g:link class="item js-open-confirm-modal"
-                                data-confirm-term-content = "${message(code: 'confirmation.content.exportPartial')}"
+                                data-confirm-tokenMsg = "${message(code: 'confirmation.content.exportPartial')}"
                                 data-confirm-term-how="ok" controller="myInstitution" action="currentSubscriptions"
                                 params="${params+[format:'csv']}">
                             ${message(code:'default.button.exports.csv')}
@@ -457,7 +457,7 @@
                             </g:else>
                         </g:link>
                     </g:if>
-                    <g:if test="${statsWibid && (s.getCommaSeperatedPackagesIsilList()?.trim()) && s.hasOrgWithUsageSupplierId()}">
+                    <g:if test="${statsWibid && (s.getCommaSeperatedPackagesIsilList()?.trim()) && s.hasPlatformWithUsageSupplierId()}">
                         <laser:statsLink class="ui icon button"
                                          base="${grailsApplication.config.statsApiUrl}"
                                          module="statistics"
@@ -489,8 +489,7 @@
                             </g:if>
                             <g:else>
                                 <g:link class="ui icon negative button js-open-confirm-modal"
-                                        data-confirm-term-what="subscription"
-                                        data-confirm-term-what-detail="${s.name}"
+                                        data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.subscription", args: [s.name])}"
                                         data-confirm-term-how="delete"
                                         controller="myInstitution" action="actionCurrentSubscriptions"
                                         params="${[curInst: institution.id, basesubscription: s.id]}">

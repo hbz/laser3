@@ -30,7 +30,7 @@
         <g:if test="${filterSet}">
             <semui:exportDropdownItem>
                 <g:link class="item js-open-confirm-modal"
-                        data-confirm-term-content = "${message(code: 'confirmation.content.exportPartial')}"
+                        data-confirm-tokenMsg = "${message(code: 'confirmation.content.exportPartial')}"
                         data-confirm-term-how="ok" controller="myInstitution" action="manageMembers"
                         params="${params+[exportXLS:true]}">
                     ${message(code:'default.button.exports.xls')}
@@ -38,7 +38,7 @@
             </semui:exportDropdownItem>
             <semui:exportDropdownItem>
                 <g:link class="item js-open-confirm-modal"
-                        data-confirm-term-content = "${message(code: 'confirmation.content.exportPartial')}"
+                        data-confirm-tokenMsg = "${message(code: 'confirmation.content.exportPartial')}"
                         data-confirm-term-how="ok" controller="myInstitution" action="manageMembers"
                         params="${params+[format:'csv']}">
                     ${message(code:'default.button.exports.csv')}
@@ -72,11 +72,11 @@
         List configShowTable = []
         if(comboType.id == RDStore.COMBO_TYPE_CONSORTIUM.id) {
             configShowFilter = [['name', 'identifier', 'libraryType'], ['federalState', 'libraryNetwork','property']]
-            configShowTable = ['sortname', 'name', 'mainContact', 'numberOfSubscriptions', 'numberOfSurveys', 'libraryType', 'hasInstAdmin']
+            configShowTable = ['sortname', 'name', 'mainContact', 'legalInformation', 'numberOfSubscriptions', 'numberOfSurveys', 'libraryType', 'hasInstAdmin']
         }
         else if(comboType.id == RDStore.COMBO_TYPE_DEPARTMENT.id) {
             configShowFilter = [['name', 'identifier'], ['property']]
-            configShowTable = ['name', 'mainContact', 'numberOfSubscriptions']
+            configShowTable = ['name', 'mainContact', 'legalInformation', 'numberOfSubscriptions']
         }
     %>
     <semui:filter>
@@ -101,7 +101,8 @@
 
 
         <g:if test="${members && editable}">
-            <input type="submit" class="ui button" data-confirm-term-what="function" data-confirm-term-what-detail="${message(code:'members.confirmDelete')}"
+            <input type="submit" class="ui button"
+                   data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.function", args: [message(code:'members.confirmDelete')])}"
                    data-confirm-term-how="delete" value="${message(code: 'default.button.revoke.label')}"/>
         </g:if>
     </g:form>

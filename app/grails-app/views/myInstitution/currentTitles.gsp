@@ -16,7 +16,7 @@
         <semui:exportDropdownItem>
             <g:if test="${filterSet}">
                 <g:link class="item js-open-confirm-modal"
-                        data-confirm-term-content="${message(code: 'confirmation.content.exportPartial')}"
+                        data-confirm-tokenMsg="${message(code: 'confirmation.content.exportPartial')}"
                         data-confirm-term-how="ok" controller="myInstitution" action="currentTitles"
                         params="${params + [format: 'csv']}">
                     ${message(code: 'default.button.exports.csv')}
@@ -35,7 +35,7 @@
         <semui:exportDropdownItem>
             <g:if test="${filterSet}">
                 <g:link class="item js-open-confirm-modal"
-                        data-confirm-term-content="${message(code: 'confirmation.content.exportPartial')}"
+                        data-confirm-tokenMsg="${message(code: 'confirmation.content.exportPartial')}"
                         data-confirm-term-how="ok" controller="myInstitution" action="currentTitles"
                         params="${params + [exportKBart: true]}">
                     KBART Export
@@ -50,7 +50,7 @@
             <semui:exportDropdownItem>
                 <g:if test="${filterSet}">
                     <g:link class="item js-open-confirm-modal"
-                            data-confirm-term-content="${message(code: 'confirmation.content.exportPartial')}"
+                            data-confirm-tokenMsg="${message(code: 'confirmation.content.exportPartial')}"
                             data-confirm-term-how="ok" controller="myInstitution" action="currentTitles"
                             params="${params + [format: 'xml', transformId: transkey]}">
                         ${transval.name}

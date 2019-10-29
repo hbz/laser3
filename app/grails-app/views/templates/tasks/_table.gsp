@@ -7,7 +7,7 @@
 
     <div class="sixteen wide column">
 
-        <h2 class="ui header">${message(code: 'task.myTasks.header', default:'Tasks assigned to me')} <semui:totalNumber total="${taskInstanceCount}"/></h2>
+        <h3 class="ui header">${message(code: 'task.myTasks.header', default:'Tasks assigned to me')} <semui:totalNumber total="${taskInstanceCount}"/></h3>
 
         <%--
         <g:if test="${editable && controllerName != 'myInstitution'}">
@@ -76,7 +76,7 @@
                         </g:if>
                         <g:if test="${(user == taskInstance.creator) || contextService.getUser().hasAffiliation("INST_ADM")}">
                             <g:link class="ui icon negative button js-open-confirm-modal"
-                                    data-confirm-term-what="task"
+                                    data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.task")}"
                                     data-confirm-term-how="delete"
                                     action="tasks" params="[deleteId:taskInstance.id, id: params.id]" >
                                 <i class="trash alternate icon"></i>

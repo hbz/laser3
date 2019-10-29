@@ -223,7 +223,7 @@ class SubscriptionService {
     }
 
 
-
+    // Entscheidung steht aus
     List getIssueEntitlementsUnderConsideration(Subscription subscription) {
         List<IssueEntitlement> ies = subscription?
                 IssueEntitlement.executeQuery("select ie from IssueEntitlement as ie where ie.subscription = :sub and ie.acceptStatus = :acceptStat and ie.status = :ieStatus",
@@ -232,10 +232,28 @@ class SubscriptionService {
         ies.sort {it.tipp.title.title}
         ies
     }
+    //In Verhandlung
+    List getIssueEntitlementsUnderNegotiation(Subscription subscription) {
+        List<IssueEntitlement> ies = subscription?
+                IssueEntitlement.executeQuery("select ie from IssueEntitlement as ie where ie.subscription = :sub and ie.acceptStatus = :acceptStat and ie.status = :ieStatus",
+                        [sub: subscription, acceptStat: RDStore.IE_ACCEPT_STATUS_UNDER_NEGOTIATION, ieStatus: RDStore.TIPP_STATUS_CURRENT])
+                : []
+        ies.sort {it.tipp.title.title}
+        ies
+    }
 
     List getIssueEntitlementsNotFixed(Subscription subscription) {
         List<IssueEntitlement> ies = subscription?
                 IssueEntitlement.executeQuery("select ie from IssueEntitlement as ie where ie.subscription = :sub and ie.acceptStatus != :acceptStat and ie.status = :ieStatus",
+                        [sub: subscription, acceptStat: RDStore.IE_ACCEPT_STATUS_FIXED, ieStatus: RDStore.TIPP_STATUS_CURRENT])
+                : []
+        ies.sort {it.tipp.title.title}
+        ies
+    }
+
+    List getIssueEntitlementsFixed(Subscription subscription) {
+        List<IssueEntitlement> ies = subscription?
+                IssueEntitlement.executeQuery("select ie from IssueEntitlement as ie where ie.subscription = :sub and ie.acceptStatus = :acceptStat and ie.status = :ieStatus",
                         [sub: subscription, acceptStat: RDStore.IE_ACCEPT_STATUS_FIXED, ieStatus: RDStore.TIPP_STATUS_CURRENT])
                 : []
         ies.sort {it.tipp.title.title}

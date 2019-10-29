@@ -104,35 +104,6 @@ class LicenseSpec extends GebReportingSpec {
           at LicensePage
     }
 
-    def "search for public journal license using journal title and org (Invalid)"() {
-        setup: "Logout and go to Public Journal Licenses page"
-                   //Title licencing
-          def org = Org.findByNameAndImpId(Data.Org_name,Data.Org_impId)
-          def licenseSub = new com.k_int.kbplus.License(reference:"test subscription license").save()
-          def sub = new com.k_int.kbplus.Subscription(name: "test subscription name", owner: licenseSub,
-                  identifier: java.util.UUID.randomUUID().toString()).save(flush: true)
-          def subrefRole = RefdataValue.getByValueAndCategory('Subscriber','Organisational Role')
-          def subRelation= new com.k_int.kbplus.OrgRole(roleType: subrefRole, org: org).save()
-          def subRole    = new com.k_int.kbplus.OrgRole(roleType: subrefRole, sub: sub, org: org).save()
-          sub.addToOrgRelations(subRelation) 
-          sub.save()//OrgRole needed for
-          //RefdataCategory Entitlement Issue Status merged into TIPP Status
-          def ie_current = RDStore.TIPP_STATUS_CURRENT
-          def ti = new com.k_int.kbplus.TitleInstance(title: Data.Title_titlename, impId:Data.Title_uniqID).save()
-          def tipp = new com.k_int.kbplus.TitleInstancePackagePlatform(impId:Data.Tipp_uniqID, title: ti).save()
-          def ie = new com.k_int.kbplus.IssueEntitlement(status: ie_current, tipp: tipp, subscription: sub).save()
-          logout()
-          go '/laser/public/journalLicenses'
-        when: "inputting org and journal title values"
-          $("input", name: "journal").value(Data.Title_titlename)
-          $("input", name: "org").value(Data.Org_name)
-          $("button", type:"submit").click()
-          Thread.sleep(500)
-          waitFor {$("div.alert")}
-        then: "This organisation SHOULDN'T allow public access"
-          $("div.alert.alert-block.alert-error p").text().trim() == "${Data.Org_name} does not provide public access to this service."
-    }
-
     def "log back into the system so we can change the configuration"(){
         setup:
           to PublicPage
@@ -155,17 +126,5 @@ class LicenseSpec extends GebReportingSpec {
           Thread.sleep(500)
           propertyChangedCheck(Data.License_publicProp_journals) == Data.License_public_journals
     }
-  // todo unable to get IE to return based on mocked data in setupSpec()
-   def "search for public journal license using journal title and org (Valid)"() {
-       setup: "Go to Public Journal Licenses page"
 
-         go '/laser/public/journalLicenses'
-       when: "inputting org and journal title values"
-         $("input", name: "journal").value(Data.Title_titlename)
-         $("input", name: "org").value(Data.Org_name)
-         $("button", type:"submit").click()
-       then: "There will be a table of results"
-        // We are not getting back results, at least we verify that we got access to data.
-         $("div.alert.alert-block.alert-error p").isEmpty()
-   }
 }

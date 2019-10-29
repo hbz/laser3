@@ -7,7 +7,7 @@
 </head>
 <body>
 <semui:breadcrumbs>
-    <semui:crumb controller="myInstitution" action="dashboard" text="${institution?.getDesignation()}" />
+    <semui:crumb controller="myInstitution" action="dashboard" text="${contextOrg?.getDesignation()}" />
     <semui:crumb message="menu.my.platforms" class="active" />
 </semui:breadcrumbs>
 
@@ -65,7 +65,7 @@
                 </g:if>
             </td>
             <td>
-                <g:each in="${platformInstance.oapp.oap}" var="oap" >
+                <g:each in="${platformInstance.getContextOrgAccessPoints(contextOrg)}" var="oap" >
                     <g:link controller="accessPoint" action="edit_${oap.accessMethod}" id=" ${oap.id}">${oap.name} (${oap.accessMethod.getI10n('value')})</g:link> <br />
                 </g:each>
             </td>

@@ -2,9 +2,10 @@
 <g:set var="simpleDateFormat" value="${new java.text.SimpleDateFormat("yyyyMMdd")}"/>
 <!doctype html>
 <html>
+<html>
     <head>
         <meta name="layout" content="semanticUI"/>
-        <title>${message(code:'laser', default:'LAS:eR')} : ${message(code:'myinst.title', default:'Institutional Dash')}</title>
+        <title>${message(code:'laser', default:'LAS:eR')} : ${message(code:'menu.institutions.dash')}</title>
     </head>
     <body>
 
@@ -268,7 +269,12 @@
             <g:if test="${editable}">
                 <div class="ui right aligned grid">
                     <div class="right floated right aligned sixteen wide column">
-                        <input type="submit" class="ui button" value="${message(code:'task.create.new')}" data-semui="modal" data-href="#modalCreateTask" />
+                        <a onclick="taskcreate();" class="ui icon button">
+                            ${message(code:'task.create.new')}
+                        </a>
+                        %{--<a onclick="taskedit(268);" class="ui icon button">--}%
+                            %{--TaskEdit 268--}%
+                        %{--</a>--}%
                     </div>
                 </div>
             </g:if>
@@ -360,9 +366,27 @@
         </div>
     </g:if>
 --}%
-        <g:render template="/templates/tasks/modal_create" />
-
     <g:javascript>
+        function taskcreate() {
+
+            $.ajax({
+                url: '<g:createLink controller="ajax" action="TaskCreate"/>',
+                success: function(result){
+                    $("#dynamicModalContainer").empty();
+                    $("#modalCreateTask").remove();
+
+                    $("#dynamicModalContainer").html(result);
+                    $("#dynamicModalContainer .ui.modal").modal({
+                        onVisible: function () {
+                            r2d2.initDynamicSemuiStuff('#modalCreateTask');
+                            r2d2.initDynamicXEditableStuff('#modalCreateTask');
+
+                            ajaxPostFunc()
+                        }
+                    }).modal('show');
+                }
+            });
+        }
         function taskedit(id) {
 
             $.ajax({

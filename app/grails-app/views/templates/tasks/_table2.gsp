@@ -2,7 +2,7 @@
 
     <div class="sixteen wide column">
 
-        <h2 class="ui header">${message(code:'task.tasksCreatedByMe.header')} <semui:totalNumber total="${taskInstanceCount}"/></h2>
+        <h3 class="ui header">${message(code:'task.tasksCreatedByMe.header')} <semui:totalNumber total="${taskInstanceCount}"/></h3>
 
         <table class="ui celled la-table table">
             <thead>
@@ -63,7 +63,7 @@
                             <i class="write icon"></i>
                         </a>
                         <g:link class="ui icon negative button js-open-confirm-modal"
-                                data-confirm-term-what="task"
+                                data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.task")}"
                                 data-confirm-term-how="delete"
                                 controller="myInstitution" action="tasks" params="[deleteId:taskInstance.id]" >
                             <i class="trash alternate icon"></i>

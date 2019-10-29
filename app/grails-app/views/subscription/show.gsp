@@ -84,11 +84,14 @@
                                 <dd><semui:xEditable owner="${subscriptionInstance}" field="manualCancellationDate" type="date"/></dd>
                                 <dd class="la-js-editmode-container"><semui:auditButton auditable="[subscriptionInstance, 'manualCancellationDate']" /></dd>
                             </dl>
-                            <dl>
-                                <dt class="control-label">${message(code: 'subscription.isMultiYear.label')}</dt>
-                                <dd><semui:xEditableBoolean owner="${subscriptionInstance}" field="isMultiYear" /></dd>
-                                <dd class="la-js-editmode-container"><semui:auditButton auditable="[subscriptionInstance, 'isMultiYear']"/></dd>
-                            </dl>
+
+                            <g:if test="${subscriptionInstance.type == de.laser.helper.RDStore.SUBSCRIPTION_TYPE_CONSORTIAL && subscriptionInstance.getCalculatedType() == de.laser.interfaces.TemplateSupport.CALCULATED_TYPE_PARTICIPATION}">
+                                <dl>
+                                    <dt class="control-label">${message(code: 'subscription.isMultiYear.label')}</dt>
+                                    <dd><semui:xEditableBoolean owner="${subscriptionInstance}" field="isMultiYear" /></dd>
+                                    <dd class="la-js-editmode-container"><semui:auditButton auditable="[subscriptionInstance, 'isMultiYear']"/></dd>
+                                </dl>
+                            </g:if>
 
                         </div>
                     </div>
@@ -179,7 +182,7 @@
                                                               ]}" />
                                                     <g:if test="${editable}">
                                                         <g:link class="ui negative icon button la-selectable-button js-open-confirm-modal"
-                                                                data-confirm-term-what="subscription"
+                                                                data-confirm-tokenMsg="${message(code: "confirm.dialog.unlink.subscription.subscription")}"
                                                                 data-confirm-term-how="unlink"
                                                                 controller="ajax" action="delete" params='[cmd: "deleteLink", oid: "${link.class.name}:${link.id}"]'>
                                                             <i class="unlink icon"></i>

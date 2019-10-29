@@ -116,8 +116,7 @@
                                                                editable: "${editable}",
                                                                showConsortiaFunctions: true
                                                       ]'
-                                                      data-confirm-term-what="property"
-                                                      data-confirm-term-what-detail="${prop.type.getI10n('name')}"
+                                                      data-confirm-tokenMsg="${message(code: "confirm.dialog.inherit.property", args: [prop.type.getI10n('name')])}"
                                                       data-confirm-term-how="inherit"
                                                       id="${prop.id}"
                                                       data-content="${message(code:'property.audit.off.tooltip')}"
@@ -142,8 +141,7 @@
                                                       ]'
                                                       id="${prop.id}"
                                                       data-content="${message(code:'property.audit.on.tooltip')}"
-                                                      data-confirm-term-what="property"
-                                                      data-confirm-term-what-detail="${prop.type.getI10n('name')}"
+                                                      data-confirm-tokenMsg="${message(code: "confirm.dialog.inherit.property", args: [prop.type.getI10n('name')])}"
                                                       data-confirm-term-how="inherit"
                                                       data-done="c3po.initProperties('${createLink(controller:'ajax', action:'lookup')}', '#${custom_props_div}')"
                                                       data-always="c3po.loadJsAfterAjax(); bb8.init('#${custom_props_div}') "
@@ -170,8 +168,7 @@
                                                                showConsortiaFunctions: "${showConsortiaFunctions}"
                                                       ]'
                                                       id="${prop.id}"
-                                                      data-confirm-term-what="property"
-                                                      data-confirm-term-what-detail="${prop.type.getI10n('name')}"
+                                                      data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.property", args: [prop.type.getI10n('name')])}"
                                                       data-confirm-term-how="delete"
                                                       data-done="c3po.initProperties('${createLink(controller:'ajax', action:'lookup')}', '#${custom_props_div}')"
                                                       data-always="c3po.loadJsAfterAjax(); bb8.init('#${custom_props_div}') "

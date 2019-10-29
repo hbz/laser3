@@ -758,8 +758,6 @@ class SurveyController {
             response.sendError(401); return
         }
 
-
-
         def orgs = result.surveyConfig?.orgs.org.flatten().unique { a, b -> a.id <=> b.id }
         result.participants = orgs.sort { it.sortname }
 
@@ -774,29 +772,33 @@ class SurveyController {
 
     }
 
-    @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
-    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
+    @DebugAnnotation(perm = "ORG_CONSORTIUM_SURVEY", affil = "INST_EDITOR", specRole = "ROLE_ADMIN")
+    @Secured(closure = {
+        ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM_SURVEY", "INST_EDITOR", "ROLE_ADMIN")
+    })
     def showEntitlementsRenew() {
         def result = [:]
-
         result.institution = contextService.getOrg()
+        result.user = User.get(springSecurityService.principal.id)
         result.participant = params.participant ? Org.get(params.participant) : null
 
-        result.user = User.get(springSecurityService.principal.id)
+        result.surveyConfig = SurveyConfig.get(params.id)
+        result.surveyInfo = result.surveyConfig.surveyInfo
 
-        result.editable = accessService.checkMinUserOrgRole(result.user, result.institution, 'INST_EDITOR')
+        result.editable = result.surveyInfo?.isEditable() ?: false
 
         if (!result.editable) {
             flash.error = g.message(code: "default.notAutorized.message")
             redirect(url: request.getHeader('referer'))
         }
 
-        result.surveyConfig = SurveyConfig.get(params.id)
-        result.surveyInfo = result.surveyConfig.surveyInfo
+        result.surveyOrg = SurveyOrg.findByOrgAndSurveyConfig(result.participant, result.surveyConfig)
 
         result.subscriptionInstance =  result.surveyConfig?.subscription
 
-        result.ies = subscriptionService.getIssueEntitlementsNotFixed(result.surveyConfig.subscription?.getDerivedSubscriptionBySubscribers(result.participant))
+        result.subscriptionParticipant = result.surveyConfig.subscription?.getDerivedSubscriptionBySubscribers(result.participant)
+
+        result.ies = subscriptionService.getCurrentIssueEntitlements(result.subscriptionParticipant)
 
         def filename = "renewEntitlements_${escapeService.escapeString(result.subscriptionInstance.dropdownNamingConvention(result.participant))}"
 
@@ -822,10 +824,12 @@ class SurveyController {
                     g.message(code:'identifier.label'),
                     g.message(code:'title.dateFirstInPrint.label'),
                     g.message(code:'title.dateFirstOnline.label'),
+                    g.message(code:'default.status.label'),
                     g.message(code:'tipp.price')
+
             ]
             List rows = []
-            result.ies.each { ie ->
+            result.ies?.each { ie ->
                 List row = []
                 row.add([field: ie?.tipp?.title?.title ?: '', style:null])
                 row.add([field: ie?.tipp?.title?.volume ?: '', style:null])
@@ -841,9 +845,11 @@ class SurveyController {
 
                 row.add([field: ie?.tipp?.title?.dateFirstInPrint ? g.formatDate(date: ie?.tipp?.title?.dateFirstInPrint, format: message(code: 'default.date.format.notime')): '', style:null])
                 row.add([field: ie?.tipp?.title?.dateFirstOnline ? g.formatDate(date: ie?.tipp?.title?.dateFirstOnline, format: message(code: 'default.date.format.notime')): '', style:null])
+                row.add([field: ie?.acceptStatus?.getI10n('value') ?: '', style:null])
 
                 row.add([field: ie.priceItem?.listPrice ? g.formatNumber(number: ie?.priceItem?.listPrice, type: 'currency', currencySymbol: ie?.priceItem?.listCurrency, currencyCode: ie?.priceItem?.listCurrency) : '', style:null])
                 row.add([field: ie.priceItem?.localPrice ? g.formatNumber(number: ie?.priceItem?.localPrice, type: 'currency', currencySymbol: ie?.priceItem?.localCurrency, currencyCode: ie?.priceItem?.localCurrency) : '', style:null])
+
 
                 rows.add(row)
             }
@@ -861,6 +867,142 @@ class SurveyController {
                 html result
             }
         }
+    }
+
+    @DebugAnnotation(perm = "ORG_CONSORTIUM_SURVEY", affil = "INST_EDITOR", specRole = "ROLE_ADMIN")
+    @Secured(closure = {
+        ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM_SURVEY", "INST_EDITOR", "ROLE_ADMIN")
+    })
+    def openIssueEntitlementsSurveyAgain() {
+        def result = [:]
+        result.institution = contextService.getOrg()
+        result.user = User.get(springSecurityService.principal.id)
+        result.participant = params.participant ? Org.get(params.participant) : null
+
+        result.surveyConfig = SurveyConfig.get(params.id)
+        result.surveyInfo = result.surveyConfig.surveyInfo
+
+        result.editable = result.surveyInfo?.isEditable() ?: false
+
+        if (!result.editable) {
+            flash.error = g.message(code: "default.notAutorized.message")
+            redirect(url: request.getHeader('referer'))
+        }
+
+        def surveyOrg = SurveyOrg.findByOrgAndSurveyConfig(result.participant, result.surveyConfig)
+
+        result.subscriptionInstance =  result.surveyConfig?.subscription
+
+        def ies = subscriptionService.getIssueEntitlementsUnderNegotiation(result.surveyConfig.subscription?.getDerivedSubscriptionBySubscribers(result.participant))
+
+        ies?.each { ie ->
+            ie.acceptStatus = RDStore.IE_ACCEPT_STATUS_UNDER_CONSIDERATION
+            ie.save(flush: true)
+        }
+
+        surveyOrg.finishDate = null
+        surveyOrg.save(flush: true)
+
+        flash.message = message(code: 'openIssueEntitlementsSurveyAgain.info')
+
+        redirect(action: 'showEntitlementsRenew', id: result.surveyConfig?.id, params:[participant: result.participant?.id])
+
+    }
+
+    @DebugAnnotation(perm = "ORG_CONSORTIUM_SURVEY", affil = "INST_EDITOR", specRole = "ROLE_ADMIN")
+    @Secured(closure = {
+        ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM_SURVEY", "INST_EDITOR", "ROLE_ADMIN")
+    })
+    def completeIssueEntitlementsSurveyforParticipant() {
+        def result = [:]
+        result.institution = contextService.getOrg()
+        result.user = User.get(springSecurityService.principal.id)
+        result.participant = params.participant ? Org.get(params.participant) : null
+
+        result.surveyConfig = SurveyConfig.get(params.id)
+        result.surveyInfo = result.surveyConfig.surveyInfo
+
+        result.editable = result.surveyInfo?.isEditable() ?: false
+
+        if (!result.editable) {
+            flash.error = g.message(code: "default.notAutorized.message")
+            redirect(url: request.getHeader('referer'))
+        }
+
+        def ies = subscriptionService.getIssueEntitlementsUnderNegotiation(result.surveyConfig.subscription?.getDerivedSubscriptionBySubscribers(result.participant))
+
+        ies?.each { ie ->
+            ie.acceptStatus = RDStore.IE_ACCEPT_STATUS_FIXED
+            ie.save(flush: true)
+        }
+
+        flash.message = message(code: 'completeIssueEntitlementsSurvey.forParticipant.info')
+
+        redirect(action: 'showEntitlementsRenew', id: result.surveyConfig?.id, params:[participant: result.participant?.id])
+
+    }
+
+    @DebugAnnotation(perm = "ORG_CONSORTIUM_SURVEY", affil = "INST_EDITOR", specRole = "ROLE_ADMIN")
+    @Secured(closure = {
+        ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM_SURVEY", "INST_EDITOR", "ROLE_ADMIN")
+    })
+    def completeIssueEntitlementsSurvey() {
+        def result = [:]
+        result.institution = contextService.getOrg()
+        result.user = User.get(springSecurityService.principal.id)
+
+        result.surveyConfig = SurveyConfig.get(params.id)
+        result.surveyInfo = result.surveyConfig.surveyInfo
+
+        result.editable = result.surveyInfo?.isEditable() ?: false
+
+        if (!result.editable) {
+            flash.error = g.message(code: "default.notAutorized.message")
+            redirect(url: request.getHeader('referer'))
+        }
+
+        def participantsFinish = SurveyOrg.findAllByFinishDateIsNotNullAndSurveyConfig(result.surveyConfig)?.org.flatten().unique { a, b -> a.id <=> b.id }
+
+        participantsFinish?.each { org ->
+
+            def ies = subscriptionService.getIssueEntitlementsUnderNegotiation(result.surveyConfig.subscription?.getDerivedSubscriptionBySubscribers(org))
+
+            ies?.each { ie ->
+                ie.acceptStatus = RDStore.IE_ACCEPT_STATUS_FIXED
+                ie.save(flush: true)
+            }
+        }
+
+        flash.message = message(code: 'completeIssueEntitlementsSurvey.forFinishParticipant.info')
+
+        redirect(action: 'surveyTitlesEvaluation', id: result.surveyInfo?.id, params:[surveyConfigID: result.surveyConfig?.id])
+
+    }
+
+    @Secured(closure = {
+        ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM_SURVEY", "INST_EDITOR", "ROLE_ADMIN")
+    })
+    def evaluateIssueEntitlementsSurvey() {
+        def result = setResultGenericsAndCheckAccess()
+
+        if (!result.editable) {
+            flash.error = g.message(code: "default.notAutorized.message")
+            redirect(url: request.getHeader('referer'))
+        }
+
+        result.participant = params.participant ? Org.get(params.participant) : null
+
+        result.surveyConfig = SurveyConfig.get(params.id)
+        result.surveyInfo = result.surveyConfig.surveyInfo
+
+        result.surveyOrg = SurveyOrg.findByOrgAndSurveyConfig(result.participant, result.surveyConfig)
+
+        result.subscriptionInstance =  result.surveyConfig?.subscription
+
+        result.ies = subscriptionService.getCurrentIssueEntitlements(result.surveyConfig.subscription?.getDerivedSubscriptionBySubscribers(result.participant))
+
+        result
+
     }
 
     @DebugAnnotation(perm = "ORG_CONSORTIUM_SURVEY", affil = "INST_EDITOR", specRole = "ROLE_ADMIN")
@@ -1009,7 +1151,7 @@ class SurveyController {
 
         def contextOrg = contextService.getOrg()
         result.tasks = taskService.getTasksByResponsiblesAndObject(result.user, contextOrg, result.surveyConfig)
-        def preCon = taskService.getPreconditions(contextOrg)
+        def preCon = taskService.getPreconditionsWithoutTargets(contextOrg)
         result << preCon
 
         result
@@ -1922,7 +2064,24 @@ class SurveyController {
         result.surveyInfo.status = RDStore.SURVEY_IN_EVALUATION
         result.surveyInfo.save(flush: true)
 
-        redirect(action: "currentSurveysConsortia", params: [tab: "inEvaluation"])
+        redirect(url: request.getHeader('referer'))
+
+    }
+
+    @DebugAnnotation(perm = "ORG_CONSORTIUM_SURVEY", affil = "INST_EDITOR", specRole = "ROLE_ADMIN")
+    @Secured(closure = {
+        ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM_SURVEY", "INST_EDITOR", "ROLE_ADMIN")
+    })
+    def setCompleteSurvey() {
+        def result = setResultGenericsAndCheckAccess()
+        if (!result.editable) {
+            response.sendError(401); return
+        }
+
+        result.surveyInfo.status = RDStore.SURVEY_SURVEY_COMPLETED
+        result.surveyInfo.save(flush: true)
+
+        redirect(url: request.getHeader('referer'))
 
     }
 
@@ -3034,6 +3193,49 @@ class SurveyController {
 
 
         redirect(uri: request.getHeader('referer'))
+    }
+
+    @DebugAnnotation(perm = "ORG_CONSORTIUM_SURVEY", affil = "INST_EDITOR", specRole = "ROLE_ADMIN")
+    @Secured(closure = {
+        ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM_SURVEY", "INST_EDITOR", "ROLE_ADMIN")
+    })
+    def transferParticipants() {
+        def result = setResultGenericsAndCheckAccess()
+        if (!result.editable) {
+            response.sendError(401); return
+        }
+
+        result.parentSubscription = result.surveyConfig?.subscription
+        result.parentSubChilds = subscriptionService.getCurrentValidSubChilds(result.parentSubscription)
+        result.parentSuccessorSubscription = result.surveyConfig?.subscription?.getCalculatedSuccessor()
+        result.parentSuccessorSubChilds = result.parentSuccessorSubscription ? subscriptionService.getValidSubChilds(result.parentSuccessorSubscription) : null
+
+        result.participantsList = []
+
+        result.parentParticipantsList = []
+        result.parentSuccessortParticipantsList = []
+
+        result.parentSubChilds.each { sub ->
+            def org = sub.getSubscriber()
+            result.participantsList << org
+            result.parentParticipantsList << org
+
+        }
+
+        result.parentSuccessorSubChilds.each { sub ->
+            def org = sub.getSubscriber()
+            result.participantsList << org
+            result.parentSuccessortParticipantsList << org
+
+        }
+
+        result.participantsList = result.participantsList.sort{it.sortname}
+
+
+        result.participationProperty = SurveyProperty.findByNameAndOwnerIsNull("Participation")
+
+        result
+
     }
 
     private getSurveyProperties(Org contextOrg) {
