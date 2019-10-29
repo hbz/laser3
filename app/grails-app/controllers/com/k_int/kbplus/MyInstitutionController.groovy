@@ -1501,8 +1501,8 @@ from License as l where (
         def license_type = RefdataValue.getByValueAndCategory('Actual', 'License Type')
 
         def licenseInstance = new License(type: license_type, reference: params.licenseName,
-                startDate:params.licenseStartDate ? parseDate(params.licenseStartDate,possible_date_formats) : null,
-                endDate: params.licenseEndDate ? parseDate(params.licenseEndDate,possible_date_formats) : null,
+                startDate:params.licenseStartDate ? parseDate(params.licenseStartDate, escapeService.possible_date_formats) : null,
+                endDate: params.licenseEndDate ? parseDate(params.licenseEndDate, escapeService.possible_date_formats) : null,
                 status: RefdataValue.get(params.status)
         )
 
