@@ -10,13 +10,14 @@
 <head>
     <meta name="layout" content="semanticUI">
     <g:set var="entityName" value="${message(code: 'org.label', default: 'Org')}"/>
-    <title>${message(code: 'laser', default: 'LAS:eR')} : <g:message code="default.show.label"
-                                                                     args="[entityName]"/></title>
+    <title>${message(code: 'laser', default: 'LAS:eR')} : ${message(code:'menu.institutions.readerNumbers')}</title>
 </head>
 
 <body>
 
-<g:render template="breadcrumb" model="${[orgInstance: orgInstance, params: params]}"/>
+<semui:breadcrumbs>
+    <semui:crumb text="${orgInstance.getDesignation()}" class="active"/>
+</semui:breadcrumbs>
 
 <g:if test="${editable}">
     <semui:controlButtons>
@@ -24,9 +25,7 @@
     </semui:controlButtons>
 </g:if>
 
-<h1 class="ui left aligned icon header"><semui:headerIcon/>
-${orgInstance.name} - ${message(code:'menu.institutions.readerNumbers')}
-</h1>
+<h1 class="ui left aligned icon header"><semui:headerIcon/>${orgInstance.name}</h1>
 
 <g:render template="nav" model="${[orgInstance: orgInstance, inContextOrg: orgInstance.id == contextService.getOrg().id]}"/>
 

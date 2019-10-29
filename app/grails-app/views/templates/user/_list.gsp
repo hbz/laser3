@@ -4,8 +4,7 @@
 <html>
   <head>
     <meta name="layout" content="semanticUI">
-    <g:set var="entityName" value="${message(code: 'user.label', default: 'User')}" />
-    <title><g:message code="default.list.label" args="[entityName]" /></title>
+    <title>${message(code:'laser', default:'LAS:eR')} : ${message(code:'menu.institutions.users')}</title>
   </head>
     <body>
 

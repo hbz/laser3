@@ -5,7 +5,7 @@
 <html>
     <head>
         <meta name="layout" content="semanticUI"/>
-        <title>${message(code:'laser', default:'LAS:eR')} : ${message(code:'myinst.title', default:'Institutional Dash')}</title>
+        <title>${message(code:'laser', default:'LAS:eR')} : ${message(code:'menu.institutions.dash')}</title>
     </head>
     <body>
 

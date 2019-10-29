@@ -7,7 +7,7 @@
 </head>
 <body>
 <semui:breadcrumbs>
-    <semui:crumb controller="myInstitution" action="dashboard" text="${institution?.getDesignation()}" />
+    <semui:crumb controller="myInstitution" action="dashboard" text="${contextOrg?.getDesignation()}" />
     <semui:crumb message="menu.my.platforms" class="active" />
 </semui:breadcrumbs>
 

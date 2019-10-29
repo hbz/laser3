@@ -6,18 +6,20 @@
 <html>
     <head>
         <meta name="layout" content="semanticUI">
-            <title>${message(code:'laser', default:'LAS:eR')} : ${message(code:'org.confProperties')} &amp; ${message(code:'org.orgSettings')}</title>
+            <title>${message(code:'laser', default:'LAS:eR')} : ${message(code:'org.nav.options')}</title>
             <g:javascript src="properties.js"/>
     </head>
     <body>
 
-        <g:render template="breadcrumb" model="${[ orgInstance:orgInstance, params:params ]}"/>
+        <semui:breadcrumbs>
+            <semui:crumb text="${orgInstance.getDesignation()}" class="active"/>
+        </semui:breadcrumbs>
 
         <%--<semui:controlButtons>
             <g:render template="actions" model="${[ org:orgInstance, user:user ]}"/>
         </semui:controlButtons>--%>
 
-        <h1 class="ui left aligned icon header"><semui:headerIcon />${orgInstance.name} - ${message(code:'org.nav.options')}</h1>
+        <h1 class="ui left aligned icon header"><semui:headerIcon />${orgInstance.name}</h1>
 
         <semui:objectStatus object="${orgInstance}" status="${orgInstance.status}" />
 
