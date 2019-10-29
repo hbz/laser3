@@ -4,8 +4,7 @@
 <html>
 	<head>
 		<meta name="layout" content="semanticUI">
-		<g:set var="entityName" value="${message(code: 'platform.label', default: 'Platform')}" />
-		<title><g:message code="default.list.label" args="[entityName]" /></title>
+		<title>${message(code: 'laser', default: 'LAS:eR')} : ${message(code: 'platforms.all_platforms.label')}</title>
 	</head>
 	<body>
 	<semui:breadcrumbs>
@@ -13,7 +12,7 @@
 	</semui:breadcrumbs>
 
 
-	<h1 class="ui left aligned icon header"><semui:headerIcon /><g:message code="platforms.all_platforms.label" args="[entityName]" />
+	<h1 class="ui left aligned icon header"><semui:headerIcon /><g:message code="platforms.all_platforms.label" />
 		<semui:totalNumber total="${platformInstanceTotal}"/>
 	</h1>
 

@@ -7,6 +7,7 @@
         <title>${message(code:'laser', default:'LAS:eR')} : ${message(code:'menu.my.comp_lic')}</title>
     </head>
     <body>
+
         <semui:breadcrumbs>
             <semui:crumb controller="myInstitution" action="dashboard" text="${institution.getDesignation()}" />
             <semui:crumb class="active" message="menu.my.comp_lic" />
@@ -19,8 +20,11 @@
                 </ul>
             </li>--%>
         </semui:breadcrumbs>
+
         <h1 class="ui left aligned icon header"><semui:headerIcon />${message(code:'menu.my.comp_lic')}</h1>
+
         <g:render template="selectionForm" model="${[selectedLicenses:licenses]}" />
+
         <div class="ui grid">
             <table class="ui la-table la-table-small table">
                 <g:set var="licenseCount" value="${licenses.size()}"/>
