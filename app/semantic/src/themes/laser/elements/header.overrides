@@ -5,7 +5,9 @@
 /*******************************
             Header
 *******************************/
-
+h1~h2.ui.header {
+  font-size: @h3;
+}
 /* Standard */
 .ui.header {
   color: @darkBlueGrey;
