@@ -2,7 +2,7 @@
 
     <div class="sixteen wide column">
 
-        <h2 class="ui header">${message(code:'task.tasksCreatedByMe.header')} <semui:totalNumber total="${taskInstanceCount}"/></h2>
+        <h3 class="ui header">${message(code:'task.tasksCreatedByMe.header')} <semui:totalNumber total="${taskInstanceCount}"/></h3>
 
         <table class="ui celled la-table table">
             <thead>

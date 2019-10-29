@@ -3,14 +3,18 @@
 <html>
     <head>
         <meta name="layout" content="semanticUI">
-        <title>${message(code: 'menu.institutions.costConfiguration')}</title>
+        <title>${message(code:'laser', default:'LAS:eR')} : ${message(code: 'menu.institutions.costConfiguration')}</title>
     </head>
     <body>
         <semui:breadcrumbs>
-            <semui:crumb controller="myInstitution" action="dashboard" text="${institution.name}" />
+            <semui:crumb controller="myInstitution" action="dashboard" text="${institution?.getDesignation()}" />
             <semui:crumb message="menu.institutions.costConfiguration" class="active" />
         </semui:breadcrumbs>
-        <h1 class="ui left aligned icon header"><semui:headerIcon/><g:message code="menu.institutions.costConfiguration"/></h1>
+
+        <h1 class="ui left aligned icon header"><semui:headerIcon />${institution.name}</h1>
+
+        <h2 class="ui left aligned icon header"><semui:headerIcon/><g:message code="menu.institutions.costConfiguration"/></h2>
+
         <p>
             <g:message code="costConfiguration.preset" />
         </p>

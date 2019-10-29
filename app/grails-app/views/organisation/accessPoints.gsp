@@ -5,15 +5,14 @@
     <head>
         <meta name="layout" content="semanticUI">
         <g:set var="entityName" value="${message(code: 'org.label', default: 'Org')}" />
-        <title>${message(code:'laser', default:'LAS:eR')} <g:message code="default.show.label" args="[entityName]" /></title>
+        <title>${message(code:'laser', default:'LAS:eR')} : ${message(code:'org.nav.accessPoints')}</title>
 
         <g:javascript src="properties.js"/>
     </head>
     <body>
 
     <semui:breadcrumbs>
-        <semui:crumb controller="organisation" action="show" id="${orgInstance.id}" text="${orgInstance.getDesignation()}" />
-        <semui:crumb message="org.nav.accessPoints" class="active"/>
+        <semui:crumb text="${orgInstance.getDesignation()}" class="active"/>
     </semui:breadcrumbs>
 
     <g:if test="${accessService.checkPerm('ORG_INST,ORG_CONSORTIUM')}">
@@ -22,9 +21,7 @@
         </semui:controlButtons>
     </g:if>
 
-    <h1 class="ui left aligned icon header"><semui:headerIcon />
-        ${orgInstance.name} - ${message(code:'org.nav.accessPoints')}</h1>
-    </h1>
+    <h1 class="ui left aligned icon header"><semui:headerIcon />${orgInstance.name}</h1>
 
     <g:render template="nav" model="${[orgInstance: orgInstance, inContextOrg: orgInstance.id == contextService.getOrg().id]}" />
 

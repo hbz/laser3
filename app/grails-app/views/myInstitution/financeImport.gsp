@@ -14,7 +14,8 @@
 
     <semui:messages data="${flash}" />
 
-    <h1 class="ui left aligned icon header"><semui:headerIcon />${message(code:'menu.institutions.financeImport')}</h1>
+    <h1 class="ui left aligned icon header"><semui:headerIcon />${institution.name}</h1>
+    <h2 class="ui left aligned icon header"><semui:headerIcon />${message(code:'menu.institutions.financeImport')}</h2>
 
           ${message(code:'myinst.financeImport.headline', default:'Bulk load cost item records')}
           <%-- continue here: make the template and make then test processes --%>

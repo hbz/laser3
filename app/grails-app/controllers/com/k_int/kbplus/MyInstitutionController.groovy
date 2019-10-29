@@ -2885,7 +2885,7 @@ AND EXISTS (
 
         result.users = userService.getUserSet(filterParams)
         result.breadcrumb = '/organisation/breadcrumb'
-        result.titleMessage = "${result.institution} - ${message(code:'org.nav.users')}"
+        result.titleMessage = "${result.institution}"
         result.inContextOrg = true
         result.pendingRequests = UserOrg.findAllByStatusAndOrg(UserOrg.STATUS_PENDING, result.institution, [sort:'dateRequested', order:'desc'])
         result.orgInstance = result.institution

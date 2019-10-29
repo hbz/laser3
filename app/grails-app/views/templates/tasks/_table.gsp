@@ -7,7 +7,7 @@
 
     <div class="sixteen wide column">
 
-        <h2 class="ui header">${message(code: 'task.myTasks.header', default:'Tasks assigned to me')} <semui:totalNumber total="${taskInstanceCount}"/></h2>
+        <h3 class="ui header">${message(code: 'task.myTasks.header', default:'Tasks assigned to me')} <semui:totalNumber total="${taskInstanceCount}"/></h3>
 
         <%--
         <g:if test="${editable && controllerName != 'myInstitution'}">

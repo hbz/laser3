@@ -15,7 +15,9 @@
             <semui:crumb message="menu.institutions.tasks" class="active"/>
         </semui:breadcrumbs>
 
-        <h1 class="ui left aligned icon header"><semui:headerIcon />${message(code:'task.plural', default:'Tasks')}</h1>
+        <h1 class="ui left aligned icon header"><semui:headerIcon />${institution.name}</h1>
+        <h2 class="ui left aligned icon header"><semui:headerIcon />${message(code:'task.plural', default:'Tasks')}</h2>
+
         <g:if test="${editable}">
             <input type="submit" class="ui button" value="${message(code:'task.create.new')}" data-semui="modal" data-href="#modalCreateTask" />
         </g:if>
