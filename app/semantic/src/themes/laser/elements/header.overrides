@@ -82,7 +82,9 @@ body[class*="title"]  {
 }
 
 body[class*="Organisation"],
-body[class*="organisation"] {
+body[class*="organisation"],
+body[class*="myPublicContacts"],
+body[class*="userList"]{
   .ui.icon.header .circular.icon.la-object {
     display: inline-block;
     background-color: @organisation;
@@ -92,6 +94,27 @@ body[class*="organisation"] {
     }
   }
 }
+
+body[class*="Platform"],
+body[class*="platform"]
+{
+  .ui.icon.header .circular.icon.la-object {
+    display: inline-block;
+    background-color: @platform;
+    border-color: @platform;
+    &:before {
+      content: "\f0c2";
+    }
+  }
+}
+
+
+body[class*="Platform"] .ui.icon.header .circular.icon.la-object:before,
+body[class*="platform"] .ui.icon.header .circular.icon.la-object:before {
+  content: "\f0c2";
+}
+
+
 .ui.icon.header .circular.icon.la-object-journal {
   display: inline-block;
   background-color: @title;
