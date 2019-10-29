@@ -7096,15 +7096,36 @@ body[class*="title"] .ui.icon.header .circular.icon.la-object:before {
 }
 
 body[class*="Organisation"] .ui.icon.header .circular.icon.la-object,
-body[class*="organisation"] .ui.icon.header .circular.icon.la-object {
+body[class*="organisation"] .ui.icon.header .circular.icon.la-object,
+body[class*="myPublicContacts"] .ui.icon.header .circular.icon.la-object,
+body[class*="userList"] .ui.icon.header .circular.icon.la-object {
   display: inline-block;
   background-color: #00B5AD;
   border-color: #00B5AD;
 }
 
 body[class*="Organisation"] .ui.icon.header .circular.icon.la-object:before,
-body[class*="organisation"] .ui.icon.header .circular.icon.la-object:before {
+body[class*="organisation"] .ui.icon.header .circular.icon.la-object:before,
+body[class*="myPublicContacts"] .ui.icon.header .circular.icon.la-object:before,
+body[class*="userList"] .ui.icon.header .circular.icon.la-object:before {
   content: "\f19c";
+}
+
+body[class*="Platform"] .ui.icon.header .circular.icon.la-object,
+body[class*="platform"] .ui.icon.header .circular.icon.la-object {
+  display: inline-block;
+  background-color: #FBC71C;
+  border-color: #FBC71C;
+}
+
+body[class*="Platform"] .ui.icon.header .circular.icon.la-object:before,
+body[class*="platform"] .ui.icon.header .circular.icon.la-object:before {
+  content: "\f0c2";
+}
+
+body[class*="Platform"] .ui.icon.header .circular.icon.la-object:before,
+body[class*="platform"] .ui.icon.header .circular.icon.la-object:before {
+  content: "\f0c2";
 }
 
 .ui.icon.header .circular.icon.la-object-journal {
