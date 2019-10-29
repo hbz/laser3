@@ -7014,6 +7014,10 @@ a.ui.inverted.grey.header:hover {
             Header
 *******************************/
 
+h1 ~ h2.ui.header {
+  font-size: 1.28571429rem;
+}
+
 /* Standard */
 
 .ui.header {
