@@ -12,7 +12,7 @@
 </semui:breadcrumbs>
 
 
-<h1 class="ui left aligned icon header">${message(code:'menu.my.platforms')}
+<h1 class="ui left aligned icon header"><semui:headerIcon/>${message(code:'menu.my.platforms')}
     <semui:totalNumber total="${platformInstanceTotal}"/>
 </h1>
 

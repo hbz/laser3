@@ -54,10 +54,12 @@
       padding-left:0.9rem;
       padding-right:0.9rem;
     }
-    th {
+    th{
       color: #515151;
       font-size: 0.8rem;
-      text-transform: uppercase;
+      &:not(.la-no-uppercase) {
+        text-transform: uppercase;
+      }
       a {
         //display: inline-block;
         //padding: 0.5rem 0;

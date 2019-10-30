@@ -10,6 +10,7 @@
 
 <body>
 <semui:breadcrumbs>
+    <semui:crumb controller="myInstitution" action="dashboard" text="${contextService.getOrg()?.getDesignation()}"/>
     <semui:crumb controller="myInstitution" action="currentLicenses" text="${message(code: 'license.current')}"/>
     <semui:crumb controller="license" action="show" id="${license.id}" text="${license.reference}"/>
     <semui:crumb class="active" text="${message(code: 'license.details.addMembers.label',args:[message(code:'consortium.subscriber')])}"/>

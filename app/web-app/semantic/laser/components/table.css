@@ -1180,6 +1180,8 @@
 .ui.table tr th {
   color: #515151;
   font-size: 0.8rem;
+}
+.ui.table tr th:not(.la-no-uppercase) {
   text-transform: uppercase;
 }
 .ui.table tr th a {

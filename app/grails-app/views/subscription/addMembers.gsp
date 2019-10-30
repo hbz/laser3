@@ -11,6 +11,7 @@
 <body>
 
 <semui:breadcrumbs>
+    <semui:crumb controller="myInstitution" action="dashboard" text="${contextService.getOrg()?.getDesignation()}"/>
     <semui:crumb controller="myInstitution" action="currentSubscriptions"
                  text="${message(code: 'myinst.currentSubscriptions.label')}"/>
     <semui:crumb controller="subscription" action="index" id="${subscriptionInstance.id}"
