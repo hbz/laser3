@@ -12,7 +12,6 @@
     <body>
 
         <semui:breadcrumbs>
-            <semui:crumb controller="myInstitution" action="dashboard" text="${institution?.getDesignation()}" />
             <semui:crumb message="myinst.currentSubscriptions.label" class="active" />
         </semui:breadcrumbs>
 
