@@ -12,7 +12,7 @@
         <laser:serviceInjection />
 
         <semui:breadcrumbs>
-            <semui:crumb text="Dashboard" class="active" />
+            <semui:crumb text="${message(code:'menu.institutions.dash')}" class="active" />
         </semui:breadcrumbs>
 
         <h1 class="ui left aligned icon header"><semui:headerIcon />${institution.name}</h1>
