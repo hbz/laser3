@@ -13,14 +13,12 @@
 <body>
 
 <semui:breadcrumbs>
-    <semui:crumb controller="myInstitution" action="dashboard" text="${institution?.getDesignation()}"/>
     <semui:crumb message="currentSurveys.label" class="active"/>
 </semui:breadcrumbs>
 
 <semui:controlButtons>
     <g:render template="actions"/>
 </semui:controlButtons>
-
 
 
 <h1 class="ui left aligned icon header"><semui:headerIcon/>${message(code: 'currentSurveys.label', default: 'Current Surveys')}
@@ -324,7 +322,7 @@
                     <g:if test="${params.tab == "inEvaluation"}">
                         <td>
                         <g:if test="${surveyInfo.isSubscriptionSurvey && surveyConfig && surveyConfig?.type == 'Subscription' && !surveyConfig?.pickAndChoose}">
-                            <g:link controller="survey" action="renewalwithSurvey" id="${surveyInfo?.id}"
+                            <g:link controller="survey" action="renewalWithSurvey" id="${surveyInfo?.id}"
                                     params="[surveyConfigID: surveyConfig?.id]"
                                     class="ui button ">
                                 <g:message code="surveyInfo.renewal.action"/>

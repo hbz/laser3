@@ -12,7 +12,9 @@
     <body>
 
     <semui:breadcrumbs>
-        <semui:crumb text="${orgInstance.getDesignation()}" class="active"/>
+        <g:if test="${!inContextOrg}">
+            <semui:crumb text="${orgInstance.getDesignation()}" class="active"/>
+        </g:if>
     </semui:breadcrumbs>
 
     <g:if test="${accessService.checkPerm('ORG_INST,ORG_CONSORTIUM')}">

@@ -4,8 +4,7 @@
 <html>
 <head>
     <meta name="layout" content="semanticUI">
-    <g:set var="entityName" value="${message(code: 'titleInstance.label', default: 'Title Instance')}"/>
-    <title><g:message code="laser"/> : <g:message code="default.edit.label" args="[entityName]"/></title>
+    <title>${message(code:'laser', default:'LAS:eR')} : ${message(code:'title.details')}</title>
 </head>
   <body>
 
@@ -202,7 +201,7 @@
               </tbody>
             </table>
             <g:if test="${ti.getIdentifierValue('originediturl') != null}">
-              <span class="pull-right">
+              <span class="la-float-right">
                 ${message(code: 'title.show.gokb')} <a href="${ti.getIdentifierValue('originediturl')}">GOKb</a>.
               </span>
             </g:if>

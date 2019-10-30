@@ -69,7 +69,7 @@
                     </tbody>
                 </table>
 
-                <div class="pull-right">
+                <div class="la-float-right">
                     <g:if test="${entitlements}">
                         <button type="submit" class="ui button">${message(code:'myinst.renewalUpload.accept', default:'Accept and Process')}</button>
                     </g:if>
@@ -123,7 +123,7 @@
                 </table>
             </g:if>
 
-          <div class="pull-right">
+          <div class="la-float-right">
               <g:if test="${entitlements}">
                   <button type="submit" class="ui button">${message(code:'myinst.renewalUpload.accept', default:'Accept and Process')}</button>
               </g:if>

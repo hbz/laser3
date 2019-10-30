@@ -24,14 +24,17 @@
 <semui:controlButtons>
     <semui:exportDropdown>
         <semui:exportDropdownItem>
-            <g:link class="item" action="renewalwithSurvey" id="${surveyInfo.id}"
-                    params="[surveyConfigID: surveyConfig.id, exportXLS: true]">${message(code: 'renewalwithSurvey.exportRenewal')}</g:link>
+            <g:link class="item" action="renewalWithSurvey" id="${surveyInfo.id}"
+                    params="[surveyConfigID: surveyConfig.id, exportXLS: true]">${message(code: 'renewalWithSurvey.exportRenewal')}</g:link>
         </semui:exportDropdownItem>
     </semui:exportDropdown>
     <semui:actionsDropdown>
         <g:if test="${parentSuccessorSubscription}">
             <semui:actionsDropdownItem data-semui="modal" href="#transferParticipantsModal"
                                        message="surveyInfo.transferParticipants"/>
+
+            <semui:actionsDropdownItem controller="survey" action="compareMembersOfTwoSubs" params="[id: params.id, surveyConfigID: surveyConfig.id]"
+                                       message="surveyInfo.transferOverView"/>
         </g:if>
         <g:else>
             <semui:actionsDropdownItemDisabled data-semui="modal" href="#transferParticipantsModal"
@@ -58,7 +61,7 @@ ${surveyInfo?.name}
 <semui:form>
 
     <h3>
-    <g:message code="renewalwithSurvey.parentSubscription"/>:
+    <g:message code="renewalWithSurvey.parentSubscription"/>:
     <g:if test="${parentSubscription}">
         <g:link controller="subscription" action="show"
                 id="${parentSubscription?.id}">${parentSubscription?.dropdownNamingConvention()}</g:link>
@@ -66,7 +69,7 @@ ${surveyInfo?.name}
 
     <br>
     <br>
-    <g:message code="renewalwithSurvey.parentSuccessorSubscription"/>:
+    <g:message code="renewalWithSurvey.parentSuccessorSubscription"/>:
     <g:if test="${parentSuccessorSubscription}">
         <g:link controller="subscription" action="show"
                 id="${parentSuccessorSubscription?.id}">${parentSuccessorSubscription?.dropdownNamingConvention()}</g:link>
@@ -74,16 +77,16 @@ ${surveyInfo?.name}
         <g:link controller="survey" action="copyElementsIntoRenewalSubscription" id="${parentSubscription?.id}"
                 params="[sourceSubscriptionId: parentSubscription?.id, targetSubscriptionId: parentSuccessorSubscription?.id, isRenewSub: true, isCopyAuditOn: true]"
                 class="ui button ">
-            <g:message code="renewalwithSurvey.newSub.change"/>
+            <g:message code="renewalWithSurvey.newSub.change"/>
         </g:link>
 
     </g:if>
     <g:else>
-        <g:message code="renewalwithSurvey.noParentSuccessorSubscription"/>
+        <g:message code="renewalWithSurvey.noParentSuccessorSubscription"/>
         <g:link controller="survey" action="renewSubscriptionConsortiaWithSurvey" id="${surveyInfo?.id}"
                 params="[surveyConfig: surveyConfig?.id, parentSub: parentSubscription?.id]"
                 class="ui button ">
-            <g:message code="renewalwithSurvey.newSub"/>
+            <g:message code="renewalWithSurvey.newSub"/>
         </g:link>
     </g:else>
     </br>
@@ -104,18 +107,18 @@ ${surveyInfo?.name}
         <semui:totalNumber total="${surveyParticipants}"/>
         <br>
         <g:link controller="subscription" action="members"
-                id="${parentSubscription?.id}">${message(code: 'renewalwithSurvey.orgsInSub')}</g:link>
+                id="${parentSubscription?.id}">${message(code: 'renewalWithSurvey.orgsInSub')}</g:link>
         <semui:totalNumber class="${surveyParticipants != consortiaSubscriptions ? 'red' : ''}"
                            total="${consortiaSubscriptions}"/>
         <br>
-        ${message(code: 'renewalwithSurvey.orgsTotalInRenewalProcess')}
+        ${message(code: 'renewalWithSurvey.orgsTotalInRenewalProcess')}
         <semui:totalNumber class="${totalOrgs != consortiaSubscriptions ? 'red' : ''}" total="${totalOrgs}"/>
     </h3>
 
     <br>
     <br>
 
-    <h4 class="ui left aligned icon header">${message(code: 'renewalwithSurvey.continuetoSubscription.label')} <semui:totalNumber
+    <h4 class="ui left aligned icon header">${message(code: 'renewalWithSurvey.continuetoSubscription.label')} <semui:totalNumber
             total="${orgsContinuetoSubscription?.size() ?: 0}"/></h4>
 
     <table class="ui celled sortable table la-table">
@@ -136,7 +139,7 @@ ${surveyInfo?.name}
             </th>
             <g:if test="${multiYearTermTwoSurvey || multiYearTermThreeSurvey}">
                 <th>
-                    <g:message code="renewalwithSurvey.period"/>
+                    <g:message code="renewalWithSurvey.period"/>
                 </th>
             </g:if>
 
@@ -153,7 +156,7 @@ ${surveyInfo?.name}
                     </g:if>
                 </th>
             </g:each>
-            <th>${message(code: 'renewalwithSurvey.costItem.label')}</th>
+            <th>${message(code: 'renewalWithSurvey.costItem.label')}</th>
             <th>${message(code: 'default.actions')}</th>
         </tr>
         </thead>
@@ -324,7 +327,7 @@ ${surveyInfo?.name}
     <br>
     <br>
 
-    <h4 class="ui left aligned icon header">${message(code: 'renewalwithSurvey.newOrgstoSubscription.label')} <semui:totalNumber
+    <h4 class="ui left aligned icon header">${message(code: 'renewalWithSurvey.newOrgstoSubscription.label')} <semui:totalNumber
             total="${newOrgsContinuetoSubscription?.size() ?: 0}"/></h4>
 
     <table class="ui celled sortable table la-table">
@@ -346,7 +349,7 @@ ${surveyInfo?.name}
 
             <g:if test="${multiYearTermTwoSurvey || multiYearTermThreeSurvey}">
                 <th>
-                    <g:message code="renewalwithSurvey.period"/>
+                    <g:message code="renewalWithSurvey.period"/>
                 </th>
             </g:if>
 
@@ -362,7 +365,7 @@ ${surveyInfo?.name}
                     </g:if>
                 </th>
             </g:each>
-            <th>${message(code: 'renewalwithSurvey.costItem.label')}</th>
+            <th>${message(code: 'renewalWithSurvey.costItem.label')}</th>
             <th>${message(code: 'default.actions')}</th>
         </tr>
         </thead>
@@ -535,7 +538,7 @@ ${surveyInfo?.name}
     <br>
     <br>
 
-    <h4 class="ui left aligned icon header">${message(code: 'renewalwithSurvey.withMultiYearTermSub.label')} <semui:totalNumber
+    <h4 class="ui left aligned icon header">${message(code: 'renewalWithSurvey.withMultiYearTermSub.label')} <semui:totalNumber
             total="${orgsWithMultiYearTermSub?.size() ?: 0}"/></h4>
 
     <table class="ui celled la-table table">
@@ -587,7 +590,7 @@ ${surveyInfo?.name}
     <br>
     <br>
 
-    <h4 class="ui left aligned icon header">${message(code: 'renewalwithSurvey.orgsWithParticipationInParentSuccessor.label')} <semui:totalNumber
+    <h4 class="ui left aligned icon header">${message(code: 'renewalWithSurvey.orgsWithParticipationInParentSuccessor.label')} <semui:totalNumber
             total="${orgsWithParticipationInParentSuccessor?.size() ?: 0}"/></h4>
 
     <table class="ui celled la-table table">
@@ -639,7 +642,7 @@ ${surveyInfo?.name}
     <br>
 
 
-    <h4 class="ui left aligned icon header">${message(code: 'renewalwithSurvey.orgsLateCommers.label')} <semui:totalNumber
+    <h4 class="ui left aligned icon header">${message(code: 'renewalWithSurvey.orgsLateCommers.label')} <semui:totalNumber
             total="${orgsLateCommers?.size() ?: 0}"/></h4>
 
     <table class="ui celled la-table table">
@@ -690,7 +693,7 @@ ${surveyInfo?.name}
     <br>
     <br>
 
-    <h4 class="ui left aligned icon header">${message(code: 'renewalwithSurvey.withTermination.label')} <semui:totalNumber
+    <h4 class="ui left aligned icon header">${message(code: 'renewalWithSurvey.withTermination.label')} <semui:totalNumber
             total="${orgsWithTermination?.size() ?: 0}"/></h4>
 
     <table class="ui celled sortable table la-table">
@@ -722,7 +725,7 @@ ${surveyInfo?.name}
                     </g:if>
                 </th>
             </g:each>
-            <th>${message(code: 'renewalwithSurvey.costItem.label')}</th>
+            <th>${message(code: 'renewalWithSurvey.costItem.label')}</th>
             <th>${message(code: 'default.actions')}</th>
         </tr>
         </thead>
@@ -852,7 +855,7 @@ ${surveyInfo?.name}
     <br>
     <br>
 
-    <h4 class="ui left aligned icon header">${message(code: 'renewalwithSurvey.orgsWithoutResult.label')} <semui:totalNumber
+    <h4 class="ui left aligned icon header">${message(code: 'renewalWithSurvey.orgsWithoutResult.label')} <semui:totalNumber
             total="${orgsWithoutResult?.size() ?: 0}"/></h4>
 
     <table class="ui celled sortable table la-table">
@@ -884,7 +887,7 @@ ${surveyInfo?.name}
                     </g:if>
                 </th>
             </g:each>
-            <th>${message(code: 'renewalwithSurvey.costItem.label')}</th>
+            <th>${message(code: 'renewalWithSurvey.costItem.label')}</th>
             <th>${message(code: 'default.actions')}</th>
         </tr>
         </thead>
@@ -1023,6 +1026,29 @@ ${surveyInfo?.name}
 
         <g:form class="ui form"
                 url="[controller: 'survey', action: 'processTransferParticipants', params: [id: params.id, surveyConfigID: surveyConfig?.id]]">
+            <div class="field">
+                <g:set var="properties" value="${de.laser.AuditConfig.getConfigs(parentSuccessorSubscription)}"></g:set>
+                <g:if test="${properties}">
+
+                    <label><g:message code="subscription.details.copyElementsIntoSubscription.auditConfig" />:</label>
+                    <div class="ui bulleted list">
+                        <g:each in="${properties}" var="prop" >
+                            <div class="item">
+                                <b><g:message code="subscription.${prop.referenceField}.label" /></b>:
+                            <g:if test="${parentSuccessorSubscription.getProperty(prop.referenceField) instanceof com.k_int.kbplus.RefdataValue}">
+                                ${parentSuccessorSubscription.getProperty(prop.referenceField).getI10n('value')}
+                            </g:if>
+                            <g:else>
+                                ${parentSuccessorSubscription.getProperty(prop.referenceField)}
+                            </g:else>
+                            </div>
+                        </g:each>
+                    </div>
+                </g:if>
+                <g:else>
+                    <g:message code="subscription.details.copyElementsIntoSubscription.noAuditConfig"/>
+                </g:else>
+            </div>
             <div class="two fields">
                 <g:set var="validPackages" value="${parentSuccessorSubscription.packages?.sort { it.pkg.name }}"/>
                 <div class="field">
@@ -1064,7 +1090,7 @@ ${surveyInfo?.name}
                         <label><g:message code="surveyInfo.transferParticipants.moreOption"/></label>
 
                         <div class="ui checkbox">
-                            <input type="checkbox" id="transferProviderAgency" name="transferProviderAgency">
+                            <input type="checkbox" id="transferProviderAgency" name="transferProviderAgency" checked>
                             <label for="transferProviderAgency"><g:message
                                     code="surveyInfo.transferParticipants.transferProviderAgency"
                                     args="${superOrgType}"/>

@@ -3,8 +3,7 @@
 <html>
 <head>
     <meta name="layout" content="semanticUI">
-    <g:set var="entityName" value="${message(code: 'titleInstance.label', default: 'Title Instance')}"/>
-    <title><g:message code="default.edit.label" args="[entityName]"/></title>
+    <title>${message(code:'laser', default:'LAS:eR')} : ${message(code:'title.nav.history')}</title>
 </head>
 
 <body>

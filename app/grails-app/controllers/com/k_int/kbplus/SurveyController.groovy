@@ -2082,7 +2082,7 @@ class SurveyController {
     @Secured(closure = {
         ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM_SURVEY", "INST_EDITOR", "ROLE_ADMIN")
     })
-    def renewalwithSurvey() {
+    def renewalWithSurvey() {
         def result = setResultGenericsAndCheckAccess()
         if (!result.editable) {
             response.sendError(401); return
@@ -3201,7 +3201,7 @@ class SurveyController {
     @Secured(closure = {
         ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM_SURVEY", "INST_EDITOR", "ROLE_ADMIN")
     })
-    def transferParticipants() {
+    def compareMembersOfTwoSubs() {
         def result = setResultGenericsAndCheckAccess()
         if (!result.editable) {
             response.sendError(401); return
@@ -3226,7 +3226,7 @@ class SurveyController {
 
         result.parentSuccessorSubChilds.each { sub ->
             def org = sub.getSubscriber()
-            if(!org in result.participantsList) {
+            if(!(org in result.participantsList)) {
                 result.participantsList << org
             }
             result.parentSuccessortParticipantsList << org
@@ -3274,45 +3274,6 @@ class SurveyController {
             result.properties.remove(result.multiYearTermTwoSurvey)
 
         }
-
-        def lateCommersProperty = PropertyDefinition.findByName("Späteinsteiger")
-        def currentParticipantIDs = []
-        result.orgsWithMultiYearTermSub = []
-        result.orgsLateCommers = []
-        def orgsWithMultiYearTermOrgsID = []
-        def orgsLateCommersOrgsID = []
-        result.parentSubChilds?.each { sub ->
-            if (sub?.isCurrentMultiYearSubscription())
-            {
-                result.orgsWithMultiYearTermSub << sub
-                sub?.getAllSubscribers()?.each { org ->
-                    orgsWithMultiYearTermOrgsID << org?.id
-                }
-            }
-            else if (lateCommersProperty && lateCommersProperty?.type == 'class com.k_int.kbplus.RefdataValue') {
-                def subProp = sub?.customProperties?.find { it?.type?.id == lateCommersProperty?.id }
-                if(subProp?.refValue == RefdataValue.getByValueAndCategory('Yes', lateCommersProperty?.refdataCategory))
-                {
-                    result.orgsLateCommers << sub
-                    sub?.getAllSubscribers()?.each { org ->
-                        orgsLateCommersOrgsID << org?.id
-                    }
-
-                } else
-                {
-                    sub?.getAllSubscribers()?.each { org ->
-                        currentParticipantIDs << org?.id
-                    }
-                }
-            }
-            else
-            {
-                sub?.getAllSubscribers()?.each { org ->
-                    currentParticipantIDs << org?.id
-                }
-            }
-        }
-
 
         result.parentSuccessortParticipantsList = []
 
@@ -3392,9 +3353,9 @@ class SurveyController {
             }
         }
 
-        //Späteinsteiger
 
-        //MultiYearTerm Subs  //Späteinsteiger
+
+        //MultiYearTerm Subs  //Späteinsteiger Unwichtig
         result.parentSubChilds?.each { sub ->
             if (sub?.isCurrentMultiYearSubscriptionNew()){
                 sub?.getAllSubscribers()?.each { org ->
@@ -3405,7 +3366,7 @@ class SurveyController {
                     }
                 }
             }
-            else if(sub.islateCommer()){
+            /*else if(sub.islateCommer()){
                 sub?.getAllSubscribers()?.each { org ->
                     if (!(org in result.parentSuccessortParticipantsList)) {
 
@@ -3413,7 +3374,7 @@ class SurveyController {
                         result.newSubs << processAddMember(sub, result.parentSuccessorSubscription, org, sub.startDate, sub.endDate, false, params)
                     }
                 }
-            }
+            }*/
 
         }
 
@@ -3421,10 +3382,10 @@ class SurveyController {
         if(result.newSubs) {
             result.parentSuccessorSubscription.syncAllShares(result.newSubs)
         }
+        flash.message = message(code: 'surveyInfo.transfer.info', args: [countNewSubs, result.newSubs?.size() ?: 0])
 
 
-
-        redirect(action: 'renewalwithSurvey', id: params.id, params: [surveyConfigID: result.surveyConfig?.id])
+        redirect(action: 'compareMembersOfTwoSubs', id: params.id, params: [surveyConfigID: result.surveyConfig?.id])
 
 
     }
@@ -3844,25 +3805,25 @@ class SurveyController {
         ]
 
 
-        titles << g.message(code: 'renewalwithSurvey.period')
+        titles << g.message(code: 'renewalWithSurvey.period')
 
         if (renewalResult?.multiYearTermTwoSurvey || renewalResult?.multiYearTermThreeSurvey)
         {
-            titles << g.message(code: 'renewalwithSurvey.periodComment')
+            titles << g.message(code: 'renewalWithSurvey.periodComment')
         }
 
         renewalResult.properties.each { surveyProperty ->
             titles << surveyProperty?.getI10n('name')
-            titles << g.message(code: 'surveyResult.participantComment') + " " + g.message(code: 'renewalwithSurvey.exportRenewal.to') +" " + surveyProperty?.getI10n('name')
+            titles << g.message(code: 'surveyResult.participantComment') + " " + g.message(code: 'renewalWithSurvey.exportRenewal.to') +" " + surveyProperty?.getI10n('name')
         }
-        titles << g.message(code: 'renewalwithSurvey.costBeforeTax')
-        titles << g.message(code: 'renewalwithSurvey.costAfterTax')
-        titles << g.message(code: 'renewalwithSurvey.costTax')
-        titles << g.message(code: 'renewalwithSurvey.currency')
+        titles << g.message(code: 'renewalWithSurvey.costBeforeTax')
+        titles << g.message(code: 'renewalWithSurvey.costAfterTax')
+        titles << g.message(code: 'renewalWithSurvey.costTax')
+        titles << g.message(code: 'renewalWithSurvey.currency')
 
         List renewalData = []
 
-        renewalData.add([[field: g.message(code: 'renewalwithSurvey.continuetoSubscription.label')+ " (${renewalResult.orgsContinuetoSubscription?.size() ?: 0})", style: 'positive']])
+        renewalData.add([[field: g.message(code: 'renewalWithSurvey.continuetoSubscription.label')+ " (${renewalResult.orgsContinuetoSubscription?.size() ?: 0})", style: 'positive']])
 
         renewalResult.orgsContinuetoSubscription.each { participantResult ->
             List row = []
@@ -3916,7 +3877,7 @@ class SurveyController {
         renewalData.add([[field: '', style: null]])
         renewalData.add([[field: '', style: null]])
         renewalData.add([[field: '', style: null]])
-        renewalData.add([[field: g.message(code: 'renewalwithSurvey.withMultiYearTermSub.label')+ " (${renewalResult.orgsWithMultiYearTermSub?.size() ?: 0})", style: 'positive']])
+        renewalData.add([[field: g.message(code: 'renewalWithSurvey.withMultiYearTermSub.label')+ " (${renewalResult.orgsWithMultiYearTermSub?.size() ?: 0})", style: 'positive']])
 
 
         renewalResult.orgsWithMultiYearTermSub.each { sub ->
@@ -3952,7 +3913,7 @@ class SurveyController {
         renewalData.add([[field: '', style: null]])
         renewalData.add([[field: '', style: null]])
         renewalData.add([[field: '', style: null]])
-        renewalData.add([[field: g.message(code: 'renewalwithSurvey.orgsWithParticipationInParentSuccessor.label')+ " (${renewalResult.orgsWithParticipationInParentSuccessor?.size() ?: 0})", style: 'positive']])
+        renewalData.add([[field: g.message(code: 'renewalWithSurvey.orgsWithParticipationInParentSuccessor.label')+ " (${renewalResult.orgsWithParticipationInParentSuccessor?.size() ?: 0})", style: 'positive']])
 
 
         renewalResult.orgsWithParticipationInParentSuccessor.each { sub ->
@@ -3987,7 +3948,7 @@ class SurveyController {
         renewalData.add([[field: '', style: null]])
         renewalData.add([[field: '', style: null]])
         renewalData.add([[field: '', style: null]])
-        renewalData.add([[field: g.message(code: 'renewalwithSurvey.orgsLateCommers.label')+ " (${renewalResult.orgsLateCommers?.size() ?: 0})", style: 'positive']])
+        renewalData.add([[field: g.message(code: 'renewalWithSurvey.orgsLateCommers.label')+ " (${renewalResult.orgsLateCommers?.size() ?: 0})", style: 'positive']])
 
 
         renewalResult.orgsLateCommers.each { sub ->
@@ -4022,7 +3983,7 @@ class SurveyController {
         renewalData.add([[field: '', style: null]])
         renewalData.add([[field: '', style: null]])
         renewalData.add([[field: '', style: null]])
-        renewalData.add([[field: g.message(code: 'renewalwithSurvey.newOrgstoSubscription.label')+ " (${renewalResult.newOrgstoSubscription?.size() ?: 0})", style: 'positive']])
+        renewalData.add([[field: g.message(code: 'renewalWithSurvey.newOrgstoSubscription.label')+ " (${renewalResult.newOrgstoSubscription?.size() ?: 0})", style: 'positive']])
 
 
         renewalResult.newOrgsContinuetoSubscription.each { participantResult ->
@@ -4077,7 +4038,7 @@ class SurveyController {
         renewalData.add([[field: '', style: null]])
         renewalData.add([[field: '', style: null]])
         renewalData.add([[field: '', style: null]])
-        renewalData.add([[field: g.message(code: 'renewalwithSurvey.withTermination.label')+ " (${renewalResult.orgsWithTermination?.size() ?: 0})", style: 'negative']])
+        renewalData.add([[field: g.message(code: 'renewalWithSurvey.withTermination.label')+ " (${renewalResult.orgsWithTermination?.size() ?: 0})", style: 'negative']])
 
 
         renewalResult.orgsWithTermination.each { participantResult ->

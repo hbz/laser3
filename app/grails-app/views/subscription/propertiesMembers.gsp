@@ -5,13 +5,12 @@
 <html>
 <head>
     <meta name="layout" content="semanticUI"/>
-    <title>${message(code: 'laser', default: 'LAS:eR')} : ${message(code: 'subscription.details.subscriberManagement.label', args: args.memberType)}</title>
+    <title>${message(code: 'laser', default: 'LAS:eR')} : ${message(code:'subscription.propertiesMembers.label',args:args.memberTypeGenitive)}</title>
 </head>
 
 <body>
 
 <semui:breadcrumbs>
-    <semui:crumb controller="myInstitution" action="dashboard" text="${contextService.getOrg()?.getDesignation()}"/>
     <semui:crumb controller="myInstitution" action="currentSubscriptions"
                  text="${message(code: 'myinst.currentSubscriptions.label')}"/>
     <semui:crumb controller="subscription" action="show" id="${subscriptionInstance.id}"
@@ -21,15 +20,9 @@
 
 </semui:breadcrumbs>
 
-<h1 class="ui left aligned icon header">
-    ${message(code: 'subscription.details.subscriberManagement.label',args:args.memberType)}
-</h1>
+<h1 class="ui left aligned icon header"><semui:headerIcon/>${subscriptionInstance.name}</h1>
 
 <g:render template="navSubscriberManagement" model="${[args:args]}"/>
-
-<h3 class="ui left aligned icon header"><semui:headerIcon/>
-${message(code: 'subscription.propertiesMembers.header',args:args.memberTypeGenitive)}
-</h3>
 
 <semui:messages data="${flash}"/>
 

@@ -27,8 +27,8 @@
 <g:inPlaceEdit domain="Subscription" pk="${subscriptionInstance.id}" field="name" id="name"
                class="newipe">${subscriptionInstance?.name}</g:inPlaceEdit>
 </h1>
+<h2 class="ui left aligned icon header">${message(code: 'subscription.details.addMembers.label', args:memberType)}</h2>
 
-<g:render template="nav"/>
 
 <g:if test="${consortialView || departmentalView}">
 

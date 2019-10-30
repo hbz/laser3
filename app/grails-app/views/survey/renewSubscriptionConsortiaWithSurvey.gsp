@@ -62,26 +62,27 @@ ${surveyInfo?.name}
                     <div class="ui checkbox">
                         <input type="checkbox" id="subscription.isCopyAuditOn" name="subscription.isCopyAuditOn" checked />
                         <label for="subscription.isCopyAuditOn">${message(code:'subscription.details.copyElementsIntoSubscription.copyAudit')}</label>
-                        <g:set var="properties" value="${subscription.getClass().controlledProperties}"></g:set>
+                        <g:set var="properties" value="${de.laser.AuditConfig.getConfigs(subscription)}"></g:set>
                         <g:if test="${properties}">
 
-                            <h4><g:message code="subscription.details.copyElementsIntoSubscription.audit" />:</h4>
+                            <h4><g:message code="subscription.details.copyElementsIntoSubscription.auditConfig" />:</h4>
                             <div class="ui bulleted list">
                                 <g:each in="${properties}" var="prop" >
-                                    <g:if test="${de.laser.AuditConfig.getConfig(subscription, prop)}">
                                         <div class="item">
-                                            <b><g:message code="subscription.${prop}.label" /></b>:
-                                                <g:if test="${subscription.getProperty(prop) instanceof com.k_int.kbplus.RefdataValue}">
-                                                    ${subscription.getProperty(prop).getI10n('value')}
+                                            <b><g:message code="subscription.${prop.referenceField}.label" /></b>:
+                                                <g:if test="${subscription.getProperty(prop.referenceField) instanceof com.k_int.kbplus.RefdataValue}">
+                                                    ${subscription.getProperty(prop.referenceField).getI10n('value')}
                                                 </g:if>
                                                 <g:else>
-                                                    ${subscription.getProperty(prop)}
+                                                    ${subscription.getProperty(prop.referenceField)}
                                                 </g:else>
                                         </div>
-                                    </g:if>
                                 </g:each>
                             </div>
                         </g:if>
+                        <g:else>
+                            <g:message code="subscription.details.copyElementsIntoSubscription.noAuditConfig"/>
+                        </g:else>
                     </div>
                 </td>
             </tr>
@@ -117,7 +118,7 @@ ${surveyInfo?.name}
             </tbody>
         </table>
 
-        <div class="pull-right">
+        <div class="la-float-right">
             <button type="submit"
                     class="ui button">${message(code: 'myinst.renewalUpload.renew')}</button>
         </div>
