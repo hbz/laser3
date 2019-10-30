@@ -40,7 +40,7 @@
                 <th>${message(code: 'org.type.label', default: 'Type')}</th>
                 <th>${message(code:'org.customerType.label')}</th>
                 <th>${message(code:'org.apiLevel.label')}</th>
-                <th><span class="la-popup-tooltip la-delay" data-position="top right"
+                <th class="la-no-uppercase"><span class="la-popup-tooltip la-delay" data-position="top right"
                           data-content="${message(code:'org.legalInformation.tooltip')}" >
                     <i class="handshake outline icon"></i>
                 </span></th>
