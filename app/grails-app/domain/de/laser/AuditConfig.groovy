@@ -56,10 +56,25 @@ class AuditConfig {
             return null
 
         AuditConfig.findWhere(
-            referenceId: obj.getId(),
-            referenceClass: obj.getClass().name,
-            referenceField: field
+                referenceId: obj.getId(),
+                referenceClass: obj.getClass().name,
+                referenceField: field
         )
+    }
+
+    static List getConfigs(Object obj) {
+        if (! obj)
+            return null
+
+        List configs = []
+
+        obj.getClass().controlledProperties.each{ prop ->
+            def config = getConfig(obj, prop)
+            if(config){
+                configs << config
+            }
+        }
+        return configs
     }
 
     static void removeConfig(Object obj, String field) {

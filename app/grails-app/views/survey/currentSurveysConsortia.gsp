@@ -324,7 +324,7 @@
                     <g:if test="${params.tab == "inEvaluation"}">
                         <td>
                         <g:if test="${surveyInfo.isSubscriptionSurvey && surveyConfig && surveyConfig?.type == 'Subscription' && !surveyConfig?.pickAndChoose}">
-                            <g:link controller="survey" action="renewalwithSurvey" id="${surveyInfo?.id}"
+                            <g:link controller="survey" action="renewalWithSurvey" id="${surveyInfo?.id}"
                                     params="[surveyConfigID: surveyConfig?.id]"
                                     class="ui button ">
                                 <g:message code="surveyInfo.renewal.action"/>
