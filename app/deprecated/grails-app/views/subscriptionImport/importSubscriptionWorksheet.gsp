@@ -86,7 +86,7 @@
           </table>
           <input type="hidden" name="ecount" value="${counter}"/>
 
-          <div class="pull-right">
+          <div class="la-float-right">
             <button type="submit" class="ui button">${message(code:'myinst.renewalUpload.accept', default:'Accept and Process')}</button>
           </div>
         </div>

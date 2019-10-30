@@ -63,7 +63,7 @@
                 </tbody>
             </table>
 
-            <div class="pull-right">
+            <div class="la-float-right">
 
                     <button type="submit"
                             class="ui button">${message(code: 'myinst.renewalUpload.accept', default: 'Accept and Process')}</button>

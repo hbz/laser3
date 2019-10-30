@@ -202,7 +202,7 @@
               </tbody>
             </table>
             <g:if test="${ti.getIdentifierValue('originediturl') != null}">
-              <span class="pull-right">
+              <span class="la-float-right">
                 ${message(code: 'title.show.gokb')} <a href="${ti.getIdentifierValue('originediturl')}">GOKb</a>.
               </span>
             </g:if>

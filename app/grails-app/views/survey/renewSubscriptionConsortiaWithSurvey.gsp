@@ -95,7 +95,7 @@ ${surveyInfo?.name}
             </tbody>
         </table>
 
-        <div class="pull-right">
+        <div class="la-float-right">
             <button type="submit"
                     class="ui button">${message(code: 'myinst.renewalUpload.renew')}</button>
         </div>
