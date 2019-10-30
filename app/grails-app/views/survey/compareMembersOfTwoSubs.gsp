@@ -18,10 +18,12 @@
 
     <g:if test="${surveyInfo}">
         <semui:crumb controller="survey" action="show" id="${surveyInfo.id}" text="${surveyInfo.name}"/>
+        <semui:crumb controller="survey" action="renewalWithSurvey" id="${surveyInfo.id}" params="[surveyConfigID: surveyConfig.id]" message="surveyInfo.renewal"/>
     </g:if>
     <semui:crumb message="surveyInfo.transfer" class="active"/>
 </semui:breadcrumbs>
-
+<semui:controlButtons>
+</semui:controlButtons>
 
 <h1 class="ui icon header"><semui:headerTitleIcon type="Survey"/>
 ${surveyInfo?.name}
@@ -44,7 +46,7 @@ ${surveyInfo?.name}
             method="post" class="ui form newLicence">
 
         <h3>
-        <g:message code="renewalwithSurvey.parentSubscription"/>:
+        <g:message code="renewalWithSurvey.parentSubscription"/>:
         <g:if test="${parentSubscription}">
             <g:link controller="subscription" action="show"
                     id="${parentSubscription?.id}">${parentSubscription?.dropdownNamingConvention()}</g:link>
@@ -52,7 +54,7 @@ ${surveyInfo?.name}
 
         <br>
         <br>
-        <g:message code="renewalwithSurvey.parentSuccessorSubscription"/>:
+        <g:message code="renewalWithSurvey.parentSuccessorSubscription"/>:
         <g:if test="${parentSuccessorSubscription}">
             <g:link controller="subscription" action="show"
                     id="${parentSuccessorSubscription?.id}">${parentSuccessorSubscription?.dropdownNamingConvention()}</g:link>
@@ -60,16 +62,16 @@ ${surveyInfo?.name}
             <g:link controller="survey" action="copyElementsIntoRenewalSubscription" id="${parentSubscription?.id}"
                     params="[sourceSubscriptionId: parentSubscription?.id, targetSubscriptionId: parentSuccessorSubscription?.id, isRenewSub: true, isCopyAuditOn: true]"
                     class="ui button ">
-                <g:message code="renewalwithSurvey.newSub.change"/>
+                <g:message code="renewalWithSurvey.newSub.change"/>
             </g:link>
 
         </g:if>
         <g:else>
-            <g:message code="renewalwithSurvey.noParentSuccessorSubscription"/>
+            <g:message code="renewalWithSurvey.noParentSuccessorSubscription"/>
             <g:link controller="survey" action="renewSubscriptionConsortiaWithSurvey" id="${surveyInfo?.id}"
                     params="[surveyConfig: surveyConfig?.id, parentSub: parentSubscription?.id]"
                     class="ui button ">
-                <g:message code="renewalwithSurvey.newSub"/>
+                <g:message code="renewalWithSurvey.newSub"/>
             </g:link>
         </g:else>
         </br>
@@ -77,25 +79,12 @@ ${surveyInfo?.name}
 
         <br>
 
-        <g:set var="consortiaSubscriptions"
-               value="${com.k_int.kbplus.Subscription.findAllByInstanceOf(parentSubscription)?.size()}"/>
         <g:set var="surveyParticipants" value="${surveyConfig?.orgs?.size()}"/>
-        <g:set var="totalOrgs"
-               value="${(orgsContinuetoSubscription?.size() ?: 0) + (newOrgsContinuetoSubscription?.size() ?: 0) + (orgsWithMultiYearTermSub?.size() ?: 0) + (orgsLateCommers?.size() ?: 0) + (orgsWithTermination?.size() ?: 0) + (orgsWithoutResult?.size() ?: 0) + (orgsWithParticipationInParentSuccessor?.size() ?: 0)}"/>
-
 
         <h3 class="ui left aligned icon header">
             <g:link action="evaluationConfigsInfo" id="${surveyInfo?.id}"
                     params="[surveyConfigID: surveyConfig?.id]">${message(code: 'survey.label')} ${message(code: 'surveyParticipants.label')}</g:link>
             <semui:totalNumber total="${surveyParticipants}"/>
-            <br>
-            <g:link controller="subscription" action="members"
-                    id="${parentSubscription?.id}">${message(code: 'renewalwithSurvey.orgsInSub')}</g:link>
-            <semui:totalNumber class="${surveyParticipants != consortiaSubscriptions ? 'red' : ''}"
-                               total="${consortiaSubscriptions}"/>
-            <br>
-            ${message(code: 'renewalwithSurvey.orgsTotalInRenewalProcess')}
-            <semui:totalNumber class="${totalOrgs != consortiaSubscriptions ? 'red' : ''}" total="${totalOrgs}"/>
         </h3>
 
         <br>
@@ -112,17 +101,17 @@ ${surveyInfo?.name}
                         <g:if test="${parentSubscription}">
                             <g:link controller="subscription" action="show"
                                     id="${parentSubscription?.id}">${parentSubscription?.dropdownNamingConvention()}</g:link>
+                            <br><br>
+                            <g:link controller="subscription" action="members"
+                                    id="${parentSubscription?.id}">${message(code: 'renewalWithSurvey.orgsInSub')}</g:link>
+                            <semui:totalNumber total="${parentSubChilds.size()?:0}"/>
+
                         </g:if>
                     </h3>
 
                     <table class="ui celled sortable table la-table" id="parentSubscription">
                         <thead>
                         <tr>
-                            <th>
-                                <g:if test="${editable}">
-                                    <input class="select-all" type="checkbox" name="chkall">
-                                </g:if>
-                            </th>
                             <th>${message(code: 'sidewide.number')}</th>
                             <th></th>
                         </tr>
@@ -130,13 +119,8 @@ ${surveyInfo?.name}
                         <tbody>
                         <g:each in="${participantsList}" var="participant" status="i">
                             <g:if test="${participant in parentParticipantsList}">
-                                <g:set var="termination" value="${!(participant in parentSuccessortParticipantsList) && !surveyService.isContinueToParticipate(participant, surveyConfig)}"/>
+                                <g:set var="termination" value="${!(participant in parentSuccessortParticipantsList)}"/>
                                 <tr class=" ${termination ? 'negative' : ''}">
-                                    <td>
-                                        <g:if test="${!termination}">
-                                            <input type="checkbox" name="bulkflag" data-index="${participant.id}" class="bulkcheck">
-                                        </g:if>
-                                    </td>
                                     <td>${i + 1}</td>
                                     <td class="titleCell">
                                         <g:link controller="myInstitution" action="manageParticipantSurveys"
@@ -151,7 +135,6 @@ ${surveyInfo?.name}
                             </g:if>
                             <g:else>
                                 <tr>
-                                    <td></td>
                                     <td>${i + 1}</td>
                                     <td class="titleCell"></td>
                                 </tr>
@@ -173,18 +156,23 @@ ${surveyInfo?.name}
                                     id="${parentSubscription?.id}"
                                     params="[sourceSubscriptionId: parentSubscription?.id, targetSubscriptionId: parentSuccessorSubscription?.id, isRenewSub: true, isCopyAuditOn: true]"
                                     class="ui button ">
-                                <g:message code="renewalwithSurvey.newSub.change"/>
+                                <g:message code="renewalWithSurvey.newSub.change"/>
                             </g:link>--}%
+
+                            <br><br>
+                            <g:link controller="subscription" action="members"
+                                    id="${parentSuccessorSubscription?.id}">${message(code: 'renewalWithSurvey.orgsInSub')}</g:link>
+                            <semui:totalNumber total="${parentSuccessorSubChilds.size()?:0}"/>
 
                         </g:if>
                         <g:else>
-                            <g:message code="renewalwithSurvey.noParentSuccessorSubscription"/>
+                            <g:message code="renewalWithSurvey.noParentSuccessorSubscription"/>
                             %{--<br>
                             <g:link controller="survey" action="renewSubscriptionConsortiaWithSurvey"
                                     id="${surveyInfo?.id}"
                                     params="[surveyConfig: surveyConfig?.id, parentSub: parentSubscription?.id]"
                                     class="ui button ">
-                                <g:message code="renewalwithSurvey.newSub"/>
+                                <g:message code="renewalWithSurvey.newSub"/>
                             </g:link>--}%
                         </g:else>
                     </h3>
@@ -192,11 +180,6 @@ ${surveyInfo?.name}
                     <table class="ui celled sortable table la-table" id="parentSuccessorSubscription">
                         <thead>
                         <tr>
-                            <th>
-                                <g:if test="${editable}">
-                                    <input class="select-all" type="checkbox" name="chkall">
-                                </g:if>
-                            </th>
                             <th>${message(code: 'sidewide.number')}</th>
                             <th></th>
                         </tr>
@@ -204,7 +187,6 @@ ${surveyInfo?.name}
                         <g:each in="${participantsList}" var="participant" status="j">
                             <g:if test="${participant in parentSuccessortParticipantsList}">
                                 <tr class=" ${participant in parentParticipantsList ? '' : 'positive'}">
-                                    <td></td>
                                     <td>${j+1}</td>
                                     <td class="titleCell">
                                         <g:link controller="myInstitution" action="manageParticipantSurveys"
@@ -219,7 +201,6 @@ ${surveyInfo?.name}
                             </g:if>
                             <g:else>
                                 <tr>
-                                    <td></td>
                                     <td>${j+1}</td>
                                     <td class="titleCell"></td>
                                 </tr>
