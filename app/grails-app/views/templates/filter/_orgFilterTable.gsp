@@ -34,7 +34,7 @@
         </g:if>
         <g:if test="${tmplConfigShow?.contains('legalInformation')}">
             <th class="la-no-uppercase">
-                <span class="la-popup-tooltip la-delay" data-position="top right"
+                <span class="la-popup-tooltip la-delay"
                       data-content="${message(code:'org.legalInformation.tooltip')}" >
                         <i class="handshake outline icon"></i>
                 </span>
