@@ -12,7 +12,7 @@
             <semui:crumb text="Stats" class="active"/>
 
             <%--
-            <li class="dropdown pull-right">
+            <li class="dropdown la-float-right">
                 <a class="dropdown-toggle badge" id="export-menu" role="button" data-toggle="dropdown" data-target="#" href="">Exports<strong class="caret"></strong></a>
                 <ul class="dropdown-menu filtering-dropdown-menu" role="menu" aria-labelledby="export-menu">
                     <li>

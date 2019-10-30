@@ -12,7 +12,6 @@
     <body>
 
         <semui:breadcrumbs>
-            <semui:crumb controller="myInstitution" action="dashboard" text="${institution?.getDesignation()}" />
             <semui:crumb message="myinst.currentSubscriptions.label" class="active" />
         </semui:breadcrumbs>
 
@@ -329,6 +328,9 @@
                     ${ (params.int('offset') ?: 0)  + i + 1 }
                 </td>
                 <td>
+                    <g:if test="${s.isMultiYear}">
+                        <i class="map orange icon"></i>
+                    </g:if>
                     <g:link controller="subscription" class="la-main-object" action="show" id="${s.id}">
                         <g:if test="${s.name}">
                             ${s.name}

@@ -5,13 +5,12 @@
 <html>
 <head>
     <meta name="layout" content="semanticUI"/>
-    <title>${message(code: 'laser', default: 'LAS:eR')} : ${message(code: 'subscription.details.subscriberManagement.label', args: args.memberType)}</title>
+    <title>${message(code: 'laser', default: 'LAS:eR')} : ${message(code: 'subscription.subscriptionPropertiesMembers.header', args: args.memberTypeGenitive)}</title>
 </head>
 
 <body>
 
 <semui:breadcrumbs>
-    <semui:crumb controller="myInstitution" action="dashboard" text="${contextService.getOrg()?.getDesignation()}"/>
     <semui:crumb controller="myInstitution" action="currentSubscriptions"
                  text="${message(code: 'myinst.currentSubscriptions.label')}"/>
     <semui:crumb controller="subscription" action="show" id="${subscriptionInstance.id}"
@@ -22,15 +21,9 @@
 
 </semui:breadcrumbs>
 
-<h1 class="ui left aligned icon header">
-    ${message(code: 'subscription.details.subscriberManagement.label', args: args.memberType)}
-</h1>
+<h1 class="ui left aligned icon header"><semui:headerIcon/>${subscriptionInstance.name}</h1>
 
 <g:render template="navSubscriberManagement"/>
-
-<h3 class="ui left aligned icon header"><semui:headerIcon/>
-${message(code: 'subscription.subscriptionPropertiesMembers.header', args: args.memberTypeGenitive)}
-</h3>
 
 <semui:messages data="${flash}"/>
 
@@ -215,7 +208,12 @@ ${message(code: 'subscription.subscriptionPropertiesMembers.header', args: args.
                             <td>${i + 1}</td>
                             <g:set var="filteredSubscribers" value="${zeile.orgs}"/>
                             <g:each in="${filteredSubscribers}" var="subscr">
-                                <td>${subscr.sortname}</td>
+                                <td>
+                                    <g:if test="${sub.isMultiYear}">
+                                    <i class="map orange icon"></i>
+                                    </g:if>
+                                    ${subscr.sortname}
+                                </td>
                                 <td>
                                     <g:link controller="organisation" action="show"
                                             id="${subscr.id}">${subscr}</g:link>
@@ -314,7 +312,12 @@ ${message(code: 'subscription.subscriptionPropertiesMembers.header', args: args.
                                         <td>${i + 1}</td>
                                         <g:set var="filteredSubscribers" value="${zeile.orgs}"/>
                                         <g:each in="${filteredSubscribers}" var="subscr">
-                                            <td>${subscr.sortname}</td>
+                                            <td>
+                                                <g:if test="${sub.isMultiYear}">
+                                                    <i class="map orange icon"></i>
+                                                </g:if>
+                                                ${subscr.sortname}
+                                            </td>
                                             <td>
                                                 <g:link controller="organisation" action="show"
                                                         id="${subscr.id}">${subscr}</g:link>
@@ -392,7 +395,12 @@ ${message(code: 'subscription.subscriptionPropertiesMembers.header', args: args.
                             <td>${i + 1}</td>
                             <g:set var="filteredSubscribers" value="${zeile.orgs}"/>
                             <g:each in="${filteredSubscribers}" var="subscr">
-                                <td>${subscr.sortname}</td>
+                                <td>
+                                    <g:if test="${sub.isMultiYear}">
+                                    <i class="map orange icon"></i>
+                                    </g:if>
+                                    ${subscr.sortname}
+                                </td>
                             </g:each>
                             <g:if test="${!sub.getAllSubscribers()}">
                                 <td></td>
@@ -442,7 +450,12 @@ ${message(code: 'subscription.subscriptionPropertiesMembers.header', args: args.
                             <td>${i + 1}</td>
                             <g:set var="filteredSubscribers" value="${zeile.orgs}"/>
                             <g:each in="${filteredSubscribers}" var="subscr">
-                                <td>${subscr.sortname}</td>
+                                <td>
+                                    <g:if test="${sub.isMultiYear}">
+                                        <i class="map orange icon"></i>
+                                    </g:if>
+                                    ${subscr.sortname}
+                                </td>
                             </g:each>
                             <g:if test="${!sub.getAllSubscribers()}">
                                 <td></td>
@@ -529,7 +542,12 @@ ${message(code: 'subscription.subscriptionPropertiesMembers.header', args: args.
                             <td>${i + 1}</td>
                             <g:set var="filteredSubscribers" value="${zeile.orgs}"/>
                             <g:each in="${filteredSubscribers}" var="subscr">
-                                <td>${subscr.sortname}</td>
+                                <td>
+                                    <g:if test="${sub.isMultiYear}">
+                                        <i class="map orange icon"></i>
+                                    </g:if>
+                                    ${subscr.sortname}
+                                </td>
                                 <td>
                                     <g:link controller="organisation" action="show"
                                             id="${subscr.id}">${subscr}</g:link>

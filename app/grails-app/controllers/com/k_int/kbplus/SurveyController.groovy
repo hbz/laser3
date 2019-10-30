@@ -21,14 +21,6 @@ import java.text.DateFormat
 import java.text.NumberFormat
 import java.text.SimpleDateFormat
 
-import static de.laser.helper.RDStore.getLINKTYPE_FOLLOWS
-import static de.laser.helper.RDStore.getSUBSCRIPTION_INTENDED
-import static de.laser.helper.RDStore.getSUBSCRIPTION_TYPE_ADMINISTRATIVE
-import static de.laser.helper.RDStore.getSUBSCRIPTION_TYPE_ALLIANCE
-import static de.laser.helper.RDStore.getSUBSCRIPTION_TYPE_CONSORTIAL
-import static de.laser.helper.RDStore.getSUBSCRIPTION_TYPE_NATIONAL
-import static de.laser.helper.RDStore.getTIPP_DELETED
-import static de.laser.helper.RDStore.getTIPP_STATUS_CURRENT
 
 @Secured(['IS_AUTHENTICATED_FULLY'])
 class SurveyController {
@@ -50,6 +42,7 @@ class SurveyController {
     def surveyUpdateService
     def escapeService
     def titleStreamService
+    def institutionsService
 
     public static final String WORKFLOW_DATES_OWNER_RELATIONS = '1'
     public static final String WORKFLOW_PACKAGES_ENTITLEMENTS = '5'
@@ -2089,10 +2082,17 @@ class SurveyController {
     @Secured(closure = {
         ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM_SURVEY", "INST_EDITOR", "ROLE_ADMIN")
     })
-    def renewalwithSurvey() {
+    def renewalWithSurvey() {
         def result = setResultGenericsAndCheckAccess()
         if (!result.editable) {
             response.sendError(401); return
+        }
+        result.superOrgType = []
+        if(accessService.checkPerm('ORG_CONSORTIUM')) {
+            result.superOrgType << message(code:'consortium.superOrgType')
+        }
+        if(accessService.checkPerm('ORG_INST_COLLECTIVE')) {
+            result.superOrgType << message(code:'collective.superOrgType')
         }
 
         result.parentSubscription = result.surveyConfig?.subscription
@@ -2414,6 +2414,8 @@ class SurveyController {
                                  sub_id       : subscription?.id,
                                  sub_license  : subscription?.owner?.reference ?: '',
                                  sub_status   : RDStore.SUBSCRIPTION_INTENDED]
+
+        result.subscription = subscription
         result
     }
 
@@ -3199,7 +3201,7 @@ class SurveyController {
     @Secured(closure = {
         ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM_SURVEY", "INST_EDITOR", "ROLE_ADMIN")
     })
-    def transferParticipants() {
+    def compareMembersOfTwoSubs() {
         def result = setResultGenericsAndCheckAccess()
         if (!result.editable) {
             response.sendError(401); return
@@ -3224,7 +3226,9 @@ class SurveyController {
 
         result.parentSuccessorSubChilds.each { sub ->
             def org = sub.getSubscriber()
-            result.participantsList << org
+            if(!(org in result.participantsList)) {
+                result.participantsList << org
+            }
             result.parentSuccessortParticipantsList << org
 
         }
@@ -3236,6 +3240,324 @@ class SurveyController {
 
         result
 
+    }
+
+    @DebugAnnotation(perm = "ORG_CONSORTIUM_SURVEY", affil = "INST_EDITOR", specRole = "ROLE_ADMIN")
+    @Secured(closure = {
+        ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM_SURVEY", "INST_EDITOR", "ROLE_ADMIN")
+    })
+    def processTransferParticipants() {
+        def result = setResultGenericsAndCheckAccess()
+        if (!result.editable) {
+            response.sendError(401); return
+        }
+
+        result.parentSubscription = result.surveyConfig?.subscription
+        result.parentSubChilds = subscriptionService.getCurrentValidSubChilds(result.parentSubscription)
+        result.parentSuccessorSubscription = result.surveyConfig?.subscription?.getCalculatedSuccessor()
+        result.parentSuccessorSubChilds = result.parentSuccessorSubscription ? subscriptionService.getValidSubChilds(result.parentSuccessorSubscription) : null
+
+        result.participationProperty = SurveyProperty.findByNameAndOwnerIsNull("Participation")
+
+        result.properties = []
+        result.properties.addAll(SurveyConfigProperties.findAllBySurveyPropertyNotEqualAndSurveyConfig(result.participationProperty, result.surveyConfig)?.surveyProperty)
+
+        result.multiYearTermThreeSurvey = null
+        result.multiYearTermTwoSurvey = null
+
+        if (SurveyProperty.findByNameAndOwnerIsNull("Multi-year term 3 years")?.id in result.properties.id) {
+            result.multiYearTermThreeSurvey = SurveyProperty.findByNameAndOwnerIsNull("Multi-year term 3 years")
+            result.properties.remove(result.multiYearTermThreeSurvey)
+        }
+        if (SurveyProperty.findByNameAndOwnerIsNull("Multi-year term 2 years")?.id in result.properties.id) {
+            result.multiYearTermTwoSurvey = SurveyProperty.findByNameAndOwnerIsNull("Multi-year term 2 years")
+            result.properties.remove(result.multiYearTermTwoSurvey)
+
+        }
+
+        result.parentSuccessortParticipantsList = []
+
+        result.parentSuccessorSubChilds.each { sub ->
+            def org = sub.getSubscriber()
+            result.parentSuccessortParticipantsList << org
+
+        }
+
+        // Orgs that renew or new to Sub
+        result.orgsContinuetoSubscription = []
+        result.newOrgsContinuetoSubscription = []
+
+        result.newSubs = []
+
+        def countNewSubs = 0
+
+        SurveyResult.executeQuery("from SurveyResult where owner.id = :owner and surveyConfig.id = :surConfig and type.id = :surProperty and refValue = :refValue order by participant.sortname",
+                [
+                        owner      : result.institution?.id,
+                        surProperty: result.participationProperty?.id,
+                        surConfig  : result.surveyConfig?.id,
+                        refValue   : RDStore.YN_YES])?.each {
+
+            // Keine Kindlizenz in der Nachfolgerlizenz vorhanden
+            if(!(it?.participant in result.parentSuccessortParticipantsList)){
+
+                def oldSubofParticipant = Subscription.executeQuery("Select s from Subscription s left join s.orgRelations orgR where s.instanceOf = :parentSub and orgR.org = :participant",
+                        [parentSub  : result.parentSubscription,
+                         participant: it?.participant
+                        ])[0]
+
+
+                if(!oldSubofParticipant)
+                {
+                    oldSubofParticipant = result.parentSubscription
+                }
+
+                def newStartDate = null
+                def newEndDate = null
+
+                //Umfrage-Merkmal MJL2
+                if (result.multiYearTermTwoSurvey) {
+
+                    def participantPropertyTwo = SurveyResult.findByParticipantAndOwnerAndSurveyConfigAndType(it?.participant, result.institution, result.surveyConfig, result.multiYearTermTwoSurvey)
+
+                    if (participantPropertyTwo?.refValue?.id == RDStore.YN_YES?.id) {
+                        use(TimeCategory) {
+                            newStartDate = oldSubofParticipant?.startDate ? (oldSubofParticipant.endDate + 1.day) : null
+                            newEndDate = oldSubofParticipant?.endDate ? (oldSubofParticipant.endDate + 2.year) : null
+                        }
+                            countNewSubs++
+                            result.newSubs << processAddMember(((oldSubofParticipant != result.parentSubscription) ? oldSubofParticipant: null), result.parentSuccessorSubscription, it?.participant, newStartDate, newEndDate, true, params)
+                    }
+
+                }
+                //Umfrage-Merkmal MJL3
+                else if (result.multiYearTermThreeSurvey) {
+
+                    def participantPropertyThree = SurveyResult.findByParticipantAndOwnerAndSurveyConfigAndType(it?.participant, result.institution, result.surveyConfig, result.multiYearTermThreeSurvey)
+                    if (participantPropertyThree?.refValue?.id == RDStore.YN_YES?.id) {
+                        use(TimeCategory) {
+                            newStartDate = oldSubofParticipant?.startDate ? (oldSubofParticipant.endDate + 1.day) : null
+                            newEndDate = oldSubofParticipant?.endDate ? (oldSubofParticipant.endDate + 3.year) : null
+                        }
+                        countNewSubs++
+                        result.newSubs << processAddMember(((oldSubofParticipant != result.parentSubscription) ? oldSubofParticipant: null), result.parentSuccessorSubscription, it?.participant, newStartDate, newEndDate, true, params)
+                    }
+                }else {
+                    use(TimeCategory) {
+                        newStartDate = oldSubofParticipant?.startDate ? (oldSubofParticipant.endDate + 1.day) : null
+                        newEndDate = oldSubofParticipant?.endDate ? (oldSubofParticipant.endDate + 1.year) : null
+                    }
+                    countNewSubs++
+                    result.newSubs << processAddMember(((oldSubofParticipant != result.parentSubscription) ? oldSubofParticipant: null), result.parentSuccessorSubscription, it?.participant, newStartDate, newEndDate, false, params)
+                }
+            }
+        }
+
+
+
+        //MultiYearTerm Subs  //Späteinsteiger Unwichtig
+        result.parentSubChilds?.each { sub ->
+            if (sub?.isCurrentMultiYearSubscriptionNew()){
+                sub?.getAllSubscribers()?.each { org ->
+                    if (!(org in result.parentSuccessortParticipantsList)) {
+
+                        countNewSubs++
+                        result.newSubs << processAddMember(sub, result.parentSuccessorSubscription, org, sub.startDate, sub.endDate, true, params)
+                    }
+                }
+            }
+            /*else if(sub.islateCommer()){
+                sub?.getAllSubscribers()?.each { org ->
+                    if (!(org in result.parentSuccessortParticipantsList)) {
+
+                        countNewSubs++
+                        result.newSubs << processAddMember(sub, result.parentSuccessorSubscription, org, sub.startDate, sub.endDate, false, params)
+                    }
+                }
+            }*/
+
+        }
+
+        result.countNewSubs = countNewSubs
+        if(result.newSubs) {
+            result.parentSuccessorSubscription.syncAllShares(result.newSubs)
+        }
+        flash.message = message(code: 'surveyInfo.transfer.info', args: [countNewSubs, result.newSubs?.size() ?: 0])
+
+
+        redirect(action: 'compareMembersOfTwoSubs', id: params.id, params: [surveyConfigID: result.surveyConfig?.id])
+
+
+    }
+
+    private def processAddMember(def oldSub, Subscription newParentSub, Org org, Date newStartDate, Date newEndDate, boolean multiYear, params) {
+
+        List orgType = [RDStore.OT_INSTITUTION.id.toString()]
+        if (accessService.checkPerm("ORG_CONSORTIUM")) {
+            orgType = [RDStore.OT_CONSORTIUM.id.toString()]
+        }
+
+        def institution = contextService.getOrg()
+
+        RefdataValue subStatus = multiYear ? RDStore.SUBSCRIPTION_INTENDED_PERENNIAL : RDStore.SUBSCRIPTION_INTENDED
+
+        RefdataValue role_sub = RDStore.OR_SUBSCRIBER_CONS
+        RefdataValue role_sub_cons = RDStore.OR_SUBSCRIPTION_CONSORTIA
+        RefdataValue role_coll = RDStore.OR_SUBSCRIBER_COLLECTIVE
+        RefdataValue role_sub_coll = RDStore.OR_SUBSCRIPTION_COLLECTIVE
+        RefdataValue role_sub_hidden = RDStore.OR_SUBSCRIBER_CONS_HIDDEN
+        RefdataValue role_lic = RDStore.OR_LICENSEE_CONS
+        if(accessService.checkPerm("ORG_INST_COLLECTIVE")) {
+            role_lic = RDStore.OR_LICENSEE_COLL
+        }
+        RefdataValue role_lic_cons = RDStore.OR_LICENSING_CONSORTIUM
+
+        RefdataValue role_provider = RDStore.OR_PROVIDER
+        RefdataValue role_agency = RDStore.OR_AGENCY
+
+        if (accessService.checkPerm("ORG_INST_COLLECTIVE,ORG_CONSORTIUM")) {
+
+                License licenseCopy
+
+                def subLicense = newParentSub.owner
+
+                Set<Package> packagesToProcess = []
+
+                //copy package data
+                if(params.linkAllPackages) {
+                    newParentSub.packages.each { sp ->
+                        packagesToProcess << sp.pkg
+                    }
+                }else if(params.packageSelection) {
+                    List packageIds = params.list("packageSelection")
+                    packageIds.each { spId ->
+                        packagesToProcess << SubscriptionPackage.get(spId).pkg
+                    }
+                }
+
+                    if(accessService.checkPerm("ORG_INST_COLLECTIVE,ORG_CONSORTIUM")) {
+                       // def postfix = (members.size() > 1) ? 'Teilnehmervertrag' : (cm.shortname ?: cm.name)
+                        def postfix = 'Teilnehmervertrag'
+
+                        if (subLicense) {
+                            def subLicenseParams = [
+                                    lic_name     : "${subLicense.reference} (${postfix})",
+                                    isSlaved     : params.isSlaved,
+                                    asOrgType: orgType,
+                                    copyStartEnd : true
+                            ]
+
+                            if (params.generateSlavedLics == 'explicit') {
+                                licenseCopy = institutionsService.copyLicense(
+                                        subLicense, subLicenseParams, InstitutionsService.CUSTOM_PROPERTIES_ONLY_INHERITED)
+                            }
+                            else if (params.generateSlavedLics == 'shared' && !licenseCopy) {
+                                licenseCopy = institutionsService.copyLicense(
+                                        subLicense, subLicenseParams, InstitutionsService.CUSTOM_PROPERTIES_ONLY_INHERITED)
+                            }
+                            else if ((params.generateSlavedLics == 'reference' || params.attachToParticipationLic == "true") && !licenseCopy) {
+                                licenseCopy = genericOIDService.resolveOID(params.generateSlavedLicsReference)
+                            }
+
+                            if (licenseCopy) {
+                                new OrgRole(org: org, lic: licenseCopy, roleType: role_lic).save()
+                            }
+                        }
+                    }
+
+                    log.debug("Generating seperate slaved instances for members")
+
+                    SimpleDateFormat sdf = new DateUtil().getSimpleDateFormat_NoTime()
+                    Date startDate = newStartDate ?: null
+                    Date endDate = newEndDate ?: null
+
+                    Subscription memberSub = new Subscription(
+                            type: newParentSub.type ?: null,
+                            status: subStatus,
+                            name: newParentSub.name,
+                            startDate: startDate,
+                            endDate: endDate,
+                            administrative: newParentSub.getCalculatedType() == TemplateSupport.CALCULATED_TYPE_ADMINISTRATIVE,
+                            manualRenewalDate: newParentSub.manualRenewalDate,
+                            identifier: UUID.randomUUID().toString(),
+                            instanceOf: newParentSub,
+                            isSlaved: true,
+                            isPublic: newParentSub.isPublic,
+                            impId: UUID.randomUUID().toString(),
+                            owner: licenseCopy,
+                            resource: newParentSub.resource ?: null,
+                            form: newParentSub.form ?: null,
+                            isMultiYear: multiYear ?: false
+                    )
+
+                    if (!memberSub.save()) {
+                        memberSub?.errors.each { e ->
+                            log.debug("Problem creating new sub: ${e}")
+                        }
+                    }
+
+                    if (memberSub) {
+                        if(accessService.checkPerm("ORG_CONSORTIUM")) {
+
+                            new OrgRole(org: org, sub: memberSub, roleType: role_sub).save()
+                            new OrgRole(org: institution, sub: memberSub, roleType: role_sub_cons).save()
+
+                            if(params.transferProviderAgency) {
+                                newParentSub.getProviders().each { provider ->
+                                    new OrgRole(org: provider, sub: memberSub, roleType: role_provider).save()
+                                }
+                                newParentSub.getAgencies().each { provider ->
+                                    new OrgRole(org: provider, sub: memberSub, roleType: role_agency).save()
+                                }
+                            }else if(params.providersSelection) {
+                                List orgIds = params.list("providersSelection")
+                                orgIds.each { orgID ->
+                                    new OrgRole(org: Org.get(orgID), sub: memberSub, roleType: role_provider).save()
+                                }
+                            }else if(params.agenciesSelection) {
+                                List orgIds = params.list("agenciesSelection")
+                                orgIds.each { orgID ->
+                                    new OrgRole(org: Org.get(orgID), sub: memberSub, roleType: role_agency).save()
+                                }
+                            }
+
+                        }
+
+                        SubscriptionCustomProperty.findAllByOwner(newParentSub).each { scp ->
+                            AuditConfig ac = AuditConfig.getConfig(scp)
+
+                            if (ac) {
+                                // multi occurrence props; add one additional with backref
+                                if (scp.type.multipleOccurrence) {
+                                    def additionalProp = PropertyDefinition.createGenericProperty(PropertyDefinition.CUSTOM_PROPERTY, memberSub, scp.type)
+                                    additionalProp = scp.copyInto(additionalProp)
+                                    additionalProp.instanceOf = scp
+                                    additionalProp.save(flush: true)
+                                }
+                                else {
+                                    // no match found, creating new prop with backref
+                                    def newProp = PropertyDefinition.createGenericProperty(PropertyDefinition.CUSTOM_PROPERTY, memberSub, scp.type)
+                                    newProp = scp.copyInto(newProp)
+                                    newProp.instanceOf = scp
+                                    newProp.save(flush: true)
+                                }
+                            }
+                        }
+
+                        packagesToProcess.each { pkg ->
+                            if(params.linkWithEntitlements)
+                                pkg.addToSubscriptionCurrentStock(memberSub, newParentSub)
+                            else
+                                pkg.addToSubscription(memberSub, false)
+                        }
+
+                        if(oldSub){
+                            new Links(linkType: RDStore.LINKTYPE_FOLLOWS, source: memberSub.id, destination: oldSub.id, owner: contextService.getOrg(), objectType:Subscription.class.name).save(flush: true)
+                        }
+
+                        return memberSub
+                    }
+            }
     }
 
     private getSurveyProperties(Org contextOrg) {
@@ -3483,25 +3805,25 @@ class SurveyController {
         ]
 
 
-        titles << g.message(code: 'renewalwithSurvey.period')
+        titles << g.message(code: 'renewalWithSurvey.period')
 
         if (renewalResult?.multiYearTermTwoSurvey || renewalResult?.multiYearTermThreeSurvey)
         {
-            titles << g.message(code: 'renewalwithSurvey.periodComment')
+            titles << g.message(code: 'renewalWithSurvey.periodComment')
         }
 
         renewalResult.properties.each { surveyProperty ->
             titles << surveyProperty?.getI10n('name')
-            titles << g.message(code: 'surveyResult.participantComment') + " " + g.message(code: 'renewalwithSurvey.exportRenewal.to') +" " + surveyProperty?.getI10n('name')
+            titles << g.message(code: 'surveyResult.participantComment') + " " + g.message(code: 'renewalWithSurvey.exportRenewal.to') +" " + surveyProperty?.getI10n('name')
         }
-        titles << g.message(code: 'renewalwithSurvey.costBeforeTax')
-        titles << g.message(code: 'renewalwithSurvey.costAfterTax')
-        titles << g.message(code: 'renewalwithSurvey.costTax')
-        titles << g.message(code: 'renewalwithSurvey.currency')
+        titles << g.message(code: 'renewalWithSurvey.costBeforeTax')
+        titles << g.message(code: 'renewalWithSurvey.costAfterTax')
+        titles << g.message(code: 'renewalWithSurvey.costTax')
+        titles << g.message(code: 'renewalWithSurvey.currency')
 
         List renewalData = []
 
-        renewalData.add([[field: g.message(code: 'renewalwithSurvey.continuetoSubscription.label')+ " (${renewalResult.orgsContinuetoSubscription?.size() ?: 0})", style: 'positive']])
+        renewalData.add([[field: g.message(code: 'renewalWithSurvey.continuetoSubscription.label')+ " (${renewalResult.orgsContinuetoSubscription?.size() ?: 0})", style: 'positive']])
 
         renewalResult.orgsContinuetoSubscription.each { participantResult ->
             List row = []
@@ -3555,7 +3877,7 @@ class SurveyController {
         renewalData.add([[field: '', style: null]])
         renewalData.add([[field: '', style: null]])
         renewalData.add([[field: '', style: null]])
-        renewalData.add([[field: g.message(code: 'renewalwithSurvey.withMultiYearTermSub.label')+ " (${renewalResult.orgsWithMultiYearTermSub?.size() ?: 0})", style: 'positive']])
+        renewalData.add([[field: g.message(code: 'renewalWithSurvey.withMultiYearTermSub.label')+ " (${renewalResult.orgsWithMultiYearTermSub?.size() ?: 0})", style: 'positive']])
 
 
         renewalResult.orgsWithMultiYearTermSub.each { sub ->
@@ -3591,7 +3913,7 @@ class SurveyController {
         renewalData.add([[field: '', style: null]])
         renewalData.add([[field: '', style: null]])
         renewalData.add([[field: '', style: null]])
-        renewalData.add([[field: g.message(code: 'renewalwithSurvey.orgsWithParticipationInParentSuccessor.label')+ " (${renewalResult.orgsWithParticipationInParentSuccessor?.size() ?: 0})", style: 'positive']])
+        renewalData.add([[field: g.message(code: 'renewalWithSurvey.orgsWithParticipationInParentSuccessor.label')+ " (${renewalResult.orgsWithParticipationInParentSuccessor?.size() ?: 0})", style: 'positive']])
 
 
         renewalResult.orgsWithParticipationInParentSuccessor.each { sub ->
@@ -3626,7 +3948,7 @@ class SurveyController {
         renewalData.add([[field: '', style: null]])
         renewalData.add([[field: '', style: null]])
         renewalData.add([[field: '', style: null]])
-        renewalData.add([[field: g.message(code: 'renewalwithSurvey.orgsLateCommers.label')+ " (${renewalResult.orgsLateCommers?.size() ?: 0})", style: 'positive']])
+        renewalData.add([[field: g.message(code: 'renewalWithSurvey.orgsLateCommers.label')+ " (${renewalResult.orgsLateCommers?.size() ?: 0})", style: 'positive']])
 
 
         renewalResult.orgsLateCommers.each { sub ->
@@ -3661,7 +3983,7 @@ class SurveyController {
         renewalData.add([[field: '', style: null]])
         renewalData.add([[field: '', style: null]])
         renewalData.add([[field: '', style: null]])
-        renewalData.add([[field: g.message(code: 'renewalwithSurvey.newOrgstoSubscription.label')+ " (${renewalResult.newOrgstoSubscription?.size() ?: 0})", style: 'positive']])
+        renewalData.add([[field: g.message(code: 'renewalWithSurvey.newOrgstoSubscription.label')+ " (${renewalResult.newOrgstoSubscription?.size() ?: 0})", style: 'positive']])
 
 
         renewalResult.newOrgsContinuetoSubscription.each { participantResult ->
@@ -3716,7 +4038,7 @@ class SurveyController {
         renewalData.add([[field: '', style: null]])
         renewalData.add([[field: '', style: null]])
         renewalData.add([[field: '', style: null]])
-        renewalData.add([[field: g.message(code: 'renewalwithSurvey.withTermination.label')+ " (${renewalResult.orgsWithTermination?.size() ?: 0})", style: 'negative']])
+        renewalData.add([[field: g.message(code: 'renewalWithSurvey.withTermination.label')+ " (${renewalResult.orgsWithTermination?.size() ?: 0})", style: 'negative']])
 
 
         renewalResult.orgsWithTermination.each { participantResult ->

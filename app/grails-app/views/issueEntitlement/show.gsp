@@ -169,7 +169,7 @@
 </table>
 
 <g:if test="${(institutional_usage_identifier) && ( usage != null ) && ( usage.size() > 0 ) }">
-<span class="pull-right">
+<span class="la-float-right">
     <laser:statsLink class="ui basic negative"
                      base="${grailsApplication.config.statsApiUrl}"
                      module="statistics"

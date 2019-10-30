@@ -16,7 +16,6 @@
 </semui:debugInfo>
 
 <semui:breadcrumbs>
-    <semui:crumb controller="myInstitution" action="dashboard" text="${institution?.getDesignation()}"/>
     <semui:crumb message="menu.my.consortiaSubscriptions" class="active"/>
 </semui:breadcrumbs>
 
@@ -259,6 +258,9 @@
                     ${ jj + 1 }
                 </td>
                 <td>
+                    <g:if test="${subCons.isMultiYear}">
+                        <i class="map orange icon"></i>
+                    </g:if>
                     <g:link controller="organisation" action="show" id="${subscr.id}">
                         <g:if test="${subscr.sortname}">${subscr.sortname}</g:if>
                         (${subscr.name})

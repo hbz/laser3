@@ -16,7 +16,7 @@
     <g:render template="subsNav" contextPath="." />
 
       <div>
-          <div class="pull-right">
+          <div class="la-float-right">
               <g:form action="addSubscription" controller="myInstitution" method="get" class="ui form">
                   <label>${message(code:'default.search.text', default:'Search text')}</label>: <input type="text" name="q" placeholder="${message(code:'default.search.ph', default:'enter search term...')}"  value="${params.q}"  />
                   <label>${message(code:'default.valid_on.label', default:'Valid On')}</label>: <input name="validOn" type="text" value="${validOn}"/>

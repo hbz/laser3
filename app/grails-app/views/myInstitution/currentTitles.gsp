@@ -8,9 +8,9 @@
 <body>
 
 <semui:breadcrumbs>
-    <semui:crumb controller="myInstitution" action="dashboard" text="${institution?.getDesignation()}"/>
     <semui:crumb message="myinst.currentTitles.label" class="active"/>
 </semui:breadcrumbs>
+
 <semui:controlButtons>
     <semui:exportDropdown>
         <semui:exportDropdownItem>

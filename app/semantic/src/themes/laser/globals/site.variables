@@ -254,6 +254,7 @@
 @title            :    @blue; /* hbz-blue */
 @license          :    #008C25; /* Dark Green */
 @organisation      :   @teal; /* bluegreen */
+@platform      :    @o-yellow;
 
 
 /*---  Colors for Site Elements---*/

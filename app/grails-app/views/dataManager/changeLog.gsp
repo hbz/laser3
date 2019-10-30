@@ -11,7 +11,7 @@
       <semui:crumb message="menu.datamanager.dash" controller="dataManager" action="index"/>
       <semui:crumb message="menu.datamanager.changelog" class="active"/>
 
-      <li class="dropdown pull-right">
+      <li class="dropdown la-float-right">
         <a class="dropdown-toggle badge" id="export-menu" role="button" data-toggle="dropdown" data-target="#" href="">${message(code:'default.button.exports.label', default:'Exports')}<strong class="caret"></strong></a>
         <ul class="dropdown-menu filtering-dropdown-menu" role="menu" aria-labelledby="export-menu">
           <li><g:link controller="dataManager" action="changeLog" params="${params+[format:'csv']}">${message(code:'default.button.exports.csv', default:'CSV Export')}</g:link></li>
@@ -23,7 +23,7 @@
 
       <h2 class="ui header">${message(code:'menu.datamanager.changelog', default:'Data Manager Change Log')}</h2>
 
-      <h6 class="ui header">${message(code:'menu.institutions.change_log')} <span class="pull-right">${message(code:'datamanager.changeLog.num_changes', args:[num_hl])}</span></h6>
+      <h6 class="ui header">${message(code:'menu.institutions.change_log')} <span class="la-float-right">${message(code:'datamanager.changeLog.num_changes', args:[num_hl])}</span></h6>
 
         <semui:filter>
             <g:form action="changeLog" controller="dataManager" method="get" class="ui form">

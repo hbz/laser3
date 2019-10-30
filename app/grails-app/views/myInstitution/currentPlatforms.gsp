@@ -6,13 +6,12 @@
     <title>${message(code:'laser', default:'LAS:eR')} : ${message(code:'menu.my.platforms')}</title>
 </head>
 <body>
+
 <semui:breadcrumbs>
-    <semui:crumb controller="myInstitution" action="dashboard" text="${contextOrg?.getDesignation()}" />
     <semui:crumb message="menu.my.platforms" class="active" />
 </semui:breadcrumbs>
 
-
-<h1 class="ui left aligned icon header">${message(code:'menu.my.platforms')}
+<h1 class="ui left aligned icon header"><semui:headerIcon/>${message(code:'menu.my.platforms')}
     <semui:totalNumber total="${platformInstanceTotal}"/>
 </h1>
 

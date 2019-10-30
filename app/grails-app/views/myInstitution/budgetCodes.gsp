@@ -9,13 +9,10 @@
     <body>
 
         <semui:breadcrumbs>
-            <semui:crumb controller="myInstitution" action="dashboard" text="${institution?.getDesignation()}" />
             <semui:crumb message="menu.institutions.budgetCodes" class="active"/>
         </semui:breadcrumbs>
 
-        <h1 class="ui left aligned icon header"><semui:headerIcon />${institution.name}</h1>
-
-        <h2 class="ui left aligned icon header"><semui:headerIcon />${message(code:'menu.institutions.budgetCodes')}</h2>
+        <h1 class="ui left aligned icon header"><semui:headerIcon />${message(code:'menu.institutions.budgetCodes')}</h1>
 
         <semui:messages data="${flash}" />
 

@@ -8,10 +8,8 @@
   <body>
 
   <semui:breadcrumbs>
-    <semui:crumb controller="myInstitution" action="dashboard" text="${institution?.getDesignation()}" />
     <semui:crumb message="default.changeLog.label" class="active" />
   </semui:breadcrumbs>
-
 
   <semui:controlButtons>
     <semui:exportDropdown>
@@ -21,7 +19,6 @@
     </semui:exportDropdown>
     <g:render template="actions"/>
   </semui:controlButtons>
-
 
     <div class="home-page">
       <br>

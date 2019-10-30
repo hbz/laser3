@@ -46,7 +46,7 @@ class BasePage extends Page {
             $("#zenbox_tab").click()
         }
         logout {
-            $("ul.pull-right").children().find("a.dropdown-toggle").click()
+            $("ul.la-float-right").children().find("a.dropdown-toggle").click()
             waitFor{$("a", text: "Logout")}
             $("a", text: "Logout").click()
         }
@@ -60,7 +60,7 @@ class BasePage extends Page {
             $("a", text: "New License").click()
         }
         changeUserNoDash { user, passwd ->
-            $("ul.pull-right").children().find("a.dropdown-toggle").click()
+            $("ul.la-float-right").children().find("a.dropdown-toggle").click()
             waitFor{$("a", text: "Logout")}
             $("a", text: "Logout").click()
             waitFor { $("a", text: "Knowledge Base+ Member Login") }
@@ -71,7 +71,7 @@ class BasePage extends Page {
             $("#submit", value: "Login").click()
         }
         changeUser { user, passwd ->
-            $("ul.pull-right").children().find("a.dropdown-toggle").click()
+            $("ul.la-float-right").children().find("a.dropdown-toggle").click()
             waitFor{$("a", text: "Logout")}
             $("a", text: "Logout").click()
             waitFor { $("a", text: "Knowledge Base+ Member Login") }
