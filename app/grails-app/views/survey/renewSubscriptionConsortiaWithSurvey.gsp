@@ -1,3 +1,4 @@
+<%@ page import="de.laser.AuditConfig" %>
 <!doctype html>
 <html>
 <head>
@@ -40,6 +41,7 @@ ${surveyInfo?.name}
 <g:set var="counter" value="${-1}"/>
 <g:set var="index" value="${0}"/>
 
+
 <g:form action="processRenewalwithSurvey" method="post" enctype="multipart/form-data" params="${params}">
 
     <div>
@@ -60,6 +62,26 @@ ${surveyInfo?.name}
                     <div class="ui checkbox">
                         <input type="checkbox" id="subscription.isCopyAuditOn" name="subscription.isCopyAuditOn" checked />
                         <label for="subscription.isCopyAuditOn">${message(code:'subscription.details.copyElementsIntoSubscription.copyAudit')}</label>
+                        <g:set var="properties" value="${subscription.getClass().controlledProperties}"></g:set>
+                        <g:if test="${properties}">
+
+                            <h4><g:message code="subscription.details.copyElementsIntoSubscription.audit" />:</h4>
+                            <div class="ui bulleted list">
+                                <g:each in="${properties}" var="prop" >
+                                    <g:if test="${de.laser.AuditConfig.getConfig(subscription, prop)}">
+                                        <div class="item">
+                                            <b><g:message code="subscription.${prop}.label" /></b>:
+                                                <g:if test="${subscription.getProperty(prop) instanceof com.k_int.kbplus.RefdataValue}">
+                                                    ${subscription.getProperty(prop).getI10n('value')}
+                                                </g:if>
+                                                <g:else>
+                                                    ${subscription.getProperty(prop)}
+                                                </g:else>
+                                        </div>
+                                    </g:if>
+                                </g:each>
+                            </div>
+                        </g:if>
                     </div>
                 </td>
             </tr>

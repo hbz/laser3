@@ -4,6 +4,7 @@ import com.k_int.kbplus.Org
 import com.k_int.kbplus.SurveyConfig
 import com.k_int.kbplus.SurveyInfo
 import com.k_int.kbplus.SurveyOrg
+import com.k_int.kbplus.SurveyProperty
 import com.k_int.kbplus.SurveyResult
 import de.laser.helper.RDStore
 import grails.transaction.Transactional
@@ -106,5 +107,13 @@ class SurveyService {
 
         return result
 
+    }
+
+    boolean isContinueToParticipate(Org org, SurveyConfig surveyConfig) {
+        def participationProperty = SurveyProperty.findByNameAndOwnerIsNull("Participation")
+
+        def result = SurveyResult.findBySurveyConfigAndParticipantAndType(surveyConfig, org, participationProperty)?.getResult() == RDStore.YN_YES ? true : false
+
+        return result
     }
 }
