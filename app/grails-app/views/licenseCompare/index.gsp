@@ -7,7 +7,6 @@
     </head>
     <body>
         <semui:breadcrumbs>
-            <semui:crumb controller="myInstitution" action="dashboard" text="${institution?.getDesignation()}" />
             <semui:crumb text="${message(code:'license.current')}" controller="myInstitution" action="currentLicenses" />
         	<semui:crumb class="active" message="menu.my.comp_lic" />
 		</semui:breadcrumbs>

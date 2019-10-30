@@ -21,7 +21,6 @@
 <body>
 
 <semui:breadcrumbs>
-    <semui:crumb controller="myInstitution" action="dashboard" text="${institution?.getDesignation()}"/>
     <semui:crumb message="${title}" class="active"/>
 </semui:breadcrumbs>
 

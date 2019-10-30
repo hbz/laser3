@@ -8,7 +8,6 @@
 <body>
 
 <semui:breadcrumbs>
-    <semui:crumb controller="myInstitution" action="dashboard" text="${institution?.getDesignation()}"/>
     <semui:crumb controller="myInstitution" action="currentLicenses" message="license.current"/>
     <semui:crumb action="show" controller="license" id="${license.id}" text="${license.reference}" />
     <semui:crumb message="myinst.copyLicense" class="active"/>
@@ -18,9 +17,8 @@
     <g:render template="actions"/>
 </semui:controlButtons>
 
-<h1 class="ui left aligned icon header"><semui:headerIcon />
-${message(code: 'myinst.copyLicense')}: ${license.reference}
-</h1>
+<h1 class="ui left aligned icon header"><semui:headerIcon />${license.reference}</h1>
+<h2 class="ui left aligned icon header">${message(code: 'myinst.copyLicense')}</h2>
 
 <semui:messages data="${flash}"/>
 

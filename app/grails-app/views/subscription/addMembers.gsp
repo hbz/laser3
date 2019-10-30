@@ -11,7 +11,6 @@
 <body>
 
 <semui:breadcrumbs>
-    <semui:crumb controller="myInstitution" action="dashboard" text="${contextService.getOrg()?.getDesignation()}"/>
     <semui:crumb controller="myInstitution" action="currentSubscriptions"
                  text="${message(code: 'myinst.currentSubscriptions.label')}"/>
     <semui:crumb controller="subscription" action="index" id="${subscriptionInstance.id}"
@@ -28,8 +27,8 @@
 <g:inPlaceEdit domain="Subscription" pk="${subscriptionInstance.id}" field="name" id="name"
                class="newipe">${subscriptionInstance?.name}</g:inPlaceEdit>
 </h1>
+<h2 class="ui left aligned icon header">${message(code: 'subscription.details.addMembers.label', args:memberType)}</h2>
 
-<g:render template="nav"/>
 
 <g:if test="${consortialView || departmentalView}">
 

@@ -21,6 +21,6 @@
         </g:else>
     </g:if>
     <g:else>
-        <semui:crumb text="${orgInstance.getDesignation()}" class="active"/>
+        <%--<semui:crumb text="${orgInstance.getDesignation()}" class="active"/>--%>
     </g:else>
 </semui:breadcrumbs>

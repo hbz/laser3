@@ -13,7 +13,9 @@ import="de.laser.helper.RDStore; com.k_int.kbplus.Org; com.k_int.kbplus.Person; 
     <body>
 
         <semui:breadcrumbs>
-            <semui:crumb text="${institution.getDesignation()}" class="active"/>
+            <g:if test="${institution.id != contextService.getOrg()?.id}">
+                <semui:crumb text="${institution.getDesignation()}" class="active"/>
+            </g:if>
         </semui:breadcrumbs>
 
         <semui:controlButtons>

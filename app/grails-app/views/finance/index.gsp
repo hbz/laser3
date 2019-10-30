@@ -16,8 +16,9 @@
         <g:set var="cons" value="${financialData.cons}"/>
         <g:set var="coll" value="${financialData.coll}"/>
         <g:set var="subscr" value="${financialData.subscr}"/>
+
         <semui:breadcrumbs>
-            <semui:crumb controller="myInstitution" action="dashboard" text="${institution.name}" />
+            <%--<semui:crumb controller="myInstitution" action="dashboard" text="${institution.name}" />--%>
             <semui:crumb class="active" text="${message(code:'subscription.details.financials.label')}" />
         </semui:breadcrumbs>
 

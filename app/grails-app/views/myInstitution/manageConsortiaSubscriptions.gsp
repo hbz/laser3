@@ -16,7 +16,6 @@
 </semui:debugInfo>
 
 <semui:breadcrumbs>
-    <semui:crumb controller="myInstitution" action="dashboard" text="${institution?.getDesignation()}"/>
     <semui:crumb message="menu.my.consortiaSubscriptions" class="active"/>
 </semui:breadcrumbs>
 
