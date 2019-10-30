@@ -175,7 +175,11 @@ ${message(code: 'subscription.linkPackagesMembers.header', args: args.memberType
                     <td>${i + 1}</td>
                     <g:set var="filteredSubscribers" value="${zeile.orgs}"/>
                     <g:each in="${filteredSubscribers}" var="subscr">
-                        <td>${subscr.sortname}</td>
+                        <td><g:if test="${sub.isMultiYear}">
+                            <i class="map orange icon"></i>
+                            </g:if>
+                            ${subscr.sortname}
+                        </td>
                         <td>
                             <g:link controller="organisation" action="show" id="${subscr.id}">${subscr}</g:link>
 

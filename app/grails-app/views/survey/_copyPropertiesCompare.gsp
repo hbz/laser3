@@ -43,6 +43,7 @@
             </g:if>
             <g:else>
                 ${message(code: 'subscription.details.copyElementsIntoSubscription.copyProperties.empty')}
+                <br><br>
 
                 <div class="two fields">
                     <div class="eight wide field" style="text-align: left;">
