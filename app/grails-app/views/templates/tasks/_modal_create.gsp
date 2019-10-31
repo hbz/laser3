@@ -78,22 +78,15 @@ double t8 = 0L
                 <label for="license">
                     <g:message code="task.linkto" default="Task link to "/><g:message code="task.license.label" default="License"/>
                 </label>
-                <g:select id="license"
+                <g:select class="ui dropdown search many-to-one"
+                          id="license"
                           name="license"
                           from="${validLicensesDropdown}"
-                          optionKey="${{it?.optionKey}}"
-                          optionValue="${{it?.optionValue}}"
+                          optionKey="${{it.optionKey}}"
+                          optionValue="${{it.optionValue}}"
                           value="${ownobj?.id}"
-                          class="ui dropdown search many-to-one"
                           noSelection="[null: '']"/>
-                %{--<g:select id="license"--}%
-                          %{--name="license"--}%
-                          %{--from="${validLicensesDropdown}"--}%
-                          %{--optionKey="${{it ? it[0] : null}}"--}%
-                          %{--optionValue="${{it[1] + ' ' + (it[2].getI10n('value')) + ' (' + (it[3] ? it[3]?.format('dd.MM.yy') : '') + ('-') + (it[4] ? it[4]?.format('dd.MM.yy') : '') + ')' }}"--}%
-                          %{--value="${ownobj?.id}"--}%
-                          %{--class="ui dropdown search many-to-one"--}%
-                          %{--noSelection="[null: '']"/>--}%
+
             </div>
             <% t2 = System.currentTimeMillis() %>
 
@@ -141,21 +134,12 @@ double t8 = 0L
                 <label for="subscription">
                     <g:message code="task.linkto" default="Task link to "/><g:message code="task.subscription.label" default="Subscription"/>
                 </label>
-                %{--TODO instanceOf--}%
-                %{--<g:set var="consortialLicense" value="${message('gasco.filter.consortialLicence')}" />--}%
-                <g:set var="NO_STATUS" value="${RDStore.SUBSCRIPTION_NO_STATUS.getI10n('value')}" />
                 <g:select class="ui dropdown search many-to-one"
                           id="subscription"
                           name="subscription"
-                          from="${validSubscriptionDropdown}"
-                          optionValue="${{it ? (it[1]
-                                  + ((it[2]||it[3]) ? ' (' : ' ')
-                                  + (it[2] ? (it[2]?.format('dd.MM.yy')) : '')
-                                  +  '-'
-                                  + (it[3] ? (it[3]?.format('dd.MM.yy')) : '')
-                                  + ((it[2]||it[3]) ? ') ' : ' ')
-                                  + (it[4]?: NO_STATUS)  ) : null}}"
-                          optionKey="${{it ? it[0] : null}}"
+                          from="${validSubscriptionsDropdown}"
+                          optionKey="${{it.optionKey}}"
+                          optionValue="${{it.optionValue}}"
                           value="${ownobj?.id}"
                           noSelection="[null: '']"/>
 
@@ -229,16 +213,17 @@ double t8 = 0L
         </div>
 
     </g:form>
-    %{--controllerName ${controllerName}<br>--}%
-    %{--validLicenses ${validLicenses?.size()}<br>--}%
-    %{--validLicensesDropdown ${validLicensesDropdown?.size()}<br>--}%
-    %{--validOrgs ${validOrgs?.size()}<br>--}%
-    %{--validOrgsDropdown ${validOrgsDropdown?.size()}<br>--}%
-    %{--validPackages ${validPackages?.size()}<br>--}%
-    %{--validSubscriptionDropdown ${validSubscriptionDropdown?.size()}<br>--}%
-    %{--validResponsibleUsers ${validResponsibleUsers?.size()}<br><br>--}%
-    %{--Zeiten:--}%
-    %{--<% java.text.DecimalFormat myFormatter = new java.text.DecimalFormat("###,###"); %>--}%
+    controllerName ${controllerName}<br>
+    validLicenses ${validLicenses?.size()}<br>
+    validLicensesDropdown ${validLicensesDropdown?.size()}<br>
+    validOrgs ${validOrgs?.size()}<br>
+    validOrgsDropdown ${validOrgsDropdown?.size()}<br>
+    validPackages ${validPackages?.size()}<br>
+    validSubscriptionDropdown ${validSubscriptionDropdown?.size()}<br>
+    validSubscriptionsDropdown ${validSubscriptionsDropdown?.size()}<br>
+    validResponsibleUsers ${validResponsibleUsers?.size()}<br><br>
+    Zeiten:<br/>
+    <% java.text.DecimalFormat myFormatter = new java.text.DecimalFormat("###,###"); %>
     %{--t1 ${myFormatter.format(t1-start)}<br>--}%
     %{--t2 ${myFormatter.format(t2-t1)}<br>--}%
     %{--t3 ${myFormatter.format(t3-t2)}<br>--}%
@@ -248,12 +233,12 @@ double t8 = 0L
     %{--t7 ${myFormatter.format(t7-t6)}<br>--}%
     %{--t8 ${myFormatter.format(t8-t7)}<br>--}%
 
-    %{--<% def ende = System.currentTimeMillis()--}%
-        %{--def dauerBackFrontend = backendStart ? ende-backendStart : 0L--}%
-        %{--def dauerFrontend = ende-start--}%
-    %{--%>--}%
-    %{--****************** Backend + Frontend DAUER: ${backendStart? myFormatter.format(dauerBackFrontend) : 'n/a'} ******************<br>--}%
-    %{--****************** Frontend           DAUER: ${myFormatter.format(dauerFrontend)} ******************--}%
+    <% def ende = System.currentTimeMillis()
+        def dauerBackFrontend = backendStart ? ende-backendStart : 0L
+        def dauerFrontend = ende-start
+    %>
+    ****************** Backend + Frontend DAUER: ${backendStart? myFormatter.format(dauerBackFrontend) : 'n/a'} ******************<br>
+    ****************** Frontend           DAUER: ${myFormatter.format(dauerFrontend)} ******************
     <g:if test="${controllerName == 'myInstitution' || controllerName == 'ajax'}">
         <script>
             // initial side call
