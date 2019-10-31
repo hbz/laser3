@@ -8,6 +8,7 @@ class Identifier {
     IdentifierNamespace ns
     String value
     IdentifierGroup ig
+    String note = ""
 
     Date dateCreated
     Date lastUpdated
@@ -30,7 +31,9 @@ class Identifier {
 		  }
 		}
 
-    	ig(nullable:true, blank:false)
+    	ig      (nullable:true, blank:false)
+        note    (nullable: true, blank: true)
+
 	  	lic     (nullable:true)
 	  	org     (nullable:true)
 	  	pkg     (nullable:true)
@@ -49,13 +52,14 @@ class Identifier {
     value   column:'id_value', index:'id_value_idx'
        ns   column:'id_ns_fk', index:'id_value_idx'
        ig   column:'id_ig_fk', index:'id_ig_idx'
+       note column:'id_note',  type: 'text'
 
        lic  column:'id_lic_fk'
        org  column:'id_org_fk'
        pkg  column:'id_pkg_fk'
        sub  column:'id_sub_fk'
-       ti   column:'id_ti_fk',      index:'io_title_idx'
-       tipp column:'id_tipp_fk',    index:'io_tipp_idx'
+       ti   column:'id_ti_fk',      index:'id_title_idx'
+       tipp column:'id_tipp_fk',    index:'id_tipp_idx'
        cre  column:'id_cre_fk'
 
         dateCreated column: 'id_date_created'
