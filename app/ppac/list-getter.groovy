@@ -3,8 +3,8 @@
 
 class Dummy {
 
-	// bad code
-	// return value is null or contains null entries
+	// returns null or a list containing null values
+	@Deprecated
 	static getList_deprecated(param) {
 		if (param > 0.5) {
 			return [1, 2, 3, null, null, 6, 7, null]
@@ -15,7 +15,8 @@ class Dummy {
 	}
 
 	// good code
-	// list as return value without null entries; warning is logged if there would be
+	// returns an empty or not empty list without containing null values
+	// a warning is logged if there would be
 	static List<Object> getList(param) {
 		List<Object> result = []
 
@@ -33,9 +34,9 @@ class Dummy {
 
 class Demo {
 
-	// bad code
-	// unnecessary testing due erroneously values
-	static doSomething_deprecated(param) {
+	// unnecessary testing and logic errors due unexpected return values
+	@Deprecated
+	static calcSum_deprecated(param) {
 		def list = Dummy.getList_deprecated(param)
 		int sum = 0
 
@@ -50,7 +51,7 @@ class Demo {
 
 	// good code
 	// trustworthy values
-	static int doSomething(param) {
+	static int calcSum(param) {
 		List<Object> list = Dummy.getList(param)
 		int sum = 0
 
@@ -64,8 +65,8 @@ class Demo {
 
 double rnd = Math.random()
 
-println '-- deprecated --'
-println Demo.doSomething_deprecated(rnd)
+println '\n-- deprecated --'
+println Demo.calcSum_deprecated(rnd)
 
-println '-- good code --'
-println Demo.doSomething(rnd)
+println '\n-- good code --'
+println Demo.calcSum(rnd)
