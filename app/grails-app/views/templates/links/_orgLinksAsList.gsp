@@ -39,7 +39,9 @@
                             </g:else>
                         </g:if>
                         <g:if test="${! role.isShared && ! role.sharedFrom}">
-                            <g:link class="ui negative icon button la-selectable-button" controller="ajax" action="delOrgRole" id="${role.id}" onclick="return confirm(${message(code:'template.orgLinks.delete.warn')})">
+                            <g:link class="ui negative icon button la-selectable-button js-open-confirm-modal" controller="ajax" action="delOrgRole" id="${role.id}"
+                                    data-confirm-tokenMsg = "${message(code:'confirm.dialog.unlink.provider-agency.subscription')}"
+                                    data-confirm-how = "unlink">
                                 <i class="unlink icon"></i>
                             </g:link>
                         </g:if>
