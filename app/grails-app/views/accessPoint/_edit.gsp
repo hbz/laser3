@@ -58,6 +58,7 @@
                                     </dl>
                                 </g:if>
 
+                  <g:if test="${ !accessPoint.hasProperty('entityId') }">
             <dl >
                 <dt><g:message code="accessPoint.range.plural" default="Addressbereiche" /></dt>
                 <dd class="la-full-width">
@@ -95,10 +96,11 @@
                     </div>
                 </dd>
         </dl>
+                  </g:if>
     </div>
 </div>
 </g:form>
-
+<g:if test="${ !accessPoint.hasProperty('entityId') }">
 <g:form class="ui form" url="[controller: 'accessPoint', action: 'addIpRange']" id="${accessPoint.id}" method="POST">
 <g:hiddenField name="id" value="${accessPoint?.id}" />
 <g:hiddenField name="ipv4Format" value="${ipv4Format}" />
@@ -149,7 +151,7 @@
 </table>
 
 </g:form>
-
+</g:if>
 <g:render template="link" model="${[accessPoint:accessPoint, params:params, linkedPlatformsMap: linkedPlatformsMap, linkedSubscriptionsMap: linkedSubscriptionsMap]}"/>
 
 %{--
