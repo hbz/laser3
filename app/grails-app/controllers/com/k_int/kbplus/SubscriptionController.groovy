@@ -2702,8 +2702,8 @@ class SubscriptionController extends AbstractDebugController {
         }
 
         if (result.subscriptionInstance && params.singleTitle) {
-            if(subscriptionService.deleteEntitlement(result.subscriptionInstance,params.singleTitle))
-                log.debug("Deleted tipp ${params.singleTitle} from sub ${result.subscriptionInstance.id}")
+            if(subscriptionService.deleteEntitlementbyID(result.subscriptionInstance,params.singleTitle))
+                log.debug("Deleted ie ${params.singleTitle} from sub ${result.subscriptionInstance.id}")
         } else {
             log.error("Unable to locate subscription instance");
         }
