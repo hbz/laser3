@@ -8,10 +8,12 @@ import de.laser.AuditConfig
 import de.laser.helper.DateUtil
 import de.laser.helper.DebugAnnotation
 import de.laser.helper.RDStore
+import de.laser.interfaces.ShareSupport
 import de.laser.interfaces.TemplateSupport
 import grails.plugin.springsecurity.annotation.Secured
 import groovy.time.TimeCategory
 import org.apache.poi.xssf.streaming.SXSSFWorkbook
+import org.codehaus.groovy.grails.orm.hibernate.cfg.GrailsHibernateUtil
 import org.codehaus.groovy.runtime.InvokerHelper
 import org.springframework.context.i18n.LocaleContextHolder
 import org.springframework.dao.DataIntegrityViolationException
@@ -2413,7 +2415,11 @@ class SurveyController {
                                  sub_name     : subscription?.name,
                                  sub_id       : subscription?.id,
                                  sub_license  : subscription?.owner?.reference ?: '',
-                                 sub_status   : RDStore.SUBSCRIPTION_INTENDED]
+                                 sub_status   : RDStore.SUBSCRIPTION_INTENDED.id.toString(),
+                                 sub_type     : subscription.type?.id.toString(),
+                                 sub_form     : subscription.form?.id.toString(),
+                                 sub_resource : subscription.resource?.id.toString()
+        ]
 
         result.subscription = subscription
         result
@@ -2436,28 +2442,15 @@ class SurveyController {
         if (previousSubscriptions.size() > 0) {
             flash.error = message(code: 'subscription.renewSubExist', default: 'The Subscription is already renewed!')
         } else {
-            boolean isCopyAuditOn = params.subscription.isCopyAuditOn ? true : false
-            def sub_startDate = null
-            def sub_endDate = null
-            def sub_status = null
-            def old_subOID = null
-            def new_subname = null
+            def sub_startDate = params.subscription?.start_date ? parseDate(params.subscription?.start_date, possible_date_formats) : null
+            def sub_endDate = params.subscription?.end_date ? parseDate(params.subscription?.end_date, possible_date_formats) : null
+            def sub_status = params.subStatus
+            def sub_type = params.subType
+            def sub_form = params.subForm
+            def sub_resource = params.subResource
+            def old_subOID = params.subscription.old_subid
+            def new_subname = params.subscription.name
             def manualCancellationDate = null
-            if (isCopyAuditOn) {
-                use(TimeCategory) {
-                    sub_startDate = baseSub?.endDate ? (baseSub?.endDate + 1.day) : null
-                    sub_endDate = baseSub?.endDate ? (baseSub?.endDate + 1.year) : null
-                }
-                sub_status = RDStore.SUBSCRIPTION_INTENDED
-                old_subOID = baseSub?.id
-                new_subname = baseSub?.name
-            } else {
-                sub_startDate = params.subscription?.start_date ? parseDate(params.subscription?.start_date, possible_date_formats) : null
-                sub_endDate = params.subscription?.end_date ? parseDate(params.subscription?.end_date, possible_date_formats) : null
-                sub_status = params.subStatus
-                old_subOID = params.subscription.old_subid
-                new_subname = params.subscription.name
-            }
 
             use(TimeCategory) {
                 manualCancellationDate =  baseSub?.manualCancellationDate ? (baseSub?.manualCancellationDate + 1.year) : null
@@ -2470,25 +2463,25 @@ class SurveyController {
                     identifier: java.util.UUID.randomUUID().toString(),
                     isPublic: baseSub?.isPublic,
                     isSlaved: baseSub?.isSlaved,
-                    type: baseSub?.type ?: null,
+                    type: sub_type,
                     status: sub_status,
-                    resource: baseSub?.resource ?: null,
-                    form: baseSub?.form ?: null
+                    resource: sub_resource,
+                    form: sub_form
             )
 
             if (!newSub.save(flush: true)) {
                 log.error("Problem saving subscription ${newSub.errors}");
                 return newSub
             } else {
+                boolean isCopyAuditOn = params.auditProperties ? true : false
                 log.debug("Save ok");
-                if (isCopyAuditOn) {
+                if (params.list('auditList')) {
                     //copy audit
-                    def auditConfigs = AuditConfig.findAllByReferenceClassAndReferenceId(Subscription.class.name, baseSub?.id)
-                    auditConfigs.each {
-                        AuditConfig ac ->
-                            //All ReferenceFields were copied!
-                            //'name', 'startDate', 'endDate', 'manualCancellationDate', 'status', 'type', 'form', 'resource'
-                            AuditConfig.addConfig(newSub, ac.referenceField)
+                    params.list('auditList').each { auditField ->
+                        //All ReferenceFields were copied!
+                        //'name', 'startDate', 'endDate', 'manualCancellationDate', 'status', 'type', 'form', 'resource'
+                        //println(auditField)
+                        AuditConfig.addConfig(newSub, auditField)
                     }
                 }
                 //Copy References
@@ -2614,9 +2607,14 @@ class SurveyController {
             case WORKFLOW_PROPERTIES:
                 result << copySubElements_Properties();
                 if (params.isRenewSub && params.targetSubscriptionId) {
-                    flash.error = ""
-                    flash.message = ""
-                    redirect controller: 'subscription', action: 'show', params: [id: params?.targetSubscriptionId]
+                    def surveyConfig = SurveyConfig.findBySubscriptionAndIsSubscriptionSurveyFix(result.sourceSubscription, true)
+                    /*flash.error = ""
+                    flash.message = ""*/
+                    if(surveyConfig) {
+                        redirect controller: 'survey', action: 'renewalWithSurvey', params: [id: surveyConfig.surveyInfo.id, surveyConfigID: surveyConfig.id]
+                    }else {
+                        redirect controller: 'subscription', action: 'show', params: [id: params?.targetSubscriptionId]
+                    }
                 } else {
                     result << loadDataFor_Properties()
                 }
@@ -2624,9 +2622,14 @@ class SurveyController {
             case WORKFLOW_END:
                 result << copySubElements_Properties();
                 if (params?.targetSubscriptionId) {
-                    flash.error = ""
-                    flash.message = ""
-                    redirect controller: 'subscription', action: 'show', params: [id: params?.targetSubscriptionId]
+                    def surveyConfig = SurveyConfig.findBySubscriptionAndIsSubscriptionSurveyFix(result.sourceSubscription, true)
+                    /*flash.error = ""
+                    flash.message = ""*/
+                    if(surveyConfig) {
+                        redirect controller: 'survey', action: 'renewalWithSurvey', params: [id: surveyConfig.surveyInfo.id, surveyConfigID: surveyConfig.id]
+                    }else {
+                        redirect controller: 'subscription', action: 'show', params: [id: params?.targetSubscriptionId]
+                    }
                 }
                 break;
             default:
@@ -2658,6 +2661,7 @@ class SurveyController {
         boolean isRenewSub = params?.isRenewSub ? true : false
         boolean isCopyAuditOn = params?.isCopyAuditOn ? true : false
         Subscription newSub = null
+        List auditProperties = params.list('auditProperties')
         List<Subscription> subsToCompare = [baseSub]
         if (params.targetSubscriptionId) {
             newSub = Subscription.get(params.targetSubscriptionId)
@@ -2667,14 +2671,14 @@ class SurveyController {
             genericOIDService.resolveOID(it)
         }
         if (propertiesToTake && isBothSubscriptionsSet(baseSub, newSub)) {
-            subscriptionService.copyProperties(propertiesToTake, newSub, isRenewSub, isCopyAuditOn, flash)
+            surveyService.copyProperties(propertiesToTake, newSub, isRenewSub, isCopyAuditOn, flash, auditProperties)
         }
 
         List<AbstractProperty> propertiesToDelete = params?.list('subscription.deleteProperty').collect {
             genericOIDService.resolveOID(it)
         }
         if (propertiesToDelete && isBothSubscriptionsSet(baseSub, newSub)) {
-            subscriptionService.deleteProperties(propertiesToDelete, newSub, isRenewSub, isCopyAuditOn, flash)
+            surveyService.deleteProperties(propertiesToDelete, newSub, isRenewSub, isCopyAuditOn, flash, auditProperties)
         }
 
         if (newSub) {
@@ -2699,6 +2703,7 @@ class SurveyController {
         }
         subsToCompare.each { sub ->
             TreeMap customProperties = result.customProperties
+            sub = GrailsHibernateUtil.unwrapIfProxy(sub)
             customProperties = comparisonService.buildComparisonTree(customProperties, sub, sub.customProperties)
             result.customProperties = customProperties
             TreeMap privateProperties = result.privateProperties
@@ -2808,6 +2813,22 @@ class SurveyController {
             }
             subscriptionService.copyOrgRelations(toCopyOrgRelations, baseSub, newSub, flash)
             isTargetSubChanged = true
+
+            List<OrgRole> toggleShareOrgRoles = params.list('toggleShareOrgRoles').collect {
+                genericOIDService.resolveOID(it)
+            }
+
+            newSub = newSub.refresh()
+            newSub.orgRelations.each {newSubOrgRole ->
+
+                if(newSubOrgRole.org in toggleShareOrgRoles.org)
+                {
+                    newSubOrgRole.isShared = true
+                    newSubOrgRole.save(flush:true)
+
+                    ((ShareSupport) newSub).updateShare(newSubOrgRole)
+                }
+            }
         }
 
         if (isTargetSubChanged) {
