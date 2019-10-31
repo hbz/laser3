@@ -102,7 +102,8 @@
                                             <g:if test="${editmode}">
                                                 <g:set var="prsRole" value="${com.k_int.kbplus.PersonRole.getByPersonAndOrgAndRespValue(resp, role.org, roleRespValue)}" />
                                                 <div class="ui mini icon buttons">
-                                                    <g:link class="ui button la-selectable-button" controller="ajax" action="delPrsRole" id="${prsRole?.id}" onclick="return confirm(${message(code:'template.orgLinks.delete.warn')})" >
+                                                    <g:link class="ui button la-selectable-button" controller="ajax" action="delPrsRole" id="${prsRole?.id}"
+                                                            onclick="return confirm('${message(code:'template.orgLinks.delete.warn')}')" >
                                                         <i class="times icon red"></i>
                                                     </g:link>
                                                 </div>
@@ -140,7 +141,7 @@
                                             <g:if test="${editmode}">
                                                 <g:set var="prsRole" value="${com.k_int.kbplus.PersonRole.getByPersonAndOrgAndRespValue(resp, role.org, roleRespValue)}" />
                                                 <div class="ui mini icon buttons">
-                                                    <g:link class="ui button la-selectable-button" controller="ajax" action="delPrsRole" id="${prsRole?.id}" onclick="return confirm(${message(code:'template.orgLinks.delete.warn')})" >
+                                                    <g:link class="ui button la-selectable-button" controller="ajax" action="delPrsRole" id="${prsRole?.id}" onclick="return confirm('${message(code:'template.orgLinks.delete.warn')}')" >
                                                         <i class="times icon red"></i>
                                                     </g:link>
                                                 </div>

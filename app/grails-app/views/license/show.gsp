@@ -154,7 +154,7 @@
                                                             <g:link class="ui button la-selectable-button" name="unlinkSubscription"
                                                                     controller="license" action="unlinkSubscription"
                                                                     params="['license':license.id, 'subscription':sub.id]"
-                                                                    onclick="return confirm(${message(code:'template.orgLinks.delete.warn')})" >
+                                                                    onclick="return confirm('${message(code:'template.orgLinks.delete.warn')}')" >
                                                                 <i class="unlink icon"></i>
                                                             </g:link>
                                                         </div>
