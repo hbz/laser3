@@ -665,6 +665,7 @@ tooltip = {
             hoverable: true,
             inline     : true,
             lastResort: true,
+            position: 'left center',
             delay: {
                 show: 300,
                 hide: 500
