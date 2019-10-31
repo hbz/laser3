@@ -289,23 +289,20 @@ class SubscriptionService {
         visibleOrgRelations.sort { it.org?.name.toLowerCase() }
     }
 
-    @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
-    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
+
     boolean deleteOwner(Subscription targetSub, def flash) {
         targetSub.owner = null
         return save(targetSub, flash)
     }
 
-    @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
-    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
+
     boolean copyOwner(Subscription sourceSub, Subscription targetSub, def flash) {
         //Vertrag/License
         targetSub.owner = sourceSub.owner ?: null
         return save(targetSub, flash)
     }
 
-    @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
-    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
+
     boolean deleteOrgRelations(List<OrgRole> toDeleteOrgRelations, Subscription targetSub, def flash) {
         OrgRole.executeUpdate(
                 "delete from OrgRole o where o in (:orgRelations) and o.sub = :sub and o.roleType not in (:roleTypes)",
@@ -313,8 +310,7 @@ class SubscriptionService {
         )
     }
 
-    @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
-    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
+
     boolean copyOrgRelations(List<OrgRole> toCopyOrgRelations, Subscription sourceSub, Subscription targetSub, def flash) {
         sourceSub.orgRelations?.each { or ->
             if (or in toCopyOrgRelations && !(or.org?.id == contextService.getOrg()?.id) && !(or.roleType.value in ['Subscriber', 'Subscriber_Consortial', 'Subscription Consortia'])) {
@@ -323,11 +319,12 @@ class SubscriptionService {
                     flash.error += messageSource.getMessage('subscription.err.alreadyExistsInTargetSub', args, locale)
                 } else {
                     def newProperties = or.properties
-                    //Vererbung ausschalten
-                    newProperties.sharedFrom = null
-                    newProperties.isShared = false
+
                     OrgRole newOrgRole = new OrgRole()
                     InvokerHelper.setProperties(newOrgRole, newProperties)
+                    //Vererbung ausschalten
+                    newOrgRole.sharedFrom  = null
+                    newOrgRole.isShared = false
                     newOrgRole.sub = targetSub
                     save(newOrgRole, flash)
                 }
@@ -335,8 +332,7 @@ class SubscriptionService {
         }
     }
 
-    @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
-    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
+
     boolean deletePackages(List<SubscriptionPackage> packagesToDelete, Subscription targetSub, def flash) {
         //alle IEs löschen, die zu den zu löschenden Packages gehören
 //        targetSub.issueEntitlements.each{ ie ->
@@ -355,8 +351,7 @@ class SubscriptionService {
         }
     }
 
-    @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
-    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
+
     boolean copyPackages(List<Package> packagesToTake, Subscription targetSub, def flash) {
         packagesToTake?.each { pkg ->
             if (targetSub.packages?.find { it.pkg?.id == pkg?.id }) {
@@ -371,8 +366,7 @@ class SubscriptionService {
         }
     }
 
-    @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
-    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
+
     boolean deleteEntitlements(List<IssueEntitlement> entitlementsToDelete, Subscription targetSub, def flash) {
         entitlementsToDelete.each {
             it.status = TIPP_DELETED
@@ -383,8 +377,7 @@ class SubscriptionService {
 //                [entitlementsToDelete: entitlementsToDelete, sub: targetSub])
     }
 
-    @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
-    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
+
     boolean copyEntitlements(List<IssueEntitlement> entitlementsToTake, Subscription targetSub, def flash) {
         entitlementsToTake.each { ieToTake ->
             if (ieToTake.status != TIPP_DELETED) {
@@ -396,9 +389,9 @@ class SubscriptionService {
                 } else {
                     def properties = ieToTake.properties
                     properties.globalUID = null
-                    properties.coverages = null
                     IssueEntitlement newIssueEntitlement = new IssueEntitlement()
                     InvokerHelper.setProperties(newIssueEntitlement, properties)
+                    newIssueEntitlement.coverages = null
                     newIssueEntitlement.subscription = targetSub
 
                     if(save(newIssueEntitlement, flash)){
@@ -408,7 +401,7 @@ class SubscriptionService {
                             IssueEntitlementCoverage newIssueEntitlementCoverage = new IssueEntitlementCoverage()
                             InvokerHelper.setProperties(newIssueEntitlementCoverage, coverageProperties)
                             newIssueEntitlementCoverage.issueEntitlement = newIssueEntitlement
-                            save(newIssueEntitlement, flash)
+                            newIssueEntitlementCoverage.save(flush: true)
                         }
                     }
                 }
@@ -416,8 +409,7 @@ class SubscriptionService {
         }
     }
 
-    @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
-    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
+
     void copySubscriber(List<Subscription> subscriptionToTake, Subscription targetSub, def flash) {
         subscriptionToTake.each { subMember ->
             //Gibt es mich schon in der Ziellizenz?
@@ -513,8 +505,19 @@ class SubscriptionService {
 
                                 IssueEntitlement newIssueEntitlement = new IssueEntitlement()
                                 InvokerHelper.setProperties(newIssueEntitlement, ieProperties)
+                                newIssueEntitlement.coverages = null
                                 newIssueEntitlement.subscription = newSubscription
-                                newIssueEntitlement.save(flush: true)
+
+                                if(save(newIssueEntitlement, flash)){
+                                    ie.properties.coverages.each{ coverage ->
+
+                                        def coverageProperties = coverage.properties
+                                        IssueEntitlementCoverage newIssueEntitlementCoverage = new IssueEntitlementCoverage()
+                                        InvokerHelper.setProperties(newIssueEntitlementCoverage, coverageProperties)
+                                        newIssueEntitlementCoverage.issueEntitlement = newIssueEntitlement
+                                        newIssueEntitlementCoverage.save(flush: true)
+                                    }
+                                }
                             }
                         }
                     }
@@ -543,8 +546,7 @@ class SubscriptionService {
         }
     }
 
-    @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
-    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
+
     boolean deleteTasks(List<Long> toDeleteTasks, Subscription targetSub, def flash) {
         boolean isInstAdm = contextService.getUser().hasAffiliation("INST_ADM")
         def userId = contextService.user.id
@@ -564,8 +566,7 @@ class SubscriptionService {
         }
     }
 
-    @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
-    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
+
     boolean copyTasks(Subscription sourceSub, def toCopyTasks, Subscription targetSub, def flash) {
         toCopyTasks.each { tsk ->
             def task = Task.findBySubscriptionAndId(sourceSub, tsk)
@@ -581,8 +582,7 @@ class SubscriptionService {
         }
     }
 
-    @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
-    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
+
     boolean copyAnnouncements(Subscription sourceSub, def toCopyAnnouncements, Subscription targetSub, def flash) {
         sourceSub.documents?.each { dctx ->
             if (dctx.id in toCopyAnnouncements) {
@@ -600,8 +600,7 @@ class SubscriptionService {
         }
     }
 
-    @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
-    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
+
     def deleteAnnouncements(List<Long> toDeleteAnnouncements, Subscription targetSub, def flash) {
         targetSub.documents.each {
             if (toDeleteAnnouncements.contains(it.id) && it.owner?.contentType == Doc.CONTENT_TYPE_STRING  && !(it.domain)){
@@ -613,8 +612,7 @@ class SubscriptionService {
     }
 
 
-    @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
-    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
+
     boolean deleteDates(Subscription targetSub, def flash){
         targetSub.startDate = null
         targetSub.endDate = null
@@ -622,16 +620,14 @@ class SubscriptionService {
     }
 
 
-    @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
-    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
+
     boolean copyDates(Subscription sourceSub, Subscription targetSub, def flash) {
         targetSub.setStartDate(sourceSub.getStartDate())
         targetSub.setEndDate(sourceSub.getEndDate())
         return save(targetSub, flash)
     }
 
-    @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
-    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
+
     def deleteDocs(List<Long> toDeleteDocs, Subscription targetSub, def flash) {
         log.debug("toDeleteDocCtxIds: " + toDeleteDocs)
         def updated = DocContext.executeUpdate("UPDATE DocContext set status = :del where id in (:ids)",
@@ -639,8 +635,7 @@ class SubscriptionService {
         log.debug("Number of deleted (per Flag) DocCtxs: " + updated)
     }
 
-    @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
-    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
+
     boolean copyDocs(Subscription sourceSub, def toCopyDocs, Subscription targetSub, def flash) {
         sourceSub.documents?.each { dctx ->
             if (dctx.id in toCopyDocs) {
@@ -658,8 +653,7 @@ class SubscriptionService {
         }
     }
 
-    @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
-    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
+
     boolean copyProperties(List<AbstractProperty> properties, Subscription targetSub, boolean isRenewSub, boolean isCopyAuditOn, def flash){
         def contextOrg = contextService.getOrg()
         def targetProp
@@ -697,10 +691,9 @@ class SubscriptionService {
         }
     }
 
-    @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
-    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
+
     boolean deleteProperties(List<AbstractProperty> properties, Subscription targetSub, boolean isRenewSub, boolean isCopyAuditOn, def flash){
-        if (isCopyAuditOn){
+        if (true){
             properties.each { AbstractProperty prop ->
                 AuditConfig.removeAllConfigs(prop)
             }

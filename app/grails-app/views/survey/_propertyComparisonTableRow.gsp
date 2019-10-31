@@ -1,5 +1,7 @@
-<%@page import="com.k_int.properties.PropertyDefinition; de.laser.helper.RDStore;com.k_int.kbplus.*" %>
+<%@page import="com.k_int.properties.PropertyDefinition; de.laser.helper.RDStore;com.k_int.kbplus.*; de.laser.AuditConfig" %>
 <laser:serviceInjection/>
+
+<g:set var="overwriteEditable" value="${false}"/>
 <thead>
     <tr>
         <th class="four wide  aligned">${key}</th>
@@ -38,7 +40,7 @@
     </tr>
 </thead>
 <tbody>
-<g:each in="${group}" var="prop">
+<g:each in="${group.sort{it.key}}" var="prop">
     <% PropertyDefinition propKey = (PropertyDefinition) genericOIDService.resolveOID(prop.getKey()) %>
     <tr>
         <td>
@@ -87,8 +89,16 @@
                             <g:if test="${propValue?.note}">
                                 <div class="ui circular label la-long-tooltip la-popup-tooltip la-delay" data-content="${propValue?.note}">Anm.</div>
                             </g:if>
+
                             <g:if test="${propValues.get(sourceSubscription)?.size() > 1}"><br></g:if>
                         </div>
+                        <g:if test="${propValue instanceof com.k_int.kbplus.SubscriptionCustomProperty}">
+                            <div class="la-copyElements-flex-item right aligned wide column">
+                                <g:message code="subscription.details.copyElementsIntoSubscription.audit"/>:&nbsp;
+                                    <input type="checkbox" name="auditProperties" value="${propValue.id}" ${!AuditConfig.getConfig(propValue) ? '' : 'checked' }/>
+
+                            </div>
+                        </g:if>
 
                         %{--COPY:--}%
                         <g:if test="${propValues.containsKey(sourceSubscription)}">
@@ -150,6 +160,16 @@
                             </g:if>
                             <g:if test="${propValues.get(targetSubscription)?.size() > 1}"><br></g:if>
                         </div>
+                        <g:if test="${propValue instanceof com.k_int.kbplus.SubscriptionCustomProperty}">
+                            <div class="la-copyElements-flex-item">
+                                <g:if test="${! AuditConfig.getConfig(propValue)}">
+                                    <i class="icon la-thumbtack slash la-js-editmode-icon"></i>
+                                </g:if>
+                                <g:else>
+                                    <i class="thumbtack icon la-js-editmode-icon"></i>
+                                </g:else>
+                            </div>
+                        </g:if>
                         %{--DELETE:--}%
                         <div class="ui checkbox la-toggle-radio la-noChange">
                             <g:checkBox class="bulkcheck"  name="subscription.deleteProperty" value="${genericOIDService.getOID(propValue)}" data-action="delete" checked="${false}"/>

@@ -247,7 +247,7 @@
                 <br><strong><g:message code="filter.result.empty.object" args="${[message(code:"license.plural")]}"/></strong>
             </g:if>
             <g:else>
-                <br><strong><g:message code="result.empty.object" args="${message(code:"license.plural")}"/></strong>
+                <br><strong><g:message code="result.empty.object" args="${[message(code:"license.plural")]}"/></strong>
             </g:else>
         </g:else>
     </div>

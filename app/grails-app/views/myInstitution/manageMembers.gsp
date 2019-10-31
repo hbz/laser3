@@ -111,7 +111,7 @@
         <br><strong><g:message code="filter.result.empty.object" args="${[message(code:"myinst.consortiaSubscriptions.consortia")]}"/></strong>
     </g:if>
     <g:else>
-        <br><strong><g:message code="result.empty.object" args="${message(code:"myinst.consortiaSubscriptions.consortia")}"/></strong>
+        <br><strong><g:message code="result.empty.object" args="${[message(code:"myinst.consortiaSubscriptions.consortia")]}"/></strong>
     </g:else>
 </g:else>
 

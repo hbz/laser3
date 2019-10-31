@@ -67,7 +67,6 @@ ${surveyInfo?.name}
 
         </g:if>
         <g:else>
-            <g:message code="renewalWithSurvey.noParentSuccessorSubscription"/>
             <g:link controller="survey" action="renewSubscriptionConsortiaWithSurvey" id="${surveyInfo?.id}"
                     params="[surveyConfig: surveyConfig?.id, parentSub: parentSubscription?.id]"
                     class="ui button ">
