@@ -20,6 +20,7 @@
             <tr>
                 <th>url</th>
                 <th>avg(sec)</th>
+                <th>max(sec)</th>
                 <th>count(*) > ${de.laser.domain.SystemProfiler.THRESHOLD_MS} ms</th>
                 <th>total hits</th>
             </tr>
@@ -28,8 +29,9 @@
             <g:each in="${byUri}" var="bench">
                 <tr data-uri="${bench[0]}">
                     <td data-uri="${bench[0]}">${bench[0]}</td>
-                    <td>${(bench[1] / 1000).round(2)}</td>
-                    <td>${bench[2]}</td>
+                    <td>${(bench[2] / 1000).round(2)}</td>
+                    <td>${((double) bench[1] / 1000).round(2)}</td>
+                    <td>${bench[3]}</td>
                     <td>${globalCountByUri.get(bench[0])}</td>
                 </tr>
             </g:each>
@@ -42,6 +44,7 @@
             <tr>
                 <th>url</th>
                 <th>avg(sec)</th>
+                <th>max(sec)</th>
                 <th>count(*) > ${de.laser.domain.SystemProfiler.THRESHOLD_MS} ms</th>
                 <th>context</th>
             </tr>
@@ -50,8 +53,9 @@
             <g:each in="${byUriAndContext}" var="bench">
                 <tr data-uri="${bench[0]}" data-context="${bench[1]}">
                     <td data-uri="${bench[0]}">${bench[0]}</td>
-                    <td>${(bench[2] / 1000).round(2)}</td>
-                    <td>${bench[3]}</td>
+                    <td>${(bench[3] / 1000).round(2)}</td>
+                    <td>${((double) bench[2] / 1000).round(2)}</td>
+                    <td>${bench[4]}</td>
                     <td data-context="${bench[1]}">${com.k_int.kbplus.Org.get(bench[1]).getDesignation()}</td>
                 </tr>
             </g:each>
