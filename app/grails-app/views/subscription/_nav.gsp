@@ -54,7 +54,7 @@
     %{--Custom URL mapping for re-use of index--}%
 
         <g:link class="item${controllerName == 'finance' ? ' active':''}" mapping="subfinance" controller="finance" action="index" params="${[sub:params.id]}">
-            ${message(code:'subscription.details.financials.label', default:'Subscription Financials')}
+            ${message(code:'subscription.details.financials.label')}
         </g:link>
 
     </g:if>

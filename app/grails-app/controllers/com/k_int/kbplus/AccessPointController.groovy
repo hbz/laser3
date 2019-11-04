@@ -90,16 +90,57 @@ class AccessPointController extends AbstractDebugController {
         [personInstanceList: Person.list(params), personInstanceTotal: Person.count()]
     }
 
-    @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
-    def create() {
-        params.max = params.max ?: ((User) springSecurityService.getCurrentUser())?.getDefaultPageSizeTMP()
+    /**
+     * Check for existing name in all supported locales and return available suggestions for IP Access Method
+     * A simpler solution would be nice
+     * TODO move out of controller
+     * @return
+     */
+    private def availableIPOptions() {
 
         def organisation = contextService.getOrg()
         params.orgInstance = organisation
 
+        def availableLanguageKeys = ['accessPoint.option.remoteAccess', 'accessPoint.option.woRemoteAccess']
+        def supportedLocales = ['en', 'de']
+        Map localizedAccessPointNameSuggestions = [:]
+        supportedLocales.each { locale ->
+            availableLanguageKeys.each { key ->
+                localizedAccessPointNameSuggestions[message(code : key, locale : locale)] = key
+            }
+        }
+        def existingOapIpInstances = OrgAccessPoint.findAllByOrgAndAccessMethod(organisation, RefdataValue.findByValue('ip'))
+
+        if (existingOapIpInstances) {
+            existingOapIpInstances.each { it ->
+             if (localizedAccessPointNameSuggestions.keySet().contains(it.name)){
+                 if (localizedAccessPointNameSuggestions[it.name]) {
+                     availableLanguageKeys.removeAll {languageKey ->
+                         languageKey == localizedAccessPointNameSuggestions[it.name]
+                     }
+                 }
+             }
+            }
+        }
+        def resultList = []
+        availableLanguageKeys.each { it ->
+            resultList.add(["${message(code : it)}" : "${message(code : it)}"])
+        }
+        resultList.add(["${message(code : 'accessPoint.option.customName')}" : ''])
+        return resultList
+    }
+
+
+    @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
+    def create() {
+        params.max = params.max ?: ((User) springSecurityService.getCurrentUser())?.getDefaultPageSizeTMP()
+        def organisation = contextService.getOrg()
+        params.orgInstance = organisation
+        params.availableIpOptions = availableIPOptions()
+
         if (params.template) {
             def accessMethod = RefdataValue.findByValue(params.template)
-            return render(template: 'create_' + accessMethod, model: [accessMethod: accessMethod])
+            return render(template: 'create_' + accessMethod, model: [accessMethod: accessMethod, availableIpOptions : params.availableIpOptions])
         } else {
             if (!params.accessMethod) {
                 params.accessMethod = RefdataValue.findByValue('ip');

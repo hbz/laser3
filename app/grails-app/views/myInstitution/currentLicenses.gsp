@@ -10,9 +10,9 @@
   <laser:serviceInjection />
 
   <semui:breadcrumbs>
-      <semui:crumb controller="myInstitution" action="dashboard" text="${institution?.getDesignation()}" />
       <semui:crumb message="license.current" class="active" />
   </semui:breadcrumbs>
+
   <semui:controlButtons>
       <semui:exportDropdown>
           <g:if test="${filterSet || defaultSet}">

@@ -10,7 +10,6 @@
 <body>
 
     <semui:breadcrumbs>
-        <semui:crumb controller="myInstitution" action="dashboard" text="${institution?.getDesignation()}"/>
         <semui:crumb controller="myInstitution" action="currentLicenses" message="license.current"/>
         <semui:crumb message="license.new" class="active"/>
     </semui:breadcrumbs>

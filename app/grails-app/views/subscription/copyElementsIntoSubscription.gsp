@@ -7,19 +7,23 @@
 <html>
 <head>
     <meta name="layout" content="semanticUI"/>
-    <title>${message(code: 'laser', default: 'LAS:eR')} : ${message(code: 'subscription.details.copyElementsIntoSubscription.label')}</title>
+    <g:if test="${isRenewSub}">
+        <title>${message(code: 'laser', default: 'LAS:eR')} : ${message(code: 'subscription.details.renewals.renew_sub.label')}</title>
+    </g:if>
+    <g:else>
+        <title>${message(code: 'laser', default: 'LAS:eR')} : ${message(code: 'subscription.details.copyElementsIntoSubscription.label')}</title>
+    </g:else>
 </head>
 <body>
     <g:render template="breadcrumb" model="${[params: params]}"/>
 
-    <h1 class="ui left aligned icon header"><semui:headerIcon />
-        <g:if test="${isRenewSub}">
-            ${message(code: 'subscription.details.renewals.renew_sub.label')}
-        </g:if>
-        <g:else>
-            ${message(code: 'subscription.details.copyElementsIntoSubscription.label')}
-        </g:else>
-    </h1>
+    <g:if test="${isRenewSub}">
+        <h1 class="ui left aligned icon header"><semui:headerIcon />${message(code: 'subscription.details.renewals.renew_sub.label')} </h1>
+    </g:if>
+    <g:else>
+        <h1 class="ui left aligned icon header"><semui:headerIcon />${message(code: 'subscription.details.copyElementsIntoSubscription.label')} </h1>
+    </g:else>
+
     <semui:messages data="${flash}"/>
 
     <% Map params = [id: params.id];

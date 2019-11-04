@@ -13,7 +13,6 @@ import="com.k_int.kbplus.Org; com.k_int.kbplus.Person; com.k_int.kbplus.PersonRo
     <body>
 
         <semui:breadcrumbs>
-            <semui:crumb controller="myInstitution" action="dashboard" text="${institution?.getDesignation()}" />
             <semui:crumb message="menu.institutions.myAddressbook" class="active"/>
         </semui:breadcrumbs>
 
@@ -21,10 +20,9 @@ import="com.k_int.kbplus.Org; com.k_int.kbplus.Person; com.k_int.kbplus.PersonRo
             <g:render template="actions" />
         </semui:controlButtons>
 
-        <h1 class="ui left aligned icon header"><semui:headerIcon />${institution.name}</h1>
-        <h2 class="ui left aligned icon header"><semui:headerIcon />${message(code:'menu.institutions.myAddressbook')}
+        <h1 class="ui left aligned icon header"><semui:headerIcon />${message(code:'menu.institutions.myAddressbook')}
             <semui:totalNumber total="${num_visiblePersons}"/>
-        </h2>
+        </h1>
 
         <semui:messages data="${flash}" />
 

@@ -13,14 +13,12 @@
 <body>
 
 <semui:breadcrumbs>
-    <semui:crumb controller="myInstitution" action="dashboard" text="${institution?.getDesignation()}"/>
     <semui:crumb message="currentSurveys.label" class="active"/>
 </semui:breadcrumbs>
 
 <semui:controlButtons>
     <g:render template="actions"/>
 </semui:controlButtons>
-
 
 
 <h1 class="ui left aligned icon header"><semui:headerIcon/>${message(code: 'currentSurveys.label', default: 'Current Surveys')}
