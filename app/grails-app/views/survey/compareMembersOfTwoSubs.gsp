@@ -59,11 +59,13 @@ ${surveyInfo?.name}
             <g:link controller="subscription" action="show"
                     id="${parentSuccessorSubscription?.id}">${parentSuccessorSubscription?.dropdownNamingConvention()}</g:link>
 
+            <g:if test="${parentSuccessorSubscription.getAllSubscribers().size() > 0}">
             <g:link controller="survey" action="copyElementsIntoRenewalSubscription" id="${parentSubscription?.id}"
                     params="[sourceSubscriptionId: parentSubscription?.id, targetSubscriptionId: parentSuccessorSubscription?.id, isRenewSub: true, isCopyAuditOn: true]"
                     class="ui button ">
                 <g:message code="renewalWithSurvey.newSub.change"/>
             </g:link>
+            </g:if>
 
         </g:if>
         <g:else>
@@ -113,15 +115,20 @@ ${surveyInfo?.name}
                         <tr>
                             <th>${message(code: 'sidewide.number')}</th>
                             <th></th>
+                            <th></th>
                         </tr>
                         </thead>
                         <tbody>
                         <g:each in="${participantsList}" var="participant" status="i">
                             <g:if test="${participant in parentParticipantsList}">
                                 <g:set var="termination" value="${!(participant in parentSuccessortParticipantsList)}"/>
+                                <g:set var="participantSub" value="${parentSubscription?.getDerivedSubscriptionBySubscribers(participant)}"/>
                                 <tr class=" ${termination ? 'negative' : ''}">
                                     <td>${i + 1}</td>
                                     <td class="titleCell">
+                                        <g:if test="${participantSub && participantSub.isMultiYear}">
+                                            <i class="map orange icon"></i>
+                                        </g:if>
                                         <g:link controller="myInstitution" action="manageParticipantSurveys"
                                                 id="${participant.id}">
                                             ${participant?.sortname}
@@ -129,6 +136,25 @@ ${surveyInfo?.name}
                                         <br>
                                         <g:link controller="organisation" action="show"
                                                 id="${participant.id}">(${fieldValue(bean: participant, field: "name")})</g:link>
+                                        <g:if test="${participantSub}">
+                                            <div class="la-icon-list">
+                                                <g:formatDate formatName="default.date.format.notime"
+                                                              date="${participantSub.startDate}"/>
+                                                -
+                                                <g:formatDate formatName="default.date.format.notime"
+                                                              date="${participantSub.endDate}"/>
+                                                <div class="right aligned wide column">
+                                                    <b>${participantSub.status.getI10n('value')}</b>
+                                                </div>
+                                            </div>
+                                        </g:if>
+
+                                    </td>
+                                    <td>
+                                        <g:if test="${participantSub}">
+                                            <g:link controller="subscription" action="show" id="${participantSub.id}"
+                                                    class="ui button icon"><i class="icon clipboard"></i></g:link>
+                                        </g:if>
                                     </td>
                                 </tr>
                             </g:if>
@@ -136,6 +162,7 @@ ${surveyInfo?.name}
                                 <tr>
                                     <td>${i + 1}</td>
                                     <td class="titleCell"></td>
+                                    <td></td>
                                 </tr>
                             </g:else>
                         </g:each>
@@ -150,13 +177,6 @@ ${surveyInfo?.name}
                         <g:if test="${parentSuccessorSubscription}">
                             <g:link controller="subscription" action="show"
                                     id="${parentSuccessorSubscription?.id}">${parentSuccessorSubscription?.dropdownNamingConvention()}</g:link>
-                            %{--<br>
-                            <g:link controller="survey" action="copyElementsIntoRenewalSubscription"
-                                    id="${parentSubscription?.id}"
-                                    params="[sourceSubscriptionId: parentSubscription?.id, targetSubscriptionId: parentSuccessorSubscription?.id, isRenewSub: true, isCopyAuditOn: true]"
-                                    class="ui button ">
-                                <g:message code="renewalWithSurvey.newSub.change"/>
-                            </g:link>--}%
 
                             <br><br>
                             <g:link controller="subscription" action="members"
@@ -181,13 +201,18 @@ ${surveyInfo?.name}
                         <tr>
                             <th>${message(code: 'sidewide.number')}</th>
                             <th></th>
+                            <th></th>
                         </tr>
                         </thead>
                         <g:each in="${participantsList}" var="participant" status="j">
                             <g:if test="${participant in parentSuccessortParticipantsList}">
+                                <g:set var="participantSub" value="${parentSuccessorSubscription?.getDerivedSubscriptionBySubscribers(participant)}"/>
                                 <tr class=" ${participant in parentParticipantsList ? '' : 'positive'}">
                                     <td>${j+1}</td>
                                     <td class="titleCell">
+                                        <g:if test="${participantSub && participantSub.isMultiYear}">
+                                            <i class="map orange icon"></i>
+                                        </g:if>
                                         <g:link controller="myInstitution" action="manageParticipantSurveys"
                                                 id="${participant.id}">
                                             ${participant?.sortname}
@@ -195,6 +220,27 @@ ${surveyInfo?.name}
                                         <br>
                                         <g:link controller="organisation" action="show"
                                                 id="${participant.id}">(${fieldValue(bean: participant, field: "name")})</g:link>
+
+                                        <g:if test="${participantSub}">
+                                            <div class="la-icon-list">
+                                                <g:formatDate formatName="default.date.format.notime"
+                                                              date="${participantSub.startDate}"/>
+                                                -
+                                                <g:formatDate formatName="default.date.format.notime"
+                                                              date="${participantSub.endDate}"/>
+
+                                                <div class="right aligned wide column">
+                                                    <b>${participantSub.status.getI10n('value')}</b>
+                                                </div>
+                                            </div>
+                                        </g:if>
+
+                                    </td>
+                                    <td>
+                                        <g:if test="${participantSub}">
+                                            <g:link controller="subscription" action="show" id="${participantSub.id}"
+                                                    class="ui button icon"><i class="icon clipboard"></i></g:link>
+                                        </g:if>
                                     </td>
                                 </tr>
                             </g:if>
