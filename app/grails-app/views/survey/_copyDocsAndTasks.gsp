@@ -48,6 +48,17 @@
                                             </g:else>
                                         </g:link>(${docctx.owner.type.getI10n("value")})
                                     </label>
+                                    <div class="right aligned wide column">
+                                        <g:message code="subscription.details.copyElementsIntoSubscription.share"/>:
+
+                                        <g:if test="${docctx.isShared}">
+                                            <i class="la-share icon la-js-editmode-icon"></i>
+                                        </g:if>
+                                        <g:else>
+                                            <i class="la-share slash icon la-js-editmode-icon"></i>
+                                        </g:else>
+
+                                    </div>
                                 </div>
                             </g:if>
                         </g:each>
@@ -84,6 +95,17 @@
                                                     </g:else>
                                                 </g:else>
                                             </g:link>(${docctx.owner.type.getI10n("value")})
+                                        </div>
+                                        <div class="right aligned wide column">
+                                            <g:message code="subscription.details.copyElementsIntoSubscription.share"/>:
+
+                                            <g:if test="${docctx.isShared}">
+                                                <i class="la-share icon la-js-editmode-icon"></i>
+                                            </g:if>
+                                            <g:else>
+                                                <i class="la-share slash icon la-js-editmode-icon"></i>
+                                            </g:else>
+
                                         </div>
                                     </g:if>
                                 </g:each>
@@ -123,6 +145,17 @@
                                                 format="${message(code: 'default.date.format.notime')}"
                                                 date="${docctx.owner.dateCreated}"/>)
                                     </label>
+                                    <div class="right aligned wide column">
+                                        <g:message code="subscription.details.copyElementsIntoSubscription.share"/>:
+
+                                        <g:if test="${docctx.isShared}">
+                                            <i class="la-share icon la-js-editmode-icon"></i>
+                                        </g:if>
+                                        <g:else>
+                                            <i class="la-share slash icon la-js-editmode-icon"></i>
+                                        </g:else>
+
+                                    </div>
                                 </div>
                             </g:if>
                         </g:each>
@@ -158,6 +191,17 @@
                                             <g:formatDate
                                                     format="${message(code: 'default.date.format.notime')}"
                                                     date="${docctx.owner.dateCreated}"/>)
+                                        </div>
+                                        <div class="right aligned wide column">
+                                            <g:message code="subscription.details.copyElementsIntoSubscription.share"/>:
+
+                                            <g:if test="${docctx.isShared}">
+                                                <i class="la-share icon la-js-editmode-icon"></i>
+                                            </g:if>
+                                            <g:else>
+                                                <i class="la-share slash icon la-js-editmode-icon"></i>
+                                            </g:else>
+
                                         </div>
                                     </g:if>
                                 </g:each>

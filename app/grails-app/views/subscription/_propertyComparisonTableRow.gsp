@@ -1,5 +1,7 @@
 <%@page import="com.k_int.properties.PropertyDefinition; de.laser.helper.RDStore;com.k_int.kbplus.*" %>
 <laser:serviceInjection/>
+
+<g:set var="overwriteEditable" value="${false}"/>
 <thead>
     <tr>
         <th class="four wide  aligned">${key}</th>
@@ -38,7 +40,7 @@
     </tr>
 </thead>
 <tbody>
-<g:each in="${group}" var="prop">
+<g:each in="${group.sort{it.key}}" var="prop">
     <% PropertyDefinition propKey = (PropertyDefinition) genericOIDService.resolveOID(prop.getKey()) %>
     <tr>
         <td>

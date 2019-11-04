@@ -46,7 +46,6 @@ ${surveyInfo?.name}
 
     <div>
         <hr/>
-
         ${message(code: 'myinst.renewalUpload.noupload.note', args: [institution?.name])}<br/>
         <table class="ui celled la-table table">
             <tbody>
@@ -55,42 +54,18 @@ ${surveyInfo?.name}
             <tr>
                 <th>${message(code: 'myinst.renewalUpload.props', default: 'Subscription Properties')}</th>
                 <th>${message(code: 'default.value.label', default: 'Value')}</th>
-            </tr>
-            <tr>
                 <th>${message(code: 'subscription.details.copyElementsIntoSubscription.audit')}</th>
-                <td>
-                    <div class="ui checkbox">
-                        <input type="checkbox" id="subscription.isCopyAuditOn" name="subscription.isCopyAuditOn" checked />
-                        <label for="subscription.isCopyAuditOn">${message(code:'subscription.details.copyElementsIntoSubscription.copyAudit')}</label>
-                        <g:set var="properties" value="${de.laser.AuditConfig.getConfigs(subscription)}"></g:set>
-                        <g:if test="${properties}">
-
-                            <h4><g:message code="subscription.details.copyElementsIntoSubscription.auditConfig" />:</h4>
-                            <div class="ui bulleted list">
-                                <g:each in="${properties}" var="prop" >
-                                        <div class="item">
-                                            <b><g:message code="subscription.${prop.referenceField}.label" /></b>:
-                                                <g:if test="${subscription.getProperty(prop.referenceField) instanceof com.k_int.kbplus.RefdataValue}">
-                                                    ${subscription.getProperty(prop.referenceField).getI10n('value')}
-                                                </g:if>
-                                                <g:else>
-                                                    ${subscription.getProperty(prop.referenceField)}
-                                                </g:else>
-                                        </div>
-                                </g:each>
-                            </div>
-                        </g:if>
-                        <g:else>
-                            <g:message code="subscription.details.copyElementsIntoSubscription.noAuditConfig"/>
-                        </g:else>
-                    </div>
-                </td>
             </tr>
             <tr>
                 <th>${message(code: 'myinst.emptySubscription.name')}</th>
                 <td>
-                    <div class="ui input">
+                    <div class="ui form field">
                         <input type="text" name="subscription.name" value="${permissionInfo?.sub_name}">
+                    </div>
+                </td>
+                <td class="center aligned">
+                    <div class="ui checkbox">
+                    <input type="checkbox" name="auditList" value="name" ${AuditConfig.getConfig(subscription, 'name') ? 'checked': ''} />
                     </div>
                 </td>
 
@@ -98,21 +73,87 @@ ${surveyInfo?.name}
             <tr>
                 <th>${message(code: 'default.startDate.label', default: 'Start Date')}</th>
                 <td><semui:datepicker class="wide eight" id="subscription.start_date" name="subscription.start_date" placeholder="default.date.label" value="${permissionInfo?.sub_startDate}" required="" /></td>
+                <td class="center aligned">
+                    <div class="ui checkbox">
+                        <input type="checkbox" name="auditList" value="startDate" ${AuditConfig.getConfig(subscription, 'startDate') ? 'checked': ''} />
+                    </div>
+                </td>
             </tr>
             <tr>
                 <th>${message(code: 'default.endDate.label', default: 'End Date')}</th>
                 <td><semui:datepicker class="wide eight" id="subscription.end_date" name="subscription.end_date" placeholder="default.date.label" value="${permissionInfo?.sub_endDate}" /></td>
+                <td class="center aligned">
+                    <div class="ui checkbox">
+                        <input type="checkbox" name="auditList" value="endDate" ${AuditConfig.getConfig(subscription, 'endDate') ? 'checked': ''} />
+                    </div>
+                </td>
             </tr>
             <tr>
-                <th>${message(code: 'default.status.label')}</th>
+                <th>${message(code: 'subscription.details.status')}</th>
                 <td>
                 <g:set var="rdcSubStatus" value="${com.k_int.kbplus.RefdataCategory.findByDesc('Subscription Status')}"/>
                 <g:select from="${com.k_int.kbplus.RefdataValue.findAllByOwner(rdcSubStatus)}" class="ui dropdown"
                           optionKey="id"
                           optionValue="${{ it.getI10n('value') }}"
                           name="subStatus"
-                          value="${de.laser.helper.RDStore.SUBSCRIPTION_INTENDED.id.toString()}"
-                          disabled="${true}"/>
+                          value="${permissionInfo?.sub_status}"
+                          />
+                </td>
+                <td class="center aligned">
+                    <div class="ui checkbox">
+                        <input type="checkbox" name="auditList" value="status" ${AuditConfig.getConfig(subscription, 'status') ? 'checked': ''} />
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <th>${message(code: 'subscription.details.type')}</th>
+                <td>
+                    <g:set var="rdcSubType" value="${com.k_int.kbplus.RefdataCategory.findByDesc('Subscription Type')}"/>
+                    <g:select from="${com.k_int.kbplus.RefdataValue.findAllByOwner(rdcSubType)}" class="ui dropdown"
+                              optionKey="id"
+                              optionValue="${{ it.getI10n('value') }}"
+                              name="subType"
+                              value="${permissionInfo?.sub_type}"
+                              />
+                </td>
+                <td class="center aligned">
+                    <div class="ui checkbox">
+                        <input type="checkbox" name="auditList" value="type" ${AuditConfig.getConfig(subscription, 'type') ? 'checked': ''} />
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <th>${message(code: 'subscription.form.label')}</th>
+                <td>
+                    <g:set var="rdcSubForm" value="${com.k_int.kbplus.RefdataCategory.findByDesc('Subscription Form')}"/>
+                    <g:select from="${com.k_int.kbplus.RefdataValue.findAllByOwner(rdcSubForm)}" class="ui dropdown"
+                              optionKey="id"
+                              optionValue="${{ it.getI10n('value') }}"
+                              name="subForm"
+                              value="${permissionInfo?.sub_form}"
+                              />
+                </td>
+                <td class="center aligned">
+                    <div class="ui checkbox">
+                        <input type="checkbox" name="auditList" value="form" ${AuditConfig.getConfig(subscription, 'form') ? 'checked': ''} />
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <th>${message(code: 'subscription.resource.label')}</th>
+                <td>
+                    <g:set var="rdcSubResource" value="${com.k_int.kbplus.RefdataCategory.findByDesc('Subscription Resource')}"/>
+                    <g:select from="${com.k_int.kbplus.RefdataValue.findAllByOwner(rdcSubResource)}" class="ui dropdown"
+                              optionKey="id"
+                              optionValue="${{ it.getI10n('value') }}"
+                              name="subResource"
+                              value="${permissionInfo?.sub_resource}"
+                              />
+                </td>
+                <td class="center aligned">
+                    <div class="ui checkbox">
+                        <input type="checkbox" name="auditList" value="resource" ${AuditConfig.getConfig(subscription, 'resource') ? 'checked': ''} />
+                    </div>
                 </td>
             </tr>
             </tbody>
@@ -124,29 +165,7 @@ ${surveyInfo?.name}
         </div>
 
     </div>
-    <input type="hidden" name="ecount" value="${counter}"/>
 </g:form>
 
 </body>
 </html>
-<r:script>
-    formularFieldsDisableIfAuditOn($('input[name="subscription.isCopyAuditOn"]'));
-
-    $('input[name="subscription.isCopyAuditOn"]').change( function() {
-        formularFieldsDisableIfAuditOn($(this));
-    });
-
-    function formularFieldsDisableIfAuditOn(that) {
-        var isCopyAuditOn = $(that).is(":checked");
-        $('input[name="subscription.name"]').prop( "disabled", isCopyAuditOn);
-        $('input[name="subscription.start_date"]').prop( "disabled", isCopyAuditOn);
-        $('input[name="subscription.end_date"]').prop( "disabled", isCopyAuditOn);
-        if (isCopyAuditOn) {
-            $('.ui.dropdown > select[name=subStatus]').parent('.dropdown').addClass('disabled');
-        } else {
-            $('.ui.dropdown > select[name=subStatus]').parent('.dropdown').removeClass('disabled');
-        }
-        // $('.ui.dropdown > select[name=subStatus]').parent('.dropdown').toggleClass('disabled');
-        $('.ui.dropdown > select[name=subStatus]').prop('disabled', isCopyAuditOn);
-    }
-</r:script>

@@ -74,15 +74,16 @@ ${surveyInfo?.name}
         <g:link controller="subscription" action="show"
                 id="${parentSuccessorSubscription?.id}">${parentSuccessorSubscription?.dropdownNamingConvention()}</g:link>
 
+        <g:if test="${parentSuccessorSubscription.getAllSubscribers().size() > 0}">
         <g:link controller="survey" action="copyElementsIntoRenewalSubscription" id="${parentSubscription?.id}"
                 params="[sourceSubscriptionId: parentSubscription?.id, targetSubscriptionId: parentSuccessorSubscription?.id, isRenewSub: true, isCopyAuditOn: true]"
                 class="ui button ">
             <g:message code="renewalWithSurvey.newSub.change"/>
         </g:link>
+        </g:if>
 
     </g:if>
     <g:else>
-        <g:message code="renewalWithSurvey.noParentSuccessorSubscription"/>
         <g:link controller="survey" action="renewSubscriptionConsortiaWithSurvey" id="${surveyInfo?.id}"
                 params="[surveyConfig: surveyConfig?.id, parentSub: parentSubscription?.id]"
                 class="ui button ">
@@ -641,57 +642,6 @@ ${surveyInfo?.name}
     <br>
     <br>
 
-
-    <h4 class="ui left aligned icon header">${message(code: 'renewalWithSurvey.orgsLateCommers.label')} <semui:totalNumber
-            total="${orgsLateCommers?.size() ?: 0}"/></h4>
-
-    <table class="ui celled la-table table">
-        <thead>
-        <tr>
-            <th class="center aligned">${message(code: 'sidewide.number')}</th>
-            <th>${message(code: 'default.sortname.label')}</th>
-            <th>${message(code: 'default.startDate.label')}</th>
-            <th>${message(code: 'default.endDate.label')}</th>
-            <th>${message(code: 'subscription.details.status')}</th>
-            <th>${message(code: 'default.actions')}</th>
-
-        </tr>
-        </thead>
-        <tbody>
-        <g:each in="${orgsLateCommers}" var="sub" status="i">
-            <tr>
-                <td class="center aligned">
-                    ${i + 1}
-                </td>
-                <g:each in="${sub.getAllSubscribers()}" var="subscriberOrg">
-                    <td>
-                        ${subscriberOrg?.sortname}
-                        <br>
-                        <g:link controller="organisation" action="show"
-                                id="${subscriberOrg.id}">(${fieldValue(bean: subscriberOrg, field: "name")})</g:link>
-                    </td>
-                    <td><g:formatDate formatName="default.date.format.notime" date="${sub.startDate}"/></td>
-                    <td><g:formatDate formatName="default.date.format.notime" date="${sub.endDate}"/></td>
-                    <td>${sub.status.getI10n('value')}</td>
-                    <td>
-                        <g:if test="${sub}">
-                            <g:link controller="subscription" action="show" id="${sub?.id}"
-                                    class="ui button icon"><i class="icon clipboard"></i></g:link>
-                        </g:if>
-                        <g:if test="${sub?.getCalculatedSuccessor()}">
-                            <br>
-                            <g:link controller="subscription" action="show" id="${sub?.getCalculatedSuccessor()?.id}"
-                                    class="ui button icon"><i class="icon yellow clipboard"></i></g:link>
-                        </g:if>
-                    </td>
-                </g:each>
-            </tr>
-        </g:each>
-        </tbody>
-    </table>
-
-    <br>
-    <br>
 
     <h4 class="ui left aligned icon header">${message(code: 'renewalWithSurvey.withTermination.label')} <semui:totalNumber
             total="${orgsWithTermination?.size() ?: 0}"/></h4>
