@@ -232,9 +232,9 @@ ${personInstance}
                                                                 </g:link>
                                                             </div>
                                                         </g:if>
-                                                        <g:else>
+                                                        <g:else>K
                                                             <div class="ui mini icon buttons">
-                                                                <g:link class="ui negative button"
+                                                                <g:link class="ui negative button js-open-confirm-modal"
                                                                         controller="person"
                                                                         action="_delete"
                                                                         id="${personInstance?.id}"
