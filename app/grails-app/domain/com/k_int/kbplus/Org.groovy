@@ -492,8 +492,7 @@ class Org
                            sector:sector,
                            ipRange:iprange,
                            impId: null,
-                           gokbId: imp_uuid?.length() > 0 ? imp_uuid : null
-          ).save()
+                           gokbId: imp_uuid?.length() > 0 ? imp_uuid : null).save(flush: true)
           if(orgRoleTyp) {
               result.addToOrgType(orgRoleTyp).save()
           }
@@ -502,9 +501,10 @@ class Org
             if (identifiers instanceof ArrayList) {
                 identifiers.each{ it ->
                     it.each { k, v ->
-                        if(k.toLowerCase() != 'originediturl')
+                        if(k.toLowerCase() != 'originediturl') {
                             def io = new IdentifierOccurrence(org: result, identifier: Identifier.lookupOrCreateCanonicalIdentifier(k, v)).save()
-                        else println "org identifier ${v} is deprecated namespace originEditUrl .. ignoring"
+                        }
+                        else {println "org identifier ${v} is deprecated namespace originEditUrl .. ignoring"}
                     }
                 }
             }

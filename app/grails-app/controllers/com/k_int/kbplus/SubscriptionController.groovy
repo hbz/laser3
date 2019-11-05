@@ -3244,7 +3244,7 @@ class SubscriptionController extends AbstractDebugController {
         }
         log.debug("Going for GOKB API")
         User user = springSecurityService.getCurrentUser()
-        params.max = user?.getDefaultPageSizeTMP() ?: 25
+        params.max = params.max ?: (user?.getDefaultPageSizeTMP() ?: 25)
 
         if (params.gokbApi) {
             def gokbRecords = []
