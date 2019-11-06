@@ -227,6 +227,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
             he.from.each { hef ->
                 def new_history_statement = [:]
                 new_history_statement.title = hef.title.text()
+                new_history_statement.status = hef.status.text() ?: null
                 new_history_statement.ids = []
                 new_history_statement.uuid = hef.'@uuid'?.text() ?: null
                 hef.identifiers.identifier.each { i ->
@@ -239,6 +240,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
             he.to.each { het ->
                 def new_history_statement = [:]
                 new_history_statement.title = het.title.text()
+                new_history_statement.status = het.status.text() ?: null
                 new_history_statement.ids = []
                 new_history_statement.uuid = het.'@uuid'?.text() ?: null
                 het.identifiers.identifier.each { i ->
@@ -385,7 +387,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
             def title_instance = TitleInstance.findByGokbId(tipp.title?.gokbId)
 
             if (!title_instance) {
-                title_instance = TitleInstance.lookupOrCreate(tipp.title.identifiers, tipp.title.name, tipp.title.titleType, tipp.title.gokbId)
+                title_instance = TitleInstance.lookupOrCreate(tipp.title.identifiers, tipp.title.name, tipp.title.titleType, tipp.title.gokbId, tipp.title.status)
             }
             println("Result of lookup or create for ${tipp.title.name} with identifiers ${tipp.title.identifiers} is ${title_instance}");
 
@@ -523,7 +525,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
             def title_of_tipp_to_update = TitleInstance.findByGokbId(tipp.title.gokbId)
 
             if (!title_of_tipp_to_update) {
-                title_of_tipp_to_update = TitleInstance.lookupOrCreate(tipp.title.identifiers, tipp.title.name, tipp.title.titleType, tipp.title.gokbId)
+                title_of_tipp_to_update = TitleInstance.lookupOrCreate(tipp.title.identifiers, tipp.title.name, tipp.title.titleType, tipp.title.gokbId, tipp.title.status)
             }
 
             /*if (grailsApplication.config.globalDataSync.replaceLocalImpIds.TitleInstance &&
@@ -778,7 +780,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
             def title_of_tipp_to_update = TitleInstance.findByGokbId(tipp.title.gokbId)
 
             if (!title_of_tipp_to_update) {
-                title_of_tipp_to_update = TitleInstance.lookupOrCreate(tipp.title.identifiers, tipp.title.name, tipp.title.titleType, tipp.title.gokbId)
+                title_of_tipp_to_update = TitleInstance.lookupOrCreate(tipp.title.identifiers, tipp.title.name, tipp.title.titleType, tipp.title.gokbId, tipp.title.status)
             }
 
             /*if (grailsApplication.config.globalDataSync.replaceLocalImpIds.TitleInstance &&
@@ -1566,12 +1568,12 @@ class GlobalSourceSyncService extends AbstractLockableService {
                 def toset = []
 
                 historyEvent.from.each { he ->
-                    def participant = TitleInstance.lookupOrCreate(he.ids, he.title, titleinfo.titleType, he.uuid)
+                    def participant = TitleInstance.lookupOrCreate(he.ids, he.title, titleinfo.titleType, he.uuid, he.status)
                     fromset.add(participant)
                 }
 
                 historyEvent.to.each { he ->
-                    def participant = TitleInstance.lookupOrCreate(he.ids, he.title, titleinfo.titleType, he.uuid)
+                    def participant = TitleInstance.lookupOrCreate(he.ids, he.title, titleinfo.titleType, he.uuid, he.status)
                     toset.add(participant)
                 }
 
