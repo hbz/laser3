@@ -186,7 +186,7 @@ class Platform extends AbstractBaseDomain {
 
   def getContextOrgAccessPoints(contextOrg) {
     def hql = "select oap from OrgAccessPoint oap " +
-        "join oap.oapp as oapp where oap.org=:org and oapp.active = true and oapp.platform.id =${this.id}"
+        "join oap.oapp as oapp where oap.org=:org and oapp.active = true and oapp.platform.id =${this.id} order by LOWER(oap.name)"
     def result = OrgAccessPoint.executeQuery(hql, ['org' : contextOrg])
     return result
   }

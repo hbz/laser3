@@ -78,7 +78,10 @@ class OrgAccessPoint extends AbstractBaseDomain {
     def getNotLinkedPlatforms()
     {
         List currentSubIds = orgTypeService.getCurrentSubscriptions(org).collect{ it.id }
-
+        // TODO check if this is enough
+        if (!currentSubIds){
+            return
+        }
         String qry = "select distinct p from SubscriptionPackage subPkg join subPkg.subscription s join subPkg.pkg pkg, " +
             "TitleInstancePackagePlatform tipp join tipp.platform p " +
             "where tipp.pkg = pkg and s.id in (:currentSubIds) " +

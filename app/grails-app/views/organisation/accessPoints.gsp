@@ -54,12 +54,12 @@
         <g:form class="ui form" url="[controller: 'accessPoint', action: 'create']" method="POST">
             <table  class="ui celled la-table table">
                 <thead>
-                        <tr>
-                            <g:sortableColumn property="AccessPoint" title="${message(code: 'accessPoint.name', default: 'Name')}" />
-                            <g:sortableColumn property="accessMethod" title="${message(code: 'accessMethod.label', default: 'Access Method')}" />
-                            <g:sortableColumn property="rules" title="${message(code: 'accessRule.plural', default: 'Access Rules')}" />
-                            <th>${message(code: 'accessPoint.actions', default: 'Actions')}</th>
-                        </tr>
+                <tr>
+                    <th>${message(code: 'accessPoint.name', default: 'Name')}</th>
+                    <th>${message(code: 'accessMethod.label', default: 'Access Method')}</th>
+                    <th>${message(code: 'accessRule.plural', default: 'Access Rules')}</th>
+                    <th class="la-action-info">${message(code: 'accessPoint.actions', default: 'Actions')}</th>
+                </tr>
                 </thead>
                 <tbody>
                     <g:each in="${orgAccessPointList}" var="accessPoint">
