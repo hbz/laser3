@@ -313,6 +313,17 @@
                 <th scope="col" rowspan="2" >${message(code: 'subscription.numberOfLicenses.label')}</th>
                 <th scope="col" rowspan="2" >${message(code: 'subscription.numberOfCostItems.label')}</th>
             </g:if>
+
+            <g:if test="${!(contextService.getOrg().getCustomerType() in ['ORG_CONSORTIUM', 'ORG_CONSORTIUM_SURVEY'])}">
+            <th class="la-no-uppercase" scope="col" rowspan="2" >
+                <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="bottom center"
+                      data-content="${message(code: 'subscription.isMultiYear.consortial.label')}">
+                 <i class="map orange icon"></i>
+                </span>
+            </th>
+
+            </g:if>
+
             <% /* <g:sortableColumn params="${params}" property="s.manualCancellationDate"
                               title="${message(code: 'default.cancellationDate.label')}"/> */ %>
             <th scope="col" rowspan="2" class="two">${message(code:'default.actions')}</th>
@@ -328,9 +339,6 @@
                     ${ (params.int('offset') ?: 0)  + i + 1 }
                 </td>
                 <td>
-                    <g:if test="${s.isMultiYear}">
-                        <i class="map orange icon"></i>
-                    </g:if>
                     <g:link controller="subscription" class="la-main-object" action="show" id="${s.id}">
                         <g:if test="${s.name}">
                             ${s.name}
@@ -424,6 +432,16 @@
                         <g:link mapping="subfinance" controller="finance" action="index" params="${[sub:s.id]}">
                             ${CostItem.findAllBySubInListAndOwner(Subscription.findAllByInstanceOf(s), institution)?.size()}
                         </g:link>
+                    </td>
+                </g:if>
+                <g:if test="${!(contextService.getOrg().getCustomerType() in ['ORG_CONSORTIUM', 'ORG_CONSORTIUM_SURVEY'])}">
+                    <td>
+                        <g:if test="${s.isMultiYear}">
+                            <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="bottom center"
+                                  data-content="${message(code: 'subscription.isMultiYear.consortial.label')}">
+                                <i class="map orange icon"></i>
+                            </span>
+                        </g:if>
                     </td>
                 </g:if>
                 <td class="x">

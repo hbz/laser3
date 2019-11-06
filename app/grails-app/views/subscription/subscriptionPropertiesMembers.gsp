@@ -198,6 +198,12 @@
                         <th>${message(code: 'subscription.details.status')}</th>
                         <th>${message(code: 'subscription.form.label')}</th>
                         <th>${message(code: 'subscription.resource.label')}</th>
+                        <th class="la-no-uppercase">
+                            <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="bottom center"
+                                  data-content="${message(code: 'subscription.isMultiYear.consortial.label')}">
+                                <i class="map orange icon"></i>
+                            </span>
+                        </th>
                         <th></th>
                     </tr>
                     </thead>
@@ -209,9 +215,6 @@
                             <g:set var="filteredSubscribers" value="${zeile.orgs}"/>
                             <g:each in="${filteredSubscribers}" var="subscr">
                                 <td>
-                                    <g:if test="${sub.isMultiYear}">
-                                    <i class="map orange icon"></i>
-                                    </g:if>
                                     ${subscr.sortname}
                                 </td>
                                 <td>
@@ -257,6 +260,14 @@
                                 <semui:xEditableRefData owner="${sub}" field="resource" config='Subscription Resource'
                                                         overwriteEditable="${editableOld}"/>
                                 <semui:auditButton auditable="[sub, 'resource']"/>
+                            </td>
+                            <td>
+                                <g:if test="${sub.isMultiYear}">
+                                    <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="bottom center"
+                                          data-content="${message(code: 'subscription.isMultiYear.consortial.label')}">
+                                        <i class="map orange icon"></i>
+                                    </span>
+                                </g:if>
                             </td>
                             <td class="x">
                                 <g:link controller="subscription" action="show" id="${sub.id}"
@@ -313,9 +324,6 @@
                                         <g:set var="filteredSubscribers" value="${zeile.orgs}"/>
                                         <g:each in="${filteredSubscribers}" var="subscr">
                                             <td>
-                                                <g:if test="${sub.isMultiYear}">
-                                                    <i class="map orange icon"></i>
-                                                </g:if>
                                                 ${subscr.sortname}
                                             </td>
                                             <td>
@@ -396,9 +404,6 @@
                             <g:set var="filteredSubscribers" value="${zeile.orgs}"/>
                             <g:each in="${filteredSubscribers}" var="subscr">
                                 <td>
-                                    <g:if test="${sub.isMultiYear}">
-                                    <i class="map orange icon"></i>
-                                    </g:if>
                                     ${subscr.sortname}
                                 </td>
                             </g:each>
@@ -451,9 +456,6 @@
                             <g:set var="filteredSubscribers" value="${zeile.orgs}"/>
                             <g:each in="${filteredSubscribers}" var="subscr">
                                 <td>
-                                    <g:if test="${sub.isMultiYear}">
-                                        <i class="map orange icon"></i>
-                                    </g:if>
                                     ${subscr.sortname}
                                 </td>
                             </g:each>
@@ -543,9 +545,6 @@
                             <g:set var="filteredSubscribers" value="${zeile.orgs}"/>
                             <g:each in="${filteredSubscribers}" var="subscr">
                                 <td>
-                                    <g:if test="${sub.isMultiYear}">
-                                        <i class="map orange icon"></i>
-                                    </g:if>
                                     ${subscr.sortname}
                                 </td>
                                 <td>

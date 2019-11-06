@@ -5,7 +5,7 @@
 <html>
 <head>
     <meta name="layout" content="semanticUI"/>
-    <title>${message(code: 'laser', default: 'LAS:eR')} : ${message(code: 'surveyInfo.renewal')}</title>
+    <title>${message(code: 'laser', default: 'LAS:eR')} : ${message(code: 'surveyInfo.renewalOverView')}</title>
 
 </head>
 
@@ -17,7 +17,7 @@
     <g:if test="${surveyInfo}">
         <semui:crumb controller="survey" action="show" id="${surveyInfo.id}" text="${surveyInfo.name}"/>
     </g:if>
-    <semui:crumb message="surveyInfo.renewal" class="active"/>
+    <semui:crumb message="surveyInfo.renewalOverView" class="active"/>
 </semui:breadcrumbs>
 
 
@@ -54,7 +54,7 @@ ${surveyInfo?.name}
 <semui:messages data="${flash}"/>
 
 <h2>
-    ${message(code: 'surveyInfo.renewal')}
+    ${message(code: 'surveyInfo.renewalOverView')}
 </h2>
 
 

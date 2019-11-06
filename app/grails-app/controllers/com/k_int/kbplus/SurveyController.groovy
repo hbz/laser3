@@ -3267,6 +3267,93 @@ class SurveyController {
     @Secured(closure = {
         ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM_SURVEY", "INST_EDITOR", "ROLE_ADMIN")
     })
+    def copySurveyCostItems() {
+        def result = setResultGenericsAndCheckAccess()
+        if (!result.editable) {
+            response.sendError(401); return
+        }
+
+        result.parentSubscription = result.surveyConfig?.subscription
+        result.parentSubChilds = subscriptionService.getCurrentValidSubChilds(result.parentSubscription)
+        result.parentSuccessorSubscription = result.surveyConfig?.subscription?.getCalculatedSuccessor()
+        result.parentSuccessorSubChilds = result.parentSuccessorSubscription ? subscriptionService.getValidSubChilds(result.parentSuccessorSubscription) : null
+
+        result.participantsList = []
+
+        result.parentParticipantsList = []
+        result.parentSuccessortParticipantsList = []
+
+        result.parentSubChilds.each { sub ->
+            def org = sub.getSubscriber()
+            result.participantsList << org
+            result.parentParticipantsList << org
+
+        }
+
+        result.parentSuccessorSubChilds.each { sub ->
+            def org = sub.getSubscriber()
+            if(!(org in result.participantsList)) {
+                result.participantsList << org
+            }
+            result.parentSuccessortParticipantsList << org
+
+        }
+
+        result.participantsList = result.participantsList.sort{it.sortname}
+
+
+        result.participationProperty = SurveyProperty.findByNameAndOwnerIsNull("Participation")
+
+        result
+
+    }
+
+    @DebugAnnotation(perm = "ORG_CONSORTIUM_SURVEY", affil = "INST_EDITOR", specRole = "ROLE_ADMIN")
+    @Secured(closure = {
+        ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM_SURVEY", "INST_EDITOR", "ROLE_ADMIN")
+    })
+    def proccessCopySurveyCostItems() {
+        def result = setResultGenericsAndCheckAccess()
+        if (!result.editable) {
+            response.sendError(401); return
+        }
+
+        result.parentSubscription = result.surveyConfig?.subscription
+
+        result.parentSuccessorSubscription = result.surveyConfig?.subscription?.getCalculatedSuccessor()
+
+        def countNewCostItems = 0
+        def costElement = RefdataValue.getByValueAndCategory('price: consortial price', 'CostItemElement')
+        params.list('selectedSurveyCostItem').each { costItemId ->
+
+            def costItem = CostItem.get(costItemId)
+            def participantSub = result.parentSuccessorSubscription?.getDerivedSubscriptionBySubscribers(costItem.surveyOrg.org)
+            def participantSubCostItem = CostItem.findAllBySubAndOwnerAndCostItemElement(participantSub, result.institution, costElement)
+            if(costItem && participantSub && !participantSubCostItem){
+
+                def properties = costItem.properties
+                CostItem copyCostItem = new CostItem()
+                InvokerHelper.setProperties(copyCostItem, properties)
+                copyCostItem.globalUID = null
+                copyCostItem.surveyOrg = null
+                copyCostItem.sub = participantSub
+                if(copyCostItem.save(flush:true)) {
+                    countNewCostItems++
+                }
+
+            }
+
+        }
+
+        flash.message = message(code: 'copySurveyCostItems.copy.success', args: [countNewCostItems])
+        redirect(action: 'copySurveyCostItems', id: params.id, params: [surveyConfigID: result.surveyConfig?.id])
+
+    }
+
+    @DebugAnnotation(perm = "ORG_CONSORTIUM_SURVEY", affil = "INST_EDITOR", specRole = "ROLE_ADMIN")
+    @Secured(closure = {
+        ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM_SURVEY", "INST_EDITOR", "ROLE_ADMIN")
+    })
     def processTransferParticipants() {
         def result = setResultGenericsAndCheckAccess()
         if (!result.editable) {

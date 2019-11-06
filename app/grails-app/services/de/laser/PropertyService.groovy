@@ -125,7 +125,7 @@ class PropertyService {
                 //log.debug(query)
 
                 def pds = PropertyDefinition.executeQuery(query)
-                log.debug(pds)
+                //log.debug(pds)
                 detailsMap << ["${dc.shortName}": pds.collect{ it -> "${it.id}:${it.type}:${it.descr}"}.sort()]
 
                 // ids of used property definitions
