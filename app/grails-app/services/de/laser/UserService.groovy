@@ -22,17 +22,19 @@ class UserService {
     def grailsApplication
     Locale locale = LocaleContextHolder.getLocale()
 
+    // called after every successful login
     void initMandatorySettings(User user) {
         log.debug('initMandatorySettings for user #' + user.id)
 
+        if (UserSettings.get(user, UserSettings.KEYS.DASHBOARD) == UserSettings.SETTING_NOT_FOUND) {
+            def userOrgMatches = user.getAuthorizedOrgsIds()
+            if (userOrgMatches.size() > 0) {
+                user.getSetting(UserSettings.KEYS.DASHBOARD, Org.findById(userOrgMatches.first()))
+            }
+        }
 
         user.getSetting(UserSettings.KEYS.IS_NOTIFICATION_BY_EMAIL, RDStore.YN_YES)
         user.getSetting(UserSettings.KEYS.IS_NOTIFICATION_FOR_SURVEYS_START, RDStore.YN_YES)
-
-    // called after
-    // new User.save()
-    // or
-    // every successful login
     }
 
     Set<User> getUserSet(Map params) {
