@@ -197,7 +197,9 @@
                                     </g:link>
                                 </span>
                             </g:else>
-                            <g:link controller="finance" action="deleteCostItem" id="${ci.id}" params="[ tab:'cons']" class="ui icon negative button" onclick="return confirm('${message(code: 'default.button.confirm.delete')}')">
+                            <g:link controller="finance" action="deleteCostItem" id="${ci.id}" params="[ tab:'cons']" class="ui icon negative button js-open-confirm-modal"
+                                    data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.costItem.participant")}"
+                                    data-confirm-term-how="delete">
                                 <i class="trash alternate icon"></i>
                             </g:link>
                         </g:if>

@@ -302,7 +302,6 @@
 
                 <div class="ui card la-js-hideable hidden">
                     <div class="content">
-
                         <g:render template="/templates/links/orgLinksAsList"
                                   model="${[roleLinks: visibleOrgRelations,
                                             roleObject: subscriptionInstance,
