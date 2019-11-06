@@ -379,8 +379,10 @@ class AccessPointController extends AbstractDebugController {
 //                accessPointId : params.id as Long
 //        ]
 //        List linkedPlatformsMap = Platform.executeQuery(qry,qryParams)
+        def sort = params.sort ?: "LOWER(p.name)"
+        def order = params.order ?: "ASC"
 
-        def hql = "select new map(p as platform,oapl as aplink) from Platform p join p.oapp as oapl where oapl.active = true and oapl.oap=${orgAccessPoint.id}"
+        def hql = "select new map(p as platform,oapl as aplink) from Platform p join p.oapp as oapl where oapl.active = true and oapl.oap=${orgAccessPoint.id} order by ${sort} ${order}"
         def linkedPlatformsMap = Platform.executeQuery(hql)
 
         def linkedSubscriptionsQuery = "select new map(s as subscription,oapl as aplink) from Subscription s join s.oapl as oapl where oapl.active = true and oapl.oap=${orgAccessPoint.id}"

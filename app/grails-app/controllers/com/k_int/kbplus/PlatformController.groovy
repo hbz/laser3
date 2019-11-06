@@ -184,7 +184,7 @@ class PlatformController extends AbstractDebugController {
         def notActiveAPLinkQuery = "select oap from OrgAccessPoint oap where oap.org =:institution "
         notActiveAPLinkQuery += "and not exists ("
         notActiveAPLinkQuery += "select 1 from oap.oapp as oapl where oapl.oap=oap and oapl.active=true "
-        notActiveAPLinkQuery += "and oapl.platform.id = ${platformInstance.id})"
+        notActiveAPLinkQuery += "and oapl.platform.id = ${platformInstance.id}) order by lower(oap.name)"
 
         def accessPointList = OrgAccessPoint.executeQuery(notActiveAPLinkQuery, [institution : selectedInstitution])
 
