@@ -158,6 +158,12 @@
                 <th>${message(code: 'default.endDate.label')}</th>
                 <th>${message(code: 'subscription.details.status')}</th>
                 <th>${message(code: 'subscription.packages.label')}</th>
+                <th class="la-no-uppercase">
+                    <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="bottom center"
+                          data-content="${message(code: 'subscription.isMultiYear.consortial.label')}">
+                        <i class="map orange icon"></i>
+                    </span>
+                </th>
                 <th></th>
             </tr>
             </thead>
@@ -168,9 +174,7 @@
                     <td>${i + 1}</td>
                     <g:set var="filteredSubscribers" value="${zeile.orgs}"/>
                     <g:each in="${filteredSubscribers}" var="subscr">
-                        <td><g:if test="${sub.isMultiYear}">
-                            <i class="map orange icon"></i>
-                            </g:if>
+                        <td>
                             ${subscr.sortname}
                         </td>
                         <td>
@@ -259,6 +263,14 @@
                         <g:else>
                             <g:message code="subscription.linkPackagesMembers.noValidLicenses" args="${args.superOrgType}"/>
                         </g:else>
+                    </td>
+                    <td>
+                        <g:if test="${sub.isMultiYear}">
+                            <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="bottom center"
+                                  data-content="${message(code: 'subscription.isMultiYear.consortial.label')}">
+                                <i class="map orange icon"></i>
+                            </span>
+                        </g:if>
                     </td>
 
                     <td class="x">

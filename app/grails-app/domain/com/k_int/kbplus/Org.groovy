@@ -494,8 +494,7 @@ class Org
                            sector:sector,
                            ipRange:iprange,
                            impId: null,
-                           gokbId: imp_uuid?.length() > 0 ? imp_uuid : null
-          ).save()
+                           gokbId: imp_uuid?.length() > 0 ? imp_uuid : null).save(flush: true)
           if(orgRoleTyp) {
               result.addToOrgType(orgRoleTyp).save()
           }

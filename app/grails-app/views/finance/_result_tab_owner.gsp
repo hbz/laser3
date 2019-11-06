@@ -151,7 +151,9 @@
                             </g:else>
                         </g:if>
                         <g:if test="${editable}">
-                            <g:link controller="finance" action="deleteCostItem" id="${ci.id}" params="[ tab:'own']" class="ui icon negative button" onclick="return confirm('${message(code: 'default.button.confirm.delete')}')">
+                            !!!!<g:link controller="finance" action="deleteCostItem" id="${ci.id}" params="[ tab:'own']" class="ui icon negative button js-open-confirm-modal"
+                                        data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.costItem",args: [ci.costTitle])}"
+                                        data-confirm-term-how="delete">
                                 <i class="trash alternate icon"></i>
                             </g:link>
                         </g:if>

@@ -241,6 +241,12 @@
                     <i class="ui icon eye orange"></i>
                 </span>
             </th>
+            <th class="la-no-uppercase" rowspan="2" >
+                <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="bottom center"
+                      data-content="${message(code: 'subscription.isMultiYear.consortial.label')}">
+                    <i class="map orange icon"></i>
+                </span>
+            </th>
         </tr>
         <tr>
             <g:sortableColumn property="subK.owner.reference" params="${params}" title="${message(code:'myinst.consortiaSubscriptions.license')}" class="la-smaller-table-head" />
@@ -258,9 +264,6 @@
                     ${ jj + 1 }
                 </td>
                 <td>
-                    <g:if test="${subCons.isMultiYear}">
-                        <i class="map orange icon"></i>
-                    </g:if>
                     <g:link controller="organisation" action="show" id="${subscr.id}">
                         <g:if test="${subscr.sortname}">${subscr.sortname}</g:if>
                         (${subscr.name})
@@ -359,6 +362,14 @@
                     <g:if test="${ci.isVisibleForSubscriber}">
                         <span data-position="top right"  class="la-popup-tooltip la-delay" data-content="${message(code:'financials.isVisibleForSubscriber')}" style="margin-left:10px">
                             <i class="ui icon eye orange"></i>
+                        </span>
+                    </g:if>
+                </td>
+                <td>
+                    <g:if test="${subCons.isMultiYear}">
+                        <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="bottom center"
+                              data-content="${message(code: 'subscription.isMultiYear.consortial.label')}">
+                            <i class="map orange icon"></i>
                         </span>
                     </g:if>
                 </td>

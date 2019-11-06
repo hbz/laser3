@@ -7,7 +7,7 @@
 <html>
 <head>
     <meta name="layout" content="semanticUI"/>
-    <title>${message(code: 'laser', default: 'LAS:eR')} :  ${message(code: 'surveyInfo.transfer')}</title>
+    <title>${message(code: 'laser', default: 'LAS:eR')} :  ${message(code: 'surveyInfo.transferOverView')}</title>
 
 </head>
 
@@ -18,11 +18,20 @@
 
     <g:if test="${surveyInfo}">
         <semui:crumb controller="survey" action="show" id="${surveyInfo.id}" text="${surveyInfo.name}"/>
-        <semui:crumb controller="survey" action="renewalWithSurvey" id="${surveyInfo.id}" params="[surveyConfigID: surveyConfig.id]" message="surveyInfo.renewal"/>
+        <semui:crumb controller="survey" action="renewalWithSurvey" id="${surveyInfo.id}" params="[surveyConfigID: surveyConfig.id]" message="surveyInfo.renewalOverView"/>
     </g:if>
-    <semui:crumb message="surveyInfo.transfer" class="active"/>
+    <semui:crumb message="surveyInfo.transferOverView" class="active"/>
 </semui:breadcrumbs>
+
 <semui:controlButtons>
+    <semui:actionsDropdown>
+            <semui:actionsDropdownItem controller="survey" action="renewalWithSurvey" params="[id: params.id, surveyConfigID: surveyConfig.id]"
+                                       message="surveyInfo.renewalOverView"/>
+
+            <semui:actionsDropdownItem controller="survey" action="copySurveyCostItems" params="[id: params.id, surveyConfigID: surveyConfig.id]"
+                                       message="surveyInfo.copySurveyCostItems"/>
+
+    </semui:actionsDropdown>
 </semui:controlButtons>
 
 <h1 class="ui icon header"><semui:headerTitleIcon type="Survey"/>
@@ -35,15 +44,11 @@ ${surveyInfo?.name}
 <semui:messages data="${flash}"/>
 
 <h2>
-    ${message(code: 'surveyInfo.transfer')}
+    ${message(code: 'surveyInfo.transferOverView')}
 </h2>
 
 
 <semui:form>
-
-    <g:form action="proccessRenewalwithSurvey" controller="survey" id="${surveyInfo?.id}"
-            params="[surveyConfigID: surveyConfig?.id]"
-            method="post" class="ui form newLicence">
 
         <h3>
         <g:message code="renewalWithSurvey.parentSubscription"/>:
@@ -114,7 +119,7 @@ ${surveyInfo?.name}
                         <thead>
                         <tr>
                             <th>${message(code: 'sidewide.number')}</th>
-                            <th></th>
+                            <th>${message(code: 'subscription.details.consortiaMembers.label')}</th>
                             <th></th>
                         </tr>
                         </thead>
@@ -127,7 +132,10 @@ ${surveyInfo?.name}
                                     <td>${i + 1}</td>
                                     <td class="titleCell">
                                         <g:if test="${participantSub && participantSub.isMultiYear}">
-                                            <i class="map orange icon"></i>
+                                            <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="bottom center"
+                                                  data-content="${message(code: 'subscription.isMultiYear.consortial.label')}">
+                                                <i class="map orange icon"></i>
+                                            </span>
                                         </g:if>
                                         <g:link controller="myInstitution" action="manageParticipantSurveys"
                                                 id="${participant.id}">
@@ -200,7 +208,7 @@ ${surveyInfo?.name}
                         <thead>
                         <tr>
                             <th>${message(code: 'sidewide.number')}</th>
-                            <th></th>
+                            <th>${message(code: 'subscription.details.consortiaMembers.label')}</th>
                             <th></th>
                         </tr>
                         </thead>
@@ -211,7 +219,10 @@ ${surveyInfo?.name}
                                     <td>${j+1}</td>
                                     <td class="titleCell">
                                         <g:if test="${participantSub && participantSub.isMultiYear}">
-                                            <i class="map orange icon"></i>
+                                            <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="bottom center"
+                                                  data-content="${message(code: 'subscription.isMultiYear.consortial.label')}">
+                                                <i class="map orange icon"></i>
+                                            </span>
                                         </g:if>
                                         <g:link controller="myInstitution" action="manageParticipantSurveys"
                                                 id="${participant.id}">
@@ -257,7 +268,7 @@ ${surveyInfo?.name}
             </div>
         </div>
 
-    </g:form>
+
 </semui:form>
 
 <r:script>

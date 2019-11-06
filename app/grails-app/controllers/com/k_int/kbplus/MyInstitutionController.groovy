@@ -1830,7 +1830,7 @@ from License as l where (
 
         String queryStr = "tipp.tipp_ti_fk, count(ie.ie_id) ${sub_qry} group by ti.sort_title, tipp.tipp_ti_fk ${having_clause} ".toString()
 
-        log.debug(" SELECT ${queryStr} ${order_by_clause} ${limits_clause} ")
+        //log.debug(" SELECT ${queryStr} ${order_by_clause} ${limits_clause} ")
 
         if(params.format || params.exportKBart) {
             //double run until ERMS-1188
@@ -1876,8 +1876,8 @@ from License as l where (
                 filterString += " and pkgOrgRoles.roleType in (:contentProvider) "
                 queryParams.contentProvider = filterPvd
             }
-            log.debug("select ie from IssueEntitlement ie join ie.coverages iecov join ie.subscription.orgRelations as oo join ie.tipp.pkg.orgs pkgOrgRoles where oo.org = :org and oo.roleType in (:orgRoles) and ie.status != :ieDeleted ${filterString} order by ie.tipp.title.title asc")
-            log.debug(queryParams)
+            //log.debug("select ie from IssueEntitlement ie join ie.coverages iecov join ie.subscription.orgRelations as oo join ie.tipp.pkg.orgs pkgOrgRoles where oo.org = :org and oo.roleType in (:orgRoles) and ie.status != :ieDeleted ${filterString} order by ie.tipp.title.title asc")
+            //log.debug(queryParams)
             result.titles = IssueEntitlement.executeQuery("select ie from IssueEntitlement ie join ie.coverages iecov join ie.subscription.orgRelations as oo join ie.tipp.pkg.orgs pkgOrgRoles where oo.org = :org and oo.roleType in (:orgRoles) and ie.status != :ieDeleted ${filterString} order by ie.tipp.title.title asc",queryParams)
         }
         else {
@@ -1885,8 +1885,8 @@ from License as l where (
             qry_params.max = result.max
             qry_params.offset = result.offset
 
-            log.debug( "SELECT ${queryStr} ${order_by_clause} ${limits_clause}" )
-            log.debug( qry_params )
+            //log.debug( "SELECT ${queryStr} ${order_by_clause} ${limits_clause}" )
+            //log.debug( qry_params )
 
             result.titles = sql.rows("SELECT ${queryStr} ${order_by_clause} ${limits_clause} ".toString(), qry_params).collect {
                 TitleInstance.get(it.tipp_ti_fk)
@@ -3420,7 +3420,7 @@ AND EXISTS (
         if(params.filterSet && !params.member && !params.validOn && !params.status && !params.filterPropDef && !params.filterProp && !params.form && !params.resource && !params.subTypes)
             result.filterSet = false
 
-        log.debug( query + " " + orderQuery )
+        //log.debug( query + " " + orderQuery )
         // log.debug( qarams )
 
         du.setBenchMark('costs')
