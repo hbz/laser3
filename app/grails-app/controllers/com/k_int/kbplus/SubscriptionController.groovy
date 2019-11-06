@@ -156,7 +156,8 @@ class SubscriptionController extends AbstractDebugController {
                     changesDesc.add(PendingChange.get(change).desc)
                 }
             }
-            flash.message = changesDesc
+            // ERMS-1844: Hotfix: Änderungsmitteilungen ausblenden
+            // flash.message = changesDesc
         } else {
             result.pendingChanges = pendingChanges.collect { PendingChange.get(it) }
         }
@@ -3533,7 +3534,8 @@ class SubscriptionController extends AbstractDebugController {
                         changesDesc.add(PendingChange.get(change).desc)
                     }
                 }
-                flash.message = changesDesc
+                //ERMS-1844 Hotfix: Änderungsmitteilungen ausblenden
+                //flash.message = changesDesc
             } else {
                 result.pendingChanges = pendingChanges.collect { PendingChange.get(it) }
             }

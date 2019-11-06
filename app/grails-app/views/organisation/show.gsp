@@ -188,11 +188,11 @@
             <g:if test="${((fromCreate) && !inContextOrg) || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN,ROLE_ORG_EDITOR')}">
                 <div class="ui card">
                     <div class="content">
-                        <g:if test="${orgInstance.hasPerm("ORG_INST")}">
+                        <g:if test="${orgInstance.hasPerm("ORG_INST") || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN,ROLE_ORG_EDITOR')}">
                             <dl>
                                 <dt><g:message code="org.sector.label" default="Sector"/></dt>
                                 <dd>
-                                    <semui:xEditableRefData owner="${orgInstance}" field="sector" config='OrgSector'/>
+                                    <semui:xEditableRefData owner="${orgInstance}" field="sector" config='OrgSector' overwriteEditable="${SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN,ROLE_ORG_EDITOR')}"/>
                                 </dd>
                             </dl>
                         </g:if>
