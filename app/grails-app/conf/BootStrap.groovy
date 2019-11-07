@@ -1641,11 +1641,6 @@ class BootStrap {
                         name: [key: "Deep Discount Price", en: "Deep Discount Price", de: "Deep-Discount-Preis"],
                         expl: [en: "", de: "Bietet der Verlag einen Deep-Discount-Preis für Printabonnements an?"],
                         descr:allDescr, type: OT.Rdv, cat:'YN'
-                ],
-		[
-                        name: [key: "Späteinsteiger", en: "Späteinsteiger", de: "Späteinsteiger"],
-                        expl: [en: "", de: "Einrichtung, die spät im Jahr nach der Umfrage ins Konsortium eingestiegen ist und daher auch bereits für die Lizenzierung für das Nachfolgejahr entschieden hat."],
-                        descr:allDescr, type: OT.Rdv, cat:'YN', isUsedForLogic: true
                 ]
 		
         ]

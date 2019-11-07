@@ -273,8 +273,11 @@
                                                 <g:render template="/templates/tipps/coverageStatement" model="${[covStmt: covStmt]}"/>
                                             </div>
                                         </g:each>
-                                        </div><br>
-                                        <g:link action="addCoverage" params="${[issueEntitlement: ie.id]}" class="ui compact icon button positive tiny"><i class="ui icon plus" data-content="Lizenzzeitraum hinzufügen"></i></g:link>
+                                        </div>
+                                        <g:if test="${editable}">
+                                            <br>
+                                            <g:link action="addCoverage" params="${[issueEntitlement: ie.id]}" class="ui compact icon button positive tiny"><i class="ui icon plus" data-content="Lizenzzeitraum hinzufügen"></i></g:link>
+                                        </g:if>
                                     </g:else>
 
 
