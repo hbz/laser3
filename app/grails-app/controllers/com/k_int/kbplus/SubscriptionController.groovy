@@ -5228,6 +5228,10 @@ class SubscriptionController extends AbstractDebugController {
             result.editable = false
         }
 
+        if(params.orgBasicMemberView){
+            result.editable = false
+        }
+
         if (checkOption in [AccessService.CHECK_EDIT, AccessService.CHECK_VIEW_AND_EDIT]) {
             if (!result.editable) {
                 log.debug("--- NOT EDITABLE ---")

@@ -109,7 +109,7 @@ class FinanceController extends AbstractDebugController {
         result.editable = accessService.checkPermAffiliationX('ORG_INST,ORG_CONSORTIUM','INST_EDITOR','ROLE_ADMIN')
         result.max = params.max ? Long.parseLong(params.max) : result.user.getDefaultPageSizeTMP()
         result.offset = params.offset ? Integer.parseInt(params.offset) : 0
-        if(result.subscription.instanceOf && result.institution.id in [result.subscription.getConsortia()?.id,result.subscription.getCollective()?.id]) {
+        if(!params.orgBasicMemberView && result.subscription.instanceOf && result.institution.id in [result.subscription.getConsortia()?.id,result.subscription.getCollective()?.id]) {
             if(result.institution.id == result.subscription.getConsortia()?.id)
                 params.view = "consAtSubscr"
         }
@@ -126,7 +126,7 @@ class FinanceController extends AbstractDebugController {
                 break
         }
         result.financialData = financeService.getCostItemsForSubscription(result.subscription,params,result.max.toInteger(),result.offset.toInteger())
-        if(OrgRole.findBySubAndOrgAndRoleType(result.subscription,result.institution,RDStore.OR_SUBSCRIPTION_CONSORTIA)) {
+        if(!params.orgBasicMemberView && OrgRole.findBySubAndOrgAndRoleType(result.subscription,result.institution,RDStore.OR_SUBSCRIPTION_CONSORTIA)) {
             result.showView = "cons"
             if(params.view.equals("consAtSubscr"))
                 result.showView = "consAtSubscr"
@@ -147,7 +147,7 @@ class FinanceController extends AbstractDebugController {
             result.subscriptionParticipants = OrgRole.executeQuery(fsq.query,fsq.queryParams)
             result.subMembersLabel = 'subscription.details.collectiveMembers.label'
         }
-        else if(OrgRole.findBySubAndOrgAndRoleTypeInList(result.subscription,result.institution,[RDStore.OR_SUBSCRIBER_CONS,RDStore.OR_SUBSCRIBER_COLLECTIVE]))
+        else if(params.orgBasicMemberView || OrgRole.findBySubAndOrgAndRoleTypeInList(result.subscription,result.institution,[RDStore.OR_SUBSCRIBER_CONS,RDStore.OR_SUBSCRIBER_COLLECTIVE]))
             result.showView = "subscr"
         else if(accessService.checkPermAffiliation("ORG_INST,ORG_CONSORTIUM","INST_USER"))
             result.showView = "own"
@@ -1554,6 +1554,11 @@ class FinanceController extends AbstractDebugController {
         else
             result.editable = accessService.checkMinUserOrgRole(result.user, result.institution, 'INST_EDITOR')
         result.institution  = contextService.getOrg()
+
+        if(params.orgBasicMemberView){
+            result.editable = false
+        }
+
         result
     }
 
