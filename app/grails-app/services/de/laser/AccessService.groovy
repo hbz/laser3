@@ -115,8 +115,8 @@ class AccessService {
             def oss = OrgSettings.get(ctx, OrgSettings.KEYS.CUSTOMER_TYPE)
 
             Role fakeRole
-            println(org.springframework.web.context.request.RequestContextHolder.currentRequestAttributes().params)
-            println(oss.getValue())
+            //println(org.springframework.web.context.request.RequestContextHolder.currentRequestAttributes().params)
+            //println(oss.getValue())
             if(org.springframework.web.context.request.RequestContextHolder.currentRequestAttributes().params.orgBasicMemberView && (oss.getValue() in Role.findAllByAuthorityInList(['ORG_CONSORTIUM_SURVEY', 'ORG_CONSORTIUM']))){
                 fakeRole = Role.findByAuthority('ORG_BASIC_MEMBER')
             }
