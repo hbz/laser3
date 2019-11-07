@@ -21,16 +21,9 @@ class HomeController {
         if (result.user) {
 
             if (UserSettings.get(result.user, UserSettings.KEYS.DASHBOARD) == UserSettings.SETTING_NOT_FOUND) {
-
-                def uao = result.user.getAuthorizedOrgsIds()
-                if (uao.size() > 0) {
-                    result.user.getSetting(UserSettings.KEYS.DASHBOARD, Org.findById(uao.first()))
-                }
-                else {
-                    flash.message = message(code: 'profile.dash.not_set', default: 'Please select an institution to use as your default home dashboard')
-                    redirect(controller: 'profile', action: 'index')
-                    return
-                }
+                flash.message = message(code: 'profile.dash.not_set', default: 'Please select an institution to use as your default home dashboard')
+                redirect(controller: 'profile', action: 'index')
+                return
             }
             redirect(controller: 'myInstitution', action: 'dashboard')
         }

@@ -40,7 +40,7 @@
         <th>${message(code:'default.provider.label')}</th>
         <th>${message(code:'org.url.label')}</th>
         <th>${message(code:'accessPoint.plural')}</th>
-        <th>Zugeordnete aktive Lizenzen</th>
+        <th>${message(code:'myinst.currentPlatforms.assignedSubscriptions')}</th>
     </tr>
     </thead>
     <tbody>
@@ -65,7 +65,7 @@
             </td>
             <td>
                 <g:each in="${platformInstance.getContextOrgAccessPoints(contextOrg)}" var="oap" >
-                    <g:link controller="accessPoint" action="edit_${oap.accessMethod}" id=" ${oap.id}">${oap.name} (${oap.accessMethod.getI10n('value')})</g:link> <br />
+                    <g:link controller="accessPoint" action="edit_${oap.accessMethod}" id="${oap.id}">${oap.name} (${oap.accessMethod.getI10n('value')})</g:link> <br />
                 </g:each>
             </td>
             <td>

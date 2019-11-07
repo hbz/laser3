@@ -444,6 +444,17 @@ class TitleInstance extends AbstractBaseDomain implements AuditableTrait {
       }
     }
 
+    if(result instanceof TitleInstance && status){
+      def ti_status = RDStore.TITLE_STATUS_CURRENT
+      if (status == 'Retired') {
+        ti_status = RDStore.TITLE_STATUS_RETIRED
+      } else if (status == 'Deleted') {
+        ti_status = RDStore.TITLE_STATUS_DELETED
+      }
+      result.status = ti_status
+      result.save(failOnError: true)
+    }
+
     return result;
 
   }

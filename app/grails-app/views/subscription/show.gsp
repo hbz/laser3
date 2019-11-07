@@ -89,7 +89,6 @@
                                 <dl>
                                     <dt class="control-label">${message(code: 'subscription.isMultiYear.label')}</dt>
                                     <dd><semui:xEditableBoolean owner="${subscriptionInstance}" field="isMultiYear" /></dd>
-                                    <dd class="la-js-editmode-container"><semui:auditButton auditable="[subscriptionInstance, 'isMultiYear']"/></dd>
                                 </dl>
                             </g:if>
 
@@ -303,7 +302,6 @@
 
                 <div class="ui card la-js-hideable hidden">
                     <div class="content">
-
                         <g:render template="/templates/links/orgLinksAsList"
                                   model="${[roleLinks: visibleOrgRelations,
                                             roleObject: subscriptionInstance,

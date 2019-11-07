@@ -156,7 +156,8 @@ class SubscriptionController extends AbstractDebugController {
                     changesDesc.add(PendingChange.get(change).desc)
                 }
             }
-            flash.message = changesDesc
+            // ERMS-1844: Hotfix: Änderungsmitteilungen ausblenden
+            // flash.message = changesDesc
         } else {
             result.pendingChanges = pendingChanges.collect { PendingChange.get(it) }
         }
@@ -3244,7 +3245,7 @@ class SubscriptionController extends AbstractDebugController {
         }
         log.debug("Going for GOKB API")
         User user = springSecurityService.getCurrentUser()
-        params.max = user?.getDefaultPageSizeTMP() ?: 25
+        params.max = params.max ?: (user?.getDefaultPageSizeTMP() ?: 25)
 
         if (params.gokbApi) {
             def gokbRecords = []
@@ -3533,7 +3534,8 @@ class SubscriptionController extends AbstractDebugController {
                         changesDesc.add(PendingChange.get(change).desc)
                     }
                 }
-                flash.message = changesDesc
+                //ERMS-1844 Hotfix: Änderungsmitteilungen ausblenden
+                //flash.message = changesDesc
             } else {
                 result.pendingChanges = pendingChanges.collect { PendingChange.get(it) }
             }
@@ -3940,7 +3942,18 @@ class SubscriptionController extends AbstractDebugController {
                                     IssueEntitlement newIssueEntitlement = new IssueEntitlement()
                                     InvokerHelper.setProperties(newIssueEntitlement, ieProperties)
                                     newIssueEntitlement.subscription = newSubscription
-                                    newIssueEntitlement.save(flush: true)
+                                    newIssueEntitlement.coverages = null
+
+                                    if(newIssueEntitlement.save(flush: true)){
+                                        ie.properties.coverages.each{ coverage ->
+
+                                            def coverageProperties = coverage.properties
+                                            IssueEntitlementCoverage newIssueEntitlementCoverage = new IssueEntitlementCoverage()
+                                            InvokerHelper.setProperties(newIssueEntitlementCoverage, coverageProperties)
+                                            newIssueEntitlementCoverage.issueEntitlement = newIssueEntitlement
+                                            newIssueEntitlementCoverage.save(flush: true)
+                                        }
+                                    }
                                 }
                             }
 
@@ -4134,7 +4147,18 @@ class SubscriptionController extends AbstractDebugController {
                                         IssueEntitlement newIssueEntitlement = new IssueEntitlement()
                                         InvokerHelper.setProperties(newIssueEntitlement, properties)
                                         newIssueEntitlement.subscription = newSub
-                                        newIssueEntitlement.save(flush: true)
+                                        newIssueEntitlement.coverages = null
+
+                                        if(newIssueEntitlement.save(flush: true)){
+                                            ie.properties.coverages.each{ coverage ->
+
+                                                def coverageProperties = coverage.properties
+                                                IssueEntitlementCoverage newIssueEntitlementCoverage = new IssueEntitlementCoverage()
+                                                InvokerHelper.setProperties(newIssueEntitlementCoverage, coverageProperties)
+                                                newIssueEntitlementCoverage.issueEntitlement = newIssueEntitlement
+                                                newIssueEntitlementCoverage.save(flush: true)
+                                            }
+                                        }
                                     }
                                 }
 
@@ -4981,7 +5005,18 @@ class SubscriptionController extends AbstractDebugController {
                             IssueEntitlement newIssueEntitlement = new IssueEntitlement()
                             InvokerHelper.setProperties(newIssueEntitlement, properties)
                             newIssueEntitlement.subscription = newSubscriptionInstance
-                            newIssueEntitlement.save(flush: true)
+                            newIssueEntitlement.coverages = null
+
+                            if(newIssueEntitlement.save(flush: true)){
+                                ie.properties.coverages.each{ coverage ->
+
+                                    def coverageProperties = coverage.properties
+                                    IssueEntitlementCoverage newIssueEntitlementCoverage = new IssueEntitlementCoverage()
+                                    InvokerHelper.setProperties(newIssueEntitlementCoverage, coverageProperties)
+                                    newIssueEntitlementCoverage.issueEntitlement = newIssueEntitlement
+                                    newIssueEntitlementCoverage.save(flush: true)
+                                }
+                            }
                         }
                     }
 
