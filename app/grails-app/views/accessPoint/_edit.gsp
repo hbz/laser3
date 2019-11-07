@@ -1,4 +1,5 @@
 <%@ page import="com.k_int.kbplus.OrgAccessPoint" %>
+<laser:serviceInjection/>
 <!doctype html>
 <html>
 <head>
@@ -100,7 +101,7 @@
     </div>
 </div>
 </g:form>
-<g:if test="${ !accessPoint.hasProperty('entityId') }">
+<g:if test="${ !accessPoint.hasProperty('entityId') && accessService.checkPermAffiliation('ORG_BASIC_MEMBER','INST_EDITOR') || (accessService.checkPermAffiliation('ORG_CONSORTIUM','INST_EDITOR') && inContextOrg)}">
 <g:form class="ui form" url="[controller: 'accessPoint', action: 'addIpRange']" id="${accessPoint.id}" method="POST">
 <g:hiddenField name="id" value="${accessPoint?.id}" />
 <g:hiddenField name="ipv4Format" value="${ipv4Format}" />
