@@ -468,10 +468,66 @@ class TitleInstance extends AbstractBaseDomain implements AuditableTrait {
   /**
    *  Caller passes in a map like {issn:'nnnn-nnnn',doi:'quyeihdj'} and expects to get back a new title
    *  or one matching any of the identifiers
+   */
+    static def lookupOrCreateViaIdMap(candidate_identifiers, title) {
+        def result
+        def identifiers = []
+
+        candidate_identifiers.each { i ->
+            if ((i.key != null && i.key.length() > 0) && (i.value != null && i.value.length() > 0)) {
+
+                Identifier match = Identifier.executeQuery('select i from Identifier i join i.ns ns where i.value = :iValue and ns.ns = :nsValue and i.ti is not null',
+                        [iValue: i.value, nsValue: i.key])
+
+                // only unique namespaces to identifiy a correct title
+                if (match && match.ns.isUnique) {
+                    if (! result) {
+                        result = match.org
+                    }
+                    else {
+                        if (result.id != match.org.id) {
+                            throw new RuntimeException("Identifiers -las(${candidate_identifiers}) reference multiple titles [Already located title with id ${result.id}, also located title with id ${match.org.id}]")
+                        }
+                    }
+                }
+                identifiers.add(i)
+            }
+        }
+
+        // no matching title
+        if (! result) {
+            if (title.type=='Serial') {
+                result = new JournalInstance(title:title, impId:java.util.UUID.randomUUID().toString(), type: RefdataValue.loc(RefdataCategory.TI_TYPE, [en: 'Journal', de: 'Journal']))
+            }
+            else if (title.type=='Database') {
+                result = new DatabaseInstance(title:title, impId:java.util.UUID.randomUUID().toString(), type: RefdataValue.loc(RefdataCategory.TI_TYPE, [en: 'Database', de: 'Database']))
+            }
+            else {
+                result = new BookInstance(title:title, impId:java.util.UUID.randomUUID().toString(), type: RefdataValue.loc(RefdataCategory.TI_TYPE, [en: 'Book', de: 'Book']))
+            }
+            if (! result.save()) {
+                throw new RuntimeException("Problem creating title instance : ${result.errors?.toString()}")
+            }
+        }
+
+        identifiers.each{ i ->
+            Identifier match = Identifier.executeQuery('select i from Identifier i join i.ns ns where i.value = :iValue and ns.ns = :nsValue and i.ti = :ti',
+                    [iValue: i.value, nsValue: i.key, ti: result])
+            if (! match) {
+                Identifier.construct([value: i.value, reference: result, namespace: i.key])
+            }
+        }
+
+        result
+    }
+
+  /**
+   *  Caller passes in a map like {issn:'nnnn-nnnn',doi:'quyeihdj'} and expects to get back a new title
+   *  or one matching any of the identifiers
    *  - assumes all identifiers to be unique -
    */
     //TODO: Wegen Überarbeitung von Titel Konzept muss dies hier nochmal überarbeitet werden by Moe
-  static def lookupOrCreateViaIdMap(candidate_identifiers, title) {
+  static def lookupOrCreateViaIdMap_depr(candidate_identifiers, title) {
     def result = null;
     def ids = []
 
@@ -483,8 +539,6 @@ class TitleInstance extends AbstractBaseDomain implements AuditableTrait {
            ( i.value.length() > 0 ) ) {
 
         // TODO [ticket=1789] check and adapt LOGIC here
-        // TODO [ticket=1789] check and adapt LOGIC here
-        // TODO [ticket=1789] check and adapt LOGIC here
         def id = Identifier.lookupOrCreateCanonicalIdentifier(i.key, i.value)
         if ( id != null ) {
           ids.add(id);
@@ -494,8 +548,6 @@ class TitleInstance extends AbstractBaseDomain implements AuditableTrait {
             // Namespace is marked as non-unique, don't perform a uniqueness check
           }
           else {
-            // TODO [ticket=1789] check and adapt LOGIC here
-            // TODO [ticket=1789] check and adapt LOGIC here
             // TODO [ticket=1789] check and adapt LOGIC here
             def io = IdentifierOccurrence.findByIdentifier(id)
             if ( io && io.ti ) {
@@ -522,8 +574,6 @@ class TitleInstance extends AbstractBaseDomain implements AuditableTrait {
       result.ids=[]
       ids.each {
         // TODO [ticket=1789] check and adapt LOGIC here
-        // TODO [ticket=1789] check and adapt LOGIC here
-        // TODO [ticket=1789] check and adapt LOGIC here
         result.ids.add(new IdentifierOccurrence(identifier:it, ti:result).save(flush: true));
       }
       if ( ! result.save() ) {
@@ -538,8 +588,6 @@ class TitleInstance extends AbstractBaseDomain implements AuditableTrait {
         // it == an ID
         // Does result.ids contain an identifier occurrence that matches this ID
         // def existing_id = result.ids.find { it -> it.identifier == identifier }
-        // TODO [ticket=1789] check and adapt LOGIC here
-        // TODO [ticket=1789] check and adapt LOGIC here
         // TODO [ticket=1789] check and adapt LOGIC here
         def existing_id = IdentifierOccurrence.findByIdentifierAndTi(identifier,result)
 

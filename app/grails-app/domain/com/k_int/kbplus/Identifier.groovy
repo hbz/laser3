@@ -79,7 +79,7 @@ class Identifier {
 			ns = IdentifierNamespace.findByNsIlike(namespace?.trim())
 
 			if(! ns) {
-				ns = new IdentifierNamespace(ns:ns, isUnique: false, isHidden: false)
+				ns = new IdentifierNamespace(ns:ns, isUnique: true, isHidden: false)
 				ns.save()
 			}
 		}
@@ -93,15 +93,21 @@ class Identifier {
         )
         if (! ident.isEmpty()) {
             if (ident.size() > 1) {
-                print ("WARNING: multiple matches found for ( ${value}, ${ns}, ${reference.class} )")
+                print ("WARNING: multiple matches found for ( ${value}, ${ns}, ${reference} )")
             }
             ident = ident.first()
         }
+
         if (! ident) {
-            print ("INFO: no match found; creating new identifier for ( ${value}, ${ns}, ${reference.class} )")
-            ident = new Identifier(ns: ns, value: value)
-            ident.setReference(reference)
-            ident.save()
+			if (ns.isUnique && Identifier.findByNsAndValue(ns, value)) {
+				print ("NO IDENTIFIER CREATED: multiple occurrences found for unique namespace ( ${value}, ${ns} )")
+			}
+			else {
+				print("INFO: no match found; creating new identifier for ( ${value}, ${ns}, ${reference.class} )")
+				ident = new Identifier(ns: ns, value: value)
+				ident.setReference(reference)
+				ident.save()
+			}
         }
 
         ident
