@@ -55,7 +55,7 @@
 
         </div>
 
-        <div class="four fields">
+        <div class="three fields">
 
             <div class="field">
                 <label>${message(code: 'surveyInfo.type.label')}</label>
@@ -65,6 +65,16 @@
                               optionValue="value"
                               value="${params.type}"
                               noSelection="${['': message(code: 'default.select.choose.label')]}"/>
+            </div>
+
+            <div class="field">
+                <label>${message(code: 'menu.my.providers')}</label>
+                <g:select class="ui search dropdown" name="provider"
+                          from="${providers.sort {it.name}}"
+                          optionKey="id"
+                          optionValue="name"
+                          value="${params.provider}"
+                          noSelection="${['': message(code: 'default.select.choose.label')]}"/>
             </div>
 
         </div>

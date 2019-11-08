@@ -338,6 +338,11 @@ class FilterService {
             queryParams << [endDate : sdFormat.parse(params.endDate)]
         }
 
+        if (params.provider) {
+            query << "exists (select orgRole from OrgRole orgRole where orgRole.sub = surConfig.subscription and orgRole.org = :provider)"
+            queryParams << [provider : Org.get(params.provider)]
+        }
+
         if (params.participant) {
             query << "" +
                     " exists (select surResult from SurveyResult as surResult where surResult.surveyConfig = surConfig and participant = :participant)"
