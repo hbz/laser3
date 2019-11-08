@@ -783,5 +783,14 @@
                 <p style="padding:1em; text-align: right">page load time (backend only): ${plt} ms</p>
             </g:if>
         </sec:ifAnyGranted>
+
+        <script>
+            $(document).ready(function(){
+                $.ajax({
+                    url: "${g.createLink(controller:'ajax', action:'notifyProfiler')}",
+                    data: {uri: "${request.request.request.request.servletPath.replaceFirst('/grails','').replace('.dispatch','')}"}
+                })
+            })
+        </script>
     </body>
 </html>
