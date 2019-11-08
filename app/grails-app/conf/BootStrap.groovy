@@ -1991,6 +1991,8 @@ class BootStrap {
         RefdataCategory.loc('User.Settings.Theme',                  [en: 'Theme', de: 'Theme'], BOOTSTRAP)
         RefdataCategory.loc('Survey Type',                          [en: 'Survey Type', de: 'Umfrage-Typ'], BOOTSTRAP)
         RefdataCategory.loc('Survey Status',                        [en: 'Survey Status', de: 'Umfrage-Status'], BOOTSTRAP)
+        RefdataCategory.loc('MailTemplate Type',                        [en: 'MailTemplate Type', de: 'MailTemplate Typ'], BOOTSTRAP)
+        RefdataCategory.loc('MailTemplate Language',                        [en: 'MailTemplate Language', de: 'MailTemplate Sprache'], BOOTSTRAP)
 
         // refdata values
 
@@ -2739,6 +2741,11 @@ class BootStrap {
         RefdataValue.loc('Survey Status',      [en: 'Completed', de: 'Abgeschlossen'], BOOTSTRAP)
         RefdataValue.loc('Survey Status',      [en: 'Survey started', de: 'Umfrage gestartet'], BOOTSTRAP)
         RefdataValue.loc('Survey Status',      [en: 'Survey completed', de: 'Umfrage beendet'], BOOTSTRAP)
+
+        RefdataValue.loc('MailTemplate Type',      [en: 'IP Message', de: 'IP-Meldung'], BOOTSTRAP)
+
+        RefdataValue.loc('MailTemplate Language',      [en: 'English', de: 'Englisch'], BOOTSTRAP)
+        RefdataValue.loc('MailTemplate Language',      [en: 'German', de: 'Deutsch'], BOOTSTRAP)
 
         createRefdataWithI10nExplanation()
     }

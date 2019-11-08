@@ -26,6 +26,8 @@
 
 <g:render template="nav"/>
 
+<g:render template="message" />
+
 <semui:messages data="${flash}"/>
 
 <g:if test="${surveys}">
