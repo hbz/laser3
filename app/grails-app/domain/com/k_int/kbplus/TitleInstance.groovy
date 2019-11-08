@@ -226,17 +226,15 @@ class TitleInstance extends AbstractBaseDomain implements AuditableTrait {
   }
 
   static def lookupOrCreate(List candidate_identifiers, String title, String imp_uuid, String status) {
-    lookupOrCreate(candidate_identifiers, title, false, null, imp_uuid, status)
+    lookupOrCreate(candidate_identifiers, title, null, imp_uuid, status)
   }
 
-  static def lookupOrCreate(List candidate_identifiers, String title, String titletyp, String imp_uuid, String status) {
-        lookupOrCreate(candidate_identifiers, title, false, titletyp, imp_uuid, status)
-    }
+    // TODO [ticket=1789] check and adapt LOGIC here
+    // TODO [ticket=1789] check and adapt LOGIC here
+    // TODO [ticket=1789] check and adapt LOGIC here
+    static TitleInstance lookupOrCreate(List candidate_identifiers, String title, String titletyp, String imp_uuid, String status) {
+        // argument "enrich" was always set to false -> removed
 
-    // TODO [ticket=1789] check and adapt LOGIC here
-    // TODO [ticket=1789] check and adapt LOGIC here
-    // TODO [ticket=1789] check and adapt LOGIC here
-    static TitleInstance lookupOrCreate(List candidate_identifiers, String title, boolean enrich, String titletyp, String imp_uuid, String status) {
         TitleInstance result
         def origin_uri
 
@@ -307,20 +305,28 @@ class TitleInstance extends AbstractBaseDomain implements AuditableTrait {
             static_logger.debug("No valid match - creating new title");
             def ti_status = RDStore.TITLE_STATUS_CURRENT
 
-            result = ((titletyp=='BookInstance') ? new BookInstance(title:title, impId:imp_uuid ?: java.util.UUID.randomUUID().toString(), gokbId: imp_uuid ?: null, status:ti_status, type: RefdataValue.loc(RefdataCategory.TI_TYPE, [en: 'EBook', de: 'EBook'])) :
-                    (titletyp=='DatabaseInstance' ? new DatabaseInstance(title:title, impId:imp_uuid ?: java.util.UUID.randomUUID().toString(), gokbId: imp_uuid ?: null, status:ti_status, type: RefdataValue.loc(RefdataCategory.TI_TYPE, [en: 'Database', de: 'Database'])) :
-                            new JournalInstance(title:title, impId:imp_uuid ?: java.util.UUID.randomUUID().toString(), gokbId: imp_uuid ?: null, status:ti_status, type: RefdataValue.loc(RefdataCategory.TI_TYPE, [en: 'Journal', de: 'Journal']))))
+            if (titletyp == 'BookInstance') {
+                result = new BookInstance(title:title, impId:imp_uuid ?: java.util.UUID.randomUUID().toString(), gokbId: imp_uuid ?: null, status:ti_status, type: RefdataValue.loc(RefdataCategory.TI_TYPE, [en: 'EBook', de: 'EBook']))
+            }
+            else if (titletyp == 'DatabaseInstance') {
+                result = new DatabaseInstance(title:title, impId:imp_uuid ?: java.util.UUID.randomUUID().toString(), gokbId: imp_uuid ?: null, status:ti_status, type: RefdataValue.loc(RefdataCategory.TI_TYPE, [en: 'Database', de: 'Database']))
+            }
+            else {
+                result = new JournalInstance(title:title, impId:imp_uuid ?: java.util.UUID.randomUUID().toString(), gokbId: imp_uuid ?: null, status:ti_status, type: RefdataValue.loc(RefdataCategory.TI_TYPE, [en: 'Journal', de: 'Journal']))
+            }
+
             result.save(failOnError: true)
 
             canonical_ids.each { i ->
                 Identifier.construct([value: i.value, reference: result, namespace: i.namespace])
             }
         }
-        else {
+
+        /* if argument "enrich" = true -> else {
             canonical_ids.each { i ->
                 Identifier.construct([value: i.value, reference: result, namespace: i.namespace])
             }
-        }
+        }*/
 
         if (result instanceof TitleInstance && status) {
             def ti_status = RDStore.TITLE_STATUS_CURRENT
@@ -604,10 +610,10 @@ class TitleInstance extends AbstractBaseDomain implements AuditableTrait {
 
         // no matching title
         if (! result) {
-            if (title.type=='Serial') {
+            if (title.type == 'Serial') {
                 result = new JournalInstance(title:title, impId:java.util.UUID.randomUUID().toString(), type: RefdataValue.loc(RefdataCategory.TI_TYPE, [en: 'Journal', de: 'Journal']))
             }
-            else if (title.type=='Database') {
+            else if (title.type == 'Database') {
                 result = new DatabaseInstance(title:title, impId:java.util.UUID.randomUUID().toString(), type: RefdataValue.loc(RefdataCategory.TI_TYPE, [en: 'Database', de: 'Database']))
             }
             else {
