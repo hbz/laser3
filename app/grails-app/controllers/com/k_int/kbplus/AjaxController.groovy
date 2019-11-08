@@ -117,12 +117,17 @@ class AjaxController {
   ]
 
     def notifyProfiler() {
+        Map<String, Object> result = [:]
+
         DebugUtil debugUtil = debugService.getDebugUtilAsSingleton()
         long delta = debugUtil.stopSimpleBench(session.id + '#' + params.uri)
 
         SystemProfiler.update(delta, params.uri)
 
-        render ([uri:params.uri, delta:delta]) as JSON
+        result.uri = params.uri
+        result.delta = delta
+
+        render result as JSON
     }
 
   @Secured(['ROLE_USER'])
