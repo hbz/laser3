@@ -114,9 +114,16 @@ class AccessService {
             Org ctx = contextOrg
             def oss = OrgSettings.get(ctx, OrgSettings.KEYS.CUSTOMER_TYPE)
 
+            Role fakeRole
+            //println(org.springframework.web.context.request.RequestContextHolder.currentRequestAttributes().params)
+            //println(oss.getValue())
+            if(org.springframework.web.context.request.RequestContextHolder.currentRequestAttributes().params.orgBasicMemberView && (oss.getValue() in Role.findAllByAuthorityInList(['ORG_CONSORTIUM_SURVEY', 'ORG_CONSORTIUM']))){
+                fakeRole = Role.findByAuthority('ORG_BASIC_MEMBER')
+            }
+
             if (oss != OrgSettings.SETTING_NOT_FOUND) {
                 orgPerms.each{ cd ->
-                    check = check || PermGrant.findByPermAndRole(Perm.findByCode(cd?.toLowerCase()?.trim()), (Role) oss.getValue())
+                    check = check || PermGrant.findByPermAndRole(Perm.findByCode(cd?.toLowerCase()?.trim()), (Role) fakeRole ?: oss.getValue())
                 }
             }
         } else {
