@@ -177,7 +177,6 @@ class MyInstitutionController extends AbstractDebugController {
 
     @Secured(['ROLE_USER'])
     def currentPlatforms() {
-        long timestamp = System.currentTimeMillis()
 
         def result = [:]
         result.user = User.get(springSecurityService.principal.id)
@@ -303,7 +302,6 @@ class MyInstitutionController extends AbstractDebugController {
         else result.platformInstanceList = []
         result.platformInstanceTotal    = result.platformInstanceList.size()
 
-        result.plt = (System.currentTimeMillis() - timestamp)
         result.cachedContent = true
 
         result
@@ -702,7 +700,7 @@ from License as l where (
     @DebugAnnotation(test='hasAffiliation("INST_USER")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
     def currentProviders() {
-        long timestamp = System.currentTimeMillis()
+
         def result = setResultGenerics()
 
         def cache = contextService.getCache('MyInstitutionController/currentProviders/', contextService.ORG_SCOPE)
@@ -743,7 +741,6 @@ from License as l where (
         String datetoday = sdf.format(new Date(System.currentTimeMillis()))
         String filename = message+"_${datetoday}"
 
-        result.plt = (System.currentTimeMillis() - timestamp)
         result.cachedContent = true
 
         if ( params.exportXLS ) {
@@ -3239,6 +3236,7 @@ AND EXISTS (
         result.members         = totalMembers.drop((int) result.offset).take((int) result.max)
         String header
         String exportHeader
+
         if(result.comboType == RDStore.COMBO_TYPE_CONSORTIUM) {
             header = message(code: 'menu.my.consortia')
             exportHeader = message(code: 'export.my.consortia')

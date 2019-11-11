@@ -1641,6 +1641,11 @@ class BootStrap {
                         name: [key: "Deep Discount Price", en: "Deep Discount Price", de: "Deep-Discount-Preis"],
                         expl: [en: "", de: "Bietet der Verlag einen Deep-Discount-Preis für Printabonnements an?"],
                         descr:allDescr, type: OT.Rdv, cat:'YN'
+                ],
+                [
+                        name: [en: "Central funding possible", de: "Zentralmittelfähig"],
+                        expl: [en: "", de: "Ist es möglich, diese Lizenz aus Zentralmitteln zu finanzieren?"],
+                        descr:allDescr, type: OT.Rdv, cat:'YN'
                 ]
 		
         ]

@@ -1,53 +1,24 @@
 package de.laser.controller
 
-import de.laser.domain.SystemProfiler
 import de.laser.helper.DebugUtil
 
 abstract class AbstractDebugController {
 
-    protected DebugUtil debugUtil = new DebugUtil(DebugUtil.CK_PREFIX_GLOBAL_INTERCEPTOR)
+    def debugService
 
     def beforeInterceptor = {
-        debugUtil.startSimpleBench(this.class.simpleName + ' ' + session.id)
+        DebugUtil debugUtil = debugService.getDebugUtilAsSingleton()
+
+        debugUtil.startSimpleBench(session.id + '#' + actionUri)
     }
 
+
     def afterInterceptor = {
-        def delta = debugUtil.stopSimpleBench(this.class.simpleName + ' ' + session.id)
+        //DebugUtil debugUtil = debugService.getDebugUtilAsSingleton()
 
-        if (delta >= SystemProfiler.THRESHOLD_MS) {
+        //long delta = debugUtil.stopSimpleBench(session.id + '@' + actionUri)
+        //debugUtil.updateSystemProfiler(delta, actionUri)
 
-            /*
-            Map paramsToLog = [:]
-            params.each{ key, value ->
-                if (value instanceof String) {
-                    paramsToLog.put(key, value)
-                }
-                else {
-                    paramsToLog.put(key, value.getClass())
-                }
-            }
-            def json = (paramsToLog as JSON)
-            */
-
-            (new SystemProfiler(
-                    uri:      actionUri,
-                    // params:   json?.toString(),
-                    ms:       delta,
-                    context:  contextService?.getOrg()
-            )).save(flush: true)
-        }
-
-        // added global counts
-        SystemProfiler.withTransaction { status ->
-            SystemProfiler global = SystemProfiler.findWhere(uri: actionUri, context: null, params: null)
-            if (! global) {
-                global = new SystemProfiler(uri: actionUri, ms: 1)
-                global.save(flush:true)
-            }
-            else {
-                SystemProfiler.executeUpdate('UPDATE SystemProfiler SET ms =:newValue WHERE id =:spId',
-                [newValue: Integer.valueOf(global.ms) + 1, spId: global.id])
-            }
-        }
+        // triggerd via AjaxController.notifyProfiler()
     }
 }

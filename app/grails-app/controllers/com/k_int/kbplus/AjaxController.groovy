@@ -8,7 +8,9 @@ import com.k_int.properties.PropertyDefinitionGroupBinding
 import de.laser.AuditConfig
 import de.laser.domain.AbstractI10nTranslatable
 import de.laser.domain.IssueEntitlementCoverage
+import de.laser.domain.SystemProfiler
 import de.laser.helper.DebugAnnotation
+import de.laser.helper.DebugUtil
 import de.laser.helper.EhcacheWrapper
 import de.laser.helper.RDStore
 import de.laser.interfaces.ShareSupport
@@ -34,6 +36,7 @@ class AjaxController {
     def controlledListService
     def dataConsistencyService
     def accessService
+    def debugService
 
     def refdata_config = [
     "ContentProvider" : [
@@ -112,6 +115,20 @@ class AjaxController {
             format:'map'
     ]
   ]
+
+    def notifyProfiler() {
+        Map<String, Object> result = [:]
+
+        DebugUtil debugUtil = debugService.getDebugUtilAsSingleton()
+        long delta = debugUtil.stopSimpleBench(session.id + '#' + params.uri)
+
+        SystemProfiler.update(delta, params.uri)
+
+        result.uri = params.uri
+        result.delta = delta
+
+        render result as JSON
+    }
 
   @Secured(['ROLE_USER'])
   def setFieldNote() {
