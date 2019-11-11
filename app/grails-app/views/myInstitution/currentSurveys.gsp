@@ -112,13 +112,13 @@
             <th rowspan="2" class="center aligned">
                 ${message(code: 'sidewide.number')}
             </th>
-            <g:sortableColumn params="${params}" property="surveyInfo.name"
+            <g:sortableColumn params="${params}" property="surInfo.name"
                               title="${message(code: 'surveyInfo.slash.name')}"/>
-            <g:sortableColumn params="${params}" property="surveyInfo.type"
+            <g:sortableColumn params="${params}" property="surInfo.type"
                               title="${message(code: 'surveyInfo.type.label')}"/>
-            <g:sortableColumn params="${params}" property="surveyInfo.endDate"
+            <g:sortableColumn params="${params}" property="surInfo.endDate"
                               title="${message(code: 'default.endDate.label', default: 'End Date')}"/>
-            <g:sortableColumn params="${params}" property="surveyInfo.owner"
+            <g:sortableColumn params="${params}" property="surInfo.owner"
                               title="${message(code: 'surveyInfo.owner.label')}"/>
             <th><g:message code="surveyInfo.finished"/></th>
 
