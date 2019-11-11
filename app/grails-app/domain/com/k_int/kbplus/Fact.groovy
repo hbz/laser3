@@ -18,7 +18,6 @@ class Fact {
   TitleInstance relatedTitle
   Platform supplier
   Org inst
-  IdentifierOccurrence juspio
 
   Date dateCreated
   Date lastUpdated
@@ -28,7 +27,6 @@ class Fact {
     relatedTitle(nullable:true, blank:false)
     supplier(nullable:true, blank:false)
     inst(nullable:true, blank:false)
-    juspio(nullable:true, blank:false)
     reportingYear(nullable:true, blank:false)
     reportingMonth(nullable:true, blank:false)
 
