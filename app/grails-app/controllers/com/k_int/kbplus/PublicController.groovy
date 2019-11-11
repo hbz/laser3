@@ -253,8 +253,8 @@ class PublicController {
                 def idv = params.idv?.trim()
                 if (idv) {
                     query += " AND ( EXISTS ( " +
-                        " SELECT io FROM IdentifierOccurrence AS io " +
-                        " WHERE io.ti = ie.tipp.title AND io.identifier.value LIKE :idv "
+                        " SELECT ident FROM Identifier AS ident " +
+                        " WHERE ident.ti = ie.tipp.title AND ident.value LIKE :idv "
 
                     if (params.idns) {
                         query += " AND io.identifier.ns = :idns "

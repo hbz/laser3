@@ -401,9 +401,9 @@
                       </a><br>
                   </g:if>
 
-                  <g:each in="${t?.title?.ids?.sort{it?.identifier?.ns?.ns}}" var="id">
+                  <g:each in="${t?.title?.ids?.sort{it?.ns?.ns}}" var="id">
                       <span class="ui small teal image label">
-                          ${id.identifier.ns.ns}: <div class="detail">${id.identifier.value}</div>
+                          ${id.ns.ns}: <div class="detail">${id.value}</div>
                       </span>
                   </g:each>
                   <div class="la-icon-list">

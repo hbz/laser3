@@ -1,7 +1,6 @@
 package com.k_int.kbplus.processing
 
 import com.k_int.kbplus.Identifier
-import com.k_int.kbplus.IdentifierOccurrence
 import org.apache.commons.logging.LogFactory
 
 public class OrgsProcessing {
@@ -12,11 +11,10 @@ public class OrgsProcessing {
     log.debug("This is a testMethodCall");
     if ( domain_object ) {
       if ( value ) {
-        def identifier = Identifier.lookupOrCreateCanonicalIdentifier(type,value);
-        domain_object.ids.add(new IdentifierOccurrence(identifier:identifier,org:domain_object));
-      }
-      else {
-        // Should we make sure there is no identifier attached?
+        // TODO [ticket=1789]
+        //def identifier = Identifier.lookupOrCreateCanonicalIdentifier(type,value);
+        //domain_object.ids.add(new IdentifierOccurrence(identifier:identifier,org:domain_object));
+        def identifier = Identifier.construct([value: value, reference: domain_object, namespace:type])
       }
     }
     else {
