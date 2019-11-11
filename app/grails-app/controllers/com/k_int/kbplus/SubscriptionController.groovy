@@ -438,6 +438,8 @@ class SubscriptionController extends AbstractDebugController {
             def parsed_change_info = JSON.parse(pc[1])
             if (parsed_change_info.tippID) {
                 pc_to_delete += pc[0]
+            }else if (parsed_change_info.tippId) {
+                    pc_to_delete += pc[0]
             } else if (parsed_change_info.changeDoc) {
                 def (oid_class, ident) = parsed_change_info.changeDoc.OID.split(":")
                 if (oid_class == tipp_class && tipp_ids.contains(ident.toLong())) {

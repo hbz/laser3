@@ -79,11 +79,11 @@ class DashboardDueDatesService {
                 def dueObjects = queryService.getDueObjectsCorrespondingUserSettings(org, user)
                 dueObjects.each { obj ->
                     if (obj instanceof Subscription) {
-                        int reminderPeriodForManualCancellationDate = user.getSetting(UserSettings.KEYS.REMIND_PERIOD_FOR_SUBSCRIPTIONS_NOTICEPERIOD, DEFAULT_REMINDER_PERIOD).value
+                        int reminderPeriodForManualCancellationDate = user.getSetting(UserSettings.KEYS.REMIND_PERIOD_FOR_SUBSCRIPTIONS_NOTICEPERIOD, DEFAULT_REMINDER_PERIOD).value ?: 1
                         if (obj.manualCancellationDate && SqlDateUtils.isDateBetweenTodayAndReminderPeriod(obj.manualCancellationDate, reminderPeriodForManualCancellationDate)) {
                             dashboarEntriesToInsert.add(new DashboardDueDate(obj, true, user, org, false, false))
                         }
-                        int reminderPeriodForSubsEnddate = user.getSetting(UserSettings.KEYS.REMIND_PERIOD_FOR_SUBSCRIPTIONS_ENDDATE, DEFAULT_REMINDER_PERIOD).value
+                        int reminderPeriodForSubsEnddate = user.getSetting(UserSettings.KEYS.REMIND_PERIOD_FOR_SUBSCRIPTIONS_ENDDATE, DEFAULT_REMINDER_PERIOD).value ?: 1
                         if (obj.endDate && SqlDateUtils.isDateBetweenTodayAndReminderPeriod(obj.endDate, reminderPeriodForSubsEnddate)) {
                             dashboarEntriesToInsert.add(new DashboardDueDate(obj, false, user, org, false, false))
                         }
