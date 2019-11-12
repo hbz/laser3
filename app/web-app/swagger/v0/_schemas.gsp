@@ -843,7 +843,7 @@
           key:
             type: string
             description: Primary Identifier
-          group:
+          scope:
             type: string
             enum:
               [${ com.k_int.properties.PropertyDefinition.AVAILABLE_CUSTOM_DESCR.toList().plus(com.k_int.properties.PropertyDefinition.AVAILABLE_PRIVATE_DESCR.toList()).unique().join(', ') }]

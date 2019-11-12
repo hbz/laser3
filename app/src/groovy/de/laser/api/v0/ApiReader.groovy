@@ -47,7 +47,7 @@ class ApiReader {
             def pdTmp = [:]
 
             pdTmp.key = pd.name
-            pdTmp.group = pd.descr
+            pdTmp.scope = pd.descr
             pdTmp.type = PropertyDefinition.validTypes2[pd.type]['en']
 
             pdTmp.label_de = validLabel(pd.getI10n('name', 'de'))
