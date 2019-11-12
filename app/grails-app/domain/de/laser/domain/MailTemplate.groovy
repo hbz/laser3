@@ -30,7 +30,7 @@ class MailTemplate {
         version column: 'mt_version'
 
         name column: 'mt_name'
-        text column: 'mt_text'
+        text column: 'mt_text', type:'text'
         subject column: 'mt_subject'
 
         sentBySystem column: 'mt_sent_by_system'
