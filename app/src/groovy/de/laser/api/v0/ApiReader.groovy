@@ -1,6 +1,7 @@
 package de.laser.api.v0
 
 import com.k_int.kbplus.*
+import com.k_int.properties.PropertyDefinition
 import de.laser.CacheService
 import de.laser.helper.Constants
 import de.laser.helper.RDStore
@@ -20,16 +21,55 @@ class ApiReader {
             'oaMonitorList':        [Constants.MIME_APPLICATION_JSON],
             'organisation':         [Constants.MIME_APPLICATION_JSON],
             'package':              [Constants.MIME_APPLICATION_JSON],
+            'propertyList':         [Constants.MIME_APPLICATION_JSON],
             'refdataList':          [Constants.MIME_APPLICATION_JSON],
             'statistic':            [Constants.MIME_APPLICATION_JSON],
             'statisticList':        [Constants.MIME_APPLICATION_JSON],
             'subscription':         [Constants.MIME_APPLICATION_JSON]
     ]
 
-    static SIMPLE_QUERIES = ['oaMonitorList', 'refdataList', 'statisticList']
+    static SIMPLE_QUERIES = ['oaMonitorList', 'refdataList', 'propertyList', 'statisticList']
 
 
-    // ################### CATALOGUE ###################
+    // ################### MIXED CATALOGUE ###################
+
+    /**
+     * @return
+     */
+    static Collection<Object> retrievePropertyCollection(Org context){
+        def result = []
+
+        def validLabel = { lb ->
+            return (lb != 'null' && lb != 'null °') ? lb : null
+        }
+
+        PropertyDefinition.where { tenant == null || tenant == context }.sort('name').each { pd ->
+            def pdTmp = [:]
+
+            pdTmp.key = pd.name
+            pdTmp.group = pd.descr
+            pdTmp.type = PropertyDefinition.validTypes2[pd.type]['en']
+
+            pdTmp.label_de = validLabel(pd.getI10n('name', 'de'))
+            pdTmp.label_en = validLabel(pd.getI10n('name', 'en'))
+
+            pdTmp.explanation_de = validLabel(pd.getI10n('expl', 'de'))
+            pdTmp.explanation_en = validLabel(pd.getI10n('expl', 'en'))
+
+            pdTmp.usedForLogic = pd.isUsedForLogic ? 'Yes' : 'No'
+            pdTmp.multiple = pd.multipleOccurrence ? 'Yes' : 'No'
+
+            pdTmp.isPublic = pd.tenant ? 'No' : 'Yes'
+            pdTmp.refdataCategory = pd.refdataCategory
+
+            result << ApiToolkit.cleanUp(pdTmp, true, true)
+        }
+
+        result
+    }
+
+
+    // ################### PUBLIC CATALOGUE ###################
 
     /**
      * @return
