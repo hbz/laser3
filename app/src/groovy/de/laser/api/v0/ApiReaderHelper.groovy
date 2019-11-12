@@ -362,22 +362,26 @@ class ApiReaderHelper {
             def groups = generic.getCalculatedPropDefGroups(context)
             def tmp = []
 
+            // [PropertyDefinitionGroup, ..]
             groups.global?.each { it ->
                 if (it.isVisible) {
                     tmp.addAll(it.getCurrentProperties(generic))
                 }
             }
+            // [[PropertyDefinitionGroup, PropertyDefinitionGroupBinding], ..]
             groups.local?.each { it ->
-                if (it.isVisible) {
-                    tmp.addAll(it.getCurrentProperties(generic))
+                if (it[0].isVisible) {
+                    tmp.addAll(it[0].getCurrentProperties(generic))
                 }
             }
-            groups.members?.each { it ->
-                if (it.isVisibleForConsortiaMembers) {
-                    tmp.addAll(it.getCurrentProperties(generic))
+            // [[PropertyDefinitionGroup, PropertyDefinitionGroupBinding], ..]
+            groups.member?.each { it ->
+                if (it[1].isVisibleForConsortiaMembers) {
+                    tmp.addAll(it[0].getCurrentProperties(generic))
                 }
             }
 
+            // [<x>CustomProperty, ..]
             if (groups.orphanedProperties) {
                 tmp.addAll(groups.orphanedProperties)
             }
