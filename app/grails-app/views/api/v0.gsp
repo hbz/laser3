@@ -108,15 +108,15 @@
 <!--
     // calculation of hmac
 
-    var apiKey        = "&lt;apiKey&gt;"
-    var apiPassword   = "&lt;apiPassword&gt;"
+    var apiKey        = "<apiKey>"
+    var apiPassword   = "<apiPassword>"
     var method        = "GET"
-    var path          = "/api/v0/&lt;apiEndpoint&gt;"
+    var path          = "/api/v0/<apiEndpoint>"
     var timestamp     = ""
     var nounce        = ""
-    var q             = "&lt;q&gt;"
-    var v             = "&lt;v&gt;"
-    var context       = "&lt;context&gt;"
+    var q             = "<q>"
+    var v             = "<v>"
+    var context       = "<context>"
     var query         = $.grep( [(q ? "q=" + q : null), (v ? "v=" + v : null), (context ? "context=" + context : null)], function(e, i){ return e }).join('&')
     var body          = ""
     var algorithm     = "hmac-sha256"

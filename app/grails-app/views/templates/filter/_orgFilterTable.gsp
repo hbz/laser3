@@ -336,7 +336,7 @@
                         </g:link>
                     </g:if>
                     <g:else>
-                        <g:link controller="myInstitution" action="currentSubscriptions" params="${[q: org.name]}"
+                        <g:link controller="myInstitution" action="currentSubscriptions" params="${[identifier: org.globalUID]}"
                                 title="${message(code: 'org.subscriptions.tooltip', args: [org.name])}">
                             <div class="ui circular label">
                                 ${numberOfSubscriptions}
