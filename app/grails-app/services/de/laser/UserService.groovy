@@ -26,10 +26,15 @@ class UserService {
     void initMandatorySettings(User user) {
         log.debug('initMandatorySettings for user #' + user.id)
 
-        if (UserSettings.get(user, UserSettings.KEYS.DASHBOARD) == UserSettings.SETTING_NOT_FOUND) {
-            def userOrgMatches = user.getAuthorizedOrgsIds()
-            if (userOrgMatches.size() > 0) {
+        def uss = UserSettings.get(user, UserSettings.KEYS.DASHBOARD)
+
+        def userOrgMatches = user.getAuthorizedOrgsIds()
+        if (userOrgMatches.size() > 0) {
+            if (uss == UserSettings.SETTING_NOT_FOUND) {
                 user.getSetting(UserSettings.KEYS.DASHBOARD, Org.findById(userOrgMatches.first()))
+            }
+            else if (! uss.getValue()) {
+                uss.setValue(Org.findById(userOrgMatches.first()))
             }
         }
 
