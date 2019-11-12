@@ -239,6 +239,29 @@
           $ref: "#/components/responses/preconditionFailed"
 
 
+  /propertyList:
+
+    get:
+      tags:
+        - Lists
+      summary: Retrieving a combined list of public and owner related property definitions
+      description: >
+        Retrieving a combined list of public and owner related property definitions
+
+      parameters:
+        - $ref: "#/components/parameters/authorization"
+
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PropertyList"
+        401:
+          $ref: "#/components/responses/notAuthorized"
+
+
   /refdataList:
 
     get:

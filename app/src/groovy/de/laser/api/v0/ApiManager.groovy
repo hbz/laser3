@@ -16,7 +16,7 @@ import javax.servlet.http.HttpServletRequest
 @Log4j
 class ApiManager {
 
-    static final VERSION = '0.69'
+    static final VERSION = '0.71'
     static final NOT_SUPPORTED = false
 
     /**
@@ -147,6 +147,10 @@ class ApiManager {
             if (result && !(result in failureCodes)) {
                 result = ApiPkg.getPackage((Package) result, contextOrg, accessDueDatamanager)
             }
+        }
+        else if (resolve('propertyList', ApiReader.SUPPORTED_FORMATS.propertyList) == Constants.VALID_REQUEST) {
+
+			result = ApiCatalogue.getAllProperties(contextOrg)
         }
         else if (resolve('refdataList', ApiReader.SUPPORTED_FORMATS.refdataList) == Constants.VALID_REQUEST) {
 
