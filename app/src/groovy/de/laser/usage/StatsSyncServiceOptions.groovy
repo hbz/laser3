@@ -1,7 +1,6 @@
 package de.laser.usage
 
 import com.k_int.kbplus.*
-import com.k_int.properties.PropertyDefinition
 import groovy.util.logging.Log4j
 
 @Log4j
@@ -22,29 +21,29 @@ class StatsSyncServiceOptions {
     String requestor
     String mostRecentClosedPeriod
     String statsTitleIdentifier
-    String identifierType
+    String statsIdentifierType
     TitleInstance title_inst
     Platform supplier_inst
     Org org_inst
-    IdentifierOccurrence title_io_inst
+    Identifier identifier
 
     void setItemObjects(objectList)
     {
         title_inst = (TitleInstance)objectList[0]
         supplier_inst = (Platform)objectList[1]
         org_inst = (Org)objectList[2]
-        title_io_inst = (IdentifierOccurrence)objectList[3]
-        statsTitleIdentifier = title_io_inst?.identifier?.value
-        setIdentifierType(title_io_inst)
+        identifier = (Identifier)objectList[3]
+        statsTitleIdentifier = identifier.value
+        setStatsIdentifierType(identifier)
     }
 
-    void setIdentifierType(title_io_inst) {
-        def type = title_io_inst?.identifier?.ns?.ns
+    void setStatsIdentifierType(identifier) {
+        def type = identifier.ns?.ns
         // ugly difference in type name
         if (type == 'zdb'){
-            identifierType = 'zdbid'
+            statsIdentifierType = 'zdbid'
         } else {
-            identifierType = type
+            statsIdentifierType = type
         }
     }
 
@@ -84,22 +83,22 @@ class StatsSyncServiceOptions {
 
     Boolean identifierTypeAllowedForAPICall()
     {
-        if (! identifierType || ! reportType){
+        if (! statsIdentifierType || ! reportType){
             return false
         }
         switch (reportType) {
             case "book":
-            if (identifierType == "doi") {
+            if (statsIdentifierType == "doi") {
                 return true
             }
             break
             case "journal":
-            if (identifierType == "zdbid") {
+            if (statsIdentifierType == "zdbid") {
                 return true
             }
             break
             case "database":
-            if (identifierType == "zdbid") {
+            if (statsIdentifierType == "zdbid") {
                 return true
             }
             break

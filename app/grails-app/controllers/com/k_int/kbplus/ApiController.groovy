@@ -182,61 +182,6 @@ where tipp.title = ? and orl.roleType.value=?''', [title, 'Content Provider']);
         }
         render result as JSON
     }
-    /*
-    * Create a CSV containing all JUSP title IDs with the institution they belong to
-    */
-
-    @Secured(['ROLE_API', 'IS_AUTHENTICATED_FULLY'])
-    def fetchAllTips() {
-
-        def jusp_ti_inst = TitleInstitutionProvider.executeQuery("""
-   select jusp_institution_id.identifier.value, jusp_title_id.identifier.value, dates,tip_ti.id, 
-   (select jusp_provider_id.identifier.value from tip_ti.provider.ids as jusp_provider_id where jusp_provider_id.identifier.ns.ns='juspsid' )
-    from TitleInstitutionProvider tip_ti
-      join tip_ti.institution.ids as jusp_institution_id,
-    TitleInstitutionProvider tip_inst
-      join tip_inst.title.ids as jusp_title_id,
-    TitleInstitutionProvider tip_date
-      join tip_date.coreDates as dates
-    where jusp_title_id.identifier.ns.ns='jusp'
-        and tip_ti = tip_inst
-        and tip_inst = tip_date
-        and jusp_institution_id.identifier.ns.ns='jusplogin' order by jusp_institution_id.identifier.value 
-     """)
-
-        def date = new SimpleDateFormat(message(code:'default.date.format.notime'))
-        date = date.format(new Date())
-        response.setHeader("Content-disposition", "attachment; filename=\"kbplus_jusp_export_${date}.csv\"")
-        response.contentType = "text/csv"
-        def out = response.outputStream
-        def currentTip = null
-        def dates_concat = ""
-        out.withWriter { writer ->
-            writer.write("JUSP Institution ID,JUSP Title ID,JUSP Provider, Core Dates\n")
-            Iterator iter = jusp_ti_inst.iterator()
-            while (iter.hasNext()) {
-                def it = iter.next()
-                if (currentTip == it[3]) {
-                    dates_concat += ", ${it[2]}"
-                } else if (currentTip) {
-                    writer.write("\"${dates_concat}\"\n\"${it[0]}\",\"${it[1]}\",\"${it[4] ?: ''}\",")
-                    dates_concat = "${it[2]}"
-                    currentTip = it[3]
-                } else {
-                    writer.write("\"${it[0]}\",\"${it[1]}\",\"${it[4] ?: ''}\",")
-                    dates_concat = "${it[2]}"
-                    currentTip = it[3]
-                }
-                if (!iter.hasNext()) {
-                    writer.write("\"${dates_concat}\"\n")
-                }
-            }
-
-            writer.flush()
-            writer.close()
-        }
-        out.close()
-    }
 
     // Accept a single mandatorty parameter which is the namespace:code for an institution
     // If found, return a JSON report of each title for that institution

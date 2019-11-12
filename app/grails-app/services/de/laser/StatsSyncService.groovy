@@ -65,12 +65,12 @@ class StatsSyncService {
 
     private String getTitleInstancesForUsageQuery() {
         // Distinct list of titles ids, the platform, subscribing organisation and the zdbid
-        def hql =  "select distinct ie.tipp.title.id, pf.id, orgrel.org.id, zdbtitle.id from IssueEntitlement as ie " +
+        def hql =  "select distinct ie.tipp.title.id, pf.id, orgrel.org.id, titleIdentifier.id from IssueEntitlement as ie " +
             "join ie.tipp.platform as pf " +
             "join ie.tipp.pkg.orgs as po " +
             "join ie.subscription.orgRelations as orgrel "+
-            "join ie.tipp.title.ids as zdbtitle "+
-            "where zdbtitle.identifier.ns.ns in ('zdb','doi') "+
+            "join ie.tipp.title.ids as titleIdentifier "+
+            "where titleIdentifier.ns.ns in ('zdb','doi') "+
             "and po.roleType.value='Content Provider' "+
             "and exists (select cp from pf.customProperties as cp where cp.type.name = 'NatStat Supplier ID')" +
             "and (orgrel.roleType.value = 'Subscriber_Consortial' or orgrel.roleType.value = 'Subscriber') " +
@@ -191,7 +191,7 @@ class StatsSyncService {
             TitleInstance.get(listItem[0]),
             Platform.get(listItem[1]),
             Org.get(listItem[2]),
-            IdentifierOccurrence.get(listItem[3])
+            Identifier.get(listItem[3])
         ]
     }
 
@@ -225,6 +225,7 @@ class StatsSyncService {
         if (csr == null) {
             csr = new StatsTripleCursor(
                 titleId: options.statsTitleIdentifier,
+                identifierType: options.identifier.ns,
                 supplierId: options.platform,
                 customerId: options.customer,
                 availFrom: new SimpleDateFormat("yyyy-MM-dd").parse(SYNC_STATS_FROM),
@@ -329,7 +330,6 @@ class StatsSyncService {
                         fact.title = options.title_inst
                         fact.supplier = options.supplier_inst
                         fact.inst = options.org_inst
-                        fact.juspio = options.title_io_inst
                         if (factService.registerFact(fact)) {
                             ++factCount
                             ++newFactCount
@@ -357,6 +357,7 @@ class StatsSyncService {
                     csr.titleId = options.statsTitleIdentifier
                     csr.supplierId = options.platform
                     csr.factType = options.factType
+                    csr.identifierType = options.identifier.ns
                     csr.save(flush: true)
                 }
             }
