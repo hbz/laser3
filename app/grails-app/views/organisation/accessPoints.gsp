@@ -17,7 +17,8 @@
         </g:if>
     </semui:breadcrumbs>
 
-    <g:if test="${accessService.checkPerm('ORG_INST,ORG_CONSORTIUM')}">
+    <g:if test="${accessService.checkPermAffiliation('ORG_BASIC_MEMBER','INST_EDITOR')
+        || (accessService.checkPermAffiliation('ORG_CONSORTIUM','INST_EDITOR') && inContextOrg)}">
         <semui:controlButtons>
             <g:render template="actions" />
         </semui:controlButtons>
@@ -58,13 +59,19 @@
                     <th>${message(code: 'accessPoint.name', default: 'Name')}</th>
                     <th>${message(code: 'accessMethod.label', default: 'Access Method')}</th>
                     <th>${message(code: 'accessRule.plural', default: 'Access Rules')}</th>
-                    <th class="la-action-info">${message(code: 'accessPoint.actions', default: 'Actions')}</th>
+                    <g:if test="${accessService.checkPermAffiliation('ORG_BASIC_MEMBER','INST_EDITOR') || (accessService.checkPermAffiliation('ORG_CONSORTIUM','INST_EDITOR') && inContextOrg)}">
+                        <th class="la-action-info">${message(code: 'accessPoint.actions', default: 'Actions')}</th>
+                    </g:if>
                 </tr>
                 </thead>
                 <tbody>
                     <g:each in="${orgAccessPointList}" var="accessPoint">
                         <tr>
-                            <td class="la-main-object" >${accessPoint.name}</td>
+                        <td class="la-main-object" >
+                        <g:link controller="accessPoint" action="edit_${accessPoint.accessMethod.value.toLowerCase()}" id="${accessPoint.id}">
+                            ${accessPoint.name}
+                        </g:link>
+                        </td>
                             <td>${accessPoint.accessMethod.getI10n('value')}</td>
                             <td>
                                 <g:each in="${accessPoint.getIpRangeStrings('ipv4', 'ranges')}" var="ipv4Range">
@@ -84,16 +91,15 @@
                                     </g:if>
                                 </div>
                             </td>
-                            <td class="center aligned">
-                                <g:link action="edit_${accessPoint.accessMethod.value.toLowerCase()}" controller="accessPoint" id="${accessPoint?.id}" class="ui icon button">
-                                    <i class="write icon"></i>
-                                </g:link>
+                            <g:if test="${accessService.checkPermAffiliation('ORG_BASIC_MEMBER','INST_EDITOR') || (accessService.checkPermAffiliation('ORG_CONSORTIUM','INST_EDITOR') && inContextOrg)}">
+                                <td class="center aligned">
                                 <g:link action="delete" controller="accessPoint" id="${accessPoint?.id}" class="ui negative icon button js-open-confirm-modal"
                                         data-confirm-tokenMsg="${message(code: 'confirm.dialog.delete.accessPoint', args: [accessPoint.name])}"
                                         data-confirm-term-how="delete">
                                     <i class="trash alternate icon"></i>
                                 </g:link>
-                            </td>
+                                </td>
+                            </g:if>
                         </tr>
                     </g:each>
                  </tbody>

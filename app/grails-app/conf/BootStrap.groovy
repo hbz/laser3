@@ -1642,10 +1642,10 @@ class BootStrap {
                         expl: [en: "", de: "Bietet der Verlag einen Deep-Discount-Preis für Printabonnements an?"],
                         descr:allDescr, type: OT.Rdv, cat:'YN'
                 ],
-		[
-                        name: [key: "Späteinsteiger", en: "Späteinsteiger", de: "Späteinsteiger"],
-                        expl: [en: "", de: "Einrichtung, die spät im Jahr nach der Umfrage ins Konsortium eingestiegen ist und daher auch bereits für die Lizenzierung für das Nachfolgejahr entschieden hat."],
-                        descr:allDescr, type: OT.Rdv, cat:'YN', isUsedForLogic: true
+                [
+                        name: [en: "Central funding possible", de: "Zentralmittelfähig"],
+                        expl: [en: "", de: "Ist es möglich, diese Lizenz aus Zentralmitteln zu finanzieren?"],
+                        descr:allDescr, type: OT.Rdv, cat:'YN'
                 ]
 		
         ]

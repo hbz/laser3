@@ -608,9 +608,9 @@
                 <div class="right menu la-advanced-view">
                     <div class="item">
                         <g:if test="${cachedContent}">
-                            <button class="ui icon button la-popup-tooltip la-delay" data-content="${message(code:'statusbar.cachedContent.tooltip')}" data-position="bottom right" data-variation="tiny">
-                                <i class="hourglass end icon green"></i>
-                            </button>
+                            <span class="ui icon button la-popup-tooltip la-delay" data-content="${message(code:'statusbar.cachedContent.tooltip')}" data-position="bottom right" data-variation="tiny">
+                                <i class="hourglass end icon"></i>
+                            </span>
                         </g:if>
                     </div>
 
@@ -726,12 +726,12 @@
         <main class="ui main container ${visibilityContextOrgMenu} ">
             <g:layoutBody/>
         </main><!-- .main -->
-    <sec:ifNotGranted roles="ROLE_USER">
-        <!-- Footer -->
-            <g:render template="/public/templates/footer" />
-        <!-- Footer End -->
-    </sec:ifNotGranted>
 
+        <sec:ifNotGranted roles="ROLE_USER">
+            <!-- Footer -->
+            <g:render template="/public/templates/footer" />
+            <!-- Footer End -->
+        </sec:ifNotGranted>
 
         <%-- global container for modals and ajax --%>
         <div id="dynamicModalContainer"></div>
@@ -740,12 +740,6 @@
         <div id="loadingIndicator" style="display: none">
             <div class="ui text loader active">Loading</div>
         </div>
-
-        <sec:ifAnyGranted roles="ROLE_ADMIN">
-            <semui:systemInfo>
-
-            </semui:systemInfo>
-        </sec:ifAnyGranted>
 
         <%-- global confirmation modal --%>
         <semui:confirmationModal  />
@@ -780,10 +774,28 @@
 
         <% if(! flash.redirectFrom) { flash.clear() } %>
 
-        <sec:ifAnyGranted roles="ROLE_YODA">
-            <g:if test="${plt}">
-                <p style="padding:1em; text-align: right">page load time (backend only): ${plt} ms</p>
-            </g:if>
+        <sec:ifAnyGranted roles="ROLE_ADMIN">
+            <semui:systemInfo />
+
+            <div id="system-profiler" class="ui label hidden">
+                <i class="clock icon"></i>
+                <span></span>
+            </div>
         </sec:ifAnyGranted>
+
+        <script>
+            $(document).ready(function() {
+                $.ajax({
+                    url: "${g.createLink(controller:'ajax', action:'notifyProfiler')}",
+                    data: {uri: "${request.request.request.request.servletPath.replaceFirst('/grails','').replace('.dispatch','')}"},
+                    success: function (data) {
+                        var $sp = $('#system-profiler')
+                        if ($sp) {
+                            $sp.removeClass('hidden').find('span').empty().append(data.delta + ' ms')
+                        }
+                    }
+                })
+            })
+        </script>
     </body>
 </html>
