@@ -134,10 +134,10 @@
                                     <g:message code="default.identifiers.label"/>
                                 </dt>
                                 <dd>
-                                    <g:each in="${surveyConfig?.subscription?.ids?.sort { it?.identifier?.ns?.ns }}"
+                                    <g:each in="${surveyConfig?.subscription?.ids?.sort { it?.ns?.ns }}"
                                             var="id">
                                         <span class="ui small teal image label">
-                                            ${id.identifier.ns.ns}: <div class="detail">${id.identifier.value}</div>
+                                            ${id.ns.ns}: <div class="detail">${id.value}</div>
                                         </span>
                                     </g:each>
                                 </dd>

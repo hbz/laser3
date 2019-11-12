@@ -139,7 +139,7 @@ class ApiSubscription {
 
 		result.documents            = ApiReaderHelper.retrieveDocumentCollection(sub.documents) // com.k_int.kbplus.DocContext
 		//result.derivedSubscriptions = ApiReaderHelper.resolveStubs(sub.derivedSubscriptions, ApiReaderHelper.SUBSCRIPTION_STUB, context) // com.k_int.kbplus.Subscription
-		result.identifiers          = ApiReaderHelper.retrieveIdentifierCollection(sub.ids) // com.k_int.kbplus.IdentifierOccurrence
+		result.identifiers          = ApiReaderHelper.retrieveIdentifierCollection(sub.ids) // com.k_int.kbplus.Identifier
 		result.instanceOf           = ApiReaderHelper.requestSubscriptionStub(sub.instanceOf, context) // com.k_int.kbplus.Subscription
 		result.license              = ApiReaderHelper.requestLicenseStub(sub.owner, context) // com.k_int.kbplus.License
 		//removed: result.license          = ApiReaderHelper.resolveLicense(sub.owner, ApiReaderHelper.IGNORE_ALL, context) // com.k_int.kbplus.License

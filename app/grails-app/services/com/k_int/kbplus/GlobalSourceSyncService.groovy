@@ -448,13 +448,15 @@ class GlobalSourceSyncService extends AbstractLockableService {
                 new_tipp.save(failOnError: true)
 
                 if (tipp.tippId) {
-                    def tipp_id = Identifier.lookupOrCreateCanonicalIdentifier('uri', tipp.tippId)
+                    // TODO [ticket=1789]
 
-                    if (tipp_id) {
-                        def tipp_io = new IdentifierOccurrence(identifier: tipp_id, tipp: new_tipp).save()
-                    } else {
-                        log.error("Error creating identifier instance for new TIPP!")
-                    }
+                    //def tipp_id = Identifier.lookupOrCreateCanonicalIdentifier('uri', tipp.tippId)
+                    //if (tipp_id) {
+                    //    def tipp_io = new IdentifierOccurrence(identifier: tipp_id, tipp: new_tipp).save()
+                    //} else {
+                    //    log.error("Error creating identifier instance for new TIPP!")
+                    //}
+                    tipp_id = Identifier.construct([value: tipp.tippId, reference: new_tipp, namespace: 'uri'])
                 }
 
                 def tipps = TitleInstancePackagePlatform.findAllByGokbId(tipp?.tippUuid)
@@ -758,13 +760,15 @@ class GlobalSourceSyncService extends AbstractLockableService {
                     }
 
                     if (tipp.tippId) {
-                        def tipp_id = Identifier.lookupOrCreateCanonicalIdentifier('uri', tipp.tippId)
+                        // TODO [ticket=1789]
+                        //def tipp_id = Identifier.lookupOrCreateCanonicalIdentifier('uri', tipp.tippId)
 
-                        if (tipp_id) {
-                            def tipp_io = new IdentifierOccurrence(identifier: tipp_id, tipp: currTIPP).save()
-                        } else {
-                            log.error("Error creating identifier instance for new TIPP!")
-                        }
+                        //if (tipp_id) {
+                        //    def tipp_io = new IdentifierOccurrence(identifier: tipp_id, tipp: currTIPP).save()
+                        //} else {
+                         //   log.error("Error creating identifier instance for new TIPP!")
+                        //}
+                        def tipp_id = Identifier.construct([value: tipp.tippId, reference: currTIPP, namespace: 'uri'])
                     }
                 }
             } else {
