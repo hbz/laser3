@@ -131,20 +131,20 @@ class UserService {
     }
 
     void setupAdminAccounts(Map<String,Org> orgs) {
-        List<String> adminUsers = ['selbach', 'engels', 'konze', 'rupp', 'galffy', 'klober', 'bluoss', 'albin', 'djebeniani', 'test', 'oberknapp', 'jaegle', 'beh', 'lauer']
+        List adminUsers = grailsApplication.config.adminUsers
         List<String> customerTypes = ['konsorte','institut','singlenutzer','kollektivnutzer','konsortium']
         //the Aninas, Rahels and Violas ... if my women get chased from online test environments, I feel permitted to keep them internally ... for more women in IT branch!!!
         Map<String,Role> userRights = ['benutzer':Role.findByAuthority('INST_USER'), //internal 'Anina'
                                        'redakteur':Role.findByAuthority('INST_EDITOR'), //internal 'Rahel'
                                        'admin':Role.findByAuthority('INST_ADM')] //internal 'Viola'
-        adminUsers.each { String userKey ->
+        adminUsers.each { adminUser ->
             customerTypes.each { String customerKey ->
                 userRights.each { String rightKey, Role userRole ->
-                    String username = "${userKey}_${customerKey}_${rightKey}"
+                    String username = "${adminUser.name}_${customerKey}_${rightKey}"
                     User user = User.findByUsername(username)
                     if(!user) {
                         log.debug("create new user ${username}")
-                        user = addNewUser([username: username, password: "${username}${grailsApplication.config.passwordSuffix}", display: username, email: "${userKey}@hbz-nrw.de", enabled: true, org: orgs[customerKey]],null)
+                        user = addNewUser([username: username, password: "${adminUser.pass}", display: username, email: "${adminUser.email}", enabled: true, org: orgs[customerKey]],null)
                     }
                     if(user && !user.hasAffiliationForForeignOrg(rightKey,orgs[customerKey])) {
                         if(orgs[customerKey]) {
