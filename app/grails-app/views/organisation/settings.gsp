@@ -158,16 +158,16 @@
                     <div class="ui card la-dl-no-table la-js-hideable">
                         <div class="content">
                             <h5 class="ui header">
-                                ${message(code:'org.customerIdentifier')}
+                                ${message(code:'org.customerIdentifier.plural')}
                             </h5>
 
                             <table class="ui la-table table">
                                 <thead>
                                     <tr>
-                                        <th>Anbieter : Plattform</th>
-                                        <th>Kundennummer</th>
-                                        <th>Anmerkung</th>
-                                        <th>Sichtbar</th>
+                                        <th>${message(code:'default.provider.label')} : ${message(code:'platform.label')}</th>
+                                        <th>${message(code:'org.customerIdentifier')}</th>
+                                        <th>${message(code:'default.note.label')}</th>
+                                        <th>${message(code:'default.isPublic.label')}</th>
                                         <th></th>
                                     </tr>
                                 </thead>
@@ -202,7 +202,7 @@
                                                         ${ci.note}
                                                     </td>
                                                     <td>
-                                                        ${ci.isPublic ? 'Ja' : 'Nein'}
+                                                        ${ci.isPublic ? message(code:'refdata.Yes') : message(code:'refdata.No')}
                                                     </td>
                                                     <td></td>
                                                 </g:else>
@@ -224,7 +224,7 @@
 
                                                     <div class="six wide column">
                                                         <div class="field">
-                                                            <label for="addCIPlatform">Anbieter : Plattform</label>
+                                                            <label for="addCIPlatform">${message(code:'default.provider.label')} : ${message(code:'platform.label')}</label>
                                                             <g:select id="addCIPlatform" name="addCIPlatform" class="ui dropdown fluid search selection"
                                                                       from="${allPlatforms}"
                                                                       optionKey="${{'com.k_int.kbplus.Platform:' + it.id}}"
@@ -234,14 +234,14 @@
 
                                                     <div class="four wide column">
                                                         <div class="field">
-                                                            <label for="addCIValue">Kundennummer</label>
+                                                            <label for="addCIValue">${message(code:'org.customerIdentifier')}</label>
                                                             <input type="text" id="addCIValue" name="addCIValue" value=""/>
                                                         </div>
                                                     </div>
 
                                                     <div class="four wide column">
                                                         <div class="field">
-                                                            <label for="addCINote">Anmerkung</label>
+                                                            <label for="addCINote">${message(code:'default.note.label')}</label>
                                                             <input type="text" id="addCINote" name="addCINote" value=""/>
                                                         </div>
                                                     </div>
