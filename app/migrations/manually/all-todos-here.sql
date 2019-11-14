@@ -69,4 +69,4 @@ ALTER TABLE fact DROP COLUMN supplier_id;
 
 -- 2019-11-14
 -- Change for SurveyProperty  reference_field
-surveyInfo.copyProperties = Merkmale übertragenupdate i10n_translation set i10n_reference_field = 'expl' where i10n_reference_field = 'explain';
+update i10n_translation set i10n_reference_field = 'expl' where i10n_reference_field = 'explain';
