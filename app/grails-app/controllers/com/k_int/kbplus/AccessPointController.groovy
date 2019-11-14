@@ -127,9 +127,9 @@ class AccessPointController extends AbstractDebugController {
         }
         def resultList = []
         availableLanguageKeys.each { it ->
-            resultList.add(["${message(code : it)}" : "${message(code : it)}"])
+            resultList.add(["${it}" : "${message(code : it)}"])
         }
-        resultList.add(["${message(code : 'accessPoint.option.customName')}" : ''])
+        resultList.add(["accessPoint.option.customName" : ''])
         return resultList
     }
 
@@ -154,6 +154,7 @@ class AccessPointController extends AbstractDebugController {
 
             return params
         }
+
     }
 
     @Secured(closure = {

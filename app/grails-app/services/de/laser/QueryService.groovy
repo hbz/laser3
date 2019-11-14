@@ -14,7 +14,7 @@ class QueryService {
     def taskService
 
     private computeInfoDate(User user, UserSettings.KEYS userSettingsKey){
-        int daysToBeInformedBeforeToday = user.getSetting(userSettingsKey, DEFAULT_REMINDER_PERIOD)?.getValue()
+        int daysToBeInformedBeforeToday = user.getSetting(userSettingsKey, DEFAULT_REMINDER_PERIOD)?.getValue() ?: 1
         java.sql.Date infoDate = daysToBeInformedBeforeToday? SqlDateUtils.getDateInNrOfDays(daysToBeInformedBeforeToday) : null
         infoDate
     }
