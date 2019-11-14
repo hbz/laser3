@@ -269,7 +269,7 @@
 
                                 <div class="divider"></div>
 
-                                <g:link class="item" controller="upload" action="reviewPackage">${message(code:'menu.datamanager.uploadPackage')}</g:link>
+                                <%--<g:link class="item" controller="upload" action="reviewPackage">${message(code:'menu.datamanager.uploadPackage')}</g:link>--%>
                                 <g:link class="item" controller="licenseImport" action="doImport">${message(code:'onix.import.license')}</g:link>
 
                                 <div class="divider"></div>

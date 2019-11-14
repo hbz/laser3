@@ -47,6 +47,7 @@ class UploadController extends AbstractDebugController {
   ];
 
   @Secured(['ROLE_ADMIN'])
+  @Deprecated
   def reviewPackage() {
     def result = [:]
     result.user = User.get(springSecurityService.principal.id)
@@ -72,6 +73,7 @@ class UploadController extends AbstractDebugController {
   * Ingest a package
   */
 
+  @Deprecated
   private def processUploadSO(upload) {
 
     def new_pkg_id = null
@@ -257,6 +259,7 @@ class UploadController extends AbstractDebugController {
   }
 
   //TODO: Wegen Überarbeitung von Titel Konzept muss dies hier nochmal überarbeitet werden by Moe
+  @Deprecated
   private def lookupOrCreateTitleInstance(identifiers, title, publisher, tipp) {
     // log.debug("lookupOrCreateTitleInstance ${identifiers}, ${title}, ${publisher}");
     def result = null;

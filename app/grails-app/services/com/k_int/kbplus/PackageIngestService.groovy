@@ -37,6 +37,7 @@ public class PackageIngestService {
   ];
 
 
+  @Deprecated
   def processUploadPackage(upload) {
 
     def new_pkg_id = null
@@ -208,6 +209,7 @@ public class PackageIngestService {
     upload.new_pkg_id = new_pkg_id
   }
   //TODO: Wegen Überarbeitung von Titel Konzept muss dies hier nochmal überarbeitet werden by Moe
+  @Deprecated
   def lookupOrCreateTitleInstance(identifiers,title,publisher) {
     // log.debug("lookupOrCreateTitleInstance ${identifiers}, ${title}, ${publisher}");
     //TODO: Wegen Überarbeitung von Titel Konzept muss dies hier nochmal überarbeitet werden by Moe

@@ -138,7 +138,7 @@ class TitleController extends AbstractDebugController {
   }
 
     @Secured(['ROLE_USER'])
-        def show() {
+    def show() {
         def result = [:]
 
         result.editable = SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')
@@ -158,9 +158,25 @@ class TitleController extends AbstractDebugController {
     }
 
     private def reusedIdentifiers(title) {
-    // Test for identifiers that are used accross multiple titles
-    def duplicates = [:]
-    def identifiers = title?.ids?.collect{it.identifier}
+        // Test for identifiers that are used accross multiple titles
+        def duplicates = [:]
+        def identifiers = title?.ids?.collect{it}
+
+        identifiers.each { ident ->
+            List<Identifier> dups = Identifier.findAll {
+                value == ident.value && ti != null && ti.id != title.id && ti.status?.value == 'Current'
+            }
+            dups.each {
+                if (duplicates."${it.ns.ns}:${it.value}") {
+                    duplicates."${it.ns.ns}:${it.value}" += [it.ti]
+                }
+                else{
+                    duplicates."${it.ns.ns}:${it.value}" = [it.ti]
+                }
+            }
+        }
+
+        /*
     identifiers.each{ident ->
       ident.occurrences.each{
         if(it.ti != title && it.ti!=null && it.ti.status?.value == 'Current'){
@@ -171,9 +187,10 @@ class TitleController extends AbstractDebugController {
           }
         }
       }
+
+         */
+        return duplicates
     }
-    return duplicates
-  }
 
     @Secured(['ROLE_ADMIN'])
   def batchUpdate() {

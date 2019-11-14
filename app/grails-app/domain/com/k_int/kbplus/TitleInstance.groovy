@@ -580,6 +580,7 @@ class TitleInstance extends AbstractBaseDomain implements AuditableTrait {
    *  Caller passes in a map like {issn:'nnnn-nnnn',doi:'quyeihdj'} and expects to get back a new title
    *  or one matching any of the identifiers
    */
+    @Deprecated
     static def lookupOrCreateViaIdMap(candidate_identifiers, title) {
         def result
         def identifiers = []
@@ -1142,7 +1143,7 @@ select ie from IssueEntitlement as ie JOIN ie.subscription.orgRelations as o
     static_logger.debug("Looking for identifier ${value} in title ids ${this.ids}");
 
     this.ids.each {
-      if ( it?.identifier?.ns?.ns.toLowerCase() == ns.toLowerCase() && it.identifier.value == value ) {
+      if ( it?.ns?.ns.toLowerCase() == ns.toLowerCase() && it.value == value ) {
         found = true
       }
     }
