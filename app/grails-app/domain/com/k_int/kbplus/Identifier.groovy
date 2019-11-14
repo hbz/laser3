@@ -1,9 +1,12 @@
 package com.k_int.kbplus
 
+import org.apache.commons.logging.Log
 import org.apache.commons.logging.LogFactory
 import javax.persistence.Transient
 
 class Identifier {
+
+    static Log static_logger = LogFactory.getLog(Identifier)
 
     IdentifierNamespace ns
     String value
@@ -93,17 +96,17 @@ class Identifier {
         )
         if (! ident.isEmpty()) {
             if (ident.size() > 1) {
-                print ("WARNING: multiple matches found for ( ${value}, ${ns}, ${reference} )")
+                static_logger.debug("WARNING: multiple matches found for ( ${value}, ${ns}, ${reference} )")
             }
             ident = ident.first()
         }
 
         if (! ident) {
 			if (ns.isUnique && Identifier.findByNsAndValue(ns, value)) {
-				print ("NO IDENTIFIER CREATED: multiple occurrences found for unique namespace ( ${value}, ${ns} )")
+                static_logger.debug("NO IDENTIFIER CREATED: multiple occurrences found for unique namespace ( ${value}, ${ns} )")
 			}
 			else {
-				print("INFO: no match found; creating new identifier for ( ${value}, ${ns}, ${reference.class} )")
+                static_logger.debug("INFO: no match found; creating new identifier for ( ${value}, ${ns}, ${reference.class} )")
 				ident = new Identifier(ns: ns, value: value)
 				ident.setReference(reference)
 				ident.save()
@@ -158,7 +161,8 @@ class Identifier {
 
     @Deprecated
   static Identifier lookupOrCreateCanonicalIdentifier(ns, value) {
-      println "loc canonical identifier"
+        static_logger.log("loc canonical identifier")
+
       value = value?.trim()
       ns = ns?.trim()
       // println ("lookupOrCreateCanonicalIdentifier(${ns},${value})");
@@ -182,13 +186,13 @@ class Identifier {
               if(result.save())
                   result
               else {
-                  println "error saving identifier"
-                  println result.getErrors()
+                  static_logger.log("error saving identifier")
+                  static_logger.log(result.getErrors())
               }
           }
           else {
-              println "error saving namespace"
-              println namespace.getErrors()
+              static_logger.log("error saving namespace")
+              static_logger.log(namespace.getErrors())
           }
       }
   }

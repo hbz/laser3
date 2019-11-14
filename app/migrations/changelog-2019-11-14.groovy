@@ -1,18 +1,19 @@
 databaseChangeLog = {
 
-	changeSet(author: "kloberd (modified)", id: "tmp-1") {
+	changeSet(author: "kloberd (modified)", id: "1573731660644-1") {
 		grailsChange {
 			change {
 				sql.execute("create table identifier_distinct_tmp as select * from identifier with no data")
 				
 				sql.execute("create table identifier_backup as table identifier")
+				sql.execute("create table identifier_namespace_backup as table identifier_namespace")
 				sql.execute("create table identifier_occurrence_backup as table identifier_occurrence")
 			}
 		}
 		rollback {}
 	}
 
-	changeSet(author: "kloberd (modified)", id: "tmp-2") {
+	changeSet(author: "kloberd (modified)", id: "1573731660644-2") {
 		grailsChange {
 			change {
 				sql.execute("""
@@ -32,7 +33,7 @@ where i.id_value is not null and i.id_value != ''
 		}
 	}
 
-	changeSet(author: "kloberd (modified)", id: "tmp-3") {
+	changeSet(author: "kloberd (modified)", id: "1573731660644-3") {
 		grailsChange {
 			change {
 				sql.execute("truncate table identifier RESTART IDENTITY cascade")
@@ -50,7 +51,16 @@ from identifier_distinct_tmp
 		}
 	}
 
-	changeSet(author: "kloberd (modified)", id: "tmp-4") {
+	changeSet(author: "kloberd (modified)", id: "1573731660644-4") {
+		grailsChange {
+			change {
+				sql.execute("update identifier_namespace set idns_is_unique = false where idns_ns in ('ezb','edb','zdb','doi','isbn','pisbn','issn','eissn','uri','unkown') and idns_type is null")
+			}
+			rollback {}
+		}
+	}
+
+	changeSet(author: "kloberd (modified)", id: "1573731660644-5") {
 		grailsChange {
 			change {
 				sql.execute("drop table identifier_occurrence cascade")
