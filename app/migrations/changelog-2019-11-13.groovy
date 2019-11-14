@@ -55,4 +55,36 @@ databaseChangeLog = {
 	changeSet(author: "kloberd (generated)", id: "1573628349804-4") {
 		addForeignKeyConstraint(baseColumnNames: "mt_type_rv_fk", baseTableName: "mail_template", baseTableSchemaName: "public", constraintName: "FK4F82760225B4AA4", deferrable: "false", initiallyDeferred: "false", referencedColumnNames: "rdv_id", referencedTableName: "refdata_value", referencedTableSchemaName: "public", referencesUniqueColumn: "false")
 	}
+
+	changeSet(author: "kloberd (generated)", id: "1573628349804-5") {
+		addColumn(schemaName: "public", tableName: "customer_identifier") {
+			column(name: "cid_customer_fk", type: "int8")
+		}
+	}
+
+	changeSet(author: "kloberd (generated)", id: "1573628349804-6") {
+		addColumn(schemaName: "public", tableName: "customer_identifier") {
+			column(name: "cid_is_public", type: "bool")
+		}
+	}
+
+	changeSet(author: "kloberd (generated)", id: "1573628349804-7") {
+		addColumn(schemaName: "public", tableName: "customer_identifier") {
+			column(name: "cid_note", type: "text")
+		}
+	}
+
+	changeSet(author: "kloberd (generated)", id: "1573628349804-8") {
+		addForeignKeyConstraint(baseColumnNames: "cid_customer_fk", baseTableName: "customer_identifier", baseTableSchemaName: "public", constraintName: "FK5ABD8BAA5E41700C", deferrable: "false", initiallyDeferred: "false", referencedColumnNames: "org_id", referencedTableName: "org", referencedTableSchemaName: "public", referencesUniqueColumn: "false")
+	}
+
+	changeSet(author: "kloberd (generated)", id: "1573628349804-9") {
+		grailsChange {
+			change {
+				sql.execute("update customer_identifier set cid_customer_fk = cid_owner_fk")
+				sql.execute("update customer_identifier set cid_is_public = true")
+			}
+			rollback {}
+		}
+	}
 }

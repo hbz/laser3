@@ -31,7 +31,7 @@
                             ${propDefGroup.tenant ? '' : ' (global)'}
                         </td>
                         <td>
-                            ${propDefGroup.isVisible ? 'Ja' : 'Nein'}
+                            ${propDefGroup.isVisible ? message(code:'refdata.Yes') : message(code:'refdata.No')}
                         </td>
                         <td>
                             <%
