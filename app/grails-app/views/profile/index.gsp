@@ -147,8 +147,7 @@
                     <input type="text" id="emailCC" name="remindCCEmailaddress" value="${remindCCEmailaddress}"/>
                 </div>
 
-
-                <table class="ui celled la-table table">
+                <table class="ui celled la-table la-table-small table">
                     <g:set var="defaultRemindPeriod" value="${UserSettings.DEFAULT_REMINDER_PERIOD}" />
                     <thead>
                         <tr>
@@ -388,8 +387,7 @@
                     <input type="text" id="emailCC" name="notificationCCEmailaddress" value="${notificationCCEmailaddress}"/>
                 </div>
 
-
-                <table class="ui celled la-table table">
+                <table class="ui celled la-table la-table-small table">
                     <thead>
                     <tr>
                         <th></th>
@@ -423,9 +421,7 @@
                 </div>
             </g:form>
         </div><!-- .segment -->
-    </div>
-
-
+    </div><!-- .column -->
 
     <%--
         <g:if test="${user.getAuthorities().contains(Role.findByAuthority('ROLE_API_READER')) | user.getAuthorities().contains(Role.findByAuthority('ROLE_API_WRITER'))}">
