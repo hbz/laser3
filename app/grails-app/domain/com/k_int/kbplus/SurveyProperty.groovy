@@ -13,7 +13,7 @@ class SurveyProperty extends AbstractI10nTranslatable {
 
     String name
     String type
-    String explain
+    String expl
     String comment
     String introduction
     String refdataCategory
@@ -40,7 +40,7 @@ class SurveyProperty extends AbstractI10nTranslatable {
         owner(nullable: true, blank: false)
         introduction(nullable: true, blank: false)
         comment(nullable: true, blank: false)
-        explain(nullable: true, blank: false)
+        expl(nullable: true, blank: false)
         isHardData(nullable: false, blank: false, default: false)
         refdataCategory(nullable: true, blank: false)
     }
@@ -51,7 +51,7 @@ class SurveyProperty extends AbstractI10nTranslatable {
 
         name column: 'surpro_name'
         type column: 'surpro_type', type: 'text'
-        explain column: 'surpro_explain', type: 'text'
+        expl column: 'surpro_explain', type: 'text'
         comment column: 'surpro_comment', type: 'text'
         introduction column: 'surpro_introduction', type: 'text'
         refdataCategory column: 'surpro_refdata_category'
@@ -76,7 +76,7 @@ class SurveyProperty extends AbstractI10nTranslatable {
 
     def afterInsert() {
         I10nTranslation.createOrUpdateI10n(this, 'name', [de: this.name, en: this.name])
-        I10nTranslation.createOrUpdateI10n(this, 'explain', [de: this.explain, en: this.explain])
+        I10nTranslation.createOrUpdateI10n(this, 'expl', [de: this.expl, en: this.expl])
         I10nTranslation.createOrUpdateI10n(this, 'introduction', [de: this.introduction, en: this.introduction])
         //I10nTranslation.createOrUpdateI10n(this, 'comment', [de: this.comment, en: this.comment])
 
@@ -97,7 +97,7 @@ class SurveyProperty extends AbstractI10nTranslatable {
         }
     }
 
-    static def loc(String name, String typeClass, RefdataCategory rdc, String explain, String comment, String introduction, Org owner) {
+    static def loc(String name, String typeClass, RefdataCategory rdc, String expl, String comment, String introduction, Org owner) {
 
         typeIsValid(typeClass)
 
@@ -108,12 +108,12 @@ class SurveyProperty extends AbstractI10nTranslatable {
         )
 
         if (!prop) {
-            log.debug("No SurveyProperty match for ${name} : ${typeClass} ( ${explain} ) @ ${owner?.name}. Creating new one ..")
+            log.debug("No SurveyProperty match for ${name} : ${typeClass} ( ${expl} ) @ ${owner?.name}. Creating new one ..")
 
             prop = new SurveyProperty(
                     name: name,
                     type: typeClass,
-                    explain: explain ?: null,
+                    expl: expl ?: null,
                     comment: comment ?: null,
                     introduction: introduction ?: null,
                     refdataCategory: rdc?.desc,

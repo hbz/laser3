@@ -48,72 +48,60 @@ ${surveyInfo?.name}
 </h2>
 
 
+
 <semui:form>
+    <div class="ui grid">
 
-        <h3>
-        <g:message code="renewalWithSurvey.parentSubscription"/>:
-        <g:if test="${parentSubscription}">
-            <g:link controller="subscription" action="show"
-                    id="${parentSubscription?.id}">${parentSubscription?.dropdownNamingConvention()}</g:link>
-        </g:if>
+        <div class="row">
+            <div class="eight wide column">
+                <h3 class="ui header center aligned">
 
-        <br>
-        <br>
-        <g:message code="renewalWithSurvey.parentSuccessorSubscription"/>:
-        <g:if test="${parentSuccessorSubscription}">
-            <g:link controller="subscription" action="show"
-                    id="${parentSuccessorSubscription?.id}">${parentSuccessorSubscription?.dropdownNamingConvention()}</g:link>
+                    <g:message code="renewalWithSurvey.parentSubscription"/>:<br>
+                    <g:if test="${parentSubscription}">
+                        <g:link controller="subscription" action="show"
+                                id="${parentSubscription?.id}">${parentSubscription?.dropdownNamingConvention()}</g:link>
+                        <br>
+                        <g:link controller="subscription" action="members"
+                                id="${parentSubscription?.id}">${message(code: 'renewalWithSurvey.orgsInSub')}</g:link>
+                        <semui:totalNumber total="${parentSubscription.getDerivedSubscribers().size() ?: 0}"/>
+                    </g:if>
+                </h3>
+            </div>
 
-            <g:if test="${parentSuccessorSubscription.getAllSubscribers().size() > 0}">
-            <g:link controller="survey" action="copyElementsIntoRenewalSubscription" id="${parentSubscription?.id}"
-                    params="[sourceSubscriptionId: parentSubscription?.id, targetSubscriptionId: parentSuccessorSubscription?.id, isRenewSub: true, isCopyAuditOn: true]"
-                    class="ui button ">
-                <g:message code="renewalWithSurvey.newSub.change"/>
-            </g:link>
-            </g:if>
+            <div class="eight wide column">
+                <h3 class="ui header center aligned">
+                    <g:message code="renewalWithSurvey.parentSuccessorSubscription"/>:<br>
+                    <g:if test="${parentSuccessorSubscription}">
+                        <g:link controller="subscription" action="show"
+                                id="${parentSuccessorSubscription?.id}">${parentSuccessorSubscription?.dropdownNamingConvention()}</g:link>
+                        <br>
+                        <g:link controller="subscription" action="members"
+                                id="${parentSuccessorSubscription?.id}">${message(code: 'renewalWithSurvey.orgsInSub')}</g:link>
+                        <semui:totalNumber total="${parentSuccessorSubscription.getDerivedSubscribers().size() ?: 0}"/>
 
-        </g:if>
-        <g:else>
-            <g:link controller="survey" action="renewSubscriptionConsortiaWithSurvey" id="${surveyInfo?.id}"
-                    params="[surveyConfig: surveyConfig?.id, parentSub: parentSubscription?.id]"
-                    class="ui button ">
-                <g:message code="renewalWithSurvey.newSub"/>
-            </g:link>
-        </g:else>
-        </br>
-        </h3>
-
-        <br>
-
-        <g:set var="surveyParticipants" value="${surveyConfig?.orgs?.size()}"/>
-
-        <h3 class="ui left aligned icon header">
-            <g:link action="evaluationConfigsInfo" id="${surveyInfo?.id}"
-                    params="[surveyConfigID: surveyConfig?.id]">${message(code: 'survey.label')} ${message(code: 'surveyParticipants.label')}</g:link>
-            <semui:totalNumber total="${surveyParticipants}"/>
-        </h3>
-
-        <br>
-
-        <br>
+                    </g:if>
+                    <g:else>
+                        <g:message code="renewalWithSurvey.noParentSuccessorSubscription"/>
+                    %{--<br>
+                    <g:link controller="survey" action="renewSubscriptionConsortiaWithSurvey"
+                            id="${surveyInfo?.id}"
+                            params="[surveyConfig: surveyConfig?.id, parentSub: parentSubscription?.id]"
+                            class="ui button ">
+                        <g:message code="renewalWithSurvey.newSub"/>
+                    </g:link>--}%
+                    </g:else>
+                </h3>
+            </div>
+        </div>
+    </div>
+</semui:form>
+<semui:form>
 
         <div class="ui grid">
 
             <div class="row">
 
                 <div class="eight wide column">
-                    <h3 class="ui header center aligned">
-
-                        <g:if test="${parentSubscription}">
-                            <g:link controller="subscription" action="show"
-                                    id="${parentSubscription?.id}">${parentSubscription?.dropdownNamingConvention()}</g:link>
-                            <br><br>
-                            <g:link controller="subscription" action="members"
-                                    id="${parentSubscription?.id}">${message(code: 'renewalWithSurvey.orgsInSub')}</g:link>
-                            <semui:totalNumber total="${parentSubChilds.size()?:0}"/>
-
-                        </g:if>
-                    </h3>
 
                     <table class="ui celled sortable table la-table" id="parentSubscription">
                         <thead>
@@ -180,29 +168,6 @@ ${surveyInfo?.name}
                 </div>
 
                 <div class="eight wide column">
-                    <h3 class="ui header center aligned">
-
-                        <g:if test="${parentSuccessorSubscription}">
-                            <g:link controller="subscription" action="show"
-                                    id="${parentSuccessorSubscription?.id}">${parentSuccessorSubscription?.dropdownNamingConvention()}</g:link>
-
-                            <br><br>
-                            <g:link controller="subscription" action="members"
-                                    id="${parentSuccessorSubscription?.id}">${message(code: 'renewalWithSurvey.orgsInSub')}</g:link>
-                            <semui:totalNumber total="${parentSuccessorSubChilds.size()?:0}"/>
-
-                        </g:if>
-                        <g:else>
-                            <g:message code="renewalWithSurvey.noParentSuccessorSubscription"/>
-                            %{--<br>
-                            <g:link controller="survey" action="renewSubscriptionConsortiaWithSurvey"
-                                    id="${surveyInfo?.id}"
-                                    params="[surveyConfig: surveyConfig?.id, parentSub: parentSubscription?.id]"
-                                    class="ui button ">
-                                <g:message code="renewalWithSurvey.newSub"/>
-                            </g:link>--}%
-                        </g:else>
-                    </h3>
 
                     <table class="ui celled sortable table la-table" id="parentSuccessorSubscription">
                         <thead>
