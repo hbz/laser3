@@ -73,12 +73,12 @@ ${surveyInfo?.name}
         </div>
     </div>
 
-    <div class="${(actionName == 'copyProperties' && params.tab == 'custoumProperties') ? 'active' : ''}  step">
+    <div class="${(actionName == 'copyProperties' && params.tab == 'customProperties') ? 'active' : ''}  step">
         <div class="content">
             <div class="title">
                 <g:link controller="survey" action="copyProperties"
-                        params="[id: surveyInfo?.id, surveyConfigID: surveyConfig?.id, tab: 'custoumProperties']">
-                    ${message(code: 'copyProperties.custoumProperties')}
+                        params="[id: surveyInfo?.id, surveyConfigID: surveyConfig?.id, tab: 'customProperties']">
+                    ${message(code: 'copyProperties.customProperties')}
                 </g:link>
             </div>
 
