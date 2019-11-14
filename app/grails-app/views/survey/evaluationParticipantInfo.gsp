@@ -87,9 +87,9 @@
                         <g:set var="surveyProperty" value="${SurveyProperty.get(property.key)}"/>
                         ${surveyProperty?.getI10n('name')}
 
-                        <g:if test="${surveyProperty?.getI10n('explain')}">
+                        <g:if test="${surveyProperty?.getI10n('expl')}">
                             <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
-                                  data-content="${surveyProperty?.getI10n('explain')}">
+                                  data-content="${surveyProperty?.getI10n('expl')}">
                                 <i class="question circle icon"></i>
                             </span>
                         </g:if>

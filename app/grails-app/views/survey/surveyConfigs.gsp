@@ -225,10 +225,10 @@
                             <g:if test="${config?.type == 'SurveyProperty'}">
                                 ${config?.surveyProperty?.getI10n('name')}
 
-                                <g:if test="${config?.surveyProperty?.getI10n('explain')}">
+                                <g:if test="${config?.surveyProperty?.getI10n('expl')}">
                                     <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
                                           data-variation="tiny"
-                                          data-content="${config?.surveyProperty?.getI10n('explain')}">
+                                          data-content="${config?.surveyProperty?.getI10n('expl')}">
                                         <i class="question circle icon"></i>
                                     </span>
                                 </g:if>
