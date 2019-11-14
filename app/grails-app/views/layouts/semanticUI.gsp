@@ -707,9 +707,7 @@
                             };
 
                             // attach ready event
-                            $(document)
-                                .ready(LaToggle.advanced.button.ready)
-                            ;
+                            $(document).ready(LaToggle.advanced.button.ready);
                         </script>
                         </g:if>
                 </div>
@@ -789,7 +787,9 @@
                     success: function (data) {
                         var $sp = $('#system-profiler')
                         if ($sp) {
-                            $sp.removeClass('hidden').find('span').empty().append(data.delta + ' ms')
+                            if (data.delta > 0) {
+                                $sp.removeClass('hidden').find('span').empty().append(data.delta + ' ms')
+                            }
                         }
                     }
                 })

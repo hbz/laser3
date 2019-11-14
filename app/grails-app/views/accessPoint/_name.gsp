@@ -6,7 +6,11 @@
                 <div class="field">
                     <div class="ui radio checkbox" onclick="fillNameField('${nameOption.value}');">
                         <input type="radio" name="frequency" ${ (i) == 0 ? 'checked=checked' : ''}>
-                        <label>${nameOption.key} </label>
+                        <label>${message(code: "${nameOption.key}")}
+                            <span class="la-long-tooltip la-popup-tooltip la-delay"
+                                  data-tooltip="${message(code: "${nameOption.key}.help")}">
+                                <i class="question circle icon la-popup"></i></span>
+                        </label>
                     </div>
                 </div>
             </g:each>
