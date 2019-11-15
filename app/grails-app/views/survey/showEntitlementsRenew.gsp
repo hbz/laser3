@@ -7,7 +7,16 @@
 </head>
 
 <body>
-<g:render template="breadcrumb" model="${[params: params]}"/>
+<semui:breadcrumbs>
+    <semui:crumb controller="myInstitution" action="dashboard" text="${contextService.getOrg()?.getDesignation()}" />
+    <semui:crumb controller="survey" action="currentSurveysConsortia" text="${message(code:'menu.my.surveys')}" />
+
+    <g:if test="${surveyInfo}">
+        <semui:crumb controller="survey" action="show" id="${surveyInfo.id}" text="${surveyInfo.name}" />
+        <semui:crumb class="active" controller="survey" action="surveyTitlesEvaluation" id="${surveyInfo.id}" params="[surveyConfigID: surveyConfig.id]" message="surveyTitlesEvaluation.label" />
+    </g:if>
+
+</semui:breadcrumbs>
 
 <semui:controlButtons>
     <semui:exportDropdown>
