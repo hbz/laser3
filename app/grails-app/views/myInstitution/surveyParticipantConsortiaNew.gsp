@@ -174,10 +174,10 @@ ${surveyInfo.name}
                                 <g:message code="default.identifiers.label"/>
                             </dt>
                             <dd>
-                                <g:each in="${subscriptionInstance?.ids?.sort { it?.identifier?.ns?.ns }}"
+                                <g:each in="${subscriptionInstance?.ids?.sort { it?.ns?.ns }}"
                                         var="id">
                                     <span class="ui small teal image label">
-                                        ${id.identifier.ns.ns}: <div class="detail">${id.identifier.value}</div>
+                                        ${id.ns.ns}: <div class="detail">${id.value}</div>
                                     </span>
                                 </g:each>
                             </dd>
@@ -463,9 +463,9 @@ ${surveyInfo.name}
                 <td>
                     ${surveyResult?.type?.getI10n('name')}
 
-                    <g:if test="${surveyResult?.type?.getI10n('explain')}">
+                    <g:if test="${surveyResult?.type?.getI10n('expl')}">
                         <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="bottom center"
-                              data-content="${surveyResult?.type?.getI10n('explain')}">
+                              data-content="${surveyResult?.type?.getI10n('expl')}">
                             <i class="question circle icon"></i>
                         </span>
                     </g:if>

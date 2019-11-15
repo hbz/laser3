@@ -92,7 +92,7 @@ class OrganisationService {
         }
         List orgData = []
         Map<Org,Map<String,String>> identifiers = [:]
-        List identifierList = Identifier.executeQuery("select i, io.org from IdentifierOccurrence io join io.identifier i where io.org in (:orgs) and i.ns.ns in (:namespaces)",[orgs:orgs,namespaces:['wibid','ezb','ISIL']])
+        List identifierList = Identifier.executeQuery("select ident, ident.org from Identifier ident where ident.org in (:orgs) and ident.ns.ns in (:namespaces)",[orgs:orgs,namespaces:['wibid','ezb','ISIL']])
         identifierList.each { row ->
             Identifier io = (Identifier) row[0]
             Org o = (Org) row[1]
@@ -2066,7 +2066,7 @@ class OrganisationService {
                                         //dataloadService.updateFTIndexes()
                                         if(entry.issueEntitlementISBNs) {
                                             pkg.addToSubscription(obj,false)
-                                            List<TitleInstancePackagePlatform> tippSubset = TitleInstancePackagePlatform.executeQuery("select tipp from TitleInstancePackagePlatform tipp where tipp.pkg = :pkg and tipp.id in (select io.ti from IdentifierOccurrence io join io.identifier i where i.ns.ns = 'isbn' and i.value in (:idSet))",[pkg:pkg,idSet:entry.issueEntitlementISBNs])
+                                            List<TitleInstancePackagePlatform> tippSubset = TitleInstancePackagePlatform.executeQuery("select tipp from TitleInstancePackagePlatform tipp where tipp.pkg = :pkg and tipp.id in (select ident.ti from Identifier ident where ident.ns.ns = 'isbn' and ident.value in (:idSet))", [pkg:pkg,idSet:entry.issueEntitlementISBNs])
                                             RefdataValue ieCurrent = RDStore.TIPP_STATUS_CURRENT
                                             tippSubset.each { tipp ->
                                                 IssueEntitlement ie = new IssueEntitlement(status:ieCurrent,

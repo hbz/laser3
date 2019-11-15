@@ -48,8 +48,8 @@
             <th>EN</th>
             <th>DE ${message(code: 'surveyProperty.introduction.label')}</th>
             <th>EN ${message(code: 'surveyProperty.introduction.label')}</th>
-            <th>DE ${message(code: 'surveyProperty.explain.label')}</th>
-            <th>EN ${message(code: 'surveyProperty.explain.label')}</th>
+            <th>DE ${message(code: 'surveyProperty.expl.label')}</th>
+            <th>EN ${message(code: 'surveyProperty.expl.label')}</th>
             <th>${message(code: 'surveyProperty.comment.label')}</th>
             <th>${message(code: 'surveyProperty.type.label')}</th>
         </tr>
@@ -61,7 +61,7 @@
                 <g:set var="pdI10nName" value="${I10nTranslation.createI10nOnTheFly(property, 'name')}"/>
                 <g:set var="pdI10nIntroduction"
                        value="${I10nTranslation.createI10nOnTheFly(property, 'introduction')}"/>
-                <g:set var="pdI10nExplain" value="${I10nTranslation.createI10nOnTheFly(property, 'explain')}"/>
+                <g:set var="pdI10nexpl" value="${I10nTranslation.createI10nOnTheFly(property, 'expl')}"/>
                 <td class="center aligned">
 
                     <g:if test="${property.isHardData}">
@@ -124,18 +124,18 @@
                 </td>
                 <td>
                     <g:if test="${!property.isHardData && SpringSecurityUtils.ifAnyGranted('ROLE_YODA')}">
-                        <semui:xEditable owner="${pdI10nExplain}" field="valueDe" type="textarea"/>
+                        <semui:xEditable owner="${pdI10nexpl}" field="valueDe" type="textarea"/>
                     </g:if>
                     <g:else>
-                        ${pdI10nExplain?.valueDe}
+                        ${pdI10nexpl?.valueDe}
                     </g:else>
                 </td>
                 <td>
                     <g:if test="${!property.isHardData && SpringSecurityUtils.ifAnyGranted('ROLE_YODA')}">
-                        <semui:xEditable owner="${pdI10nExplain}" field="valueEn" type="textarea"/>
+                        <semui:xEditable owner="${pdI10nexpl}" field="valueEn" type="textarea"/>
                     </g:if>
                     <g:else>
-                        ${pdI10nExplain?.valueEn}
+                        ${pdI10nexpl?.valueEn}
                     </g:else>
                 </td>
                 <td>
@@ -200,8 +200,8 @@
 
             <div class="three fields">
                 <div class="field six wide">
-                    <label class="property-label">${message(code: 'surveyProperty.explain.label', default: 'Explanation')}</label>
-                    <textarea name="explain" class="ui textarea"></textarea>
+                    <label class="property-label">${message(code: 'surveyProperty.expl.label', default: 'Explanation')}</label>
+                    <textarea name="expl" class="ui textarea"></textarea>
                 </div>
 
                 <div class="field six wide">

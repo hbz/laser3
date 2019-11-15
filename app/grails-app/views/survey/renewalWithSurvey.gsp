@@ -131,9 +131,9 @@ ${surveyInfo?.name}
             <th>
                 ${participationProperty?.getI10n('name')}
 
-                <g:if test="${participationProperty?.getI10n('explain')}">
+                <g:if test="${participationProperty?.getI10n('expl')}">
                     <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="bottom center"
-                          data-content="${participationProperty?.getI10n('explain')}">
+                          data-content="${participationProperty?.getI10n('expl')}">
                         <i class="question circle icon"></i>
                     </span>
                 </g:if>
@@ -149,9 +149,9 @@ ${surveyInfo?.name}
                 <th>
                     ${surveyProperty?.getI10n('name')}
 
-                    <g:if test="${surveyProperty?.getI10n('explain')}">
+                    <g:if test="${surveyProperty?.getI10n('expl')}">
                         <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
-                              data-content="${surveyProperty?.getI10n('explain')}">
+                              data-content="${surveyProperty?.getI10n('expl')}">
                             <i class="question circle icon"></i>
                         </span>
                     </g:if>
@@ -340,9 +340,9 @@ ${surveyInfo?.name}
             <th>
                 ${participationProperty?.getI10n('name')}
 
-                <g:if test="${participationProperty?.getI10n('explain')}">
+                <g:if test="${participationProperty?.getI10n('expl')}">
                     <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="bottom center"
-                          data-content="${participationProperty?.getI10n('explain')}">
+                          data-content="${participationProperty?.getI10n('expl')}">
                         <i class="question circle icon"></i>
                     </span>
                 </g:if>
@@ -358,9 +358,9 @@ ${surveyInfo?.name}
                 <th>
                     ${surveyProperty?.getI10n('name')}
 
-                    <g:if test="${surveyProperty?.getI10n('explain')}">
+                    <g:if test="${surveyProperty?.getI10n('expl')}">
                         <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="bottom center"
-                              data-content="${surveyProperty?.getI10n('explain')}">
+                              data-content="${surveyProperty?.getI10n('expl')}">
                             <i class="question circle icon"></i>
                         </span>
                     </g:if>
@@ -655,9 +655,9 @@ ${surveyInfo?.name}
             <th>
                 ${participationProperty?.getI10n('name')}
 
-                <g:if test="${participationProperty?.getI10n('explain')}">
+                <g:if test="${participationProperty?.getI10n('expl')}">
                     <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="bottom center"
-                          data-content="${participationProperty?.getI10n('explain')}">
+                          data-content="${participationProperty?.getI10n('expl')}">
                         <i class="question circle icon"></i>
                     </span>
                 </g:if>
@@ -667,9 +667,9 @@ ${surveyInfo?.name}
                 <th>
                     ${surveyProperty?.getI10n('name')}
 
-                    <g:if test="${surveyProperty?.getI10n('explain')}">
+                    <g:if test="${surveyProperty?.getI10n('expl')}">
                         <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
-                              data-content="${surveyProperty?.getI10n('explain')}">
+                              data-content="${surveyProperty?.getI10n('expl')}">
                             <i class="question circle icon"></i>
                         </span>
                     </g:if>
@@ -817,9 +817,9 @@ ${surveyInfo?.name}
             <th>
                 ${participationProperty?.getI10n('name')}
 
-                <g:if test="${participationProperty?.getI10n('explain')}">
+                <g:if test="${participationProperty?.getI10n('expl')}">
                     <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="bottom center"
-                          data-content="${participationProperty?.getI10n('explain')}">
+                          data-content="${participationProperty?.getI10n('expl')}">
                         <i class="question circle icon"></i>
                     </span>
                 </g:if>
@@ -829,9 +829,9 @@ ${surveyInfo?.name}
                 <th>
                     ${surveyProperty?.getI10n('name')}
 
-                    <g:if test="${surveyProperty?.getI10n('explain')}">
+                    <g:if test="${surveyProperty?.getI10n('expl')}">
                         <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
-                              data-content="${surveyProperty?.getI10n('explain')}">
+                              data-content="${surveyProperty?.getI10n('expl')}">
                             <i class="question circle icon"></i>
                         </span>
                     </g:if>

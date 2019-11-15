@@ -19,8 +19,7 @@
                                   message="menu.institutions.readerNumbers"/>
             </g:if>
             <g:else>
-                <semui:subNavItem controller="organisation" action="readerNumber" params="${[id: orgInstance?.id]}"
-                                  message="menu.institutions.readerNumbers" disabled="disabled"/>
+                <semui:subNavItem message="menu.institutions.readerNumbers" disabled="disabled"/>
             </g:else>
         </g:if>
 
@@ -63,8 +62,7 @@
                                   message="org.nav.accessPoints"/>
             </g:if>
             <g:else>
-                <semui:subNavItem controller="organisation" action="accessPoints" params="${[id: orgInstance?.id]}"
-                                  message="org.nav.accessPoints" disabled="disabled"/>
+                <semui:subNavItem message="org.nav.accessPoints" disabled="disabled"/>
             </g:else>
 
         </g:if>

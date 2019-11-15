@@ -68,7 +68,7 @@
                 <th class="center aligned">${message(code: 'sidewide.number')}</th>
                 <th>${message(code: 'surveyProperty.name')}
                 </th>
-                <th>${message(code: 'surveyProperty.explain.label')}</th>
+                <th>${message(code: 'surveyProperty.expl.label')}</th>
                 <th>${message(code: 'surveyProperty.comment.label')}</th>
                 <th>${message(code: 'surveyProperty.type.label')}</th>
                 <th class="la-action-info">${message(code:'default.actions')}</th>
@@ -100,10 +100,10 @@
                     <td>
 
                         <g:if test="${property?.owner == institution}">
-                            <semui:xEditable owner="${property}" field="explain" type="textarea"/>
+                            <semui:xEditable owner="${property}" field="expl" type="textarea"/>
                         </g:if>
                         <g:else>
-                            ${property?.getI10n('explain')}
+                            ${property?.getI10n('expl')}
                         </g:else>
 
                     </td>
@@ -170,8 +170,8 @@
 
             <div class="three fields">
                 <div class="field six wide">
-                    <label class="property-label">${message(code: 'surveyProperty.explain.label', default: 'Explanation')}</label>
-                    <textarea name="explain" class="ui textarea"></textarea>
+                    <label class="property-label">${message(code: 'surveyProperty.expl.label', default: 'Explanation')}</label>
+                    <textarea name="expl" class="ui textarea"></textarea>
                 </div>
 
                 <div class="field six wide">

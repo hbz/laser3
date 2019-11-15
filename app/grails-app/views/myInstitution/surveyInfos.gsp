@@ -283,9 +283,9 @@ ${message(code: 'subscriptionSurvey.label')} - ${surveyInfo.name}
                             <g:if test="${surveyConfig?.type == 'SurveyProperty'}">
                                 ${surveyConfig?.surveyProperty?.getI10n('name')}
 
-                                <g:if test="${surveyConfig?.surveyProperty?.getI10n('explain')}">
+                                <g:if test="${surveyConfig?.surveyProperty?.getI10n('expl')}">
                                     <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
-                                          data-content="${surveyConfig?.surveyProperty?.getI10n('explain')}">
+                                          data-content="${surveyConfig?.surveyProperty?.getI10n('expl')}">
                                         <i class="question circle icon"></i>
                                     </span>
                                 </g:if>

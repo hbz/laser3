@@ -270,10 +270,10 @@
                                                             <td>
                                                                 ${prop?.surveyProperty?.getI10n('name')}
 
-                                                                <g:if test="${prop?.surveyProperty?.getI10n('explain')}">
+                                                                <g:if test="${prop?.surveyProperty?.getI10n('expl')}">
                                                                     <span class="la-long-tooltip la-popup-tooltip la-delay"
                                                                           data-position="right center"
-                                                                          data-content="${prop?.surveyProperty?.getI10n('explain')}">
+                                                                          data-content="${prop?.surveyProperty?.getI10n('expl')}">
                                                                         <i class="question circle icon"></i>
                                                                     </span>
                                                                 </g:if>

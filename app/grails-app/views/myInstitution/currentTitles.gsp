@@ -264,9 +264,9 @@
                                         </g:if>
                                 </g:each>
 
-                                <g:each in="${ti?.ids?.sort { it?.identifier?.ns?.ns }}" var="id">
+                                <g:each in="${ti?.ids?.sort { it?.ns?.ns }}" var="id">
                                     <span class="ui small teal image label">
-                                        ${id.identifier.ns.ns}: <div class="detail">${id.identifier.value}</div>
+                                        ${id.ns.ns}: <div class="detail">${id.value}</div>
                                     </span>
                                 </g:each>
                                 <br/>
@@ -394,8 +394,8 @@
                                         </div>
                                         <div class="sixteen wide column">
                                             <g:if test="${ie.priceItem}">
-                                                <g:message code="tipp.listPrice"/>: <g:formatNumber number="${ie.priceItem.listPrice}" type="currency" currencyCode="${ie.priceItem.listCurrency.value}" currencySymbol="${ie.priceItem.listCurrency.value}"/><br>
-                                                <g:message code="tipp.localPrice"/>: <g:formatNumber number="${ie.priceItem.localPrice}" type="currency" currencyCode="${ie.priceItem.localCurrency.value}" currencySymbol="${ie.priceItem.listCurrency.value}"/>
+                                                <g:message code="tipp.listPrice"/>: <g:formatNumber number="${ie.priceItem.listPrice}" type="currency" currencyCode="${ie.priceItem.listCurrency?.value}" currencySymbol="${ie.priceItem.listCurrency?.value}"/><br>
+                                                <g:message code="tipp.localPrice"/>: <g:formatNumber number="${ie.priceItem.localPrice}" type="currency" currencyCode="${ie.priceItem.localCurrency?.value}" currencySymbol="${ie.priceItem.listCurrency?.value}"/>
                                                 (<g:message code="tipp.priceDate"/> <g:formatDate format="${message(code:'default.date.format.notime')}" date="${ie.priceItem.priceDate}"/>)
                                             </g:if>
                                         </div>

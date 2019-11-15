@@ -211,8 +211,8 @@
 				<semui:listIcon type="${currentTitle[0]?.type?.value}"/><strong><g:link action="show" controller="title" id="${currentTitle[0].id}">${entry.key}</g:link></strong>
                           <i onclick="showMore('${currentTitle[0].id}')" class="icon-info-sign"></i>
 
-                          <g:each in="${currentTitle[0].ids?.sort{it?.identifier?.ns?.ns}}" var="id">
-                              <br>${id.identifier.ns.ns}: ${id.identifier.value}
+                          <g:each in="${currentTitle[0].ids?.sort{it?.ns?.ns}}" var="id">
+                              <br>${id.ns.ns}: ${id.value}
                           </g:each>
 			</td>
 			

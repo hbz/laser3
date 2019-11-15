@@ -6,6 +6,8 @@ info:
     _Authorization_ has to be set manually.
     Usual javascript insertion isn't working due shadow dom mechanic of [React](https://facebook.github.io/react).
     Please copy and paste required/generated fields.
+
+     &#10095; [Here]() you find an example for HMAC generation.
   contact:
     email: david.klober@hbz-nrw.de
   version: "<% print de.laser.api.v0.ApiManager.VERSION %>"

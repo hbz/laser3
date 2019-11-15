@@ -1,11 +1,13 @@
 package de.laser.domain
 
+import com.k_int.kbplus.IdentifierNamespace
 import com.k_int.kbplus.RefdataValue
 import de.laser.helper.RefdataAnnotation
 
 class StatsTripleCursor {
 
     String titleId
+    IdentifierNamespace identifierType
     String supplierId
     String customerId
     String jerror

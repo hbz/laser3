@@ -32,6 +32,7 @@
                         <dd><g:fieldValue bean="${identifierInstance}" field="value"/></dd>
 					</g:if>
 
+					<%-- // TODO [ticket=1789]
 					<g:if test="${identifierInstance?.occurrences}">
                         <br />
                         <br />
@@ -48,7 +49,7 @@
                             </ul>
                         </dd>
 				    </g:if>
-
+					--%>
 				</dl>
 			</div><!-- .twelve -->
 
