@@ -1,4 +1,4 @@
-<%@ page import="com.k_int.kbplus.ApiSource; com.k_int.kbplus.License; de.laser.helper.RDStore; com.k_int.kbplus.Package" %>
+<%@ page import="com.k_int.kbplus.ApiSource; com.k_int.kbplus.License; de.laser.helper.RDStore; com.k_int.kbplus.Package; com.k_int.kbplus.IdentifierNamespace" %>
 <laser:serviceInjection />
 <!-- template: meta/identifier : editable: ${editable} -->
 <aside class="ui segment metaboxContent accordion">
@@ -63,18 +63,23 @@
                         </tr>
                         </thead>
                         <tbody>
-                        <g:each in="${object.ids?.sort { it?.identifier?.ns?.ns }}" var="io">
+                        <g:each in="${object.ids?.sort { it?.ns?.ns }}" var="ident">
                             <tr>
                                 <td>
-                                    ${io.identifier.ns.ns}
+                                    ${ident.ns.ns}
                                 </td>
                                 <td>
-                                    ${io.identifier.value}
+                                    ${ident.value}
                                 </td>
                                 <td>
                                     <g:if test="${editable}">
+                                        <%-- TODO [ticket=1612] new identifier handling
                                         <g:link controller="ajax" action="deleteThrough"
-                                                params='${[contextOid: "${object.class.name}:${object.id}", contextProperty: "ids", targetOid: "${io.class.name}:${io.id}"]}'>
+                                                params='${[contextOid: "${object.class.name}:${object.id}", contextProperty: "ids", targetOid: "${ident.class.name}:${ident.id}"]}'>
+                                            ${message(code: 'default.delete.label', args: ["${message(code: 'identifier.label')}"])}</g:link>
+                                        --%>
+                                        <g:link controller="ajax" action="deleteIdentifier"
+                                                params='${[owner: "${object.class.name}:${object.id}", target: "${ident.class.name}:${ident.id}"]}'>
                                             ${message(code: 'default.delete.label', args: ["${message(code: 'identifier.label')}"])}</g:link>
                                     </g:if>
                                 </td>
@@ -84,10 +89,52 @@
                     </table>
                 </dd>
 
-                <g:if test="${editable}">
+                <%
+                    List<IdentifierNamespace> nsList = IdentifierNamespace.where{(nsType == object.class.name || nsType == null)}
+                            .list(sort: 'ns')
+                            .sort { a,b -> a.ns.compareToIgnoreCase b.ns }
+                            .collect{ it }
+                %>
+                <g:if test="${editable && nsList}">
                     <dt class="la-js-hideMe">
                         Identifikfator hinzufügen
                     </dt>
+
+                    <dd class="la-js-hideMe">
+                        <g:if test="${object.class.simpleName == 'License'}">
+                            ${message(code: 'identifier.select.text', args: ['gasco-lic:0815'])}
+                        </g:if>
+                        <g:if test="${object.class.simpleName == 'Org'}">
+                            ${message(code: 'identifier.select.text', args: ['isil:DE-18'])}
+                        </g:if>
+                        <g:if test="${object.class.simpleName == 'Subscription'}">
+                            ${message(code: 'identifier.select.text', args: ['JC:66454'])}
+                        </g:if>
+                        <g:if test="${object.class.simpleName in ['BookInstance', 'DatabaseInstance', 'JournalInstance', 'TitleInstance']}">
+                            ${message(code: 'identifier.select.text', args: ['eISSN:2190-9180'])}
+                        </g:if>
+
+                        <g:form controller="ajax" action="addIdentifier" class="ui form">
+                            <input name="owner" type="hidden" value="${object.class.name}:${object.id}" />
+
+                            <div class="fields two">
+                                <div class="field">
+                                    <label for="namespace">Namensraum</label>
+                                    <g:select name="namespace" id="namespace" class="ui search dropdown"
+                                              from="${nsList}" optionKey="${{'com.k_int.kbplus.IdentifierNamespace:' + it.id}}" optionValue="ns" />
+                                </div>
+                                <div class="field">
+                                    <label for="value">Identifikator</label>
+                                    <input name="value" id="value" type="text" class="ui" />
+                                </div>
+                                <div class="field">
+                                    <label>&nbsp;</label>
+                                    <button type="submit" class="ui button">Hinzufügen</button>
+                                </div>
+                            </div>
+                        </g:form>
+                    </dd>
+                <%-- TODO [ticket=1612] new identifier handling
                     <dd class="la-js-hideMe">
                         <g:if test="${object.class.simpleName == 'License'}">
                             <semui:formAddIdentifier owner="${object}"
@@ -128,6 +175,8 @@
                             </semui:formAddIdentifier>
                         </g:if>
                     </dd>
+                --%>
+
                 </g:if>
 
             </dl>

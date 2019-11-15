@@ -464,7 +464,7 @@ class OrganisationController extends AbstractDebugController {
                         [institution: OT_INSTITUTION, searchName: "%${params.proposedOrganisation.toLowerCase()}%"]))
             }
             if (params.proposedOrganisationID) {
-                result.organisationMatches.addAll(Org.executeQuery("select id.org from IdentifierOccurrence id where lower(id.identifier.value) like :identifier and lower(id.identifier.ns.ns) in (:namespaces) ",
+                result.organisationMatches.addAll(Org.executeQuery("select id.org from Identifier id where lower(id.value) like :identifier and lower(id.ns.ns) in (:namespaces) ",
                         [identifier: "%${params.proposedOrganisationID.toLowerCase()}%",namespaces:["isil","wibid"]]))
             }
         }
@@ -622,17 +622,14 @@ class OrganisationController extends AbstractDebugController {
             def foundWibid = false
             def foundEZB = false
 
-            result.orgInstance.ids.each {io ->
-                if(io?.identifier?.ns?.ns == 'ISIL')
-                {
+            result.orgInstance.ids.each {ident ->
+                if(ident.ns?.ns == 'ISIL') {
                     foundIsil = true
                 }
-                if(io?.identifier?.ns?.ns == 'wibid')
-                {
+                if(ident.ns?.ns == 'wibid') {
                     foundWibid = true
                 }
-                if(io?.identifier?.ns?.ns == 'ezb')
-                {
+                if(ident.ns?.ns == 'ezb') {
                     foundEZB = true
                 }
             }

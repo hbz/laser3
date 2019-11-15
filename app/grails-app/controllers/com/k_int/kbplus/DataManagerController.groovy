@@ -209,7 +209,7 @@ class DataManagerController extends AbstractDebugController {
             }
             linetype = 'Title'
             break;
-          case 'com.k_int.kbplus.IdentifierOccurrence':
+          case 'com.k_int.kbplus.Identifier':
             break;
           default:
             log.error("Unexpected event class name found ${hl.className}")

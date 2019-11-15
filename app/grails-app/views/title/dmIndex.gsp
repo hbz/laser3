@@ -76,8 +76,8 @@
                           </td>
                           <td>
                             <ul>
-                              <g:each in="${hit.ids?.sort{it?.identifier?.ns?.ns}}" var="id">
-                                  <li>${id.identifier.ns.ns}: ${id.identifier.value}</li>
+                              <g:each in="${hit.ids?.sort{it?.ns?.ns}}" var="id">
+                                  <li>${id.ns.ns}: ${id.value}</li>
                               </g:each>
                             </ul>
                           </td>
