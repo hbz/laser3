@@ -220,7 +220,7 @@ ${surveyInfo?.name}
 
                     <tr class="">
                         <td>
-                            <g:if test="${!participant.newCustomProperty}">
+                            <g:if test="${!participant.newCustomProperty && !participant.newPrivateProperty}">
                                 <g:checkBox name="selectedSub" value="${participant.newSub.id}" checked="false"/>
                             </g:if>
                         </td>

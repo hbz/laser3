@@ -3466,6 +3466,8 @@ class SurveyController {
             result.parentSuccessorSubscription = result.surveyConfig?.subscription?.getCalculatedSuccessor()
             result.parentSuccessorSubChilds = result.parentSuccessorSubscription ? subscriptionService.getValidSubChilds(result.parentSuccessorSubscription) : null
 
+            def countSuccessfulCopy = 0
+
             if (propDef && params.list('selectedSub')) {
                 params.list('selectedSub').each { subID ->
                     if (Long.parseLong(subID) in result.parentSuccessorSubChilds.id) {
@@ -3502,7 +3504,12 @@ class SurveyController {
                                         log.error(newProp.errors)
                                     } else {
                                         log.debug("New private property created: " + newProp.type.name)
-                                        def prop = setProperty(newProp, params.filterPropValue)
+                                        def newValue = copyProperty.getValue()
+                                        if (copyProperty.type.type == RefdataValue.toString()) {
+                                            newValue = copyProperty.refValue ? copyProperty.refValue : null
+                                        }
+                                        def prop = setNewProperty(newProp, newValue)
+                                        countSuccessfulCopy++
                                     }
                                 }
                             } else {
@@ -3522,6 +3529,7 @@ class SurveyController {
                                             newValue = copyProperty.refValue ? copyProperty.refValue : null
                                         }
                                         def prop = setNewProperty(newProp, newValue)
+                                        countSuccessfulCopy++
                                     }
                                 }
 
@@ -3534,8 +3542,7 @@ class SurveyController {
                     }
                 }
             }
-        }else{
-            flash.error = message(code: 'copyProperties.noSelect')
+            flash.message = message(code: 'copyProperties.successful', args: [countSuccessfulCopy, message(code: 'copyProperties.' + params.tab) ,params.list('selectedSub').size()])
         }
 
         redirect(action: 'copyProperties', id: params.id, params: [surveyConfigID: result.surveyConfig?.id, tab: params.tab, selectedProperty: params.selectedProperty])
