@@ -74,7 +74,7 @@
         <g:if test="${!departmentalView}">
 
             <g:if test="${inContextOrg}">
-                <semui:securedSubNavItem controller="organisation" action="settings"
+                <semui:securedSubNavItem controller="organisation" action="settings" params="${[id: orgInstance.id]}"
                                          message="org.nav.options" affiliation="INST_ADM" affiliationOrg="${orgInstance}"/>
             </g:if>
             <g:elseif test="${accessService.checkForeignOrgComboPermAffiliationX([
