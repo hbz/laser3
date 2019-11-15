@@ -1811,7 +1811,7 @@ class BootStrap {
             I10nTranslation.createOrUpdateI10n(surveyProperty, 'name', default_prop.name)
 
             if (default_prop.expl) {
-                I10nTranslation.createOrUpdateI10n(surveyProperty, 'explain', default_prop.expl)
+                I10nTranslation.createOrUpdateI10n(surveyProperty, 'expl', default_prop.expl)
             }
 
             if (default_prop.introduction) {

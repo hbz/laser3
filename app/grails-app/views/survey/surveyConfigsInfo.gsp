@@ -398,7 +398,7 @@
                 <tr>
                     <th class="center aligned">${message(code: 'sidewide.number')}</th>
                     <th>${message(code: 'surveyProperty.name')}</th>
-                    <th>${message(code: 'surveyProperty.explain.label')}</th>
+                    <th>${message(code: 'surveyProperty.expl.label')}</th>
                     <th>${message(code: 'surveyProperty.comment.label')}</th>
                     <th>${message(code: 'surveyProperty.type.label')}</th>
                     <th></th>
@@ -418,9 +418,9 @@
                                 <i class='shield alternate icon'></i>
                             </g:if>
 
-                            <g:if test="${surveyProperty?.surveyProperty?.getI10n('explain')}">
+                            <g:if test="${surveyProperty?.surveyProperty?.getI10n('expl')}">
                                 <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
-                                      data-content="${surveyProperty?.surveyProperty?.getI10n('explain')}">
+                                      data-content="${surveyProperty?.surveyProperty?.getI10n('expl')}">
                                     <i class="question circle icon"></i>
                                 </span>
                             </g:if>
@@ -428,8 +428,8 @@
                         </td>
 
                         <td>
-                            <g:if test="${surveyProperty?.surveyProperty?.getI10n('explain')}">
-                                ${surveyProperty?.surveyProperty?.getI10n('explain')}
+                            <g:if test="${surveyProperty?.surveyProperty?.getI10n('expl')}">
+                                ${surveyProperty?.surveyProperty?.getI10n('expl')}
                             </g:if>
                         </td>
                         <td>

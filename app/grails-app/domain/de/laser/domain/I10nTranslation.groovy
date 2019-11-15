@@ -187,4 +187,20 @@ class I10nTranslation {
 
         return result
     }
+    static copyI10n(Object from, String referenceField, Object to) {
+        from = GrailsHibernateUtil.unwrapIfProxy(from)
+        to = GrailsHibernateUtil.unwrapIfProxy(to)
+
+        def i10n = findByReferenceClassAndReferenceIdAndReferenceField(from.getClass().getCanonicalName(), from.getId(), referenceField)
+        def values = [:]
+        if(i10n)
+        {
+            values = [
+                    'en': i10n.valueEn?: null,
+                    'de': i10n.valueDe?: null,
+                    'fr': i10n.valueFr?: null,
+            ]
+            return set(to, referenceField, values)
+        }
+    }
 }

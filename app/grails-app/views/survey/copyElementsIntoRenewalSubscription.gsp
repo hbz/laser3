@@ -10,11 +10,23 @@
     <title>${message(code: 'laser', default: 'LAS:eR')} : ${message(code: 'subscription.details.copyElementsIntoSubscription.label')}</title>
 </head>
 <body>
-    <g:render template="breadcrumb" model="${[params: params]}"/>
+
+
+<semui:breadcrumbs>
+    <semui:crumb controller="survey" action="currentSurveysConsortia" text="${message(code:'menu.my.surveys')}" />
+
+    <g:if test="${sourceSubscription}">
+        <g:set var="surveyConfig" value="${com.k_int.kbplus.SurveyConfig.findBySubscriptionAndIsSubscriptionSurveyFix(sourceSubscription, true)}"/>
+        <semui:crumb controller="survey" action="renewalWithSurvey" id="${surveyConfig.surveyInfo.id}" params="[surveyConfigID: surveyConfig.id]" text="${surveyConfig.surveyInfo.name}" />
+    </g:if>
+
+    <semui:crumb class="active" message="subscription.details.renewals.renew_sub.label" />
+
+</semui:breadcrumbs>
 
     <h1 class="ui left aligned icon header"><semui:headerIcon />
         <g:if test="${isRenewSub}">
-            ${message(code: 'subscription.details.renewals.renew_sub.label')}
+            ${message(code: 'subscription.details.renewals.renew_sub.label')}: <g:if test="${sourceSubscription}">${sourceSubscription.name}</g:if>
         </g:if>
         <g:else>
             ${message(code: 'subscription.details.copyElementsIntoSubscription.label')}

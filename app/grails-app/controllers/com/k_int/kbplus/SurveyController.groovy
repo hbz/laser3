@@ -5,6 +5,7 @@ import com.k_int.kbplus.auth.User
 import com.k_int.properties.PropertyDefinition
 import de.laser.AccessService
 import de.laser.AuditConfig
+import de.laser.domain.I10nTranslation
 import de.laser.helper.DateUtil
 import de.laser.helper.DebugAnnotation
 import de.laser.helper.RDStore
@@ -1605,7 +1606,7 @@ class SurveyController {
                     params.name,
                     params.type,
                     rdc,
-                    params.explain,
+                    params.expl,
                     params.comment,
                     params.introduction,
                     result.institution
@@ -2552,20 +2553,6 @@ class SurveyController {
         result.allSubscriptions_readRights = subscriptionService.getMySubscriptions_readRights()
         result.allSubscriptions_writeRights = subscriptionService.getMySubscriptions_writeRights()
 
-        List<String> subTypSubscriberVisible = [RDStore.SUBSCRIPTION_TYPE_CONSORTIAL,
-                                                RDStore.SUBSCRIPTION_TYPE_ADMINISTRATIVE,
-                                                RDStore.SUBSCRIPTION_TYPE_ALLIANCE,
-                                                RDStore.SUBSCRIPTION_TYPE_NATIONAL]
-        result.isSubscriberVisible =
-                result.sourceSubscription &&
-                        result.targetSubscription &&
-                        subTypSubscriberVisible.contains(result.sourceSubscription.type) &&
-                        subTypSubscriberVisible.contains(result.targetSubscription.type)
-
-        if (!result.isSubscriberVisible) {
-            flash.message += message(code: 'subscription.info.subscriberNotAvailable')
-        }
-
         switch (params.workFlowPart) {
             case WORKFLOW_DATES_OWNER_RELATIONS:
                 result << copySubElements_DatesOwnerRelations();
@@ -2588,14 +2575,8 @@ class SurveyController {
             case WORKFLOW_DOCS_ANNOUNCEMENT_TASKS:
                 result << copySubElements_DocsAnnouncementsTasks();
                 if (params.isRenewSub) {
-                    if (result.isSubscriberVisible) {
-                        //params.workFlowPart = WORKFLOW_SUBSCRIBER
-                        params.workFlowPart = WORKFLOW_PROPERTIES
-                        result << loadDataFor_Subscriber()
-                    } else {
                         params.workFlowPart = WORKFLOW_PROPERTIES
                         result << loadDataFor_Properties()
-                    }
                 } else {
                     result << loadDataFor_DocsAnnouncementsTasks()
                 }
@@ -2662,14 +2643,14 @@ class SurveyController {
     })
     Map copySubElements_Properties() {
         LinkedHashMap result = [customProperties: [:], privateProperties: [:]]
-        Subscription baseSub = Subscription.get(params.sourceSubscriptionId ?: params.id)
+        Subscription baseSub = Subscription.get(params.sourceSubscriptionId ? Long.parseLong(params.sourceSubscriptionId) : params.id)
         boolean isRenewSub = params?.isRenewSub ? true : false
         boolean isCopyAuditOn = params?.isCopyAuditOn ? true : false
         Subscription newSub = null
         List auditProperties = params.list('auditProperties')
         List<Subscription> subsToCompare = [baseSub]
         if (params.targetSubscriptionId) {
-            newSub = Subscription.get(params.targetSubscriptionId)
+            newSub = Subscription.get(Long.parseLong(params.targetSubscriptionId))
             subsToCompare.add(newSub)
         }
         List<AbstractProperty> propertiesToTake = params?.list('subscription.takeProperty').collect {
@@ -2695,11 +2676,11 @@ class SurveyController {
 
     private loadDataFor_Properties() {
         LinkedHashMap result = [customProperties: [:], privateProperties: [:]]
-        Subscription baseSub = Subscription.get(params.sourceSubscriptionId ?: params.id)
+        Subscription baseSub = Subscription.get(params.sourceSubscriptionId ? Long.parseLong(params.sourceSubscriptionId) : params.id)
         Subscription newSub = null
         List<Subscription> subsToCompare = [baseSub]
         if (params.targetSubscriptionId) {
-            newSub = Subscription.get(params.targetSubscriptionId)
+            newSub = Subscription.get(Long.parseLong(params.targetSubscriptionId))
             subsToCompare.add(newSub)
         }
 
@@ -2730,8 +2711,8 @@ class SurveyController {
 
     private copySubElements_PackagesEntitlements() {
         def result = setResultGenericsAndCheckAccessforSub(AccessService.CHECK_VIEW)
-        Subscription baseSub = Subscription.get(params.sourceSubscriptionId ?: params.id)
-        Subscription newSub = params.targetSubscriptionId ? Subscription.get(params.targetSubscriptionId) : null
+        Subscription baseSub = Subscription.get(params.sourceSubscriptionId ? Long.parseLong(params.sourceSubscriptionId) : params.id)
+        Subscription newSub = params.targetSubscriptionId ? Subscription.get(Long.parseLong(params.targetSubscriptionId)) : null
 
         boolean isTargetSubChanged = false
         if (params?.subscription?.deletePackageIds && isBothSubscriptionsSet(baseSub, newSub)) {
@@ -2774,8 +2755,8 @@ class SurveyController {
 
     private loadDataFor_PackagesEntitlements() {
         def result = setResultGenericsAndCheckAccessforSub(AccessService.CHECK_VIEW)
-        Subscription baseSub = Subscription.get(params.sourceSubscriptionId ?: params.id)
-        Subscription newSub = params.targetSubscriptionId ? Subscription.get(params.targetSubscriptionId) : null
+        Subscription baseSub = Subscription.get(params.sourceSubscriptionId ? Long.parseLong(params.sourceSubscriptionId) : params.id)
+        Subscription newSub = params.targetSubscriptionId ? Subscription.get(Long.parseLong(params.targetSubscriptionId)) : null
         result.sourceIEs = subscriptionService.getIssueEntitlements(baseSub)
         result.targetIEs = subscriptionService.getIssueEntitlements(newSub)
         result.newSub = newSub
@@ -2785,8 +2766,8 @@ class SurveyController {
 
     private copySubElements_DatesOwnerRelations() {
         def result = setResultGenericsAndCheckAccessforSub(AccessService.CHECK_VIEW)
-        Subscription baseSub = Subscription.get(params.sourceSubscriptionId ?: params.id)
-        Subscription newSub = params.targetSubscriptionId ? Subscription.get(params.targetSubscriptionId) : null
+        Subscription baseSub = Subscription.get(params.sourceSubscriptionId ? Long.parseLong(params.sourceSubscriptionId) : params.id)
+        Subscription newSub = params.targetSubscriptionId ? Subscription.get(Long.parseLong(params.targetSubscriptionId)) : null
 
         boolean isTargetSubChanged = false
         if (params?.subscription?.deleteDates && isBothSubscriptionsSet(baseSub, newSub)) {
@@ -2847,8 +2828,8 @@ class SurveyController {
 
     private loadDataFor_DatesOwnerRelations() {
         def result = setResultGenericsAndCheckAccessforSub(AccessService.CHECK_VIEW)
-        Subscription baseSub = Subscription.get(params.sourceSubscriptionId ?: params.id)
-        Subscription newSub = params.targetSubscriptionId ? Subscription.get(params.targetSubscriptionId) : null
+        Subscription baseSub = Subscription.get(params.sourceSubscriptionId ? Long.parseLong(params.sourceSubscriptionId) : params.id)
+        Subscription newSub = params.targetSubscriptionId ? Subscription.get(Long.parseLong(params.targetSubscriptionId)) : null
 
         // restrict visible for templates/links/orgLinksAsList
         result.source_visibleOrgRelations = subscriptionService.getVisibleOrgRelations(baseSub)
@@ -2910,7 +2891,7 @@ class SurveyController {
             newSub = newSub.refresh()
         }
 
-        result.sourceSubscription = baseSub
+        result.sourceSubscription = baseSub.refresh()
         result.targetSubscription = newSub
         result
     }
@@ -3279,35 +3260,30 @@ class SurveyController {
         }
 
         result.parentSubscription = result.surveyConfig?.subscription
-        result.parentSubChilds = subscriptionService.getCurrentValidSubChilds(result.parentSubscription)
         result.parentSuccessorSubscription = result.surveyConfig?.subscription?.getCalculatedSuccessor()
         result.parentSuccessorSubChilds = result.parentSuccessorSubscription ? subscriptionService.getValidSubChilds(result.parentSuccessorSubscription) : null
 
         result.participantsList = []
 
-        result.parentParticipantsList = []
         result.parentSuccessortParticipantsList = []
 
-        result.parentSubChilds.each { sub ->
-            def org = sub.getSubscriber()
-            result.participantsList << org
-            result.parentParticipantsList << org
-
-        }
-
         result.parentSuccessorSubChilds.each { sub ->
+            def newMap = [:]
             def org = sub.getSubscriber()
-            if(!(org in result.participantsList)) {
-                result.participantsList << org
-            }
-            result.parentSuccessortParticipantsList << org
+            newMap.id = org.id
+            newMap.sortname = org.sortname
+            newMap.name = org.name
+            newMap.newSub = sub
+            newMap.oldSub = sub.getCalculatedPrevious()
+
+            newMap.surveyOrg = SurveyOrg.findBySurveyConfigAndOrg(result.surveyConfig, org)
+            newMap.surveyCostItem =newMap.surveyOrg ? com.k_int.kbplus.CostItem.findBySurveyOrg(newMap.surveyOrg) : null
+
+            result.participantsList << newMap
 
         }
 
         result.participantsList = result.participantsList.sort{it.sortname}
-
-
-        result.participationProperty = SurveyProperty.findByNameAndOwnerIsNull("Participation")
 
         result
 
@@ -3352,6 +3328,152 @@ class SurveyController {
 
         flash.message = message(code: 'copySurveyCostItems.copy.success', args: [countNewCostItems])
         redirect(action: 'copySurveyCostItems', id: params.id, params: [surveyConfigID: result.surveyConfig?.id])
+
+    }
+
+    @DebugAnnotation(perm = "ORG_CONSORTIUM_SURVEY", affil = "INST_EDITOR", specRole = "ROLE_ADMIN")
+    @Secured(closure = {
+        ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM_SURVEY", "INST_EDITOR", "ROLE_ADMIN")
+    })
+    def copyProperties() {
+        def result = setResultGenericsAndCheckAccess()
+        if (!result.editable) {
+            response.sendError(401); return
+        }
+
+        params.tab = params.tab ?: 'surveyProperties'
+
+        result.selectedProperty
+        result.properties
+        if(params.tab == 'surveyProperties') {
+            result.properties = SurveyConfigProperties.findAllBySurveyConfig(result.surveyConfig).surveyProperty
+        }
+
+        result.selectedProperty = params.selectedProperty ?:  result.properties[0].id
+
+        result.parentSubscription = result.surveyConfig?.subscription
+        result.parentSuccessorSubscription = result.surveyConfig?.subscription?.getCalculatedSuccessor()
+        result.parentSuccessorSubChilds = result.parentSuccessorSubscription ? subscriptionService.getValidSubChilds(result.parentSuccessorSubscription) : null
+
+        result.participantsList = []
+        result.parentSuccessorSubChilds.each { sub ->
+
+            def newMap = [:]
+            def org = sub.getSubscriber()
+                newMap.id = org.id
+                newMap.sortname = org.sortname
+                newMap.name = org.name
+                newMap.newSub = sub
+                newMap.oldSub = sub.getCalculatedPrevious()
+
+
+            if(params.tab == 'surveyProperties') {
+                    newMap.surveyProperty = SurveyResult.findBySurveyConfigAndTypeAndParticipant(result.surveyConfig, SurveyProperty.get(result.selectedProperty), org)
+                }
+
+                newMap.newCustomProperty = sub ? sub.customProperties.find { it.type.id == result.selectedProperty } : []
+                newMap.oldCustomProperty = newMap.oldSub ? newMap.oldSub.customProperties.find { it.type.id == result.selectedProperty } : []
+
+
+                result.participantsList << newMap
+        }
+
+        result.participantsList = result.participantsList.sort{it.sortname}
+
+
+        result
+
+    }
+
+    @DebugAnnotation(perm = "ORG_CONSORTIUM_SURVEY", affil = "INST_EDITOR", specRole = "ROLE_ADMIN")
+    @Secured(closure = {
+        ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM_SURVEY", "INST_EDITOR", "ROLE_ADMIN")
+    })
+    def proccessCopyProperties() {
+        def result = setResultGenericsAndCheckAccess()
+        if (!result.editable) {
+            response.sendError(401); return
+        }
+
+        result.selectedProperty
+        def propDef
+        def surveyProperty
+        if(params.tab == 'surveyProperties') {
+            result.selectedProperty = params.selectedProperty ?:  null
+
+            surveyProperty = params.copyProperty ? SurveyProperty.get(Long.parseLong(params.copyProperty)): null
+
+            propDef = surveyProperty ? PropertyDefinition.findByNameAndDescrAndTenant(surveyProperty.name, 'Subscription Property', null) : null
+            if (!propDef && surveyProperty)  {
+                    propDef = PropertyDefinition.loc(
+                                surveyProperty.name,
+                                'Subscription Property',
+                                surveyProperty.type,
+                                (surveyProperty.type == RefdataValue.toString()) ? RefdataCategory.get(surveyProperty.refdataCategory) : null,
+                                surveyProperty.expl,
+                                null,
+                                PropertyDefinition.FALSE,
+                                null)
+
+                if (propDef?.hasErrors()) {
+                    log.error(propDef.errors)
+                }
+                else {
+                    propDef.save(flush: true)
+                    I10nTranslation.copyI10n(propDef, 'name', propDef)
+                    I10nTranslation.copyI10n(propDef, 'expl', propDef)
+                }
+            }
+
+        }else {
+            result.selectedProperty = params.selectedProperty ?:  null
+        }
+
+        result.parentSuccessorSubscription = result.surveyConfig?.subscription?.getCalculatedSuccessor()
+        result.parentSuccessorSubChilds = result.parentSuccessorSubscription ? subscriptionService.getValidSubChilds(result.parentSuccessorSubscription) : null
+
+        if(propDef && params.list('selectedSub')) {
+            params.list('selectedSub').each { subID ->
+                    if (Long.parseLong(subID) in result.parentSuccessorSubChilds.id) {
+                        def sub = Subscription.get(Long.parseLong(subID))
+                        def org = sub.getSubscriber()
+                        def oldSub = sub.getCalculatedPrevious()
+
+                        def copyProperty
+                        if (params.tab == 'surveyProperties') {
+                            copyProperty = SurveyResult.findBySurveyConfigAndTypeAndParticipant(result.surveyConfig, surveyProperty, org)
+                        } else {
+                            copyProperty = oldSub ? oldSub.customProperties.find {
+                                it.type.id == result.selectedProperty
+                            } : []
+                        }
+
+                        //custom Property
+                        if (copyProperty) {
+                            def existingProp = sub.customProperties.find {
+                                it.type.id == propDef.id && it.owner.id == sub.id
+                            }
+
+                            if (existingProp == null || propDef.multipleOccurrence) {
+                                def newProp = PropertyDefinition.createGenericProperty(PropertyDefinition.CUSTOM_PROPERTY, sub, propDef)
+                                if (newProp.hasErrors()) {
+                                    log.error(newProp.errors)
+                                } else {
+                                    log.debug("New custom property created: " + newProp.type.name)
+                                    def prop = setNewProperty(newProp, copyProperty.getValue())
+                                }
+                            }
+
+                            /*if (existingProp) {
+                            def customProp = SubscriptionCustomProperty.get(existingProp.id)
+                            def prop = setNewProperty(customProp, copyProperty)
+                        }*/
+                        }
+                    }
+            }
+        }
+
+        redirect(action: 'copyProperties', id: params.id, params: [surveyConfigID: result.surveyConfig?.id, tab: params.tab, selectedProperty: params.selectedProperty])
 
     }
 
@@ -4401,6 +4523,110 @@ class SurveyController {
 
         result
     }
+
+    private def setNewProperty(def property, def value) {
+
+        def field = null
+
+        if(property.type.type == Integer.toString()) {
+            field = "intValue"
+        }
+        else if (property.type.type == String.toString())  {
+            field = "stringValue"
+        }
+        else if (property.type.type == BigDecimal.toString())  {
+            field = "decValue"
+        }
+        else if (property.type.type == Date.toString())  {
+            field = "dateValue"
+        }
+        else if (property.type.type == URL.toString())  {
+            field = "urlValue"
+        }
+        else if (property.type.type == RefdataValue.toString())  {
+            field = "refValue"
+        }
+
+        //Wenn eine Vererbung vorhanden ist.
+        if(field && property.hasProperty('instanceOf') && property.instanceOf && AuditConfig.getConfig(property.instanceOf)){
+            if(property.instanceOf."${field}" == '' || property.instanceOf."${field}" == null)
+            {
+                value = property.instanceOf."${field}" ?: ''
+            }else{
+                //
+                return
+            }
+        }
+
+        if (value == '' && field) {
+            // Allow user to set a rel to null be calling set rel ''
+            property[field] = null
+            property.save(flush: true);
+        } else {
+
+            if (property && value && field){
+
+                if(field == "refValue") {
+                    def binding_properties = ["${field}": value]
+                    bindData(property, binding_properties)
+                    //property.save()
+                    if(!property.save(failOnError: true, flush: true))
+                    {
+                        println(property.error)
+                    }
+                } else if(field == "dateValue") {
+                    def sdf = new java.text.SimpleDateFormat(message(code: 'default.date.format.notime', default: 'yyyy-MM-dd'))
+
+                    def backup = property."${field}"
+                    try {
+                        if (value && value.size() > 0) {
+                            // parse new date
+                            def parsed_date = sdf.parse(value)
+                            property."${field}" = parsed_date
+                        } else {
+                            // delete existing date
+                            property."${field}" = null
+                        }
+                        property.save(failOnError: true, flush: true);
+                    }
+                    catch (Exception e) {
+                        property."${field}" = backup
+                        log.error(e)
+                    }
+                } else if(field == "urlValue") {
+
+                    def backup = property."${field}"
+                    try {
+                        if (value && value.size() > 0) {
+                            property."${field}" = new URL(value)
+                        } else {
+                            // delete existing url
+                            property."${field}" = null
+                        }
+                        property.save(failOnError: true, flush: true)
+                    }
+                    catch (Exception e) {
+                        property."${field}" = backup
+                        log.error(e)
+                    }
+                } else {
+                    def binding_properties = [:]
+                    if (property."${field}" instanceof Double) {
+                        value = Double.parseDouble(value)
+                    }
+
+                    binding_properties["${field}"] = value
+                    bindData(property, binding_properties)
+
+                    property.save(failOnError: true, flush: true)
+
+                }
+
+            }
+        }
+
+    }
+
     def parseDate(datestr, possible_formats) {
         def parsed_date = null;
         if (datestr && (datestr.toString().trim().length() > 0)) {

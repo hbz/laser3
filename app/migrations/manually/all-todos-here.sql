@@ -68,3 +68,7 @@
 -- changesets in changelog-2019-10-31.groovy
 -- Set sub_is_multi_year on all subscription where the periode more than 724 days
 -- update subscription set sub_is_multi_year = true where sub_id in(select sub_id from subscription where DATE_PART('day', sub_end_date - sub_start_date) >= 724 and sub_end_date is not null);
+
+-- 2019-11-14
+-- Change for SurveyProperty  reference_field
+update i10n_translation set i10n_reference_field = 'expl' where i10n_reference_field = 'explain';

@@ -95,8 +95,8 @@ class PendingChangeService extends AbstractLockableService {
                                     processCustomPropertyChange(event)
                                 }
                                 else if ( prop_info.name == 'status' ) {
-                                    RefdataValue oldStatus = RefdataValue.get(event.changeDoc.old.id)
-                                    RefdataValue newStatus = RefdataValue.get(event.changeDoc.new.id)
+                                    RefdataValue oldStatus = genericOIDService.resolveOID(event.changeDoc.old)
+                                    RefdataValue newStatus = genericOIDService.resolveOID(event.changeDoc.new)
                                     log.debug("Updating status from ${oldStatus.getI10n('value')} to ${newStatus.getI10n('value')}")
                                     target_object.status = newStatus
                                 }
