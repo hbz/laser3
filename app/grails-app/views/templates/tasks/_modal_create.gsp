@@ -78,22 +78,15 @@ double t8 = 0L
                 <label for="license">
                     <g:message code="task.linkto" default="Task link to "/><g:message code="task.license.label" default="License"/>
                 </label>
-                <g:select id="license"
+                <g:select class="ui dropdown search many-to-one"
+                          id="license"
                           name="license"
                           from="${validLicensesDropdown}"
-                          optionKey="${{it?.optionKey}}"
-                          optionValue="${{it?.optionValue}}"
+                          optionKey="${{it.optionKey}}"
+                          optionValue="${{it.optionValue}}"
                           value="${ownobj?.id}"
-                          class="ui dropdown search many-to-one"
                           noSelection="[null: '']"/>
-                %{--<g:select id="license"--}%
-                          %{--name="license"--}%
-                          %{--from="${validLicensesDropdown}"--}%
-                          %{--optionKey="${{it ? it[0] : null}}"--}%
-                          %{--optionValue="${{it[1] + ' ' + (it[2].getI10n('value')) + ' (' + (it[3] ? it[3]?.format('dd.MM.yy') : '') + ('-') + (it[4] ? it[4]?.format('dd.MM.yy') : '') + ')' }}"--}%
-                          %{--value="${ownobj?.id}"--}%
-                          %{--class="ui dropdown search many-to-one"--}%
-                          %{--noSelection="[null: '']"/>--}%
+
             </div>
             <% t2 = System.currentTimeMillis() %>
 
@@ -101,29 +94,14 @@ double t8 = 0L
             <label for="org">
                 <g:message code="task.linkto" default="Task link to "/><g:message code="task.org.label" default="Org"/>
             </label>
-                <g:if test="${RDStore.OT_INSTITUTION == contextOrg?.getCustomerType()}">
-                    <g:select id="org"
+                <g:select id="org"
                           name="org"
                           from="${validOrgsDropdown}"
-                          optionKey="${{it ? it[0] : null}}"
-                              optionValue="${{(it[1]?:'') + ' (' + (it[2]?:'') +')'}}"
+                          optionKey="${{it.optionKey}}"
+                          optionValue="${{it.optionValue}}"
                           value="${ownobj?.id}"
                           class="ui dropdown search many-to-one"
                           noSelection="[null: '']"/>
-                          %{--optionValue="${{it[1]  + ' (' + it[2] +')'}}"--}%
-                          optionValue="${{it[1]?:'' + ' (' + it[2]?:'' +')'}}"
-                </g:if>
-                <g:else>
-                    <g:select id="org"
-                          name="org"
-                          from="${validOrgsDropdown}"
-                          optionKey="${{it ? it[0] : null}}"
-                          optionValue="${{(it[3]?:'')  + ' (' + (it[1]?:'')  + ')'}}"
-                          value="${ownobj?.id}"
-                          class="ui dropdown search many-to-one"
-                          noSelection="[null: '']"/>
-                </g:else>
-
             </div>
             <% t3 = System.currentTimeMillis()%>
 
@@ -141,21 +119,12 @@ double t8 = 0L
                 <label for="subscription">
                     <g:message code="task.linkto" default="Task link to "/><g:message code="task.subscription.label" default="Subscription"/>
                 </label>
-                %{--TODO instanceOf--}%
-                %{--<g:set var="consortialLicense" value="${message('gasco.filter.consortialLicence')}" />--}%
-                <g:set var="NO_STATUS" value="${RDStore.SUBSCRIPTION_NO_STATUS.getI10n('value')}" />
                 <g:select class="ui dropdown search many-to-one"
                           id="subscription"
                           name="subscription"
-                          from="${validSubscriptionDropdown}"
-                          optionValue="${{it ? (it[1]
-                                  + ((it[2]||it[3]) ? ' (' : ' ')
-                                  + (it[2] ? (it[2]?.format('dd.MM.yy')) : '')
-                                  +  '-'
-                                  + (it[3] ? (it[3]?.format('dd.MM.yy')) : '')
-                                  + ((it[2]||it[3]) ? ') ' : ' ')
-                                  + (it[4]?: NO_STATUS)  ) : null}}"
-                          optionKey="${{it ? it[0] : null}}"
+                          from="${validSubscriptionsDropdown}"
+                          optionKey="${{it.optionKey}}"
+                          optionValue="${{it.optionValue}}"
                           value="${ownobj?.id}"
                           noSelection="[null: '']"/>
 
@@ -230,14 +199,12 @@ double t8 = 0L
 
     </g:form>
     %{--controllerName ${controllerName}<br>--}%
-    %{--validLicenses ${validLicenses?.size()}<br>--}%
     %{--validLicensesDropdown ${validLicensesDropdown?.size()}<br>--}%
-    %{--validOrgs ${validOrgs?.size()}<br>--}%
     %{--validOrgsDropdown ${validOrgsDropdown?.size()}<br>--}%
     %{--validPackages ${validPackages?.size()}<br>--}%
-    %{--validSubscriptionDropdown ${validSubscriptionDropdown?.size()}<br>--}%
+    %{--validSubscriptionsDropdown ${validSubscriptionsDropdown?.size()}<br>--}%
     %{--validResponsibleUsers ${validResponsibleUsers?.size()}<br><br>--}%
-    %{--Zeiten:--}%
+    %{--Zeiten:<br/>--}%
     %{--<% java.text.DecimalFormat myFormatter = new java.text.DecimalFormat("###,###"); %>--}%
     %{--t1 ${myFormatter.format(t1-start)}<br>--}%
     %{--t2 ${myFormatter.format(t2-t1)}<br>--}%
