@@ -130,6 +130,19 @@ class AjaxController {
         render result as JSON
     }
 
+    def updateUserSetting() {
+        User user = contextService.getUser()
+        if (user) {
+            EhcacheWrapper userCacheWrapper = contextService.getCache('SHOW_EXTENDED_FILTER', contextService.USER_SCOPE)
+            if (params.key == UserSettings.KEYS.SHOW_EXTENDED_FILTER) {
+                params.key
+                params.value
+                params.uri
+                log.debug("update user setting for: ${user} @ ${params.uri} [${params.key}:${params.value}]")
+            }
+        }
+    }
+
   @Secured(['ROLE_USER'])
   def setFieldNote() {
     def domain_class=grailsApplication.getArtefact('Domain',"com.k_int.kbplus.${params.type}")
