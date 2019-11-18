@@ -157,9 +157,12 @@ ${surveyInfo?.name}
             <g:if test="${params.tab == 'surveyProperties'}">
                 <g:message code="copyProperties.surveyProperties.info"/>
             </g:if>
-            <g:else>
-                <g:message code="copyProperties.surveyProperties.info"/>
-            </g:else>
+            <g:if test="${params.tab == 'customProperties'}">
+                <g:message code="copyProperties.customProperties.info"/>
+            </g:if>
+            <g:if test="${params.tab == 'privateProperties'}">
+                <g:message code="copyProperties.privateProperties.info"/>
+            </g:if>
         </p>
     </div>
 </div>
