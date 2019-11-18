@@ -446,3 +446,8 @@ aside.ui.accordion .title:not(.ui) {
     }
 
 }*/
+
+// clearing afecting the elements before the element with class 'la-clear-before'
+.la-clear-before {
+    clear: both;
+}

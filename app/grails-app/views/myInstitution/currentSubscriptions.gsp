@@ -53,12 +53,27 @@
 
         <semui:messages data="${flash}"/>
 
-        <h1 class="ui left aligned icon header"><semui:headerIcon />${message(code:'myinst.currentSubscriptions.label', default:'Current Subscriptions')}
+        <h1 class="ui left floated aligned icon header la-clear-before"><semui:headerIcon />${message(code:'myinst.currentSubscriptions.label', default:'Current Subscriptions')}
             <semui:totalNumber total="${num_sub_rows}"/>
         </h1>
 
+
+        <button class="ui  right floated button la-inline-labeled la-js-filterButton" style="margin-top: 14px;">
+            Filter
+            <i class="filter icon"></i>
+            <span class="ui circular label la-js-filter-total hidden">0</span>
+        </button>
+
+    <r:script>
+        $('.la-js-filterButton').click(function() {
+            $( '.la-filter').toggle( "fast", function() {
+
+            });
+            $(this).toggleClass('blue');
+        });
+    </r:script>
 <semui:filter>
-    <g:form action="currentSubscriptions" controller="myInstitution" method="get" class="ui small form">
+    <g:form action="currentSubscriptions" controller="myInstitution" method="get" class="ui small form clearing">
         <input type="hidden" name="isSiteReloaded" value="yes"/>
         <div class="three fields">
         %{--<div class="four fields">--}%
@@ -206,7 +221,7 @@
                 </fieldset>
         </div>
 
-        <div class="two fields">
+        <div class="three fields">
             <div class="field">
                 <g:if test="${accessService.checkPerm("ORG_CONSORTIUM")}">
                 <%--
@@ -261,19 +276,18 @@
                     </div>
                 </div>
             </div>
-
-            </div>
-
             <div class="field la-field-right-aligned">
                 <a href="${request.forwardURI}" class="ui reset primary button">${message(code:'default.button.reset.label')}</a>
                 <input type="submit" class="ui secondary button" value="${message(code:'default.button.filter.label', default:'Filter')}">
             </div>
+
+
         </div>
 
     </g:form>
 </semui:filter>
 
-<div class="subscription-results">
+<div class="subscription-results subscription-results la-clear-before">
 <g:if test="${subscriptions}">
     <table class="ui celled sortable table table-tworow la-table">
         <thead>

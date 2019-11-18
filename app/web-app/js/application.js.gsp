@@ -1,3 +1,4 @@
+
 var currLanguage = $('html').attr('lang');
 
 
@@ -50,7 +51,8 @@ r2d2 = {
                         $(this).removeClass("la-calendar-selected");
                     } else {
                         if( ! $(this).hasClass("la-calendar-selected") ) {
-                            $(this).addClass("la-calendar-selected")
+                            $(this).addClass("la-calendar-selected");
+                            //r2d2.countSettedFilters();
                         }
                     }
                 }
@@ -90,6 +92,8 @@ r2d2 = {
 
         r2d2.initDynamicSemuiStuff('body');
         r2d2.initDynamicXEditableStuff('body');
+
+
 
         $("html").css("cursor", "auto");
 
@@ -286,6 +290,56 @@ r2d2 = {
         });
     },
 
+    countSettedFilters: function () {
+        // DROPDOWN AND INPUT FIELDS
+        var dropdownFilter = 0;
+        var inputTextFilter = 0;
+        var calendarFilter = 0;
+        var checkboxFilter = 0;
+        dropdownFilter = $('.la-filter-dropdown-selected').length;
+        inputTextFilter = $('.la-filter-selected').length;
+        calendarFilter = $('.la-calendar-selected').length;
+
+
+        // CHECKBOXES
+        // LOOP TROUGH CHECKBOXES
+        var allCheckboxes = [];
+        $('.la-filter .checkbox').each(function() {
+            allCheckboxes.push($(this).children('input').attr("name"));
+        });
+        // ELIMINATE DUPLICATES
+        var eliminateDuplicates = function (uniquecheckboxNames){
+            return uniquecheckboxNames.filter (function(v,i) {
+                return uniquecheckboxNames.indexOf(v) === i
+            });
+        };
+        var uniquecheckboxNames = eliminateDuplicates(allCheckboxes);
+        // COUNT SELECTED CHECKBOXES
+        countSettedCheckboxes(uniquecheckboxNames);
+        function countSettedCheckboxes(params) {
+            var sumCheck = 0;
+            for (i=0; i<params.length; i++) {
+                var checkboxName = params[i];
+                $('input[name='+ checkboxName +']').is(':checked')? sumCheck=sumCheck+1: sumCheck= sumCheck;
+            }
+            checkboxFilter = sumCheck;
+        }
+
+        // COUNT ALL SELECTIONS IN TOTAL
+        var total = dropdownFilter + inputTextFilter + calendarFilter +checkboxFilter;
+        $( document ).ready(function() {
+            if (total == 0) {
+                $('.la-js-filter-total').addClass('hidden');
+                $('.la-js-filterButton i').removeClass('hidden');
+
+            } else {
+                $('.la-js-filter-total').text(total);
+                $('.la-js-filter-total').removeClass('hidden');
+                $('.la-js-filterButton i').addClass('hidden');
+            }
+        });
+    },
+
 
     initDynamicSemuiStuff : function(ctxSel) {
         console.log("r2d2.initDynamicSemuiStuff( " + ctxSel + " )")
@@ -340,7 +394,6 @@ r2d2 = {
                 onShow : function() {
                     var modalCallbackFunction = dcbStore.modal.show[$(this).attr('id')];
                     if (typeof modalCallbackFunction === "function") {
-                        //console.log('found modalCallbackFunction: ' + modalCallbackFunction);
                         modalCallbackFunction(triggerElement)
                     }
                 }
@@ -399,19 +452,30 @@ r2d2 = {
         $( document ).ready(function() {
 
             $( '.la-filter .ui.dropdown' ).each(function( index ) {
-                toggleFilterDropdown(this)
+                toggleFilterDropdown(this,true)
             });
 
         });
-        function toggleFilterDropdown(that) {
+
+        function toggleFilterDropdown(that, initial) {
 
             $( that ).find("div.text").hasClass("default")? $(that).removeClass("la-filter-dropdown-selected") : $(that).addClass("la-filter-dropdown-selected");
+            if(initial) {
+                r2d2.countSettedFilters();
+            }
+
         }
+
+        $('.la-filter .checkbox').checkbox({
+            onChange: function() {
+                // r2d2.countSettedFilters();
+            }
+        });
 
 
         // SEM UI DROPDOWN CHANGE
         $(ctxSel + ' .la-filter .ui.dropdown').change(function() {
-            toggleFilterDropdown(this)
+            toggleFilterDropdown(this, false)
         });
 
         // for default selected Dropdown value
@@ -427,11 +491,13 @@ r2d2 = {
         // FILTER SELECT FUNCTION - INPUT LOADING
         $(ctxSel + ' .la-filter input[type=text]').each(function() {
             $(this).val().length === 0 ? $(this).removeClass("la-filter-selected") : $(this).addClass("la-filter-selected");
+            r2d2.countSettedFilters(true);
         });
 
         //  FILTER SELECT FUNCTION - INPUT CHANGE
         $(ctxSel + ' .la-filter input[type=text]').change(function() {
             $(this).val().length === 0 ? $(this).removeClass("la-filter-selected") : $(this).addClass("la-filter-selected");
+            //r2d2.countSettedFilters();
         });
 
         //
@@ -523,7 +589,9 @@ r2d2 = {
         });
     },
 
+
 }
+
 // for future handling on other views
 // 1. add class 'hidden' via markup to all cards that might be toggled
 // 2. add class 'la-js-hideable' to all cards that might be toggled
@@ -774,4 +842,3 @@ $(document).ready(function() {
     bb8.go();
     tooltip.go();
 })
-
