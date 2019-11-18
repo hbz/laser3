@@ -655,3 +655,6 @@ aside.ui.accordion .title:not(.ui) {
     }
 
 }*/
+.la-clear-before {
+  clear: both;
+}

@@ -914,7 +914,7 @@ from License as l where (
         Map costItemCounts = [:]
         List allProviders = OrgRole.findAllByRoleTypeAndSubIsNotNull(RDStore.OR_PROVIDER)
         List allAgencies = OrgRole.findAllByRoleTypeAndSubIsNotNull(RDStore.OR_AGENCY)
-        List allIdentifiers = IdentifierOccurrence.findAllBySubIsNotNull()
+        List allIdentifiers = Identifier.findAllBySubIsNotNull()
         List allCostItems = CostItem.executeQuery('select count(ci.id),s.instanceOf.id from CostItem ci join ci.sub s where s.instanceOf != null and (ci.costItemStatus != :ciDeleted or ci.costItemStatus = null) and ci.owner = :owner group by s.instanceOf.id',[ciDeleted:RDStore.COST_ITEM_DELETED,owner:contextOrg])
         allProviders.each { provider ->
             Set subProviders
@@ -939,7 +939,7 @@ from License as l where (
             if(identifiers.get(identifier.sub))
                 subIdentifiers = identifiers.get(identifier.sub)
             else subIdentifiers = new TreeSet()
-            subIdentifiers.add("(${identifier.identifier.ns.ns}) ${identifier.identifier.value}")
+            subIdentifiers.add("(${identifier.ns.ns}) ${identifier.value}")
             identifiers.put(identifier.sub,subIdentifiers)
         }
         allCostItems.each { row ->
@@ -1379,12 +1379,16 @@ from License as l where (
                 if (params.newEmptySubId) {
                   def sub_id_components = params.newEmptySubId.split(':');
                   if ( sub_id_components.length == 2 ) {
-                    def sub_identifier = Identifier.lookupOrCreateCanonicalIdentifier(sub_id_components[0],sub_id_components[1]);
-                      new IdentifierOccurrence(sub: new_sub, identifier: sub_identifier).save()
+                      // TODO [ticket=1789]
+                      //def sub_identifier = Identifier.lookupOrCreateCanonicalIdentifier(sub_id_components[0],sub_id_components[1]);
+                      //new IdentifierOccurrence(sub: new_sub, identifier: sub_identifier).save()
+                      Identifier ident = Identifier.construct([value: sub_id_components[1], reference: new_sub, namespace: sub_id_components[0]])
                   }
                   else {
-                    def sub_identifier = Identifier.lookupOrCreateCanonicalIdentifier('Unknown', params.newEmptySubId);
-                      new IdentifierOccurrence(sub: new_sub, identifier: sub_identifier).save()
+                      // TODO [ticket=1789]
+                      //def sub_identifier = Identifier.lookupOrCreateCanonicalIdentifier('Unknown', params.newEmptySubId);
+                      //new IdentifierOccurrence(sub: new_sub, identifier: sub_identifier).save()
+                      Identifier ident = Identifier.construct([value: params.newEmptySubId, reference: new_sub, namespace: 'Unkown'])
                   }
                 }
 
@@ -2059,9 +2063,9 @@ ORDER BY p.platform.name""", sub_params);
         if (params.filter) {
             title_query.append("\
   AND ( ( Lower(ie.tipp.title.title) like :filterTrim ) \
-  OR ( EXISTS ( FROM IdentifierOccurrence io \
-  WHERE io.ti.id = ie.tipp.title.id \
-  AND io.identifier.value like :filter ) ) )")
+  OR ( EXISTS ( FROM Identifier ident \
+  WHERE ident.ti.id = ie.tipp.title.id \
+  AND ident.value like :filter ) ) )")
             qry_params.filterTrim = "%${params.filter.trim().toLowerCase()}%"
             qry_params.filter = "%${params.filter}%"
         }
@@ -3353,8 +3357,8 @@ AND EXISTS (
         }
 
         if (params.identifier?.length() > 0) {
-            query += " and exists (select io from IdentifierOccurrence io join io.org ioorg join io.identifier ioid " +
-                    " where ioorg = roleT.org and LOWER(ioid.value) like LOWER(:identifier)) "
+            query += " and exists (select ident from Identifier ident join ident.org ioorg " +
+                    " where ioorg = roleT.org and LOWER(ident.value) like LOWER(:identifier)) "
             qarams.put('identifier', "%${params.identifier}%")
         }
 

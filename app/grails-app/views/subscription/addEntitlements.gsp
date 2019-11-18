@@ -229,9 +229,9 @@ ${message(code: 'subscription.details.availableTitles', default: 'Available Titl
                    target="_blank"><i class="share square icon"></i></a>
             </g:if>
             <br>
-            <g:each in="${tipp?.title?.ids?.sort { it?.identifier?.ns?.ns }}" var="id">
+            <g:each in="${tipp?.title?.ids?.sort { it?.ns?.ns }}" var="id">
                 <span class="ui small teal image label">
-                    ${id.identifier.ns.ns}: <div class="detail">${id.identifier.value}</div>
+                    ${id.ns.ns}: <div class="detail">${id.value}</div>
                 </span>
             </g:each>
 

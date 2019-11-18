@@ -40,6 +40,12 @@
     <script>
         var gspLocale = "${message(code:'default.locale.label')}";
         var gspDateFormat = "${message(code:'default.date.format.notime').toLowerCase()}";
+        <g:if test="${user?.getSettingsValue(UserSettings.KEYS.SHOW_EXTENDED_FILTER, RefdataValue.getByValueAndCategory('Yes', 'YN'))?.value == 'Yes'}">
+        var showExtendedFilter = true;
+        </g:if>
+        <g:else>
+        var showExtendedFilter = false;
+        </g:else>
     </script>
 
     <g:layoutHead/>
@@ -269,7 +275,7 @@
 
                                 <div class="divider"></div>
 
-                                <g:link class="item" controller="upload" action="reviewPackage">${message(code:'menu.datamanager.uploadPackage')}</g:link>
+                                <%--<g:link class="item" controller="upload" action="reviewPackage">${message(code:'menu.datamanager.uploadPackage')}</g:link>--%>
                                 <g:link class="item" controller="licenseImport" action="doImport">${message(code:'onix.import.license')}</g:link>
 
                                 <div class="divider"></div>
@@ -292,6 +298,8 @@
                                 <div class="divider"></div>
                                 <%--<g:link class="item" controller="jasperReports" action="index">${message(code:'menu.datamanager.jasper_reports')}</g:link>--%>
                                 <g:link class="item" controller="title" action="dmIndex">${message(code:'menu.datamanager.titles')}</g:link>
+                                <div class="divider"></div>
+                                <g:link class="item" controller="dataManager" action="listMailTemplates">Mail Templates</g:link>
                             </sec:ifAnyGranted>
                         </div>
                     </div>
@@ -336,9 +344,6 @@
 
                                     <g:link class="item" controller="admin" action="triggerHousekeeping" onclick="return confirm('${message(code:'confirm.start.HouseKeeping')}')">${message(code:'menu.admin.triggerHousekeeping')}</g:link>
                                     <g:link class="item" controller="admin" action="initiateCoreMigration" onclick="return confirm('${message(code:'confirm.start.CoreMigration')}')">${message(code:'menu.admin.coreMigration')}</g:link>
-                                    <g:if test="${grailsApplication.config.feature.issnl}">
-                                        <g:link class="item" controller="admin" action="uploadIssnL">Upload ISSN to ISSN-L File</g:link>
-                                    </g:if>
                                     <g:link class="item" controller="admin" action="dataCleanse" onclick="return confirm('${message(code:'confirm.start.DataCleaningNominalPlatforms')}')">Run Data Cleaning (Nominal Platforms)</g:link>
                                     <%-- <g:link class="item" controller="admin" action="titleAugment" onclick="return confirm('${message(code:'confirm.start.DataCleaningTitleAugment')}')">Run Data Cleaning (Title Augment)</g:link> --%>
                                 </div>
@@ -740,7 +745,11 @@
         <%-- global confirmation modal --%>
         <semui:confirmationModal  />
 
-        <%-- <a href="#globalJumpMark" class="ui button icon" style="position:fixed;right:0;bottom:0;"><i class="angle up icon"></i></a> --%
+        <%-- <a href="#globalJumpMark" class="ui button icon" style="position:fixed;right:0;bottom:0;"><i class="angle up icon"></i></a> --%>
+
+        <r:script>
+
+        </r:script>
 
         <%-- maintenance --%>
         <g:if test="${com.k_int.kbplus.SystemMessage.findAllByShowNowAndOrg(true, contextOrg) || com.k_int.kbplus.SystemMessage.findAllByShowNowAndOrgIsNull(true)}">

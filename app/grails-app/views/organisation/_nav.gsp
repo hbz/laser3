@@ -1,4 +1,4 @@
-<%@page import="de.laser.helper.RDStore" %>
+<%@page import="de.laser.helper.RDStore; com.k_int.kbplus.Combo" %>
 
 <laser:serviceInjection/>
 
@@ -23,8 +23,7 @@
                           message="menu.institutions.readerNumbers"/>
         </g:if>
         <g:else>
-            <semui:subNavItem controller="organisation" action="readerNumber" params="${[id: orgInstance.id]}"
-                              message="menu.institutions.readerNumbers" disabled="disabled" />
+            <semui:subNavItem message="menu.institutions.readerNumbers" disabled="disabled" />
         </g:else>
     </g:if>
 
@@ -40,8 +39,7 @@
             <semui:subNavItem controller="organisation" action="accessPoints" params="${[id:orgInstance.id]}" message="org.nav.accessPoints"/>
         </g:if>
         <g:else>
-            <semui:subNavItem controller="organisation" action="accessPoints" params="${[id:orgInstance.id]}"
-                              message="org.nav.accessPoints" disabled="disabled" />
+            <semui:subNavItem message="org.nav.accessPoints" disabled="disabled" />
         </g:else>
     </g:if>
 
@@ -74,10 +72,22 @@
     </g:else>
     TODO: check ctx != foreign org--%>
         <g:if test="${!departmentalView}">
-            <semui:securedSubNavItem controller="organisation" action="settings" params="${[id: orgInstance.id]}"
-                                     specRole="ROLE_ADMIN,ROLE_ORG_EDITOR"
-                                     affiliation="INST_ADM" affiliationOrg="${orgInstance}" orgPerm="ORG_INST,ORG_CONSORTIUM"
-                                     message="org.nav.options" />
+
+            <g:if test="${inContextOrg}">
+                <semui:securedSubNavItem controller="organisation" action="settings" params="${[id: orgInstance.id]}"
+                                         message="org.nav.options" affiliation="INST_ADM" affiliationOrg="${orgInstance}"/>
+            </g:if>
+            <g:elseif test="${accessService.checkForeignOrgComboPermAffiliationX([
+                    org: orgInstance,
+                    comboPerm: "ORG_INST_COLLECTIVE, ORG_CONSORTIUM",
+                    comboAffiliation: "INST_ADM",
+                    specRoles: "ROLE_ORG_EDITOR, ROLE_ADMIN"
+            ])}">
+                <semui:subNavItem controller="organisation" action="settings" params="${[id: orgInstance.id]}" message="org.nav.options"/>
+            </g:elseif>
+            <g:else>
+                <semui:subNavItem disabled="disabled" message="org.nav.options"/>
+            </g:else>
         </g:if>
     </g:if>
 </semui:subNav>

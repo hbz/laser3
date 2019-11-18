@@ -18,23 +18,21 @@ class UserSettings {
         DASHBOARD                                   (Org),
         THEME                                       (RefdataValue, 'User.Settings.Theme'),
         DASHBOARD_TAB                               (RefdataValue, 'User.Settings.Dashboard.Tab'),
-//        use REMIND_PERIOD_FOR... instead
-        @Deprecated
-        DASHBOARD_REMINDER_PERIOD                   (Integer),
         DASHBOARD_ITEMS_TIME_WINDOW                 (Integer),
         LANGUAGE                                    (RefdataValue, 'Language'),
         LANGUAGE_OF_EMAILS                          (RefdataValue, 'Language'),
         SHOW_SIMPLE_VIEWS                           (RefdataValue, 'YN'),
+        SHOW_EXTENDED_FILTER                        (RefdataValue, 'YN'),
         SHOW_INFO_ICON                              (RefdataValue, 'YN'),
         SHOW_EDIT_MODE                              (RefdataValue, 'YN'),
 
         REMIND_CC_EMAILADDRESS                      (String),
-        NOTIFICATION_CC_EMAILADDRESS                 (String),
+        NOTIFICATION_CC_EMAILADDRESS                (String),
 
-        IS_NOTIFICATION_BY_EMAIL                     (RefdataValue, 'YN'),
-        IS_NOTIFICATION_CC_BY_EMAIL                  (RefdataValue, 'YN'),
-        IS_NOTIFICATION_FOR_SURVEYS_START            (RefdataValue, 'YN'),
-        IS_NOTIFICATION_FOR_SYSTEM_MESSAGES          (RefdataValue, 'YN'),
+        IS_NOTIFICATION_BY_EMAIL                    (RefdataValue, 'YN'),
+        IS_NOTIFICATION_CC_BY_EMAIL                 (RefdataValue, 'YN'),
+        IS_NOTIFICATION_FOR_SURVEYS_START           (RefdataValue, 'YN'),
+        IS_NOTIFICATION_FOR_SYSTEM_MESSAGES         (RefdataValue, 'YN'),
 
         IS_REMIND_BY_EMAIL                          (RefdataValue, 'YN'),
         IS_REMIND_CC_BY_EMAIL                       (RefdataValue, 'YN'),
@@ -60,7 +58,7 @@ class UserSettings {
         REMIND_PERIOD_FOR_ORG_PRIVATE_PROP            (Integer),
         REMIND_PERIOD_FOR_PERSON_PRIVATE_PROP         (Integer),
         REMIND_PERIOD_FOR_TASKS                       (Integer),
-        REMIND_PERIOD_FOR_SURVEYS_ENDDATE              (Integer)
+        REMIND_PERIOD_FOR_SURVEYS_ENDDATE             (Integer)
 
         KEYS(type, rdc) {
             this.type = type

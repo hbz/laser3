@@ -74,7 +74,7 @@ static hasMany = [  tipps:     TitleInstancePackagePlatform,
                     documents: DocContext,
                     subscriptions:  SubscriptionPackage,
                     pendingChanges: PendingChange,
-                    ids: IdentifierOccurrence ]
+                    ids: Identifier ]
 
   static mappedBy = [tipps:     'pkg',
                      orgs:      'pkg',
@@ -546,7 +546,7 @@ static hasMany = [  tipps:     TitleInstancePackagePlatform,
           println "processing IDs ..."
       tip?.title?.ids.each { id ->
           println "adding identifier ${id}"
-        newtip.title.identifiers.add([namespace:id.identifier.ns.ns, value:id.identifier.value]);
+        newtip.title.identifiers.add([namespace:id.ns.ns, value:id.value]);
       }
 
       result.tipps.add(newtip)
@@ -583,22 +583,24 @@ static hasMany = [  tipps:     TitleInstancePackagePlatform,
     println "processing identifier ${value}"
     this.ids.each {
         println "processing identifier occurrence ${it}"
-      if ( it?.identifier?.ns?.ns == ns && it.identifier.value == value ) {
+      if ( it.ns?.ns == ns && it.value == value ) {
           println "occurrence found"
         found = true
       }
     }
 
     if ( ! found && ns.toLowerCase() != 'originediturl' ) {
-      def id = Identifier.lookupOrCreateCanonicalIdentifier(ns, value)
-        println "before execute query"
-      def id_occ = IdentifierOccurrence.executeQuery("select io from IdentifierOccurrence as io where io.identifier = ? and io.pkg = ?", [id,this])
-        println "id_occ query executed"
+        // TODO [ticket=1789]
+      //def id = Identifier.lookupOrCreateCanonicalIdentifier(ns, value)
+      //  println "before execute query"
+      //def id_occ = IdentifierOccurrence.executeQuery("select io from IdentifierOccurrence as io where io.identifier = ? and io.pkg = ?", [id,this])
+      //  println "id_occ query executed"
 
-      if ( !id_occ || id_occ.size() == 0 ){
-        println "Create new identifier occurrence for pid:${getId()} ns:${ns} value:${value}"
-        new IdentifierOccurrence(identifier:id, pkg:this).save()
-      }
+      //if ( !id_occ || id_occ.size() == 0 ){
+      //  println "Create new identifier occurrence for pid:${getId()} ns:${ns} value:${value}"
+      //  new IdentifierOccurrence(identifier:id, pkg:this).save()
+      //}
+        Identifier.construct([value:value, reference:this, namespace:ns])
     }
     else if(ns.toLowerCase() == 'originediturl') {
         println "package identifier namespace for ${value} is deprecated originEditUrl ... ignoring."
@@ -618,12 +620,11 @@ static hasMany = [  tipps:     TitleInstancePackagePlatform,
 
     def getIdentifierByType(idtype) {
         def result = null
-        ids.each { id ->
-            if ( id.identifier.ns.ns.equalsIgnoreCase(idtype) ) {
-                result = id.identifier;
+        ids.each { ident ->
+            if ( ident.ns.ns.equalsIgnoreCase(idtype) ) {
+                result = ident;
             }
         }
         result
     }
-
 }

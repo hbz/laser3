@@ -115,7 +115,7 @@ class DataloadService {
                 result.identifiers = []
                 ti.ids?.each { id ->
                     try{
-                        result.identifiers.add([type:id.identifier.ns.ns, value:id.identifier.value])
+                        result.identifiers.add([type:id.ns.ns, value:id.value])
                     } catch(Exception e) {
                         log.error(e)
                     }
@@ -151,9 +151,9 @@ class DataloadService {
             result.cpname = pkg.getContentProvider()?.name
 
             result.identifiers = []
-            pkg.ids?.each { id ->
+            pkg.ids?.each { ident ->
                 try{
-                    result.identifiers.add([type:id.identifier.ns.ns, value:id.identifier.value])
+                    result.identifiers.add([type:ident.ns.ns, value:ident.value])
                 } catch(Exception e) {
                     log.error(e)
                 }
@@ -490,10 +490,12 @@ class DataloadService {
     result
   }
 
-  def lookupOrCreateCanonicalIdentifier(ns, value) {
-    log.debug("lookupOrCreateCanonicalIdentifier(${ns},${value})");
-    def namespace = IdentifierNamespace.findByNs(ns) ?: new IdentifierNamespace(ns:ns).save();
-    Identifier.findByNsAndValue(namespace,value) ?: new Identifier(ns:namespace, value:value).save();
+    def lookupOrCreateCanonicalIdentifier(ns, value) {
+        // TODO [ticket=1789]
+        log.debug("lookupOrCreateCanonicalIdentifier(${ns},${value})");
+        //def namespace = IdentifierNamespace.findByNs(ns) ?: new IdentifierNamespace(ns:ns).save();
+        //Identifier.findByNsAndValue(namespace,value) ?: new Identifier(ns:namespace, value:value).save();
+        Identifier.construct([value:value, reference:null, namespace:ns])
   }
 
 
@@ -663,10 +665,12 @@ class DataloadService {
             }
 
             if ( matched && suncat_identifier ) {
+                // TODO [ticket=1789]
               log.debug("set suncat identifier to ${suncat_identifier}");
-              def canonical_identifier = Identifier.lookupOrCreateCanonicalIdentifier('SUNCAT',suncat_identifier);
-              ti.ids.add(new IdentifierOccurrence(identifier:canonical_identifier, ti:ti));
-              ti.save(flush:true);
+              //def canonical_identifier = Identifier.lookupOrCreateCanonicalIdentifier('SUNCAT',suncat_identifier);
+              //ti.ids.add(new IdentifierOccurrence(identifier:canonical_identifier, ti:ti));
+              //ti.save(flush:true);
+                def canonical_identifier = Identifier.construct([value: suncat_identifier, reference: ti, namespace: 'SUNCAT'])
             }
             else {
               log.debug("No match for title ${ti.title}, ${ti.id}");

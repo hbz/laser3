@@ -376,7 +376,7 @@ class YodaController {
 
     @Secured(['ROLE_YODA'])
     def remapOriginEditUrl() {
-        List<IdentifierOccurrence> originEditUrls = IdentifierOccurrence.executeQuery("select io from IdentifierOccurrence io join io.identifier id where lower(id.ns.ns) = 'originediturl'")
+        List<Identifier> originEditUrls = Identifier.executeQuery("select ident from Identifier ident where lower(ident.ns.ns) = 'originediturl'")
         originEditUrls.each { originEditUrl ->
             def obj
             if(originEditUrl.tipp) {
@@ -626,9 +626,11 @@ class YodaController {
     @Secured(['ROLE_YODA'])
     def migratePackageIdentifiers() {
         IdentifierNamespace isilPaketsigel = IdentifierNamespace.findByNs('ISIL_Paketsigel')
-        Set<Identifier> idList = Identifier.executeQuery("select io.identifier from IdentifierOccurrence io where io.pkg != null and lower(io.identifier.ns.ns) = 'isil'")
+        Set<Identifier> idList = Identifier.executeQuery("select ident from Identifier ident where ident.pkg != null and lower(ident.ns.ns) = 'isil'")
         if(idList) {
-            Identifier.executeUpdate("update IdentifierOccurrence io set io.identifier.ns = :isilPaketsigel where io.pkg != null and lower(io.identifier.ns.ns) = 'isil'",[isilPaketsigel: isilPaketsigel])
+            // TODO [ticket=1789]
+            Identifier.executeUpdate("update Identifier ident set ident.ns = :isilPaketsigel where ident.pkg != null and lower(ident.ns.ns) = 'isil'",[isilPaketsigel: isilPaketsigel])
+            //Identifier.executeUpdate("update IdentifierOccurrence io set io.identifier.ns = :isilPaketsigel where io.pkg != null and lower(io.identifier.ns.ns) = 'isil'",[isilPaketsigel: isilPaketsigel])
             flash.message = "Changes performed on ${idList.size()} package identifiers ..."
         }
         redirect controller: 'home'
@@ -1029,8 +1031,9 @@ class YodaController {
                                     }
                                     ids {
                                         o.ids.each { idObj ->
-                                            IdentifierOccurrence idOcc = (IdentifierOccurrence) idObj
-                                            id (namespace: idOcc.identifier.ns.ns, value: idOcc.identifier.value)
+                                            // TODO [ticket=1789]
+                                            //IdentifierOccurrence idOcc = (IdentifierOccurrence) idObj
+                                            id (namespace: idObj.ns.ns, value: idObj.value)
                                         }
                                     }
                                     //outgoing/ingoingCombos: assembled in branch combos
@@ -1408,8 +1411,7 @@ class YodaController {
                 def users = User.findAll()
                 print users
                 users.each { user ->
-                    UserSettings userSettingDashboardReminderPeriod = user.getSetting(DASHBOARD_REMINDER_PERIOD, DEFAULT_REMINDER_PERIOD)
-                    int oldPeriod = userSettingDashboardReminderPeriod.value
+                    int oldPeriod = 30
                     user.getSetting(REMIND_PERIOD_FOR_LICENSE_PRIVATE_PROP, oldPeriod)
                     user.getSetting(REMIND_PERIOD_FOR_LICENSE_CUSTOM_PROP, oldPeriod)
                     user.getSetting(REMIND_PERIOD_FOR_ORG_CUSTOM_PROP, oldPeriod)
@@ -1420,9 +1422,6 @@ class YodaController {
                     user.getSetting(REMIND_PERIOD_FOR_SUBSCRIPTIONS_NOTICEPERIOD, oldPeriod)
                     user.getSetting(REMIND_PERIOD_FOR_SUBSCRIPTIONS_ENDDATE, oldPeriod)
                     user.getSetting(REMIND_PERIOD_FOR_TASKS, oldPeriod)
-
-                    println '-----> deleting userSetting: ' + userSettingDashboardReminderPeriod.id + ", " + userSettingDashboardReminderPeriod.key
-                    userSettingDashboardReminderPeriod.delete()
                 }
                 result.users = users
                 flash.message = 'Das Ersetzen des Usersettings DASHBOARD_REMINDER_PERIOD für alle Benutzer im System war erfolgreich.'
@@ -1699,7 +1698,9 @@ class YodaController {
                 }
                 else {
 
-                    def tiObj = TitleInstance.executeQuery('select ti from TitleInstance ti join ti.ids ids where ids in (select io from IdentifierOccurrence io join io.identifier id where id.ns in :namespaces and id.value = :value)',[namespaces:idCandidate.namespaces,value:idCandidate.value])
+                    // TODO [ticket=1789]
+                    //def tiObj = TitleInstance.executeQuery('select ti from TitleInstance ti join ti.ids ids where ids in (select io from IdentifierOccurrence io join io.identifier id where id.ns in :namespaces and id.value = :value)',[namespaces:idCandidate.namespaces,value:idCandidate.value])
+                    def tiObj = TitleInstance.executeQuery('select ti from TitleInstance ti join ti.ids ident where ident.ns in :namespaces and ident.value = :value', [namespaces:idCandidate.namespaces, value:idCandidate.value])
                     if(tiObj) {
 
                         tiObj?.each { titleInstance ->

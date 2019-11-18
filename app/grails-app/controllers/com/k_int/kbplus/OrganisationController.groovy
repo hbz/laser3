@@ -59,7 +59,13 @@ class OrganisationController extends AbstractDebugController {
         Boolean isComboRelated = Combo.findByFromOrgAndToOrg(org, contextService.getOrg())
 
         Boolean hasAccess = (inContextOrg && accessService.checkMinUserOrgRole(user, org, 'INST_ADM')) ||
-                (isComboRelated && accessService.checkMinUserOrgRole(user, contextService.getOrg(), 'INST_ADM'))
+                (isComboRelated && accessService.checkMinUserOrgRole(user, contextService.getOrg(), 'INST_ADM')) ||
+                SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN,ROLE_ORG_EDITOR')
+
+        // forbidden access
+        if (! hasAccess) {
+            redirect controller: 'organisation', action: 'show', id: org.id
+        }
 
         Map result = [
                 user:           user,
@@ -68,11 +74,7 @@ class OrganisationController extends AbstractDebugController {
                 inContextOrg:   inContextOrg
         ]
         result.editable = result.editable || (inContextOrg && accessService.checkMinUserOrgRole(user, org, 'INST_ADM'))
-
-        // forbidden access
-        if (! result.editable) {
-            redirect controller: 'organisation', action: 'show', id: org.id
-        }
+        result.isComboRelated = isComboRelated
 
 		if (params.deleteCI) {
 			CustomerIdentifier ci = genericOIDService.resolveOID(params.deleteCI)
@@ -84,10 +86,13 @@ class OrganisationController extends AbstractDebugController {
             Platform plt = genericOIDService.resolveOID(params.addCIPlatform)
             if (plt) {
                 CustomerIdentifier ci = new CustomerIdentifier(
-                        owner: org,
+                        customer: org,
                         platform: plt,
-                        value: params.addCIValue,
-                        type: RefdataValue.getByValueAndCategory('Default', 'CustomerIdentifier.Type') // TODO
+                        value: params.addCIValue?.trim(),
+                        note: params.addCINote?.trim(),
+                        owner: contextService.getOrg(),
+                        isPublic: true,
+                        type: RefdataValue.getByValueAndCategory('Default', 'CustomerIdentifier.Type')
                 )
                 ci.save()
             }
@@ -121,7 +126,7 @@ class OrganisationController extends AbstractDebugController {
             result.settings.addAll(allSettings.findAll { it.key in ownerSet })
             result.settings.addAll(allSettings.findAll { it.key in accessSet })
             result.settings.addAll(allSettings.findAll { it.key in credentialsSet })
-            result.customerIdentifier = CustomerIdentifier.findAllByOwner(org)
+            result.customerIdentifier = CustomerIdentifier.findAllByCustomer(org)
         }
         else if (inContextOrg) {
             log.debug( 'settings for own org')
@@ -130,14 +135,19 @@ class OrganisationController extends AbstractDebugController {
             if (org.hasPerm('ORG_CONSORTIUM,ORG_INST')) {
                 result.settings.addAll(allSettings.findAll { it.key in accessSet })
                 result.settings.addAll(allSettings.findAll { it.key in credentialsSet })
-                result.customerIdentifier = CustomerIdentifier.findAllByOwner(org)
+                result.customerIdentifier = CustomerIdentifier.findAllByCustomer(org)
             }
-            else if (['FAKE', 'ORG_BASIC_MEMBER'].contains(org.getCustomerType())) {
+            else if (['ORG_BASIC_MEMBER'].contains(org.getCustomerType())) {
+                result.settings.addAll(allSettings.findAll { it.key == OrgSettings.KEYS.NATSTAT_SERVER_ACCESS })
+                result.customerIdentifier = CustomerIdentifier.findAllByCustomer(org)
+            }
+            else if (['FAKE'].contains(org.getCustomerType())) {
                 result.settings.addAll(allSettings.findAll { it.key == OrgSettings.KEYS.NATSTAT_SERVER_ACCESS })
             }
         }
         else if (isComboRelated){
             log.debug( 'settings for combo related org: consortia or collective')
+            result.customerIdentifier = CustomerIdentifier.findAllByCustomer(org)
         }
 
         result.allPlatforms = Platform.executeQuery('select p from Platform p join p.org o where p.org is not null order by o.name, o.sortname, p.name')
@@ -454,7 +464,7 @@ class OrganisationController extends AbstractDebugController {
                         [institution: OT_INSTITUTION, searchName: "%${params.proposedOrganisation.toLowerCase()}%"]))
             }
             if (params.proposedOrganisationID) {
-                result.organisationMatches.addAll(Org.executeQuery("select id.org from IdentifierOccurrence id where lower(id.identifier.value) like :identifier and lower(id.identifier.ns.ns) in (:namespaces) ",
+                result.organisationMatches.addAll(Org.executeQuery("select id.org from Identifier id where lower(id.value) like :identifier and lower(id.ns.ns) in (:namespaces) ",
                         [identifier: "%${params.proposedOrganisationID.toLowerCase()}%",namespaces:["isil","wibid"]]))
             }
         }
@@ -612,17 +622,14 @@ class OrganisationController extends AbstractDebugController {
             def foundWibid = false
             def foundEZB = false
 
-            result.orgInstance.ids.each {io ->
-                if(io?.identifier?.ns?.ns == 'ISIL')
-                {
+            result.orgInstance.ids.each {ident ->
+                if(ident.ns?.ns == 'ISIL') {
                     foundIsil = true
                 }
-                if(io?.identifier?.ns?.ns == 'wibid')
-                {
+                if(ident.ns?.ns == 'wibid') {
                     foundWibid = true
                 }
-                if(io?.identifier?.ns?.ns == 'ezb')
-                {
+                if(ident.ns?.ns == 'ezb') {
                     foundEZB = true
                 }
             }

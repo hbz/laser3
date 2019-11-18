@@ -37,6 +37,7 @@ public class PackageIngestService {
   ];
 
 
+  @Deprecated
   def processUploadPackage(upload) {
 
     def new_pkg_id = null
@@ -184,9 +185,11 @@ public class PackageIngestService {
             }
             // Really not happy with this as a way forward, hoping for feedback from OS
             tipp.tippid.each { tippid ->
-              def canonical_id = Identifier.lookupOrCreateCanonicalIdentifier(tippid.key, tippid.value)
-              def new_io = new IdentifierOccurrence(identifier:canonical_id,tipp:dbtipp).save()
-              tipp.messages.add([type:'alert-success',message:"tipp identifier created: ${tippid.key}:${tippid.value} ${new_io.id}"]);
+              // TODO [ticket=1789]
+              //def canonical_id = Identifier.lookupOrCreateCanonicalIdentifier(tippid.key, tippid.value)
+              //def new_io = new IdentifierOccurrence(identifier:canonical_id,tipp:dbtipp).save()
+              def ident = Identifier.construct([value: tippid.value, reference: dbtipp,namespace: tippid.key])
+              tipp.messages.add([type:'alert-success',message:"tipp identifier created: ${tippid.key}:${tippid.value} ${ident.id}"]);
             }
           }
 
@@ -206,6 +209,7 @@ public class PackageIngestService {
     upload.new_pkg_id = new_pkg_id
   }
   //TODO: Wegen Überarbeitung von Titel Konzept muss dies hier nochmal überarbeitet werden by Moe
+  @Deprecated
   def lookupOrCreateTitleInstance(identifiers,title,publisher) {
     // log.debug("lookupOrCreateTitleInstance ${identifiers}, ${title}, ${publisher}");
     //TODO: Wegen Überarbeitung von Titel Konzept muss dies hier nochmal überarbeitet werden by Moe

@@ -2,6 +2,7 @@ package com.k_int.kbplus
 
 import com.k_int.kbplus.auth.User
 import de.laser.controller.AbstractDebugController
+import de.laser.domain.MailTemplate
 import grails.plugin.springsecurity.SpringSecurityUtils
 import grails.plugin.springsecurity.annotation.Secured
 import org.codehaus.groovy.grails.plugins.orm.auditable.AuditLogEvent
@@ -12,6 +13,7 @@ class DataManagerController extends AbstractDebugController {
   def springSecurityService
   def GOKbService
   def contextService
+  def genericOIDService
 
   @Secured(['ROLE_ADMIN'])
   def index() { 
@@ -207,7 +209,7 @@ class DataManagerController extends AbstractDebugController {
             }
             linetype = 'Title'
             break;
-          case 'com.k_int.kbplus.IdentifierOccurrence':
+          case 'com.k_int.kbplus.Identifier':
             break;
           default:
             log.error("Unexpected event class name found ${hl.className}")
@@ -528,6 +530,55 @@ class DataManagerController extends AbstractDebugController {
 
 
     result
+  }
+
+  @Secured(['ROLE_ADMIN'])
+  def listMailTemplates() {
+    def result =[:]
+
+    result.mailTemplates = MailTemplate.getAll()
+
+    result
+  }
+
+  @Secured(['ROLE_ADMIN'])
+  def createMailTemplate() {
+
+    def mailTemplate = new MailTemplate(params)
+
+    if(mailTemplate.save(flush: true))
+    {
+        flash.message = message(code: 'default.created.message', args: [message(code: 'mailTemplate.label'), mailTemplate.name])
+    }
+    else{
+      flash.error = message(code: 'default.save.error.message', args: [message(code: 'mailTemplate.label')])
+    }
+
+    redirect(action: 'listMailTemplates')
+  }
+
+  @Secured(['ROLE_ADMIN'])
+  def editMailTemplate() {
+
+    MailTemplate mailTemplate = genericOIDService.resolveOID(params.target)
+
+    if(mailTemplate) {
+      mailTemplate.name = params.name
+      mailTemplate.subject = params.subject
+      mailTemplate.text = params.text
+      mailTemplate.language = params.language ? RefdataValue.get(params.language) : mailTemplate.language
+      mailTemplate.type = params.type ? RefdataValue.get(params.type) : mailTemplate.type
+    }
+
+    if(mailTemplate.save(flush: true))
+    {
+      flash.message = message(code: 'default.updated.message', args: [message(code: 'mailTemplate.label'), mailTemplate.name])
+    }
+    else{
+      flash.error = message(code: 'default.not.updated.message', args: [message(code: 'mailTemplate.label'), mailTemplate.name])
+    }
+
+    redirect(action: 'listMailTemplates')
   }
 
 }

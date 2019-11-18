@@ -102,7 +102,7 @@ class ApiReaderHelper {
             result.endDate          = lic.endDate
 
             // References
-            result.identifiers = retrieveIdentifierCollection(lic.ids) // com.k_int.kbplus.IdentifierOccurrence
+            result.identifiers = retrieveIdentifierCollection(lic.ids) // com.k_int.kbplus.Identifier
 
             result = ApiToolkit.cleanUp(result, true, true)
         }
@@ -124,7 +124,7 @@ class ApiReaderHelper {
         result.name         = org.name
 
         // References
-        result.identifiers = retrieveIdentifierCollection(org.ids) // com.k_int.kbplus.IdentifierOccurrence
+        result.identifiers = retrieveIdentifierCollection(org.ids) // com.k_int.kbplus.Identifier
 
         return ApiToolkit.cleanUp(result, true, true)
     }
@@ -145,7 +145,7 @@ class ApiReaderHelper {
         result.gokbId       = pkg.gokbId
 
         // References
-        result.identifiers = retrieveIdentifierCollection(pkg.ids) // com.k_int.kbplus.IdentifierOccurrence
+        result.identifiers = retrieveIdentifierCollection(pkg.ids) // com.k_int.kbplus.Identifier
 
         return ApiToolkit.cleanUp(result, true, true)
     }
@@ -195,7 +195,7 @@ class ApiReaderHelper {
             result.endDate        = sub.endDate
 
             // References
-            result.identifiers = retrieveIdentifierCollection(sub.ids) // com.k_int.kbplus.IdentifierOccurrence
+            result.identifiers = retrieveIdentifierCollection(sub.ids) // com.k_int.kbplus.Identifier
 
             result = ApiToolkit.cleanUp(result, true, true)
         }
@@ -238,7 +238,7 @@ class ApiReaderHelper {
         result.type         = title.type?.value
 
         // References
-        result.identifiers = retrieveIdentifierCollection(title.ids) // com.k_int.kbplus.IdentifierOccurrence
+        result.identifiers = retrieveIdentifierCollection(title.ids) // com.k_int.kbplus.Identifier
 
         return ApiToolkit.cleanUp(result, true, true)
     }
@@ -421,12 +421,12 @@ class ApiReaderHelper {
         result
     }
 
-    static Collection<Object> retrieveIdentifierCollection(Collection<IdentifierOccurrence> list) {
+    static Collection<Object> retrieveIdentifierCollection(Collection<Identifier> list) {
         def result = []
         list?.each { it ->   // com.k_int.kbplus.IdentifierOccurrence
             def tmp = [:]
-            tmp.put( 'namespace', it.identifier?.ns?.ns )
-            tmp.put( 'value', it.identifier?.value )
+            tmp.put( 'namespace', it.ns?.ns )
+            tmp.put( 'value', it.value )
 
             tmp = ApiToolkit.cleanUp(tmp, true, true)
             result << tmp
@@ -894,7 +894,7 @@ class ApiReaderHelper {
 
         // References
         result.additionalPlatforms  = retrievePlatformTippCollection(tipp.additionalPlatforms) // com.k_int.kbplus.PlatformTIPP
-        result.identifiers          = retrieveIdentifierCollection(tipp.ids)       // com.k_int.kbplus.IdentifierOccurrence
+        result.identifiers          = retrieveIdentifierCollection(tipp.ids)       // com.k_int.kbplus.Identifier
         result.platform             = retrievePlatformStubMap(tipp.platform) // com.k_int.kbplus.Platform
         result.title                = retrieveTitleStubMap(tipp.title)       // com.k_int.kbplus.TitleInstance
 
