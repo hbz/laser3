@@ -147,10 +147,10 @@ ${message(code: 'issueEntitlementsSurvey.label')} - ${surveyInfo.name}
                                 <g:message code="default.identifiers.label"/>
                             </dt>
                             <dd>
-                                <g:each in="${subscriptionInstance?.ids?.sort { it?.identifier?.ns?.ns }}"
+                                <g:each in="${subscriptionInstance?.ids?.sort { it?.ns?.ns }}"
                                         var="id">
                                     <span class="ui small teal image label">
-                                        ${id.identifier.ns.ns}: <div class="detail">${id.identifier.value}</div>
+                                        ${id.ns.ns}: <div class="detail">${id.value}</div>
                                     </span>
                                 </g:each>
                             </dd>
@@ -283,10 +283,23 @@ ${message(code: 'issueEntitlementsSurvey.label')} - ${surveyInfo.name}
 
             <div class="ui card la-time-card">
                 <div class="content">
-                    <div class="header"><g:message code="renewEntitlementsWithSurvey.currentEntitlements"/></div>
+                    <div class="header"><g:message code="subscription.entitlement.plural"/></div>
                 </div>
 
                 <div class="content">
+                    <div class="header"><g:message code="renewEntitlementsWithSurvey.currentFixedEntitlements"/></div>
+                    <dl>
+                        <dt class="control-label">${message(code: 'myinst.selectPackages.pkg_titles')}</dt>
+                        <dd>${iesFix?.size() ?: 0}</dd>
+                    </dl>
+                    <dl>
+                        <dt class="control-label">${message(code: 'tipp.listPrice')}</dt>
+                        <dd><g:formatNumber number="${iesFixListPriceSum}" type="currency"/></dd>
+                    </dl>
+                </div>
+
+                <div class="content">
+                    <div class="header"><g:message code="renewEntitlementsWithSurvey.currentEntitlements"/></div>
                     <dl>
                         <dt class="control-label">${message(code: 'myinst.selectPackages.pkg_titles')}</dt>
                         <dd>${ies?.size() ?: 0}</dd>
@@ -326,7 +339,7 @@ ${message(code: 'issueEntitlementsSurvey.label')} - ${surveyInfo.name}
             <div class="eight wide field" style="text-align: left;">
                 <g:if test="${subscriptionInstance && editable}">
                     <g:link class="ui button green js-open-confirm-modal"
-                            data-confirm-term-what="renewalEntitlements"
+                            data-confirm-tokenMsg="${message(code: "confirm.dialog.concludeBinding.renewalEntitlements")}"
                             data-confirm-term-how="concludeBinding"
                             controller="myInstitution" action="surveyInfoFinish"
                             id="${surveyInfo.id}"

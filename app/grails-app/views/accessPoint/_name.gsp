@@ -4,13 +4,27 @@
         <div class="grouped fields">
             <g:each status="i" in="${nameOptions}" var="nameOption" >
                 <div class="field">
-                    <div class="ui radio checkbox" onclick="$('#name').val('${nameOption.value}')">
+                    <div class="ui radio checkbox" onclick="fillNameField('${nameOption.value}');">
                         <input type="radio" name="frequency" ${ (i) == 0 ? 'checked=checked' : ''}>
-                        <label>${nameOption.key} </label>
+                        <label>${message(code: "${nameOption.key}")}
+                            <span class="la-long-tooltip la-popup-tooltip la-delay"
+                                  data-tooltip="${message(code: "${nameOption.key}.help")}">
+                                <i class="question circle icon la-popup"></i></span>
+                        </label>
                     </div>
                 </div>
             </g:each>
         </div>
     </div>
-    <g:textField id='name' name="name" value="${name}" />
+    <g:field readonly="${name != ''}" type="text" name="name" value="${name}" />
 </div>
+<r:script>
+    function fillNameField(name) {
+        $('#name').val(name);
+        if (name !== '') {
+            document.getElementById('name').readOnly = true;
+        } else {
+            document.getElementById('name').readOnly = false;
+        }
+    }
+</r:script>

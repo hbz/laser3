@@ -49,7 +49,7 @@
                     <td>
                         ${n.owner.content}<br/>
 
-                        <div class="pull-right"><i>${n.owner.type?.value} (
+                        <div class="la-float-right"><i>${n.owner.type?.value} (
                         Private
                         ) By ${n.owner.user?.displayName} on <g:formatDate formatName="default.date.format.notime"
                                                                            date="${n.alert.createTime}"/></i></div>

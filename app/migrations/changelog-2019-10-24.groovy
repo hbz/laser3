@@ -6,6 +6,24 @@ databaseChangeLog = {
 
                 def propDefId = sql.rows("select pd_id from property_definition where pd_name='NatStat Supplier ID'")
 
+                if (! propDefId) {
+                    // because 'NatStat Supplier ID' is not existing yet
+                    // will be updated during next bootstrap
+                    sql.execute("""
+                        insert into property_definition(
+                            pd_description,
+                            pd_name,
+                            version,
+                            pd_mandatory,
+                            pd_multiple_occurrence,
+                            pd_used_for_logic,
+                            pd_hard_data,
+                            pd_type) values ('Platform Property', 'NatStat Supplier ID', 0, false, false, true, false, 'class java.lang.String')
+                        """)
+
+                    propDefId = sql.rows("select pd_id from property_definition where pd_name='NatStat Supplier ID'")
+                }
+
                 def mapping = [:] // LAS:eR Platform -> NatStat Platform
                 mapping['4a9ccc66-eb60-4355-8eb6-516300b71354'] = 'American Chemical Society (ACS)' //'ACS Publications'
                 mapping['83415044-6f9b-43ec-a7e2-a2c7a35e7dfd'] = 'American Physical Society (APS)' //American Physical Society

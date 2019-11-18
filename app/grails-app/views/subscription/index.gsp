@@ -7,7 +7,7 @@
 <html>
 <head>
     <meta name="layout" content="semanticUI"/>
-    <title>${message(code: 'laser', default: 'LAS:eR')} : ${message(code: 'subscription.details.label', default: 'Subscription Details')}</title>
+    <title>${message(code: 'laser', default: 'LAS:eR')} : ${message(code: 'subscription.details.current_ent')}</title>
 </head>
 
 <body>
@@ -273,8 +273,11 @@
                                                 <g:render template="/templates/tipps/coverageStatement" model="${[covStmt: covStmt]}"/>
                                             </div>
                                         </g:each>
-                                        </div><br>
-                                        <g:link action="addCoverage" params="${[issueEntitlement: ie.id]}" class="ui compact icon button positive tiny"><i class="ui icon plus" data-content="Lizenzzeitraum hinzufügen"></i></g:link>
+                                        </div>
+                                        <g:if test="${editable}">
+                                            <br>
+                                            <g:link action="addCoverage" params="${[issueEntitlement: ie.id]}" class="ui compact icon button positive tiny"><i class="ui icon plus" data-content="Lizenzzeitraum hinzufügen"></i></g:link>
+                                        </g:if>
                                     </g:else>
 
 
@@ -319,7 +322,7 @@
                                     <g:if test="${editable}">
                                         <g:link action="removeEntitlement" class="ui icon negative button"
                                                 params="${[ieid: ie.id, sub: subscriptionInstance.id]}"
-                                                onClick="return confirm(${message(code: 'subscription.details.removeEntitlement.confirm', default: 'Are you sure you wish to delete this entitlement?')});">
+                                                onClick="return confirm('${message(code: 'subscription.details.removeEntitlement.confirm', default: 'Are you sure you wish to delete this entitlement?')}');">
                                             <i class="trash alternate icon"></i>
                                         </g:link>
                                     </g:if>

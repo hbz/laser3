@@ -12,7 +12,6 @@
     <body>
 
         <semui:breadcrumbs>
-            <semui:crumb controller="myInstitution" action="dashboard" text="${institution?.getDesignation()}" />
             <semui:crumb message="myinst.currentSubscriptions.label" class="active" />
         </semui:breadcrumbs>
 
@@ -21,7 +20,7 @@
                 <g:if test="${filterSet || defaultSet}">
                     <semui:exportDropdownItem>
                         <g:link class="item js-open-confirm-modal"
-                                data-confirm-term-content = "${message(code: 'confirmation.content.exportPartial')}"
+                                data-confirm-tokenMsg = "${message(code: 'confirmation.content.exportPartial')}"
                                 data-confirm-term-how="ok" controller="myInstitution" action="currentSubscriptions"
                                 params="${params+[exportXLS:true]}">
                             ${message(code:'default.button.exports.xls')}
@@ -29,7 +28,7 @@
                     </semui:exportDropdownItem>
                     <semui:exportDropdownItem>
                         <g:link class="item js-open-confirm-modal"
-                                data-confirm-term-content = "${message(code: 'confirmation.content.exportPartial')}"
+                                data-confirm-tokenMsg = "${message(code: 'confirmation.content.exportPartial')}"
                                 data-confirm-term-how="ok" controller="myInstitution" action="currentSubscriptions"
                                 params="${params+[format:'csv']}">
                             ${message(code:'default.button.exports.csv')}
@@ -66,7 +65,7 @@
             <!-- 1-1 -->
             <div class="field">
                 <label for="search-title">${message(code: 'default.search.text', default: 'Search text')}
-                    <span data-position="right center" data-variation="tiny"  class="la-popup-tooltip la-delay" data-content="${message(code:'default.search.tooltip.subscription')}">
+                    <span data-position="right center" data-variation="tiny" class="la-popup-tooltip la-delay" data-content="${message(code:'default.search.tooltip.subscription')}">
                         <i class="question circle icon"></i>
                     </span>
                 </label>
@@ -80,7 +79,7 @@
             <!-- 1-2 -->
             <div class="field">
                 <label for="identifier">${message(code: 'default.search.identifier')}
-                    <span data-position="right center" data-variation="tiny"  class="la-popup-tooltip la-delay" data-content="Lizenz, Vertrag, Paket, Titel">
+                    <span data-position="right center" data-variation="tiny" class="la-popup-tooltip la-delay" data-content="${message(code:'default.search.tooltip.subscription.identifier')}">
                         <i class="question circle icon"></i>
                     </span>
                 </label>
@@ -185,11 +184,11 @@
                     <div class="inline fields la-filter-inline">
                         <%
                             List subTypes = RefdataCategory.getAllRefdataValues('Subscription Type')
-                            boolean orgHasAdministrativeSubscriptions = OrgRole.executeQuery('select oo.sub from OrgRole oo where oo.org = :context and oo.roleType = :consortium and oo.sub.administrative = true',[context:institution,consortium:RDStore.OR_SUBSCRIPTION_CONSORTIA])
+
                             if(accessService.checkPermAffiliation("ORG_CONSORTIUM","INST_USER")) {
                                 subTypes -= RDStore.SUBSCRIPTION_TYPE_LOCAL
                             }
-                            if(!orgHasAdministrativeSubscriptions) {
+                            if(!accessService.checkPermAffiliation("ORG_CONSORTIUM","INST_USER")) {
                                 subTypes -= RDStore.SUBSCRIPTION_TYPE_ADMINISTRATIVE
                             }
                         %>
@@ -314,6 +313,17 @@
                 <th scope="col" rowspan="2" >${message(code: 'subscription.numberOfLicenses.label')}</th>
                 <th scope="col" rowspan="2" >${message(code: 'subscription.numberOfCostItems.label')}</th>
             </g:if>
+
+            <g:if test="${!(contextService.getOrg().getCustomerType() in ['ORG_CONSORTIUM', 'ORG_CONSORTIUM_SURVEY'])}">
+            <th class="la-no-uppercase" scope="col" rowspan="2" >
+                <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="bottom center"
+                      data-content="${message(code: 'subscription.isMultiYear.consortial.label')}">
+                 <i class="map orange icon"></i>
+                </span>
+            </th>
+
+            </g:if>
+
             <% /* <g:sortableColumn params="${params}" property="s.manualCancellationDate"
                               title="${message(code: 'default.cancellationDate.label')}"/> */ %>
             <th scope="col" rowspan="2" class="two">${message(code:'default.actions')}</th>
@@ -424,6 +434,16 @@
                         </g:link>
                     </td>
                 </g:if>
+                <g:if test="${!(contextService.getOrg().getCustomerType() in ['ORG_CONSORTIUM', 'ORG_CONSORTIUM_SURVEY'])}">
+                    <td>
+                        <g:if test="${s.isMultiYear}">
+                            <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="bottom center"
+                                  data-content="${message(code: 'subscription.isMultiYear.consortial.label')}">
+                                <i class="map orange icon"></i>
+                            </span>
+                        </g:if>
+                    </td>
+                </g:if>
                 <td class="x">
 
                     <g:set var="surveysConsortiaSub" value="${com.k_int.kbplus.SurveyConfig.findBySubscriptionAndIsSubscriptionSurveyFix(s ,true)}" />
@@ -489,8 +509,7 @@
                             </g:if>
                             <g:else>
                                 <g:link class="ui icon negative button js-open-confirm-modal"
-                                        data-confirm-term-what="subscription"
-                                        data-confirm-term-what-detail="${s.name}"
+                                        data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.subscription", args: [s.name])}"
                                         data-confirm-term-how="delete"
                                         controller="myInstitution" action="actionCurrentSubscriptions"
                                         params="${[curInst: institution.id, basesubscription: s.id]}">
@@ -509,7 +528,7 @@
             <br><strong><g:message code="filter.result.empty.object" args="${[message(code:"subscription.plural")]}"/></strong>
         </g:if>
         <g:else>
-            <br><strong><g:message code="result.empty.object" args="${message(code:"subscription.plural")}"/></strong>
+            <br><strong><g:message code="result.empty.object" args="${[message(code:"subscription.plural")]}"/></strong>
         </g:else>
     </g:else>
 

@@ -5,8 +5,7 @@
 <html>
     <head>
         <meta name="layout" content="semanticUI">
-        <g:set var="entityName" value="${message(code: 'package', default: 'Package')}" />
-        <title>${message(code:'laser', default:'LAS:eR')} : ${message(code:'package', default:'Package Details')}</title>
+        <title>${message(code:'laser', default:'LAS:eR')} : ${message(code:'package.details')}</title>
     </head>
     <body>
 
@@ -257,7 +256,7 @@
     <div>
       <br/>
       <p>
-        <span class="pull-right">
+        <span class="la-float-right">
           <g:if test="${unfiltered_num_tipp_rows == num_tipp_rows}">
             ${message(code:'package.show.filter.off')}
           </g:if>

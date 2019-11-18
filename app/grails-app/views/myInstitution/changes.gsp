@@ -3,19 +3,18 @@
 <html>
     <head>
         <meta name="layout" content="semanticUI"/>
-        <title>${message(code:'laser', default:'LAS:eR')} : ${message(code:'myinst.todo.label', default:'ToDo List')}</title>
+        <title>${message(code:'laser', default:'LAS:eR')} : ${message(code:'myinst.todo.label')}</title>
     </head>
 
     <body>
 
         <semui:breadcrumbs>
-            <semui:crumb controller="myInstitution" action="dashboard" text="${institution?.getDesignation()}" />
             <%--<semui:crumb text="(${num_todos} ${message(code:'myinst.todo.items', default:'Items')})" message="myinst.todo.list" class="active" />--%>
             <semui:crumb message="myinst.todo.label" class="active" />
         </semui:breadcrumbs>
 
         <h1 class="ui left aligned icon header"><semui:headerIcon />
-            ${message(code:'myinst.todo.label', default:'ToDo List')}
+            ${message(code:'myinst.todo.label')}
             <%--${message(code:'myinst.todo.pagination', args:[(params.offset?:1), (java.lang.Math.min(num_todos,(params.int('offset')?:0)+10)), num_todos])}--%>
         </h1>
 

@@ -7,7 +7,16 @@
 </head>
 
 <body>
-<g:render template="breadcrumb" model="${[params: params]}"/>
+<semui:breadcrumbs>
+    <semui:crumb controller="myInstitution" action="dashboard" text="${contextService.getOrg()?.getDesignation()}" />
+    <semui:crumb controller="survey" action="currentSurveysConsortia" text="${message(code:'menu.my.surveys')}" />
+
+    <g:if test="${surveyInfo}">
+        <semui:crumb controller="survey" action="show" id="${surveyInfo.id}" text="${surveyInfo.name}" />
+        <semui:crumb class="active" controller="survey" action="surveyTitlesEvaluation" id="${surveyInfo.id}" params="[surveyConfigID: surveyConfig.id]" message="surveyTitlesEvaluation.label" />
+    </g:if>
+
+</semui:breadcrumbs>
 
 <semui:controlButtons>
     <semui:exportDropdown>
@@ -17,13 +26,33 @@
         </semui:exportDropdownItem>
         <semui:exportDropdownItem>
             <g:link class="item" action="showEntitlementsRenew" id="${surveyConfig?.id}"
-                                          params="${[exportXLS:true, participant: participant?.id]}">${message(code:'default.button.exports.xls')}</g:link>
+                    params="${[exportXLS: true, participant: participant?.id]}">${message(code: 'default.button.exports.xls')}</g:link>
         </semui:exportDropdownItem>
     </semui:exportDropdown>
+    <semui:actionsDropdown>
+        <g:if test="${surveyOrg?.finishDate && surveyInfo && surveyInfo.status?.id == de.laser.helper.RDStore.SURVEY_SURVEY_STARTED?.id}">
+            <semui:actionsDropdownItem controller="survey" action="openIssueEntitlementsSurveyAgain"
+                                       params="[id: surveyConfig?.id, participant: participant?.id]"
+                                       message="openIssueEntitlementsSurveyAgain.label"/>
+        </g:if>
+
+        <g:if test="${surveyInfo && surveyInfo.status?.id == de.laser.helper.RDStore.SURVEY_IN_EVALUATION?.id}">
+            <semui:actionsDropdownItem controller="survey" action="completeIssueEntitlementsSurveyforParticipant"
+                                       params="[id: surveyConfig?.id, participant: participant?.id]"
+                                       message="completeIssueEntitlementsSurvey.forParticipant.label"/>
+        </g:if>
+        <g:else>
+            <semui:actionsDropdownItemDisabled controller="survey"
+                                               action="completeIssueEntitlementsSurveyforParticipant"
+                                               message="completeIssueEntitlementsSurvey.forParticipant.label"/>
+        </g:else>
+
+    </semui:actionsDropdown>
 </semui:controlButtons>
 
 <h1 class="ui left aligned icon header"><semui:headerTitleIcon type="Survey"/>
-<g:message code="issueEntitlementsSurvey.label"/>: ${surveyConfig?.surveyInfo?.name}
+<g:message code="issueEntitlementsSurvey.label"/>: <g:link controller="subscription" action="index"
+                                                           id="${subscriptionParticipant?.id}">${surveyConfig?.surveyInfo?.name}</g:link>
 </h1>
 
 
@@ -76,7 +105,6 @@
 
 <semui:form>
 
-
     <h2 class="ui header left aligned aligned"><g:message
             code="renewEntitlementsWithSurvey.currentEntitlements"/> (${ies.size() ?: 0})</h2>
 
@@ -120,7 +148,7 @@
                         <br>
 
                         <div class="la-icon-list">
-                            <g:if test="${tipp?.title instanceof com.k_int.kbplus.BookInstance }">
+                            <g:if test="${tipp?.title instanceof com.k_int.kbplus.BookInstance}">
                                 <div class="item">
                                     <i class="grey icon la-books la-popup-tooltip la-delay"
                                        data-content="${message(code: 'tipp.volume')}"></i>
@@ -263,11 +291,13 @@
                     <td>
                         <g:if test="${tipp?.title instanceof BookInstance}">
                         <%-- TODO contact Ingrid! ---> done as of subtask of ERMS-1490 --%>
-                            <i class="grey fitted la-books icon la-popup-tooltip la-delay" data-content="${message(code: 'title.dateFirstInPrint.label')}"></i>
+                            <i class="grey fitted la-books icon la-popup-tooltip la-delay"
+                               data-content="${message(code: 'title.dateFirstInPrint.label')}"></i>
                             <g:formatDate format="${message(code: 'default.date.format.notime')}"
                                           date="${tipp?.title?.dateFirstInPrint}"/>
                             <br>
-                            <i class="grey fitted la-books icon la-popup-tooltip la-delay" data-content="${message(code: 'title.dateFirstOnline.label')}"></i>
+                            <i class="grey fitted la-books icon la-popup-tooltip la-delay"
+                               data-content="${message(code: 'title.dateFirstOnline.label')}"></i>
                             <g:formatDate format="${message(code: 'default.date.format.notime')}"
                                           date="${tipp?.title?.dateFirstOnline}"/>
                         </g:if>

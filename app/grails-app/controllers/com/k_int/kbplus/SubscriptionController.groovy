@@ -156,7 +156,8 @@ class SubscriptionController extends AbstractDebugController {
                     changesDesc.add(PendingChange.get(change).desc)
                 }
             }
-            flash.message = changesDesc
+            // ERMS-1844: Hotfix: Änderungsmitteilungen ausblenden
+            // flash.message = changesDesc
         } else {
             result.pendingChanges = pendingChanges.collect { PendingChange.get(it) }
         }
@@ -200,7 +201,7 @@ class SubscriptionController extends AbstractDebugController {
                 qry_params.startDate = date_filter
                 qry_params.endDate = date_filter
             }
-            base_qry += "and ( ( lower(ie.tipp.title.title) like :title ) or ( exists ( from IdentifierOccurrence io where io.ti.id = ie.tipp.title.id and io.identifier.value like :identifier ) ) ) "
+            base_qry += "and ( ( lower(ie.tipp.title.title) like :title ) or ( exists ( from Identifier ident where ident.ti.id = ie.tipp.title.id and ident.value like :identifier ) ) ) "
             qry_params.title = "%${params.filter.trim().toLowerCase()}%"
             qry_params.identifier = "%${params.filter}%"
         } else {
@@ -437,6 +438,8 @@ class SubscriptionController extends AbstractDebugController {
             def parsed_change_info = JSON.parse(pc[1])
             if (parsed_change_info.tippID) {
                 pc_to_delete += pc[0]
+            }else if (parsed_change_info.tippId) {
+                    pc_to_delete += pc[0]
             } else if (parsed_change_info.changeDoc) {
                 def (oid_class, ident) = parsed_change_info.changeDoc.OID.split(":")
                 if (oid_class == tipp_class && tipp_ids.contains(ident.toLong())) {
@@ -613,7 +616,7 @@ class SubscriptionController extends AbstractDebugController {
         }
 
         if (params.filter) {
-            base_qry += " and ( ( lower(ie.tipp.title.title) like ? ) or ( exists ( from IdentifierOccurrence io where io.ti.id = ie.tipp.title.id and io.identifier.value like ? ) ) )"
+            base_qry += " and ( ( lower(ie.tipp.title.title) like ? ) or ( exists ( from Identifier ident where ident.ti.id = ie.tipp.title.id and ident.value like ? ) ) )"
             qry_params.add("%${params.filter.trim().toLowerCase()}%")
             qry_params.add("%${params.filter}%")
         }
@@ -753,7 +756,7 @@ class SubscriptionController extends AbstractDebugController {
 
             if (params.filter) {
                 log.debug("Filtering....");
-                basequery = "from TitleInstancePackagePlatform tipp where tipp.pkg in ( select pkg from SubscriptionPackage sp where sp.subscription = ? ) and tipp.status = ? and ( not exists ( select ie from IssueEntitlement ie where ie.subscription = ? and ie.tipp.id = tipp.id and ie.status = ? ) ) and ( ( lower(tipp.title.title) like ? ) OR ( exists ( select io from IdentifierOccurrence io where io.ti.id = tipp.title.id and io.identifier.value like ? ) ) ) "
+                basequery = "from TitleInstancePackagePlatform tipp where tipp.pkg in ( select pkg from SubscriptionPackage sp where sp.subscription = ? ) and tipp.status = ? and ( not exists ( select ie from IssueEntitlement ie where ie.subscription = ? and ie.tipp.id = tipp.id and ie.status = ? ) ) and ( ( lower(tipp.title.title) like ? ) OR ( exists ( select ident from Identifier ident where ident.ti.id = tipp.title.id and ident.value like ? ) ) ) "
                 qry_params.add("%${params.filter.trim().toLowerCase()}%")
                 qry_params.add("%${params.filter}%")
             } else {
@@ -899,7 +902,7 @@ class SubscriptionController extends AbstractDebugController {
                         //is title in LAS:eR?
                         //List tiObj = TitleInstancePackagePlatform.executeQuery('select tipp from TitleInstancePackagePlatform tipp join tipp.title ti join ti.ids identifiers where identifiers.identifier.value in :idCandidates',[idCandidates:idCandidates])
                         //log.debug(idCandidates)
-                        def tiObj = TitleInstance.executeQuery('select ti from TitleInstance ti join ti.ids ids where ids in (select io from IdentifierOccurrence io join io.identifier id where id.ns in :namespaces and id.value = :value)',[namespaces:idCandidate.namespaces,value:idCandidate.value])
+                        def tiObj = TitleInstance.executeQuery('select ti from TitleInstance ti join ti.ids ids where ids in (select ident from Identifier ident where ident.ns in :namespaces and ident.value = :value)',[namespaces:idCandidate.namespaces,value:idCandidate.value])
                         if(tiObj) {
                             //is title already added?
                             if(addedTipps.get(tiObj)) {
@@ -1101,8 +1104,8 @@ class SubscriptionController extends AbstractDebugController {
                 row.add([field: ie?.tipp?.title?.summaryOfContent ?: '', style:null])
 
                 def identifiers = []
-                ie?.tipp?.title?.ids?.sort { it?.identifier?.ns?.ns }.each{ id ->
-                    identifiers << "${id.identifier.ns.ns}: ${id.identifier.value}"
+                ie?.tipp?.title?.ids?.sort { it?.ns?.ns }?.each{ ident ->
+                    identifiers << "${ident.ns?.ns}: ${ident.value}"
                 }
                 row.add([field: identifiers ? identifiers.join(', ') : '', style:null])
 
@@ -1152,7 +1155,7 @@ class SubscriptionController extends AbstractDebugController {
 
         result.subscriptionInstance =  result.surveyConfig?.subscription
 
-        result.ies = subscriptionService.getIssueEntitlementsNotFixed(result.surveyConfig.subscription?.getDerivedSubscriptionBySubscribers(result.institution))
+        result.ies = subscriptionService.getCurrentIssueEntitlements(result.surveyConfig.subscription?.getDerivedSubscriptionBySubscribers(result.institution))
 
         def filename = "renewEntitlements_${escapeService.escapeString(result.subscriptionInstance.dropdownNamingConvention())}"
 
@@ -1178,10 +1181,12 @@ class SubscriptionController extends AbstractDebugController {
                     g.message(code:'identifier.label'),
                     g.message(code:'title.dateFirstInPrint.label'),
                     g.message(code:'title.dateFirstOnline.label'),
+                    g.message(code:'default.status.label'),
                     g.message(code:'tipp.price')
+
             ]
             List rows = []
-            result.ies.each { ie ->
+            result.ies?.each { ie ->
                 List row = []
                 row.add([field: ie?.tipp?.title?.title ?: '', style:null])
                 row.add([field: ie?.tipp?.title?.volume ?: '', style:null])
@@ -1190,16 +1195,19 @@ class SubscriptionController extends AbstractDebugController {
                 row.add([field: ie?.tipp?.title?.summaryOfContent ?: '', style:null])
 
                 def identifiers = []
-                ie?.tipp?.title?.ids?.sort { it?.identifier?.ns?.ns }.each{ id ->
-                    identifiers << "${id.identifier.ns.ns}: ${id.identifier.value}"
+                ie?.tipp?.title?.ids?.sort { it.ns?.ns }?.each{ ident ->
+                    identifiers << "${ident.ns?.ns}: ${ident.value}"
                 }
                 row.add([field: identifiers ? identifiers.join(', ') : '', style:null])
 
                 row.add([field: ie?.tipp?.title?.dateFirstInPrint ? g.formatDate(date: ie?.tipp?.title?.dateFirstInPrint, format: message(code: 'default.date.format.notime')): '', style:null])
                 row.add([field: ie?.tipp?.title?.dateFirstOnline ? g.formatDate(date: ie?.tipp?.title?.dateFirstOnline, format: message(code: 'default.date.format.notime')): '', style:null])
 
+                row.add([field: ie?.acceptStatus?.getI10n('value') ?: '', style:null])
+
                 row.add([field: ie.priceItem?.listPrice ? g.formatNumber(number: ie?.priceItem?.listPrice, type: 'currency', currencySymbol: ie?.priceItem?.listCurrency, currencyCode: ie?.priceItem?.listCurrency) : '', style:null])
                 row.add([field: ie.priceItem?.localPrice ? g.formatNumber(number: ie?.priceItem?.localPrice, type: 'currency', currencySymbol: ie?.priceItem?.localCurrency, currencyCode: ie?.priceItem?.localCurrency) : '', style:null])
+
 
                 rows.add(row)
             }
@@ -2697,8 +2705,8 @@ class SubscriptionController extends AbstractDebugController {
         }
 
         if (result.subscriptionInstance && params.singleTitle) {
-            if(subscriptionService.deleteEntitlement(result.subscriptionInstance,params.singleTitle))
-                log.debug("Deleted tipp ${params.singleTitle} from sub ${result.subscriptionInstance.id}")
+            if(subscriptionService.deleteEntitlementbyID(result.subscriptionInstance,params.singleTitle))
+                log.debug("Deleted ie ${params.singleTitle} from sub ${result.subscriptionInstance.id}")
         } else {
             log.error("Unable to locate subscription instance");
         }
@@ -2806,10 +2814,10 @@ class SubscriptionController extends AbstractDebugController {
     def addEmptyPriceItem() {
         if(params.ieid) {
             IssueEntitlement ie = IssueEntitlement.get(params.ieid)
-            if(ie) {
+            if(ie && !ie.priceItem) {
                 PriceItem pi = new PriceItem(issueEntitlement: ie)
                 pi.setGlobalUID()
-                if(!pi.save()) {
+                if(!pi.save(flush: true)) {
                     log.error(pi.errors)
                     flash.error = message(code:'subscription.details.addEmptyPriceItem.priceItemNotSaved')
                 }
@@ -3239,7 +3247,7 @@ class SubscriptionController extends AbstractDebugController {
         }
         log.debug("Going for GOKB API")
         User user = springSecurityService.getCurrentUser()
-        params.max = user?.getDefaultPageSizeTMP() ?: 25
+        params.max = params.max ?: (user?.getDefaultPageSizeTMP() ?: 25)
 
         if (params.gokbApi) {
             def gokbRecords = []
@@ -3528,7 +3536,8 @@ class SubscriptionController extends AbstractDebugController {
                         changesDesc.add(PendingChange.get(change).desc)
                     }
                 }
-                flash.message = changesDesc
+                //ERMS-1844 Hotfix: Änderungsmitteilungen ausblenden
+                //flash.message = changesDesc
             } else {
                 result.pendingChanges = pendingChanges.collect { PendingChange.get(it) }
             }
@@ -3935,7 +3944,18 @@ class SubscriptionController extends AbstractDebugController {
                                     IssueEntitlement newIssueEntitlement = new IssueEntitlement()
                                     InvokerHelper.setProperties(newIssueEntitlement, ieProperties)
                                     newIssueEntitlement.subscription = newSubscription
-                                    newIssueEntitlement.save(flush: true)
+                                    newIssueEntitlement.coverages = null
+
+                                    if(newIssueEntitlement.save(flush: true)){
+                                        ie.properties.coverages.each{ coverage ->
+
+                                            def coverageProperties = coverage.properties
+                                            IssueEntitlementCoverage newIssueEntitlementCoverage = new IssueEntitlementCoverage()
+                                            InvokerHelper.setProperties(newIssueEntitlementCoverage, coverageProperties)
+                                            newIssueEntitlementCoverage.issueEntitlement = newIssueEntitlement
+                                            newIssueEntitlementCoverage.save(flush: true)
+                                        }
+                                    }
                                 }
                             }
 
@@ -4129,7 +4149,18 @@ class SubscriptionController extends AbstractDebugController {
                                         IssueEntitlement newIssueEntitlement = new IssueEntitlement()
                                         InvokerHelper.setProperties(newIssueEntitlement, properties)
                                         newIssueEntitlement.subscription = newSub
-                                        newIssueEntitlement.save(flush: true)
+                                        newIssueEntitlement.coverages = null
+
+                                        if(newIssueEntitlement.save(flush: true)){
+                                            ie.properties.coverages.each{ coverage ->
+
+                                                def coverageProperties = coverage.properties
+                                                IssueEntitlementCoverage newIssueEntitlementCoverage = new IssueEntitlementCoverage()
+                                                InvokerHelper.setProperties(newIssueEntitlementCoverage, coverageProperties)
+                                                newIssueEntitlementCoverage.issueEntitlement = newIssueEntitlement
+                                                newIssueEntitlementCoverage.save(flush: true)
+                                            }
+                                        }
                                     }
                                 }
 
@@ -4976,7 +5007,18 @@ class SubscriptionController extends AbstractDebugController {
                             IssueEntitlement newIssueEntitlement = new IssueEntitlement()
                             InvokerHelper.setProperties(newIssueEntitlement, properties)
                             newIssueEntitlement.subscription = newSubscriptionInstance
-                            newIssueEntitlement.save(flush: true)
+                            newIssueEntitlement.coverages = null
+
+                            if(newIssueEntitlement.save(flush: true)){
+                                ie.properties.coverages.each{ coverage ->
+
+                                    def coverageProperties = coverage.properties
+                                    IssueEntitlementCoverage newIssueEntitlementCoverage = new IssueEntitlementCoverage()
+                                    InvokerHelper.setProperties(newIssueEntitlementCoverage, coverageProperties)
+                                    newIssueEntitlementCoverage.issueEntitlement = newIssueEntitlement
+                                    newIssueEntitlementCoverage.save(flush: true)
+                                }
+                            }
                         }
                     }
 
@@ -5220,6 +5262,10 @@ class SubscriptionController extends AbstractDebugController {
                                      'propertiesMembers', 'processPropertiesMembers',
                                      'subscriptionPropertiesMembers', 'processSubscriptionPropertiesMembers'])
         ) {
+            result.editable = false
+        }
+
+        if(params.orgBasicMemberView){
             result.editable = false
         }
 

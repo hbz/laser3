@@ -5,13 +5,12 @@
 <html>
 <head>
     <meta name="layout" content="semanticUI"/>
-    <title>${message(code: 'laser', default: 'LAS:eR')} : ${message(code: 'subscription.details.subscriberManagement.label', args: args.memberType)}</title>
+    <title>${message(code: 'laser', default: 'LAS:eR')} : ${message(code:'subscription.details.linkPackagesMembers.label',args:args.memberTypeGenitive)}</title>
 </head>
 
 <body>
 
 <semui:breadcrumbs>
-    <semui:crumb controller="myInstitution" action="dashboard" text="${contextService.getOrg()?.getDesignation()}"/>
     <semui:crumb controller="myInstitution" action="currentSubscriptions"
                  text="${message(code: 'myinst.currentSubscriptions.label')}"/>
     <semui:crumb controller="subscription" action="show" id="${subscriptionInstance.id}"
@@ -22,15 +21,9 @@
 
 </semui:breadcrumbs>
 
-<h1 class="ui left aligned icon header">
-    ${message(code: 'subscription.details.subscriberManagement.label', args: args.memberType)}
-</h1>
+<h1 class="ui left aligned icon header"><semui:headerIcon/>${subscriptionInstance.name}</h1>
 
 <g:render template="navSubscriberManagement" model="${[args: args]}"/>
-
-<h3 class="ui left aligned icon header"><semui:headerIcon/>
-${message(code: 'subscription.linkPackagesMembers.header', args: args.memberTypeGenitive)}
-</h3>
 
 <semui:messages data="${flash}"/>
 
@@ -103,12 +96,12 @@ ${message(code: 'subscription.linkPackagesMembers.header', args: args.memberType
 
         <div class="ui buttons">
             <g:link class="ui button js-open-confirm-modal"
-                    data-confirm-term-content="${message(code: 'subscription.linkPackagesMembers.unlinkInfo.onlyPackage.confirm')}"
+                    data-confirm-tokenMsg="${message(code: 'subscription.linkPackagesMembers.unlinkInfo.onlyPackage.confirm')}"
                     data-confirm-term-how="ok" action="processUnLinkPackagesConsortia" id="${params.id}"
                     params="[withIE: false]">${message(code: 'subscription.linkPackagesMembers.unlinkInfo.onlyPackage')}</g:link>
             <div class="or"></div>
             <g:link class="ui button js-open-confirm-modal"
-                    data-confirm-term-content="${message(code: 'subscription.linkPackagesMembers.unlinkInfo.withIE.confirm')}"
+                    data-confirm-tokenMsg="${message(code: 'subscription.linkPackagesMembers.unlinkInfo.withIE.confirm')}"
                     data-confirm-term-how="ok" action="processUnLinkPackagesConsortia" id="${params.id}"
                     params="[withIE: true]">${message(code: 'subscription.linkPackagesMembers.unlinkInfo.withIE')}</g:link>
         </div>
@@ -136,13 +129,13 @@ ${message(code: 'subscription.linkPackagesMembers.header', args: args.memberType
 
             <div class="ui buttons">
                 <button class="ui button "
-                        data-confirm-term-content="${message(code: 'subscription.linkPackagesMembers.unlinkInfo.onlyPackage.confirm')}"
+                        data-confirm-tokenMsg="${message(code: 'subscription.linkPackagesMembers.unlinkInfo.onlyPackage.confirm')}"
                         data-confirm-term-how="ok" type="submit" name="withIE"
                         value="${false}">${message(code: 'subscription.linkPackagesMembers.unlinkInfo.onlyPackage')}</button>
 
                 <div class="or"></div>
                 <button class="ui button "
-                        data-confirm-term-content="${message(code: 'subscription.linkPackagesMembers.unlinkInfo.withIE.confirm')}"
+                        data-confirm-tokenMsg="${message(code: 'subscription.linkPackagesMembers.unlinkInfo.withIE.confirm')}"
                         data-confirm-term-how="ok" type="submit" name="withIE"
                         value="${true}">${message(code: 'subscription.linkPackagesMembers.unlinkInfo.withIE')}</button>
             </div>
@@ -165,6 +158,12 @@ ${message(code: 'subscription.linkPackagesMembers.header', args: args.memberType
                 <th>${message(code: 'default.endDate.label')}</th>
                 <th>${message(code: 'subscription.details.status')}</th>
                 <th>${message(code: 'subscription.packages.label')}</th>
+                <th class="la-no-uppercase">
+                    <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="bottom center"
+                          data-content="${message(code: 'subscription.isMultiYear.consortial.label')}">
+                        <i class="map orange icon"></i>
+                    </span>
+                </th>
                 <th></th>
             </tr>
             </thead>
@@ -175,7 +174,9 @@ ${message(code: 'subscription.linkPackagesMembers.header', args: args.memberType
                     <td>${i + 1}</td>
                     <g:set var="filteredSubscribers" value="${zeile.orgs}"/>
                     <g:each in="${filteredSubscribers}" var="subscr">
-                        <td>${subscr.sortname}</td>
+                        <td>
+                            ${subscr.sortname}
+                        </td>
                         <td>
                             <g:link controller="organisation" action="show" id="${subscr.id}">${subscr}</g:link>
 
@@ -262,6 +263,14 @@ ${message(code: 'subscription.linkPackagesMembers.header', args: args.memberType
                         <g:else>
                             <g:message code="subscription.linkPackagesMembers.noValidLicenses" args="${args.superOrgType}"/>
                         </g:else>
+                    </td>
+                    <td>
+                        <g:if test="${sub.isMultiYear}">
+                            <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="bottom center"
+                                  data-content="${message(code: 'subscription.isMultiYear.consortial.label')}">
+                                <i class="map orange icon"></i>
+                            </span>
+                        </g:if>
                     </td>
 
                     <td class="x">

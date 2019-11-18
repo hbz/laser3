@@ -47,6 +47,7 @@
             </g:if>
             <g:else>
                 ${message(code: 'subscription.details.copyElementsIntoSubscription.copyProperties.empty')}
+                <br><br>
 
                 <div class="sixteen wide field" style="text-align: right;">
                     <g:set var="submitButtonText" value="${isRenewSub?

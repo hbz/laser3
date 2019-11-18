@@ -216,7 +216,10 @@ class SemanticUiInplaceTagLib {
                 out << "${strValue}</a></span>"
             }
             else {
-                out << attrs.owner[attrs.field]
+
+                int intValue = attrs.owner[attrs.field] ? 1 : 0
+                String strValue = intValue ? RDStore.YN_YES.getI10n('value') : RDStore.YN_NO.getI10n('value')
+                out << strValue
             }
         }
         catch ( Throwable e ) {

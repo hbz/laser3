@@ -5,26 +5,26 @@
     <head>
         <meta name="layout" content="semanticUI">
         <g:set var="entityName" value="${message(code: 'org.label', default: 'Org')}" />
-        <title>${message(code:'laser', default:'LAS:eR')} <g:message code="default.show.label" args="[entityName]" /></title>
+        <title>${message(code:'laser', default:'LAS:eR')} : ${message(code:'org.nav.accessPoints')}</title>
 
         <g:javascript src="properties.js"/>
     </head>
     <body>
 
     <semui:breadcrumbs>
-        <semui:crumb controller="organisation" action="show" id="${orgInstance.id}" text="${orgInstance.getDesignation()}" />
-        <semui:crumb message="org.nav.accessPoints" class="active"/>
+        <g:if test="${!inContextOrg}">
+            <semui:crumb text="${orgInstance.getDesignation()}" class="active"/>
+        </g:if>
     </semui:breadcrumbs>
 
-    <g:if test="${accessService.checkPerm('ORG_INST,ORG_CONSORTIUM')}">
+    <g:if test="${accessService.checkPermAffiliation('ORG_BASIC_MEMBER','INST_EDITOR')
+        || (accessService.checkPermAffiliation('ORG_CONSORTIUM','INST_EDITOR') && inContextOrg)}">
         <semui:controlButtons>
             <g:render template="actions" />
         </semui:controlButtons>
     </g:if>
 
-    <h1 class="ui left aligned icon header"><semui:headerIcon />
-        ${orgInstance.name} - ${message(code:'org.nav.accessPoints')}</h1>
-    </h1>
+    <h1 class="ui left aligned icon header"><semui:headerIcon />${orgInstance.name}</h1>
 
     <g:render template="nav" model="${[orgInstance: orgInstance, inContextOrg: orgInstance.id == contextService.getOrg().id]}" />
 
@@ -55,17 +55,23 @@
         <g:form class="ui form" url="[controller: 'accessPoint', action: 'create']" method="POST">
             <table  class="ui celled la-table table">
                 <thead>
-                        <tr>
-                            <g:sortableColumn property="AccessPoint" title="${message(code: 'accessPoint.name', default: 'Name')}" />
-                            <g:sortableColumn property="accessMethod" title="${message(code: 'accessMethod.label', default: 'Access Method')}" />
-                            <g:sortableColumn property="rules" title="${message(code: 'accessRule.plural', default: 'Access Rules')}" />
-                            <th>${message(code: 'accessPoint.actions', default: 'Actions')}</th>
-                        </tr>
+                <tr>
+                    <th>${message(code: 'accessPoint.name', default: 'Name')}</th>
+                    <th>${message(code: 'accessMethod.label', default: 'Access Method')}</th>
+                    <th>${message(code: 'accessRule.plural', default: 'Access Rules')}</th>
+                    <g:if test="${accessService.checkPermAffiliation('ORG_BASIC_MEMBER','INST_EDITOR') || (accessService.checkPermAffiliation('ORG_CONSORTIUM','INST_EDITOR') && inContextOrg)}">
+                        <th class="la-action-info">${message(code: 'accessPoint.actions', default: 'Actions')}</th>
+                    </g:if>
+                </tr>
                 </thead>
                 <tbody>
                     <g:each in="${orgAccessPointList}" var="accessPoint">
                         <tr>
-                            <td class="la-main-object" >${accessPoint.name}</td>
+                        <td class="la-main-object" >
+                        <g:link controller="accessPoint" action="edit_${accessPoint.accessMethod.value.toLowerCase()}" id="${accessPoint.id}">
+                            ${accessPoint.name}
+                        </g:link>
+                        </td>
                             <td>${accessPoint.accessMethod.getI10n('value')}</td>
                             <td>
                                 <g:each in="${accessPoint.getIpRangeStrings('ipv4', 'ranges')}" var="ipv4Range">
@@ -85,16 +91,15 @@
                                     </g:if>
                                 </div>
                             </td>
-                            <td class="center aligned">
-                                <g:link action="edit_${accessPoint.accessMethod.value.toLowerCase()}" controller="accessPoint" id="${accessPoint?.id}" class="ui icon button">
-                                    <i class="write icon"></i>
-                                </g:link>
+                            <g:if test="${accessService.checkPermAffiliation('ORG_BASIC_MEMBER','INST_EDITOR') || (accessService.checkPermAffiliation('ORG_CONSORTIUM','INST_EDITOR') && inContextOrg)}">
+                                <td class="center aligned">
                                 <g:link action="delete" controller="accessPoint" id="${accessPoint?.id}" class="ui negative icon button js-open-confirm-modal"
-                                        data-confirm-term-what="${message(code: 'accessPoint.delete.what', args: [accessPoint.name])}"
-                                        data-confirm-term-content="${message(code: 'accessPoint.details.delete.confirm', args: [(accessPoint.name ?: 'this access point')])}">
+                                        data-confirm-tokenMsg="${message(code: 'confirm.dialog.delete.accessPoint', args: [accessPoint.name])}"
+                                        data-confirm-term-how="delete">
                                     <i class="trash alternate icon"></i>
                                 </g:link>
-                            </td>
+                                </td>
+                            </g:if>
                         </tr>
                     </g:each>
                  </tbody>

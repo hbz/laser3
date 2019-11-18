@@ -4,13 +4,13 @@
   <head>
     <meta name="layout" content="semanticUI">
     <g:set var="entityName" value="${message(code: 'package.label', default: 'Package')}" />
-    <title>${message(code:'laser', default:'LAS:eR')} : <g:message code="package.compare" default="Package Comparison" /></title>
+    <title>${message(code:'laser', default:'LAS:eR')} : <g:message code="package.compare" /></title>
   </head>
  <body>
 
 	<semui:breadcrumbs>
 		<semui:crumb controller="package" action="index" message="package.show.all" />
-		<semui:crumb class="active" message="package.compare.compare" />
+		<semui:crumb class="active" message="package.compare" />
 	</semui:breadcrumbs>
 
 	<semui:controlButtons>
@@ -21,7 +21,7 @@
 		</semui:exportDropdown>
 	</semui:controlButtons>
 
-	<h1 class="ui left aligned icon header"><semui:headerIcon />${message(code:'package.compare', default:'Package Comparison')}</h1>
+	<h1 class="ui left aligned icon header"><semui:headerIcon />${message(code:'package.compare')}</h1>
 
 	<semui:messages data="${flash}" />
 
@@ -211,8 +211,8 @@
 				<semui:listIcon type="${currentTitle[0]?.type?.value}"/><strong><g:link action="show" controller="title" id="${currentTitle[0].id}">${entry.key}</g:link></strong>
                           <i onclick="showMore('${currentTitle[0].id}')" class="icon-info-sign"></i>
 
-                          <g:each in="${currentTitle[0].ids?.sort{it?.identifier?.ns?.ns}}" var="id">
-                              <br>${id.identifier.ns.ns}: ${id.identifier.value}
+                          <g:each in="${currentTitle[0].ids?.sort{it?.ns?.ns}}" var="id">
+                              <br>${id.ns.ns}: ${id.value}
                           </g:each>
 			</td>
 			

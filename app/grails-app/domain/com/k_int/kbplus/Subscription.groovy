@@ -87,7 +87,7 @@ class Subscription
   static transients = [ 'subscriber', 'providers', 'agencies', 'consortia' ]
 
   static hasMany = [
-                     ids: IdentifierOccurrence,
+                     ids: Identifier,
                      packages : SubscriptionPackage,
                      issueEntitlements: IssueEntitlement,
                      documents: DocContext,
@@ -496,6 +496,30 @@ class Subscription
         }
     }
 
+    boolean isCurrentMultiYearSubscriptionNew()
+    {
+        def currentDate = new Date(System.currentTimeMillis())
+        //println(this.endDate.minus(currentDate))
+        if(this.isMultiYear && this.endDate && (this.endDate.minus(currentDate) > 366))
+        {
+            return true
+        }else {
+            return false
+        }
+    }
+
+    boolean islateCommer()
+    {
+        def currentDate = new Date(System.currentTimeMillis())
+        //println(this.endDate.minus(currentDate))
+        if(this.endDate && (this.endDate.minus(this.startDate) > 366 && this.endDate.minus(this.startDate) < 728))
+        {
+            return true
+        }else {
+            return false
+        }
+    }
+
     boolean isEditableBy(user) {
         hasPerm('edit', user)
     }
@@ -759,6 +783,7 @@ class Subscription
     this.orgRelations.add(or)
   }
 
+/*-- not used
   def addNamespacedIdentifier(ns,value) {
       log.debug("Add Namespaced identifier ${ns}:${value}")
 
@@ -768,6 +793,7 @@ class Subscription
     this.ids.add(new IdentifierOccurrence(sub:this,identifier:canonical_id))
 
   }
+--*/
 
   def getCommaSeperatedPackagesIsilList() {
       def result = []

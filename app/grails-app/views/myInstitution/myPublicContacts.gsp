@@ -13,15 +13,16 @@ import="de.laser.helper.RDStore; com.k_int.kbplus.Org; com.k_int.kbplus.Person; 
     <body>
 
         <semui:breadcrumbs>
-            <semui:crumb controller="myInstitution" action="dashboard" text="${institution?.getDesignation()}" />
-            <semui:crumb message="menu.institutions.publicContacts" class="active"/>
+            <g:if test="${institution.id != contextService.getOrg()?.id}">
+                <semui:crumb text="${institution.getDesignation()}" class="active"/>
+            </g:if>
         </semui:breadcrumbs>
 
         <semui:controlButtons>
             <g:render template="actions" />
         </semui:controlButtons>
 
-        <h1 class="ui left aligned icon header"><semui:headerIcon />${message(code:'menu.institutions.publicContacts')}</h1>
+        <h1 class="ui left aligned icon header"><semui:headerIcon />${institution.name}</h1>
 
         <semui:messages data="${flash}" />
 

@@ -83,8 +83,7 @@
                     <g:set var="oid" value="${personRole?.class.name}:${personRole?.id}"/>
 
                     <g:link class="ui mini icon negative button js-open-confirm-modal"
-                            data-confirm-term-what="contact"
-                            data-confirm-term-where="organisation"
+                            data-confirm-tokenMsg="${message(code: "confirm.dialog.unlink.contact.organisation")}"
                             data-confirm-term-how="unlink"
                             controller="ajax" action="delete" params="[cmd: 'deletePersonRole', oid: oid]">
                         <i class="unlink icon"></i>

@@ -8,15 +8,15 @@
 <body>
 
 <semui:breadcrumbs>
-    <semui:crumb controller="myInstitution" action="dashboard" text="${institution?.getDesignation()}"/>
     <semui:crumb message="myinst.currentTitles.label" class="active"/>
 </semui:breadcrumbs>
+
 <semui:controlButtons>
     <semui:exportDropdown>
         <semui:exportDropdownItem>
             <g:if test="${filterSet}">
                 <g:link class="item js-open-confirm-modal"
-                        data-confirm-term-content="${message(code: 'confirmation.content.exportPartial')}"
+                        data-confirm-tokenMsg="${message(code: 'confirmation.content.exportPartial')}"
                         data-confirm-term-how="ok" controller="myInstitution" action="currentTitles"
                         params="${params + [format: 'csv']}">
                     ${message(code: 'default.button.exports.csv')}
@@ -35,7 +35,7 @@
         <semui:exportDropdownItem>
             <g:if test="${filterSet}">
                 <g:link class="item js-open-confirm-modal"
-                        data-confirm-term-content="${message(code: 'confirmation.content.exportPartial')}"
+                        data-confirm-tokenMsg="${message(code: 'confirmation.content.exportPartial')}"
                         data-confirm-term-how="ok" controller="myInstitution" action="currentTitles"
                         params="${params + [exportKBart: true]}">
                     KBART Export
@@ -50,7 +50,7 @@
             <semui:exportDropdownItem>
                 <g:if test="${filterSet}">
                     <g:link class="item js-open-confirm-modal"
-                            data-confirm-term-content="${message(code: 'confirmation.content.exportPartial')}"
+                            data-confirm-tokenMsg="${message(code: 'confirmation.content.exportPartial')}"
                             data-confirm-term-how="ok" controller="myInstitution" action="currentTitles"
                             params="${params + [format: 'xml', transformId: transkey]}">
                         ${transval.name}
@@ -264,9 +264,9 @@
                                         </g:if>
                                 </g:each>
 
-                                <g:each in="${ti?.ids?.sort { it?.identifier?.ns?.ns }}" var="id">
+                                <g:each in="${ti?.ids?.sort { it?.ns?.ns }}" var="id">
                                     <span class="ui small teal image label">
-                                        ${id.identifier.ns.ns}: <div class="detail">${id.identifier.value}</div>
+                                        ${id.ns.ns}: <div class="detail">${id.value}</div>
                                     </span>
                                 </g:each>
                                 <br/>
@@ -394,8 +394,8 @@
                                         </div>
                                         <div class="sixteen wide column">
                                             <g:if test="${ie.priceItem}">
-                                                <g:message code="tipp.listPrice"/>: <g:formatNumber number="${ie.priceItem.listPrice}" type="currency" currencyCode="${ie.priceItem.listCurrency.value}" currencySymbol="${ie.priceItem.listCurrency.value}"/><br>
-                                                <g:message code="tipp.localPrice"/>: <g:formatNumber number="${ie.priceItem.localPrice}" type="currency" currencyCode="${ie.priceItem.localCurrency.value}" currencySymbol="${ie.priceItem.listCurrency.value}"/>
+                                                <g:message code="tipp.listPrice"/>: <g:formatNumber number="${ie.priceItem.listPrice}" type="currency" currencyCode="${ie.priceItem.listCurrency?.value}" currencySymbol="${ie.priceItem.listCurrency?.value}"/><br>
+                                                <g:message code="tipp.localPrice"/>: <g:formatNumber number="${ie.priceItem.localPrice}" type="currency" currencyCode="${ie.priceItem.localCurrency?.value}" currencySymbol="${ie.priceItem.listCurrency?.value}"/>
                                                 (<g:message code="tipp.priceDate"/> <g:formatDate format="${message(code:'default.date.format.notime')}" date="${ie.priceItem.priceDate}"/>)
                                             </g:if>
                                         </div>
@@ -413,7 +413,7 @@
                     <br><strong><g:message code="filter.result.empty.object" args="${[message(code:"title.plural")]}"/></strong>
                 </g:if>
                 <g:else>
-                    <br><strong><g:message code="result.empty.object" args="${message(code:"title.plural")}"/></strong>
+                    <br><strong><g:message code="result.empty.object" args="${[message(code:"title.plural")]}"/></strong>
                 </g:else>
             </g:else>
         </div>

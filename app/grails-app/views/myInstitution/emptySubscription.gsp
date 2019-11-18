@@ -5,14 +5,13 @@
 <html>
     <head>
         <meta name="layout" content="semanticUI"/>
-        <title>${message(code:'laser', default:'LAS:eR')} : ${message(code:'myinst.addSubscription.label')}</title>
+        <title>${message(code:'laser', default:'LAS:eR')} : ${message(code:'myinst.emptySubscription.label')}</title>
         </head>
     <body>
 
         <semui:breadcrumbs>
-            <semui:crumb controller="myInstitution" action="dashboard" text="${institution?.getDesignation()}" />
             <semui:crumb controller="myInstitution" action="currentSubscriptions" message="myinst.currentSubscriptions.label" />
-            <semui:crumb message="myinst.addSubscription.label" class="active" />
+            <semui:crumb message="myinst.emptySubscription.label" class="active" />
         </semui:breadcrumbs>
 
         <g:render template="actions" />

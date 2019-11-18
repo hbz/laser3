@@ -165,43 +165,58 @@
                           <input type="hidden" name="role" id="userRoleSelect"/>
                           <input type="submit" class="ui button" value="${message(code:'user.role.add', default:'Add Role...')}"/>
                       </g:form>
-                  </td>
-              </tr>
-              </tfoot>
-            </g:if>
-          </table>
 
-          <r:script language="JavaScript">
+            <%-- TODO [ticket=1612] new identifier handling
+                                  <g:form controller="ajax" action="addIdentifier" class="ui form">
+                                      <input name="owner" type="hidden" value="${user.class.name}:${user.id}" />
 
-            $(function(){
-              $.fn.editable.defaults.mode = 'inline';
-              $('.xEditableValue').editable();
+                                      <div class="fields">
+                                          <div class="field">
+                                              <g:select name="role" id="role" class="ui search dropdown"
+                                                        from="${Role.findAllByRoleType('global')}" optionKey="${{'com.k_int.kbplus.auth.UserRole:' + it.id}}" optionValue="authority" />
+                                          </div>
+                                          <div class="field">
+                                              <button type="submit" class="ui button">Rolle hinzufügen</button>
+                                          </div>
+                                      </div>
+                                  </g:form>
+            --%>
+                              </td>
+                          </tr>
+                          </tfoot>
+                        </g:if>
+                      </table>
 
-              $("#userRoleSelect").select2({
-                placeholder: "${message(code:'user.role.search.ph', default:'Search for an role...')}",
-                minimumInputLength: 0,
-                formatInputTooShort: function () {
-                    return "${message(code:'select2.minChars.note', default:'Please enter 1 or more character')}";
-                },
-                ajax: { // instead of writing the function to execute the request we use Select2's convenient helper
-                  url: "<g:createLink controller='ajax' action='lookup'/>",
-                  dataType: 'json',
-                  data: function (term, page) {
-                      return {
-                          q: term, // search term
-                          page_limit: 10,
-                          baseClass:'com.k_int.kbplus.auth.Role'
-                      };
-                  },
-                  results: function (data, page) {
-                    return {results: data.values};
-                  }
-                }
-              });
-            });
+                  <r:script language="JavaScript">
 
-          </r:script>
+                    $(function(){
+                      $.fn.editable.defaults.mode = 'inline';
+                      $('.xEditableValue').editable();
 
-    </sec:ifAnyGranted>
-  </body>
+                      $("#userRoleSelect").select2({
+                        placeholder: "${message(code:'user.role.search.ph', default:'Search for an role...')}",
+                        minimumInputLength: 0,
+                        formatInputTooShort: function () {
+                            return "${message(code:'select2.minChars.note', default:'Please enter 1 or more character')}";
+                        },
+                        ajax: { // instead of writing the function to execute the request we use Select2's convenient helper
+                          url: "<g:createLink controller='ajax' action='lookup'/>",
+                          dataType: 'json',
+                          data: function (term, page) {
+                              return {
+                                  q: term, // search term
+                                  page_limit: 10,
+                                  baseClass:'com.k_int.kbplus.auth.Role'
+                              };
+                          },
+                          results: function (data, page) {
+                            return {results: data.values};
+                          }
+                        }
+                      });
+                    });
+
+                  </r:script>
+</sec:ifAnyGranted>
+</body>
 </html>

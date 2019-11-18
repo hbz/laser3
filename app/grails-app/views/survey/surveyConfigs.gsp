@@ -119,7 +119,7 @@
                         <td class="center aligned">
                             <g:link controller="survey" action="surveyParticipants" id="${surveyInfo.id}"
                                     params="[surveyConfigID: config?.id]" class="ui icon">
-                                <div class="ui circular ${participantsFinish == participantsTotal ? "green" : config?.configFinish ? "yellow" : ""} label">
+                                <div class="ui circular ${participantsFinish?.size() == participantsTotal?.size() ? "green" : config?.configFinish ? "yellow" : ""} label">
                                     ${participantsFinish?.participant?.flatten()?.unique { a, b -> a.id <=> b.id }?.size()}/${config?.orgs?.org?.flatten()?.unique { a, b -> a.id <=> b.id }?.size()}
                                 </div>
                             </g:link>
@@ -160,8 +160,7 @@
                             </g:elseif>
                             <g:elseif test="${editable}">
                                 <g:link class="ui icon negative button js-open-confirm-modal"
-                                        data-confirm-term-what="Abfrage-Elemente"
-                                        data-confirm-term-what-detail="${config?.getConfigNameShort()}"
+                                        data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.surveyElements", args: [config?.getConfigNameShort()])}"
                                         data-confirm-term-how="delete"
                                         controller="survey" action="deleteSurveyConfig"
                                         id="${config?.id}">
@@ -226,10 +225,10 @@
                             <g:if test="${config?.type == 'SurveyProperty'}">
                                 ${config?.surveyProperty?.getI10n('name')}
 
-                                <g:if test="${config?.surveyProperty?.getI10n('explain')}">
+                                <g:if test="${config?.surveyProperty?.getI10n('expl')}">
                                     <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
                                           data-variation="tiny"
-                                          data-content="${config?.surveyProperty?.getI10n('explain')}">
+                                          data-content="${config?.surveyProperty?.getI10n('expl')}">
                                         <i class="question circle icon"></i>
                                     </span>
                                 </g:if>
@@ -275,8 +274,7 @@
                             </g:if>
                             <g:elseif test="${editable}">
                                 <g:link class="ui icon negative button js-open-confirm-modal"
-                                        data-confirm-term-what="Abfrage-Elemente"
-                                        data-confirm-term-what-detail="${config?.getConfigNameShort()}"
+                                        data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.surveyElements", args: [config?.getConfigNameShort()])}"
                                         data-confirm-term-how="delete"
                                         controller="survey" action="deleteSurveyConfig"
                                         id="${config?.id}">

@@ -267,21 +267,6 @@ aside.metaboxContent + .metaboxContent-spacer {
     display: none !important;
 }
 
-/* debug info */
-
-#showDebugInfo {
-    position: fixed;
-    bottom: 3px;
-    right: 0;
-}
-
-#showSystemInfo {
-    position: fixed;
-    bottom: 3px;
-    left: 0;
-    z-index: 1000;
-}
-
 /* grid hover @ cpa */
 
 .ui.internally.grid > .row:hover {
@@ -336,4 +321,24 @@ h1 .icon.h1-icon-overwrite {
 
 .ui.label.survey-selection {
     background-color: #ffdf00;
+}
+
+/* debug info */
+
+#showSystemInfo {
+    position: fixed;
+    bottom: 72px;
+    right: 0;
+}
+
+#showDebugInfo {
+    position: fixed;
+    bottom: 33px;
+    right: 0;
+}
+
+#system-profiler {
+    position: fixed;
+    bottom: 3px;
+    right: 1px;
 }

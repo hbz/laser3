@@ -80,7 +80,7 @@ class TitleInstancePackagePlatform extends AbstractBaseDomain implements Auditab
   //TitleInstancePackagePlatform masterTipp
 
   static mappedBy = [ids: 'tipp', additionalPlatforms: 'tipp']
-  static hasMany = [ids: IdentifierOccurrence, 
+  static hasMany = [ids: Identifier,
                     additionalPlatforms: PlatformTIPP,
                     coverages: TIPPCoverage]
 
@@ -204,9 +204,9 @@ class TitleInstancePackagePlatform extends AbstractBaseDomain implements Auditab
 
   String getIdentifierValue(idtype) {
     def result=null
-    ids?.each { id ->
-      if ( id.identifier?.ns?.ns?.toLowerCase() == idtype.toLowerCase() )
-        result = id.identifier?.value
+    ids?.each { ident ->
+      if ( ident.ns?.ns?.toLowerCase() == idtype.toLowerCase() )
+        result = ident.value
     }
     result
   }

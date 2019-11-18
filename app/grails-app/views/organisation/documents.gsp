@@ -16,8 +16,9 @@
       List documentTypes = RefdataCategory.getAllRefdataValues("Document Type")-notAvailable
     %>
     <semui:breadcrumbs>
-      <semui:crumb controller="organisation" action="show" id="${orgInstance.id}" text="${orgInstance.getDesignation()}" />
-      <semui:crumb message="menu.my.documents" class="active"/>
+      <g:if test="${!inContextOrg}">
+        <semui:crumb text="${orgInstance.getDesignation()}" class="active"/>
+      </g:if>
     </semui:breadcrumbs>
 
     <g:if test="${accessService.checkPerm('ORG_INST,ORG_CONSORTIUM')}">
@@ -26,7 +27,7 @@
         </semui:controlButtons>
     </g:if>
 
-  <h1 class="ui left aligned icon header"><semui:headerIcon />${orgInstance.name} - ${message(code:'menu.my.documents')}</h1>
+  <h1 class="ui left aligned icon header"><semui:headerIcon />${orgInstance.name}</h1>
 
     <g:render template="nav" model="${[orgInstance: orgInstance, inContextOrg: inContextOrg]}"/>
 

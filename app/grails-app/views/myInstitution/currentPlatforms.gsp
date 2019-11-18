@@ -6,13 +6,12 @@
     <title>${message(code:'laser', default:'LAS:eR')} : ${message(code:'menu.my.platforms')}</title>
 </head>
 <body>
+
 <semui:breadcrumbs>
-    <semui:crumb controller="myInstitution" action="dashboard" text="${institution?.getDesignation()}" />
     <semui:crumb message="menu.my.platforms" class="active" />
 </semui:breadcrumbs>
 
-
-<h1 class="ui left aligned icon header">${message(code:'menu.my.platforms')}
+<h1 class="ui left aligned icon header"><semui:headerIcon/>${message(code:'menu.my.platforms')}
     <semui:totalNumber total="${platformInstanceTotal}"/>
 </h1>
 
@@ -41,7 +40,7 @@
         <th>${message(code:'default.provider.label')}</th>
         <th>${message(code:'org.url.label')}</th>
         <th>${message(code:'accessPoint.plural')}</th>
-        <th>Zugeordnete aktive Lizenzen</th>
+        <th>${message(code:'myinst.currentPlatforms.assignedSubscriptions')}</th>
     </tr>
     </thead>
     <tbody>
@@ -66,7 +65,7 @@
             </td>
             <td>
                 <g:each in="${platformInstance.getContextOrgAccessPoints(contextOrg)}" var="oap" >
-                    <g:link controller="accessPoint" action="edit_${oap.accessMethod}" id=" ${oap.id}">${oap.name} (${oap.accessMethod.getI10n('value')})</g:link> <br />
+                    <g:link controller="accessPoint" action="edit_${oap.accessMethod}" id="${oap.id}">${oap.name} (${oap.accessMethod.getI10n('value')})</g:link> <br />
                 </g:each>
             </td>
             <td>

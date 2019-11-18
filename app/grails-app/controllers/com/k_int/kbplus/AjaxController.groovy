@@ -8,7 +8,9 @@ import com.k_int.properties.PropertyDefinitionGroupBinding
 import de.laser.AuditConfig
 import de.laser.domain.AbstractI10nTranslatable
 import de.laser.domain.IssueEntitlementCoverage
+import de.laser.domain.SystemProfiler
 import de.laser.helper.DebugAnnotation
+import de.laser.helper.DebugUtil
 import de.laser.helper.EhcacheWrapper
 import de.laser.helper.RDStore
 import de.laser.interfaces.ShareSupport
@@ -34,6 +36,7 @@ class AjaxController {
     def controlledListService
     def dataConsistencyService
     def accessService
+    def debugService
 
     def refdata_config = [
     "ContentProvider" : [
@@ -112,6 +115,20 @@ class AjaxController {
             format:'map'
     ]
   ]
+
+    def notifyProfiler() {
+        Map<String, Object> result = [:]
+
+        DebugUtil debugUtil = debugService.getDebugUtilAsSingleton()
+        long delta = debugUtil.stopSimpleBench(session.id + '#' + params.uri)
+
+        SystemProfiler.update(delta, params.uri)
+
+        result.uri = params.uri
+        result.delta = delta
+
+        render result as JSON
+    }
 
   @Secured(['ROLE_USER'])
   def setFieldNote() {
@@ -1964,6 +1981,37 @@ class AjaxController {
     }
 
     @Secured(['ROLE_USER'])
+    def addIdentifier() {
+        log.debug("AjaxController::addIdentifier ${params}")
+        def owner = genericOIDService.resolveOID(params.owner)
+        def namespace = genericOIDService.resolveOID(params.namespace)
+        String value = params.value?.trim()
+
+        if (owner && namespace && value) {
+            Identifier.construct([value: value, reference: owner, namespace: namespace])
+        }
+        redirect(url: request.getHeader('referer'))
+    }
+
+    @Secured(['ROLE_USER'])
+    def deleteIdentifier() {
+        log.debug("AjaxController::deleteIdentifier ${params}")
+        def owner = genericOIDService.resolveOID(params.owner)
+        def target = genericOIDService.resolveOID(params.target)
+
+        log.debug('owner: ' + owner)
+        log.debug('target: ' + target)
+
+        if (owner && target) {
+            if (target."${Identifier.getAttributeName(owner)}" == owner.id) {
+                log.debug("Identifier deleted: ${params}")
+                target.delete()
+            }
+        }
+        redirect(url: request.getHeader('referer'))
+    }
+
+    @Secured(['ROLE_USER'])
   def addToCollection() {
     log.debug("AjaxController::addToCollection ${params}");
 
@@ -2042,16 +2090,22 @@ class AjaxController {
     def owner = resolveOID2(params.owner)
     def identifier = resolveOID2(params.identifier)
 
-    def owner_type = IdentifierOccurrence.getAttributeName(owner)
+    // TODO [ticket=1789]
+    def owner_type = Identifier.getAttributeName(owner)
     if (!owner_type) {
       log.error("Unexpected Identifier Owner ${owner.class}")
       return null
     }
 
     // TODO: BUG !? multiple occurrences on the same object allowed
-    def duplicates = identifier?.occurrences.findAll{it."${owner_type}" != owner && it."${owner_type}" != null}?.collect{it."${owner_type}"}
+    //def duplicates = identifier?.occurrences.findAll{it."${owner_type}" != owner && it."${owner_type}" != null}?.collect{it."${owner_type}"}
+
+    def duplicates = Identifier.executeQuery(
+            "select ident from Identifier ident where ident.value = ? and ident.${owner_type} != ?", [identifier.value, owner]
+    )
+
     if(duplicates){
-      result.duplicates = duplicates
+      result.duplicates = duplicates.collect{ it."${owner_type}" }
     }
     else{
       result.unique=true

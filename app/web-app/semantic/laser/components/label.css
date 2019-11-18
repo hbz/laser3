@@ -1405,7 +1405,7 @@ a.ui.basic.label:hover {
   -webkit-transition: none;
   transition: none;
 }
-#js-confirmation-term-what-detail {
+.confirmation-term span {
   margin: 0 .5em 0 0;
   padding: .4em .833em;
   min-width: 3em;

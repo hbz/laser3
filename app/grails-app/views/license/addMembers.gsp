@@ -12,7 +12,7 @@
 <semui:breadcrumbs>
     <semui:crumb controller="myInstitution" action="currentLicenses" text="${message(code: 'license.current')}"/>
     <semui:crumb controller="license" action="show" id="${license.id}" text="${license.reference}"/>
-    <semui:crumb class="active" text="${message(code: 'license.details.addMembers.label',args:[message(code:'consortium.subscriber')])}"/>
+    <semui:crumb class="active" text="${message(code: 'license.details.addMembers.label', args:[message(code:'consortium.subscriber')])}"/>
 </semui:breadcrumbs>
 
 <semui:controlButtons>
@@ -23,8 +23,7 @@
     <g:if test="${license.type?.value == 'Template'}">${message(code:'license.label')} (${license.type.getI10n('value')}):</g:if>
     <semui:xEditable owner="${license}" field="reference" id="reference"/>
 </h1>
-
-<g:render template="nav" />
+<h2 class="ui left aligned icon header">${message(code: 'license.details.addMembers.label', args:[message(code:'consortium.subscriber')])}</h2>
 
 <g:if test="${license.instanceOf && (institution.id == license.getLicensingConsortium()?.id)}">
     <div class="ui negative message">

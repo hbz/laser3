@@ -105,21 +105,45 @@ class SubscriptionsQueryService {
         }
 
         if (params.identifier) {
-            String tmpBaseQuery1 = "( exists ( select io from IdentifierOccurrence io, Identifier id"
-            String tmpBaseQuery2 = "and io.identifier = id.id and id.value = :identifier ) )"
 
-            base_qry += "AND ("
-            base_qry += tmpBaseQuery1 + " where io.sub = s.id " + tmpBaseQuery2 + " or "
+            // globalUID based
+            if (params.identifier.startsWith('org:')) {
 
-            base_qry += tmpBaseQuery1 + ", License lic where io.lic = lic.id and s.owner = lic " + tmpBaseQuery2 + " or "
+                base_qry += "AND ( exists ( select idMatch from OrgRole as idMatch where idMatch.sub = s and idMatch.org.globalUID = :identifier ) ) "
+            }
+            else if (params.identifier.startsWith('license:')) {
 
-            base_qry += tmpBaseQuery1 + ", SubscriptionPackage sp where io.pkg = sp.pkg.id and sp.subscription = s " + tmpBaseQuery2 + " or "
+                base_qry += "AND ( exists ( select idMatch from License as idMatch where s.owner = idMatch and idMatch.globalUID = :identifier ) ) "
+            }
+            else if (params.identifier.startsWith('subscription:')) {
 
-            base_qry += tmpBaseQuery1 + ", TitleInstance ti, TitleInstancePackagePlatform tipp, IssueEntitlement ie " +
-                    " where io.ti = ti.id and tipp.title = ti.id and ie.tipp = tipp.id and ie.subscription = s.id " + tmpBaseQuery2
-            base_qry += ")"
+                base_qry += "AND ( exists ( select idMatch from Subscription as idMatch where idMatch = s and idMatch.globalUID = :identifier ) ) "
+            }
+            else if (params.identifier.startsWith('package:')) {
 
-            qry_params.put('identifier', params.identifier)
+                base_qry += "AND ( exists ( select idMatch from SubscriptionPackage as idMatch where idMatch.subscription = s and idMatch.pkg.globalUID = :identifier ) ) "
+            }
+            // identifier based
+            else {
+                String tmpBaseQuery1 = "( exists ( select ident from Identifier ident"
+                String tmpBaseQuery2 = "ident.value = :identifier ) )"
+
+                base_qry += "AND ("
+                base_qry += tmpBaseQuery1 + " where ident.sub = s.id " + tmpBaseQuery2 + " or "
+
+                base_qry += tmpBaseQuery1 + ", License lic where ident.lic = lic.id and s.owner = lic " + tmpBaseQuery2 + " or "
+
+                base_qry += tmpBaseQuery1 + ", SubscriptionPackage sp where ident.pkg = sp.pkg.id and sp.subscription = s " + tmpBaseQuery2 + " or "
+
+                base_qry += tmpBaseQuery1 + ", TitleInstance ti, TitleInstancePackagePlatform tipp, IssueEntitlement ie " +
+                        " where ident.ti = ti.id and tipp.title = ti.id and ie.tipp = tipp.id and ie.subscription = s.id " + tmpBaseQuery2  + " or "
+
+                base_qry += tmpBaseQuery1 + ", OrgRole ro where ident.org = ro.org and ro.sub = s " + tmpBaseQuery2
+
+                base_qry += ")"
+            }
+
+            qry_params.put('identifier', params.identifier.trim())
             filterSet = true
         }
 

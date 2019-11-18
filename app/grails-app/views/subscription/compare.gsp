@@ -13,10 +13,10 @@
         <g:render template="breadcrumb" model="${[ params:params ]}"/>
 
         <g:if test="${institutionName}">
-            <h1 class="ui header">${message(code:'menu.my.comp_sub')}</h1>
+            <h1 class="ui left aligned icon header"><semui:headerIcon />${message(code:'menu.my.comp_sub')}</h1>
         </g:if>
         <g:else>
-            <h2 class="ui header">${message(code:'subscription.compare.label')}</h2>
+            <h1 class="ui left aligned icon header"><semui:headerIcon />${message(code:'subscription.compare.label')}</h1>
         </g:else>
 
         <semui:messages data="${flash}" />
@@ -194,8 +194,8 @@
 								<strong><g:link action="show" controller="title" id="${currentTitle.id}">${entry.key}</g:link></strong>
 								<i onclick="showMore('${currentTitle.id}')" class="icon-info-sign"></i>
 
-								<g:each in="${currentTitle?.ids?.sort{it?.identifier?.ns?.ns}}" var="id">
-				                    <br>${id.identifier.ns.ns}: ${id.identifier.value}
+								<g:each in="${currentTitle?.ids?.sort{it?.ns?.ns}}" var="id">
+				                    <br>${id.ns.ns}: ${id.value}
 				                </g:each>
 								</td>
 							

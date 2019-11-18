@@ -53,7 +53,7 @@ class TitleInstance extends AbstractBaseDomain implements AuditableTrait {
                      ]
   static hasMany = [
                     tipps:  TitleInstancePackagePlatform,
-                    ids:    IdentifierOccurrence,
+                    ids:    Identifier,
                     orgs:   OrgRole,
                     historyEvents: TitleHistoryEventParticipant,
                     prsLinks: PersonRole,
@@ -98,22 +98,22 @@ class TitleInstance extends AbstractBaseDomain implements AuditableTrait {
   String getIdentifierValue(idtype) {
     def result=null
     ids?.each { id ->
-      if ( id.identifier?.ns?.ns?.toLowerCase() == idtype.toLowerCase() )
-        result = id.identifier?.value
+      if ( id.ns?.ns?.toLowerCase() == idtype.toLowerCase() )
+        result = id.value
     }
     result
   }
 
   String joinIdentfiers(String namespace,String separator) {
     String joined = ' '
-    List identifiers = []
+    List values = []
     ids?.each { id ->
-      if(id.identifier?.ns?.ns?.equalsIgnoreCase(namespace)) {
-        identifiers.add(id.identifier.value)
+      if(id.ns?.ns?.equalsIgnoreCase(namespace)) {
+        values.add(id.value)
       }
     }
-    if(identifiers)
-      joined = identifiers.join(separator)
+    if(values)
+      joined = values.join(separator)
     joined
   }
 
@@ -137,10 +137,10 @@ class TitleInstance extends AbstractBaseDomain implements AuditableTrait {
 
     switch ( idstr_components.size() ) {
       case 1:
-        qr = executeQuery('select t from TitleInstance as t join t.ids as io where io.identifier.value = ?',[idstr_components[0]])
+        qr = executeQuery('select t from TitleInstance as t join t.ids as ident where ident.value = ?',[idstr_components[0]])
         break;
       case 2:
-        qr = executeQuery('select t from TitleInstance as t join t.ids as io where io.identifier.value = ? and lower(io.identifier.ns.ns) = ?',[idstr_components[1],idstr_components[0]?.toLowerCase()])
+        qr = executeQuery('select t from TitleInstance as t join t.ids as ident where ident.value = ? and lower(ident.ns.ns) = ?',[idstr_components[1],idstr_components[0]?.toLowerCase()])
         break;
       default:
         // static_logger.debug("Unable to split");
@@ -155,10 +155,10 @@ class TitleInstance extends AbstractBaseDomain implements AuditableTrait {
             static_logger.debug("No matches - trying to locate via identifier group");
           switch ( idstr_components.size() ) {
             case 1:
-              qr = executeQuery('select t from TitleInstance as t join t.ids as io where exists ( select i from Identifier i where i.value = ? and i.ig = io.identifier.ig )',[idstr_components[0]])
+              qr = executeQuery('select t from TitleInstance as t join t.ids as ident where ident.value = ?', [idstr_components[0]])
               break;
             case 2:
-              qr = executeQuery('select t from TitleInstance as t join t.ids as io where exists ( select i from Identifier i where i.value = ? and i.ns.ns = ? and i.ig = io.identifier.ig )',[idstr_components[1],idstr_components[0]?.toLowerCase()])
+              qr = executeQuery('select t from TitleInstance as t join t.ids as ident where ident.value = ? and ident.ns.ns = ?', [idstr_components[1], idstr_components[0]?.toLowerCase()])
               break;
             default:
               // static_logger.debug("Unable to split");
@@ -185,15 +185,14 @@ class TitleInstance extends AbstractBaseDomain implements AuditableTrait {
   static def findByIdentifier(candidate_identifiers) {
     def matched = []
     candidate_identifiers.each { i ->
-      List<IdentifierOccurrence> ioList = IdentifierOccurrence.executeQuery('select io from IdentifierOccurrence io join io.identifier id where id.ns = :namespace and id.value = :value',[namespace:i.namespace,value:i.value])
-      if(ioList.size() > 0) {
-        IdentifierOccurrence io = ioList.get(0)
-        if ( ( io != null ) && ( io.ti != null ) ) {
-          if ( matched.contains(io.ti) ) {
-            // Already in the list
-          }
-          else {
-            matched.add(io.ti);
+      // TODO [ticket=1789]
+      //List<IdentifierOccurrence> ioList = IdentifierOccurrence.executeQuery('select io from IdentifierOccurrence io join io.identifier id where id.ns = :namespace and id.value = :value',[namespace:i.namespace,value:i.value])
+      List<Identifier> identifiers = Identifier.executeQuery('select ident from Identifier ident where ident.ns = :namespace and ident.value = :value', [namespace:i.namespace, value:i.value])
+      if(identifiers.size() > 0) {
+        Identifier ident = identifiers.get(0)
+        if ( ( ident != null ) && ( ident.ti != null ) ) {
+          if (! matched.contains(ident.ti) ) {
+            matched.add(ident.ti)
           }
         }
       }
@@ -202,14 +201,13 @@ class TitleInstance extends AbstractBaseDomain implements AuditableTrait {
     // Didn't match anything - see if we can match based on identifier without namespace [In case of duff supplier data]
     if ( matched.size() == 0 ) {
       candidate_identifiers.each { i ->
-        def id1 = Identifier.executeQuery('Select io from IdentifierOccurrence as io where io.identifier.value = ?',[i.value]);
+        // TODO [ticket=1789]
+        //def id1 = Identifier.executeQuery('Select io from IdentifierOccurrence as io where io.identifier.value = ?',[i.value]);
+        def id1 = Identifier.executeQuery('select ident from Identifier as ident where ident.value = ?', [i.value])
         id1.each {
           if ( it.ti != null ) {
-            if ( matched.contains(it.ti) ) {
-              // Already in the list
-            }
-            else {
-              matched.add(it.ti);
+            if ( ! matched.contains(it.ti) ) {
+              matched.add(it.ti)
             }
           }
         }
@@ -228,14 +226,126 @@ class TitleInstance extends AbstractBaseDomain implements AuditableTrait {
   }
 
   static def lookupOrCreate(List candidate_identifiers, String title, String imp_uuid, String status) {
-    lookupOrCreate(candidate_identifiers, title, false, null, imp_uuid, status)
+    lookupOrCreate(candidate_identifiers, title, null, imp_uuid, status)
   }
 
-  static def lookupOrCreate(List candidate_identifiers, String title, String titletyp, String imp_uuid, String status) {
-        lookupOrCreate(candidate_identifiers, title, false, titletyp, imp_uuid, status)
+    // TODO [ticket=1789] check and adapt LOGIC here
+    // TODO [ticket=1789] check and adapt LOGIC here
+    // TODO [ticket=1789] check and adapt LOGIC here
+    static TitleInstance lookupOrCreate(List candidate_identifiers, String title, String titletyp, String imp_uuid, String status) {
+        // argument "enrich" was always set to false -> removed
+
+        TitleInstance result
+        def origin_uri
+
+        String gokbUUID
+        List<TitleInstance> ti_candidates = []
+        List<Identifier> canonical_ids = []
+
+        if (imp_uuid?.length() == 0) {
+            imp_uuid = null
+        }
+        if (imp_uuid) {
+            result = findByImpId(imp_uuid)
+            TitleInstance newresult = findByGokbId(imp_uuid)
+
+            result = newresult ?: result
+        }
+
+        if (! result) {
+            TitleInstance ti_candidate = TitleInstance.findByGokbId(gokbUUID)
+
+            if (ti_candidate) {
+                ti_candidates << ti_candidate
+            }
+
+            candidate_identifiers.each { i ->
+                static_logger.debug("processing candidate identifier ${i}")
+
+                if (i.namespace.toLowerCase() == 'uri'){
+                    origin_uri = i.value
+                }
+
+                Identifier matches = Identifier.executeQuery('select i from Identifier i join i.ns ns where i.value = :iValue and ns.ns = :nsValue and i.ti is not null',
+                        [iValue: i.value, nsValue: i.namespace])
+
+                matches.each { match ->
+                    static_logger.debug("located existing title " + match.ti)
+
+                    if (match.ti.status?.value == 'Current' && ! ti_candidates.contains(match.ti)){
+                        ti_candidates.add(match.ti)
+                    }
+                }
+            }
+        }
+
+        if( ti_candidates.size() > 0 ) {
+            static_logger.debug("Collected ${ti_candidates.size()} title candidates: ${ti_candidates}")
+
+            ti_candidates.each { ti_cndt ->
+                if (ti_cndt.gokbId == gokbUUID) {
+
+                    if(! result) {
+                        result = ti_cndt
+                        log.debug("Matched TI by gokb uuid.")
+                    }
+                    else {
+                        log.warn("Multiple TIs with the same gokb uuid found: ${result} AND ${ti_cndt}! This should not be possible!")
+                    }
+                }
+            }
+        }
+
+        if ( result && imp_uuid && (result.impId != imp_uuid || ! result.impId) ) {
+            result.impId = imp_uuid
+        }
+
+        //TODO: Import ID ersetzen
+        if (! result) {
+            static_logger.debug("No valid match - creating new title");
+            def ti_status = RDStore.TITLE_STATUS_CURRENT
+
+            if (titletyp == 'BookInstance') {
+                result = new BookInstance(title:title, impId:imp_uuid ?: java.util.UUID.randomUUID().toString(), gokbId: imp_uuid ?: null, status:ti_status, type: RefdataValue.loc(RefdataCategory.TI_TYPE, [en: 'EBook', de: 'EBook']))
+            }
+            else if (titletyp == 'DatabaseInstance') {
+                result = new DatabaseInstance(title:title, impId:imp_uuid ?: java.util.UUID.randomUUID().toString(), gokbId: imp_uuid ?: null, status:ti_status, type: RefdataValue.loc(RefdataCategory.TI_TYPE, [en: 'Database', de: 'Database']))
+            }
+            else {
+                result = new JournalInstance(title:title, impId:imp_uuid ?: java.util.UUID.randomUUID().toString(), gokbId: imp_uuid ?: null, status:ti_status, type: RefdataValue.loc(RefdataCategory.TI_TYPE, [en: 'Journal', de: 'Journal']))
+            }
+
+            result.save(failOnError: true)
+
+            canonical_ids.each { i ->
+                Identifier.construct([value: i.value, reference: result, namespace: i.namespace])
+            }
+        }
+
+        /* if argument "enrich" = true -> else {
+            canonical_ids.each { i ->
+                Identifier.construct([value: i.value, reference: result, namespace: i.namespace])
+            }
+        }*/
+
+        if (result instanceof TitleInstance && status) {
+            def ti_status = RDStore.TITLE_STATUS_CURRENT
+
+            if (status == 'Retired') {
+                ti_status = RDStore.TITLE_STATUS_RETIRED
+            }
+            else if (status == 'Deleted') {
+                ti_status = RDStore.TITLE_STATUS_DELETED
+            }
+            result.status = ti_status
+            result.save(failOnError: true)
+        }
+
+        return result
     }
 
-  static TitleInstance lookupOrCreate(List candidate_identifiers, String title, boolean enrich, String titletyp, String imp_uuid, String status) {
+    /*
+  static TitleInstance lookupOrCreate_depr(List candidate_identifiers, String title, boolean enrich, String titletyp, String imp_uuid, String status) {
     def result = null
     def origin_uri = null
     String gokbUUID = null
@@ -267,6 +377,7 @@ class TitleInstance extends AbstractBaseDomain implements AuditableTrait {
             origin_uri = i.value
           }
 
+          // TODO [ticket=1789] check and adapt LOGIC here
           def id = Identifier.lookupOrCreateCanonicalIdentifier(i.namespace, i.value)
 
           if(id && id.ns.ns && id.value){
@@ -309,13 +420,13 @@ class TitleInstance extends AbstractBaseDomain implements AuditableTrait {
 
         cti.ids.each { ctio ->
 
-          if ( !canonical_ids.contains(ctio.identifier) ){
-            if ( ctio.identifier.ns.ns != 'uri'){
+          if ( !canonical_ids.contains(ctio) ){
+            if ( ctio.ns.ns != 'uri'){
               full_match = false
             }
           }else{
 
-            if ( ctio.identifier.ns.ns == 'uri' && canonical_ids.contains(ctio.identifier) ){
+            if ( ctio.ns.ns == 'uri' && canonical_ids.contains(ctio) ){
               origin_uri_match = true
             }
             intersection++;
@@ -406,6 +517,7 @@ class TitleInstance extends AbstractBaseDomain implements AuditableTrait {
       result.ids=[]
 
       canonical_ids.each {
+        // TODO [ticket=1789] check and adapt LOGIC here
         def new_io = new IdentifierOccurrence(identifier:it, ti:result)
         if ( new_io.save() ) {
           static_logger.debug("Created new IO");
@@ -430,6 +542,7 @@ class TitleInstance extends AbstractBaseDomain implements AuditableTrait {
         //if(cid.ns.ns.toLowerCase() != 'originediturl'){
           static_logger.debug("looking for identifier ${cid.ns.ns}:${cid.value}");
 
+          // TODO [ticket=1789] check and adapt LOGIC here
           def matched_io = IdentifierOccurrence.executeQuery("select io from IdentifierOccurrence as io where io.identifier = ? and io.ti = ?",[cid,result])
 
           if ( !matched_io || matched_io && matched_io.size() == 0){
@@ -444,17 +557,93 @@ class TitleInstance extends AbstractBaseDomain implements AuditableTrait {
       }
     }
 
+    if(result instanceof TitleInstance && status){
+      def ti_status = RDStore.TITLE_STATUS_CURRENT
+      if (status == 'Retired') {
+        ti_status = RDStore.TITLE_STATUS_RETIRED
+      } else if (status == 'Deleted') {
+        ti_status = RDStore.TITLE_STATUS_DELETED
+      }
+      result.status = ti_status
+      result.save(failOnError: true)
+    }
+
     return result;
 
   }
+    */
+
+    // TODO [ticket=1789] check and adapt LOGIC here
+    // TODO [ticket=1789] check and adapt LOGIC here
+    // TODO [ticket=1789] check and adapt LOGIC here
+  /**
+   *  Caller passes in a map like {issn:'nnnn-nnnn',doi:'quyeihdj'} and expects to get back a new title
+   *  or one matching any of the identifiers
+   */
+    @Deprecated
+    static def lookupOrCreateViaIdMap(candidate_identifiers, title) {
+        def result
+        def identifiers = []
+
+        candidate_identifiers.each { i ->
+            if ((i.key != null && i.key.length() > 0) && (i.value != null && i.value.length() > 0)) {
+
+                List<Identifier> matches = Identifier.executeQuery('select i from Identifier i join i.ns ns where i.value = :iValue and ns.ns = :nsValue and i.ti is not null',
+                        [iValue: i.value, nsValue: i.key])
+
+                matches.each { match ->
+                    // only unique namespaces to identifiy a correct title
+                    if (match.ns.isUnique) {
+                        if (! result) {
+                            result = match.org
+                        }
+                        else {
+                            if (result.id != match.org.id) {
+                                throw new RuntimeException("Identifiers -las(${candidate_identifiers}) reference multiple titles [Already located title with id ${result.id}, also located title with id ${match.org.id}]")
+                            }
+                        }
+                    }
+                }
+
+                identifiers.add(i)
+            }
+        }
+
+        // no matching title
+        if (! result) {
+            if (title.type == 'Serial') {
+                result = new JournalInstance(title:title, impId:java.util.UUID.randomUUID().toString(), type: RefdataValue.loc(RefdataCategory.TI_TYPE, [en: 'Journal', de: 'Journal']))
+            }
+            else if (title.type == 'Database') {
+                result = new DatabaseInstance(title:title, impId:java.util.UUID.randomUUID().toString(), type: RefdataValue.loc(RefdataCategory.TI_TYPE, [en: 'Database', de: 'Database']))
+            }
+            else {
+                result = new BookInstance(title:title, impId:java.util.UUID.randomUUID().toString(), type: RefdataValue.loc(RefdataCategory.TI_TYPE, [en: 'Book', de: 'Book']))
+            }
+            if (! result.save()) {
+                throw new RuntimeException("Problem creating title instance : ${result.errors?.toString()}")
+            }
+        }
+
+        identifiers.each{ i ->
+            Identifier match = Identifier.executeQuery('select i from Identifier i join i.ns ns where i.value = :iValue and ns.ns = :nsValue and i.ti = :ti',
+                    [iValue: i.value, nsValue: i.key, ti: result])
+            if (! match) {
+                Identifier.construct([value: i.value, reference: result, namespace: i.key])
+            }
+        }
+
+        result
+    }
 
   /**
    *  Caller passes in a map like {issn:'nnnn-nnnn',doi:'quyeihdj'} and expects to get back a new title
    *  or one matching any of the identifiers
    *  - assumes all identifiers to be unique -
    */
+    /*
     //TODO: Wegen Überarbeitung von Titel Konzept muss dies hier nochmal überarbeitet werden by Moe
-  static def lookupOrCreateViaIdMap(candidate_identifiers, title) {
+  static def lookupOrCreateViaIdMap_depr(candidate_identifiers, title) {
     def result = null;
     def ids = []
 
@@ -465,6 +654,7 @@ class TitleInstance extends AbstractBaseDomain implements AuditableTrait {
            ( i.key.length() > 0 ) &&
            ( i.value.length() > 0 ) ) {
 
+        // TODO [ticket=1789] check and adapt LOGIC here
         def id = Identifier.lookupOrCreateCanonicalIdentifier(i.key, i.value)
         if ( id != null ) {
           ids.add(id);
@@ -474,6 +664,7 @@ class TitleInstance extends AbstractBaseDomain implements AuditableTrait {
             // Namespace is marked as non-unique, don't perform a uniqueness check
           }
           else {
+            // TODO [ticket=1789] check and adapt LOGIC here
             def io = IdentifierOccurrence.findByIdentifier(id)
             if ( io && io.ti ) {
               if ( result == null ) {
@@ -498,6 +689,7 @@ class TitleInstance extends AbstractBaseDomain implements AuditableTrait {
 
       result.ids=[]
       ids.each {
+        // TODO [ticket=1789] check and adapt LOGIC here
         result.ids.add(new IdentifierOccurrence(identifier:it, ti:result).save(flush: true));
       }
       if ( ! result.save() ) {
@@ -512,6 +704,7 @@ class TitleInstance extends AbstractBaseDomain implements AuditableTrait {
         // it == an ID
         // Does result.ids contain an identifier occurrence that matches this ID
         // def existing_id = result.ids.find { it -> it.identifier == identifier }
+        // TODO [ticket=1789] check and adapt LOGIC here
         def existing_id = IdentifierOccurrence.findByIdentifierAndTi(identifier,result)
 
         if ( existing_id == null ) {
@@ -532,7 +725,8 @@ class TitleInstance extends AbstractBaseDomain implements AuditableTrait {
     return result;
 
   }
-
+*/
+    
     @Override
     def beforeInsert() {
         if (title != null) {
@@ -863,7 +1057,7 @@ class TitleInstance extends AbstractBaseDomain implements AuditableTrait {
   def identifiersAsString() {
     def result = new StringWriter()
     ids.each { id ->
-      result.write("${id.identifier.ns.ns}:${id.identifier.value} ");
+      result.write("${id.ns.ns}:${id.value} ");
     }
     return result.toString()
   }
@@ -949,20 +1143,22 @@ select ie from IssueEntitlement as ie JOIN ie.subscription.orgRelations as o
     static_logger.debug("Looking for identifier ${value} in title ids ${this.ids}");
 
     this.ids.each {
-      if ( it?.identifier?.ns?.ns.toLowerCase() == ns.toLowerCase() && it.identifier.value == value ) {
+      if ( it?.ns?.ns.toLowerCase() == ns.toLowerCase() && it.value == value ) {
         found = true
       }
     }
 
-    if ( !found && ns.toLowerCase() != 'originediturl' ) {
-      Identifier id = Identifier.lookupOrCreateCanonicalIdentifier(ns, value)
-      List<IdentifierOccurrence> id_occ = IdentifierOccurrence.executeQuery("select io from IdentifierOccurrence as io where io.identifier = :id and io.ti = :ti", [id:id,ti:this])
+    if ( ! found && ns.toLowerCase() != 'originediturl' ) {
+      // TODO [ticket=1789]
+      Identifier id = Identifier.construct([value: value, reference: this, namespace: ns])
+      //Identifier id = Identifier.lookupOrCreateCanonicalIdentifier(ns, value)
+      //List<IdentifierOccurrence> id_occ = IdentifierOccurrence.executeQuery("select io from IdentifierOccurrence as io where io.identifier = :id and io.ti = :ti", [id:id,ti:this])
 
       static_logger.debug("Create new identifier occurrence for tid:${getId()} ns:${ns} value:${value}");
 
-      if ( !id_occ || id_occ.size() == 0 ){
-        new IdentifierOccurrence(identifier:id, ti:this).save()
-      }
+      //if ( !id_occ || id_occ.size() == 0 ){
+       // new IdentifierOccurrence(identifier:id, ti:this).save()
+      //}
     }
     else if(ns.toLowerCase() == 'originediturl') {
       log.debug("identifier namespace of ${value} is deprecated originediturl .. ignoring")
@@ -997,8 +1193,8 @@ select ie from IssueEntitlement as ie JOIN ie.subscription.orgRelations as o
       TitleInstance.executeUpdate('delete from IssueEntitlement ie where ie.tipp in ( select tipp from TitleInstancePackagePlatform tipp where tipp.title.id = ? )',[title_id])
       log.debug("  -> TIPPs");
       TitleInstance.executeUpdate('delete from TitleInstancePackagePlatform tipp where tipp.title.id = ?',[title_id])
-      log.debug("  -> IdentifierOccurrence");
-      TitleInstance.executeUpdate('delete from IdentifierOccurrence io where io.ti.id = ?',[title_id])
+      log.debug("  -> Identifier");
+      TitleInstance.executeUpdate('delete from Identifier i where i.ti.id = ?',[title_id])
       log.debug("  -> OrgRole");
       TitleInstance.executeUpdate('delete from OrgRole orl where orl.title.id = ?',[title_id])
       log.debug("  -> TitleHistoryEventParticipant");

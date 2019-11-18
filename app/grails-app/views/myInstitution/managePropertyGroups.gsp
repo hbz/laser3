@@ -4,16 +4,15 @@
 <html>
     <head>
         <meta name="layout" content="semanticUI"/>
-        <title>${message(code:'laser', default:'LAS:eR')} : ${message(code:'menu.institutions.manage_prop_groups')}</title>
+        <title>${message(code:'laser', default:'LAS:eR')} : ${message(code:'menu.institutions.prop_groups')}</title>
     </head>
     <body>
 
         <semui:breadcrumbs>
-            <semui:crumb controller="myInstitution" action="dashboard" text="${institution?.getDesignation()}" />
             <semui:crumb message="menu.institutions.manage_props" class="active"/>
         </semui:breadcrumbs>
 
-        <h1 class="ui left aligned icon header"><semui:headerIcon />${message(code:'menu.institutions.manage_prop_groups')}</h1>
+        <h1 class="ui left aligned icon header"><semui:headerIcon />${message(code:'menu.institutions.manage_props')}</h1>
 
         <g:render template="nav" />
 

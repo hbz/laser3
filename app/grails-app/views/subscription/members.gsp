@@ -23,7 +23,7 @@
             <semui:exportDropdownItem>
                 <g:if test="${filterSet}">
                     <g:link class="item js-open-confirm-modal"
-                            data-confirm-term-content = "${message(code: 'confirmation.content.exportPartial')}"
+                            data-confirm-tokenMsg = "${message(code: 'confirmation.content.exportPartial')}"
                             data-confirm-term-how="ok" controller="subscriptionDetails" action="members"
                             params="${params+[exportXLS:true]}">
                         ${message(code:'default.button.exports.xls')}
@@ -36,7 +36,7 @@
             <semui:exportDropdownItem>
                 <g:if test="${filterSet}">
                     <g:link class="item js-open-confirm-modal"
-                            data-confirm-term-content = "${message(code: 'confirmation.content.exportPartial')}"
+                            data-confirm-tokenMsg = "${message(code: 'confirmation.content.exportPartial')}"
                             data-confirm-term-how="ok" controller="subscriptionDetails" action="members"
                             params="${params+[format:'csv']}">
                         ${message(code:'default.button.exports.csv')}
@@ -109,6 +109,12 @@
                     <th>${message(code: 'subscription.linktoLicense')}</th>
                 </g:if>
                 <th>${message(code:'subscription.details.status')}</th>
+                <th class="la-no-uppercase">
+                    <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="bottom center"
+                          data-content="${message(code: 'subscription.isMultiYear.consortial.label')}">
+                        <i class="map orange icon"></i>
+                    </span>
+                </th>
                 <th class="la-action-info">${message(code:'default.actions')}</th>
             </tr>
             </thead>
@@ -119,7 +125,8 @@
                     <td>${i + 1}</td>
                     <g:set var="filteredSubscribers" value="${zeile.orgs}" />
                     <g:each in="${filteredSubscribers}" var="subscr">
-                        <td>${subscr.sortname}</td>
+                        <td>
+                            ${subscr.sortname}</td>
                         <td>
                             <g:link controller="organisation" action="show" id="${subscr.id}">${subscr}</g:link>
 
@@ -175,6 +182,14 @@
                         </td>
                     </g:if>
                     <td>${sub.status.getI10n('value')}</td>
+                    <td>
+                        <g:if test="${sub.isMultiYear}">
+                            <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="bottom center"
+                                  data-content="${message(code: 'subscription.isMultiYear.consortial.label')}">
+                                <i class="map orange icon"></i>
+                            </span>
+                        </g:if>
+                    </td>
                     <td class="x">
                         <g:link controller="subscription" action="show" id="${sub.id}" class="ui icon button"><i class="write icon"></i></g:link>
                         <g:if test="${editable}">

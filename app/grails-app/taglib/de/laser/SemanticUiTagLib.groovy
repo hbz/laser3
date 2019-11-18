@@ -189,7 +189,7 @@ class SemanticUiTagLib {
             out << '</a>'
 
             out << '<div id="systemInfo" class="ui modal">'
-            out << '<h4 class="ui red header"> <i class="bug icon"></i> SYSTEM-INFORMATION</h4>'
+            out << '<h4 class="ui red header"> <i class="red fire extinguisher icon"></i> SYSTEM-INFORMATION</h4>'
             out << '<div class="scrolling content">'
             out << '<div class="ui list">'
             systemChecks.each {systemCheck ->
@@ -638,16 +638,9 @@ class SemanticUiTagLib {
         String msgCancel = "Abbrechen"
 
         out << '<div class="ui tiny modal">'
-        out << '<div class="header">Wollen Sie wirklich '
-        out << '<span id="js-confirmation-term-what"></span> '
-        out << '<span id="js-confirmation-term-what-detail"></span> '
-        out << '<span id="js-confirmation-term-where"></span> '
-        out << '<span id="js-confirmation-term-where-detail"></span> '
-        out << '<span id="js-confirmation-term-how"></span>'
-        out << '?</div>'
-        out << '<span class="content" id="js-confirmation-term-content"></span> '
-
-
+        out << '<div class="header">'
+        out << '<span class="confirmation-term" id="js-confirmation-term"></span>'
+        out << '</div>'
         out << '<div class="actions">'
         out << '<div class="ui deny button">' + msgCancel + '</div>'
         out << '<button id="js-confirmation-button" class="ui positive right labeled icon button">' + msgDelete

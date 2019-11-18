@@ -25,12 +25,15 @@ class AccessPointController extends AbstractDebugController {
         redirect action: 'list', params: params
     }
 
-    @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
+    @Secured(closure = {
+        ctx.accessService.checkPermAffiliation("ORG_BASIC_MEMBER,ORG_CONSORTIUM", "INST_EDITOR")
+    })
     def addIpRange() {
         def orgAccessPoint = OrgAccessPoint.get(params.id)
         def org = orgAccessPoint.org;
         def orgId = org.id;
-
+        // need to check if contextOrg == orgAccessPoint.org for ORG_CONSORTIUM? The template has no editable elements
+        // in that context (would need to fake a post request), similar for deleteIpRange method.
         def validRanges = []
         def invalidRanges = []
         // allow multiple ip ranges as input (must be separated by whitespaces)
@@ -90,16 +93,59 @@ class AccessPointController extends AbstractDebugController {
         [personInstanceList: Person.list(params), personInstanceTotal: Person.count()]
     }
 
-    @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
-    def create() {
-        params.max = params.max ?: ((User) springSecurityService.getCurrentUser())?.getDefaultPageSizeTMP()
+    /**
+     * Check for existing name in all supported locales and return available suggestions for IP Access Method
+     * A simpler solution would be nice
+     * TODO move out of controller
+     * @return
+     */
+    private def availableIPOptions() {
 
         def organisation = contextService.getOrg()
         params.orgInstance = organisation
 
+        def availableLanguageKeys = ['accessPoint.option.remoteAccess', 'accessPoint.option.woRemoteAccess']
+        def supportedLocales = ['en', 'de']
+        Map localizedAccessPointNameSuggestions = [:]
+        supportedLocales.each { locale ->
+            availableLanguageKeys.each { key ->
+                localizedAccessPointNameSuggestions[message(code : key, locale : locale)] = key
+            }
+        }
+        def existingOapIpInstances = OrgAccessPoint.findAllByOrgAndAccessMethod(organisation, RefdataValue.findByValue('ip'))
+
+        if (existingOapIpInstances) {
+            existingOapIpInstances.each { it ->
+             if (localizedAccessPointNameSuggestions.keySet().contains(it.name)){
+                 if (localizedAccessPointNameSuggestions[it.name]) {
+                     availableLanguageKeys.removeAll {languageKey ->
+                         languageKey == localizedAccessPointNameSuggestions[it.name]
+                     }
+                 }
+             }
+            }
+        }
+        def resultList = []
+        availableLanguageKeys.each { it ->
+            resultList.add(["${it}" : "${message(code : it)}"])
+        }
+        resultList.add(["accessPoint.option.customName" : ''])
+        return resultList
+    }
+
+
+    @Secured(closure = {
+        ctx.accessService.checkPermAffiliationX("ORG_BASIC_MEMBER,ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN")
+    })
+    def create() {
+        params.max = params.max ?: ((User) springSecurityService.getCurrentUser())?.getDefaultPageSizeTMP()
+        def organisation = contextService.getOrg()
+        params.orgInstance = organisation
+        params.availableIpOptions = availableIPOptions()
+
         if (params.template) {
             def accessMethod = RefdataValue.findByValue(params.template)
-            return render(template: 'create_' + accessMethod, model: [accessMethod: accessMethod])
+            return render(template: 'create_' + accessMethod, model: [accessMethod: accessMethod, availableIpOptions : params.availableIpOptions])
         } else {
             if (!params.accessMethod) {
                 params.accessMethod = RefdataValue.findByValue('ip');
@@ -108,10 +154,14 @@ class AccessPointController extends AbstractDebugController {
 
             return params
         }
+
     }
 
-    @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
+    @Secured(closure = {
+        ctx.accessService.checkPermAffiliationX("ORG_BASIC_MEMBER,ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN")
+    })
     def create_ip() {
+        // without the org somehow passed we can only create AccessPoints for the context org
         def orgInstance = contextService.getOrg()
         def oap = OrgAccessPoint.findAllByNameAndOrg(params.name, orgInstance)
 
@@ -136,8 +186,11 @@ class AccessPointController extends AbstractDebugController {
         }
     }
 
-    @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
+    @Secured(closure = {
+        ctx.accessService.checkPermAffiliationX("ORG_BASIC_MEMBER,ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN")
+    })
     def create_proxy() {
+        // without the org somehow passed we can only create AccessPoints for the context org
         def orgInstance = contextService.getOrg()
         def oap = OrgAccessPoint.findAllByNameAndOrg(params.name, orgInstance)
 
@@ -162,8 +215,11 @@ class AccessPointController extends AbstractDebugController {
         }
     }
 
-    @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
+    @Secured(closure = {
+        ctx.accessService.checkPermAffiliationX("ORG_BASIC_MEMBER,ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN")
+    })
     def create_vpn() {
+        // without the org somehow passed we can only create AccessPoints for the context org
         def orgInstance = contextService.getOrg()
 
         if (! params.name) {
@@ -188,8 +244,11 @@ class AccessPointController extends AbstractDebugController {
         }
     }
 
-    @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
+    @Secured(closure = {
+        ctx.accessService.checkPermAffiliationX("ORG_BASIC_MEMBER,ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN")
+    })
     def create_ezproxy() {
+        // without the org somehow passed we can only create AccessPoints for the context org
         def orgInstance = contextService.getOrg()
 
         if (! params.name) {
@@ -221,8 +280,11 @@ class AccessPointController extends AbstractDebugController {
         }
     }
 
-    @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
+    @Secured(closure = {
+        ctx.accessService.checkPermAffiliationX("ORG_BASIC_MEMBER,ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN")
+    })
     def create_shibboleth() {
+        // without the org somehow passed we can only create AccessPoints for the context org
         def orgInstance = contextService.getOrg()
 
         if (! params.name) {
@@ -254,7 +316,8 @@ class AccessPointController extends AbstractDebugController {
         }
     }
 
-    @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
+    @Secured(closure = { ctx.accessService.checkPermAffiliation('ORG_BASIC_MEMBER','INST_EDITOR') || (ctx.accessService.checkPermAffiliation('ORG_CONSORTIUM','INST_EDITOR') && OrgAccessPoint.get(request.getRequestURI().split('/').last()).org == ctx.contextService.getOrg())
+    })
     def delete() {
         def accessPoint = OrgAccessPoint.get(params.id)
 
@@ -338,8 +401,10 @@ class AccessPointController extends AbstractDebugController {
 //                accessPointId : params.id as Long
 //        ]
 //        List linkedPlatformsMap = Platform.executeQuery(qry,qryParams)
+        def sort = params.sort ?: "LOWER(p.name)"
+        def order = params.order ?: "ASC"
 
-        def hql = "select new map(p as platform,oapl as aplink) from Platform p join p.oapp as oapl where oapl.active = true and oapl.oap=${orgAccessPoint.id}"
+        def hql = "select new map(p as platform,oapl as aplink) from Platform p join p.oapp as oapl where oapl.active = true and oapl.oap=${orgAccessPoint.id} order by ${sort} ${order}"
         def linkedPlatformsMap = Platform.executeQuery(hql)
 
         def linkedSubscriptionsQuery = "select new map(s as subscription,oapl as aplink) from Subscription s join s.oapl as oapl where oapl.active = true and oapl.oap=${orgAccessPoint.id}"
@@ -368,7 +433,9 @@ class AccessPointController extends AbstractDebugController {
         }
     }
 
-    @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
+    @Secured(closure = {
+        ctx.accessService.checkPermAffiliation("ORG_BASIC_MEMBER,ORG_CONSORTIUM", "INST_EDITOR")
+    })
     def deleteIpRange() {
         def accessPointData = AccessPointData.get(params.id)
         def accessPoint = accessPointData.orgAccessPoint;
@@ -378,7 +445,9 @@ class AccessPointController extends AbstractDebugController {
         //redirect controller: 'accessPoint', action: 'edit_'+params.accessMethod, id: accessPoint.id, params: [autofocus: true]
     }
 
-    @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
+    @Secured(closure = {
+        ctx.accessService.checkPermAffiliation("ORG_BASIC_MEMBER,ORG_CONSORTIUM", "INST_EDITOR")
+    })
     def linkPlatform() {
         def accessPoint = OrgAccessPoint.get(params.accessPointId)
         def oapl = new OrgAccessPointLink()
@@ -402,7 +471,9 @@ class AccessPointController extends AbstractDebugController {
         //redirect controller: 'accessPoint', action: 'edit_ip', id: accessPoint.id, params: [autofocus: true]
     }
 
-    @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
+    @Secured(closure = {
+        ctx.accessService.checkPermAffiliation("ORG_BASIC_MEMBER,ORG_CONSORTIUM", "INST_EDITOR")
+    })
     def unlinkPlatform() {
         def aoplInstance = OrgAccessPointLink.get(params.id)
         aoplInstance.active = false

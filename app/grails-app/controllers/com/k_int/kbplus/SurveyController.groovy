@@ -5,13 +5,16 @@ import com.k_int.kbplus.auth.User
 import com.k_int.properties.PropertyDefinition
 import de.laser.AccessService
 import de.laser.AuditConfig
+import de.laser.domain.I10nTranslation
 import de.laser.helper.DateUtil
 import de.laser.helper.DebugAnnotation
 import de.laser.helper.RDStore
+import de.laser.interfaces.ShareSupport
 import de.laser.interfaces.TemplateSupport
 import grails.plugin.springsecurity.annotation.Secured
 import groovy.time.TimeCategory
 import org.apache.poi.xssf.streaming.SXSSFWorkbook
+import org.codehaus.groovy.grails.orm.hibernate.cfg.GrailsHibernateUtil
 import org.codehaus.groovy.runtime.InvokerHelper
 import org.springframework.context.i18n.LocaleContextHolder
 import org.springframework.dao.DataIntegrityViolationException
@@ -21,14 +24,6 @@ import java.text.DateFormat
 import java.text.NumberFormat
 import java.text.SimpleDateFormat
 
-import static de.laser.helper.RDStore.getLINKTYPE_FOLLOWS
-import static de.laser.helper.RDStore.getSUBSCRIPTION_INTENDED
-import static de.laser.helper.RDStore.getSUBSCRIPTION_TYPE_ADMINISTRATIVE
-import static de.laser.helper.RDStore.getSUBSCRIPTION_TYPE_ALLIANCE
-import static de.laser.helper.RDStore.getSUBSCRIPTION_TYPE_CONSORTIAL
-import static de.laser.helper.RDStore.getSUBSCRIPTION_TYPE_NATIONAL
-import static de.laser.helper.RDStore.getTIPP_DELETED
-import static de.laser.helper.RDStore.getTIPP_STATUS_CURRENT
 
 @Secured(['IS_AUTHENTICATED_FULLY'])
 class SurveyController {
@@ -50,6 +45,7 @@ class SurveyController {
     def surveyUpdateService
     def escapeService
     def titleStreamService
+    def institutionsService
 
     public static final String WORKFLOW_DATES_OWNER_RELATIONS = '1'
     public static final String WORKFLOW_PACKAGES_ENTITLEMENTS = '5'
@@ -85,6 +81,11 @@ class SurveyController {
         params.offset = result.offset
 
         params.tab = params.tab ?: 'created'
+
+        List<Org> providers = orgTypeService.getCurrentProviders( contextService.getOrg())
+        List<Org> agencies   = orgTypeService.getCurrentAgencies( contextService.getOrg())
+        providers.addAll(agencies)
+        result.providers = providers.unique { a, b -> a?.id <=> b?.id }
 
         DateFormat sdFormat = new DateUtil().getSimpleDateFormat_NoTime()
         def fsq = filterService.getSurveyConfigQueryConsortia(params, sdFormat, result.institution)
@@ -758,8 +759,6 @@ class SurveyController {
             response.sendError(401); return
         }
 
-
-
         def orgs = result.surveyConfig?.orgs.org.flatten().unique { a, b -> a.id <=> b.id }
         result.participants = orgs.sort { it.sortname }
 
@@ -774,29 +773,33 @@ class SurveyController {
 
     }
 
-    @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
-    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
+    @DebugAnnotation(perm = "ORG_CONSORTIUM_SURVEY", affil = "INST_EDITOR", specRole = "ROLE_ADMIN")
+    @Secured(closure = {
+        ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM_SURVEY", "INST_EDITOR", "ROLE_ADMIN")
+    })
     def showEntitlementsRenew() {
         def result = [:]
-
         result.institution = contextService.getOrg()
+        result.user = User.get(springSecurityService.principal.id)
         result.participant = params.participant ? Org.get(params.participant) : null
 
-        result.user = User.get(springSecurityService.principal.id)
+        result.surveyConfig = SurveyConfig.get(params.id)
+        result.surveyInfo = result.surveyConfig.surveyInfo
 
-        result.editable = accessService.checkMinUserOrgRole(result.user, result.institution, 'INST_EDITOR')
+        result.editable = result.surveyInfo?.isEditable() ?: false
 
         if (!result.editable) {
             flash.error = g.message(code: "default.notAutorized.message")
             redirect(url: request.getHeader('referer'))
         }
 
-        result.surveyConfig = SurveyConfig.get(params.id)
-        result.surveyInfo = result.surveyConfig.surveyInfo
+        result.surveyOrg = SurveyOrg.findByOrgAndSurveyConfig(result.participant, result.surveyConfig)
 
         result.subscriptionInstance =  result.surveyConfig?.subscription
 
-        result.ies = subscriptionService.getIssueEntitlementsNotFixed(result.surveyConfig.subscription?.getDerivedSubscriptionBySubscribers(result.participant))
+        result.subscriptionParticipant = result.surveyConfig.subscription?.getDerivedSubscriptionBySubscribers(result.participant)
+
+        result.ies = subscriptionService.getCurrentIssueEntitlements(result.subscriptionParticipant)
 
         def filename = "renewEntitlements_${escapeService.escapeString(result.subscriptionInstance.dropdownNamingConvention(result.participant))}"
 
@@ -822,10 +825,12 @@ class SurveyController {
                     g.message(code:'identifier.label'),
                     g.message(code:'title.dateFirstInPrint.label'),
                     g.message(code:'title.dateFirstOnline.label'),
+                    g.message(code:'default.status.label'),
                     g.message(code:'tipp.price')
+
             ]
             List rows = []
-            result.ies.each { ie ->
+            result.ies?.each { ie ->
                 List row = []
                 row.add([field: ie?.tipp?.title?.title ?: '', style:null])
                 row.add([field: ie?.tipp?.title?.volume ?: '', style:null])
@@ -841,9 +846,11 @@ class SurveyController {
 
                 row.add([field: ie?.tipp?.title?.dateFirstInPrint ? g.formatDate(date: ie?.tipp?.title?.dateFirstInPrint, format: message(code: 'default.date.format.notime')): '', style:null])
                 row.add([field: ie?.tipp?.title?.dateFirstOnline ? g.formatDate(date: ie?.tipp?.title?.dateFirstOnline, format: message(code: 'default.date.format.notime')): '', style:null])
+                row.add([field: ie?.acceptStatus?.getI10n('value') ?: '', style:null])
 
                 row.add([field: ie.priceItem?.listPrice ? g.formatNumber(number: ie?.priceItem?.listPrice, type: 'currency', currencySymbol: ie?.priceItem?.listCurrency, currencyCode: ie?.priceItem?.listCurrency) : '', style:null])
                 row.add([field: ie.priceItem?.localPrice ? g.formatNumber(number: ie?.priceItem?.localPrice, type: 'currency', currencySymbol: ie?.priceItem?.localCurrency, currencyCode: ie?.priceItem?.localCurrency) : '', style:null])
+
 
                 rows.add(row)
             }
@@ -861,6 +868,142 @@ class SurveyController {
                 html result
             }
         }
+    }
+
+    @DebugAnnotation(perm = "ORG_CONSORTIUM_SURVEY", affil = "INST_EDITOR", specRole = "ROLE_ADMIN")
+    @Secured(closure = {
+        ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM_SURVEY", "INST_EDITOR", "ROLE_ADMIN")
+    })
+    def openIssueEntitlementsSurveyAgain() {
+        def result = [:]
+        result.institution = contextService.getOrg()
+        result.user = User.get(springSecurityService.principal.id)
+        result.participant = params.participant ? Org.get(params.participant) : null
+
+        result.surveyConfig = SurveyConfig.get(params.id)
+        result.surveyInfo = result.surveyConfig.surveyInfo
+
+        result.editable = result.surveyInfo?.isEditable() ?: false
+
+        if (!result.editable) {
+            flash.error = g.message(code: "default.notAutorized.message")
+            redirect(url: request.getHeader('referer'))
+        }
+
+        def surveyOrg = SurveyOrg.findByOrgAndSurveyConfig(result.participant, result.surveyConfig)
+
+        result.subscriptionInstance =  result.surveyConfig?.subscription
+
+        def ies = subscriptionService.getIssueEntitlementsUnderNegotiation(result.surveyConfig.subscription?.getDerivedSubscriptionBySubscribers(result.participant))
+
+        ies?.each { ie ->
+            ie.acceptStatus = RDStore.IE_ACCEPT_STATUS_UNDER_CONSIDERATION
+            ie.save(flush: true)
+        }
+
+        surveyOrg.finishDate = null
+        surveyOrg.save(flush: true)
+
+        flash.message = message(code: 'openIssueEntitlementsSurveyAgain.info')
+
+        redirect(action: 'showEntitlementsRenew', id: result.surveyConfig?.id, params:[participant: result.participant?.id])
+
+    }
+
+    @DebugAnnotation(perm = "ORG_CONSORTIUM_SURVEY", affil = "INST_EDITOR", specRole = "ROLE_ADMIN")
+    @Secured(closure = {
+        ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM_SURVEY", "INST_EDITOR", "ROLE_ADMIN")
+    })
+    def completeIssueEntitlementsSurveyforParticipant() {
+        def result = [:]
+        result.institution = contextService.getOrg()
+        result.user = User.get(springSecurityService.principal.id)
+        result.participant = params.participant ? Org.get(params.participant) : null
+
+        result.surveyConfig = SurveyConfig.get(params.id)
+        result.surveyInfo = result.surveyConfig.surveyInfo
+
+        result.editable = result.surveyInfo?.isEditable() ?: false
+
+        if (!result.editable) {
+            flash.error = g.message(code: "default.notAutorized.message")
+            redirect(url: request.getHeader('referer'))
+        }
+
+        def ies = subscriptionService.getIssueEntitlementsUnderNegotiation(result.surveyConfig.subscription?.getDerivedSubscriptionBySubscribers(result.participant))
+
+        ies?.each { ie ->
+            ie.acceptStatus = RDStore.IE_ACCEPT_STATUS_FIXED
+            ie.save(flush: true)
+        }
+
+        flash.message = message(code: 'completeIssueEntitlementsSurvey.forParticipant.info')
+
+        redirect(action: 'showEntitlementsRenew', id: result.surveyConfig?.id, params:[participant: result.participant?.id])
+
+    }
+
+    @DebugAnnotation(perm = "ORG_CONSORTIUM_SURVEY", affil = "INST_EDITOR", specRole = "ROLE_ADMIN")
+    @Secured(closure = {
+        ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM_SURVEY", "INST_EDITOR", "ROLE_ADMIN")
+    })
+    def completeIssueEntitlementsSurvey() {
+        def result = [:]
+        result.institution = contextService.getOrg()
+        result.user = User.get(springSecurityService.principal.id)
+
+        result.surveyConfig = SurveyConfig.get(params.id)
+        result.surveyInfo = result.surveyConfig.surveyInfo
+
+        result.editable = result.surveyInfo?.isEditable() ?: false
+
+        if (!result.editable) {
+            flash.error = g.message(code: "default.notAutorized.message")
+            redirect(url: request.getHeader('referer'))
+        }
+
+        def participantsFinish = SurveyOrg.findAllByFinishDateIsNotNullAndSurveyConfig(result.surveyConfig)?.org.flatten().unique { a, b -> a.id <=> b.id }
+
+        participantsFinish?.each { org ->
+
+            def ies = subscriptionService.getIssueEntitlementsUnderNegotiation(result.surveyConfig.subscription?.getDerivedSubscriptionBySubscribers(org))
+
+            ies?.each { ie ->
+                ie.acceptStatus = RDStore.IE_ACCEPT_STATUS_FIXED
+                ie.save(flush: true)
+            }
+        }
+
+        flash.message = message(code: 'completeIssueEntitlementsSurvey.forFinishParticipant.info')
+
+        redirect(action: 'surveyTitlesEvaluation', id: result.surveyInfo?.id, params:[surveyConfigID: result.surveyConfig?.id])
+
+    }
+
+    @Secured(closure = {
+        ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM_SURVEY", "INST_EDITOR", "ROLE_ADMIN")
+    })
+    def evaluateIssueEntitlementsSurvey() {
+        def result = setResultGenericsAndCheckAccess()
+
+        if (!result.editable) {
+            flash.error = g.message(code: "default.notAutorized.message")
+            redirect(url: request.getHeader('referer'))
+        }
+
+        result.participant = params.participant ? Org.get(params.participant) : null
+
+        result.surveyConfig = SurveyConfig.get(params.id)
+        result.surveyInfo = result.surveyConfig.surveyInfo
+
+        result.surveyOrg = SurveyOrg.findByOrgAndSurveyConfig(result.participant, result.surveyConfig)
+
+        result.subscriptionInstance =  result.surveyConfig?.subscription
+
+        result.ies = subscriptionService.getCurrentIssueEntitlements(result.surveyConfig.subscription?.getDerivedSubscriptionBySubscribers(result.participant))
+
+        result
+
     }
 
     @DebugAnnotation(perm = "ORG_CONSORTIUM_SURVEY", affil = "INST_EDITOR", specRole = "ROLE_ADMIN")
@@ -1463,7 +1606,7 @@ class SurveyController {
                     params.name,
                     params.type,
                     rdc,
-                    params.explain,
+                    params.expl,
                     params.comment,
                     params.introduction,
                     result.institution
@@ -1922,7 +2065,7 @@ class SurveyController {
         result.surveyInfo.status = RDStore.SURVEY_IN_EVALUATION
         result.surveyInfo.save(flush: true)
 
-        redirect(action: "currentSurveysConsortia", params: [tab: "inEvaluation"])
+        redirect(url: request.getHeader('referer'))
 
     }
 
@@ -1930,10 +2073,34 @@ class SurveyController {
     @Secured(closure = {
         ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM_SURVEY", "INST_EDITOR", "ROLE_ADMIN")
     })
-    def renewalwithSurvey() {
+    def setCompleteSurvey() {
         def result = setResultGenericsAndCheckAccess()
         if (!result.editable) {
             response.sendError(401); return
+        }
+
+        result.surveyInfo.status = RDStore.SURVEY_SURVEY_COMPLETED
+        result.surveyInfo.save(flush: true)
+
+        redirect(url: request.getHeader('referer'))
+
+    }
+
+    @DebugAnnotation(perm = "ORG_CONSORTIUM_SURVEY", affil = "INST_EDITOR", specRole = "ROLE_ADMIN")
+    @Secured(closure = {
+        ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM_SURVEY", "INST_EDITOR", "ROLE_ADMIN")
+    })
+    def renewalWithSurvey() {
+        def result = setResultGenericsAndCheckAccess()
+        if (!result.editable) {
+            response.sendError(401); return
+        }
+        result.superOrgType = []
+        if(accessService.checkPerm('ORG_CONSORTIUM')) {
+            result.superOrgType << message(code:'consortium.superOrgType')
+        }
+        if(accessService.checkPerm('ORG_INST_COLLECTIVE')) {
+            result.superOrgType << message(code:'collective.superOrgType')
         }
 
         result.parentSubscription = result.surveyConfig?.subscription
@@ -2254,7 +2421,13 @@ class SurveyController {
                                  sub_name     : subscription?.name,
                                  sub_id       : subscription?.id,
                                  sub_license  : subscription?.owner?.reference ?: '',
-                                 sub_status   : RDStore.SUBSCRIPTION_INTENDED]
+                                 sub_status   : RDStore.SUBSCRIPTION_INTENDED.id.toString(),
+                                 sub_type     : subscription.type?.id.toString(),
+                                 sub_form     : subscription.form?.id.toString(),
+                                 sub_resource : subscription.resource?.id.toString()
+        ]
+
+        result.subscription = subscription
         result
     }
 
@@ -2275,28 +2448,15 @@ class SurveyController {
         if (previousSubscriptions.size() > 0) {
             flash.error = message(code: 'subscription.renewSubExist', default: 'The Subscription is already renewed!')
         } else {
-            boolean isCopyAuditOn = params.subscription.isCopyAuditOn ? true : false
-            def sub_startDate = null
-            def sub_endDate = null
-            def sub_status = null
-            def old_subOID = null
-            def new_subname = null
+            def sub_startDate = params.subscription?.start_date ? parseDate(params.subscription?.start_date, possible_date_formats) : null
+            def sub_endDate = params.subscription?.end_date ? parseDate(params.subscription?.end_date, possible_date_formats) : null
+            def sub_status = params.subStatus
+            def sub_type = params.subType
+            def sub_form = params.subForm
+            def sub_resource = params.subResource
+            def old_subOID = params.subscription.old_subid
+            def new_subname = params.subscription.name
             def manualCancellationDate = null
-            if (isCopyAuditOn) {
-                use(TimeCategory) {
-                    sub_startDate = baseSub?.endDate ? (baseSub?.endDate + 1.day) : null
-                    sub_endDate = baseSub?.endDate ? (baseSub?.endDate + 1.year) : null
-                }
-                sub_status = RDStore.SUBSCRIPTION_INTENDED
-                old_subOID = baseSub?.id
-                new_subname = baseSub?.name
-            } else {
-                sub_startDate = params.subscription?.start_date ? parseDate(params.subscription?.start_date, possible_date_formats) : null
-                sub_endDate = params.subscription?.end_date ? parseDate(params.subscription?.end_date, possible_date_formats) : null
-                sub_status = params.subStatus
-                old_subOID = params.subscription.old_subid
-                new_subname = params.subscription.name
-            }
 
             use(TimeCategory) {
                 manualCancellationDate =  baseSub?.manualCancellationDate ? (baseSub?.manualCancellationDate + 1.year) : null
@@ -2309,25 +2469,25 @@ class SurveyController {
                     identifier: java.util.UUID.randomUUID().toString(),
                     isPublic: baseSub?.isPublic,
                     isSlaved: baseSub?.isSlaved,
-                    type: baseSub?.type ?: null,
+                    type: sub_type,
                     status: sub_status,
-                    resource: baseSub?.resource ?: null,
-                    form: baseSub?.form ?: null
+                    resource: sub_resource,
+                    form: sub_form
             )
 
             if (!newSub.save(flush: true)) {
                 log.error("Problem saving subscription ${newSub.errors}");
                 return newSub
             } else {
+                boolean isCopyAuditOn = params.auditProperties ? true : false
                 log.debug("Save ok");
-                if (isCopyAuditOn) {
+                if (params.list('auditList')) {
                     //copy audit
-                    def auditConfigs = AuditConfig.findAllByReferenceClassAndReferenceId(Subscription.class.name, baseSub?.id)
-                    auditConfigs.each {
-                        AuditConfig ac ->
-                            //All ReferenceFields were copied!
-                            //'name', 'startDate', 'endDate', 'manualCancellationDate', 'status', 'type', 'form', 'resource'
-                            AuditConfig.addConfig(newSub, ac.referenceField)
+                    params.list('auditList').each { auditField ->
+                        //All ReferenceFields were copied!
+                        //'name', 'startDate', 'endDate', 'manualCancellationDate', 'status', 'type', 'form', 'resource'
+                        //println(auditField)
+                        AuditConfig.addConfig(newSub, auditField)
                     }
                 }
                 //Copy References
@@ -2393,20 +2553,6 @@ class SurveyController {
         result.allSubscriptions_readRights = subscriptionService.getMySubscriptions_readRights()
         result.allSubscriptions_writeRights = subscriptionService.getMySubscriptions_writeRights()
 
-        List<String> subTypSubscriberVisible = [RDStore.SUBSCRIPTION_TYPE_CONSORTIAL,
-                                                RDStore.SUBSCRIPTION_TYPE_ADMINISTRATIVE,
-                                                RDStore.SUBSCRIPTION_TYPE_ALLIANCE,
-                                                RDStore.SUBSCRIPTION_TYPE_NATIONAL]
-        result.isSubscriberVisible =
-                result.sourceSubscription &&
-                        result.targetSubscription &&
-                        subTypSubscriberVisible.contains(result.sourceSubscription.type) &&
-                        subTypSubscriberVisible.contains(result.targetSubscription.type)
-
-        if (!result.isSubscriberVisible) {
-            flash.message += message(code: 'subscription.info.subscriberNotAvailable')
-        }
-
         switch (params.workFlowPart) {
             case WORKFLOW_DATES_OWNER_RELATIONS:
                 result << copySubElements_DatesOwnerRelations();
@@ -2429,14 +2575,8 @@ class SurveyController {
             case WORKFLOW_DOCS_ANNOUNCEMENT_TASKS:
                 result << copySubElements_DocsAnnouncementsTasks();
                 if (params.isRenewSub) {
-                    if (result.isSubscriberVisible) {
-                        //params.workFlowPart = WORKFLOW_SUBSCRIBER
-                        params.workFlowPart = WORKFLOW_PROPERTIES
-                        result << loadDataFor_Subscriber()
-                    } else {
                         params.workFlowPart = WORKFLOW_PROPERTIES
                         result << loadDataFor_Properties()
-                    }
                 } else {
                     result << loadDataFor_DocsAnnouncementsTasks()
                 }
@@ -2453,9 +2593,14 @@ class SurveyController {
             case WORKFLOW_PROPERTIES:
                 result << copySubElements_Properties();
                 if (params.isRenewSub && params.targetSubscriptionId) {
-                    flash.error = ""
-                    flash.message = ""
-                    redirect controller: 'subscription', action: 'show', params: [id: params?.targetSubscriptionId]
+                    def surveyConfig = SurveyConfig.findBySubscriptionAndIsSubscriptionSurveyFix(result.sourceSubscription, true)
+                    /*flash.error = ""
+                    flash.message = ""*/
+                    if(surveyConfig) {
+                        redirect controller: 'survey', action: 'renewalWithSurvey', params: [id: surveyConfig.surveyInfo.id, surveyConfigID: surveyConfig.id]
+                    }else {
+                        redirect controller: 'subscription', action: 'show', params: [id: params?.targetSubscriptionId]
+                    }
                 } else {
                     result << loadDataFor_Properties()
                 }
@@ -2463,9 +2608,14 @@ class SurveyController {
             case WORKFLOW_END:
                 result << copySubElements_Properties();
                 if (params?.targetSubscriptionId) {
-                    flash.error = ""
-                    flash.message = ""
-                    redirect controller: 'subscription', action: 'show', params: [id: params?.targetSubscriptionId]
+                    def surveyConfig = SurveyConfig.findBySubscriptionAndIsSubscriptionSurveyFix(result.sourceSubscription, true)
+                    /*flash.error = ""
+                    flash.message = ""*/
+                    if(surveyConfig) {
+                        redirect controller: 'survey', action: 'renewalWithSurvey', params: [id: surveyConfig.surveyInfo.id, surveyConfigID: surveyConfig.id]
+                    }else {
+                        redirect controller: 'subscription', action: 'show', params: [id: params?.targetSubscriptionId]
+                    }
                 }
                 break;
             default:
@@ -2493,27 +2643,28 @@ class SurveyController {
     })
     Map copySubElements_Properties() {
         LinkedHashMap result = [customProperties: [:], privateProperties: [:]]
-        Subscription baseSub = Subscription.get(params.sourceSubscriptionId ?: params.id)
+        Subscription baseSub = Subscription.get(params.sourceSubscriptionId ? Long.parseLong(params.sourceSubscriptionId) : params.id)
         boolean isRenewSub = params?.isRenewSub ? true : false
         boolean isCopyAuditOn = params?.isCopyAuditOn ? true : false
         Subscription newSub = null
+        List auditProperties = params.list('auditProperties')
         List<Subscription> subsToCompare = [baseSub]
         if (params.targetSubscriptionId) {
-            newSub = Subscription.get(params.targetSubscriptionId)
+            newSub = Subscription.get(Long.parseLong(params.targetSubscriptionId))
             subsToCompare.add(newSub)
         }
         List<AbstractProperty> propertiesToTake = params?.list('subscription.takeProperty').collect {
             genericOIDService.resolveOID(it)
         }
         if (propertiesToTake && isBothSubscriptionsSet(baseSub, newSub)) {
-            subscriptionService.copyProperties(propertiesToTake, newSub, isRenewSub, isCopyAuditOn, flash)
+            surveyService.copyProperties(propertiesToTake, newSub, isRenewSub, isCopyAuditOn, flash, auditProperties)
         }
 
         List<AbstractProperty> propertiesToDelete = params?.list('subscription.deleteProperty').collect {
             genericOIDService.resolveOID(it)
         }
         if (propertiesToDelete && isBothSubscriptionsSet(baseSub, newSub)) {
-            subscriptionService.deleteProperties(propertiesToDelete, newSub, isRenewSub, isCopyAuditOn, flash)
+            surveyService.deleteProperties(propertiesToDelete, newSub, isRenewSub, isCopyAuditOn, flash, auditProperties)
         }
 
         if (newSub) {
@@ -2525,11 +2676,11 @@ class SurveyController {
 
     private loadDataFor_Properties() {
         LinkedHashMap result = [customProperties: [:], privateProperties: [:]]
-        Subscription baseSub = Subscription.get(params.sourceSubscriptionId ?: params.id)
+        Subscription baseSub = Subscription.get(params.sourceSubscriptionId ? Long.parseLong(params.sourceSubscriptionId) : params.id)
         Subscription newSub = null
         List<Subscription> subsToCompare = [baseSub]
         if (params.targetSubscriptionId) {
-            newSub = Subscription.get(params.targetSubscriptionId)
+            newSub = Subscription.get(Long.parseLong(params.targetSubscriptionId))
             subsToCompare.add(newSub)
         }
 
@@ -2538,6 +2689,7 @@ class SurveyController {
         }
         subsToCompare.each { sub ->
             TreeMap customProperties = result.customProperties
+            sub = GrailsHibernateUtil.unwrapIfProxy(sub)
             customProperties = comparisonService.buildComparisonTree(customProperties, sub, sub.customProperties)
             result.customProperties = customProperties
             TreeMap privateProperties = result.privateProperties
@@ -2559,8 +2711,8 @@ class SurveyController {
 
     private copySubElements_PackagesEntitlements() {
         def result = setResultGenericsAndCheckAccessforSub(AccessService.CHECK_VIEW)
-        Subscription baseSub = Subscription.get(params.sourceSubscriptionId ?: params.id)
-        Subscription newSub = params.targetSubscriptionId ? Subscription.get(params.targetSubscriptionId) : null
+        Subscription baseSub = Subscription.get(params.sourceSubscriptionId ? Long.parseLong(params.sourceSubscriptionId) : params.id)
+        Subscription newSub = params.targetSubscriptionId ? Subscription.get(Long.parseLong(params.targetSubscriptionId)) : null
 
         boolean isTargetSubChanged = false
         if (params?.subscription?.deletePackageIds && isBothSubscriptionsSet(baseSub, newSub)) {
@@ -2603,8 +2755,8 @@ class SurveyController {
 
     private loadDataFor_PackagesEntitlements() {
         def result = setResultGenericsAndCheckAccessforSub(AccessService.CHECK_VIEW)
-        Subscription baseSub = Subscription.get(params.sourceSubscriptionId ?: params.id)
-        Subscription newSub = params.targetSubscriptionId ? Subscription.get(params.targetSubscriptionId) : null
+        Subscription baseSub = Subscription.get(params.sourceSubscriptionId ? Long.parseLong(params.sourceSubscriptionId) : params.id)
+        Subscription newSub = params.targetSubscriptionId ? Subscription.get(Long.parseLong(params.targetSubscriptionId)) : null
         result.sourceIEs = subscriptionService.getIssueEntitlements(baseSub)
         result.targetIEs = subscriptionService.getIssueEntitlements(newSub)
         result.newSub = newSub
@@ -2614,8 +2766,8 @@ class SurveyController {
 
     private copySubElements_DatesOwnerRelations() {
         def result = setResultGenericsAndCheckAccessforSub(AccessService.CHECK_VIEW)
-        Subscription baseSub = Subscription.get(params.sourceSubscriptionId ?: params.id)
-        Subscription newSub = params.targetSubscriptionId ? Subscription.get(params.targetSubscriptionId) : null
+        Subscription baseSub = Subscription.get(params.sourceSubscriptionId ? Long.parseLong(params.sourceSubscriptionId) : params.id)
+        Subscription newSub = params.targetSubscriptionId ? Subscription.get(Long.parseLong(params.targetSubscriptionId)) : null
 
         boolean isTargetSubChanged = false
         if (params?.subscription?.deleteDates && isBothSubscriptionsSet(baseSub, newSub)) {
@@ -2647,6 +2799,22 @@ class SurveyController {
             }
             subscriptionService.copyOrgRelations(toCopyOrgRelations, baseSub, newSub, flash)
             isTargetSubChanged = true
+
+            List<OrgRole> toggleShareOrgRoles = params.list('toggleShareOrgRoles').collect {
+                genericOIDService.resolveOID(it)
+            }
+
+            newSub = newSub.refresh()
+            newSub.orgRelations.each {newSubOrgRole ->
+
+                if(newSubOrgRole.org in toggleShareOrgRoles.org)
+                {
+                    newSubOrgRole.isShared = true
+                    newSubOrgRole.save(flush:true)
+
+                    ((ShareSupport) newSub).updateShare(newSubOrgRole)
+                }
+            }
         }
 
         if (isTargetSubChanged) {
@@ -2660,8 +2828,8 @@ class SurveyController {
 
     private loadDataFor_DatesOwnerRelations() {
         def result = setResultGenericsAndCheckAccessforSub(AccessService.CHECK_VIEW)
-        Subscription baseSub = Subscription.get(params.sourceSubscriptionId ?: params.id)
-        Subscription newSub = params.targetSubscriptionId ? Subscription.get(params.targetSubscriptionId) : null
+        Subscription baseSub = Subscription.get(params.sourceSubscriptionId ? Long.parseLong(params.sourceSubscriptionId) : params.id)
+        Subscription newSub = params.targetSubscriptionId ? Subscription.get(Long.parseLong(params.targetSubscriptionId)) : null
 
         // restrict visible for templates/links/orgLinksAsList
         result.source_visibleOrgRelations = subscriptionService.getVisibleOrgRelations(baseSub)
@@ -2723,7 +2891,7 @@ class SurveyController {
             newSub = newSub.refresh()
         }
 
-        result.sourceSubscription = baseSub
+        result.sourceSubscription = baseSub.refresh()
         result.targetSubscription = newSub
         result
     }
@@ -3036,6 +3204,597 @@ class SurveyController {
         redirect(uri: request.getHeader('referer'))
     }
 
+    @DebugAnnotation(perm = "ORG_CONSORTIUM_SURVEY", affil = "INST_EDITOR", specRole = "ROLE_ADMIN")
+    @Secured(closure = {
+        ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM_SURVEY", "INST_EDITOR", "ROLE_ADMIN")
+    })
+    def compareMembersOfTwoSubs() {
+        def result = setResultGenericsAndCheckAccess()
+        if (!result.editable) {
+            response.sendError(401); return
+        }
+
+        result.parentSubscription = result.surveyConfig?.subscription
+        result.parentSubChilds = subscriptionService.getCurrentValidSubChilds(result.parentSubscription)
+        result.parentSuccessorSubscription = result.surveyConfig?.subscription?.getCalculatedSuccessor()
+        result.parentSuccessorSubChilds = result.parentSuccessorSubscription ? subscriptionService.getValidSubChilds(result.parentSuccessorSubscription) : null
+
+        result.participantsList = []
+
+        result.parentParticipantsList = []
+        result.parentSuccessortParticipantsList = []
+
+        result.parentSubChilds.each { sub ->
+            def org = sub.getSubscriber()
+            result.participantsList << org
+            result.parentParticipantsList << org
+
+        }
+
+        result.parentSuccessorSubChilds.each { sub ->
+            def org = sub.getSubscriber()
+            if(!(org in result.participantsList)) {
+                result.participantsList << org
+            }
+            result.parentSuccessortParticipantsList << org
+
+        }
+
+        result.participantsList = result.participantsList.sort{it.sortname}
+
+
+        result.participationProperty = SurveyProperty.findByNameAndOwnerIsNull("Participation")
+
+        result
+
+    }
+
+    @DebugAnnotation(perm = "ORG_CONSORTIUM_SURVEY", affil = "INST_EDITOR", specRole = "ROLE_ADMIN")
+    @Secured(closure = {
+        ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM_SURVEY", "INST_EDITOR", "ROLE_ADMIN")
+    })
+    def copySurveyCostItems() {
+        def result = setResultGenericsAndCheckAccess()
+        if (!result.editable) {
+            response.sendError(401); return
+        }
+
+        result.parentSubscription = result.surveyConfig?.subscription
+        result.parentSuccessorSubscription = result.surveyConfig?.subscription?.getCalculatedSuccessor()
+        result.parentSuccessorSubChilds = result.parentSuccessorSubscription ? subscriptionService.getValidSubChilds(result.parentSuccessorSubscription) : null
+
+        result.participantsList = []
+
+        result.parentSuccessortParticipantsList = []
+
+        result.parentSuccessorSubChilds.each { sub ->
+            def newMap = [:]
+            def org = sub.getSubscriber()
+            newMap.id = org.id
+            newMap.sortname = org.sortname
+            newMap.name = org.name
+            newMap.newSub = sub
+            newMap.oldSub = sub.getCalculatedPrevious()
+
+            newMap.surveyOrg = SurveyOrg.findBySurveyConfigAndOrg(result.surveyConfig, org)
+            newMap.surveyCostItem =newMap.surveyOrg ? com.k_int.kbplus.CostItem.findBySurveyOrg(newMap.surveyOrg) : null
+
+            result.participantsList << newMap
+
+        }
+
+        result.participantsList = result.participantsList.sort{it.sortname}
+
+        result
+
+    }
+
+    @DebugAnnotation(perm = "ORG_CONSORTIUM_SURVEY", affil = "INST_EDITOR", specRole = "ROLE_ADMIN")
+    @Secured(closure = {
+        ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM_SURVEY", "INST_EDITOR", "ROLE_ADMIN")
+    })
+    def proccessCopySurveyCostItems() {
+        def result = setResultGenericsAndCheckAccess()
+        if (!result.editable) {
+            response.sendError(401); return
+        }
+
+        result.parentSubscription = result.surveyConfig?.subscription
+
+        result.parentSuccessorSubscription = result.surveyConfig?.subscription?.getCalculatedSuccessor()
+
+        def countNewCostItems = 0
+        def costElement = RefdataValue.getByValueAndCategory('price: consortial price', 'CostItemElement')
+        params.list('selectedSurveyCostItem').each { costItemId ->
+
+            def costItem = CostItem.get(costItemId)
+            def participantSub = result.parentSuccessorSubscription?.getDerivedSubscriptionBySubscribers(costItem.surveyOrg.org)
+            def participantSubCostItem = CostItem.findAllBySubAndOwnerAndCostItemElement(participantSub, result.institution, costElement)
+            if(costItem && participantSub && !participantSubCostItem){
+
+                def properties = costItem.properties
+                CostItem copyCostItem = new CostItem()
+                InvokerHelper.setProperties(copyCostItem, properties)
+                copyCostItem.globalUID = null
+                copyCostItem.surveyOrg = null
+                copyCostItem.sub = participantSub
+                if(copyCostItem.save(flush:true)) {
+                    countNewCostItems++
+                }
+
+            }
+
+        }
+
+        flash.message = message(code: 'copySurveyCostItems.copy.success', args: [countNewCostItems])
+        redirect(action: 'copySurveyCostItems', id: params.id, params: [surveyConfigID: result.surveyConfig?.id])
+
+    }
+
+    @DebugAnnotation(perm = "ORG_CONSORTIUM_SURVEY", affil = "INST_EDITOR", specRole = "ROLE_ADMIN")
+    @Secured(closure = {
+        ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM_SURVEY", "INST_EDITOR", "ROLE_ADMIN")
+    })
+    def copyProperties() {
+        def result = setResultGenericsAndCheckAccess()
+        if (!result.editable) {
+            response.sendError(401); return
+        }
+
+        params.tab = params.tab ?: 'surveyProperties'
+
+        result.selectedProperty
+        result.properties
+        if(params.tab == 'surveyProperties') {
+            result.properties = SurveyConfigProperties.findAllBySurveyConfig(result.surveyConfig).surveyProperty
+        }
+
+        result.selectedProperty = params.selectedProperty ?:  result.properties[0].id
+
+        result.parentSubscription = result.surveyConfig?.subscription
+        result.parentSuccessorSubscription = result.surveyConfig?.subscription?.getCalculatedSuccessor()
+        result.parentSuccessorSubChilds = result.parentSuccessorSubscription ? subscriptionService.getValidSubChilds(result.parentSuccessorSubscription) : null
+
+        result.participantsList = []
+        result.parentSuccessorSubChilds.each { sub ->
+
+            def newMap = [:]
+            def org = sub.getSubscriber()
+                newMap.id = org.id
+                newMap.sortname = org.sortname
+                newMap.name = org.name
+                newMap.newSub = sub
+                newMap.oldSub = sub.getCalculatedPrevious()
+
+
+            if(params.tab == 'surveyProperties') {
+                    newMap.surveyProperty = SurveyResult.findBySurveyConfigAndTypeAndParticipant(result.surveyConfig, SurveyProperty.get(result.selectedProperty), org)
+                }
+
+                newMap.newCustomProperty = sub ? sub.customProperties.find { it.type.id == result.selectedProperty } : []
+                newMap.oldCustomProperty = newMap.oldSub ? newMap.oldSub.customProperties.find { it.type.id == result.selectedProperty } : []
+
+
+                result.participantsList << newMap
+        }
+
+        result.participantsList = result.participantsList.sort{it.sortname}
+
+
+        result
+
+    }
+
+    @DebugAnnotation(perm = "ORG_CONSORTIUM_SURVEY", affil = "INST_EDITOR", specRole = "ROLE_ADMIN")
+    @Secured(closure = {
+        ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM_SURVEY", "INST_EDITOR", "ROLE_ADMIN")
+    })
+    def proccessCopyProperties() {
+        def result = setResultGenericsAndCheckAccess()
+        if (!result.editable) {
+            response.sendError(401); return
+        }
+
+        result.selectedProperty
+        def propDef
+        def surveyProperty
+        if(params.tab == 'surveyProperties') {
+            result.selectedProperty = params.selectedProperty ?:  null
+
+            surveyProperty = params.copyProperty ? SurveyProperty.get(Long.parseLong(params.copyProperty)): null
+
+            propDef = surveyProperty ? PropertyDefinition.findByNameAndDescrAndTenant(surveyProperty.name, 'Subscription Property', null) : null
+            if (!propDef && surveyProperty)  {
+                    propDef = PropertyDefinition.loc(
+                                surveyProperty.name,
+                                'Subscription Property',
+                                surveyProperty.type,
+                                (surveyProperty.type == RefdataValue.toString()) ? RefdataCategory.get(surveyProperty.refdataCategory) : null,
+                                surveyProperty.expl,
+                                null,
+                                PropertyDefinition.FALSE,
+                                null)
+
+                if (propDef?.hasErrors()) {
+                    log.error(propDef.errors)
+                }
+                else {
+                    propDef.save(flush: true)
+                    I10nTranslation.copyI10n(propDef, 'name', propDef)
+                    I10nTranslation.copyI10n(propDef, 'expl', propDef)
+                }
+            }
+
+        }else {
+            result.selectedProperty = params.selectedProperty ?:  null
+        }
+
+        result.parentSuccessorSubscription = result.surveyConfig?.subscription?.getCalculatedSuccessor()
+        result.parentSuccessorSubChilds = result.parentSuccessorSubscription ? subscriptionService.getValidSubChilds(result.parentSuccessorSubscription) : null
+
+        if(propDef && params.list('selectedSub')) {
+            params.list('selectedSub').each { subID ->
+                    if (Long.parseLong(subID) in result.parentSuccessorSubChilds.id) {
+                        def sub = Subscription.get(Long.parseLong(subID))
+                        def org = sub.getSubscriber()
+                        def oldSub = sub.getCalculatedPrevious()
+
+                        def copyProperty
+                        if (params.tab == 'surveyProperties') {
+                            copyProperty = SurveyResult.findBySurveyConfigAndTypeAndParticipant(result.surveyConfig, surveyProperty, org)
+                        } else {
+                            copyProperty = oldSub ? oldSub.customProperties.find {
+                                it.type.id == result.selectedProperty
+                            } : []
+                        }
+
+                        //custom Property
+                        if (copyProperty) {
+                            def existingProp = sub.customProperties.find {
+                                it.type.id == propDef.id && it.owner.id == sub.id
+                            }
+
+                            if (existingProp == null || propDef.multipleOccurrence) {
+                                def newProp = PropertyDefinition.createGenericProperty(PropertyDefinition.CUSTOM_PROPERTY, sub, propDef)
+                                if (newProp.hasErrors()) {
+                                    log.error(newProp.errors)
+                                } else {
+                                    log.debug("New custom property created: " + newProp.type.name)
+                                    def prop = setNewProperty(newProp, copyProperty.getValue())
+                                }
+                            }
+
+                            /*if (existingProp) {
+                            def customProp = SubscriptionCustomProperty.get(existingProp.id)
+                            def prop = setNewProperty(customProp, copyProperty)
+                        }*/
+                        }
+                    }
+            }
+        }
+
+        redirect(action: 'copyProperties', id: params.id, params: [surveyConfigID: result.surveyConfig?.id, tab: params.tab, selectedProperty: params.selectedProperty])
+
+    }
+
+    @DebugAnnotation(perm = "ORG_CONSORTIUM_SURVEY", affil = "INST_EDITOR", specRole = "ROLE_ADMIN")
+    @Secured(closure = {
+        ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM_SURVEY", "INST_EDITOR", "ROLE_ADMIN")
+    })
+    def processTransferParticipants() {
+        def result = setResultGenericsAndCheckAccess()
+        if (!result.editable) {
+            response.sendError(401); return
+        }
+
+        result.parentSubscription = result.surveyConfig?.subscription
+        result.parentSubChilds = subscriptionService.getCurrentValidSubChilds(result.parentSubscription)
+        result.parentSuccessorSubscription = result.surveyConfig?.subscription?.getCalculatedSuccessor()
+        result.parentSuccessorSubChilds = result.parentSuccessorSubscription ? subscriptionService.getValidSubChilds(result.parentSuccessorSubscription) : null
+
+        result.participationProperty = SurveyProperty.findByNameAndOwnerIsNull("Participation")
+
+        result.properties = []
+        result.properties.addAll(SurveyConfigProperties.findAllBySurveyPropertyNotEqualAndSurveyConfig(result.participationProperty, result.surveyConfig)?.surveyProperty)
+
+        result.multiYearTermThreeSurvey = null
+        result.multiYearTermTwoSurvey = null
+
+        if (SurveyProperty.findByNameAndOwnerIsNull("Multi-year term 3 years")?.id in result.properties.id) {
+            result.multiYearTermThreeSurvey = SurveyProperty.findByNameAndOwnerIsNull("Multi-year term 3 years")
+            result.properties.remove(result.multiYearTermThreeSurvey)
+        }
+        if (SurveyProperty.findByNameAndOwnerIsNull("Multi-year term 2 years")?.id in result.properties.id) {
+            result.multiYearTermTwoSurvey = SurveyProperty.findByNameAndOwnerIsNull("Multi-year term 2 years")
+            result.properties.remove(result.multiYearTermTwoSurvey)
+
+        }
+
+        result.parentSuccessortParticipantsList = []
+
+        result.parentSuccessorSubChilds.each { sub ->
+            def org = sub.getSubscriber()
+            result.parentSuccessortParticipantsList << org
+
+        }
+
+        // Orgs that renew or new to Sub
+        result.orgsContinuetoSubscription = []
+        result.newOrgsContinuetoSubscription = []
+
+        result.newSubs = []
+
+        def countNewSubs = 0
+
+        SurveyResult.executeQuery("from SurveyResult where owner.id = :owner and surveyConfig.id = :surConfig and type.id = :surProperty and refValue = :refValue order by participant.sortname",
+                [
+                        owner      : result.institution?.id,
+                        surProperty: result.participationProperty?.id,
+                        surConfig  : result.surveyConfig?.id,
+                        refValue   : RDStore.YN_YES])?.each {
+
+            // Keine Kindlizenz in der Nachfolgerlizenz vorhanden
+            if(!(it?.participant in result.parentSuccessortParticipantsList)){
+
+                def oldSubofParticipant = Subscription.executeQuery("Select s from Subscription s left join s.orgRelations orgR where s.instanceOf = :parentSub and orgR.org = :participant",
+                        [parentSub  : result.parentSubscription,
+                         participant: it?.participant
+                        ])[0]
+
+
+                if(!oldSubofParticipant)
+                {
+                    oldSubofParticipant = result.parentSubscription
+                }
+
+                def newStartDate = null
+                def newEndDate = null
+
+                //Umfrage-Merkmal MJL2
+                if (result.multiYearTermTwoSurvey) {
+
+                    def participantPropertyTwo = SurveyResult.findByParticipantAndOwnerAndSurveyConfigAndType(it?.participant, result.institution, result.surveyConfig, result.multiYearTermTwoSurvey)
+
+                    if (participantPropertyTwo?.refValue?.id == RDStore.YN_YES?.id) {
+                        use(TimeCategory) {
+                            newStartDate = oldSubofParticipant?.startDate ? (oldSubofParticipant.endDate + 1.day) : null
+                            newEndDate = oldSubofParticipant?.endDate ? (oldSubofParticipant.endDate + 2.year) : null
+                        }
+                            countNewSubs++
+                            result.newSubs << processAddMember(((oldSubofParticipant != result.parentSubscription) ? oldSubofParticipant: null), result.parentSuccessorSubscription, it?.participant, newStartDate, newEndDate, true, params)
+                    }
+
+                }
+                //Umfrage-Merkmal MJL3
+                else if (result.multiYearTermThreeSurvey) {
+
+                    def participantPropertyThree = SurveyResult.findByParticipantAndOwnerAndSurveyConfigAndType(it?.participant, result.institution, result.surveyConfig, result.multiYearTermThreeSurvey)
+                    if (participantPropertyThree?.refValue?.id == RDStore.YN_YES?.id) {
+                        use(TimeCategory) {
+                            newStartDate = oldSubofParticipant?.startDate ? (oldSubofParticipant.endDate + 1.day) : null
+                            newEndDate = oldSubofParticipant?.endDate ? (oldSubofParticipant.endDate + 3.year) : null
+                        }
+                        countNewSubs++
+                        result.newSubs << processAddMember(((oldSubofParticipant != result.parentSubscription) ? oldSubofParticipant: null), result.parentSuccessorSubscription, it?.participant, newStartDate, newEndDate, true, params)
+                    }
+                }else {
+                    use(TimeCategory) {
+                        newStartDate = oldSubofParticipant?.startDate ? (oldSubofParticipant.endDate + 1.day) : null
+                        newEndDate = oldSubofParticipant?.endDate ? (oldSubofParticipant.endDate + 1.year) : null
+                    }
+                    countNewSubs++
+                    result.newSubs << processAddMember(((oldSubofParticipant != result.parentSubscription) ? oldSubofParticipant: null), result.parentSuccessorSubscription, it?.participant, newStartDate, newEndDate, false, params)
+                }
+            }
+        }
+
+
+
+        //MultiYearTerm Subs  //Späteinsteiger Unwichtig
+        result.parentSubChilds?.each { sub ->
+            if (sub?.isCurrentMultiYearSubscriptionNew()){
+                sub?.getAllSubscribers()?.each { org ->
+                    if (!(org in result.parentSuccessortParticipantsList)) {
+
+                        countNewSubs++
+                        result.newSubs << processAddMember(sub, result.parentSuccessorSubscription, org, sub.startDate, sub.endDate, true, params)
+                    }
+                }
+            }
+            /*else if(sub.islateCommer()){
+                sub?.getAllSubscribers()?.each { org ->
+                    if (!(org in result.parentSuccessortParticipantsList)) {
+
+                        countNewSubs++
+                        result.newSubs << processAddMember(sub, result.parentSuccessorSubscription, org, sub.startDate, sub.endDate, false, params)
+                    }
+                }
+            }*/
+
+        }
+
+        result.countNewSubs = countNewSubs
+        if(result.newSubs) {
+            result.parentSuccessorSubscription.syncAllShares(result.newSubs)
+        }
+        flash.message = message(code: 'surveyInfo.transfer.info', args: [countNewSubs, result.newSubs?.size() ?: 0])
+
+
+        redirect(action: 'compareMembersOfTwoSubs', id: params.id, params: [surveyConfigID: result.surveyConfig?.id])
+
+
+    }
+
+    private def processAddMember(def oldSub, Subscription newParentSub, Org org, Date newStartDate, Date newEndDate, boolean multiYear, params) {
+
+        List orgType = [RDStore.OT_INSTITUTION.id.toString()]
+        if (accessService.checkPerm("ORG_CONSORTIUM")) {
+            orgType = [RDStore.OT_CONSORTIUM.id.toString()]
+        }
+
+        def institution = contextService.getOrg()
+
+        RefdataValue subStatus = multiYear ? RDStore.SUBSCRIPTION_INTENDED_PERENNIAL : RDStore.SUBSCRIPTION_INTENDED
+
+        RefdataValue role_sub = RDStore.OR_SUBSCRIBER_CONS
+        RefdataValue role_sub_cons = RDStore.OR_SUBSCRIPTION_CONSORTIA
+        RefdataValue role_coll = RDStore.OR_SUBSCRIBER_COLLECTIVE
+        RefdataValue role_sub_coll = RDStore.OR_SUBSCRIPTION_COLLECTIVE
+        RefdataValue role_sub_hidden = RDStore.OR_SUBSCRIBER_CONS_HIDDEN
+        RefdataValue role_lic = RDStore.OR_LICENSEE_CONS
+        if(accessService.checkPerm("ORG_INST_COLLECTIVE")) {
+            role_lic = RDStore.OR_LICENSEE_COLL
+        }
+        RefdataValue role_lic_cons = RDStore.OR_LICENSING_CONSORTIUM
+
+        RefdataValue role_provider = RDStore.OR_PROVIDER
+        RefdataValue role_agency = RDStore.OR_AGENCY
+
+        if (accessService.checkPerm("ORG_INST_COLLECTIVE,ORG_CONSORTIUM")) {
+
+                License licenseCopy
+
+                def subLicense = newParentSub.owner
+
+                Set<Package> packagesToProcess = []
+
+                //copy package data
+                if(params.linkAllPackages) {
+                    newParentSub.packages.each { sp ->
+                        packagesToProcess << sp.pkg
+                    }
+                }else if(params.packageSelection) {
+                    List packageIds = params.list("packageSelection")
+                    packageIds.each { spId ->
+                        packagesToProcess << SubscriptionPackage.get(spId).pkg
+                    }
+                }
+
+                    if(accessService.checkPerm("ORG_INST_COLLECTIVE,ORG_CONSORTIUM")) {
+                       // def postfix = (members.size() > 1) ? 'Teilnehmervertrag' : (cm.shortname ?: cm.name)
+                        def postfix = 'Teilnehmervertrag'
+
+                        if (subLicense) {
+                            def subLicenseParams = [
+                                    lic_name     : "${subLicense.reference} (${postfix})",
+                                    isSlaved     : params.isSlaved,
+                                    asOrgType: orgType,
+                                    copyStartEnd : true
+                            ]
+
+                            if (params.generateSlavedLics == 'explicit') {
+                                licenseCopy = institutionsService.copyLicense(
+                                        subLicense, subLicenseParams, InstitutionsService.CUSTOM_PROPERTIES_ONLY_INHERITED)
+                            }
+                            else if (params.generateSlavedLics == 'shared' && !licenseCopy) {
+                                licenseCopy = institutionsService.copyLicense(
+                                        subLicense, subLicenseParams, InstitutionsService.CUSTOM_PROPERTIES_ONLY_INHERITED)
+                            }
+                            else if ((params.generateSlavedLics == 'reference' || params.attachToParticipationLic == "true") && !licenseCopy) {
+                                licenseCopy = genericOIDService.resolveOID(params.generateSlavedLicsReference)
+                            }
+
+                            if (licenseCopy) {
+                                new OrgRole(org: org, lic: licenseCopy, roleType: role_lic).save()
+                            }
+                        }
+                    }
+
+                    log.debug("Generating seperate slaved instances for members")
+
+                    SimpleDateFormat sdf = new DateUtil().getSimpleDateFormat_NoTime()
+                    Date startDate = newStartDate ?: null
+                    Date endDate = newEndDate ?: null
+
+                    Subscription memberSub = new Subscription(
+                            type: newParentSub.type ?: null,
+                            status: subStatus,
+                            name: newParentSub.name,
+                            startDate: startDate,
+                            endDate: endDate,
+                            administrative: newParentSub.getCalculatedType() == TemplateSupport.CALCULATED_TYPE_ADMINISTRATIVE,
+                            manualRenewalDate: newParentSub.manualRenewalDate,
+                            identifier: UUID.randomUUID().toString(),
+                            instanceOf: newParentSub,
+                            isSlaved: true,
+                            isPublic: newParentSub.isPublic,
+                            impId: UUID.randomUUID().toString(),
+                            owner: licenseCopy,
+                            resource: newParentSub.resource ?: null,
+                            form: newParentSub.form ?: null,
+                            isMultiYear: multiYear ?: false
+                    )
+
+                    if (!memberSub.save()) {
+                        memberSub?.errors.each { e ->
+                            log.debug("Problem creating new sub: ${e}")
+                        }
+                    }
+
+                    if (memberSub) {
+                        if(accessService.checkPerm("ORG_CONSORTIUM")) {
+
+                            new OrgRole(org: org, sub: memberSub, roleType: role_sub).save()
+                            new OrgRole(org: institution, sub: memberSub, roleType: role_sub_cons).save()
+
+                            if(params.transferProviderAgency) {
+                                newParentSub.getProviders().each { provider ->
+                                    new OrgRole(org: provider, sub: memberSub, roleType: role_provider).save()
+                                }
+                                newParentSub.getAgencies().each { provider ->
+                                    new OrgRole(org: provider, sub: memberSub, roleType: role_agency).save()
+                                }
+                            }else if(params.providersSelection) {
+                                List orgIds = params.list("providersSelection")
+                                orgIds.each { orgID ->
+                                    new OrgRole(org: Org.get(orgID), sub: memberSub, roleType: role_provider).save()
+                                }
+                            }else if(params.agenciesSelection) {
+                                List orgIds = params.list("agenciesSelection")
+                                orgIds.each { orgID ->
+                                    new OrgRole(org: Org.get(orgID), sub: memberSub, roleType: role_agency).save()
+                                }
+                            }
+
+                        }
+
+                        SubscriptionCustomProperty.findAllByOwner(newParentSub).each { scp ->
+                            AuditConfig ac = AuditConfig.getConfig(scp)
+
+                            if (ac) {
+                                // multi occurrence props; add one additional with backref
+                                if (scp.type.multipleOccurrence) {
+                                    def additionalProp = PropertyDefinition.createGenericProperty(PropertyDefinition.CUSTOM_PROPERTY, memberSub, scp.type)
+                                    additionalProp = scp.copyInto(additionalProp)
+                                    additionalProp.instanceOf = scp
+                                    additionalProp.save(flush: true)
+                                }
+                                else {
+                                    // no match found, creating new prop with backref
+                                    def newProp = PropertyDefinition.createGenericProperty(PropertyDefinition.CUSTOM_PROPERTY, memberSub, scp.type)
+                                    newProp = scp.copyInto(newProp)
+                                    newProp.instanceOf = scp
+                                    newProp.save(flush: true)
+                                }
+                            }
+                        }
+
+                        packagesToProcess.each { pkg ->
+                            if(params.linkWithEntitlements)
+                                pkg.addToSubscriptionCurrentStock(memberSub, newParentSub)
+                            else
+                                pkg.addToSubscription(memberSub, false)
+                        }
+
+                        if(oldSub){
+                            new Links(linkType: RDStore.LINKTYPE_FOLLOWS, source: memberSub.id, destination: oldSub.id, owner: contextService.getOrg(), objectType:Subscription.class.name).save(flush: true)
+                        }
+
+                        return memberSub
+                    }
+            }
+    }
+
     private getSurveyProperties(Org contextOrg) {
         def props = []
 
@@ -3281,25 +4040,25 @@ class SurveyController {
         ]
 
 
-        titles << g.message(code: 'renewalwithSurvey.period')
+        titles << g.message(code: 'renewalWithSurvey.period')
 
         if (renewalResult?.multiYearTermTwoSurvey || renewalResult?.multiYearTermThreeSurvey)
         {
-            titles << g.message(code: 'renewalwithSurvey.periodComment')
+            titles << g.message(code: 'renewalWithSurvey.periodComment')
         }
 
         renewalResult.properties.each { surveyProperty ->
             titles << surveyProperty?.getI10n('name')
-            titles << g.message(code: 'surveyResult.participantComment') + " " + g.message(code: 'renewalwithSurvey.exportRenewal.to') +" " + surveyProperty?.getI10n('name')
+            titles << g.message(code: 'surveyResult.participantComment') + " " + g.message(code: 'renewalWithSurvey.exportRenewal.to') +" " + surveyProperty?.getI10n('name')
         }
-        titles << g.message(code: 'renewalwithSurvey.costBeforeTax')
-        titles << g.message(code: 'renewalwithSurvey.costAfterTax')
-        titles << g.message(code: 'renewalwithSurvey.costTax')
-        titles << g.message(code: 'renewalwithSurvey.currency')
+        titles << g.message(code: 'renewalWithSurvey.costBeforeTax')
+        titles << g.message(code: 'renewalWithSurvey.costAfterTax')
+        titles << g.message(code: 'renewalWithSurvey.costTax')
+        titles << g.message(code: 'renewalWithSurvey.currency')
 
         List renewalData = []
 
-        renewalData.add([[field: g.message(code: 'renewalwithSurvey.continuetoSubscription.label')+ " (${renewalResult.orgsContinuetoSubscription?.size() ?: 0})", style: 'positive']])
+        renewalData.add([[field: g.message(code: 'renewalWithSurvey.continuetoSubscription.label')+ " (${renewalResult.orgsContinuetoSubscription?.size() ?: 0})", style: 'positive']])
 
         renewalResult.orgsContinuetoSubscription.each { participantResult ->
             List row = []
@@ -3353,7 +4112,7 @@ class SurveyController {
         renewalData.add([[field: '', style: null]])
         renewalData.add([[field: '', style: null]])
         renewalData.add([[field: '', style: null]])
-        renewalData.add([[field: g.message(code: 'renewalwithSurvey.withMultiYearTermSub.label')+ " (${renewalResult.orgsWithMultiYearTermSub?.size() ?: 0})", style: 'positive']])
+        renewalData.add([[field: g.message(code: 'renewalWithSurvey.withMultiYearTermSub.label')+ " (${renewalResult.orgsWithMultiYearTermSub?.size() ?: 0})", style: 'positive']])
 
 
         renewalResult.orgsWithMultiYearTermSub.each { sub ->
@@ -3389,7 +4148,7 @@ class SurveyController {
         renewalData.add([[field: '', style: null]])
         renewalData.add([[field: '', style: null]])
         renewalData.add([[field: '', style: null]])
-        renewalData.add([[field: g.message(code: 'renewalwithSurvey.orgsWithParticipationInParentSuccessor.label')+ " (${renewalResult.orgsWithParticipationInParentSuccessor?.size() ?: 0})", style: 'positive']])
+        renewalData.add([[field: g.message(code: 'renewalWithSurvey.orgsWithParticipationInParentSuccessor.label')+ " (${renewalResult.orgsWithParticipationInParentSuccessor?.size() ?: 0})", style: 'positive']])
 
 
         renewalResult.orgsWithParticipationInParentSuccessor.each { sub ->
@@ -3424,7 +4183,7 @@ class SurveyController {
         renewalData.add([[field: '', style: null]])
         renewalData.add([[field: '', style: null]])
         renewalData.add([[field: '', style: null]])
-        renewalData.add([[field: g.message(code: 'renewalwithSurvey.orgsLateCommers.label')+ " (${renewalResult.orgsLateCommers?.size() ?: 0})", style: 'positive']])
+        renewalData.add([[field: g.message(code: 'renewalWithSurvey.orgsLateCommers.label')+ " (${renewalResult.orgsLateCommers?.size() ?: 0})", style: 'positive']])
 
 
         renewalResult.orgsLateCommers.each { sub ->
@@ -3459,7 +4218,7 @@ class SurveyController {
         renewalData.add([[field: '', style: null]])
         renewalData.add([[field: '', style: null]])
         renewalData.add([[field: '', style: null]])
-        renewalData.add([[field: g.message(code: 'renewalwithSurvey.newOrgstoSubscription.label')+ " (${renewalResult.newOrgstoSubscription?.size() ?: 0})", style: 'positive']])
+        renewalData.add([[field: g.message(code: 'renewalWithSurvey.newOrgstoSubscription.label')+ " (${renewalResult.newOrgstoSubscription?.size() ?: 0})", style: 'positive']])
 
 
         renewalResult.newOrgsContinuetoSubscription.each { participantResult ->
@@ -3514,7 +4273,7 @@ class SurveyController {
         renewalData.add([[field: '', style: null]])
         renewalData.add([[field: '', style: null]])
         renewalData.add([[field: '', style: null]])
-        renewalData.add([[field: g.message(code: 'renewalwithSurvey.withTermination.label')+ " (${renewalResult.orgsWithTermination?.size() ?: 0})", style: 'negative']])
+        renewalData.add([[field: g.message(code: 'renewalWithSurvey.withTermination.label')+ " (${renewalResult.orgsWithTermination?.size() ?: 0})", style: 'negative']])
 
 
         renewalResult.orgsWithTermination.each { participantResult ->
@@ -3764,6 +4523,110 @@ class SurveyController {
 
         result
     }
+
+    private def setNewProperty(def property, def value) {
+
+        def field = null
+
+        if(property.type.type == Integer.toString()) {
+            field = "intValue"
+        }
+        else if (property.type.type == String.toString())  {
+            field = "stringValue"
+        }
+        else if (property.type.type == BigDecimal.toString())  {
+            field = "decValue"
+        }
+        else if (property.type.type == Date.toString())  {
+            field = "dateValue"
+        }
+        else if (property.type.type == URL.toString())  {
+            field = "urlValue"
+        }
+        else if (property.type.type == RefdataValue.toString())  {
+            field = "refValue"
+        }
+
+        //Wenn eine Vererbung vorhanden ist.
+        if(field && property.hasProperty('instanceOf') && property.instanceOf && AuditConfig.getConfig(property.instanceOf)){
+            if(property.instanceOf."${field}" == '' || property.instanceOf."${field}" == null)
+            {
+                value = property.instanceOf."${field}" ?: ''
+            }else{
+                //
+                return
+            }
+        }
+
+        if (value == '' && field) {
+            // Allow user to set a rel to null be calling set rel ''
+            property[field] = null
+            property.save(flush: true);
+        } else {
+
+            if (property && value && field){
+
+                if(field == "refValue") {
+                    def binding_properties = ["${field}": value]
+                    bindData(property, binding_properties)
+                    //property.save()
+                    if(!property.save(failOnError: true, flush: true))
+                    {
+                        println(property.error)
+                    }
+                } else if(field == "dateValue") {
+                    def sdf = new java.text.SimpleDateFormat(message(code: 'default.date.format.notime', default: 'yyyy-MM-dd'))
+
+                    def backup = property."${field}"
+                    try {
+                        if (value && value.size() > 0) {
+                            // parse new date
+                            def parsed_date = sdf.parse(value)
+                            property."${field}" = parsed_date
+                        } else {
+                            // delete existing date
+                            property."${field}" = null
+                        }
+                        property.save(failOnError: true, flush: true);
+                    }
+                    catch (Exception e) {
+                        property."${field}" = backup
+                        log.error(e)
+                    }
+                } else if(field == "urlValue") {
+
+                    def backup = property."${field}"
+                    try {
+                        if (value && value.size() > 0) {
+                            property."${field}" = new URL(value)
+                        } else {
+                            // delete existing url
+                            property."${field}" = null
+                        }
+                        property.save(failOnError: true, flush: true)
+                    }
+                    catch (Exception e) {
+                        property."${field}" = backup
+                        log.error(e)
+                    }
+                } else {
+                    def binding_properties = [:]
+                    if (property."${field}" instanceof Double) {
+                        value = Double.parseDouble(value)
+                    }
+
+                    binding_properties["${field}"] = value
+                    bindData(property, binding_properties)
+
+                    property.save(failOnError: true, flush: true)
+
+                }
+
+            }
+        }
+
+    }
+
     def parseDate(datestr, possible_formats) {
         def parsed_date = null;
         if (datestr && (datestr.toString().trim().length() > 0)) {

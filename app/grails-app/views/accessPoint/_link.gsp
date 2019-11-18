@@ -6,6 +6,7 @@
 </h5>
 
 <g:form class="ui form" url="[controller: 'accessPoint', action: 'linkPlatform']" id="linkPlatform" method="POST">
+    <g:if test="${ accessService.checkPermAffiliation('ORG_BASIC_MEMBER','INST_EDITOR') || (accessService.checkPermAffiliation('ORG_CONSORTIUM','INST_EDITOR') && inContextOrg)}">
     <td>
         <g:select id="platforms" class="ui dropdown search" name="platforms"
                   from="${platformList}"
@@ -16,7 +17,7 @@
     <td class="center aligned">
         <input type="Submit" class="ui tiny button" value="${message(code:'accessPoint.button.linkPlatform', default:'Create link')}" onClick="this.form.submit()" class="ui button"/>
     </td>
-
+    </g:if>
 
     <g:hiddenField name="accessPointId" value="${accessPoint?.id}" />
     <g:hiddenField name="accessMethod" value="${accessPoint?.accessMethod}" />
@@ -29,7 +30,9 @@
             <th>${message(code: 'accessPoint.lastNotificationDate', default: 'Last Notification')}</th>
             <th>${message(code: 'accessPoint.providerConfirmation', default: 'Provider Confirmation')}</th>
             <th>${message(code: 'accessPoint.note', default: 'Note')}</th>
+    <g:if test="${ accessService.checkPermAffiliation('ORG_BASIC_MEMBER','INST_EDITOR') || (accessService.checkPermAffiliation('ORG_CONSORTIUM','INST_EDITOR') && inContextOrg)}">
             <th>${message(code: 'accessPoint.action', default: 'Action')}</th>
+    </g:if>
         </tr>
         </thead>
         <tbody>
@@ -41,13 +44,16 @@
                 <td></td>
                 <td></td>
                 <td></td>
+            <g:if test="${ accessService.checkPermAffiliation('ORG_BASIC_MEMBER','INST_EDITOR') || (accessService.checkPermAffiliation('ORG_CONSORTIUM','INST_EDITOR') && inContextOrg)}">
                 <td class="center aligned">
                     <g:link class="ui negative icon button button js-open-confirm-modal" controller="accessPoint" action="unlinkPlatform" id="${linkedPlatform.aplink.id}"
-                            data-confirm-term-what="${message(code: 'accessPoint.unlink.what', args: [accessPoint.name, linkedPlatform.platform.name])}"
+                            data-confirm-tokenMsg="${message(code: 'confirm.dialog.unlink.accessPoint.platform', args: [accessPoint.name, linkedPlatform.platform.name])}"
+                            data-confirm-term-how="unlink"
                     >
                         <i class="unlink icon"></i>
                     </g:link>
                 </td>
+            </g:if>
             </tr>
         </g:each>
         </tbody>

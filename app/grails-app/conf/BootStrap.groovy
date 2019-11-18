@@ -1642,10 +1642,10 @@ class BootStrap {
                         expl: [en: "", de: "Bietet der Verlag einen Deep-Discount-Preis für Printabonnements an?"],
                         descr:allDescr, type: OT.Rdv, cat:'YN'
                 ],
-		[
-                        name: [key: "Späteinsteiger", en: "Späteinsteiger", de: "Späteinsteiger"],
-                        expl: [en: "", de: "Einrichtung, die spät im Jahr nach der Umfrage ins Konsortium eingestiegen ist und daher auch bereits für die Lizenzierung für das Nachfolgejahr entschieden hat."],
-                        descr:allDescr, type: OT.Rdv, cat:'YN', isUsedForLogic: true
+                [
+                        name: [en: "Central funding possible", de: "Zentralmittelfähig"],
+                        expl: [en: "", de: "Ist es möglich, diese Lizenz aus Zentralmitteln zu finanzieren?"],
+                        descr:allDescr, type: OT.Rdv, cat:'YN'
                 ]
 		
         ]
@@ -1811,7 +1811,7 @@ class BootStrap {
             I10nTranslation.createOrUpdateI10n(surveyProperty, 'name', default_prop.name)
 
             if (default_prop.expl) {
-                I10nTranslation.createOrUpdateI10n(surveyProperty, 'explain', default_prop.expl)
+                I10nTranslation.createOrUpdateI10n(surveyProperty, 'expl', default_prop.expl)
             }
 
             if (default_prop.introduction) {
@@ -1991,6 +1991,8 @@ class BootStrap {
         RefdataCategory.loc('User.Settings.Theme',                  [en: 'Theme', de: 'Theme'], BOOTSTRAP)
         RefdataCategory.loc('Survey Type',                          [en: 'Survey Type', de: 'Umfrage-Typ'], BOOTSTRAP)
         RefdataCategory.loc('Survey Status',                        [en: 'Survey Status', de: 'Umfrage-Status'], BOOTSTRAP)
+        RefdataCategory.loc('MailTemplate Type',                        [en: 'MailTemplate Type', de: 'MailTemplate Typ'], BOOTSTRAP)
+        RefdataCategory.loc('MailTemplate Language',                        [en: 'MailTemplate Language', de: 'MailTemplate Sprache'], BOOTSTRAP)
 
         // refdata values
 
@@ -2739,6 +2741,11 @@ class BootStrap {
         RefdataValue.loc('Survey Status',      [en: 'Completed', de: 'Abgeschlossen'], BOOTSTRAP)
         RefdataValue.loc('Survey Status',      [en: 'Survey started', de: 'Umfrage gestartet'], BOOTSTRAP)
         RefdataValue.loc('Survey Status',      [en: 'Survey completed', de: 'Umfrage beendet'], BOOTSTRAP)
+
+        RefdataValue.loc('MailTemplate Type',      [en: 'IP Message', de: 'IP-Meldung'], BOOTSTRAP)
+
+        RefdataValue.loc('MailTemplate Language',      [en: 'English', de: 'Englisch'], BOOTSTRAP)
+        RefdataValue.loc('MailTemplate Language',      [en: 'German', de: 'Deutsch'], BOOTSTRAP)
 
         createRefdataWithI10nExplanation()
     }

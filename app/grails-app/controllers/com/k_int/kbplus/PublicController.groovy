@@ -253,8 +253,8 @@ class PublicController {
                 def idv = params.idv?.trim()
                 if (idv) {
                     query += " AND ( EXISTS ( " +
-                        " SELECT io FROM IdentifierOccurrence AS io " +
-                        " WHERE io.ti = ie.tipp.title AND io.identifier.value LIKE :idv "
+                        " SELECT ident FROM Identifier AS ident " +
+                        " WHERE ident.ti = ie.tipp.title AND ident.value LIKE :idv "
 
                     if (params.idns) {
                         query += " AND io.identifier.ns = :idns "
@@ -274,61 +274,6 @@ class PublicController {
         }
         result
     }
-
-    @Deprecated
-    @Secured(['ROLE_YODA'])
-  def journalLicenses(){
-    log.debug("journalLicenses :: ${params}")
-    def result = [:]
-
-    if(params.journal && params.org){
-      if(springSecurityService.principal != "anonymousUser"){
-          result.user = User.get(springSecurityService.principal.id)
-      }else{
-        result.user = null
-      }
-      def ti = null
-      def org = null
-      if(params.journal.contains(":")){
-        def (ns,id) = params.journal.split(":")
-        if(ns=="kb"){
-          try {
-            ti = TitleInstance.get(id)
-          } catch (NumberFormatException) {
-            flash.error="Entering ns and id e.g :${params.journal} is not permitted, instead it should be ns:identifer number e.g. kb:123"
-            log.error("Namespace & ID error for public journalLicenses: ns:${ns} id:${id} (expected integer)")
-          }
-        }else{
-          ti = TitleInstance.lookupByIdentifierString(params.journal)
-        }
-      }else{
-        ti = TitleInstance.findAllByTitleIlike("${params.journal}%")
-      }
-
-      if(params.org.isLong()){
-        org = Org.get(params.org.toLong())
-      }else{
-        org = Org.findByNameIlike("${params.org}%")
-      }
-
-      log.debug("${ti} and ${org}")
-      if(ti && org){
-        def access_prop =  grails.util.Holders.config.customProperties.org.journalAccess
-        def org_access = org.customProperties.find{it.type.name == access_prop.name}
-        if(checkUserAccessToOrg(result.user,org,org_access)){
-          def ies = retrieveIssueEntitlements(ti,org,result)
-          log.debug("Retrieved ies: ${ies}")
-          if(ies) generateIELicenseMap(ies,result);
-        }else{
-          flash.error = "${org.name} does not provide public access to this service."
-        }
-      }
-    }
-    result.journal = params.journal
-    result.org = params.org
-
-    result
-  }
 
   private def checkUserAccessToOrg(user, org, org_access) {
     def hasAccess = false

@@ -8,19 +8,17 @@ import="com.k_int.kbplus.Org; com.k_int.kbplus.Person; com.k_int.kbplus.PersonRo
 <html>
     <head>
         <meta name="layout" content="semanticUI"/>
-        <title>${message(code:'laser', default:'LAS:eR')} : ${message(code:'menu.institutions.addressbook', default:'Addressbook')}</title>
+        <title>${message(code:'laser', default:'LAS:eR')} : ${message(code:'menu.institutions.myAddressbook')}</title>
     </head>
     <body>
 
         <semui:breadcrumbs>
-            <semui:crumb controller="myInstitution" action="dashboard" text="${institution?.getDesignation()}" />
-            <semui:crumb message="menu.institutions.addressbook" class="active"/>
+            <semui:crumb message="menu.institutions.myAddressbook" class="active"/>
         </semui:breadcrumbs>
 
         <semui:controlButtons>
             <g:render template="actions" />
         </semui:controlButtons>
-
 
         <h1 class="ui left aligned icon header"><semui:headerIcon />${message(code:'menu.institutions.myAddressbook')}
             <semui:totalNumber total="${num_visiblePersons}"/>

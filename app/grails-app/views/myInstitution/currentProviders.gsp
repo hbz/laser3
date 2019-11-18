@@ -9,7 +9,6 @@
     <body>
 
         <semui:breadcrumbs>
-            <semui:crumb controller="myInstitution" action="dashboard" text="${institution?.getDesignation()}" />
             <semui:crumb message="menu.my.providers" class="active" />
         </semui:breadcrumbs>
 
@@ -18,7 +17,7 @@
                 <g:if test="${filterSet}">
                     <semui:exportDropdownItem>
                         <g:link class="item js-open-confirm-modal"
-                                data-confirm-term-content = "${message(code: 'confirmation.content.exportPartial')}"
+                                data-confirm-tokenMsg = "${message(code: 'confirmation.content.exportPartial')}"
                                 data-confirm-term-how="ok" controller="myInstitution" action="currentProviders"
                                 params="${params+[exportXLS:true]}">
                             ${message(code:'default.button.exports.xls')}
@@ -26,7 +25,7 @@
                     </semui:exportDropdownItem>
                     <semui:exportDropdownItem>
                         <g:link class="item js-open-confirm-modal"
-                                data-confirm-term-content = "${message(code: 'confirmation.content.exportPartial')}"
+                                data-confirm-tokenMsg = "${message(code: 'confirmation.content.exportPartial')}"
                                 data-confirm-term-how="ok" controller="myInstitution" action="currentProviders"
                                 params="${params+[format:'csv']}">
                             ${message(code:'default.button.exports.csv')}
@@ -81,7 +80,7 @@
             <br><strong><g:message code="filter.result.empty.object" args="${[message(code:"default.ProviderAgency.label")]}"/></strong>
         </g:if>
         <g:else>
-            <br><strong><g:message code="result.empty.object" args="${message(code:"default.ProviderAgency.label")}"/></strong>
+            <br><strong><g:message code="result.empty.object" args="${[message(code:"default.ProviderAgency.label")]}"/></strong>
         </g:else>
     </g:else>
 

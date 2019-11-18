@@ -3,12 +3,11 @@
 <html>
   <head>
     <meta name="layout" content="semanticUI"/>
-    <title>${message(code:'laser', default:'LAS:eR')} : ${message(code:'default.documents.label')}</title>
+    <title>${message(code:'laser', default:'LAS:eR')} : ${message(code:'menu.my.documents')}</title>
   </head>
 
   <body>
     <semui:breadcrumbs>
-      <semui:crumb controller="myInstitution" action="dashboard" text="${institution.getDesignation()}" />
       <semui:crumb message="menu.my.documents" class="active"/>
     </semui:breadcrumbs>
 
@@ -17,7 +16,7 @@
     </semui:controlButtons>
     <semui:messages data="${flash}" />
 
-    <h1 class="ui left aligned icon header"><semui:headerIcon />${institution.name}</h1>
+    <h1 class="ui left aligned icon header"><semui:headerIcon />${message(code:'menu.my.documents')}</h1>
 
     <%-- does not work as it is mapped upon a DomainClass attribute <g:render template="/templates/documents/filter" model="${[availableUsers:availableUsers]}"/>--%>
 

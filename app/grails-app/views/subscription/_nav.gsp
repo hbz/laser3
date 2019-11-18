@@ -28,7 +28,7 @@
         </sec:ifAnyGranted>
     </g:if>
 
-    <g:if test="${contextService.org?.getCustomerType() in ['ORG_INST', 'ORG_BASIC_MEMBER'] && subscriptionInstance?.type == de.laser.helper.RDStore.SUBSCRIPTION_TYPE_CONSORTIAL}">
+    <g:if test="${((contextService.org?.getCustomerType() in ['ORG_INST', 'ORG_BASIC_MEMBER']) || params.orgBasicMemberView)&& subscriptionInstance?.type == de.laser.helper.RDStore.SUBSCRIPTION_TYPE_CONSORTIAL}">
         <semui:securedSubNavItem orgPerm="ORG_BASIC_MEMBER" controller="subscription" action="surveys" params="${[id:params.id]}" message="subscription.details.surveys.label" />
     </g:if>
 
@@ -54,7 +54,7 @@
     %{--Custom URL mapping for re-use of index--}%
 
         <g:link class="item${controllerName == 'finance' ? ' active':''}" mapping="subfinance" controller="finance" action="index" params="${[sub:params.id]}">
-            ${message(code:'subscription.details.financials.label', default:'Subscription Financials')}
+            ${message(code:'subscription.details.financials.label')}
         </g:link>
 
     </g:if>

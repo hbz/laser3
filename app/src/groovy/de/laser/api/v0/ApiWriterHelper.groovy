@@ -133,18 +133,13 @@ class ApiWriterHelper {
 
     @Deprecated
     static getIdentifiers(HashMap data, def owner) {
-        def idenfifierOccurences = []
+        List<Identifier> idenfifiers = []
 
         data?.each { it ->
-            def identifier = Identifier.lookupOrCreateCanonicalIdentifier(it.key, it.value) // TODO test
-            def idenfifierOccurence = new IdentifierOccurrence(
-                    identifier: identifier
-            )
-            idenfifierOccurence.setReference(owner)
-            idenfifierOccurences << idenfifierOccurence
+            idenfifiers << Identifier.construct([value:it.value, reference:owner, namespace:it.key])
         }
 
-        idenfifierOccurences
+        idenfifiers
     }
 
     @Deprecated

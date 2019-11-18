@@ -10,23 +10,23 @@
   <laser:serviceInjection />
 
   <semui:breadcrumbs>
-      <semui:crumb controller="myInstitution" action="dashboard" text="${institution?.getDesignation()}" />
       <semui:crumb message="license.current" class="active" />
   </semui:breadcrumbs>
+
   <semui:controlButtons>
       <semui:exportDropdown>
           <g:if test="${filterSet || defaultSet}">
               <semui:exportDropdownItem>
-                  <g:link class="item js-open-confirm-modal" data-confirm-term-content = "${message(code: 'confirmation.content.exportPartial')}"
+                  <g:link class="item js-open-confirm-modal" data-confirm-tokenMsg = "${message(code: 'confirmation.content.exportPartial')}"
                           data-confirm-term-how="ok" action="currentLicenses" params="${params+[format:'csv']}">${message(code:'default.button.exports.csv')}</g:link>
               </semui:exportDropdownItem>
               <semui:exportDropdownItem>
-                  <g:link class="item js-open-confirm-modal" data-confirm-term-content = "${message(code: 'confirmation.content.exportPartial')}"
+                  <g:link class="item js-open-confirm-modal" data-confirm-tokenMsg = "${message(code: 'confirmation.content.exportPartial')}"
                           data-confirm-term-how="ok" action="currentLicenses" params="${params+[exportXLS:true]}">${message(code:'default.button.exports.xls')}</g:link>
               </semui:exportDropdownItem>
               <g:each in="${transforms}" var="transkey,transval">
                   <semui:exportDropdownItem>
-                      <g:link class="item js-open-confirm-modal" data-confirm-term-content = "${message(code: 'confirmation.content.exportPartial')}"
+                      <g:link class="item js-open-confirm-modal" data-confirm-tokenMsg = "${message(code: 'confirmation.content.exportPartial')}"
                               data-confirm-term-how="ok" action="currentLicenses" params="${params+[format:'xml',transformId:transkey,format_content:'subie']}">${transval.name}</g:link>
                   </semui:exportDropdownItem>
               </g:each>
@@ -247,7 +247,7 @@
                 <br><strong><g:message code="filter.result.empty.object" args="${[message(code:"license.plural")]}"/></strong>
             </g:if>
             <g:else>
-                <br><strong><g:message code="result.empty.object" args="${message(code:"license.plural")}"/></strong>
+                <br><strong><g:message code="result.empty.object" args="${[message(code:"license.plural")]}"/></strong>
             </g:else>
         </g:else>
     </div>

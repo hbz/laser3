@@ -106,8 +106,10 @@ class ApiController extends AbstractDebugController {
                             log.debug("Add identifier identifier ${jid}");
                             if (jid != null) {
                                 result.message = "Adding jusp ID ${jid.id}to title";
-                                def new_jusp_id = Identifier.lookupOrCreateCanonicalIdentifier('jusp', "${jid.id}");
-                                def new_io = new IdentifierOccurrence(identifier: new_jusp_id, ti: title).save(flush: true);
+                                // TODO [ticket=1789]
+                                //def new_jusp_id = Identifier.lookupOrCreateCanonicalIdentifier('jusp', "${jid.id}");
+                                //def new_io = new IdentifierOccurrence(identifier: new_jusp_id, ti: title).save(flush: true);
+                                def new_jusp_id = Identifier.construct([value: "${jid.id}", reference: title, namespace: 'jusp'])
                             } else {
                                 result.message = "Unable to locate JID in BibJson record";
                             }
@@ -180,61 +182,6 @@ where tipp.title = ? and orl.roleType.value=?''', [title, 'Content Provider']);
         }
         render result as JSON
     }
-    /*
-    * Create a CSV containing all JUSP title IDs with the institution they belong to
-    */
-
-    @Secured(['ROLE_API', 'IS_AUTHENTICATED_FULLY'])
-    def fetchAllTips() {
-
-        def jusp_ti_inst = TitleInstitutionProvider.executeQuery("""
-   select jusp_institution_id.identifier.value, jusp_title_id.identifier.value, dates,tip_ti.id, 
-   (select jusp_provider_id.identifier.value from tip_ti.provider.ids as jusp_provider_id where jusp_provider_id.identifier.ns.ns='juspsid' )
-    from TitleInstitutionProvider tip_ti
-      join tip_ti.institution.ids as jusp_institution_id,
-    TitleInstitutionProvider tip_inst
-      join tip_inst.title.ids as jusp_title_id,
-    TitleInstitutionProvider tip_date
-      join tip_date.coreDates as dates
-    where jusp_title_id.identifier.ns.ns='jusp'
-        and tip_ti = tip_inst
-        and tip_inst = tip_date
-        and jusp_institution_id.identifier.ns.ns='jusplogin' order by jusp_institution_id.identifier.value 
-     """)
-
-        def date = new SimpleDateFormat(message(code:'default.date.format.notime'))
-        date = date.format(new Date())
-        response.setHeader("Content-disposition", "attachment; filename=\"kbplus_jusp_export_${date}.csv\"")
-        response.contentType = "text/csv"
-        def out = response.outputStream
-        def currentTip = null
-        def dates_concat = ""
-        out.withWriter { writer ->
-            writer.write("JUSP Institution ID,JUSP Title ID,JUSP Provider, Core Dates\n")
-            Iterator iter = jusp_ti_inst.iterator()
-            while (iter.hasNext()) {
-                def it = iter.next()
-                if (currentTip == it[3]) {
-                    dates_concat += ", ${it[2]}"
-                } else if (currentTip) {
-                    writer.write("\"${dates_concat}\"\n\"${it[0]}\",\"${it[1]}\",\"${it[4] ?: ''}\",")
-                    dates_concat = "${it[2]}"
-                    currentTip = it[3]
-                } else {
-                    writer.write("\"${it[0]}\",\"${it[1]}\",\"${it[4] ?: ''}\",")
-                    dates_concat = "${it[2]}"
-                    currentTip = it[3]
-                }
-                if (!iter.hasNext()) {
-                    writer.write("\"${dates_concat}\"\n")
-                }
-            }
-
-            writer.flush()
-            writer.close()
-        }
-        out.close()
-    }
 
     // Accept a single mandatorty parameter which is the namespace:code for an institution
     // If found, return a JSON report of each title for that institution
@@ -250,7 +197,9 @@ where tipp.title = ? and orl.roleType.value=?''', [title, 'Content Provider']);
             def name_components = params.orgid.split(':')
             if (name_components.length == 2) {
                 // Lookup org by ID
-                def orghql = "select org from Org org where exists ( select io from IdentifierOccurrence io, Identifier id, IdentifierNamespace ns where io.org = org and id.ns = ns and io.identifier = id and ns.ns = ? and id.value like ? )"
+                // TODO [ticket=1789]
+                def orghql = "select distinct ident.org from Identifier ident where ident.org is not null and ident.ns.ns = ? and ident.value like ? )"
+                // def orghql = "select org from Org org where exists ( select io from IdentifierOccurrence io, Identifier id, IdentifierNamespace ns where io.org = org and id.ns = ns and io.identifier = id and ns.ns = ? and id.value like ? )"
                 def orgs = Org.executeQuery(orghql, [name_components[0], name_components[1]])
                 if (orgs.size() == 1) {
                     def org = orgs[0]

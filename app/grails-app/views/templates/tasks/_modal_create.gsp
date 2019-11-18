@@ -280,43 +280,45 @@ double t8 = 0L
 
 
         function chooseRequiredDropdown(opt) {
-            $('#create_task')
+            $(document).ready(function () {
+                $('#create_task')
                     .form({
 
-                inline: true,
-                fields: {
-                    title: {
-                        identifier  : 'title',
-                        rules: [
-                            {
-                                type   : 'empty',
-                                prompt : '{name} <g:message code="validation.needsToBeFilledOut" default=" muss ausgefüllt werden" />'
-                            }
-                        ]
-                    },
+                        inline: true,
+                        fields: {
+                            title: {
+                                identifier: 'title',
+                                rules: [
+                                    {
+                                        type: 'empty',
+                                        prompt: '{name} <g:message code="validation.needsToBeFilledOut" default=" muss ausgefüllt werden" />'
+                                    }
+                                ]
+                            },
 
-                    endDate: {
-                        identifier  : 'endDate',
-                        rules: [
-                            {
-                                type   : 'empty',
-                                prompt : '{name} <g:message code="validation.needsToBeFilledOut" default=" muss ausgefüllt werden" />'
-                            }
-                        ]
-                    },
-                    opt: {
-                        identifier  : opt,
-                        rules: [
-                            {
-                                type   : 'empty',
-                                prompt : '{name} <g:message code="validation.needsToBeFilledOut" default=" muss ausgefüllt werden" />'
-                            }
-                        ]
-                    },
-                 }
-            });
+                            endDate: {
+                                identifier: 'endDate',
+                                rules: [
+                                    {
+                                        type: 'empty',
+                                        prompt: '{name} <g:message code="validation.needsToBeFilledOut" default=" muss ausgefüllt werden" />'
+                                    }
+                                ]
+                            },
+                            opt: {
+                                identifier: opt,
+                                rules: [
+                                    {
+                                        type: 'empty',
+                                        prompt: '{name} <g:message code="validation.needsToBeFilledOut" default=" muss ausgefüllt werden" />'
+                                    }
+                                ]
+                            },
+                        }
+                    });
+            })
         }
-        chooseRequiredDropdown()
+        chooseRequiredDropdown('status.id');
 
 
 

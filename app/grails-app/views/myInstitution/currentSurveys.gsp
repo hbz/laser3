@@ -13,10 +13,8 @@
 <body>
 
 <semui:breadcrumbs>
-    <semui:crumb controller="myInstitution" action="dashboard" text="${institution?.getDesignation()}"/>
     <semui:crumb message="currentSurveys.label" class="active"/>
 </semui:breadcrumbs>
-
 
 <h1 class="ui left aligned icon header"><semui:headerIcon/>${institution?.name} - ${message(code: 'currentSurveys.label', default: 'Current Surveys')}
 <semui:totalNumber total="${countSurveys.values().sum { it }}"/>
@@ -114,13 +112,13 @@
             <th rowspan="2" class="center aligned">
                 ${message(code: 'sidewide.number')}
             </th>
-            <g:sortableColumn params="${params}" property="surveyInfo.name"
+            <g:sortableColumn params="${params}" property="surInfo.name"
                               title="${message(code: 'surveyInfo.slash.name')}"/>
-            <g:sortableColumn params="${params}" property="surveyInfo.type"
+            <g:sortableColumn params="${params}" property="surInfo.type"
                               title="${message(code: 'surveyInfo.type.label')}"/>
-            <g:sortableColumn params="${params}" property="surveyInfo.endDate"
+            <g:sortableColumn params="${params}" property="surInfo.endDate"
                               title="${message(code: 'default.endDate.label', default: 'End Date')}"/>
-            <g:sortableColumn params="${params}" property="surveyInfo.owner"
+            <g:sortableColumn params="${params}" property="surInfo.owner"
                               title="${message(code: 'surveyInfo.owner.label')}"/>
             <th><g:message code="surveyInfo.finished"/></th>
 

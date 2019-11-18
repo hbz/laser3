@@ -45,7 +45,7 @@ class SystemService {
                 checks.SendEmailsForDueDatesOfAllUsers = "Send Emails for DueDates Of All Users is not active"
             }
 
-            if (!grailsApplication.config.grails.mail.disabled ) {
+            if (grailsApplication.config.grails.mail.disabled ) {
                 checks.MailService = "Mail Service not active"
             }
 

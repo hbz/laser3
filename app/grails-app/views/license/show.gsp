@@ -7,7 +7,7 @@
   <head>
     <meta name="layout" content="semanticUI"/>
      <g:javascript src="properties.js"/>
-    <title>${message(code:'laser', default:'LAS:eR')} : <g:message code="license" default="License"/></title>
+    <title>${message(code:'laser', default:'LAS:eR')} : ${message(code:'license.details.label')}</title>
   </head>
 
     <body>
@@ -151,10 +151,11 @@
                                                 <td class="right aligned">
                                                     <g:if test="${editable}">
                                                         <div class="ui icon negative buttons">
-                                                            <g:link class="ui button la-selectable-button" name="unlinkSubscription"
+                                                            <g:link class="ui button la-selectable-button js-open-confirm-modal" name="unlinkSubscription"
                                                                     controller="license" action="unlinkSubscription"
                                                                     params="['license':license.id, 'subscription':sub.id]"
-                                                                    onclick="return confirm(${message(code:'template.orgLinks.delete.warn')})" >
+                                                                    data-confirm-tokenMsg="${message(code: "confirm.dialog.unlink.licence.subscription", args:[sub.name])}"
+                                                                    data-confirm-term-how="unlink">
                                                                 <i class="unlink icon"></i>
                                                             </g:link>
                                                         </div>

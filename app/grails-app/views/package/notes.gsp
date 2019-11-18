@@ -3,13 +3,12 @@
 <html>
 <head>
     <meta name="layout" content="semanticUI">
-    <g:set var="entityName" value="${message(code: 'package.label', default: 'Package')}"/>
-    <title>${message(code:'laser', default:'LAS:eR')} : ${message(code:'package', default:'Package Details')}</title>
+    <title>${message(code:'laser', default:'LAS:eR')} : ${message(code:'package.show.nav.notes')}</title>
 </head>
 <body>
 
     <semui:breadcrumbs>
-        <semui:crumb controller="package" action="index" text="${message(code:'package.show.all', default:'All Packages')}" />
+        <semui:crumb controller="package" action="index" text="${message(code:'package.show.all')}" />
         <semui:crumb text="${packageInstance.name}" id="${packageInstance.id}" class="active"/>
     </semui:breadcrumbs>
     <semui:controlButtons>

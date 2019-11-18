@@ -32,7 +32,7 @@
                 </td>
                 <td>
                     <g:if test="${editable}">
-                        <g:link controller="ajax" action="delPrsRole" id="${pr.id}" onclick="return confirm(${message(code:'template.orgLinks.delete.warn')})">${message(code:'default.button.delete.label')}</g:link>
+                        <g:link controller="ajax" action="delPrsRole" id="${pr.id}" onclick="return confirm('${message(code:'template.orgLinks.delete.warn')}')">${message(code:'default.button.delete.label')}</g:link>
                     </g:if>
                 </td>
             </g:if>

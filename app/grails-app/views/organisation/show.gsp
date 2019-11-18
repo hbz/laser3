@@ -18,8 +18,7 @@
     <g:else>
         <g:set var="entityName" value="${message(code: 'org.label')}"/>
     </g:else>
-    <title>${message(code: 'laser', default: 'LAS:eR')} : <g:message code="default.show.label"
-                                                                     args="[entityName]"/></title>
+    <title>${message(code: 'laser', default: 'LAS:eR')} : ${message(code:'menu.institutions.org_info')}</title>
 
     <g:javascript src="properties.js"/>
 </head>
@@ -41,9 +40,7 @@
     </semui:controlButtons>
 </g:if>
 
-<h1 class="ui left aligned icon header"><semui:headerIcon/>
-${orgInstance.name} - ${message(code:'profile.errorOverview.label')}</h1>
-</h1>
+<h1 class="ui left aligned icon header"><semui:headerIcon/>${orgInstance.name}</h1>
 
 <g:render template="nav" model="${[orgInstance: orgInstance, inContextOrg: inContextOrg]}"/>
 
@@ -133,21 +130,26 @@ ${orgInstance.name} - ${message(code:'profile.errorOverview.label')}</h1>
                             <dt>ISIL</dt>
                             <dd>
                                 <g:set var="isils"
-                                       value="${orgInstance.ids.findAll { it?.identifier?.ns?.ns == 'ISIL' }}"/>
+                                       value="${orgInstance.ids.findAll { it?.ns?.ns == 'ISIL' }}"/>
                                 <g:if test="${isils}">
                                     <div class="ui divided middle aligned selection list la-flex-list">
                                         <g:each in="${isils}" var="isil">
                                             <div class="ui item">
 
                                                 <div class="content la-space-right">
-                                                    <semui:xEditable owner="${isil.identifier}" field="value"/>
+                                                    <semui:xEditable owner="${isil}" field="value"/>
                                                 </div>
 
                                                 <div class="content">
                                                     <g:if test="${editable}">
+                                                    <%-- TODO [ticket=1612] new identifier handling
                                                         <g:link class="ui mini negative button" controller="ajax"
                                                                 action="deleteThrough"
                                                                 params='${[contextOid: "${orgInstance.class.name}:${orgInstance.id}", contextProperty: "ids", targetOid: "${isil.class.name}:${isil.id}"]}'>
+                                                            <i class="trash alternate icon"></i></g:link>
+                                                    --%>
+                                                        <g:link controller="ajax" action="deleteIdentifier" class="ui icon mini negative button"
+                                                                params='${[owner: "${orgInstance.class.name}:${orgInstance.id}", target: "${isil.class.name}:${isil.id}"]}'>
                                                             <i class="trash alternate icon"></i></g:link>
                                                     </g:if>
                                                 </div>
@@ -159,43 +161,55 @@ ${orgInstance.name} - ${message(code:'profile.errorOverview.label')}</h1>
 
                                 </g:if>
                                 <g:if test="${editable}">
-                                    <semui:formAddIdentifier owner="${orgInstance}" onlyoneNamespace="ISIL">
-                                    </semui:formAddIdentifier>
-                                </g:if>
-                            </dd>
+                                    <%-- TODO [ticket=1612] new identifier handling --%>
+                                    <g:form controller="ajax" action="addIdentifier" class="ui form">
+                                        <input name="owner" type="hidden" value="${orgInstance.class.name}:${orgInstance.id}" />
+                                        <input name="namespace" type="hidden" value="com.k_int.kbplus.IdentifierNamespace:${com.k_int.kbplus.IdentifierNamespace.findByNs('ISIL').id}" />
 
-                        </dl>
+                                        <div class="fields">
+                                            <div class="field">
+                                                <input name="value" id="value" type="text" class="ui" />
+                                            </div>
+                                            <div class="field">
+                                                <button type="submit" class="ui button">Identifikator hinzufügen</button>
+                                            </div>
+                                        </div>
+                                    </g:form>
+                            </g:if>
+                        </dd>
 
-                        <dl>
-                            <dt>WIB-ID</dt>
-                            <dd>
-                                <g:set var="wibid" value="${orgInstance.ids.find { it?.identifier?.ns?.ns == 'wibid' }}"/>
-                                <g:if test="${wibid}">
-                                    <semui:xEditable owner="${wibid.identifier}" field="value"/>
-                                </g:if>
-                            </dd>
-                        </dl>
-                        <dl>
-                            <dt>EZB-ID</dt>
-                            <dd>
-                                <g:set var="ezb" value="${orgInstance.ids.find { it?.identifier?.ns?.ns == 'ezb' }}"/>
-                                <g:if test="${ezb}">
-                                    <semui:xEditable owner="${ezb.identifier}" field="value"/>
-                                </g:if>
-                            </dd>
-                        </dl>
-                    </div>
-                </div><!-- .card -->
-            </g:if>
+                    </dl>
+
+                    <dl>
+                        <dt>WIB-ID</dt>
+                        <dd>
+                            <g:set var="wibid" value="${orgInstance.ids.find { it?.ns?.ns == 'wibid' }}"/>
+                            <g:if test="${wibid}">
+                                <semui:xEditable owner="${wibid}" field="value"/>
+                            </g:if>
+                        </dd>
+                    </dl>
+                    <dl>
+                        <dt>EZB-ID</dt>
+                        <dd>
+                            <g:set var="ezb" value="${orgInstance.ids.find { it?.ns?.ns == 'ezb' }}"/>
+                            <g:if test="${ezb}">
+                                <semui:xEditable owner="${ezb}" field="value"/>
+                            </g:if>
+                        </dd>
+                    </dl>
+                </div>
+            </div><!-- .card -->
+        </g:if>
 
             <g:if test="${((fromCreate) && !inContextOrg) || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN,ROLE_ORG_EDITOR')}">
                 <div class="ui card">
                     <div class="content">
-                        <g:if test="${orgInstance.hasPerm("ORG_INST")}">
+                        <g:if test="${orgInstance.hasPerm("ORG_INST") || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN,ROLE_ORG_EDITOR')}">
                             <dl>
                                 <dt><g:message code="org.sector.label" default="Sector"/></dt>
                                 <dd>
-                                    <semui:xEditableRefData owner="${orgInstance}" field="sector" config='OrgSector'/>
+                                    <semui:xEditableRefData owner="${orgInstance}" field="sector" config='OrgSector' overwriteEditable="${SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN,ROLE_ORG_EDITOR')}"/>
                                 </dd>
                             </dl>
                         </g:if>
@@ -210,23 +224,23 @@ ${orgInstance.name} - ${message(code:'profile.errorOverview.label')}</h1>
                         <dl>
                             <dt>${message(code: 'subscription.details.status', default: 'Status')}</dt>
 
-                            <dd>
-                                <g:if test="${SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN,ROLE_ORG_EDITOR')}">
-                                    <semui:xEditableRefData owner="${orgInstance}" field="status" config='OrgStatus'/>
-                                </g:if>
-                                <g:else>
-                                    ${orgInstance.status?.getI10n('value')}
-                                </g:else>
-                            </dd>
-                        </dl>
-                    </div>
-                </div><!-- .card -->
-            </g:if>
+                        <dd>
+                            <g:if test="${SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN,ROLE_ORG_EDITOR')}">
+                                <semui:xEditableRefData owner="${orgInstance}" field="status" config='OrgStatus'/>
+                            </g:if>
+                            <g:else>
+                                ${orgInstance.status?.getI10n('value')}
+                            </g:else>
+                        </dd>
+                    </dl>
+                </div>
+            </div><!-- .card -->
+        </g:if>
 
-            <g:if test="${((fromCreate) && !inContextOrg) || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN,ROLE_ORG_EDITOR')}">
-                <div class="ui card">
-                    <div class="content">
-                        <%-- ROLE_ADMIN: all , ROLE_ORG_EDITOR: all minus Consortium --%>
+        <g:if test="${((fromCreate) && !inContextOrg) || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN,ROLE_ORG_EDITOR')}">
+            <div class="ui card">
+                <div class="content">
+                    <%-- ROLE_ADMIN: all , ROLE_ORG_EDITOR: all minus Consortium --%>
                         <dl>
                             <dt><g:message code="org.orgType.label" default="Organisation Type"/></dt>
                             <dd>
@@ -556,46 +570,56 @@ ${orgInstance.name} - ${message(code:'profile.errorOverview.label')}</h1>
                 </div><!-- .card -->
 
                 <g:if test="${contextService.getUser().isAdmin() || contextService.getOrg().getCustomerType() in ['ORG_CONSORTIUM', 'ORG_CONSORTIUM_SURVEY']}">
-                    <g:if test="${createdByOrgGeneralContacts || legallyObligedByOrgGeneralContacts}">
+                    <g:if test="${orgInstance.createdBy || orgInstance.legallyObligedBy}">
                         <div class="ui card">
                             <div class="content">
-                                <g:if test="${createdByOrgGeneralContacts}">
+                                <g:if test="${orgInstance.createdBy}">
                                     <dl>
                                         <dt>
                                             <g:message code="org.createdBy.label" default="createdBy"/>
                                         </dt>
                                         <dd>
-                                            <g:each in="${createdByOrgGeneralContacts}" var="cbogc">
-                                                <g:render template="/templates/cpa/person_full_details" model="${[
-                                                        person              : cbogc,
-                                                        personContext       : createdByOrg,
-                                                        tmplShowFunctions       : true,
-                                                        tmplShowPositions       : true,
-                                                        tmplShowResponsiblities : true,
-                                                        tmplConfigShow      : ['E-Mail', 'Mail', 'Url', 'Phone', 'Fax', 'address'],
-                                                        editable            : false
-                                                ]}"/>
-                                            </g:each>
+                                            <h5 class="ui header">
+                                                <g:link controller="organisation" action="show" id="${orgInstance.createdBy.id}">${orgInstance.createdBy.name}</g:link>
+                                            </h5>
+                                            <g:if test="${createdByOrgGeneralContacts}">
+                                                    <g:each in="${createdByOrgGeneralContacts}" var="cbogc">
+                                                        <g:render template="/templates/cpa/person_full_details" model="${[
+                                                                person              : cbogc,
+                                                                personContext       : orgInstance.createdBy,
+                                                                tmplShowFunctions       : true,
+                                                                tmplShowPositions       : true,
+                                                                tmplShowResponsiblities : true,
+                                                                tmplConfigShow      : ['E-Mail', 'Mail', 'Url', 'Phone', 'Fax', 'address'],
+                                                                editable            : false
+                                                        ]}"/>
+                                                    </g:each>
+                                            </g:if>
                                         </dd>
                                     </dl>
                                 </g:if>
-                                <g:if test="${legallyObligedByOrgGeneralContacts}">
+                                <g:if test="${orgInstance.legallyObligedBy}">
                                     <dl>
                                         <dt>
                                             <g:message code="org.legallyObligedBy.label" default="legallyObligedBy"/>
                                         </dt>
                                         <dd>
-                                            <g:each in="${legallyObligedByOrgGeneralContacts}" var="lobogc">
-                                                <g:render template="/templates/cpa/person_full_details" model="${[
-                                                        person              : lobogc,
-                                                        personContext       : legallyObligedByOrg,
-                                                        tmplShowFunctions       : true,
-                                                        tmplShowPositions       : true,
-                                                        tmplShowResponsiblities : true,
-                                                        tmplConfigShow      : ['E-Mail', 'Mail', 'Url', 'Phone', 'Fax', 'address'],
-                                                        editable            : false
-                                                ]}"/>
-                                            </g:each>
+                                            <h5 class="ui header">
+                                                <g:link controller="organisation" action="show" id="${orgInstance.legallyObligedBy.id}">${orgInstance.legallyObligedBy.name}</g:link>
+                                            </h5>
+                                            <g:if test="${legallyObligedByOrgGeneralContacts}">
+                                                <g:each in="${legallyObligedByOrgGeneralContacts}" var="lobogc">
+                                                    <g:render template="/templates/cpa/person_full_details" model="${[
+                                                            person              : lobogc,
+                                                            personContext       : orgInstance.legallyObligedBy,
+                                                            tmplShowFunctions       : true,
+                                                            tmplShowPositions       : true,
+                                                            tmplShowResponsiblities : true,
+                                                            tmplConfigShow      : ['E-Mail', 'Mail', 'Url', 'Phone', 'Fax', 'address'],
+                                                            editable            : false
+                                                    ]}"/>
+                                                </g:each>
+                                            </g:if>
                                         </dd>
                                     </dl>
                                 </g:if>

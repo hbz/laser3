@@ -47,6 +47,7 @@ class UploadController extends AbstractDebugController {
   ];
 
   @Secured(['ROLE_ADMIN'])
+  @Deprecated
   def reviewPackage() {
     def result = [:]
     result.user = User.get(springSecurityService.principal.id)
@@ -72,6 +73,7 @@ class UploadController extends AbstractDebugController {
   * Ingest a package
   */
 
+  @Deprecated
   private def processUploadSO(upload) {
 
     def new_pkg_id = null
@@ -232,9 +234,11 @@ class UploadController extends AbstractDebugController {
             }
             // Really not happy with this as a way forward, hoping for feedback from OS
             tipp.tippid.each { tippid ->
-              def canonical_id = Identifier.lookupOrCreateCanonicalIdentifier(tippid.key, tippid.value)
-              def new_io = new IdentifierOccurrence(identifier:canonical_id,tipp:dbtipp).save()
-              tipp.messages.add([type:'alert-success',message:"tipp identifier created: ${tippid.key}:${tippid.value} ${new_io.id}"]);
+              // TODO [ticket=1789]
+              //def canonical_id = Identifier.lookupOrCreateCanonicalIdentifier(tippid.key, tippid.value)
+              //def new_io = new IdentifierOccurrence(identifier:canonical_id,tipp:dbtipp).save()
+              Identifier ident = Identifier.construct([value: tippid.value, reference: dbtipp, namespace: tippid.key])
+              tipp.messages.add([type:'alert-success', message:"tipp identifier created: ${tippid.key}:${tippid.value} ${ident.id}"]);
             }
           }
 
@@ -255,6 +259,7 @@ class UploadController extends AbstractDebugController {
   }
 
   //TODO: Wegen Überarbeitung von Titel Konzept muss dies hier nochmal überarbeitet werden by Moe
+  @Deprecated
   private def lookupOrCreateTitleInstance(identifiers, title, publisher, tipp) {
     // log.debug("lookupOrCreateTitleInstance ${identifiers}, ${title}, ${publisher}");
     def result = null;

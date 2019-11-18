@@ -47,8 +47,8 @@ class FilterService {
              queryParams << [orgSector : Long.parseLong(params.orgSector)]
         }
         if (params.orgIdentifier?.length() > 0) {
-            query << " exists (select io from IdentifierOccurrence io join io.org ioorg join io.identifier ioid " +
-                     " where ioorg = o and LOWER(ioid.value) like LOWER(:orgIdentifier)) "
+            query << " exists (select ident from Identifier ident join ident.org ioorg " +
+                     " where ioorg = o and LOWER(ident.value) like LOWER(:orgIdentifier)) "
             queryParams << [orgIdentifier: "%${params.orgIdentifier}%"]
         }
 
@@ -141,8 +141,8 @@ class FilterService {
         }
 
         if (params.orgIdentifier?.length() > 0) {
-            query << " exists (select io from IdentifierOccurrence io join io.org ioorg join io.identifier ioid " +
-                    " where ioorg = o and LOWER(ioid.value) like LOWER(:orgIdentifier)) "
+            query << " exists (select ident from Identifier io join io.org ioorg " +
+                    " where ioorg = o and LOWER(ident.value) like LOWER(:orgIdentifier)) "
             queryParams << [orgIdentifier: "%${params.orgIdentifier}%"]
         }
 
@@ -336,6 +336,11 @@ class FilterService {
         if (params.endDate && sdFormat) {
             query << "surInfo.endDate <= :endDate"
             queryParams << [endDate : sdFormat.parse(params.endDate)]
+        }
+
+        if (params.provider) {
+            query << "exists (select orgRole from OrgRole orgRole where orgRole.sub = surConfig.subscription and orgRole.org = :provider)"
+            queryParams << [provider : Org.get(params.provider)]
         }
 
         if (params.participant) {
@@ -605,7 +610,7 @@ class FilterService {
         }
 
         if (params.filter) {
-            base_qry += " and ( ( genfunc_filter_matcher(tipp.title.title,:title) = true ) or ( exists ( from IdentifierOccurrence io where io.ti.id = tipp.title.id and genfunc_filter_matcher(io.identifier.value,:title) = true ) ) )"
+            base_qry += " and ( ( genfunc_filter_matcher(tipp.title.title,:title) = true ) or ( exists ( from Identifier ident where ident.ti.id = tipp.title.id and genfunc_filter_matcher(ident.value,:title) = true ) ) )"
             qry_params.title = params.filter
         }
 

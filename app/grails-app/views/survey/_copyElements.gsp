@@ -114,7 +114,14 @@
                                     <b><i class="university icon"></i>&nbsp${source_role?.roleType?.getI10n("value")}:</b>
                                     <g:link controller="organisation" action="show" target="_blank" id="${source_role.org.id}">
                                         ${source_role?.org?.name}
-                                    </g:link><br>
+                                    </g:link>
+
+                                        <div class="right aligned wide column">
+                                            <g:message code="subscription.details.copyElementsIntoSubscription.share"/>:
+                                            <input class="ui checkbox" type="checkbox" name="toggleShareOrgRoles" value="${source_role.class.name}:${source_role.id}" ${source_role.isShared ? 'checked': ''} />
+                                        </div>
+
+                                <br>
                                 </div>
                             </g:if>
                         </g:each>
@@ -144,6 +151,19 @@
                                     <g:link controller="organisation" action="show" target="_blank" id="${target_role.org.id}">
                                         ${target_role?.org?.name}
                                     </g:link>
+
+                                        <div class="right aligned wide column">
+                                            <g:message code="subscription.details.copyElementsIntoSubscription.share"/>:
+
+                                            <g:if test="${target_role.isShared}">
+                                                <i class="la-share icon la-js-editmode-icon"></i>
+                                            </g:if>
+                                            <g:else>
+                                                <i class="la-share slash icon la-js-editmode-icon"></i>
+                                            </g:else>
+
+                                        </div>
+
                                     <br>
                                 </div>
                             </g:if>
@@ -169,8 +189,8 @@
         <div class="two fields">
             <div class="eight wide field" style="text-align: left;">
                 <g:set var="surveyConfig" value="${com.k_int.kbplus.SurveyConfig.findBySubscriptionAndIsSubscriptionSurveyFix(Subscription.get(sourceSubscriptionId), true)}" />
-                <g:link action="renewalwithSurvey" id="${surveyConfig?.surveyInfo?.id}" params="[surveyConfigID: surveyConfig?.id]" class="ui button js-click-control">
-                    <g:message code="renewalwithSurvey.back"/>
+                <g:link action="renewalWithSurvey" id="${surveyConfig?.surveyInfo?.id}" params="[surveyConfigID: surveyConfig?.id]" class="ui button js-click-control">
+                    <g:message code="renewalWithSurvey.back"/>
                 </g:link>
             </div>
             <div class="eight wide field" style="text-align: right;">

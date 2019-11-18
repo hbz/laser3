@@ -17,7 +17,7 @@
         <g:set var="coll" value="${financialData.coll}"/>
         <g:set var="subscr" value="${financialData.subscr}"/>
         <semui:breadcrumbs>
-            <semui:crumb controller="myInstitution" action="dashboard" text="${contextService.getOrg()?.getDesignation()}" />
+            <%--<semui:crumb controller="myInstitution" action="dashboard" text="${contextService.getOrg()?.getDesignation()}" />--%>
             <semui:crumb controller="myInstitution" action="currentSubscriptions" text="${message(code:'myinst.currentSubscriptions.label')}" />
             <semui:crumb class="active"  message="${subscription.name}" />
         </semui:breadcrumbs>
@@ -27,7 +27,7 @@
                 <g:if test="${params.submit || params.filterSubStatus}">
                     <semui:exportDropdownItem>
                         <g:link  class="item js-open-confirm-modal"
-                                 data-confirm-term-content = "${message(code: 'confirmation.content.exportPartial')}"
+                                 data-confirm-tokenMsg = "${message(code: 'confirmation.content.exportPartial')}"
                                  data-confirm-term-how="ok"
                                  controller="finance"
                                  action="financialsExport"
@@ -36,7 +36,7 @@
                     </semui:exportDropdownItem>
                     <semui:exportDropdownItem>
                         <g:link class="item exportCSV js-open-confirm-modal"
-                                 data-confirm-term-content = "${message(code: 'confirmation.content.exportPartialCSV')}"
+                                 data-confirm-tokenMsg = "${message(code: 'confirmation.content.exportPartialCSV')}"
                                  data-confirm-term-how="ok"
                                  controller="finance"
                                  action="financialsExport"
@@ -50,7 +50,7 @@
                     </semui:exportDropdownItem>
                     <semui:exportDropdownItem>
                         <g:link class="item exportCSV js-open-confirm-modal"
-                                 data-confirm-term-content = "${message(code: 'confirmation.content.exportCSV')}"
+                                 data-confirm-tokenMsg = "${message(code: 'confirmation.content.exportCSV')}"
                                  data-confirm-term-how="ok"
                                  controller="finance"
                                  action="financialsExport"
@@ -115,7 +115,7 @@
 
         <g:render template="../subscription/nav" model="${[subscriptionInstance:subscription, params:(params << [id:subscription.id,showConsortiaFunctions:showConsortiaFunctions,showCollectiveFunctions:showCollectiveFunctions])]}"/>
 
-        <g:if test="${showView.equals("consAtSubscr")}">
+        <g:if test="${params.orgBasicMemberView || showView.equals("consAtSubscr")}">
             <g:render template="../subscription/message" model="${[contextOrg: institution, subscriptionInstance: subscription]}"/>
         </g:if>
 

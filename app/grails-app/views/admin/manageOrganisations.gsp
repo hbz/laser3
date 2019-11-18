@@ -40,7 +40,10 @@
                 <th>${message(code: 'org.type.label', default: 'Type')}</th>
                 <th>${message(code:'org.customerType.label')}</th>
                 <th>${message(code:'org.apiLevel.label')}</th>
-                <th><%--${message(code:'org.legalInformation.label')}--%></th>
+                <th class="la-no-uppercase"><span class="la-popup-tooltip la-delay" data-position="left center"
+                          data-content="${message(code:'org.legalInformation.tooltip')}" >
+                    <i class="handshake outline icon"></i>
+                </span></th>
                 <th>${message(code:'org.hasAccessOrg')}</th>
                 <th class="la-action-info">${message(code:'default.actions')}</th>
             </tr>

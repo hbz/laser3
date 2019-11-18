@@ -82,7 +82,6 @@
             </g:each>
 
         </g:if>
-
         <g:if test="${tmplShowFunctions}">
             <g:each in="${person.roleLinks.toSorted()}" var="personRole">
                 <g:if test="${personRole.org.id == personContext.id && personRole?.functionType}">
@@ -94,33 +93,30 @@
                         </div>
 
                         <div class="content">
+
                             <g:if test="${editable && tmplShowDeleteButton}">
                                 <g:set var="oid" value="${personRole?.class.name}:${personRole?.id}"/>
                                 <g:if test="${person.roleLinks.size() > 1}">
-
                                     <g:link class="ui mini icon negative button js-open-confirm-modal"
-                                            data-confirm-term-what="contact"
-                                            data-confirm-term-where="${controller}"
+                                            data-confirm-tokenMsg="${message(code: "confirm.dialog.unlink.function.contact", args: [personRole?.functionType?.getI10n('value'), person.toString()])}"
                                             data-confirm-term-how="unlink"
                                             controller="ajax" action="delete" params="[cmd: 'deletePersonRole', oid: oid]">
                                         <i class="unlink icon"></i>
                                     </g:link>
                                 </g:if>
                                 <g:else>
-                                    <g:link class="ui mini icon negative button"
+                                    <g:link class="ui mini icon negative button js-open-confirm-modal"
                                             controller="person"
                                             action="_delete"
                                             id="${person?.id}"
-                                            onclick="return confirm('${message( code: 'org.deletePrsLinksAndContact.button.confirm',
-                                                    default: 'Do you want to delete the whole contact?',
-                                                    args:[personRole?.functionType?.getI10n('value'), person.toString()])}')">
-                                        <i class="unlink icon"></i>
+                                            data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.org.PrsLinksAndContact.function", args: [personRole?.functionType?.getI10n('value'), person.toString()])}"
+                                            data-confirm-term-how="delete">
+                                        <i class="trash alternate icon"></i>
                                     </g:link>
                                     %{--<g:form controller="person" action="_delete" data-confirm-id="${person?.id?.toString()+ '_form'}">--}%
                                         %{--<g:hiddenField name="id" value="${person?.id}" />--}%
                                         %{--<div class="ui mini icon negative button js-open-confirm-modal"--}%
-                                             %{--data-confirm-term-what="contact"--}%
-                                             %{--data-confirm-term-what-detail="${person?.toString()}"--}%
+                                             %{--data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.contact", args: [person?.toString()])}"--}%
                                              %{--data-confirm-term-how="delete"--}%
                                              %{--data-confirm-id="${person?.id}" >--}%
                                             %{--<i class="unlink icon"></i>--}%
@@ -134,7 +130,6 @@
                 </g:if>
             </g:each>
         </g:if>
-
         <g:if test="${tmplShowPositions}">
             <g:each in="${person.roleLinks.toSorted()}" var="personRole">
                 <g:if test="${personRole.org.id == personContext.id && personRole?.positionType}">
@@ -149,13 +144,24 @@
                             <g:if test="${editable && tmplShowDeleteButton}">
                                 <g:set var="oid" value="${personRole?.class.name}:${personRole?.id}"/>
 
-                                <g:link class="ui mini icon negative button js-open-confirm-modal"
-                                        data-confirm-term-what="contact"
-                                        data-confirm-term-where="${controller}"
-                                        data-confirm-term-how="unlink"
-                                        controller="ajax" action="delete" params="[cmd: 'deletePersonRole', oid: oid]">
-                                    <i class="unlink icon"></i>
-                                </g:link>
+                                <g:if test="${person.roleLinks.size() > 1}">
+                                    <g:link class="ui mini icon negative button js-open-confirm-modal"
+                                            data-confirm-tokenMsg="${message(code: "confirm.dialog.unlink.position.contact", args: [personRole?.positionType?.getI10n('value'), person.toString()])}"
+                                            data-confirm-term-how="unlink"
+                                            controller="ajax" action="delete" params="[cmd: 'deletePersonRole', oid: oid]">
+                                        <i class="unlink icon"></i>
+                                    </g:link>
+                                </g:if>
+                                <g:else>
+                                    <g:link class="ui mini icon negative button js-open-confirm-modal"
+                                            controller="person"
+                                            action="_delete"
+                                            id="${person?.id}"
+                                            data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.org.PrsLinksAndContact.position", args: [personRole?.positionType?.getI10n('value'), person.toString()])}"
+                                            data-confirm-term-how="delete">
+                                        <i class="trash alternate icon"></i>
+                                    </g:link>
+                                </g:else>
                             </g:if>
                         </div>
                     </div><!-- .person-details -->
@@ -177,10 +183,8 @@
                         <div class="content">
                             <g:if test="${editable && tmplShowDeleteButton}">
                                 <g:set var="oid" value="${personRole?.class.name}:${personRole?.id}"/>
-
                                 <g:link class="ui mini icon negative button js-open-confirm-modal"
-                                        data-confirm-term-what="contact"
-                                        data-confirm-term-where="${controller}"
+                                        data-confirm-tokenMsg="${message(code: "confirm.dialog.unlink.contact.organisation")}"
                                         data-confirm-term-how="unlink"
                                         controller="ajax" action="delete" params="[cmd: 'deletePersonRole', oid: oid]">
                                     <i class="unlink icon"></i>
@@ -194,22 +198,17 @@
         </g:if>
 
     </div><!-- .la-flex-list -->
-
     <g:if test="${editable && tmplUnlinkedObj}">
         <td class="right aligned">
             <g:set var="oid" value="${tmplUnlinkedObj?.class.name}:${tmplUnlinkedObj?.id}"/>
-
             <g:link class="ui icon negative button js-open-confirm-modal"
-                    data-confirm-term-what="contact"
-                    data-confirm-term-what-detail="${tmplUnlinkedObj.prs}"
-                    data-confirm-term-where="${controller}"
+                    data-confirm-tokenMsg="${message(code: "confirm.dialog.unlink.contact")}"
                     data-confirm-term-how="unlink"
                     controller="ajax" action="delete" params="[cmd: 'deletePersonRole', oid: oid]">
                 <i class="unlink icon"></i>
             </g:link>
         </td>
     </g:if>
-
 </g:if>
 
 							

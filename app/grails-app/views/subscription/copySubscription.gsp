@@ -10,23 +10,20 @@
 <body>
 
 <semui:breadcrumbs>
-    <semui:crumb controller="myInstitution" action="dashboard" text="${contextService.getOrg()?.getDesignation()}" />
     <semui:crumb controller="myInstitution" action="currentSubscriptions" text="${message(code:'myinst.currentSubscriptions.label')}" />
 
     <g:if test="${subscriptionInstance}">
         <semui:crumb action="show" controller="subscription" id="${subscriptionInstance.id}" text="${subscriptionInstance.name}" />
         <semui:crumb class="active" text="${message(code: 'myinst.copySubscription')}" />
     </g:if>
-
 </semui:breadcrumbs>
 
 <semui:controlButtons>
     <g:render template="actions"/>
 </semui:controlButtons>
 
-<h1 class="ui left aligned icon header"><semui:headerIcon />
-${message(code: 'myinst.copySubscription')}: ${subscriptionInstance.name}
-</h1>
+<h1 class="ui left aligned icon header"><semui:headerIcon />${subscriptionInstance.name}</h1>
+<h2 class="ui left aligned icon header">${message(code: 'myinst.copySubscription')}</h2>
 
 <semui:messages data="${flash}"/>
 

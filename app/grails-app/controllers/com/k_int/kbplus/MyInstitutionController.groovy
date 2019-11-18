@@ -177,7 +177,6 @@ class MyInstitutionController extends AbstractDebugController {
 
     @Secured(['ROLE_USER'])
     def currentPlatforms() {
-        long timestamp = System.currentTimeMillis()
 
         def result = [:]
         result.user = User.get(springSecurityService.principal.id)
@@ -303,7 +302,6 @@ class MyInstitutionController extends AbstractDebugController {
         else result.platformInstanceList = []
         result.platformInstanceTotal    = result.platformInstanceList.size()
 
-        result.plt = (System.currentTimeMillis() - timestamp)
         result.cachedContent = true
 
         result
@@ -702,7 +700,7 @@ from License as l where (
     @DebugAnnotation(test='hasAffiliation("INST_USER")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
     def currentProviders() {
-        long timestamp = System.currentTimeMillis()
+
         def result = setResultGenerics()
 
         def cache = contextService.getCache('MyInstitutionController/currentProviders/', contextService.ORG_SCOPE)
@@ -743,7 +741,6 @@ from License as l where (
         String datetoday = sdf.format(new Date(System.currentTimeMillis()))
         String filename = message+"_${datetoday}"
 
-        result.plt = (System.currentTimeMillis() - timestamp)
         result.cachedContent = true
 
         if ( params.exportXLS ) {
@@ -917,7 +914,7 @@ from License as l where (
         Map costItemCounts = [:]
         List allProviders = OrgRole.findAllByRoleTypeAndSubIsNotNull(RDStore.OR_PROVIDER)
         List allAgencies = OrgRole.findAllByRoleTypeAndSubIsNotNull(RDStore.OR_AGENCY)
-        List allIdentifiers = IdentifierOccurrence.findAllBySubIsNotNull()
+        List allIdentifiers = Identifier.findAllBySubIsNotNull()
         List allCostItems = CostItem.executeQuery('select count(ci.id),s.instanceOf.id from CostItem ci join ci.sub s where s.instanceOf != null and (ci.costItemStatus != :ciDeleted or ci.costItemStatus = null) and ci.owner = :owner group by s.instanceOf.id',[ciDeleted:RDStore.COST_ITEM_DELETED,owner:contextOrg])
         allProviders.each { provider ->
             Set subProviders
@@ -942,7 +939,7 @@ from License as l where (
             if(identifiers.get(identifier.sub))
                 subIdentifiers = identifiers.get(identifier.sub)
             else subIdentifiers = new TreeSet()
-            subIdentifiers.add("(${identifier.identifier.ns.ns}) ${identifier.identifier.value}")
+            subIdentifiers.add("(${identifier.ns.ns}) ${identifier.value}")
             identifiers.put(identifier.sub,subIdentifiers)
         }
         allCostItems.each { row ->
@@ -1382,12 +1379,16 @@ from License as l where (
                 if (params.newEmptySubId) {
                   def sub_id_components = params.newEmptySubId.split(':');
                   if ( sub_id_components.length == 2 ) {
-                    def sub_identifier = Identifier.lookupOrCreateCanonicalIdentifier(sub_id_components[0],sub_id_components[1]);
-                      new IdentifierOccurrence(sub: new_sub, identifier: sub_identifier).save()
+                      // TODO [ticket=1789]
+                      //def sub_identifier = Identifier.lookupOrCreateCanonicalIdentifier(sub_id_components[0],sub_id_components[1]);
+                      //new IdentifierOccurrence(sub: new_sub, identifier: sub_identifier).save()
+                      Identifier ident = Identifier.construct([value: sub_id_components[1], reference: new_sub, namespace: sub_id_components[0]])
                   }
                   else {
-                    def sub_identifier = Identifier.lookupOrCreateCanonicalIdentifier('Unknown', params.newEmptySubId);
-                      new IdentifierOccurrence(sub: new_sub, identifier: sub_identifier).save()
+                      // TODO [ticket=1789]
+                      //def sub_identifier = Identifier.lookupOrCreateCanonicalIdentifier('Unknown', params.newEmptySubId);
+                      //new IdentifierOccurrence(sub: new_sub, identifier: sub_identifier).save()
+                      Identifier ident = Identifier.construct([value: params.newEmptySubId, reference: new_sub, namespace: 'Unkown'])
                   }
                 }
 
@@ -1501,8 +1502,8 @@ from License as l where (
         def license_type = RefdataValue.getByValueAndCategory('Actual', 'License Type')
 
         def licenseInstance = new License(type: license_type, reference: params.licenseName,
-                startDate:params.licenseStartDate ? parseDate(params.licenseStartDate,possible_date_formats) : null,
-                endDate: params.licenseEndDate ? parseDate(params.licenseEndDate,possible_date_formats) : null,
+                startDate:params.licenseStartDate ? parseDate(params.licenseStartDate, escapeService.possible_date_formats) : null,
+                endDate: params.licenseEndDate ? parseDate(params.licenseEndDate, escapeService.possible_date_formats) : null,
                 status: RefdataValue.get(params.status)
         )
 
@@ -1826,7 +1827,7 @@ from License as l where (
 
         String queryStr = "tipp.tipp_ti_fk, count(ie.ie_id) ${sub_qry} group by ti.sort_title, tipp.tipp_ti_fk ${having_clause} ".toString()
 
-        log.debug(" SELECT ${queryStr} ${order_by_clause} ${limits_clause} ")
+        //log.debug(" SELECT ${queryStr} ${order_by_clause} ${limits_clause} ")
 
         if(params.format || params.exportKBart) {
             //double run until ERMS-1188
@@ -1872,8 +1873,8 @@ from License as l where (
                 filterString += " and pkgOrgRoles.roleType in (:contentProvider) "
                 queryParams.contentProvider = filterPvd
             }
-            log.debug("select ie from IssueEntitlement ie join ie.coverages iecov join ie.subscription.orgRelations as oo join ie.tipp.pkg.orgs pkgOrgRoles where oo.org = :org and oo.roleType in (:orgRoles) and ie.status != :ieDeleted ${filterString} order by ie.tipp.title.title asc")
-            log.debug(queryParams)
+            //log.debug("select ie from IssueEntitlement ie join ie.coverages iecov join ie.subscription.orgRelations as oo join ie.tipp.pkg.orgs pkgOrgRoles where oo.org = :org and oo.roleType in (:orgRoles) and ie.status != :ieDeleted ${filterString} order by ie.tipp.title.title asc")
+            //log.debug(queryParams)
             result.titles = IssueEntitlement.executeQuery("select ie from IssueEntitlement ie join ie.coverages iecov join ie.subscription.orgRelations as oo join ie.tipp.pkg.orgs pkgOrgRoles where oo.org = :org and oo.roleType in (:orgRoles) and ie.status != :ieDeleted ${filterString} order by ie.tipp.title.title asc",queryParams)
         }
         else {
@@ -1881,8 +1882,8 @@ from License as l where (
             qry_params.max = result.max
             qry_params.offset = result.offset
 
-            log.debug( "SELECT ${queryStr} ${order_by_clause} ${limits_clause}" )
-            log.debug( qry_params )
+            //log.debug( "SELECT ${queryStr} ${order_by_clause} ${limits_clause}" )
+            //log.debug( qry_params )
 
             result.titles = sql.rows("SELECT ${queryStr} ${order_by_clause} ${limits_clause} ".toString(), qry_params).collect {
                 TitleInstance.get(it.tipp_ti_fk)
@@ -2062,9 +2063,9 @@ ORDER BY p.platform.name""", sub_params);
         if (params.filter) {
             title_query.append("\
   AND ( ( Lower(ie.tipp.title.title) like :filterTrim ) \
-  OR ( EXISTS ( FROM IdentifierOccurrence io \
-  WHERE io.ti.id = ie.tipp.title.id \
-  AND io.identifier.value like :filter ) ) )")
+  OR ( EXISTS ( FROM Identifier ident \
+  WHERE ident.ti.id = ie.tipp.title.id \
+  AND ident.value like :filter ) ) )")
             qry_params.filterTrim = "%${params.filter.trim().toLowerCase()}%"
             qry_params.filter = "%${params.filter}%"
         }
@@ -2701,6 +2702,14 @@ AND EXISTS (
             result.iesListPriceSum = result.iesListPriceSum + (it?.priceItem ? (it?.priceItem?.listPrice ? it?.priceItem?.listPrice : 0) : 0)
         }
 
+
+        result.iesFix = subscriptionService.getIssueEntitlementsFixed(result.surveyConfig.subscription?.getDerivedSubscriptionBySubscribers(result.institution))
+        result.iesFixListPriceSum = 0
+        result.iesFix?.each{
+            result.iesFixListPriceSum = result.iesFixListPriceSum + (it?.priceItem ? (it?.priceItem?.listPrice ? it?.priceItem?.listPrice : 0) : 0)
+        }
+
+
         result.ownerId = result.surveyConfig.surveyInfo.owner?.id ?: null
 
         result.subscriptionInstance = result.surveyConfig.subscription?.getDerivedSubscriptionBySubscribers(result.institution)
@@ -2746,7 +2755,7 @@ AND EXISTS (
             def surveyOrg = SurveyOrg.findByOrgAndSurveyConfig(result.institution, surveyConfig)
 
             def ies = subscriptionService.getIssueEntitlementsUnderConsideration(surveyConfig.subscription?.getDerivedSubscriptionBySubscribers(result.institution))
-            ies.each { ie ->
+            ies?.each { ie ->
                 ie.acceptStatus = RDStore.IE_ACCEPT_STATUS_UNDER_NEGOTIATION
                 ie.save(flush: true)
             }
@@ -2877,7 +2886,7 @@ AND EXISTS (
 
         result.users = userService.getUserSet(filterParams)
         result.breadcrumb = '/organisation/breadcrumb'
-        result.titleMessage = "${result.institution} - ${message(code:'org.nav.users')}"
+        result.titleMessage = "${result.institution}"
         result.inContextOrg = true
         result.pendingRequests = UserOrg.findAllByStatusAndOrg(UserOrg.STATUS_PENDING, result.institution, [sort:'dateRequested', order:'desc'])
         result.orgInstance = result.institution
@@ -3231,6 +3240,7 @@ AND EXISTS (
         result.members         = totalMembers.drop((int) result.offset).take((int) result.max)
         String header
         String exportHeader
+
         if(result.comboType == RDStore.COMBO_TYPE_CONSORTIUM) {
             header = message(code: 'menu.my.consortia')
             exportHeader = message(code: 'export.my.consortia')
@@ -3347,8 +3357,8 @@ AND EXISTS (
         }
 
         if (params.identifier?.length() > 0) {
-            query += " and exists (select io from IdentifierOccurrence io join io.org ioorg join io.identifier ioid " +
-                    " where ioorg = roleT.org and LOWER(ioid.value) like LOWER(:identifier)) "
+            query += " and exists (select ident from Identifier ident join ident.org ioorg " +
+                    " where ioorg = roleT.org and LOWER(ident.value) like LOWER(:identifier)) "
             qarams.put('identifier', "%${params.identifier}%")
         }
 
@@ -3408,7 +3418,7 @@ AND EXISTS (
         if(params.filterSet && !params.member && !params.validOn && !params.status && !params.filterPropDef && !params.filterProp && !params.form && !params.resource && !params.subTypes)
             result.filterSet = false
 
-        log.debug( query + " " + orderQuery )
+        //log.debug( query + " " + orderQuery )
         // log.debug( qarams )
 
         du.setBenchMark('costs')

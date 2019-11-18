@@ -16,8 +16,9 @@
         <g:set var="cons" value="${financialData.cons}"/>
         <g:set var="coll" value="${financialData.coll}"/>
         <g:set var="subscr" value="${financialData.subscr}"/>
+
         <semui:breadcrumbs>
-            <semui:crumb controller="myInstitution" action="dashboard" text="${institution.name}" />
+            <%--<semui:crumb controller="myInstitution" action="dashboard" text="${institution.name}" />--%>
             <semui:crumb class="active" text="${message(code:'subscription.details.financials.label')}" />
         </semui:breadcrumbs>
 
@@ -26,7 +27,7 @@
                 <g:if test="${(params.submit && params.filterSubStatus) || params.filterSubStatus}">
                     <semui:exportDropdownItem>
                         <g:link  class="item js-open-confirm-modal"
-                                 data-confirm-term-content = "${message(code: 'confirmation.content.exportPartial', default: 'Achtung!  Dennoch fortfahren?')}"
+                                 data-confirm-tokenMsg = "${message(code: 'confirmation.content.exportPartial', default: 'Achtung!  Dennoch fortfahren?')}"
                                  data-confirm-term-how="ok"
                                  controller="finance"
                                  action="financialsExport"
@@ -35,7 +36,7 @@
                     </semui:exportDropdownItem>
                     <semui:exportDropdownItem>
                         <g:link class="item exportCSV js-open-confirm-modal"
-                                 data-confirm-term-content = "${message(code: 'confirmation.content.exportPartialCSV')}"
+                                 data-confirm-tokenMsg = "${message(code: 'confirmation.content.exportPartialCSV')}"
                                  data-confirm-term-how="ok"
                                  controller="finance"
                                  action="financialsExport"
@@ -49,7 +50,7 @@
                     </semui:exportDropdownItem>
                     <semui:exportDropdownItem>
                         <g:link class="item exportCSV js-open-confirm-modal"
-                                 data-confirm-term-content = "${message(code: 'confirmation.content.exportCSV')}"
+                                 data-confirm-tokenMsg = "${message(code: 'confirmation.content.exportCSV')}"
                                  data-confirm-term-how="ok"
                                  controller="finance"
                                  action="financialsExport"

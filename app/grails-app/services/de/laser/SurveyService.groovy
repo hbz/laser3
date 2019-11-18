@@ -1,18 +1,35 @@
 package de.laser
 
 import com.k_int.kbplus.Org
+import com.k_int.kbplus.Subscription
+import com.k_int.kbplus.SubscriptionCustomProperty
+import com.k_int.kbplus.SubscriptionPrivateProperty
 import com.k_int.kbplus.SurveyConfig
 import com.k_int.kbplus.SurveyInfo
 import com.k_int.kbplus.SurveyOrg
+import com.k_int.kbplus.SurveyProperty
 import com.k_int.kbplus.SurveyResult
+import com.k_int.kbplus.abstract_domain.AbstractProperty
+import com.k_int.kbplus.abstract_domain.CustomProperty
+import com.k_int.kbplus.abstract_domain.PrivateProperty
 import de.laser.helper.RDStore
 import grails.transaction.Transactional
+import grails.util.Holders
 
 @Transactional
 class SurveyService {
 
     def accessService
     def contextService
+    def messageSource
+    def locale
+
+    @javax.annotation.PostConstruct
+    void init() {
+        messageSource = Holders.grailsApplication.mainContext.getBean('messageSource')
+        locale = org.springframework.context.i18n.LocaleContextHolder.getLocale()
+    }
+
 
     boolean isEditableSurvey(Org org, SurveyInfo surveyInfo) {
 
@@ -106,5 +123,79 @@ class SurveyService {
 
         return result
 
+    }
+
+    boolean isContinueToParticipate(Org org, SurveyConfig surveyConfig) {
+        def participationProperty = SurveyProperty.findByNameAndOwnerIsNull("Participation")
+
+        def result = SurveyResult.findBySurveyConfigAndParticipantAndType(surveyConfig, org, participationProperty)?.getResult() == RDStore.YN_YES ? true : false
+
+        return result
+    }
+
+    boolean copyProperties(List<AbstractProperty> properties, Subscription targetSub, boolean isRenewSub, boolean isCopyAuditOn, def flash, List auditProperties){
+        def contextOrg = contextService.getOrg()
+        def targetProp
+        //boolean doCopyAudit = accessService.checkPerm("ORG_CONSORTIUM") && isRenewSub && isCopyAuditOn
+
+        properties?.each { sourceProp ->
+            if (sourceProp instanceof CustomProperty) {
+                targetProp = targetSub.customProperties.find { it.typeId == sourceProp.typeId }
+            }
+            if (sourceProp instanceof PrivateProperty && sourceProp.type?.tenant?.id == contextOrg?.id) {
+                targetProp = targetSub.privateProperties.find { it.typeId == sourceProp.typeId }
+            }
+            boolean isAddNewProp = sourceProp.type?.multipleOccurrence
+            if ( (! targetProp) || isAddNewProp) {
+                if (sourceProp instanceof CustomProperty) {
+                    targetProp = new SubscriptionCustomProperty(type: sourceProp.type, owner: targetSub)
+                } else {
+                    targetProp = new SubscriptionPrivateProperty(type: sourceProp.type, owner: targetSub)
+                }
+                targetProp = sourceProp.copyInto(targetProp)
+                save(targetProp, flash)
+                if ((sourceProp.id.toString() in auditProperties) && targetProp instanceof CustomProperty) {
+                    //copy audit
+                    if (!AuditConfig.getConfig(targetProp, AuditConfig.COMPLETE_OBJECT)) {
+                        def auditConfigs = AuditConfig.findAllByReferenceClassAndReferenceId(SubscriptionCustomProperty.class.name, sourceProp.id)
+                        auditConfigs.each {
+                            AuditConfig ac ->
+                                //All ReferenceFields were copied!
+                                AuditConfig.addConfig(targetProp, ac.referenceField)
+                        }
+                        if (!auditConfigs) {
+                            AuditConfig.addConfig(targetProp, AuditConfig.COMPLETE_OBJECT)
+                        }
+                    }
+
+                }
+            } else {
+                Object[] args = [sourceProp?.type?.getI10n("name") ?: sourceProp.class.getSimpleName()]
+                flash.error += messageSource.getMessage('subscription.err.alreadyExistsInTargetSub', args, locale)
+            }
+        }
+    }
+
+
+    boolean deleteProperties(List<AbstractProperty> properties, Subscription targetSub, boolean isRenewSub, boolean isCopyAuditOn, def flash, List auditProperties){
+        if (isCopyAuditOn){
+            properties.each { AbstractProperty prop ->
+                AuditConfig.removeAllConfigs(prop)
+            }
+        }
+        int anzCP = SubscriptionCustomProperty.executeUpdate("delete from SubscriptionCustomProperty p where p in (:properties)",[properties: properties])
+        int anzPP = SubscriptionPrivateProperty.executeUpdate("delete from SubscriptionPrivateProperty p where p in (:properties)",[properties: properties])
+    }
+
+    private boolean save(obj, flash){
+        if (obj.save(flush: true)){
+            log.debug("Save ${obj} ok")
+            return true
+        } else {
+            log.error("Problem saving ${obj.errors}")
+            Object[] args = [obj]
+            flash.error += messageSource.getMessage('default.save.error.message', args, locale)
+            return false
+        }
     }
 }

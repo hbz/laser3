@@ -75,12 +75,13 @@
                     <tr data-gokbId="${tipp.gokbId}" data-ieId="${ie?.id}" data-index="${counter}">
                         <td>
 
-                            <g:if test="${surveyFunction && !isContainedByTarget && editable}">
+                            <g:if test="${surveyFunction && !isContainedByTarget && editable && side == 'source'}">
                                 <input type="checkbox" name="bulkflag" data-index="${ie.id}" class="bulkcheck">
                             </g:if>
-                            <g:else test="${!isContainedByTarget && editable}">
+
+                            <g:if test="${!surveyFunction && !isContainedByTarget && editable}">
                                 <input type="checkbox" name="bulkflag" data-index="${tipp.gokbId}" class="bulkcheck">
-                            </g:else>
+                            </g:if>
 
                         </td>
                         <td>${counter++}</td>
@@ -156,9 +157,9 @@
 
                             </div>
 
-                            <g:each in="${tipp?.title?.ids?.sort { it?.identifier?.ns?.ns }}" var="id">
+                            <g:each in="${tipp?.title?.ids?.sort { it?.ns?.ns }}" var="id">
                                 <span class="ui small teal image label">
-                                    ${id.identifier.ns.ns}: <div class="detail">${id.identifier.value}</div>
+                                    ${id.ns.ns}: <div class="detail">${id.value}</div>
                                 </span>
                             </g:each>
 
@@ -260,7 +261,7 @@
                             <g:if test="${surveyFunction}">
                                 <g:if test="${side == 'target' && isContainedByTarget && targetIE?.acceptStatus == de.laser.helper.RDStore.IE_ACCEPT_STATUS_UNDER_CONSIDERATION && editable}">
                                     <g:link class="ui icon negative button la-popup-tooltip la-delay" action="processRemoveIssueEntitlementsSurvey"
-                                            params="${[id: subscriptionInstance.id, singleTitle: tipp.gokbId, packageId: packageId, surveyConfigID: surveyConfig?.id]}"
+                                            params="${[id: subscriptionInstance.id, singleTitle: isContainedByTarget.id, packageId: packageId, surveyConfigID: surveyConfig?.id]}"
                                             data-content="${message(code: 'subscription.details.addEntitlements.remove_now')}">
                                         <i class="minus icon"></i>
                                     </g:link>

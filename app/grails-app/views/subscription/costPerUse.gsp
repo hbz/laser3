@@ -36,7 +36,7 @@
                 <td>${ci.invoice.invoiceNumber}</td>
                 <td><g:formatDate date="${ci.invoice.startDate}" format="${message(code:'default.date.format.notime', default:'yyyy-MM-dd')}"/></td>
                 <td><g:formatDate date="${ci.invoice.endDate}" format="${message(code:'default.date.format.notime', default:'yyyy-MM-dd')}"/></td>
-                <td><span class="pull-right"><g:formatNumber number="${ci.total}" groupingUsed="true" type="currency" currencyCode="${ci.billingCurrency}"/></span></td>
+                <td><span class="la-float-right"><g:formatNumber number="${ci.total}" groupingUsed="true" type="currency" currencyCode="${ci.billingCurrency}"/></span></td>
               </tr>
               <tr>
                 <td colspan="4">Total usage for this invoice period: <g:formatNumber number="${ci.total_usage_for_sub}"  groupingUsed="true"/> gives an overall cost per use of
@@ -44,8 +44,8 @@
               </tr>
               <g:each in="${ci.usage}" var="u">
                 <tr>
-                  <td colspan="3"><span class="pull-right">Apportionment for usage period ${u[0]}/${u[1]}</span></td>
-                  <td><span class="pull-right">${u[2]} @ <g:formatNumber number="${ci.overall_cost_per_use}"  groupingUsed="true" type="currency" currencyCode="${ci.billingCurrency}"/>
+                  <td colspan="3"><span class="la-float-right">Apportionment for usage period ${u[0]}/${u[1]}</span></td>
+                  <td><span class="la-float-right">${u[2]} @ <g:formatNumber number="${ci.overall_cost_per_use}"  groupingUsed="true" type="currency" currencyCode="${ci.billingCurrency}"/>
                        = <g:formatNumber number="${ci.overall_cost_per_use * Integer.parseInt(u[2])}"  groupingUsed="true" type="currency" currencyCode="${ci.billingCurrency}"/></span></td>
 
                 </tr>

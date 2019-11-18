@@ -16,7 +16,6 @@
 </semui:debugInfo>
 
 <semui:breadcrumbs>
-    <semui:crumb controller="myInstitution" action="dashboard" text="${institution?.getDesignation()}"/>
     <semui:crumb message="menu.my.consortiaSubscriptions" class="active"/>
 </semui:breadcrumbs>
 
@@ -25,7 +24,7 @@
         <semui:exportDropdownItem>
             <g:if test="${filterSet || defaultSet}">
                 <g:link class="item js-open-confirm-modal"
-                        data-confirm-term-content = "${message(code: 'confirmation.content.exportPartial')}"
+                        data-confirm-tokenMsg = "${message(code: 'confirmation.content.exportPartial')}"
                         data-confirm-term-how="ok" controller="myInstitution" action="manageConsortiaSubscriptions"
                         params="${params+[exportXLS:true]}">
                     ${message(code:'default.button.exports.xls')}
@@ -38,7 +37,7 @@
         <semui:exportDropdownItem>
             <g:if test="${filterSet || defaultSet}">
                 <g:link class="item js-open-confirm-modal"
-                        data-confirm-term-content = "${message(code: 'confirmation.content.exportPartial')}"
+                        data-confirm-tokenMsg = "${message(code: 'confirmation.content.exportPartial')}"
                         data-confirm-term-how="ok" controller="myInstitution" action="manageConsortiaSubscriptions"
                         params="${params+[format:'csv']}">
                     ${message(code:'default.button.exports.csv')}
@@ -234,12 +233,18 @@
             <th rowspan="2">${message(code:'myinst.consortiaSubscriptions.provider')}</th>
             <th rowspan="2">${message(code:'myinst.consortiaSubscriptions.runningTimes')}</th>
             <th rowspan="2">${message(code:'financials.amountFinal')}</th>
-            <th rowspan="2">
-                <span  class="la-popup-tooltip la-delay" data-content="${message(code:'financials.costItemConfiguration')}" data-position="top center">
+            <th class="la-no-uppercase" rowspan="2">
+                <span  class="la-popup-tooltip la-delay" data-content="${message(code:'financials.costItemConfiguration')}" data-position="left center">
                     <i class="money bill alternate icon"></i>
                 </span>&nbsp;/&nbsp;
                 <span data-position="top right"  class="la-popup-tooltip la-delay" data-content="${message(code:'financials.isVisibleForSubscriber')}" style="margin-left:10px">
                     <i class="ui icon eye orange"></i>
+                </span>
+            </th>
+            <th class="la-no-uppercase" rowspan="2" >
+                <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="bottom center"
+                      data-content="${message(code: 'subscription.isMultiYear.consortial.label')}">
+                    <i class="map orange icon"></i>
                 </span>
             </th>
         </tr>
@@ -357,6 +362,14 @@
                     <g:if test="${ci.isVisibleForSubscriber}">
                         <span data-position="top right"  class="la-popup-tooltip la-delay" data-content="${message(code:'financials.isVisibleForSubscriber')}" style="margin-left:10px">
                             <i class="ui icon eye orange"></i>
+                        </span>
+                    </g:if>
+                </td>
+                <td>
+                    <g:if test="${subCons.isMultiYear}">
+                        <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="bottom center"
+                              data-content="${message(code: 'subscription.isMultiYear.consortial.label')}">
+                            <i class="map orange icon"></i>
                         </span>
                     </g:if>
                 </td>

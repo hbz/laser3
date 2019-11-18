@@ -103,7 +103,7 @@
 
                                 <div class="divider"></div>
 
-                                <semui:securedMainNavItem orgPerm="ORG_INST,ORG_CONSORTIUM" affiliation="INST_USER" controller="package" action="compare" message="menu.public.comp_pkg" />
+                                <semui:securedMainNavItemDisabled orgPerm="ORG_INST,ORG_CONSORTIUM" affiliation="INST_USER" controller="package" action="compare" message="menu.public.comp_pkg" />
 
                                 <div class="divider"></div>
 
@@ -170,7 +170,7 @@
 
                             <semui:securedMainNavItem orgPerm="ORG_INST,ORG_CONSORTIUM" affiliation="INST_EDITOR" controller="myInstitution" action="emptySubscription" message="menu.institutions.emptySubscription" />
 
-                            <semui:securedMainNavItem orgPerm="ORG_INST,ORG_CONSORTIUM" affiliation="INST_USER" controller="subscription" action="compare" message="menu.my.comp_sub" />
+                            <semui:securedMainNavItemDisabled orgPerm="ORG_INST,ORG_CONSORTIUM" affiliation="INST_USER" controller="subscription" action="compare" message="menu.my.comp_sub" />
 
                             <div class="divider"></div>
 
@@ -269,7 +269,7 @@
 
                                 <div class="divider"></div>
 
-                                <g:link class="item" controller="upload" action="reviewPackage">${message(code:'menu.datamanager.uploadPackage')}</g:link>
+                                <%--<g:link class="item" controller="upload" action="reviewPackage">${message(code:'menu.datamanager.uploadPackage')}</g:link>--%>
                                 <g:link class="item" controller="licenseImport" action="doImport">${message(code:'onix.import.license')}</g:link>
 
                                 <div class="divider"></div>
@@ -292,6 +292,8 @@
                                 <div class="divider"></div>
                                 <%--<g:link class="item" controller="jasperReports" action="index">${message(code:'menu.datamanager.jasper_reports')}</g:link>--%>
                                 <g:link class="item" controller="title" action="dmIndex">${message(code:'menu.datamanager.titles')}</g:link>
+                                <div class="divider"></div>
+                                <g:link class="item" controller="dataManager" action="listMailTemplates">Mail Templates</g:link>
                             </sec:ifAnyGranted>
                         </div>
                     </div>
@@ -336,9 +338,6 @@
 
                                     <g:link class="item" controller="admin" action="triggerHousekeeping" onclick="return confirm('${message(code:'confirm.start.HouseKeeping')}')">${message(code:'menu.admin.triggerHousekeeping')}</g:link>
                                     <g:link class="item" controller="admin" action="initiateCoreMigration" onclick="return confirm('${message(code:'confirm.start.CoreMigration')}')">${message(code:'menu.admin.coreMigration')}</g:link>
-                                    <g:if test="${grailsApplication.config.feature.issnl}">
-                                        <g:link class="item" controller="admin" action="uploadIssnL">Upload ISSN to ISSN-L File</g:link>
-                                    </g:if>
                                     <g:link class="item" controller="admin" action="dataCleanse" onclick="return confirm('${message(code:'confirm.start.DataCleaningNominalPlatforms')}')">Run Data Cleaning (Nominal Platforms)</g:link>
                                     <%-- <g:link class="item" controller="admin" action="titleAugment" onclick="return confirm('${message(code:'confirm.start.DataCleaningTitleAugment')}')">Run Data Cleaning (Title Augment)</g:link> --%>
                                 </div>
@@ -505,7 +504,7 @@
                                     <%--<g:link class="item" controller="yoda" action="assignNoteOwners">Assign note owners for notes of subscriptions and licenses without owners</g:link>--%>
                                     <%--<g:link class="item" controller="yoda" action="correctCostsInLocalCurrency" params="[dryRun: true]">${message(code:'menu.admin.correctCostsInLocalCurrencyDryRun')}</g:link>
                                     <g:link class="item js-open-confirm-modal"
-                                            data-confirm-term-content = "${message(code: 'confirmation.content.correctCostsInLocalCurrency')}"
+                                            data-confirm-tokenMsg = "${message(code: 'confirmation.content.correctCostsInLocalCurrency')}"
                                             data-confirm-term-how="ok"
                                             controller="yoda" action="correctCostsInLocalCurrency" params="[dryRun: false]">${message(code:'menu.admin.correctCostsInLocalCurrencyDoIt')}</g:link>--%>
 
@@ -606,9 +605,9 @@
                 <div class="right menu la-advanced-view">
                     <div class="item">
                         <g:if test="${cachedContent}">
-                            <button class="ui icon button la-popup-tooltip la-delay" data-content="${message(code:'statusbar.cachedContent.tooltip')}" data-position="bottom right" data-variation="tiny">
-                                <i class="hourglass end icon green"></i>
-                            </button>
+                            <span class="ui icon button la-popup-tooltip la-delay" data-content="${message(code:'statusbar.cachedContent.tooltip')}" data-position="bottom right" data-variation="tiny">
+                                <i class="hourglass end icon"></i>
+                            </span>
                         </g:if>
                     </div>
 
@@ -707,9 +706,7 @@
                             };
 
                             // attach ready event
-                            $(document)
-                                .ready(LaToggle.advanced.button.ready)
-                            ;
+                            $(document).ready(LaToggle.advanced.button.ready);
                         </script>
                         </g:if>
                 </div>
@@ -724,12 +721,12 @@
         <main class="ui main container ${visibilityContextOrgMenu} ">
             <g:layoutBody/>
         </main><!-- .main -->
-    <sec:ifNotGranted roles="ROLE_USER">
-        <!-- Footer -->
-            <g:render template="/public/templates/footer" />
-        <!-- Footer End -->
-    </sec:ifNotGranted>
 
+        <sec:ifNotGranted roles="ROLE_USER">
+            <!-- Footer -->
+            <g:render template="/public/templates/footer" />
+            <!-- Footer End -->
+        </sec:ifNotGranted>
 
         <%-- global container for modals and ajax --%>
         <div id="dynamicModalContainer"></div>
@@ -738,12 +735,6 @@
         <div id="loadingIndicator" style="display: none">
             <div class="ui text loader active">Loading</div>
         </div>
-
-        <sec:ifAnyGranted roles="ROLE_ADMIN">
-            <semui:systemInfo>
-
-            </semui:systemInfo>
-        </sec:ifAnyGranted>
 
         <%-- global confirmation modal --%>
         <semui:confirmationModal  />
@@ -778,10 +769,30 @@
 
         <% if(! flash.redirectFrom) { flash.clear() } %>
 
-        <sec:ifAnyGranted roles="ROLE_YODA">
-            <g:if test="${plt}">
-                <p style="padding:1em; text-align: right">page load time (backend only): ${plt} ms</p>
-            </g:if>
+        <sec:ifAnyGranted roles="ROLE_ADMIN">
+            <semui:systemInfo />
+
+            <div id="system-profiler" class="ui label hidden">
+                <i class="clock icon"></i>
+                <span></span>
+            </div>
         </sec:ifAnyGranted>
+
+        <script>
+            $(document).ready(function() {
+                $.ajax({
+                    url: "${g.createLink(controller:'ajax', action:'notifyProfiler')}",
+                    data: {uri: "${request.request.request.request.servletPath.replaceFirst('/grails','').replace('.dispatch','')}"},
+                    success: function (data) {
+                        var $sp = $('#system-profiler')
+                        if ($sp) {
+                            if (data.delta > 0) {
+                                $sp.removeClass('hidden').find('span').empty().append(data.delta + ' ms')
+                            }
+                        }
+                    }
+                })
+            })
+        </script>
     </body>
 </html>

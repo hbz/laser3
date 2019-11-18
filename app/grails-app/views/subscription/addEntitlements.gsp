@@ -3,28 +3,29 @@
 <html>
 <head>
     <meta name="layout" content="semanticUI"/>
-    <title>${message(code: 'laser', default: 'LAS:eR')} : ${message(code: 'subscription.label', default: 'Subscription')}</title>
+    <title>${message(code: 'laser', default: 'LAS:eR')} : ${message(code: 'subscription.details.addEntitlements.label')}</title>
 </head>
 
 <body>
 <semui:breadcrumbs>
     <semui:crumb controller="myInstitution" action="currentSubscriptions"
-                 text="${message(code: 'myinst.currentSubscriptions.label', default: 'Current Subscriptions')}"/>
+                 text="${message(code: 'myinst.currentSubscriptions.label')}"/>
     <semui:crumb controller="subscription" action="index" id="${subscriptionInstance.id}"
                  text="${subscriptionInstance.name}"/>
     <semui:crumb class="active"
-                 text="${message(code: 'subscription.details.addEntitlements.label', default: 'Add Entitlements')}"/>
+                 text="${message(code: 'subscription.details.addEntitlements.label')}"/>
 </semui:breadcrumbs>
+
 <semui:controlButtons>
     <g:render template="actions"/>
 </semui:controlButtons>
-<h1 class="ui left aligned icon header"><semui:headerIcon/>
 
+<h1 class="ui left aligned icon header"><semui:headerIcon/>
 <g:inPlaceEdit domain="Subscription" pk="${subscriptionInstance.id}" field="name" id="name"
                class="newipe">${subscriptionInstance?.name}</g:inPlaceEdit>
 </h1>
-
-<g:render template="nav"/>
+<h2 class="ui left aligned icon header">${message(code: 'subscription.details.addEntitlements.label')}</h2>
+<%-- <g:render template="nav"/> --%>
 
 <g:set var="counter" value="${offset + 1}"/>
 ${message(code: 'subscription.details.availableTitles', default: 'Available Titles')} ( ${message(code: 'default.paginate.offset', args: [(offset + 1), (offset + (tipps?.size())), num_tipp_rows])} )
@@ -228,9 +229,9 @@ ${message(code: 'subscription.details.availableTitles', default: 'Available Titl
                    target="_blank"><i class="share square icon"></i></a>
             </g:if>
             <br>
-            <g:each in="${tipp?.title?.ids?.sort { it?.identifier?.ns?.ns }}" var="id">
+            <g:each in="${tipp?.title?.ids?.sort { it?.ns?.ns }}" var="id">
                 <span class="ui small teal image label">
-                    ${id.identifier.ns.ns}: <div class="detail">${id.identifier.value}</div>
+                    ${id.ns.ns}: <div class="detail">${id.value}</div>
                 </span>
             </g:each>
 

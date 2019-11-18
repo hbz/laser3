@@ -5,14 +5,14 @@
 <html>
     <head>
         <meta name="layout" content="semanticUI"/>
-        <title>${message(code:'laser', default:'LAS:eR')} : ${message(code:'myinst.title', default:'Institutional Dash')}</title>
+        <title>${message(code:'laser', default:'LAS:eR')} : ${message(code:'menu.institutions.dash')}</title>
     </head>
     <body>
 
         <laser:serviceInjection />
 
         <semui:breadcrumbs>
-            <semui:crumb text="${institution?.getDesignation()}" class="active" />
+            <semui:crumb text="${message(code:'menu.institutions.dash')}" class="active" />
         </semui:breadcrumbs>
 
         <h1 class="ui left aligned icon header"><semui:headerIcon />${institution.name}</h1>
@@ -139,7 +139,7 @@
 
         <div class="ui bottom attached tab segment ${US_DASHBOARD_TAB.getValue().value == 'Changes' || US_DASHBOARD_TAB.getValue() == 'Changes' ? 'active':''}" data-tab="second" style="border-top: 1px solid #d4d4d5; ">
             <g:if test="${editable}">
-                <div class="pull-right">
+                <div class="la-float-right">
                     <g:link action="changes" class="ui button">${message(code:'myinst.todo.submit.label', default:'View To Do List')}</g:link>
                 </div>
             </g:if>
@@ -214,7 +214,7 @@
         %{--<sec:ifAnyGranted roles="ROLE_ADMIN">
         <div class="ui bottom attached tab segment ${US_DASHBOARD_TAB.getValue().value=='Announcements' || US_DASHBOARD_TAB.getValue() == 'Announcements' ? 'active':''}" data-tab="third" style="border-top: 1px solid #d4d4d5; ">
             <g:if test="${editable}">
-                <div class="pull-right">
+                <div class="la-float-right">
                     <g:link action="announcements" class="ui button">${message(code:'myinst.ann.view.label', default:'View All Announcements')}</g:link>
                 </div>
             </g:if>
@@ -349,7 +349,7 @@
         <g:if test="${accessService.checkPerm('ORG_BASIC_MEMBER')}">
             <g:if test="${grailsApplication.config.featureSurvey}">
             <div class="ui bottom attached tab segment ${US_DASHBOARD_TAB.getValue().value == 'Surveys' || US_DASHBOARD_TAB.getValue()=='Surveys' ? 'active':''}" data-tab="fifth" style="border-top: 1px solid #d4d4d5; ">
-                <div class="pull-right">
+                <div class="la-float-right">
                     <g:link action="currentSurveys" class="ui button">${message(code:'menu.my.surveys')}</g:link>
                 </div>
                     <g:render template="surveys"/>

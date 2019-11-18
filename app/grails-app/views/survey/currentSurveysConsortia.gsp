@@ -13,14 +13,12 @@
 <body>
 
 <semui:breadcrumbs>
-    <semui:crumb controller="myInstitution" action="dashboard" text="${institution?.getDesignation()}"/>
     <semui:crumb message="currentSurveys.label" class="active"/>
 </semui:breadcrumbs>
 
 <semui:controlButtons>
     <g:render template="actions"/>
 </semui:controlButtons>
-
 
 
 <h1 class="ui left aligned icon header"><semui:headerIcon/>${message(code: 'currentSurveys.label', default: 'Current Surveys')}
@@ -57,7 +55,7 @@
 
         </div>
 
-        <div class="four fields">
+        <div class="three fields">
 
             <div class="field">
                 <label>${message(code: 'surveyInfo.type.label')}</label>
@@ -67,6 +65,16 @@
                               optionValue="value"
                               value="${params.type}"
                               noSelection="${['': message(code: 'default.select.choose.label')]}"/>
+            </div>
+
+            <div class="field">
+                <label>${message(code: 'menu.my.providers')}</label>
+                <g:select class="ui search dropdown" name="provider"
+                          from="${providers.sort {it.name}}"
+                          optionKey="id"
+                          optionValue="name"
+                          value="${params.provider}"
+                          noSelection="${['': message(code: 'default.select.choose.label')]}"/>
             </div>
 
         </div>
@@ -248,7 +256,7 @@
                         <g:if test="${surveyConfig}">
                             <g:link controller="survey" action="surveyParticipants" id="${surveyInfo?.id}"
                                     params="[surveyConfigID: surveyConfig?.id]" class="ui icon">
-                                <div class="ui circular ${participantsFinish == participantsTotal ? "green" : surveyConfig?.configFinish ? "yellow" : ""} label">
+                                <div class="ui circular ${participantsFinish?.size() == participantsTotal?.size() ? "green" : surveyConfig?.configFinish ? "yellow" : ""} label">
                                     ${participantsFinish?.participant?.flatten()?.unique { a, b -> a.id <=> b.id }?.size() ?: 0} / ${surveyConfig?.orgs?.org?.flatten()?.unique { a, b -> a.id <=> b.id }?.size() ?: 0}
                                 </div>
                             </g:link>
@@ -273,10 +281,10 @@
                                 <g:link controller="survey" action="evaluationConfigsInfo" id="${surveyInfo?.id}"
                                         params="[surveyConfigID: surveyConfig?.id]"
                                         class="ui icon">
-                                    <div class="ui circular ${(participantsFinish.size() == participantsTotal.size()) ? "green" : (participantsFinish.size() > 0) ? "yellow" :""} label">
+                                    <div class="ui circular ${(participantsFinish?.size() == participantsTotal?.size()) ? "green" : (participantsFinish?.size() > 0) ? "yellow" :""} label">
                                         <g:if
                                             test="${participantsFinish && participantsTotal}">
-                                        <g:formatNumber number="${(participantsFinish.size() / participantsTotal.size()) * 100}" minFractionDigits="2"
+                                        <g:formatNumber number="${(participantsFinish?.size() / participantsTotal?.size()) * 100}" minFractionDigits="2"
                                                         maxFractionDigits="2"/>%
                                     </g:if>
                                     <g:else>
@@ -324,7 +332,7 @@
                     <g:if test="${params.tab == "inEvaluation"}">
                         <td>
                         <g:if test="${surveyInfo.isSubscriptionSurvey && surveyConfig && surveyConfig?.type == 'Subscription' && !surveyConfig?.pickAndChoose}">
-                            <g:link controller="survey" action="renewalwithSurvey" id="${surveyInfo?.id}"
+                            <g:link controller="survey" action="renewalWithSurvey" id="${surveyInfo?.id}"
                                     params="[surveyConfigID: surveyConfig?.id]"
                                     class="ui button ">
                                 <g:message code="surveyInfo.renewal.action"/>

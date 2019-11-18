@@ -1,12 +1,10 @@
 <%@ page import="com.k_int.kbplus.ApiSource; com.k_int.kbplus.Platform" %>
-<r:require module="annotations"/>
+
 <!doctype html>
 <html>
 <head>
     <meta name="layout" content="semanticUI">
-    <g:set var="entityName" value="${message(code: 'platform.label', default: 'Platform')}"/>
-    <title>${message(code: 'laser', default: 'LAS:eR')} : <g:message code="default.show.label"
-                                                                     args="[entityName]"/></title>
+    <title>${message(code: 'laser', default: 'LAS:eR')} : <g:message code="platform.nav.platformTipps"/></title>
 </head>
 
 <body>

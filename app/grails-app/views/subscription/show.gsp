@@ -9,7 +9,7 @@
 <html>
     <head>
         <meta name="layout" content="semanticUI"/>
-        <title>${message(code:'laser', default:'LAS:eR')} : ${message(code:'subscription.details.label', default:'Subscription Details')}</title>
+        <title>${message(code:'laser', default:'LAS:eR')} : ${message(code:'subscription.details.label')}</title>
         <g:javascript src="properties.js"/>
     </head>
     <body>
@@ -84,11 +84,13 @@
                                 <dd><semui:xEditable owner="${subscriptionInstance}" field="manualCancellationDate" type="date"/></dd>
                                 <dd class="la-js-editmode-container"><semui:auditButton auditable="[subscriptionInstance, 'manualCancellationDate']" /></dd>
                             </dl>
-                            <dl>
-                                <dt class="control-label">${message(code: 'subscription.isMultiYear.label')}</dt>
-                                <dd><semui:xEditableBoolean owner="${subscriptionInstance}" field="isMultiYear" /></dd>
-                                <dd class="la-js-editmode-container"><semui:auditButton auditable="[subscriptionInstance, 'isMultiYear']"/></dd>
-                            </dl>
+
+                            <g:if test="${subscriptionInstance.type == de.laser.helper.RDStore.SUBSCRIPTION_TYPE_CONSORTIAL && subscriptionInstance.getCalculatedType() == de.laser.interfaces.TemplateSupport.CALCULATED_TYPE_PARTICIPATION}">
+                                <dl>
+                                    <dt class="control-label">${message(code: 'subscription.isMultiYear.label')}</dt>
+                                    <dd><semui:xEditableBoolean owner="${subscriptionInstance}" field="isMultiYear" /></dd>
+                                </dl>
+                            </g:if>
 
                         </div>
                     </div>
@@ -125,7 +127,7 @@
                                 <dd><semui:xEditableRefData owner="${subscriptionInstance}" field="resource" config='Subscription Resource'/></dd>
                                 <dd class="la-js-editmode-container"><semui:auditButton auditable="[subscriptionInstance, 'resource']"/></dd>
                             </dl>
-                            <g:if test="${subscriptionInstance.instanceOf && (contextOrg?.id in [subscriptionInstance.getConsortia()?.id,subscriptionInstance.getCollective()?.id])}">
+                            <g:if test="${!params.orgBasicMemberView && subscriptionInstance.instanceOf && (contextOrg?.id in [subscriptionInstance.getConsortia()?.id,subscriptionInstance.getCollective()?.id])}">
                                 <dl>
                                     <dt class="control-label">${message(code:'subscription.isInstanceOfSub.label')}</dt>
                                     <dd>
@@ -179,7 +181,7 @@
                                                               ]}" />
                                                     <g:if test="${editable}">
                                                         <g:link class="ui negative icon button la-selectable-button js-open-confirm-modal"
-                                                                data-confirm-term-what="subscription"
+                                                                data-confirm-tokenMsg="${message(code: "confirm.dialog.unlink.subscription.subscription")}"
                                                                 data-confirm-term-how="unlink"
                                                                 controller="ajax" action="delete" params='[cmd: "deleteLink", oid: "${link.class.name}:${link.id}"]'>
                                                             <i class="unlink icon"></i>
@@ -300,7 +302,6 @@
 
                 <div class="ui card la-js-hideable hidden">
                     <div class="content">
-
                         <g:render template="/templates/links/orgLinksAsList"
                                   model="${[roleLinks: visibleOrgRelations,
                                             roleObject: subscriptionInstance,

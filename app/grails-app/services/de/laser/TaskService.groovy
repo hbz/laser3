@@ -400,8 +400,8 @@ order by lower(s.name), s.endDate""", qry_params_for_sub << [referenceField: 'va
                 def qry_params_for_lic = [
                     lic_org:    contextOrg,
                     org_roles:  [
-                            RDStore.OR_LICENSEE?.id,
-                            RDStore.OR_LICENSING_CONSORTIUM?.id
+                            RDStore.OR_LICENSEE.id,
+                            RDStore.OR_LICENSING_CONSORTIUM.id
                     ]
                 ]
                 validLicensesOhneInstanceOf = License.executeQuery(licensesQueryOhneInstanceOf, qry_params_for_lic)
@@ -411,9 +411,9 @@ order by lower(s.name), s.endDate""", qry_params_for_sub << [referenceField: 'va
                 def qry_params_for_lic = [
                     lic_org:    contextOrg,
                     org_roles:  [
-                            RDStore.OR_LICENSEE,
-                            RDStore.OR_LICENSEE_CONS,
-                            RDStore.OR_LICENSEE_COLL
+                            RDStore.OR_LICENSEE.id,
+                            RDStore.OR_LICENSEE_CONS.id,
+                            RDStore.OR_LICENSEE_COLL.id
                     ]
                 ]
                 validLicensesOhneInstanceOf = License.executeQuery(licensesQueryOhneInstanceOf, qry_params_for_lic)
