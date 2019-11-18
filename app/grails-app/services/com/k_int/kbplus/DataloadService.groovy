@@ -115,7 +115,7 @@ class DataloadService {
                 result.identifiers = []
                 ti.ids?.each { id ->
                     try{
-                        result.identifiers.add([type:id.identifier.ns.ns, value:id.identifier.value])
+                        result.identifiers.add([type:id.ns.ns, value:id.value])
                     } catch(Exception e) {
                         log.error(e)
                     }
