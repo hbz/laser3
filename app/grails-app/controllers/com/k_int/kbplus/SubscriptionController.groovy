@@ -1360,7 +1360,7 @@ class SubscriptionController extends AbstractDebugController {
 //        result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeTMP();
 //        result.offset = params.offset ? Integer.parseInt(params.offset) : 0;
 
-
+        result.contextOrg = contextService.getOrg()
         LinkedHashMap<String, List> links = navigationGenerationService.generateNavigation(Subscription.class.name, result.subscription.id)
         result.navPrevSubscription = links.prevLink
         result.navNextSubscription = links.nextLink
