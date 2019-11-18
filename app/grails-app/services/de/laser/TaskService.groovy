@@ -206,8 +206,7 @@ class TaskService {
         result.validResponsibleUsers        = getUserDropdown(contextOrg)
         result.validPackages                = getPackagesDropdown(contextOrg)
         result.validOrgsDropdown            = getOrgsDropdown(contextOrg)
-//        result.validSubscriptionsDropdown   = getSubscriptionsDropdown(contextOrg)
-        result.validSubscriptionsDropdown   = getSubscriptionsDropdown_unfinished(contextOrg)
+        result.validSubscriptionsDropdown   = getSubscriptionsDropdown(contextOrg)
         result.validLicensesDropdown        = getLicensesDropdown(contextOrg)
 
         long ende = System.currentTimeMillis()
@@ -261,28 +260,8 @@ class TaskService {
         validOrgsDropdown.unique().sort{it.optionValue}
     }
 
+
     List<Map> getSubscriptionsDropdown(Org contextOrg) {
-        List validSubscriptions = []
-        List<Map> validSubscriptionsDropdown = []
-        if (contextOrg) {
-            def qry_params_for_sub = [
-                    'roleTypes' : [
-                            RDStore.OR_SUBSCRIBER,
-                            RDStore.OR_SUBSCRIBER_CONS,
-                            RDStore.OR_SUBSCRIPTION_CONSORTIA
-                    ],
-                    'activeInst': contextOrg
-            ]
-            validSubscriptions = Subscription.executeQuery("select s " + INSTITUTIONAL_SUBSCRIPTION_QUERY + ' order by s.name asc', qry_params_for_sub)
-        }
-        validSubscriptions.each { Subscription sub ->
-            validSubscriptionsDropdown << [optionKey: sub.id, optionValue: sub.dropdownNamingConvention()]
-        }
-
-        validSubscriptionsDropdown
-    }
-
-    List<Map> getSubscriptionsDropdown_unfinished(Org contextOrg) {
         List validSubscriptionsMitInstanceOf = []
         List validSubscriptionsOhneInstanceOf = []
         List<Map> validSubscriptionsDropdown = []
@@ -339,7 +318,7 @@ order by lower(s.name), s.endDate""", qry_params_for_sub << [referenceField: 'va
         validSubscriptionsMitInstanceOf?.each{
 
             Long optionKey = it[0]
-            String optionValue = (it[0] + ": " +
+            String optionValue = (
                     it[1]
                     + ' - '
                     + (it[4]?: NO_STATUS)
@@ -360,7 +339,7 @@ order by lower(s.name), s.endDate""", qry_params_for_sub << [referenceField: 'va
         validSubscriptionsOhneInstanceOf?.each{
 
             Long optionKey = it[0]
-            String optionValue = (it[0] + ": " +
+            String optionValue = (
                     it[1]
                     + ' - '
                     + (it[4]?: NO_STATUS)
@@ -372,18 +351,7 @@ order by lower(s.name), s.endDate""", qry_params_for_sub << [referenceField: 'va
             )
             validSubscriptionsDropdown << [optionKey: optionKey, optionValue: optionValue]
         }
-//        Comparator cmp = new Comparator() {
-//            @Override
-//            int compare(Object o1, Object o2) {
-//                if (o1 && o2 && o1[0] && o2[0])
-//                    return o1[0] - o2[0]
-//                else
-//                    return 0
-//            }
-//        }
         validSubscriptionsDropdown.sort{it.optionValue.toLowerCase()}
-//        List result = validSubscriptionsDropdown.toSorted(cmp)
-//        result
     }
 
     List<Map> getLicensesDropdown(Org contextOrg) {

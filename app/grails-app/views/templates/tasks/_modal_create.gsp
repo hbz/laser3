@@ -198,14 +198,14 @@ double t8 = 0L
         </div>
 
     </g:form>
-    controllerName ${controllerName}<br>
-    validLicensesDropdown ${validLicensesDropdown?.size()}<br>
-    validOrgsDropdown ${validOrgsDropdown?.size()}<br>
-    validPackages ${validPackages?.size()}<br>
-    validSubscriptionsDropdown ${validSubscriptionsDropdown?.size()}<br>
-    validResponsibleUsers ${validResponsibleUsers?.size()}<br><br>
-    Zeiten:<br/>
-    <% java.text.DecimalFormat myFormatter = new java.text.DecimalFormat("###,###"); %>
+    %{--controllerName ${controllerName}<br>--}%
+    %{--validLicensesDropdown ${validLicensesDropdown?.size()}<br>--}%
+    %{--validOrgsDropdown ${validOrgsDropdown?.size()}<br>--}%
+    %{--validPackages ${validPackages?.size()}<br>--}%
+    %{--validSubscriptionsDropdown ${validSubscriptionsDropdown?.size()}<br>--}%
+    %{--validResponsibleUsers ${validResponsibleUsers?.size()}<br><br>--}%
+    %{--Zeiten:<br/>--}%
+    %{--<% java.text.DecimalFormat myFormatter = new java.text.DecimalFormat("###,###"); %>--}%
     %{--t1 ${myFormatter.format(t1-start)}<br>--}%
     %{--t2 ${myFormatter.format(t2-t1)}<br>--}%
     %{--t3 ${myFormatter.format(t3-t2)}<br>--}%
@@ -215,12 +215,12 @@ double t8 = 0L
     %{--t7 ${myFormatter.format(t7-t6)}<br>--}%
     %{--t8 ${myFormatter.format(t8-t7)}<br>--}%
 
-    <% def ende = System.currentTimeMillis()
-        def dauerBackFrontend = backendStart ? ende-backendStart : 0L
-        def dauerFrontend = ende-start
-    %>
-    ****************** Backend + Frontend DAUER: ${backendStart? myFormatter.format(dauerBackFrontend) : 'n/a'} ******************<br>
-    ****************** Frontend           DAUER: ${myFormatter.format(dauerFrontend)} ******************
+    %{--<% def ende = System.currentTimeMillis()--}%
+        %{--def dauerBackFrontend = backendStart ? ende-backendStart : 0L--}%
+        %{--def dauerFrontend = ende-start--}%
+    %{--%>--}%
+    %{--****************** Backend + Frontend DAUER: ${backendStart? myFormatter.format(dauerBackFrontend) : 'n/a'} ******************<br>--}%
+    %{--****************** Frontend           DAUER: ${myFormatter.format(dauerFrontend)} ******************--}%
     <g:if test="${controllerName == 'myInstitution' || controllerName == 'ajax'}">
         <script>
             // initial side call
