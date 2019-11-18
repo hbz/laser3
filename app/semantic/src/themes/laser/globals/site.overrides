@@ -410,3 +410,7 @@ aside.ui.accordion .title:not(.ui) {
 .la-main-object {
     font-weight: bold;
 }
+// clearing afecting the elements before the element with class 'la-clear-before'
+.la-clear-before {
+    clear: both;
+}
