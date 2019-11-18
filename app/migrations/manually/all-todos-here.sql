@@ -72,3 +72,7 @@
 -- 2019-11-14
 -- Change for SurveyProperty  reference_field
 update i10n_translation set i10n_reference_field = 'expl' where i10n_reference_field = 'explain';
+
+-- 2019-11-18
+-- Delete deprecated user settings
+delete from user_settings where us_key_enum like 'DASHBOARD_REMINDER_PERIOD';

@@ -40,6 +40,12 @@
     <script>
         var gspLocale = "${message(code:'default.locale.label')}";
         var gspDateFormat = "${message(code:'default.date.format.notime').toLowerCase()}";
+        <g:if test="${user?.getSettingsValue(UserSettings.KEYS.SHOW_EXTENDED_FILTER, RefdataValue.getByValueAndCategory('Yes', 'YN'))?.value == 'Yes'}">
+        var showExtendedFilter = true;
+        </g:if>
+        <g:else>
+        var showExtendedFilter = false;
+        </g:else>
     </script>
 
     <g:layoutHead/>
@@ -739,7 +745,11 @@
         <%-- global confirmation modal --%>
         <semui:confirmationModal  />
 
-        <%-- <a href="#globalJumpMark" class="ui button icon" style="position:fixed;right:0;bottom:0;"><i class="angle up icon"></i></a> --%
+        <%-- <a href="#globalJumpMark" class="ui button icon" style="position:fixed;right:0;bottom:0;"><i class="angle up icon"></i></a> --%>
+
+        <r:script>
+
+        </r:script>
 
         <%-- maintenance --%>
         <g:if test="${com.k_int.kbplus.SystemMessage.findAllByShowNowAndOrg(true, contextOrg) || com.k_int.kbplus.SystemMessage.findAllByShowNowAndOrgIsNull(true)}">
