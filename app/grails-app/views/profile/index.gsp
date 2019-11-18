@@ -318,33 +318,39 @@
                     <semui:xEditableRefData owner="${US_THEME}" field="rdValue" config="${US_THEME.key.rdc}" />
                 </div>
                 <div class="field">
-                    <label>${message(code: 'profile.dashboardTab', default:'Dashboard Tab')}</label>
+                    <label>${message(code: 'profile.dashboardTab')}</label>
                     <g:set var="US_DASHBOARD_TAB" value="${user.getSetting(UserSettings.KEYS.DASHBOARD_TAB, RefdataValue.getByValueAndCategory('Due Dates', 'User.Settings.Dashboard.Tab'))}" />
                     <semui:xEditableRefData owner="${US_DASHBOARD_TAB}" field="rdValue" config="${US_DASHBOARD_TAB.key.rdc}" />
                 </div>
                 <div class="field">
-                    <label>${message(code: 'profile.language', default:'Language')}</label>
+                    <label>${message(code: 'profile.language')}</label>
                     <g:set var="US_LANGUAGE" value="${user.getSetting(UserSettings.KEYS.LANGUAGE, RefdataValue.getByValueAndCategory('de','Language'))}" />
                     <semui:xEditableRefData owner="${US_LANGUAGE}" field="rdValue" config="${US_LANGUAGE.key.rdc}" />
                     &nbsp;
                     <g:link controller="profile" action="index" class="ui button icon" style="float:right"><i class="icon sync"></i></g:link>
                 </div>
                 <div class="field">
-                    <label>${message(code: 'profile.emailLanguage', default:'Language in E-Mails')}</label>
+                    <label>${message(code: 'profile.emailLanguage')}</label>
                     <g:set var="US_EMAIL_LANGUAGE" value="${user.getSetting(UserSettings.KEYS.LANGUAGE_OF_EMAILS, RefdataValue.getByValueAndCategory('de','Language'))}" />
                     <semui:xEditableRefData owner="${US_EMAIL_LANGUAGE}" field="rdValue" config="${US_EMAIL_LANGUAGE.key.rdc}" />
                 </div>
 
                 <div class="field">
-                    <label>${message(code: 'profile.editMode', default:'Show Edit Mode')}</label>
+                    <label>${message(code: 'profile.editMode')}</label>
                     <g:set var="US_SHOW_EDIT_MODE" value="${user.getSetting(UserSettings.KEYS.SHOW_EDIT_MODE, YN_YES)}" />
                     <semui:xEditableRefData owner="${US_SHOW_EDIT_MODE}" field="rdValue" config="${US_SHOW_EDIT_MODE.key.rdc}" />
                 </div>
 
                 <div class="field">
-                    <label>${message(code: 'profile.simpleViews', default:'Show simple Views')}</label>
+                    <label>${message(code: 'profile.simpleViews')}</label>
                     <g:set var="US_SHOW_SIMPLE_VIEWS" value="${user.getSetting(UserSettings.KEYS.SHOW_SIMPLE_VIEWS, null)}" />
                     <semui:xEditableRefData owner="${US_SHOW_SIMPLE_VIEWS}" field="rdValue" config="${US_SHOW_SIMPLE_VIEWS.key.rdc}" />
+                </div>
+
+                <div class="field">
+                    <label>${message(code: 'profile.extendedFilter')}</label>
+                    <g:set var="US_SHOW_EXTENDED_FILTER" value="${user.getSetting(UserSettings.KEYS.SHOW_EXTENDED_FILTER, YN_YES)}" />
+                    <semui:xEditableRefData owner="${US_SHOW_EXTENDED_FILTER}" field="rdValue" config="${US_SHOW_EXTENDED_FILTER.key.rdc}" />
                 </div>
 
                 <div class="field">

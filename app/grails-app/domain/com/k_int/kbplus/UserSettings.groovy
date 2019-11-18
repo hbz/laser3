@@ -22,16 +22,17 @@ class UserSettings {
         LANGUAGE                                    (RefdataValue, 'Language'),
         LANGUAGE_OF_EMAILS                          (RefdataValue, 'Language'),
         SHOW_SIMPLE_VIEWS                           (RefdataValue, 'YN'),
+        SHOW_EXTENDED_FILTER                        (RefdataValue, 'YN'),
         SHOW_INFO_ICON                              (RefdataValue, 'YN'),
         SHOW_EDIT_MODE                              (RefdataValue, 'YN'),
 
         REMIND_CC_EMAILADDRESS                      (String),
-        NOTIFICATION_CC_EMAILADDRESS                 (String),
+        NOTIFICATION_CC_EMAILADDRESS                (String),
 
-        IS_NOTIFICATION_BY_EMAIL                     (RefdataValue, 'YN'),
-        IS_NOTIFICATION_CC_BY_EMAIL                  (RefdataValue, 'YN'),
-        IS_NOTIFICATION_FOR_SURVEYS_START            (RefdataValue, 'YN'),
-        IS_NOTIFICATION_FOR_SYSTEM_MESSAGES          (RefdataValue, 'YN'),
+        IS_NOTIFICATION_BY_EMAIL                    (RefdataValue, 'YN'),
+        IS_NOTIFICATION_CC_BY_EMAIL                 (RefdataValue, 'YN'),
+        IS_NOTIFICATION_FOR_SURVEYS_START           (RefdataValue, 'YN'),
+        IS_NOTIFICATION_FOR_SYSTEM_MESSAGES         (RefdataValue, 'YN'),
 
         IS_REMIND_BY_EMAIL                          (RefdataValue, 'YN'),
         IS_REMIND_CC_BY_EMAIL                       (RefdataValue, 'YN'),
