@@ -94,29 +94,14 @@ double t8 = 0L
             <label for="org">
                 <g:message code="task.linkto" default="Task link to "/><g:message code="task.org.label" default="Org"/>
             </label>
-                <g:if test="${RDStore.OT_INSTITUTION == contextOrg?.getCustomerType()}">
-                    <g:select id="org"
+                <g:select id="org"
                           name="org"
                           from="${validOrgsDropdown}"
-                          optionKey="${{it ? it[0] : null}}"
-                              optionValue="${{(it[1]?:'') + ' (' + (it[2]?:'') +')'}}"
+                          optionKey="${{it.optionKey}}"
+                          optionValue="${{it.optionValue}}"
                           value="${ownobj?.id}"
                           class="ui dropdown search many-to-one"
                           noSelection="[null: '']"/>
-                          %{--optionValue="${{it[1]  + ' (' + it[2] +')'}}"--}%
-                          optionValue="${{it[1]?:'' + ' (' + it[2]?:'' +')'}}"
-                </g:if>
-                <g:else>
-                    <g:select id="org"
-                          name="org"
-                          from="${validOrgsDropdown}"
-                          optionKey="${{it ? it[0] : null}}"
-                          optionValue="${{(it[3]?:'')  + ' (' + (it[1]?:'')  + ')'}}"
-                          value="${ownobj?.id}"
-                          class="ui dropdown search many-to-one"
-                          noSelection="[null: '']"/>
-                </g:else>
-
             </div>
             <% t3 = System.currentTimeMillis()%>
 
@@ -214,12 +199,9 @@ double t8 = 0L
 
     </g:form>
     controllerName ${controllerName}<br>
-    validLicenses ${validLicenses?.size()}<br>
     validLicensesDropdown ${validLicensesDropdown?.size()}<br>
-    validOrgs ${validOrgs?.size()}<br>
     validOrgsDropdown ${validOrgsDropdown?.size()}<br>
     validPackages ${validPackages?.size()}<br>
-    validSubscriptionDropdown ${validSubscriptionDropdown?.size()}<br>
     validSubscriptionsDropdown ${validSubscriptionsDropdown?.size()}<br>
     validResponsibleUsers ${validResponsibleUsers?.size()}<br><br>
     Zeiten:<br/>
