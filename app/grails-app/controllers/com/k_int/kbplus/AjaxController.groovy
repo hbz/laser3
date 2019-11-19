@@ -13,6 +13,7 @@ import de.laser.helper.DebugAnnotation
 import de.laser.helper.DebugUtil
 import de.laser.helper.EhcacheWrapper
 import de.laser.helper.RDStore
+import de.laser.helper.SessionCacheWrapper
 import de.laser.interfaces.ShareSupport
 import grails.converters.JSON
 import grails.plugin.springsecurity.annotation.Secured
@@ -130,16 +131,21 @@ class AjaxController {
         render result as JSON
     }
 
-    def updateUserSetting() {
-        User user = contextService.getUser()
-        if (user) {
-            EhcacheWrapper userCacheWrapper = contextService.getCache('SHOW_EXTENDED_FILTER', contextService.USER_SCOPE)
-            if (params.key == UserSettings.KEYS.SHOW_EXTENDED_FILTER) {
-                params.key
-                params.value
-                params.uri
-                log.debug("update user setting for: ${user} @ ${params.uri} [${params.key}:${params.value}]")
+    def updateSessionCache() {
+        if (contextService.getUser()) {
+            SessionCacheWrapper cache = contextService.getSessionCache()
+
+            if (params.key == UserSettings.KEYS.SHOW_EXTENDED_FILTER.toString()) {
+
+                if (params.uri) {
+                    cache.put("${params.key}/${params.uri}", params.value)
+                    log.debug("update session based user setting: [${params.key}/${params.uri} -> ${params.value}]")
+                }
             }
+        }
+
+        if (params.redirect) {
+            redirect(url: request.getHeader('referer'))
         }
     }
 

@@ -13,7 +13,12 @@
     <semui:crumb message="menu.yoda.cacheInfo" class="active"/>
 </semui:breadcrumbs>
 
-
+<%
+    // EXAMPLE:
+    sessionCache = contextService.getSessionCache()
+    sessionCache.put("test", "${System.currentTimeSeconds()}")
+    sessionCache.get("test")
+%>
 
 <h1 class="ui left aligned icon header"><semui:headerIcon />${message(code:'menu.yoda.cacheInfo')}</h1>
 

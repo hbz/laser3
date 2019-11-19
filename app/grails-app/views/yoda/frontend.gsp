@@ -1,3 +1,4 @@
+<%@ page import="com.k_int.kbplus.UserSettings" %>
 <!doctype html>
 <html>
 <head>
@@ -50,7 +51,16 @@
 </head>
 
 <body>
+
 <section id="example">
+    <h2 class="ui dividing header">Filter Toggler</h2>
+    <g:set var="uri" value="${controllerName}/${actionName}" />
+
+    <g:link class="ui button" controller="ajax" action="updateSessionCache" params="${[key: UserSettings.KEYS.SHOW_EXTENDED_FILTER, value: true, uri: uri, redirect: true]}">Extended: TRUE</g:link>
+    <g:link class="ui button" controller="ajax" action="updateSessionCache" params="${[key: UserSettings.KEYS.SHOW_EXTENDED_FILTER, value:false, uri: uri, redirect: true]}">Extended: FALSE</g:link>
+
+    <br />
+
     <h2 class="ui dividing header">Icons<a class="anchor" id="icons"></a></h2>
     <h4 class="ui header">Zusätzliche Icons</h4>
     <div class="html ui top attached segment example">
