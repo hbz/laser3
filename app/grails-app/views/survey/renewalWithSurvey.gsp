@@ -150,7 +150,7 @@ ${surveyInfo?.name}
                     ${surveyProperty?.getI10n('name')}
 
                     <g:if test="${surveyProperty?.getI10n('expl')}">
-                        <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
+                        <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="bottom center"
                               data-content="${surveyProperty?.getI10n('expl')}">
                             <i class="question circle icon"></i>
                         </span>
@@ -969,6 +969,9 @@ ${surveyInfo?.name}
 </semui:form>
 
 <g:if test="${parentSuccessorSubscription}">
+
+    <g:set var="auditConfigProvidersAgencies" value="${parentSuccessorSubscription.orgRelations?.findAll {it?.isShared}}" />
+
     <semui:modal id="transferParticipantsModal" message="surveyInfo.transferParticipants"
                  msgSave="${message(code: 'surveyInfo.transferParticipants.button')}">
 
@@ -998,6 +1001,20 @@ ${surveyInfo?.name}
                 <g:else>
                     <g:message code="subscription.details.copyElementsIntoSubscription.noAuditConfig"/>
                 </g:else>
+
+                <g:if test="${auditConfigProvidersAgencies}">
+                    <label><g:message code="property.share.tooltip.on" />:</label>
+                    <div class="ui bulleted list">
+                        <g:each in="${auditConfigProvidersAgencies}" var="role" >
+                            <div class="item">
+                                <b> ${role?.roleType?.getI10n("value")}</b>:
+                                    ${role?.org?.name}
+                            </div>
+                        </g:each>
+                    </div>
+
+                </g:if>
+
             </div>
             <div class="two fields">
                 <g:set var="validPackages" value="${parentSuccessorSubscription.packages?.sort { it.pkg.name }}"/>
@@ -1033,10 +1050,12 @@ ${surveyInfo?.name}
                     </g:else>
                 </div>
 
+                <g:if test="${!auditConfigProvidersAgencies}">
                 <div class="field">
                     <g:set var="providers" value="${parentSuccessorSubscription.getProviders()?.sort { it.name }}"/>
                     <g:set var="agencies" value="${parentSuccessorSubscription.getAgencies()?.sort { it.name }}"/>
-                    <g:if test="${providers || agencies}">
+
+                    <g:if test="${(providers || agencies)}">
                         <label><g:message code="surveyInfo.transferParticipants.moreOption"/></label>
 
                         <div class="ui checkbox">
@@ -1079,6 +1098,7 @@ ${surveyInfo?.name}
                                    args="${superOrgType}"/>
                     </g:else>
                 </div>
+                </g:if>
             </div>
 
             <div class="ui two fields">
@@ -1136,7 +1156,7 @@ ${surveyInfo?.name}
                                     <g:select from="${parentSuccessorSubscription.owner?.derivedLicenses}"
                                               class="ui search dropdown hide"
                                               optionKey="${{ 'com.k_int.kbplus.License:' + it.id }}"
-                                              optionValue="${{ it.getReferenceConcatenated() }}"
+                                              optionValue="${{ it.reference }}"
                                               name="generateSlavedLicsReference"/>
                                 </div>
                                 <r:script>
