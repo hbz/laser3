@@ -3343,23 +3343,33 @@ class SurveyController {
 
         params.tab = params.tab ?: 'surveyProperties'
 
-        result.selectedProperty
-        result.properties
-        if(params.tab == 'surveyProperties') {
-            result.properties = SurveyConfigProperties.findAllBySurveyConfig(result.surveyConfig).surveyProperty
-        }
-
-        result.selectedProperty = params.selectedProperty ?:  result.properties[0].id
-
         result.parentSubscription = result.surveyConfig?.subscription
         result.parentSuccessorSubscription = result.surveyConfig?.subscription?.getCalculatedSuccessor()
         result.parentSuccessorSubChilds = result.parentSuccessorSubscription ? subscriptionService.getValidSubChilds(result.parentSuccessorSubscription) : null
 
-        result.participantsList = []
-        result.parentSuccessorSubChilds.each { sub ->
+        result.selectedProperty
+        result.properties
+        if(params.tab == 'surveyProperties') {
+            result.properties = SurveyConfigProperties.findAllBySurveyConfig(result.surveyConfig).surveyProperty.findAll{it.owner == null}
+            result.properties -= SurveyProperty.findByNameAndOwnerIsNull("Participation")
+        }
 
-            def newMap = [:]
-            def org = sub.getSubscriber()
+        if(params.tab == 'customProperties') {
+            result.properties = result.parentSubscription.customProperties.type
+        }
+
+        if(params.tab == 'privateProperties') {
+            result.properties = result.parentSubscription.privateProperties.type
+        }
+
+        if(result.properties) {
+            result.selectedProperty = params.selectedProperty ?: result.properties[0].id
+
+            result.participantsList = []
+            result.parentSuccessorSubChilds.each { sub ->
+
+                def newMap = [:]
+                def org = sub.getSubscriber()
                 newMap.id = org.id
                 newMap.sortname = org.sortname
                 newMap.name = org.name
@@ -3367,19 +3377,42 @@ class SurveyController {
                 newMap.oldSub = sub.getCalculatedPrevious()
 
 
-            if(params.tab == 'surveyProperties') {
-                    newMap.surveyProperty = SurveyResult.findBySurveyConfigAndTypeAndParticipant(result.surveyConfig, SurveyProperty.get(result.selectedProperty), org)
+                if (params.tab == 'surveyProperties') {
+                    def surProp = SurveyProperty.get(result.selectedProperty)
+                    newMap.surveyProperty = SurveyResult.findBySurveyConfigAndTypeAndParticipant(result.surveyConfig, surProp, org)
+                    def propDef = surProp ? PropertyDefinition.findByNameAndDescrAndTenant(surProp.name, 'Subscription Property', null) : null
+
+                    newMap.newCustomProperty = (sub && propDef) ? sub.customProperties.find {
+                        it.type.id == propDef.id
+                    } : null
+                    newMap.oldCustomProperty = (newMap.oldSub && propDef) ? newMap.oldSub.customProperties.find {
+                        it.type.id == propDef.id
+                    } : null
+                }
+                if(params.tab == 'customProperties') {
+                    newMap.newCustomProperty = (sub) ? sub.customProperties.find {
+                        it.type.id == (result.selectedProperty instanceof Long ?: Long.parseLong(result.selectedProperty))
+                    } : null
+                    newMap.oldCustomProperty = (newMap.oldSub) ? newMap.oldSub.customProperties.find {
+                        it.type.id == (result.selectedProperty instanceof Long ?: Long.parseLong(result.selectedProperty))
+                    } : null
                 }
 
-                newMap.newCustomProperty = sub ? sub.customProperties.find { it.type.id == result.selectedProperty } : []
-                newMap.oldCustomProperty = newMap.oldSub ? newMap.oldSub.customProperties.find { it.type.id == result.selectedProperty } : []
+                if(params.tab == 'privateProperties') {
+                    newMap.newPrivateProperty = (sub) ? sub.privateProperties.find {
+                        it.type.id == (result.selectedProperty instanceof Long ?: Long.parseLong(result.selectedProperty))
+                    } : null
+                    newMap.oldPrivateProperty = (newMap.oldSub) ? newMap.oldSub.privateProperties.find {
+                        it.type.id == (result.selectedProperty instanceof Long ?: Long.parseLong(result.selectedProperty))
+                    } : null
+                }
 
 
                 result.participantsList << newMap
+            }
+
+            result.participantsList = result.participantsList.sort { it.sortname }
         }
-
-        result.participantsList = result.participantsList.sort{it.sortname}
-
 
         result
 
@@ -3395,45 +3428,48 @@ class SurveyController {
             response.sendError(401); return
         }
 
-        result.selectedProperty
-        def propDef
-        def surveyProperty
-        if(params.tab == 'surveyProperties') {
-            result.selectedProperty = params.selectedProperty ?:  null
+        if(params.list('selectedSub')) {
+            result.selectedProperty
+            def propDef
+            def surveyProperty
+            if (params.tab == 'surveyProperties') {
+                result.selectedProperty = params.selectedProperty ?: null
 
-            surveyProperty = params.copyProperty ? SurveyProperty.get(Long.parseLong(params.copyProperty)): null
+                surveyProperty = params.copyProperty ? SurveyProperty.get(Long.parseLong(params.copyProperty)) : null
 
-            propDef = surveyProperty ? PropertyDefinition.findByNameAndDescrAndTenant(surveyProperty.name, 'Subscription Property', null) : null
-            if (!propDef && surveyProperty)  {
+                propDef = surveyProperty ? PropertyDefinition.findByNameAndDescrAndTenant(surveyProperty.name, 'Subscription Property', null) : null
+                if (!propDef && surveyProperty) {
                     propDef = PropertyDefinition.loc(
-                                surveyProperty.name,
-                                'Subscription Property',
-                                surveyProperty.type,
-                                (surveyProperty.type == RefdataValue.toString()) ? RefdataCategory.get(surveyProperty.refdataCategory) : null,
-                                surveyProperty.expl,
-                                null,
-                                PropertyDefinition.FALSE,
-                                null)
+                            surveyProperty.name,
+                            'Subscription Property',
+                            surveyProperty.type,
+                            (surveyProperty.type == RefdataValue.toString()) ? RefdataCategory.findByDesc(surveyProperty.refdataCategory) : null,
+                            surveyProperty.expl,
+                            null,
+                            PropertyDefinition.FALSE,
+                            null)
 
-                if (propDef?.hasErrors()) {
-                    log.error(propDef.errors)
+                    if (propDef?.hasErrors()) {
+                        log.error(propDef.errors)
+                    } else {
+                        propDef.save(flush: true)
+                        I10nTranslation.copyI10n(surveyProperty, 'name', propDef)
+                        I10nTranslation.copyI10n(surveyProperty, 'expl', propDef)
+                    }
                 }
-                else {
-                    propDef.save(flush: true)
-                    I10nTranslation.copyI10n(propDef, 'name', propDef)
-                    I10nTranslation.copyI10n(propDef, 'expl', propDef)
-                }
+
+            } else {
+                result.selectedProperty = params.selectedProperty ?: null
+                propDef = params.selectedProperty ? PropertyDefinition.get(Long.parseLong(params.selectedProperty)) : null
             }
 
-        }else {
-            result.selectedProperty = params.selectedProperty ?:  null
-        }
+            result.parentSuccessorSubscription = result.surveyConfig?.subscription?.getCalculatedSuccessor()
+            result.parentSuccessorSubChilds = result.parentSuccessorSubscription ? subscriptionService.getValidSubChilds(result.parentSuccessorSubscription) : null
 
-        result.parentSuccessorSubscription = result.surveyConfig?.subscription?.getCalculatedSuccessor()
-        result.parentSuccessorSubChilds = result.parentSuccessorSubscription ? subscriptionService.getValidSubChilds(result.parentSuccessorSubscription) : null
+            def countSuccessfulCopy = 0
 
-        if(propDef && params.list('selectedSub')) {
-            params.list('selectedSub').each { subID ->
+            if (propDef && params.list('selectedSub')) {
+                params.list('selectedSub').each { subID ->
                     if (Long.parseLong(subID) in result.parentSuccessorSubChilds.id) {
                         def sub = Subscription.get(Long.parseLong(subID))
                         def org = sub.getSubscriber()
@@ -3443,34 +3479,70 @@ class SurveyController {
                         if (params.tab == 'surveyProperties') {
                             copyProperty = SurveyResult.findBySurveyConfigAndTypeAndParticipant(result.surveyConfig, surveyProperty, org)
                         } else {
-                            copyProperty = oldSub ? oldSub.customProperties.find {
-                                it.type.id == result.selectedProperty
-                            } : []
+                            if (params.tab == 'privateProperties') {
+                                copyProperty = oldSub ? oldSub.privateProperties.find {
+                                    it.type.id == propDef.id
+                                } : []
+                            } else {
+                                copyProperty = oldSub ? oldSub.customProperties.find {
+                                    it.type.id == propDef.id
+                                } : []
+                            }
                         }
 
-                        //custom Property
                         if (copyProperty) {
-                            def existingProp = sub.customProperties.find {
-                                it.type.id == propDef.id && it.owner.id == sub.id
-                            }
-
-                            if (existingProp == null || propDef.multipleOccurrence) {
-                                def newProp = PropertyDefinition.createGenericProperty(PropertyDefinition.CUSTOM_PROPERTY, sub, propDef)
-                                if (newProp.hasErrors()) {
-                                    log.error(newProp.errors)
-                                } else {
-                                    log.debug("New custom property created: " + newProp.type.name)
-                                    def prop = setNewProperty(newProp, copyProperty.getValue())
+                            if (propDef.tenant != null) {
+                                //private Property
+                                def existingProps = sub.privateProperties.findAll {
+                                    it.owner.id == sub.id && it.type.id == propDef.id
                                 }
-                            }
+                                existingProps.removeAll { it.type.name != propDef.name } // dubious fix
 
-                            /*if (existingProp) {
+                                if (existingProps.size() == 0 || propDef.multipleOccurrence) {
+                                    def newProp = PropertyDefinition.createGenericProperty(PropertyDefinition.PRIVATE_PROPERTY, sub, propDef)
+                                    if (newProp.hasErrors()) {
+                                        log.error(newProp.errors)
+                                    } else {
+                                        log.debug("New private property created: " + newProp.type.name)
+                                        def newValue = copyProperty.getValue()
+                                        if (copyProperty.type.type == RefdataValue.toString()) {
+                                            newValue = copyProperty.refValue ? copyProperty.refValue : null
+                                        }
+                                        def prop = setNewProperty(newProp, newValue)
+                                        countSuccessfulCopy++
+                                    }
+                                }
+                            } else {
+                                //custom Property
+                                def existingProp = sub.customProperties.find {
+                                    it.type.id == propDef.id && it.owner.id == sub.id
+                                }
+
+                                if (existingProp == null || propDef.multipleOccurrence) {
+                                    def newProp = PropertyDefinition.createGenericProperty(PropertyDefinition.CUSTOM_PROPERTY, sub, propDef)
+                                    if (newProp.hasErrors()) {
+                                        log.error(newProp.errors)
+                                    } else {
+                                        log.debug("New custom property created: " + newProp.type.name)
+                                        def newValue = copyProperty.getValue()
+                                        if (copyProperty.type.type == RefdataValue.toString()) {
+                                            newValue = copyProperty.refValue ? copyProperty.refValue : null
+                                        }
+                                        def prop = setNewProperty(newProp, newValue)
+                                        countSuccessfulCopy++
+                                    }
+                                }
+
+                                /*if (existingProp) {
                             def customProp = SubscriptionCustomProperty.get(existingProp.id)
                             def prop = setNewProperty(customProp, copyProperty)
                         }*/
+                            }
                         }
                     }
+                }
             }
+            flash.message = message(code: 'copyProperties.successful', args: [countSuccessfulCopy, message(code: 'copyProperties.' + params.tab) ,params.list('selectedSub').size()])
         }
 
         redirect(action: 'copyProperties', id: params.id, params: [surveyConfigID: result.surveyConfig?.id, tab: params.tab, selectedProperty: params.selectedProperty])
@@ -4564,7 +4636,7 @@ class SurveyController {
             property.save(flush: true);
         } else {
 
-            if (property && value && field){
+                if (property && value && field){
 
                 if(field == "refValue") {
                     def binding_properties = ["${field}": value]
