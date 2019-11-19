@@ -565,7 +565,22 @@ ${surveyInfo?.name}
         </g:form>
     </g:if>
     <g:else>
-        <g:message code="copyProperties.noCopyProperties" args="${message(code: 'copyProperties.' + params.tab)}"/>
+        <g:message code="copyProperties.noCopyProperties" args="[message(code: 'copyProperties.' + params.tab)]"/>
+
+        <div class="two fields">
+            <div class="eight wide field" style="text-align: left;">
+            </div>
+
+
+            <div class="eight wide field" style="text-align: right;">
+                <g:if test="${params.tab != 'privateProperties'}">
+                    <g:link class="ui button" controller="survey" action="copyProperties"
+                            params="[id: surveyInfo?.id, surveyConfigID: surveyConfig?.id, tab: ((params.tab == 'customProperties') ? 'privateProperties' : ((params.tab == 'surveyProperties') ? 'customProperties' : 'surveyProperties'))]">
+                        ${message(code: 'copySurveyCostItems.workFlowSteps.nextStep')}
+                    </g:link>
+                </g:if>
+            </div>
+        </div>
     </g:else>
 </semui:form>
 <script language="JavaScript">

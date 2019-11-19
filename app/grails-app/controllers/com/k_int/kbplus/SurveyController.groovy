@@ -3634,6 +3634,13 @@ class SurveyController {
                         }
                             countNewSubs++
                             result.newSubs << processAddMember(((oldSubofParticipant != result.parentSubscription) ? oldSubofParticipant: null), result.parentSuccessorSubscription, it?.participant, newStartDate, newEndDate, true, params)
+                    } else {
+                        use(TimeCategory) {
+                            newStartDate = oldSubofParticipant?.startDate ? (oldSubofParticipant.endDate + 1.day) : null
+                            newEndDate = oldSubofParticipant?.endDate ? (oldSubofParticipant.endDate + 1.year) : null
+                        }
+                        countNewSubs++
+                        result.newSubs << processAddMember(((oldSubofParticipant != result.parentSubscription) ? oldSubofParticipant: null), result.parentSuccessorSubscription, it?.participant, newStartDate, newEndDate, false, params)
                     }
 
                 }
@@ -3648,6 +3655,14 @@ class SurveyController {
                         }
                         countNewSubs++
                         result.newSubs << processAddMember(((oldSubofParticipant != result.parentSubscription) ? oldSubofParticipant: null), result.parentSuccessorSubscription, it?.participant, newStartDate, newEndDate, true, params)
+                    }
+                    else {
+                        use(TimeCategory) {
+                            newStartDate = oldSubofParticipant?.startDate ? (oldSubofParticipant.endDate + 1.day) : null
+                            newEndDate = oldSubofParticipant?.endDate ? (oldSubofParticipant.endDate + 1.year) : null
+                        }
+                        countNewSubs++
+                        result.newSubs << processAddMember(((oldSubofParticipant != result.parentSubscription) ? oldSubofParticipant: null), result.parentSuccessorSubscription, it?.participant, newStartDate, newEndDate, false, params)
                     }
                 }else {
                     use(TimeCategory) {
