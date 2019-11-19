@@ -526,7 +526,7 @@ class SemanticUiTagLib {
         out << '<div class="metaboxContent-spacer"></div>'
     }
 
-    //<semui:filter extendable="true|false" extended="true|false"> CONTENT <semui:filter>
+    //<semui:filter showFilterButton="true|false" extended="true|false"> CONTENT <semui:filter>
 
     def filter = { attrs, body ->
 
