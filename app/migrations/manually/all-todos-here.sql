@@ -34,17 +34,17 @@
 
 -- 2019-10-18
 -- changesets in changelog-2019-10-21.groovy
-ALTER TABLE subscription ADD sub_is_multi_year boolean;
+-----ALTER TABLE subscription ADD sub_is_multi_year boolean;
 --UPDATE subscription set sub_is_multi_year = FALSE;
 
 -- 2019-10-22
 -- changesets in changelog-2019-10-23.groovy
 -- ERMS-1785: purge originEditUrl as it is never used
-ALTER TABLE package DROP COLUMN pkg_origin_edit_url;
-ALTER TABLE title_instance_package_platform DROP COLUMN tipp_origin_edit_url;
-ALTER TABLE title_instance DROP COLUMN ti_origin_edit_url;
-ALTER TABLE platform DROP COLUMN plat_origin_edit_url;
-ALTER TABLE org DROP COLUMN org_origin_edit_url;
+-----ALTER TABLE package DROP COLUMN pkg_origin_edit_url;
+-----ALTER TABLE title_instance_package_platform DROP COLUMN tipp_origin_edit_url;
+-----ALTER TABLE title_instance DROP COLUMN ti_origin_edit_url;
+-----ALTER TABLE platform DROP COLUMN plat_origin_edit_url;
+-----ALTER TABLE org DROP COLUMN org_origin_edit_url;
 --DELETE FROM identifier_occurrence where io_canonical_id in (select id_id from identifier left join identifier_namespace "in" on identifier.id_ns_fk = "in".idns_id where "in".idns_ns in ('originEditUrl','originediturl'));
 --DELETE FROM identifier where id_ns_fk = (select idns_id from identifier_namespace where idns_ns in ('originEditUrl','originediturl'));
 --DELETE FROM identifier_namespace where idns_ns in ('originEditUrl','originediturl');
@@ -61,12 +61,15 @@ DELETE FROM stats_triple_cursor;
 DELETE FROM fact;
 -- execute before startup / local dev environment only
 -- changed Fact.supplier without mapping from Org to Platform!
-ALTER TABLE fact DROP COLUMN supplier_id;
+-- changesets in changelog-2019-10-24.groovy
+-----ALTER TABLE fact DROP COLUMN supplier_id;
 
 -- 2019-10-25
 -- Set sub_is_multi_year on all subscription where the periode more than 724 days
+-- changesets in changelog-2019-10-31.groovy
 -- update subscription set sub_is_multi_year = true where sub_id in(select sub_id from subscription where DATE_PART('day', sub_end_date - sub_start_date) >= 724 and sub_end_date is not null);
 
 -- 2019-11-14
 -- Change for SurveyProperty  reference_field
-update i10n_translation set i10n_reference_field = 'expl' where i10n_reference_field = 'explain';
+-- changesets in changelog-2019-10-31.groovy
+---update i10n_translation set i10n_reference_field = 'expl' where i10n_reference_field = 'explain';
