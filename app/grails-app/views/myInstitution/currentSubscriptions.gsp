@@ -57,9 +57,8 @@
             <semui:totalNumber total="${num_sub_rows}"/>
         </h1>
 
-    <semui:filterToggle/>
 
-<semui:filter>
+<semui:filter showFilterButton="true">
     <g:form action="currentSubscriptions" controller="myInstitution" method="get" class="ui small form clearing">
         <input type="hidden" name="isSiteReloaded" value="yes"/>
         <div class="three fields">

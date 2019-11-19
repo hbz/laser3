@@ -220,7 +220,7 @@ class SemanticUiDropdownTagLib {
         out << '<div class="divider"></div>'
     }
 
-    def filterToggle = { attrs, body ->
+    def filterToggleExtended = { attrs, body ->
 
 
         out << '<button class="ui  right floated button la-inline-labeled la-js-filterButton" style="margin-top: 14px;">'
@@ -229,14 +229,26 @@ class SemanticUiDropdownTagLib {
         out << '   <span class="ui circular label la-js-filter-total hidden">0</span>'
         out << '</button>'
 
-        out << r.script() {
+/*        out << r.script() {
             out << ' $(".la-js-filterButton").click(function() { '
             out << '    $( ".la-filter").toggle( "fast" ); '
             out << '    $(this).toggleClass("blue"); '
             out << '}); '
-        }
+        }*/
 
     }
+    def filterToggleUnextended = { attrs, body ->
+
+
+        out << '<button class="ui  right floated button la-inline-labeled la-js-filterButton" style="margin-top: 14px;">'
+        out << '    Filter'
+        out << '    <i class="filter icon"></i>'
+        out << '   <span class="ui circular label la-js-filter-total hidden">0</span>'
+        out << '</button>'
+
+
+    }
+
 
 }
 
