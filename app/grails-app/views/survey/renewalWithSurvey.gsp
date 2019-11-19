@@ -970,7 +970,7 @@ ${surveyInfo?.name}
 
 <g:if test="${parentSuccessorSubscription}">
 
-    <g:set var="auditConfigProvidersAgencies" value="${parentSuccessorSubscription.orgRelations?.findAll {it?.isShared}}" />
+    <g:set var="auditConfigProvidersAgencies" value="${parentSuccessorSubscription.orgRelations?.findAll {it.isShared}}" />
 
     <semui:modal id="transferParticipantsModal" message="surveyInfo.transferParticipants"
                  msgSave="${message(code: 'surveyInfo.transferParticipants.button')}">
@@ -1007,8 +1007,8 @@ ${surveyInfo?.name}
                     <div class="ui bulleted list">
                         <g:each in="${auditConfigProvidersAgencies}" var="role" >
                             <div class="item">
-                                <b> ${role?.roleType?.getI10n("value")}</b>:
-                                    ${role?.org?.name}
+                                <b> ${role.roleType.getI10n("value")}</b>:
+                                    ${role.org.name}
                             </div>
                         </g:each>
                     </div>
