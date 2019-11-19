@@ -54,11 +54,11 @@
 
   <semui:messages data="${flash}" />
 
-  <h1 class="ui left aligned icon header"><semui:headerIcon />${message(code:'license.current')}
+  <h1 class="ui left floated aligned icon header la-clear-before"><semui:headerIcon />${message(code:'license.current')}
       <semui:totalNumber total="${licenseCount}"/>
   </h1>
 
-    <semui:filter class="license-searches">
+  <semui:filter showFilterButton="true" class="license-searches">
         <form class="ui form">
             <div class="four fields">
 

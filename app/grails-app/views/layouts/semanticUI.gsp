@@ -37,15 +37,10 @@
 
     <r:require modules="${currentTheme}" />
 
+
     <script>
         var gspLocale = "${message(code:'default.locale.label')}";
         var gspDateFormat = "${message(code:'default.date.format.notime').toLowerCase()}";
-        <g:if test="${user?.getSettingsValue(UserSettings.KEYS.SHOW_EXTENDED_FILTER, RefdataValue.getByValueAndCategory('Yes', 'YN'))?.value == 'Yes'}">
-        var showExtendedFilter = true;
-        </g:if>
-        <g:else>
-        var showExtendedFilter = false;
-        </g:else>
     </script>
 
     <g:layoutHead/>

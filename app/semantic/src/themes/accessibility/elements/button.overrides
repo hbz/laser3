@@ -87,4 +87,7 @@
       width: 28px;
     }
   }
+  &.la-js-filterButton {
+    margin-top: 14px;
+  }
 }

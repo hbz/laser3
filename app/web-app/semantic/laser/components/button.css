@@ -3937,3 +3937,6 @@
 .ui.button.la-inline-labeled i {
   width: 28px;
 }
+.ui.button.la-js-filterButton {
+  margin-top: 14px;
+}
