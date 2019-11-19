@@ -19,6 +19,7 @@ class SemanticUiTagLib {
     def yodaService
     def auditService
     def systemService
+    def contextService
 
     //static defaultEncodeAs = [taglib:'html']
     //static encodeAsForTags = [tagName: [taglib:'html'], otherTagName: [taglib:'none']]
@@ -525,11 +526,60 @@ class SemanticUiTagLib {
         out << '<div class="metaboxContent-spacer"></div>'
     }
 
-    //<semui:filter> CONTENT <semui:filter>
+    //<semui:filter showFilterButton="true|false" extended="true|false"> CONTENT <semui:filter>
 
     def filter = { attrs, body ->
 
-        out << '<div class="ui la-filter segment la-clear-before">'
+        boolean extended = true
+        boolean showFilterButton = false
+
+        if (attrs.showFilterButton) {
+            if (attrs.showFilterButton.toLowerCase() == 'true') {
+                showFilterButton = true
+            }
+            else if (attrs.showFilterButton.toLowerCase() == 'false') {
+                showFilterButton = false
+            }
+        }
+
+
+        if (showFilterButton) {
+            if (attrs.extended) {
+                if (attrs.extended.toLowerCase() == 'true') {
+                    extended = true
+                } else if (attrs.extended.toLowerCase() == 'false') {
+                    extended = false
+                }
+            } else {
+                User currentUser = contextService.getUser()
+                String settingValue = currentUser.getSettingsValue(UserSettings.KEYS.SHOW_EXTENDED_FILTER, RefdataValue.getByValueAndCategory('Yes', 'YN')).value
+
+                if (settingValue.toLowerCase() == 'yes') {
+                    extended = true
+                } else if (settingValue.toLowerCase() == 'no') {
+                    extended = false
+                }
+            }
+        }
+        if (showFilterButton) {
+            out << '<button class="ui  right floated button la-inline-labeled la-js-filterButton ' + (extended ?'':'blue') + '">'
+            out << '    Filter'
+            out << '    <i class="filter icon"></i>'
+            out << '   <span class="ui circular label la-js-filter-total hidden">0</span>'
+            out << '</button>'
+
+            out << r.script() {
+                out << ' $(".la-js-filterButton").click(function() { '
+                //out << ' showExtendedFilter = !showExtendedFilter; '
+                out << '    $( ".la-filter").toggle( "fast" ); '
+                out << '    $(this).toggleClass("blue"); '
+                out << '}); '
+            }
+        }
+
+
+        //out << '<div class="ui la-filter segment la-clear-before' + (extended ?'':' hidden') + '">'
+        out << '<div class="ui la-filter segment la-clear-before"' + (extended ?'':' style="display: none;"') + '">'
         out << body()
         out << '</div>'
     }
@@ -627,7 +677,7 @@ class SemanticUiTagLib {
     //  <semui:confirmationModal  />
     // global included at semanticUI.gsp
     // called by the specific delete button
-    //  - to send a form or
+    //  - to send a form oridden
     //        <g:form data-confirm-id="${person?.id.toString()+ '_form'}">
     //        <div class="....... js-open-confirm-modal" data-confirm-term-what="diese Person" data-confirm-id="${person?.id}" >
     //  - to call a link
