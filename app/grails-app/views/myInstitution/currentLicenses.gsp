@@ -59,7 +59,7 @@
   </h1>
 
 
-  <g:render template="../templates/filter/javascript" />
+  <g:render template="/templates/filter/javascript" />
 
 
   <semui:filter showFilterButton="true" class="license-searches">

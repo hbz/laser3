@@ -27,7 +27,8 @@
 
         <semui:messages data="${flash}" />
 
-        <semui:filter>
+        <g:render template="/templates/filter/javascript" />
+        <semui:filter showFilterButton="true">
             <g:form class="ui form" action="tipview" method="get">
 
                 <div class="fields">
