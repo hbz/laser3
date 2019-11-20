@@ -2327,7 +2327,8 @@ class SubscriptionController extends AbstractDebugController {
                                 impId: UUID.randomUUID().toString(),
                                 owner: licenseCopy,
                                 resource: result.subscriptionInstance.resource ?: null,
-                                form: result.subscriptionInstance.form ?: null
+                                form: result.subscriptionInstance.form ?: null,
+                                isMultiYear: params.checkSubRunTimeMultiYear ?: false
                         )
 
                         if (!memberSub.save()) {
