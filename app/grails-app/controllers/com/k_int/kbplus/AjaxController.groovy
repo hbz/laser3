@@ -17,6 +17,7 @@ import de.laser.interfaces.ShareSupport
 import grails.converters.JSON
 import grails.plugin.springsecurity.annotation.Secured
 import org.codehaus.groovy.grails.orm.hibernate.cfg.GrailsHibernateUtil
+import org.codehaus.groovy.grails.web.converters.exceptions.ConverterException
 
 //import org.grails.orm.hibernate.cfg.GrailsHibernateUtil
 
@@ -1607,13 +1608,12 @@ class AjaxController {
 
                     // delete pending changes
                     // e.g. PendingChange.changeDoc = {changeTarget, changeType, changeDoc:{OID,  event}}
-                    def openPD = PendingChange.executeQuery("select pc from PendingChange as pc where pc.status is null" )
+                    def openPD = PendingChange.executeQuery("select pc from PendingChange as pc where pc.status is null and pc.costItem is null" )
                     openPD?.each { pc ->
                         def event = JSON.parse(pc?.changeDoc)
                         if (event && event?.changeDoc) {
                             def eventObj = genericOIDService.resolveOID(event.changeDoc?.OID)
                             def eventProp = event.changeDoc?.prop
-
                             if (eventObj?.id == owner?.id && eventProp.equalsIgnoreCase(prop)) {
                                 pc.delete(flush: true)
                             }
