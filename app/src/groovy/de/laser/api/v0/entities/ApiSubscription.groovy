@@ -146,10 +146,9 @@ class ApiSubscription {
 
 		//result.organisations        = ApiReaderHelper.resolveOrgLinks(sub.orgRelations, ApiReaderHelper.IGNORE_SUBSCRIPTION, context) // com.k_int.kbplus.OrgRole
 
-		//TODO contact David upon this!
-
-		result.previousSubscription = ApiReaderHelper.requestSubscriptionStub(sub.getCalculatedPrevious(), context) // com.k_int.kbplus.Subscription
-		result.properties           = ApiReaderHelper.retrievePropertyCollection(sub, context, ApiReaderHelper.IGNORE_NONE) // com.k_int.kbplus.(SubscriptionCustomProperty, SubscriptionPrivateProperty)
+		result.predecessor = ApiReaderHelper.requestSubscriptionStub(sub.getCalculatedPrevious(), context) // com.k_int.kbplus.Subscription
+		result.successor   = ApiReaderHelper.requestSubscriptionStub(sub.getCalculatedSuccessor(), context) // com.k_int.kbplus.Subscription
+		result.properties  = ApiReaderHelper.retrievePropertyCollection(sub, context, ApiReaderHelper.IGNORE_NONE) // com.k_int.kbplus.(SubscriptionCustomProperty, SubscriptionPrivateProperty)
 
 		def allOrgRoles = []
 
