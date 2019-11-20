@@ -58,21 +58,7 @@
         </h1>
 
 
-        <button class="ui  right floated button la-inline-labeled la-js-filterButton" style="margin-top: 14px;">
-            Filter
-            <i class="filter icon"></i>
-            <span class="ui circular label la-js-filter-total hidden">0</span>
-        </button>
-
-    <r:script>
-        $('.la-js-filterButton').click(function() {
-            $( '.la-filter').toggle( "fast", function() {
-
-            });
-            $(this).toggleClass('blue');
-        });
-    </r:script>
-<semui:filter>
+<semui:filter showFilterButton="true">
     <g:form action="currentSubscriptions" controller="myInstitution" method="get" class="ui small form clearing">
         <input type="hidden" name="isSiteReloaded" value="yes"/>
         <div class="three fields">

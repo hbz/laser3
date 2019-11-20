@@ -220,6 +220,5 @@ class SemanticUiDropdownTagLib {
         out << '<div class="divider"></div>'
     }
 
-
 }
 

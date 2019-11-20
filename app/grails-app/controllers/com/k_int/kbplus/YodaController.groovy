@@ -1407,8 +1407,7 @@ class YodaController {
                 def users = User.findAll()
                 print users
                 users.each { user ->
-                    UserSettings userSettingDashboardReminderPeriod = user.getSetting(DASHBOARD_REMINDER_PERIOD, DEFAULT_REMINDER_PERIOD)
-                    int oldPeriod = userSettingDashboardReminderPeriod.value
+                    int oldPeriod = 30
                     user.getSetting(REMIND_PERIOD_FOR_LICENSE_PRIVATE_PROP, oldPeriod)
                     user.getSetting(REMIND_PERIOD_FOR_LICENSE_CUSTOM_PROP, oldPeriod)
                     user.getSetting(REMIND_PERIOD_FOR_ORG_CUSTOM_PROP, oldPeriod)
@@ -1419,9 +1418,6 @@ class YodaController {
                     user.getSetting(REMIND_PERIOD_FOR_SUBSCRIPTIONS_NOTICEPERIOD, oldPeriod)
                     user.getSetting(REMIND_PERIOD_FOR_SUBSCRIPTIONS_ENDDATE, oldPeriod)
                     user.getSetting(REMIND_PERIOD_FOR_TASKS, oldPeriod)
-
-                    println '-----> deleting userSetting: ' + userSettingDashboardReminderPeriod.id + ", " + userSettingDashboardReminderPeriod.key
-                    userSettingDashboardReminderPeriod.delete()
                 }
                 result.users = users
                 flash.message = 'Das Ersetzen des Usersettings DASHBOARD_REMINDER_PERIOD für alle Benutzer im System war erfolgreich.'
