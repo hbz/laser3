@@ -57,8 +57,8 @@
             <semui:totalNumber total="${num_sub_rows}"/>
         </h1>
 
-
-<semui:filter showFilterButton="true">
+    <g:render template="../templates/filter/javascript" />
+    <semui:filter showFilterButton="true">
     <g:form action="currentSubscriptions" controller="myInstitution" method="get" class="ui small form clearing">
         <input type="hidden" name="isSiteReloaded" value="yes"/>
         <div class="three fields">

@@ -187,7 +187,11 @@ class YodaController {
 
         if (params.cmd?.equals('clearCache')) {
             def cache
-            if (params.type?.equals('ehcache')) {
+            if (params.type?.equals('session')) {
+                cache = contextService.getSessionCache()
+                cache.clear()
+            }
+            else if (params.type?.equals('ehcache')) {
                 cache = cacheService.getCache(result.ehcacheManager, params.cache)
                 cacheService.clear(cache)
             } else {

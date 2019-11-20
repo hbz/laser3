@@ -50,12 +50,13 @@
         </semui:controlButtons>
 
 
-    <h1 class="ui left aligned icon header"><semui:headerIcon /><g:message code="menu.my.providers" />
+    <h1 class="ui left floated aligned icon header la-clear-before"><semui:headerIcon /><g:message code="menu.my.providers" />
         <semui:totalNumber total="${orgListTotal}"/>
     </h1>
 
     <semui:messages data="${flash}" />
-    <semui:filter>
+    <g:render template="/templates/filter/javascript" />
+    <semui:filter showFilterButton="true">
         <g:form action="currentProviders" method="get" class="ui form">
             <g:render template="/templates/filter/orgFilter"
                       model="[
@@ -68,21 +69,23 @@
         </g:form>
     </semui:filter>
 
-    <g:if test="${orgList}">
-    <g:render template="/templates/filter/orgFilterTable"
-              model="[orgList: orgList,
-                      tmplShowCheckbox: false,
-                      tmplConfigShow: ['lineNumber', 'shortname', 'name', 'privateContacts', 'numberOfSubscriptions']
-              ]"/>
-    </g:if>
-    <g:else>
-        <g:if test="${filterSet}">
-            <br><strong><g:message code="filter.result.empty.object" args="${[message(code:"default.ProviderAgency.label")]}"/></strong>
+    <div class="la-clear-before">
+        <g:if test="${orgList}">
+        <g:render template="/templates/filter/orgFilterTable"
+                  model="[orgList: orgList,
+                          tmplShowCheckbox: false,
+                          tmplConfigShow: ['lineNumber', 'shortname', 'name', 'privateContacts', 'numberOfSubscriptions']
+                  ]"/>
         </g:if>
         <g:else>
-            <br><strong><g:message code="result.empty.object" args="${[message(code:"default.ProviderAgency.label")]}"/></strong>
+            <g:if test="${filterSet}">
+                <br><strong><g:message code="filter.result.empty.object" args="${[message(code:"default.ProviderAgency.label")]}"/></strong>
+            </g:if>
+            <g:else>
+                <br><strong><g:message code="result.empty.object" args="${[message(code:"default.ProviderAgency.label")]}"/></strong>
+            </g:else>
         </g:else>
-    </g:else>
+    </div>
 
     <g:render template="../templates/copyEmailaddresses" model="[orgList: orgList]"/>
 
