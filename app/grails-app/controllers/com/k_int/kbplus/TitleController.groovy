@@ -16,43 +16,6 @@ class TitleController extends AbstractDebugController {
     def index() {
         redirect controller: 'title', action: 'list', params: params
         return // ----- deprecated
-
-        log.debug("titleSearch : ${params}");
-
-        def result=[:]
-
-        if (springSecurityService.isLoggedIn()) {
-            params.rectype = "Title" // Tells ESSearchService what to look for
-            result.user = springSecurityService.getCurrentUser()
-            params.max = result.user.getDefaultPageSizeTMP()
-
-
-            if(params.search.equals("yes")){
-                //when searching make sure results start from first page
-                params.offset = 0
-                params.remove("search")
-            }
-
-            def old_q = params.q
-            if(!params.q ){
-                params.remove('q');
-                if(!params.sort){
-                    params.sort = "sortTitle"
-                }
-            }
-
-            if(params.filter) params.q ="${params.filter}:${params.q}";
-
-            result =  ESSearchService.search(params)
-            //Double-Quoted search strings wont display without this
-            params.q = old_q?.replace("\"","&quot;")
-        }
-
-        result.editable=SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')
-
-        log.debug(result);
-
-        result
     }
 
     @Secured(['ROLE_USER'])

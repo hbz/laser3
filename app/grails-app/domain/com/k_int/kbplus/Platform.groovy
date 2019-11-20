@@ -19,6 +19,9 @@ class Platform extends AbstractBaseDomain {
   @Transient
   def propertyService
 
+  @Transient
+  def deletionService
+
   static Log static_logger = LogFactory.getLog(Platform)
 
   String impId
@@ -87,6 +90,10 @@ class Platform extends AbstractBaseDomain {
     softwareProvider(nullable:true, blank:false)
     gokbId (nullable:true, blank:false)
     org (nullable:true, blank:false)
+  }
+
+  def afterDelete() {
+    deletionService.deleteDocumentFromIndex(this.class.name, this.globalUID)
   }
 
   def static lookupOrCreatePlatform(Map params=[:]) {

@@ -18,50 +18,6 @@ class SpotlightController extends AbstractDebugController {
     log.debug("spotlight::index");
   }
 
-    @Secured(['ROLE_YODA'])
-  def managePages(){
-    def result = [:]
-    result.user = springSecurityService.getCurrentUser()
-
-    def isAdmin = SpringSecurityUtils.ifAllGranted('ROLE_ADMIN')
-
-    if ( isAdmin  ) {
-       request.setAttribute("editable","true")
-    }
-
-    def newPage
-
-    if(request.getMethod() == "POST"){
-      if(params.newCtrl && params.newAction && params.newAlias){
-        newPage = 
-        new SitePage(controller:params.newCtrl,action:params.newAction, alias:params.newAlias).save(flush:true)
-      }else{
-        flash.error=message(code: 'spotlight.new.missingprop') 
-      }      
-    }else if(params.id){
-       newPage = SitePage.get(params.id)
-       newPage.delete(flush:true)
-    }
-
-    if(newPage){
-      if(newPage.hasErrors()){
-          log.error(newPage.errors)
-          result.newPage = newPage
-        }else{
-          updateSiteES()
-        }
-    }
-
-    result.pages = SitePage.findAll()
-
-    result
-
-  }
-
-    private def updateSiteES() {
-      dataloadService.updateSiteMapping()
-  }
-
     @Secured(['ROLE_USER'])
   def search() { 
     log.debug("spotlight::search");
@@ -115,10 +71,6 @@ class SpotlightController extends AbstractDebugController {
             query = query.replace("\$l ","")
             filtered = "License"
             break
-          case "\$a":
-            params.type = "action"
-            query = query.replace("\$a ","")
-            filtered = "Action"
         }
 
       }

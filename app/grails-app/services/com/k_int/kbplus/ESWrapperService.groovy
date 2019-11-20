@@ -1,6 +1,11 @@
 package com.k_int.kbplus
 
+import grails.converters.JSON
+import groovy.json.JsonSlurper
+import org.elasticsearch.action.admin.cluster.health.ClusterHealthResponse
 import org.elasticsearch.client.transport.TransportClient
+import org.elasticsearch.cluster.health.ClusterHealthStatus
+import org.elasticsearch.cluster.health.ClusterIndexHealth
 import org.elasticsearch.common.settings.Settings
 import org.elasticsearch.common.transport.InetSocketTransportAddress
 
@@ -42,6 +47,30 @@ class ESWrapperService {
 
     def getClient() {
         return esclient
+    }
+
+    //grails-app/config
+    private def inputFile = this.class.classLoader.getResourceAsStream(
+            "elasticsearch/es_mapping.txt"
+    )
+    def es_mapping = new JsonSlurper().parseText(inputFile.text)
+
+    def clusterHealth(){
+        ClusterHealthResponse healths = client.admin().cluster().prepareHealth().get();
+        String clusterName = healths.getClusterName();
+        int numberOfDataNodes = healths.getNumberOfDataNodes();
+        int numberOfNodes = healths.getNumberOfNodes();
+
+        println("ESInfo: clusterName: ${clusterName}, numberOfDataNodes: ${numberOfDataNodes}, numberOfNodes: ${numberOfNodes}")
+
+        for (ClusterIndexHealth health : healths.getIndices().values()) {
+            String index = health.getIndex();
+            int numberOfShards = health.getNumberOfShards();
+            int numberOfReplicas = health.getNumberOfReplicas();
+            ClusterHealthStatus status = health.getStatus();
+
+            println("ESInfo: index: ${index}, numberOfShards: ${numberOfShards}, numberOfReplicas: ${numberOfReplicas}, status: ${status}")
+        }
     }
 
 }

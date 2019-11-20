@@ -1,14 +1,12 @@
 package com.k_int.kbplus
 
 
-import org.elasticsearch.client.transport.TransportClient
 import org.elasticsearch.common.settings.Settings
 import org.elasticsearch.common.transport.InetSocketTransportAddress
 import org.elasticsearch.search.sort.SortOrder;
 import org.elasticsearch.action.search.SearchRequestBuilder;
 import org.elasticsearch.client.*
 import org.elasticsearch.index.query.QueryBuilders;
-import org.elasticsearch.search.aggregations.AggregationBuilders;
 
 class ESSearchService{
 // Map the parameter names we use in the webapp with the ES fields
@@ -56,6 +54,11 @@ class ESSearchService{
             params.remove("tempFQ") //remove from GSP access
         }
 
+        if(!params.showDeleted)
+        {
+          query_str = query_str + '  AND ( NOT status:"Deleted" ) '
+        }
+
         log.debug("index:${index} query: ${query_str}");
         def search
         try {
@@ -67,6 +70,9 @@ class ESSearchService{
             }
             searchRequestBuilder = searchRequestBuilder.addSort("${params.sort}".toString()+".keyword", order)
           }
+
+          searchRequestBuilder = searchRequestBuilder.addSort("priority", SortOrder.DESC)
+
           log.debug("searchRequestBuilder start to add query and aggregration query string is ${query_str}")
 
           searchRequestBuilder.setQuery(QueryBuilders.queryStringQuery(query_str))
@@ -180,7 +186,22 @@ class ESSearchService{
     StringWriter sw = new StringWriter()
 
     if ( params?.q != null ){
-      sw.write("${params.q}")
+      //GOKBID, GUUID, ImpID
+      if(params.q.length() >= 37){
+        if(params.q.contains(":") || params.q.contains("-")){
+          params.q = params.q.replaceAll('\\*', '\\"')
+          sw.write("${params.q}")
+        }else {
+          sw.write("${params.q}")
+        }
+      }else {
+        if(params.q.charAt(1) == '"' && params.q.charAt(params.q.length()-2) == '"') {
+          params.q = params.q.replaceAll('\\*', '\\"')
+          sw.write("${params.q}")
+        }else{
+          sw.write("${params.q}")
+        }
+      }
     }
       
     if(params?.rectype){

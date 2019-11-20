@@ -44,6 +44,8 @@ class Subscription
     def accessService
     @Transient
     def propertyService
+    @Transient
+    def deletionService
 
     @RefdataAnnotation(cat = 'Subscription Status')
     RefdataValue status
@@ -184,6 +186,10 @@ class Subscription
         cancellationAllowances(nullable:true, blank:true)
         lastUpdated(nullable: true, blank: true)
         isMultiYear(nullable: true, blank: false, default: false)
+    }
+
+    def afterDelete() {
+        deletionService.deleteDocumentFromIndex(this.class.name, this.globalUID)
     }
 
     // TODO: implement

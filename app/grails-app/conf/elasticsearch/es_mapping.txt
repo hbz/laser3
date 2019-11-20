@@ -1,0 +1,781 @@
+{
+  "com.k_int.kbplus.License": {
+    "properties": {
+      "rectype": {
+        "type": "text",
+        "fields": {
+          "keyword": {
+            "ignore_above": 256,
+            "type": "keyword"
+          }
+        }
+      },
+      "visible": {
+        "type": "text",
+        "fields": {
+          "keyword": {
+            "ignore_above": 256,
+            "type": "keyword"
+          }
+        }
+      },
+      "endDate": {
+        "type": "text",
+        "fields": {
+          "keyword": {
+            "ignore_above": 256,
+            "type": "keyword"
+          }
+        }
+      },
+      "dbId": {
+        "type": "long",
+        "index": false
+      },
+      "name": {
+        "type": "text",
+        "fields": {
+          "keyword": {
+            "ignore_above": 256,
+            "type": "keyword"
+          }
+        }
+      },
+      "guid": {
+        "type": "text",
+        "fields": {
+          "keyword": {
+            "ignore_above": 256,
+            "type": "keyword"
+          }
+        }
+      },
+      "availableToOrgs": {
+         "type": "long",
+         "index": false
+      },
+      "priority": {
+        "type": "long"
+      },
+      "startDate": {
+        "type": "text",
+        "fields": {
+          "keyword": {
+            "ignore_above": 256,
+            "type": "keyword"
+          }
+        }
+      },
+      "status": {
+        "type": "text",
+        "fields": {
+          "keyword": {
+            "ignore_above": 256,
+            "type": "keyword"
+          }
+        }
+      }
+    }
+  },
+  "com.k_int.kbplus.Platform": {
+    "properties": {
+      "rectype": {
+        "type": "text",
+        "fields": {
+          "keyword": {
+            "ignore_above": 256,
+            "type": "keyword"
+          }
+        }
+      },
+      "visible": {
+        "type": "text",
+        "fields": {
+          "keyword": {
+            "ignore_above": 256,
+            "type": "keyword"
+          }
+        }
+      },
+      "dbId": {
+        "type": "long",
+        "index": false
+      },
+      "normname": {
+        "type": "text",
+        "fields": {
+          "keyword": {
+            "ignore_above": 256,
+            "type": "keyword"
+          }
+        }
+      },
+      "name": {
+        "type": "text",
+        "fields": {
+          "keyword": {
+            "ignore_above": 256,
+            "type": "keyword"
+          }
+        }
+      },
+      "guid": {
+        "type": "text",
+        "fields": {
+          "keyword": {
+            "ignore_above": 256,
+            "type": "keyword"
+          }
+        }
+      },
+      "gokbId": {
+        "type": "text",
+        "fields": {
+          "keyword": {
+            "ignore_above": 256,
+            "type": "keyword"
+          }
+        }
+      },
+      "priority": {
+        "type": "long"
+      },
+      "primaryUrl": {
+        "type": "text",
+        "fields": {
+          "keyword": {
+            "ignore_above": 256,
+            "type": "keyword"
+          }
+        }
+      }
+    }
+  },
+  "com.k_int.kbplus.Subscription": {
+    "properties": {
+      "consortiaName": {
+        "type": "text",
+        "fields": {
+          "keyword": {
+            "ignore_above": 256,
+            "type": "keyword"
+          }
+        }
+      },
+      "rectype": {
+        "type": "text",
+        "fields": {
+          "keyword": {
+            "ignore_above": 256,
+            "type": "keyword"
+          }
+        }
+      },
+      "visible": {
+        "type": "text",
+        "fields": {
+          "keyword": {
+            "ignore_above": 256,
+            "type": "keyword"
+          }
+        }
+      },
+      "endDate": {
+        "type": "text",
+        "fields": {
+          "keyword": {
+            "ignore_above": 256,
+            "type": "keyword"
+          }
+        }
+      },
+      "startYear": {
+        "type": "text",
+        "fields": {
+          "keyword": {
+            "ignore_above": 256,
+            "type": "keyword"
+          }
+        }
+      },
+      "packages": {
+        "properties": {
+          "providerId": {
+            "type": "long",
+            "index": false
+          },
+          "pkgname": {
+            "type": "text",
+            "fields": {
+              "keyword": {
+                "ignore_above": 256,
+                "type": "keyword"
+              }
+            }
+          },
+          "pkgid": {
+            "type": "long",
+            "index": false
+          },
+          "providerName": {
+            "type": "text",
+            "fields": {
+              "keyword": {
+                "ignore_above": 256,
+                "type": "keyword"
+              }
+            }
+          }
+        }
+      },
+      "priority": {
+        "type": "long"
+      },
+      "startYearAndMonth": {
+        "type": "text",
+        "fields": {
+          "keyword": {
+            "ignore_above": 256,
+            "type": "keyword"
+          }
+        }
+      },
+      "subtype": {
+        "type": "text",
+        "fields": {
+          "keyword": {
+            "ignore_above": 256,
+            "type": "keyword"
+          }
+        }
+      },
+      "dbId": {
+        "type": "long",
+        "index": false
+      },
+      "name": {
+        "type": "text",
+        "fields": {
+          "keyword": {
+            "ignore_above": 256,
+            "type": "keyword"
+          }
+        }
+      },
+      "guid": {
+        "type": "text",
+        "fields": {
+          "keyword": {
+            "ignore_above": 256,
+            "type": "keyword"
+          }
+        }
+      },
+      "consortiaId": {
+        "type": "long",
+        "index": false
+      },
+      "availableToOrgs": {
+        "type": "long",
+        "index": false
+      },
+      "startDate": {
+        "type": "text",
+        "fields": {
+          "keyword": {
+            "ignore_above": 256,
+            "type": "keyword"
+          }
+        }
+      },
+      "status": {
+        "type": "text",
+        "fields": {
+          "keyword": {
+            "ignore_above": 256,
+            "type": "keyword"
+          }
+        }
+      }
+    }
+  },
+  "com.k_int.kbplus.SurveyConfig": {
+    "properties": {
+      "rectype": {
+        "type": "text",
+        "fields": {
+          "keyword": {
+            "ignore_above": 256,
+            "type": "keyword"
+          }
+        }
+      },
+      "dbId": {
+        "type": "long",
+        "index": false
+      },
+      "name": {
+        "type": "text",
+        "fields": {
+          "keyword": {
+            "ignore_above": 256,
+            "type": "keyword"
+          }
+        }
+      },
+      "availableToOrgs": {
+        "type": "long",
+        "index": false
+      },
+      "priority": {
+        "type": "long"
+      },
+      "status": {
+        "type": "text",
+        "fields": {
+          "keyword": {
+            "ignore_above": 256,
+            "type": "keyword"
+          }
+        }
+      }
+    }
+  },
+  "com.k_int.kbplus.Org": {
+    "properties": {
+      "sortname": {
+        "type": "text",
+        "fields": {
+          "keyword": {
+            "ignore_above": 256,
+            "type": "keyword"
+          }
+        }
+      },
+      "rectype": {
+        "type": "text",
+        "fields": {
+          "keyword": {
+            "ignore_above": 256,
+            "type": "keyword"
+          }
+        }
+      },
+      "visible": {
+        "type": "text",
+        "fields": {
+          "keyword": {
+            "ignore_above": 256,
+            "type": "keyword"
+          }
+        }
+      },
+      "dbId": {
+        "type": "long",
+        "index": false
+      },
+      "name": {
+        "type": "text",
+        "fields": {
+          "keyword": {
+            "ignore_above": 256,
+            "type": "keyword"
+          }
+        }
+      },
+      "guid": {
+        "type": "text",
+        "fields": {
+          "keyword": {
+            "ignore_above": 256,
+            "type": "keyword"
+          }
+        }
+      },
+      "gokbId": {
+        "type": "text",
+        "fields": {
+          "keyword": {
+            "ignore_above": 256,
+            "type": "keyword"
+          }
+        }
+      },
+      "priority": {
+        "type": "long"
+      },
+      "sector": {
+        "type": "text",
+        "fields": {
+          "keyword": {
+            "ignore_above": 256,
+            "type": "keyword"
+          }
+        }
+      },
+      "shortname": {
+        "type": "text",
+        "fields": {
+          "keyword": {
+            "ignore_above": 256,
+            "type": "keyword"
+          }
+        }
+      },
+      "status": {
+        "type": "text",
+        "fields": {
+          "keyword": {
+            "ignore_above": 256,
+            "type": "keyword"
+          }
+        }
+      },
+
+"identifiers": {
+"properties": {
+"type": {
+"type": "text",
+"fields": {
+"keyword": {
+"ignore_above": 256,
+"type": "keyword"
+}
+}
+},
+"value": {
+"type": "text",
+"fields": {
+"keyword": {
+"ignore_above": 256,
+"type": "keyword"
+}
+}
+}
+}
+}
+    }
+  },
+  "com.k_int.kbplus.TitleInstance": {
+    "properties": {
+      "sortTitle": {
+        "type": "text",
+        "fields": {
+          "keyword": {
+            "ignore_above": 256,
+            "type": "keyword"
+          }
+        }
+      },
+      "rectype": {
+        "type": "text",
+        "fields": {
+          "keyword": {
+            "ignore_above": 256,
+            "type": "keyword"
+          }
+        }
+      },
+      "visible": {
+        "type": "text",
+        "fields": {
+          "keyword": {
+            "ignore_above": 256,
+            "type": "keyword"
+          }
+        }
+      },
+      "dbId": {
+        "type": "long",
+        "index": false
+      },
+      "typTitle": {
+        "type": "text",
+        "fields": {
+          "keyword": {
+            "ignore_above": 256,
+            "type": "keyword"
+          }
+        }
+      },
+      "name": {
+        "type": "text",
+        "fields": {
+          "keyword": {
+            "ignore_above": 256,
+            "type": "keyword"
+          }
+        }
+      },
+      "guid": {
+        "type": "text",
+        "fields": {
+          "keyword": {
+            "ignore_above": 256,
+            "type": "keyword"
+          }
+        }
+      },
+      "publisher": {
+        "type": "text",
+        "fields": {
+          "keyword": {
+            "ignore_above": 256,
+            "type": "keyword"
+          }
+        }
+      },
+      "gokbId": {
+        "type": "text",
+        "fields": {
+          "keyword": {
+            "ignore_above": 256,
+            "type": "keyword"
+          }
+        }
+      },
+      "priority": {
+        "type": "long"
+      },
+      "status": {
+        "type": "text",
+        "fields": {
+          "keyword": {
+            "ignore_above": 256,
+            "type": "keyword"
+          }
+        }
+      },
+"identifiers": {
+"properties": {
+"type": {
+"type": "text",
+"fields": {
+"keyword": {
+"ignore_above": 256,
+"type": "keyword"
+}
+}
+},
+"value": {
+"type": "text",
+"fields": {
+"keyword": {
+"ignore_above": 256,
+"type": "keyword"
+}
+}
+}
+}
+}
+    }
+  },
+  "com.k_int.kbplus.Package": {
+    "properties": {
+      "rectype": {
+        "type": "text",
+        "fields": {
+          "keyword": {
+            "ignore_above": 256,
+            "type": "keyword"
+          }
+        }
+      },
+      "visible": {
+        "type": "text",
+        "fields": {
+          "keyword": {
+            "ignore_above": 256,
+            "type": "keyword"
+          }
+        }
+      },
+      "endDate": {
+        "type": "text",
+        "fields": {
+          "keyword": {
+            "ignore_above": 256,
+            "type": "keyword"
+          }
+        }
+      },
+      "titleCount": {
+        "type": "long",
+        "index": false
+      },
+      "titleCountCurrent": {
+        "type": "long",
+        "index": false
+      },
+      "gokbId": {
+        "type": "text",
+        "fields": {
+          "keyword": {
+            "ignore_above": 256,
+            "type": "keyword"
+          }
+        }
+      },
+      "priority": {
+        "type": "long"
+      },
+      "sortname": {
+        "type": "text",
+        "fields": {
+          "keyword": {
+            "ignore_above": 256,
+            "type": "keyword"
+          }
+        }
+      },
+      "providerId": {
+        "type": "long",
+        "index": false
+      },
+      "nominalPlatformId": {
+           "type": "long",
+           "index": false
+      },
+      "dbId": {
+        "type": "long",
+        "index": false
+      },
+      "name": {
+        "type": "text",
+        "fields": {
+          "keyword": {
+            "ignore_above": 256,
+            "type": "keyword"
+          }
+        }
+      },
+      "guid": {
+        "type": "text",
+        "fields": {
+          "keyword": {
+            "ignore_above": 256,
+            "type": "keyword"
+          }
+        }
+      },
+      "isPublic": {
+        "type": "text",
+        "fields": {
+          "keyword": {
+            "ignore_above": 256,
+            "type": "keyword"
+          }
+        }
+      },
+      "lastModified": {
+        "type": "text",
+        "fields": {
+          "keyword": {
+            "ignore_above": 256,
+            "type": "keyword"
+          }
+        }
+      },
+      "providerName": {
+        "type": "text",
+        "fields": {
+          "keyword": {
+            "ignore_above": 256,
+            "type": "keyword"
+          }
+        }
+      },
+      "nominalPlatformName": {
+        "type": "text",
+        "fields": {
+          "keyword": {
+            "ignore_above": 256,
+            "type": "keyword"
+          }
+        }
+      },
+      "startDate": {
+        "type": "text",
+        "fields": {
+          "keyword": {
+            "ignore_above": 256,
+            "type": "keyword"
+          }
+        }
+      },
+      "status": {
+        "type": "text",
+        "fields": {
+          "keyword": {
+            "ignore_above": 256,
+            "type": "keyword"
+          }
+        }
+      },
+"identifiers": {
+"properties": {
+"type": {
+"type": "text",
+"fields": {
+"keyword": {
+"ignore_above": 256,
+"type": "keyword"
+}
+}
+},
+"value": {
+"type": "text",
+"fields": {
+"keyword": {
+"ignore_above": 256,
+"type": "keyword"
+}
+}
+}
+}
+},
+    }
+  },
+  "com.k_int.kbplus.SurveyOrg": {
+    "properties": {
+      "rectype": {
+        "type": "text",
+        "fields": {
+          "keyword": {
+            "ignore_above": 256,
+            "type": "keyword"
+          }
+        }
+      },
+      "dbId": {
+        "type": "long",
+        "index": false
+      },
+      "name": {
+        "type": "text",
+        "fields": {
+          "keyword": {
+            "ignore_above": 256,
+            "type": "keyword"
+          }
+        }
+      },
+      "availableToOrgs": {
+        "type": "long",
+        "index": false
+      },
+      "priority": {
+        "type": "long"
+      },
+      "status": {
+        "type": "text",
+        "fields": {
+          "keyword": {
+            "ignore_above": 256,
+            "type": "keyword"
+          }
+        }
+      }
+    }
+  }
+}

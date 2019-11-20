@@ -247,8 +247,6 @@ class BootStrap {
         log.debug("setupContentItems ..")
         setupContentItems()
 
-        log.debug("addDefaultPageMappings ..")
-        addDefaultPageMappings()
 
         //log.debug("createOrgConfig ..")
         //createOrgConfig()
@@ -1817,17 +1815,6 @@ class BootStrap {
             if (default_prop.introduction) {
                 I10nTranslation.createOrUpdateI10n(surveyProperty, 'introduction', default_prop.introduction)
             }
-        }
-    }
-
-    def addDefaultPageMappings() {
-
-        if (! SitePage.findAll()) {
-            def home    = new SitePage(alias: "Home",    action: "index", controller: "home").save()
-            def profile = new SitePage(alias: "Profile", action: "index", controller: "profile").save()
-            //def pages   = new SitePage(alias: "Pages",   action: "managePages", controller: "spotlight").save()
-
-            dataloadService.updateSiteMapping()
         }
     }
 

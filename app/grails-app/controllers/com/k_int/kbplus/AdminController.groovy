@@ -416,12 +416,6 @@ class AdminController extends AbstractDebugController {
     dataloadService.dataCleanse()
   }
 
-  @Secured(['ROLE_YODA'])
-  def titleAugment() {
-    // Sets nominal platform
-    dataloadService.titleAugment()
-  }
-
   @Secured(['ROLE_ADMIN'])
   def licenseLink() {
     if ( ( params.sub_identifier ) && ( params.lic_reference.length() > 0 ) ) {
