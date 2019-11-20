@@ -579,19 +579,20 @@ class SemanticUiTagLib {
             }
         }
         if (showFilterButton) {
-            out << '<button class="ui  right floated button la-inline-labeled la-js-filterButton ' + (extended ?'':'blue') + '">'
+            out << '<button class="ui right floated button la-inline-labeled la-js-filterButton ' + (extended ?'':'blue') + '">'
             out << '    Filter'
             out << '    <i class="filter icon"></i>'
             out << '   <span class="ui circular label la-js-filter-total hidden">0</span>'
             out << '</button>'
 
-            out << r.script() {
+
+/*            out << r.script() {
                 out << ' $(".la-js-filterButton").click(function() { '
                 //out << ' showExtendedFilter = !showExtendedFilter; '
                 out << '    $( ".la-filter").toggle( "fast" ); '
                 out << '    $(this).toggleClass("blue"); '
                 out << '}); '
-            }
+            }*/
         }
 
 

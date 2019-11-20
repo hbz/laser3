@@ -58,14 +58,9 @@
       <semui:totalNumber total="${licenseCount}"/>
   </h1>
 
-  <%-- // EXAMPLE ONLY --%>
-  <%--
-    AJAX data: [key: com.k_int.kbplus.UserSettings.KEYS.SHOW_EXTENDED_FILTER, value:true|false, uri: ${controllerName}/${actionName}]
-  --%>
 
-  <g:set var="uri" value="${controllerName}/${actionName}" />
-  <g:link class="ui button" controller="ajax" action="updateSessionCache" params="${[key: com.k_int.kbplus.UserSettings.KEYS.SHOW_EXTENDED_FILTER, value: true, uri: uri, redirect: true]}">Extended: TRUE</g:link>
-  <g:link class="ui button" controller="ajax" action="updateSessionCache" params="${[key: com.k_int.kbplus.UserSettings.KEYS.SHOW_EXTENDED_FILTER, value:false, uri: uri, redirect: true]}">Extended: FALSE</g:link>
+  <g:render template="../templates/filter/javascript" />
+
 
   <semui:filter showFilterButton="true" class="license-searches">
         <form class="ui form">
@@ -157,7 +152,7 @@
         </form>
     </semui:filter>
 
-        <div class="license-results">
+        <div class="license-results la-clear-before">
         <g:if test="${licenses}">
               <table class="ui sortable celled la-table table">
                 <thead>

@@ -147,6 +147,8 @@ class AjaxController {
         if (params.redirect) {
             redirect(url: request.getHeader('referer'))
         }
+        def result = [:]
+        render result as JSON
     }
 
   @Secured(['ROLE_USER'])
