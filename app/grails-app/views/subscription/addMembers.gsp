@@ -129,7 +129,7 @@
                                     <g:select from="${subscriptionInstance.owner?.derivedLicenses}"
                                               class="ui search dropdown hide"
                                               optionKey="${{ 'com.k_int.kbplus.License:' + it.id }}"
-                                              optionValue="${{ it.getReferenceConcatenated() }}"
+                                              optionValue="${{ it.reference }}"
                                               name="generateSlavedLicsReference"/>
                                 </div>
                                 <r:script>
@@ -175,6 +175,15 @@
                     <semui:datepicker label="subscription.startDate.label" id="valid_from" name="valid_from" value="" />
 
                     <semui:datepicker label="subscription.endDate.label" id="valid_to" name="valid_to" value="" />
+                </div>
+            </div>
+            <div class="two fields">
+                <div class="field">
+                    <label><g:message code="myinst.currentSubscriptions.subscription.runTime"/></label>
+                    <div class="ui checkbox">
+                            <input type="checkbox" id="checkSubRunTimeMultiYear" name="checkSubRunTimeMultiYear">
+                            <label for="checkSubRunTimeMultiYear"><g:message code="subscription.isMultiYear.label"/></label>
+                    </div>
                 </div>
             </div>
         </g:if>
