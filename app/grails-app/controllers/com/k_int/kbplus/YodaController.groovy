@@ -6,22 +6,18 @@ import com.k_int.kbplus.auth.UserOrg
 import com.k_int.kbplus.auth.UserRole
 import com.k_int.properties.PropertyDefinition
 import de.laser.SystemEvent
-import de.laser.domain.IssueEntitlementCoverage
 import de.laser.domain.SystemProfiler
-import de.laser.domain.TIPPCoverage
 import de.laser.helper.DebugAnnotation
 import de.laser.helper.RDStore
 import grails.converters.JSON
 import grails.plugin.springsecurity.annotation.Secured
 import grails.util.Holders
 import grails.web.Action
-import groovy.json.JsonOutput
 import groovy.xml.MarkupBuilder
 import org.hibernate.SessionFactory
 import org.quartz.JobKey
 import org.quartz.impl.matchers.GroupMatcher
 import org.springframework.transaction.TransactionStatus
-import com.k_int.kbplus.OrgSettings
 import groovy.json.JsonOutput
 import org.springframework.web.multipart.commons.CommonsMultipartFile
 
@@ -452,10 +448,10 @@ class YodaController {
     @Secured(['ROLE_YODA'])
     def globalSync() {
         log.debug("start global sync ..")
-        globalSourceSyncService.runAllActiveSyncTasks()
+        globalSourceSyncService.startSync()
         log.debug("done global sync ..")
 
-        redirect(controller: 'globalDataSync')
+        redirect controller: 'home'
     }
 
     @Secured(['ROLE_YODA'])

@@ -83,17 +83,13 @@ class Identifier {
 
 			if(! ns) {
 				ns = new IdentifierNamespace(ns:ns, isUnique: true, isHidden: false)
-				ns.save()
+				ns.save(flush:true)
 			}
 		}
 
         String attr = Identifier.getAttributeName(reference)
 
-        def ident = Identifier.executeQuery(
-                'select ident from Identifier ident where ident.value = :val and ident.ns = :ns and ident.' + attr + ' = :ref order by ident.id',
-                [val: value, ns: ns, ref: reference]
-
-        )
+        def ident = Identifier.executeQuery('select ident from Identifier ident where ident.value = :val and ident.ns = :ns and ident.' + attr + ' = :ref order by ident.id', [val: value, ns: ns, ref: reference])
         if (! ident.isEmpty()) {
             if (ident.size() > 1) {
                 static_logger.debug("WARNING: multiple matches found for ( ${value}, ${ns}, ${reference} )")

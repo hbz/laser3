@@ -266,7 +266,7 @@ class TitleInstance extends AbstractBaseDomain implements AuditableTrait {
                     origin_uri = i.value
                 }
 
-                Identifier matches = Identifier.executeQuery('select i from Identifier i join i.ns ns where i.value = :iValue and ns.ns = :nsValue and i.ti is not null',
+                List<Identifier> matches = Identifier.executeQuery('select i from Identifier i join i.ns ns where i.value = :iValue and ns.ns = :nsValue and i.ti is not null',
                         [iValue: i.value, nsValue: i.namespace])
 
                 matches.each { match ->

@@ -16,6 +16,8 @@ import groovy.util.logging.Log4j
 import org.apache.commons.lang3.StringUtils
 import org.apache.commons.logging.LogFactory
 import org.codehaus.groovy.grails.orm.hibernate.cfg.GrailsHibernateUtil
+import org.codehaus.groovy.grails.web.util.WebUtils
+import org.hibernate.AssertionFailure
 
 import javax.persistence.Transient
 
@@ -226,11 +228,16 @@ class Org
         }
         
         if (impId == null) {
-            impId = java.util.UUID.randomUUID().toString();
+            impId = UUID.randomUUID().toString();
         }
 
-        if (contextService.getOrg()) {
-            createdBy = contextService.getOrg()
+        try {
+            if (contextService.getOrg()) {
+                createdBy = contextService.getOrg()
+            }
+        }
+        catch(AssertionFailure e) {
+            log.warn("AssertionFailure occurred, if called from thread or job, then ignore, otherwise do checks why ContextService loading failed!")
         }
 
         super.beforeInsert()
@@ -494,7 +501,7 @@ class Org
                            sector:sector,
                            ipRange:iprange,
                            impId: null,
-                           gokbId: imp_uuid?.length() > 0 ? imp_uuid : null).save(flush: true)
+                           gokbId: imp_uuid?.length() > 0 ? imp_uuid : null).save()
           if(orgRoleTyp) {
               result.addToOrgType(orgRoleTyp).save()
           }

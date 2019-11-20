@@ -31,13 +31,19 @@ class ContextService {
     }
 
     Org getOrg() {
-        GrailsHttpSession session = WebUtils.retrieveGrailsWebRequest().getSession()
-        def context = session.getAttribute('contextOrg') ?: getUser()?.getSettingsValue(UserSettings.KEYS.DASHBOARD)
+        try {
+            GrailsHttpSession session = WebUtils.retrieveGrailsWebRequest().getSession()
+            def context = session.getAttribute('contextOrg') ?: getUser()?.getSettingsValue(UserSettings.KEYS.DASHBOARD)
 
-        if (context) {
-            (Org) GrailsHibernateUtil.unwrapIfProxy(context)
+            if (context) {
+                (Org) GrailsHibernateUtil.unwrapIfProxy(context)
+            }
+            else {
+                return null
+            }
         }
-        else {
+        catch (IllegalStateException e) {
+            log.info("No thread-bound request found thus no context could be established!")
             return null
         }
     }

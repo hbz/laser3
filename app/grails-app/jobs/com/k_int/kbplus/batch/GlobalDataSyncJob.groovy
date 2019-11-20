@@ -46,7 +46,7 @@ class GlobalDataSyncJob extends AbstractJob {
                 log.debug("This server is marked as hbzMaster. Running GlobalDataSyncJob batch job");
                 SystemEvent.createEvent('GD_SYNC_JOB_START')
 
-                if (! globalSourceSyncService.runAllActiveSyncTasks()) {
+                if (! globalSourceSyncService.startSync()) {
                     log.warn( 'Failed. Maybe ignored due blocked globalSourceSyncService')
                 }
 

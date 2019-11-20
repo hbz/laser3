@@ -6,6 +6,10 @@ import de.laser.helper.RDStore
 import de.laser.helper.RefdataAnnotation
 import de.laser.interfaces.ShareSupport
 import de.laser.traits.ShareableTrait
+import groovy.util.slurpersupport.NodeChildren
+import groovyx.net.http.HTTPBuilder
+import static groovyx.net.http.ContentType.XML
+import static groovyx.net.http.Method.GET
 import org.apache.commons.logging.Log
 import org.apache.commons.logging.LogFactory
 
@@ -143,6 +147,65 @@ static hasMany = [  tipps:     TitleInstancePackagePlatform,
                  vendorURL(nullable:true, blank:false)
     cancellationAllowances(nullable:true, blank:false)
                   sortName(nullable:true, blank:false)
+  }
+
+  static Package createOrUpdate(NodeChildren packageData, GlobalRecordSource grs) {
+      log.info('converting XML record into map and reconciling new package!')
+      Package result = findByGokbId(packageData.'@uuid'.text()) ?: new Package(gokbId: packageData.'@uuid'.text()) //impId needed?
+      String title = packageData.title.text()
+      result.name = packageData.name.text()
+      result.packageStatus = RefdataValue.getByValueAndCategory(packageData.status.text(), 'Package Status')
+      result.packageScope = RefdataValue.getByValueAndCategory(packageData.scope.text(),RefdataCategory.PKG_SCOPE) //needed?
+      result.packageListStatus = RefdataValue.getByValueAndCategory(packageData.listStatus.text(),RefdataCategory.PKG_LIST_STAT) //needed?
+      result.breakable = RefdataValue.getByValueAndCategory(packageData.breakable.text(),RefdataCategory.PKG_BREAKABLE) //needed?
+      result.consistent = RefdataValue.getByValueAndCategory(packageData.consistent.text(),RefdataCategory.PKG_CONSISTENT) //needed?
+      result.fixed = RefdataValue.getByValueAndCategory(packageData.fixed.text(),RefdataCategory.PKG_FIXED) //needed?
+      //result.global = packageData.global.text() needed? not used in packageReconcile
+      //result.paymentType = packageData.paymentType.text() needed? not used in packageReconcile
+      if(packageData.nominalProvider.'@uuid'.text()){
+          String providerUUID = packageData.nominalProvider.'@uuid'.text()
+          //Org.lookupOrCreate2 simplified
+          Org provider = Org.findByGokbId(providerUUID)
+          if(!provider) {
+              provider = new Org(
+                      name: packageData.nominalProvider.name.text(),
+                      sector: RDStore.O_SECTOR_PUBLISHER,
+                      type: [RDStore.OT_PROVIDER],
+                      gokbId: providerUUID
+              )
+              if(!provider.save()) {
+                  log.error(provider.errors)
+              }
+          }
+          HTTPBuilder http = new HTTPBuilder(grs.uri.replaceAll("packages",""))
+          http.request(GET,XML) {
+              uri.query = [verb:'getRecord',metadataPrefix:grs.fullPrefix,identifier:providerUUID]
+              response.success { resp, xml ->
+                  println resp.statusLine
+                  NodeChildren metadata = xml.'GetRecord'.record.metadata
+                  if(metadata) {
+                      metadata.gokb.org.providedPlatforms.platform.each { plat ->
+                          //ex setOrUpdateProviderPlattform()
+                          log.info("checking provider with uuid ${providerUUID}")
+                          Platform platform = Platform.lookupOrCreatePlatform([name: plat.name.text(), gokbId: plat.'@uuid'.text(), primaryUrl: plat.primaryUrl.text()])
+                          if(platform.org != provider) {
+                              platform.org = provider
+                              platform.save()
+                          }
+                      }
+                  }
+              }
+              response.failure = { resp ->
+                  println "Unexpected error on fetching provider data: ${resp.statusLine.statusCode} : ${resp.statusLine.reasonPhrase}."
+              }
+          }
+      }
+      /*
+      updatedRecord.nominalPlatform = packageData.nominalPlatform.name.text() //needed?
+      updatedRecord.nominalPlatformUUID = packageData.nominalPlatform.'@uuid'?.text()
+      updatedRecord.nominalPlatformPrimaryUrl = packageData.nominalPlatform.primaryUrl.text() //needed?
+       */
+      result
   }
 
     @Override

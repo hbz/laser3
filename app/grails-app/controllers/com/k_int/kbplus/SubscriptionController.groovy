@@ -3117,7 +3117,7 @@ class SubscriptionController extends AbstractDebugController {
                     SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'")
                     GlobalRecordSource grs = GlobalRecordSource.findByUri(params.source+'/gokb/oai/packages')
                     def rec = oaiClient.getRecord(params.source+'/gokb/oai/','packages',params.impId) //alright, we rely on fixToken to remain as is!!!
-                    def parsedRec = globalSourceSyncService.packageConv(rec.metadata,grs)
+                    def parsedRec = globalSourceSyncService.processPackage(rec.metadata,grs)
                     def kbplusCompliant = globalSourceSyncService.testPackageCompliance(parsedRec.parsed_rec)
                     ByteArrayOutputStream baos = new ByteArrayOutputStream()
                     ObjectOutputStream out = new ObjectOutputStream(baos)
