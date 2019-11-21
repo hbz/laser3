@@ -7,7 +7,7 @@
     <g:if test="${dashboard_last_update != null}" >
         <div class="la-float-right">
             <g:if test="${ ! SqlDateUtils.isYesterdayOrToday(dashboard_last_update)}">
-                <span style="text-decoration:blink; color: red;">
+                <span style="color: red;">
                     <i class="exclamation alternate triangle icon" style="text-decoration:blink;" id="noData" data-content="${message(code:'myinst.dash.due_dates.tooltip')}"></i>
                     ${message(code:'myinst.dash.due_dates.lastUpdate')}&nbsp;<g:formatDate format="${message(code:'default.date.format.notime', default:'yyyy-MM-dd')}" date="${dashboard_last_update}"/>&nbsp;
                 </span>
