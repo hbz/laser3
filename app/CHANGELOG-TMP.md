@@ -1,7 +1,11 @@
 ## temporary change log
 
 **Ticket - Date - Branch - Author - Feature/Bug  - Description/Keywords**
+
+-      2019-11-20 - rc-1.1  - Andreas Gálffy - Bug - pending changes are now filtered out when deactivating audit
     
+1869 - 20.11.2019 - hbz-dev - David - Feature - API-Endpunkt /subscription liefert Vorgänger und Nachfolger (0.72)
+
 1839 - 19.11.2019 - hbz-dev - David - Feature - Neue Profileinstellung: Ausgeklappte Filter 
 
 1839 - 19.11.2019 - hbz-dev - David - Feature - SessionCache implementiert 

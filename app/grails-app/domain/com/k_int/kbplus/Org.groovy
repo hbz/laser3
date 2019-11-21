@@ -33,6 +33,8 @@ class Org
     def accessService
 	@Transient
 	def propertyService
+    @Transient
+    def deletionService
 
     String name
     String shortname
@@ -213,6 +215,10 @@ class Org
                 [org: this, active: COMBO_STATUS_ACTIVE])
     }
     */
+
+    def afterDelete() {
+        deletionService.deleteDocumentFromIndex(this.class.name, this.globalUID)
+    }
 
     @Override
     boolean isDeleted() {

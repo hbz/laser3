@@ -5740,6 +5740,7 @@ aside.ui.accordion .title:not(.ui) {
 
 .ui.button.la-js-filterButton {
   margin-top: 14px;
+  margin-bottom: 14px;
 }
 /*!
  * # Semantic UI 2.3.1 - Container

@@ -187,13 +187,24 @@ class YodaController {
 
         if (params.cmd?.equals('clearCache')) {
             def cache
-            if (params.type?.equals('ehcache')) {
+            if (params.type?.equals('session')) {
+                cache = contextService.getSessionCache()
+                cache.clear()
+            }
+            else if (params.type?.equals('ehcache')) {
                 cache = cacheService.getCache(result.ehcacheManager, params.cache)
                 cacheService.clear(cache)
-            } else {
+            }
+            else {
                 cache = cacheService.getCache(result.plugincacheManager, params.cache)
                 cacheService.clear(cache)
             }
+
+            params.remove('cmd')
+            params.remove('type')
+            params.remove('cache')
+
+            redirect controller: 'yoda', action: 'cacheInfo', params: params
         }
 
         result
@@ -222,7 +233,7 @@ class YodaController {
     //@Cacheable('message')
     @Secured(['ROLE_ADMIN'])
     def appInfo() {
-        Map result = [:]
+        Map<String, Object> result = [:]
 
         result.statsSyncService = [:]
         result.dataloadService = [:]
@@ -252,8 +263,8 @@ class YodaController {
 
     @Secured(['ROLE_YODA'])
     def appSecurity() {
-        Map result = [:]
-        Map cList = [:]
+        Map<String, Object> result = [:]
+        Map<String, Object> cList = [:]
 
         grailsApplication.controllerClasses.toList().each { controller ->
             Class controllerClass = controller.clazz
@@ -298,7 +309,7 @@ class YodaController {
 
     @Secured(['ROLE_YODA'])
     def userMatrix() {
-        Map result = [:]
+        Map<String, Object> result = [:]
 
         result.matrix = [:]
 
@@ -314,7 +325,7 @@ class YodaController {
 
     @Secured(['ROLE_YODA'])
     def userRoleDefinitions() {
-        Map result = [:]
+        Map<String, Object> result = [:]
         result.matrix = [:]
         result
     }
@@ -323,7 +334,7 @@ class YodaController {
     def pendingChanges() {
 
         // TODO: DEBUG ONLY
-        Map result = [:]
+        Map<String, Object> result = [:]
 
         result.pending = PendingChange.executeQuery(
                 "SELECT pc FROM PendingChange pc WHERE pc.status IS NULL ORDER BY pc.id DESC",
@@ -410,7 +421,6 @@ class YodaController {
     @Secured(['ROLE_YODA'])
     def esIndexUpdate() {
         log.debug("manual start full text index")
-        dataloadService.updateSiteMapping()
         dataloadService.updateFTIndexes()
         log.debug("redirecting to home ..")
 
@@ -420,29 +430,34 @@ class YodaController {
     @Secured(['ROLE_YODA'])
     def fullReset() {
 
-        if (ftupdate_running == false) {
-            try {
-                ftupdate_running = true
-                SystemEvent.createEvent('YODA_ES_RESET_START')
+        if(dataloadService.update_running == false) {
+            if (ftupdate_running == false) {
+                try {
+                    ftupdate_running = true
+                    SystemEvent.createEvent('YODA_ES_RESET_START')
 
-                log.debug("Delete all existing FT Control entries");
-                FTControl.withTransaction {
-                    FTControl.executeUpdate("delete FTControl c")
+                    log.debug("Delete all existing FT Control entries");
+                    FTControl.withTransaction {
+                        FTControl.executeUpdate("delete FTControl c")
+                    }
+
+                    log.debug("Clear ES")
+                    dataloadService.clearDownAndInitES()
+
+                    log.debug("manual start full text index")
+                    dataloadService.updateFTIndexes()
                 }
-
-                log.debug("Clear ES")
-                dataloadService.clearDownAndInitES()
-
-                log.debug("manual start full text index")
-                dataloadService.updateFTIndexes()
+                finally {
+                    ftupdate_running = false
+                    log.debug("fullReset complete ..")
+                }
+            } else {
+                log.debug("FT update already running")
+                flash.error = 'FT update already running'
             }
-            finally {
-                ftupdate_running = false
-                log.debug("fullReset complete ..")
-            }
-        }
-        else {
-            log.debug("FT update already running")
+        }else{
+            log.debug("Full Reset fail, because IndexUpdateJob running")
+            flash.error = 'Full Reset fail, because IndexUpdateJob running'
         }
         log.debug("redirecting to home ..")
 
@@ -460,7 +475,7 @@ class YodaController {
 
     @Secured(['ROLE_YODA'])
     def manageGlobalSources() {
-        Map result = [:]
+        Map<String, Object> result = [:]
         log.debug("manageGlobalSources ..")
         result.sources = GlobalRecordSource.list()
 
@@ -469,7 +484,7 @@ class YodaController {
 
     @Secured(['ROLE_YODA'])
     def manageESSources() {
-        Map result = [:]
+        Map<String, Object> result = [:]
         log.debug("manageESSources ..")
         result.sources = ElasticsearchSource.list()
 
@@ -478,7 +493,7 @@ class YodaController {
 
     @Secured(['ROLE_YODA'])
     def newESSource() {
-        Map result=[:]
+        Map<String, Object> result = [:]
         log.debug("manageGlobalSources ..")
 
         /*result.newSource = ElasticsearchSource.findByIdentifier(params.identifier) ?: new ElasticsearchSource(
@@ -500,7 +515,7 @@ class YodaController {
 
     @Secured(['ROLE_YODA'])
     def newGlobalSource() {
-        Map result=[:]
+        Map<String, Object> result=[:]
         log.debug("manageGlobalSources ..")
 
         result.newSource = GlobalRecordSource.findByIdentifier(params.identifier) ?: new GlobalRecordSource(
@@ -521,7 +536,7 @@ class YodaController {
 
     @Secured(['ROLE_YODA'])
     def migrateNatStatSettings() {
-        Map result = [:]
+        Map<String, Object> result = [:]
 
         List<OrgCustomProperty> ocpList = OrgCustomProperty.executeQuery(
                 'select ocp from OrgCustomProperty ocp join ocp.type pd where pd.descr = :orgConf', [

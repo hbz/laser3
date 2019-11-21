@@ -1,3 +1,4 @@
+<%@ page import="com.k_int.kbplus.UserSettings" %>
 <!doctype html>
 <html>
 <head>
@@ -50,7 +51,9 @@
 </head>
 
 <body>
+
 <section id="example">
+
     <h2 class="ui dividing header">Icons<a class="anchor" id="icons"></a></h2>
     <h4 class="ui header">Zusätzliche Icons</h4>
     <div class="html ui top attached segment example">
