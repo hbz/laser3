@@ -84,3 +84,7 @@
 -- Refactoring PendingChanges.(changeDoc -> payload)
 -- changesets in changelog-2019-10-31.groovy
 ALTER TABLE pending_change RENAME pc_change_doc TO pc_payload
+
+-- 2019-11-18
+-- Rename Column
+alter table dashboard_due_date RENAME das_is_hide TO  das_is_hidden ;
