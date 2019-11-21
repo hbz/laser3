@@ -160,6 +160,8 @@ ${surveyInfo?.name}
         <g:set var="sumOldCostItemAfterTax" value="${0.0}"/>
         <g:set var="sumNewCostItemAfterTax" value="${0.0}"/>
         <g:set var="sumSurveyCostItemAfterTax" value="${0.0}"/>
+        <g:set var="OldCostItem" value="${0.0}"/>
+        <g:set var="OldCostItemAfterTax" value="${0.0}"/>
         <table class="ui celled sortable table la-table" id="parentSubscription">
             <thead>
             <tr>
@@ -169,7 +171,14 @@ ${surveyInfo?.name}
                 <th>${message(code: 'sidewide.number')}</th>
                 <th>${message(code: 'subscription.details.consortiaMembers.label')}</th>
                 <th>${message(code: 'copySurveyCostItems.oldCostItem')}</th>
-                <th>${message(code: 'copySurveyCostItems.surveyCostItem')}</th>
+                <th>${message(code: 'copySurveyCostItems.surveyCostItem')}
+                    <g:if test="${surveyConfig.comment}">
+                        <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="bottom center"
+                              data-content="${surveyConfig.comment}">
+                            <i class="question circle icon"></i>
+                        </span>
+                    </g:if>
+                </th>
                 <th>${message(code: 'copySurveyCostItems.newCostItem')}</th>
                 <th></th>
             </tr>
@@ -229,10 +238,13 @@ ${surveyInfo?.name}
                                                  maxFractionDigits="2" type="number"/>)
 
                                 ${(costItemParticipantSub?.billingCurrency?.getI10n('value')?.split('-')).first()}
-                                <g:set var="sumOldCostItemAfterTax"
-                                       value="${sumOldCostItem + costItemParticipantSub.costInBillingCurrencyAfterTax}"/>
                                 <g:set var="sumOldCostItem"
-                                       value="${sumOldCostItem + costItemParticipantSub.costInBillingCurrency}"/>
+                                       value="${sumOldCostItem + costItemParticipantSub.costInBillingCurrency?:0}"/>
+                                <g:set var="sumOldCostItemAfterTax"
+                                       value="${sumOldCostItemAfterTax + costItemParticipantSub.costInBillingCurrencyAfterTax?:0}"/>
+
+                                <g:set var="OldCostItem" value="${costItemParticipantSub.costInBillingCurrency?:0.0}"/>
+                                <g:set var="OldCostItemAfterTax" value="${costItemParticipantSub.costInBillingCurrencyAfterTax?:0.0}"/>
                             </g:each>
                         </g:if>
                     </td>
@@ -250,10 +262,20 @@ ${surveyInfo?.name}
 
                             ${(participant.surveyCostItem?.billingCurrency?.getI10n('value')?.split('-')).first()}
 
-                            <g:set var="sumSurveyCostItemAfterTax"
-                                   value="${sumSurveyCostItem + participant.surveyCostItem.costInBillingCurrencyAfterTax}"/>
                             <g:set var="sumSurveyCostItem"
-                                   value="${sumSurveyCostItem + participant.surveyCostItem.costInBillingCurrency}"/>
+                                   value="${sumSurveyCostItem + participant.surveyCostItem.costInBillingCurrency?:0}"/>
+                            <g:set var="sumSurveyCostItemAfterTax"
+                                   value="${sumSurveyCostItemAfterTax + participant.surveyCostItem.costInBillingCurrencyAfterTax?:0}"/>
+
+                            <g:if test="${OldCostItem || OldCostItemAfterTax}">
+                                <br><b><g:formatNumber number="${((participant.surveyCostItem.costInBillingCurrencyAfterTax-OldCostItemAfterTax)/OldCostItemAfterTax)*100}"
+                                                   minFractionDigits="2"
+                                                   maxFractionDigits="2" type="number"/>%</b>
+
+                                (<g:formatNumber number="${((participant.surveyCostItem.costInBillingCurrency-OldCostItem)/OldCostItem)*100}" minFractionDigits="2"
+                                                 maxFractionDigits="2" type="number"/>%)
+                            </g:if>
+
                         </g:if>
                     </td>
 
@@ -274,9 +296,18 @@ ${surveyInfo?.name}
 
                                 ${(costItemParticipantSuccessorSub?.billingCurrency?.getI10n('value')?.split('-')).first()}
                                 <g:set var="sumNewCostItem"
-                                       value="${sumNewCostItem + costItemParticipantSuccessorSub?.costInBillingCurrencyAfterTax}"/>
+                                       value="${sumNewCostItem + costItemParticipantSuccessorSub?.costInBillingCurrency?:0}"/>
                                 <g:set var="sumNewCostItemAfterTax"
-                                       value="${sumNewCostItem + costItemParticipantSuccessorSub?.costInBillingCurrency}"/>
+                                       value="${sumNewCostItemAfterTax + costItemParticipantSuccessorSub?.costInBillingCurrencyAfterTax?:0}"/>
+
+                                <g:if test="${OldCostItem || OldCostItemAfterTax}">
+                                    <br><b><g:formatNumber number="${((costItemParticipantSuccessorSub?.costInBillingCurrencyAfterTax-OldCostItemAfterTax)/OldCostItemAfterTax)*100}"
+                                                           minFractionDigits="2"
+                                                           maxFractionDigits="2" type="number"/>%</b>
+
+                                    (<g:formatNumber number="${((costItemParticipantSuccessorSub?.costInBillingCurrency-OldCostItem)/OldCostItem)*100}" minFractionDigits="2"
+                                                     maxFractionDigits="2" type="number"/>%)
+                                </g:if>
                             </g:each>
                         </g:if>
                     </td>
@@ -305,12 +336,30 @@ ${surveyInfo?.name}
                                        maxFractionDigits="2" type="number"/></b>
                     (<g:formatNumber number="${sumSurveyCostItem}" minFractionDigits="2"
                                      maxFractionDigits="2" type="number"/>)
+
+                    <g:if test="${sumOldCostItemAfterTax || sumOldCostItem}">
+                        <br><b><g:formatNumber number="${((sumSurveyCostItemAfterTax-sumOldCostItemAfterTax)/sumOldCostItemAfterTax)*100}"
+                                               minFractionDigits="2"
+                                               maxFractionDigits="2" type="number"/>%</b>
+
+                        (<g:formatNumber number="${((sumSurveyCostItem-sumOldCostItem)/sumOldCostItem)*100}" minFractionDigits="2"
+                                         maxFractionDigits="2" type="number"/>%)
+                    </g:if>
                 </td>
                 <td>
                     <b><g:formatNumber number="${sumNewCostItemAfterTax}" minFractionDigits="2"
                                        maxFractionDigits="2" type="number"/></b>
-                    <g:formatNumber number="${sumNewCostItem}" minFractionDigits="2"
-                                    maxFractionDigits="2" type="number"/>
+                    (<g:formatNumber number="${sumNewCostItem}" minFractionDigits="2"
+                                    maxFractionDigits="2" type="number"/>)
+
+                    <g:if test="${sumOldCostItemAfterTax || sumOldCostItem}">
+                        <br><b><g:formatNumber number="${((sumNewCostItemAfterTax-sumOldCostItemAfterTax)/sumOldCostItemAfterTax)*100}"
+                                               minFractionDigits="2"
+                                               maxFractionDigits="2" type="number"/>%</b>
+
+                        (<g:formatNumber number="${((sumNewCostItemAfterTax-sumOldCostItem)/sumOldCostItem)*100}" minFractionDigits="2"
+                                         maxFractionDigits="2" type="number"/>%)
+                    </g:if>
                 </td>
                 <td></td>
             </tr>

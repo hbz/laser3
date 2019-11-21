@@ -13,10 +13,12 @@ import de.laser.helper.DebugAnnotation
 import de.laser.helper.DebugUtil
 import de.laser.helper.EhcacheWrapper
 import de.laser.helper.RDStore
+import de.laser.helper.SessionCacheWrapper
 import de.laser.interfaces.ShareSupport
 import grails.converters.JSON
 import grails.plugin.springsecurity.annotation.Secured
 import org.codehaus.groovy.grails.orm.hibernate.cfg.GrailsHibernateUtil
+import org.codehaus.groovy.grails.web.converters.exceptions.ConverterException
 
 //import org.grails.orm.hibernate.cfg.GrailsHibernateUtil
 
@@ -127,6 +129,26 @@ class AjaxController {
         result.uri = params.uri
         result.delta = delta
 
+        render result as JSON
+    }
+
+    def updateSessionCache() {
+        if (contextService.getUser()) {
+            SessionCacheWrapper cache = contextService.getSessionCache()
+
+            if (params.key == UserSettings.KEYS.SHOW_EXTENDED_FILTER.toString()) {
+
+                if (params.uri) {
+                    cache.put("${params.key}/${params.uri}", params.value)
+                    log.debug("update session based user setting: [${params.key}/${params.uri} -> ${params.value}]")
+                }
+            }
+        }
+
+        if (params.redirect) {
+            redirect(url: request.getHeader('referer'))
+        }
+        def result = [:]
         render result as JSON
     }
 
@@ -1607,13 +1629,12 @@ class AjaxController {
 
                     // delete pending changes
                     // e.g. PendingChange.changeDoc = {changeTarget, changeType, changeDoc:{OID,  event}}
-                    def openPD = PendingChange.executeQuery("select pc from PendingChange as pc where pc.status is null" )
+                    def openPD = PendingChange.executeQuery("select pc from PendingChange as pc where pc.status is null and pc.costItem is null" )
                     openPD?.each { pc ->
                         def event = JSON.parse(pc?.changeDoc)
                         if (event && event?.changeDoc) {
                             def eventObj = genericOIDService.resolveOID(event.changeDoc?.OID)
                             def eventProp = event.changeDoc?.prop
-
                             if (eventObj?.id == owner?.id && eventProp.equalsIgnoreCase(prop)) {
                                 pc.delete(flush: true)
                             }

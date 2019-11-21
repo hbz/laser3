@@ -58,6 +58,10 @@
       <semui:totalNumber total="${licenseCount}"/>
   </h1>
 
+
+  <g:render template="/templates/filter/javascript" />
+
+
   <semui:filter showFilterButton="true" class="license-searches">
         <form class="ui form">
             <div class="four fields">
@@ -148,7 +152,7 @@
         </form>
     </semui:filter>
 
-        <div class="license-results">
+        <div class="license-results la-clear-before">
         <g:if test="${licenses}">
               <table class="ui sortable celled la-table table">
                 <thead>
