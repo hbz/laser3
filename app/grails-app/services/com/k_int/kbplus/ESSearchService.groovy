@@ -1,14 +1,12 @@
 package com.k_int.kbplus
 
 
-import org.elasticsearch.client.transport.TransportClient
 import org.elasticsearch.common.settings.Settings
 import org.elasticsearch.common.transport.InetSocketTransportAddress
 import org.elasticsearch.search.sort.SortOrder;
 import org.elasticsearch.action.search.SearchRequestBuilder;
 import org.elasticsearch.client.*
 import org.elasticsearch.index.query.QueryBuilders;
-import org.elasticsearch.search.aggregations.AggregationBuilders;
 
 class ESSearchService{
 // Map the parameter names we use in the webapp with the ES fields
@@ -67,6 +65,9 @@ class ESSearchService{
             }
             searchRequestBuilder = searchRequestBuilder.addSort("${params.sort}".toString()+".keyword", order)
           }
+
+          searchRequestBuilder = searchRequestBuilder.addSort("priority", SortOrder.DESC)
+
           log.debug("searchRequestBuilder start to add query and aggregration query string is ${query_str}")
 
           searchRequestBuilder.setQuery(QueryBuilders.queryStringQuery(query_str))
@@ -180,7 +181,25 @@ class ESSearchService{
     StringWriter sw = new StringWriter()
 
     if ( params?.q != null ){
-      sw.write("${params.q}")
+      params.query = "*${params.query}*"
+      //GOKBID, GUUID
+      if(params.q.length() >= 37){
+        if(params.q.contains(":") || params.q.contains("-")){
+          params.q = params.q.replaceAll('\\*', '')
+          sw.write("\"${params.q}\"")
+        }else {
+          sw.write("${params.q}")
+          sw.write(" AND ((NOT gokbId:'${params.q}') AND (NOT guid:'${params.q}')) ")
+        }
+      }else {
+        if((params.q.charAt(1) == '"' && params.q.charAt(params.q.length()-2) == '"') || params.q.contains(":") || params.q.contains("-")) {
+          params.q = params.q.replaceAll('\\*', '')
+          sw.write("\"${params.q}\"")
+        }else{
+          sw.write("${params.q}")
+          sw.write(" AND ((NOT gokbId:'${params.q}') AND (NOT guid:'${params.q}')) ")
+        }
+      }
     }
       
     if(params?.rectype){
@@ -241,90 +260,14 @@ class ESSearchService{
       }
     }
 
+    if(!params.showDeleted)
+    {
+      sw.write(  " AND ( NOT status:\"Deleted\" )")
+    }
+
     def result = sw.toString();
     result;
   }
-
-  /*def testIndexExist(esclient, params, field_map, index)
-  {
-    if ( (params.q && params.q.length() > 0) || params.rectype || params.esgokb) {
-
-      params.max = Math.min(params.max ? params.int('max') : 15, 100)
-      params.offset = params.offset ? params.int('offset') : 0
-
-      def query_str = buildQuery(params, field_map)
-      if (params.tempFQ) //add filtered query
-      {
-        query_str = query_str + " AND ( " + params.tempFQ + " ) "
-        params.remove("tempFQ") //remove from GSP access
-      }
-
-      def search
-      try {
-        search = esclient.search {
-          indices index
-          source {
-            from = params.offset
-            size = params.max
-            sort = params.sort ? [
-                    ("${params.sort}".toString()): ['order': (params.order ?: 'asc')]
-            ] : []
-
-            query {
-              query_string(query: query_str)
-            }
-            aggregations {
-              consortiaName {
-                terms {
-                  field = 'consortiaName'
-                  size = 25
-                }
-              }
-              cpname {
-                terms {
-                  field = 'cpname'
-                  size = 25
-                }
-              }
-              type {
-                terms {
-                  field = 'rectype'
-                  size = 25
-                }
-              }
-              startYear {
-                terms {
-                  field = 'startYear'
-                  size = 25
-                }
-              }
-              endYear {
-                terms {
-                  field = 'endYear'
-                  size = 25
-                }
-              }
-            }
-
-          }
-
-        }.actionGet()
-
-      } catch (IndexNotFoundException e) {
-        if (params.esgokb) {
-          params.remove("esgokb")
-          params.rectype = "Package"
-        }
-      }
-      catch (Exception e) {
-        if (params.esgokb) {
-          params.remove("esgokb")
-          params.rectype = "Package"
-        }
-      }
-    }
-    return params
-  }*/
 
   def getClient(index) {
     def esclient = null

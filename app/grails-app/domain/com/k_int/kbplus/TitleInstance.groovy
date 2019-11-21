@@ -18,6 +18,8 @@ class TitleInstance extends AbstractBaseDomain implements AuditableTrait {
 
   @Transient
   def grailsApplication
+  @Transient
+  def deletionService
 
     // AuditableTrait
     static auditable = true
@@ -93,6 +95,10 @@ class TitleInstance extends AbstractBaseDomain implements AuditableTrait {
         creators(nullable:true, blank:false)
         gokbId (nullable:true, blank:false)
         //originEditUrl(nullable:true, blank:false)
+    }
+
+    def afterDelete() {
+        deletionService.deleteDocumentFromIndex(this.class.name, this.globalUID)
     }
 
   String getIdentifierValue(idtype) {
