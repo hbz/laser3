@@ -77,9 +77,10 @@
 
 -- 2019-11-18
 -- Delete deprecated user settings
-delete from user_settings where us_key_enum like 'DASHBOARD_REMINDER_PERIOD';
+-- changesets in changelog-2019-10-31.groovy
+-- delete from user_settings where us_key_enum like 'DASHBOARD_REMINDER_PERIOD';
 
 -- 2019-11-21
 -- Refactoring PendingChanges.(changeDoc -> payload)
--- changesets in changelog-2019-11-21.groovy
+-- changesets in changelog-2019-10-31.groovy
 ALTER TABLE pending_change RENAME pc_change_doc TO pc_payload
