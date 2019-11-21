@@ -47,7 +47,7 @@
                                 <g:if test="${obj instanceof AbstractProperty}">
                                     <i class="icon tags la-list-icon"></i>
                                 </g:if>
-                                ${dashDueDate.id} &nbsp
+                                %{--${dashDueDate.id} &nbsp--}%
                                 ${dashDueDate.attribut}
                             </td>
                             <td>
