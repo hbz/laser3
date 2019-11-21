@@ -597,8 +597,10 @@ class DataloadService {
 
         log.debug("Create new ES index ..")
         def createResponse = client.admin().indices().prepareCreate(es_index).get()
-        println(ESWrapperService.es_mapping)
-        ESWrapperService.es_mapping.each {
+
+        def es_mapping = ESWrapperService.getESMapping()
+        //println(es_mapping)
+        es_mapping.each {
             client.admin().indices().preparePutMapping(es_index)
                     .setType(it.key)
                     .setSource(JsonOutput.toJson(it.value), XContentType.JSON)

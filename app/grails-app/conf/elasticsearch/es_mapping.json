@@ -51,8 +51,7 @@
         }
       },
       "availableToOrgs": {
-         "type": "long",
-         "index": false
+        "type": "long"
       },
       "priority": {
         "type": "long"
@@ -276,8 +275,7 @@
         "index": false
       },
       "availableToOrgs": {
-        "type": "long",
-        "index": false
+        "type": "long"
       },
       "startDate": {
         "type": "text",
@@ -324,8 +322,7 @@
         }
       },
       "availableToOrgs": {
-        "type": "long",
-        "index": false
+        "type": "long"
       },
       "priority": {
         "type": "long"
@@ -431,29 +428,28 @@
           }
         }
       },
-
-"identifiers": {
-"properties": {
-"type": {
-"type": "text",
-"fields": {
-"keyword": {
-"ignore_above": 256,
-"type": "keyword"
-}
-}
-},
-"value": {
-"type": "text",
-"fields": {
-"keyword": {
-"ignore_above": 256,
-"type": "keyword"
-}
-}
-}
-}
-}
+      "identifiers": {
+        "properties": {
+          "type": {
+            "type": "text",
+            "fields": {
+              "keyword": {
+                "ignore_above": 256,
+                "type": "keyword"
+              }
+            }
+          },
+          "value": {
+            "type": "text",
+            "fields": {
+              "keyword": {
+                "ignore_above": 256,
+                "type": "keyword"
+              }
+            }
+          }
+        }
+      }
     }
   },
   "com.k_int.kbplus.TitleInstance": {
@@ -546,28 +542,28 @@
           }
         }
       },
-"identifiers": {
-"properties": {
-"type": {
-"type": "text",
-"fields": {
-"keyword": {
-"ignore_above": 256,
-"type": "keyword"
-}
-}
-},
-"value": {
-"type": "text",
-"fields": {
-"keyword": {
-"ignore_above": 256,
-"type": "keyword"
-}
-}
-}
-}
-}
+      "identifiers": {
+        "properties": {
+          "type": {
+            "type": "text",
+            "fields": {
+              "keyword": {
+                "ignore_above": 256,
+                "type": "keyword"
+              }
+            }
+          },
+          "value": {
+            "type": "text",
+            "fields": {
+              "keyword": {
+                "ignore_above": 256,
+                "type": "keyword"
+              }
+            }
+          }
+        }
+      }
     }
   },
   "com.k_int.kbplus.Package": {
@@ -633,8 +629,8 @@
         "index": false
       },
       "nominalPlatformId": {
-           "type": "long",
-           "index": false
+        "type": "long",
+        "index": false
       },
       "dbId": {
         "type": "long",
@@ -712,28 +708,28 @@
           }
         }
       },
-"identifiers": {
-"properties": {
-"type": {
-"type": "text",
-"fields": {
-"keyword": {
-"ignore_above": 256,
-"type": "keyword"
-}
-}
-},
-"value": {
-"type": "text",
-"fields": {
-"keyword": {
-"ignore_above": 256,
-"type": "keyword"
-}
-}
-}
-}
-},
+      "identifiers": {
+        "properties": {
+          "type": {
+            "type": "text",
+            "fields": {
+              "keyword": {
+                "ignore_above": 256,
+                "type": "keyword"
+              }
+            }
+          },
+          "value": {
+            "type": "text",
+            "fields": {
+              "keyword": {
+                "ignore_above": 256,
+                "type": "keyword"
+              }
+            }
+          }
+        }
+      }
     }
   },
   "com.k_int.kbplus.SurveyOrg": {
@@ -761,8 +757,7 @@
         }
       },
       "availableToOrgs": {
-        "type": "long",
-        "index": false
+        "type": "long"
       },
       "priority": {
         "type": "long"

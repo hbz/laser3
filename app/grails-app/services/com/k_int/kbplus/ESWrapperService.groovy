@@ -1,13 +1,13 @@
 package com.k_int.kbplus
 
-import grails.converters.JSON
-import groovy.json.JsonSlurper
+import org.codehaus.groovy.grails.web.json.parser.JSONParser
 import org.elasticsearch.action.admin.cluster.health.ClusterHealthResponse
-import org.elasticsearch.client.transport.TransportClient
 import org.elasticsearch.cluster.health.ClusterHealthStatus
 import org.elasticsearch.cluster.health.ClusterIndexHealth
 import org.elasticsearch.common.settings.Settings
 import org.elasticsearch.common.transport.InetSocketTransportAddress
+
+import java.text.ParseException
 
 class ESWrapperService {
 
@@ -50,10 +50,18 @@ class ESWrapperService {
     }
 
     //grails-app/config
-    private def inputFile = this.class.classLoader.getResourceAsStream(
-            "elasticsearch/es_mapping.txt"
+    private def inputStream = this.class.classLoader.getResourceAsStream(
+            "elasticsearch/es_mapping.json"
     )
-    def es_mapping = new JsonSlurper().parseText(inputFile.text)
+
+    def getESMapping(){
+
+        JSONParser jsonParser = new JSONParser(this.class.classLoader.getResourceAsStream(
+                "elasticsearch/es_mapping.json"))
+
+        return jsonParser.parse()
+
+    }
 
     def clusterHealth(){
         ClusterHealthResponse healths = client.admin().cluster().prepareHealth().get();
