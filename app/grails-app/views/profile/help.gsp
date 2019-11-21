@@ -17,12 +17,12 @@
 <div class="ui styled accordion">
     <div class="active title">
         <i class="dropdown icon"></i>
-        Wo kann ich das Handbuch, Anleitungen und die FAQ finden?
+        Wo kann ich das Handbuch, die Anleitungen und die FAQ finden?
     </div>
     <div class="active content">
         <div class="ui relaxed divided list">
             <p>
-                Die Handbuch, Anleitungen und die FAQ finden Sie hier:
+                Das Handbuch, die Anleitungen und die FAQ finden Sie hier:
                 <a href="https://service-wiki.hbz-nrw.de/display/LAS/Startseite" class="header" target="_blank">https://service-wiki.hbz-nrw.de/display/LAS/Startseite</a>
 
             </p>
