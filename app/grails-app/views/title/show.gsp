@@ -113,23 +113,24 @@
 
                 </div>
                 </semui:form>
-            </div><!-- .twelve -->
-        </div>
+            </div>
 
-            <div class="twelve wide column">
 
-              <g:each in="${duplicates}" var="entry">
-                  <bootstrap:alert class="alert-info">
-                      ${message(code:'title.edit.duplicate.warn', args:[entry.key])}:
-                      <ul>
-                          <g:each in ="${entry.value}" var="dup_title">
-                              <li><g:link controller='title' action='show' id="${dup_title.id}">${dup_title.title}</g:link></li>
-                          </g:each>
-                      </ul>
-                  </bootstrap:alert>
-              </g:each>
+            <div class="sixteen wide column">
+                <semui:form>
+                  <g:each in="${duplicates}" var="entry">
 
-            </div><!-- .twelve -->
+                          ${message(code:'title.edit.duplicate.warn', args:[entry.key])}:
+                          <ul>
+                              <g:each in ="${entry.value}" var="dup_title">
+                                  <li><g:link controller='title' action='show' id="${dup_title.id}">${dup_title.title}</g:link></li>
+                              </g:each>
+                          </ul>
+
+                  </g:each>
+                </semui:form>
+            </div>
+
         </div><!-- .grid -->
 
           <h3 class="ui header"><g:message code="title.edit.orglink"/></h3>
