@@ -435,18 +435,18 @@ class SubscriptionController extends AbstractDebugController {
 
         def pc_to_delete = []
         pendingChanges.each { pc ->
-            def parsed_change_info = JSON.parse(pc[1])
-            if (parsed_change_info.tippID) {
+            def payload = JSON.parse(pc[1])
+            if (payload.tippID) {
                 pc_to_delete += pc[0]
-            }else if (parsed_change_info.tippId) {
+            }else if (payload.tippId) {
                     pc_to_delete += pc[0]
-            } else if (parsed_change_info.payload) {
-                def (oid_class, ident) = parsed_change_info.payload.OID.split(":")
+            } else if (payload.changeDoc) {
+                def (oid_class, ident) = payload.changeDoc.OID.split(":")
                 if (oid_class == tipp_class && tipp_ids.contains(ident.toLong())) {
                     pc_to_delete += pc[0]
                 }
             } else {
-                log.error("Could not decide if we should delete the pending change id:${pc[0]} - ${parsed_change_info}")
+                log.error("Could not decide if we should delete the pending change id:${pc[0]} - ${payload}")
             }
         }
         if (confirmed && pc_to_delete) {
