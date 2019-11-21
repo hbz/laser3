@@ -117,10 +117,11 @@ class AdminController extends AbstractDebugController {
     log.debug("Starting PendingChange Update. Found:${changes.size()}")
 
     changes.each{
-        def parsed_change_info = JSON.parse(it.changeDoc)
-        parsed_change_info.changeType = "PropertyChange"
+        def parsed_change_info = JSON.parse(it.payload)
+        parsed_change_info.changeType = PendingChangeService.EVENT_PROPERTY_CHANGE
+      //parsed_change_info.changeType = "PropertyChange"
         //parsed_change_info.changeDoc.propertyOID = parsed_change_info.changeDoc.OID
-        it.changeDoc = parsed_change_info
+        it.payload = parsed_change_info
         it.save(failOnError:true)
     }
     log.debug("Pending Change Update Complete.")

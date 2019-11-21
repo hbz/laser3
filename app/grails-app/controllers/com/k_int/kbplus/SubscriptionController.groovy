@@ -431,7 +431,7 @@ class SubscriptionController extends AbstractDebugController {
         def tipp_id_query = "from TitleInstancePackagePlatform tipp where tipp.pkg.id = ?"
         def change_doc_query = "from PendingChange pc where pc.subscription.id = ? "
         def tipp_ids = TitleInstancePackagePlatform.executeQuery("select tipp.id ${tipp_id_query}", [pkg_id])
-        def pendingChanges = PendingChange.executeQuery("select pc.id, pc.changeDoc ${change_doc_query}", [sub_id])
+        def pendingChanges = PendingChange.executeQuery("select pc.id, pc.payload ${change_doc_query}", [sub_id])
 
         def pc_to_delete = []
         pendingChanges.each { pc ->
@@ -440,8 +440,8 @@ class SubscriptionController extends AbstractDebugController {
                 pc_to_delete += pc[0]
             }else if (parsed_change_info.tippId) {
                     pc_to_delete += pc[0]
-            } else if (parsed_change_info.changeDoc) {
-                def (oid_class, ident) = parsed_change_info.changeDoc.OID.split(":")
+            } else if (parsed_change_info.payload) {
+                def (oid_class, ident) = parsed_change_info.payload.OID.split(":")
                 if (oid_class == tipp_class && tipp_ids.contains(ident.toLong())) {
                     pc_to_delete += pc[0]
                 }
