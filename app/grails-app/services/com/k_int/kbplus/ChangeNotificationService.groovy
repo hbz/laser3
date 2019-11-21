@@ -275,8 +275,8 @@ class ChangeNotificationService extends AbstractLockableService {
         def existsPendingChange = null
         //IF PENDING Change for PKG exists
         if (prop == PendingChange.PROP_PKG) {
-            def jsonChangeDocument = changeMap as JSON
-            def changeDocNew = jsonChangeDocument.toString();
+            def payload = changeMap as JSON
+            def changeDocNew = payload.toString()
 
             existsPendingChange = PendingChange.findWhere(
                     desc: desc,
@@ -285,7 +285,7 @@ class ChangeNotificationService extends AbstractLockableService {
                     msgToken: msgToken,
                     msgParams: null,
                     pkg: target,
-                    changeDoc: changeDocNew,
+                    payload: changeDocNew,
             )
         }
         if (!existsPendingChange) {
@@ -299,8 +299,8 @@ class ChangeNotificationService extends AbstractLockableService {
 
             new_pending_change[prop] = target;
 
-            def jsonChangeDocument = changeMap as JSON
-            new_pending_change.changeDoc = jsonChangeDocument.toString();
+            def payload = changeMap as JSON
+            new_pending_change.payload = payload.toString()
 
             def jsonMsgParams = msgParams as JSON
             new_pending_change.msgParams = msgParams ? jsonMsgParams.toString() : null
