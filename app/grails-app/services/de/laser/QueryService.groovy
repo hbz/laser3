@@ -3,6 +3,7 @@ package de.laser
 import com.k_int.kbplus.*
 import com.k_int.kbplus.abstract_domain.AbstractProperty
 import com.k_int.kbplus.auth.User
+import de.laser.helper.RDStore
 import de.laser.helper.SqlDateUtils
 
 import static com.k_int.kbplus.UserSettings.KEYS.*
@@ -37,7 +38,7 @@ class QueryService {
                     contextUser,
                     contextOrg,
                     [query:" and status = :open and endDate <= :endDate",
-                     queryParams:[open: RefdataValue.getByValueAndCategory('Open', 'Task Status'),
+                     queryParams:[open: RDStore.TASK_STATUS_OPEN,
                                   endDate: computeInfoDate(contextUser, REMIND_PERIOD_FOR_TASKS)]]) )
         }
 
@@ -161,7 +162,7 @@ class QueryService {
     }
 
     private def getMyLicensesQuery(Org institution){
-        def template_license_type = RefdataValue.getByValueAndCategory('Template', 'License Type')
+        def template_license_type = RDStore.LICENSE_TYPE_TEMPLATE
         def result = [:]
         def base_qry
         def qry_params

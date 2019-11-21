@@ -2233,9 +2233,9 @@ AND EXISTS (
         result.announcementOffset = 0
         result.dashboardDueDatesOffset = 0
         switch(params.view) {
-            case 'announcementsView': result.announcementOffset = Integer.parseInt(params.offset)
+            case 'announcementsView': result.announcementOffset = result.offset
             break
-            case 'dueDatesView': result.dashboardDueDatesOffset = Integer.parseInt(params.offset)
+            case 'dueDatesView': result.dashboardDueDatesOffset = result.offset
             break
         }
 

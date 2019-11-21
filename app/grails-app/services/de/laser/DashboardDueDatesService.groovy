@@ -99,7 +99,6 @@ class DashboardDueDatesService {
 
                 dashboarEntriesToInsert.each { DashboardDueDate newDueDate ->
                     //update
-//                        SET date = date, lastUpdated = :now
                     int anzUpdates = DashboardDueDate.executeUpdate("""UPDATE DashboardDueDate 
                         SET date = :date, lastUpdated = :now
                         WHERE attribut = :attribut 
@@ -126,7 +125,7 @@ class DashboardDueDatesService {
                     }
                 }
                 // delete (not-inserted and non-updated entries, they are obsolet)
-                int anzDeletes = DashboardDueDate.executeUpdate("DELETE from DashboardDueDate WHERE lastUpdated < :now", [now: now])
+                int anzDeletes = DashboardDueDate.executeUpdate("DELETE from DashboardDueDate WHERE lastUpdated < :now and isDone = false and isHidden = false", [now: now])
                 log.debug("DashboardDueDatesService DELETES: " + anzDeletes);
 
                 log.debug("DashboardDueDatesService INSERT Anzahl: " + dashboarEntriesToInsert.size)
