@@ -56,8 +56,7 @@ class ESWrapperService {
 
     def getESMapping(){
 
-        JSONParser jsonParser = new JSONParser(this.class.classLoader.getResourceAsStream(
-                "elasticsearch/es_mapping.json"))
+        JSONParser jsonParser = new JSONParser(inputStream)
 
         return jsonParser.parse()
 

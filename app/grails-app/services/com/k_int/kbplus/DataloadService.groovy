@@ -312,6 +312,7 @@ class DataloadService {
                         result.packages.add(pgkinfo);
                     }
                 }
+                result.suggest = [input: [sub.name.split(' ')]]
 
             result
         }

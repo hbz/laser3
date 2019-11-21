@@ -294,6 +294,10 @@
             "type": "keyword"
           }
         }
+      },
+      "suggest" : { "type" : "completion",
+        "analyzer" : "simple",
+        "search_analyzer" : "simple"
       }
     }
   },
