@@ -40,6 +40,7 @@ class BootStrap {
 
         log.info("SystemId: ${grailsApplication.config.laserSystemId}")
         log.info("Database: ${grailsApplication.config.dataSource.url}")
+        log.info("Database datasource dbCreate: ${grailsApplication.config.dataSource.dbCreate}")
         log.info("Database migration plugin updateOnStart: ${grailsApplication.config.grails.plugin.databasemigration.updateOnStart}")
         log.info("Documents: ${grailsApplication.config.documentStorageLocation}")
 
