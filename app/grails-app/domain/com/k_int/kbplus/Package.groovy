@@ -636,7 +636,7 @@ static hasMany = [  tipps:     TitleInstancePackagePlatform,
 
     def getCurrentTipps()
     {
-        def result = this.tipps?.findAll{it?.status?.value == 'Current'}
+        def result = this.tipps?.findAll{it?.status?.id == RDStore.TIPP_STATUS_CURRENT.id}
 
         result
     }
