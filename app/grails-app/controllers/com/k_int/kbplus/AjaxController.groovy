@@ -7,7 +7,6 @@ import com.k_int.properties.PropertyDefinitionGroup
 import com.k_int.properties.PropertyDefinitionGroupBinding
 import de.laser.AuditConfig
 import de.laser.domain.AbstractI10nTranslatable
-import de.laser.domain.IssueEntitlementCoverage
 import de.laser.domain.SystemProfiler
 import de.laser.helper.DebugAnnotation
 import de.laser.helper.DebugUtil
@@ -18,7 +17,6 @@ import de.laser.interfaces.ShareSupport
 import grails.converters.JSON
 import grails.plugin.springsecurity.annotation.Secured
 import org.codehaus.groovy.grails.orm.hibernate.cfg.GrailsHibernateUtil
-import org.codehaus.groovy.grails.web.converters.exceptions.ConverterException
 
 //import org.grails.orm.hibernate.cfg.GrailsHibernateUtil
 
@@ -1539,11 +1537,11 @@ class AjaxController {
                     // e.g. PendingChange.changeDoc = {changeTarget, changeType, changeDoc:{OID,  event}}
                     def openPD = PendingChange.executeQuery("select pc from PendingChange as pc where pc.status is null" )
                     openPD.each { pc ->
-                        if (pc.changeDoc) {
-                            def event = JSON.parse(pc.changeDoc)
-                            if (event.changeDoc) {
-                                def eventObj = genericOIDService.resolveOID(event.changeDoc.OID)
-                                def eventProp = event.changeDoc.prop
+                        if (pc.payload) {
+                            def payload = JSON.parse(pc.payload)
+                            if (payload.changeDoc) {
+                                def eventObj = genericOIDService.resolveOID(payload.changeDoc.OID)
+                                def eventProp = payload.changeDoc.prop
 
                                 if (eventObj?.id == owner.id && eventProp.equalsIgnoreCase(prop)) {
                                     pc.delete(flush: true)
@@ -1631,10 +1629,10 @@ class AjaxController {
                     // e.g. PendingChange.changeDoc = {changeTarget, changeType, changeDoc:{OID,  event}}
                     def openPD = PendingChange.executeQuery("select pc from PendingChange as pc where pc.status is null and pc.costItem is null" )
                     openPD?.each { pc ->
-                        def event = JSON.parse(pc?.changeDoc)
-                        if (event && event?.changeDoc) {
-                            def eventObj = genericOIDService.resolveOID(event.changeDoc?.OID)
-                            def eventProp = event.changeDoc?.prop
+                        def payload = JSON.parse(pc?.payload)
+                        if (payload && payload?.changeDoc) {
+                            def eventObj = genericOIDService.resolveOID(payload.changeDoc?.OID)
+                            def eventProp = payload.changeDoc?.prop
                             if (eventObj?.id == owner?.id && eventProp.equalsIgnoreCase(prop)) {
                                 pc.delete(flush: true)
                             }
@@ -1666,10 +1664,10 @@ class AjaxController {
 
             def openPD = PendingChange.executeQuery("select pc from PendingChange as pc where pc.status is null" )
             openPD.each { pc ->
-                if (pc.changeDoc) {
-                    def event = JSON.parse(pc.changeDoc)
-                    if (event.changeDoc) {
-                        def scp = genericOIDService.resolveOID(event.changeDoc.OID)
+                if (pc.payload) {
+                    def payload = JSON.parse(pc.payload)
+                    if (payload.changeDoc) {
+                        def scp = genericOIDService.resolveOID(payload.changeDoc.OID)
                         if (scp?.id == property.id) {
                             pc.delete(flush: true)
                         }

@@ -202,7 +202,7 @@ class SubscriptionUpdateService extends AbstractLockableService {
             Subscription subscription = ClassUtils.deproxy(pc.subscription)
             if(subscription.status != RDStore.SUBSCRIPTION_EXPIRED) {
                 Set currSubChanges = currentPendingChanges.get(subscription) ?: []
-                currSubChanges.add(JSON.parse(pc.changeDoc).changeDoc)
+                currSubChanges.add(JSON.parse(pc.payload).changeDoc)
                 currentPendingChanges.put(subscription,currSubChanges)
             }
         }
