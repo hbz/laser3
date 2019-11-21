@@ -35,7 +35,7 @@
                     <th>${message(code:'myinst.dash.due_date.date.label')}</th>
                     <th>${message(code:'myinst.dash.due_dates.name.label')}</th>
                     <th>${message(code:'myinst.dash.due_dates.hide.label')}</th>
-                    <th>${message(code:'myinst.dash.due_dates.done.label')}</th>
+                    %{--<th>${message(code:'myinst.dash.due_dates.done.label')}</th>--}%
                 </tr>
             </thead>
             <tbody>
@@ -111,7 +111,7 @@
                                 </div>
                             </td>
                             <td><semui:xEditableBoolean owner="${dashDueDate}" field="isHidden" /></td>
-                            <td><semui:xEditableBoolean owner="${dashDueDate}" field="isDone" /></td>
+                            %{--<td><semui:xEditableBoolean owner="${dashDueDate}" field="isDone" /></td>--}%
                         </tr>
                     </g:if>
                 </g:each>
