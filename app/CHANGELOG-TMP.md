@@ -20,4 +20,6 @@
 
 1837 - 06.11.2019 - rc-1.1  - David - Bug     - Standard-Dashboard beim Einloggen setzen
 
+1747 - 18.11.19 - hbz-dev - Anja - Feature - Modaler Dialog zum Anlegen von Aufgaben: Dialog ist schneller, Dropdowns nun vollständig und gemäss Anzeigekonventionen
+
     

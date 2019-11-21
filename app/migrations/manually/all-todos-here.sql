@@ -78,3 +78,7 @@
 -- 2019-11-18
 -- Delete deprecated user settings
 delete from user_settings where us_key_enum like 'DASHBOARD_REMINDER_PERIOD';
+
+-- 2019-11-18
+-- Rename Column
+alter table dashboard_due_date RENAME das_is_hide TO  das_is_hidden ;
