@@ -2,6 +2,10 @@
 
 **Ticket - Date - Branch - Author - Feature/Bug  - Description/Keywords**
 
+1872   2019-11-21 - hbz-dev  - Moe - Feature - Prevent deletion of the last INST_ADMIN of a org
+
+1888   2019-11-21 - hbz-dev  - Moe - Feature - improve global search
+
 -      2019-11-20 - rc-1.1  - Andreas Gálffy - Bug - pending changes are now filtered out when deactivating audit
     
 1869 - 20.11.2019 - hbz-dev - David - Feature - API-Endpunkt /subscription liefert Vorgänger und Nachfolger (0.72)

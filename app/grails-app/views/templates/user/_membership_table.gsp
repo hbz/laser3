@@ -48,11 +48,20 @@
                             <g:link class="ui button" controller="profile" action="processCancelRequest" params="${[assoc:aff.id]}">${message(code:'default.button.revoke.label', default:'Revoke')}</g:link>
                         </g:if>
                         <g:if test="${tmplUserEdit}">
-                            <g:if test="${editor.hasRole('ROLE_ADMIN') || (aff.org.id == contextService.getOrg().id) || (aff.org.id in comboOrgIds)}">
-                                <g:link controller="ajax" action="deleteThrough" params='${[contextOid:"${userInstance.class.name}:${userInstance.id}",contextProperty:"affiliations",targetOid:"${aff.class.name}:${aff.id}"]}'
-                                        class="ui icon negative button">
-                                    <i class="trash alternate icon"></i>
-                                </g:link>
+                            <g:if test="${(editor.hasRole('ROLE_ADMIN') || (aff.org.id == contextService.getOrg().id) || (aff.org.id in comboOrgIds))}">
+                                <g:if test="${!instAdmService.isLastAdminForOrg(aff.org, userInstance)}">
+                                    <g:link controller="ajax" action="deleteThrough" params='${[contextOid:"${userInstance.class.name}:${userInstance.id}",contextProperty:"affiliations",targetOid:"${aff.class.name}:${aff.id}"]}'
+                                            class="ui icon negative button">
+                                        <i class="trash alternate icon"></i>
+                                    </g:link>
+                                </g:if>
+                                <g:else>
+                                    <span  class="la-popup-tooltip la-delay" data-content="${message(code:'user.affiliation.lastAdminForOrg', args: [userInstance.getDisplayName()])}">
+                                        <button class="ui icon negative button" disabled="disabled">
+                                            <i class="trash alternate icon"></i>
+                                        </button>
+                                    </span>
+                                </g:else>
                             </g:if>
                         </g:if>
                     </td>
