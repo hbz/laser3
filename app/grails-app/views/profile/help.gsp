@@ -17,6 +17,20 @@
 <div class="ui styled accordion">
     <div class="active title">
         <i class="dropdown icon"></i>
+        Wo kann ich das Handbuch, die Anleitungen und die FAQ finden?
+    </div>
+    <div class="active content">
+        <div class="ui relaxed divided list">
+            <p>
+                Das Handbuch, die Anleitungen und die FAQ finden Sie hier:
+                <a href="https://service-wiki.hbz-nrw.de/display/LAS/Startseite" class="header" target="_blank">https://service-wiki.hbz-nrw.de/display/LAS/Startseite</a>
+
+            </p>
+
+        </div>
+    </div>
+    <div class="active title">
+        <i class="dropdown icon"></i>
         Symbole, Schriften oder Farben werden nicht richtig dargestellt
     </div>
     <div class="active content">
@@ -45,7 +59,6 @@
             </div>
         </div>
     </div>
-
 </div>
 
 </body>
