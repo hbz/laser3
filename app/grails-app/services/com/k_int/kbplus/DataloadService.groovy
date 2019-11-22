@@ -5,8 +5,6 @@ import de.laser.SystemEvent
 import de.laser.helper.RDStore
 import de.laser.interfaces.TemplateSupport
 import groovy.json.JsonOutput
-import org.elasticsearch.action.admin.indices.create.CreateIndexRequest
-import org.elasticsearch.action.admin.indices.create.CreateIndexResponse
 import org.elasticsearch.action.admin.indices.delete.DeleteIndexRequest
 import org.elasticsearch.action.admin.indices.delete.DeleteIndexResponse
 import org.elasticsearch.action.admin.indices.flush.FlushRequest
@@ -41,7 +39,7 @@ class DataloadService {
 
     @javax.annotation.PostConstruct
     def init () {
-        es_index = grailsApplication.config.aggr_es_index ?: ESWrapperService.ES_INDEX
+        es_index = ESWrapperService.getESSettings().indexName
     }
 
     def updateFTIndexes() {
@@ -76,7 +74,7 @@ class DataloadService {
             def result = [:]
 
                 result._id = org.globalUID
-                result.priority = 3
+                result.priority = 30
                 result.dbId = org.id
 
                 result.gokbId = org.gokbId
@@ -97,6 +95,7 @@ class DataloadService {
                 result.rectype = 'Organisation'
                 result.sector = org.sector?.value
                 result.status = org.status?.value
+                result.statusId = org.status?.id
                 result.visible = ['Public']
 
             result
@@ -119,7 +118,7 @@ class DataloadService {
                     }
 
                     result._id = ti.globalUID
-                    result.priority = 2
+                    result.priority = 20
                     result.dbId = ti.id
 
                     result.gokbId = ti.gokbId
@@ -139,6 +138,7 @@ class DataloadService {
                     result.rectype = 'Title'
                     result.sortTitle = ti.sortTitle
                     result.status = ti.status?.value
+                    result.statusId = ti.status?.id
                     result.typTitle = ti.type?.value
                     result.name = ti.title
                     result.visible = ['Public']
@@ -153,7 +153,7 @@ class DataloadService {
             def result = [:]
 
                 result._id = pkg.globalUID
-                result.priority = 4
+                result.priority = 30
                 result.dbId = pkg.id
 
                 result.gokbId = pkg.gokbId
@@ -188,6 +188,7 @@ class DataloadService {
                 result.sortname = pkg.sortName
                 result.startDate = pkg.startDate
                 result.status = pkg.packageStatus?.value
+                result.statusId = pkg.packageStatus?.id
                 result.titleCount = pkg.tipps.size()?:0
                 result.titleCountCurrent = pkg.getCurrentTipps().size()?:0
 
@@ -213,7 +214,7 @@ class DataloadService {
             def result = [:]
 
             result._id = lic.globalUID
-            result.priority = 4
+            result.priority = 40
             result.dbId = lic.id
             result.guid = lic.globalUID ?:''
             switch(lic.getCalculatedType()) {
@@ -230,8 +231,22 @@ class DataloadService {
             result.name = lic.reference
             result.rectype = 'License'
             result.status = lic.status?.value
+            result.statusId = lic.status?.id
             result.endDate = lic.endDate
             result.startDate = lic.startDate
+
+            if (lic.startDate) {
+                GregorianCalendar c = new GregorianCalendar()
+                c.setTime(lic.startDate)
+                result.startYear = "${c.get(Calendar.YEAR)}"
+            }
+
+            if (lic.endDate) {
+                GregorianCalendar c = new GregorianCalendar()
+                c.setTime(lic.endDate)
+                result.endYear = "${c.get(Calendar.YEAR)}"
+            }
+
             result.visible = ['Private']
             result
         }
@@ -240,7 +255,7 @@ class DataloadService {
             def result = [:]
 
                 result._id = plat.globalUID
-                result.priority = 3
+                result.priority = 30
                 result.dbId = plat.id
 
                 result.gokbId = plat.gokbId
@@ -251,6 +266,7 @@ class DataloadService {
                 result.primaryUrl = plat.primaryUrl
                 result.rectype = 'Platform'
                 result.status = plat.status?.value
+                result.statusId = plat.status?.id
                 result.visible = ['Public']
 
             result
@@ -260,7 +276,7 @@ class DataloadService {
             def result = [:]
 
                 result._id = sub.globalUID
-                result.priority = 5
+                result.priority = 50
                 result.dbId = sub.id
                 result.guid = sub.globalUID ?: ''
                 switch (sub.getCalculatedType()) {
@@ -291,6 +307,7 @@ class DataloadService {
                 result.endDate = sub.endDate
                 result.startDate = sub.startDate
                 result.status = sub.status?.value
+                result.statusId = sub.status?.id
                 result.subtype = sub.type?.value
                 result.visible = ['Private']
 
@@ -298,7 +315,12 @@ class DataloadService {
                     GregorianCalendar c = new GregorianCalendar()
                     c.setTime(sub.startDate)
                     result.startYear = "${c.get(Calendar.YEAR)}"
-                    result.startYearAndMonth = "${c.get(Calendar.YEAR)}-${(c.get(Calendar.MONTH)) + 1}"
+                }
+
+                if (sub.endDate) {
+                    GregorianCalendar c = new GregorianCalendar()
+                    c.setTime(sub.endDate)
+                    result.endYear = "${c.get(Calendar.YEAR)}"
                 }
 
                 sub.packages.each { sp ->
@@ -317,32 +339,31 @@ class DataloadService {
             result
         }
 
-        //Nicht auf SurveyOrg, da sonst man die Umfrage sieht bevor Sie bereit ist!
-       /* updateES(esclient, com.k_int.kbplus.SurveyResult.class) { surResult ->
-            def result = [:]
-
-            result._id = SurveyOrg.findBySurveyConfigAndOrg(surResult.surveyConfig, surResult.participant).id
-            result.dbId = surResult.surveyConfig?.surveyInfo?.id
-            result.availableToOrgs = surResult.participant?.id
-            result.name = surResult.surveyConfig?.getConfigNameShort()
-
-            result.rectype = 'ParticipantSurveys'
-
-            result
-        }*/
-
         updateES(esclient, com.k_int.kbplus.SurveyConfig.class) { surveyConfig ->
             def result = [:]
 
             result._id = surveyConfig.id*surveyConfig.surveyInfo.id
-            result.priority = 5
+            result.priority = 50
             result.dbId = surveyConfig.id
             result.availableToOrgs = surveyConfig.surveyInfo.owner?.id
             result.name = surveyConfig.getSurveyName()
             result.status= surveyConfig.surveyInfo.status?.value
+            result.statusId= surveyConfig.surveyInfo.status?.id
+
+            if (surveyConfig.surveyInfo.startDate) {
+                GregorianCalendar c = new GregorianCalendar()
+                c.setTime(surveyConfig.surveyInfo.startDate)
+                result.startYear = "${c.get(Calendar.YEAR)}"
+            }
+
+            if (surveyConfig.surveyInfo.endDate) {
+                GregorianCalendar c = new GregorianCalendar()
+                c.setTime(surveyConfig.surveyInfo.endDate)
+                result.endYear = "${c.get(Calendar.YEAR)}"
+            }
             result.visible = ['Private']
 
-            result.rectype = 'Surveys'
+            result.rectype = 'Survey'
 
             result
         }
@@ -351,14 +372,28 @@ class DataloadService {
             def result = [:]
 
             result._id = surOrg.id
-            result.priority = 5
+            result.priority = 50
             result.dbId = surOrg.id
             result.availableToOrgs = (surOrg.surveyConfig.surveyInfo.status != RDStore.SURVEY_IN_PROCESSING) ? [surOrg.org.id] : []
             result.name = surOrg.surveyConfig.getSurveyName()
             result.status= surOrg.surveyConfig.surveyInfo.status?.value
+            result.statusId= surOrg.surveyConfig.surveyInfo.status?.id
+
+            if (surOrg.surveyConfig.surveyInfo.startDate) {
+                GregorianCalendar c = new GregorianCalendar()
+                c.setTime(surOrg.surveyConfig.surveyInfo.startDate)
+                result.startYear = "${c.get(Calendar.YEAR)}"
+            }
+
+            if (surOrg.surveyConfig.surveyInfo.endDate) {
+                GregorianCalendar c = new GregorianCalendar()
+                c.setTime(surOrg.surveyConfig.surveyInfo.endDate)
+                result.endYear = "${c.get(Calendar.YEAR)}"
+            }
+
             result.visible = ['Private']
 
-            result.rectype = 'ParticipantSurveys'
+            result.rectype = 'ParticipantSurvey'
 
             result
         }
@@ -642,20 +677,19 @@ class DataloadService {
         }
         else if (domain.name == 'com.k_int.kbplus.SurveyConfig')
         {
-            rectype = "ParticipantSurveys"
+            rectype = "ParticipantSurvey"
         }
 
         else if (domain.name == 'com.k_int.kbplus.SurveyOrg')
         {
-            rectype = "Surveys"
+            rectype = "Survey"
         }
         def query_str = "rectype: '${rectype}'"
 
-        def indices = grailsApplication.config.aggr_es_index ?: ESWrapperService.ES_INDEX
-
+        def index = ESWrapperService.getESSettings().indexName
         Client esclient = ESWrapperService.getClient()
 
-        def search = esclient.prepareSearch(indices).setQuery(QueryBuilders.queryStringQuery(query_str)).get()
+        def search = esclient.prepareSearch(index).setQuery(QueryBuilders.queryStringQuery(query_str)).get()
 
             def resultsTotal =  search ?search.hits.totalHits: 0
 
