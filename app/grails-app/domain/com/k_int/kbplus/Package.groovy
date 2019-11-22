@@ -33,6 +33,7 @@ class Package
   String identifier
   String name
   String sortName
+  @Deprecated
   String impId
   String gokbId
    //URL originEditUrl
@@ -149,65 +150,6 @@ static hasMany = [  tipps:     TitleInstancePackagePlatform,
                   sortName(nullable:true, blank:false)
   }
 
-  static Package createOrUpdate(NodeChildren packageData, GlobalRecordSource grs) {
-      log.info('converting XML record into map and reconciling new package!')
-      Package result = findByGokbId(packageData.'@uuid'.text()) ?: new Package(gokbId: packageData.'@uuid'.text()) //impId needed?
-      String title = packageData.title.text()
-      result.name = packageData.name.text()
-      result.packageStatus = RefdataValue.getByValueAndCategory(packageData.status.text(), 'Package Status')
-      result.packageScope = RefdataValue.getByValueAndCategory(packageData.scope.text(),RefdataCategory.PKG_SCOPE) //needed?
-      result.packageListStatus = RefdataValue.getByValueAndCategory(packageData.listStatus.text(),RefdataCategory.PKG_LIST_STAT) //needed?
-      result.breakable = RefdataValue.getByValueAndCategory(packageData.breakable.text(),RefdataCategory.PKG_BREAKABLE) //needed?
-      result.consistent = RefdataValue.getByValueAndCategory(packageData.consistent.text(),RefdataCategory.PKG_CONSISTENT) //needed?
-      result.fixed = RefdataValue.getByValueAndCategory(packageData.fixed.text(),RefdataCategory.PKG_FIXED) //needed?
-      //result.global = packageData.global.text() needed? not used in packageReconcile
-      //result.paymentType = packageData.paymentType.text() needed? not used in packageReconcile
-      if(packageData.nominalProvider.'@uuid'.text()){
-          String providerUUID = packageData.nominalProvider.'@uuid'.text()
-          //Org.lookupOrCreate2 simplified
-          Org provider = Org.findByGokbId(providerUUID)
-          if(!provider) {
-              provider = new Org(
-                      name: packageData.nominalProvider.name.text(),
-                      sector: RDStore.O_SECTOR_PUBLISHER,
-                      type: [RDStore.OT_PROVIDER],
-                      gokbId: providerUUID
-              )
-              if(!provider.save()) {
-                  log.error(provider.errors)
-              }
-          }
-          HTTPBuilder http = new HTTPBuilder(grs.uri.replaceAll("packages",""))
-          http.request(GET,XML) {
-              uri.query = [verb:'getRecord',metadataPrefix:grs.fullPrefix,identifier:providerUUID]
-              response.success { resp, xml ->
-                  println resp.statusLine
-                  NodeChildren metadata = xml.'GetRecord'.record.metadata
-                  if(metadata) {
-                      metadata.gokb.org.providedPlatforms.platform.each { plat ->
-                          //ex setOrUpdateProviderPlattform()
-                          log.info("checking provider with uuid ${providerUUID}")
-                          Platform platform = Platform.lookupOrCreatePlatform([name: plat.name.text(), gokbId: plat.'@uuid'.text(), primaryUrl: plat.primaryUrl.text()])
-                          if(platform.org != provider) {
-                              platform.org = provider
-                              platform.save()
-                          }
-                      }
-                  }
-              }
-              response.failure = { resp ->
-                  println "Unexpected error on fetching provider data: ${resp.statusLine.statusCode} : ${resp.statusLine.reasonPhrase}."
-              }
-          }
-      }
-      /*
-      updatedRecord.nominalPlatform = packageData.nominalPlatform.name.text() //needed?
-      updatedRecord.nominalPlatformUUID = packageData.nominalPlatform.'@uuid'?.text()
-      updatedRecord.nominalPlatformPrimaryUrl = packageData.nominalPlatform.primaryUrl.text() //needed?
-       */
-      result
-  }
-
     @Override
     boolean checkSharePreconditions(ShareableTrait sharedObject) {
         false // NO SHARES
@@ -225,6 +167,7 @@ static hasMany = [  tipps:     TitleInstancePackagePlatform,
         false // NO SHARES
     }
 
+  @Deprecated
   def getConsortia() {
     def result = null;
     orgs.each { or ->
@@ -238,6 +181,7 @@ static hasMany = [  tipps:     TitleInstancePackagePlatform,
    * Materialise this package into a subscription of the given type (taken or offered)
    * @param subtype One of 'Subscription Offered' or 'Subscription Taken'
    */
+  @Deprecated
   @Transient
   def createSubscription(subtype,
                          subname,
@@ -247,6 +191,7 @@ static hasMany = [  tipps:     TitleInstancePackagePlatform,
                          consortium_org) {
     createSubscription(subtype,subname,subidentifier,startdate,enddate,consortium_org,true)
   }
+ @Deprecated
  @Transient
   def createSubscription(subtype,
                          subname,
@@ -258,6 +203,7 @@ static hasMany = [  tipps:     TitleInstancePackagePlatform,
     createSubscription(subtype, subname,subidentifier,startdate,
                   enddate,consortium_org,add_entitlements,false)
   }
+  @Deprecated
   @Transient
   def createSubscription(subtype,
                          subname,
@@ -269,7 +215,7 @@ static hasMany = [  tipps:     TitleInstancePackagePlatform,
     createSubscription(subtype, subname,subidentifier,startdate,
                   enddate,consortium_org,"Package Consortia",add_entitlements,false)
   }
-
+  @Deprecated
   @Transient
   def createSubscription(subtype,
                          subname,
@@ -318,6 +264,7 @@ static hasMany = [  tipps:     TitleInstancePackagePlatform,
     result
   }
 
+  @Deprecated
   @Transient
   def updateNominalPlatform() {
     def platforms = [:]
@@ -452,14 +399,15 @@ static hasMany = [  tipps:     TitleInstancePackagePlatform,
     name ? "${name}" : "Package ${id}"
   }
 
-  @Transient
+  /*@Transient
   public String getURL() {
     "${grailsApplication.config.grails.serverURL}/package/show/${id}".toString();
-  }
+  }*/
 
+    /*
     def onChange = { oldMap, newMap ->
         log.debug("OVERWRITE onChange")
-    }
+    }*/
 
   // @Transient
   // def onChange = { oldMap,newMap ->
@@ -479,6 +427,7 @@ static hasMany = [  tipps:     TitleInstancePackagePlatform,
   //   }
   // }
 
+    /*
  @Transient
   def onSave = {
     log.debug("onSave")
@@ -490,9 +439,11 @@ static hasMany = [  tipps:     TitleInstancePackagePlatform,
                                                 ])
 
   }
+    */
   /**
   * OPTIONS: startDate, endDate, hideIdent, inclPkgStartDate, hideDeleted
-  **/
+  */
+    /*
   @Transient
   def notifyDependencies_trait(changeDocument) {
     def changeNotificationService = grailsApplication.mainContext.getBean("changeNotificationService")
@@ -500,6 +451,7 @@ static hasMany = [  tipps:     TitleInstancePackagePlatform,
       changeNotificationService.broadcastEvent("com.k_int.kbplus.SystemObject:1", changeDocument);
     }
   }
+     */
 
   @Transient
   static def refdataFind(params) {
@@ -541,7 +493,7 @@ static hasMany = [  tipps:     TitleInstancePackagePlatform,
     result
   }
 
-
+  @Deprecated
   @Transient
   def toComparablePackage() {
     def result = [:]

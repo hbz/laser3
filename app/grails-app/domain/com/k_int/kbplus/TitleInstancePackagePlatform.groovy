@@ -267,10 +267,12 @@ class TitleInstancePackagePlatform extends AbstractBaseDomain implements Auditab
     result
   }
 
+    /*
   @Transient
   def onSave = {
 
     log.debug("onSave")
+
     def changeNotificationService = grailsApplication.mainContext.getBean("changeNotificationService")
 
     changeNotificationService.fireEvent([
@@ -281,6 +283,7 @@ class TitleInstancePackagePlatform extends AbstractBaseDomain implements Auditab
                                                  linkedPackage:pkg.name,
                                                  linkedPlatform:platform.name
                                                 ])
+
   }
 
   @Transient
@@ -298,7 +301,9 @@ class TitleInstancePackagePlatform extends AbstractBaseDomain implements Auditab
                                                  linkedPlatform:platform.name
                                                 ])
   }
+    */
 
+    /*
   @Transient
   def notifyDependencies_trait(changeDocument) {
     log.debug("notifyDependencies_trait(${changeDocument})")
@@ -421,6 +426,7 @@ class TitleInstancePackagePlatform extends AbstractBaseDomain implements Auditab
     }
     //If the change is in a controller property, store it up and note it against subs
   }
+    */
 
   public Date getDerivedAccessStartDate() {
     accessStartDate ? accessStartDate : pkg?.startDate

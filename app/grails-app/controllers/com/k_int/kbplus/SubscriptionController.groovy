@@ -3,7 +3,6 @@ package com.k_int.kbplus
 import com.k_int.kbplus.abstract_domain.AbstractProperty
 import com.k_int.kbplus.auth.User
 import com.k_int.properties.PropertyDefinition
-import de.laser.AccessService
 import de.laser.AuditConfig
 import de.laser.DeletionService
 import de.laser.controller.AbstractDebugController
@@ -3192,10 +3191,10 @@ class SubscriptionController extends AbstractDebugController {
                 }*/
                 switch(params.addType) {
                     case "With": flash.message = message(code:'subscription.details.link.processingWithEntitlements')
-                        redirect action: 'index', id: params.id
+                        redirect action: 'index', model: [id: params.id, gokbId: params.impId]
                         break
                     case "Without": flash.message = message(code:'subscription.details.link.processingWithoutEntitlements')
-                        redirect action: 'addEntitlements', id: params.id
+                        redirect action: 'addEntitlements', model: [id: params.id, gokbId: params.impId] //TODO [ticket=1410,1807,1808,1819] impId -> gokbId
                         break
                 }
 

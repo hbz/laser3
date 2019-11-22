@@ -288,7 +288,6 @@ class GlobalSourceSyncService extends AbstractLockableService {
             println "getting local package ..."
             pkg = (Package) genericOIDService.resolveOID(grt.localOid)
             log.debug("Package successfully found, processing LAS:eR id #${pkg.id}, with GOKb id ${pkg.gokbId}")
-            //TODO [ticket=1410] after having revealed the local package, we have to hand out the ID to a waiting thread
             if (pkg && newpkg.status != 'Current') {
                 def pkg_del_status = RefdataValue.loc('Package Status', [en: 'Deleted', de: 'Gelöscht'])
                 if (newpkg.status == 'Retired') {
