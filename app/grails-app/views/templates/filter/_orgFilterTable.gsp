@@ -296,7 +296,32 @@
         </g:if>
         <g:if test="${tmplConfigShow?.contains('privateContacts')}">
             <td>
+                <g:set var="visiblePrivateContacts" value="[]" />
                 <g:each in="${org?.prsLinks?.toSorted()}" var="pl">
+                    <g:if test="${pl?.functionType?.value && (! pl.prs.isPublic) && pl?.prs?.tenant?.id == contextService.getOrg()?.id}">
+
+                        <g:if test="${! visiblePrivateContacts.contains(pl.prs.id)}">
+                            <g:set var="visiblePrivateContacts" value="${visiblePrivateContacts + pl.prs.id}" />
+
+                            <g:render template="/templates/cpa/person_full_details" model="${[
+                                    person                  : pl.prs,
+                                    personContext           : org,
+                                    tmplShowDeleteButton    : true,
+                                    tmplShowAddPersonRoles  : false,
+                                    tmplShowAddContacts     : false,
+                                    tmplShowAddAddresses    : false,
+                                    tmplShowFunctions       : true,
+                                    tmplShowPositions       : true,
+                                    tmplShowResponsiblities : false,
+                                    tmplConfigShow          : ['E-Mail', 'Mail', 'Phone'],
+                                    controller              : 'organisation',
+                                    action                  : 'show',
+                                    id                      : org.id,
+                                    editable                : true
+                            ]}"/>
+                        </g:if>
+                    </g:if>
+                    <%--
                     <g:if test="${pl?.functionType?.value && (! pl.prs.isPublic) && pl?.prs?.tenant?.id == contextService.getOrg()?.id}">
                         <g:render template="/templates/cpa/person_details" model="${[
                                 personRole          : pl,
@@ -307,6 +332,7 @@
                                 id                  : org.id
                         ]}"/>
                     </g:if>
+                    --%>
                 </g:each>
             </td>
         </g:if>
