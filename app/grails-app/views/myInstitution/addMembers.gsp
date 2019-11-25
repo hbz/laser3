@@ -47,7 +47,7 @@
         <g:render template="actions" />
     </semui:controlButtons>
     
-    <h1 class="ui left aligned icon header"><semui:headerIcon />${message(code: 'menu.institutions.add_consortia_members')}</h1>
+    <h1 class="ui left floated aligned icon header la-clear-before"><semui:headerIcon />${message(code: 'menu.institutions.add_consortia_members')}</h1>
 
     <semui:messages data="${flash}" />
 

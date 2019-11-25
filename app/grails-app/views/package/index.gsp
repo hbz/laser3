@@ -11,15 +11,15 @@
 <semui:breadcrumbs>
     <semui:crumb message="package.show.all" class="active"/>
 </semui:breadcrumbs>
-
-<h1 class="ui left aligned icon header"><semui:headerIcon/>${message(code: 'package.show.all')}
+<br>
+<h1 class="ui left floated aligned icon header la-clear-before"><semui:headerIcon/>${message(code: 'package.show.all')}
 <semui:totalNumber total="${resultsTotal2}"/>
 </h1>
 
 <semui:messages data="${flash}"/>
 
-
-<semui:filter>
+<g:render template="/templates/filter/javascript" />
+<semui:filter showFilterButton="true">
     <g:form action="index" method="get" params="${params}" class="ui form">
         <input type="hidden" name="offset" value="${params.offset}"/>
 
@@ -142,7 +142,7 @@
     </div>
   </div>--}%
 
-<div class="twelve wide column">
+<div class="twelve wide column la-clear-before">
     <div>
         <g:if test="${records}">
 

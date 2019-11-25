@@ -39,7 +39,7 @@
 
 <br>
 
-<h2 class="ui left aligned icon header">
+<h2 class="ui icon header la-clear-before la-noMargin-top">
     <g:if test="${surveyConfig?.type == 'Subscription'}">
         <i class="icon clipboard outline la-list-icon"></i>
         <g:link controller="subscription" action="show" id="${surveyConfig?.subscription?.id}">

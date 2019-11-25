@@ -11,8 +11,8 @@
             <semui:crumb message="menu.admin.dash" controller="admin" action="index" />
             <semui:crumb text="Title Merge" class="active"/>
         </semui:breadcrumbs>
-
-        <h1 class="ui left aligned icon header"><semui:headerIcon />Title Merge</h1>
+        <br>
+        <h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon />Title Merge</h1>
 
         <semui:messages data="${flash}" />
 

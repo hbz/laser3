@@ -11,7 +11,7 @@
     <semui:crumb text="Package Tipps LAS:eR and GOKB" class="active"/>
 </semui:breadcrumbs>
 
-<h1 class="ui header"> Package Tipps LAS:eR and GOKB</h1>
+<h1 class="ui header la-noMargin-top"> Package Tipps LAS:eR and GOKB</h1>
 
 %{--<g:link action="checkPackageTIPPs" params="${params+[onlyNotEqual: true]}" class="ui button">Show only where Tipps Not Equal</g:link>--}%
 <br>

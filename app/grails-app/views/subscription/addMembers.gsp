@@ -23,11 +23,11 @@
     <g:render template="actions"/>
 </semui:controlButtons>
 
-<h1 class="ui left aligned icon header"><semui:headerIcon/>
+<h1 class="ui left floated aligned icon header la-clear-before"><semui:headerIcon/>
 <g:inPlaceEdit domain="Subscription" pk="${subscriptionInstance.id}" field="name" id="name"
                class="newipe">${subscriptionInstance?.name}</g:inPlaceEdit>
 </h1>
-<h2 class="ui left aligned icon header">${message(code: 'subscription.details.addMembers.label', args:memberType)}</h2>
+<h2 class="ui left floated aligned icon header la-clear-before">${message(code: 'subscription.details.addMembers.label', args:memberType)}</h2>
 
 
 <g:if test="${consortialView || departmentalView}">

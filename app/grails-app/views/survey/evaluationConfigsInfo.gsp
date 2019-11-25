@@ -31,8 +31,6 @@
     <g:render template="actions"/>
 </semui:controlButtons>
 
-<br>
-
 <h1 class="ui icon header"><semui:headerTitleIcon type="Survey"/>
 <semui:xEditable owner="${surveyInfo}" field="name"/>
 <semui:surveyStatus object="${surveyInfo}"/>
@@ -119,7 +117,7 @@
 <br>
 <g:if test="${surveyConfig?.type == 'Subscription'}">
     <semui:form>
-        <h4 class="ui left aligned icon header">${message(code: 'surveyParticipants.label')} <semui:totalNumber
+        <h4 class="ui icon header la-clear-before la-noMargin-top">${message(code: 'surveyParticipants.label')} <semui:totalNumber
                 total="${surveyResult?.groupBy { it?.participant.id }?.size()}"/></h4>
 
         <h4><g:message code="surveyParticipants.hasAccess"/></h4>

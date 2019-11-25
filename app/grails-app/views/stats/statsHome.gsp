@@ -22,8 +22,8 @@
             </li>
             --%>
         </semui:breadcrumbs>
-
-        <h1 class="ui left aligned icon header"><semui:headerIcon />Stats</h1>
+        <br>
+        <h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon />Stats</h1>
 
         <table class="ui celled la-table table">
             <thead>

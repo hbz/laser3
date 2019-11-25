@@ -74,7 +74,7 @@ class DocContext implements ShareableTrait {
     status(nullable:true, blank:false)
     globannounce(nullable:true, blank:true)
       sharedFrom(nullable:true, blank:true)
-      isShared(nullable:true, blank:false, default:false)
+      isShared(nullable:true, blank:false)
       shareConf(nullable: true,blank: false)
       targetOrg(nullable: true, blank: false)
       surveyConfig (nullable: true,blank: false)

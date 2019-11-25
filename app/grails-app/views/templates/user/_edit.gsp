@@ -13,7 +13,7 @@
             <g:render template="/user/actions" />
         </semui:controlButtons>
 
-        <h1 class="ui left aligned icon header"><semui:headerIcon />
+        <h1 class="ui left floated aligned icon header la-clear-before"><semui:headerIcon />
             <g:message code="user.edit.label" />: ${user.username}
         </h1>
 
@@ -106,7 +106,7 @@
         </div>
     </g:if>
 
-    <sec:ifAnyGranted roles="ROLE_ADMIN">
+
         <g:if test="${editable}">
             <g:if test="${availableOrgs}">
                 <div class="ui segment form">
@@ -130,7 +130,7 @@
                 </div>
             </g:if>
         </g:if>
-    </sec:ifAnyGranted>
+
 
     <sec:ifAnyGranted roles="ROLE_ADMIN">
       <h4 class="ui dividing header">${message(code:'user.role.plural', default:'Roles')}</h4>

@@ -13,7 +13,6 @@
             <semui:crumb message="menu.public.all_orgs" class="active" />
         </semui:breadcrumbs>
 
-
             <semui:controlButtons>
                 <semui:exportDropdown>
                     <g:if test="${filterSet}">
@@ -50,14 +49,14 @@
 
             </semui:controlButtons>
 
-
-        <h1 class="ui left aligned icon header"><semui:headerIcon /><g:message code="menu.public.all_orgs" />
+        <h1 class="ui left floated aligned icon header la-clear-before"><semui:headerIcon /><g:message code="menu.public.all_orgs" />
             <semui:totalNumber total="${orgListTotal}"/>
         </h1>
 
         <semui:messages data="${flash}" />
 
-        <semui:filter>
+        <g:render template="../templates/filter/javascript" />
+        <semui:filter showFilterButton="true">
             <g:form action="list" method="get" class="ui form">
                 <g:render template="/templates/filter/orgFilter"
                           model="[

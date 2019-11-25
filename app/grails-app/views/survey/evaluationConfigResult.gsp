@@ -25,8 +25,6 @@
     <g:render template="actions"/>
 </semui:controlButtons>
 
-<br>
-
 <h1 class="ui icon header"><semui:headerTitleIcon type="Survey"/>
 <semui:xEditable owner="${surveyInfo}" field="name"/>
 <semui:surveyStatus object="${surveyInfo}"/>
@@ -112,7 +110,7 @@
 
 <div>
 
-    <h3 class="ui left aligned icon header">
+    <h3 class="ui icon header la-clear-before la-noMargin-top">
 
         <g:message code="surveyProperty.label"/>:
         ${surveyProperty?.getI10n('name')}
@@ -129,7 +127,7 @@
 
 
     <semui:form>
-        <h4 class="ui left aligned icon header">${message(code: 'surveyParticipants.label')} <semui:totalNumber
+        <h4 class="ui icon header la-clear-before la-noMargin-top">${message(code: 'surveyParticipants.label')} <semui:totalNumber
                 total="${surveyResult?.size()}"/></h4>
 
         <h4><g:message code="surveyParticipants.hasAccess"/></h4>

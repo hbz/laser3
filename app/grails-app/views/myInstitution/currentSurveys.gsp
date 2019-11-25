@@ -15,14 +15,15 @@
 <semui:breadcrumbs>
     <semui:crumb message="currentSurveys.label" class="active"/>
 </semui:breadcrumbs>
-
-<h1 class="ui left aligned icon header"><semui:headerIcon/>${institution?.name} - ${message(code: 'currentSurveys.label', default: 'Current Surveys')}
+<br>
+<h1 class="ui left floated aligned icon header la-clear-before"><semui:headerIcon/>${institution?.name} - ${message(code: 'currentSurveys.label', default: 'Current Surveys')}
 <semui:totalNumber total="${countSurveys.values().sum { it }}"/>
 </h1>
 
 <semui:messages data="${flash}"/>
 
-<semui:filter>
+<g:render template="../templates/filter/javascript" />
+<semui:filter showFilterButton="true">
     <g:form action="currentSurveys" controller="myInstitution" method="post" class="ui small form" params="[tab: params.tab ]">
         <div class="three fields">
             <div class="field">

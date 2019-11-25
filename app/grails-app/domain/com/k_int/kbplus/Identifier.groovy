@@ -78,12 +78,13 @@ class Identifier {
 		IdentifierNamespace ns
 		if (namespace instanceof IdentifierNamespace) {
 			ns = namespace
-		} else {
+		}
+        else {
 			ns = IdentifierNamespace.findByNsIlike(namespace?.trim())
 
 			if(! ns) {
-				ns = new IdentifierNamespace(ns:ns, isUnique: true, isHidden: false)
-				ns.save()
+				ns = new IdentifierNamespace(ns: namespace, isUnique: true, isHidden: false)
+				ns.save(flush:true)
 			}
 		}
 

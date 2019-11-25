@@ -15,7 +15,7 @@
 
         <semui:modeSwitch controller="platform" action="show" params="${params}" />
 
-        <h1 class="ui header">
+        <h1 class="ui header la-noMargin-top">
             <g:if test="${editable}"><span id="platformNameEdit"
                                            class="xEditableValue"
                                            data-type="textarea"
