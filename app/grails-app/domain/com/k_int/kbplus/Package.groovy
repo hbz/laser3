@@ -25,6 +25,8 @@ class Package
 
   @Transient
   def grailsApplication
+  @Transient
+  def deletionService
 
   String identifier
   String name
@@ -144,6 +146,10 @@ static hasMany = [  tipps:     TitleInstancePackagePlatform,
     cancellationAllowances(nullable:true, blank:false)
                   sortName(nullable:true, blank:false)
   }
+
+    def afterDelete() {
+        deletionService.deleteDocumentFromIndex(this.class.name, this.globalUID)
+    }
 
     @Override
     boolean checkSharePreconditions(ShareableTrait sharedObject) {
@@ -625,6 +631,13 @@ static hasMany = [  tipps:     TitleInstancePackagePlatform,
                 result = ident;
             }
         }
+        result
+    }
+
+    def getCurrentTipps()
+    {
+        def result = this.tipps?.findAll{it?.status?.id == RDStore.TIPP_STATUS_CURRENT.id}
+
         result
     }
 }

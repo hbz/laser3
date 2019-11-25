@@ -68,6 +68,7 @@ class DashboardDueDatesService {
         }
     }
     private updateDashboardTableInDatabase(def flash){
+        Date now = new Date();
         log.debug("Start DashboardDueDatesService updateDashboardTableInDatabase")
         SystemEvent.createEvent('DBDD_SERVICE_START_2')
 
@@ -95,12 +96,38 @@ class DashboardDueDatesService {
         }
         DashboardDueDate.withTransaction { status ->
             try {
-                DashboardDueDate.executeUpdate("DELETE from DashboardDueDate ")
-                log.debug("DashboardDueDatesService DELETE from DashboardDueDate");
-                dashboarEntriesToInsert.each {
-                    it.save(flush: true)
-                    log.debug("DashboardDueDatesService INSERT: " + it);
+
+                dashboarEntriesToInsert.each { DashboardDueDate newDueDate ->
+                    //update
+                    int anzUpdates = DashboardDueDate.executeUpdate("""UPDATE DashboardDueDate 
+                        SET date = :date, lastUpdated = :now
+                        WHERE attribut = :attribut 
+                        AND oid = :oid 
+                        AND responsibleOrg = :org 
+                        AND responsibleUser = :user""",
+                            [
+                                    date: newDueDate.date,
+                                    now: now,
+                                    attribut: newDueDate.attribut,
+                                    oid: newDueDate.oid,
+                                    org: newDueDate.responsibleOrg,
+                                    user: newDueDate.responsibleUser
+                            ])
+
+                    if (anzUpdates == 1) {
+                        log.debug("DashboardDueDatesService UPDATE: " + newDueDate);
+                    //insert if not exist
+                    } else if (anzUpdates < 1){
+                        newDueDate.save(flush: true)
+                        log.debug("DashboardDueDatesService INSERT: " + newDueDate);
+                    } else if (anzUpdates > 1){
+                        log.error("DashboardDueDate Error: Update "+anzUpdates+" records! It should be 0 or 1 record!")
+                    }
                 }
+                // delete (not-inserted and non-updated entries, they are obsolet)
+                int anzDeletes = DashboardDueDate.executeUpdate("DELETE from DashboardDueDate WHERE lastUpdated < :now and isDone = false and isHidden = false", [now: now])
+                log.debug("DashboardDueDatesService DELETES: " + anzDeletes);
+
                 log.debug("DashboardDueDatesService INSERT Anzahl: " + dashboarEntriesToInsert.size)
                 SystemEvent.createEvent('DBDD_SERVICE_PROCESSING_2', ['count': dashboarEntriesToInsert.size])
 

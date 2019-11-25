@@ -13,6 +13,7 @@ class DashboardDueDatesJob extends AbstractJob {
         cron name:'DashboardDueDatesTrigger', cronExpression: "0 0 22 * * ?" //Fire at 22:00 every day
 //        cron name:'DashboardDueDatesTrigger', cronExpression: "0 /15 * * * ?" //ONLY FOR DEVELOPMENT AND TESTS: Fire every 15th minute
 //        cron name:'DashboardDueDatesTrigger', cronExpression: "0 /5 * * * ?" //ONLY FOR DEVELOPMENT AND TESTS: Fire every 5th minute
+//        cron name:'DashboardDueDatesTrigger', cronExpression: "0 /1 * * * ?" //ONLY FOR DEVELOPMENT AND TESTS: Fire every minute
     }
 
     static configFlags = ['isUpdateDashboardTableInDatabase', 'isSendEmailsForDueDatesOfAllUsers']

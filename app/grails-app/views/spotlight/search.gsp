@@ -1,15 +1,9 @@
+<%@ page import="com.k_int.kbplus.SurveyConfig" %>
 <%
     def result = []
     hits.each { hit ->
 
-        if (hit.getSource().rectype == 'action') {
-            result << [
-                "title": "${hit.getSource().alias}",
-                "url":   g.createLink(controller:"${hit.getSource().controller}", action:"${hit.getSource().action}"),
-                "category": "${message(code: 'spotlight.action')}"
-            ]
-        }
-        else if (hit.getSource().rectype == 'License') {
+        if (hit.getSource().rectype == 'License') {
             result << [
                 "title": "${hit.getSource().name}",
                 "url":   g.createLink(controller:"license", action:"show", id:"${hit.getSource().dbId}"),
@@ -20,7 +14,7 @@
             result << [
                 "title": "${hit.getSource().name}",
                 "url":   g.createLink(controller:"organisation", action:"show", id:"${hit.getSource().dbId}"),
-                "category": "${message(code: 'spotlight.organisation')}"
+                "category": (hit.getSource().sector == 'Publisher') ? "${message(code: 'spotlight.ProviderAgency')}" : "${message(code: 'spotlight.organisation')}"
             ]
         }
         else if (hit.getSource().rectype == 'Package') {
@@ -46,7 +40,7 @@
         }
         else if (hit.getSource().rectype == 'Title') {
             result << [
-                "title": "${hit.getSource().title}",
+                "title": "${hit.getSource().name}",
                 "url":   g.createLink(controller:"title", action:"show", id:"${hit.getSource().dbId}"),
                 "category": (hit.getSource().typTitle == 'Journal') ? "${message(code: 'spotlight.journaltitle')}" :
                                 (hit.getSource().typTitle == 'Database') ? "${message(code: 'spotlight.databasetitle')}" :
@@ -61,7 +55,7 @@
         }else if (hit.getSource().rectype == 'Surveys') {
             result << [
                     "title": "${hit.getSource().name}",
-                    "url":   g.createLink(controller:"survey", action:"show", id:"${hit.getSource().dbId}"),
+                    "url":   g.createLink(controller:"survey", action:"show", id:"${com.k_int.kbplus.SurveyConfig.get(hit.getSource().dbId).surveyInfo.id}", params:"[surveyConfigID: ${hit.getSource().dbId}]"),
                     "category": "${message(code: 'spotlight.Survey')}"
             ]
         }
