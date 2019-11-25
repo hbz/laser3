@@ -37,6 +37,8 @@ class Package
   String vendorURL
   String cancellationAllowances
 
+  Date listVerifiedDate
+
     @RefdataAnnotation(cat = '?')
     RefdataValue packageType
 
@@ -117,6 +119,8 @@ static hasMany = [  tipps:     TitleInstancePackagePlatform,
                      tipps sort:'title.title', order: 'asc', batchSize: 10
             pendingChanges sort:'ts', order: 'asc', batchSize: 10
 
+            listVerifiedDate column: 'pkg_list_verified_date'
+
             orgs            batchSize: 10
             prsLinks        batchSize: 10
             documents       batchSize: 10
@@ -145,6 +149,7 @@ static hasMany = [  tipps:     TitleInstancePackagePlatform,
                  vendorURL(nullable:true, blank:false)
     cancellationAllowances(nullable:true, blank:false)
                   sortName(nullable:true, blank:false)
+      listVerifiedDate(nullable:true, blank:false)
   }
 
     def afterDelete() {

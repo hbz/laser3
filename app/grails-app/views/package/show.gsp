@@ -86,6 +86,12 @@
                                     <semui:xEditable owner="${packageInstance}" field="endDate" type="date"/>
                                 </dd>
                             </dl>
+                            <dl>
+                                <dt>${message(code: 'package.listVerifiedDate.label')}</dt>
+                                <dd>
+                                    <semui:xEditable owner="${packageInstance}" field="listVerifiedDate" type="date"/>
+                                </dd>
+                            </dl>
                         </div>
                     </div>
                     <div class="ui card">

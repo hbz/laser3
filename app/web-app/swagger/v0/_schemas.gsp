@@ -398,6 +398,9 @@
           endDate:
             type: string
             format: date
+          listVerifiedDate:
+            type: string
+            format: date
           fixed:
             type: string
             description: Mapping RefdataCategory "YN"
