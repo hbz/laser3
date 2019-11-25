@@ -58,7 +58,7 @@ class RefdataCategory extends AbstractI10nTranslatable {
     }
 
     static constraints = {
-        isHardData (nullable:false, blank:false, default:false)
+        isHardData (nullable:false, blank:false)
 
         // Nullable is true, because values are already in the database
         lastUpdated (nullable: true, blank: false)

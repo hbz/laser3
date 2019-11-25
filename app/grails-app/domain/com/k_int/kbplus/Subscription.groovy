@@ -178,14 +178,14 @@ class Subscription
         manualRenewalDate(nullable:true, blank:false)
         manualCancellationDate(nullable:true, blank:false)
         instanceOf(nullable:true, blank:false)
-        administrative(nullable:false, blank:false, default: false)
+        administrative(nullable:false, blank:false)
         previousSubscription(nullable:true, blank:false) //-> see Links, deleted as ERMS-800
         isSlaved    (nullable:false, blank:false)
         noticePeriod(nullable:true, blank:true)
         isPublic    (nullable:false, blank:false)
         cancellationAllowances(nullable:true, blank:true)
         lastUpdated(nullable: true, blank: true)
-        isMultiYear(nullable: true, blank: false, default: false)
+        isMultiYear(nullable: true, blank: false)
     }
 
     def afterDelete() {
