@@ -2,6 +2,12 @@
 
 **Ticket    Date    Branch      Author  Feature/Bug     Description/Keywords**
 
+1872   2019-11-21 - hbz-dev  - Moe - Feature - Prevent deletion of the last INST_ADMIN of a org
+
+1888   2019-11-21 - hbz-dev  - Moe - Feature - improve global search
+
+ /     2019-11-20 - rc-1.1  - Andy - Bug - pending changes are now filtered out when deactivating audit
+
 1830    21.11.2019  rc-1.1      Moe     Bug         filter cost element requires defined cost elements
     
  /      21.11.2019  rc-1.1      Moe     Bug         export of Entitlements by renew with survey
