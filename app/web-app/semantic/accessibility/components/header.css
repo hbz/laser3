@@ -861,3 +861,6 @@ body[class*="platform"] .ui.icon.header .circular.icon.la-object:before {
 .ui.icon.header .ui.form input[type=text] {
   font-size: 1rem;
 }
+.ui.header.la-noMargin-top {
+  margin-top: 0rem;
+}

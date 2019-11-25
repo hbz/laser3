@@ -61,24 +61,25 @@
     </g:if>
 </semui:controlButtons>
 
-<h1 class="ui left aligned icon header"><semui:headerIcon />${title}
+<h1 class="ui left floated aligned icon header la-clear-before"><semui:headerIcon />${title}
 <semui:totalNumber total="${membersCount}"/>
 </h1>
-
+<g:render template="/templates/filter/javascript" />
 <semui:messages data="${flash}"/>
     <%
         List configShowFilter = []
         List configShowTable = []
         if(comboType.id == RDStore.COMBO_TYPE_CONSORTIUM.id) {
             configShowFilter = [['name', 'identifier', 'libraryType'], ['federalState', 'libraryNetwork','property']]
-            configShowTable = ['sortname', 'name', 'mainContact', 'legalInformation', 'numberOfSubscriptions', 'numberOfSurveys', 'libraryType', 'hasInstAdmin']
+            configShowTable = ['sortname', 'name', 'mainContact', 'libraryType', 'hasInstAdmin', 'legalInformation', 'numberOfSubscriptions', 'numberOfSurveys']
         }
         else if(comboType.id == RDStore.COMBO_TYPE_DEPARTMENT.id) {
             configShowFilter = [['name', 'identifier'], ['property']]
             configShowTable = ['name', 'mainContact', 'legalInformation', 'numberOfSubscriptions']
         }
     %>
-    <semui:filter>
+
+    <semui:filter showFilterButton="true">
         <g:form action="manageMembers" method="get" class="ui form">
             <g:render template="/templates/filter/orgFilter"
                       model="[
@@ -88,32 +89,33 @@
                       ]"/>
         </g:form>
     </semui:filter>
+<div class="la-clear-before">
+    <g:if test="${members}">
+        <g:form action="manageMembers" controller="myInstitution" method="post" class="ui form la-clear-before">
+            <g:render template="/templates/filter/orgFilterTable"
+                      model="[orgList: members,
+                              tmplShowCheckbox: editable,
+                              comboType: comboType,
+                              tmplConfigShow: configShowTable
+                      ]"/>
 
-<g:if test="${members}">
-<g:form action="manageMembers" controller="myInstitution" method="post" class="ui form">
-        <g:render template="/templates/filter/orgFilterTable"
-                  model="[orgList: members,
-                          tmplShowCheckbox: editable,
-                          comboType: comboType,
-                          tmplConfigShow: configShowTable
-                  ]"/>
 
-
-        <g:if test="${members && editable}">
-            <input type="submit" class="ui button"
-                   data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.function", args: [message(code:'members.confirmDelete')])}"
-                   data-confirm-term-how="delete" value="${message(code: 'default.button.revoke.label')}"/>
-        </g:if>
-    </g:form>
-</g:if>
-<g:else>
-    <g:if test="${filterSet}">
-        <br><strong><g:message code="filter.result.empty.object" args="${[message(code:"myinst.consortiaSubscriptions.consortia")]}"/></strong>
+            <g:if test="${members && editable}">
+                <input type="submit" class="ui button"
+                       data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.function", args: [message(code:'members.confirmDelete')])}"
+                       data-confirm-term-how="delete" value="${message(code: 'default.button.revoke.label')}"/>
+            </g:if>
+        </g:form>
     </g:if>
     <g:else>
-        <br><strong><g:message code="result.empty.object" args="${[message(code:"myinst.consortiaSubscriptions.consortia")]}"/></strong>
+        <g:if test="${filterSet}">
+            <br><strong><g:message code="filter.result.empty.object" args="${[message(code:"myinst.consortiaSubscriptions.consortia")]}"/></strong>
+        </g:if>
+        <g:else>
+            <br><strong><g:message code="result.empty.object" args="${[message(code:"myinst.consortiaSubscriptions.consortia")]}"/></strong>
+        </g:else>
     </g:else>
-</g:else>
+</div>
 
     <g:render template="../templates/copyEmailaddresses" model="[orgList: totalMembers]"/>
     <semui:paginate action="manageMembers" controller="myInstitution" params="${params}" next="${message(code:'default.paginate.next', default:'Next')}" prev="${message(code:'default.paginate.prev', default:'Prev')}" max="${max}" total="${membersCount}" />

@@ -210,7 +210,7 @@ class ChangeNotificationService_en_original {
     def new_pending_change = new PendingChange()
     new_pending_change[prop] = target;
     def jsonChangeDocument = changeMap as JSON
-    new_pending_change.changeDoc = jsonChangeDocument.toString();
+    new_pending_change.payload = jsonChangeDocument.toString();
     new_pending_change.desc = desc
     new_pending_change.owner = objowner
     new_pending_change.oid = "${target.class.name}:${target.id}"

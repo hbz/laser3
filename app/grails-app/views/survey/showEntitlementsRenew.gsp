@@ -1,4 +1,5 @@
 <%@ page import="de.laser.helper.RDStore; com.k_int.kbplus.Subscription; com.k_int.kbplus.ApiSource; com.k_int.kbplus.Platform; com.k_int.kbplus.BookInstance; com.k_int.kbplus.Org" %>
+<laser:serviceInjection/>
 <!doctype html>
 <html>
 <head>
@@ -50,7 +51,7 @@
     </semui:actionsDropdown>
 </semui:controlButtons>
 
-<h1 class="ui left aligned icon header"><semui:headerTitleIcon type="Survey"/>
+<h1 class="ui left floated aligned icon header la-clear-before"><semui:headerTitleIcon type="Survey"/>
 <g:message code="issueEntitlementsSurvey.label"/>: <g:link controller="subscription" action="index"
                                                            id="${subscriptionParticipant?.id}">${surveyConfig?.surveyInfo?.name}</g:link>
 </h1>

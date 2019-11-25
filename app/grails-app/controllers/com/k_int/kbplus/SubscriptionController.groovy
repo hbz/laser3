@@ -430,22 +430,22 @@ class SubscriptionController extends AbstractDebugController {
         def tipp_id_query = "from TitleInstancePackagePlatform tipp where tipp.pkg.id = ?"
         def change_doc_query = "from PendingChange pc where pc.subscription.id = ? "
         def tipp_ids = TitleInstancePackagePlatform.executeQuery("select tipp.id ${tipp_id_query}", [pkg_id])
-        def pendingChanges = PendingChange.executeQuery("select pc.id, pc.changeDoc ${change_doc_query}", [sub_id])
+        def pendingChanges = PendingChange.executeQuery("select pc.id, pc.payload ${change_doc_query}", [sub_id])
 
         def pc_to_delete = []
         pendingChanges.each { pc ->
-            def parsed_change_info = JSON.parse(pc[1])
-            if (parsed_change_info.tippID) {
+            def payload = JSON.parse(pc[1])
+            if (payload.tippID) {
                 pc_to_delete += pc[0]
-            }else if (parsed_change_info.tippId) {
+            }else if (payload.tippId) {
                     pc_to_delete += pc[0]
-            } else if (parsed_change_info.changeDoc) {
-                def (oid_class, ident) = parsed_change_info.changeDoc.OID.split(":")
+            } else if (payload.changeDoc) {
+                def (oid_class, ident) = payload.changeDoc.OID.split(":")
                 if (oid_class == tipp_class && tipp_ids.contains(ident.toLong())) {
                     pc_to_delete += pc[0]
                 }
             } else {
-                log.error("Could not decide if we should delete the pending change id:${pc[0]} - ${parsed_change_info}")
+                log.error("Could not decide if we should delete the pending change id:${pc[0]} - ${payload}")
             }
         }
         if (confirmed && pc_to_delete) {
@@ -1188,10 +1188,18 @@ class SubscriptionController extends AbstractDebugController {
             result.ies?.each { ie ->
                 List row = []
                 row.add([field: ie?.tipp?.title?.title ?: '', style:null])
-                row.add([field: ie?.tipp?.title?.volume ?: '', style:null])
-                row.add([field: ie?.tipp?.title?.getEbookFirstAutorOrFirstEditor() ?: '', style:null])
-                row.add([field: ie?.tipp?.title?.editionStatement ?: '', style:null])
-                row.add([field: ie?.tipp?.title?.summaryOfContent ?: '', style:null])
+
+                if(ie?.tipp?.title instanceof BookInstance) {
+                    row.add([field: ie?.tipp?.title?.volume ?: '', style: null])
+                    row.add([field: ie?.tipp?.title?.getEbookFirstAutorOrFirstEditor() ?: '', style: null])
+                    row.add([field: ie?.tipp?.title?.editionStatement ?: '', style: null])
+                    row.add([field: ie?.tipp?.title?.summaryOfContent ?: '', style: null])
+                }else{
+                    row.add([field: '', style: null])
+                    row.add([field: '', style: null])
+                    row.add([field: '', style: null])
+                    row.add([field: '', style: null])
+                }
 
                 def identifiers = []
                 ie?.tipp?.title?.ids?.sort { it.ns?.ns }?.each{ ident ->
@@ -1199,8 +1207,13 @@ class SubscriptionController extends AbstractDebugController {
                 }
                 row.add([field: identifiers ? identifiers.join(', ') : '', style:null])
 
-                row.add([field: ie?.tipp?.title?.dateFirstInPrint ? g.formatDate(date: ie?.tipp?.title?.dateFirstInPrint, format: message(code: 'default.date.format.notime')): '', style:null])
-                row.add([field: ie?.tipp?.title?.dateFirstOnline ? g.formatDate(date: ie?.tipp?.title?.dateFirstOnline, format: message(code: 'default.date.format.notime')): '', style:null])
+                if(ie?.tipp?.title instanceof BookInstance) {
+                    row.add([field: ie?.tipp?.title?.dateFirstInPrint ? g.formatDate(date: ie?.tipp?.title?.dateFirstInPrint, format: message(code: 'default.date.format.notime')) : '', style: null])
+                    row.add([field: ie?.tipp?.title?.dateFirstOnline ? g.formatDate(date: ie?.tipp?.title?.dateFirstOnline, format: message(code: 'default.date.format.notime')) : '', style: null])
+                }else{
+                    row.add([field: '', style: null])
+                    row.add([field: '', style: null])
+                }
 
                 row.add([field: ie?.acceptStatus?.getI10n('value') ?: '', style:null])
 

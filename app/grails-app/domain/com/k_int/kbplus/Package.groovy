@@ -29,6 +29,8 @@ class Package
 
   @Transient
   def grailsApplication
+  @Transient
+  def deletionService
 
   String identifier
   String name
@@ -39,6 +41,8 @@ class Package
    //URL originEditUrl
   String vendorURL
   String cancellationAllowances
+
+  Date listVerifiedDate
 
     @RefdataAnnotation(cat = '?')
     RefdataValue packageType
@@ -120,6 +124,8 @@ static hasMany = [  tipps:     TitleInstancePackagePlatform,
                      tipps sort:'title.title', order: 'asc', batchSize: 10
             pendingChanges sort:'ts', order: 'asc', batchSize: 10
 
+            listVerifiedDate column: 'pkg_list_verified_date'
+
             orgs            batchSize: 10
             prsLinks        batchSize: 10
             documents       batchSize: 10
@@ -148,7 +154,12 @@ static hasMany = [  tipps:     TitleInstancePackagePlatform,
                  vendorURL(nullable:true, blank:false)
     cancellationAllowances(nullable:true, blank:false)
                   sortName(nullable:true, blank:false)
+      listVerifiedDate(nullable:true, blank:false)
   }
+
+    def afterDelete() {
+        deletionService.deleteDocumentFromIndex(this.class.name, this.globalUID)
+    }
 
     @Override
     boolean checkSharePreconditions(ShareableTrait sharedObject) {
@@ -640,6 +651,13 @@ static hasMany = [  tipps:     TitleInstancePackagePlatform,
                 result = ident;
             }
         }
+        result
+    }
+
+    def getCurrentTipps()
+    {
+        def result = this.tipps?.findAll{it?.status?.id == RDStore.TIPP_STATUS_CURRENT.id}
+
         result
     }
 }

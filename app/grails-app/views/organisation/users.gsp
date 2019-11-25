@@ -18,7 +18,7 @@
         </semui:controlButtons>
     </g:if>
 
-    <h1 class="ui left aligned icon header">
+    <h1 class="ui left floated aligned icon header la-clear-before">
         <semui:headerIcon />
         ${orgInstance.name} - ${message(code:'org.nav.users')}
     </h1>

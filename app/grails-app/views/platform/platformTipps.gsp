@@ -16,7 +16,7 @@
 
 <semui:modeSwitch controller="platform" action="show" params="${params}"/>
 
-<h1 class="ui left aligned icon header"><semui:headerIcon/>
+<h1 class="ui left floated aligned icon header la-clear-before"><semui:headerIcon/>
 
     <g:if test="${editable}"><span id="platformNameEdit"
                                    class="xEditableValue"
@@ -36,7 +36,7 @@
 <g:render template="/package/filter" model="${[params:params]}"/>
 
 
-<h3 class="ui left aligned icon header">${message(code: 'platform.show.availability', default: 'Availability of titles in this platform by package')}
+<h3 class="ui left floated aligned icon header la-clear-before">${message(code: 'platform.show.availability', default: 'Availability of titles in this platform by package')}
 <semui:totalNumber total="${tipps.size()}"/>
 </h3>
 

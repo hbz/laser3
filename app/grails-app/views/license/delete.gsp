@@ -8,8 +8,8 @@
 
 <body>
     <g:render template="breadcrumb" model="${[ license:license, params:params ]}"/>
-
-    <h1 class="ui left aligned icon header"><semui:headerIcon />
+    <br>
+    <h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon />
         ${license.reference}
     </h1>
 

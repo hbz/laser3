@@ -21,10 +21,10 @@ class DashboardDueDate {
     User responsibleUser
     Org  responsibleOrg
     boolean isDone
-    boolean isHide
+    boolean isHidden
     Timestamp lastUpdated
 
-    DashboardDueDate(Subscription obj, boolean isManualCancellationDate, User responsibleUser, Org responsibleOrg, boolean isDone, boolean isHide){
+    DashboardDueDate(Subscription obj, boolean isManualCancellationDate, User responsibleUser, Org responsibleOrg, boolean isDone, boolean isHidden){
         this(
                 isManualCancellationDate? 'Kündigungsdatum' : 'Enddatum',
                 isManualCancellationDate? obj.manualCancellationDate : obj.endDate,
@@ -32,26 +32,26 @@ class DashboardDueDate {
                 responsibleUser,
                 responsibleOrg,
                 isDone,
-                isHide
+                isHidden
         )
     }
-    DashboardDueDate(AbstractProperty obj, User responsibleUser, Org responsibleOrg, boolean isDone, boolean isHide){
-        this(obj.type?.name?: obj.class.simpleName, obj.dateValue, obj, responsibleUser, responsibleOrg, isDone, isHide)
+    DashboardDueDate(AbstractProperty obj, User responsibleUser, Org responsibleOrg, boolean isDone, boolean isHidden){
+        this(obj.type?.name?: obj.class.simpleName, obj.dateValue, obj, responsibleUser, responsibleOrg, isDone, isHidden)
     }
-    DashboardDueDate(Task obj, User responsibleUser, Org responsibleOrg, boolean isDone, boolean isHide){
-        this('Fälligkeitsdatum', obj.endDate, obj, responsibleUser, responsibleOrg, isDone, isHide)
+    DashboardDueDate(Task obj, User responsibleUser, Org responsibleOrg, boolean isDone, boolean isHidden){
+        this('Fälligkeitsdatum', obj.endDate, obj, responsibleUser, responsibleOrg, isDone, isHidden)
     }
-    DashboardDueDate(SurveyInfo obj, User responsibleUser, Org responsibleOrg, boolean isDone, boolean isHide){
-        this('Enddatum', obj.endDate, obj, responsibleUser, responsibleOrg, isDone, isHide)
+    DashboardDueDate(SurveyInfo obj, User responsibleUser, Org responsibleOrg, boolean isDone, boolean isHidden){
+        this('Enddatum', obj.endDate, obj, responsibleUser, responsibleOrg, isDone, isHidden)
     }
-    private DashboardDueDate(attribut, date, object, responsibleUser, responsibleOrg, isDone, isHide){
+    private DashboardDueDate(attribut, date, object, responsibleUser, responsibleOrg, isDone, isHidden){
         this.attribut = attribut
         this.date = date
         this.oid = "${object.class.name}:${object.id}"
         this.responsibleUser = responsibleUser
         this.responsibleOrg = responsibleOrg
         this.isDone = isDone
-        this.isHide = isHide
+        this.isHidden = isHidden
     }
 
     static mapping = {
@@ -62,7 +62,7 @@ class DashboardDueDate {
         responsibleUser         column: 'das_responsible_user_fk', index: 'das_responsible_user_fk_idx'
         responsibleOrg          column: 'das_responsible_org_fk',  index: 'das_responsible_org_fk_idx'
         isDone                  column: 'das_is_done'
-        isHide                  column: 'das_is_hide'
+        isHidden                  column: 'das_is_hidden'
         autoTimestamp true
     }
 
@@ -73,7 +73,7 @@ class DashboardDueDate {
         responsibleUser         (nullable:true, blank:false)
         responsibleOrg          (nullable:true, blank:false)
         isDone                  (nullable:false, blank:false)
-        isHide                  (nullable:false, blank:false)
+        isHidden                  (nullable:false, blank:false)
         lastUpdated             (nullable:true, blank:false)
     }
 

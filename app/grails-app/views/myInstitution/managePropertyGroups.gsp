@@ -11,8 +11,8 @@
         <semui:breadcrumbs>
             <semui:crumb message="menu.institutions.manage_props" class="active"/>
         </semui:breadcrumbs>
-
-        <h1 class="ui left aligned icon header"><semui:headerIcon />${message(code:'menu.institutions.manage_props')}</h1>
+        <br>
+        <h1 class="ui left floated aligned icon header la-clear-before"><semui:headerIcon />${message(code:'menu.institutions.manage_props')}</h1>
 
         <g:render template="nav" />
 

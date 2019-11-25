@@ -1106,14 +1106,19 @@ class FinanceController extends AbstractDebugController {
                       copiedCostItems.each { cci ->
                           List diffs = []
                           String costTitle = cci.costTitle ?: ''
+                          String prop
                           if(newCostItem.costInBillingCurrencyAfterTax != cci.costInBillingCurrency) {
+                              prop = 'billingCurrency'
                               diffs.add(message(code:'pendingChange.message_CI01',args:[costTitle,g.createLink(mapping:'subfinance',controller:'subscription',action:'index',params:[sub:cci.sub.id]),cci.sub.name,cci.costInBillingCurrency,newCostItem.costInBillingCurrencyAfterTax]))
                           }
                           if(newCostItem.costInLocalCurrencyAfterTax != cci.costInLocalCurrency) {
+                              prop = 'localCurrency'
                               diffs.add(message(code:'pendingChange.message_CI02',args:[costTitle,g.createLink(mapping:'subfinance',controller:'subscription',action:'index',params:[sub:cci.sub.id]),cci.sub.name,cci.costInLocalCurrency,newCostItem.costInLocalCurrencyAfterTax]))
                           }
                           diffs.each { diff ->
-                              PendingChange change = new PendingChange(costItem: cci, owner: cci.owner,desc: diff, ts: new Date())
+                              JSON json = [changeDoc:[OID:"${cci.class.name}:${cci.id}",prop:prop]] as JSON
+                              String changeDoc = json.toString()
+                              PendingChange change = new PendingChange(costItem: cci, owner: cci.owner,desc: diff, ts: new Date(), payload: changeDoc)
                               if(!change.save(flush: true))
                                   log.error(change.errors)
                           }

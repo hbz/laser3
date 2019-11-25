@@ -39,7 +39,7 @@ class SurveyResult extends AbstractProperty {
         endDate (nullable:true, blank:false)
         participantComment (nullable:true, blank:false)
         ownerComment (nullable:true, blank:false)
-        isRequired (nullable:true, blank:false,  default: false)
+        isRequired (nullable:true, blank:false)
     }
 
     static mapping = {

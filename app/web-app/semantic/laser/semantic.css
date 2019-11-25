@@ -5722,6 +5722,7 @@ aside.ui.accordion .title:not(.ui) {
 
 .ui.button.la-js-filterButton {
   margin-top: 14px;
+  margin-bottom: 14px;
 }
 /*!
  * # Semantic UI 2.3.1 - Container
@@ -7178,6 +7179,10 @@ body[class*="platform"] .ui.icon.header .circular.icon.la-object:before {
 
 .ui.icon.header .ui.form input[type=text] {
   font-size: 1rem;
+}
+
+.ui.header.la-noMargin-top {
+  margin-top: 0rem;
 }
 /*!
  * # Semantic UI 2.3.1 - Icon
@@ -19780,6 +19785,7 @@ dd {
 
 .ui.breadcrumb {
   color: #454545;
+  padding-bottom: 21px;
 }
 
 /* Link */

@@ -6,20 +6,39 @@
 </head>
 <body>
 
+<laser:serviceInjection />
+
 <semui:breadcrumbs>
     <semui:crumb message="menu.yoda.dash" controller="yoda" action="index"/>
     <semui:crumb message="menu.yoda.cacheInfo" class="active"/>
 </semui:breadcrumbs>
 
-
-
-<h1 class="ui left aligned icon header"><semui:headerIcon />${message(code:'menu.yoda.cacheInfo')}</h1>
+<%
+    // EXAMPLE:
+    sessionCache = contextService.getSessionCache()
+    sessionCache.put("test", "${System.currentTimeSeconds()}")
+    sessionCache.get("test")
+%>
+<br>
+<h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon />${message(code:'menu.yoda.cacheInfo')}</h1>
 
 
 <h3 class="ui header">Session</h3>
+<g:set var="sessionCache" value="${contextService.getSessionCache().list()}" />
 
 <div class="ui segment">
     ${session.id}
+    <g:if test="${sessionCache.size() > 0}">
+        <br /><br />
+
+        <g:each in="${contextService.getSessionCache().list()}" var="entry">
+            <strong>${entry.key}</strong> ${entry.value} <br />
+        </g:each>
+    </g:if>
+
+    <br />
+    <g:link class="ui button negative"
+            controller="yoda" action="cacheInfo" params="[cmd: 'clearCache', type: 'session']">Cache leeren</g:link>
 </div>
 
 

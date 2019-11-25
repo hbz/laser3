@@ -13,13 +13,14 @@
         <semui:breadcrumbs>
             <semui:crumb message="menu.institutions.tasks" class="active"/>
         </semui:breadcrumbs>
-
-        <h1 class="ui left aligned icon header"><semui:headerIcon />${message(code:'task.plural', default:'Tasks')}</h1>
+        <br>
+        <h1 class="ui left floated aligned icon header la-clear-before"><semui:headerIcon />${message(code:'task.plural', default:'Tasks')}</h1>
 
         <g:if test="${editable}">
-            <input type="submit" class="ui button" value="${message(code:'task.create.new')}" data-semui="modal" data-href="#modalCreateTask" />
+            <input type="submit" class="ui left floated  button la-clear-before" value="${message(code:'task.create.new')}" data-semui="modal" data-href="#modalCreateTask" />
         </g:if>
-        <semui:filter>
+        <g:render template="../templates/filter/javascript" />
+        <semui:filter showFilterButton="true">
             <form class="ui form">
                 <div class="four fields">
                     <div class="field">

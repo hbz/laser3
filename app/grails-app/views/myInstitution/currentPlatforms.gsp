@@ -10,14 +10,15 @@
 <semui:breadcrumbs>
     <semui:crumb message="menu.my.platforms" class="active" />
 </semui:breadcrumbs>
-
-<h1 class="ui left aligned icon header"><semui:headerIcon/>${message(code:'menu.my.platforms')}
+<br>
+<h1 class="ui left floated aligned icon header la-clear-before"><semui:headerIcon/>${message(code:'menu.my.platforms')}
     <semui:totalNumber total="${platformInstanceTotal}"/>
 </h1>
 
 <semui:messages data="${flash}" />
 
-<semui:filter>
+<g:render template="/templates/filter/javascript" />
+<semui:filter showFilterButton="true">
     <g:form action="currentPlatforms" method="get" class="ui form">
         <div class="two fields">
             <div class="field">

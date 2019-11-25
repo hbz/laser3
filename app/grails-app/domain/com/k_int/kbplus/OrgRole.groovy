@@ -66,7 +66,7 @@ class OrgRole implements ShareableTrait {
     title       (nullable:true, blank:false)
     startDate   (nullable:true, blank:false)
     endDate     (nullable:true, blank:false)
-    isShared    (nullable:true, blank:false, default:false)
+    isShared    (nullable:true, blank:false)
     sharedFrom  (nullable:true, blank:true)
 
     // Nullable is true, because values are already in the database

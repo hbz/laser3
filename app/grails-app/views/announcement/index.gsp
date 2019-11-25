@@ -13,8 +13,8 @@
     </semui:breadcrumbs>
 
     <semui:messages data="${flash}" />
-
-    <h2 class="ui header">${message(code:'announcement.create.label', default:'Create announcement')}</h2>
+    <br>
+    <h2 class="ui left floated aligned header la-clear-before">${message(code:'announcement.create.label', default:'Create announcement')}</h2>
 
     <semui:form>
         <g:form action="createAnnouncement" class="ui form">
@@ -34,7 +34,7 @@
     </semui:form>
 
 
-      <h2 class="ui header">${message(code:'announcement.previous.label', default:'previous announcements')}</h2>
+      <h2 class="ui  header la-clear-before">${message(code:'announcement.previous.label', default:'previous announcements')}</h2>
 
       <div class="ui divided relaxed list">
         <g:each in="${recentAnnouncements}" var="ra">

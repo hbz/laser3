@@ -80,6 +80,7 @@ class ApiPkg {
 		result.lastUpdated      	= pkg.lastUpdated
 		result.vendorURL        	= pkg.vendorURL
 		result.startDate        	= pkg.startDate
+		result.listVerifiedDate      = pkg.listVerifiedDate
 
 		// RefdataValues
 

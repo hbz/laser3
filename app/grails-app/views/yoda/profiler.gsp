@@ -10,8 +10,8 @@
     <semui:crumb message="menu.yoda.dash" controller="yoda" action="index"/>
     <semui:crumb message="menu.yoda.profiler" class="active"/>
 </semui:breadcrumbs>
-
-    <h1 class="ui left aligned icon header"><semui:headerIcon />${message(code:'menu.yoda.profiler')}</h1>
+<br>
+    <h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon />${message(code:'menu.yoda.profiler')}</h1>
 
     <h3 class="ui header">Global</h3>
 

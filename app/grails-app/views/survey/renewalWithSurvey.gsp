@@ -102,7 +102,7 @@ ${surveyInfo?.name}
            value="${(orgsContinuetoSubscription?.size() ?: 0) + (newOrgsContinuetoSubscription?.size() ?: 0) + (orgsWithMultiYearTermSub?.size() ?: 0) + (orgsLateCommers?.size() ?: 0) + (orgsWithTermination?.size() ?: 0) + (orgsWithoutResult?.size() ?: 0) + (orgsWithParticipationInParentSuccessor?.size() ?: 0)}"/>
 
 
-    <h3 class="ui left aligned icon header">
+    <h3 class="ui left floated aligned icon header la-clear-before">
         <g:link action="evaluationConfigsInfo" id="${surveyInfo?.id}"
                 params="[surveyConfigID: surveyConfig?.id]">${message(code: 'survey.label')} ${message(code: 'surveyParticipants.label')}</g:link>
         <semui:totalNumber total="${surveyParticipants}"/>
@@ -119,7 +119,7 @@ ${surveyInfo?.name}
     <br>
     <br>
 
-    <h4 class="ui left aligned icon header">${message(code: 'renewalWithSurvey.continuetoSubscription.label')} <semui:totalNumber
+    <h4 class="ui left floated aligned icon header la-clear-before">${message(code: 'renewalWithSurvey.continuetoSubscription.label')} <semui:totalNumber
             total="${orgsContinuetoSubscription?.size() ?: 0}"/></h4>
 
     <table class="ui celled sortable table la-table">
@@ -328,7 +328,7 @@ ${surveyInfo?.name}
     <br>
     <br>
 
-    <h4 class="ui left aligned icon header">${message(code: 'renewalWithSurvey.newOrgstoSubscription.label')} <semui:totalNumber
+    <h4 class="ui left floated aligned icon header la-clear-before">${message(code: 'renewalWithSurvey.newOrgstoSubscription.label')} <semui:totalNumber
             total="${newOrgsContinuetoSubscription?.size() ?: 0}"/></h4>
 
     <table class="ui celled sortable table la-table">
@@ -539,7 +539,7 @@ ${surveyInfo?.name}
     <br>
     <br>
 
-    <h4 class="ui left aligned icon header">${message(code: 'renewalWithSurvey.withMultiYearTermSub.label')} <semui:totalNumber
+    <h4 class="ui left floated aligned icon header la-clear-before">${message(code: 'renewalWithSurvey.withMultiYearTermSub.label')} <semui:totalNumber
             total="${orgsWithMultiYearTermSub?.size() ?: 0}"/></h4>
 
     <table class="ui celled la-table table">
@@ -591,7 +591,7 @@ ${surveyInfo?.name}
     <br>
     <br>
 
-    <h4 class="ui left aligned icon header">${message(code: 'renewalWithSurvey.orgsWithParticipationInParentSuccessor.label')} <semui:totalNumber
+    <h4 class="ui left floated aligned icon header la-clear-before">${message(code: 'renewalWithSurvey.orgsWithParticipationInParentSuccessor.label')} <semui:totalNumber
             total="${orgsWithParticipationInParentSuccessor?.size() ?: 0}"/></h4>
 
     <table class="ui celled la-table table">
@@ -643,7 +643,7 @@ ${surveyInfo?.name}
     <br>
 
 
-    <h4 class="ui left aligned icon header">${message(code: 'renewalWithSurvey.withTermination.label')} <semui:totalNumber
+    <h4 class="ui left floated aligned icon header la-clear-before">${message(code: 'renewalWithSurvey.withTermination.label')} <semui:totalNumber
             total="${orgsWithTermination?.size() ?: 0}"/></h4>
 
     <table class="ui celled sortable table la-table">
@@ -805,7 +805,7 @@ ${surveyInfo?.name}
     <br>
     <br>
 
-    <h4 class="ui left aligned icon header">${message(code: 'renewalWithSurvey.orgsWithoutResult.label')} <semui:totalNumber
+    <h4 class="ui left floated aligned icon header la-clear-before">${message(code: 'renewalWithSurvey.orgsWithoutResult.label')} <semui:totalNumber
             total="${orgsWithoutResult?.size() ?: 0}"/></h4>
 
     <table class="ui celled sortable table la-table">

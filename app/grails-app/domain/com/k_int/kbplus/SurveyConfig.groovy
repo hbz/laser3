@@ -78,10 +78,10 @@ class SurveyConfig {
         comment column: 'surconf_comment', type: 'text'
         internalComment column: 'surconf_internal_comment', type: 'text'
         pickAndChoose column: 'surconf_pickandchoose'
-        configFinish column: 'surconf_config_finish', default: false
-        costItemsFinish column: 'surconf_costitems_finish', default: false
-        evaluationFinish column: 'surconf_evaluation_finish', default: false
-        isSubscriptionSurveyFix column: 'surconf_is_subscription_survey_fix', default: false
+        configFinish column: 'surconf_config_finish'
+        costItemsFinish column: 'surconf_costitems_finish'
+        evaluationFinish column: 'surconf_evaluation_finish'
+        isSubscriptionSurveyFix column: 'surconf_is_subscription_survey_fix'
 
         scheduledStartDate column: 'surconf_scheduled_startdate'
         scheduledEndDate column: 'surconf_scheduled_enddate'

@@ -33,7 +33,8 @@ class HomeController {
     }
 
   @Secured(['ROLE_USER'])
-  def search() { 
+  def search() {
+      redirect(controller: 'search', action: 'search')
 
     def result = [:]
   

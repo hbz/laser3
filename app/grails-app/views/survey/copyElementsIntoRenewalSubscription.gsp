@@ -24,7 +24,7 @@
 
 </semui:breadcrumbs>
 
-    <h1 class="ui left aligned icon header"><semui:headerIcon />
+    <h1 class="ui left floated aligned icon header la-clear-before"><semui:headerIcon />
         <g:if test="${isRenewSub}">
             ${message(code: 'subscription.details.renewals.renew_sub.label')}: <g:if test="${sourceSubscription}">${sourceSubscription.name}</g:if>
         </g:if>

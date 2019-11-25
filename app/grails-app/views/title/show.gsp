@@ -12,8 +12,8 @@
           <semui:crumb controller="title" action="list" message="menu.public.all_titles" />
           <semui:crumb class="active" text="${message(code:'title.title.label')}: ${ti.title}" />
       </semui:breadcrumbs>
-
-  <h1 class="ui left aligned icon header">
+  <br>
+  <h1 class="ui icon header la-clear-before la-noMargin-top">
             <semui:headerTitleIcon type="${ti.type.('value')}"/>
 
             <% /*
@@ -113,23 +113,24 @@
 
                 </div>
                 </semui:form>
-            </div><!-- .twelve -->
-        </div>
+            </div>
 
-            <div class="twelve wide column">
 
-              <g:each in="${duplicates}" var="entry">
-                  <bootstrap:alert class="alert-info">
-                      ${message(code:'title.edit.duplicate.warn', args:[entry.key])}:
-                      <ul>
-                          <g:each in ="${entry.value}" var="dup_title">
-                              <li><g:link controller='title' action='show' id="${dup_title.id}">${dup_title.title}</g:link></li>
-                          </g:each>
-                      </ul>
-                  </bootstrap:alert>
-              </g:each>
+            <div class="sixteen wide column">
+                <semui:form>
+                  <g:each in="${duplicates}" var="entry">
 
-            </div><!-- .twelve -->
+                          ${message(code:'title.edit.duplicate.warn', args:[entry.key])}:
+                          <ul>
+                              <g:each in ="${entry.value}" var="dup_title">
+                                  <li><g:link controller='title' action='show' id="${dup_title.id}">${dup_title.title}</g:link></li>
+                              </g:each>
+                          </ul>
+
+                  </g:each>
+                </semui:form>
+            </div>
+
         </div><!-- .grid -->
 
           <h3 class="ui header"><g:message code="title.edit.orglink"/></h3>
@@ -206,7 +207,7 @@
               </span>
             </g:if>
 
-  <h3 class="ui left aligned icon header"><g:message code="title.edit.tipp"/>
+  <h3 class="ui icon header la-clear-before la-noMargin-top"><g:message code="title.edit.tipp"/>
   <semui:totalNumber total="${ti.tipps.size()}"/>
   </h3>
 %{--<% /*

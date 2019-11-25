@@ -4,6 +4,7 @@ import com.k_int.kbplus.Org
 import com.k_int.kbplus.UserSettings
 import com.k_int.kbplus.auth.User
 import de.laser.helper.EhcacheWrapper
+import de.laser.helper.SessionCacheWrapper
 import grails.plugin.springsecurity.SpringSecurityService
 import groovy.transform.CompileStatic
 import net.sf.ehcache.Cache
@@ -66,5 +67,9 @@ class ContextService {
         Cache cache = (Cache) cacheService.getCache(cacheManager, cacheName)
 
         return new EhcacheWrapper(cache, cacheKeyPrefix)
+    }
+
+    SessionCacheWrapper getSessionCache() {
+        return new SessionCacheWrapper()
     }
 }

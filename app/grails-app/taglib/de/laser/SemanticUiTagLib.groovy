@@ -8,6 +8,7 @@ import com.k_int.kbplus.UserSettings
 import com.k_int.kbplus.abstract_domain.PrivateProperty
 import com.k_int.kbplus.auth.User
 import de.laser.helper.RDStore
+import de.laser.helper.SessionCacheWrapper
 import org.codehaus.groovy.grails.plugins.web.taglib.ValidationTagLib
 import org.springframework.web.servlet.support.RequestContextUtils
 
@@ -33,7 +34,7 @@ class SemanticUiTagLib {
         def flash = attrs.data
 
         if (flash && flash.message) {
-            out << '<div class="ui success message">'
+            out << '<div class="ui success message la-clear-before">'
             out << '<i class="close icon"></i>'
             out << '<p>'
             out << flash.message
@@ -42,7 +43,7 @@ class SemanticUiTagLib {
         }
 
         if (flash && flash.error) {
-            out << '<div class="ui negative message">'
+            out << '<div class="ui negative message la-clear-before">'
             out << '<i class="close icon"></i>'
             out << '<p>'
             out << flash.error
@@ -55,7 +56,7 @@ class SemanticUiTagLib {
 
     def msg = { attrs, body ->
 
-        out << '<div class="ui ' + attrs.class + ' message">'
+        out << '<div class="ui ' + attrs.class + ' message la-clear-before">'
         out << '<i class="close icon"></i>'
         out << '<div class="content">'
 
@@ -542,39 +543,56 @@ class SemanticUiTagLib {
             }
         }
 
-
         if (showFilterButton) {
+
+			// overwrite due attribute
             if (attrs.extended) {
                 if (attrs.extended.toLowerCase() == 'true') {
                     extended = true
                 } else if (attrs.extended.toLowerCase() == 'false') {
                     extended = false
                 }
-            } else {
-                User currentUser = contextService.getUser()
-                String settingValue = currentUser.getSettingsValue(UserSettings.KEYS.SHOW_EXTENDED_FILTER, RefdataValue.getByValueAndCategory('Yes', 'YN')).value
+            }
+            else {
+				// overwrite due session
+                SessionCacheWrapper sessionCache = contextService.getSessionCache()
+                def cacheEntry = sessionCache.get("${UserSettings.KEYS.SHOW_EXTENDED_FILTER.toString()}/${controllerName}/${actionName}")
 
-                if (settingValue.toLowerCase() == 'yes') {
-                    extended = true
-                } else if (settingValue.toLowerCase() == 'no') {
-                    extended = false
+                if (cacheEntry) {
+                    if (cacheEntry.toLowerCase() == 'true') {
+                        extended = true
+                    } else if (cacheEntry.toLowerCase() == 'false') {
+                        extended = false
+                    }
+                }
+				// default profile setting
+                else {
+                    User currentUser = contextService.getUser()
+                    String settingValue = currentUser.getSettingsValue(UserSettings.KEYS.SHOW_EXTENDED_FILTER, RefdataValue.getByValueAndCategory('Yes', 'YN')).value
+
+                    if (settingValue.toLowerCase() == 'yes') {
+                        extended = true
+                    } else if (settingValue.toLowerCase() == 'no') {
+                        extended = false
+                    }
                 }
             }
         }
         if (showFilterButton) {
-            out << '<button class="ui  right floated button la-inline-labeled la-js-filterButton ' + (extended ?'':'blue') + '">'
+            out << '<button class="ui right floated button la-inline-labeled la-js-filterButton la-clearfix' + (extended ?'':'blue') + '">'
             out << '    Filter'
             out << '    <i class="filter icon"></i>'
             out << '   <span class="ui circular label la-js-filter-total hidden">0</span>'
             out << '</button>'
 
-            out << r.script() {
+
+/*            out << r.script() {
                 out << ' $(".la-js-filterButton").click(function() { '
                 //out << ' showExtendedFilter = !showExtendedFilter; '
                 out << '    $( ".la-filter").toggle( "fast" ); '
                 out << '    $(this).toggleClass("blue"); '
                 out << '}); '
-            }
+            }*/
         }
 
 
@@ -608,7 +626,7 @@ class SemanticUiTagLib {
 
     def form = { attrs, body ->
 
-        out << '<div class="ui grey segment">'
+        out << '<div class="ui grey segment la-clear-before">'
         out << body()
         out << '</div>'
     }

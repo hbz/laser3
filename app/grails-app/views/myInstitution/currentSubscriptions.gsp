@@ -57,8 +57,8 @@
             <semui:totalNumber total="${num_sub_rows}"/>
         </h1>
 
-
-<semui:filter showFilterButton="true">
+    <g:render template="../templates/filter/javascript" />
+    <semui:filter showFilterButton="true">
     <g:form action="currentSubscriptions" controller="myInstitution" method="get" class="ui small form clearing">
         <input type="hidden" name="isSiteReloaded" value="yes"/>
         <div class="three fields">
@@ -523,14 +523,14 @@
         </g:each>
     </table>
 </g:if>
+<g:else>
+    <g:if test="${filterSet}">
+        <br><strong><g:message code="filter.result.empty.object" args="${[message(code:"subscription.plural")]}"/></strong>
+    </g:if>
     <g:else>
-        <g:if test="${filterSet}">
-            <br><strong><g:message code="filter.result.empty.object" args="${[message(code:"subscription.plural")]}"/></strong>
-        </g:if>
-        <g:else>
-            <br><strong><g:message code="result.empty.object" args="${[message(code:"subscription.plural")]}"/></strong>
-        </g:else>
+        <br><strong><g:message code="result.empty.object" args="${[message(code:"subscription.plural")]}"/></strong>
     </g:else>
+</g:else>
 
 </div>
 

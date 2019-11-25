@@ -9,7 +9,7 @@
   </head>
   <body>
 
-    <h1 class="ui left aligned icon header"><semui:headerIcon />${orgInstance.name}</h1>
+    <h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon />${orgInstance.name}</h1>
 
     <semui:messages data="${flash}" />
 

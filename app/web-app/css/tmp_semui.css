@@ -342,3 +342,16 @@ h1 .icon.h1-icon-overwrite {
     bottom: 3px;
     right: 1px;
 }
+
+.ui.label.facet-providerName {
+    background-color: deepskyblue;
+}
+.ui.label.facet-type {
+    background-color: orange;
+}
+.ui.label.facet-startYear {
+    background-color: green;
+}
+.ui.label.facet-EndYear {
+    background-color: yellow;
+}

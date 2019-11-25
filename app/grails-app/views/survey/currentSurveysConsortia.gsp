@@ -21,13 +21,14 @@
 </semui:controlButtons>
 
 
-<h1 class="ui left aligned icon header"><semui:headerIcon/>${message(code: 'currentSurveys.label', default: 'Current Surveys')}
+<h1 class="ui left floated aligned icon header la-clear-before"><semui:headerIcon/>${message(code: 'currentSurveys.label', default: 'Current Surveys')}
 <semui:totalNumber total="${countSurveyConfigs.values().sum { it }}"/>
 </h1>
 
 <semui:messages data="${flash}"/>
 
-<semui:filter>
+<g:render template="/templates/filter/javascript" />
+<semui:filter showFilterButton="true">
     <g:form action="currentSurveysConsortia" controller="survey" method="post" class="ui small form" params="[tab: params.tab]">
         <div class="three fields">
             <div class="field">

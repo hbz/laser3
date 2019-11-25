@@ -398,6 +398,9 @@
           endDate:
             type: string
             format: date
+          listVerifiedDate:
+            type: string
+            format: date
           fixed:
             type: string
             description: Mapping RefdataCategory "YN"
@@ -577,7 +580,7 @@
           type: array
           items:
             $ref: "#/components/schemas/Package_in_Subscription"
-        previousSubscription:
+        predecessor:
           $ref: "#/components/schemas/SubscriptionStub"
         properties: # mapping customProperties and privateProperties
           type: array
@@ -596,6 +599,8 @@
           description: Mapping RefdataCategory "Subscription Status"
           enum:
             [${ com.k_int.kbplus.RefdataCategory.getAllRefdataValues('Subscription Status').collect{ it.value }.join(', ') }]
+        successor:
+          $ref: "#/components/schemas/SubscriptionStub"
         type:
           type: string
           description: Mapping RefdataCategory "Subscription Type"
