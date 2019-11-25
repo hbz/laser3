@@ -32,7 +32,7 @@ class Package
   @Transient
   def deletionService
 
-  String identifier
+  //String identifier
   String name
   String sortName
   @Deprecated
@@ -100,7 +100,7 @@ static hasMany = [  tipps:     TitleInstancePackagePlatform,
                       id column:'pkg_id'
                  version column:'pkg_version'
                globalUID column:'pkg_guid'
-              identifier column:'pkg_identifier'
+            //identifier column:'pkg_identifier'
                     name column:'pkg_name'
                 sortName column:'pkg_sort_name'
                    impId column:'pkg_imp_id', index:'pkg_imp_id_idx'

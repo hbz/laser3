@@ -116,7 +116,7 @@ class SubscriptionController extends AbstractDebugController {
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
     def index() {
-        def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
+        def result = setResultGenericsAndCheckAccess(accessService.CHECK_VIEW)
         if (!result) {
             response.sendError(401); return
         }
@@ -357,7 +357,7 @@ class SubscriptionController extends AbstractDebugController {
     @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_EDITOR") })
     def delete() {
-        def result = setResultGenericsAndCheckAccess(AccessService.CHECK_EDIT)
+        def result = setResultGenericsAndCheckAccess(accessService.CHECK_EDIT)
 
         if (params.process  && result.editable) {
             result.result = deletionService.deleteSubscription(result.subscription, false)
@@ -468,7 +468,7 @@ class SubscriptionController extends AbstractDebugController {
         ctx.accessService.checkPermAffiliation("ORG_INST,ORG_CONSORTIUM", "INST_USER")
     })
     def compare() {
-        def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
+        def result = setResultGenericsAndCheckAccess(accessService.CHECK_VIEW)
 
         result
         /*
@@ -640,7 +640,7 @@ class SubscriptionController extends AbstractDebugController {
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
     def subscriptionBatchUpdate() {
 
-        def result = setResultGenericsAndCheckAccess(AccessService.CHECK_EDIT)
+        def result = setResultGenericsAndCheckAccess(accessService.CHECK_EDIT)
         if (!result) {
             response.sendError(401); return
         }
@@ -714,7 +714,7 @@ class SubscriptionController extends AbstractDebugController {
     def addEntitlements() {
         log.debug("addEntitlements .. params: ${params}")
 
-        def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW_AND_EDIT)
+        def result = setResultGenericsAndCheckAccess(accessService.CHECK_VIEW_AND_EDIT)
         result.preselectValues = params.preselectValues == 'on'
         result.preselectCoverageDates = params.preselectCoverageDates == 'on'
         result.uploadPriceInfo = params.uploadPriceInfo == 'on'
@@ -1056,7 +1056,7 @@ class SubscriptionController extends AbstractDebugController {
         params.offset = 0
         params.max = 2000
 
-        def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
+        def result = setResultGenericsAndCheckAccess(accessService.CHECK_VIEW)
         Subscription baseSub = Subscription.get(params.sourceSubscriptionId ?: params.id)
         Subscription newSub = params.targetSubscriptionId ? Subscription.get(params.targetSubscriptionId) : null
         result.sourceIEs = subscriptionService.getIssueEntitlementsWithFilter(baseSub, params)
@@ -1248,7 +1248,7 @@ class SubscriptionController extends AbstractDebugController {
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
     def members() {
-        def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
+        def result = setResultGenericsAndCheckAccess(accessService.CHECK_VIEW)
         if (!result) {
             response.sendError(401); return
         }
@@ -1365,7 +1365,7 @@ class SubscriptionController extends AbstractDebugController {
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
     def surveys() {
-        def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
+        def result = setResultGenericsAndCheckAccess(accessService.CHECK_VIEW)
         if (!result) {
             response.sendError(401); return
         }
@@ -1387,7 +1387,7 @@ class SubscriptionController extends AbstractDebugController {
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
     def surveysConsortia() {
-        def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
+        def result = setResultGenericsAndCheckAccess(accessService.CHECK_VIEW)
         if (!result) {
             response.sendError(401); return
         }
@@ -1409,7 +1409,7 @@ class SubscriptionController extends AbstractDebugController {
         ctx.accessService.checkPermAffiliation("ORG_INST_COLLECTIVE,ORG_CONSORTIUM", "INST_EDITOR")
     })
     def linkLicenseMembers() {
-        def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
+        def result = setResultGenericsAndCheckAccess(accessService.CHECK_VIEW)
         if (!result) {
             response.sendError(401); return
         }
@@ -1473,7 +1473,7 @@ class SubscriptionController extends AbstractDebugController {
         ctx.accessService.checkPermAffiliation("ORG_INST_COLLECTIVE,ORG_CONSORTIUM", "INST_EDITOR")
     })
     def processLinkLicenseMembers() {
-        def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
+        def result = setResultGenericsAndCheckAccess(accessService.CHECK_VIEW)
         if (!result) {
             response.sendError(401); return
         }
@@ -1534,7 +1534,7 @@ class SubscriptionController extends AbstractDebugController {
         ctx.accessService.checkPermAffiliation("ORG_INST_COLLECTIVE,ORG_CONSORTIUM", "INST_EDITOR")
     })
     def processUnLinkLicenseMembers() {
-        def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
+        def result = setResultGenericsAndCheckAccess(accessService.CHECK_VIEW)
         if (!result) {
             response.sendError(401); return
         }
@@ -1571,7 +1571,7 @@ class SubscriptionController extends AbstractDebugController {
         ctx.accessService.checkPermAffiliation("ORG_INST_COLLECTIVE,ORG_CONSORTIUM", "INST_EDITOR")
     })
     def linkPackagesMembers() {
-        def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
+        def result = setResultGenericsAndCheckAccess(accessService.CHECK_VIEW)
         if (!result) {
             response.sendError(401); return
         }
@@ -1623,7 +1623,7 @@ class SubscriptionController extends AbstractDebugController {
         ctx.accessService.checkPermAffiliation("ORG_INST_COLLECTIVE,ORG_CONSORTIUM", "INST_EDITOR")
     })
     def processLinkPackagesConsortia() {
-        def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
+        def result = setResultGenericsAndCheckAccess(accessService.CHECK_VIEW)
         if (!result) {
             response.sendError(401); return
         }
@@ -1719,7 +1719,7 @@ class SubscriptionController extends AbstractDebugController {
         ctx.accessService.checkPermAffiliation("ORG_INST_COLLECTIVE,ORG_CONSORTIUM", "INST_EDITOR")
     })
     def processUnLinkPackagesConsortia() {
-        def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
+        def result = setResultGenericsAndCheckAccess(accessService.CHECK_VIEW)
         if (!result) {
             response.sendError(401); return
         }
@@ -1788,7 +1788,7 @@ class SubscriptionController extends AbstractDebugController {
         ctx.accessService.checkPermAffiliation("ORG_INST_COLLECTIVE,ORG_CONSORTIUM", "INST_EDITOR")
     })
     def propertiesMembers() {
-        def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
+        def result = setResultGenericsAndCheckAccess(accessService.CHECK_VIEW)
         if (!result) {
             response.sendError(401); return
         }
@@ -1848,7 +1848,7 @@ class SubscriptionController extends AbstractDebugController {
         ctx.accessService.checkPermAffiliation("ORG_INST_COLLECTIVE,ORG_CONSORTIUM", "INST_EDITOR")
     })
     def subscriptionPropertiesMembers() {
-        def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
+        def result = setResultGenericsAndCheckAccess(accessService.CHECK_VIEW)
         if (!result) {
             response.sendError(401); return
         }
@@ -1911,7 +1911,7 @@ class SubscriptionController extends AbstractDebugController {
         ctx.accessService.checkPermAffiliation("ORG_INST_COLLECTIVE,ORG_CONSORTIUM", "INST_EDITOR")
     })
     def processPropertiesMembers() {
-        def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
+        def result = setResultGenericsAndCheckAccess(accessService.CHECK_VIEW)
         if (!result) {
             response.sendError(401); return
         }
@@ -2010,7 +2010,7 @@ class SubscriptionController extends AbstractDebugController {
         ctx.accessService.checkPermAffiliation("ORG_INST_COLLECTIVE,ORG_CONSORTIUM", "INST_EDITOR")
     })
     def processSubscriptionPropertiesMembers() {
-        def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
+        def result = setResultGenericsAndCheckAccess(accessService.CHECK_VIEW)
         if (!result) {
             response.sendError(401); return
         }
@@ -2079,7 +2079,7 @@ class SubscriptionController extends AbstractDebugController {
         ctx.accessService.checkPermAffiliation("ORG_INST_COLLECTIVE,ORG_CONSORTIUM", "INST_EDITOR")
     })
     def processDeletePropertiesMembers() {
-        def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
+        def result = setResultGenericsAndCheckAccess(accessService.CHECK_VIEW)
         if (!result) {
             response.sendError(401); return
         }
@@ -2168,7 +2168,7 @@ class SubscriptionController extends AbstractDebugController {
     }
 
     private ArrayList<Long> getOrgIdsForFilter() {
-        def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
+        def result = setResultGenericsAndCheckAccess(accessService.CHECK_VIEW)
         ArrayList<Long> resultOrgIds
         def tmpParams = params.clone()
         tmpParams.remove("max")
@@ -2191,7 +2191,7 @@ class SubscriptionController extends AbstractDebugController {
     def addMembers() {
         log.debug("addMembers ..")
 
-        def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW_AND_EDIT)
+        def result = setResultGenericsAndCheckAccess(accessService.CHECK_VIEW_AND_EDIT)
         if (!result) {
             response.sendError(401); return
         }
@@ -2228,7 +2228,7 @@ class SubscriptionController extends AbstractDebugController {
     def processAddMembers() {
         log.debug(params)
 
-        def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW_AND_EDIT)
+        def result = setResultGenericsAndCheckAccess(accessService.CHECK_VIEW_AND_EDIT)
         if (!result) {
             response.sendError(401); return
         }
@@ -2431,7 +2431,7 @@ class SubscriptionController extends AbstractDebugController {
 
         return
 
-        def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW_AND_EDIT)
+        def result = setResultGenericsAndCheckAccess(accessService.CHECK_VIEW_AND_EDIT)
         if (!result) {
             response.sendError(401); return
         }
@@ -2477,7 +2477,7 @@ class SubscriptionController extends AbstractDebugController {
     def pendingChanges() {
         log.debug("subscription id:${params.id}");
 
-        def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
+        def result = setResultGenericsAndCheckAccess(accessService.CHECK_VIEW)
         if (!result) {
             response.sendError(401); return
         }
@@ -2521,7 +2521,7 @@ class SubscriptionController extends AbstractDebugController {
     private def previousAndExpected(params, screen) {
         log.debug("previousAndExpected ${params}");
 
-        def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
+        def result = setResultGenericsAndCheckAccess(accessService.CHECK_VIEW)
         if (!result) {
             response.sendError(401); return
         }
@@ -2566,7 +2566,7 @@ class SubscriptionController extends AbstractDebugController {
     def processAddEntitlements() {
         log.debug("addEntitlements....");
 
-        def result = setResultGenericsAndCheckAccess(AccessService.CHECK_EDIT)
+        def result = setResultGenericsAndCheckAccess(accessService.CHECK_EDIT)
         if (!result) {
             response.sendError(401); return
         }
@@ -2686,7 +2686,7 @@ class SubscriptionController extends AbstractDebugController {
     def processRemoveEntitlements() {
         log.debug("processRemoveEntitlements....");
 
-        def result = setResultGenericsAndCheckAccess(AccessService.CHECK_EDIT)
+        def result = setResultGenericsAndCheckAccess(accessService.CHECK_EDIT)
         if (!result) {
             response.sendError(401); return
         }
@@ -2733,7 +2733,7 @@ class SubscriptionController extends AbstractDebugController {
         log.debug("processRenewEntitlements ...")
         params.id = Long.parseLong(params.id)
         params.packageId = Long.parseLong(params.packageId)
-        def result = setResultGenericsAndCheckAccess(AccessService.CHECK_EDIT)
+        def result = setResultGenericsAndCheckAccess(accessService.CHECK_EDIT)
         if (!result) {
             response.sendError(401); return
         }
@@ -2848,7 +2848,7 @@ class SubscriptionController extends AbstractDebugController {
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
     def notes() {
-        def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
+        def result = setResultGenericsAndCheckAccess(accessService.CHECK_VIEW)
         if (!result) {
             response.sendError(401); return
         }
@@ -2866,7 +2866,7 @@ class SubscriptionController extends AbstractDebugController {
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
     def documents() {
-        def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
+        def result = setResultGenericsAndCheckAccess(accessService.CHECK_VIEW)
         if (!result) {
             response.sendError(401); return
         }
@@ -2898,7 +2898,7 @@ class SubscriptionController extends AbstractDebugController {
     @DebugAnnotation(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_USER")
     @Secured(closure = { ctx.accessService.checkPermAffiliation("ORG_INST,ORG_CONSORTIUM", "INST_USER") })
     def tasks() {
-        def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
+        def result = setResultGenericsAndCheckAccess(accessService.CHECK_VIEW)
         if (!result) {
             response.sendError(401); return
         }
@@ -2943,7 +2943,7 @@ class SubscriptionController extends AbstractDebugController {
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
     def renewals() {
-        def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
+        def result = setResultGenericsAndCheckAccess(accessService.CHECK_VIEW)
         if (!result) {
             response.sendError(401); return
         }
@@ -2969,7 +2969,7 @@ class SubscriptionController extends AbstractDebugController {
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
     def permissionInfo() {
-        def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
+        def result = setResultGenericsAndCheckAccess(accessService.CHECK_VIEW)
         if (!result) {
             response.sendError(401); return
         }
@@ -2983,7 +2983,7 @@ class SubscriptionController extends AbstractDebugController {
     @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_EDITOR") })
     def launchRenewalsProcess() {
-        def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW_AND_EDIT)
+        def result = setResultGenericsAndCheckAccess(accessService.CHECK_VIEW_AND_EDIT)
 
         def shopping_basket = UserFolder.findByUserAndShortcode(result.user, 'RenewalsBasket') ?: new UserFolder(user: result.user, shortcode: 'RenewalsBasket').save(flush: true);
 
@@ -3095,7 +3095,7 @@ class SubscriptionController extends AbstractDebugController {
             }
         }*/
 
-        def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW_AND_EDIT)
+        def result = setResultGenericsAndCheckAccess(accessService.CHECK_VIEW_AND_EDIT)
         if (!result) {
             response.sendError(401); return
         }
@@ -3347,7 +3347,7 @@ class SubscriptionController extends AbstractDebugController {
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
     def history() {
-        def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
+        def result = setResultGenericsAndCheckAccess(accessService.CHECK_VIEW)
         if (!result) {
             response.sendError(401); return
         }
@@ -3369,7 +3369,7 @@ class SubscriptionController extends AbstractDebugController {
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
     def changes() {
-        def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
+        def result = setResultGenericsAndCheckAccess(accessService.CHECK_VIEW)
         if (!result) {
             response.sendError(401); return
         }
@@ -3403,7 +3403,7 @@ class SubscriptionController extends AbstractDebugController {
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
     def costPerUse() {
-        def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
+        def result = setResultGenericsAndCheckAccess(accessService.CHECK_VIEW)
         if (!result) {
             response.sendError(401); return
         }
@@ -3466,7 +3466,7 @@ class SubscriptionController extends AbstractDebugController {
         DebugUtil du = new DebugUtil()
         du.setBenchMark('1')
 
-        def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
+        def result = setResultGenericsAndCheckAccess(accessService.CHECK_VIEW)
         if (!result) {
             response.sendError(401); return
         }
@@ -3742,7 +3742,7 @@ class SubscriptionController extends AbstractDebugController {
     @DebugAnnotation(test='hasAffiliation("INST_USER")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
     def renewSubscription_Local() {
-        def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
+        def result = setResultGenericsAndCheckAccess(accessService.CHECK_VIEW)
 
         if (!accessService.checkUserIsMember(result.user, result.institution)) {
             flash.error = message(code: 'myinst.error.noMember', args: [result.institution.name]);
@@ -3787,7 +3787,7 @@ class SubscriptionController extends AbstractDebugController {
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
     def processSimpleRenewal_Local() {
         log.debug("-> renewalsUpload params: ${params}");
-        def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
+        def result = setResultGenericsAndCheckAccess(accessService.CHECK_VIEW)
         if (!result) {
             response.sendError(401); return
         }
@@ -3849,7 +3849,7 @@ class SubscriptionController extends AbstractDebugController {
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
     def renewSubscriptionConsortia() {
 
-        def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
+        def result = setResultGenericsAndCheckAccess(accessService.CHECK_VIEW)
         if (!(result || accessService.checkPerm("ORG_CONSORTIUM"))) {
             response.sendError(401); return
         }
@@ -4263,7 +4263,7 @@ class SubscriptionController extends AbstractDebugController {
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
     def processSimpleRenewal_Consortia() {
 
-        def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
+        def result = setResultGenericsAndCheckAccess(accessService.CHECK_VIEW)
         if (!(result || accessService.checkPerm("ORG_CONSORTIUM"))) {
             response.sendError(401); return
         }
@@ -4366,7 +4366,7 @@ class SubscriptionController extends AbstractDebugController {
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
     def renewSubscription_Consortia() {
 
-        def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
+        def result = setResultGenericsAndCheckAccess(accessService.CHECK_VIEW)
         result.institution = contextService.org
         if (!(result || accessService.checkPerm("ORG_CONSORTIUM"))) {
             response.sendError(401); return
@@ -4426,7 +4426,7 @@ class SubscriptionController extends AbstractDebugController {
     @DebugAnnotation(test='hasAffiliation("INST_EDITOR")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_EDITOR") })
     def copyElementsIntoSubscription() {
-        def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
+        def result = setResultGenericsAndCheckAccess(accessService.CHECK_VIEW)
         if (!result) {
             response.sendError(401); return
         }
@@ -4537,7 +4537,7 @@ class SubscriptionController extends AbstractDebugController {
     }
 
     private copySubElements_DatesOwnerRelations() {
-        def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
+        def result = setResultGenericsAndCheckAccess(accessService.CHECK_VIEW)
         Subscription baseSub = Subscription.get(params.sourceSubscriptionId ?: params.id)
         Subscription newSub = params.targetSubscriptionId ? Subscription.get(params.targetSubscriptionId) : null
 
@@ -4578,7 +4578,7 @@ class SubscriptionController extends AbstractDebugController {
         result
     }
     private loadDataFor_DatesOwnerRelations(){
-        def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
+        def result = setResultGenericsAndCheckAccess(accessService.CHECK_VIEW)
         Subscription baseSub = Subscription.get(params.sourceSubscriptionId ?: params.id)
         Subscription newSub = params.targetSubscriptionId ? Subscription.get(params.targetSubscriptionId) : null
 
@@ -4589,7 +4589,7 @@ class SubscriptionController extends AbstractDebugController {
     }
 
     private copySubElements_DocsAnnouncementsTasks() {
-        def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
+        def result = setResultGenericsAndCheckAccess(accessService.CHECK_VIEW)
         Subscription baseSub = Subscription.get(params.sourceSubscriptionId ? Long.parseLong(params.sourceSubscriptionId): Long.parseLong(params.id))
         Subscription newSub = null
         if (params.targetSubscriptionId) {
@@ -4648,7 +4648,7 @@ class SubscriptionController extends AbstractDebugController {
     }
 
     private loadDataFor_DocsAnnouncementsTasks() {
-        def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
+        def result = setResultGenericsAndCheckAccess(accessService.CHECK_VIEW)
         Subscription baseSub = Subscription.get(params.sourceSubscriptionId ? Long.parseLong(params.sourceSubscriptionId): Long.parseLong(params.id))
         Subscription newSub = null
         if (params.targetSubscriptionId) {
@@ -4663,7 +4663,7 @@ class SubscriptionController extends AbstractDebugController {
     }
 
     private copySubElements_Subscriber() {
-        def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
+        def result = setResultGenericsAndCheckAccess(accessService.CHECK_VIEW)
         Subscription baseSub = Subscription.get(params.sourceSubscriptionId ? Long.parseLong(params.sourceSubscriptionId): Long.parseLong(params.id))
         Subscription newSub = null
         if (params.targetSubscriptionId) {
@@ -4681,7 +4681,7 @@ class SubscriptionController extends AbstractDebugController {
     }
 
     private loadDataFor_Subscriber() {
-        def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
+        def result = setResultGenericsAndCheckAccess(accessService.CHECK_VIEW)
         result.sourceSubscription = Subscription.get(params.sourceSubscriptionId ? Long.parseLong(params.sourceSubscriptionId): Long.parseLong(params.id))
         result.validSourceSubChilds = subscriptionService.getValidSubChilds(result.sourceSubscription)
         if (params.targetSubscriptionId) {
@@ -4746,7 +4746,7 @@ class SubscriptionController extends AbstractDebugController {
     }
 
     private copySubElements_PackagesEntitlements() {
-        def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
+        def result = setResultGenericsAndCheckAccess(accessService.CHECK_VIEW)
         Subscription baseSub = Subscription.get(params.sourceSubscriptionId ?: params.id)
         Subscription newSub = params.targetSubscriptionId ? Subscription.get(params.targetSubscriptionId) : null
 
@@ -4782,7 +4782,7 @@ class SubscriptionController extends AbstractDebugController {
     }
 
     private loadDataFor_PackagesEntitlements() {
-        def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
+        def result = setResultGenericsAndCheckAccess(accessService.CHECK_VIEW)
         Subscription baseSub = Subscription.get(params.sourceSubscriptionId ?: params.id)
         Subscription newSub = params.targetSubscriptionId ? Subscription.get(params.targetSubscriptionId) : null
         result.sourceIEs = subscriptionService.getIssueEntitlements(baseSub)
@@ -4803,7 +4803,7 @@ class SubscriptionController extends AbstractDebugController {
 
     def copySubscription() {
 
-        def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
+        def result = setResultGenericsAndCheckAccess(accessService.CHECK_VIEW)
         if (!result) {
             response.sendError(401); return
         }
@@ -4877,7 +4877,7 @@ class SubscriptionController extends AbstractDebugController {
     def processcopySubscription() {
 
         params.id = params.baseSubscription
-        def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
+        def result = setResultGenericsAndCheckAccess(accessService.CHECK_VIEW)
         if (!result) {
             response.sendError(401); return
         }
@@ -5258,7 +5258,7 @@ class SubscriptionController extends AbstractDebugController {
         }
         result.args = args
 
-        if (checkOption in [AccessService.CHECK_VIEW, AccessService.CHECK_VIEW_AND_EDIT]) {
+        if (checkOption in [accessService.CHECK_VIEW, accessService.CHECK_VIEW_AND_EDIT]) {
             if (!result.subscriptionInstance?.isVisibleBy(result.user)) {
                 log.debug("--- NOT VISIBLE ---")
                 return null
@@ -5282,7 +5282,7 @@ class SubscriptionController extends AbstractDebugController {
             result.editable = false
         }
 
-        if (checkOption in [AccessService.CHECK_EDIT, AccessService.CHECK_VIEW_AND_EDIT]) {
+        if (checkOption in [accessService.CHECK_EDIT, accessService.CHECK_VIEW_AND_EDIT]) {
             if (!result.editable) {
                 log.debug("--- NOT EDITABLE ---")
                 return null

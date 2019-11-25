@@ -4,24 +4,36 @@ import de.laser.SystemEvent
 import de.laser.domain.TIPPCoverage
 import de.laser.helper.RDStore
 import de.laser.interfaces.AbstractLockableService
+import groovy.util.slurpersupport.GPathResult
+import groovy.util.slurpersupport.NodeChild
 import groovy.util.slurpersupport.NodeChildren
 import groovyx.net.http.HTTPBuilder
+import groovyx.net.http.HttpResponseException
+import org.codehaus.groovy.grails.plugins.DomainClassGrailsPlugin
+import org.hibernate.SessionFactory
+import org.hibernate.classic.Session
+
 import java.text.SimpleDateFormat
 import java.util.concurrent.Callable
 import java.util.concurrent.ExecutorService
-import static groovyx.net.http.ContentType.XML
-import static groovyx.net.http.Method.GET
 
 /**
  * Implements the synchronisation workflow according to https://dienst-wiki.hbz-nrw.de/display/GDI/GOKB+Sync+mit+LASER
  */
 class GlobalSourceSyncService extends AbstractLockableService {
 
+    SessionFactory sessionFactory
     ExecutorService executorService
+    def propertyInstanceMap = DomainClassGrailsPlugin.PROPERTY_INSTANCE_MAP
+    GlobalRecordSource source
 
     boolean running = false
     SimpleDateFormat xmlDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'")
 
+    /**
+     * This is the entry point for triggering the sync workflow. To ensure locking, a flag will be set when a process is already running
+     * @return a flag whether a process is already running
+     */
     boolean startSync() {
         if(!running) {
             def future = executorService.submit({ doSync() } as Callable)
@@ -33,12 +45,16 @@ class GlobalSourceSyncService extends AbstractLockableService {
         }
     }
 
+    /**
+     * The sync process wrapper. It takes every {@link GlobalRecordSource}, fetches the information since a given timestamp
+     * and updates the local records
+     */
     void doSync() {
         running = true
         //TODO [ticket=1819] please ask whether in future, we may have more than one source (i.e. GlobalRecordSources)
         //for the moment, we rely upon being only one source per LAS:eR instance.
         List<GlobalRecordSource> jobs = GlobalRecordSource.findAll()
-        GlobalRecordSource source = jobs.first()
+        source = jobs.first()
         /*
         in case we build upon multiple sources, move the following block into this loop and remove comment
         jobs.each { source ->
@@ -60,41 +76,34 @@ class GlobalSourceSyncService extends AbstractLockableService {
             // perform GET request, expection XML response data
             while(more) {
                 log.info("in loop, making request ...")
-                http.request(GET,XML) {
-                    Map queryParams = [verb:'ListRecords']
-                    if(resumption)
-                        queryParams.resumptionToken = resumption
-                    else {
-                        String fromParam = oldDate ? xmlDateFormat.format(oldDate) : ''
-                        queryParams.metadataPrefix = source.fullPrefix
-                        queryParams.from = fromParam
+                Map<String,String> queryParams = [verb:'ListRecords',metadataPrefix:'gokb',resumptionToken:resumption]
+                if(resumption) {
+                    queryParams.resumptionToken = resumption
+                }
+                else {
+                    String fromParam = oldDate ? xmlDateFormat.format(oldDate) : ''
+                    queryParams.metadataPrefix = source.fullPrefix
+                    queryParams.from = fromParam
+                }
+                NodeChildren listRecords = fetchRecord(source.uri,'packages',queryParams)
+                if(listRecords) {
+                    listRecords.record.each { NodeChild r ->
+                        //continue processing here, original code jumps back to GlobalSourceSyncService
+                        log.info("got OAI record ${r.header.identifier} datestamp: ${r.header.datestamp} job: ${source.id} url: ${source.uri}")
+                        String recUUID = r.header.uuid.text() ?: '0'
+                        String recIdentifier = r.header.identifier.text()
+                        String recordTimestamp = xmlDateFormat.parse(r.header.datestamp.text())
+                        //leave out GlobalRecordInfo update, no need to reflect it twice since we keep the package structure internally
+                        //jump to packageReconcile which includes packageConv - check if there is a package, otherwise, update package data
+                        Package pkg = createOrUpdatePackage(r.metadata.gokb.package)
                     }
-                    uri.query = queryParams
-
-                    response.success = { resp, xml ->
-                        log.info(resp.statusLine)
-                        xml.'ListRecords'.'record'.each { r ->
-                            //continue processing here, original code jumps back to GlobalSourceSyncService
-                            log.info("got OAI record ${r.header.identifier} datestamp: ${r.header.datestamp} job: ${source.id} url: ${source.uri}")
-                            String recUUID = r.header.uuid.text() ?: '0'
-                            String recIdentifier = r.header.identifier.text()
-                            String recordTimestamp = xmlDateFormat.parse(r.header.datestamp.text())
-                            //leave out GlobalRecordInfo update, no need to reflect it twice since we keep the package structure internally
-                            //jump to packageReconcile which includes packageConv - check if there is a package, otherwise, update package data
-                            Package pkg = createOrUpdate(r.metadata.gokb.package, source)
-                        }
-                        if(xml.'ListRecords'.'resumptionToken'.text()) {
-                            resumption = xml.'ListRecords'.'resumptionToken'.text()
-                            log.info("Continue with next iteration, token: ${resumption}")
-                        }
-                        else
-                            more = false
+                    if(listRecords.resumptionToken) {
+                        resumption = listRecords.resumptionToken
+                        log.info("Continue with next iteration, token: ${resumption}")
+                        cleanUpGorm()
                     }
-
-                    response.failure = { resp ->
-                        log.error("Unexpected error: ${resp.statusLine.statusCode} : ${resp.statusLine.reasonPhrase}. Set more=false")
+                    else
                         more = false
-                    }
                 }
                 log.info("Endloop")
             }
@@ -110,8 +119,18 @@ class GlobalSourceSyncService extends AbstractLockableService {
         }
     }
 
-
-    Package createOrUpdate(NodeChildren packageData, GlobalRecordSource grs) {
+    /**
+     * Looks up for a given OAI-PMH extract if a local record exists or not. If no {@link Package} record exists, it will be
+     * created with the given remote record data, otherwise, the local record is going to be updated. The {@link TitleInstancePackagePlatform records}
+     * in the {@link Package} will be checked for differences and if there are such, the according fields updated. Same counts for the {@link TIPPCoverage} records
+     * in the {@link TitleInstancePackagePlatform}s. If {@link Subscription}s are linked to the {@link Package}, the {@link IssueEntitlement}s (just as their
+     * {@link de.laser.domain.IssueEntitlementCoverage}s) are going to be notified; it is up to the respective subscription tenants to accept the changes or not.
+     * Replaces the method GokbDiffEngine.diff and the onNewTipp, onUpdatedTipp and onUnchangedTipp closures
+     *
+     * @param packageData - A {@link NodeChildren} list containing a OAI-PMH record extract for a given package
+     * @return
+     */
+    Package createOrUpdatePackage(NodeChildren packageData) {
         log.info('converting XML record into map and reconciling new package!')
         String title = packageData.title.text()
         String name = packageData.name.text()
@@ -125,41 +144,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
         //result.paymentType = packageData.paymentType.text() needed? not used in packageReconcile
         String providerUUID = packageData.nominalProvider.'@uuid'.text()
         if(providerUUID){
-            //Org.lookupOrCreate2 simplified
-            Org provider = Org.findByGokbId(providerUUID)
-            if(!provider) {
-                provider = new Org(
-                        name: packageData.nominalProvider.name.text(),
-                        sector: RDStore.O_SECTOR_PUBLISHER,
-                        type: [RDStore.OT_PROVIDER],
-                        gokbId: providerUUID
-                )
-                if(!provider.save()) {
-                    log.error(provider.errors)
-                }
-            }
-            HTTPBuilder http2 = new HTTPBuilder(grs.uri.replaceAll("packages","orgs"))
-            http2.request(GET,XML) {
-                uri.query = [verb:'getRecord',metadataPrefix:grs.fullPrefix,identifier:providerUUID]
-                response.success { resp, xml ->
-                    log.info(resp.statusLine)
-                    NodeChildren metadata = xml.'GetRecord'.record.metadata
-                    if(metadata) {
-                        metadata.gokb.org.providedPlatforms.platform.each { plat ->
-                            //ex setOrUpdateProviderPlattform()
-                            log.info("checking provider with uuid ${providerUUID}")
-                            Platform platform = Platform.lookupOrCreatePlatform([name: plat.name.text(), gokbId: plat.'@uuid'.text(), primaryUrl: plat.primaryUrl.text()])
-                            if(platform.org != provider) {
-                                platform.org = provider
-                                platform.save()
-                            }
-                        }
-                    }
-                }
-                response.failure = { resp ->
-                    println "unexpected error on fetching provider data: ${resp.statusLine.statusCode} : ${resp.statusLine.reasonPhrase}."
-                }
-            }
+            lookupOrCreateProvider(providerUUID)
         }
         //ex packageConv, processing TIPPs - conversion necessary because package may be not existent in LAS:eR; then, no comparison is needed any more
         List<Map<String,Object>> tipps = []
@@ -208,8 +193,8 @@ class GlobalSourceSyncService extends AbstractLockableService {
             updatedTIPP.coverages = updatedTIPP.coverages.toSorted { a, b -> a.startDate <=> b.startDate }
             tipps << updatedTIPP
         }
-        log.info("Rec conversion for package returns object with title ${result.parsed_rec.title} and ${result.parsed_rec.tipps?.size()} tipps")
-        Package result = findByGokbId(packageData.'@uuid'.text())
+        log.info("Rec conversion for package returns object with title ${title} and ${tipps.size()} tipps")
+        Package result = Package.findByGokbId(packageData.'@uuid'.text())
         if(result) {
             //local package exists -> update closure, build up GokbDiffEngine and the horrendous closures
             log.info("package successfully found, processing LAS:eR id #${result.id}, with GOKb id ${result.gokbId}")
@@ -227,44 +212,67 @@ class GlobalSourceSyncService extends AbstractLockableService {
                 List<Map<String,Object>> tippsToNotify = []
                 tipps.each { Map<String, Object> tippB ->
                     TitleInstancePackagePlatform tippA = result.tipps.find { TitleInstancePackagePlatform b -> b.gokbId == tippB.uuid } //we have to consider here TIPPs, too, which were deleted but have been reactivated
-                    RefdataValue status = RefdataValue.getByValueAndCategory(tippB.status,RefdataCategory.TIPP_STATUS)
-                    if(status == RDStore.TIPP_DELETED) {
-                        log.info("TIPP with UUID ${tippA.gokbId} has been deleted from package ${result.gokbId}")
-                        tippA.status = status
-                        tippsToNotify << [event:"delete",target:tippA]
-                    }
-                    else {
-                        List<Map<String,Object>> diffs = getTippDiff(tippA,tippB) //includes also changes in coverage statement set
-                        if(diffs) {
-                            log.info("Got tipp diffs: ${diffs}")
-                            //process actual diffs
-                            diffs.each { diff ->
-                                if(diff.field == 'coverage') {
-                                    diff.covDiffs.each { covDiff ->
-                                        switch(covDiff.event) {
-                                            case 'added':
-                                                if(!covDiff.target.save())
-                                                    log.error(covDiff.target.errors)
+                    if(tippA) {
+                        //ex updatedTippClosure / tippUnchangedClosure
+                        RefdataValue status = RefdataValue.getByValueAndCategory(tippB.status,RefdataCategory.TIPP_STATUS)
+                        if(status == RDStore.TIPP_DELETED) {
+                            log.info("TIPP with UUID ${tippA.gokbId} has been deleted from package ${result.gokbId}")
+                            tippA.status = status
+                            tippsToNotify << [event:"delete",target:tippA]
+                        }
+                        else {
+                            Set<Map<String,Object>> diffs = getTippDiff(tippA,tippB) //includes also changes in coverage statement set
+                            if(diffs) {
+                                log.info("Got tipp diffs: ${diffs}")
+                                //process actual diffs
+                                diffs.each { diff ->
+                                    if(diff.field == 'coverage') {
+                                        diff.covDiffs.each { covDiff ->
+                                            switch(covDiff.event) {
+                                                case 'added':
+                                                    if(!covDiff.target.save())
+                                                        log.error(covDiff.target.errors)
+                                                    break
+                                                case 'deleted': covDiff.target.delete()
+                                                    break
+                                                case 'updated': covDiff.target[covDiff.field] = covDiff.newValue
+                                                    if(!covDiff.target.save())
+                                                        log.error(covDiff.target.errors)
+                                                    break
+                                            }
+                                        }
+                                    }
+                                    else {
+                                        switch(diff.fieldType) {
+                                            case RefdataValue.class.name:
+                                                if(diff.refdataCategory)
+                                                    tippA[diff.field] = RefdataValue.getByValueAndCategory(tippB[diff.field],diff.refdataCategory)
+                                                else log.error("RefdataCategory missing!")
                                                 break
-                                            case 'deleted': covDiff.target.delete()
-                                                break
-                                            case 'updated': covDiff.target[covDiff.field] = covDiff.newValue
-                                                if(!covDiff.target.save())
-                                                    log.error(covDiff.target.errors)
+                                            default: tippA[diff.field] = tippB[diff.field]
                                                 break
                                         }
                                     }
                                 }
-                                else {
-                                    tippA[diff.field] = tippB[diff.field]
-                                }
+                                if(tippA.save())
+                                    tippsToNotify << [event:'update',target:tippA,diffs:diffs]
+                                else
+                                    log.error(tippA.errors)
+                                //updatedTitleAfterPackageReconcile!
                             }
-                            if(tippA.save())
-                                tippsToNotify << [event:'update',target:tippA,diffs:diffs]
-                            else
-                                log.error(tippA.errors)
-                            //updatedTitleAfterPackageReconcile!
                         }
+                    }
+                    else {
+                        //ex newTippClosure
+                        TitleInstancePackagePlatform newTIPP = new TitleInstancePackagePlatform(
+                                gokbId: tippB.uuid,
+                                status: RefdataValue.getByValueAndCategory(tippB.status, RefdataCategory.TIPP_STATUS),
+                                hostPlatformURL: tippB.url.text(),
+                                accessStartDate: (Date) tippB.accessStartDate,
+                                accessEndDate: (Date) tippB.accessEndDate
+                        )
+                        //updatedTitleAfterPackageReconcile!
+
                     }
                 }
                 //if everything went well, we should have here the list of tipps to notify ...
@@ -304,10 +312,72 @@ class GlobalSourceSyncService extends AbstractLockableService {
         result
     }
 
+    /**
+     * Checks for a given UUID if a {@link TitleInstance} is existing in the database, if it does not exist, it will be created.
+     * Replaces the former updatedTitleAfterPackageReconcile, titleConv and titleReconcile closure
+     *
+     * @param titleUUID - the GOKb UUID of the {@link TitleInstance} to create or update
+     * @return the new or updated {@link TitleInstance}
+     */
+    TitleInstance createOrUpdateTitle(String titleUUID) {
+        NodeChildren record = fetchRecord(source.uri,'titles',[verb:'getRecord',metadataPrefix:source.fullPrefix,identifier:titleUUID])
+        if(record) {
+            NodeChildren titleRecord = record.metadata.gokb.title
+            log.info("title record loaded, converting XML record and reconciling title record ...")
+            TitleInstance titleInstance = TitleInstance.findByGokbId(titleUUID)
+            RefdataValue status = RefdataValue.getByValueAndCategory(RefdataCategory.TI_STATUS)
+            if(titleInstance) {
+                
+            }
+            else {
+                titleInstance = new TitleInstance(gokbId: titleUUID)
+
+            }
+        }
+    }
+
+    /**
+     * Was formerly in the {@link Org} domain class; deployed for better maintainability
+     * Checks for a given UUID if the provider exists, otherwise, it will be created. The
+     * default {@link Platform}s are set up or updated as well
+     *
+     * @param providerUUID - the GOKb UUID of the given provider {@link Org}
+     * @return - the provider {@link Org}
+     */
+    Org lookupOrCreateProvider(providerUUID) {
+        //Org.lookupOrCreate2 simplified
+        Org provider = Org.findByGokbId(providerUUID)
+        if(!provider) {
+            provider = new Org(
+                    name: packageData.nominalProvider.name.text(),
+                    sector: RDStore.O_SECTOR_PUBLISHER,
+                    type: [RDStore.OT_PROVIDER],
+                    gokbId: providerUUID
+            )
+            if(!provider.save()) {
+                log.error(provider.errors)
+            }
+        }
+        NodeChildren metadata = fetchRecord(source.uri,'orgs',[verb:'getRecord',metadataPrefix:source.fullPrefix,identifier:providerUUID])
+        if(metadata) {
+            metadata.gokb.org.providedPlatforms.platform.each { plat ->
+                //ex setOrUpdateProviderPlattform()
+                log.info("checking provider with uuid ${providerUUID}")
+                Platform platform = Platform.lookupOrCreatePlatform([name: plat.name.text(), gokbId: plat.'@uuid'.text(), primaryUrl: plat.primaryUrl.text()])
+                if(platform.org != provider) {
+                    platform.org = provider
+                    platform.save()
+                }
+            }
+        }
+        provider
+    }
+
     void createOrUpdatePackageProvider(String providerUUID, String packageUUID, Package pkg) {
-        List<OrgRole> providerRoleCheck = OrgRole.executeQuery("select oo from OrgRole oo where oo.org.globalUID = :providerUUID and oo.pkg.gokbId = :gokbUUID",[providerUUID:providerUUID,gokbUUID:packageUUID])
+        Org provider = lookupOrCreateProvider(providerUUID)
+        List<OrgRole> providerRoleCheck = OrgRole.executeQuery("select oo from OrgRole oo where oo.org = :provider and oo.pkg.gokbId = :gokbUUID",[provider:provider,gokbUUID:packageUUID])
         if(!providerRoleCheck) {
-            OrgRole providerRole = new OrgRole(org:Org.findByGlobalUID(providerUUID),pkg:pkg,roleType: RDStore.OT_PROVIDER)
+            OrgRole providerRole = new OrgRole(org:provider,pkg:pkg,roleType: RDStore.OT_PROVIDER)
             if(!providerRole.save()) {
                 log.error("Error on saving org role: ${providerRole.errors}")
             }
@@ -335,6 +405,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
      * @return a {@link Set} of {@link Map}s with the differences
      */
     Set<Map<String,Object>> getTippDiff(TitleInstancePackagePlatform tippa, Map<String,Object> tippb) {
+        log.info("processing diffs; the respective GOKb UUIDs are: ${tippa.gokbId} (LAS:eR) vs. ${tippb.uuid} (remote)")
         Set<Map<String, Object>> result = []
 
         if (tippa.hostPlatformURL != tippb.hostPlatformURL) {
@@ -347,7 +418,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
             result.add([field: 'coverage', newValue: tippb.coverage, oldValue: tippa.coverage])
         }*/
         Map<String, Object> coverageDiffs = getCoverageDiffs(tippa.coverages,(List<Map<String,Object>>) tippb.coverages, tippa)
-        if(coverageDiffs)
+        if(coverageDiffs.isEmpty())
             result.add(coverageDiffs)
 
         if (tippa.accessStartDate != tippb.accessStartDate) {
@@ -358,8 +429,8 @@ class GlobalSourceSyncService extends AbstractLockableService {
             result.add([field: 'accessEndDate', newValue: tippb.accessEndDate, oldValue: tippa.accessEndDate])
         }
 
-        if(tippa.status != tippb.status) {
-            result.add([field: 'status', newValue: tippb.status, oldValue: tippa.status])
+        if(tippa.status != RefdataValue.getByValueAndCategory(tippb.status,RefdataCategory.TIPP_STATUS)) {
+            result.add([field: 'status', fieldType: RefdataValue.class.name, refdataCategory: RefdataCategory.TIPP_STATUS, newValue: tippb.status, oldValue: tippa.status])
         }
 
         /*
@@ -373,9 +444,9 @@ class GlobalSourceSyncService extends AbstractLockableService {
     }
 
     /**
-     *
-     * @param covListA - the old coverage statement
-     * @param covListB - the new coverage statement
+     * Compares two coverage entries against each other, retrieving the differences between both.
+     * @param covListA - the old coverage statements (an existing {@link Set} of {@link TIPPCoverage}s)
+     * @param covListB - the new coverage statements (a {@link List} of unpersisted remote records, kept in {@link Map}s)
      * @return a {@link Map} reflecting the differences between the coverage statements
      */
     Map<String,Object> getCoverageDiffs(Set<TIPPCoverage> covListA,List<Map<String,Object>> covListB, TitleInstancePackagePlatform tippBase) {
@@ -384,7 +455,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
             Map<String, Object> equivalentCoverageEntry
             //several attempts ... take dates! Where are the unique identifiers when we REALLY need them??!!
             //here is the culprit
-            for(def k: covA) {
+            for(def k: covA.properties.keySet()) {
                 equivalentCoverageEntry = covListB.find { covB ->
                     covB[k] == covA[k]
                 }
@@ -432,6 +503,49 @@ class GlobalSourceSyncService extends AbstractLockableService {
             }
         }
         [field: 'coverage', covDiffs: covDiffs]
+    }
+
+    /**
+     * Retrieves remote data with the given query parameters. Used to query a GOKb instance for changes since a given timestamp or to fetch remote package/provider data
+     * Was formerly the OaiClient and OaiClientLaser classes
+     *
+     * @param url - the URL to query against
+     * @param object - the object(s) about which records should be obtained. May be: {@link Package}, {@link TitleInstance} or {@link Org}
+     * @param queryParams - parameters to pass along with the query
+     * @return a {@link NodeChildren} containing the OAI-PMH conform XML extract of the given record
+     */
+    NodeChildren fetchRecord(String url, String object, Map<String,String> queryParams) {
+        try {
+            HTTPBuilder http = new HTTPBuilder(url)
+            NodeChildren record = (NodeChildren) http.get(path:object,query:queryParams,contentType:'xml') { resp, xml ->
+                GPathResult response = new XmlSlurper().parseText(xml.text)
+                if(response[queryParams.verb] && response[queryParams.verb] instanceof NodeChildren) {
+                    NodeChildren record = (NodeChildren) response[queryParams.verb]
+                    record
+                }
+                else {
+                    log.error('Request succeeded but result data invalid. Please do checks')
+                    null
+                }
+            }
+            record
+        }
+        catch(HttpResponseException e) {
+            e.printStackTrace()
+            null
+        }
+    }
+
+    /**
+     * Flushes the session data to free up memory. Essential for bulk data operations like record syncing
+     */
+    void cleanUpGorm() {
+        log.debug("Clean up GORM")
+
+        Session session = sessionFactory.currentSession
+        session.flush()
+        session.clear()
+        propertyInstanceMap.get().clear()
     }
 
 }

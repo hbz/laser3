@@ -81,36 +81,40 @@ class Identifier {
 		}
         else {
 			ns = IdentifierNamespace.findByNsIlike(namespace?.trim())
-
-			if(! ns) {
-				ns = new IdentifierNamespace(ns: namespace, isUnique: true, isHidden: false)
-				ns.save()
-			}
 		}
 
-        String attr = Identifier.getAttributeName(reference)
+        if(! ns) {
+            ns = new IdentifierNamespace(ns:namespace, isUnique: true, isHidden: false)
+            ns.save()
+            static_logger.debug("INFO: no match found for namespace; creating new identifier with namespace for ( ${value}, ${ns}, ${reference.class} )")
+            Identifier ident = new Identifier(ns: ns, value: value)
+            ident.setReference(reference)
+            ident.save()
+        }
+        else {
+            String attr = getAttributeName(reference)
 
-        def ident = Identifier.executeQuery('select ident from Identifier ident where ident.value = :val and ident.ns = :ns and ident.' + attr + ' = :ref order by ident.id', [val: value, ns: ns, ref: reference])
-        if (! ident.isEmpty()) {
-            if (ident.size() > 1) {
-                static_logger.debug("WARNING: multiple matches found for ( ${value}, ${ns}, ${reference} )")
+            def ident = executeQuery('select ident from Identifier ident where ident.value = :val and ident.ns = :ns and ident.' + attr + ' = :ref order by ident.id', [val: value, ns: ns, ref: reference])
+            if (! ident.isEmpty()) {
+                if (ident.size() > 1) {
+                    static_logger.debug("WARNING: multiple matches found for ( ${value}, ${ns}, ${reference} )")
+                }
+                ident = ident.first()
             }
-            ident = ident.first()
-        }
 
-        if (! ident) {
-			if (ns.isUnique && Identifier.findByNsAndValue(ns, value)) {
-                static_logger.debug("NO IDENTIFIER CREATED: multiple occurrences found for unique namespace ( ${value}, ${ns} )")
-			}
-			else {
-                static_logger.debug("INFO: no match found; creating new identifier for ( ${value}, ${ns}, ${reference.class} )")
-				ident = new Identifier(ns: ns, value: value)
-				ident.setReference(reference)
-				ident.save()
-			}
+            if (! ident) {
+                if (ns.isUnique && findByNsAndValue(ns, value)) {
+                    static_logger.debug("NO IDENTIFIER CREATED: multiple occurrences found for unique namespace ( ${value}, ${ns} )")
+                }
+                else {
+                    static_logger.debug("INFO: no match found; creating new identifier for ( ${value}, ${ns}, ${reference.class} )")
+                    ident = new Identifier(ns: ns, value: value)
+                    ident.setReference(reference)
+                    ident.save()
+                }
+            }
+            ident
         }
-
-        ident
     }
 
     void setReference(def owner) {

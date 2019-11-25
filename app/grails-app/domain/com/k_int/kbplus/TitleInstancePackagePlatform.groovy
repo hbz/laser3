@@ -212,6 +212,7 @@ class TitleInstancePackagePlatform extends AbstractBaseDomain implements Auditab
   }
 
   @Transient
+  /*
   def onChange = { oldMap,newMap ->
 
     log.debug("onChange Tipp")
@@ -226,6 +227,7 @@ class TitleInstancePackagePlatform extends AbstractBaseDomain implements Auditab
     }
     log.debug("onChange completed")
   }
+    */
 
   void raisePendingChange(oldMap,newMap,cp) {
       def domain_class = grailsApplication.getArtefact('Domain','com.k_int.kbplus.TitleInstancePackagePlatform')
