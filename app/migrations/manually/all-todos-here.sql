@@ -88,3 +88,8 @@ ALTER TABLE pending_change RENAME pc_change_doc TO pc_payload;
 -- 2019-11-21
 -- Rename Column
 alter table dashboard_due_date RENAME das_is_hide TO das_is_hidden;
+
+-- 2019-11-25
+-- ERMS-1901
+-- Delete deprecated package identifier (we use gokbId instead)
+alter table package drop column pkg_identifier;
