@@ -53,6 +53,7 @@ class GOKbService {
 
                     pkg.updater = r.updater
                     pkg.listStatus = r.listStatus
+                    pkg.listVerifiedDate = r.listVerifiedDate
                     //pkg.consistent = r.consistent
                     //pkg.global = r.global
 
@@ -112,6 +113,7 @@ class GOKbService {
 
                     pkg.updater = r.updater
                     pkg.listStatus = r.listStatus
+                    pkg.listVerifiedDate = r.listVerifiedDate
                     //pkg.consistent = r.consistent
                     //pkg.global = r.global
 
