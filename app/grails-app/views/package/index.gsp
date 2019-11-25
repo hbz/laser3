@@ -145,21 +145,6 @@
 <div class="twelve wide column">
     <div>
         <g:if test="${records}">
-            <div class="paginateButtons" style="text-align:center">
-
-                <g:if test="${offset && params.int('offset') > 0}">
-                    ${message(code: 'default.search.offset.text', args: [(params.int('offset') + 1), (resultsTotal2 < (params.int('max') + params.int('offset')) ? resultsTotal2 : (params.int('max') + params.int('offset'))), resultsTotal])}
-                </g:if>
-                <g:elseif test="${resultsTotal2 && resultsTotal2 > params.int('max')}">
-                    ${message(code: 'default.search.no_offset.text', args: [(resultsTotal < params.int('max') ? resultsTotal2 : params.int('max')), resultsTotal2])}
-                </g:elseif>
-                <g:elseif test="${resultsTotal2 && resultsTotal2 == 1}">
-                    ${message(code: 'default.search.single.text')}
-                </g:elseif>
-                <g:else>
-                    ${message(code: 'default.search.no_pagiantion.text', args: [resultsTotal2])}
-                </g:else>
-            </div><!-- .paginateButtons -->
 
             <div id="resultsarea">
                 <table class="ui sortable celled la-table table">
@@ -169,13 +154,16 @@
                         <g:sortableColumn property="name"
                                           title="${message(code: 'package.show.pkg_name', default: 'Package Name')}"
                                           params="${params}"/>
-                        <th>${message(code: 'package.show.status')}</th>
                         <th>${message(code: 'package.compare.overview.tipps')}</th>
                         <g:sortableColumn property="providerName" title="${message(code: 'package.content_provider')}"
                                           params="${params}"/>
                         <g:sortableColumn property="platformName" title="${message(code: 'package.nominalPlatform')}"
                                           params="${params}"/>
+                        <th>${message(code: 'package.curatoryGroup.label')}</th>
+                        <th>${message(code: 'package.listVerifiedDate.label')}</th>
                         <th>${message(code: 'package.scope')}</th>
+                        <th>${message(code: 'package.contentType.label')}</th>
+                        <th>${message(code: 'package.list_status')}</th>
                     </tr>
                     </thead>
                     <tbody>
@@ -196,7 +184,6 @@
                                             title="GOKB Link" class="external alternate icon"></i></a>
                                 </g:else>
                             </td>
-                            <td>${message(code: 'refdata.' + record?.status)}</td>
                             <td>
                                 <g:if test="${record?.titleCount}">
                                     <g:if test="${record?.titleCount == 1}">
@@ -230,9 +217,19 @@
                             </td>
                             <td><g:if test="${com.k_int.kbplus.Platform.findByGokbId(record?.platformUuid)}"><g:link
                                     controller="platform" action="show"
-                                    id="${com.k_int.kbplus.Platform.findByGokbId(record?.platformUuid).id}">${record?.platformName}</g:link></g:if>
-                                <g:else>${record?.platformName}</g:else></td>
-                            <td>${record?.scope}</td>
+                                    id="${com.k_int.kbplus.Platform.findByGokbId(record?.platformUuid).id}">${record.platformName}</g:link></g:if>
+                                <g:else>${record.platformName}</g:else></td>
+                            <td>
+                                <div class="ui bulleted list">
+                                <g:each in="${record.curatoryGroups}" var="curatoryGroup">
+                                    <div class="item">${curatoryGroup}</div>
+                                </g:each>
+                                </div>
+                            </td>
+                            <td>${record.listVerifiedDate}</td>
+                            <td>${record.scope}</td>
+                            <td>${record.contentType}</td>
+                            <td>${record.listStatus}</td>
                         </tr>
                     </g:each>
                     </tbody>

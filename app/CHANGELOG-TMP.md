@@ -2,6 +2,7 @@
 
 **Ticket    Date    Branch      Author  Feature/Bug     Description/Keywords**
 
+1788    25.11.2019  hbz-dev     Moe     Feature     Paketsichten überarbeitet
 
 1169    25.11.2019  hbz-dev     Moe     Feature     E-Books: Jahrespaket/Stand des jeweiligen Pakets auszeichnen
 

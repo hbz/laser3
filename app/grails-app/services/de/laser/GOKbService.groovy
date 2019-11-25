@@ -20,8 +20,10 @@ class GOKbService {
             def json = null
 
             if(suggest) {
+                //Get only Package with Status= Current
                 json = geElasticsearchSuggests(apiSource.baseUrl+apiSource.fixToken, esQuery, "Package", null) // 10000 is maximum value allowed by now
             }else {
+                //Get only Package with Status= Current
                 json = geElasticsearchFindings(apiSource.baseUrl+apiSource.fixToken, esQuery, "Package", null, max)
             }
             log.info("getting Package map from gokb (${apiSource.baseUrl+apiSource.fixToken})")
@@ -53,7 +55,8 @@ class GOKbService {
 
                     pkg.updater = r.updater
                     pkg.listStatus = r.listStatus
-                    pkg.listVerifiedDate = r.listVerifiedDate
+                    pkg.listVerifiedDate = (r.listVerifiedDate != "null") ? r.listVerifiedDate : ''
+                    pkg.contentType = (r.contentType != "null") ? r.contentType : ''
                     //pkg.consistent = r.consistent
                     //pkg.global = r.global
 
@@ -113,9 +116,11 @@ class GOKbService {
 
                     pkg.updater = r.updater
                     pkg.listStatus = r.listStatus
-                    pkg.listVerifiedDate = r.listVerifiedDate
+                    pkg.listVerifiedDate = (r.listVerifiedDate != "null") ? r.listVerifiedDate : ''
+                    pkg.contentType = (r.contentType != "null") ? r.contentType : ''
                     //pkg.consistent = r.consistent
                     //pkg.global = r.global
+                    pkg.listVerifiedDate = r.listVerifiedDate
 
                     pkg.curatoryGroups = []
                     r.curatoryGroups?.each{ curatoryGroup ->
