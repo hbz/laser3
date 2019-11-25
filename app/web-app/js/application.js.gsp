@@ -106,10 +106,9 @@ r2d2 = {
         // spotlight
         $('.ui.search').search({
             type: 'category',
-            searchFields   : [
-                'title'
-            ],
+            minCharacters: 3,
             apiSettings: {
+                url: "<g:createLink controller='search' action='spotlightSearch'/>/?query={query}",
                 onResponse: function(elasticResponse) {
                     var response = { results : {} };
 
@@ -132,14 +131,17 @@ r2d2 = {
                         // add result to category
                         response.results[category].results.push({
                             title       : item.title,
-                            url         : item.url
+                            url         : item.url,
+                            description : item.description
                         });
                     });
                     return response;
                 },
-                url: "<g:createLink controller='spotlight' action='search'/>/?query={query}"
-            },
-            minCharacters: 3
+                onError: function(errorMessage) {
+                  // invalid response
+
+                }
+            }
         });
         $('#btn-search').on('click', function(e) {
             e.preventDefault();

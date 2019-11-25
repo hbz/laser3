@@ -73,6 +73,28 @@
             "type": "keyword"
           }
         }
+      },
+      "statusId": {
+        "type": "long",
+        "index": false
+      },
+      "startYear": {
+        "type": "text",
+        "fields": {
+          "keyword": {
+            "ignore_above": 256,
+            "type": "keyword"
+          }
+        }
+      },
+      "endYear": {
+        "type": "text",
+        "fields": {
+          "keyword": {
+            "ignore_above": 256,
+            "type": "keyword"
+          }
+        }
       }
     }
   },
@@ -197,6 +219,15 @@
           }
         }
       },
+      "endYear": {
+        "type": "text",
+        "fields": {
+          "keyword": {
+            "ignore_above": 256,
+            "type": "keyword"
+          }
+        }
+      },
       "packages": {
         "properties": {
           "providerId": {
@@ -229,15 +260,6 @@
       },
       "priority": {
         "type": "long"
-      },
-      "startYearAndMonth": {
-        "type": "text",
-        "fields": {
-          "keyword": {
-            "ignore_above": 256,
-            "type": "keyword"
-          }
-        }
       },
       "subtype": {
         "type": "text",
@@ -294,6 +316,15 @@
             "type": "keyword"
           }
         }
+      },
+      "statusId": {
+        "type": "long",
+        "index": false
+      },
+      "suggest": {
+        "type": "completion",
+        "analyzer": "simple",
+        "search_analyzer": "simple"
       }
     }
   },
@@ -328,6 +359,28 @@
         "type": "long"
       },
       "status": {
+        "type": "text",
+        "fields": {
+          "keyword": {
+            "ignore_above": 256,
+            "type": "keyword"
+          }
+        }
+      },
+      "statusId": {
+        "type": "long",
+        "index": false
+      },
+      "startYear": {
+        "type": "text",
+        "fields": {
+          "keyword": {
+            "ignore_above": 256,
+            "type": "keyword"
+          }
+        }
+      },
+      "endYear": {
         "type": "text",
         "fields": {
           "keyword": {
@@ -427,6 +480,10 @@
             "type": "keyword"
           }
         }
+      },
+      "statusId": {
+        "type": "long",
+        "index": false
       },
       "identifiers": {
         "properties": {
@@ -541,6 +598,10 @@
             "type": "keyword"
           }
         }
+      },
+      "statusId": {
+        "type": "long",
+        "index": false
       },
       "identifiers": {
         "properties": {
@@ -708,6 +769,10 @@
           }
         }
       },
+      "statusId": {
+        "type": "long",
+        "index": false
+      },
       "identifiers": {
         "properties": {
           "type": {
@@ -763,6 +828,28 @@
         "type": "long"
       },
       "status": {
+        "type": "text",
+        "fields": {
+          "keyword": {
+            "ignore_above": 256,
+            "type": "keyword"
+          }
+        }
+      },
+      "statusId": {
+        "type": "long",
+        "index": false
+      },
+      "startYear": {
+        "type": "text",
+        "fields": {
+          "keyword": {
+            "ignore_above": 256,
+            "type": "keyword"
+          }
+        }
+      },
+      "endYear": {
         "type": "text",
         "fields": {
           "keyword": {

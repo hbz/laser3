@@ -120,10 +120,12 @@
 									<label for="unique">
 										<g:message code="identifierNamespace.unique.label" />
 									</label>
-									<g:checkBox name="unique" checked="true" />
+									<g:checkBox name="isUnique" checked="true" />
 								</div>
 
 								<br />
+
+								<input name="isHidden" type="hidden" value="false" />
 
 								<button type="submit" class="ui button">
 									<g:message code="default.button.create.label" default="Create" />
