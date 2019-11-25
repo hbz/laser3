@@ -16,7 +16,7 @@
     </semui:breadcrumbs>
 
 
-    <h1 class="ui left aligned icon header"><semui:headerTitleIcon type="${issueEntitlementInstance?.tipp?.title?.type?.value}"/>
+    <h1 class="ui left floated aligned icon header la-clear-before"><semui:headerTitleIcon type="${issueEntitlementInstance?.tipp?.title?.type?.value}"/>
 
         <g:message code="issueEntitlement.for_title.label"/> ${issueEntitlementInstance?.tipp.title.title}
     </h1>

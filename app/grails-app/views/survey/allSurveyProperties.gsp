@@ -48,7 +48,7 @@
         <g:hiddenField name="surveyConfigID" value="${surveyConfig?.id}"/>
 
 
-        <h4 class="ui left aligned icon header">${message(code: 'surveyProperty.all.label')}
+        <h4 class="ui icon header la-clear-before la-noMargin-top">${message(code: 'surveyProperty.all.label')}
 
             <i class="question circle icon la-popup"></i>
 

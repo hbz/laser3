@@ -4,7 +4,8 @@
 
 
     <%--normal semui:filter comes along with more functionality which conflicts with ajax dropdown initialisation, see ERMS-1420--%>
-    <semui:filterTemp>
+    <g:render template="../templates/filter/javascript" />
+    <semui:filter showFilterButton="true">
         <%
             def formUrl = [controller: 'myInstitution', action: 'finance']
             SimpleDateFormat sdf = new SimpleDateFormat(message(code:'default.date.format.notime'))
@@ -254,7 +255,7 @@
 
             <g:hiddenField name="orgId" value="${contextService.getOrg()?.id}"/>
         </g:form>
-    </semui:filterTemp>
+    </semui:filter>
 
 <!-- _filter.gsp -->
 

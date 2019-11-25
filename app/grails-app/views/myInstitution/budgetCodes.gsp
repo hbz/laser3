@@ -11,13 +11,13 @@
         <semui:breadcrumbs>
             <semui:crumb message="menu.institutions.budgetCodes" class="active"/>
         </semui:breadcrumbs>
-
-        <h1 class="ui left aligned icon header"><semui:headerIcon />${message(code:'menu.institutions.budgetCodes')}</h1>
+        <br>
+        <h1 class="ui left floated aligned icon header la-clear-before"><semui:headerIcon />${message(code:'menu.institutions.budgetCodes')}</h1>
 
         <semui:messages data="${flash}" />
 
         <g:if test="${editable}">
-            <div class="content ui form">
+            <div class="content ui form ui left floated  la-clear-before">
                 <div class="fields">
                     <div class="field">
                         <button class="ui button" value="" data-href="#addBudgetCodeModal" data-semui="modal">${message(code:'budgetCode.create_new.label')}</button>

@@ -13,7 +13,7 @@
         <g:render template="actions" />
       </semui:controlButtons>
 
-      <h1 class="ui left aligned icon header"><semui:headerIcon />${user.username} : ${user.displayName?:'No username'}</h1>
+      <h1 class="ui left floated aligned icon header la-clear-before"><semui:headerIcon />${user.username} : ${user.displayName?:'No username'}</h1>
 
       <semui:messages data="${flash}" />
 

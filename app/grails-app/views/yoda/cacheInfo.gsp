@@ -19,8 +19,8 @@
     sessionCache.put("test", "${System.currentTimeSeconds()}")
     sessionCache.get("test")
 %>
-
-<h1 class="ui left aligned icon header"><semui:headerIcon />${message(code:'menu.yoda.cacheInfo')}</h1>
+<br>
+<h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon />${message(code:'menu.yoda.cacheInfo')}</h1>
 
 
 <h3 class="ui header">Session</h3>

@@ -11,7 +11,7 @@
         <semui:crumb text="TIPP Transfer" class="active"/>
       </semui:breadcrumbs>
 
-      <h1 class="ui left aligned icon header"><semui:headerIcon />TIPP Transfer</h1>
+      <h1 class="ui left floated aligned icon header la-clear-before"><semui:headerIcon />TIPP Transfer</h1>
 
       <semui:messages data="${flash}" />
 

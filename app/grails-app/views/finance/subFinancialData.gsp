@@ -21,7 +21,6 @@
             <semui:crumb controller="myInstitution" action="currentSubscriptions" text="${message(code:'myinst.currentSubscriptions.label')}" />
             <semui:crumb class="active"  message="${subscription.name}" />
         </semui:breadcrumbs>
-
         <semui:controlButtons>
             <semui:exportDropdown>
                 <g:if test="${params.submit || params.filterSubStatus}">
@@ -107,7 +106,7 @@
             <g:set var="totalString" value="${subscr.count} ${message(code:'financials.header.subscriptionCosts')}"/>
         </g:else>
 
-        <h1 class="ui icon header">
+        <h1 class="ui icon header la-noMargin-top">
             <semui:headerIcon />${message(code:'subscription.details.financials.label')} ${message(code:'default.for')} ${subscription} <semui:totalNumber total="${totalString}"/>
         </h1>
         <semui:anualRings mapping="subfinance" object="${subscription}" controller="finance" action="index" navNext="${navNextSubscription}" navPrev="${navPrevSubscription}"/>

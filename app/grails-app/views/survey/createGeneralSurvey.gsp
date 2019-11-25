@@ -16,7 +16,7 @@
     <semui:crumb message="createGeneralSurvey.label" class="active"/>
 </semui:breadcrumbs>
 
-<h1 class="ui left aligned icon header"><semui:headerTitleIcon type="Survey"/>${message(code: 'createGeneralSurvey.label')}</h1>
+<h1 class="ui left floated aligned icon header la-clear-before"><semui:headerTitleIcon type="Survey"/>${message(code: 'createGeneralSurvey.label')}</h1>
 
 <semui:messages data="${flash}"/>
 

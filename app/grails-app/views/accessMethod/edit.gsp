@@ -10,7 +10,8 @@
 
             <div>
                 <g:render template="breadcrumb" model="${[ accessMethod:accessMethod, params:params ]}"/>
-                <h1 class="ui header"><g:message code="default.edit.label" args="[entityName]" /></h1>
+
+                <h1 class="ui header la-noMargin-top"><g:message code="default.edit.label" args="[entityName]" /></h1>
                 <semui:messages data="${flash}" />
 
 

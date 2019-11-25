@@ -20,7 +20,7 @@ import="com.k_int.kbplus.Org; com.k_int.kbplus.Person; com.k_int.kbplus.PersonRo
             <g:render template="actions" />
         </semui:controlButtons>
 
-        <h1 class="ui left aligned icon header"><semui:headerIcon />${message(code:'menu.institutions.myAddressbook')}
+        <h1 class="ui left floated aligned icon header la-clear-before"><semui:headerIcon />${message(code:'menu.institutions.myAddressbook')}
             <semui:totalNumber total="${num_visiblePersons}"/>
         </h1>
 
@@ -29,7 +29,7 @@ import="com.k_int.kbplus.Org; com.k_int.kbplus.Person; com.k_int.kbplus.PersonRo
         <semui:msg class="warning" header="${message(code: 'message.information')}" message="myinst.addressBook.visible" />
 
         <g:if test="${editable}">
-            <input class="ui button"
+            <input class="ui left floated  button la-clear-before"
                    value="${message(code: 'person.create_new.contactPerson.label')}"
                    data-semui="modal"
                    data-href="#personFormModal" />
@@ -40,7 +40,8 @@ import="com.k_int.kbplus.Org; com.k_int.kbplus.Person; com.k_int.kbplus.PersonRo
                                                        'presetFunctionType': RefdataValue.getByValueAndCategory('General contact person', 'Person Function')
         ]"/>
 
-            <semui:filter>
+            <g:render template="../templates/filter/javascript" />
+            <semui:filter showFilterButton="true">
                 <g:form action="addressbook" controller="myInstitution" method="get" class="ui small form">
                     <div class="four fields">
                         <div class="field">

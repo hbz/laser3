@@ -13,7 +13,7 @@
             <g:render template="/user/actions" />
         </semui:controlButtons>
 
-        <h1 class="ui left aligned icon header"><semui:headerIcon />
+        <h1 class="ui left floated aligned icon header la-clear-before"><semui:headerIcon />
             <g:message code="user.edit.label" />: ${user.username}
         </h1>
 

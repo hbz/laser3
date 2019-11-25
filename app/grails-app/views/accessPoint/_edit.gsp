@@ -16,17 +16,17 @@
 	<body>
             <div>
                 <g:render template="breadcrumb" model="${[ accessPoint:accessPoint, params:params ]}"/>
-
+                <br>
                 %{--<semui:controlButtons>
                   <g:render template="actions" />
                 </semui:controlButtons>--}%
 
-              <h1 class="ui left aligned icon header"><semui:headerIcon />
+              <h1 class="ui left floated aligned icon header la-clear-before"><semui:headerIcon />
               ${orgInstance.name}
               </h1>
 
               <g:render template="/organisation/nav" model="${[orgInstance: accessPoint.org, inContextOrg: inContextOrg]}"/>
-                <h1 class="ui header"><g:message code="default.edit.label" args="[entityName]" /></h1>
+                <h1 class="ui header la-noMargin-top"><g:message code="default.edit.label" args="[entityName]" /></h1>
                 <semui:messages data="${flash}" />
 
                 <g:form class="ui form" url="[controller: 'accessPoint', action: 'edit_'+accessPoint.accessMethod ]" id="${accessPoint.id}" method="GET">

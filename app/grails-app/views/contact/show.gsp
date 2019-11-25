@@ -12,8 +12,8 @@
             <semui:crumb message="menu.public.all_orgs" controller="organisation" action="index"/>
             <semui:crumb text="${g.message(code:'default.edit.label', args:[entityName])}" class="active"/>
         </semui:breadcrumbs>
-
-		<h1 class="ui left aligned icon header"><semui:headerIcon /><g:message code="default.show.label" args="[entityName]" /></h1>
+		<br>
+		<h1 class="ui left floated aligned icon header la-clear-before"><semui:headerIcon /><g:message code="default.show.label" args="[entityName]" /></h1>
 
         <button class="ui button" onclick="window.location.href = document.referrer">
             Zurück

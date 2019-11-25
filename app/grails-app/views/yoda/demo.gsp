@@ -11,7 +11,7 @@
     <semui:crumb text="Application Security" class="active"/>
 </semui:breadcrumbs>
 
-<h1 class="ui header">debug only</h1>
+<h1 class="ui header la-noMargin-top">debug only</h1>
 
 
 <pre>numberOfActiveUsers : ${numberOfActiveUsers}</pre>

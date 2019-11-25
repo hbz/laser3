@@ -17,7 +17,7 @@
         </semui:controlButtons>
     </g:if>
 
-        <h1 class="ui left aligned icon header"><semui:headerIcon />
+        <h1 class="ui left floated aligned icon header la-clear-before"><semui:headerIcon />
             ${orgInstance.name} - ${message(code: 'menu.institutions.myAddressbook')}
 	    </h1>
 

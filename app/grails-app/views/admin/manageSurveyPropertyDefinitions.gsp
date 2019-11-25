@@ -11,8 +11,8 @@
     <semui:crumb message="menu.admin.dash" controller="admin" action="index"/>
     <semui:crumb message="menu.admin.manageI10n" class="active"/>
 </semui:breadcrumbs>
-
-<h1 class="ui left aligned icon header"><semui:headerIcon/><g:message
+<br>
+<h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon/><g:message
         code="menu.admin.manageSurveyPropertyDefinitions"/></h1>
 
 <h3 class="ui header">${message(code: 'surveyProperty.label')}</h3>
@@ -29,7 +29,7 @@
 <br>
 
 <div>
-    <h4 class="ui left aligned icon header">${message(code: 'surveyProperty.all.label')}
+    <h4 class="ui icon header la-clear-before la-noMargin-top">${message(code: 'surveyProperty.all.label')}
 
         <i class="question circle icon la-popup"></i>
 

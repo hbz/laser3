@@ -3,7 +3,7 @@
     <semui:messages data="${flash}" />
 
     <g:if test="${editable}">
-        <button class="ui button" value="" data-href="#addBudgetCodeModal" data-semui="modal">${message(code:'budgetCode.create_new.label')}</button>
+        <button class="ui left floated  button la-clear-before" value="" data-href="#addBudgetCodeModal" data-semui="modal">${message(code:'budgetCode.create_new.label')}</button>
 
         <semui:modal id="addBudgetCodeModal" message="budgetCode.create_new.label">
 
@@ -27,8 +27,7 @@
     </g:if>
 
 
-    <div class="ui grid">
-        <div class="column">
+
             <%--<button class="ui button" type="submit" data-semui="modal" href="#recentlyAdded_modal" id="showHideRecent">${message(code:'financials.recentCosts')}</button>--%>
 
             <g:if test="${editable}">
@@ -79,13 +78,11 @@
                 </script>
 
             </g:if>
-        </div>
-    </div>
+
 
         <%--<g:render template="recentlyAddedModal" />--%>
 
-        <div class="ui grid">
-            <div class="sixteen wide column">
+
                 <div id="filterTemplateWrapper" class="wrapper">
                     <div id="filterTemplate">
                         <%--${financialData}--%>
@@ -142,8 +139,7 @@
                         </g:if>
                     </div>
                 </div>
-            </div><!-- .sixteen -->
-        </div><!-- .grid -->
+
 
         <r:script>
             $(document).ready(function() {
