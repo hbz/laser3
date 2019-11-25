@@ -12,7 +12,7 @@
         <semui:crumb text="Migrate Collective Subscriptions" class="active"/>
     </semui:breadcrumbs>
 
-    <h1 class="ui left aligned icon header"><semui:headerIcon />Migrate Collective Subscriptions</h1>
+    <h1 class="ui left floated aligned icon header la-clear-before"><semui:headerIcon />Migrate Collective Subscriptions</h1>
 
     <h4>Gefunden (OrgRole=Subscriber): ${subRoles.size()}</h4>
 

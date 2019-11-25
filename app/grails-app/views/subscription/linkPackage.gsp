@@ -21,8 +21,8 @@
     <g:render template="actions"/>
 </semui:controlButtons>
 
-<h1 class="ui left aligned icon header"><semui:headerIcon/>${subscriptionInstance.name}</h1>
-<h2 class="ui left aligned icon header">${message(code: 'subscription.details.linkPackage.heading')}</h2>
+<h1 class="ui left floated aligned icon header la-clear-before"><semui:headerIcon/>${subscriptionInstance.name}</h1>
+<h2 class="ui left floated aligned icon header la-clear-before">${message(code: 'subscription.details.linkPackage.heading')}</h2>
 
 <semui:filter>
     <g:form name="LinkPackageForm" action="linkPackage" method="get" params="${params}" class="ui form">

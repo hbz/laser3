@@ -14,7 +14,7 @@
             <g:render template="/user/actions" />
         </semui:controlButtons>
 
-        <h1 class="ui left aligned icon header">
+        <h1 class="ui left floated aligned icon header la-clear-before">
             <semui:headerIcon />
             ${titleMessage}
             <semui:totalNumber total="${total}"/>

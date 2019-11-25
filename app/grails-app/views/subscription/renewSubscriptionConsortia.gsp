@@ -11,9 +11,9 @@
 <body>
 
 <g:render template="breadcrumb" model="${[params: params]}"/>
+<br>
 
-
-<h1 class="ui left aligned icon header"><semui:headerIcon />
+<h1 class="ui left floated aligned icon header la-clear-before"><semui:headerIcon />
 ${message(code: 'subscription.details.renewalsConsortium.label')}: ${subscription?.name}
 </h1>
 

@@ -25,8 +25,6 @@
     <g:render template="actions"/>
 </semui:controlButtons>
 
-<br>
-
 <h1 class="ui icon header"><semui:headerTitleIcon type="Survey"/>
 <semui:xEditable owner="${surveyInfo}" field="name"/>
 <semui:surveyStatus object="${surveyInfo}"/>
@@ -70,7 +68,7 @@
 
         <g:set var="surveyConfig" value="${com.k_int.kbplus.SurveyConfig.get(config.key)}"/>
 
-        <h4 class="ui left aligned icon header">
+        <h4 class="ui icon header la-clear-before la-noMargin-top">
             <g:link controller="subscription" action="show" id="${surveyConfig?.subscription?.getDerivedSubscriptionBySubscribers(participant)?.id}">
                 ${surveyConfig.getConfigNameShort()}
             </g:link>

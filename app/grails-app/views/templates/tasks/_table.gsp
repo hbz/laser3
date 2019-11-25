@@ -3,7 +3,7 @@
 <!-- OVERWRITE editable for INST_EDITOR: ${editable} -&gt; ${accessService.checkMinUserOrgRole(user, contextService.getOrg(), 'INST_EDITOR')} -->
 <g:set var="overwriteEditable" value="${editable || accessService.checkMinUserOrgRole(user, contextService.getOrg(), 'INST_EDITOR')}" />
 
-<div class="ui grid">
+<div class="ui grid la-clear-before">
 
     <div class="sixteen wide column">
 

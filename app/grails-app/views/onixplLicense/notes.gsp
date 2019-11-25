@@ -32,13 +32,13 @@
             <semui:crumb controller="onixplLicense" action="index" id="${params.id}" text="ONIX-PL License Details" />
             <semui:crumb controller="onixplLicense" action="notes" id="${params.id}" text="License Notes" />
         </semui:breadcrumbs>
-
+        <br>
         <g:if test="${editable}">
             <semui:crumbAsBadge message="default.editable" class="orange" />
         </g:if>
 
 
-        <h1 class="ui left aligned icon header"><semui:headerIcon />${onixplLicense.license.getLicensee()?.name} ${onixplLicense.license.type?.value} License : <span id="reference" style="padding-top: 5px;">${onixplLicense.license.reference}</span></h1>
+        <h1 class="ui left floated aligned icon header la-clear-before"><semui:headerIcon />${onixplLicense.license.getLicensee()?.name} ${onixplLicense.license.type?.value} License : <span id="reference" style="padding-top: 5px;">${onixplLicense.license.reference}</span></h1>
 
         <g:render template="nav" contextPath="." />
 
