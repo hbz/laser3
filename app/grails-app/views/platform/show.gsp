@@ -17,7 +17,7 @@
 <br>
 
 <semui:modeSwitch controller="platform" action="show" params="${params}"/>
-
+<br>
 <h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon/>
 
     <g:if test="${editable}"><span id="platformNameEdit"

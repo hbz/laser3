@@ -179,6 +179,9 @@ class MyInstitutionController extends AbstractDebugController {
     def currentPlatforms() {
 
         def result = [:]
+		DebugUtil du = new DebugUtil()
+		du.setBenchMark('init')
+
         result.user = User.get(springSecurityService.principal.id)
         result.max = params.max ?: result.user.getDefaultPageSizeTMP()
         result.offset = params.offset ?: 0
@@ -291,6 +294,9 @@ class MyInstitutionController extends AbstractDebugController {
 
         result.cachedContent = true
 
+		List bm = du.stopBenchMark()
+		result.benchMark = bm
+
         result
     }
 
@@ -308,7 +314,11 @@ class MyInstitutionController extends AbstractDebugController {
     @DebugAnnotation(test='hasAffiliation("INST_USER")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
     def currentLicenses() {
+
         def result = setResultGenerics()
+		DebugUtil du = new DebugUtil()
+		du.setBenchMark('init')
+
         result.transforms = grailsApplication.config.licenseTransforms
 
         result.is_inst_admin = accessService.checkMinUserOrgRole(result.user, result.institution, 'INST_ADM')
@@ -432,6 +442,9 @@ from License as l where (
         orgRoles.each { oo ->
             result.orgRoles.put(oo.lic.id,oo.roleType)
         }
+
+		List bm = du.stopBenchMark()
+		result.benchMark = bm
 
         def filename = "${g.message(code: 'export.my.currentLicenses')}_${sdf.format(new Date(System.currentTimeMillis()))}"
         if(params.exportXLS) {
@@ -689,6 +702,8 @@ from License as l where (
     def currentProviders() {
 
         def result = setResultGenerics()
+		DebugUtil du = new DebugUtil()
+		du.setBenchMark('init')
 
         def cache = contextService.getCache('MyInstitutionController/currentProviders/', contextService.ORG_SCOPE)
         List orgIds = []
@@ -730,6 +745,9 @@ from License as l where (
 
         result.cachedContent = true
 
+		List bm = du.stopBenchMark()
+		result.benchMark = bm
+
         if ( params.exportXLS ) {
             try {
                 SXSSFWorkbook wb = (SXSSFWorkbook) organisationService.exportOrg(orgListTotal, message, true, "xls")
@@ -770,7 +788,10 @@ from License as l where (
     @DebugAnnotation(test='hasAffiliation("INST_USER")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
     def currentSubscriptions() {
+
         def result = setResultGenerics()
+		DebugUtil du = new DebugUtil()
+		du.setBenchMark('init')
 
         result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeTMP()
         result.offset = params.offset ? Integer.parseInt(params.offset) : 0
@@ -842,6 +863,9 @@ from License as l where (
         sdf = new SimpleDateFormat(g.message(code: 'default.date.format.notimenopoint'))
         String datetoday = sdf.format(new Date(System.currentTimeMillis()))
         String filename = "${datetoday}_" + g.message(code: "export.my.currentSubscriptions")
+
+		List bm = du.stopBenchMark()
+		result.benchMark = bm
 
         if ( params.exportXLS ) {
 
@@ -1679,6 +1703,9 @@ from License as l where (
         boolean isHtmlOutput = !params.format || params.format.equals("html")
 
         def result = setResultGenerics()
+		DebugUtil du = new DebugUtil()
+		du.setBenchMark('init')
+		
         result.transforms = grailsApplication.config.titlelistTransforms
 
         result.availableConsortia = Combo.executeQuery("select c.toOrg from Combo as c where c.fromOrg = ?", [result.institution])
@@ -1882,6 +1909,10 @@ from License as l where (
 
         result.filterSet = params.filterSet || defaultSet
         String filename = "titles_listing_${result.institution.shortcode}"
+
+		List bm = du.stopBenchMark()
+		result.benchMark = bm
+
         if(params.exportKBart) {
             response.setHeader("Content-disposition", "attachment; filename=${filename}.tsv")
             response.contentType = "text/tsv"
@@ -3285,6 +3316,9 @@ AND EXISTS (
     def manageMembers() {
         def result = setResultGenerics()
 
+        DebugUtil du = new DebugUtil()
+        du.setBenchMark('start')
+
         // new: filter preset
         if(accessService.checkPerm('ORG_CONSORTIUM')) {
             result.comboType = RDStore.COMBO_TYPE_CONSORTIUM
@@ -3326,6 +3360,8 @@ AND EXISTS (
         def tmpQuery = "select o.id " + fsq.query.minus("select o ")
         def memberIds = Org.executeQuery(tmpQuery, fsq.queryParams)
 
+		du.setBenchMark('query')
+
         if (params.filterPropDef && memberIds) {
             fsq                      = propertyService.evalFilterQuery(params, "select o FROM Org o WHERE o.id IN (:oids) order by o.sortname asc", 'o', [oids: memberIds])
         }
@@ -3348,6 +3384,10 @@ AND EXISTS (
         SimpleDateFormat sdf = new SimpleDateFormat(message(code:'default.date.format.notimenopoint'))
         // Write the output to a file
         String file = "${sdf.format(new Date(System.currentTimeMillis()))}_"+exportHeader
+
+		List bm = du.stopBenchMark()
+		result.benchMark = bm
+
         if ( params.exportXLS ) {
 
             SXSSFWorkbook wb = (SXSSFWorkbook) organisationService.exportOrg(totalMembers, header, true, 'xls')
@@ -3391,6 +3431,7 @@ AND EXISTS (
     @DebugAnnotation(perm="ORG_CONSORTIUM", affil="INST_EDITOR", specRole="ROLE_ADMIN")
     @Secured(closure = { ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN") })
     def manageConsortiaSubscriptions() {
+
         def result = setResultGenerics()
 
         DebugUtil du = new DebugUtil()
