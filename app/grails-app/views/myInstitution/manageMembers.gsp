@@ -120,5 +120,8 @@
     <g:render template="../templates/copyEmailaddresses" model="[orgList: totalMembers]"/>
     <semui:paginate action="manageMembers" controller="myInstitution" params="${params}" next="${message(code:'default.paginate.next', default:'Next')}" prev="${message(code:'default.paginate.prev', default:'Prev')}" max="${max}" total="${membersCount}" />
 
+    <semui:debugInfo>
+        <g:render template="/templates/debug/benchMark" model="[debug: benchMark]" />
+    </semui:debugInfo>
 </body>
 </html>

@@ -48,6 +48,7 @@ class RefdataCategory extends AbstractI10nTranslatable {
     Date lastUpdated
 
     static mapping = {
+            cache   true
               id column: 'rdc_id'
          version column: 'rdc_version'
             desc column: 'rdc_description', index:'rdc_description_idx'
