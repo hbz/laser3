@@ -2,15 +2,19 @@
 
 **Ticket    Date    Branch      Author  Feature/Bug     Description/Keywords**
 
+1847    25.11.2019  hbz-dev     David   Feature     Performanz-, bzw. Cache-Optimierung
+
+1899    25.11.2019  hbz-dev     David   Feature     Layouter für OrgFilterTable-Template 
+
 1788    25.11.2019  hbz-dev     Moe     Feature     Paketsichten überarbeitet
 
 1169    25.11.2019  hbz-dev     Moe     Feature     E-Books: Jahrespaket/Stand des jeweiligen Pakets auszeichnen
 
 1872    21.11.2019  hbz-dev     Moe     Feature     Prevent deletion of the last INST_ADMIN of a org
 
-1888    21.11.2019  hbz-dev   Moe       Feature     improve global search
+1888    21.11.2019  hbz-dev     Moe       Feature   improve global search
 
--       20.11.2019  rc-1.1  Andreas     Bug         pending changes are now filtered out when deactivating audit
+ /      20.11.2019  rc-1.1      Andreas     Bug     pending changes are now filtered out when deactivating audit
 
 1830    21.11.2019  rc-1.1      Moe     Bug         filter cost element requires defined cost elements
     
@@ -40,4 +44,4 @@
 
 1747    18.11.2019  hbz-dev     Anja    Feature     Modaler Dialog zum Anlegen von Aufgaben: Dialog ist schneller, Dropdowns nun vollständig und gemäss Anzeigekonventionen
 
-    
+1837    25.11.2019  hbz-dev     Ingrid  Feature     Neuer Button "Filter" auf allen Tabellenübersichtsseiten. Dient zum Einklappen des Filters, zeigt gleichseitig die Anzahl der gestzten Filter an, ist einstellbar unter Profil. Jedes erneutes Laden der aktuellen Seite (z.B. Klicken durch Paginierung) läd Filter ein- oder eingeklappt, wie zuvor über Button eingestellt. Das überschreibt die Einstllung im Profil.
