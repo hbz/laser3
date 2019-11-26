@@ -14,6 +14,7 @@
     <semui:crumb controller="platform" action="index" message="platform.show.all"/>
     <semui:crumb class="active" id="${platformInstance.id}" text="${platformInstance.name}"/>
 </semui:breadcrumbs>
+<br>
 
 <semui:modeSwitch controller="platform" action="show" params="${params}"/>
 
@@ -34,7 +35,7 @@
 
 <semui:messages data="${flash}"/>
 <div id="collapseableSubDetails" class="ui stackable grid">
-    <div class="twelve wide column">
+    <div class="sixteen wide column">
         <div class="la-inline-lists">
           <div class="ui two stackable cards">
             <div class="ui card la-time-card">
