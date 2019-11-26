@@ -2,6 +2,10 @@
 
 **Ticket    Date    Branch      Author  Feature/Bug     Description/Keywords**
 
+1895    26.11.2019  hbz-dev     Moe     Feature     Fehler beim Filtern von Umfragen
+
+1902    26.11.2019  hbz-dev     Moe     Feature     Meine Pakete Sicht
+
 1847    25.11.2019  hbz-dev     David   Feature     Performanz-, bzw. Cache-Optimierung
 
 1899    25.11.2019  hbz-dev     David   Feature     Layouter für OrgFilterTable-Template 
