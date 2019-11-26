@@ -394,6 +394,7 @@ class SubscriptionController extends AbstractDebugController {
                         PriceItem.executeUpdate("delete from PriceItem pi where pi.issueEntitlement.id in (:delList)",[delList: deleteIdList])
                         IssueEntitlement.executeUpdate("delete from IssueEntitlement ie where ie.id in (:delList)", [delList: deleteIdList])
                     }
+                    // TODO OrgAccessPointLink
                     SubscriptionPackage.executeUpdate("delete from SubscriptionPackage sp where sp.pkg=? and sp.subscription=? ", [result.package, result.subscription])
 
                     flash.message = message(code: 'subscription.details.unlink.successfully')
@@ -413,6 +414,13 @@ class SubscriptionController extends AbstractDebugController {
                 if (numOfPCs > 0) {
                     def conflict_item_pc = [name: "${g.message(code: "subscription.details.unlink.pendingChanges")}", details: [['text': "${g.message(code: "subscription.details.unlink.pendingChanges.numbers")} " + numOfPCs]], action: [actionRequired: false, text: "${g.message(code: "subscription.details.unlink.pendingChanges.numbers.action")}"]]
                     conflicts_list += conflict_item_pc
+                }
+
+                // TODO get list
+                def accessPointLinks = [['text': 'Link1'],['text': 'Link2']]
+                if (accessPointLinks) {
+                    def conflict_item_oap = [name: "Verknüpfte Zugangskonfigurationen", details: accessPointLinks, action: [actionRequired: false, text: "Die Verknüpfungen zu den Zugangskonfigurationen werden gelöscht"]]
+                    conflicts_list += conflict_item_oap
                 }
 
                 return render(template: "unlinkPackageModal", model: [pkg: result.package, subscription: result.subscription, conflicts_list: conflicts_list])

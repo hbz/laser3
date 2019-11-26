@@ -100,7 +100,6 @@ class Subscription
                      customProperties: SubscriptionCustomProperty,
                      privateProperties: SubscriptionPrivateProperty,
                      costItems: CostItem,
-                     oapl: OrgAccessPointLink
   ]
 
   static mappedBy = [
@@ -115,7 +114,6 @@ class Subscription
                       costItems: 'sub',
                       customProperties: 'owner',
                       privateProperties: 'owner',
-                      oapl: 'subscription'
                       ]
 
     static mapping = {
@@ -154,7 +152,6 @@ class Subscription
         customProperties    batchSize: 10
         privateProperties   batchSize: 10
         costItems           batchSize: 10
-        oapl                batchSize: 10
     }
 
     static constraints = {

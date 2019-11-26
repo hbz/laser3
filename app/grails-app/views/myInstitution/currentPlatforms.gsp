@@ -71,7 +71,27 @@
             </td>
             <td>
                 <g:each in="${subscriptionMap.get('platform_' + platformInstance.id)}" var="sub">
-                    <g:link controller="subscription" action="show" id="${sub.id}">${sub}</g:link> <br />
+                    <g:link controller="subscription" action="show" id="${sub.id}">${sub}</g:link>
+                    <g:if test="${sub.packages}">
+                        <g:each in="${sub.packages}" var="sp">
+                            <g:if test="${!platformInstance.usesPlatformAccessPoints(contextOrg, sp)}">
+                                <g:each in="${sp.getAccessPointListForOrgAndPlatform(contextOrg, platformInstance)?.collect()}" var="orgap">
+                                <div class="la-flexbox">
+                                    <span data-position="top right"
+                                    class="la-popup-tooltip la-delay"
+                                    data-content="Es wird eine eigene Zugangskonfiguration für Paket [${sp.pkg.name}] verwendet">
+                                    <i class="icon thumbtack scale la-list-icon"></i>
+                                    </span>
+                                    <g:link controller="accessPoint" action="edit_${orgap.oap.accessMethod}"
+                                            id="${orgap.oap.id}">${orgap.oap.name} (${orgap.oap.accessMethod.getI10n('value')})[Paket: ${sp.pkg.name}]</g:link>
+                                </div>
+                                </g:each>
+                            </g:if>
+                        </g:each>
+                    </g:if>
+
+
+
                 </g:each>
             </td>
             <%--<td class="x">

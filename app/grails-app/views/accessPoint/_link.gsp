@@ -74,10 +74,11 @@
         </tr>
         </thead>
         <tbody>
-        <g:each in="${linkedSubscriptionsMap}" var="linkedSubscription">
+        <g:each in="${linkedSubscriptionPackagesMap}" var="linkedSubscriptionPackage">
+            %{--
             <tr>
                 <td><g:link controller="subscription" action="show" id="${linkedSubscription.subscription.id}">${linkedSubscription.subscription.name}</g:link></td>
-            </tr>
+            </tr>--}%
         </g:each>
         </tbody>
     </table>
