@@ -40,4 +40,4 @@
 
 1747    18.11.2019  hbz-dev     Anja    Feature     Modaler Dialog zum Anlegen von Aufgaben: Dialog ist schneller, Dropdowns nun vollständig und gemäss Anzeigekonventionen
 
-    
+1837    25.11.2019  hbz-dev     Ingrid  Feature     Neuer Button "Filter" auf allen Tabellenübersichtsseiten. Dient zum Einklappen des Filters, zeigt gleichseitig die Anzahl der gestzten Filter an, ist einstellbar unter Profil. Jedes erneutes Laden der aktuellen Seite (z.B. Klicken durch Paginierung) läd Filter ein- oder eingeklappt, wie zuvor über Button eingestellt. Das überschreibt die Einstllung im Profil.

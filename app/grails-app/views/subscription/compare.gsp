@@ -11,7 +11,7 @@
 
     <body>
         <g:render template="breadcrumb" model="${[ params:params ]}"/>
-		<br>
+
         <g:if test="${institutionName}">
             <h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon />${message(code:'menu.my.comp_sub')}</h1>
         </g:if>
