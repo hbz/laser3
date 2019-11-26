@@ -22,7 +22,7 @@
 
 
 <h1 class="ui left floated aligned icon header la-clear-before"><semui:headerIcon/>${message(code: 'currentSurveys.label', default: 'Current Surveys')}
-<semui:totalNumber total="${countSurveyConfigs.values().sum { it }}"/>
+<semui:totalNumber total="${surveys.size()?:0}"/>
 </h1>
 
 <semui:messages data="${flash}"/>
