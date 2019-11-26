@@ -140,6 +140,7 @@
                                 <semui:xEditable owner="${packageInstance}" field="vendorURL" />
                             </dd>
                         </dl>
+
                     </div>
                 </div>
                 <div class="ui card">
