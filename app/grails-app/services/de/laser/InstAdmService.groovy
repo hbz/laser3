@@ -51,6 +51,16 @@ class InstAdmService {
         else result = accessService.checkPermAffiliation("ORG_INST,ORG_CONSORTIUM","INST_ADM")
         result
     }
+    boolean isLastAdminForOrg(Org orgToCheck, User usertoCheck){
+        def role = Role.findByAuthority("INST_ADM")
+        def userOrgs = UserOrg.findAllByOrgAndFormalRoleAndStatus(orgToCheck, role, UserOrg.STATUS_APPROVED)
+        if(userOrgs && userOrgs.size() == 1 && userOrgs[0].user == usertoCheck)
+        {
+            return  true
+        }else {
+            return false
+        }
+    }
 
 	@Deprecated
 	// moved here from AccessService

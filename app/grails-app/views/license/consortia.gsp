@@ -10,10 +10,10 @@
 <body>
 
     <g:render template="breadcrumb" model="${[ license:license, params:params ]}"/>
-
+    <br>
     <semui:messages data="${flash}" />
 
-    <h1 class="ui left aligned icon header"><semui:headerIcon />
+    <h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon />
         <g:if test="${license.type?.value == 'Template'}">${message(code:'license.label')} (${license.type.getI10n('value')}):</g:if>
         <semui:xEditable owner="${license}" field="reference" id="reference"/>
     </h1>

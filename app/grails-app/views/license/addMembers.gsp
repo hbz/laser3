@@ -19,11 +19,11 @@
     <g:render template="actions"/>
 </semui:controlButtons>
 
-<h1 class="ui left aligned icon header"><semui:headerIcon />
+<h1 class="ui left floated aligned icon header la-clear-before"><semui:headerIcon />
     <g:if test="${license.type?.value == 'Template'}">${message(code:'license.label')} (${license.type.getI10n('value')}):</g:if>
     <semui:xEditable owner="${license}" field="reference" id="reference"/>
 </h1>
-<h2 class="ui left aligned icon header">${message(code: 'license.details.addMembers.label', args:[message(code:'consortium.subscriber')])}</h2>
+<h2 class="ui left floated aligned icon header la-clear-before">${message(code: 'license.details.addMembers.label', args:[message(code:'consortium.subscriber')])}</h2>
 
 <g:if test="${license.instanceOf && (institution.id == license.getLicensingConsortium()?.id)}">
     <div class="ui negative message">

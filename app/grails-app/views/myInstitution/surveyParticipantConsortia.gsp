@@ -20,10 +20,7 @@
     </g:if>
     <semui:crumb message="surveyEvaluation.label" class="active"/>
 </semui:breadcrumbs>
-
-
 <br>
-
 <h1 class="ui icon header"><semui:headerTitleIcon type="Survey"/>
 ${surveyInfo.name}
 </h1>
@@ -65,7 +62,7 @@ ${surveyInfo.name}
 
         <g:set var="surveyConfig" value="${com.k_int.kbplus.SurveyConfig.get(config.key)}"/>
 
-        <h4 class="ui left aligned icon header">${surveyConfig.getConfigName()} <semui:totalNumber
+        <h4 class="ui icon header la-clear-before la-noMargin-top">${surveyConfig.getConfigName()} <semui:totalNumber
                 total="${config?.value?.size()}"/></h4>
 
         <table class="ui celled sortable table la-table">

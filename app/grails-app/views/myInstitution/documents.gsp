@@ -16,7 +16,7 @@
     </semui:controlButtons>
     <semui:messages data="${flash}" />
 
-    <h1 class="ui left aligned icon header"><semui:headerIcon />${message(code:'menu.my.documents')}</h1>
+    <h1 class="ui left floated aligned icon header la-clear-before"><semui:headerIcon />${message(code:'menu.my.documents')}</h1>
 
     <%-- does not work as it is mapped upon a DomainClass attribute <g:render template="/templates/documents/filter" model="${[availableUsers:availableUsers]}"/>--%>
 

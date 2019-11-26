@@ -10,8 +10,8 @@
     <semui:breadcrumbs>
         <semui:crumb message="menu.yoda.dash" class="active"/>
     </semui:breadcrumbs>
-
-    <h1 class="ui left aligned icon header"><semui:headerIcon />Yoda Dashboard</h1>
+    <br>
+    <h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon />Yoda Dashboard</h1>
 
     <div class="ui equal width grid">
         <div class="row">

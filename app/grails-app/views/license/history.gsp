@@ -8,8 +8,8 @@
 <body>
 
     <g:render template="breadcrumb" model="${[ license:license, params:params ]}"/>
-
-    <h1 class="ui left aligned icon header"><semui:headerIcon />
+    <br>
+    <h1 class="ui left floated aligned icon header la-clear-before"><semui:headerIcon />
         <g:if test="${license.type?.value == 'Template'}">${message(code:'license.label')} (${license.type.getI10n('value')}):</g:if>
         <semui:xEditable owner="${license}" field="reference" id="reference"/>
         <semui:totalNumber total="${historyLinesTotal?:'0'}"/>

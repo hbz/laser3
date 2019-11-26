@@ -51,7 +51,7 @@ class RefdataValue extends AbstractI10nTranslatable implements Comparable<Refdat
     static constraints = {
         icon     (nullable:true)
         group    (nullable:true,  blank:false)
-        isHardData (nullable:false, blank:false, default:false)
+        isHardData (nullable:false, blank:false)
         order    (nullable:true,  blank: false)
 
         // Nullable is true, because values are already in the database

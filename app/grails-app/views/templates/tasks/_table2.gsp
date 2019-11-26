@@ -1,4 +1,4 @@
-<div class="ui grid">
+<div class="ui grid la-clear-before">
 
     <div class="sixteen wide column">
 

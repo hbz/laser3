@@ -15,7 +15,7 @@
 
     <semui:messages data="${flash}" />
 
-    <h1 class="ui left aligned icon header"><semui:headerIcon /><g:message code="menu.institutions.subscriptionImport"/></h1>
+    <h1 class="ui left floated aligned icon header la-clear-before"><semui:headerIcon /><g:message code="menu.institutions.subscriptionImport"/></h1>
 
           <g:message code="myinst.subscriptionImport.headline"/>
           <a href="${resource(dir: 'resources/downloadFile', file: 'bulk_load_subscription_records_template_01.csv')}" download="template_bulk_load_subscription_records.csv">

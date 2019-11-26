@@ -34,7 +34,7 @@ class SemanticUiTagLib {
         def flash = attrs.data
 
         if (flash && flash.message) {
-            out << '<div class="ui success message">'
+            out << '<div class="ui success message la-clear-before">'
             out << '<i class="close icon"></i>'
             out << '<p>'
             out << flash.message
@@ -43,7 +43,7 @@ class SemanticUiTagLib {
         }
 
         if (flash && flash.error) {
-            out << '<div class="ui negative message">'
+            out << '<div class="ui negative message la-clear-before">'
             out << '<i class="close icon"></i>'
             out << '<p>'
             out << flash.error
@@ -56,7 +56,7 @@ class SemanticUiTagLib {
 
     def msg = { attrs, body ->
 
-        out << '<div class="ui ' + attrs.class + ' message">'
+        out << '<div class="ui ' + attrs.class + ' message la-clear-before">'
         out << '<i class="close icon"></i>'
         out << '<div class="content">'
 
@@ -579,7 +579,7 @@ class SemanticUiTagLib {
             }
         }
         if (showFilterButton) {
-            out << '<button class="ui right floated button la-inline-labeled la-js-filterButton ' + (extended ?'':'blue') + '">'
+            out << '<button class="ui right floated button la-inline-labeled la-js-filterButton la-clearfix' + (extended ?'':'blue') + '">'
             out << '    Filter'
             out << '    <i class="filter icon"></i>'
             out << '   <span class="ui circular label la-js-filter-total hidden">0</span>'
@@ -626,7 +626,7 @@ class SemanticUiTagLib {
 
     def form = { attrs, body ->
 
-        out << '<div class="ui grey segment">'
+        out << '<div class="ui grey segment la-clear-before">'
         out << body()
         out << '</div>'
     }

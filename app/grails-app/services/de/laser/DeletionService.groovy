@@ -748,7 +748,7 @@ class DeletionService {
 
     def deleteDocumentFromIndex(domainName, id)
     {
-        def es_index = grailsApplication.config.aggr_es_index ?: ESWrapperService.ES_INDEX
+        def es_index = ESWrapperService.getESSettings().indexName
         def esclient = ESWrapperService.getClient()
 
         DeleteResponse response = esclient.prepareDelete(es_index, domainName, id).get();

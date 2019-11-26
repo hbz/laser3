@@ -18,7 +18,7 @@
     <semui:crumb message="createIssueEntitlementsSurvey.label" class="active"/>
 </semui:breadcrumbs>
 
-<h1 class="ui left aligned icon header"><semui:headerTitleIcon
+<h1 class="ui left floated aligned icon header la-clear-before"><semui:headerTitleIcon
         type="Survey"/>${message(code: 'createIssueEntitlementsSurvey.label')}</h1>
 
 
@@ -31,7 +31,7 @@
 </div>
 
 
-<h1 class="ui left aligned icon header"><semui:headerIcon/>${message(code: 'myinst.currentSubscriptions.label', default: 'Current Subscriptions')}
+<h1 class="ui left floated aligned icon header la-clear-before"><semui:headerIcon/>${message(code: 'myinst.currentSubscriptions.label', default: 'Current Subscriptions')}
 <semui:totalNumber total="${num_sub_rows}"/>
 </h1>
 

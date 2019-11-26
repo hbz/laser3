@@ -6,8 +6,15 @@
     <g:set var="dashboard_last_update" value="${DashboardDueDate.executeQuery("select max(lastUpdated) from DashboardDueDate ")[0]}" />
     <g:if test="${dashboard_last_update != null}" >
         <div class="la-float-right">
-            <g:if test="${ ! SqlDateUtils.isYesterdayOrToday(dashboard_last_update)}"><i class="exclamation triangle icon" id="noData" data-content="${message(code:'myinst.dash.due_dates.tooltip')}"></i></g:if>
-            ${message(code:'myinst.dash.due_dates.lastUpdate')}&nbsp;<g:formatDate format="${message(code:'default.date.format.notime', default:'yyyy-MM-dd')}" date="${dashboard_last_update}"/>&nbsp;
+            <g:if test="${ ! SqlDateUtils.isYesterdayOrToday(dashboard_last_update)}">
+                <span style="color: red;">
+                    <i class="exclamation alternate triangle icon" style="text-decoration:blink;" id="noData" data-content="${message(code:'myinst.dash.due_dates.tooltip')}"></i>
+                    ${message(code:'myinst.dash.due_dates.lastUpdate')}&nbsp;<g:formatDate format="${message(code:'default.date.format.notime', default:'yyyy-MM-dd')}" date="${dashboard_last_update}"/>&nbsp;
+                </span>
+            </g:if>
+            <g:else>
+                ${message(code:'myinst.dash.due_dates.lastUpdate')}&nbsp;<g:formatDate format="${message(code:'default.date.format.notime', default:'yyyy-MM-dd')}" date="${dashboard_last_update}"/>&nbsp;
+            </g:else>
         </div>
     </g:if>
 <r:script>
@@ -27,6 +34,8 @@
                     <th>${message(code:'myinst.dash.due_dates.attribute.label')}</th>
                     <th>${message(code:'myinst.dash.due_date.date.label')}</th>
                     <th>${message(code:'myinst.dash.due_dates.name.label')}</th>
+                    <th>${message(code:'myinst.dash.due_dates.hide.label')}</th>
+                    %{--<th>${message(code:'myinst.dash.due_dates.done.label')}</th>--}%
                 </tr>
             </thead>
             <tbody>
@@ -38,6 +47,7 @@
                                 <g:if test="${obj instanceof AbstractProperty}">
                                     <i class="icon tags la-list-icon"></i>
                                 </g:if>
+                                %{--${dashDueDate.id} &nbsp--}%
                                 ${dashDueDate.attribut}
                             </td>
                             <td>
@@ -100,10 +110,12 @@
                                     </g:else>
                                 </div>
                             </td>
+                            <td><semui:xEditableBoolean owner="${dashDueDate}" field="isHidden" /></td>
+                            %{--<td><semui:xEditableBoolean owner="${dashDueDate}" field="isDone" /></td>--}%
                         </tr>
                     </g:if>
                 </g:each>
             </tbody>
         </table>
-        <semui:paginate offset="${dashboardDueDatesOffset ? dashboardDueDatesOffset : '0'}" max="${contextService.getUser().getDefaultPageSizeTMP()}" params="${[view:'dueDatesView']}" total="${dueDatesCount}"/>
+        <semui:paginate offset="${dashboardDueDatesOffset ? dashboardDueDatesOffset : '0'}" max="${max ?: contextService.getUser().getDefaultPageSizeTMP()}" params="${[view:'dueDatesView']}" total="${dueDatesCount}"/>
     </g:if>

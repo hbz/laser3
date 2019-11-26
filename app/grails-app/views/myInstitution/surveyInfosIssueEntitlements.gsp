@@ -28,7 +28,7 @@
 
 
 
-<h1 class="ui left aligned icon header"><semui:headerIcon/>
+<h1 class="ui left floated aligned icon header la-clear-before"><semui:headerIcon/>
 ${message(code: 'issueEntitlementsSurvey.label')} - ${surveyInfo.name}
 <semui:surveyStatus object="${surveyInfo}"/>
 </h1>

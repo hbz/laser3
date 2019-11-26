@@ -10,12 +10,12 @@
         <semui:breadcrumbs>
             <semui:crumb message="menu.institutions.costConfiguration" class="active" />
         </semui:breadcrumbs>
+        <br>
+        <h1 class="ui left floated aligned icon header la-clear-before"><semui:headerIcon/><g:message code="menu.institutions.costConfiguration"/></h1>
 
-        <h1 class="ui left aligned icon header"><semui:headerIcon/><g:message code="menu.institutions.costConfiguration"/></h1>
 
-        <p>
-            <g:message code="costConfiguration.preset" />
-        </p>
+
+         <semui:msg class="warning" header="${message(code: 'message.information')}" message="costConfiguration.preset" />
         <semui:messages data="${flash}"/>
         <%--<div class="content ui form">
             <div class="two fields wide">

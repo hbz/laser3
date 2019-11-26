@@ -15,7 +15,7 @@
         <semui:messages data="${flash}" />
 
         <g:if test="${pendingRequests}"><%-- INST_ADM --%>
-
+            <br>
             <h2 class="ui header">${message(code: "menu.institutions.affiliation_requests")}</h2>
 
             <table class="ui celled la-table table">

@@ -18,6 +18,7 @@
             <semui:crumb message="menu.yoda.dash" controller="yoda" action="index"/>
             <semui:crumb text="Documents without owners and share configurations" class="active"/>
         </semui:breadcrumbs>
+        <br>
         <% Set addedUsers = [] %>
         <div>
             <table class="ui celled la-table table">

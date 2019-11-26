@@ -12,8 +12,8 @@
   <body>
 
     <g:render template="breadcrumb" model="${[ orgInstance:orgInstance, params:params ]}"/>
-
-      <h1 class="ui left aligned icon header"><semui:headerIcon />${orgInstance.name}</h1>
+    <br>
+      <h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon />${orgInstance.name}</h1>
 
       <g:render template="nav" contextPath="." />
 

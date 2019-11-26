@@ -4,7 +4,8 @@
 
 
     <%--normal semui:filter comes along with more functionality which conflicts with ajax dropdown initialisation, see ERMS-1420--%>
-    <semui:filterTemp>
+    <g:render template="../templates/filter/javascript" />
+    <semui:filter showFilterButton="true">
         <%
             def formUrl = [controller: 'myInstitution', action: 'finance']
             SimpleDateFormat sdf = new SimpleDateFormat(message(code:'default.date.format.notime'))
@@ -51,7 +52,7 @@
                             //fakeList.add(RefdataValue.getByValueAndCategory('subscription.status.no.status.set.but.null', 'filter.fake.values'))
                         %>
                         <label for="filterSubStatus">${message(code:'subscription.status.label')}</label>
-                        <laser:select id="filterSubStatus" class="ui fluid dropdown" name="filterSubStatus"
+                        <laser:select id="filterSubStatus" class="ui fluid dropdown search" name="filterSubStatus"
                                       from="${ fakeList }"
                                       optionKey="id"
                                       optionValue="value"
@@ -163,9 +164,9 @@
 
                 <div class="field fieldcontain">
                     <label for="filterCIElement">${message(code:'financials.costItemElement')}</label>
-                    <laser:select id="filterCIElement" class="ui dropdown selection"
+                    <laser:select id="filterCIElement" class="ui dropdown selection search"
                                   name="filterCIElement"
-                                  from="${allCIElements}"
+                                  from="${RefdataCategory.getAllRefdataValues('CostItemElement')}"
                                   optionKey="${{it.class.getName() + ":" + it.id}}"
                                   optionValue="value"
                                   value="${params.filterCIElement}"
@@ -174,7 +175,7 @@
 
                 <div class="field fieldcontain">
                     <label for="filterCIStatus">${message(code:'financials.costItemStatus')}</label>
-                    <laser:select id="filterCIStatus" class="ui dropdown selection"
+                    <laser:select id="filterCIStatus" class="ui dropdown selection search"
                                   name="filterCIStatus"
                                   from="${RefdataCategory.getAllRefdataValues("CostItemStatus")}"
                                   optionKey="${{it.class.getName() + ":" + it.id}}"
@@ -237,7 +238,7 @@
                             taxTypesList.add([key:taxType,value:taxType.taxType.getI10n("value")+" ("+taxType.taxRate+"%)"])
                         }
                     %>
-                    <g:select id="filterCITaxType" class="ui dropdown selection"
+                    <g:select id="filterCITaxType" class="ui dropdown selection search"
                               name="filterCITaxType"
                               from="${taxTypesList}"
                               optionKey="${{it.key}}"
@@ -254,7 +255,7 @@
 
             <g:hiddenField name="orgId" value="${contextService.getOrg()?.id}"/>
         </g:form>
-    </semui:filterTemp>
+    </semui:filter>
 
 <!-- _filter.gsp -->
 

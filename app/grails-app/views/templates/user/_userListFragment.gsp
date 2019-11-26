@@ -75,15 +75,25 @@
                 <td class="x">
                     <g:if test="${editable && (instAdmService.isUserEditableForInstAdm(us, editor) || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN'))}">
                         <g:link controller="${controllerName}" action="${editLink}" id="${us.id}" class="ui icon button"><i class="write icon"></i></g:link>
-                        <g:link class="ui icon negative button js-open-confirm-modal la-popup-tooltip la-delay"
-                                data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.user.organisation", args: [us.displayName,us.getSettingsValue(UserSettings.KEYS.DASHBOARD)?.name ])}"
-                                data-confirm-term-how="delete"
-                                controller="organisation"
-                                action="processAffiliation"
-                                params="${[assoc:uoId, id:orgInstance?.id, cmd:'delete']}"
-                                data-content="${message(code:'profile.membership.delete.button')}" data-position="top left" >
-                            <i class="trash alternate icon"></i>
-                        </g:link>
+                        <g:if test="${!instAdmService.isLastAdminForOrg(orgInstance, us) || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')}">
+                            <g:link class="ui icon negative button js-open-confirm-modal la-popup-tooltip la-delay"
+                                    data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.user.organisation", args: [us.displayName,us.getSettingsValue(UserSettings.KEYS.DASHBOARD)?.name ])}"
+                                    data-confirm-term-how="delete"
+                                    controller="organisation"
+                                    action="processAffiliation"
+                                    params="${[assoc:uoId, id:orgInstance?.id, cmd:'delete']}"
+                                    data-content="${message(code:'profile.membership.delete.button')}" data-position="top left" >
+                                <i class="trash alternate icon"></i>
+                            </g:link>
+                        </g:if>
+                        <g:else>
+                            <span  class="la-popup-tooltip la-delay" data-content="${message(code:'user.affiliation.lastAdminForOrg', args: [us.getDisplayName()])}">
+                                <button class="ui icon negative button" disabled="disabled">
+                                    <i class="trash alternate icon"></i>
+                                </button>
+                            </span>
+                        </g:else>
+
                     </g:if>
                 </td>
             </tr>

@@ -2022,7 +2022,7 @@ class AjaxController {
         log.debug('target: ' + target)
 
         if (owner && target) {
-            if (target."${Identifier.getAttributeName(owner)}" == owner.id) {
+            if (target."${Identifier.getAttributeName(owner)}"?.id == owner.id) {
                 log.debug("Identifier deleted: ${params}")
                 target.delete()
             }
