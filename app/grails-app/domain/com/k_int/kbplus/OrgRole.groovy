@@ -38,7 +38,6 @@ class OrgRole implements ShareableTrait {
     ownerStatus
 
   static mapping = {
-        cache true
           id column:'or_id'
      version column:'or_version'
          org column:'or_org_fk',        index:'or_org_rt_idx'

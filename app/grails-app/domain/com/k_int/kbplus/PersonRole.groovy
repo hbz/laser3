@@ -36,7 +36,6 @@ class PersonRole implements Comparable<PersonRole>{
     ]
     
     static mapping = {
-        cache   true
         id          column:'pr_id'
         version     column:'pr_version'
         positionType            column:'pr_position_type_rv_fk'

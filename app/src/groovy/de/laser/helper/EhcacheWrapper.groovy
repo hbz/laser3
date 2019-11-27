@@ -10,7 +10,7 @@ class EhcacheWrapper {
 
     CacheService cacheService = (CacheService) Holders.grailsApplication.mainContext.getBean('cacheService')
 
-    private Cache cache
+    private Cache cache // net.sf.ehcache.Cache
     private String keyPrefix
 
     EhcacheWrapper(Cache cache, String keyPrefix) {
