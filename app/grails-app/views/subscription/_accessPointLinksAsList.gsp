@@ -75,7 +75,7 @@
                       <span data-position="top right"
                             class="la-popup-tooltip la-delay"
                             data-content="${message(code:'subscription.details.linkAccessPoint.accessConfig.tooltip.thumbtack.content')}">
-                        <g:render template="/templates/links/accessPointInheritModal"
+                        <g:render template="/subscription/accessPointInheritModal"
                                   model="${[tmplText           : message(code:'subscription.details.linkAccessPoint.accessConfig.modal.removeDerivation.header'),
                                             tmplID             : 'removeDerivation',
                                             tmplIcon           : 'thumbtack blue',
@@ -94,7 +94,7 @@
                       <span data-position="top right"
                             class="la-popup-tooltip la-delay"
                             data-content="${message(code:'subscription.details.linkAccessPoint.accessConfig.tooltip.inherit.content')}">
-                        <g:render template="/templates/links/accessPointInheritModal"
+                        <g:render template="/subscription/accessPointInheritModal"
                                   model="${[tmplText           : message(code:'subscription.details.linkAccessPoint.accessConfig.modal.addDerivation.header'),
                                             tmplID             : 'addDerivation',
                                             tmplIcon           : 'la-thumbtack slash blue',
