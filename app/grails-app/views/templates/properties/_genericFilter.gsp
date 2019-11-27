@@ -44,7 +44,7 @@
 <div class="field">
     <label for="filterProp">${message(code: 'subscription.property.value')}</label>
 
-    <input id="filterProp" id="filterProp" name="filterProp" type="text"
+    <input  id="filterProp" name="filterProp" type="text"
            placeholder="${message(code: 'license.search.property.ph')}" value="${params.filterProp ?: ''}"/>
 </div>
 </g:if>

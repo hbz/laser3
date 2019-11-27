@@ -179,9 +179,8 @@
         </div>
 
         <div class="field">
-                <label for="subscritionType">${message(code: 'myinst.currentSubscriptions.subscription_type')}</label>
-
                 <fieldset id="subscritionType">
+                    <legend >${message(code: 'myinst.currentSubscriptions.subscription_type')}</legend>
                     <div class="inline fields la-filter-inline">
                         <%
                             List subTypes = RefdataCategory.getAllRefdataValues('Subscription Type')
