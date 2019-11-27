@@ -24,7 +24,7 @@ class DashboardDueDate {
     Org  responsibleOrg
     boolean isDone
     boolean isHidden
-    Timestamp lastUpdated
+    Date lastUpdated
 
     DashboardDueDate(messageSource, Subscription obj, boolean isManualCancellationDate, User responsibleUser, Org responsibleOrg, boolean isDone, boolean isHidden){
         this(

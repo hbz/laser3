@@ -102,6 +102,7 @@ alter table dashboard_due_date add column if not exists das_attribute_name varch
 -- Fill new columns with values
 TRUNCATE TABLE dashboard_due_date;
 ALTER SEQUENCE dashboard_due_date_das_id_seq RESTART WITH 1;
+ALTER TABLE dashboard_due_date ALTER COLUMN das_last_updated TYPE TIMESTAMP WITH TIME ZONE;
 update dashboard_due_date set das_attribute_name = 'manualCancellationDate' where das_attribute_name isnull and das_attribute_value_de = 'Kündigungsdatum' and das_oid like 'com.k_int.kbplus.Subscription:%';
 update dashboard_due_date set das_attribute_name = 'endDate' where  das_attribute_name isnull and das_attribute_value_de = 'Enddatum' and das_oid like 'com.k_int.kbplus.Subscription:%';
 update dashboard_due_date set das_attribute_name = 'manualCancellationDate' where  das_attribute_name isnull and das_attribute_value_de = 'Kündigungsdatum' and das_oid like 'com.k_int.kbplus.Subscription:%';
@@ -112,4 +113,3 @@ update dashboard_due_date set das_attribute_name = 'type.name' where  das_attrib
 update dashboard_due_date set das_attribute_value_en = 'termination date' where das_attribute_value_en isnull and das_attribute_name = 'manualCancellationDate' ;
 update dashboard_due_date set das_attribute_value_en = 'due date' where  das_attribute_value_en isnull and das_oid like 'com.k_int.kbplus.Task:%';
 update dashboard_due_date set das_attribute_value_en = 'endDate' where  das_attribute_value_en isnull and (das_oid like 'com.k_int.kbplus.Subscription:%' or das_oid like 'com.k_int.kbplus.SurveyInfo:%');
--- todo: fill with values for properties
