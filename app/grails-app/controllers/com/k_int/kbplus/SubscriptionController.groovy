@@ -394,7 +394,10 @@ class SubscriptionController extends AbstractDebugController {
                         PriceItem.executeUpdate("delete from PriceItem pi where pi.issueEntitlement.id in (:delList)",[delList: deleteIdList])
                         IssueEntitlement.executeUpdate("delete from IssueEntitlement ie where ie.id in (:delList)", [delList: deleteIdList])
                     }
-                    // TODO OrgAccessPointLink
+                    SubscriptionPackage subPkg = SubscriptionPackage.findByPkgAndSubscription(result.package, result.subscription)
+                    if (subPkg) {
+                        OrgAccessPointLink.executeUpdate("delete from OrgAccessPointLink oapl where oapl.subPkg=?", [subPkg])
+                    }
                     SubscriptionPackage.executeUpdate("delete from SubscriptionPackage sp where sp.pkg=? and sp.subscription=? ", [result.package, result.subscription])
 
                     flash.message = message(code: 'subscription.details.unlink.successfully')
@@ -416,8 +419,12 @@ class SubscriptionController extends AbstractDebugController {
                     conflicts_list += conflict_item_pc
                 }
 
-                // TODO get list
-                def accessPointLinks = [['text': 'Link1'],['text': 'Link2']]
+                SubscriptionPackage sp = SubscriptionPackage.findByPkgAndSubscription(result.package, result.subscription)
+                List accessPointLinks = []
+                if (sp.oapls){
+                    Map detailItem = ['text':"Es werden ${sp.oapls.size()} Verknüpfungen gelöscht"]
+                    accessPointLinks.add(detailItem)
+                }
                 if (accessPointLinks) {
                     def conflict_item_oap = [name: "Verknüpfte Zugangskonfigurationen", details: accessPointLinks, action: [actionRequired: false, text: "Die Verknüpfungen zu den Zugangskonfigurationen werden gelöscht"]]
                     conflicts_list += conflict_item_oap
