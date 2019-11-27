@@ -13,7 +13,7 @@
             <g:render template="/user/actions" />
         </semui:controlButtons>
 
-        <h1 class="ui left aligned icon header"><semui:headerIcon />
+        <h1 class="ui left floated aligned icon header la-clear-before"><semui:headerIcon />
             <g:message code="user.edit.label" />: ${user.username}
         </h1>
 
@@ -99,35 +99,38 @@
 
     </div><!-- grid -->
 
+
     <g:if test="${manipulateAffiliations}">
         <div class="ui one column grid">
             <g:render template="/templates/user/membership_table" model="[userInstance: user, tmplUserEdit: true]" />
         </div>
     </g:if>
 
-    <g:if test="${editable}">
-        <g:if test="${availableOrgs}">
-            <div class="ui segment form">
-                <g:set var="orgLabel" value="Organisation" />
 
-                <g:render template="/templates/user/membership_form" model="[userInstance: user, availableOrgs: availableOrgs, availableOrgRoles: availableOrgRoles, orgLabel: orgLabel, tmplUserEdit: true]" />
-            </div>
+        <g:if test="${editable}">
+            <g:if test="${availableOrgs}">
+                <div class="ui segment form">
+                    <g:set var="orgLabel" value="Organisation" />
+
+                    <g:render template="/templates/user/membership_form" model="[userInstance: user, availableOrgs: availableOrgs, availableOrgRoles: availableOrgRoles, orgLabel: orgLabel, tmplUserEdit: true]" />
+                </div>
+            </g:if>
+
+            <g:if test="${availableComboDeptOrgs}">
+                <div class="ui segment form">
+                    <g:render template="/templates/user/membership_form" model="[userInstance: user, availableOrgs: availableComboDeptOrgs, availableOrgRoles: availableOrgRoles, orgLabel: orgLabel, tmplUserEdit: true]" />
+                </div>
+            </g:if>
+
+            <g:if test="${availableComboConsOrgs}">
+                <div class="ui segment form">
+                    <g:set var="orgLabel" value="Konsorten" />
+
+                    <g:render template="/templates/user/membership_form" model="[userInstance: user, availableOrgs: availableComboConsOrgs, availableOrgRoles: availableOrgRoles, orgLabel: orgLabel, tmplUserEdit: true]" />
+                </div>
+            </g:if>
         </g:if>
 
-        <g:if test="${availableComboDeptOrgs}">
-            <div class="ui segment form">
-                <g:render template="/templates/user/membership_form" model="[userInstance: user, availableOrgs: availableComboDeptOrgs, availableOrgRoles: availableOrgRoles, orgLabel: orgLabel, tmplUserEdit: true]" />
-            </div>
-        </g:if>
-
-        <g:if test="${availableComboConsOrgs}">
-            <div class="ui segment form">
-                <g:set var="orgLabel" value="Konsorten" />
-
-                <g:render template="/templates/user/membership_form" model="[userInstance: user, availableOrgs: availableComboConsOrgs, availableOrgRoles: availableOrgRoles, orgLabel: orgLabel, tmplUserEdit: true]" />
-            </div>
-        </g:if>
-    </g:if>
 
     <sec:ifAnyGranted roles="ROLE_ADMIN">
       <h4 class="ui dividing header">${message(code:'user.role.plural', default:'Roles')}</h4>

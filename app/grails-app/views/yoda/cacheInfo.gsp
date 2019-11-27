@@ -19,8 +19,8 @@
     sessionCache.put("test", "${System.currentTimeSeconds()}")
     sessionCache.get("test")
 %>
-
-<h1 class="ui left aligned icon header"><semui:headerIcon />${message(code:'menu.yoda.cacheInfo')}</h1>
+<br>
+<h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon />${message(code:'menu.yoda.cacheInfo')}</h1>
 
 
 <h3 class="ui header">Session</h3>
@@ -58,19 +58,24 @@
 <g:each in="${ehcacheManager.getCacheNames()}" var="cacheName">
     <g:set var="cache" value="${ehcacheManager.getCache(cacheName)}" />
 
-    <h4 class="ui header">${cacheName} <span class="ui label">${cache.class}</span></h4>
+    <h4 class="ui header">${cacheName}
+        <span class="ui label">${cache.class}</span>
+        <span class="ui label button" onclick="$(this).parent('h4').next('.segment').find('.cacheContent').toggleClass('hidden')">${cache.getKeys().size()}</span>
+    </h4>
 
     <div class="ui segment">
         ${cache}
 
         <dl>
-            <g:each in="${cache.getKeys()}" var="key">
-                <g:if test="${cache.get(key)}">
-                    <dt>${key}</dt>
-                    <dd>${cache.get(key)?.getObjectValue()}</dd>
-                    <br />
-                </g:if>
-            </g:each>
+            <div class="cacheContent hidden">
+                <g:each in="${cache.getKeys()}" var="key">
+                    <g:if test="${cache.get(key)}">
+                        <dt>${key}</dt>
+                        <dd>${cache.get(key)?.getObjectValue()}</dd>
+                        <br />
+                    </g:if>
+                </g:each>
+            </div>
         </dl>
 
         <g:link class="ui button negative"

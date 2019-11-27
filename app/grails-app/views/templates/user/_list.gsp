@@ -14,7 +14,7 @@
             <g:render template="/user/actions" />
         </semui:controlButtons>
 
-        <h1 class="ui left aligned icon header">
+        <h1 class="ui left floated aligned icon header la-clear-before">
             <semui:headerIcon />
             ${titleMessage}
             <semui:totalNumber total="${total}"/>
@@ -28,7 +28,7 @@
 
         <g:if test="${pendingRequests && editable}">
 
-            <h3 class="ui header">Offene Anfragen</h3>
+            <h3 class="ui header"><g:message code="PendingAffiliationRequest"/></h3>
 
             <table class="ui celled la-table table">
                 <thead>

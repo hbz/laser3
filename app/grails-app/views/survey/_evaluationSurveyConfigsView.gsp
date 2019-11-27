@@ -1,9 +1,9 @@
-<h2 class="ui left aligned icon header"><g:message code="surveyEvaluation.surveyConfigs"/><semui:totalNumber
+<h2 class="ui icon header la-clear-before la-noMargin-top"><g:message code="surveyEvaluation.surveyConfigs"/><semui:totalNumber
         total="${surveyConfigs?.size()}"/></h2>
 <br>
 
 <g:if test="${surveyInfo.isSubscriptionSurvey}">
-    <h3 class="ui left aligned icon header">${message(code: 'subscription.plural')} <semui:totalNumber
+    <h3 class="ui icon header la-clear-before la-noMargin-top">${message(code: 'subscription.plural')} <semui:totalNumber
             total="${surveyConfigs.findAll { it?.type == 'Subscription' }.size()}"/></h3>
 
     <semui:form>
@@ -79,7 +79,7 @@
     </semui:form>
 </g:if>
 <g:else>
-    <h3 class="ui left aligned icon header">${message(code: 'surveyConfigs.list.propertys')} <semui:totalNumber
+    <h3 class="ui icon header la-clear-before la-noMargin-top">${message(code: 'surveyConfigs.list.propertys')} <semui:totalNumber
             total="${surveyConfigs.findAll { it?.type == 'SurveyProperty' }.size()}"/></h3>
     <semui:form>
         <table class="ui celled sortable table la-table">

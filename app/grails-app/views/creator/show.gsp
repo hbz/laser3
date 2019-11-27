@@ -32,7 +32,7 @@
     </div>
 
     <div class="span9">
-        <h1 class="ui left aligned icon header"><semui:headerIcon /><g:message code="default.show.label" args="[entityName]"/></h1>
+        <h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon /><g:message code="default.show.label" args="[entityName]"/></h1>
 
         <semui:messages data="${flash}"/>
 

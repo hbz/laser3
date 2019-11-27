@@ -7,11 +7,12 @@
     <g:if test="${subscriptionInstance}">
         <semui:crumb class="active" id="${subscriptionInstance.id}" text="${subscriptionInstance.name}" />
     </g:if>
+    <g:if test="${actionName == 'compare'}">
+        ${message(code:'subscription.compare.label')}
+    </g:if>
 </semui:breadcrumbs>
 
 <g:if test="${actionName == 'compare'}">
-    <semui:crumb class="active" message="subscription.compare.label" />
-
     <semui:controlButtons>
         <semui:exportDropdown>
             <semui:exportDropdownItem>

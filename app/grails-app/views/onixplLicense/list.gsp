@@ -11,7 +11,7 @@
 		<div>
 				
 
-					<h1 class="ui left aligned icon header"><semui:headerIcon /><g:message code="default.list.label" args="[entityName]" />
+					<h1 class="ui left floated aligned icon header la-clear-before"><semui:headerIcon /><g:message code="default.list.label" args="[entityName]" />
                         <semui:totalNumber total="${onixplLicenseInstanceTotal}"/>
                     </h1>
 

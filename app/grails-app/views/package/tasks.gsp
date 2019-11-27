@@ -31,7 +31,7 @@
     </semui:controlButtons>
     <semui:modeSwitch controller="package" action="show" params="${params}"/>
 
-    <h1 class="ui left aligned icon header"><semui:headerIcon />${packageInstance?.name}</h1>
+    <h1 class="ui left floated aligned icon header la-clear-before"><semui:headerIcon />${packageInstance?.name}</h1>
 
     <g:render template="nav"/>
 

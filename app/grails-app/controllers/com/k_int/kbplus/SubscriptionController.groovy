@@ -27,6 +27,7 @@ import org.apache.poi.ss.usermodel.Row
 import org.apache.poi.ss.usermodel.Sheet
 import org.apache.poi.xssf.streaming.SXSSFWorkbook
 import org.apache.poi.xssf.usermodel.XSSFWorkbook
+import org.codehaus.groovy.grails.commons.GrailsApplication
 import org.codehaus.groovy.grails.plugins.orm.auditable.AuditLogEvent
 import org.codehaus.groovy.runtime.InvokerHelper
 import org.springframework.web.multipart.commons.CommonsMultipartFile
@@ -52,7 +53,7 @@ class SubscriptionController extends AbstractDebugController {
     def genericOIDService
     def transformerService
     def exportService
-    def grailsApplication
+    GrailsApplication grailsApplication
     def pendingChangeService
     def institutionsService
     def ESSearchService
@@ -1189,10 +1190,18 @@ class SubscriptionController extends AbstractDebugController {
             result.ies?.each { ie ->
                 List row = []
                 row.add([field: ie?.tipp?.title?.title ?: '', style:null])
-                row.add([field: ie?.tipp?.title?.volume ?: '', style:null])
-                row.add([field: ie?.tipp?.title?.getEbookFirstAutorOrFirstEditor() ?: '', style:null])
-                row.add([field: ie?.tipp?.title?.editionStatement ?: '', style:null])
-                row.add([field: ie?.tipp?.title?.summaryOfContent ?: '', style:null])
+
+                if(ie?.tipp?.title instanceof BookInstance) {
+                    row.add([field: ie?.tipp?.title?.volume ?: '', style: null])
+                    row.add([field: ie?.tipp?.title?.getEbookFirstAutorOrFirstEditor() ?: '', style: null])
+                    row.add([field: ie?.tipp?.title?.editionStatement ?: '', style: null])
+                    row.add([field: ie?.tipp?.title?.summaryOfContent ?: '', style: null])
+                }else{
+                    row.add([field: '', style: null])
+                    row.add([field: '', style: null])
+                    row.add([field: '', style: null])
+                    row.add([field: '', style: null])
+                }
 
                 def identifiers = []
                 ie?.tipp?.title?.ids?.sort { it.ns?.ns }?.each{ ident ->
@@ -1200,8 +1209,13 @@ class SubscriptionController extends AbstractDebugController {
                 }
                 row.add([field: identifiers ? identifiers.join(', ') : '', style:null])
 
-                row.add([field: ie?.tipp?.title?.dateFirstInPrint ? g.formatDate(date: ie?.tipp?.title?.dateFirstInPrint, format: message(code: 'default.date.format.notime')): '', style:null])
-                row.add([field: ie?.tipp?.title?.dateFirstOnline ? g.formatDate(date: ie?.tipp?.title?.dateFirstOnline, format: message(code: 'default.date.format.notime')): '', style:null])
+                if(ie?.tipp?.title instanceof BookInstance) {
+                    row.add([field: ie?.tipp?.title?.dateFirstInPrint ? g.formatDate(date: ie?.tipp?.title?.dateFirstInPrint, format: message(code: 'default.date.format.notime')) : '', style: null])
+                    row.add([field: ie?.tipp?.title?.dateFirstOnline ? g.formatDate(date: ie?.tipp?.title?.dateFirstOnline, format: message(code: 'default.date.format.notime')) : '', style: null])
+                }else{
+                    row.add([field: '', style: null])
+                    row.add([field: '', style: null])
+                }
 
                 row.add([field: ie?.acceptStatus?.getI10n('value') ?: '', style:null])
 

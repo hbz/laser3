@@ -13,7 +13,7 @@
     </semui:controlButtons>
     <semui:messages data="${flash}" />
 
-      <h1 class="ui icon header"><semui:headerIcon />
+      <h1 class="ui icon header la-noMargin-top"><semui:headerIcon />
         <semui:xEditable owner="${subscriptionInstance}" field="name" />
       </h1>
       <semui:anualRings object="${subscriptionInstance}" controller="subscription" action="documents" navNext="${navNextSubscription}" navPrev="${navPrevSubscription}"/>

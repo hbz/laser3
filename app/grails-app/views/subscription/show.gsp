@@ -35,7 +35,7 @@
         </g:if>
 
         <span class="la-js-editmode-container la-header-with-icon">
-            <h1 class="ui icon header"><semui:headerIcon />
+            <h1 class="ui icon header la-noMargin-top"><semui:headerIcon />
                 <semui:xEditable owner="${subscriptionInstance}" field="name" />
             </h1>
             <semui:auditButton auditable="[subscriptionInstance, 'name']" />

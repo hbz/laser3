@@ -12,7 +12,7 @@
           <semui:crumb text="IE Transfer" class="active"/>
       </semui:breadcrumbs>
 
-      <h1 class="ui left aligned icon header"><semui:headerIcon />IE Transfer</h1>
+      <h1 class="ui left floated aligned icon header la-clear-before"><semui:headerIcon />IE Transfer</h1>
 
       <semui:messages data="${flash}" />
 

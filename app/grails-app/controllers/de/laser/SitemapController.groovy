@@ -2,13 +2,14 @@ package de.laser
 
 import grails.web.Action
 import groovy.xml.MarkupBuilder
+import org.codehaus.groovy.grails.commons.GrailsApplication
 
 import java.lang.reflect.Method
 import java.lang.reflect.Modifier
 
 class SitemapController {
 
-    def grailsApplication
+    GrailsApplication grailsApplication
 
     /**
      * If you want to exclude any controllers in the sitemap, especially Error controllers and services etc, include them in this array

@@ -15,7 +15,7 @@
     <semui:crumb message="manageParticipantSurveys.header" class="active"/>
 </semui:breadcrumbs>
 
-<h1 class="ui left aligned icon header">
+<h1 class="ui left floated aligned icon header la-clear-before">
     <semui:headerIcon/>${message(code: 'manageParticipantSurveys.header')}
     <semui:totalNumber total="${countSurveys.values().sum { it }}"/>
 </h1>

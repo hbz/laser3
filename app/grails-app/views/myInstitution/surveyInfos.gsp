@@ -28,7 +28,7 @@
 
 
 
-<h1 class="ui left aligned icon header"><semui:headerIcon/>
+<h1 class="ui left floated aligned icon header la-clear-before"><semui:headerIcon/>
 ${message(code: 'subscriptionSurvey.label')} - ${surveyInfo.name}
 <semui:surveyStatus object="${surveyInfo}"/>
 %{--<g:if test="${surveyInfo.startDate || surveyInfo.endDate}">
@@ -122,13 +122,13 @@ ${message(code: 'subscriptionSurvey.label')} - ${surveyInfo.name}
 
 <br>
 
-<h2 class="ui left aligned icon header">${message(code: 'surveyConfig.label')} <semui:totalNumber
+<h2 class="ui icon header la-clear-before la-noMargin-top">${message(code: 'surveyConfig.label')} <semui:totalNumber
         total="${surveyResults?.size()}"/></h2>
 <br>
 
 <semui:form>
 
-    <h3 class="ui left aligned icon header">${message(code: 'subscription.plural')} <semui:totalNumber
+    <h3 class="ui icon header la-clear-before la-noMargin-top">${message(code: 'subscription.plural')} <semui:totalNumber
             total="${com.k_int.kbplus.SurveyConfig.findAllByIdInListAndType(surveyResults.collect {
                 it.key
             }, 'Subscription').size()}"/></h3>
@@ -253,7 +253,7 @@ ${message(code: 'subscriptionSurvey.label')} - ${surveyInfo.name}
 <g:if test="${surveyProperties.size() > 0}">
 
     <semui:form>
-        <h3 class="ui left aligned icon header">${message(code: 'surveyConfigs.list.propertys')} <semui:totalNumber
+        <h3 class="ui icon header la-clear-before la-noMargin-top">${message(code: 'surveyConfigs.list.propertys')} <semui:totalNumber
                 total="${surveyProperties.size()}"/></h3>
         <table class="ui celled sortable table la-table">
             <thead>

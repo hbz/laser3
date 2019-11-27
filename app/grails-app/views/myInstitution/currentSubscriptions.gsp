@@ -523,14 +523,14 @@
         </g:each>
     </table>
 </g:if>
+<g:else>
+    <g:if test="${filterSet}">
+        <br><strong><g:message code="filter.result.empty.object" args="${[message(code:"subscription.plural")]}"/></strong>
+    </g:if>
     <g:else>
-        <g:if test="${filterSet}">
-            <br><strong><g:message code="filter.result.empty.object" args="${[message(code:"subscription.plural")]}"/></strong>
-        </g:if>
-        <g:else>
-            <br><strong><g:message code="result.empty.object" args="${[message(code:"subscription.plural")]}"/></strong>
-        </g:else>
+        <br><strong><g:message code="result.empty.object" args="${[message(code:"subscription.plural")]}"/></strong>
     </g:else>
+</g:else>
 
 </div>
 
@@ -638,6 +638,9 @@
     </r:script>
     --%>
 
+    <semui:debugInfo>
+        <g:render template="/templates/debug/benchMark" model="[debug: benchMark]" />
+    </semui:debugInfo>
 
   </body>
 </html>

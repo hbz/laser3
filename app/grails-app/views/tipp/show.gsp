@@ -14,8 +14,8 @@
                  text="${tipp.pkg.name} [${message(code: 'package.label', default: 'package')}]"/>
     <semui:crumb text="${tipp.title.title} [${message(code: 'title.label')}]" class="active"/>
 </semui:breadcrumbs>
-
-<h1 class="ui left aligned icon header"><semui:headerIcon/>
+<br>
+<h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon/>
 <g:message code="tipp.show.label" args="${[titleInstanceInstance?.title, tipp.pkg.name, tipp.platform.name]}"/>
 </h1>
 

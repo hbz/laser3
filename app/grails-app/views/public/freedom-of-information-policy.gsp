@@ -9,7 +9,7 @@
     <g:render template="public_navbar" contextPath="/templates" model="['active': 'about']"/>
 
     <div class="ui container">
-        <h1 class="ui left aligned icon header"><semui:headerIcon />Freedom of Information Policy</h1>
+        <h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon />Freedom of Information Policy</h1>
 
         <div class="ui grid">
             <div class="twelve wide column">

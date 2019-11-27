@@ -12,7 +12,7 @@
     <semui:crumb message="menu.yoda.dash" class="active"/>
 </semui:breadcrumbs>
 
-<h1 class="ui left aligned icon header"><semui:headerIcon/>Import Series to EBooks</h1>
+<h1 class="ui left floated aligned icon header la-clear-before"><semui:headerIcon/>Import Series to EBooks</h1>
 
 <br>
 <br>

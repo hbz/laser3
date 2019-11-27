@@ -1,7 +1,7 @@
 
 <g:set var="participants" value="${params.tab == 'participantsViewAllFinish' ? participantsFinish : (params.tab == 'participantsViewAllNotFinish' ? participantsNotFinish : participants ) }"/>
 
-<h2 class="ui left aligned icon header"><g:message code="surveyEvaluation.participants"/><semui:totalNumber
+<h2 class="ui icon header la-clear-before la-noMargin-top"><g:message code="surveyEvaluation.participants"/><semui:totalNumber
         total="${participants?.size()}"/></h2>
 <br>
 

@@ -10,14 +10,14 @@
     <semui:breadcrumbs>
       <semui:crumb message="menu.datamanager.dash" class="active"/>
     </semui:breadcrumbs>
-
-    <h1 class="ui left aligned icon header"><semui:headerIcon />${message(code:'menu.datamanager.dash', default:'Data Manager Dashboard')}</h1>
+    <br>
+    <h1 class="ui left floated aligned icon header la-clear-before"><semui:headerIcon />${message(code:'menu.datamanager.dash', default:'Data Manager Dashboard')}</h1>
 
   <semui:messages data="${flash}" />
 
     <g:if test="${pendingChanges?.size() > 0}">
 
-        <h6 class="ui header">${message(code:'datamanager.pending.label')}</h6>
+        <h2 class="ui left floated aligned icon header la-clear-before">${message(code:'datamanager.pending.label')}</h2>
         <table class="ui celled la-table table">
           <thead>
             <tr>
