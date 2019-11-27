@@ -584,20 +584,10 @@ class SemanticUiTagLib {
             out << '    <i class="filter icon"></i>'
             out << '   <span class="ui circular label la-js-filter-total hidden">0</span>'
             out << '</button>'
-
-
-/*            out << r.script() {
-                out << ' $(".la-js-filterButton").click(function() { '
-                //out << ' showExtendedFilter = !showExtendedFilter; '
-                out << '    $( ".la-filter").toggle( "fast" ); '
-                out << '    $(this).toggleClass("blue"); '
-                out << '}); '
-            }*/
         }
 
 
-        //out << '<div class="ui la-filter segment la-clear-before' + (extended ?'':' hidden') + '">'
-        out << '<div class="ui la-filter segment la-clear-before"' + (extended ?'':' style="display: none;"') + '">'
+        out << '<div class="ui la-filter segment la-clear-before' + (extended ?'':' style="display: none;"') + '">'
         out << body()
         out << '</div>'
     }
