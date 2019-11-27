@@ -3,6 +3,8 @@ package de.laser.domain
 import org.springframework.context.i18n.LocaleContextHolder
 
 abstract class AbstractI10nTranslatable {
+    public static final LOCALE_DE = Locale.GERMAN.toString()
+    public static final LOCALE_EN = Locale.ENGLISH.toString()
 
     protected i10nStorage = [:]
 
@@ -11,6 +13,10 @@ abstract class AbstractI10nTranslatable {
         getI10n(property, LocaleContextHolder.getLocale().toString())
     }
 
+    // get translation
+    def getI10n(String property, Locale locale) {
+        getI10n(property, locale.toString())
+    }
     // get translation
     def getI10n(String property, String locale) {
         def result
