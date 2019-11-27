@@ -33,6 +33,7 @@ class TitleInstance extends AbstractBaseDomain implements AuditableTrait {
   String normTitle
   String keyTitle
   String sortTitle
+  @Deprecated
   String impId
   String gokbId
   //URL originEditUrl

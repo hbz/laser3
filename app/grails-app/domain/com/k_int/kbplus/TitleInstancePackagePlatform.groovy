@@ -49,6 +49,7 @@ class TitleInstancePackagePlatform extends AbstractBaseDomain implements Auditab
     Date coreStatusStart
     Date coreStatusEnd
     String rectype="so"
+    @Deprecated
     String impId
     String gokbId
     //URL originEditUrl
@@ -515,6 +516,7 @@ class TitleInstancePackagePlatform extends AbstractBaseDomain implements Auditab
       return 1;
   }  
 
+    @Deprecated
   static def expunge(tipp_id) {
     try {
       static_logger.debug("  -> TIPPs");
