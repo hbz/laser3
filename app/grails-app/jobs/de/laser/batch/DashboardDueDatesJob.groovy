@@ -21,15 +21,12 @@ class DashboardDueDatesJob extends AbstractJob {
     boolean isAvailable() {
         !jobIsRunning && !dashboardDueDatesService.update_running
     }
-    boolean isRunning() {
-        jobIsRunning
-    }
 
     def execute() {
         if (! isAvailable()) {
             return false
         }
-        jobIsRunning = true
+        setJobStart()
 
         try {
             if (grailsApplication.config.isUpdateDashboardTableInDatabase || grailsApplication.config.isSendEmailsForDueDatesOfAllUsers) {
@@ -59,6 +56,6 @@ class DashboardDueDatesJob extends AbstractJob {
             log.error(e)
         }
 
-        jobIsRunning = false
+        setJobEnd()
     }
 }
