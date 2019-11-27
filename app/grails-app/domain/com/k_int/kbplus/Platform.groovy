@@ -193,7 +193,7 @@ class Platform extends AbstractBaseDomain {
   }
 
   def usesPlatformAccessPoints(contextOrg, subscriptionPackage){
-    // TODO do I need the contextOrg?
+    // TODO do we need the contextOrg?
     // look for OrgAccessPointLinks for this platform and a given subscriptionPackage, if we can find that "marker",
     // we know the AccessPoints are not derived from the AccessPoints configured for the platform
     def hql = "select oapl from OrgAccessPointLink oapl where oapl.platform=${this.id} and oapl.subPkg = ${subscriptionPackage.id} and oapl.oap is null"

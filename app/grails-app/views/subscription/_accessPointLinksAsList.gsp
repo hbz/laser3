@@ -28,10 +28,10 @@
         <div class="ui top aligned divided relaxed list">
           <div class="item">
             <div class="right floated content">
-              <b>Zugangskonfiguration</b>
+              <b>${message(code: 'subscription.details.linkAccessPoint.accessConfig.label')}</b>
             </div>
             <div class="content">
-              <b>Platform</b>
+              <b>${message(code: 'subscription.details.linkAccessPoint.platform.label')}</b>
             </div>
           </div>
           <g:if test="${sp.pkg.tipps}">
@@ -74,9 +74,9 @@
                     <g:if test="${platform.usesPlatformAccessPoints(contextOrg, sp)}">
                       <span data-position="top right"
                             class="la-popup-tooltip la-delay"
-                            data-content="Zugangskonfigurationen werden von Platform geerbt. Für Lizenzpaket spezifische Verknüpfungen hier klicken">
+                            data-content="${message(code:'subscription.details.linkAccessPoint.accessConfig.tooltip.thumbtack.content')}">
                         <g:render template="/templates/links/accessPointInheritModal"
-                                  model="${[tmplText           : 'Vererbung von Platform aufheben',
+                                  model="${[tmplText           : message(code:'subscription.details.linkAccessPoint.accessConfig.modal.removeDerivation.header'),
                                             tmplID             : 'removeDerivation',
                                             tmplIcon           : 'thumbtack blue',
                                             tmplCss            : 'icon small la-selectable-button',
@@ -93,9 +93,9 @@
                     <g:else>
                       <span data-position="top right"
                             class="la-popup-tooltip la-delay"
-                            data-content="Zugangskonfigurationen werden auf Lizenzpaket Ebene verknüpft und nicht von der Platform geerbt. Klicken, um von der Platform zu erben">
+                            data-content="${message(code:'subscription.details.linkAccessPoint.accessConfig.tooltip.inherit.content')}">
                         <g:render template="/templates/links/accessPointInheritModal"
-                                  model="${[tmplText           : 'Von Platform erben',
+                                  model="${[tmplText           : message(code:'subscription.details.linkAccessPoint.accessConfig.modal.addDerivation.header'),
                                             tmplID             : 'addDerivation',
                                             tmplIcon           : 'la-thumbtack slash blue',
                                             tmplCss            : 'icon small la-selectable-button',

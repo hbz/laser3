@@ -79,7 +79,7 @@
                                 <div class="la-flexbox">
                                     <span data-position="top right"
                                     class="la-popup-tooltip la-delay"
-                                    data-content="Es wird eine eigene Zugangskonfiguration für Paket [${sp.pkg.name}] verwendet">
+                                    data-content="${message(code: 'myinst.currentPlatforms.tooltip.thumbtack.content', args:[sp.pkg.name])}">
                                     <i class="icon thumbtack scale la-list-icon"></i>
                                     </span>
                                     <g:link controller="accessPoint" action="edit_${orgap.oap.accessMethod}"

@@ -422,11 +422,11 @@ class SubscriptionController extends AbstractDebugController {
                 SubscriptionPackage sp = SubscriptionPackage.findByPkgAndSubscription(result.package, result.subscription)
                 List accessPointLinks = []
                 if (sp.oapls){
-                    Map detailItem = ['text':"Es werden ${sp.oapls.size()} Verknüpfungen gelöscht"]
+                    Map detailItem = ['text':"${g.message(code: "subscription.details.unlink.accessPoints.numbers")} ${sp.oapls.size()}"]
                     accessPointLinks.add(detailItem)
                 }
                 if (accessPointLinks) {
-                    def conflict_item_oap = [name: "Verknüpfte Zugangskonfigurationen", details: accessPointLinks, action: [actionRequired: false, text: "Die Verknüpfungen zu den Zugangskonfigurationen werden gelöscht"]]
+                    def conflict_item_oap = [name: "${g.message(code: "subscription.details.unlink.accessPoints")}", details: accessPointLinks, action: [actionRequired: false, text: "${g.message(code: "subscription.details.unlink.accessPoints.numbers.action")}"]]
                     conflicts_list += conflict_item_oap
                 }
 
