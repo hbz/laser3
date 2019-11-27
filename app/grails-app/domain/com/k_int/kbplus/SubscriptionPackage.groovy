@@ -118,9 +118,8 @@ class SubscriptionPackage {
         it.oap?.org == org && it.active
       }
     } else {
-      return oapls.findAll {
-        it.subPkg == this && it.oap?.org == org && it.active
-      }
+        def hql = "select oapl from OrgAccessPointLink oapl join oapl.oap as oap where oapl.subPkg=:subPkg and oap.org=:org and oapl.active=true"
+        return OrgAccessPointLink.executeQuery(hql, [subPkg:this, org:org])
     }
   }
 

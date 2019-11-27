@@ -378,15 +378,28 @@ class PlatformController extends AbstractDebugController {
     @DebugAnnotation(test='hasAffiliation("INST_EDITOR")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_EDITOR") })
     def addDerivation() {
-
         if (!params.sp) {
+            flash.message = message(code: 'subscription.details.linkAccessPoint.missingSubPkg.message')
+            redirect(url: request.getHeader('referer'))
+            return
         }
         def subPkg = SubscriptionPackage.get(params.sp)
-
-        if (!params.platform) {
+        if (!subPkg){
+            flash.message = message(code: 'subscription.details.linkAccessPoint.subPkgNotFound.message')
+            redirect(url: request.getHeader('referer'))
+            return
+        }
+        if (!params.platform_id) {
+            flash.message = message(code: 'subscription.details.linkAccessPoint.missingPlatform.message')
+            redirect(url: request.getHeader('referer'))
+            return
         }
         def platform = Platform.get(params.platform_id)
-
+        if (!platform){
+            flash.message = message(code: 'subscription.details.linkAccessPoint.platformNotFound.message')
+            redirect(url: request.getHeader('referer'))
+            return
+        }
         // delete marker all OrgAccessPointLinks for the given platform und SubscriptionPackage
         // The marker (OrgAccessPoint=null), which indicates that want to overwrite platform specific AccessPoint links,
         // gets deleted too
@@ -404,11 +417,27 @@ class PlatformController extends AbstractDebugController {
         // this is a kind of marker to indicate that a subscriptionPackage specific AP configuration and no
         // AccessPoint derivation from Platform is used
         if (!params.sp) {
+            flash.message = message(code: 'subscription.details.linkAccessPoint.missingSubPkg.message')
+            redirect(url: request.getHeader('referer'))
+            return
         }
         def subPkg = SubscriptionPackage.get(params.sp)
-        if (!params.platform) {
+        if (!subPkg){
+            flash.message = message(code: 'subscription.details.linkAccessPoint.subPkgNotFound.message')
+            redirect(url: request.getHeader('referer'))
+            return
+        }
+        if (!params.platform_id) {
+            flash.message = message(code: 'subscription.details.linkAccessPoint.missingPlatform.message')
+            redirect(url: request.getHeader('referer'))
+            return
         }
         def platform = Platform.get(params.platform_id)
+        if (!platform){
+            flash.message = message(code: 'subscription.details.linkAccessPoint.platformNotFound.message')
+            redirect(url: request.getHeader('referer'))
+            return
+        }
 
         def oapl = new OrgAccessPointLink()
         oapl.subPkg = subPkg
