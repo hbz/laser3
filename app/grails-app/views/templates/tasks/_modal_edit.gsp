@@ -88,9 +88,9 @@
         <div class="field">
             <div class="two fields">
                 <div class="field wide eight fieldcontain ${hasErrors(bean: taskInstance, field: 'responsible', 'error')}">
-                    <label for="responsible">
+                    <legend>
                         <g:message code="task.responsible.label" default="Responsible" />
-                    </label>
+                    </legend>
                     <g:if test="${taskInstance?.responsibleOrg?.id}"><g:set var="checked" value="checked" /></g:if><g:else> <g:set var="checked" value="" /></g:else>
 
                     <div class="field">

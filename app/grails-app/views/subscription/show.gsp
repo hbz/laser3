@@ -30,16 +30,16 @@
             <g:render template="actions" />
         </semui:controlButtons>
 
-        <g:if test="${params.asAt}">
+%{--        <g:if test="${params.asAt}">
             <h1 class="ui icon header"><semui:headerIcon />${message(code:'myinst.subscriptionDetails.snapshot', args:[params.asAt])}</h1>
-        </g:if>
+        </g:if>--}%
 
-        <span class="la-js-editmode-container la-header-with-icon">
-            <h1 class="ui icon header la-noMargin-top"><semui:headerIcon />
-                <semui:xEditable owner="${subscriptionInstance}" field="name" />
-            </h1>
-            <semui:auditButton auditable="[subscriptionInstance, 'name']" />
-        </span>
+
+        <h1 class="ui icon header la-noMargin-top"><semui:headerIcon />
+            <semui:xEditable owner="${subscriptionInstance}" field="name" />
+        </h1>
+        <semui:auditButton auditable="[subscriptionInstance, 'name']" />
+
         <semui:anualRings object="${subscriptionInstance}" controller="subscription" action="show" navNext="${navNextSubscription}" navPrev="${navPrevSubscription}"/>
 
 

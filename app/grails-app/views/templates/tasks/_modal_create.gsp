@@ -35,9 +35,9 @@ double t8 = 0L
 
         <g:if test="${controllerName == 'myInstitution' || controllerName == 'ajax'}">
             <div class="field fieldcontain required">
-                <label for="typ">
+                <legend>
                     <g:message code="task.typ" default="Task Typ"/>
-                </label>
+                </legend>
                 <div class="ui radio checkbox">
                     <input id="generalradio" type="radio" value="general" name="linkto" tabindex="0" class="hidden" checked="">
                     <label for="generalradio">${message(code: 'task.general')}</label>
@@ -146,7 +146,9 @@ double t8 = 0L
                                   from="${com.k_int.kbplus.RefdataCategory.getAllRefdataValues('Task Status')}"
                                   optionValue="value" optionKey="id" required=""
                                   value="${taskInstance?.status?.id ?: com.k_int.kbplus.RefdataValue.findByValueAndOwner("Open", com.k_int.kbplus.RefdataCategory.findByDesc('Task Status')).id}"
-                                  class="ui dropdown search many-to-one"/>
+                                  class="ui dropdown search many-to-one"
+                                  noSelection="${['' : message(code:'default.select.choose.label')]}"
+                    />
                 </div>
 
                 <semui:datepicker class="wide eight" label="task.endDate.label" id="endDate" name="endDate"
@@ -160,9 +162,9 @@ double t8 = 0L
         <div class="field" id="radioGroup">
             <div class="two fields">
                 <div class="field wide eight fieldcontain ${hasErrors(bean: taskInstance, field: 'responsible', 'error')}">
-                    <label for="responsible">
+                    <legend>
                         <g:message code="task.responsible.label" default="Responsible"/>
-                    </label>
+                    </legend>
 
                     <div class="field">
                         <div class="ui radio checkbox">
@@ -181,10 +183,10 @@ double t8 = 0L
 
                 <div id="responsibleUser"
                      class="field wide eight fieldcontain ${hasErrors(bean: taskInstance, field: 'responsibleUser', 'error')}">
-                    <label for="responsibleUser">
+                    <label for="responsibleUserInput">
                         <g:message code="task.responsibleUser.label" default="Responsible User"/>
                     </label>
-                    <g:select id="responsibleUser"
+                    <g:select id="responsibleUserInput"
                               name="responsibleUser.id"
                               from="${validResponsibleUsers}"
                               optionKey="id"

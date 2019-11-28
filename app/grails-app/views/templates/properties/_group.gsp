@@ -122,6 +122,7 @@
                                                       data-done="c3po.initGroupedProperties('${createLink(controller:'ajax', action:'lookup')}','#${custom_props_div}')"
                                                       data-always="c3po.loadJsAfterAjax(); bb8.init('#${custom_props_div}') "
                                                       data-update="${custom_props_div}"
+                                                      role="button"
                                     >
                                         <i class="icon la-thumbtack slash la-js-editmode-icon"></i>
                                     </laser:remoteLink>
