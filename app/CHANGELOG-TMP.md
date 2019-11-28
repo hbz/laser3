@@ -2,6 +2,8 @@
 
 **Ticket    Date    Branch      Author  Feature/Bug     Description/Keywords**
 
+1823/1901    28.11.2019  rc-1.1 Andreas Bug         Benennungen korrigiert, nicht umfangreichere Bugs der Kollektivsicht behoben 
+
 1898    22.11.2019  hbz-dev     David   Bug         Private Kontakte unter Meine Anbieter & Lieferanten als Dublette
 
 1830    21.11.2019  rc-1.1      Moe     Bug         filter cost element requires defined cost elements
@@ -16,6 +18,8 @@
 
 1839    19.11.2019  hbz-dev     David   Feature     SessionCache implementiert 
 
+1747    18.11.2019  hbz-dev     Anja    Feature     Modaler Dialog zum Anlegen von Aufgaben: Dialog ist schneller, Dropdowns nun vollständig und gemäss Anzeigekonventionen
+
 1789    15.11.2019  hbz-dev     David   Feature     Refactoring: IdentifierOccurrence entfernen
 
 1612    15.11.2019  hbz-dev     David   Feature     Refactoring: Identifikator-Erstellung durch Formular
@@ -29,7 +33,3 @@
 1867    12.11.2019  rc-1.1      David   Bug         Fehlende Merkmale bei verschiedenen API-Enpunkten (0.70)
 
 1837    06.11.2019  rc-1.1      David   Bug         Standard-Dashboard beim Einloggen setzen
-
-1747    18.11.2019  hbz-dev     Anja    Feature     Modaler Dialog zum Anlegen von Aufgaben: Dialog ist schneller, Dropdowns nun vollständig und gemäss Anzeigekonventionen
-
-    

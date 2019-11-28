@@ -2,12 +2,14 @@
 <laser:serviceInjection />
 
 <%
-    String title
+    String title, memberPlural
     if(comboType.id == RDStore.COMBO_TYPE_CONSORTIUM.id) {
         title = message(code: 'menu.institutions.manage_consortia')
+        memberPlural = message(code: 'consortium.member.plural')
     }
     else if(comboType.id == RDStore.COMBO_TYPE_DEPARTMENT.id) {
         title = message(code: 'menu.institutions.manage_departments')
+        memberPlural = message(code: 'collective.member.plural')
     }
 %>
 <!doctype html>
@@ -108,10 +110,10 @@
 </g:if>
 <g:else>
     <g:if test="${filterSet}">
-        <br><strong><g:message code="filter.result.empty.object" args="${[message(code:"myinst.consortiaSubscriptions.consortia")]}"/></strong>
+        <br><strong><g:message code="filter.result.empty.object" args="${[memberPlural]}"/></strong>
     </g:if>
     <g:else>
-        <br><strong><g:message code="result.empty.object" args="${[message(code:"myinst.consortiaSubscriptions.consortia")]}"/></strong>
+        <br><strong><g:message code="result.empty.object" args="${[memberPlural]}"/></strong>
     </g:else>
 </g:else>
 
