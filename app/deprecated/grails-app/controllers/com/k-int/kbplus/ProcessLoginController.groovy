@@ -1,13 +1,14 @@
 package com.k_int.kbplus
 
 import grails.plugin.springsecurity.annotation.Secured
+import org.codehaus.groovy.grails.commons.GrailsApplication
 
 // import org.springframework.security.web.authentication.AbstractProcessingFilter
 
 @Deprecated
 class ProcessLoginController {
 
-  def grailsApplication
+  GrailsApplication grailsApplication
   def ediAuthTokenMap
 
   @Deprecated

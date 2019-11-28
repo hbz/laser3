@@ -120,6 +120,7 @@ class Org
     ]
 
     static mapping = {
+                cache true
                 sort 'sortname'
                 id          column:'org_id'
            version          column:'org_version'

@@ -93,6 +93,8 @@ class SurveyController {
         result.surveys = SurveyInfo.executeQuery(fsq.query, fsq.queryParams, params)
         result.countSurveyConfigs = getSurveyConfigCounts()
 
+        result.filterSet = params.filterSet ? true : false
+
         result
     }
 

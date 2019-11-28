@@ -22,7 +22,7 @@
 
 
 <h1 class="ui left floated aligned icon header la-clear-before"><semui:headerIcon/>${message(code: 'currentSurveys.label', default: 'Current Surveys')}
-<semui:totalNumber total="${countSurveyConfigs.values().sum { it }}"/>
+<semui:totalNumber total="${surveys.size()?:0}"/>
 </h1>
 
 <semui:messages data="${flash}"/>
@@ -114,6 +114,8 @@
     </semui:tabs>
 
     <div class="ui bottom attached tab segment active">
+
+        <g:if test="${surveys}">
 
         <table class="ui celled sortable table la-table">
             <thead>
@@ -346,13 +348,24 @@
             </g:each>
         </table>
     </div>
+
+    </g:if>
+    <g:else>
+        <g:if test="${filterSet}">
+            <br><strong><g:message code="filter.result.empty.object" args="${[message(code:"survey.plural")]}"/></strong>
+        </g:if>
+        <g:else>
+            <br><strong><g:message code="result.empty.object" args="${[message(code:"survey.plural")]}"/></strong>
+        </g:else>
+    </g:else>
+
 </semui:form>
 
-<g:if test="${countSurveyConfigs}">
+<g:if test="${surveys}">
     <semui:paginate action="${actionName}" controller="${controllerName}" params="${params}"
                     next="${message(code: 'default.paginate.next', default: 'Next')}"
                     prev="${message(code: 'default.paginate.prev', default: 'Prev')}" max="${max}"
-                    total="${countSurveyConfigs."${params.tab}"}"/>
+                    total="${surveys.size()}"/>
 </g:if>
 
 </body>

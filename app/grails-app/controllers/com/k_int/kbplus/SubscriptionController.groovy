@@ -26,6 +26,7 @@ import org.apache.poi.ss.usermodel.Row
 import org.apache.poi.ss.usermodel.Sheet
 import org.apache.poi.xssf.streaming.SXSSFWorkbook
 import org.apache.poi.xssf.usermodel.XSSFWorkbook
+import org.codehaus.groovy.grails.commons.GrailsApplication
 import org.codehaus.groovy.grails.plugins.orm.auditable.AuditLogEvent
 import org.codehaus.groovy.runtime.InvokerHelper
 import org.springframework.web.multipart.commons.CommonsMultipartFile
@@ -51,7 +52,7 @@ class SubscriptionController extends AbstractDebugController {
     def genericOIDService
     def transformerService
     def exportService
-    def grailsApplication
+    GrailsApplication grailsApplication
     def pendingChangeService
     def institutionsService
     def ESSearchService

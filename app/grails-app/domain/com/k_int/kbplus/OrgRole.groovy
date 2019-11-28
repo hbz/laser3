@@ -42,7 +42,7 @@ class OrgRole implements ShareableTrait {
      version column:'or_version'
          org column:'or_org_fk',        index:'or_org_rt_idx'
     roleType column:'or_roletype_fk',   index:'or_org_rt_idx'
-         pkg column:'or_pkg_fk'
+         pkg column:'or_pkg_fk',        index:'or_pkg_idx'
          sub column:'or_sub_fk',        index:'or_sub_idx'
          lic column:'or_lic_fk',        index:'or_lic_idx'
      cluster column:'or_cluster_fk'

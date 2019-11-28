@@ -202,7 +202,6 @@ class YodaController {
 
             redirect controller: 'yoda', action: 'cacheInfo', params: params
         }
-
         result
     }
 

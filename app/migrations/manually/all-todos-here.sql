@@ -82,12 +82,29 @@
 
 -- 2019-11-21
 -- Refactoring PendingChanges.(changeDoc -> payload)
--- changesets in changelog-2019-10-31.groovy
-ALTER TABLE pending_change RENAME pc_change_doc TO pc_payload;
+-- changesets in changelog-2019-11-21.groovy
+--ALTER TABLE pending_change RENAME pc_change_doc TO pc_payload;
 
 -- 2019-11-21
 -- Rename Column
-alter table dashboard_due_date RENAME das_is_hide TO das_is_hidden;
+-- changesets in changelog-2019-11-21.groovy
+--alter table dashboard_due_date RENAME das_is_hide TO das_is_hidden;
+
+-- 2019-11-21
+-- Rename Columns
+-- changesets in changelog-2019-11-27.groovy
+--alter table dashboard_due_date RENAME das_attribut TO das_attribute_value_de;
+--alter table dashboard_due_date RENAME version TO das_version;
+--alter table dashboard_due_date RENAME last_updated TO das_last_updated;
+--alter table dashboard_due_date add column if not exists das_attribute_value_en varchar(255);
+--alter table dashboard_due_date add column if not exists das_attribute_name varchar(255);
+
+-- 2019-11-22
+-- Fill new columns with values
+-- changesets in changelog-2019-11-27.groovy
+--TRUNCATE TABLE dashboard_due_date;
+--ALTER SEQUENCE dashboard_due_date_das_id_seq RESTART WITH 1;
+--ALTER TABLE dashboard_due_date ALTER COLUMN das_last_updated TYPE TIMESTAMP WITH TIME ZONE;
 
 -- 2019-11-25
 -- ERMS-1901

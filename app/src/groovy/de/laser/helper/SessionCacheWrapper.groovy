@@ -13,6 +13,9 @@ class SessionCacheWrapper {
             session = RequestContextHolder.currentRequestAttributes().getSession()
         }
     }
+    def getSession() {
+        session
+    }
 
     def list() {
         Map<String, Object> result = [:]

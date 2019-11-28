@@ -126,6 +126,7 @@ class PropertyDefinition extends AbstractI10nTranslatable implements Serializabl
     ]
 
     static mapping = {
+                    cache  true
                       id column: 'pd_id'
                    descr column: 'pd_description', index: 'td_new_idx', type: 'text'
                     name column: 'pd_name',        index: 'td_new_idx'

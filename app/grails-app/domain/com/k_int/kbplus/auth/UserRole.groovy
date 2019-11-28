@@ -11,6 +11,11 @@ class UserRole implements Serializable, Comparable {
     User user
     Role role
 
+    static mapping = {
+        id composite: ['role', 'user']
+        version false
+    }
+
     boolean equals(other) {
         if (! (other instanceof UserRole)) {
             return false
@@ -55,11 +60,6 @@ class UserRole implements Serializable, Comparable {
 
     static void removeAll(Role role) {
         executeUpdate 'DELETE FROM UserRole WHERE role=:role', [role: role]
-    }
-
-    static mapping = {
-        id composite: ['role', 'user']
-        version false
     }
 
     @Transient
