@@ -1637,7 +1637,7 @@ class AjaxController {
         if (AuditConfig.getConfig(property, AuditConfig.COMPLETE_OBJECT)) {
 
             property.getClass().findAllByInstanceOf(property).each{ prop ->
-                prop.delete(flush: true)
+                prop.delete()
             }
             AuditConfig.removeAllConfigs(property)
 
@@ -1650,7 +1650,7 @@ class AjaxController {
                     if (event.changeDoc) {
                         def scp = genericOIDService.resolveOID(event.changeDoc.OID)
                         if (scp?.id == property.id) {
-                            pc.delete(flush: true)
+                            pc.delete()
                         }
                     }
                 }
