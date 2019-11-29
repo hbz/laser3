@@ -4,7 +4,7 @@
 </g:if>
 
 <semui:modal id="${tmplModalID}" text="${tmplText}" isEditModal="${editmode}">
-    <g:form id="create_org_role_link" class="ui form" url="[controller:'ajax', action:'addOrgRole']" method="post">
+    <g:form id="create_org_role_link_${tmplModalID}" class="ui form" url="[controller:'ajax', action:'addOrgRole']" method="post">
         <input type="hidden" name="parent" value="${parent}" />
         <input type="hidden" name="property" value="${property}" />
         <input type="hidden" name="recip_prop" value="${recip_prop}" />

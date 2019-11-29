@@ -195,15 +195,20 @@
     <g:if test="${editable}">
         <tfoot>
             <tr>
-                <g:if test="${propDefGroup.ownerType == License.class.name}">
-                    <td colspan="5">
+                <g:if test="${propDefGroup}">
+                    <g:if test="${propDefGroup.ownerType == License.class.name}">
+                        <td colspan="5">
+                    </g:if>
+                    <g:else>
+                        <td colspan="4">
+                    </g:else>
                 </g:if>
                 <g:else>
-                    <td colspan="4">
+                    <td>
                 </g:else>
 
                     <g:formRemote url="[controller: 'ajax', action: 'addCustomPropertyValue']" method="post"
-                                  name="cust_prop_add_value"
+                                  name="cust_prop_add_value_group_${propDefGroup.id}"
                                   class="ui form"
                                   update="${custom_props_div}"
                                   onComplete="c3po.loadJsAfterAjax()"

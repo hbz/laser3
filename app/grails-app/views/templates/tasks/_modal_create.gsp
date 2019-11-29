@@ -35,41 +35,43 @@ double t8 = 0L
 
         <g:if test="${controllerName == 'myInstitution' || controllerName == 'ajax'}">
             <div class="field fieldcontain required">
-                <legend>
-                    <g:message code="task.typ" default="Task Typ"/>
-                </legend>
-                <div class="ui radio checkbox">
-                    <input id="generalradio" type="radio" value="general" name="linkto" tabindex="0" class="hidden" checked="">
-                    <label for="generalradio">${message(code: 'task.general')}</label>
-                </div>
-                &nbsp &nbsp
-                <div class="ui radio checkbox">
-                    <input id="licenseradio" type="radio" value="license" name="linkto" tabindex="0" class="hidden">
-                    <label for="licenseradio">
-                        <g:message code="task.license.label" default="License"/>
-                    </label>
-                </div>
-                &nbsp &nbsp
-                <div class="ui radio checkbox">
-                    <input id="pkgradio" type="radio" value="pkg" name="linkto" tabindex="0" class="hidden">
-                    <label for="pkgradio">
-                        <g:message code="task.pkg.label" default="Pkg"/>
-                    </label>
-                </div>
-                &nbsp &nbsp
-                <div class="ui radio checkbox">
-                    <input id="subscriptionradio" type="radio" value="subscription" name="linkto" tabindex="0" class="hidden">
-                    <label for="subscriptionradio">
-                        <g:message code="task.subscription.label" default="Subscription"/>
-                    </label>
-                </div>
-                &nbsp &nbsp
-                <div class="ui radio checkbox">
-                    <input id="orgradio" type="radio" value="org" name="linkto" tabindex="0" class="hidden">
-                    <label for="orgradio">
-                        <g:message code="task.org.label" default="Subscription"/>
-                    </label>
-                </div>
+                <fieldset>
+                    <legend>
+                        <g:message code="task.typ" default="Task Typ"/>
+                    </legend>
+                    <div class="ui radio checkbox">
+                        <input id="generalradio" type="radio" value="general" name="linkto" tabindex="0" class="hidden" checked="">
+                        <label for="generalradio">${message(code: 'task.general')}</label>
+                    </div>
+                    &nbsp &nbsp
+                    <div class="ui radio checkbox">
+                        <input id="licenseradio" type="radio" value="license" name="linkto" tabindex="0" class="hidden">
+                        <label for="licenseradio">
+                            <g:message code="task.license.label" default="License"/>
+                        </label>
+                    </div>
+                    &nbsp &nbsp
+                    <div class="ui radio checkbox">
+                        <input id="pkgradio" type="radio" value="pkg" name="linkto" tabindex="0" class="hidden">
+                        <label for="pkgradio">
+                            <g:message code="task.pkg.label" default="Pkg"/>
+                        </label>
+                    </div>
+                    &nbsp &nbsp
+                    <div class="ui radio checkbox">
+                        <input id="subscriptionradio" type="radio" value="subscription" name="linkto" tabindex="0" class="hidden">
+                        <label for="subscriptionradio">
+                            <g:message code="task.subscription.label" default="Subscription"/>
+                        </label>
+                    </div>
+                    &nbsp &nbsp
+                    <div class="ui radio checkbox">
+                        <input id="orgradio" type="radio" value="org" name="linkto" tabindex="0" class="hidden">
+                        <label for="orgradio">
+                            <g:message code="task.org.label" default="Subscription"/>
+                        </label>
+                    </div>
+                </fieldset>
             </div>
             <% t1 = System.currentTimeMillis() %>
 
@@ -162,23 +164,25 @@ double t8 = 0L
         <div class="field" id="radioGroup">
             <div class="two fields">
                 <div class="field wide eight fieldcontain ${hasErrors(bean: taskInstance, field: 'responsible', 'error')}">
-                    <legend>
-                        <g:message code="task.responsible.label" default="Responsible"/>
-                    </legend>
+                    <fieldset>
+                        <legend>
+                            <g:message code="task.responsible.label" default="Responsible"/>
+                        </legend>
 
-                    <div class="field">
-                        <div class="ui radio checkbox">
-                            <input id="radioresponsibleOrg" type="radio" value="Org" name="responsible" tabindex="0" class="hidden" checked="">
-                            <label for="radioresponsibleOrg">${message(code: 'task.responsibleOrg.label')} <strong>${contextService?.org?.getDesignation()}</strong> </label>
+                        <div class="field">
+                            <div class="ui radio checkbox">
+                                <input id="radioresponsibleOrg" type="radio" value="Org" name="responsible" tabindex="0" class="hidden" checked="">
+                                <label for="radioresponsibleOrg">${message(code: 'task.responsibleOrg.label')} <strong>${contextService?.org?.getDesignation()}</strong> </label>
+                            </div>
                         </div>
-                    </div>
 
-                    <div class="field">
-                        <div class="ui radio checkbox">
-                            <input id="radioresponsibleUser" type="radio" value="User" name="responsible" tabindex="0" class="hidden">
-                            <label for="radioresponsibleUser">${message(code: 'task.responsibleUser.label')}</label>
+                        <div class="field">
+                            <div class="ui radio checkbox">
+                                <input id="radioresponsibleUser" type="radio" value="User" name="responsible" tabindex="0" class="hidden">
+                                <label for="radioresponsibleUser">${message(code: 'task.responsibleUser.label')}</label>
+                            </div>
                         </div>
-                    </div>
+                    </fieldset>
                 </div>
 
                 <div id="responsibleUser"
@@ -193,7 +197,8 @@ double t8 = 0L
                               optionValue="display"
                               value="${taskInstance?.responsibleUser?.id}"
                               class="ui dropdown search many-to-one"
-                              noSelection="['null': '']"/>
+                              noSelection="${['' : message(code:'default.select.choose.label')]}"
+                    />
                 </div>
             </div>
             <% t8 = System.currentTimeMillis()%>

@@ -195,14 +195,19 @@
     <g:if test="${editable}">
         <tfoot>
             <tr>
+            <g:if test="${orphanedProperties}">
                 <g:if test="${ownobj instanceof com.k_int.kbplus.License}">
                     <td colspan="5">
                 </g:if>
                 <g:else>
                     <td colspan="4">
                 </g:else>
+            </g:if>
+            <g:else>
+                <td>
+            </g:else>
                     <g:formRemote url="[controller: 'ajax', action: 'addCustomPropertyValue']" method="post"
-                                  name="cust_prop_add_value"
+                                  name="cust_prop_add_value_custom"
                                   class="ui form"
                                   update="${custom_props_div}"
                                   onSuccess="c3po.initProperties('${createLink(controller:'ajax', action:'lookup')}', '#${custom_props_div}')"

@@ -3,7 +3,7 @@
     <p>${message(code:'myinst.addressBook.visibleOnly', default:'Some persons are visible to you due your addressbook')}</p>
 
     <div class="field">
-        <table id="prs_role_tab" class="ui celled la-table la-table-small table">
+        <table class="ui celled la-table la-table-small table">
             <thead>
             <tr>
                 <th>Person</th>

@@ -5,7 +5,6 @@
 
     <g:form class="ui form" id="edit_task" url="[controller:'task',action:'edit',id:taskInstance?.id]" method="post">
         <g:hiddenField name="version" value="${taskInstance?.version}" />
-
         <div class="field fieldcontain ${hasErrors(bean: taskInstance, field: 'title', 'error')} required">
             <label for="title">
                 <g:message code="task.title.label" default="Title" />
@@ -77,41 +76,56 @@
                     <label for="status">
                         <g:message code="task.status.label" default="Status" />
                     </label>
-                    <laser:select id="status" name="status.id" from="${com.k_int.kbplus.RefdataCategory.getAllRefdataValues('Task Status')}" optionValue="value" optionKey="id" required="" value="${taskInstance?.status?.id ?: com.k_int.kbplus.RefdataValue.findByValueAndOwner("Open", com.k_int.kbplus.RefdataCategory.findByDesc('Task Status')).id}" class="ui dropdown many-to-one"/>
+                    <laser:select id="status" name="status.id" from="${com.k_int.kbplus.RefdataCategory.getAllRefdataValues('Task Status')}" optionValue="value" optionKey="id" required="" value="${taskInstance?.status?.id ?: com.k_int.kbplus.RefdataValue.findByValueAndOwner("Open", com.k_int.kbplus.RefdataCategory.findByDesc('Task Status')).id}" class="ui dropdown search many-to-one"/>
                 </div>
 
                 <semui:datepicker class="wide eight" label="task.endDate.label" id="endDate" name="endDate" placeholder="default.date.label" value="${formatDate(format:message(code:'default.date.format.notime', default:'yyyy-MM-dd'), date:taskInstance?.endDate)}" required bean="${taskInstance}" />
 
-            </div>
+            </div>        <select name="gender" class="ui dropdown" id="select">
+            <option value="">Gender</option>
+            <option value="male">Male</option>
+            <option value="female">Female</option>
+        </select>
         </div>
 
         <div class="field">
             <div class="two fields">
                 <div class="field wide eight fieldcontain ${hasErrors(bean: taskInstance, field: 'responsible', 'error')}">
-                    <legend>
-                        <g:message code="task.responsible.label" default="Responsible" />
-                    </legend>
-                    <g:if test="${taskInstance?.responsibleOrg?.id}"><g:set var="checked" value="checked" /></g:if><g:else> <g:set var="checked" value="" /></g:else>
+                    <fieldset>
+                        <legend>
+                            <g:message code="task.responsible.label" default="Responsible" />
+                        </legend>
+                        <g:if test="${taskInstance?.responsibleOrg?.id}"><g:set var="checked" value="checked" /></g:if><g:else> <g:set var="checked" value="" /></g:else>
 
-                    <div class="field">
-                        <div class="ui radio checkbox">
-                            <input id="radioresponsibleOrgEdit" type="radio" value="Org" name="responsible" tabindex="0" class="hidden" ${checked}>
-                            <label for="radioresponsibleOrgEdit">${message(code: 'task.responsibleOrg.label')} <strong>${contextService?.org?.getDesignation()}</strong></label>
+                        <div class="field">
+                            <div class="ui radio checkbox">
+                                <input id="radioresponsibleOrgEdit" type="radio" value="Org" name="responsible" tabindex="0" class="hidden" ${checked}>
+                                <label for="radioresponsibleOrgEdit">${message(code: 'task.responsibleOrg.label')} <strong>${contextService?.org?.getDesignation()}</strong></label>
+                            </div>
                         </div>
-                    </div>
-                    <g:if test="${taskInstance?.responsibleUser?.id}"><g:set var="checked" value="checked" /></g:if><g:else> <g:set var="checked" value="" /></g:else>
-                    <div class="field">
-                        <div class="ui radio checkbox">
-                            <input id="radioresponsibleUserEdit" type="radio" value="User" name="responsible" tabindex="0" class="hidden" ${checked}>
-                            <label for="radioresponsibleUserEdit">${message(code: 'task.responsibleUser.label')}</label>
+                        <g:if test="${taskInstance?.responsibleUser?.id}"><g:set var="checked" value="checked" /></g:if><g:else> <g:set var="checked" value="" /></g:else>
+                        <div class="field">
+                            <div class="ui radio checkbox">
+                                <input id="radioresponsibleUserEdit" type="radio" value="User" name="responsible" tabindex="0" class="hidden" ${checked}>
+                                <label for="radioresponsibleUserEdit">${message(code: 'task.responsibleUser.label')}</label>
+                            </div>
                         </div>
-                    </div>
+                    </fieldset>
                 </div>
-                <div id="responsibleUserEdit" class="field wide eight fieldcontain ${hasErrors(bean: taskInstance, field: 'responsibleUser', 'error')}">
+                <div id="responsibleUserEdit"
+                     class="field wide eight fieldcontain ${hasErrors(bean: taskInstance, field: 'responsibleUser', 'error')}">
                     <label for="responsibleUser">
                         <g:message code="task.responsibleUser.label" default="Responsible User" />
                     </label>
-                    <g:select id="responsibleUser" name="responsibleUser.id" from="${validResponsibleUsers}" optionKey="id" optionValue="display" value="${taskInstance?.responsibleUser?.id}" class="ui dropdown many-to-one" noSelection="['null': '']"/>
+                    <g:select id="responsibleUser"
+                              name="responsibleUser.id"
+                              from="${validResponsibleUsers}"
+                              optionKey="id"
+                              optionValue="display"
+                              value="${taskInstance?.responsibleUser?.id}"
+                              class="ui dropdown search many-to-one"
+                              noSelection="${['' : message(code:'default.select.choose.label')]}"
+                    />
                 </div>
             </div>
         </div>
@@ -120,6 +134,7 @@
 
 
     <script>
+
         var ajaxPostFunc = function () {
 
             $("#radioresponsibleOrgEdit").change(function () {
