@@ -30,15 +30,16 @@ class TaskService {
             } else {
                 query = "select t from Task t where t.creator=:user "
             }
+            if ( ! queryMap || ! queryMap?.query?.toLowerCase()?.contains('order by')){
+                query += "order by t.endDate"
+            }
+
             def params = [user : user]
             if (queryMap){
                 query += queryMap.query
                 params << queryMap.queryParams
             }
             tasks = Task.executeQuery(query, params)
-        }
-        if ( ! queryMap || ! queryMap?.query?.toLowerCase()?.contains('order by')){
-            tasks.sort{ it.endDate }
         }
         tasks
     }
