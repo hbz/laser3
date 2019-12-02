@@ -21,9 +21,6 @@ class TaskService {
     def accessService
     def filterService
     def messageSource
-    /*Diese Query funktioniert im IntelliJ in der Konsole fehlerfrei:
-    select tsk_description, tsk_end_date, username, display from task t left JOIN "user" u on t.tsk_responsible_user_fk = u.id order by u.display asc;
-     */
 
     private static final String select_with_join = 'select t from Task t LEFT JOIN t.responsibleUser ru '
 
@@ -32,10 +29,8 @@ class TaskService {
         if (user) {
             def query
             if (flag == WITHOUT_TENANT_ONLY) {
-//                query = "select t from Task t where t.creator=:user and t.responsibleUser is null and t.responsibleOrg is null "
                 query = select_with_join + 'where t.creator = :user and ru is null and t.responsibleOrg is null'
             } else {
-//                query = "select t from Task t where t.creator=:user "
                 query = select_with_join + 'where t.creator = :user'
             }
 
@@ -440,6 +435,7 @@ order by lower(s.name), s.endDate""", qry_params_for_sub << [referenceField: 'va
         }
         query
     }
+
     private Map addDefaultOrder(Map params){
         if (params) {
             if ( ! params.sort) {
