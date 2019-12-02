@@ -6,6 +6,7 @@ import com.k_int.kbplus.OrgRole
 import de.laser.helper.RDStore
 import de.laser.interfaces.TemplateSupport
 import grails.transaction.Transactional
+import org.apache.tools.ant.taskdefs.Pack
 import org.springframework.context.i18n.LocaleContextHolder
 
 import static com.k_int.kbplus.MyInstitutionController.INSTITUTIONAL_LICENSES_QUERY
@@ -33,12 +34,10 @@ class TaskService {
             def params = [user : user]
             if (queryMap){
                 query += queryMap.query
+                query = addDefaultOrder(query)
                 params << queryMap.queryParams
             }
             tasks = Task.executeQuery(query, params)
-        }
-        if ( ! queryMap || ! queryMap?.query?.toLowerCase()?.contains('order by')){
-            tasks.sort{ it.endDate }
         }
         tasks
     }
@@ -90,6 +89,7 @@ class TaskService {
         def tasks = []
         if (user) {
             def query  = "select t from Task t where t.responsibleUser = :user" + queryMap.query
+            query = addDefaultOrder(query)
             def params = [user : user] << queryMap.queryParams
             tasks = Task.executeQuery(query, params)
         }
@@ -100,6 +100,7 @@ class TaskService {
         def tasks = []
         if (org) {
             def query  = "select t from Task t where t.responsibleOrg = :org" + queryMap.query
+            query = addDefaultOrder(query)
             def params = [org : org] << queryMap.queryParams
             tasks = Task.executeQuery(query, params)
         }
@@ -111,6 +112,7 @@ class TaskService {
 
         if (user && org) {
             def query = "select t from Task t where ( t.responsibleUser = :user or t.responsibleOrg = :org ) " + queryMap.query
+            query = addDefaultOrder(query)
             def params = [user : user, org: org] << queryMap.queryParams
             tasks = Task.executeQuery(query, params)
         } else if (user) {
@@ -122,13 +124,13 @@ class TaskService {
     }
 
     def getTasksByResponsibleAndObject(User user, Object obj) {
-        def tasks = getTasksByResponsibleAndObject(user, obj, [])
-        tasks.sort{ it.endDate }
+        def tasks = getTasksByResponsibleAndObject(user, obj, [sort: 'endDate', order: 'asc'])
+        tasks
     }
 
     def getTasksByResponsibleAndObject(Org org, Object obj) {
-        def tasks = getTasksByResponsibleAndObject(org, obj, [])
-        tasks.sort{ it.endDate }
+        def tasks = getTasksByResponsibleAndObject(org, obj, [sort: 'endDate', order: 'asc'])
+        tasks
     }
 
     def getTasksByResponsiblesAndObject(User user, Org org, Object obj) {
@@ -140,8 +142,9 @@ class TaskService {
         tasks.sort{ it.endDate }
     }
 
-    def getTasksByResponsibleAndObject(User user, Object obj,  Object params) {
+    def getTasksByResponsibleAndObject(User user, Object obj,  Map params) {
         def tasks = []
+        params = addDefaultOrder(params)
         if (user && obj) {
             switch (obj.getClass().getSimpleName()) {
                 case 'License':
@@ -166,6 +169,7 @@ class TaskService {
 
     def getTasksByResponsibleAndObject(Org org, Object obj,  Object params) {
         def tasks = []
+        params = addDefaultOrder(params)
         if (org && obj) {
             switch (obj.getClass().getSimpleName()) {
                 case 'License':
@@ -198,7 +202,6 @@ class TaskService {
     }
 
     def getPreconditions(Org contextOrg) {
-        long start = System.currentTimeMillis()
         def result = [:]
 
         result.taskCreator                  = springSecurityService.getCurrentUser()
@@ -206,28 +209,26 @@ class TaskService {
         result.validResponsibleUsers        = getUserDropdown(contextOrg)
         result.validPackages                = getPackagesDropdown(contextOrg)
         result.validOrgsDropdown            = getOrgsDropdown(contextOrg)
-        result.validSubscriptionsDropdown   = getSubscriptionsDropdown(contextOrg)
-        result.validLicensesDropdown        = getLicensesDropdown(contextOrg)
+        result.validSubscriptionsDropdown   = getSubscriptionsDropdown(contextOrg, false)
+        result.validLicensesDropdown        = getLicensesDropdown(contextOrg, false)
 
-        long ende = System.currentTimeMillis()
-        long dauer = ende-start
-        print "Dauer in Millis: " + dauer
         result
     }
 
-    def getPackagesDropdown(Org contextOrg) {
-        def validPackages        = Package.findAll("from Package p where p.name != '' and p.name != null order by lower(p.sortName) asc") // TODO
+    private List<Package> getPackagesDropdown(Org contextOrg) {
+        List<Package> validPackages        = Package.findAll("from Package p where p.name != '' and p.name != null order by lower(p.sortName) asc") // TODO
         validPackages
     }
 
-    def getUserDropdown(Org contextOrg) {
-        def responsibleUsersQuery   = "select u from User as u where exists (select uo from UserOrg as uo where uo.user = u and uo.org = ? and (uo.status=1 or uo.status=3)) order by lower(u.display)"
-        def validResponsibleUsers   = contextOrg ? User.executeQuery(responsibleUsersQuery, [contextOrg]) : []
+    private List<User> getUserDropdown(Org contextOrg) {
+        List<User> validResponsibleUsers   = contextOrg ? User.executeQuery(
+                "select u from User as u where exists (select uo from UserOrg as uo where uo.user = u and uo.org = ? and (uo.status=1 or uo.status=3)) order by lower(u.display)",
+                [contextOrg]) : []
 
         validResponsibleUsers
     }
 
-    List<Map> getOrgsDropdown(Org contextOrg) {
+    private List<Map> getOrgsDropdown(Org contextOrg) {
         List validOrgs = []
         List<Map> validOrgsDropdown = []
         if (contextOrg) {
@@ -261,7 +262,7 @@ class TaskService {
     }
 
 
-    List<Map> getSubscriptionsDropdown(Org contextOrg) {
+    private List<Map> getSubscriptionsDropdown(Org contextOrg, boolean isWithInstanceOf) {
         List validSubscriptionsMitInstanceOf = []
         List validSubscriptionsOhneInstanceOf = []
         List<Map> validSubscriptionsDropdown = []
@@ -270,20 +271,16 @@ class TaskService {
         if (contextOrg) {
             if (binKonsortium) {
 
-            def qry_params_for_sub = [
-                'roleTypes' : [
-                        RDStore.OR_SUBSCRIBER,
-                        RDStore.OR_SUBSCRIBER_CONS,
-                        RDStore.OR_SUBSCRIPTION_CONSORTIA,
-                        RDStore.OR_SUBSCRIPTION_COLLECTIVE
-                ],
-                'activeInst': contextOrg
-            ]
-            String i10value = LocaleContextHolder.getLocale().getLanguage()== Locale.GERMAN.getLanguage() ? 'valueDe' : 'valueEn'
-
-            //Kindlizenzen
-
-//            validSubscriptionsMitInstanceOf = Subscription.executeQuery("select s.id, s.name, s.startDate, s.endDate, i10."+i10value+" from Subscription s,  I10nTranslation i10 where s.status.id = i10.referenceId and ( ( exists ( select o from s.orgRelations as o where ( o.roleType IN (:roleTypes) AND o.org = :activeInst ) ) ) ) and s.instanceOf is not null and i10.referenceField=:referenceField order by lower(s.name), s.endDate", qry_params_for_sub << [referenceField: 'value'])
+                def qry_params_for_sub = [
+                        'roleTypes' : [
+                                RDStore.OR_SUBSCRIBER,
+                                RDStore.OR_SUBSCRIBER_CONS,
+                                RDStore.OR_SUBSCRIPTION_CONSORTIA,
+                                RDStore.OR_SUBSCRIPTION_COLLECTIVE
+                        ],
+                        'activeInst': contextOrg
+                ]
+                String i10value = LocaleContextHolder.getLocale().getLanguage() == Locale.GERMAN.getLanguage() ? 'valueDe' : 'valueEn'
 
                 validSubscriptionsOhneInstanceOf = Subscription.executeQuery("""
 select s.id, s.name, s.startDate, s.endDate, i10.valueDe from Subscription s, I10nTranslation i10 
@@ -294,41 +291,35 @@ where s.status.id = i10.referenceId
 order by lower(s.name), s.endDate"""
                         , qry_params_for_sub << [referenceField: 'value'])
 
-// Erstellt mit David, bringt aber viel zu viele Treffer
-//            validSubscriptionsMitInstanceOf = Subscription.executeQuery("""
-//select s.id, s.name, s.startDate, s.endDate, i10.valueDe, oo.sortname from Subscription s, Org oo, OrgRole rr, I10nTranslation i10
-//where s.status.id = i10.referenceId
-//    and rr.org = oo and rr.sub = s and rr.roleType in (:roleTypesOO)
-//    and ( ( exists ( select o from s.orgRelations as o where ( o.roleType IN (:roleTypes) AND o.org = :activeInst ) ) ) )
-//    and s.instanceOf is not null and i10.referenceField=:referenceField
-//order by lower(s.name), s.endDate""", qry_params_for_sub << [referenceField: 'value', roleTypesOO: [RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER_CONS_HIDDEN]])
-
-            validSubscriptionsMitInstanceOf = Subscription.executeQuery("""
+                if (isWithInstanceOf) {
+                    validSubscriptionsMitInstanceOf = Subscription.executeQuery("""
 select s.id, s.name, s.startDate, s.endDate, i10.valueDe, oo.sortname from Subscription s, Org oo, OrgRole rr, I10nTranslation i10
 where s.status.id = i10.referenceId
     and rr.org = oo and rr.sub = s and rr.roleType in (:roleTypesOO)
     and ( ( exists ( select o from s.orgRelations as o where ( o.roleType IN (:roleTypes) AND o.org = :activeInst ) ) ) )
     and s.instanceOf is not null and i10.referenceField=:referenceField
 order by lower(s.name), s.endDate""", qry_params_for_sub << [referenceField: 'value', roleTypesOO: [RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER_CONS_HIDDEN]])
+                }
 
             }
         }
 
         String NO_STATUS = RDStore.SUBSCRIPTION_NO_STATUS.getI10n('value')
-        validSubscriptionsMitInstanceOf?.each{
+
+        validSubscriptionsMitInstanceOf?.each {
 
             Long optionKey = it[0]
             String optionValue = (
                     it[1]
-                    + ' - '
-                    + (it[4]?: NO_STATUS)
-                    + ((it[2]||it[3]) ? ' (' : ' ')
-                    + (it[2] ? (it[2]?.format('dd.MM.yy')) : '')
-                    +  '-'
-                    + (it[3] ? (it[3]?.format('dd.MM.yy')) : '')
-                    + ((it[2]||it[3]) ? ') ' : ' ')
+                            + ' - '
+                            + (it[4] ?: NO_STATUS)
+                            + ((it[2] || it[3]) ? ' (' : ' ')
+                            + (it[2] ? (it[2]?.format('dd.MM.yy')) : '')
+                            + '-'
+                            + (it[3] ? (it[3]?.format('dd.MM.yy')) : '')
+                            + ((it[2] || it[3]) ? ') ' : ' ')
             )
-            if (binKonsortium){
+            if (binKonsortium) {
                 optionValue += " - " + it[5]
 
             } else {
@@ -336,25 +327,28 @@ order by lower(s.name), s.endDate""", qry_params_for_sub << [referenceField: 'va
             }
             validSubscriptionsDropdown << [optionKey: optionKey, optionValue: optionValue]
         }
-        validSubscriptionsOhneInstanceOf?.each{
+        validSubscriptionsOhneInstanceOf?.each {
 
             Long optionKey = it[0]
             String optionValue = (
                     it[1]
-                    + ' - '
-                    + (it[4]?: NO_STATUS)
-                    + ((it[2]||it[3]) ? ' (' : ' ')
-                    + (it[2] ? (it[2]?.format('dd.MM.yy')) : '')
-                    +  '-'
-                    + (it[3] ? (it[3]?.format('dd.MM.yy')) : '')
-                    + ((it[2]||it[3]) ? ') ' : ' ')
+                            + ' - '
+                            + (it[4] ?: NO_STATUS)
+                            + ((it[2] || it[3]) ? ' (' : ' ')
+                            + (it[2] ? (it[2]?.format('dd.MM.yy')) : '')
+                            + '-'
+                            + (it[3] ? (it[3]?.format('dd.MM.yy')) : '')
+                            + ((it[2] || it[3]) ? ') ' : ' ')
             )
             validSubscriptionsDropdown << [optionKey: optionKey, optionValue: optionValue]
         }
-        validSubscriptionsDropdown.sort{it.optionValue.toLowerCase()}
+        if (isWithInstanceOf) {
+            validSubscriptionsDropdown.sort { it.optionValue.toLowerCase() }
+        }
+        validSubscriptionsDropdown
     }
 
-    List<Map> getLicensesDropdown(Org contextOrg) {
+    private List<Map> getLicensesDropdown(Org contextOrg, boolean isWithInstanceOf) {
         List validLicensesOhneInstanceOf = []
         List validLicensesMitInstanceOf = []
         List<Map> validLicensesDropdown = []
@@ -373,7 +367,9 @@ order by lower(s.name), s.endDate""", qry_params_for_sub << [referenceField: 'va
                     ]
                 ]
                 validLicensesOhneInstanceOf = License.executeQuery(licensesQueryOhneInstanceOf, qry_params_for_lic)
-                validLicensesMitInstanceOf = License.executeQuery(licensesQueryMitInstanceOf, qry_params_for_lic)
+                if (isWithInstanceOf) {
+                    validLicensesMitInstanceOf = License.executeQuery(licensesQueryMitInstanceOf, qry_params_for_lic)
+                }
 
             } else if (accessService.checkPerm("ORG_INST")) {
                 def qry_params_for_lic = [
@@ -385,7 +381,9 @@ order by lower(s.name), s.endDate""", qry_params_for_sub << [referenceField: 'va
                     ]
                 ]
                 validLicensesOhneInstanceOf = License.executeQuery(licensesQueryOhneInstanceOf, qry_params_for_lic)
-                validLicensesMitInstanceOf = License.executeQuery(licensesQueryMitInstanceOf, qry_params_for_lic)
+                if (isWithInstanceOf) {
+                    validLicensesMitInstanceOf = License.executeQuery(licensesQueryMitInstanceOf, qry_params_for_lic)
+                }
 
             } else {
                 validLicensesOhneInstanceOf = []
@@ -411,15 +409,36 @@ order by lower(s.name), s.endDate""", qry_params_for_sub << [referenceField: 'va
             String optionValue = it[1] + ' ' + (it[2].getI10n('value')) + ' (' + (it[3] ? it[3]?.format('dd.MM.yy') : '') + ('-') + (it[4] ? it[4]?.format('dd.MM.yy') : '') + ')'
             validLicensesDropdown << [optionKey: optionKey, optionValue: optionValue]
         }
-        validLicensesDropdown.sort{it.optionValue.toLowerCase()}
+        if (isWithInstanceOf) {
+            validLicensesDropdown.sort { it.optionValue.toLowerCase() }
+        }
+        validLicensesDropdown
     }
 
     def getPreconditionsWithoutTargets(Org contextOrg) {
         def result = [:]
-        def responsibleUsersQuery   = "select u from User as u where exists (select uo from UserOrg as uo where uo.user = u and uo.org = ? and (uo.status=1 or uo.status=3)) order by lower(u.display)"
-        def validResponsibleUsers   = contextOrg ? User.executeQuery(responsibleUsersQuery, [contextOrg]) : []
+        def validResponsibleUsers   = contextOrg ? User.executeQuery(
+                "select u from User as u where exists (select uo from UserOrg as uo where uo.user = u and uo.org = ? and (uo.status=1 or uo.status=3)) order by lower(u.display)",
+                [contextOrg]) : []
         result.taskCreator          = springSecurityService.getCurrentUser()
         result.validResponsibleUsers = validResponsibleUsers
         result
+    }
+
+    private String addDefaultOrder(String query){
+        if (query && ( ! query.toLowerCase().contains('order by'))){
+            query += ' order by endDate asc'
+        }
+        query
+    }
+    private Map addDefaultOrder(Map params){
+        if (params) {
+            if ( ! params.sort) {
+                params << [sort: 'endDate', order: 'asc']
+            }
+        } else {
+            params =  [sort: 'endDate', order: 'asc']
+        }
+        params
     }
 }
