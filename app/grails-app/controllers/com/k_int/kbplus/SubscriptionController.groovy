@@ -1598,7 +1598,8 @@ class SubscriptionController extends AbstractDebugController {
         }
 
         def oldID = params.id
-        params.id = result.parentSub.id
+        if(result.subscription.getCalculatedType() in [TemplateSupport.CALCULATED_TYPE_CONSORTIAL,TemplateSupport.CALCULATED_TYPE_COLLECTIVE])
+            params.id = result.parentSub.id
 
         ArrayList<Long> filteredOrgIds = getOrgIdsForFilter()
         result.filteredSubChilds = new ArrayList<Subscription>()
@@ -5234,7 +5235,7 @@ class SubscriptionController extends AbstractDebugController {
 
     private LinkedHashMap setResultGenericsAndCheckAccess(checkOption) {
         def result = [:]
-        result.user = User.get(springSecurityService.principal.id)
+        result.user = contextService.user
         result.subscriptionInstance = Subscription.get(params.id)
         result.subscription = Subscription.get(params.id)
         result.institution = result.subscription?.subscriber

@@ -166,32 +166,51 @@ class BootStrap {
         }
 
         if (grailsApplication.config.localauth) {
-            log.debug("localauth is set.. ensure user accounts present (From local config file) ${grailsApplication.config.sysusers}")
-            //Org hbz = Org.findByName('hbz Konsortialstelle Digitale Inhalte')
-            grailsApplication.config.sysusers.each { su ->
-                log.debug("test ${su.name} ${su.display} ${su.roles}")
-                def user = User.findByUsername(su.name)
+            log.debug("localauth is set.. ensure user accounts present (From local config file) ${grailsApplication.config.systemUsers}")
+
+            grailsApplication.config.systemUsers.each { su ->
+                log.debug("checking ${su.name} ${su.display} ${su.orgs} ${su.roles}")
+
+                User user = User.findByUsername(su.name)
                 if (user) {
-                    log.debug("${su.name} present and correct")
-                    //user.getSetting(UserSettings.KEYS.DASHBOARD,hbz)
-                } else {
-                    log.debug("create user ..")
+                    log.debug("${su.name} present .. ignored")
+                }
+                else {
+                    log.debug("creating user ..")
+
                     user = new User(
                             username: su.name,
                             password: su.pass,
-                            display: su.display,
-                            email: su.email,
-                            enabled: true).save(failOnError: true)
-                }
+                            display:  su.display,
+                            email:    su.email,
+                            enabled:  true
+                    ).save(failOnError: true)
 
-                log.debug("add roles for ${su.name}")
-                su.roles.each { r ->
-                    def role = Role.findByAuthority(r)
-                    if (! (user.authorities.contains(role))) {
-                        log.debug("  -> adding role ${role}")
-                        UserRole.create user, role
-                    } else {
-                        log.debug("  -> ${role} already present")
+                    su.roles.each { r ->
+                        def role = Role.findByAuthority(r)
+                        if (role.roleType != 'user') {
+                            log.debug("  -> adding role ${role}")
+                            UserRole.create user, role
+                        }
+                    }
+
+                    su.affils.each { key, values ->
+                        Org org = Org.findByShortname(key)
+                        values.each { affil ->
+                            Role role = Role.findByAuthorityAndRoleType(affil, 'user')
+                            if (org && role) {
+                                log.debug("  -> adding affiliation ${org.shortname} ${role}")
+                                UserOrg userOrg = new UserOrg(
+                                        user: user,
+                                        org: org,
+                                        formalRole: role,
+                                        status: UserOrg.STATUS_APPROVED,
+                                        dateRequested: System.currentTimeMillis(),
+                                        dateActioned: System.currentTimeMillis()
+
+                                ).save(failOnError: true)
+                            }
+                        }
                     }
                 }
             }
@@ -326,7 +345,7 @@ class BootStrap {
         def or_subscr_role        = RefdataValue.loc('Organisational Role', [en: 'Subscriber', de: 'Teilnehmer'], BOOTSTRAP)
         def or_subscr_cons_role   = RefdataValue.loc('Organisational Role', [key: 'Subscriber_Consortial', en: 'Consortial subscriber', de: 'Konsortialteilnehmer'], BOOTSTRAP)
         def or_subscr_cons_hidden = RefdataValue.loc('Organisational Role', [key: 'Subscriber_Consortial_Hidden', en: 'Consortial subscriber (hidden)', de: 'Konsortialteilnehmer (versteckt)'], BOOTSTRAP)
-        def or_scoll_role         = RefdataValue.loc('Organisational Role', [key: 'Subscription Collective',en: 'Subscription Collective', de:'Kollektivlizenzverwalter'], BOOTSTRAP)
+        def or_scoll_role         = RefdataValue.loc('Organisational Role', [key: 'Subscription Collective',en: 'Subscription Collective', de:'Stammlizenzverwalter'], BOOTSTRAP)
         def or_subscr_coll_role   = RefdataValue.loc('Organisational Role', [key: 'Subscriber_Collective', en: 'Collective subscriber', de: 'Kollektivteilnehmer'], BOOTSTRAP)
 
         def cl_owner_role       = RefdataValue.loc('Cluster Role',   [en: 'Cluster Owner'], BOOTSTRAP)
