@@ -13,7 +13,6 @@ import de.laser.helper.*
 import grails.converters.JSON
 import grails.plugin.springsecurity.SpringSecurityUtils
 import grails.plugin.springsecurity.annotation.Secured
-import grails.util.Holders
 import groovy.sql.Sql
 import org.apache.commons.collections.BidiMap
 import org.apache.commons.collections.bidimap.DualHashBidiMap
@@ -27,7 +26,6 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook
 import org.codehaus.groovy.grails.orm.hibernate.cfg.GrailsHibernateUtil
 import org.mozilla.universalchardet.UniversalDetector
 import org.springframework.context.i18n.LocaleContextHolder
-import org.springframework.validation.FieldError
 import org.springframework.web.multipart.commons.CommonsMultipartFile
 
 import javax.servlet.ServletOutputStream
@@ -1513,8 +1511,8 @@ from License as l where (
         def license_type = RefdataValue.getByValueAndCategory('Actual', 'License Type')
 
         def licenseInstance = new License(type: license_type, reference: params.licenseName,
-                startDate:params.licenseStartDate ? parseDate(params.licenseStartDate, escapeService.possible_date_formats) : null,
-                endDate: params.licenseEndDate ? parseDate(params.licenseEndDate, escapeService.possible_date_formats) : null,
+                startDate:params.licenseStartDate ? parseDate(params.licenseStartDate, escapeService.possibleDateFormats) : null,
+                endDate: params.licenseEndDate ? parseDate(params.licenseEndDate, escapeService.possibleDateFormats) : null,
                 status: RefdataValue.get(params.status)
         )
 

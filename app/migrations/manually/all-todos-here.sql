@@ -106,7 +106,10 @@
 --ALTER SEQUENCE dashboard_due_date_das_id_seq RESTART WITH 1;
 --ALTER TABLE dashboard_due_date ALTER COLUMN das_last_updated TYPE TIMESTAMP WITH TIME ZONE;
 
--- 2019-11-25
+-- 2019-11-25 / 2019-11-28
 -- ERMS-1901
--- Delete deprecated package identifier (we use gokbId instead)
+-- Delete deprecated package identifier (we use gokbId instead), move TitleInstance.type to TitleInstance.medium
 alter table package drop column pkg_identifier;
+ALTER TABLE title_instance RENAME ti_type_rv_fk  TO ti_medium_rv_fk;
+ALTER TABLE public.title_instance ALTER COLUMN ti_imp_id DROP NOT NULL;
+ALTER TABLE public.title_instance ALTER COLUMN ti_gokb_id TYPE character varying(255);

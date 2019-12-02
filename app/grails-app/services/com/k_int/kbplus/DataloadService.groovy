@@ -139,7 +139,7 @@ class DataloadService {
                     result.sortTitle = ti.sortTitle
                     result.status = ti.status?.value
                     result.statusId = ti.status?.id
-                    result.typTitle = ti.type?.value
+                    result.typTitle = ti.medium?.value
                     result.name = ti.title
                     result.visible = ['Public']
                 } else {

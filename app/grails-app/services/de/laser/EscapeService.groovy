@@ -7,13 +7,15 @@ import java.text.SimpleDateFormat
 @Transactional
 class EscapeService {
 
-    List<SimpleDateFormat> possible_date_formats = [
+    private List<SimpleDateFormat> possibleDateFormats = [
             new SimpleDateFormat('yyyy/MM/dd'),
             new SimpleDateFormat('dd.MM.yyyy'),
             new SimpleDateFormat('dd/MM/yyyy'),
             new SimpleDateFormat('dd/MM/yy'),
             new SimpleDateFormat('yyyy/MM'),
-            new SimpleDateFormat('yyyy')
+            new SimpleDateFormat('yyyy'),
+            new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'"),
+            new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.S")
     ]
 
     String escapeString(String input) {
@@ -30,16 +32,16 @@ class EscapeService {
         output
     }
 
-    Date parseDate(datestr) {
+    Date parseDate(String datestr) {
         Date parsed_date = null
         if (datestr && (datestr.toString().trim().length() > 0)) {
-            for (Iterator<SimpleDateFormat> i = possible_date_formats.iterator(); (i.hasNext() && (parsed_date == null));) {
+            for (Iterator<SimpleDateFormat> i = possibleDateFormats.iterator(); (i.hasNext() && (parsed_date == null));) {
                 SimpleDateFormat next = i.next()
                 try {
                     parsed_date = next.parse(datestr.toString())
                 }
                 catch (Exception e) {
-                    log.info("Parser for ${next.toPattern()} could not parse date ${datestr}. Trying next one ...")
+                    log.info("Invalid parser. Trying next one ...")
                 }
             }
         }

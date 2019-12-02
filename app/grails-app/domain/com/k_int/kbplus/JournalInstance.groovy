@@ -8,4 +8,11 @@ class JournalInstance extends TitleInstance {
 
     static constraints = {
     }
+
+    static JournalInstance construct(Map<String,Object> params) {
+        JournalInstance ji = new JournalInstance(params)
+        ji.setGlobalUID()
+        ji
+    }
+
 }

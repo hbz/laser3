@@ -41,8 +41,11 @@ class TitleInstance extends AbstractBaseDomain implements AuditableTrait {
   @RefdataAnnotation(cat = 'TitleInstanceStatus')
   RefdataValue status
 
-  @RefdataAnnotation(cat = '?')
-  RefdataValue type
+  //@RefdataAnnotation(cat = 'Title Type')
+  //RefdataValue type
+
+  @RefdataAnnotation(cat = 'Title Type')
+  RefdataValue medium
 
   Date dateCreated
   Date lastUpdated
@@ -70,11 +73,12 @@ class TitleInstance extends AbstractBaseDomain implements AuditableTrait {
         normTitle column:'ti_norm_title', type:'text'
          keyTitle column:'ti_key_title', type:'text'
           version column:'ti_version'
-            impId column:'ti_imp_id', index:'ti_imp_id_idx'
-           gokbId column:'ti_gokb_id', type:'text'
+            impId column:'ti_imp_id'
+           gokbId column:'ti_gokb_id', index:'ti_gokb_id_idx'
     //originEditUrl column:'ti_origin_edit_url'
            status column:'ti_status_rv_fk'
-             type column:'ti_type_rv_fk'
+      // type column:'ti_type_rv_fk' -> existing values should be moved to medium
+           medium column:'ti_medium_rv_fk'
             //tipps sort:'startDate', order: 'asc', batchSize: 10
         sortTitle column:'sort_title', type:'text'
 
@@ -86,15 +90,17 @@ class TitleInstance extends AbstractBaseDomain implements AuditableTrait {
   }
 
     static constraints = {
-        globalUID(nullable:true, blank:false, unique:true, maxSize:255)
+        globalUID(nullable:false, blank:false, unique:true, maxSize:255)
         status(nullable:true, blank:false)
-        type(nullable:true, blank:false)
+        //type(nullable:true, blank:false)
+        medium(nullable:true, blank:false)
         title(nullable:true, blank:false,maxSize:2048)
         normTitle(nullable:true, blank:false,maxSize:2048)
         sortTitle(nullable:true, blank:false,maxSize:2048)
         keyTitle(nullable:true, blank:false,maxSize:2048)
         creators(nullable:true, blank:false)
-        gokbId (nullable:true, blank:false)
+        gokbId (nullable:false, blank:false, unique: true)
+        impId(nullable:true,blank:false) //kept for migration reasons, deprecated
         //originEditUrl(nullable:true, blank:false)
     }
 
@@ -111,18 +117,6 @@ class TitleInstance extends AbstractBaseDomain implements AuditableTrait {
     result
   }
 
-  String joinIdentfiers(String namespace,String separator) {
-    String joined = ' '
-    List values = []
-    ids?.each { id ->
-      if(id.ns?.ns?.equalsIgnoreCase(namespace)) {
-        values.add(id.value)
-      }
-    }
-    if(values)
-      joined = values.join(separator)
-    joined
-  }
 
   Org getPublisher() {
     def result = null;
@@ -205,7 +199,7 @@ class TitleInstance extends AbstractBaseDomain implements AuditableTrait {
       }
     }
 
-    // Didn't match anything - see if we can match based on identifier without namespace [In case of duff supplier data]
+    // Didn't match anything - see if we can match based on identifier without namespace [In case of duff supplier data - or duff code like this legacy shit...]
     if ( matched.size() == 0 ) {
       candidate_identifiers.each { i ->
         // TODO [ticket=1789]
@@ -231,7 +225,7 @@ class TitleInstance extends AbstractBaseDomain implements AuditableTrait {
 
     return result;
   }
-
+    /*
   static def lookupOrCreate(List candidate_identifiers, String title, String imp_uuid, String status) {
     lookupOrCreate(candidate_identifiers, title, null, imp_uuid, status)
   }
@@ -329,11 +323,11 @@ class TitleInstance extends AbstractBaseDomain implements AuditableTrait {
             }
         }
 
-        /* if argument "enrich" = true -> else {
+         if argument "enrich" = true -> else {
             canonical_ids.each { i ->
                 Identifier.construct([value: i.value, reference: result, namespace: i.namespace])
             }
-        }*/
+        }
 
         if (result instanceof TitleInstance && status) {
             def ti_status = RDStore.TITLE_STATUS_CURRENT
@@ -351,7 +345,7 @@ class TitleInstance extends AbstractBaseDomain implements AuditableTrait {
         return result
     }
 
-    /*
+
   static TitleInstance lookupOrCreate_depr(List candidate_identifiers, String title, boolean enrich, String titletyp, String imp_uuid, String status) {
     def result = null
     def origin_uri = null
@@ -734,7 +728,7 @@ class TitleInstance extends AbstractBaseDomain implements AuditableTrait {
   }
 */
     
-    @Override
+    /*@Override
     def beforeInsert() {
         if (title != null) {
             normTitle = generateNormTitle(title)
@@ -757,7 +751,7 @@ class TitleInstance extends AbstractBaseDomain implements AuditableTrait {
             sortTitle = generateSortTitle(title)
         }
         super.beforeUpdate()
-    }
+    }*/
 
 
   public static String generateSortTitle(String input_title) {

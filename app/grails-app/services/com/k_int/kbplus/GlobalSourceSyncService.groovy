@@ -1,5 +1,6 @@
 package com.k_int.kbplus
 
+import de.laser.EscapeService
 import de.laser.SystemEvent
 import de.laser.domain.TIPPCoverage
 import de.laser.helper.RDStore
@@ -24,11 +25,13 @@ class GlobalSourceSyncService extends AbstractLockableService {
 
     SessionFactory sessionFactory
     ExecutorService executorService
+    EscapeService escapeService
     def propertyInstanceMap = DomainClassGrailsPlugin.PROPERTY_INSTANCE_MAP
     GlobalRecordSource source
 
+    SimpleDateFormat xmlTimestampFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'")
+
     boolean running = false
-    SimpleDateFormat xmlDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'")
 
     /**
      * This is the entry point for triggering the sync workflow. To ensure locking, a flag will be set when a process is already running
@@ -81,26 +84,26 @@ class GlobalSourceSyncService extends AbstractLockableService {
                     queryParams.resumptionToken = resumption
                 }
                 else {
-                    String fromParam = oldDate ? xmlDateFormat.format(oldDate) : ''
+                    String fromParam = oldDate ? xmlTimestampFormat.format(oldDate) : ''
                     queryParams.metadataPrefix = source.fullPrefix
                     queryParams.from = fromParam
                 }
-                GPathResult listRecords = fetchRecord(source.uri,'packages',queryParams)
-                if(listRecords) {
-                    listRecords.record.each { NodeChild r ->
+                GPathResult listOAI = fetchRecord(source.uri,'packages',queryParams)
+                if(listOAI) {
+                    listOAI.record.each { NodeChild r ->
                         //continue processing here, original code jumps back to GlobalSourceSyncService
                         log.info("got OAI record ${r.header.identifier} datestamp: ${r.header.datestamp} job: ${source.id} url: ${source.uri}")
                         //String recUUID = r.header.uuid.text() ?: '0'
                         //String recIdentifier = r.header.identifier.text()
-                        Date recordTimestamp = xmlDateFormat.parse(r.header.datestamp.text())
+                        Date recordTimestamp = escapeService.parseDate(r.header.datestamp.text())
                         //leave out GlobalRecordInfo update, no need to reflect it twice since we keep the package structure internally
                         //jump to packageReconcile which includes packageConv - check if there is a package, otherwise, update package data
                         tippsToNotify << createOrUpdatePackage(r.metadata.gokb.package)
                         if(recordTimestamp.getTime() > maxTimestamp)
                             maxTimestamp = recordTimestamp.getTime()
                     }
-                    if(listRecords.resumptionToken) {
-                        resumption = listRecords.resumptionToken
+                    if(listOAI.resumptionToken) {
+                        resumption = listOAI.resumptionToken
                         log.info("Continue with next iteration, token: ${resumption}")
                         cleanUpGorm()
                     }
@@ -149,12 +152,21 @@ class GlobalSourceSyncService extends AbstractLockableService {
         RefdataValue breakable = RefdataValue.getByValueAndCategory(packageData.breakable.text(),RefdataCategory.PKG_BREAKABLE) //needed?
         RefdataValue consistent = RefdataValue.getByValueAndCategory(packageData.consistent.text(),RefdataCategory.PKG_CONSISTENT) //needed?
         RefdataValue fixed = RefdataValue.getByValueAndCategory(packageData.fixed.text(),RefdataCategory.PKG_FIXED) //needed?
-        Date listVerifiedDate = packageData.listVerifiedDate.text() ? xmlDateFormat.parse(packageData.listVerifiedDate.text()) : null
+        Date listVerifiedDate = packageData.listVerifiedDate.text() ? escapeService.parseDate(packageData.listVerifiedDate.text()) : null
         //result.global = packageData.global.text() needed? not used in packageReconcile
         //result.paymentType = packageData.paymentType.text() needed? not used in packageReconcile
-        Map<String,String> providerParams = [providerUUID:(String) packageData.nominalProvider.'@uuid'.text(), name:(String) packageData.nominalProvider.name.text()]
-        if(providerParams) {
+        Map<String,String> providerParams = [:]
+        Map<String,Object> platformParams = [:]
+        if(packageData.nominalProvider) {
+            providerParams.providerUUID = (String) packageData.nominalProvider.'@uuid'.text()
+            providerParams.name = (String) packageData.nominalProvider.name.text()
             lookupOrCreateProvider(providerParams)
+        }
+        if(packageData.nominalPlatform) {
+            platformParams.gokbId = (String) packageData.nominalPlatform.'@uuid'.text()
+            platformParams.name = (String) packageData.nominalPlatform.name.text()
+            if(packageData.nominalPlatform.primaryUrl.text())
+                platformParams.primaryUrl = new URL(packageData.nominalPlatform.primaryUrl.text())
         }
         //ex packageConv, processing TIPPs - conversion necessary because package may be not existent in LAS:eR; then, no comparison is needed any more
         List<Map<String,Object>> tipps = []
@@ -177,8 +189,8 @@ class GlobalSourceSyncService extends AbstractLockableService {
                     identifiers: [],
                     id: tipp.'@id'.text(),
                     uuid: tipp.'@uuid'.text(),
-                    accessStartDate : tipp.access.'@start'.text() ? xmlDateFormat.parse(tipp.access.'@start'.text()) : null,
-                    accessEndDate   : tipp.access.'@end'.text() ? xmlDateFormat.parse(tipp.access.'@end'.text()) : null,
+                    accessStartDate : tipp.access.'@start'.text() ? escapeService.parseDate(tipp.access.'@start'.text()) : null,
+                    accessEndDate   : tipp.access.'@end'.text() ? escapeService.parseDate(tipp.access.'@end'.text()) : null,
                     medium      : tipp.medium.text()
             ]
             tipp.title.identifiers.identifier.each { id ->
@@ -188,8 +200,8 @@ class GlobalSourceSyncService extends AbstractLockableService {
             updatedTIPP.identifiers.add([namespace: 'uri', value: tipp.'@id'.tippId])
             tipp.coverage.each { cov ->
                 updatedTIPP.coverages << [
-                        startDate: cov.'@startDate'.text() ? xmlDateFormat.parse(cov.'@startDate'.text()) : null,
-                        endDate: cov.'@endDate'.text() ? xmlDateFormat.parse(cov.'@endDate'.text()) : null,
+                        startDate: cov.'@startDate'.text() ? escapeService.parseDate(cov.'@startDate'.text()) : null,
+                        endDate: cov.'@endDate'.text() ? escapeService.parseDate(cov.'@endDate'.text()) : null,
                         startVolume: cov.'@startVolume'.text() ?: '',
                         endVolume: cov.'@endVolume'.text() ?: '',
                         startIssue: cov.'@startIssue'.text() ?: '',
@@ -202,7 +214,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
             updatedTIPP.coverages = updatedTIPP.coverages.toSorted { a, b -> a.startDate <=> b.startDate }
             tipps << updatedTIPP
         }
-        log.info("Rec conversion for package returns object with title ${title} and ${tipps.size()} tipps")
+        log.info("Rec conversion for package returns object with name ${name} and ${tipps.size()} tipps")
         Package result = Package.findByGokbId(packageData.'@uuid'.text())
         if(result) {
             //local package exists -> update closure, build up GokbDiffEngine and the horrendous closures
@@ -216,8 +228,11 @@ class GlobalSourceSyncService extends AbstractLockableService {
             result.consistent = consistent //needed?
             result.fixed = fixed //needed?
             if(result.save()) {
-                if(providerParams) {
+                if(providerParams.entrySet()) {
                     createOrUpdatePackageProvider(providerParams,result)
+                }
+                if(platformParams.entrySet()) {
+                    result.nominalPlatform = createOrUpdatePlatform(platformParams,result.nominalPlatform)
                 }
                 tipps.each { Map<String, Object> tippB ->
                     TitleInstancePackagePlatform tippA = result.tipps.find { TitleInstancePackagePlatform b -> b.gokbId == tippB.uuid } //we have to consider here TIPPs, too, which were deleted but have been reactivated
@@ -267,6 +282,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
                             }
                             //ex updatedTitleAfterPackageReconcile
                             TitleInstance titleInstance = createOrUpdateTitle((String) tippB.title.gokbId)
+                            createOrUpdatePlatform([name:tippB.platformName,gokbId:tippB.platformUUID,primaryUrl:tippB.primaryUrl],tippA.platform)
                             if(titleInstance) {
                                 tippA.title = titleInstance
                                 if(!tippA.save())
@@ -338,6 +354,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
         )
         //ex updatedTitleAfterPackageReconcile
         TitleInstance titleInstance = createOrUpdateTitle((String) tippData.title.gokbId)
+        newTIPP.platform = createOrUpdatePlatform([name:tippData.platformName,gokbId:tippData.platformUUID,primaryUrl:tippData.platformPrimaryUrl],Platform.findByGokbId(tippData.platformUUID))
         if(titleInstance) {
             newTIPP.title = titleInstance
             if(newTIPP.save()) {
@@ -374,139 +391,148 @@ class GlobalSourceSyncService extends AbstractLockableService {
      * @return the new or updated {@link TitleInstance}
      */
     TitleInstance createOrUpdateTitle(String titleUUID) {
-        GPathResult record = fetchRecord(source.uri,'titles',[verb:'getRecord',metadataPrefix:source.fullPrefix,identifier:titleUUID])
-        if(record) {
-            GPathResult titleRecord = record.metadata.gokb.title
-            log.info("title record loaded, converting XML record and reconciling title record ...")
+        GPathResult titleOAI = fetchRecord(source.uri,'titles',[verb:'GetRecord',metadataPrefix:source.fullPrefix,identifier:titleUUID])
+        if(titleOAI) {
+            GPathResult titleRecord = titleOAI.record.metadata.gokb.title
+            log.info("title record loaded, converting XML record and reconciling title record for UUID ${titleUUID} ...")
             TitleInstance titleInstance = TitleInstance.findByGokbId(titleUUID)
-            log.debug(titleRecord.status)
-            RefdataValue status = RefdataValue.getByValueAndCategory(titleRecord.status.text(),RefdataCategory.TI_STATUS)
-            //titleRecord.medium.text()
-            RefdataValue titleType = RefdataValue.getByValueAndCategory(titleRecord.type.text(),RefdataCategory.TI_TYPE)
-            switch(titleType) {
-                case RDStore.TITLE_TYPE_EBOOK: titleInstance ? (BookInstance) titleInstance : new BookInstance()
-                    titleInstance.editionNumber = titleRecord.edititonNumber.text()
-                    titleInstance.editionDifferentiator = titleRecord.edititonDifferentiator.text()
-                    titleInstance.editionStatement = titleRecord.editionStatement.text()
-                    titleInstance.volume = titleRecord.volumeNumber.text()
-                    titleInstance.dateFirstInPrint = titleRecord.dateFirstInPrint ? xmlDateFormat.parse(titleRecord.dateFirstInPrint.text()) : null
-                    titleInstance.dateFirstOnline = titleRecord.dateFirstOnline ? xmlDateFormat.parse(titleRecord.dateFirstOnline.text()) : null
-                    titleInstance.firstAuthor = titleRecord.firstAuthor.text()
-                    titleInstance.firstEditor = titleRecord.firstEditor.text()
-                    break
-                case RDStore.TITLE_TYPE_DATABASE: titleInstance ? (DatabaseInstance) titleInstance : new DatabaseInstance()
-                    break
-                case RDStore.TITLE_TYPE_JOURNAL: titleInstance ? (JournalInstance) titleInstance : new JournalInstance()
-                    break
-            }
-            titleInstance.gokbId = titleUUID
-            titleInstance.title = titleRecord.title.name.text()
-            titleInstance.status = status
-            if(titleInstance.save()) {
-                if(titleRecord.publishers) {
-                    titleRecord.publishers.publisher.each { pubData ->
-                        Map<String,Object> publisherParams = [
-                                name: pubData.name.text(),
-                                //status: RefdataValue.getByValueAndCategory(pubData.status.text(),RefdataCategory.ORG_STATUS), -> is for combo type
-                                gokbId: pubData.'@uuid'.text()
-                        ]
-                        Set<Map<String,String>> identifiers = []
-                        pubData.identifiers.identifier.each { identifier ->
-                            //the filter is temporary, should be excluded ...
-                            if(identifier.'@namespace'.text().toLowerCase() != 'originediturl') {
-                                identifiers << [namespace:(String) identifier.'@namespace'.text(),value:(String) identifier.'@value'.text()]
-                            }
-                        }
-                        publisherParams.identifiers = identifiers
-                        Org publisher = lookupOrCreateTitlePublisher(publisherParams)
-                        //ex OrgRole.assertOrgTitleLink
-                        OrgRole titleLink = OrgRole.findByTitleAndOrgAndRoleType(titleInstance,publisher,RDStore.OR_PUBLISHER)
-                        if(!titleLink) {
-                            titleLink = new OrgRole(title:titleInstance,org:publisher,roleType:RDStore.OR_PUBLISHER)
-                            /*
-                            its usage / relevance for LAS:eR is unclear for the moment, must be clarified
-                            if(pubData.startDate)
-                                titleLink.startDate = xmlDateFormat.parse(pubData.startDate.text())
-                            if(pubData.endDate)
-                                titleLink.endDate = xmlDateFormat.parse(pubData.endDate.text())
-                            */
-                            if(!titleLink.save())
-                                log.error(titleLink.errors)
-                        }
-                    }
+            if(titleRecord.type.text()) {
+                RefdataValue status = RefdataValue.getByValueAndCategory(titleRecord.status.text(),RefdataCategory.TI_STATUS)
+                //titleRecord.medium.text()
+                RefdataValue medium = RefdataValue.getByValueAndCategory(titleRecord.medium.text(),RefdataCategory.TI_TYPE) //misunderstandable mapping ...
+                switch(titleRecord.type.text()) {
+                    case 'BookInstance': titleInstance = titleInstance ? (BookInstance) titleInstance : BookInstance.construct([gokbId:titleUUID])
+                        titleInstance.editionNumber = titleRecord.edititonNumber.text()
+                        titleInstance.editionDifferentiator = titleRecord.edititonDifferentiator.text()
+                        titleInstance.editionStatement = titleRecord.editionStatement.text()
+                        titleInstance.volume = titleRecord.volumeNumber.text()
+                        titleInstance.dateFirstInPrint = titleRecord.dateFirstInPrint ? escapeService.parseDate(titleRecord.dateFirstInPrint.text()) : null
+                        titleInstance.dateFirstOnline = titleRecord.dateFirstOnline ? escapeService.parseDate(titleRecord.dateFirstOnline.text()) : null
+                        titleInstance.firstAuthor = titleRecord.firstAuthor.text()
+                        titleInstance.firstEditor = titleRecord.firstEditor.text()
+                        break
+                    case 'DatabaseInstance': titleInstance = titleInstance ? (DatabaseInstance) titleInstance : DatabaseInstance.construct([gokbId:titleUUID])
+                        break
+                    case 'JournalInstance': titleInstance = titleInstance ? (JournalInstance) titleInstance : JournalInstance.construct([gokbId:titleUUID])
+                        break
                 }
-                if(titleRecord.identifiers) {
-                    titleRecord.identifiers.identifier.each { idData ->
-                        if(idData.'@namespace'.text().toLowerCase() != 'originediturl')
-                            Identifier.construct([namespace:idData.'@namespace'.text(),value:idData.'@value'.text(),reference:titleInstance])
-                    }
-                }
-                if(titleRecord.history) {
-                    titleRecord.history.historyEvent.each { eventData ->
-                        Set<TitleInstance> from = [], to = []
-                        eventData.from.each { fromEv ->
-                            from << lookupOrCreateHistoryParticipant(fromEv,titleType)
-                        }
-                        eventData.to.each { toEv ->
-                            to << lookupOrCreateHistoryParticipant(toEv,titleType)
-                        }
-                        Date eventDate = xmlDateFormat.parse(eventData.date.text())
-                        String baseQuery = "select the from TitleHistoryEvent the where the.eventDate = :eventDate"
-                        Map<String,Object> queryParams = [eventDate:eventDate]
-                        if(from) {
-                            baseQuery << " and exists (select p from the.participants p where p.participant in :from and p.participantRole = 'from')"
-                            queryParams.from = from
-                        }
-                        if(to) {
-                            baseQuery << " and exists (select p from the.participants p where p.participant in :to and p.participantRole = 'to')"
-                            queryParams.to = to
-                        }
-                        List<TitleHistoryEvent> events = TitleHistoryEvent.executeQuery(baseQuery)
-                        if(!events) {
-                            Map<String,Object> event = [:]
-                            event.from = from
-                            event.to = to
-                            event.internalId = eventData.'@id'.text()
-                            event.date = eventDate
-                            TitleHistoryEvent the = new TitleHistoryEvent(event.date)
-                            if(the.save()) {
-                                from.each { partData ->
-                                    TitleHistoryEventParticipant participant = new TitleHistoryEventParticipant(event:the,participant:partData,participantRole:'from')
-                                    if(!participant.save())
-                                        log.error(participant.errors)
-                                }
-                                to.each { partData ->
-                                    TitleHistoryEventParticipant participant = new TitleHistoryEventParticipant(event:the,participant:partData,participantRole:'to')
-                                    if(!participant.save())
-                                        log.error(participant.errors)
+                titleInstance.title = titleRecord.name.text()
+                titleInstance.status = status
+                if(titleInstance.save()) {
+                    if(titleRecord.publishers) {
+                        titleRecord.publishers.publisher.each { pubData ->
+                            Map<String,Object> publisherParams = [
+                                    name: pubData.name.text(),
+                                    //status: RefdataValue.getByValueAndCategory(pubData.status.text(),RefdataCategory.ORG_STATUS), -> is for combo type
+                                    gokbId: pubData.'@uuid'.text()
+                            ]
+                            Set<Map<String,String>> identifiers = []
+                            pubData.identifiers.identifier.each { identifier ->
+                                //the filter is temporary, should be excluded ...
+                                if(identifier.'@namespace'.text().toLowerCase() != 'originediturl') {
+                                    identifiers << [namespace:(String) identifier.'@namespace'.text(),value:(String) identifier.'@value'.text()]
                                 }
                             }
-                            else log.error(the.errors)
+                            publisherParams.identifiers = identifiers
+                            Org publisher = lookupOrCreateTitlePublisher(publisherParams)
+                            //ex OrgRole.assertOrgTitleLink
+                            OrgRole titleLink = OrgRole.findByTitleAndOrgAndRoleType(titleInstance,publisher,RDStore.OR_PUBLISHER)
+                            if(!titleLink) {
+                                titleLink = new OrgRole(title:titleInstance,org:publisher,roleType:RDStore.OR_PUBLISHER)
+                                /*
+                                its usage / relevance for LAS:eR is unclear for the moment, must be clarified
+                                if(pubData.startDate)
+                                    titleLink.startDate = escapeService.parseDate(pubData.startDate.text())
+                                if(pubData.endDate)
+                                    titleLink.endDate = escapeService.parseDate(pubData.endDate.text())
+                                */
+                                if(!titleLink.save())
+                                    log.error(titleLink.errors)
+                            }
                         }
                     }
+                    if(titleRecord.identifiers) {
+                        titleRecord.identifiers.identifier.each { idData ->
+                            if(idData.'@namespace'.text().toLowerCase() != 'originediturl')
+                                Identifier.construct([namespace:idData.'@namespace'.text(),value:idData.'@value'.text(),reference:titleInstance])
+                        }
+                    }
+                    if(titleRecord.history) {
+                        titleRecord.history.historyEvent.each { eventData ->
+                            if(eventData.date.text()) {
+                                Set<TitleInstance> from = [], to = []
+                                eventData.from.each { fromEv ->
+                                    from << lookupOrCreateHistoryParticipant(fromEv,titleInstance.class.name)
+                                }
+                                eventData.to.each { toEv ->
+                                    to << lookupOrCreateHistoryParticipant(toEv,titleInstance.class.name)
+                                }
+                                //does not work for any reason whatsoever, continue here
+                                Date eventDate = escapeService.parseDate(eventData.date.text())
+                                String baseQuery = "select the from TitleHistoryEvent the where the.eventDate = :eventDate"
+                                Map<String,Object> queryParams = [eventDate:eventDate]
+                                if(from) {
+                                    baseQuery += " and exists (select p from the.participants p where p.participant in :from and p.participantRole = 'from')"
+                                    queryParams.from = from
+                                }
+                                if(to) {
+                                    baseQuery += " and exists (select p from the.participants p where p.participant in :to and p.participantRole = 'to')"
+                                    queryParams.to = to
+                                }
+                                List<TitleHistoryEvent> events = TitleHistoryEvent.executeQuery(baseQuery,queryParams)
+                                if(!events) {
+                                    Map<String,Object> event = [:]
+                                    event.from = from
+                                    event.to = to
+                                    event.internalId = eventData.'@id'.text()
+                                    event.eventDate = eventDate
+                                    TitleHistoryEvent the = new TitleHistoryEvent(event)
+                                    if(the.save()) {
+                                        from.each { partData ->
+                                            TitleHistoryEventParticipant participant = new TitleHistoryEventParticipant(event:the,participant:partData,participantRole:'from')
+                                            if(!participant.save())
+                                                log.error(participant.errors)
+                                        }
+                                        to.each { partData ->
+                                            TitleHistoryEventParticipant participant = new TitleHistoryEventParticipant(event:the,participant:partData,participantRole:'to')
+                                            if(!participant.save())
+                                                log.error(participant.errors)
+                                        }
+                                    }
+                                    else log.error(the.errors)
+                                }
+                            }
+                            else {
+                                log.error("Title history event without date, that should not be, report history event with internal ID ${eventData.@id} to GOKb!")
+                            }
+                        }
+                    }
+                    titleInstance
                 }
-                titleInstance
+                else {
+                    log.error(titleInstance.errors)
+                    null
+                }
             }
             else {
-                log.error(titleInstance.errors)
+                log.error("ALARM! Title record without title type! Unable to process!")
                 null
             }
         }
         else null
     }
 
-    TitleInstance lookupOrCreateHistoryParticipant(particData,RefdataValue titleType) {
+    TitleInstance lookupOrCreateHistoryParticipant(particData,String titleType) {
         TitleInstance participant = TitleInstance.findByGokbId(particData.uuid.text())
         switch(titleType) {
-            case RDStore.TITLE_TYPE_EBOOK: participant ? (BookInstance) participant : new BookInstance()
+            case BookInstance.class.name: participant = participant ? (BookInstance) participant : BookInstance.construct([gokbId:particData.uuid.text()])
                 break
-            case RDStore.TITLE_TYPE_DATABASE: participant ? (DatabaseInstance) participant : new DatabaseInstance()
+            case DatabaseInstance.class.name: participant = participant ? (DatabaseInstance) participant : DatabaseInstance.construct([gokbId:particData.uuid.text()])
                 break
-            case RDStore.TITLE_TYPE_JOURNAL: participant ? (JournalInstance) participant : new JournalInstance()
+            case JournalInstance.class.name: participant = participant ? (JournalInstance) participant : JournalInstance.construct([gokbId:particData.uuid.text()])
                 break
         }
         participant.status = RefdataValue.getByValueAndCategory(particData.status.text(),RefdataCategory.TI_STATUS)
-        participant.gokbId = particData.uuid.text()
         participant.title = particData.title.text()
         if(participant.save()) {
             if(particData.identifiers) {
@@ -547,12 +573,12 @@ class GlobalSourceSyncService extends AbstractLockableService {
                 log.error(provider.errors)
             }
         }
-        GPathResult metadata = fetchRecord(source.uri,'orgs',[verb:'getRecord',metadataPrefix:source.fullPrefix,identifier:providerParams.providerUUID])
-        if(metadata) {
-            metadata.record.metadata.gokb.org.providedPlatforms.platform.each { plat ->
+        GPathResult providerOAI = fetchRecord(source.uri,'orgs',[verb:'getRecord',metadataPrefix:source.fullPrefix,identifier:providerParams.providerUUID])
+        if(providerOAI) {
+            providerOAI.record.metadata.gokb.org.providedPlatforms.platform.each { plat ->
                 //ex setOrUpdateProviderPlattform()
                 log.info("checking provider with uuid ${providerParams.providerUUID}")
-                Platform platform = Platform.lookupOrCreatePlatform([name: plat.name.text(), gokbId: plat.'@uuid'.text(), primaryUrl: plat.primaryUrl.text()])
+                Platform platform = createOrUpdatePlatform([name: plat.name.text(), gokbId: plat.'@uuid'.text(), primaryUrl: plat.primaryUrl.text()],Platform.findByGokbId(plat.'@uuid'.text()))
                 if(platform.org != provider) {
                     platform.org = provider
                     platform.save()
@@ -588,6 +614,23 @@ class GlobalSourceSyncService extends AbstractLockableService {
         }
         else {
             log.error("Org submitted without UUID! No checking possible!")
+            null
+        }
+    }
+
+    Platform createOrUpdatePlatform(Map<String,Object> platformParams, Platform platform) {
+        if(platform) {
+            platform.name = platformParams.name
+            platform.primaryUrl = platformParams.primaryUrl
+        }
+        else {
+            platform = new Platform(platformParams)
+        }
+        platform.normname = platformParams.name.trim().toLowerCase()
+        if(platform.save())
+            platform
+        else {
+            log.error(platform.errors)
             null
         }
     }
@@ -730,8 +773,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
             GPathResult record = (GPathResult) http.get(path:object,query:queryParams,contentType:'xml') { resp, xml ->
                 GPathResult response = new XmlSlurper().parseText(xml.text)
                 if(response[queryParams.verb] && response[queryParams.verb] instanceof GPathResult) {
-                    GPathResult record = (GPathResult) response[queryParams.verb]
-                    record
+                    response[queryParams.verb]
                 }
                 else {
                     log.error('Request succeeded but result data invalid. Please do checks')

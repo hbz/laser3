@@ -1076,6 +1076,7 @@ class AdminController extends AbstractDebugController {
     redirect(controller:'home')
   }
 
+  @Deprecated
   @Secured(['ROLE_ADMIN'])
   def titlesImport() {
 

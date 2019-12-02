@@ -1,5 +1,6 @@
 package de.laser
 
+import com.k_int.kbplus.Identifier
 import com.k_int.kbplus.IssueEntitlement
 import de.laser.domain.IssueEntitlementCoverage
 import de.laser.helper.RDStore
@@ -146,23 +147,36 @@ class TitleStreamService {
                 row.add(entitlement?.derivedAccessEndDate ? dateFormat.format(entitlement?.derivedAccessEndDate) : ' ')
                 log.debug("processing identifiers")
                 //zdb_id
-                row.add(entitlement?.tipp?.title?.joinIdentfiers('zdb',','))
+                row.add(joinIdentifiers(entitlement?.tipp?.title?.ids,'zdb',','))
                 //zdb_ppn
-                row.add(entitlement?.tipp?.title?.joinIdentfiers('zdb_ppn',','))
+                row.add(joinIdentifiers(entitlement?.tipp?.title?.ids,'zdb_ppn',','))
                 //DOI
-                row.add(entitlement?.tipp?.title?.joinIdentfiers('doi',','))
+                row.add(joinIdentifiers(entitlement?.tipp?.title?.ids,'doi',','))
                 //ISSNs
-                row.add(entitlement?.tipp?.title?.joinIdentfiers('issn',','))
+                row.add(joinIdentifiers(entitlement?.tipp?.title?.ids,'issn',','))
                 //eISSNs
-                row.add(entitlement?.tipp?.title?.joinIdentfiers('eissn',','))
+                row.add(joinIdentifiers(entitlement?.tipp?.title?.ids,'eissn',','))
                 //pISBNs
-                row.add(entitlement?.tipp?.title?.joinIdentfiers('pisbn',','))
+                row.add(joinIdentifiers(entitlement?.tipp?.title?.ids,'pisbn',','))
                 //ISBNs
-                row.add(entitlement?.tipp?.title?.joinIdentfiers('isbn',','))
+                row.add(joinIdentifiers(entitlement?.tipp?.title?.ids,'isbn',','))
                 export.columnData.add(row)
             }
         }
         export
+    }
+
+    String joinIdentifiers(Set<Identifier>ids, String namespace, String separator) {
+        String joined = ' '
+        List values = []
+        ids.each { id ->
+            if(id.ns.ns.equalsIgnoreCase(namespace)) {
+                values.add(id.value)
+            }
+        }
+        if(values)
+            joined = values.join(separator)
+        joined
     }
 
 }

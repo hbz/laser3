@@ -8,4 +8,11 @@ class DatabaseInstance extends TitleInstance{
 
     static constraints = {
     }
+
+    static DatabaseInstance construct(Map<String,Object> params) {
+        DatabaseInstance dbi = new DatabaseInstance(params)
+        dbi.setGlobalUID()
+        dbi
+    }
+
 }

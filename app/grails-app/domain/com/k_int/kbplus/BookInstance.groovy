@@ -49,6 +49,12 @@ class BookInstance extends TitleInstance {
 
     }
 
+    static BookInstance construct(Map<String,Object> params) {
+        BookInstance bi = new BookInstance(params)
+        bi.setGlobalUID()
+        bi
+    }
+
     def getEbookFirstAutorOrFirstEditor(){
 
         def messageSource = Holders.grailsApplication.mainContext.getBean('messageSource')
