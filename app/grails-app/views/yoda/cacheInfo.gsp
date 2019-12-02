@@ -60,9 +60,23 @@
         <h4 class="ui header">${cacheName}
             <span class="ui label">${cache.class}</span>
             <span class="ui label">
-                disk: ${Math.round(cacheStats.getLocalDiskSizeInBytes() / 1024)} kb,
-                heap: ${Math.round(cacheStats.getLocalHeapSizeInBytes() / 1024)} kb /
-                ${Math.round(cacheStats.getLocalOffHeapSizeInBytes() / 1024)} kb
+                <%
+                    try {
+                        println "disk: ${Math.round(cacheStats.getLocalDiskSizeInBytes() / 1024)} kb, "
+                    } catch (Exception e) {
+                        println "error, "
+                    }
+                    try {
+                        println "heap: ${Math.round(cacheStats.getLocalHeapSizeInBytes() / 1024)} kb / "
+                    } catch (Exception e) {
+                        println "error / "
+                    }
+                    try {
+                        println "${Math.round(cacheStats.getLocalOffHeapSizeInBytes() / 1024)} kb"
+                    } catch (Exception e) {
+                        println "error"
+                    }
+                %>
             </span>
             <g:if test="${cache.getKeys().size() > 0}">
                 <span class="ui label button" onclick="$(this).parent('h4').next('.segment').find('.cacheContent').toggleClass('hidden')">count: ${cache.getKeys().size()}</span>

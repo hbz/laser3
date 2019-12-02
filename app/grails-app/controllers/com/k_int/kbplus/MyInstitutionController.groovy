@@ -208,12 +208,12 @@ class MyInstitutionController extends AbstractDebugController {
             log.debug('currentSubInfo from cache')
         }
         else {
-            currentSubIds = orgTypeService.getCurrentSubscriptions(contextService.getOrg()).collect{ it.id }
-            allLocals     = OrgRole.findAllWhere(org: contextService.getOrg(), roleType: RDStore.OR_SUBSCRIBER).collect{ it -> it?.sub?.id }
-            allSubscrCons = OrgRole.findAllWhere(org: contextService.getOrg(), roleType: RDStore.OR_SUBSCRIBER_CONS).collect{ it -> it?.sub?.id }
-            allSubscrColl = OrgRole.findAllWhere(org: contextService.getOrg(), roleType: RDStore.OR_SUBSCRIBER_COLLECTIVE).collect{ it -> it?.sub?.id }
-            allConsOnly   = OrgRole.findAllWhere(org: contextService.getOrg(), roleType: RDStore.OR_SUBSCRIPTION_CONSORTIA).collect{ it -> it?.sub?.id }
-            allCollOnly   = OrgRole.findAllWhere(org: contextService.getOrg(), roleType: RDStore.OR_SUBSCRIPTION_COLLECTIVE).collect{ it -> it?.sub?.id }
+            currentSubIds = orgTypeService.getCurrentSubscriptions(contextService.getOrg()).findAll{ it }.collect{ it.id }
+            allLocals     = OrgRole.findAllWhere(org: contextService.getOrg(), roleType: RDStore.OR_SUBSCRIBER).findAll{ it.sub }.collect{ it.sub.id }.unique()
+            allSubscrCons = OrgRole.findAllWhere(org: contextService.getOrg(), roleType: RDStore.OR_SUBSCRIBER_CONS).findAll{ it.sub }.collect{ it.sub.id }.unique()
+            allSubscrColl = OrgRole.findAllWhere(org: contextService.getOrg(), roleType: RDStore.OR_SUBSCRIBER_COLLECTIVE).findAll{ it.sub }.collect{ it.sub.id }.unique()
+            allConsOnly   = OrgRole.findAllWhere(org: contextService.getOrg(), roleType: RDStore.OR_SUBSCRIPTION_CONSORTIA).findAll{ it.sub }.collect{ it.sub.id }.unique()
+            allCollOnly   = OrgRole.findAllWhere(org: contextService.getOrg(), roleType: RDStore.OR_SUBSCRIPTION_COLLECTIVE).findAll{ it.sub }.collect{ it.sub.id }.unique()
 
             cache.put('currentSubInfo', [
                     currentSubIds: currentSubIds,
@@ -716,7 +716,7 @@ from License as l where (
             List<Org> providers = orgTypeService.getCurrentProviders( contextService.getOrg())
             List<Org> agencies   = orgTypeService.getCurrentAgencies( contextService.getOrg())
             providers.addAll(agencies)
-            orgIds = providers.unique().collect{ it2 -> it2.id }
+            orgIds = providers.collect{ it.id }.unique()
 
             cache.put('orgIds', orgIds)
         }
@@ -1999,11 +1999,11 @@ from License as l where (
         List<Subscription> subscriptions = Subscription.executeQuery("select s ${tmpQ[0]}", tmpQ[1]) //,[max: result.max, offset: result.offset]
 
             currentSubIds = subscriptions.collect{ it.id }
-            allLocals     = OrgRole.findAllWhere(org: contextService.getOrg(), roleType: RDStore.OR_SUBSCRIBER).collect{ it -> it?.sub?.id }
-            allSubscrCons = OrgRole.findAllWhere(org: contextService.getOrg(), roleType: RDStore.OR_SUBSCRIBER_CONS).collect{ it -> it?.sub?.id }
-            allSubscrColl = OrgRole.findAllWhere(org: contextService.getOrg(), roleType: RDStore.OR_SUBSCRIBER_COLLECTIVE).collect{ it -> it?.sub?.id }
-            allConsOnly   = OrgRole.findAllWhere(org: contextService.getOrg(), roleType: RDStore.OR_SUBSCRIPTION_CONSORTIA).collect{ it -> it?.sub?.id }
-            allCollOnly   = OrgRole.findAllWhere(org: contextService.getOrg(), roleType: RDStore.OR_SUBSCRIPTION_COLLECTIVE).collect{ it -> it?.sub?.id }
+            allLocals     = OrgRole.findAllWhere(org: contextService.getOrg(), roleType: RDStore.OR_SUBSCRIBER).findAll{it.sub}.collect{it.sub.id }.unique()
+            allSubscrCons = OrgRole.findAllWhere(org: contextService.getOrg(), roleType: RDStore.OR_SUBSCRIBER_CONS).findAll{it.sub}.collect{it.sub.id }.unique()
+            allSubscrColl = OrgRole.findAllWhere(org: contextService.getOrg(), roleType: RDStore.OR_SUBSCRIBER_COLLECTIVE).findAll{it.sub}.collect{it.sub.id }.unique()
+            allConsOnly   = OrgRole.findAllWhere(org: contextService.getOrg(), roleType: RDStore.OR_SUBSCRIPTION_CONSORTIA).findAll{it.sub}.collect{it.sub.id }.unique()
+            allCollOnly   = OrgRole.findAllWhere(org: contextService.getOrg(), roleType: RDStore.OR_SUBSCRIPTION_COLLECTIVE).findAll{it.sub}.collect{it.sub.id }.unique()
 
 
         result.subscriptionMap = [:]
