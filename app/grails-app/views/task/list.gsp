@@ -13,9 +13,7 @@
 		</h1>
 
 		<g:if test="${flash.message}">
-			<semui:msg class="warning">
-				${flash.message}
-			</semui:msg>
+			<semui:msg class="warning" message="${flash.message}"/>
 		</g:if>
 
 		<div class="ui grid">

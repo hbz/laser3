@@ -61,15 +61,11 @@
 							</g:each>
 							</tbody>
 						</table>
-						<semui:msg class="warning">
-							${message(code:'org.findProviderMatches.match', args:[params.proposedProvider])}
-						</semui:msg>
+						<semui:msg class="warning" message="${message(code:'org.findProviderMatches.match', args:[params.proposedProvider])}" />
 						<g:link controller="organisation" action="createProvider" class="ui negative button" params="${[provider:params.proposedProvider]}">${message(code:'org.findProviderMatches.matches.create', default:'Create New Provider with the Name', args: [params.proposedProvider])}</g:link>
 					</g:if>
 					<g:else>
-						<semui:msg class="warning">
-							${message(code:'org.findProviderMatches.no_match', args:[params.proposedProvider])}
-						</semui:msg>
+						<semui:msg class="warning" message="${message(code:'org.findProviderMatches.no_match', args:[params.proposedProvider])}" />
 						<g:link controller="organisation" action="createProvider" class="ui positive button" params="${[provider:params.proposedProvider]}">${message(code:'org.findProviderMatches.no_matches.create', default:'Create New Provider with the Name', args: [params.proposedProvider])}</g:link>
 					</g:else>
 				</g:if>

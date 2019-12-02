@@ -79,9 +79,10 @@
           <hr/>
 
           <g:if test="${validationResult.processFile==true}">
-            <bootstrap:alert class="alert-success">${message(code:'package.upload.passed', default:'File passed validation checks, new SO details follow')}:<br/>
+            <semui:msg class="positive">
+              ${message(code:'package.upload.passed', default:'File passed validation checks, new SO details follow')}:<br/>
               <g:link controller="package" action="show" id="${validationResult.new_pkg_id}">${message(code:'package.upload.details', default:'New Package Details')}</g:link><br/>
-            </bootstrap:alert>
+            </semui:msg>
           </g:if>
           <g:else>
             <div class="alert alert-error">${message(code:'package.upload.failed', default:'File failed validation checks, details follow')}</div>

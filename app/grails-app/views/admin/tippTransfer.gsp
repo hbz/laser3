@@ -16,15 +16,11 @@
       <semui:messages data="${flash}" />
 
         <g:each in="${error}" var="err">
-            <semui:msg class="negative">
-              ${err}
-            </semui:msg>
+            <semui:msg class="negative" header="${message(code: 'myinst.message.attention')}" message="${err}"/>
         </g:each>
 
         <g:if test="${success}">
-            <semui:msg class="warning">
-              Transfer Sucessful
-            </semui:msg>
+            <semui:msg class="warning" message="Transfer Sucessful" />
         </g:if>
 
       <semui:form>

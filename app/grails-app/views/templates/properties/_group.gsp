@@ -226,6 +226,6 @@
 
 </table>
 <g:if test="${error}">
-    <semui:msg class="negative">${error}</semui:msg>
+    <semui:msg class="negative" header="${message(code: 'myinst.message.attention')}" message="${error}"/>
 </g:if>
 <!-- _groups.gsp -->
