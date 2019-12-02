@@ -1,6 +1,7 @@
 import com.k_int.kbplus.auth.User
 import grails.converters.JSON
 import grails.plugin.springsecurity.SpringSecurityUtils
+import org.codehaus.groovy.grails.commons.GrailsApplication
 import org.springframework.security.access.annotation.Secured
 import org.springframework.security.authentication.AccountExpiredException
 import org.springframework.security.authentication.CredentialsExpiredException
@@ -21,7 +22,7 @@ import java.security.MessageDigest
 @Secured('permitAll')
 class LoginController {
 
-  def grailsApplication
+  GrailsApplication grailsApplication
 
   /**
    * Dependency injection for the authenticationTrustResolver.

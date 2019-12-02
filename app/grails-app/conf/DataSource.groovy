@@ -13,6 +13,7 @@ hibernate {
     cache.use_query_cache           = false // LEGACY
     //cache.region.factory_class      = 'org.hibernate.cache.ehcache.SingletonEhCacheRegionFactory' // to hibernate 4: CAUTION: USE FOR DB-MIGRATION-PLUGIN
     cache.region.factory_class    = 'net.sf.ehcache.hibernate.SingletonEhCacheRegionFactory' // hibernate 3: CAUTION: USE FOR DB-MIGRATION-PLUGIN
+    //cache.region_prefix           = 'second_level_cache'
 }
 
 // environment specific settings

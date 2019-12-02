@@ -320,27 +320,33 @@ class FilterService {
         if(params.name) {
             query << "(genfunc_filter_matcher(surInfo.name, :name) = true or (genfunc_filter_matcher(surConfig.subscription.name, :name) = true))"
             queryParams << [name:"${params.name}"]
+            params.filterSet = true
         }
         if(params.status) {
             query << "surInfo.status = :status"
             queryParams << [status: RefdataValue.get(params.status)]
+            params.filterSet = true
         }
         if(params.type) {
             query << "surInfo.type = :type"
             queryParams << [type: RefdataValue.get(params.type)]
+            params.filterSet = true
         }
         if (params.startDate && sdFormat) {
             query << "surInfo.startDate >= :startDate"
             queryParams << [startDate : sdFormat.parse(params.startDate)]
+            params.filterSet = true
         }
         if (params.endDate && sdFormat) {
             query << "surInfo.endDate <= :endDate"
             queryParams << [endDate : sdFormat.parse(params.endDate)]
+            params.filterSet = true
         }
 
         if (params.provider) {
             query << "exists (select orgRole from OrgRole orgRole where orgRole.sub = surConfig.subscription and orgRole.org = :provider)"
             queryParams << [provider : Org.get(params.provider)]
+            params.filterSet = true
         }
 
         if (params.participant) {

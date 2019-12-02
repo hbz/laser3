@@ -3,6 +3,7 @@ package com.k_int.oai
 import de.laser.controller.AbstractDebugController
 import groovy.xml.MarkupBuilder
 import groovy.xml.StreamingMarkupBuilder
+import org.codehaus.groovy.grails.commons.GrailsApplication
 import org.gokb.cred.*
 
 // K-Int generic OAI Module, imported into KB+ 15/03/16 to support title data exchange.
@@ -10,7 +11,7 @@ import org.gokb.cred.*
 
 class OaiController extends AbstractDebugController {
 
-  def grailsApplication
+  GrailsApplication grailsApplication
   def genericOIDService
 
   // JSON.registerObjectMarshaller(DateTime) {

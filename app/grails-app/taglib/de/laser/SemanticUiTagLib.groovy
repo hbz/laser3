@@ -1,5 +1,6 @@
 package de.laser
 
+import com.k_int.kbplus.ApiSource
 import com.k_int.kbplus.RefdataValue
 import com.k_int.kbplus.Subscription
 import com.k_int.kbplus.SurveyOrg
@@ -12,6 +13,7 @@ import de.laser.helper.SessionCacheWrapper
 import org.codehaus.groovy.grails.plugins.web.taglib.ValidationTagLib
 import org.springframework.web.servlet.support.RequestContextUtils
 
+
 // Semantic UI
 
 class SemanticUiTagLib {
@@ -21,6 +23,7 @@ class SemanticUiTagLib {
     def auditService
     def systemService
     def contextService
+    def GOKbService
 
     //static defaultEncodeAs = [taglib:'html']
     //static encodeAsForTags = [tagName: [taglib:'html'], otherTagName: [taglib:'none']]
@@ -1143,6 +1146,21 @@ class SemanticUiTagLib {
                 out << g.formatDate(format: message(code: "default.date.format.notime"), date: surveyResults?.finishDate[0])
             }
         }
+    }
+
+    def gokbValue = { attrs, body ->
+
+        if(attrs.gokbId && attrs.field) {
+
+            ApiSource api = ApiSource.findByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true)
+            String gokbId = "${attrs.gokbId}"
+            def record = GOKbService.getPackageMapWithUUID(api, gokbId)
+
+            if(record && record[attrs.field]){
+                out << ((record[attrs.field] instanceof List) ? record[attrs.field].join(', ') : record[attrs.field])
+            }
+        }
+
     }
 
 }
