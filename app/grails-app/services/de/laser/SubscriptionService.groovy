@@ -937,10 +937,8 @@ class SubscriptionService {
                     break
                 case "elternlizenz":
                 case "konsortiallizenz":
-                case "kollektivlizenz":
                 case "parent subscription":
                 case "consortial subscription":
-                case "collective subscription":
                     if(accessService.checkPerm("ORG_INST_COLLECTIVE, ORG_CONSORTIUM"))
                         colMap.instanceOf = c
                     break
