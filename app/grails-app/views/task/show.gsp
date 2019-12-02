@@ -10,7 +10,9 @@
         <h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon /><g:message code="default.show.label" args="[entityName]" /></h1>
 
         <g:if test="${flash.message}">
-            <bootstrap:alert class="alert-info">${flash.message}</bootstrap:alert>
+			<semui:msg class="warning">
+				${flash.message}
+			</semui:msg>
         </g:if>
 
 

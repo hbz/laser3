@@ -16,9 +16,9 @@
 	<h1 class="ui left floated aligned icon header la-clear-before"><semui:headerIcon />${message(code:'menu.institutions.comp_onix')}</h1>
 
 		<g:if test="${flash.message}">
-			<bootstrap:alert class="alert-info">
+			<semui:msg class="warning">
 				${flash.message}
-			</bootstrap:alert>
+			</semui:msg>
 		</g:if>
 
     <g:render template="tables" model="${request.parameterMap}" />

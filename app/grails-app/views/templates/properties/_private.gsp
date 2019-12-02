@@ -12,10 +12,6 @@
     <semui:errors bean="${newProp}" />
 </g:if>
 
-<g:if test="${error}">
-    <bootstrap:alert class="alert-danger">${error}</bootstrap:alert>
-</g:if>
-
 <table class="ui la-table-small la-table-inCard table">
     <g:if test="${ownobj.privateProperties}">
         <colgroup>
@@ -148,3 +144,6 @@
     </tfoot>
 </g:if>
 </table>
+<g:if test="${error}">
+    <semui:msg class="negative">${error}</semui:msg>
+</g:if>

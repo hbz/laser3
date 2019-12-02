@@ -13,10 +13,6 @@
     <semui:errors bean="${newProp}" />
 </g:if>
 
-<g:if test="${error}">
-    <bootstrap:alert class="alert-danger">${error}</bootstrap:alert>
-</g:if>
-
 <table class="ui la-table-small la-table-inCard table">
     <g:set var="properties" value="${showPropClass == PrivateProperty.class? ownobj.privateProperties : ownobj.customProperties}" />
     <g:if test="${properties}">
@@ -130,6 +126,9 @@
         </g:each>
     </tbody>
 </table>
+<g:if test="${error}">
+    <semui:msg class="negative">${error}</semui:msg>
+</g:if>
 <r:script>
     $('input:checkbox').change( function(event) {
         if (this.checked) {

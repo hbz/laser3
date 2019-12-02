@@ -13,7 +13,9 @@
 		</h1>
 
 		<g:if test="${flash.message}">
-			<bootstrap:alert class="alert-info">${flash.message}</bootstrap:alert>
+			<semui:msg class="warning">
+				${flash.message}
+			</semui:msg>
 		</g:if>
 
 		<div class="ui grid">

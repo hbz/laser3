@@ -16,11 +16,15 @@
       <semui:messages data="${flash}" />
 
         <g:each in="${error}" var="err">
-          <bootstrap:alert class="alert-danger">${err}</bootstrap:alert>
+            <semui:msg class="negative">
+              ${err}
+            </semui:msg>
         </g:each>
 
         <g:if test="${success}">
-          <bootstrap:alert class="alert-info">Transfer Sucessful</bootstrap:alert>
+            <semui:msg class="warning">
+              Transfer Sucessful
+            </semui:msg>
         </g:if>
 
       <semui:form>

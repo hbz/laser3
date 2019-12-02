@@ -37,7 +37,9 @@
 				</div>
 
 				<g:if test="${flash.message}">
-				    <bootstrap:alert class="alert-info">${flash.message}</bootstrap:alert>
+					<semui:msg class="warning">
+						${flash.message}
+					</semui:msg>
 				</g:if>
 
 				<semui:errors bean="${taskInstance}" />
