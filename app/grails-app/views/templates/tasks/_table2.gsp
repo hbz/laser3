@@ -18,7 +18,7 @@
                     <th>${message(code: 'task.object.label', default: 'Object')}</th>
                 </g:if>
 
-                <g:sortableColumn property="lower(t.responsibleUser.username)" title="${message(code: 'task.responsibleEmployee.label', default: 'Responsible Employee')}"/>
+                <g:sortableColumn property="lower(ru.username)" title="${message(code: 'task.responsibleEmployee.label', default: 'Responsible Employee')}"/>
 
                 <g:sortableColumn property="t.createDate" title="${message(code: 'task.createDate.label', default: 'Create Date')}"/>
 

@@ -24,7 +24,7 @@ class TaskService {
     select tsk_description, tsk_end_date, username, display from task t left JOIN "user" u on t.tsk_responsible_user_fk = u.id order by u.display asc;
      */
 
-    private static final String select_with_join = 'select t from Task t left JOIN t.responsibleUser '
+    private static final String select_with_join = 'select t from Task t LEFT JOIN t.responsibleUser ru '
 
     def getTasksByCreator(User user, Map queryMap, flag) {
         def tasks = []
@@ -32,7 +32,7 @@ class TaskService {
             def query
             if (flag == WITHOUT_TENANT_ONLY) {
 //                query = "select t from Task t where t.creator=:user and t.responsibleUser is null and t.responsibleOrg is null "
-                query = select_with_join + 'where t.creator = :user and t.responsibleUser is null and t.responsibleOrg is null'
+                query = select_with_join + 'where t.creator = :user and ru is null and t.responsibleOrg is null'
             } else {
 //                query = "select t from Task t where t.creator=:user "
                 query = select_with_join + 'where t.creator = :user'
@@ -120,7 +120,7 @@ class TaskService {
 
         if (user && org) {
 //            def query = "select t from Task t where ( t.responsibleUser = :user or t.responsibleOrg = :org ) " + queryMap.query
-            def query = select_with_join + 'where ( t.responsibleUser = :user or t.responsibleOrg = :org ) ' + queryMap.query
+            def query = select_with_join + 'where ( ru = :user or t.responsibleOrg = :org ) ' + queryMap.query
 
             def params = [user : user, org: org] << queryMap.queryParams
             tasks = Task.executeQuery(query, params)
