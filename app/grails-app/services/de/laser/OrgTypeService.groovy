@@ -79,7 +79,7 @@ class OrgTypeService {
             result = OrgRole.findAll("from OrgRole where sub in (:subscriptions) and roleType = :agency",
                     [subscriptions: current,
                      agency       : RDStore.OR_AGENCY]
-            ).collect { it -> it.org }
+            ).collect { it.org }
         }
 
         result.unique()
@@ -96,7 +96,7 @@ class OrgTypeService {
             result = OrgRole.findAll("from OrgRole where lic in (:licenses) and roleType = :licensor",
                     [licenses: current,
                      licensor: RDStore.OR_LICENSOR]
-            ).collect { it -> it.org }
+            ).collect { it.org }
         }
 
         result.unique()
@@ -113,7 +113,7 @@ class OrgTypeService {
             result = OrgRole.findAll("from OrgRole where sub in (:subscriptions) and roleType = :provider",
                     [subscriptions: current,
                      provider     : RDStore.OR_PROVIDER]
-            ).collect { it -> it.org }
+            ).collect { it.org }
         }
 
         result.unique()

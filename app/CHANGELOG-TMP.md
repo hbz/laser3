@@ -2,6 +2,10 @@
 
 **Ticket    Date    Branch      Author  Feature/Bug     Description/Keywords**
 
+1907    02.12.2019  hbz-dev     David   Bug         Refactoring: collect()-Methode
+     
+1909    02.12.2019  hbz-dev     David   Feature     Neue Seite für DB-Statistiken; Migration von DB-Timestamps nach 'timestamp without time zone' (GOKB-kompatibel)
+
 1895    26.11.2019  hbz-dev     Moe     Feature     Fehler beim Filtern von Umfragen
 
 1902    26.11.2019  hbz-dev     Moe     Feature     Meine Pakete Sicht
@@ -16,9 +20,9 @@
 
 1872    21.11.2019  hbz-dev     Moe     Feature     Prevent deletion of the last INST_ADMIN of a org
 
-1888    21.11.2019  hbz-dev     Moe       Feature   improve global search
+1888    21.11.2019  hbz-dev     Moe     Feature     improve global search
 
- /      20.11.2019  rc-1.1      Andreas     Bug     pending changes are now filtered out when deactivating audit
+ /      20.11.2019  rc-1.1      Andreas Bug         pending changes are now filtered out when deactivating audit
 
 1830    21.11.2019  rc-1.1      Moe     Bug         filter cost element requires defined cost elements
     

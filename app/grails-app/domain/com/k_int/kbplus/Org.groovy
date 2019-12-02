@@ -659,11 +659,9 @@ class Org
         result
     }
 
-    def getallOrgTypeIds()
+    List getallOrgTypeIds()
     {
-        List result = []
-        orgType.collect{ it -> result.add(it.id) }
-        result
+        orgType.findAll{it}.collect{it.id}
     }
 
     boolean isInComboOfType(RefdataValue comboType) {
