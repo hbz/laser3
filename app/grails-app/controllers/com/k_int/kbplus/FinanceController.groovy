@@ -785,8 +785,17 @@ class FinanceController extends AbstractDebugController {
         def orgConfigurations = []
         result.tab = params.tab
 
-        if(!params.sub.isEmpty() && StringUtils.isNumeric(params.sub))
+        if(!params.sub.isEmpty() && StringUtils.isNumeric(params.sub)){
             result.sub = Subscription.get(Long.parseLong(params.sub))
+            if(contextService.org.id == result.sub.getConsortia().id) {
+                result.licenseeLabel = message(code: 'consortium.member')
+                result.licenseeTargetLabel = message(code:'consortium.member.plural')
+            }
+            else if(contextService.org.id == result.sub.getCollective().id) {
+                result.licenseeLabel = message(code:'collective.member')
+                result.licenseeTargetLabel = message(code:'collective.member.plural')
+            }
+        }
         result.costItem = CostItem.findById(params.id)
         //format for dropdown: (o)id:value
         def ciecs = RefdataValue.findAllByOwner(RefdataCategory.findByDesc('Cost configuration'))

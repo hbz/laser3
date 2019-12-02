@@ -257,7 +257,7 @@
                 <g:select id="createdBy" name="createdBy"
                               from="${allConsortia}"
                               optionKey="id"
-                              optionValue="name"
+                              optionValue="${{(it.sortname ?: '') + ' (' + it.name + ')'}}"
                               class="ui dropdown search"
                 />
             </div>
@@ -267,7 +267,7 @@
                 <g:select id="legallyObligedBy" name="legallyObligedBy"
                               from="${allConsortia}"
                               optionKey="id"
-                              optionValue="name"
+                              optionValue="${{(it.sortname ?: '') + ' (' + it.name + ')'}}"
                               value=""
                               class="ui dropdown search"
                 />

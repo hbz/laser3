@@ -358,13 +358,13 @@
                         %>
 
                         <g:if test="${validSubChilds}">
-                            <label>Teilnehmer</label>
+                            <label>${licenseeLabel}</label>
                             <g:if test="${contextSub && contextSub.instanceOf()}">
                                 <input class="la-full-width" readonly="readonly" value="${modalText}" />
                             </g:if>
                             <g:else>
                                 <g:select name="newLicenseeTarget" id="newLicenseeTarget" class="ui dropdown search"
-                                          from="${[[id:'forConsortia', label:'Gilt für die Konsortiallizenz'], [id:'forAllSubscribers', label:'Für alle Teilnehmer']] + validSubChilds}"
+                                          from="${[[id:'forConsortia', label:'Gilt für die Stammlizenz'], [id:'forAllSubscribers', label:'Für alle '+licenseeTargetLabel]] + validSubChilds}"
                                           optionValue="${{it?.name ? it.getAllSubscribers().join(', ') : it.label}}"
                                           optionKey="${{"com.k_int.kbplus.Subscription:" + it?.id}}"
                                           noSelection="${['' : message(code:'default.select.choose.label')]}"
