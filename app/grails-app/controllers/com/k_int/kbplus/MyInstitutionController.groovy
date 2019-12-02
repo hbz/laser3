@@ -2391,7 +2391,7 @@ AND EXISTS (
 
         DateFormat sdFormat    = new DateUtil().getSimpleDateFormat_NoTime()
         params.taskStatus = 'not done'
-        def query       = filterService.getTaskQuery(params << [sort: 'endDate', order: 'asc'], sdFormat)
+        def query       = filterService.getTaskQuery(params << [sort: 't.endDate', order: 'asc'], sdFormat)
         def contextOrg  = contextService.getOrg()
         result.tasks    = taskService.getTasksByResponsibles(springSecurityService.getCurrentUser(), contextOrg, query)
         result.tasksCount    = result.tasks.size()
@@ -3206,9 +3206,11 @@ AND EXISTS (
             }
         }
 
+        if ( ! params.sort) {
+            params.sort = "t.endDate"
+            params.order = "asc"
+        }
         DateFormat sdFormat = new DateUtil().getSimpleDateFormat_NoTime()
-        params.sort = 'endDate'
-        params.order = 'asc'
         def queryForFilter = filterService.getTaskQuery(params, sdFormat)
         int offset = params.offset ? Integer.parseInt(params.offset) : 0
         result.taskInstanceList = taskService.getTasksByResponsibles(result.user, result.institution, queryForFilter)

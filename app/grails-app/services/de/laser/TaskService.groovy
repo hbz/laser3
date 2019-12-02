@@ -22,15 +22,18 @@ class TaskService {
     def filterService
     def messageSource
 
+    private static final String select_with_join = 'select t from Task t LEFT JOIN t.responsibleUser ru '
+
     def getTasksByCreator(User user, Map queryMap, flag) {
         def tasks = []
         if (user) {
             def query
             if (flag == WITHOUT_TENANT_ONLY) {
-                query = "select t from Task t where t.creator=:user and t.responsibleUser is null and t.responsibleOrg is null "
+                query = select_with_join + 'where t.creator = :user and ru is null and t.responsibleOrg is null'
             } else {
-                query = "select t from Task t where t.creator=:user "
+                query = select_with_join + 'where t.creator = :user'
             }
+
             def params = [user : user]
             if (queryMap){
                 query += queryMap.query
@@ -88,7 +91,7 @@ class TaskService {
     def getTasksByResponsible(User user, Map queryMap) {
         def tasks = []
         if (user) {
-            def query  = "select t from Task t where t.responsibleUser = :user" + queryMap.query
+            def query  = select_with_join + 'where t.responsibleUser = :user' + queryMap.query
             query = addDefaultOrder(query)
             def params = [user : user] << queryMap.queryParams
             tasks = Task.executeQuery(query, params)
@@ -99,7 +102,7 @@ class TaskService {
     def getTasksByResponsible(Org org, Map queryMap) {
         def tasks = []
         if (org) {
-            def query  = "select t from Task t where t.responsibleOrg = :org" + queryMap.query
+            def query  = select_with_join + 'where t.responsibleOrg = :org' + queryMap.query
             query = addDefaultOrder(query)
             def params = [org : org] << queryMap.queryParams
             tasks = Task.executeQuery(query, params)
@@ -111,8 +114,9 @@ class TaskService {
         def tasks = []
 
         if (user && org) {
-            def query = "select t from Task t where ( t.responsibleUser = :user or t.responsibleOrg = :org ) " + queryMap.query
+            def query = select_with_join + 'where ( ru = :user or t.responsibleOrg = :org ) ' + queryMap.query
             query = addDefaultOrder(query)
+
             def params = [user : user, org: org] << queryMap.queryParams
             tasks = Task.executeQuery(query, params)
         } else if (user) {
@@ -431,6 +435,7 @@ order by lower(s.name), s.endDate""", qry_params_for_sub << [referenceField: 'va
         }
         query
     }
+
     private Map addDefaultOrder(Map params){
         if (params) {
             if ( ! params.sort) {
