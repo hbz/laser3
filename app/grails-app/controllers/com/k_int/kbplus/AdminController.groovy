@@ -16,6 +16,8 @@ import de.laser.helper.RDStore
 import grails.converters.JSON
 import grails.plugin.springsecurity.SpringSecurityUtils
 import grails.plugin.springsecurity.annotation.Secured
+import grails.util.Holders
+import groovy.sql.Sql
 import groovy.util.slurpersupport.FilteredNodeChildren
 import groovy.util.slurpersupport.GPathResult
 import groovy.xml.MarkupBuilder
@@ -440,8 +442,19 @@ class AdminController extends AbstractDebugController {
   }
 
     @Secured(['ROLE_ADMIN'])
+    def databaseStatistics() {
+        Map<String, Object> result = [:]
+
+        def dataSource = Holders.grailsApplication.mainContext.getBean('dataSource')
+        def sql = new Sql(dataSource)
+        result.statistic = sql.rows("select * from count_rows_for_all_tables('public')")
+
+        result
+    }
+
+    @Secured(['ROLE_ADMIN'])
     def dataConsistency() {
-        Map result = [:]
+        Map<String, Object> result = [:]
 
         if (params.task) {
 			List objIds = params.list('objId')

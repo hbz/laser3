@@ -29,6 +29,7 @@ class Person extends AbstractBaseDomain {
     Date lastUpdated
 
     static mapping = {
+        cache  true
         id              column:'prs_id'
         globalUID       column:'prs_guid'
         version         column:'prs_version'
