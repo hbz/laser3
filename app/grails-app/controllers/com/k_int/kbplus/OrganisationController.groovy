@@ -295,7 +295,8 @@ class OrganisationController extends AbstractDebugController {
     def create() {
         switch (request.method) {
             case 'POST':
-                def orgInstance = new Org(params)
+                Org orgInstance = new Org(params)
+                orgInstance.status = O_STATUS_CURRENT
 
                 if (params.name) {
                     if (orgInstance.save(flush: true)) {
@@ -377,7 +378,7 @@ class OrganisationController extends AbstractDebugController {
 
             try {
                 if(accessService.checkPerm("ORG_CONSORTIUM")) {
-                    orgInstance = new Org(name: params.institution, sector: orgSector, createdBy: contextOrg)
+                    orgInstance = new Org(name: params.institution, sector: orgSector, createdBy: contextOrg, status: O_STATUS_CURRENT)
                     orgInstance.save()
 
                     Combo newMember = new Combo(fromOrg:orgInstance,toOrg:contextOrg,type:COMBO_TYPE_CONSORTIUM)
@@ -405,7 +406,7 @@ class OrganisationController extends AbstractDebugController {
 
             try {
                 if(accessService.checkPerm("ORG_INST_COLLECTIVE")) {
-                    deptInstance = new Org(name: params.department, sector: orgSector, createdBy: contextOrg)
+                    deptInstance = new Org(name: params.department, sector: orgSector, createdBy: contextOrg, status: O_STATUS_CURRENT)
                     deptInstance.save()
 
                     Combo newMember = new Combo(fromOrg:deptInstance,toOrg:contextOrg,type:COMBO_TYPE_DEPARTMENT)

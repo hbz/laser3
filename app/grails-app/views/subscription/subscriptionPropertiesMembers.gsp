@@ -28,8 +28,7 @@
 <semui:messages data="${flash}"/>
 
 <h4>
-    <g:message code="subscription.linkPackagesMembers.subscription" args="${args.superOrgType}"/>: <g:link
-            controller="subscription" action="show" id="${parentSub.id}">${parentSub.name}</g:link>
+    <g:message code="subscription"/>: <g:link controller="subscription" action="show" id="${parentSub.id}">${parentSub.name}</g:link>
     <br><br>
 
 </h4>
@@ -185,8 +184,10 @@
             </div>
 
             <div class="ui segment">
-                <h3>${message(code: 'subscription.propertiesMembers.subscriber')} <semui:totalNumber
-                        total="${filteredSubChilds?.size()}"/></h3>
+                <h3>
+                    ${args.memberType[0]}
+                    <semui:totalNumber total="${filteredSubChilds?.size()}"/>
+                </h3>
                 <table class="ui celled la-table table">
                     <thead>
                     <tr>

@@ -27,7 +27,7 @@
 <semui:messages data="${flash}"/>
 
 <h4>
-    <g:message code="subscription.linkPackagesMembers.subscription" args="${args.superOrgType}"/>:
+    <g:message code="subscription"/>:
     <g:link controller="subscription" action="show" id="${parentSub.id}">${parentSub.name}</g:link><br><br>
 
 </h4>
