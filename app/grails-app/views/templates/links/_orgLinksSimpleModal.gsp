@@ -22,7 +22,7 @@
                 </p>
                 <g:set var="varSelectOne" value="${message(code:'default.selectOne.label')}" />
 
-                <semui:signedDropdown name="orm_orgOid" noSelection="${varSelectOne}" from="${orgList}" signedIds="${signedIdList}" />
+                <semui:signedDropdown name="orm_orgOid_${tmplModalID}" noSelection="${varSelectOne}" from="${orgList}" signedIds="${signedIdList}" />
             </g:if>
             <g:else>
                 <p>
