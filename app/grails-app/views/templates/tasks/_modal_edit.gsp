@@ -81,11 +81,7 @@
 
                 <semui:datepicker class="wide eight" label="task.endDate.label" id="endDate" name="endDate" placeholder="default.date.label" value="${formatDate(format:message(code:'default.date.format.notime', default:'yyyy-MM-dd'), date:taskInstance?.endDate)}" required bean="${taskInstance}" />
 
-            </div>        <select name="gender" class="ui dropdown" id="select">
-            <option value="">Gender</option>
-            <option value="male">Male</option>
-            <option value="female">Female</option>
-        </select>
+            </div>
         </div>
 
         <div class="field">
