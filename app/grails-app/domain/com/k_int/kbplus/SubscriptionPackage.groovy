@@ -114,9 +114,8 @@ class SubscriptionPackage {
   def getAccessPointListForOrgAndPlatform(org,platform){
     // do not mix derived and not derived
     if (platform.usesPlatformAccessPoints(org, this)){
-      return platform.oapp.findAll {
-        it.oap?.org == org && it.active
-      }
+      def hql = "select oapl from OrgAccessPointLink oapl join oapl.oap as oap where oap.org=:org and oapl.platform=:platform and oapl.active=true"
+      return OrgAccessPointLink.executeQuery(hql, [org:org, platform:platform])
     } else {
         def hql = "select oapl from OrgAccessPointLink oapl join oapl.oap as oap where oapl.subPkg=:subPkg and oap.org=:org and oapl.active=true"
         return OrgAccessPointLink.executeQuery(hql, [subPkg:this, org:org])
