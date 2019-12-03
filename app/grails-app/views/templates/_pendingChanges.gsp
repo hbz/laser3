@@ -1,6 +1,6 @@
 
 <g:if test="${processingpc}">
-     <bootstrap:alert class="alert-warning"><g:message code="pendingchange.inprogress"/></bootstrap:alert>
+    <semui:msg class="negative"  message="pendingchange.inprogress" />
 </g:if>
 
 <g:if test="${editable && pendingChanges?.size() > 0}">
