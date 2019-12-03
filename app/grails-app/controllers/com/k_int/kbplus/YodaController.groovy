@@ -1488,31 +1488,31 @@ class YodaController {
         )
 
         if (params.cmd == 'doIt') {
-            println opp.collect{ it -> it.id }
+            println opp.collect{ it.id }
             if (opp.size() > 0) {
                 OrgPrivateProperty.executeUpdate('DELETE FROM OrgPrivateProperty opp WHERE opp.id in :idList',
-                        [idList: opp.collect { it -> it.id }]
+                        [idList: opp.collect { it.id }]
                 )
             }
 
-            println spp.collect{ it -> it.id }
+            println spp.collect{ it.id }
             if (spp.size() > 0) {
                 SubscriptionPrivateProperty.executeUpdate('DELETE FROM SubscriptionPrivateProperty spp WHERE spp.id in :idList',
-                        [idList: spp.collect { it -> it.id }]
+                        [idList: spp.collect { it.id }]
                 )
             }
 
-            println lpp.collect{ it -> it.id }
+            println lpp.collect{ it.id }
             if (lpp.size() > 0) {
                 LicensePrivateProperty.executeUpdate('DELETE FROM LicensePrivateProperty lpp WHERE lpp.id in :idList',
-                        [idList: lpp.collect { it -> it.id }]
+                        [idList: lpp.collect { it.id }]
                 )
             }
 
-            println ppp.collect{ it -> it.id }
+            println ppp.collect{ it.id }
             if (ppp.size() > 0) {
                 PersonPrivateProperty.executeUpdate('DELETE FROM PersonPrivateProperty ppp WHERE ppp.id in :idList',
-                        [idList: ppp.collect { it -> it.id }]
+                        [idList: ppp.collect { it.id }]
                 )
             }
         }
