@@ -5,9 +5,7 @@
     <semui:errors bean="${newProp}" />
 </g:if>
 
-<g:if test="${error}">
-    <bootstrap:alert class="alert-danger">${error}</bootstrap:alert>
-</g:if>
+
 
 <table class="ui la-table-small la-table-inCard table">
     <g:if test="${propDefGroup}">
@@ -38,9 +36,11 @@
                     <td>
                         <g:if test="${prop.type.getI10n('expl') != null && !prop.type.getI10n('expl').contains(' °')}">
                             ${prop.type.getI10n('name')}
-                            <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center" data-content="${prop.type.getI10n('expl')}">
-                                <i class="question circle icon"></i>
-                            </span>
+                            <g:if test="${prop.type.getI10n('expl')}">
+                                <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center" data-content="${prop.type.getI10n('expl')}">
+                                    <i class="question circle icon"></i>
+                                </span>
+                            </g:if>
                         </g:if>
                         <g:else>
                             ${prop.type.getI10n('name')}
@@ -231,4 +231,7 @@
     </g:if>
 
 </table>
+<g:if test="${error}">
+    <semui:msg class="negative" header="${message(code: 'myinst.message.attention')}" text="${error}"/>
+</g:if>
 <!-- _groups.gsp -->
