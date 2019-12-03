@@ -2,7 +2,11 @@
 
 **Ticket    Date    Branch      Author  Feature/Bug     Description/Keywords**
 
-1823/1901 28.11.2019  rc-1.1 Andreas Bug         Benennungen korrigiert, nicht umfangreichere Bugs der Kollektivsicht behoben 
+1923    03.12.2019  rc1.1       David   Bug         Fehlerhafte Einträge bei Organisationen (Erstellt durch, Organisiert durch)
+
+1918    25.11.2019  rc1.1       David   Bug         Fehlende Organisationszuweisung bei autom. angelegten Nutzern
+
+1823/1901 28.11.2019  rc-1.1    Andreas Bug         Benennungen korrigiert, nicht umfangreichere Bugs der Kollektivsicht behoben 
 
 1907    02.12.2019  hbz-dev     David   Bug         Refactoring: collect()-Methode
      
@@ -20,7 +24,7 @@
 
 1169    25.11.2019  hbz-dev     Moe     Feature     E-Books: Jahrespaket/Stand des jeweiligen Pakets auszeichnen
 
-1918    25.11.2019  rc1.1   David   Bug     Fehlende Organisationszuweisung bei autom. angelegten Nutzern
+1918    25.11.2019  rc1.1       David   Bug         Fehlende Organisationszuweisung bei autom. angelegten Nutzern
 
 1898    22.11.2019  hbz-dev     David   Bug         Private Kontakte unter Meine Anbieter & Lieferanten als Dublette
 
@@ -33,8 +37,6 @@
 1830    21.11.2019  rc-1.1      Moe     Bug         filter cost element requires defined cost elements
     
  /      21.11.2019  rc-1.1      Moe     Bug         export of Entitlements by renew with survey
- 
- /      20.11.2019  rc-1.1      Andreas     Bug     pending changes are now filtered out when deactivating audit
  
  /      20.11.2019  rc-1.1      Andreas Bug         pending changes are now filtered out when deactivating audit
     

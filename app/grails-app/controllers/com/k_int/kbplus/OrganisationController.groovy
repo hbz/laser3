@@ -388,7 +388,12 @@ class OrganisationController extends AbstractDebugController {
 
             try {
                 if(accessService.checkPerm("ORG_CONSORTIUM")) {
-                    orgInstance = new Org(name: params.institution, sector: orgSector, createdBy: contextOrg, status: O_STATUS_CURRENT)
+                    // HOTFIX: IMPORTANT - https://jira.hbz-nrw.de/browse/ERMS-1923
+                    // createdBy will set by Org.beforeInsert()
+                    // otherwise contextOrg.legallyObligedBy is set to orgInstance ??
+                    // orgInstance = new Org(name: params.institution, sector: orgSector, createdBy: contextOrg, status: O_STATUS_CURRENT)
+
+                    orgInstance = new Org(name: params.institution, sector: orgSector, /*createdBy: contextOrg,*/ status: O_STATUS_CURRENT)
                     orgInstance.save()
 
                     Combo newMember = new Combo(fromOrg:orgInstance,toOrg:contextOrg,type:COMBO_TYPE_CONSORTIUM)
@@ -416,7 +421,12 @@ class OrganisationController extends AbstractDebugController {
 
             try {
                 if(accessService.checkPerm("ORG_INST_COLLECTIVE")) {
-                    deptInstance = new Org(name: params.department, sector: orgSector, createdBy: contextOrg, status: O_STATUS_CURRENT)
+                    // HOTFIX: IMPORTANT - https://jira.hbz-nrw.de/browse/ERMS-1923
+                    // createdBy will set by Org.beforeInsert()
+                    // otherwise contextOrg.legallyObligedBy is set to orgInstance ??
+                    // deptInstance = new Org(name: params.department, sector: orgSector, createdBy: contextOrg, status: O_STATUS_CURRENT)
+
+                    deptInstance = new Org(name: params.department, sector: orgSector, /*createdBy: contextOrg,*/ status: O_STATUS_CURRENT)
                     deptInstance.save()
 
                     Combo newMember = new Combo(fromOrg:deptInstance,toOrg:contextOrg,type:COMBO_TYPE_DEPARTMENT)
