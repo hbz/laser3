@@ -127,7 +127,7 @@
     </tbody>
 </table>
 <g:if test="${error}">
-    <semui:msg class="negative" header="${message(code: 'myinst.message.attention')}" message="${error}"/>
+    <semui:msg class="negative" header="${message(code: 'myinst.message.attention')}" text="${error}"/>
 </g:if>
 <r:script>
     $('input:checkbox').change( function(event) {

@@ -11,7 +11,7 @@
         <h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon /><g:message code="default.edit.label" args="[entityName]" /></h1>
 
         <g:if test="${flash.message}">
-			<semui:msg class="warning" message="${flash.message}" />
+			<semui:msg class="warning" text="${flash.message}" />
         </g:if>
 
         <semui:errors bean="${taskInstance}" />

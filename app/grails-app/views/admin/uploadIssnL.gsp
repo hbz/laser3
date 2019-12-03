@@ -9,9 +9,7 @@
 
         <h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon />Import Identifier Same-As Relations</h1>
       <g:if test="${hasStarted}">
-        <div>
-            <semui:msg id="procesing_alert" class="warning" message="${message(code:'admin.upload.issnL')}" />
-        </div>
+          <semui:msg id="procesing_alert" class="warning" message="admin.upload.issnL" />
       </g:if>
         <p>Upload a file of tab separated equivalent identifiers. By default, the assumption is ISSN -&gt; ISSNL mappings</p>
            

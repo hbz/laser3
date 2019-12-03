@@ -9,7 +9,7 @@
   <div class="modal-body">
 
     <g:if test="${message}">
-      <semui:msg class="warning" message="${message}" />
+      <semui:msg class="warning" text="${message}" />
     </g:if>
 
     <p>${message(code:'template.coreAssertionsModal.note', default:'Edit existing core dates using the table below. Click the start and end dates to modify them and then the tick to accept your change. Once finished, click the Done button below')}</p>
