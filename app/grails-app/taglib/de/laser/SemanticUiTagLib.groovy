@@ -10,6 +10,7 @@ import com.k_int.kbplus.abstract_domain.PrivateProperty
 import com.k_int.kbplus.auth.User
 import de.laser.helper.RDStore
 import de.laser.helper.SessionCacheWrapper
+import de.laser.helper.SwissKnife
 import org.codehaus.groovy.grails.plugins.web.taglib.ValidationTagLib
 import org.springframework.web.servlet.support.RequestContextUtils
 
@@ -74,6 +75,8 @@ class SemanticUiTagLib {
             out << attrs.text
         }
         if (attrs.message) {
+            SwissKnife.checkMessageKey(attrs.message)
+
             out << "${message(code: attrs.message, args: attrs.args)}"
         }
         out << '</p>'
@@ -120,8 +123,7 @@ class SemanticUiTagLib {
     // <semui:card>
 
     def card = { attrs, body ->
-        def text = attrs.text ? attrs.text : ''
-        def message = attrs.message ? "${message(code: attrs.message)}" : ''
+        def (text, message) = SwissKnife.getTextAndMessage(attrs)
         def title = (text && message) ? text + " - " + message : text + message
 
         out << '<div class="ui card ' + attrs.class + '">'
@@ -657,8 +659,7 @@ class SemanticUiTagLib {
 
         String id        = attrs.id ? ' id="' + attrs.id + '" ' : ''
         String modalSize = attrs.modalSize ? attrs.modalSize  : ''
-        String text      = attrs.text ? attrs.text : ''
-        String message   = attrs.message ? "${g.message(code: attrs.message)}" : ''
+        def (text, message) = SwissKnife.getTextAndMessage(attrs)
         String title     = (text && message) ? text + " - " + message : text + message
         String isEditModal = attrs.isEditModal
 
@@ -1026,8 +1027,7 @@ class SemanticUiTagLib {
 
     def tabsItem = { attrs, body ->
 
-        def text = attrs.text ? attrs.text : ''
-        def message = attrs.message ? "${message(code: attrs.message)}" : ''
+        def (text, message) = SwissKnife.getTextAndMessage(attrs)
         def linkBody = (text && message) ? text + " - " + message : text + message
         def aClass = ((this.pageScope.variables?.actionName == attrs.action && attrs.tab == params.tab) ? 'item active' : 'item') + (attrs.class ? ' ' + attrs.class : '')
 
@@ -1052,7 +1052,7 @@ class SemanticUiTagLib {
         def surveyInfo = attrs.surveyInfo
         def surveyConfig = attrs.surveyInfo
         def linkBody = "<i class='write icon'></i>"
-        def message = attrs.message ? "${message(code: attrs.message)}" : ''
+        def (text, message) = SwissKnife.getTextAndMessage(attrs)
         def aClass = attrs.class
 
         out << "<span class='la-popup-tooltip la-delay'"
