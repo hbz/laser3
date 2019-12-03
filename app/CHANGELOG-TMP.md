@@ -2,7 +2,7 @@
 
 **Ticket    Date    Branch      Author  Feature/Bug     Description/Keywords**
 
-1918    03.12.2019  rc1.1   David   Bug     Fehlerhafte Einträge bei Organisationen (Erstellt durch, Organisiert durch)
+1923    03.12.2019  rc1.1   David   Bug     Fehlerhafte Einträge bei Organisationen (Erstellt durch, Organisiert durch)
 
 1918    25.11.2019  rc1.1   David   Bug     Fehlende Organisationszuweisung bei autom. angelegten Nutzern
 
