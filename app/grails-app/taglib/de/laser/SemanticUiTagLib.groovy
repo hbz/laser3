@@ -590,7 +590,8 @@ class SemanticUiTagLib {
         }
 
 
-        out << '<div class="ui la-filter segment la-clear-before' + (extended ?'':' style="display: none;"') + '">'
+        //out << '<div class="ui la-filter segment la-clear-before' + (extended ?'':' style="display: none;"') + '">'
+        out << '<div class="ui la-filter segment la-clear-before"' + (extended ?'':' style="display: none;"') + '>'
         out << body()
         out << '</div>'
     }
