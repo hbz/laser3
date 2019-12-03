@@ -43,7 +43,7 @@ class SurveyUpdateService extends AbstractLockableService {
             // Ready -> Started
             def readySurveysIds = SurveyInfo.where {
                 status == RDStore.SURVEY_READY && startDate <= currentDate
-            }.collect { it -> it.id }
+            }.collect { it.id }
 
             log.info("surveyCheck (Ready to Started) readySurveysIds: " + readySurveysIds)
 
@@ -62,7 +62,7 @@ class SurveyUpdateService extends AbstractLockableService {
 
             def startedSurveyIds = SurveyInfo.where {
                 (status == RDStore.SURVEY_SURVEY_STARTED) && (startDate < currentDate) && (endDate != null && endDate < currentDate)
-            }.collect { it -> it.id }
+            }.collect { it.id }
 
             log.info("surveyCheck (Started to Completed) startedSurveyIds: " + startedSurveyIds)
 

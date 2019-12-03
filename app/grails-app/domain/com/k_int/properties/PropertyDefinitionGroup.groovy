@@ -63,7 +63,7 @@ class PropertyDefinitionGroup {
     def getCurrentProperties(def currentObject) {
 
         def result = []
-        def givenIds = getPropertyDefinitions().collect{ it -> it.id }
+        def givenIds = getPropertyDefinitions().collect{ it.id }
 
         currentObject?.customProperties?.each{ cp ->
             if (cp.type.id in givenIds) {

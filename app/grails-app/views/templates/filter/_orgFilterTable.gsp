@@ -227,26 +227,40 @@
                 <g:each in="${PersonRole.findAllByFunctionTypeAndOrg(RefdataValue.getByValueAndCategory('General contact person', 'Person Function'), org)}"
                         var="personRole">
                     <g:if test="${personRole.prs.isPublic || (! personRole.prs.isPublic && personRole?.prs?.tenant?.id == contextService.getOrg()?.id)}">
-                        ${personRole?.getPrs()?.getFirst_name()} ${personRole?.getPrs()?.getLast_name()}<br>
-                        <g:each in="${Contact.findAllByPrsAndContentType(
-                                personRole.getPrs(),
-                                RefdataValue.getByValueAndCategory('E-Mail', 'ContactContentType')
-                        )}" var="email">
-                            <i class="ui icon envelope outline"></i>
-                            <span data-position="right center"
-                                   class="la-popup-tooltip la-delay" data-content="Mail senden an ${personRole?.getPrs()?.getFirst_name()} ${personRole?.getPrs()?.getLast_name()}">
-                                <a href="mailto:${email?.content}">${email?.content}</a>
-                            </span><br>
-                        </g:each>
-                        <g:each in="${Contact.findAllByPrsAndContentType(
-                                personRole.getPrs(),
-                                RefdataValue.getByValueAndCategory('Phone', 'ContactContentType')
-                        )}" var="telNr">
-                            <i class="ui icon phone"></i>
-                            <span data-position="right center">
-                                ${telNr?.content}
-                            </span><br>
-                        </g:each>
+                        <div class="item">
+                            <%--
+                            <g:if test="${! personRole.prs.isPublic}">
+                                <span class="la-popup-tooltip la-delay" data-content="${message(code:'address.private')}" data-position="top right">
+                                    <i class="address card outline icon"></i>
+                                </span>
+                            </g:if>
+                            <g:else>
+                                <i class="address card icon"></i>
+                            </g:else>
+                            --%>
+                            ${personRole?.getPrs()?.getFirst_name()} ${personRole?.getPrs()?.getLast_name()} <br />
+
+                            <g:each in="${Contact.findAllByPrsAndContentType(
+                                    personRole.getPrs(),
+                                    RefdataValue.getByValueAndCategory('E-Mail', 'ContactContentType')
+                            )}" var="email">
+                                <i class="ui icon envelope outline"></i>
+                                <span data-position="right center"
+                                       class="la-popup-tooltip la-delay" data-content="Mail senden an ${personRole?.getPrs()?.getFirst_name()} ${personRole?.getPrs()?.getLast_name()}">
+                                    <a href="mailto:${email?.content}">${email?.content}</a>
+                                </span><br>
+                            </g:each>
+                            <g:each in="${Contact.findAllByPrsAndContentType(
+                                    personRole.getPrs(),
+                                    RefdataValue.getByValueAndCategory('Phone', 'ContactContentType')
+                            )}" var="telNr">
+                                <i class="ui icon phone"></i>
+                                <span data-position="right center">
+                                    ${telNr?.content}
+                                </span><br>
+                            </g:each>
+
+                        </div>
                     </g:if>
                 </g:each>
             </td>

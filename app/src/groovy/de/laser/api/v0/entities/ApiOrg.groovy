@@ -95,7 +95,7 @@ class ApiOrg {
         // RefdataValues
 
         result.sector       = org.sector?.value
-        result.type         = org.orgType?.collect{ it -> it.value }
+        result.type         = org.orgType?.collect{ it.value }
         result.status       = org.status?.value
 
         // References

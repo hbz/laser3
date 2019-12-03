@@ -54,8 +54,8 @@ class Org
     String scope
     Date dateCreated
     Date lastUpdated
-    Org createdBy
-    Org legallyObligedBy
+    Org createdBy           // TODO: refactoring to solve HOTFIX https://jira.hbz-nrw.de/browse/ERMS-1923
+    Org legallyObligedBy    // TODO: refactoring to solve HOTFIX https://jira.hbz-nrw.de/browse/ERMS-1923
     String categoryId
 
     @RefdataAnnotation(cat = 'OrgSector')
@@ -659,11 +659,9 @@ class Org
         result
     }
 
-    def getallOrgTypeIds()
+    List getallOrgTypeIds()
     {
-        List result = []
-        orgType.collect{ it -> result.add(it.id) }
-        result
+        orgType.findAll{it}.collect{it.id}
     }
 
     boolean isInComboOfType(RefdataValue comboType) {
