@@ -41,7 +41,7 @@
                   <g:each in="${sp.getAccessPointListForOrgAndPlatform(contextOrg, platform)?.collect()}" var="orgap">
                     <g:link controller="accessPoint" action="edit_${orgap.oap.accessMethod}"
                             id="${orgap.oap.id}">${orgap.oap.name} (${orgap.oap.accessMethod.getI10n('value')})</g:link>
-                    <g:if test="${!platform.usesPlatformAccessPoints(contextOrg, sp)}">
+                    <g:if test="${editmode && !platform.usesPlatformAccessPoints(contextOrg, sp)}">
                       <g:link class="ui mini negative icon button js-open-confirm-modal" controller="accessPoint"
                               action="unlinkPlatform" id="${orgap.id}"
                               data-confirm-tokenMsg="${message(code: 'confirm.dialog.unlink.accessPoint.platform', args: [orgap.oap.name, orgap.platform.name])}"
@@ -79,7 +79,7 @@
                                   model="${[tmplText           : message(code:'subscription.details.linkAccessPoint.accessConfig.modal.removeDerivation.header'),
                                             tmplID             : 'removeDerivation',
                                             tmplIcon           : 'thumbtack blue',
-                                            tmplCss            : 'icon small la-selectable-button',
+                                            tmplCss            : editable ? 'icon small la-selectable-button' : 'icon small',
                                             tmplModalID        : "removeDerivationModal-${sp.id}",
                                             editmode           : editable,
                                             accessPointList    : platform.getNotActiveAccessPoints(contextOrg),
@@ -98,7 +98,7 @@
                                   model="${[tmplText           : message(code:'subscription.details.linkAccessPoint.accessConfig.modal.addDerivation.header'),
                                             tmplID             : 'addDerivation',
                                             tmplIcon           : 'la-thumbtack slash blue',
-                                            tmplCss            : 'icon small la-selectable-button',
+                                            tmplCss            : editable ? 'icon small la-selectable-button' : 'icon small',
                                             tmplModalID        : "derivationModal-${sp.id}",
                                             editmode           : editable,
                                             accessPointList    : platform.getNotActiveAccessPoints(contextOrg),

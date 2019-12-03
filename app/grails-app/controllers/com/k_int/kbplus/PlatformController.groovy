@@ -375,8 +375,9 @@ class PlatformController extends AbstractDebugController {
         render(view: "_apLinkContent", model: result)
     }
 
-    @DebugAnnotation(test='hasAffiliation("INST_EDITOR")')
-    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_EDITOR") })
+    @Secured(closure = {
+        ctx.accessService.checkPermAffiliation("ORG_BASIC_MEMBER,ORG_CONSORTIUM", "INST_EDITOR")
+    })
     def addDerivation() {
         if (!params.sp) {
             flash.message = message(code: 'subscription.details.linkAccessPoint.missingSubPkg.message')
@@ -409,8 +410,9 @@ class PlatformController extends AbstractDebugController {
         redirect(url: request.getHeader('referer'))
     }
     
-    @DebugAnnotation(test='hasAffiliation("INST_EDITOR")')
-    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_EDITOR") })
+    @Secured(closure = {
+        ctx.accessService.checkPermAffiliation("ORG_BASIC_MEMBER,ORG_CONSORTIUM", "INST_EDITOR")
+    })
     def removeDerivation() {
         // create an OrgAccessPointLink with
         // subscriptionPackage=passed subscriptionPackage | Platform = passed Platform | AccessPoint = null
@@ -447,8 +449,9 @@ class PlatformController extends AbstractDebugController {
         redirect(url: request.getHeader('referer'))
     }
 
-    @DebugAnnotation(test='hasAffiliation("INST_EDITOR")')
-    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_EDITOR") })
+    @Secured(closure = {
+        ctx.accessService.checkPermAffiliation("ORG_BASIC_MEMBER,ORG_CONSORTIUM", "INST_EDITOR")
+    })
     def linkAccessPoint() {
         def apInstance = null
         if (params.AccessPoints){
@@ -485,8 +488,9 @@ class PlatformController extends AbstractDebugController {
         redirect(url: request.getHeader('referer'))
     }
 
-    @DebugAnnotation(test='hasAffiliation("INST_EDITOR")')
-    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_EDITOR") })
+    @Secured(closure = {
+        ctx.accessService.checkPermAffiliation("ORG_BASIC_MEMBER,ORG_CONSORTIUM", "INST_EDITOR")
+    })
     def removeAccessPoint() {
         // update active aopl, set active=false
         def aoplInstance = OrgAccessPointLink.get(params.oapl_id)

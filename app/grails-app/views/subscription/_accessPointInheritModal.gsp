@@ -1,14 +1,16 @@
 <g:if test="${editmode}">
   <a class="ui basic ${tmplCss}" data-semui="modal" href="#${tmplModalID}">
-    <g:if test="${tmplIcon}">
-      <i class="${tmplIcon} icon"></i>
-    </g:if>
-    <g:if test="${tmplButtonText}">
-      ${tmplButtonText}
-    </g:if>
+</g:if>
+  <g:if test="${tmplIcon}">
+    <i class="${tmplIcon} icon"></i>
+  </g:if>
+  <g:if test="${tmplButtonText}">
+    ${tmplButtonText}
+  </g:if>
+<g:if test="${editmode}">
   </a>
 </g:if>
-<g:if test="${tmplID == 'addDerivation'}">
+<g:if test="${editmode && tmplID == 'addDerivation'}">
   <semui:modal id="${tmplModalID}" text="${tmplText}" formID="addDerivationForm-${subscriptionPackage.id}" msgSave="${message(code:'subscription.details.linkAccessPoint.accessConfig.modal.addDerivation.msgSave')}">
     <g:form id="addDerivationForm-${subscriptionPackage.id}" method="get" class="form-inline ui small form"
             url="[controller: 'platform', action: 'addDerivation']">
@@ -25,7 +27,7 @@
     </g:form>
   </semui:modal>
 </g:if>
-<g:else>
+<g:elseif test="${editmode}">
   <semui:modal id="${tmplModalID}" text="${tmplText}" formID="removeDerivationForm-${subscriptionPackage.id}" msgSave="${message(code:'subscription.details.linkAccessPoint.accessConfig.modal.removeDerivation.msgSave')}">
     <g:form id="removeDerivationForm-${subscriptionPackage.id}" method="get" class="form-inline ui small form"
             url="[controller: 'platform', action: 'removeDerivation']">
@@ -41,4 +43,4 @@
       </div>
     </g:form>
   </semui:modal>
-</g:else>
+</g:elseif>
