@@ -122,6 +122,7 @@
                                                       data-done="c3po.initGroupedProperties('${createLink(controller:'ajax', action:'lookup')}','#${custom_props_div}')"
                                                       data-always="c3po.loadJsAfterAjax(); bb8.init('#${custom_props_div}') "
                                                       data-update="${custom_props_div}"
+                                                      role="button"
                                     >
                                         <i class="icon la-thumbtack slash la-js-editmode-icon"></i>
                                     </laser:remoteLink>
@@ -194,15 +195,20 @@
     <g:if test="${editable}">
         <tfoot>
             <tr>
-                <g:if test="${propDefGroup.ownerType == License.class.name}">
-                    <td colspan="5">
+                <g:if test="${propDefGroup}">
+                    <g:if test="${propDefGroup.ownerType == License.class.name}">
+                        <td colspan="5">
+                    </g:if>
+                    <g:else>
+                        <td colspan="4">
+                    </g:else>
                 </g:if>
                 <g:else>
-                    <td colspan="4">
+                    <td>
                 </g:else>
 
                     <g:formRemote url="[controller: 'ajax', action: 'addCustomPropertyValue']" method="post"
-                                  name="cust_prop_add_value"
+                                  name="cust_prop_add_value_group_${propDefGroup.id}"
                                   class="ui form"
                                   update="${custom_props_div}"
                                   onComplete="c3po.loadJsAfterAjax()"

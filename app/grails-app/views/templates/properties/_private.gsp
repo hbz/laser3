@@ -120,26 +120,31 @@
     <g:if test="${overwriteEditable}">
         <tfoot>
             <tr>
-                <td colspan="4">
-                    <g:formRemote url="[controller: 'ajax', action: 'addPrivatePropertyValue']" method="post"
-                                  name="cust_prop_add_value"
-                                  class="ui form"
-                                  update="${custom_props_div}"
-                                  onSuccess="c3po.initProperties('${createLink(controller:'ajax', action:'lookup')}', '#${custom_props_div}', ${tenant?.id})"
-                                  onComplete="c3po.loadJsAfterAjax()"
-                    >
-                    <g:if test="${!(actionName in ['surveyConfigsInfo', 'surveyInfosIssueEntitlements'])}">
-                        <input type="hidden" name="propIdent"  data-desc="${prop_desc}" class="customPropSelect"/>
-                        <input type="hidden" name="ownerId"    value="${ownobj?.id}"/>
-                        <input type="hidden" name="tenantId"   value="${tenant?.id}"/>
-                        <input type="hidden" name="editable"   value="${editable}"/>
-                        <input type="hidden" name="ownerClass" value="${ownobj?.class}"/>
+                <g:if test="${ownobj.privateProperties}">
+                    <td colspan="4">
+                </g:if>
+                <g:else>
+                    <td>
+                </g:else>
+                        <g:formRemote url="[controller: 'ajax', action: 'addPrivatePropertyValue']" method="post"
+                                      name="cust_prop_add_value_private"
+                                      class="ui form"
+                                      update="${custom_props_div}"
+                                      onSuccess="c3po.initProperties('${createLink(controller:'ajax', action:'lookup')}', '#${custom_props_div}', ${tenant?.id})"
+                                      onComplete="c3po.loadJsAfterAjax()"
+                        >
+                        <g:if test="${!(actionName in ['surveyConfigsInfo', 'surveyInfosIssueEntitlements'])}">
+                            <input type="hidden" name="propIdent"  data-desc="${prop_desc}" class="customPropSelect"/>
+                            <input type="hidden" name="ownerId"    value="${ownobj?.id}"/>
+                            <input type="hidden" name="tenantId"   value="${tenant?.id}"/>
+                            <input type="hidden" name="editable"   value="${editable}"/>
+                            <input type="hidden" name="ownerClass" value="${ownobj?.class}"/>
 
-                        <input type="submit" value="${message(code:'default.button.add.label')}" class="ui button js-wait-wheel"/>
-                    </g:if>
-                </g:formRemote>
+                            <input type="submit" value="${message(code:'default.button.add.label')}" class="ui button js-wait-wheel"/>
+                        </g:if>
+                    </g:formRemote>
 
-            </td>
+                    </td>
         </tr>
     </tfoot>
 </g:if>

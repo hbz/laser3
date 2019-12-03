@@ -54,5 +54,5 @@
             <semui:actionsDropdownItem message="template.documents.add" data-semui="modal" href="#modalCreateDocument" />
         </semui:actionsDropdown>
     </g:if>
+    <g:render template="/templates/documents/modal" model="${[ownobj: contextOrg, owntp: 'org', inContextOrg: true]}"/>
 </g:if>
-<g:render template="/templates/documents/modal" model="${[ownobj: contextOrg, owntp: 'org', inContextOrg: true]}"/>

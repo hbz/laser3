@@ -6,7 +6,7 @@
 <semui:card message="task.plural" class="notes la-js-hideable ${css_class}" href="#modalCreateTask" editable="${overwriteEditable}">
     <g:each in="${tasks}" var="tsk">
         <div class="ui grid">
-            <div id="summary" class="twelve wide column summary">
+            <div class="twelve wide column summary">
                 <a onclick="taskedit(${tsk?.id});">${tsk?.title}</a>
                 <br />
                 <div class="content">
@@ -38,6 +38,7 @@
                     onVisible: function() {
                         $(this).find('.datepicker').calendar(r2d2.configs.datepicker);
                         ajaxPostFunc();
+                        $('.dropdown').dropdown();
                     }
                 }).modal('show')
             }
