@@ -52,8 +52,8 @@ class Org
     String scope
     Date dateCreated
     Date lastUpdated
-    Org createdBy
-    Org legallyObligedBy
+    Org createdBy           // TODO: refactoring to solve HOTFIX https://jira.hbz-nrw.de/browse/ERMS-1923
+    Org legallyObligedBy    // TODO: refactoring to solve HOTFIX https://jira.hbz-nrw.de/browse/ERMS-1923
     String categoryId
 
     @RefdataAnnotation(cat = 'OrgSector')
