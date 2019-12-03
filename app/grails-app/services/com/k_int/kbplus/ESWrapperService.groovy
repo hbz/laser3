@@ -1,13 +1,14 @@
 package com.k_int.kbplus
 
+import org.apache.http.HttpHost
 import org.codehaus.groovy.grails.web.json.parser.JSONParser
+import org.elasticsearch.action.admin.cluster.health.ClusterHealthRequest
 import org.elasticsearch.action.admin.cluster.health.ClusterHealthResponse
+import org.elasticsearch.client.*
 import org.elasticsearch.cluster.health.ClusterHealthStatus
 import org.elasticsearch.cluster.health.ClusterIndexHealth
-import org.elasticsearch.common.settings.Settings
-import org.elasticsearch.common.transport.InetSocketTransportAddress
+import org.elasticsearch.rest.*
 
-import java.text.ParseException
 
 class ESWrapperService {
 
@@ -17,7 +18,7 @@ class ESWrapperService {
 
     static transactional = false
     def grailsApplication
-    def esclient = null
+    RestHighLevelClient esclient
 
     def es_cluster_name
     def es_index_name
@@ -36,21 +37,29 @@ class ESWrapperService {
         log.debug("es_index_name = ${es_index_name}")
         log.debug("es_host = ${es_host}")
 
-
-        Settings settings = Settings.builder().put("cluster.name", es_cluster_name).build()
+      /*  Settings settings = Settings.builder().put("cluster.name", es_cluster_name).build()
 
         //Nötig ?
         //Settings settings = Settings.builder()
         //        .put("client.transport.sniff", true).build();
 
         esclient = new org.elasticsearch.transport.client.PreBuiltTransportClient(settings);
-        esclient.addTransportAddress(new InetSocketTransportAddress(InetAddress.getByName(es_host), 9300));
+        esclient.addTransportAddress(new InetSocketTransportAddress(InetAddress.getByName(es_host), 9300));*/
 
         log.debug("ES Init completed");
     }
 
     def getClient() {
+        esclient = new RestHighLevelClient(
+                RestClient.builder(
+                        new HttpHost(es_host, 9200, "http"),
+                        new HttpHost(es_host, 9201, "http")));
+
         return esclient
+    }
+
+    def closeClient() {
+        return esclient.close()
     }
 
     Map getESSettings(){
@@ -64,35 +73,44 @@ class ESWrapperService {
 
     }
 
-    //grails-app/config
-    private def inputStream = this.class.classLoader.getResourceAsStream(
-            "elasticsearch/es_mapping.json"
-    )
-
     def getESMapping(){
 
-        JSONParser jsonParser = new JSONParser(inputStream)
+        JSONParser jsonParser = new JSONParser(this.class.classLoader.getResourceAsStream("elasticsearch/es_mapping.json"))
 
         return jsonParser.parse()
 
     }
 
     def clusterHealth(){
-        ClusterHealthResponse healths = client.admin().cluster().prepareHealth().get();
-        String clusterName = healths.getClusterName();
-        int numberOfDataNodes = healths.getNumberOfDataNodes();
-        int numberOfNodes = healths.getNumberOfNodes();
+
+        RestHighLevelClient esclient = ESWrapperService.getClient()
+
+        ClusterHealthRequest request = new ClusterHealthRequest();
+        ClusterHealthResponse response = esclient.cluster().health(request, RequestOptions.DEFAULT);
+
+        String clusterName = response.getClusterName();
+        ClusterHealthStatus status = response.getStatus();
+
+        boolean timedOut = response.isTimedOut();
+        RestStatus restStatus = response.status();
+
+        Map<String, ClusterIndexHealth> indices = response.getIndices();
+
+        ClusterIndexHealth index = indices.get("index");
+        ClusterHealthStatus indexStatus = index.getStatus();
+        int numberOfShards = index.getNumberOfShards();
+        int numberOfReplicas = index.getNumberOfReplicas();
+        int activeShards = index.getActiveShards();
+        int activePrimaryShards = index.getActivePrimaryShards();
+        int initializingShards = index.getInitializingShards();
+        int relocatingShards = index.getRelocatingShards();
+        int unassignedShards = index.getUnassignedShards();
 
         println("ESInfo: clusterName: ${clusterName}, numberOfDataNodes: ${numberOfDataNodes}, numberOfNodes: ${numberOfNodes}")
+        println("ESInfo: index: ${index}, numberOfShards: ${numberOfShards}, numberOfReplicas: ${numberOfReplicas}, indexStatus: ${indexStatus}")
 
-        for (ClusterIndexHealth health : healths.getIndices().values()) {
-            String index = health.getIndex();
-            int numberOfShards = health.getNumberOfShards();
-            int numberOfReplicas = health.getNumberOfReplicas();
-            ClusterHealthStatus status = health.getStatus();
+        esclient.close()
 
-            println("ESInfo: index: ${index}, numberOfShards: ${numberOfShards}, numberOfReplicas: ${numberOfReplicas}, status: ${status}")
-        }
     }
 
 }

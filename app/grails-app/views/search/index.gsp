@@ -2,20 +2,26 @@
 <laser:serviceInjection/>
 <%-- r:require module="annotations" / --%>
 
+<% SimpleDateFormat sdf = new SimpleDateFormat(message(code: 'default.date.format.notime'))
+
+String period
+%>
+
 <!doctype html>
 <html>
 <head>
     <meta name="layout" content="semanticUI"/>
-    <title>${message(code: 'laser', default: 'LAS:eR')} : ${message(code: 'search.global')}</title>
+    <title>${message(code: 'laser', default: 'LAS:eR')} : ${message(code: 'search.advancedSearch')}</title>
 </head>
 
 <body>
 
 <semui:breadcrumbs>
-    <semui:crumb message="search.global" class="active"/>
+    <semui:crumb message="search.advancedSearch" class="active"/>
 </semui:breadcrumbs>
 
-<h1 class="ui left aligned icon header"><i class="circular icon inverted blue search"></i> ${message(code: 'search.global')}
+<h1 class="ui left aligned icon header"><i
+        class="circular icon inverted blue search"></i> ${message(code: 'search.advancedSearch')}
 </h1>
 
 <%
@@ -55,37 +61,138 @@
 %>
 
 
-<semui:form>
-    <g:form action="index" controller="search" method="get" class="ui form">
 
-        <g:each in="${['typ', 'endYear', 'startYear', 'consortiaName', 'providerName']}" var="facet">
-            <g:each in="${params.list(facet)}" var="selected_facet_value"><input type="hidden" name="${facet}"
-                                                                                 value="${selected_facet_value}"/></g:each>
+
+<semui:form>
+    <g:form action="index" controller="search" method="post" class="ui form" params="[tab: params.tab]">
+
+        <g:each in="${['rectype', 'endYear', 'startYear', 'consortiaName', 'providerName', 'status']}" var="facet">
+            <g:each in="${params.list(facet)}" var="selected_facet_value">
+                <input type="hidden" name="${facet}" value="${selected_facet_value}"/>
+            </g:each>
         </g:each>
+
         <div class="field">
-            <label><g:message code="home.search.text" default="Search Text"/> :</label>
-            <input type="text" placeholder="Search Text" name="q" value="${params.q}"/>
+            <label><g:message code="search.text" default="Search Text"/>:</label>
+            <input type="text" placeholder="${message(code: 'search.placeholder')}" name="q" value="${params.q}"/>
         </div>
 
-        <div class="field la-field-right-aligned">
-            <a href="${request.forwardURI}"
-               class="ui reset primary button">${message(code: 'default.button.searchreset.label')}</a>
-            <button name="search" type="submit" value="true" class="ui secondary button">
-                <g:message code="home.search.button" default="Search"/>
-            </button>
+
+        <div class="fields">
+            <div class="three wide field">
+                <g:select class="ui dropdown"
+                          from="${['AND', 'OR', 'NOT']}"
+                          name="advancedSearchOption"
+                          valueMessagePrefix="search.advancedSearch.option"
+                          value="${params.advancedSearchOption}"/>
+            </div>
+
+            <div class="fourteen wide field">
+                <input type="text" placeholder="${message(code: 'search.placeholder')}"
+                       name="advancedSearchText" value="${params.advancedSearchText}"/>
+            </div>
+        </div>
+
+        <div class="fields">
+            <div class="three wide field">
+                <g:select class="ui dropdown"
+                          from="${['AND', 'OR', 'NOT']}"
+                          name="advancedSearchOption2"
+                          valueMessagePrefix="search.advancedSearch.option"
+                          value="${params.advancedSearchOption2}"/>
+            </div>
+
+            <div class="fourteen wide field">
+                <input type="text" placeholder="${message(code: 'search.placeholder')}"
+                       name="advancedSearchText2" value="${params.advancedSearchText2}"/>
+            </div>
+        </div>
+
+
+        <div class="three fields">
+            <div class="field">
+                <label>${message(code: 'search.objects')}</label>
+
+                <div class="inline fields la-filter-inline">
+                    <div class="field">
+                        <div class="ui radio checkbox">
+                            <input id="radioAllObjects" type="radio" value="allObjects" name="searchObjects"
+                                   tabindex="0" class="hidden"
+                                   <g:if test="${params.searchObjects == 'allObjects'}">checked=""</g:if>>
+                            <label for="radioAllObjects">
+                                <g:message code="menu.public"/>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="field">
+                        <div class="ui radio checkbox">
+                            <input id="radioMyObjects" type="radio" value="myObjects" name="searchObjects"
+                                   tabindex="0"
+                                   class="hidden"
+                                   <g:if test="${params.searchObjects == 'myObjects'}">checked=""</g:if>>
+                            <label for="radioMyObjects">${message(code: 'menu.my')}</label>
+                        </div>
+                    </div>
+
+                    %{--<div class="field">
+                        <div class="ui radio checkbox">
+                            <input id="radioSpecObject" type="radio" value="specObjects" name="searchObjects" tabindex="0" class="hidden"
+                                   <g:if test="${params.searchObjects == 'specObjects'}">checked=""</g:if>
+                            >
+                            <label for="radioSpecObject">${message(code: 'menu.my')}
+
+                            <g:select class="ui dropdown" name="status"
+                                      from="${ com.k_int.kbplus.FTControl.findAll() }"
+                                      optionKey="id"
+                                      optionValue="${{message(code: 'search.object.'+it.domainClassName.replace('com.k_int.kbplus.','').toLowerCase())}}"
+                                      value="${params.searchObject}"
+                                      noSelection="${['' : message(code:'default.select.choose.label')]}"/>
+
+                            </label>
+                        </div>
+                    </div>--}%
+                </div>
+
+            </div>
+
+            <div class="field">
+
+            </div>
+
+
+            <div class="field la-field-right-aligned">
+                <a href="${request.forwardURI}"
+                   class="ui reset primary button">${message(code: 'default.button.searchreset.label')}</a>
+                <button name="search" type="submit" value="true" class="ui secondary button">
+                    <g:message code="search.button" default="Search"/>
+                </button>
+            </div>
         </div>
 
     </g:form>
 </semui:form>
 
 
+
 <g:if test="${hits}">
 
     <p>
-        <g:each in="${['type', 'endYear', 'startYear', 'consortiaName', 'providerName']}" var="facet">
+        <g:each in="${['rectype', 'endYear', 'startYear', 'consortiaName', 'providerName', 'status']}" var="facet">
             <g:each in="${params.list(facet)}" var="fv">
 
-                <span class="ui facet-${facet} label"><g:message code="facet.so.${facet}"/>: ${fv}
+                <span class="ui facet-${facet} label"><g:message code="facet.so.${facet}"/>:
+
+                    <g:if test="${facet == 'rectype'}">
+                        ${message(code: "facet.so.${facet}.${fv.toLowerCase()}")}
+                    </g:if>
+                    <g:elseif test="${facet == 'status'}">
+                        ${RefdataValue.findByValue(fv) ? RefdataValue.findByValue(fv).getI10n('value') : fv}
+                    </g:elseif>
+                    <g:else>
+                        ${fv}
+                    </g:else>
+
                     <g:link controller="search" action="index" params="${removeFacet(params, facet, fv)}">
                         <i class="delete icon"></i>
                     </g:link>
@@ -95,99 +202,324 @@
     </p>
 
     <div class="ui info message">
-        <g:message code="home.search.result" default="Your search found ${resultsTotal} records"
+        <g:message code="search.result" default="Your search found ${resultsTotal} records"
                    args="${resultsTotal}"/>
     </div>
     <br>
 
 
-        <div class="ui segment">
-            <div class="ui left dividing rail">
-                <div class="ui segment">
+    <div class="ui segment">
+        <div class="ui left dividing rail">
+            <div class="ui segment">
 
-                    <h2>Filter:</h2>
+                <h2>Filter:</h2>
 
-                    <g:each in="${facets}" var="facet">
-                        <div class="panel panel-default">
-                            <div class="panel-heading">
-                                <h3 class="ui header"><g:message code="facet.so.${facet.key}"
-                                                                 default="${facet.key}"/></h3>
-                            </div>
-
-                            <div class="panel-body">
-                                <ul>
-                                    <g:each in="${facet.value.sort { message(code:"spotlight.${it.display.toLowerCase()}") }}" var="v">
-                                        <li>
-
-                                            <g:if test="${params.list(facet.key).contains(v.term.toString())}">
-                                                ${(facet.key == type) ? message(code:"spotlight.${v.display.toLowerCase()}") : v.display} (${v.count})
-                                            </g:if>
-                                            <g:else>
-                                                <g:link controller="search" action="index" params="${addFacet(params, facet.key, v.term)}">
-                                                    ${(facet.key == type) ? message(code:"spotlight.${v.display.toLowerCase()}") : v.display}
-                                                </g:link> (${v.count})
-                                            </g:else>
-                                        </li>
-                                    </g:each>
-                                </ul>
-                            </div>
+                <g:each in="${facets}" var="facet">
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            <h3 class="ui header"><g:message code="facet.so.${facet.key}"
+                                                             default="${facet.key}"/></h3>
                         </div>
-                    </g:each>
-                </div>
+
+                        <div class="panel-body">
+                            <ul>
+                                <g:each in="${facet.value.sort {
+                                    message(code: "facet.so.${facet.key}.${it.display.toLowerCase()}")
+                                }}" var="v">
+                                    <li>
+
+                                        <g:if test="${params.list(facet.key).contains(v.term.toString())}">
+                                            <g:if test="${facet.key == 'rectype'}">
+                                                ${message(code: "facet.so.${facet.key}.${v.display.toLowerCase()}")} (${v.count})
+                                            </g:if>
+                                            <g:elseif test="${facet.key == 'status'}">
+                                                ${RefdataValue.findByValue(v.display) ? RefdataValue.findByValue(v.display).getI10n('value') : v.display} (${v.count})
+                                            </g:elseif>
+                                            <g:else>
+                                                ${v.display} (${v.count})
+                                            </g:else>
+                                        </g:if>
+                                        <g:else>
+                                            <g:link controller="search" action="index"
+                                                    params="${addFacet(params, facet.key, v.term)}">
+                                                <g:if test="${facet.key == 'rectype'}">
+                                                    ${message(code: "facet.so.${facet.key}.${v.display.toLowerCase()}")}
+                                                </g:if>
+                                                <g:elseif test="${facet.key == 'status'}">
+                                                    ${RefdataValue.findByValue(v.display) ? RefdataValue.findByValue(v.display).getI10n('value') : v.display}
+                                                </g:elseif>
+                                                <g:else>
+                                                    ${v.display}
+                                                </g:else>
+                                            </g:link> (${v.count})
+                                        </g:else>
+                                    </li>
+                                </g:each>
+                            </ul>
+                        </div>
+                    </div>
+                </g:each>
             </div>
-            <div class="ui stackable grid">
+        </div>
+
+        <div class="ui stackable grid">
             <div class="sixteen wide column">
 
                 <table class="ui celled sortable table table-tworow la-table">
-                    <tr><th></th><th>Title/Name</th><th>${message(code: 'home.search.additionalinfo', default: "Additional Info")}</th>
+                    <tr>
+                        <th>Title/Name</th>
+                        <th>${message(code: 'search.additionalinfo', default: "Additional Info")}</th>
                     </tr>
                     <g:each in="${hits}" var="hit">
                         <tr>
-                            <td>
-                                ${message(code: "spotlight.${hit.getSource().rectype.toLowerCase()}")}
-                            </td>
-                            <g:if test="${hit.getSource().rectype == 'Organisation'}">
-                                <td><g:link controller="organisation" action="show"
-                                            id="${hit.getSource().dbId}">${hit.getSource().name}</g:link></td>
-                                <td></td>
-                            </g:if>
-                            <g:if test="${hit.getSource().rectype == 'Title'}">
-                                <td><g:link controller="title" action="show"
-                                            id="${hit.getSource().dbId}">${hit.getSource().name}</g:link></td>
+                            <g:if test="${hit.getSourceAsMap().rectype == 'Organisation'}">
                                 <td>
-                                    <g:each in="${hit.getSource().identifiers}" var="id">
-                                        ${id.type}:${id.value} &nbsp;
-                                    </g:each>
+                                    <span data-position="top right" class="la-popup-tooltip la-delay"
+                                          data-content="${(hit.getSourceAsMap().sector == 'Publisher') ? message(code: 'spotlight.provideragency') : message(code: 'spotlight.'+hit.getSourceAsMap().rectype.toLowerCase())}">
+                                        <i class="circular icon la-search-${hit.getSourceAsMap().rectype.toLowerCase()}"></i>
+                                    </span>
+
+                                    <g:link controller="organisation" action="show"
+                                            id="${hit.getSourceAsMap().dbId}">${hit.getSourceAsMap().name}</g:link>
+
+                                </td>
+                                <td>
+                                    <b><g:message code="default.identifiers.label"/></b>:
+                                <g:each in="${hit.getSourceAsMap().identifiers.sort { it.type }}" var="id">
+                                    ${id.type}: ${id.value} &nbsp;
+                                </g:each>
+                                    <br>
+                                    <b><g:message code="org.platforms.label"/></b>:
+                                <g:each in="${hit.getSourceAsMap().platforms.sort { it.name }}" var="platform">
+                                    <g:link controller="platform" action="show"
+                                            id="${platform.id}">${platform.name}</g:link>
+                                </g:each>
                                 </td>
                             </g:if>
-                            <g:if test="${hit.getSource().rectype == 'Package'}">
-                                <td><g:link controller="package" action="show"
-                                            id="${hit.getSource().dbId}">${hit.getSource().name}</g:link></td>
-                                <td></td>
-                            </g:if>
-                            <g:if test="${hit.getSource().rectype == 'Platform'}">
-                                <td><g:link controller="platform" action="show"
-                                            id="${hit.getSource().dbId}">${hit.getSource().name}</g:link></td>
-                                <td></td>
-                            </g:if>
-                            <g:if test="${hit.getSource().rectype == 'Subscription'}">
-                                <td><g:link controller="subscription" action="show"
-                                            id="${hit.getSource().dbId}">${hit.getSource().name}</g:link></td>
-                                <td>${hit.getSource().identifier}</td>
-                            </g:if>
-                            <g:if test="${hit.getSource().rectype == 'License'}">
-                                <td><g:link controller="license" action="show"
-                                            id="${hit.getSource().dbId}">${hit.getSource().name}</g:link></td>
-                                <td></td>
+
+                            <g:if test="${hit.getSourceAsMap().rectype == 'Title'}">
+                                <td>
+
+                                    <span data-position="top right" class="la-popup-tooltip la-delay"
+                                          data-content="${message(code: "facet.so.rectype.${hit.getSourceAsMap().typTitle.toLowerCase()}")}">
+                                        <i class="circular icon la-search-${hit.getSourceAsMap().typTitle.toLowerCase()}"></i>
+                                    </span>
+
+                                    <g:link controller="title" action="show"
+                                            id="${hit.getSourceAsMap().dbId}">${hit.getSourceAsMap().name}</g:link>
+                                </td>
+                                <td>
+                                    <b><g:message code="default.identifiers.label"/></b>:
+                                <g:each in="${hit.getSourceAsMap().identifiers.sort { it.type }}" var="id">
+                                    ${id.type}: ${id.value} &nbsp;
+                                </g:each>
+                                </td>
                             </g:if>
 
-                            <g:if test="${hit.getSource().rectype == 'Survey'}">
-                                <td><g:link controller="survey" action="show" id="${SurveyConfig.get(hit.getSource().dbId).surveyInfo.id}" params="[surveyConfigID: hit.getSource().dbId]">${hit.getSource().name}</g:link></td>
-                                <td></td>
+                            <g:if test="${hit.getSourceAsMap().rectype == 'Package'}">
+                                <td>
+
+                                    <span data-position="top right" class="la-popup-tooltip la-delay"
+                                          data-content="${message(code: "facet.so.rectype.${hit.getSourceAsMap().rectype.toLowerCase()}")}">
+                                        <i class="circular icon la-search-${hit.getSourceAsMap().rectype.toLowerCase()}"></i>
+                                    </span>
+
+                                    <g:link controller="package" action="show"
+                                            id="${hit.getSourceAsMap().dbId}">${hit.getSourceAsMap().name}</g:link>
+                                </td>
+                                <td>
+                                    <b>${message(code: 'package.compare.overview.tipps')}</b>: ${hit.getSourceAsMap().titleCountCurrent}
+
+                                </td>
                             </g:if>
-                            <g:if test="${hit.getSource().rectype == 'ParticipantSurvey'}">
-                                <td><g:link controller="myInstitution" action="surveyInfos" id="${hit.getSource().dbId}">${hit.getSource().name}</g:link></td>
-                                <td></td>
+
+                            <g:if test="${hit.getSourceAsMap().rectype == 'Platform'}">
+                                <td>
+
+                                    <span data-position="top right" class="la-popup-tooltip la-delay"
+                                          data-content="${message(code: "facet.so.rectype.${hit.getSourceAsMap().rectype.toLowerCase()}")}">
+                                        <i class="circular icon la-search-${hit.getSourceAsMap().rectype.toLowerCase()}"></i>
+                                    </span>
+
+                                    <g:link controller="platform" action="show"
+                                            id="${hit.getSourceAsMap().dbId}">${hit.getSourceAsMap().name}</g:link>
+                                </td>
+                                <td>
+                                    <b>${message(code: 'package.compare.overview.tipps')}</b>: ${hit.getSourceAsMap().titleCountCurrent}
+                                    <br>
+                                    <b>${message(code: 'platform.primaryURL')}</b>: ${hit.getSourceAsMap().primaryUrl}
+                                    <br>
+                                    <b>${message(code: 'platform.org')}</b>:
+                                <g:link controller="organisation" action="show"
+                                        id="${hit.getSourceAsMap().orgId}">${hit.getSourceAsMap().orgName}</g:link>
+
+                                </td>
+                            </g:if>
+
+                            <g:if test="${hit.getSourceAsMap().rectype == 'Subscription'}">
+                                <td>
+                                    <span data-position="top right" class="la-popup-tooltip la-delay"
+                                          data-content="${message(code: "facet.so.rectype.${hit.getSourceAsMap().rectype.toLowerCase()}")}">
+                                        <i class="circular icon la-search-${hit.getSourceAsMap().rectype.toLowerCase()}"></i>
+                                    </span>
+
+                                    <g:link controller="subscription" action="show"
+                                            id="${hit.getSourceAsMap().dbId}">${hit.getSourceAsMap().name}</g:link>
+
+                                    <div class="ui grid">
+                                        <div class="right aligned wide column">
+                                            <g:if test="${hit.getSourceAsMap().visible == 'Private'}">
+                                                <span data-position="top right" class="la-popup-tooltip la-delay"
+                                                      data-content="${message(code: 'search.myObject')}">
+                                                    <i class="shield alternate red large icon"></i>
+                                                </span>
+                                            </g:if>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <%
+                                        period = hit.getSourceAsMap().startDate ? sdf.format(new Date().parse("yyyy-MM-dd'T'HH:mm:ssZ", hit.getSourceAsMap().startDate)) : ''
+                                        period = hit.getSourceAsMap().endDate ? period + ' - ' + sdf.format(new Date().parse("yyyy-MM-dd'T'HH:mm:ssZ", hit.getSourceAsMap().endDate)) : ''
+                                        period = period ? period : ''
+                                    %>
+
+                                    <b>${message(code: 'subscription.status.label')}</b>: ${RefdataValue.findByValue(hit.getSourceAsMap().status) ? RefdataValue.findByValue(hit.getSourceAsMap().status).getI10n('value') : hit.getSourceAsMap().status}
+                                    <br>
+                                    <b>${message(code: 'subscription.periodOfValidity.label')}</b>: ${period}
+                                    <br>
+                                    <g:if test="${contextOrg.getCustomerType() in ['ORG_CONSORTIUM', 'ORG_CONSORTIUM_SURVEY']}">
+                                        <b>${message(code: 'subscription.details.consortiaMembers.label')}</b>:
+                                        <g:link controller="subscription" action="members"
+                                                id="${hit.getSourceAsMap().dbId}">${hit.getSourceAsMap().members}</g:link>
+                                    </g:if>
+                                </td>
+                            </g:if>
+                            <g:if test="${hit.getSourceAsMap().rectype == 'License'}">
+                                <td>
+                                    <span data-position="top right" class="la-popup-tooltip la-delay"
+                                          data-content="${message(code: "facet.so.rectype.${hit.getSourceAsMap().rectype.toLowerCase()}")}">
+                                        <i class="circular icon la-search-${hit.getSourceAsMap().rectype.toLowerCase()}"></i>
+                                    </span>
+
+                                    <g:link controller="license" action="show"
+                                            id="${hit.getSourceAsMap().dbId}">${hit.getSourceAsMap().name}</g:link>
+
+                                    <div class="ui grid">
+                                        <div class="right aligned wide column">
+                                            <g:if test="${hit.getSourceAsMap().visible == 'Private'}">
+                                                <span data-position="top right" class="la-popup-tooltip la-delay"
+                                                      data-content="${message(code: 'search.myObject')}">
+                                                    <i class="shield alternate red large icon"></i>
+                                                </span>
+                                            </g:if>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <%
+                                        period = hit.getSourceAsMap().startDate ? sdf.format(new Date().parse("yyyy-MM-dd'T'HH:mm:ssZ", hit.getSourceAsMap().startDate)) : ''
+                                        period = hit.getSourceAsMap().endDate ? period + ' - ' + sdf.format(new Date().parse("yyyy-MM-dd'T'HH:mm:ssZ", hit.getSourceAsMap().endDate)) : ''
+                                        period = period ? period : ''
+                                    %>
+
+                                    <b>${message(code: 'license.status')}</b>: ${RefdataValue.findByValue(hit.getSourceAsMap().status) ? RefdataValue.findByValue(hit.getSourceAsMap().status).getI10n('value') : hit.getSourceAsMap().status}
+                                    <br>
+                                    <b>${message(code: 'subscription.periodOfValidity.label')}</b>: ${period}
+                                    <br>
+                                    <g:if test="${contextOrg.getCustomerType() in ['ORG_CONSORTIUM', 'ORG_CONSORTIUM_SURVEY']}">
+                                        <b>${message(code: 'subscription.details.consortiaMembers.label')}</b>:
+                                        <g:link controller="license" action="members"
+                                                id="${hit.getSourceAsMap().dbId}">${hit.getSourceAsMap().members}</g:link>
+                                    </g:if>
+                                </td>
+                            </g:if>
+
+                            <g:if test="${hit.getSourceAsMap().rectype == 'Survey'}">
+                                <td>
+
+                                    <span data-position="top right" class="la-popup-tooltip la-delay"
+                                          data-content="${message(code: "facet.so.rectype.${hit.getSourceAsMap().rectype.toLowerCase()}")}">
+                                        <i class="circular icon inverted blue chart pie"></i>
+                                    </span>
+
+                                    <g:link controller="survey" action="show"
+                                            id="${SurveyConfig.get(hit.getSourceAsMap().dbId).surveyInfo.id}"
+                                            params="[surveyConfigID: hit.getSourceAsMap().dbId]">${hit.getSourceAsMap().name}</g:link>
+
+                                    <div class="ui grid">
+                                        <div class="right aligned wide column">
+                                            <g:if test="${hit.getSourceAsMap().visible == 'Private'}">
+                                                <span data-position="top right" class="la-popup-tooltip la-delay"
+                                                      data-content="${message(code: 'search.myObject')}">
+                                                    <i class="shield alternate red large icon"></i>
+                                                </span>
+                                            </g:if>
+                                        </div>
+                                    </div>
+
+                                </td>
+                                <td>
+                                    <%
+                                        period = hit.getSourceAsMap().startDate ? sdf.format(new Date().parse("yyyy-MM-dd'T'HH:mm:ssZ", hit.getSourceAsMap().startDate)) : ''
+                                        period = hit.getSourceAsMap().endDate ? period + ' - ' + sdf.format(new Date().parse("yyyy-MM-dd'T'HH:mm:ssZ", hit.getSourceAsMap().endDate)) : ''
+                                        period = period ? period : ''
+                                    %>
+
+                                    <b>${message(code: 'surveyInfo.status.label')}</b>: ${RefdataValue.findByValue(hit.getSourceAsMap().status) ? RefdataValue.findByValue(hit.getSourceAsMap().status).getI10n('value') : hit.getSourceAsMap().status}
+                                    <br>
+                                    <b>${message(code: 'renewalWithSurvey.period')}</b>: ${period}
+                                    <br>
+                                    <g:if test="${contextOrg.getCustomerType() in ['ORG_CONSORTIUM', 'ORG_CONSORTIUM_SURVEY']}">
+                                        <b>${message(code: 'surveyParticipants.label')}</b>: ${hit.getSourceAsMap().members}
+                                    </g:if>
+                                </td>
+                            </g:if>
+
+                            <g:if test="${hit.getSourceAsMap().rectype == 'ParticipantSurvey'}">
+                                <td>
+
+                                    <span data-position="top right" class="la-popup-tooltip la-delay"
+                                          data-content="${message(code: "facet.so.rectype.${hit.getSourceAsMap().rectype.toLowerCase()}")}">
+                                        <i class="circular icon inverted blue chart pie"></i>
+                                    </span>
+
+                                    <g:link controller="myInstitution" action="surveyInfos"
+                                            id="${hit.getSourceAsMap().dbId}">${hit.getSourceAsMap().name}</g:link>
+                                </td>
+                                <td>
+                                    <%
+                                        period = hit.getSourceAsMap().startDate ? sdf.format(new Date().parse("yyyy-MM-dd'T'HH:mm:ssZ", hit.getSourceAsMap().startDate)) : ''
+                                        period = hit.getSourceAsMap().endDate ? period + ' - ' + sdf.format(new Date().parse("yyyy-MM-dd'T'HH:mm:ssZ", hit.getSourceAsMap().endDate)) : ''
+                                        period = period ? period : ''
+                                    %>
+
+                                    <b>${message(code: 'surveyInfo.status.label')}</b>: ${RefdataValue.findByValue(hit.getSourceAsMap().status) ? RefdataValue.findByValue(hit.getSourceAsMap().status).getI10n('value') : hit.getSourceAsMap().status}
+                                    <br>
+                                    <b>${message(code: 'renewalWithSurvey.period')}</b>: ${period}
+                                </td>
+                            </g:if>
+
+                            <g:if test="${hit.getSourceAsMap().rectype == 'Task'}">
+                                <td>
+                                    <span data-position="top right" class="la-popup-tooltip la-delay"
+                                          data-content="${message(code: "facet.so.rectype.${hit.getSourceAsMap().rectype.toLowerCase()}")}">
+                                        <i class="circular icon inverted green checked calendar"></i>
+                                    </span>
+
+
+                                    <g:link controller="myInstitution" action="surveyInfos"
+                                            id="${hit.getSourceAsMap().dbId}">${hit.getSourceAsMap().name}</g:link>
+                                </td>
+                                <td>
+
+                                    <b>${message(code: 'task.status.label')}</b>: ${RefdataValue.findByValue(hit.getSourceAsMap().status) ? RefdataValue.findByValue(hit.getSourceAsMap().status).getI10n('value') : hit.getSourceAsMap().status}
+                                    <br>
+                                    <b>${message(code: 'task.endDate.label')}</b>:
+                                        <g:if test="${hit.getSourceAsMap()?.endDate}">
+                                            <g:formatDate format="${message(code:'default.date.format.notime', default:'yyyy-MM-dd')}" date="${new Date().parse("yyyy-MM-dd'T'HH:mm:ssZ", hit.getSourceAsMap().endDate)}"/>
+                                        </g:if>
+                                </td>
                             </g:if>
                         </tr>
                     </g:each>

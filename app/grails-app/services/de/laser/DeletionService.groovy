@@ -7,7 +7,10 @@ import com.k_int.properties.PropertyDefinitionGroup
 import com.k_int.properties.PropertyDefinitionGroupBinding
 import de.laser.domain.SystemProfiler
 import org.codehaus.groovy.grails.commons.GrailsApplication
+import org.elasticsearch.action.delete.DeleteRequest
 import org.elasticsearch.action.delete.DeleteResponse
+import org.elasticsearch.client.RestHighLevelClient
+import org.elasticsearch.client.*
 
 //@CompileStatic
 class DeletionService {
@@ -749,8 +752,9 @@ class DeletionService {
     def deleteDocumentFromIndex(domainName, id)
     {
         def es_index = ESWrapperService.getESSettings().indexName
-        def esclient = ESWrapperService.getClient()
+        RestHighLevelClient esclient = ESWrapperService.ge
 
-        DeleteResponse response = esclient.prepareDelete(es_index, domainName, id).get();
+        DeleteRequest request = new DeleteRequest(es_index, id)
+        DeleteResponse deleteResponse = esclient.delete(request, RequestOptions.DEFAULT);
     }
 }
