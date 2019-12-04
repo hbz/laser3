@@ -521,7 +521,7 @@
                     </div>
                 </sec:ifAnyGranted>
 
-                <div class="right menu">
+                <div class="right menu la-right-menuPart">
                     <div id="mainSearch" class="ui category search">
                         <div class="ui icon input">
                             <input  type="search" id="spotlightSearch" class="prompt" placeholder="${message(code:'spotlight.search.placeholder')}">
@@ -529,6 +529,13 @@
                         </div>
                         <div class="results" style="overflow-y:scroll;max-height: 400px;"></div>
                     </div>
+
+                    <g:link  controller="subscription" action="index"  class="la-search-advanced">
+                        <i class="large icons">
+                            <i class="search icon"></i>
+                            <i class="top grey right corner cog icon "></i>
+                        </i>
+                    </g:link>
 
                     <g:if test="${contextUser}">
                         <div class="ui simple dropdown item la-noBorder">
