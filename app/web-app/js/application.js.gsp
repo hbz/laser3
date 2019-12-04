@@ -143,12 +143,14 @@ r2d2 = {
                 }
             }
         });
-        $('#btn-search').on('click', function(e) {
+
+/*  Menue Search Animated Input
+       $('#btn-search').on('click', function(e) {
             e.preventDefault();
 
             $('#spotlightSearch').animate({width: 'toggle'}).focus();
             $(this).toggleClass('open');
-        });
+        });*/
 
         // metaboxes
         $('.metaboxToggle').click(function() {

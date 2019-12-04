@@ -21085,6 +21085,30 @@ form {
   margin-bottom: 1em;
 }
 
+/* Menue Search Animated Input
+
+.ui.icon.input > i.icon#btn-search:not(.link){
+  pointer-events: auto;
+}
+input#spotlightSearch[type="search"]:hover,
+input#spotlightSearch[type="search"]:focus{
+  background: @lightGrey;
+}
+i.search.icon {
+  color: white;
+}
+i.search.icon.open {
+  color:black;
+}
+input#spotlightSearch[type="search"] {
+  display: none;
+}
+
+.ui.input > input#spotlightSearch:focus  {
+  border-color: @lightGrey;
+}
+*/
+
 .ui.icon.input > i.icon#btn-search:not(.link) {
   pointer-events: auto;
 }
@@ -21094,16 +21118,12 @@ input#spotlightSearch[type="search"]:focus {
   background: #DCDDDE;
 }
 
-i.search.icon {
-  color: white;
-}
-
-i.search.icon.open {
+i.search.icon#btn-search {
   color: black;
 }
 
-input#spotlightSearch[type="search"] {
-  display: none;
+.la-search-advanced i.search.icon {
+  color: white;
 }
 
 .ui.input > input#spotlightSearch:focus {
