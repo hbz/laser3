@@ -2,6 +2,8 @@
 
 **Ticket    Date    Branch      Author  Feature/Bug     Description/Keywords**
 
+1926    04.12.2019  rc1.1       David   Bug         Modaler Dialog: Funktions-/Personenkontakte funktioniert nicht
+
 1927    03.12.2019  /           David   Feature     Monitoring von SystemEvents via Mail
 
 1923    03.12.2019  rc1.1       David   Bug         Fehlerhafte Einträge bei Organisationen (Erstellt durch, Organisiert durch)

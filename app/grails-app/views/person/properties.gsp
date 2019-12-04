@@ -1,4 +1,4 @@
-<%@ page import="com.k_int.kbplus.Org; com.k_int.properties.PropertyDefinition; com.k_int.kbplus.RefdataValue" %>
+<%@ page import="com.k_int.kbplus.Org; com.k_int.properties.PropertyDefinition; com.k_int.kbplus.RefdataValue; de.laser.helper.RDStore" %>
 <laser:serviceInjection/>
 
 <!doctype html>
@@ -17,11 +17,11 @@
     </semui:breadcrumbs>
 
     <h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon />
-        <g:if test="${personInstance?.contactType == RefdataValue.getByValueAndCategory('Functional contact', 'Person Contact Type')}">
-            ${personInstance.contactType?.getI10n('value') + ': ' + personInstance?.last_name}
+        <g:if test="${personInstance?.contactType?.id == RDStore.CONTACT_TYPE_FUNCTIONAL.id}">
+            ${personInstance.contactType.getI10n('value') + ': ' + personInstance?.last_name}
         </g:if>
-        <g:elseif test="${personInstance?.contactType == RefdataValue.getByValueAndCategory('Personal contact', 'Person Contact Type')}">
-            ${personInstance.contactType?.getI10n('value') + ': ' + personInstance}
+        <g:elseif test="${personInstance?.contactType?.id == RDStore.CONTACT_TYPE_PERSONAL.id}">
+            ${personInstance.contactType.getI10n('value') + ': ' + personInstance}
         </g:elseif>
         <g:else>
             ${personInstance}

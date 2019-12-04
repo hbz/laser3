@@ -40,8 +40,8 @@ class TitleController extends AbstractDebugController {
             def old_q = params.q
             def old_sort = params.sort
 
-            params.q = params.q ?: "*"
-            params.sort = params.sort ?: "sortTitle"
+            params.q = params.q ?: null
+            params.sort = params.sort ?: "sortTitle.keyword"
 
             if (params.filter) {
                 params.q = "${params.filter}:${params.q}"

@@ -77,8 +77,9 @@ grails.project.dependency.resolution = {
         runtime ('org.elasticsearch:elasticsearch-groovy:2.1.2') {
             excludes "org.codehaus.groovy:groovy-all"
         }*/
-        runtime 'org.elasticsearch:elasticsearch:jar:5.6.16'
-        runtime 'org.elasticsearch.client:transport:jar:5.6.16'
+        compile 'org.elasticsearch.client:elasticsearch-rest-high-level-client:7.4.2'
+        /*runtime 'org.elasticsearch:elasticsearch:jar:5.6.16'
+        runtime 'org.elasticsearch.client:transport:jar:5.6.16'*/
         runtime 'org.apache.logging.log4j:log4j-core:jar:2.11.1'
 
         compile 'joda-time:joda-time:2.9.9'
