@@ -4,23 +4,23 @@
 
         <h3 class="ui header">${message(code:'task.tasksCreatedByMe.header')} <semui:totalNumber total="${taskInstanceCount}"/></h3>
 
-        <table class="ui celled la-table table">
+        <table class="ui sortable celled la-table table">
             <thead>
             <tr>
-                <th>${message(code: 'task.title.label', default: 'Title')}</th>
+                <g:sortableColumn property="lower(t.title)" title="${message(code: 'task.title.label', default: 'Title')}"/>
 
-                <th>${message(code: 'task.endDate.label', default: 'End Date')}</th>
+                <g:sortableColumn property="t.endDate" title="${message(code: 'task.endDate.label', default: 'End Date')}"/>
 
-                <th>${message(code: 'task.status.label', default: 'Status')}</th>
+                <g:sortableColumn property="t.status" title="${message(code: 'task.status.label', default: 'Status')}"/>
 
 
                 <g:if test="${controllerName == 'myInstitution'}">
                     <th>${message(code: 'task.object.label', default: 'Object')}</th>
                 </g:if>
 
-                <th>${message(code: 'task.responsibleEmployee.label')}</th>
+                <g:sortableColumn property="lower(ru.username)" title="${message(code: 'task.responsibleEmployee.label', default: 'Responsible Employee')}"/>
 
-                <th>${message(code: 'task.createDate.label', default: 'Create Date')}</th>
+                <g:sortableColumn property="t.createDate" title="${message(code: 'task.createDate.label', default: 'Create Date')}"/>
 
                 <th class="la-action-info">${message(code:'default.actions')}</th>
             </tr>

@@ -1656,7 +1656,7 @@ class AjaxController {
         if (AuditConfig.getConfig(property, AuditConfig.COMPLETE_OBJECT)) {
 
             property.getClass().findAllByInstanceOf(property).each{ prop ->
-                prop.delete(flush: true)
+                prop.delete()
             }
             AuditConfig.removeAllConfigs(property)
 
@@ -1669,7 +1669,7 @@ class AjaxController {
                     if (payload.changeDoc) {
                         def scp = genericOIDService.resolveOID(payload.changeDoc.OID)
                         if (scp?.id == property.id) {
-                            pc.delete(flush: true)
+                            pc.delete()
                         }
                     }
                 }
@@ -1918,7 +1918,7 @@ class AjaxController {
     result.iTotalRecords = cq[0]
     result.iTotalDisplayRecords = cq[0]
     def currOrg = genericOIDService.resolveOID(params.oid)
-    List<Person> contacts = Person.findAllByContactTypeAndTenant(RefdataValue.getByValueAndCategory('Personal contact','Person Contact Type'),currOrg)
+    List<Person> contacts = Person.findAllByContactTypeAndTenant(RDStore.CONTACT_TYPE_PERSONAL, currOrg)
     LinkedHashMap personRoles = [:]
     PersonRole.findAll().collect { prs ->
       personRoles.put(prs.org,prs.prs)

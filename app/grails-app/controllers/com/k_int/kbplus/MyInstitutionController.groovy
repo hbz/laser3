@@ -208,12 +208,12 @@ class MyInstitutionController extends AbstractDebugController {
             log.debug('currentSubInfo from cache')
         }
         else {
-            currentSubIds = orgTypeService.getCurrentSubscriptions(contextService.getOrg()).collect{ it.id }
-            allLocals     = OrgRole.findAllWhere(org: contextService.getOrg(), roleType: RDStore.OR_SUBSCRIBER).collect{ it -> it?.sub?.id }
-            allSubscrCons = OrgRole.findAllWhere(org: contextService.getOrg(), roleType: RDStore.OR_SUBSCRIBER_CONS).collect{ it -> it?.sub?.id }
-            allSubscrColl = OrgRole.findAllWhere(org: contextService.getOrg(), roleType: RDStore.OR_SUBSCRIBER_COLLECTIVE).collect{ it -> it?.sub?.id }
-            allConsOnly   = OrgRole.findAllWhere(org: contextService.getOrg(), roleType: RDStore.OR_SUBSCRIPTION_CONSORTIA).collect{ it -> it?.sub?.id }
-            allCollOnly   = OrgRole.findAllWhere(org: contextService.getOrg(), roleType: RDStore.OR_SUBSCRIPTION_COLLECTIVE).collect{ it -> it?.sub?.id }
+            currentSubIds = orgTypeService.getCurrentSubscriptions(contextService.getOrg()).findAll{ it }.collect{ it.id }
+            allLocals     = OrgRole.findAllWhere(org: contextService.getOrg(), roleType: RDStore.OR_SUBSCRIBER).findAll{ it.sub }.collect{ it.sub.id }.unique()
+            allSubscrCons = OrgRole.findAllWhere(org: contextService.getOrg(), roleType: RDStore.OR_SUBSCRIBER_CONS).findAll{ it.sub }.collect{ it.sub.id }.unique()
+            allSubscrColl = OrgRole.findAllWhere(org: contextService.getOrg(), roleType: RDStore.OR_SUBSCRIBER_COLLECTIVE).findAll{ it.sub }.collect{ it.sub.id }.unique()
+            allConsOnly   = OrgRole.findAllWhere(org: contextService.getOrg(), roleType: RDStore.OR_SUBSCRIPTION_CONSORTIA).findAll{ it.sub }.collect{ it.sub.id }.unique()
+            allCollOnly   = OrgRole.findAllWhere(org: contextService.getOrg(), roleType: RDStore.OR_SUBSCRIPTION_COLLECTIVE).findAll{ it.sub }.collect{ it.sub.id }.unique()
 
             cache.put('currentSubInfo', [
                     currentSubIds: currentSubIds,
@@ -716,7 +716,7 @@ from License as l where (
             List<Org> providers = orgTypeService.getCurrentProviders( contextService.getOrg())
             List<Org> agencies   = orgTypeService.getCurrentAgencies( contextService.getOrg())
             providers.addAll(agencies)
-            orgIds = providers.unique().collect{ it2 -> it2.id }
+            orgIds = providers.collect{ it.id }.unique()
 
             cache.put('orgIds', orgIds)
         }
@@ -1999,11 +1999,11 @@ from License as l where (
         List<Subscription> subscriptions = Subscription.executeQuery("select s ${tmpQ[0]}", tmpQ[1]) //,[max: result.max, offset: result.offset]
 
             currentSubIds = subscriptions.collect{ it.id }
-            allLocals     = OrgRole.findAllWhere(org: contextService.getOrg(), roleType: RDStore.OR_SUBSCRIBER).collect{ it -> it?.sub?.id }
-            allSubscrCons = OrgRole.findAllWhere(org: contextService.getOrg(), roleType: RDStore.OR_SUBSCRIBER_CONS).collect{ it -> it?.sub?.id }
-            allSubscrColl = OrgRole.findAllWhere(org: contextService.getOrg(), roleType: RDStore.OR_SUBSCRIBER_COLLECTIVE).collect{ it -> it?.sub?.id }
-            allConsOnly   = OrgRole.findAllWhere(org: contextService.getOrg(), roleType: RDStore.OR_SUBSCRIPTION_CONSORTIA).collect{ it -> it?.sub?.id }
-            allCollOnly   = OrgRole.findAllWhere(org: contextService.getOrg(), roleType: RDStore.OR_SUBSCRIPTION_COLLECTIVE).collect{ it -> it?.sub?.id }
+            allLocals     = OrgRole.findAllWhere(org: contextService.getOrg(), roleType: RDStore.OR_SUBSCRIBER).findAll{it.sub}.collect{it.sub.id }.unique()
+            allSubscrCons = OrgRole.findAllWhere(org: contextService.getOrg(), roleType: RDStore.OR_SUBSCRIBER_CONS).findAll{it.sub}.collect{it.sub.id }.unique()
+            allSubscrColl = OrgRole.findAllWhere(org: contextService.getOrg(), roleType: RDStore.OR_SUBSCRIBER_COLLECTIVE).findAll{it.sub}.collect{it.sub.id }.unique()
+            allConsOnly   = OrgRole.findAllWhere(org: contextService.getOrg(), roleType: RDStore.OR_SUBSCRIPTION_CONSORTIA).findAll{it.sub}.collect{it.sub.id }.unique()
+            allCollOnly   = OrgRole.findAllWhere(org: contextService.getOrg(), roleType: RDStore.OR_SUBSCRIPTION_COLLECTIVE).findAll{it.sub}.collect{it.sub.id }.unique()
 
 
         result.subscriptionMap = [:]
@@ -2391,7 +2391,7 @@ AND EXISTS (
 
         DateFormat sdFormat    = new DateUtil().getSimpleDateFormat_NoTime()
         params.taskStatus = 'not done'
-        def query       = filterService.getTaskQuery(params, sdFormat)
+        def query       = filterService.getTaskQuery(params << [sort: 't.endDate', order: 'asc'], sdFormat)
         def contextOrg  = contextService.getOrg()
         result.tasks    = taskService.getTasksByResponsibles(springSecurityService.getCurrentUser(), contextOrg, query)
         result.tasksCount    = result.tasks.size()
@@ -2402,8 +2402,8 @@ AND EXISTS (
         result.recentAnnouncements = Doc.findAllByType(announcement_type, [max: result.max,offset:result.announcementOffset, sort: 'dateCreated', order: 'desc'])
         result.recentAnnouncementsCount = Doc.findAllByType(announcement_type).size()*/
 
-        result.dueDates = DashboardDueDate.findAllByResponsibleUserAndResponsibleOrg(contextService.user, contextService.org, [sort: 'date', order: 'asc', max: result.max, offset: result.dashboardDueDatesOffset])
-        result.dueDatesCount = DashboardDueDate.countByResponsibleUserAndResponsibleOrg(contextService.user, contextService.org)
+        result.dueDates = DashboardDueDate.findAllByResponsibleUserAndResponsibleOrgAndIsHiddenAndIsDone(contextService.user, contextService.org, false, false, [sort: 'date', order: 'asc', max: result.max, offset: result.dashboardDueDatesOffset])
+        result.dueDatesCount = DashboardDueDate.findAllByResponsibleUserAndResponsibleOrgAndIsHiddenAndIsDone(contextService.user, contextService.org, false, false).size()
 
         def activeSurveyConfigs = SurveyConfig.executeQuery("from SurveyConfig surConfig where exists (select surOrg from SurveyOrg surOrg where surOrg.surveyConfig = surConfig AND surOrg.org = :org and surOrg.finishDate is null and surConfig.pickAndChoose = true and surConfig.surveyInfo.status = :status) " +
                 " or exists (select surResult from SurveyResult surResult where surResult.surveyConfig = surConfig and surConfig.surveyInfo.status = :status and surResult.dateCreated = surResult.lastUpdated and surResult.finishDate is null and surResult.participant = :org) " +
@@ -3206,6 +3206,10 @@ AND EXISTS (
             }
         }
 
+        if ( ! params.sort) {
+            params.sort = "t.endDate"
+            params.order = "asc"
+        }
         DateFormat sdFormat = new DateUtil().getSimpleDateFormat_NoTime()
         def queryForFilter = filterService.getTaskQuery(params, sdFormat)
         int offset = params.offset ? Integer.parseInt(params.offset) : 0

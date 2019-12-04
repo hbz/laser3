@@ -101,7 +101,7 @@ class CostConfigurationController {
     def setAllCostItems() {
         def cie = genericOIDService.resolveOID(params.cie)
         def org = contextService.org
-        def concernedCostItems = CostItem.findAllByOwnerAndCostItemElementAndCostItemElementConfiguration(org,cie,null).collect {it -> it.id}
+        def concernedCostItems = CostItem.findAllByOwnerAndCostItemElementAndCostItemElementConfiguration(org,cie,null).collect {it.id}
         def ciec = CostItemElementConfiguration.findByCostItemElementAndForOrganisation(cie,org)
         if(concernedCostItems) {
             CostItem.executeUpdate('UPDATE CostItem ci SET ci.costItemElementConfiguration = :ciec WHERE ci.id IN (:cci)',[ciec:ciec.elementSign,cci:concernedCostItems])
