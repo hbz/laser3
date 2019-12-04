@@ -4,6 +4,8 @@
 
 1926    04.12.2019  rc1.1       David   Bug         Modaler Dialog: Funktions-/Personenkontakte funktioniert nicht
 
+1927    03.12.2019  /           David   Feature     Monitoring von SystemEvents via Mail
+
 1923    03.12.2019  rc1.1       David   Bug         Fehlerhafte Einträge bei Organisationen (Erstellt durch, Organisiert durch)
 
 1918    25.11.2019  rc1.1       David   Bug         Fehlende Organisationszuweisung bei autom. angelegten Nutzern
@@ -17,6 +19,12 @@
 1895    26.11.2019  hbz-dev     Moe     Feature     Fehler beim Filtern von Umfragen
 
 1902    26.11.2019  hbz-dev     Moe     Feature     Meine Pakete Sicht
+
+1584    27.11.2019  hbz-dev     Anja    Bugfixes     Dashboard Fällige Termine: Pagination alle Termine anzeigen funktioniert wieder
+
+1584    27.11.2019  hbz-dev     Anja    Feature     Dashboard Fällige Termine: Mehrsprachigkeit ist neu (auch in E-Mails), Einträge können ausgeblendet werden, (Einträge auf Erledigt setzen ist neu aber z.Zt. ausgeblendet), verfeinerte Kontrollausgaben des Cronjobs, 
+
+1837    25.11.2019  hbz-dev     Ingrid  Feature     Neuer Button "Filter" auf allen Tabellenübersichtsseiten. Dient zum Einklappen des Filters, zeigt gleichseitig die Anzahl der gestzten Filter an, ist einstellbar unter Profil. Jedes erneutes Laden der aktuellen Seite (z.B. Klicken durch Paginierung) läd Filter ein- oder eingeklappt, wie zuvor über Button eingestellt. Das überschreibt die Einstllung im Profil.
 
 1847    25.11.2019  hbz-dev     David   Feature     Performanz-, bzw. Cache-Optimierung
 
@@ -63,9 +71,3 @@
 1867    12.11.2019  rc-1.1      David   Bug         Fehlende Merkmale bei verschiedenen API-Enpunkten (0.70)
 
 1837    06.11.2019  rc-1.1      David   Bug         Standard-Dashboard beim Einloggen setzen
-
-1837    25.11.2019  hbz-dev     Ingrid  Feature     Neuer Button "Filter" auf allen Tabellenübersichtsseiten. Dient zum Einklappen des Filters, zeigt gleichseitig die Anzahl der gestzten Filter an, ist einstellbar unter Profil. Jedes erneutes Laden der aktuellen Seite (z.B. Klicken durch Paginierung) läd Filter ein- oder eingeklappt, wie zuvor über Button eingestellt. Das überschreibt die Einstllung im Profil.
-
-1584    27.11.2019  hbz-dev     Anja    Bugfixes     Dashboard Fällige Termine: Pagination alle Termine anzeigen funktioniert wieder
-
-1584    27.11.2019  hbz-dev     Anja    Feature     Dashboard Fällige Termine: Mehrsprachigkeit ist neu (auch in E-Mails), Einträge können ausgeblendet werden, (Einträge auf Erledigt setzen ist neu aber z.Zt. ausgeblendet), verfeinerte Kontrollausgaben des Cronjobs, 
