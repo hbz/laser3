@@ -128,12 +128,12 @@ class TaskService {
     }
 
     def getTasksByResponsibleAndObject(User user, Object obj) {
-        def tasks = getTasksByResponsibleAndObject(user, obj, [sort: 'endDate', order: 'asc'])
+        def tasks = getTasksByResponsibleAndObject(user, obj, [sort: 't.endDate', order: 'asc'])
         tasks
     }
 
     def getTasksByResponsibleAndObject(Org org, Object obj) {
-        def tasks = getTasksByResponsibleAndObject(org, obj, [sort: 'endDate', order: 'asc'])
+        def tasks = getTasksByResponsibleAndObject(org, obj, [sort: 't.endDate', order: 'asc'])
         tasks
     }
 
