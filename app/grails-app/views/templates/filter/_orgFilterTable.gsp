@@ -287,7 +287,7 @@
                 <g:elseif test="${org.legallyObligedBy}">
                     <span class="la-popup-tooltip la-delay" data-position="top right"
                           data-content="${message(code:'org.legalInformation.3.tooltip', args:[org.legallyObligedBy])}" >
-                        <i class="ui icon grey circle"></i>
+                        <i class="ui icon red question mark"></i>
                     </span>
                 </g:elseif>
             </td>
