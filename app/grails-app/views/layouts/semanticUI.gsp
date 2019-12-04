@@ -531,7 +531,7 @@
                         <div class="results" style="overflow-y:scroll;max-height: 400px;"></div>
                     </div>
 
-                    <g:link  controller="subscription" action="index"  class="la-search-advanced la-popup-tooltip la-delay"
+                    <g:link  controller="search" action="index"  class="la-search-advanced la-popup-tooltip la-delay"
                              data-content="${message(code: 'advanced.search.tooltip')}">
                         <i class="large icons">
                             <i class="search icon"></i>
