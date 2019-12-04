@@ -37,7 +37,7 @@ class QueryService {
             dueObjects.addAll( taskService.getTasksByResponsibles(
                     contextUser,
                     contextOrg,
-                    [query:" and status = :open and endDate <= :endDate",
+                    [query:" and t.status = :open and t.endDate <= :endDate",
                      queryParams:[open: RDStore.TASK_STATUS_OPEN,
                                   endDate: computeInfoDate(contextUser, REMIND_PERIOD_FOR_TASKS)]]) )
         }
