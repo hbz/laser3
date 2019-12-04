@@ -86,6 +86,7 @@ class ESSearchService{
             searchSourceBuilder.aggregation(AggregationBuilders.terms('status').size(50).field('status.keyword'))
             searchSourceBuilder.aggregation(AggregationBuilders.terms('startYear').size(50).field('startYear.keyword'))
             searchSourceBuilder.aggregation(AggregationBuilders.terms('endYear').size(50).field('endYear.keyword'))
+            searchSourceBuilder.aggregation(AggregationBuilders.terms('consortiaName').size(50).field('consortiaName.keyword'))
 
             searchSourceBuilder.from(params.offset)
             searchSourceBuilder.size(params.max)

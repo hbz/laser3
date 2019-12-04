@@ -752,7 +752,7 @@ class DeletionService {
     def deleteDocumentFromIndex(domainName, id)
     {
         def es_index = ESWrapperService.getESSettings().indexName
-        RestHighLevelClient esclient = ESWrapperService.ge
+        RestHighLevelClient esclient = ESWrapperService.getClient()
 
         DeleteRequest request = new DeleteRequest(es_index, id)
         DeleteResponse deleteResponse = esclient.delete(request, RequestOptions.DEFAULT);

@@ -21,7 +21,7 @@ class SearchController extends AbstractDebugController {
         params.offset = params.offset ? params.int('offset') : 0
 
         params.searchObjects = params.searchObjects ?: 'allObjects'
-        params.tab = params.tab ?: 'simpleSearch'
+
 
         def query = params.q ? "${params.q}": null
         if (!query) {
