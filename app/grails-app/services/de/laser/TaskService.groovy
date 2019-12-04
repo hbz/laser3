@@ -431,7 +431,7 @@ order by lower(s.name), s.endDate""", qry_params_for_sub << [referenceField: 'va
 
     private String addDefaultOrder(String query){
         if (query && ( ! query.toLowerCase().contains('order by'))){
-            query += ' order by endDate asc'
+            query += ' order by t.endDate asc'
         }
         query
     }
@@ -439,10 +439,10 @@ order by lower(s.name), s.endDate""", qry_params_for_sub << [referenceField: 'va
     private Map addDefaultOrder(Map params){
         if (params) {
             if ( ! params.sort) {
-                params << [sort: 'endDate', order: 'asc']
+                params << [sort: 't.endDate', order: 'asc']
             }
         } else {
-            params =  [sort: 'endDate', order: 'asc']
+            params =  [sort: 't.endDate', order: 'asc']
         }
         params
     }
