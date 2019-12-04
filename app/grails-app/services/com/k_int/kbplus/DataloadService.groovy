@@ -254,6 +254,19 @@ class DataloadService {
             result.statusId = lic.status?.id
             result.endDate = lic.endDate
             result.startDate = lic.startDate
+            result.members = License.findAllByInstanceOf(lic)?.size() ?: 0
+
+            result.consortiaId = lic.getLicensor()?.id
+            result.consortiaName = lic.getLicensor()?.name
+
+            result.identifiers = []
+            lic.ids?.each { ident ->
+                try {
+                    result.identifiers.add([type: ident.ns.ns, value: ident.value])
+                } catch (Exception e) {
+                    log.error(e)
+                }
+            }
 
             if (lic.startDate) {
                 GregorianCalendar c = new GregorianCalendar()
@@ -336,6 +349,15 @@ class DataloadService {
                 result.subtype = sub.type?.value
                 result.members = Subscription.findAllByInstanceOf(sub)?.size() ?: 0
                 result.visible = 'Private'
+
+                result.identifiers = []
+                sub.ids?.each { ident ->
+                        try {
+                            result.identifiers.add([type: ident.ns.ns, value: ident.value])
+                        } catch (Exception e) {
+                            log.error(e)
+                        }
+                    }
 
                 if (sub.startDate) {
                     GregorianCalendar c = new GregorianCalendar()
@@ -430,7 +452,7 @@ class DataloadService {
             def result = [:]
 
             result._id = task.getClass().getSimpleName().toLowerCase()+":"+task.id
-            result.priority = 30
+            result.priority = 35
             result.dbId = task.id
             result.availableToOrgs = [task.responsibleOrg?.id]
             result.name = task.title
@@ -444,8 +466,113 @@ class DataloadService {
             result.rectype = 'Task'
 
             if(task.subscription){
-                result.subId = task.subscription.id
-                result.subName = task.subscription.name
+                result.objectId = task.subscription.id
+                result.objectName = task.subscription.name
+                result.objectType = task.subscription.getClass().getSimpleName().toLowerCase()
+            }
+
+            if(task.org){
+                result.objectId = task.org.id
+                result.objectName = task.org.name
+                result.objectType = task.org.getClass().getSimpleName().toLowerCase()
+            }
+
+            if(task.license){
+                result.objectId = task.license.id
+                result.objectName = task.license.reference
+                result.objectType = task.license.getClass().getSimpleName().toLowerCase()
+            }
+
+            if(task.surveyConfig){
+                result.objectId = task.surveyConfig.id
+                result.objectName = task.surveyConfig.name
+                result.objectType = task.surveyConfig.getClass().getSimpleName().toLowerCase()
+            }
+
+            result
+        }
+
+        updateES(esclient, com.k_int.kbplus.DocContext.class) { docCon ->
+            def result = [:]
+
+            result._id = docCon.getClass().getSimpleName().toLowerCase()+":"+docCon.id
+            result.priority = 35
+            result.dbId = docCon.id
+            result.availableToOrgs = [docCon.owner?.owner.id ?: 0]
+            result.name = docCon.owner?.title
+            result.description = docCon.owner?.content
+            result.status= docCon.status?.value
+            result.statusId= docCon.status?.id
+
+            result.visible = 'Private'
+
+            result.rectype = (docCon.owner?.contentType == 0) ? 'Note' : 'Document'
+
+            if(docCon.subscription){
+                result.objectId = docCon.subscription.id
+                result.objectName = docCon.subscription.name
+                result.objectType = docCon.subscription.getClass().getSimpleName().toLowerCase()
+            }
+
+            if(docCon.org){
+                result.objectId = docCon.org.id
+                result.objectName = docCon.org.name
+                result.objectType = docCon.org.getClass().getSimpleName().toLowerCase()
+            }
+
+            if(docCon.license){
+                result.objectId = docCon.license.id
+                result.objectName = docCon.license.reference
+                result.objectType = docCon.license.getClass().getSimpleName().toLowerCase()
+            }
+
+            if(docCon.surveyConfig){
+                result.objectId = docCon.surveyConfig.id
+                result.objectName = docCon.surveyConfig.name
+                result.objectType = docCon.surveyConfig.getClass().getSimpleName().toLowerCase()
+            }
+
+            result
+        }
+
+        updateES(esclient, com.k_int.kbplus.DocContext.class) { docCon ->
+            def result = [:]
+
+            result._id = docCon.getClass().getSimpleName().toLowerCase()+":"+docCon.id
+            result.priority = 35
+            result.dbId = docCon.id
+            result.availableToOrgs = [docCon.owner?.owner.id ?: 0]
+            result.name = docCon.owner?.title
+            result.description = docCon.owner?.content
+            result.status= docCon.status?.value
+            result.statusId= docCon.status?.id
+
+            result.visible = 'Private'
+
+            result.rectype = (docCon.owner?.contentType == 0) ? 'Note' : 'Document'
+
+            if(docCon.subscription){
+                result.objectId = docCon.subscription.id
+                result.objectName = docCon.subscription.name
+                result.objectType = docCon.subscription.getClass().getSimpleName().toLowerCase()
+            }
+
+            if(docCon.org){
+                result.objectId = docCon.org.id
+                result.objectName = docCon.org.name
+                result.objectType = docCon.org.getClass().getSimpleName().toLowerCase()
+            }
+
+            if(docCon.license){
+                result.objectId = docCon.license.id
+                result.objectName = docCon.license.reference
+                result.objectType = docCon.license.getClass().getSimpleName().toLowerCase()
+            }
+
+            if(docCon.surveyConfig){
+                result.objectId = docCon.surveyConfig.id
+                result.objectName = docCon.surveyConfig.name
+                result.objectType = docCon.surveyConfig.getClass().getSimpleName().toLowerCase()
             }
 
             result
@@ -536,9 +663,9 @@ class DataloadService {
             String index = indexResponse.getIndex();
             String id = indexResponse.getId();
             if (indexResponse.getResult() == DocWriteResponse.Result.CREATED) {
-                println('CREATED')
+                println("CREATED ${domain.name}")
             } else if (indexResponse.getResult() == DocWriteResponse.Result.UPDATED) {
-                println("UPDATED")
+                println("UPDATED ${domain.name}")
             }
             ReplicationResponse.ShardInfo shardInfo = indexResponse.getShardInfo();
             if (shardInfo.getTotal() != shardInfo.getSuccessful()) {
@@ -796,7 +923,7 @@ class DataloadService {
         searchSourceBuilder.query(QueryBuilders.queryStringQuery(query_str))
 
         searchRequest.source(searchSourceBuilder)
-        searchRequest.scroll(TimeValue.timeValueMinutes(1L))
+        //searchRequest.scroll(TimeValue.timeValueMinutes(1L))
 
         SearchResponse searchResponse = esclient.search(searchRequest, RequestOptions.DEFAULT)
 

@@ -83,7 +83,7 @@ class ESWrapperService {
 
     def clusterHealth(){
 
-        RestHighLevelClient esclient = ESWrapperService.getClient()
+        RestHighLevelClient esclient = this.getClient()
 
         ClusterHealthRequest request = new ClusterHealthRequest();
         ClusterHealthResponse response = esclient.cluster().health(request, RequestOptions.DEFAULT);
@@ -110,6 +110,7 @@ class ESWrapperService {
         println("ESInfo: index: ${index}, numberOfShards: ${numberOfShards}, numberOfReplicas: ${numberOfReplicas}, indexStatus: ${indexStatus}")
 
         esclient.close()
+        println("Close")
 
     }
 

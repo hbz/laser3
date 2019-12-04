@@ -38,15 +38,15 @@
 
 
 <h3 class="ui left floated aligned icon header la-clear-before">${message(code: 'platform.show.availability', default: 'Availability of titles in this platform by package')}
-<semui:totalNumber total="${tipps.size()}"/>
+<semui:totalNumber total="${countTipps}"/>
 </h3>
 <semui:form>
 <g:render template="/templates/tipps/table"
           model="[tipps: tipps, showPackage: true, showPlattform: false, showBulkFlag: false]"/>
 </semui:form>
 
-<g:if test="${tipps}" >
-    <semui:paginate action="current" controller="package" params="${params}" next="${message(code:'default.paginate.next')}" prev="${message(code:'default.paginate.prev')}" maxsteps="${max}" total="${num_tipp_rows}" />
+<g:if test="${countTipps}" >
+    <semui:paginate action="platformTipps" controller="platform" params="${params}" next="${message(code:'default.paginate.next')}" prev="${message(code:'default.paginate.prev')}" maxsteps="${max}" total="${countTipps}" />
 </g:if>
 
 </body>

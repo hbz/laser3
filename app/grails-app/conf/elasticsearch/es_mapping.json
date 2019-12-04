@@ -327,6 +327,28 @@
     "members": {
       "type": "long",
       "index": false
+    },
+    "objectId": {
+      "type": "long",
+      "index": false
+    },
+    "objectName": {
+      "type": "text",
+      "fields": {
+        "keyword": {
+          "ignore_above": 256,
+          "type": "keyword"
+        }
+      }
+    },
+    "objectType": {
+      "type": "text",
+      "fields": {
+        "keyword": {
+          "ignore_above": 256,
+          "type": "keyword"
+        }
+      }
     }
   }
 }

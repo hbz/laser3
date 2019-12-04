@@ -215,6 +215,8 @@ class PlatformController extends AbstractDebugController {
         def date_filter = params.mode == 'advanced' ? null : new Date()
         def query = filterService.generateBasePackageQuery(params, qry_params, false, date_filter, "Platform")
         List<TitleInstancePackagePlatform> platformTipps = TitleInstancePackagePlatform.executeQuery("select tipp ${query.base_qry}",query.qry_params)
+
+        result.countTipps = platformTipps.size()?:0
         result.tipps = platformTipps.drop(result.offset).take(result.max)
 
         result
