@@ -1,5 +1,6 @@
 package de.laser
 
+import de.laser.helper.SwissKnife
 import org.springframework.web.servlet.support.RequestContextUtils
 import grails.plugin.springsecurity.SpringSecurityUtils
 
@@ -27,9 +28,8 @@ class SemanticUiSubNavTagLib {
 
     def complexSubNavItem = { attrs, body ->
 
-        def text      = attrs.text ? attrs.text : ''
-        def message   = attrs.message ? "${message(code: attrs.message)}" : ''
-        def aClass    = ((this.pageScope.variables?.workFlowPart == attrs.workFlowPart) ? 'item active' : 'item') + (attrs.class ? ' ' + attrs.class : '')
+        def (text, message) = SwissKnife.getTextAndMessage(attrs)
+        def aClass = ((this.pageScope.variables?.workFlowPart == attrs.workFlowPart) ? 'item active' : 'item') + (attrs.class ? ' ' + attrs.class : '')
 
         if (attrs.controller) {
             out << g.link(body(),
@@ -44,8 +44,7 @@ class SemanticUiSubNavTagLib {
         }
     }
     def subNavItem = { attrs, body ->
-        def text      = attrs.text ? attrs.text : ''
-        def message   = attrs.message ? "${message(code: attrs.message)}" : ''
+        def (text, message) = SwissKnife.getTextAndMessage(attrs)
         def linkBody  = (text && message) ? text + " - " + message : text + message
         def aClass    = ((this.pageScope.variables?.actionName == attrs.action) ? 'item active' : 'item') + (attrs.class ? ' ' + attrs.class : '')
 
@@ -72,9 +71,8 @@ class SemanticUiSubNavTagLib {
 
     def securedSubNavItem = { attrs, body ->
 
-        def text      = attrs.text ? attrs.text : ''
-        def message   = attrs.message ? "${message(code: attrs.message)}" : ''
-        def linkBody  = (text && message) ? text + " - " + message : text + message
+        def (text, message) = SwissKnife.getTextAndMessage(attrs)
+        def linkBody = (text && message) ? text + " - " + message : text + message
 
         boolean check = SpringSecurityUtils.ifAnyGranted(attrs.specRole ?: [])
 
