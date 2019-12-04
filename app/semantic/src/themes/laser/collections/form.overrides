@@ -53,7 +53,7 @@ form {
 
 
 
-// Search Form Spothlight
+/* Menue Search Animated Input
 
 .ui.icon.input > i.icon#btn-search:not(.link){
   pointer-events: auto;
@@ -70,6 +70,32 @@ i.search.icon.open {
 }
 input#spotlightSearch[type="search"] {
   display: none;
+}
+
+.ui.input > input#spotlightSearch:focus  {
+  border-color: @lightGrey;
+}
+*/
+
+
+// Search Form Spothlight
+
+.ui.icon.input > i.icon#btn-search:not(.link){
+  pointer-events: auto;
+}
+input#spotlightSearch[type="search"]:hover,
+input#spotlightSearch[type="search"]:focus{
+  background: @lightGrey;
+}
+
+i.search.icon#btn-search {
+  color:black;
+}
+.la-search-advanced i.search.icon{
+  color:white;
+}
+input#spotlightSearch[type="search"] {
+  //display: none;
 }
 
 .ui.input > input#spotlightSearch:focus  {
