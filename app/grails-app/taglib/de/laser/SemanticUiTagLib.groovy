@@ -585,7 +585,7 @@ class SemanticUiTagLib {
             }
         }
         if (showFilterButton) {
-            out << '<button class="ui right floated button la-inline-labeled la-js-filterButton la-clearfix' + (extended ?'':'blue') + '">'
+            out << '<button class="ui right floated button la-inline-labeled la-js-filterButton la-clearfix ' + (extended ?'':'blue') + '">'
             out << '    Filter'
             out << '    <i class="filter icon"></i>'
             out << '   <span class="ui circular label la-js-filter-total hidden">0</span>'
