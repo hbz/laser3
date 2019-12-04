@@ -254,7 +254,7 @@ class DataloadService {
             result.statusId = lic.status?.id
             result.endDate = lic.endDate
             result.startDate = lic.startDate
-            result.members = License.findAllByInstanceOf(lic)?.size() ?: 0
+            result.members = License.findAllByInstanceOf(lic).size()
 
             result.consortiaId = lic.getLicensor()?.id
             result.consortiaName = lic.getLicensor()?.name
@@ -347,7 +347,7 @@ class DataloadService {
                 result.status = sub.status?.value
                 result.statusId = sub.status?.id
                 result.subtype = sub.type?.value
-                result.members = Subscription.findAllByInstanceOf(sub)?.size() ?: 0
+                result.members = Subscription.findAllByInstanceOf(sub).size()
                 result.visible = 'Private'
 
                 result.identifiers = []
