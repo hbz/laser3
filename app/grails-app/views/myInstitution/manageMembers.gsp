@@ -2,12 +2,14 @@
 <laser:serviceInjection />
 
 <%
-    String title
+    String title, memberPlural
     if(comboType.id == RDStore.COMBO_TYPE_CONSORTIUM.id) {
         title = message(code: 'menu.institutions.manage_consortia')
+        memberPlural = message(code: 'consortium.member.plural')
     }
     else if(comboType.id == RDStore.COMBO_TYPE_DEPARTMENT.id) {
         title = message(code: 'menu.institutions.manage_departments')
+        memberPlural = message(code: 'collective.member.plural')
     }
 %>
 <!doctype html>
@@ -100,22 +102,21 @@
                       ]"/>
 
 
-            <g:if test="${members && editable}">
-                <input type="submit" class="ui button"
-                       data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.function", args: [message(code:'members.confirmDelete')])}"
-                       data-confirm-term-how="delete" value="${message(code: 'default.button.revoke.label')}"/>
-            </g:if>
-        </g:form>
+        <g:if test="${members && editable}">
+            <input type="submit" class="ui button"
+                   data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.function", args: [message(code:'members.confirmDelete')])}"
+                   data-confirm-term-how="delete" value="${message(code: 'default.button.revoke.label')}"/>
+        </g:if>
+    </g:form>
+</g:if>
+<g:else>
+    <g:if test="${filterSet}">
+        <br><strong><g:message code="filter.result.empty.object" args="${[memberPlural]}"/></strong>
     </g:if>
     <g:else>
-        <g:if test="${filterSet}">
-            <br><strong><g:message code="filter.result.empty.object" args="${[message(code:"myinst.consortiaSubscriptions.consortia")]}"/></strong>
-        </g:if>
-        <g:else>
-            <br><strong><g:message code="result.empty.object" args="${[message(code:"myinst.consortiaSubscriptions.consortia")]}"/></strong>
-        </g:else>
+        <br><strong><g:message code="result.empty.object" args="${[memberPlural]}"/></strong>
     </g:else>
-</div>
+</g:else>
 
     <g:render template="../templates/copyEmailaddresses" model="[orgList: totalMembers]"/>
     <semui:paginate action="manageMembers" controller="myInstitution" params="${params}" next="${message(code:'default.paginate.next', default:'Next')}" prev="${message(code:'default.paginate.prev', default:'Prev')}" max="${max}" total="${membersCount}" />

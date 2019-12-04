@@ -4,9 +4,9 @@
 <div class="field">
     <label for="filterPropDef">${message(code: 'subscription.property.search')}
         <i class="question circle icon la-popup"></i>
-        <div class="ui  popup ">
+        <span class="ui  popup ">
             <i class="shield alternate icon"></i> = ${message(code: 'subscription.properties.my')}
-        </div>
+        </span>
     </label>
     <r:script>
         $(".la-popup").popup({
@@ -44,7 +44,7 @@
 <div class="field">
     <label for="filterProp">${message(code: 'subscription.property.value')}</label>
 
-    <input id="filterProp" id="filterProp" name="filterProp" type="text"
+    <input  id="filterProp" name="filterProp" type="text"
            placeholder="${message(code: 'license.search.property.ph')}" value="${params.filterProp ?: ''}"/>
 </div>
 </g:if>

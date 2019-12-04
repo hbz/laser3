@@ -2,6 +2,7 @@ package de.laser
 
 import com.k_int.kbplus.Org
 import com.k_int.kbplus.auth.User
+import de.laser.helper.SwissKnife
 
 // Semantic UI
 
@@ -50,7 +51,7 @@ class SemanticUiDropdownTagLib {
         if (attrs.name) {
             id = ' id="' + attrs.name + '" name="' + attrs.name + '" '
         }
-        out << '<select class="ui fluid labeled search dropdown' + id + '">'
+        out << '<select class="ui fluid labeled search dropdown"' + id + '>'
 
         if (attrs.noSelection) {
             out << '<option value="">' + attrs.noSelection + '</option>'
@@ -94,8 +95,7 @@ class SemanticUiDropdownTagLib {
 
     def actionsDropdownItem = { attrs, body ->
 
-        def text      = attrs.text ? attrs.text : ''
-        def message   = attrs.message ? "${message(code: attrs.message)}" : ''
+        def (text, message) = SwissKnife.getTextAndMessage(attrs)
         def linkBody  = (text && message) ? text + " - " + message : text + message
         def aClass    = 'item'
         def href      = attrs.href ? attrs.href : '#'
@@ -131,7 +131,7 @@ class SemanticUiDropdownTagLib {
     }
 
     def actionsDropdownItemDisabled = { attrs, body ->
-        def message = attrs.message ? "${message(code: attrs.message)}" : ''
+        def (text, message) = SwissKnife.getTextAndMessage(attrs)
         def tooltip = attrs.tooltip ?: "Die Funktion \'"+message+"\' ist zur Zeit nicht verfügbar!"
 
         out << '<a href="#" class="item"><div class="disabled" data-tooltip="'+tooltip+'" data-position="bottom center">'+message+'</div></a>'
@@ -179,9 +179,8 @@ class SemanticUiDropdownTagLib {
     }
 
     def menuDropdownItems = { attrs, body ->
-        def text      = attrs.text ? attrs.text : ''
-        def message   = attrs.message ? "${message(code: attrs.message)}" : ''
-        def textMessage  = (text && message) ? text + " - " + message : text + message
+        def (text, message) = SwissKnife.getTextAndMessage(attrs)
+        def textMessage     = (text && message) ? text + " - " + message : text + message
         out << '<div class="ui pointing dropdown link item">'
         out << textMessage
         out << '<i class="dropdown icon"></i> '
@@ -194,8 +193,7 @@ class SemanticUiDropdownTagLib {
     }
 
     def menuDropdownItem = { attrs, body ->
-        def text      = attrs.text ? attrs.text : ''
-        def message   = attrs.message ? "${message(code: attrs.message)}" : ''
+        def (text, message) = SwissKnife.getTextAndMessage(attrs)
         def linkBody  = (text && message) ? text + " - " + message : text + message
         def aClass    = ('item') + (attrs.class ? ' ' + attrs.class : '')
 

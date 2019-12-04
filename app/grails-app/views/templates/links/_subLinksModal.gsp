@@ -11,7 +11,7 @@
 </g:if>
 
 <semui:modal id="${tmplModalID}" text="${tmplText}">
-    <g:form id="link_subs" class="ui form" url="[controller: 'ajax', action: 'linkSubscriptions']" method="post">
+    <g:form id="link_subs_${tmplModalID}" class="ui form" url="[controller: 'ajax', action: 'linkSubscriptions']" method="post">
         <input type="hidden" name="context" value="${context}"/>
         <%
             List<RefdataValue> refdataValues = RefdataValue.findAllByOwner(RefdataCategory.getByI10nDesc('Link type'))

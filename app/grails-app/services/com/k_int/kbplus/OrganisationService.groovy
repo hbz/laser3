@@ -2490,7 +2490,7 @@ class OrganisationService {
             hbz = createOrg([name: 'hbz Konsortialstelle Digitale Inhalte',shortname: 'hbz Konsortium', sortname: 'Köln, hbz', orgType: [consortium], sector: RDStore.O_SECTOR_HIGHER_EDU])
             if(!hbz.hasErrors()) {
                 OrgSettings.add(hbz,OrgSettings.KEYS.CUSTOMER_TYPE,customerTypes.konsortium)
-                grailsApplication.config.sysusers.each { su ->
+                grailsApplication.config.systemUsers.each { su ->
                     User admin = User.findByUsername(su.name)
                     instAdmService.createAffiliation(admin,hbz,Role.findByAuthority('INST_ADM'),UserOrg.STATUS_APPROVED,null)
                     admin.getSetting(UserSettings.KEYS.DASHBOARD,hbz)

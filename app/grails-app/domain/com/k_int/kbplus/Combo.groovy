@@ -17,6 +17,7 @@ class Combo {
     Date lastUpdated
 
     static mapping = {
+                cache true
                 id column:'combo_id'
            version column:'combo_version'
             status column:'combo_status_rv_fk'

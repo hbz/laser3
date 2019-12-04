@@ -202,7 +202,7 @@
             </div><!-- .card -->
         </g:if>
 
-            <g:if test="${((fromCreate) && !inContextOrg) || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN,ROLE_ORG_EDITOR')}">
+            <g:if test="${SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN,ROLE_ORG_EDITOR')}">
                 <div class="ui card">
                     <div class="content">
                         <g:if test="${orgInstance.hasPerm("ORG_INST") || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN,ROLE_ORG_EDITOR')}">
@@ -237,10 +237,10 @@
             </div><!-- .card -->
         </g:if>
 
-        <g:if test="${((fromCreate) && !inContextOrg) || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN,ROLE_ORG_EDITOR')}">
-            <div class="ui card">
-                <div class="content">
-                    <%-- ROLE_ADMIN: all , ROLE_ORG_EDITOR: all minus Consortium --%>
+            <g:if test="${SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN,ROLE_ORG_EDITOR')}">
+                <div class="ui card">
+                    <div class="content">
+                        <%-- ROLE_ADMIN: all , ROLE_ORG_EDITOR: all minus Consortium --%>
                         <dl>
                             <dt><g:message code="org.orgType.label" default="Organisation Type"/></dt>
                             <dd>

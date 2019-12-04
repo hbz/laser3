@@ -5,7 +5,7 @@
 
     <div class="field">
 
-        <table id="prs_role_tab" class="ui celled la-table la-table-small table la-ignore-fixed">
+        <table class="ui celled la-table la-table-small table la-ignore-fixed">
             <thead>
             <tr>
                 <th>Person</th>

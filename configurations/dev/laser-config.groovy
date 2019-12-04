@@ -44,34 +44,37 @@ doDocstoreMigration = false
 showDebugInfo       = true
 
 // --- example users ---
-sysusers = [
+systemUsers = [
     [
         name:'aaa',
         pass:'aaa',
         display:'User A',
         email:'aaa@localhost',
-        roles:['ROLE_USER','INST_USER']
+        affils:['hbz Konsortium':['INST_ADM','INST_USER'], 'UB xyz':['INST_USER']],
+        roles:['ROLE_ADMIN','ROLE_USER']
     ],
     [ 
         name:'bbb',
         pass:'bbb',
         display:'User B',
         email:'bbb@localhost',
-        roles:['ROLE_USER','INST_USER']
+        affils:['hbz Konsortium':['INST_ADM','INST_USER']],
+        roles:['ROLE_USER']
     ],
     [ 
         name:'ccc',
         pass:'ccc',
         display:'User C',
         email:'ccc@localhost',
-        roles:['ROLE_USER','INST_USER']
+        affils:['UB xyz':['INST_USER']],
+        roles:['ROLE_USER']
     ],
     [ 
         name:'admin',
         pass:'admin',
         display:'Admin',
         email:'admin@localhost',
-        roles:['ROLE_USER','ROLE_ADMIN','INST_ADM']
+        roles:['ROLE_USER']
     ]
 ]
 
