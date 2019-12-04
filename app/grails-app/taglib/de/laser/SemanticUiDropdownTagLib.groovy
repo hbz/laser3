@@ -51,7 +51,7 @@ class SemanticUiDropdownTagLib {
         if (attrs.name) {
             id = ' id="' + attrs.name + '" name="' + attrs.name + '" '
         }
-        out << '<select class="ui fluid labeled search dropdown' + id + '">'
+        out << '<select class="ui fluid labeled search dropdown"' + id + '>'
 
         if (attrs.noSelection) {
             out << '<option value="">' + attrs.noSelection + '</option>'

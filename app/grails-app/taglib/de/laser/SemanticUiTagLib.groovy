@@ -79,6 +79,9 @@ class SemanticUiTagLib {
 
             out << "${message(code: attrs.message, args: attrs.args)}"
         }
+        if ( body ) {
+            out << body()
+        }
         out << '</p>'
 
         out << '</div>'
@@ -589,20 +592,11 @@ class SemanticUiTagLib {
             out << '    <i class="filter icon"></i>'
             out << '   <span class="ui circular label la-js-filter-total hidden">0</span>'
             out << '</button>'
-
-
-/*            out << r.script() {
-                out << ' $(".la-js-filterButton").click(function() { '
-                //out << ' showExtendedFilter = !showExtendedFilter; '
-                out << '    $( ".la-filter").toggle( "fast" ); '
-                out << '    $(this).toggleClass("blue"); '
-                out << '}); '
-            }*/
         }
 
 
-        //out << '<div class="ui la-filter segment la-clear-before' + (extended ?'':' hidden') + '">'
-        out << '<div class="ui la-filter segment la-clear-before"' + (extended ?'':' style="display: none;"') + '">'
+        //out << '<div class="ui la-filter segment la-clear-before' + (extended ?'':' style="display: none;"') + '">'
+        out << '<div class="ui la-filter segment la-clear-before"' + (extended ?'':' style="display: none;"') + '>'
         out << body()
         out << '</div>'
     }
@@ -760,7 +754,7 @@ class SemanticUiTagLib {
         out << '<div class="ui calendar datepicker">'
         out << '<div class="ui input left icon">'
         out << '<i class="calendar icon"></i>'
-        out << '<input class="' + inputCssClass + '" name="' + name +  '" id="' + id +'" type="text" placeholder="' + placeholder + '" value="' + value + '"' + required + '>'
+        out << '<input class="' + inputCssClass + '" name="' + name +  '" id="' + id +'" type="text" placeholder="' + placeholder + '" value="' + value + '" ' + required + '>'
         out << '</div>'
         out << '</div>'
         out << '</div>'
@@ -809,10 +803,10 @@ class SemanticUiTagLib {
             if (prev?.size() == 1) {
                 prev?.each { p ->
                     if (attrs.mapping) {
-                        out << g.link("<i class='arrow left icon'></i>", contoller: attrs.controller, action: attrs.action, class: "item", params: [sub: p.id], mapping: attrs.mapping)
+                        out << g.link("<i class='arrow left icon'></i>", controller: attrs.controller, action: attrs.action, class: "item", params: [sub: p.id], mapping: attrs.mapping)
 
                     } else {
-                        out << g.link("<i class='arrow left icon'></i>", contoller: attrs.controller, action: attrs.action, class: "item", id: p.id)
+                        out << g.link("<i class='arrow left icon'></i>", controller: attrs.controller, action: attrs.action, class: "item", id: p.id)
                     }
                 }
             } else {
@@ -830,9 +824,9 @@ class SemanticUiTagLib {
                         prevEndDate = g.formatDate(date: p.endDate, format: message(code: 'default.date.format.notime'))
                     }
                     if (attrs.mapping) {
-                        out << g.link("<b>${p.name}:</b> " + "${prevStartDate}" + "${dash}" + "${prevEndDate}", contoller: attrs.controller, action: attrs.action, class: "item", params: [sub: p.id], mapping: attrs.mapping)
+                        out << g.link("<b>${p.name}:</b> " + "${prevStartDate}" + "${dash}" + "${prevEndDate}", controller: attrs.controller, action: attrs.action, class: "item", params: [sub: p.id], mapping: attrs.mapping)
                     } else {
-                        out << g.link("<b>${p.name}:</b> " + "${prevStartDate}" + "${dash}" + "${prevEndDate}", contoller: attrs.controller, action: attrs.action, class: "item", id: p.id)
+                        out << g.link("<b>${p.name}:</b> " + "${prevStartDate}" + "${dash}" + "${prevEndDate}", controller: attrs.controller, action: attrs.action, class: "item", id: p.id)
                     }
                 }
                 out << "</div>" +
@@ -856,10 +850,10 @@ class SemanticUiTagLib {
             if (next?.size() == 1) {
                 next?.each { n ->
                     if (attrs.mapping) {
-                        out << g.link("<i class='arrow right icon'></i>", contoller: attrs.controller, action: attrs.action, class: "item", params: [sub: n.id], mapping: attrs.mapping)
+                        out << g.link("<i class='arrow right icon'></i>", controller: attrs.controller, action: attrs.action, class: "item", params: [sub: n.id], mapping: attrs.mapping)
 
                     } else {
-                        out << g.link("<i class='arrow right icon'></i>", contoller: attrs.controller, action: attrs.action, class: "item", id: n.id)
+                        out << g.link("<i class='arrow right icon'></i>", controller: attrs.controller, action: attrs.action, class: "item", id: n.id)
                     }
                 }
             } else {
@@ -875,9 +869,9 @@ class SemanticUiTagLib {
                         nextEndDate = g.formatDate(date: n.endDate, format: message(code: 'default.date.format.notime'))
                     }
                     if (attrs.mapping) {
-                        out << g.link("<b>${n.name}:</b> " + "${nextStartDate}" + "${dash}" + "${nextEndDate}", contoller: attrs.controller, action: attrs.action, class: "item", params: [sub: n.id], mapping: attrs.mapping)
+                        out << g.link("<b>${n.name}:</b> " + "${nextStartDate}" + "${dash}" + "${nextEndDate}", controller: attrs.controller, action: attrs.action, class: "item", params: [sub: n.id], mapping: attrs.mapping)
                     } else {
-                        out << g.link("<b>${n.name}:</b> " + "${nextStartDate}" + "${dash}" + "${nextEndDate}", contoller: attrs.controller, action: attrs.action, class: "item", id: n.id)
+                        out << g.link("<b>${n.name}:</b> " + "${nextStartDate}" + "${dash}" + "${nextEndDate}", controller: attrs.controller, action: attrs.action, class: "item", id: n.id)
                     }
                 }
                 out << "</div>" +

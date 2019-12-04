@@ -26,7 +26,7 @@
 	<semui:messages data="${flash}" />
 
         <g:if test="${request.message}">
-		    <bootstrap:alert class="alert alert-error">${request.message}</bootstrap:alert>
+		    <semui:msg class="negative" text="${request.message}" />
 	    </g:if>
 
 	<g:form action="compare" controller="package" method="GET" class="ui form">
