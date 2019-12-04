@@ -419,7 +419,7 @@ r2d2 = {
         $(ctxSel + ' .datepicker').calendar(r2d2.configs.datepicker);
 
         // dropdowns
-        $(ctxSel + ' .ui.dropdown').dropdown({
+        $(ctxSel + ' .ui.dropdown').not('nav.menu .ui.dropdown').dropdown({
             duration: 150,
             transition: 'fade',
             apiSettings: {
