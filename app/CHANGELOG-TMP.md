@@ -2,6 +2,8 @@
 
 **Ticket    Date    Branch      Author  Feature/Bug     Description/Keywords**
 
+1926    04.12.2019  rc1.1       David   Bug         Modaler Dialog: Funktions-/Personenkontakte funktioniert nicht
+
 1923    03.12.2019  rc1.1       David   Bug         Fehlerhafte Einträge bei Organisationen (Erstellt durch, Organisiert durch)
 
 1918    25.11.2019  rc1.1       David   Bug         Fehlende Organisationszuweisung bei autom. angelegten Nutzern
