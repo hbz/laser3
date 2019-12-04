@@ -4,6 +4,7 @@ import com.k_int.ClassUtils
 import com.k_int.properties.PropertyDefinitionGroup
 import com.k_int.properties.PropertyDefinitionGroupBinding
 import de.laser.domain.AbstractBaseDomain
+import de.laser.helper.RDStore
 import de.laser.helper.RefdataAnnotation
 import grails.util.Holders
 import org.apache.commons.logging.Log
@@ -224,5 +225,12 @@ class Platform extends AbstractBaseDomain {
   @Override
   String toString() {
     name
+  }
+
+  def getCurrentTipps()
+  {
+    def result = this.tipps?.findAll{it?.status?.id == RDStore.TIPP_STATUS_CURRENT.id}
+
+    result
   }
 }

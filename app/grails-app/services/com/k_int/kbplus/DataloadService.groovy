@@ -5,12 +5,23 @@ import de.laser.SystemEvent
 import de.laser.helper.RDStore
 import de.laser.interfaces.TemplateSupport
 import groovy.json.JsonOutput
+import org.elasticsearch.ElasticsearchException
 import org.elasticsearch.action.admin.indices.delete.DeleteIndexRequest
-import org.elasticsearch.action.admin.indices.delete.DeleteIndexResponse
 import org.elasticsearch.action.admin.indices.flush.FlushRequest
+import org.elasticsearch.action.admin.indices.flush.FlushResponse
+import org.elasticsearch.action.index.IndexRequest
+import org.elasticsearch.action.index.IndexResponse
+import org.elasticsearch.action.search.SearchRequest
+import org.elasticsearch.action.search.SearchResponse
+import org.elasticsearch.action.support.replication.ReplicationResponse
+import org.elasticsearch.action.DocWriteResponse
+import org.elasticsearch.client.indices.*
 import org.elasticsearch.common.xcontent.XContentType
+import org.elasticsearch.common.unit.TimeValue
 import org.elasticsearch.index.query.QueryBuilders
-import org.elasticsearch.client.Client
+import org.elasticsearch.client.*
+import org.elasticsearch.rest.*
+import org.elasticsearch.search.builder.SearchSourceBuilder
 import org.hibernate.ScrollMode
 
 class DataloadService {
@@ -68,7 +79,7 @@ class DataloadService {
 
         def start_time = System.currentTimeMillis();
 
-        def esclient = ESWrapperService.getClient()
+        RestHighLevelClient esclient = ESWrapperService.getClient()
 
         updateES(esclient, com.k_int.kbplus.Org.class) { org ->
             def result = [:]
@@ -92,11 +103,20 @@ class DataloadService {
                         log.error(e)
                     }
                 }
+
+                result.platforms = []
+                org.platforms?.each { platform ->
+                    try {
+                        result.platforms.add([dbId: platform.id, name: platform.name])
+                    } catch (Exception e) {
+                        log.error(e)
+                    }
+                }
                 result.rectype = 'Organisation'
                 result.sector = org.sector?.value
                 result.status = org.status?.value
                 result.statusId = org.status?.id
-                result.visible = ['Public']
+                result.visible = 'Public'
 
             result
         }
@@ -141,7 +161,7 @@ class DataloadService {
                     result.statusId = ti.status?.id
                     result.typTitle = ti.type?.value
                     result.name = ti.title
-                    result.visible = ['Public']
+                    result.visible = 'Public'
                 } else {
                     log.warn("Title with no title string - ${ti.id}")
                 }
@@ -192,7 +212,7 @@ class DataloadService {
                 result.titleCount = pkg.tipps.size()?:0
                 result.titleCountCurrent = pkg.getCurrentTipps().size()?:0
 
-                result.visible = ['Public']
+                result.visible = 'Public'
 
 /*                if (pkg.startDate) {
                     GregorianCalendar c = new GregorianCalendar()
@@ -234,6 +254,19 @@ class DataloadService {
             result.statusId = lic.status?.id
             result.endDate = lic.endDate
             result.startDate = lic.startDate
+            result.members = License.findAllByInstanceOf(lic).size()
+
+            result.consortiaId = lic.getLicensor()?.id
+            result.consortiaName = lic.getLicensor()?.name
+
+            result.identifiers = []
+            lic.ids?.each { ident ->
+                try {
+                    result.identifiers.add([type: ident.ns.ns, value: ident.value])
+                } catch (Exception e) {
+                    log.error(e)
+                }
+            }
 
             if (lic.startDate) {
                 GregorianCalendar c = new GregorianCalendar()
@@ -247,7 +280,7 @@ class DataloadService {
                 result.endYear = "${c.get(Calendar.YEAR)}"
             }
 
-            result.visible = ['Private']
+            result.visible = 'Private'
             result
         }
 
@@ -267,7 +300,12 @@ class DataloadService {
                 result.rectype = 'Platform'
                 result.status = plat.status?.value
                 result.statusId = plat.status?.id
-                result.visible = ['Public']
+                result.orgId = plat.org?.id
+                result.orgName = plat.org?.name
+                result.primaryUrl = plat.primaryUrl
+                result.titleCountCurrent = plat.getCurrentTipps().size()?:0
+
+                result.visible = 'Public'
 
             result
         }
@@ -309,7 +347,17 @@ class DataloadService {
                 result.status = sub.status?.value
                 result.statusId = sub.status?.id
                 result.subtype = sub.type?.value
-                result.visible = ['Private']
+                result.members = Subscription.findAllByInstanceOf(sub).size()
+                result.visible = 'Private'
+
+                result.identifiers = []
+                sub.ids?.each { ident ->
+                        try {
+                            result.identifiers.add([type: ident.ns.ns, value: ident.value])
+                        } catch (Exception e) {
+                            log.error(e)
+                        }
+                    }
 
                 if (sub.startDate) {
                     GregorianCalendar c = new GregorianCalendar()
@@ -334,7 +382,7 @@ class DataloadService {
                         result.packages.add(pgkinfo);
                     }
                 }
-                result.suggest = [input: [sub.name.split(' ')]]
+                //result.suggest = [input: [sub.name.split(' ')]]
 
             result
         }
@@ -342,7 +390,7 @@ class DataloadService {
         updateES(esclient, com.k_int.kbplus.SurveyConfig.class) { surveyConfig ->
             def result = [:]
 
-            result._id = surveyConfig.id*surveyConfig.surveyInfo.id
+            result._id = surveyConfig.getClass().getSimpleName().toLowerCase()+":"+surveyConfig.id
             result.priority = 50
             result.dbId = surveyConfig.id
             result.availableToOrgs = surveyConfig.surveyInfo.owner?.id
@@ -361,7 +409,9 @@ class DataloadService {
                 c.setTime(surveyConfig.surveyInfo.endDate)
                 result.endYear = "${c.get(Calendar.YEAR)}"
             }
-            result.visible = ['Private']
+
+            result.members = surveyConfig.orgs?.size() ?: 0
+            result.visible = 'Private'
 
             result.rectype = 'Survey'
 
@@ -371,7 +421,7 @@ class DataloadService {
         updateES(esclient, com.k_int.kbplus.SurveyOrg.class) { surOrg ->
             def result = [:]
 
-            result._id = surOrg.id
+            result._id = surOrg.getClass().getSimpleName().toLowerCase()+":"+surOrg.id
             result.priority = 50
             result.dbId = surOrg.id
             result.availableToOrgs = (surOrg.surveyConfig.surveyInfo.status != RDStore.SURVEY_IN_PROCESSING) ? [surOrg.org.id] : []
@@ -391,22 +441,156 @@ class DataloadService {
                 result.endYear = "${c.get(Calendar.YEAR)}"
             }
 
-            result.visible = ['Private']
+            result.visible = 'Private'
 
             result.rectype = 'ParticipantSurvey'
 
             result
         }
 
+        updateES(esclient, com.k_int.kbplus.Task.class) { task ->
+            def result = [:]
 
+            result._id = task.getClass().getSimpleName().toLowerCase()+":"+task.id
+            result.priority = 35
+            result.dbId = task.id
+            result.availableToOrgs = [task.responsibleOrg?.id]
+            result.name = task.title
+            result.description = task.description
+            result.status= task.status?.value
+            result.statusId= task.status?.id
+            result.endDate= task.endDate
+
+            result.visible = 'Private'
+
+            result.rectype = 'Task'
+
+            if(task.subscription){
+                result.objectId = task.subscription.id
+                result.objectName = task.subscription.name
+                result.objectType = task.subscription.getClass().getSimpleName().toLowerCase()
+            }
+
+            if(task.org){
+                result.objectId = task.org.id
+                result.objectName = task.org.name
+                result.objectType = task.org.getClass().getSimpleName().toLowerCase()
+            }
+
+            if(task.license){
+                result.objectId = task.license.id
+                result.objectName = task.license.reference
+                result.objectType = task.license.getClass().getSimpleName().toLowerCase()
+            }
+
+            if(task.surveyConfig){
+                result.objectId = task.surveyConfig.id
+                result.objectName = task.surveyConfig.name
+                result.objectType = task.surveyConfig.getClass().getSimpleName().toLowerCase()
+            }
+
+            result
+        }
+
+        updateES(esclient, com.k_int.kbplus.DocContext.class) { docCon ->
+            def result = [:]
+
+            result._id = docCon.getClass().getSimpleName().toLowerCase()+":"+docCon.id
+            result.priority = 35
+            result.dbId = docCon.id
+            result.availableToOrgs = [docCon.owner?.owner.id ?: 0]
+            result.name = docCon.owner?.title
+            result.description = docCon.owner?.content
+            result.status= docCon.status?.value
+            result.statusId= docCon.status?.id
+
+            result.visible = 'Private'
+
+            result.rectype = (docCon.owner?.contentType == 0) ? 'Note' : 'Document'
+
+            if(docCon.subscription){
+                result.objectId = docCon.subscription.id
+                result.objectName = docCon.subscription.name
+                result.objectType = docCon.subscription.getClass().getSimpleName().toLowerCase()
+            }
+
+            if(docCon.org){
+                result.objectId = docCon.org.id
+                result.objectName = docCon.org.name
+                result.objectType = docCon.org.getClass().getSimpleName().toLowerCase()
+            }
+
+            if(docCon.license){
+                result.objectId = docCon.license.id
+                result.objectName = docCon.license.reference
+                result.objectType = docCon.license.getClass().getSimpleName().toLowerCase()
+            }
+
+            if(docCon.surveyConfig){
+                result.objectId = docCon.surveyConfig.id
+                result.objectName = docCon.surveyConfig.name
+                result.objectType = docCon.surveyConfig.getClass().getSimpleName().toLowerCase()
+            }
+
+            result
+        }
+
+        updateES(esclient, com.k_int.kbplus.DocContext.class) { docCon ->
+            def result = [:]
+
+            result._id = docCon.getClass().getSimpleName().toLowerCase()+":"+docCon.id
+            result.priority = 35
+            result.dbId = docCon.id
+            result.availableToOrgs = [docCon.owner?.owner.id ?: 0]
+            result.name = docCon.owner?.title
+            result.description = docCon.owner?.content
+            result.status= docCon.status?.value
+            result.statusId= docCon.status?.id
+
+            result.visible = 'Private'
+
+            result.rectype = (docCon.owner?.contentType == 0) ? 'Note' : 'Document'
+
+            if(docCon.subscription){
+                result.objectId = docCon.subscription.id
+                result.objectName = docCon.subscription.name
+                result.objectType = docCon.subscription.getClass().getSimpleName().toLowerCase()
+            }
+
+            if(docCon.org){
+                result.objectId = docCon.org.id
+                result.objectName = docCon.org.name
+                result.objectType = docCon.org.getClass().getSimpleName().toLowerCase()
+            }
+
+            if(docCon.license){
+                result.objectId = docCon.license.id
+                result.objectName = docCon.license.reference
+                result.objectType = docCon.license.getClass().getSimpleName().toLowerCase()
+            }
+
+            if(docCon.surveyConfig){
+                result.objectId = docCon.surveyConfig.id
+                result.objectName = docCon.surveyConfig.name
+                result.objectType = docCon.surveyConfig.getClass().getSimpleName().toLowerCase()
+            }
+
+            result
+        }
+
+        esclient = ESWrapperService.getClient()
         update_running = false
         def elapsed = System.currentTimeMillis() - start_time;
         lastIndexUpdate = new Date(System.currentTimeMillis())
-        esclient.admin().indices().flush(new FlushRequest(es_index)).actionGet()
+        FlushRequest request = new FlushRequest(es_index);
+        FlushResponse flushResponse = esclient.indices().flush(request, RequestOptions.DEFAULT)
 
         log.debug("IndexUpdateJob completed in ${elapsed}ms at ${new Date()} ")
 
         ESWrapperService.clusterHealth()
+
+        esclient.close()
+
         return true
     }
 
@@ -469,7 +653,31 @@ class DataloadService {
           def recid = idx_record['_id'].toString()
           idx_record.remove('_id');
 
-          future =  esclient.prepareIndex(es_index,domain.name,recid).setSource(idx_record).get()
+            IndexRequest request = new IndexRequest(es_index);
+            request.id(recid);
+            String jsonString = JsonOutput.toJson(idx_record)
+            request.source(jsonString, XContentType.JSON)
+
+            IndexResponse indexResponse = esclient.index(request, RequestOptions.DEFAULT);
+
+            String index = indexResponse.getIndex();
+            String id = indexResponse.getId();
+            if (indexResponse.getResult() == DocWriteResponse.Result.CREATED) {
+                println("CREATED ${domain.name}")
+            } else if (indexResponse.getResult() == DocWriteResponse.Result.UPDATED) {
+                println("UPDATED ${domain.name}")
+            }
+            ReplicationResponse.ShardInfo shardInfo = indexResponse.getShardInfo();
+            if (shardInfo.getTotal() != shardInfo.getSuccessful()) {
+
+            }
+            if (shardInfo.getFailed() > 0) {
+                for (ReplicationResponse.ShardInfo.Failure failure :
+                        shardInfo.getFailures()) {
+                    String reason = failure.reason();
+                    println(reason)
+                }
+            }
 
           //latest_ft_record.lastTimestamp = r.lastUpdated?.getTime()
           if (r.lastUpdated?.getTime() > highest_timestamp) {
@@ -492,6 +700,8 @@ class DataloadService {
 
         // update timestamp
         latest_ft_record.lastTimestamp = highest_timestamp
+        latest_ft_record.esElements = total
+        latest_ft_record.dbElements = 0
         latest_ft_record.save(flush:true);
 
         checkESElementswithDBElements(domain, latest_ft_record)
@@ -612,38 +822,51 @@ class DataloadService {
 
     def clearDownAndInitES() {
         log.debug("Clear down and init ES");
-        Client client = ESWrapperService.getClient()
+        RestHighLevelClient client = ESWrapperService.getClient()
 
         try {
             // Drop any existing kbplus index
             log.debug("Dropping old ES index ..")
-            DeleteIndexResponse delete = client.admin().indices().delete(new DeleteIndexRequest(es_index)).actionGet()
-            if (delete.acknowledged) {
+            DeleteIndexRequest deleteRequest = new DeleteIndexRequest(es_index)
+            def deleteIndexResponse = client.indices().delete(deleteRequest, RequestOptions.DEFAULT)
+            boolean acknowledged = deleteIndexResponse.isAcknowledged()
+            if (acknowledged) {
                 log.debug("Drop old ES index completed OK")
             }
             else {
                 log.error("Index wasn't deleted")
             }
         }
-        catch ( Exception e ) {
-            log.warn("Problem deleting index ..", e)
+        catch ( ElasticsearchException  e ) {
+            if (e.status() == RestStatus.NOT_FOUND) {
+                log.warn("index does not exist ..")
+            }else {
+                log.warn("Problem deleting index ..", e)
+            }
 
             SystemEvent.createEvent('FT_INDEX_CLEANUP_ERROR', ["index": es_index])
         }
 
         log.debug("Create new ES index ..")
-        def createResponse = client.admin().indices().prepareCreate(es_index).get()
+        //def createResponse = client.admin().indices().prepareCreate(es_index).get()
+        CreateIndexRequest createRequest = new CreateIndexRequest(es_index)
 
         def es_mapping = ESWrapperService.getESMapping()
         //println(es_mapping)
-        es_mapping.each {
-            client.admin().indices().preparePutMapping(es_index)
-                    .setType(it.key)
-                    .setSource(JsonOutput.toJson(it.value), XContentType.JSON)
-                    .get();
+
+        createRequest.mapping(JsonOutput.toJson(es_mapping), XContentType.JSON)
+
+        CreateIndexResponse createIndexResponse = client.indices().create(createRequest, RequestOptions.DEFAULT)
+        boolean acknowledgedCreate = createIndexResponse.isAcknowledged()
+        if (acknowledgedCreate) {
+            log.debug("Create ES index completed OK")
+        }
+        else {
+            log.error("Index wasn't created")
         }
 
         log.debug("Clear down and init ES completed...")
+        client.close()
     }
 
     def checkESElementswithDBElements(domain, ft_record) {
@@ -684,21 +907,35 @@ class DataloadService {
         {
             rectype = "Survey"
         }
+
+        else if (domain.name == 'com.k_int.kbplus.Task')
+        {
+            rectype = "Task"
+        }
+
         def query_str = "rectype: '${rectype}'"
 
         def index = ESWrapperService.getESSettings().indexName
-        Client esclient = ESWrapperService.getClient()
+        RestHighLevelClient esclient = ESWrapperService.getClient()
 
-        def search = esclient.prepareSearch(index).setQuery(QueryBuilders.queryStringQuery(query_str)).get()
+        SearchRequest searchRequest = new SearchRequest(index)
+        SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder()
+        searchSourceBuilder.query(QueryBuilders.queryStringQuery(query_str))
 
-            def resultsTotal =  search ?search.hits.totalHits: 0
+        searchRequest.source(searchSourceBuilder)
+        //searchRequest.scroll(TimeValue.timeValueMinutes(1L))
+
+        SearchResponse searchResponse = esclient.search(searchRequest, RequestOptions.DEFAULT)
+
+            def resultsTotal =  searchResponse ? searchResponse.getHits().getTotalHits().value : 0
 
             ft_record.dbElements = ResultsinDB.size()?:0
-            ft_record.esElements = resultsTotal?:0
+            ft_record.esElements = resultsTotal ? resultsTotal.toInteger() :0
             ft_record.save(flush: true)
-            if(ResultsinDB.size() != resultsTotal) {
+            if(ft_record.dbElements != ft_record.esElements) {
                 log.debug("****ES NOT COMPLETE FOR ${rectype}: ES Results = ${resultsTotal}, DB Results = ${ResultsinDB.size()}****")
             }
+        esclient.close()
 
     }
 }
