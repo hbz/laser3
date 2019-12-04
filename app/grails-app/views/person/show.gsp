@@ -1,4 +1,4 @@
-<%@ page import="com.k_int.kbplus.RefdataCategory; com.k_int.kbplus.Org; com.k_int.kbplus.Person; com.k_int.kbplus.PersonRole; com.k_int.kbplus.RefdataValue;" %>
+<%@ page import="com.k_int.kbplus.RefdataCategory; com.k_int.kbplus.Org; com.k_int.kbplus.Person; com.k_int.kbplus.PersonRole; com.k_int.kbplus.RefdataValue; de.laser.helper.RDStore" %>
 <!doctype html>
 <html>
 <head>
@@ -15,7 +15,7 @@
     <g:message code="default.show.label" args="[entityName]" class="active"/>
 </semui:breadcrumbs>
 
-<g:set var="personType" value="${!personInstance.contactType || personInstance.contactType?.value?.equals('Personal contact')}" />
+<g:set var="personType" value="${!personInstance.contactType || personInstance.contactType?.id == RDStore.CONTACT_TYPE_PERSONAL.id}" />
 
 <h1 class="ui left aligned icon header"><semui:headerIcon />
 ${personInstance}

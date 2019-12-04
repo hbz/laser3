@@ -5,6 +5,7 @@ import com.k_int.kbplus.auth.User
 import com.k_int.kbplus.auth.UserOrg
 import com.k_int.kbplus.auth.UserRole
 import com.k_int.properties.PropertyDefinition
+import de.laser.helper.RDStore
 import groovy.util.logging.Log4j
 import groovy.util.slurpersupport.GPathResult
 
@@ -291,10 +292,10 @@ class ApiService {
 
             inst.person?.children().each { p ->
 
-                def rdvContactType   = RefdataValue.getByValueAndCategory('Personal contact', 'Person Contact Type')
+                def rdvContactType = RDStore.CONTACT_TYPE_PERSONAL
 
                 if( ! p.first_name.text() ) {
-                    rdvContactType = RefdataValue.getByValueAndCategory('Functional contact', 'Person Contact Type')
+                    rdvContactType = RDStore.CONTACT_TYPE_FUNCTIONAL
                 }
                 def person = Person.lookup( // firstName, lastName, tenant, isPublic, contactType, org, functionType
                         p.first_name.text() ? normString("${p.first_name}") : null,
