@@ -14,14 +14,14 @@ class SwissKnife {
         Locale locale = org.springframework.context.i18n.LocaleContextHolder.getLocale()
 
         List<String> result = []
-        result.add(attrs.text ? attrs.text : '')
+        result.add(attrs.text ? attrs.text : '') // plain text
 
         if (attrs.message)
             if (SwissKnife.checkMessageKey(attrs.message)) {
-                result.add("${messageSource.getMessage(attrs.message, attrs.args, locale)}")
+                result.add("${messageSource.getMessage(attrs.message, attrs.args, locale)}") // translation via messages_<lang>.properties
             }
             else {
-                result.add(attrs.message)
+                result.add(attrs.message) // plain text; fallback
             }
         else {
             result.add('')
