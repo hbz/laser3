@@ -3,7 +3,6 @@ println('*** INFO: using local config file ***')
 // --- ---
 SystemBaseURL       = 'http://localhost:8080/laser' // no slash at end
 laserSystemId       = 'LAS:eR-Demo'
-localauth           = true
 
 // --- datasource ---
 dataSource.url      = 'jdbc:mysql://localhost/laserDev?autoReconnect=true&useUnicode=true&characterEncoding=UTF-8'
