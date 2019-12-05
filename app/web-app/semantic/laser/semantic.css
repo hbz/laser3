@@ -21052,10 +21052,6 @@ input#spotlightSearch[type="search"] {
 }
 */
 
-.ui.icon.input > i.icon#btn-search:not(.link) {
-  pointer-events: auto;
-}
-
 input#spotlightSearch[type="search"]:hover,
 input#spotlightSearch[type="search"]:focus {
   background: #DCDDDE;
