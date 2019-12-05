@@ -2,11 +2,13 @@
 
 **Ticket    Date    Branch      Author  Feature/Bug     Description/Keywords**
 
-1926    04.12.2019  rc1.1   David   Bug     Modaler Dialog: Funktions-/Personenkontakte funktioniert nicht
+1930    04.12.2019  rc1.1       David   Bug         Jobs & Services ohne Sessions werfen Fehler
 
-1923    03.12.2019  rc1.1   David   Bug     Fehlerhafte Einträge bei Organisationen (Erstellt durch, Organisiert durch)
+1926    04.12.2019  rc1.1       David   Bug         Modaler Dialog: Funktions-/Personenkontakte funktioniert nicht
 
-1918    25.11.2019  rc1.1   David   Bug     Fehlende Organisationszuweisung bei autom. angelegten Nutzern
+1923    03.12.2019  rc1.1       David   Bug         Fehlerhafte Einträge bei Organisationen (Erstellt durch, Organisiert durch)
+
+1918    25.11.2019  rc1.1       David   Bug         Fehlende Organisationszuweisung bei autom. angelegten Nutzern
 
 1823/1901    28.11.2019  rc-1.1 Andreas Bug         Benennungen korrigiert, nicht umfangreichere Bugs der Kollektivsicht behoben 
 
