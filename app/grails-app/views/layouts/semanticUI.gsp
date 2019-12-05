@@ -532,7 +532,7 @@
                     </div>
 
                     <g:link  controller="search" action="index"  class="la-search-advanced la-popup-tooltip la-delay"
-                             data-content="${message(code: 'advanced.search.tooltip')}">
+                             data-content="${message(code: 'search.advancedSearch.tooltip')}">
                         <i class="large icons">
                             <i class="search icon"></i>
                             <i class="top grey right corner cog icon "></i>
