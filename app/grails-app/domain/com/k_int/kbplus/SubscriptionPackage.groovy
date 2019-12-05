@@ -22,6 +22,20 @@ class SubscriptionPackage {
     lastUpdated column: 'sp_last_updated'
   }
 
+
+  static hasMany = [
+    oapls: OrgAccessPointLink
+  ]
+
+  static belongsTo = [
+      pkg: Package,
+      subscription: Subscription
+  ]
+
+  static mappedBy = [
+    oapls: 'subPkg'
+  ]
+
   static constraints = {
     subscription(nullable:true, blank:false)
     pkg(nullable:true, blank:false)
@@ -30,6 +44,7 @@ class SubscriptionPackage {
     // Nullable is true, because values are already in the database
     lastUpdated (nullable: true, blank: false)
     dateCreated (nullable: true, blank: false)
+    //oapls   batchSize: 10
   }
 
   @Transient
@@ -74,6 +89,7 @@ class SubscriptionPackage {
 
     return '(<span data-tooltip="Titel in der Lizenz"><i class="ui icon archive"></i></span>' + this.getIssueEntitlementsofPackage().size() + ' / <span data-tooltip="Titel im Paket"><i class="ui icon book"></i></span>' + this.getCurrentTippsofPkg()?.size() + ')'
   }
+
   def getCurrentTippsofPkg()
   {
     def result = this.pkg.tipps?.findAll{it?.status?.value == 'Current'}
@@ -85,6 +101,25 @@ class SubscriptionPackage {
   def getPackageName(){
 
     return this.pkg.name
+  }
+
+  def getNotActiveAccessPoints(org){
+    def notActiveAPLinkQuery = "select oap from OrgAccessPoint oap where oap.org =:institution "
+    notActiveAPLinkQuery += "and not exists ("
+    notActiveAPLinkQuery += "select 1 from oap.oapp as oapl where oapl.oap=oap and oapl.active=true "
+    notActiveAPLinkQuery += "and oapl.subPkg.id = ${id}) order by lower(oap.name)"
+    OrgAccessPoint.executeQuery(notActiveAPLinkQuery, [institution : org])
+  }
+
+  def getAccessPointListForOrgAndPlatform(org,platform){
+    // do not mix derived and not derived
+    if (platform.usesPlatformAccessPoints(org, this)){
+      def hql = "select oapl from OrgAccessPointLink oapl join oapl.oap as oap where oap.org=:org and oapl.platform=:platform and oapl.active=true"
+      return OrgAccessPointLink.executeQuery(hql, [org:org, platform:platform])
+    } else {
+        def hql = "select oapl from OrgAccessPointLink oapl join oapl.oap as oap where oapl.subPkg=:subPkg and oap.org=:org and oapl.active=true"
+        return OrgAccessPointLink.executeQuery(hql, [subPkg:this, org:org])
+    }
   }
 
 }
