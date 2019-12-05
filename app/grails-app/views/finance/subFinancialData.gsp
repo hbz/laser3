@@ -72,7 +72,7 @@
                 <semui:actionsDropdown>
                     <semui:actionsDropdownItem id="btnAddNewCostItem" message="financials.addNewCost" />
                 <%--<semui:actionsDropdownItemDisabled message="financials.action.financeImport" />--%>
-                    <semui:actionsDropdownItem controller="myInstitution" action="financeImport" message="financials.action.financeImport" />
+                    <semui:actionsDropdownItem controller="myInstitution" action="financeImport" params="${[id:subscription.id]}" message="financials.action.financeImport" />
                 </semui:actionsDropdown>
             </g:if>
         </semui:controlButtons>
