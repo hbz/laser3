@@ -1460,9 +1460,19 @@ class BootStrap {
                         descr:allDescr, type: OT.Rdv, cat:'YN'
                 ],
                 [
-                        name: [en: "Simuser Zahl", de: "Simuser Zahl"],
+                        name: [en: "Sim-User Number", de: "Sim-User Zahl"],
                         expl : [en: "", de: "Wieviele gleichzeitige Nutzerzugriffe umfasst die Lizenz?"],
-                        descr:allDescr, type: OT.String
+                        descr:allDescr, type: OT.Rdv, cat:'Sim-User Number'
+                ],
+                [
+                        name: [en: "Access choice remote", de: "Zugangswahl Remote"],
+                        expl: [en: "Please indicate here whether you want 2FA, access for scientists or no remote access?", de: "Bitte geben Sie hier an, ob Sie 2FA, Zugang für Wissenschaftler oder kein remote Zugang wünschen?"],
+                        descr:allDescr, type: OT.Rdv, cat:'Access choice remote'
+                ],
+                [
+                        name: [en: "Category A-F", de: "Kategorie A-F"],
+                        expl: [en: "Please indicate which price category your facility falls into. These can be found in the price tables. A-C each Uni with and without lawyers; D-F FH with and without law and other facilities.", de: "Bitte geben Sie an, in welche Preis-Kategorie Ihre Einrichtung fällt. Diese können Sie den Preistabellen entnehmen. A-C jeweils Uni mit und ohne Jurastutenten; D-F FH mit und ohne Jura und sonstige Einrichtungen."],
+                        descr:allDescr, type: OT.Rdv, cat:'Category A-F'
                 ],
                 [
                         name: [en: "Rechnungszeitpunkt", de: "Rechnungszeitpunkt"],
@@ -1679,14 +1689,14 @@ class BootStrap {
                         type: OT.Rdv, cat:'YN'
                 ],
                 [
-                        name: [en: "Access choice", de: "Zugangswahl"],
+                        name: [en: "Access choice remote", de: "Zugangswahl Remote"],
                         expl: [en: "Please indicate here whether you want 2FA, access for scientists or no remote access?", de: "Bitte geben Sie hier an, ob Sie 2FA, Zugang für Wissenschaftler oder kein remote Zugang wünschen?"],
-                        type: OT.String
+                        type: OT.Rdv, cat:'Access choice remote'
                 ],
                 [
                         name: [en: "Category A-F", de: "Kategorie A-F"],
                         expl: [en: "Please indicate which price category your facility falls into. These can be found in the price tables. A-C each Uni with and without lawyers; D-F FH with and without law and other facilities.", de: "Bitte geben Sie an, in welche Preis-Kategorie Ihre Einrichtung fällt. Diese können Sie den Preistabellen entnehmen. A-C jeweils Uni mit und ohne Jurastutenten; D-F FH mit und ohne Jura und sonstige Einrichtungen."],
-                        type: OT.String
+                        type: OT.Rdv, cat:'Category A-F'
                 ],
                 [
                         name: [en: "Multi-year term 2 years", de: "Mehrjahreslaufzeit 2 Jahre"],
@@ -1701,7 +1711,7 @@ class BootStrap {
                 [
                         name: [en: "Sim-User Number", de: "Sim-User Zahl"],
                         expl: [en: "Please indicate which number of Sim users should be licensed.", de: "Bitte geben sie an, welche Anzahl an Sim-Usern lizenziert werden soll."],
-                        type: OT.String
+                        type: OT.Rdv, cat:'Sim-User Number'
                 ],
 
         ]
@@ -2000,6 +2010,9 @@ class BootStrap {
         RefdataCategory.loc('Survey Status',                        [en: 'Survey Status', de: 'Umfrage-Status'], BOOTSTRAP)
         RefdataCategory.loc('MailTemplate Type',                        [en: 'MailTemplate Type', de: 'MailTemplate Typ'], BOOTSTRAP)
         RefdataCategory.loc('MailTemplate Language',                        [en: 'MailTemplate Language', de: 'MailTemplate Sprache'], BOOTSTRAP)
+        RefdataCategory.loc('Sim-User Number',                                         [en: 'Sim-User Number', de: 'Sim User Zahl'], BOOTSTRAP)
+        RefdataCategory.loc('Access choice remote',                                         [en: 'Access choice remote', de: 'Zugangswahl Remote'], BOOTSTRAP)
+        RefdataCategory.loc('Category A-F',                                         [en: 'Category A-F', de: 'Kategorie A - F '], BOOTSTRAP)
 
         // refdata values
 
@@ -2753,6 +2766,29 @@ class BootStrap {
 
         RefdataValue.loc('MailTemplate Language',      [en: 'English', de: 'Englisch'], BOOTSTRAP)
         RefdataValue.loc('MailTemplate Language',      [en: 'German', de: 'Deutsch'], BOOTSTRAP)
+
+        RefdataValue.loc('Sim-User Number',   [en: '1', de: '1'], BOOTSTRAP)
+        RefdataValue.loc('Sim-User Number',   [en: '2', de: '2'], BOOTSTRAP)
+        RefdataValue.loc('Sim-User Number',   [en: '3', de: '3'], BOOTSTRAP)
+        RefdataValue.loc('Sim-User Number',   [en: '4', de: '4'], BOOTSTRAP)
+        RefdataValue.loc('Sim-User Number',   [en: '5', de: '5'], BOOTSTRAP)
+        RefdataValue.loc('Sim-User Number',   [en: '6', de: '6'], BOOTSTRAP)
+        RefdataValue.loc('Sim-User Number',   [en: '7', de: '7'], BOOTSTRAP)
+        RefdataValue.loc('Sim-User Number',   [en: '8', de: '8'], BOOTSTRAP)
+        RefdataValue.loc('Sim-User Number',   [en: '9', de: '9'], BOOTSTRAP)
+        RefdataValue.loc('Sim-User Number',   [en: '10', de: '10'], BOOTSTRAP)
+        RefdataValue.loc('Sim-User Number',   [en: 'unlimited', de: 'unlimitiert'], BOOTSTRAP)
+
+        RefdataValue.loc('Access choice remote',   [en: 'all', de: 'alle'], BOOTSTRAP)
+        RefdataValue.loc('Access choice remote',   [en: 'Academic', de: 'Wissenschaftler'], BOOTSTRAP)
+        RefdataValue.loc('Access choice remote',   [en: 'no Access', de: 'kein Zugang'], BOOTSTRAP)
+
+        RefdataValue.loc('Category A-F',   [en: 'A', de: 'A'], BOOTSTRAP)
+        RefdataValue.loc('Category A-F',   [en: 'B', de: 'B'], BOOTSTRAP)
+        RefdataValue.loc('Category A-F',   [en: 'C', de: 'C'], BOOTSTRAP)
+        RefdataValue.loc('Category A-F',   [en: 'D', de: 'D'], BOOTSTRAP)
+        RefdataValue.loc('Category A-F',   [en: 'E', de: 'E'], BOOTSTRAP)
+        RefdataValue.loc('Category A-F',   [en: 'F', de: 'F'], BOOTSTRAP)
 
         createRefdataWithI10nExplanation()
     }

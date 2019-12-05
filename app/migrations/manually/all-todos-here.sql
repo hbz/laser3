@@ -417,3 +417,15 @@ alter table survey_config alter column surconf_scheduled_startdate type timestam
 update survey_config set surconf_scheduled_startdate = (surconf_scheduled_startdate + '1 hour'::interval);
 alter table dashboard_due_date alter column das_last_updated type timestamp using das_last_updated::timestamp;
 update dashboard_due_date set das_last_updated = (das_last_updated + '1 hour'::interval);
+
+
+-- 2019-12-05
+-- Change Survey Property and Property Definition
+--
+update property_definition set pd_name = 'Sim-User Number', pd_type = 'class com.k_int.kbplus.RefdataValue', pd_rdc = 'Sim-User Number' where pd_name = 'Simuser Zahl';
+
+update survey_property set surpro_refdata_category = 'Category A-F', surpro_type = 'class com.k_int.kbplus.RefdataValue' where surpro_name = 'Category A-F';
+
+update survey_property set surpro_refdata_category = 'Access choice remote', surpro_name= 'Access choice remote', surpro_type = 'class com.k_int.kbplus.RefdataValue' where surpro_name = 'Access choice';
+
+
