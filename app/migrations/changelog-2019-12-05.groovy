@@ -1,6 +1,6 @@
 databaseChangeLog = {
 
-	changeSet(author: "jaegle(modified)", id: "1575384101638-1") {
+	changeSet(author: "jaegle(modified)", id: "1575545825489-1") {
 		grailsChange {
 			change {
 				sql.execute("delete from org_access_point_link where active=false")
@@ -9,7 +9,7 @@ databaseChangeLog = {
 		rollback {}
 	}
 
-	changeSet(author: "jaegle (modified)", id: "1575384101638-2") {
+	changeSet(author: "jaegle (modified)", id: "1575545825489-2") {
 		grailsChange {
 			change {
 				sql.execute("create table org_access_point_link_bak as select * from org_access_point_link")
@@ -19,29 +19,29 @@ databaseChangeLog = {
 		}
 	}
 
-	changeSet(author: "jaegle (generated)", id: "1575384101638-3") {
+	changeSet(author: "jaegle (generated)", id: "1575545825489-3") {
 		addColumn(schemaName: "public", tableName: "org_access_point_link") {
 			column(name: "sub_pkg_id", type: "int8")
 		}
 	}
 
-	changeSet(author: "jaegle (generated)", id: "1575384101638-4") {
+	changeSet(author: "jaegle (generated)", id: "1575545825489-4") {
 		dropNotNullConstraint(columnDataType: "int8", columnName: "oap_id", tableName: "org_access_point_link")
 	}
 
-	changeSet(author: "jaegle (generated)", id: "1575384101638-5") {
+	changeSet(author: "jaegle (generated)", id: "1575545825489-5") {
 		dropForeignKeyConstraint(baseTableName: "org_access_point_link", baseTableSchemaName: "public", constraintName: "fk1c324e694dfc6d97")
 	}
 
-	changeSet(author: "jaegle (generated)", id: "1575384101638-6") {
+	changeSet(author: "jaegle (generated)", id: "1575545825489-6") {
 		dropColumn(columnName: "subscription_id", tableName: "org_access_point_link")
 	}
 
-	changeSet(author: "jaegle (generated)", id: "1575384101638-7") {
+	changeSet(author: "jaegle (generated)", id: "1575545825489-7") {
 		addForeignKeyConstraint(baseColumnNames: "sub_pkg_id", baseTableName: "org_access_point_link", baseTableSchemaName: "public", constraintName: "FK1C324E69B67D6819", deferrable: "false", initiallyDeferred: "false", referencedColumnNames: "sp_id", referencedTableName: "subscription_package", referencedTableSchemaName: "public", referencesUniqueColumn: "false")
 	}
 
-	changeSet(author: "jaegle (modified)", id: "1575384101638-8") {
+	changeSet(author: "jaegle (modified)", id: "1575545825489-8") {
 		grailsChange {
 			change {
 				sql.execute("truncate table org_access_point_link RESTART IDENTITY")
@@ -100,7 +100,7 @@ insert into org_access_point_link(
 		}
 	}
 
-	changeSet(author: "jaegle (modified)", id: "1575384101638-9") {
+	changeSet(author: "jaegle (modified)", id: "1575545825489-9") {
 		grailsChange {
 			change {
 				// we could keep the backup if needed
