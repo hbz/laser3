@@ -280,22 +280,22 @@
                     }
                 } else {
                     console.log('2')
-                        console.log('2c')
                         targetElem.addClass('willBeReplaced');
                 }
             } else {
-                if ( (that).parents('tr').find('input[name="subscription.deleteProperty"]').is(':checked')){
-                    console.log('2a')
-                } else {
-                    if ($(that).parents('tr').find('input[name="subscription.takeProperty"]').is(':checked')) {
-                        console.log($(that))
-                        if ($(that).attr('data-multipleOccurrence') == 'true') {
-                            console.log('2b')
-                        }
+                if ($(that).parents('tr').find('input[name="subscription.takeProperty"]').is(':checked')) {
+                    console.log($(that))
+                    if ($(that).attr('data-multipleOccurrence') == 'true') {
+                        console.log('3a')
+                        targetElem.removeClass('willBeReplaced');
+                    } else {
+                        console.log('3b')
+                        // targetElem.removeClass('willBeReplaced');
                     }
+                } else {
+                    console.log('4')
+                    targetElem.removeClass('willBeReplaced');
                 }
-                console.log('3')
-                targetElem.removeClass('willBeReplaced');
             }
         }
 
