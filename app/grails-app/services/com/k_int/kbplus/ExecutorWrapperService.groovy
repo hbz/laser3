@@ -27,7 +27,7 @@ class ExecutorWrapperService {
 		}
 	}
 
-	def hasRunningProcess(owner){
+	boolean hasRunningProcess(owner){
 		owner = "${owner.class.name}:${owner.id}"
 		// There is no process running for this owner
 		if(activeFuture.get(owner) == null){

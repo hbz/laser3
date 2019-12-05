@@ -37,17 +37,22 @@ ${message(code: 'subscription.details.availableTitles', default: 'Available Titl
 
         <div class="fields two">
             <div class="field">
-                <label for="filter">${message(code: 'subscription.compare.filter.title', default: 'Filters - Title')}</label>
+                <label for="filter">${message(code: 'subscription.compare.filter.title')}</label>
                 <input id="filter" name="filter" value="${params.filter}"/>
             </div>
 
             <div class="field">
-                <label for="pkgfilter">${message(code: 'subscription.details.from_pkg', default: 'From Package')}</label>
+                <label for="pkgfilter">${message(code: 'subscription.details.from_pkg')}</label>
                 <select id="pkgfilter" name="pkgfilter">
-                    <option value="">${message(code: 'subscription.details.from_pkg.all', default: 'All')}</option>
-                    <g:each in="${subscriptionInstance.packages}" var="sp">
-                        <option value="${sp.pkg.id}" ${sp.pkg.id.toString() == params.pkgfilter ? 'selected=true' : ''}>${sp.pkg.name}</option>
-                    </g:each>
+                    <option value="">${message(code: 'subscription.details.from_pkg.all')}</option>
+                    <g:if test="${params.pkgName && params.gokbId}">
+                        <option value="${params.gokbId}" selected="selected">${params.pkgName}</option>
+                    </g:if>
+                    <g:else>
+                        <g:each in="${subscriptionInstance.packages}" var="sp">
+                            <option value="${sp.pkg.gokbId}" ${sp.pkg.gokbId == params.pkgfilter ? 'selected=selected' : ''}>${sp.pkg.name}</option>
+                        </g:each>
+                    </g:else>
                 </select>
             </div>
         </div>
@@ -188,7 +193,7 @@ ${message(code: 'subscription.details.availableTitles', default: 'Available Titl
             <td>${counter++}</td>
 
             <td>
-            <semui:listIcon type="${tipp.title?.type?.value}"/>
+            <semui:listIcon type="${tipp.title.class.name}"/>
             <strong><g:link controller="title" action="show"
                             id="${tipp.title.id}">${tipp.title.title}</g:link></strong>
 

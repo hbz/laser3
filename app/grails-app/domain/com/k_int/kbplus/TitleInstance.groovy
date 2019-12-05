@@ -612,10 +612,10 @@ class TitleInstance extends AbstractBaseDomain implements AuditableTrait {
 
         // no matching title
         if (! result) {
-            if (title.type == 'Serial') {
+            if (title.medium == 'Serial') {
                 result = new JournalInstance(title:title, impId:java.util.UUID.randomUUID().toString(), type: RefdataValue.loc(RefdataCategory.TI_TYPE, [en: 'Journal', de: 'Journal']))
             }
-            else if (title.type == 'Database') {
+            else if (title.medium == 'Database') {
                 result = new DatabaseInstance(title:title, impId:java.util.UUID.randomUUID().toString(), type: RefdataValue.loc(RefdataCategory.TI_TYPE, [en: 'Database', de: 'Database']))
             }
             else {
@@ -1323,4 +1323,8 @@ select ie from IssueEntitlement as ie JOIN ie.subscription.orgRelations as o
     }
 
   }
+
+    String printTitleType() {
+
+    }
 }

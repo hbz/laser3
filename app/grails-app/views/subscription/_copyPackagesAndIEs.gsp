@@ -96,7 +96,7 @@
                         <div class="la-copyPack-container la-element">
                             <div  data-ieoid="${genericOIDService.getOID(ie)}" class="la-copyPack-item">
                                     <label>
-                                        <semui:listIcon hideTooltip="true" type="${ie.tipp.title.type.getI10n('value')}"/>
+                                        <semui:listIcon hideTooltip="true" type="${ie.tipp.title.class.name}"/>
                                         <strong><g:link controller="title" action="show" id="${ie?.tipp.title.id}">${ie.tipp.title.title}</g:link></strong>
                                         <semui:debugInfo>Tipp PkgId: ${ie.tipp.pkg.id}, Tipp ID: ${ie.tipp.id}</semui:debugInfo>
                                     </label>
@@ -114,7 +114,7 @@
                     <g:each in="${targetIEs}" var="ie">
                         <div class="la-copyPack-container la-element">
                             <div data-pkgoid="${genericOIDService.getOID(ie?.tipp?.pkg)}" data-ieoid="${genericOIDService.getOID(ie)}" class=" la-copyPack-item">
-                                <semui:listIcon hideTooltip="true" type="${ie.tipp.title.type.getI10n('value')}"/>
+                                <semui:listIcon hideTooltip="true" type="${ie.tipp.title.class.name}"/>
                                 <strong><g:link controller="title" action="show" id="${ie?.tipp.title.id}">${ie.tipp.title.title}</g:link></strong>
                                 <semui:debugInfo>Tipp PkgId: ${ie.tipp.pkg.id}, Tipp ID: ${ie.tipp.id}</semui:debugInfo>
                             </div>

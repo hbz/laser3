@@ -147,12 +147,16 @@ class ControlledListService {
                 return [results:[]]
             }
         }
-        filterParams.put('query',params.query)
-        List result = IssueEntitlement.executeQuery('select ie from IssueEntitlement as ie where ie.subscription '+filter+' and genfunc_filter_matcher(ie.tipp.title.title,:query) = true order by ie.tipp.title.title asc, ie.subscription asc, ie.subscription.startDate asc, ie.subscription.endDate asc',filterParams)
+        if(params.query) {
+            filter += 'and genfunc_filter_matcher(ie.tipp.title.title,:query) = true'
+            filterParams.put('query',params.query)
+        }
+        List result = IssueEntitlement.executeQuery('select ie from IssueEntitlement as ie where ie.subscription '+filter+' order by ie.tipp.title.title asc, ie.subscription asc, ie.subscription.startDate asc, ie.subscription.endDate asc',filterParams)
         if(result.size() > 0) {
             result.each { res ->
                 Subscription s = (Subscription) res.subscription
-                issueEntitlements.results.add([name:"${res.tipp.title.title} (${res.tipp.title.type.getI10n('value')}) (${s.dropdownNamingConvention(org)})",value:res.class.name+":"+res.id])
+
+                issueEntitlements.results.add([name:"${res.tipp.title.title} (${res.tipp.title.printTitleType()}) (${s.dropdownNamingConvention(org)})",value:res.class.name+":"+res.id])
             }
         }
         issueEntitlements

@@ -67,6 +67,7 @@ class Subscription
 
   String name
   String identifier
+  @Deprecated
   String impId
   Date startDate
   Date endDate

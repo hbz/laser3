@@ -235,7 +235,7 @@ class ApiReaderHelper {
         result.gokbId       = title.gokbId
         result.title        = title.title
         result.normTitle    = title.normTitle
-        result.type         = title.type?.value
+        result.type         = title.type?.value //TODO [ticket=1929] change mapping from title.type -> title.medium; TitleInstance-type will be extracted from DatabaseInstance/BookInstance/JournalInstance.class.simpleName
 
         // References
         result.identifiers = retrieveIdentifierCollection(title.ids) // com.k_int.kbplus.Identifier

@@ -55,6 +55,10 @@ class BookInstance extends TitleInstance {
         bi
     }
 
+    String printTitleType() {
+        RefdataValue.getByValueAndCategory('EBook',RefdataCategory.TI_TYPE).getI10n('value')
+    }
+
     def getEbookFirstAutorOrFirstEditor(){
 
         def messageSource = Holders.grailsApplication.mainContext.getBean('messageSource')

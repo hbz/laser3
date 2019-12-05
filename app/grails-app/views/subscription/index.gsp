@@ -1,5 +1,4 @@
-<%@ page import="com.k_int.kbplus.Subscription" %>
-<%@ page import="com.k_int.kbplus.Package; com.k_int.kbplus.RefdataCategory; com.k_int.kbplus.ApiSource;" %>
+<%@ page import="com.k_int.kbplus.Subscription; com.k_int.kbplus.BookInstance; com.k_int.kbplus.Package; com.k_int.kbplus.RefdataCategory; com.k_int.kbplus.ApiSource" %>
 
 <%-- r:require module="annotations" --%>
 
@@ -231,7 +230,7 @@
                                                                     class="bulkcheck"/></g:if></td>
                                 <td>${counter++}</td>
                                 <td>
-                                    <semui:listIcon type="${ie.tipp?.title?.type?.value}"/>
+                                    <semui:listIcon type="${ie.tipp.title.class.name}"/>
                                     <g:link controller="issueEntitlement" id="${ie.id}"
                                             action="show"><strong>${ie.tipp?.title.title}</strong>
                                     </g:link>
@@ -254,7 +253,7 @@
                                     <semui:xEditableRefData owner="${ie}" field="medium" config='IEMedium'/>
                                 </td>
                                 <td class="coverageStatements la-tableCard" data-entitlement="${ie.id}">
-                                    <g:if test="${ie?.tipp?.title instanceof com.k_int.kbplus.BookInstance}">
+                                    <g:if test="${ie?.tipp?.title instanceof BookInstance}">
 
                                         <i class="grey fitted la-books icon la-popup-tooltip la-delay"
                                            data-content="${message(code: 'title.dateFirstInPrint.label')}"></i>

@@ -15,4 +15,8 @@ class DatabaseInstance extends TitleInstance{
         dbi
     }
 
+    String printTitleType() {
+        RefdataValue.getByValueAndCategory('Database',RefdataCategory.TI_TYPE).getI10n('value')
+    }
+
 }

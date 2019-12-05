@@ -61,7 +61,7 @@
 <g:if test="${filteredSubChilds}">
 
     <div class="ui segment">
-        <g:form action="processLinkPackagesConsortia" method="post" class="ui form">
+        <g:form action="processLinkPackagesMembers" method="post" class="ui form">
             <g:hiddenField name="id" value="${params.id}"/>
 
 
@@ -239,7 +239,7 @@
                         </div>
 
                         <g:if test="${validPackages}">
-                            <g:form action="processLinkPackagesConsortia" method="post" class="ui form">
+                            <g:form action="processLinkPackagesMembers" method="post" class="ui form">
                                 <g:hiddenField name="id" value="${params.id}"/>
                                 <div class="field ">
                                     <g:select class="ui search dropdown"

@@ -15,11 +15,11 @@ import de.laser.helper.DebugUtil
 import de.laser.helper.EhcacheWrapper
 import de.laser.helper.RDStore
 import de.laser.interfaces.*
-import de.laser.oai.OaiClientLaser
 import grails.converters.JSON
 import grails.doc.internal.StringEscapeCategory
 import grails.plugin.springsecurity.annotation.Secured
 import groovy.time.TimeCategory
+import groovy.util.slurpersupport.GPathResult
 import org.apache.poi.POIXMLProperties
 import org.apache.poi.ss.usermodel.Cell
 import org.apache.poi.ss.usermodel.Row
@@ -34,6 +34,8 @@ import org.springframework.web.multipart.commons.CommonsMultipartFile
 import javax.servlet.ServletOutputStream
 import java.text.NumberFormat
 import java.text.SimpleDateFormat
+import java.util.concurrent.Callable
+import java.util.concurrent.ExecutorService
 
 import static de.laser.helper.RDStore.*
 
@@ -55,17 +57,15 @@ class SubscriptionController extends AbstractDebugController {
     GrailsApplication grailsApplication
     def pendingChangeService
     def institutionsService
-    def ESSearchService
-    def executorWrapperService
+    ExecutorService executorService
+    ExecutorWrapperService executorWrapperService
     def renewals_reversemap = ['subject': 'subject', 'provider': 'provid', 'pkgname': 'tokname']
     def accessService
     def filterService
     def propertyService
     def factService
     def docstoreService
-    def refdataService
-    def globalSourceSyncService
-    def dataloadService
+    GlobalSourceSyncService globalSourceSyncService
     def GOKbService
     def navigationGenerationService
     def financeService
@@ -779,8 +779,8 @@ class SubscriptionController extends AbstractDebugController {
 
 
             if (params.pkgfilter && (params.pkgfilter != '')) {
-                basequery += " and tipp.pkg.id = ? "
-                qry_params.add(Long.parseLong(params.pkgfilter));
+                basequery += " and tipp.pkg.gokbId = ? "
+                qry_params.add(params.pkgfilter)
             }
 
 
@@ -990,11 +990,11 @@ class SubscriptionController extends AbstractDebugController {
                     String serial
                     String electronicSerial
                     String checked = ""
-                    if(tipp.title.type.equals(TITLE_TYPE_EBOOK)) {
+                    if(tipp.title instanceof BookInstance) {
                         serial = tipp.title.getIdentifierValue('pISBN')
                         electronicSerial = tipp?.title?.getIdentifierValue('ISBN')
                     }
-                    else if(tipp.title.type.equals(TITLE_TYPE_JOURNAL)) {
+                    else if(tipp.title instanceof JournalInstance) {
                         serial = tipp?.title?.getIdentifierValue('ISSN')
                         electronicSerial = tipp?.title?.getIdentifierValue('eISSN')
                     }
@@ -1623,7 +1623,7 @@ class SubscriptionController extends AbstractDebugController {
     @Secured(closure = {
         ctx.accessService.checkPermAffiliation("ORG_INST_COLLECTIVE,ORG_CONSORTIUM", "INST_EDITOR")
     })
-    def processLinkPackagesConsortia() {
+    def processLinkPackagesMembers() {
         def result = setResultGenericsAndCheckAccess(accessService.CHECK_VIEW)
         if (!result) {
             response.sendError(401); return
@@ -2297,12 +2297,10 @@ class SubscriptionController extends AbstractDebugController {
                             ]
 
                             if (params.generateSlavedLics == 'explicit') {
-                                licenseCopy = institutionsService.copyLicense(
-                                        subLicense, subLicenseParams, InstitutionsService.CUSTOM_PROPERTIES_ONLY_INHERITED)
+                                licenseCopy = institutionsService.copyLicense(subLicense, subLicenseParams, InstitutionsService.CUSTOM_PROPERTIES_ONLY_INHERITED)
                             }
                             else if (params.generateSlavedLics == 'shared' && !licenseCopy) {
-                                licenseCopy = institutionsService.copyLicense(
-                                        subLicense, subLicenseParams, InstitutionsService.CUSTOM_PROPERTIES_ONLY_INHERITED)
+                                licenseCopy = institutionsService.copyLicense(subLicense, subLicenseParams, InstitutionsService.CUSTOM_PROPERTIES_ONLY_INHERITED)
                             }
                             else if ((params.generateSlavedLics == 'reference' || params.attachToParticipationLic == "true") && !licenseCopy) {
                                 licenseCopy = genericOIDService.resolveOID(params.generateSlavedLicsReference)
@@ -2337,7 +2335,6 @@ class SubscriptionController extends AbstractDebugController {
                                 instanceOf: result.subscriptionInstance,
                                 isSlaved: true,
                                 isPublic: result.subscriptionInstance.isPublic,
-                                impId: UUID.randomUUID().toString(),
                                 owner: licenseCopy,
                                 resource: result.subscriptionInstance.resource ?: null,
                                 form: result.subscriptionInstance.form ?: null,
@@ -3084,7 +3081,7 @@ class SubscriptionController extends AbstractDebugController {
     @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_EDITOR") })
     def linkPackage() {
-        log.debug("Link package, params: ${params} ");
+        log.debug("Link package, params: ${params} ")
 
         //Wenn die Subsc schon ein Anbieter hat. Soll nur Pakete von diesem Anbieter angezeigt werden als erstes
         /*if(params.size() == 3) {
@@ -3101,8 +3098,8 @@ class SubscriptionController extends AbstractDebugController {
             response.sendError(401); return
         }
 
-        Set<Thread> threadSet = Thread.getAllStackTraces().keySet();
-        Thread[] threadArray = threadSet.toArray(new Thread[threadSet.size()]);
+        Set<Thread> threadSet = Thread.getAllStackTraces().keySet()
+        Thread[] threadArray = threadSet.toArray(new Thread[threadSet.size()])
 
         threadArray.each {
             if (it.name == 'PackageSync_'+result.subscriptionInstance?.id) {
@@ -3110,130 +3107,46 @@ class SubscriptionController extends AbstractDebugController {
             }
         }
 
-        params.gokbApi = false
-
-        if (ApiSource.findAllByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true)) {
-            params.gokbApi = true
-        }
         params.sort = "name"
 
         //to be deployed in parallel thread - let's make a test!
-        if (params.addType && (params.addType != '')) {
-            if (params.gokbApi) {
-                def gri = params.impId ? GlobalRecordInfo.findByUuid(params.impId) : null
+        if (params.addUUID) {
+            String pkgUUID = params.addUUID
+            GlobalRecordSource source = GlobalRecordSource.findByUri("${params.source}/gokb/oai/packages")
+            log.debug("linkPackage. Global Record Source URL: " +source.baseUrl)
+            globalSourceSyncService.source = source
+            //continue here: title type mismatch notification, single package sync
+            String addType = params.addType
+            GPathResult packageRecord = globalSourceSyncService.fetchRecord(source.uri,'packages',[verb:'GetRecord',metadataPrefix:'gokb',identifier:params.addUUID])
+            executorService.submit({
+                Thread.currentThread().setName("PackageSync_"+result.subscriptionInstance?.id)
+                List<Map<String,Object>> tippsToNotify = globalSourceSyncService.createOrUpdatePackage(packageRecord.record.metadata.gokb.package)
+                globalSourceSyncService.cleanUpGorm()
+                Package pkgToLink = Package.findByGokbId(pkgUUID)
+                Set<Subscription> subInstances = Subscription.executeQuery("select s from Subscription as s where s.instanceOf = ? ", [result.subscriptionInstance])
+                println "Add package ${addType} entitlements to subscription ${result.subscriptionInstance}"
 
-                if (!gri) {
-                    gri = GlobalRecordInfo.findByIdentifier(params.addId)
-                }
+                if (addType == 'With') {
+                    pkgToLink.addToSubscription(result.subscriptionInstance, true)
 
-                if (!gri) {
-                    OaiClientLaser oaiClient = new OaiClientLaser()
-                    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'")
-                    GlobalRecordSource grs = GlobalRecordSource.findByUri(params.source+'/gokb/oai/packages')
-                    def rec = oaiClient.getRecord(params.source+'/gokb/oai/','packages',params.impId) //alright, we rely on fixToken to remain as is!!!
-                    def parsedRec = globalSourceSyncService.processPackage(rec.metadata,grs)
-                    def kbplusCompliant = globalSourceSyncService.testPackageCompliance(parsedRec.parsed_rec)
-                    ByteArrayOutputStream baos = new ByteArrayOutputStream()
-                    ObjectOutputStream out = new ObjectOutputStream(baos)
-                    out.writeObject(parsedRec.parsedRec)
-                    out.close()
-                    gri = new GlobalRecordInfo(
-                            ts: sdf.parse(rec.header.datestamp.text()),
-                            name: parsedRec.title,
-                            identifier: rec.header.identifier.text(),
-                            uuid: rec.header.uuid?.text() ?: null,
-                            desc: "${parsedRec.title}",
-                            source: grs,
-                            rectype: grs.rectype,
-                            record: baos.toByteArray(),
-                            kbplusCompliant: kbplusCompliant,
-                            globalRecordInfoStatus: RefdataValue.getByValueAndCategory(parsedRec.parsed_rec.status,"Package Status")
-                    )
-                    flash.message = message(code:'subscription.details.link.no_package_yet')
-                    gri.save(flush: true)
-                }
-                def grt = GlobalRecordTracker.findByOwner(gri)
-                if (!grt) {
-                    def new_tracker_id = UUID.randomUUID().toString()
+                    subInstances.each {
+                        pkgToLink.addToSubscription(it, true)
+                    }
+                } else if (addType == 'Without') {
+                    pkgToLink.addToSubscription(result.subscriptionInstance, false)
 
-                    grt = new GlobalRecordTracker(
-                            owner: gri,
-                            identifier: new_tracker_id,
-                            name: gri.name,
-                            autoAcceptTippAddition: params.autoAcceptTippAddition == 'on' ? true : false,
-                            autoAcceptTippDelete: params.autoAcceptTippDelete == 'on' ? true : false,
-                            autoAcceptTippUpdate: params.autoAcceptTippUpdate == 'on' ? true : false,
-                            autoAcceptPackageUpdate: params.autoAcceptPackageChange == 'on' ? true : false)
-                    if (!grt.save()) {
-                        log.error(grt.errors)
+                    subInstances.each {
+                        pkgToLink.addToSubscription(it, false)
                     }
                 }
-
-                log.debug("linkPackage. Global Record Source URL: " +gri.source.baseUrl)
-                //if(Package.findByGokbId(grt.owner.uuid)) {
-                String addType = params.addType
-                    executorWrapperService.processClosure({
-                        Thread.currentThread().setName("PackageSync_"+result.subscriptionInstance?.id)
-                        globalSourceSyncService.initialiseTracker(grt)
-                        //Update INDEX ES
-                        //dataloadService.updateFTIndexes()
-
-                        def pkg_to_link = Package.findByGokbId(grt.owner.uuid)
-                        def sub_instances = Subscription.executeQuery("select s from Subscription as s where s.instanceOf = ? ", [result.subscriptionInstance])
-                        println "Add package ${addType} to subscription ${result.subscriptionInstance}"
-
-                        if (addType == 'With') {
-                            pkg_to_link.addToSubscription(result.subscriptionInstance, true)
-
-                            sub_instances.each {
-                                pkg_to_link.addToSubscription(it, true)
-                            }
-                        } else if (addType == 'Without') {
-                            pkg_to_link.addToSubscription(result.subscriptionInstance, false)
-
-                            sub_instances.each {
-                                pkg_to_link.addToSubscription(it, false)
-                            }
-                        }
-                    },gri)
-                /*}
-                else {
-                    //setup new
-                    globalSourceSyncService.initialiseTracker(grt)
-                    //Update INDEX ES
-                    dataloadService.updateFTIndexes()
-                }*/
-                switch(params.addType) {
-                    case "With": flash.message = message(code:'subscription.details.link.processingWithEntitlements')
-                        redirect action: 'index', model: [id: params.id, gokbId: params.impId]
-                        break
-                    case "Without": flash.message = message(code:'subscription.details.link.processingWithoutEntitlements')
-                        redirect action: 'addEntitlements', model: [id: params.id, gokbId: params.impId] //TODO [ticket=1410,1807,1808,1819] impId -> gokbId
-                        break
-                }
-
-            } else {
-                def pkg_to_link = Package.get(params.addId)
-                def sub_instances = Subscription.executeQuery("select s from Subscription as s where s.instanceOf = ? ", [result.subscriptionInstance])
-                log.debug("Add package ${params.addType} to subscription ${params}");
-
-                if (params.addType == 'With') {
-                    pkg_to_link.addToSubscription(result.subscriptionInstance, true)
-
-                    sub_instances.each {
-                        pkg_to_link.addToSubscription(it, true)
-                    }
-
-                    redirect action: 'index', id: params.id
-                } else if (params.addType == 'Without') {
-                    pkg_to_link.addToSubscription(result.subscriptionInstance, false)
-
-                    sub_instances.each {
-                        pkg_to_link.addToSubscription(it, false)
-                    }
-
-                    redirect action: 'addEntitlements', id: params.id
-                }
+            } as Callable)
+            switch(params.addType) {
+                case "With": flash.message = message(code:'subscription.details.link.processingWithEntitlements')
+                    redirect action: 'index', params: [id: params.id, gokbId: params.addUUID]
+                    break
+                case "Without": flash.message = message(code:'subscription.details.link.processingWithoutEntitlements')
+                    redirect action: 'addEntitlements', params: [id: params.id, gokbId: params.addUUID, pkgName: packageRecord.record.metadata.gokb.package.name] //TODO [ticket=1410,1807,1808,1819] impId -> gokbId
+                    break
             }
         }
 
@@ -3243,11 +3156,6 @@ class SubscriptionController extends AbstractDebugController {
                 result.subscriptionInstance.packages.each { sp ->
                     log.debug("Existing package ${sp.pkg.name} (Adding ImpID: ${sp.pkg.gokbId})")
                     result.pkgs.add(sp.pkg.gokbId)
-                }
-            } else {
-                result.subscriptionInstance.packages.each { sp ->
-                    log.debug("Existing package ${sp.pkg.name} (Adding ID: ${sp.pkg.id})")
-                    result.pkgs.add(sp.pkg.id)
                 }
             }
         } else {
@@ -3263,7 +3171,7 @@ class SubscriptionController extends AbstractDebugController {
         User user = springSecurityService.getCurrentUser()
         params.max = params.max ?: (user?.getDefaultPageSizeTMP() ?: 25)
 
-        if (params.gokbApi) {
+        //if (params.gokbApi) {
             def gokbRecords = []
 
             ApiSource.findAllByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true).each { api ->
@@ -3299,10 +3207,10 @@ class SubscriptionController extends AbstractDebugController {
 
             result.hits = result.records?.subList(start, end)
 
-        } else {
+        /*} else {
             params.rectype = "Package"
             result.putAll(ESSearchService.search(params))
-        }
+        }*/
 
         result
     }

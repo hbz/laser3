@@ -1,6 +1,9 @@
 package de.laser
 
 import com.k_int.kbplus.ApiSource
+import com.k_int.kbplus.BookInstance
+import com.k_int.kbplus.DatabaseInstance
+import com.k_int.kbplus.JournalInstance
 import com.k_int.kbplus.RefdataValue
 import com.k_int.kbplus.Subscription
 import com.k_int.kbplus.SurveyOrg
@@ -369,6 +372,7 @@ class SemanticUiTagLib {
 
         switch (attrs.type) {
             case 'Journal':
+            case JournalInstance.class.name:
                 out << '<div class="la-inline-flexbox la-popup-tooltip la-delay" '
                 if (hideTooltip) {
                     out << 'data-content="' + message(code: 'spotlight.journaltitle') + '" data-position="left center" data-variation="tiny"'
@@ -377,6 +381,7 @@ class SemanticUiTagLib {
                 out << '</div>'
                 break
             case 'Database':
+            case DatabaseInstance.class.name:
                 out << '<div class="la-inline-flexbox la-popup-tooltip la-delay" '
                 if (hideTooltip) {
                     out << 'data-content="' + message(code: 'spotlight.databasetitle') + '" data-position="left center" data-variation="tiny"'
@@ -385,6 +390,7 @@ class SemanticUiTagLib {
                 out << '</div>'
                 break
             case 'EBook':
+            case BookInstance.class.name:
                 out << '<div class="la-inline-flexbox la-popup-tooltip la-delay" '
                 if (hideTooltip) {
                     out << 'data-content="' + message(code: 'spotlight.ebooktitle') + '" data-position="left center" data-variation="tiny"'

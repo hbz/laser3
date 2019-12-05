@@ -5,6 +5,7 @@ import org.mozilla.universalchardet.UniversalDetector
 
 import java.text.SimpleDateFormat
 
+@Deprecated
 public class PackageIngestService {
 
   def sessionFactory
