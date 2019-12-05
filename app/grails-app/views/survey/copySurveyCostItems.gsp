@@ -42,7 +42,7 @@ ${surveyInfo?.name}
 
 <semui:messages data="${flash}"/>
 
-<div class="ui tablet stackable steps">
+<div class="ui tablet stackable steps la-clear-before">
     <div class="${(actionName == 'copySurveyCostItems') ? 'active' : ''} step">
         <div class="content">
             <div class="content">

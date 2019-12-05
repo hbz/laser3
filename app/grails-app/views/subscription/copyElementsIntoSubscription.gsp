@@ -33,7 +33,7 @@
         if (isCopyAuditOn)          params << [isCopyAuditOn: isCopyAuditOn];
     %>
     <g:if test="${isRenewSub}">
-        <div class="ui tablet stackable steps">
+        <div class="ui tablet stackable steps la-clear-before">
             <div class="${workFlowPart == WORKFLOW_DATES_OWNER_RELATIONS ? 'active' : ''} step">
                 <div class="content">
                     <div class="content" >
