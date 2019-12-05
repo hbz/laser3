@@ -236,32 +236,66 @@
 
         markAffectedTake = function (that) {
             var multiPropertyIndex = ($(that).closest ('.la-copyElements-flex-container').index()) ;
+            var sourceElem = $(that).parents('.la-replace').parents('.la-copyElements-flex-container');
+            var targetElem = $(that).parents('td').next('td').children('.la-copyElements-flex-container:nth-child(' + (multiPropertyIndex + 1) + ')');
 
-            console.log($(that))
+            console.log(sourceElem);
+            console.log(targetElem);
             // if ($(that).is(":checked") ||  $(that).parents('tr').find('input[name="subscription.deleteProperty"]').is(':checked')) {
             if ($(that).is(":checked")) {
-                $(that).parents('.la-replace').parents('.la-copyElements-flex-container').addClass('willStay');
+                sourceElem.addClass('willStay');
                 // Mehrfach zu vergebende Merkmale bekommen keine Löschmarkierung, da sie nicht überschreiben sondern kopiert werden
-                if ($(that).attr('data-multipleOccurrence') != 'true') {
-                    $(that).parents('td').next('td').children('.la-copyElements-flex-container:nth-child(' + (multiPropertyIndex + 1) + ')').addClass('willBeReplaced');
+                if ($(that).attr('data-multipleOccurrence') == 'true') {
+                } else {
+                    targetElem.addClass('willBeReplaced');
                 }
-            }
-            else {
-                if ( ! $(that).parents('tr').find('input[name="subscription.takeProperty"]').is(':checked')) {
-                    $(that).parents('.la-replace').parents('.la-copyElements-flex-container').removeClass('willStay');
-                }
-                if ( ! $(that).parents('tr').find('input[name="subscription.deleteProperty"]').is(':checked')){
-                    $(that).parents('td').next('td').children('.la-copyElements-flex-container:nth-child(' + (multiPropertyIndex + 1) + ')').removeClass('willBeReplaced');
+            } else {
+                console.log('a')
+                sourceElem.removeClass('willStay');
+                // if ($(that).attr('data-multipleOccurrence') == 'true') {
+                // } else {
+                //     targetElem.removeClass('willBeReplaced');
+                // }
+                if ( (that).parents('tr').find('input[name="subscription.deleteProperty"]').is(':checked')){
+                    console.log('c')
+                } else {
+                    console.log('d')
+                    targetElem.removeClass('willBeReplaced');
                 }
             }
         }
         markAffectedDelete = function (that) {
-            if ($(that).is(":checked") ||  $(that).parents('tr').find('input[name="subscription.takeProperty"]').is(':checked')) {
-                $(that).parents('.la-replace').parents('.la-copyElements-flex-container').removeClass('willStay');
-                $(that).parents('.la-noChange').parents('.la-copyElements-flex-container').addClass('willBeReplaced');
-            }
-            else {
-                $(that).parents('.la-noChange').parents('.la-copyElements-flex-container').removeClass('willBeReplaced');
+            var sourceElem = $(that).parents('.la-replace').parents('.la-copyElements-flex-container');
+            var targetElem = $(that).parents('.la-noChange').parents('.la-copyElements-flex-container');
+            console.log(targetElem);
+            if ($(that).is(":checked")) {
+                console.log('1')
+                if ($(that).parents('tr').find('input[name="subscription.takeProperty"]').is(':checked')) {
+                    console.log($(that))
+                    if ($(that).attr('data-multipleOccurrence') == 'true') {
+                        console.log('1a')
+                    } else {
+                        console.log('1b')
+                        targetElem.addClass('willBeReplaced')
+                    }
+                } else {
+                    console.log('2')
+                        console.log('2c')
+                        targetElem.addClass('willBeReplaced');
+                }
+            } else {
+                if ( (that).parents('tr').find('input[name="subscription.deleteProperty"]').is(':checked')){
+                    console.log('2a')
+                } else {
+                    if ($(that).parents('tr').find('input[name="subscription.takeProperty"]').is(':checked')) {
+                        console.log($(that))
+                        if ($(that).attr('data-multipleOccurrence') == 'true') {
+                            console.log('2b')
+                        }
+                    }
+                }
+                console.log('3')
+                targetElem.removeClass('willBeReplaced');
             }
         }
 
