@@ -1115,6 +1115,30 @@ form {
 .ui.form .fields:last-child .field.la-modal-fieldset-no-margin .field {
   margin-bottom: 1em;
 }
+
+/* Menue Search Animated Input
+
+.ui.icon.input > i.icon#btn-search:not(.link){
+  pointer-events: auto;
+}
+input#spotlightSearch[type="search"]:hover,
+input#spotlightSearch[type="search"]:focus{
+  background: @lightGrey;
+}
+i.search.icon {
+  color: white;
+}
+i.search.icon.open {
+  color:black;
+}
+input#spotlightSearch[type="search"] {
+  display: none;
+}
+
+.ui.input > input#spotlightSearch:focus  {
+  border-color: @lightGrey;
+}
+*/
 .ui.icon.input > i.icon#btn-search:not(.link) {
   pointer-events: auto;
 }
@@ -1122,14 +1146,11 @@ input#spotlightSearch[type="search"]:hover,
 input#spotlightSearch[type="search"]:focus {
   background: #DCDDDE;
 }
-i.search.icon {
-  color: white;
-}
-i.search.icon.open {
+i.search.icon#btn-search {
   color: black;
 }
-input#spotlightSearch[type="search"] {
-  display: none;
+.la-search-advanced i.search.icon {
+  color: white;
 }
 .ui.input > input#spotlightSearch:focus {
   border-color: #DCDDDE;
@@ -1162,7 +1183,6 @@ input#spotlightSearch[type="search"] {
   pointer-events: none;
   opacity: 0.45;
 }
-
 /* Smaller input field for table headers */
 .ui.form .field .ui.input input.la-input-small {
   width: 80px;

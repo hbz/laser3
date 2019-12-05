@@ -30,16 +30,16 @@
             <g:render template="actions" />
         </semui:controlButtons>
 
-        <g:if test="${params.asAt}">
+%{--        <g:if test="${params.asAt}">
             <h1 class="ui icon header"><semui:headerIcon />${message(code:'myinst.subscriptionDetails.snapshot', args:[params.asAt])}</h1>
-        </g:if>
+        </g:if>--}%
 
-        <span class="la-js-editmode-container la-header-with-icon">
-            <h1 class="ui icon header la-noMargin-top"><semui:headerIcon />
-                <semui:xEditable owner="${subscriptionInstance}" field="name" />
-            </h1>
-            <semui:auditButton auditable="[subscriptionInstance, 'name']" />
-        </span>
+
+        <h1 class="ui icon header la-noMargin-top"><semui:headerIcon />
+            <semui:xEditable owner="${subscriptionInstance}" field="name" />
+        </h1>
+        <semui:auditButton auditable="[subscriptionInstance, 'name']" />
+
         <semui:anualRings object="${subscriptionInstance}" controller="subscription" action="show" navNext="${navNextSubscription}" navPrev="${navPrevSubscription}"/>
 
 
@@ -270,35 +270,19 @@
                             </g:if>
                     </div>
                 </div>--}%
-
-                <g:if test="${subscriptionInstance.packages}">
-                    <div class="ui card la-js-hideable hidden">
-                        <div class="content">
-                            <table class="ui three column table">
-                                <g:each in="${subscriptionInstance.packages.sort{it.pkg.name}}" var="sp">
-                                    <tr>
-                                    <th scope="row" class="control-label la-js-dont-hide-this-card">${message(code:'subscription.packages.label')}</th>
-                                        <td>
-                                            <g:link controller="package" action="show" id="${sp.pkg.id}">${sp?.pkg?.name}</g:link>
-
-                                            <g:if test="${sp.pkg?.contentProvider}">
-                                                (${sp.pkg?.contentProvider?.name})
-                                            </g:if>
-                                        </td>
-                                        <td class="right aligned">
-                                            <g:if test="${editable}">
-                                                <button class="ui icon negative button la-selectable-button" onclick="unlinkPackage(${sp.pkg.id})">
-                                                    <i class="unlink icon"></i>
-                                                </button>
-                                            </g:if>
-                                        </td>
-                                    </tr>
-                                </g:each>
-                            </table>
-
-                        </div><!-- .content -->
-                    </div>
-                </g:if>
+              <g:if test="${subscriptionInstance.packages}">
+                <div class="ui card la-js-hideable hidden">
+                  <div class="content">
+                      <g:render template="accessPointLinksAsList"
+                                model="${[roleLinks: visibleOrgRelations,
+                                          roleObject: subscriptionInstance,
+                                          roleRespValue: 'Specific subscription editor',
+                                          editmode: editable,
+                                          showPersons: true
+                                ]}" />
+                  </div><!-- .content -->
+                </div>
+              </g:if>
 
                 <div class="ui card la-js-hideable hidden">
                     <div class="content">

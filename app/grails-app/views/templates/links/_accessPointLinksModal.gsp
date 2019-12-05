@@ -14,6 +14,9 @@
 
     <g:form action="linkAccessPoint" controller="platform" method="get" class="form-inline ui small form">
         <input type="hidden" name="platform_id" value="${platformInstance.id}">
+        <g:if test="${subscriptionPackage}">
+          <input type="hidden" name="subscriptionPackage_id" value="${subscriptionPackage.id}">
+        </g:if>
         <div class="field">
              <div class="ui grid">
                         <div class="row">

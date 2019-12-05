@@ -11,8 +11,6 @@ import grails.plugin.springsecurity.SpringSecurityUtils
 import org.hibernate.type.TextType
 import groovy.sql.Sql
 
-import java.text.SimpleDateFormat
-
 class BootStrap {
 
     def grailsApplication
@@ -72,151 +70,18 @@ class BootStrap {
         log.debug("setupRolesAndPermissions ..")
         setupRolesAndPermissions()
 
-        // Transforms types and formats Refdata
+        log.debug("setupSystemUsers ..")
+        setupSystemUsers()
 
-        RefdataCategory.loc('Transform Format', [en: 'Transform Format', de: 'Transform Format'], BOOTSTRAP)
-        RefdataCategory.loc('Transform Type',   [en: 'Transform Type', de: 'Transform Type'], BOOTSTRAP)
+        log.debug("setupAdminUsers ..")
+        setupAdminUsers()
 
-        // !!! HAS TO BE BEFORE the script adding the Transformers as it is used by those tables !!!
-
-        RefdataValue.loc('Transform Format', [en: 'json'], BOOTSTRAP)
-        RefdataValue.loc('Transform Format', [en: 'xml'], BOOTSTRAP)
-        RefdataValue.loc('Transform Format', [en: 'url'], BOOTSTRAP)
-
-        RefdataValue.loc('Transform Type', [en: 'subscription'], BOOTSTRAP)
-        RefdataValue.loc('Transform Type', [en: 'license'], BOOTSTRAP)
-        RefdataValue.loc('Transform Type', [en: 'title'], BOOTSTRAP)
-        RefdataValue.loc('Transform Type', [en: 'package'], BOOTSTRAP)
-
-        // Add Transformers and Transforms defined in local config (laser-config.groovy)
-        grailsApplication.config.systransforms.each { tr ->
-            def transformName = tr.transforms_name //"${tr.name}-${tr.format}-${tr.type}"
-
-            def transforms = Transforms.findByName("${transformName}")
-            def transformer = Transformer.findByName("${tr.transformer_name}")
-            if (transformer) {
-                if (transformer.url != tr.url) {
-                    log.debug("change transformer [${tr.transformer_name}] url to ${tr.url}")
-                    transformer.url = tr.url;
-                    transformer.save(failOnError: true, flush: true)
-                } else {
-                    log.debug("${tr.transformer_name} present and correct")
-                }
-            } else {
-                log.debug("create transformer ${tr.transformer_name} ..")
-                transformer = new Transformer(
-                        name: tr.transformer_name,
-                        url: tr.url).save(failOnError: true, flush: true)
-            }
-
-            log.debug("create transform ${transformName} ..")
-            def types = RefdataValue.findAllByOwner(RefdataCategory.findByDesc('Transform Type'))
-            def formats = RefdataValue.findAllByOwner(RefdataCategory.findByDesc('Transform Format'))
-
-            if (transforms) {
-
-                if (tr.type) {
-                    // split values
-                    def type_list = tr.type.split(",")
-                    type_list.each { new_type ->
-                        if (! transforms.accepts_types.any { f -> f.value == new_type }) {
-                            log.debug("add transformer [${transformName}] type: ${new_type}")
-                            def type = types.find { t -> t.value == new_type }
-                            transforms.addToAccepts_types(type)
-                        }
-                    }
-                }
-                if (transforms.accepts_format.value != tr.format) {
-                    log.debug("change transformer [${transformName}] format to ${tr.format}")
-                    def format = formats.findAll { t -> t.value == tr.format }
-                    transforms.accepts_format = format[0]
-                }
-                if (transforms.return_mime != tr.return_mime) {
-                    log.debug("change transformer [${transformName}] return format to ${tr.'mime'}")
-                    transforms.return_mime = tr.return_mime;
-                }
-                if (transforms.return_file_extention != tr.return_file_extension) {
-                    log.debug("change transformer [${transformName}] return format to ${tr.'return'}")
-                    transforms.return_file_extention = tr.return_file_extension;
-                }
-                if (transforms.path_to_stylesheet != tr.path_to_stylesheet) {
-                    log.debug("change transformer [${transformName}] return format to ${tr.'path'}")
-                    transforms.path_to_stylesheet = tr.path_to_stylesheet;
-                }
-                transforms.save(failOnError: true, flush: true)
-            } else {
-                def format = formats.findAll { t -> t.value == tr.format }
-
-                assert format.size() == 1
-
-                transforms = new Transforms(
-                        name: transformName,
-                        accepts_format: format[0],
-                        return_mime: tr.return_mime,
-                        return_file_extention: tr.return_file_extension,
-                        path_to_stylesheet: tr.path_to_stylesheet,
-                        transformer: transformer).save(failOnError: true, flush: true)
-
-                def type_list = tr.type.split(",")
-                type_list.each { new_type ->
-                    def type = types.find { t -> t.value == new_type }
-                    transforms.addToAccepts_types(type)
-                }
-            }
+        if (UserOrg.findAllByFormalRoleIsNull()?.size() > 0) {
+            log.warn("there are user org rows with no role set. Please update the table to add role FKs")
         }
 
-        if (grailsApplication.config.localauth) {
-            log.debug("localauth is set.. ensure user accounts present (From local config file) ${grailsApplication.config.sysusers}")
-            //Org hbz = Org.findByName('hbz Konsortialstelle Digitale Inhalte')
-            grailsApplication.config.sysusers.each { su ->
-                log.debug("test ${su.name} ${su.display} ${su.roles}")
-                def user = User.findByUsername(su.name)
-                if (user) {
-                    log.debug("${su.name} present and correct")
-                    //user.getSetting(UserSettings.KEYS.DASHBOARD,hbz)
-                } else {
-                    log.debug("create user ..")
-                    user = new User(
-                            username: su.name,
-                            password: su.pass,
-                            display: su.display,
-                            email: su.email,
-                            enabled: true).save(failOnError: true)
-                }
-
-                log.debug("add roles for ${su.name}")
-                su.roles.each { r ->
-                    def role = Role.findByAuthority(r)
-                    if (! (user.authorities.contains(role))) {
-                        log.debug("  -> adding role ${role}")
-                        UserRole.create user, role
-                    } else {
-                        log.debug("  -> ${role} already present")
-                    }
-                }
-            }
-        }
-        if(grailsApplication.config.getCurrentServer() == ContextService.SERVER_QA) {
-            log.debug("check if all user accounts are existing on QA ...")
-            Map<String,Org> modelOrgs = [konsorte: Org.findByName('Musterkonsorte'),
-                                         institut: Org.findByName('Musterinstitut'),
-                                         singlenutzer: Org.findByName('Mustereinrichtung'),
-                                         kollektivnutzer: Org.findByName('Mustereinrichtung Kollektiv'),
-                                         konsortium: Org.findByName('Musterkonsortium')]
-            Map<String,Org> testOrgs = [konsorte: Org.findByName('Testkonsorte'),
-                                        institut: Org.findByName('Testinstitut'),
-                                        singlenutzer: Org.findByName('Testeinrichtung'),
-                                        kollektivnutzer: Org.findByName('Testeinrichtung Kollektiv'),
-                                        konsortium: Org.findByName('Testkonsortium')]
-            Map<String,Org> QAOrgs = [konsorte: Org.findByName('QA-Konsorte'),
-                                      institut: Org.findByName('QA-Institut'),
-                                      singlenutzer: Org.findByName('QA-Einrichtung'),
-                                      kollektivnutzer: Org.findByName('QA-Einrichtung Kollektiv'),
-                                      konsortium: Org.findByName('QA-Konsortium')]
-            userService.setupAdminAccounts(modelOrgs)
-            userService.setupAdminAccounts(testOrgs)
-            userService.setupAdminAccounts(QAOrgs)
-        }
+        log.debug("setupTransforms ..")
+        setupTransforms()
 
         // def auto_approve_memberships = Setting.findByName('AutoApproveMemberships') ?: new Setting(name: 'AutoApproveMemberships', tp: Setting.CONTENT_TYPE_BOOLEAN, defvalue: 'true', value: 'true').save()
 
@@ -232,10 +97,6 @@ class BootStrap {
         //SpringSecurityUtils.clientRegisterFilter('apiauthFilter', SecurityFilterPosition.SECURITY_CONTEXT_FILTER.order + 10)
         SpringSecurityUtils.clientRegisterFilter('apiFilter', SecurityFilterPosition.BASIC_AUTH_FILTER)
 
-        if (UserOrg.findAllByFormalRoleIsNull()?.size() > 0) {
-            log.warn("there are user org rows with no role set. Please update the table to add role FKs")
-        }
-
         log.debug("setOrgRoleGroups ..")
         setOrgRoleGroups()
 
@@ -247,7 +108,6 @@ class BootStrap {
 
         log.debug("setupContentItems ..")
         setupContentItems()
-
 
         //log.debug("createOrgConfig ..")
         //createOrgConfig()
@@ -274,6 +134,7 @@ class BootStrap {
         setIdentifierNamespace()
 
         log.debug("checking database ..")
+
         if (!Org.findAll() && !Person.findAll() && !Address.findAll() && !Contact.findAll()) {
             log.debug("database is probably empty; setting up essential data ..")
             File f = new File("${grailsApplication.config.basicDataPath}${grailsApplication.config.basicDataFileName}")
@@ -291,6 +152,7 @@ class BootStrap {
 //        setESGOKB()
 
         log.debug("setJSONFormatDate ..")
+
         JSON.registerObjectMarshaller(Date) {
             return it?.format("yyyy-MM-dd'T'HH:mm:ss'Z'")
         }
@@ -302,6 +164,92 @@ class BootStrap {
     }
 
     def destroy = {
+    }
+
+    def setupSystemUsers = {
+
+        if (grailsApplication.config.systemUsers) {
+            log.debug("found systemUsers in local config file ..")
+
+            grailsApplication.config.systemUsers.each { su ->
+                log.debug("checking: [${su.name}, ${su.display}, ${su.roles}, ${su.affils}]")
+
+                User user = User.findByUsername(su.name)
+                if (user) {
+                    log.debug("${su.name} exists .. skipped")
+                }
+                else {
+                    log.debug("creating user ..")
+
+                    user = new User(
+                            username: su.name,
+                            password: su.pass,
+                            display:  su.display,
+                            email:    su.email,
+                            enabled:  true
+                    ).save(failOnError: true)
+
+                    su.roles.each { r ->
+                        def role = Role.findByAuthority(r)
+                        if (role.roleType != 'user') {
+                            log.debug("  -> adding role: ${role}")
+                            UserRole.create user, role
+                        }
+                    }
+
+                    su.affils.each { key, values ->
+                        Org org = Org.findByShortname(key)
+                        values.each { affil ->
+                            Role role = Role.findByAuthorityAndRoleType(affil, 'user')
+                            if (org && role) {
+                                log.debug("  -> adding affiliation: ${role} for ${org.shortname} ")
+                                UserOrg userOrg = new UserOrg(
+                                        user: user,
+                                        org: org,
+                                        formalRole: role,
+                                        status: UserOrg.STATUS_APPROVED,
+                                        dateRequested: System.currentTimeMillis(),
+                                        dateActioned: System.currentTimeMillis()
+
+                                ).save(failOnError: true)
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    def setupAdminUsers = {
+
+        if (grailsApplication.config.getCurrentServer() == ContextService.SERVER_QA) {
+            log.debug("check if all user accounts are existing on QA ...")
+
+            Map<String,Org> modelOrgs = [konsorte: Org.findByName('Musterkonsorte'),
+                                         institut: Org.findByName('Musterinstitut'),
+                                         singlenutzer: Org.findByName('Mustereinrichtung'),
+                                         kollektivnutzer: Org.findByName('Mustereinrichtung Kollektiv'),
+                                         konsortium: Org.findByName('Musterkonsortium')]
+
+            Map<String,Org> testOrgs = [konsorte: Org.findByName('Testkonsorte'),
+                                        institut: Org.findByName('Testinstitut'),
+                                        singlenutzer: Org.findByName('Testeinrichtung'),
+                                        kollektivnutzer: Org.findByName('Testeinrichtung Kollektiv'),
+                                        konsortium: Org.findByName('Testkonsortium')]
+
+            Map<String,Org> QAOrgs = [konsorte: Org.findByName('QA-Konsorte'),
+                                      institut: Org.findByName('QA-Institut'),
+                                      singlenutzer: Org.findByName('QA-Einrichtung'),
+                                      kollektivnutzer: Org.findByName('QA-Einrichtung Kollektiv'),
+                                      konsortium: Org.findByName('QA-Konsortium')]
+
+            userService.setupAdminAccounts(modelOrgs)
+            userService.setupAdminAccounts(testOrgs)
+            userService.setupAdminAccounts(QAOrgs)
+        }
+        else {
+            log.debug('.. skipped')
+        }
     }
 
     def setupRolesAndPermissions = {
@@ -326,7 +274,7 @@ class BootStrap {
         def or_subscr_role        = RefdataValue.loc('Organisational Role', [en: 'Subscriber', de: 'Teilnehmer'], BOOTSTRAP)
         def or_subscr_cons_role   = RefdataValue.loc('Organisational Role', [key: 'Subscriber_Consortial', en: 'Consortial subscriber', de: 'Konsortialteilnehmer'], BOOTSTRAP)
         def or_subscr_cons_hidden = RefdataValue.loc('Organisational Role', [key: 'Subscriber_Consortial_Hidden', en: 'Consortial subscriber (hidden)', de: 'Konsortialteilnehmer (versteckt)'], BOOTSTRAP)
-        def or_scoll_role         = RefdataValue.loc('Organisational Role', [key: 'Subscription Collective',en: 'Subscription Collective', de:'Kollektivlizenzverwalter'], BOOTSTRAP)
+        def or_scoll_role         = RefdataValue.loc('Organisational Role', [key: 'Subscription Collective',en: 'Subscription Collective', de:'Stammlizenzverwalter'], BOOTSTRAP)
         def or_subscr_coll_role   = RefdataValue.loc('Organisational Role', [key: 'Subscriber_Collective', en: 'Collective subscriber', de: 'Kollektivteilnehmer'], BOOTSTRAP)
 
         def cl_owner_role       = RefdataValue.loc('Cluster Role',   [en: 'Cluster Owner'], BOOTSTRAP)
@@ -408,7 +356,103 @@ class BootStrap {
         createOrgPerms(orgConsortiumSurveyRole,     ['ORG_CONSORTIUM_SURVEY', 'ORG_CONSORTIUM'])
     }
 
-    def updatePsqlRoutines() {
+    def setupTransforms = {
+
+        // Transforms types and formats Refdata
+
+        RefdataCategory.loc('Transform Format', [en: 'Transform Format', de: 'Transform Format'], BOOTSTRAP)
+        RefdataCategory.loc('Transform Type', [en: 'Transform Type', de: 'Transform Type'], BOOTSTRAP)
+
+        // !!! HAS TO BE BEFORE the script adding the Transformers as it is used by those tables !!!
+
+        RefdataValue.loc('Transform Format', [en: 'json'], BOOTSTRAP)
+        RefdataValue.loc('Transform Format', [en: 'xml'], BOOTSTRAP)
+        RefdataValue.loc('Transform Format', [en: 'url'], BOOTSTRAP)
+
+        RefdataValue.loc('Transform Type', [en: 'subscription'], BOOTSTRAP)
+        RefdataValue.loc('Transform Type', [en: 'license'], BOOTSTRAP)
+        RefdataValue.loc('Transform Type', [en: 'title'], BOOTSTRAP)
+        RefdataValue.loc('Transform Type', [en: 'package'], BOOTSTRAP)
+
+        // Add Transformers and Transforms defined in local config (laser-config.groovy)
+        grailsApplication.config.systransforms.each { tr ->
+            def transformName = tr.transforms_name //"${tr.name}-${tr.format}-${tr.type}"
+
+            def transforms = Transforms.findByName("${transformName}")
+            def transformer = Transformer.findByName("${tr.transformer_name}")
+            if (transformer) {
+                if (transformer.url != tr.url) {
+                    log.debug("change transformer [${tr.transformer_name}] url to ${tr.url}")
+                    transformer.url = tr.url;
+                    transformer.save(failOnError: true, flush: true)
+                } else {
+                    log.debug("${tr.transformer_name} present and correct")
+                }
+            } else {
+                log.debug("create transformer ${tr.transformer_name} ..")
+                transformer = new Transformer(
+                        name: tr.transformer_name,
+                        url: tr.url).save(failOnError: true, flush: true)
+            }
+
+            log.debug("create transform ${transformName} ..")
+            def types = RefdataValue.findAllByOwner(RefdataCategory.findByDesc('Transform Type'))
+            def formats = RefdataValue.findAllByOwner(RefdataCategory.findByDesc('Transform Format'))
+
+            if (transforms) {
+
+                if (tr.type) {
+                    // split values
+                    def type_list = tr.type.split(",")
+                    type_list.each { new_type ->
+                        if (!transforms.accepts_types.any { f -> f.value == new_type }) {
+                            log.debug("add transformer [${transformName}] type: ${new_type}")
+                            def type = types.find { t -> t.value == new_type }
+                            transforms.addToAccepts_types(type)
+                        }
+                    }
+                }
+                if (transforms.accepts_format.value != tr.format) {
+                    log.debug("change transformer [${transformName}] format to ${tr.format}")
+                    def format = formats.findAll { t -> t.value == tr.format }
+                    transforms.accepts_format = format[0]
+                }
+                if (transforms.return_mime != tr.return_mime) {
+                    log.debug("change transformer [${transformName}] return format to ${tr.'mime'}")
+                    transforms.return_mime = tr.return_mime;
+                }
+                if (transforms.return_file_extention != tr.return_file_extension) {
+                    log.debug("change transformer [${transformName}] return format to ${tr.'return'}")
+                    transforms.return_file_extention = tr.return_file_extension;
+                }
+                if (transforms.path_to_stylesheet != tr.path_to_stylesheet) {
+                    log.debug("change transformer [${transformName}] return format to ${tr.'path'}")
+                    transforms.path_to_stylesheet = tr.path_to_stylesheet;
+                }
+                transforms.save(failOnError: true, flush: true)
+            } else {
+                def format = formats.findAll { t -> t.value == tr.format }
+
+                assert format.size() == 1
+
+                transforms = new Transforms(
+                        name: transformName,
+                        accepts_format: format[0],
+                        return_mime: tr.return_mime,
+                        return_file_extention: tr.return_file_extension,
+                        path_to_stylesheet: tr.path_to_stylesheet,
+                        transformer: transformer).save(failOnError: true, flush: true)
+
+                def type_list = tr.type.split(",")
+                type_list.each { new_type ->
+                    def type = types.find { t -> t.value == new_type }
+                    transforms.addToAccepts_types(type)
+                }
+            }
+        }
+    }
+
+    def updatePsqlRoutines = {
 
         File dir
 
@@ -455,7 +499,7 @@ class BootStrap {
 
     }
 
-    def adjustDatabasePermissions() {
+    def adjustDatabasePermissions = {
 
         Sql sql = new Sql(dataSource)
         sql.rows("SELECT * FROM grants_for_backup()")
@@ -523,6 +567,7 @@ class BootStrap {
         */
     }
 
+    @Deprecated
     def createOrgConfig() {
 
         def allDescr = [en: PropertyDefinition.ORG_CONF, de: PropertyDefinition.ORG_CONF]
@@ -1689,6 +1734,7 @@ class BootStrap {
         createSurveyPropertiesWithI10nTranslations(requiredProps)
     }
 
+    @Deprecated
     def createPrivateProperties() {
 
         def allOrgDescr = [en: PropertyDefinition.ORG_PROP, de: PropertyDefinition.ORG_PROP]
@@ -1725,7 +1771,7 @@ class BootStrap {
                 if (tenant) {
                     prop = PropertyDefinition.findByNameAndTenant(default_prop.name['en'], tenant)
                 } else {
-                    log.debug("unable to locate tenant: ${default_prop.tenant} .. ignored")
+                    log.debug("unable to locate tenant: ${default_prop.tenant} .. skipped")
                     return
                 }
             } else {
@@ -1781,7 +1827,7 @@ class BootStrap {
                 if (owner) {
                     surveyProperty = SurveyProperty.findByNameAndOwner(default_prop.name['en'], owner)
                 } else {
-                    log.debug("unable to locate owner: ${default_prop.owner} .. ignored")
+                    log.debug("unable to locate owner: ${default_prop.owner} .. skipped")
                     return
                 }
             } else {
@@ -2735,16 +2781,10 @@ class BootStrap {
         RefdataValue.loc('MailTemplate Language',      [en: 'English', de: 'Englisch'], BOOTSTRAP)
         RefdataValue.loc('MailTemplate Language',      [en: 'German', de: 'Deutsch'], BOOTSTRAP)
 
-        createRefdataWithI10nExplanation()
-    }
-
-    void createRefdataWithI10nExplanation() {
-
         I10nTranslation.createOrUpdateI10n(RefdataValue.loc('Number Type',[en: 'Students', de: 'Studierende'], BOOTSTRAP),'expl',[en:'',de:'Gesamtzahl aller immatrikulierten Studierenden'])
         I10nTranslation.createOrUpdateI10n(RefdataValue.loc('Number Type',[en: 'Scientific staff', de: 'wissenschaftliches Personal'], BOOTSTRAP),'expl',[en:'',de:'zugehöriges wissenschaftliches Personal'])
         I10nTranslation.createOrUpdateI10n(RefdataValue.loc('Number Type',[en: 'User', de: 'Nutzer'], BOOTSTRAP),'expl',[en:'',de:'Nutzer der Einrichtung'])
         I10nTranslation.createOrUpdateI10n(RefdataValue.loc('Number Type',[en: 'Population', de: 'Einwohner'], BOOTSTRAP),'expl',[en:'',de:'Einwohner der Stadt'])
-
     }
 
     def setupOnixPlRefdata = {

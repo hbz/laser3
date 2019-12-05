@@ -393,6 +393,10 @@ class SubscriptionController extends AbstractDebugController {
                         PriceItem.executeUpdate("delete from PriceItem pi where pi.issueEntitlement.id in (:delList)",[delList: deleteIdList])
                         IssueEntitlement.executeUpdate("delete from IssueEntitlement ie where ie.id in (:delList)", [delList: deleteIdList])
                     }
+                    SubscriptionPackage subPkg = SubscriptionPackage.findByPkgAndSubscription(result.package, result.subscription)
+                    if (subPkg) {
+                        OrgAccessPointLink.executeUpdate("delete from OrgAccessPointLink oapl where oapl.subPkg=?", [subPkg])
+                    }
                     SubscriptionPackage.executeUpdate("delete from SubscriptionPackage sp where sp.pkg=? and sp.subscription=? ", [result.package, result.subscription])
 
                     flash.message = message(code: 'subscription.details.unlink.successfully')
@@ -412,6 +416,17 @@ class SubscriptionController extends AbstractDebugController {
                 if (numOfPCs > 0) {
                     def conflict_item_pc = [name: "${g.message(code: "subscription.details.unlink.pendingChanges")}", details: [['text': "${g.message(code: "subscription.details.unlink.pendingChanges.numbers")} " + numOfPCs]], action: [actionRequired: false, text: "${g.message(code: "subscription.details.unlink.pendingChanges.numbers.action")}"]]
                     conflicts_list += conflict_item_pc
+                }
+
+                SubscriptionPackage sp = SubscriptionPackage.findByPkgAndSubscription(result.package, result.subscription)
+                List accessPointLinks = []
+                if (sp.oapls){
+                    Map detailItem = ['text':"${g.message(code: "subscription.details.unlink.accessPoints.numbers")} ${sp.oapls.size()}"]
+                    accessPointLinks.add(detailItem)
+                }
+                if (accessPointLinks) {
+                    def conflict_item_oap = [name: "${g.message(code: "subscription.details.unlink.accessPoints")}", details: accessPointLinks, action: [actionRequired: false, text: "${g.message(code: "subscription.details.unlink.accessPoints.numbers.action")}"]]
+                    conflicts_list += conflict_item_oap
                 }
 
                 return render(template: "unlinkPackageModal", model: [pkg: result.package, subscription: result.subscription, conflicts_list: conflicts_list])
@@ -1597,7 +1612,8 @@ class SubscriptionController extends AbstractDebugController {
         }
 
         def oldID = params.id
-        params.id = result.parentSub.id
+        if(result.subscription.getCalculatedType() in [TemplateSupport.CALCULATED_TYPE_CONSORTIAL,TemplateSupport.CALCULATED_TYPE_COLLECTIVE])
+            params.id = result.parentSub.id
 
         ArrayList<Long> filteredOrgIds = getOrgIdsForFilter()
         result.filteredSubChilds = new ArrayList<Subscription>()
@@ -4186,6 +4202,7 @@ class SubscriptionController extends AbstractDebugController {
             boolean isCopyAuditOn = params.subscription.isCopyAuditOn? true : false
             def sub_startDate = null
             def sub_endDate = null
+            def sub_manualCancellationDate = null
             def sub_status = null
             def old_subOID = null
             def new_subname = null
@@ -4193,6 +4210,7 @@ class SubscriptionController extends AbstractDebugController {
                 use(TimeCategory) {
                     sub_startDate = baseSub.endDate ? (baseSub.endDate + 1.day) : null
                     sub_endDate = baseSub.endDate ? (baseSub.endDate + 1.year) : null
+                    sub_manualCancellationDate = baseSub?.manualCancellationDate ? (baseSub?.manualCancellationDate + 1.year) : null
                 }
                 sub_status = SUBSCRIPTION_INTENDED
                 old_subOID = baseSub.id
@@ -4200,6 +4218,7 @@ class SubscriptionController extends AbstractDebugController {
             } else {
                 sub_startDate = params.subscription?.start_date ? parseDate(params.subscription?.start_date, possible_date_formats) : null
                 sub_endDate = params.subscription?.end_date ? parseDate(params.subscription?.end_date, possible_date_formats): null
+                sub_manualCancellationDate = baseSub?.manualCancellationDate
                 sub_status = params.subStatus
                 old_subOID = params.subscription.old_subid
                 new_subname = params.subscription.name
@@ -4209,7 +4228,7 @@ class SubscriptionController extends AbstractDebugController {
                     name: new_subname,
                     startDate: sub_startDate,
                     endDate: sub_endDate,
-                    manualCancellationDate: (baseSub?.manualCancellationDate && isCopyAuditOn) ? (baseSub?.manualCancellationDate + 1.year) : baseSub?.manualCancellationDate,
+                    manualCancellationDate: sub_manualCancellationDate,
                     identifier: java.util.UUID.randomUUID().toString(),
                     isPublic: baseSub.isPublic,
                     isSlaved: baseSub.isSlaved,
@@ -5141,7 +5160,7 @@ class SubscriptionController extends AbstractDebugController {
 
     private LinkedHashMap setResultGenericsAndCheckAccess(checkOption) {
         def result = [:]
-        result.user = User.get(springSecurityService.principal.id)
+        result.user = contextService.user
         result.subscriptionInstance = Subscription.get(params.id)
         result.subscription = Subscription.get(params.id)
         result.institution = result.subscription?.subscriber

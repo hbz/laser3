@@ -1309,9 +1309,8 @@ class AdminController extends AbstractDebugController {
         result.orgListTotal = result.orgList.size()
 
 		result.allConsortia = Org.executeQuery(
-                "select o from OrgSettings os join os.org o where os.key = 'CUSTOMER_TYPE' and os.roleValue.authority in ('ORG_CONSORTIUM', 'ORG_CONSORTIUM_SURVEY')"
-        ).toSorted()
-
+                "select o from OrgSettings os join os.org o where os.key = 'CUSTOMER_TYPE' and os.roleValue.authority in ('ORG_CONSORTIUM', 'ORG_CONSORTIUM_SURVEY') order by o.sortname, o.name"
+        )
         result
     }
 

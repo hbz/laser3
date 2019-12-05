@@ -404,18 +404,19 @@ class AccessPointController extends AbstractDebugController {
         def sort = params.sort ?: "LOWER(p.name)"
         def order = params.order ?: "ASC"
 
-        def hql = "select new map(p as platform,oapl as aplink) from Platform p join p.oapp as oapl where oapl.active = true and oapl.oap=${orgAccessPoint.id} order by ${sort} ${order}"
+        def hql = "select new map(p as platform,oapl as aplink) from Platform p join p.oapp as oapl where oapl.active = true and oapl.oap=${orgAccessPoint.id} and oapl.subPkg is null order by ${sort} ${order}"
         def linkedPlatformsMap = Platform.executeQuery(hql)
 
-        def linkedSubscriptionsQuery = "select new map(s as subscription,oapl as aplink) from Subscription s join s.oapl as oapl where oapl.active = true and oapl.oap=${orgAccessPoint.id}"
-        def linkedSubscriptionsMap = Subscription.executeQuery(linkedSubscriptionsQuery)
+        def linkedSubscriptionsQuery = "select new map(sp as subPkg,oapl as oapl) from OrgAccessPointLink oapl join oapl.subPkg as sp where oapl.active = true and oapl.oap=${orgAccessPoint.id}"
+
+        def linkedSubscriptionPackagesMap = OrgAccessPointLink.executeQuery(linkedSubscriptionsQuery)
 
         switch (request.method) {
             case 'GET':
                 [accessPoint           : orgAccessPoint, accessPointDataList: accessPointDataList, orgId: orgId,
                  platformList          : orgAccessPoint.getNotLinkedPlatforms(),
                  linkedPlatformsMap    : linkedPlatformsMap,
-                 linkedSubscriptionsMap: linkedSubscriptionsMap,
+                 linkedSubscriptionPackagesMap: linkedSubscriptionPackagesMap,
                  ip                    : params.ip, editable: true,
                  ipv4Ranges            : ipv4Ranges, ipv4Format: ipv4Format,
                  ipv6Ranges            : ipv6Ranges, ipv6Format: ipv6Format,
@@ -455,9 +456,10 @@ class AccessPointController extends AbstractDebugController {
         oapl.oap = accessPoint
         if (params.platforms) {
             oapl.platform = Platform.get(params.platforms)
-            def existingActiveAP = OrgAccessPointLink.findAll {
-                active == true && platform == oapl.platform && oap == accessPoint
-            }
+            def hql = "select oap from OrgAccessPoint oap " +
+                "join oap.oapp as oapl where oapl.active = true and oapl.platform.id =${accessPoint.id} and oapl.oap=:oap and oapl.subPkg is null order by LOWER(oap.name)"
+            def existingActiveAP = OrgAccessPoint.executeQuery(hql, ['oap' : accessPoint])
+
             if (! existingActiveAP.isEmpty()){
                 flash.error = "Existing active AccessPoint for platform"
                 redirect(url: request.getHeader('referer'))

@@ -40,7 +40,7 @@
     </g:if>
     <g:if test="${actionName == 'show'}">
         <sec:ifAnyGranted roles="ROLE_ORG_EDITOR,ROLE_ADMIN">
-            <semui:actionsDropdownItem controller="organisation" action="setupBasicTestData" params="[id: orgInstance.id]" message="${message(code:'datamanager.setupBasicOrgData.label')}"/>
+            <semui:actionsDropdownItem controller="organisation" action="setupBasicTestData" params="[id: orgInstance.id]" message="datamanager.setupBasicOrgData.label"/>
 
             <div class="divider"></div>
             <g:link class="item" action="_delete" id="${params.id}"><i class="trash alternate icon"></i> Organisation löschen</g:link>

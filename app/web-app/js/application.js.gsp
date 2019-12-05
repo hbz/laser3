@@ -143,12 +143,14 @@ r2d2 = {
                 }
             }
         });
-        $('#btn-search').on('click', function(e) {
+
+/*  Menue Search Animated Input
+       $('#btn-search').on('click', function(e) {
             e.preventDefault();
 
             $('#spotlightSearch').animate({width: 'toggle'}).focus();
             $(this).toggleClass('open');
-        });
+        });*/
 
         // metaboxes
         $('.metaboxToggle').click(function() {
@@ -419,7 +421,7 @@ r2d2 = {
         $(ctxSel + ' .datepicker').calendar(r2d2.configs.datepicker);
 
         // dropdowns
-        $(ctxSel + ' .ui.dropdown').dropdown({
+        $(ctxSel + ' .ui.dropdown').not('nav.menu .ui.dropdown').dropdown({
             duration: 150,
             transition: 'fade',
             apiSettings: {

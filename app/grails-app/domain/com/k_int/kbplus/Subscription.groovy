@@ -101,7 +101,6 @@ class Subscription
                      customProperties: SubscriptionCustomProperty,
                      privateProperties: SubscriptionPrivateProperty,
                      costItems: CostItem,
-                     oapl: OrgAccessPointLink
   ]
 
   static mappedBy = [
@@ -116,7 +115,6 @@ class Subscription
                       costItems: 'sub',
                       customProperties: 'owner',
                       privateProperties: 'owner',
-                      oapl: 'subscription'
                       ]
 
     static mapping = {
@@ -155,7 +153,6 @@ class Subscription
         customProperties    batchSize: 10
         privateProperties   batchSize: 10
         costItems           batchSize: 10
-        oapl                batchSize: 10
     }
 
     static constraints = {
@@ -546,22 +543,23 @@ class Subscription
             return true
         }
 
-        if (user.getAuthorizedOrgsIds().contains(contextService.getOrg()?.id)) {
+        Org contextOrg = contextService.getOrg()
+        if (user.getAuthorizedOrgsIds().contains(contextOrg?.id)) {
 
             OrgRole cons = OrgRole.findBySubAndOrgAndRoleType(
-                    this, contextService.getOrg(), RDStore.OR_SUBSCRIPTION_CONSORTIA
+                    this, contextOrg, RDStore.OR_SUBSCRIPTION_CONSORTIA
             )
             OrgRole coll = OrgRole.findBySubAndOrgAndRoleType(
-                    this, contextService.getOrg(), RDStore.OR_SUBSCRIPTION_COLLECTIVE
+                    this, contextOrg, RDStore.OR_SUBSCRIPTION_COLLECTIVE
             )
             OrgRole subscrCons = OrgRole.findBySubAndOrgAndRoleType(
-                    this, contextService.getOrg(), RDStore.OR_SUBSCRIBER_CONS
+                    this, contextOrg, RDStore.OR_SUBSCRIBER_CONS
             )
             OrgRole subscrColl = OrgRole.findBySubAndOrgAndRoleType(
-                    this, contextService.getOrg(), RDStore.OR_SUBSCRIBER_COLLECTIVE
+                    this, contextOrg, RDStore.OR_SUBSCRIBER_COLLECTIVE
             )
             OrgRole subscr = OrgRole.findBySubAndOrgAndRoleType(
-                    this, contextService.getOrg(), RDStore.OR_SUBSCRIBER
+                    this, contextOrg, RDStore.OR_SUBSCRIBER
             )
 
             if (perm == 'view') {

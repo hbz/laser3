@@ -1,10 +1,9 @@
-<%@ page import="com.k_int.kbplus.RefdataValue; de.laser.helper.RDStore; com.k_int.kbplus.RefdataCategory; com.k_int.kbplus.Org; com.k_int.kbplus.Person; com.k_int.kbplus.PersonRole" %>
+<%@ page import="com.k_int.kbplus.RefdataValue; de.laser.helper.RDStore; com.k_int.kbplus.RefdataCategory; com.k_int.kbplus.Org; com.k_int.kbplus.Person; com.k_int.kbplus.PersonRole; de.laser.helper.RDStore" %>
 <laser:serviceInjection/>
 
 
 <g:set var="modalId" value="${modalId ?: 'personFormModal'}"/>
 <semui:modal id="${modalId}" text="${message(code: (modalId))}">
-
     <g:form class="ui form" id="create_person" url="[controller: 'person', action: 'create', params: [org_id: org.id]]"
             method="POST">
 
@@ -19,7 +18,7 @@
                                   from="${com.k_int.kbplus.Person.getAllRefdataValues('Person Contact Type')}"
                                   optionKey="id"
                                   optionValue="value"
-                                  value="${personInstance?.contactType?.id ?: com.k_int.kbplus.RefdataValue.getByValueAndCategory('Personal contact', 'Person Contact Type')?.id}"
+                                  value="${personInstance?.contactType?.id ?: RDStore.CONTACT_TYPE_PERSONAL.id}"
                                   noSelection="['': '']"/>
                 </div>
             </div>
@@ -293,7 +292,7 @@
                 }
              }
         });
-        var fc = "${com.k_int.kbplus.RefdataValue.getByValueAndCategory('Functional contact', 'Person Contact Type')?.getI10n('value')}";
+        var fc = "${RDStore.CONTACT_TYPE_FUNCTIONAL.getI10n('value')}";
 
         $(document).ready( function(){
             changeForm( ($("#${modalId} #contactType option:selected").text() == fc), "${modalId}")
@@ -301,10 +300,9 @@
 
         $("#${modalId} #contactType").on('change', function() {
             changeForm( ($("#${modalId} #contactType option:selected").text() == fc), "${modalId}")
-        })
+        });
 
         function changeForm(hide, mId) {
-            console.log(mId+"Test1");
             var group1 = $("#"+mId+" #person_middle_name, #"+mId+" #person_first_name, #"+mId+" #person_title, #"+mId+" #person_gender, #"+mId+" .js-positionTypeWrapper")
             var group2 = $("#"+mId+" #person_gender .dropdown,#"+mId+" #person_gender select")
             var group3 = $("#"+mId+" #positionType,#"+mId+" #positionOrg")

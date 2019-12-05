@@ -153,7 +153,7 @@
 
 </g:form>
 </g:if>
-<g:render template="link" model="${[accessPoint:accessPoint, params:params, linkedPlatformsMap: linkedPlatformsMap, linkedSubscriptionsMap: linkedSubscriptionsMap]}"/>
+<g:render template="link" model="${[accessPoint:accessPoint, params:params, linkedPlatformsMap: linkedPlatformsMap, linkedSubscriptionPackagesMap: linkedSubscriptionPackagesMap]}"/>
 
 %{--
 

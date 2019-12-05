@@ -142,9 +142,10 @@
 
         <div class="two fields">
             <div class="field">
-                <label for="subscritionType">${message(code: 'myinst.currentSubscriptions.subscription_type')}</label>
+
 
                 <fieldset id="subscritionType">
+                    <legend for="subscritionType">${message(code: 'myinst.currentSubscriptions.subscription_type')}</legend>
                     <div class="inline fields la-filter-inline">
 
                         <g:each in="${filterSubTypes}" var="subType">

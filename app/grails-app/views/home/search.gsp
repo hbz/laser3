@@ -133,48 +133,48 @@
                             <tr>
                                 <td>
 
-                                    <g:if test="${hit.getSource().rectype == 'Org'}"><span
+                                    <g:if test="${hit.getSourceAsMap().rectype == 'Org'}"><span
                                             class="label label-info">Organisation</span></g:if>
-                                    <g:if test="${hit.getSource().rectype == 'Title'}"><span
+                                    <g:if test="${hit.getSourceAsMap().rectype == 'Title'}"><span
                                             class="label label-info">Title Instance</span></g:if>
-                                    <g:if test="${hit.getSource().rectype == 'Package'}"><span
+                                    <g:if test="${hit.getSourceAsMap().rectype == 'Package'}"><span
                                             class="label label-info">Package</span></g:if>
-                                    <g:if test="${hit.getSource().rectype == 'Platform'}"><span
+                                    <g:if test="${hit.getSourceAsMap().rectype == 'Platform'}"><span
                                             class="label label-info">Platform</span></g:if>
-                                    <g:if test="${hit.getSource().rectype == 'Subscription'}"><span
+                                    <g:if test="${hit.getSourceAsMap().rectype == 'Subscription'}"><span
                                             class="label label-info">Subscription</span></g:if>
-                                    <g:if test="${hit.getSource().rectype == 'License'}"><span
+                                    <g:if test="${hit.getSourceAsMap().rectype == 'License'}"><span
                                             class="label label-info">License</span></g:if>
                                 </td>
-                                <g:if test="${hit.getSource().rectype == 'Org'}">
+                                <g:if test="${hit.getSourceAsMap().rectype == 'Org'}">
                                     <td><g:link controller="organisation" action="show"
-                                                id="${hit.getSource().dbId}">${hit.getSource().name}</g:link></td>
+                                                id="${hit.getSourceAsMap().dbId}">${hit.getSourceAsMap().name}</g:link></td>
                                 </g:if>
-                                <g:if test="${hit.getSource().rectype == 'Title'}">
+                                <g:if test="${hit.getSourceAsMap().rectype == 'Title'}">
                                     <td><g:link controller="title" action="show"
-                                                id="${hit.getSource().dbId}">${hit.getSource().title}</g:link></td>
+                                                id="${hit.getSourceAsMap().dbId}">${hit.getSourceAsMap().title}</g:link></td>
                                     <td>
-                                        <g:each in="${hit.getSource().identifiers}" var="id">
+                                        <g:each in="${hit.getSourceAsMap().identifiers}" var="id">
                                             ${id.type}:${id.value} &nbsp;
                                         </g:each>
                                     </td>
                                 </g:if>
-                                <g:if test="${hit.getSource().rectype == 'Package'}">
+                                <g:if test="${hit.getSourceAsMap().rectype == 'Package'}">
                                     <td><g:link controller="package" action="show"
-                                                id="${hit.getSource().dbId}">${hit.getSource().name}</g:link></td>
+                                                id="${hit.getSourceAsMap().dbId}">${hit.getSourceAsMap().name}</g:link></td>
                                 </g:if>
-                                <g:if test="${hit.getSource().rectype == 'Platform'}">
+                                <g:if test="${hit.getSourceAsMap().rectype == 'Platform'}">
                                     <td><g:link controller="platform" action="show"
-                                                id="${hit.getSource().dbId}">${hit.getSource().name}</g:link></td>
+                                                id="${hit.getSourceAsMap().dbId}">${hit.getSourceAsMap().name}</g:link></td>
                                 </g:if>
-                                <g:if test="${hit.getSource().rectype == 'Subscription'}">
+                                <g:if test="${hit.getSourceAsMap().rectype == 'Subscription'}">
                                     <td><g:link controller="subscription" action="show"
-                                                id="${hit.getSource().dbId}">${hit.getSource().name} (${hit.getSource().type})</g:link></td>
-                                    <td>${hit.getSource().identifier}</td>
+                                                id="${hit.getSourceAsMap().dbId}">${hit.getSourceAsMap().name} (${hit.getSourceAsMap().type})</g:link></td>
+                                    <td>${hit.getSourceAsMap().identifier}</td>
                                 </g:if>
-                                <g:if test="${hit.getSource().rectype == 'License'}">
+                                <g:if test="${hit.getSourceAsMap().rectype == 'License'}">
                                     <td><g:link controller="license" action="show"
-                                                id="${hit.getSource().dbId}">${hit.getSource().name}</g:link></td>
+                                                id="${hit.getSourceAsMap().dbId}">${hit.getSourceAsMap().name}</g:link></td>
                                 </g:if>
                             </tr>
                         </g:each>
