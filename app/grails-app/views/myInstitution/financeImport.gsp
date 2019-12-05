@@ -16,10 +16,16 @@
     <h1 class="ui left aligned icon header"><semui:headerIcon />${message(code:'menu.institutions.financeImport')}</h1>
 
           ${message(code:'myinst.financeImport.headline', default:'Bulk load cost item records')}
-          <%-- continue here: make the template and make then test processes --%>
-          <a href="${resource(dir: 'resources/downloadFile', file: 'bulk_load_cost_item_records_template_02.csv')}" download="template_bulk_load_cost_item_records.csv">
-            <p>${message(code:'myinst.financeImport.template', default:'Template for bulk import.')}</p>
-          </a>
+          <g:if test="${params.id}">
+              <g:link action="generateFinanceImportWorksheet" params="${[id:params.id]}">
+                  <p>${message(code:'myinst.financeImport.template', default:'Template for bulk import.')}</p>
+              </g:link>
+          </g:if>
+          <g:else>
+              <a href="${resource(dir: 'resources/downloadFile', file: 'bulk_load_cost_item_records_template_02.csv')}" download="template_bulk_load_cost_item_records.csv">
+                  <p>${message(code:'myinst.financeImport.template', default:'Template for bulk import.')}</p>
+              </a>
+          </g:else>
          <table class="ui celled striped table la-table">
            <thead>
              <tr>

@@ -42,8 +42,8 @@ class ExportService {
 	/**
 		new CSV/TSV export interface - should subsequently replace StreamOutLicenseCSV, StreamOutSubsCSV and StreamOutTitlesCSV
 		expect data in structure:
-		@param titleRow - {@link List} of column headers [header1,header2,...,headerN]
-		@param columnData - {@link List} of the rows, each row is itself a {@link List}:
+		@param titleRow - {@link Collection} of column headers [header1,header2,...,headerN]
+		@param columnData - {@link Collection} of the rows, each row is itself a {@link Collection}:
 	 	[
 		 	[column1, column2, ..., columnN], //for row 1
 		 	[column1, column2, ..., columnN], //for row 2
@@ -51,7 +51,7 @@ class ExportService {
 		 	[column1, column2, ..., columnN]  //for row N
 		]
 	 */
-	String generateSeparatorTableString(List titleRow, List columnData,String separator) {
+	String generateSeparatorTableString(Collection titleRow, Collection columnData,String separator) {
 		List output = []
 		output.add(titleRow.join(separator))
 		columnData.each { row ->

@@ -45,7 +45,7 @@
                                 <ul>
                                     <g:set var="ci" value="${row.getKey()}"/>
                                     <g:set var="errors" value="${row.getValue()}"/>
-                                    <li><g:message code="myinst.financeImport.institution"/>: ${ci.owner?.sortname}</li>
+                                    <%--li><g:message code="myinst.financeImport.institution"/>: ${ci.owner?.sortname}</li--%>
                                     <li><g:message code="myinst.financeImport.subscription"/>: ${ci.sub?.dropdownNamingConvention()}</li>
                                     <li><g:message code="myinst.financeImport.package"/>: ${ci.subPkg?.pkg?.name}</li>
                                     <li><g:message code="myinst.financeImport.issueEntitlement"/>: ${ci.issueEntitlement?.tipp?.title?.title}</li>
