@@ -93,6 +93,8 @@ class SurveyController {
         result.surveys = SurveyInfo.executeQuery(fsq.query, fsq.queryParams, params)
         result.countSurveyConfigs = getSurveyConfigCounts()
 
+        result.filterSet = params.filterSet ? true : false
+
         result
     }
 
@@ -194,7 +196,7 @@ class SurveyController {
         List<Org> agencies = orgTypeService.getCurrentAgencies(contextService.getOrg())
 
         providers.addAll(agencies)
-        List orgIds = providers.unique().collect { it2 -> it2.id }
+        List orgIds = providers.unique().collect { it.id }
 
         result.providers = Org.findAllByIdInList(orgIds).sort { it?.name }
 
@@ -267,7 +269,7 @@ class SurveyController {
         List<Org> agencies = orgTypeService.getCurrentAgencies(contextService.getOrg())
 
         providers.addAll(agencies)
-        List orgIds = providers.unique().collect { it2 -> it2.id }
+        List orgIds = providers.unique().collect { it.id }
 
         result.providers = Org.findAllByIdInList(orgIds).sort { it?.name }
 

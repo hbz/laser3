@@ -34,6 +34,7 @@ class RefdataValue extends AbstractI10nTranslatable implements Comparable<Refdat
     ]
 
     static mapping = {
+            cache   true
                     id column: 'rdv_id'
                version column: 'rdv_version'
                  owner column: 'rdv_owner', index: 'rdv_owner_value_idx'

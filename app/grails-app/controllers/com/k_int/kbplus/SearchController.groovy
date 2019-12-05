@@ -16,24 +16,43 @@ class SearchController extends AbstractDebugController {
         log.debug("searchController: index");
         def result = [:]
 
-        def query = params.q ? "${params.q}": null
         result.user = springSecurityService.getCurrentUser()
         params.max = params.max ?: result.user.getDefaultPageSizeTMP()
         params.offset = params.offset ? params.int('offset') : 0
 
+        params.searchObjects = params.searchObjects ?: 'allObjects'
+
+
+        def query = params.q ? "${params.q}": null
         if (!query) {
             return result
         }
 
         if (springSecurityService.isLoggedIn()) {
             params.q = query
+
+            if(params.advancedSearchText){
+                params.q += " ${params.advancedSearchOption} ${params.advancedSearchText} "
+            }
+            if(params.advancedSearchText2){
+                params.q += " ${params.advancedSearchOption2} ${params.advancedSearchText2} "
+            }
+
+            if(params.advancedSearchText || params.advancedSearchText2)
+            {
+                params.q = "( ${params.q} )"
+            }
+
             params.actionName = actionName
 
             params.availableToOrgs = [contextService.org.id]
 
             result = ESSearchService.search(params)
 
+            params.q = query
+
         }
+        result.contextOrg = contextService.getOrg()
 
         result
     }

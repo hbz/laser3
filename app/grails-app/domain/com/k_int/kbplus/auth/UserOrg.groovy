@@ -22,6 +22,10 @@ class UserOrg implements Comparable {
     User user
     Role formalRole
 
+    static mapping = {
+        cache true
+    }
+
     static constraints = {
         dateActioned    (nullable: true)
         dateRequested   (nullable: true)

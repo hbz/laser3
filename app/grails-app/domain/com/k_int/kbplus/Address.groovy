@@ -36,6 +36,7 @@ class Address {
     Org    org              // org related contact; exclusive with prs
     
     static mapping = {
+        cache  true
         id       column:'adr_id'
         version  column:'adr_version'
         street_1 column:'adr_street_1'

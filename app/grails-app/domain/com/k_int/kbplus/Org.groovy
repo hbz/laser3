@@ -88,17 +88,19 @@ class Org
     Set ids = []
 
     static mappedBy = [
-        ids:              'org',
-        outgoingCombos:   'fromOrg',
-        incomingCombos:   'toOrg',
-        links:            'org',
-        prsLinks:         'org',
-        contacts:         'org',
-        addresses:        'org',
-        affiliations:     'org',
-        customProperties: 'owner',
-        privateProperties:'owner',
-        documents:        'org'
+        ids:                'org',
+        outgoingCombos:     'fromOrg',
+        incomingCombos:     'toOrg',
+        links:              'org',
+        prsLinks:           'org',
+        contacts:           'org',
+        addresses:          'org',
+        affiliations:       'org',
+        customProperties:   'owner',
+        privateProperties:  'owner',
+        documents:          'org',
+        hasCreated:         'createdBy',
+        hasLegallyObliged:  'legallyObligedBy'
     ]
 
     static hasMany = [
@@ -114,10 +116,13 @@ class Org
         privateProperties:  OrgPrivateProperty,
         orgType:            RefdataValue,
         documents:          DocContext,
-        platforms:          Platform
+        platforms:          Platform,
+        hasCreated:         Org,
+        hasLegallyObliged:  Org
     ]
 
     static mapping = {
+                cache true
                 sort 'sortname'
                 id          column:'org_id'
            version          column:'org_version'
@@ -156,8 +161,6 @@ class Org
                 key:    'org_id',
                 column: 'refdata_value_id', type:   'BIGINT'
         ], lazy: false
-//        addresses   lazy: false
-//        contacts    lazy: false
 
         ids                 batchSize: 10
         outgoingCombos      batchSize: 10
@@ -169,6 +172,8 @@ class Org
         privateProperties   batchSize: 10
         documents           batchSize: 10
         platforms           batchSize: 10
+        hasCreated          batchSize: 10
+        hasLegallyObliged   batchSize: 10
     }
 
     static constraints = {
@@ -658,11 +663,9 @@ class Org
         result
     }
 
-    def getallOrgTypeIds()
+    List getallOrgTypeIds()
     {
-        List result = []
-        orgType.collect{ it -> result.add(it.id) }
-        result
+        orgType.findAll{it}.collect{it.id}
     }
 
     boolean isInComboOfType(RefdataValue comboType) {

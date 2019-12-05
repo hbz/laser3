@@ -12,10 +12,6 @@
     <semui:errors bean="${newProp}" />
 </g:if>
 
-<g:if test="${error}">
-    <bootstrap:alert class="alert-danger">${error}</bootstrap:alert>
-</g:if>
-
 <table class="ui la-table-small la-table-inCard table">
     <g:if test="${ownobj.privateProperties}">
         <colgroup>
@@ -46,9 +42,11 @@
                     <td>
                         <g:if test="${prop.type.getI10n('expl') != null && !prop.type.getI10n('expl').contains(' °')}">
                             ${prop.type.getI10n('name')}
-                            <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center" data-content="${prop.type.getI10n('expl')}">
-                                <i class="question circle icon"></i>
-                            </span>
+                            <g:if test="${prop.type.getI10n('expl')}">
+                                <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center" data-content="${prop.type.getI10n('expl')}">
+                                    <i class="question circle icon"></i>
+                                </span>
+                            </g:if>
                         </g:if>
                         <g:else>
                             ${prop.type.getI10n('name')}
@@ -122,27 +120,35 @@
     <g:if test="${overwriteEditable}">
         <tfoot>
             <tr>
-                <td colspan="4">
-                    <g:formRemote url="[controller: 'ajax', action: 'addPrivatePropertyValue']" method="post"
-                                  name="cust_prop_add_value"
-                                  class="ui form"
-                                  update="${custom_props_div}"
-                                  onSuccess="c3po.initProperties('${createLink(controller:'ajax', action:'lookup')}', '#${custom_props_div}', ${tenant?.id})"
-                                  onComplete="c3po.loadJsAfterAjax()"
-                    >
-                    <g:if test="${!(actionName in ['surveyConfigsInfo', 'surveyInfosIssueEntitlements'])}">
-                        <input type="hidden" name="propIdent"  data-desc="${prop_desc}" class="customPropSelect"/>
-                        <input type="hidden" name="ownerId"    value="${ownobj?.id}"/>
-                        <input type="hidden" name="tenantId"   value="${tenant?.id}"/>
-                        <input type="hidden" name="editable"   value="${editable}"/>
-                        <input type="hidden" name="ownerClass" value="${ownobj?.class}"/>
+                <g:if test="${ownobj.privateProperties}">
+                    <td colspan="4">
+                </g:if>
+                <g:else>
+                    <td>
+                </g:else>
+                        <g:formRemote url="[controller: 'ajax', action: 'addPrivatePropertyValue']" method="post"
+                                      name="cust_prop_add_value_private"
+                                      class="ui form"
+                                      update="${custom_props_div}"
+                                      onSuccess="c3po.initProperties('${createLink(controller:'ajax', action:'lookup')}', '#${custom_props_div}', ${tenant?.id})"
+                                      onComplete="c3po.loadJsAfterAjax()"
+                        >
+                        <g:if test="${!(actionName in ['surveyConfigsInfo', 'surveyInfosIssueEntitlements'])}">
+                            <input type="hidden" name="propIdent"  data-desc="${prop_desc}" class="customPropSelect"/>
+                            <input type="hidden" name="ownerId"    value="${ownobj?.id}"/>
+                            <input type="hidden" name="tenantId"   value="${tenant?.id}"/>
+                            <input type="hidden" name="editable"   value="${editable}"/>
+                            <input type="hidden" name="ownerClass" value="${ownobj?.class}"/>
 
-                        <input type="submit" value="${message(code:'default.button.add.label')}" class="ui button js-wait-wheel"/>
-                    </g:if>
-                </g:formRemote>
+                            <input type="submit" value="${message(code:'default.button.add.label')}" class="ui button js-wait-wheel"/>
+                        </g:if>
+                    </g:formRemote>
 
-            </td>
+                    </td>
         </tr>
     </tfoot>
 </g:if>
 </table>
+<g:if test="${error}">
+    <semui:msg class="negative" header="${message(code: 'myinst.message.attention')}" text="${error}"/>
+</g:if>

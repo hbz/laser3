@@ -130,6 +130,8 @@
 
                             <semui:securedMainNavItem affiliation="INST_USER" controller="myInstitution" action="currentPlatforms" message="menu.my.platforms" />
 
+                            <semui:securedMainNavItem affiliation="INST_USER" controller="myInstitution" action="currentPackages" message="menu.my.packages" />
+
                             <semui:securedMainNavItem affiliation="INST_USER" controller="myInstitution" action="currentTitles" message="menu.my.titles" />
 
                             <semui:securedMainNavItem orgPerm="ORG_INST,ORG_CONSORTIUM" affiliation="INST_USER" controller="myInstitution" action="documents" message="menu.my.documents" />
@@ -375,6 +377,7 @@
                                     <g:link class="item" controller="admin" action="userMerge">${message(code:'menu.admin.userMerge')}</g:link>
                                     <g:link class="item" controller="admin" action="hardDeletePkgs">${message(code:'menu.admin.hardDeletePkgs')}</g:link>
                                     <g:link class="item" controller="admin" action="manageDeletedObjects">${message(code: "menu.admin.deletedObjects")}</g:link>
+                                    <g:link class="item" controller="admin" action="databaseStatistics">${message(code: "menu.admin.databaseStatistics")}</g:link>
                                     <g:link class="item" controller="admin" action="dataConsistency">${message(code: "menu.admin.dataConsistency")}</g:link>
                                 </div>
                             </div>

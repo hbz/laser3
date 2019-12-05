@@ -68,17 +68,17 @@
                         <tr>
                           <td>${ (params.int('offset') ?: 0)  + jj + 1 }</td>
                           <td>
-                            <semui:listIcon type="${hit.getSource().typTitle}"/>
-                            <strong><g:link controller="title" action="show" id="${hit.getSource().dbId}">${hit.getSource().name}</g:link></strong>
+                            <semui:listIcon type="${hit.getSourceAsMap().typTitle}"/>
+                            <strong><g:link controller="title" action="show" id="${hit.getSourceAsMap().dbId}">${hit.getSourceAsMap().name}</g:link></strong>
                           </td>
                           <td>
-                            ${com.k_int.kbplus.RefdataValue.getByValueAndCategory(hit.getSource().typTitle, 'Title Type').getI10n('value')}
+                            ${com.k_int.kbplus.RefdataValue.getByValueAndCategory(hit.getSourceAsMap().typTitle, 'Title Type').getI10n('value')}
                           </td>
                           <td>
-                            ${hit.getSource().publisher?:''}
+                            ${hit.getSourceAsMap().publisher?:''}
                           </td>
                           <td>
-                            <g:each in="${hit.getSource().identifiers.sort{it.type}}" var="id">
+                            <g:each in="${hit.getSourceAsMap().identifiers.sort{it.type}}" var="id">
                               <div style="white-space:nowrap"><span>${id.type}:</span> <span>${id.value}</span></div>
                             </g:each>
                           </td>

@@ -170,10 +170,10 @@
         <div class="two fields">
 
             <div class="field">
-                <label>${message(code: 'myinst.currentTitles.dupes', default: 'Titles we subscribe to through 2 or more packages')}</label>
+                <label for="filterMultiIE">${message(code: 'myinst.currentTitles.dupes', default: 'Titles we subscribe to through 2 or more packages')}</label>
 
                 <div class="ui checkbox">
-                    <input type="checkbox" class="hidden" name="filterMultiIE"
+                    <input type="checkbox" class="hidden" name="filterMultiIE" id="filterMultiIE"
                            value="${true}" <%=(params.filterMultiIE) ? ' checked="true"' : ''%>/>
                 </div>
             </div>
@@ -485,6 +485,10 @@
         <!-- End - For Test Only -->
     </g:if>
 </div>
+
+<semui:debugInfo>
+    <g:render template="/templates/debug/benchMark" model="[debug: benchMark]" />
+</semui:debugInfo>
 
 </body>
 </html>

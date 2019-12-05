@@ -140,7 +140,7 @@
                         <g:elseif test="${org.legallyObligedBy}">
                             <span class="la-popup-tooltip la-delay" data-position="top right"
                                   data-content="${message(code:'org.legalInformation.3.tooltip', args:[org.legallyObligedBy])}" >
-                                <i class="ui icon grey circle"></i>
+                                <i class="ui icon red question mark"></i>
                             </span>
                         </g:elseif>
                     </td>
@@ -257,7 +257,7 @@
                 <g:select id="createdBy" name="createdBy"
                               from="${allConsortia}"
                               optionKey="id"
-                              optionValue="name"
+                              optionValue="${{(it.sortname ?: '') + ' (' + it.name + ')'}}"
                               class="ui dropdown search"
                 />
             </div>
@@ -267,7 +267,7 @@
                 <g:select id="legallyObligedBy" name="legallyObligedBy"
                               from="${allConsortia}"
                               optionKey="id"
-                              optionValue="name"
+                              optionValue="${{(it.sortname ?: '') + ' (' + it.name + ')'}}"
                               value=""
                               class="ui dropdown search"
                 />

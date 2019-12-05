@@ -1,4 +1,4 @@
-<%@ page import="de.laser.helper.SqlDateUtils; com.k_int.kbplus.*; com.k_int.kbplus.abstract_domain.AbstractProperty; de.laser.DashboardDueDate" %>
+<%@ page import="org.springframework.context.i18n.LocaleContextHolder; de.laser.helper.SqlDateUtils; com.k_int.kbplus.*; com.k_int.kbplus.abstract_domain.AbstractProperty; de.laser.DashboardDueDate" %>
 <laser:serviceInjection />
     <g:if test="${ ! dueDates}">
         <g:message code="profile.noDashboardReminderDates" default="There are no due dates for your personal reminder periods"/>
@@ -48,7 +48,11 @@
                                     <i class="icon tags la-list-icon"></i>
                                 </g:if>
                                 %{--${dashDueDate.id} &nbsp--}%
-                                ${dashDueDate.attribut}
+                                <g:if test="${Locale.GERMAN.getLanguage() == org.springframework.context.i18n.LocaleContextHolder.getLocale().getLanguage()}">
+                                    ${dashDueDate.attribute_value_de}
+                                </g:if><g:else>
+                                    ${dashDueDate.attribute_value_en}
+                                </g:else>
                             </td>
                             <td>
                                 <g:formatDate format="${message(code:'default.date.format.notime', default:'yyyy-MM-dd')}" date="${dashDueDate.date}"/>

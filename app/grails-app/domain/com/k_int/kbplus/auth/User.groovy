@@ -43,6 +43,7 @@ class User {
   }
 
   static mapping = {
+      cache   true
       table (name: '`user`')
       password column: '`password`'
 
