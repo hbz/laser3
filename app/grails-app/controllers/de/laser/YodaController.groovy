@@ -141,8 +141,10 @@ class YodaController {
                 def triggers = quartzScheduler.getTriggersOfJob(key)
                 def nft = triggers.collect{ it.nextFireTime ?: null }
 
-                def services = clazz.getDeclaredFields().findAll{ it.getName().endsWith('Service')}.collect{ it.getName().capitalize() }
-                println services
+                def getUsedServices = { clz ->
+                    clz.getDeclaredFields().findAll{ it.getName().endsWith('Service')}.collect{ it.getName().capitalize() }
+                }
+                def services = getUsedServices(clazz)
 
                 Map map = [
                         name: clazz.simpleName,

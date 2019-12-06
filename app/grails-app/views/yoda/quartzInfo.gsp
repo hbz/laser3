@@ -53,27 +53,33 @@
                     <td>
                         <code>${job.cronEx}</code>
                     </td>
+
+                    <%
+                        boolean isActive = true
+
+                        if (job.configFlags) {
+                            job.configFlags.split(',').each { flag ->
+                                isActive = isActive && (currentConfig.get(flag) && ! (currentConfig.get(flag) in [null, false]))
+                            }
+                        }
+                    %>
+
                     <td style="text-align:center">
                         <g:if test="${job.running}">
-                            <i class="ui icon circle green"></i>
+                            <i class="ui big icon play circle green"></i>
                         </g:if>
-                        <g:elseif test="${job.available}">
-                            <i class="ui icon circle yellow"></i>
-                        </g:elseif>
                         <g:else>
-                           <%-- <i class="ui icon circle outline lightgrey"></i> --%>
+                            <g:if test="${isActive}">
+                                <i class="ui icon play green"></i>
+                            </g:if>
+                            <g:elseif test="${job.available}">
+                                <i class="ui icon pause yellow"></i>
+                            </g:elseif>
+                            <g:else>
+                            </g:else>
                         </g:else>
                     </td>
                     <td>
-                        <%
-                            boolean isActive = true
-
-                            if (job.configFlags) {
-                                job.configFlags.split(',').each { flag ->
-                                    isActive = isActive && (currentConfig.get(flag) && ! (currentConfig.get(flag) in [null, false]))
-                                }
-                            }
-                        %>
                         <g:if test="${isActive}">
                             ${job.nextFireTime}
                         </g:if>
