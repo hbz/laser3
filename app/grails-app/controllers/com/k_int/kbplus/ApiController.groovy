@@ -79,6 +79,7 @@ class ApiController extends AbstractDebugController {
     }
 
     @Secured(['ROLE_API', 'IS_AUTHENTICATED_FULLY'])
+    @Deprecated
     def uploadBibJson() {
         def result = [:]
         log.debug("uploadBibJson");

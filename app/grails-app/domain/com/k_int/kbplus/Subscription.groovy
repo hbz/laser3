@@ -67,8 +67,6 @@ class Subscription
 
   String name
   String identifier
-  @Deprecated
-  String impId
   Date startDate
   Date endDate
   Date manualRenewalDate
@@ -129,7 +127,6 @@ class Subscription
         resource    column:'sub_resource_fk'
         name        column:'sub_name'
         identifier  column:'sub_identifier'
-        impId       column:'sub_imp_id', index:'sub_imp_id_idx'
         startDate   column:'sub_start_date',        index: 'sub_dates_idx'
         endDate     column:'sub_end_date',          index: 'sub_dates_idx'
         manualRenewalDate       column:'sub_manual_renewal_date'
@@ -162,7 +159,6 @@ class Subscription
         owner(nullable:true, blank:false)
         form        (nullable:true, blank:false)
         resource    (nullable:true, blank:false)
-        impId(nullable:true, blank:false)
         startDate(nullable:true, blank:false, validator: { val, obj ->
             if(obj.startDate != null && obj.endDate != null) {
                 if(obj.startDate > obj.endDate) return ['startDateAfterEndDate']
@@ -576,9 +572,6 @@ class Subscription
 
   @Override
   def beforeInsert() {
-    if (impId == null) {
-      impId = java.util.UUID.randomUUID().toString();
-    }
     super.beforeInsert()
   }
 

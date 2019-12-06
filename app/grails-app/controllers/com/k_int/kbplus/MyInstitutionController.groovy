@@ -1308,8 +1308,7 @@ from License as l where (
                     status: status,
                     administrative: administrative,
                     identifier: params.newEmptySubId,
-                    isPublic: false,
-                    impId: java.util.UUID.randomUUID().toString())
+                    isPublic: false)
 
             if (new_sub.save()) {
                 def new_sub_link = new OrgRole(org: result.institution,
@@ -1351,8 +1350,7 @@ from License as l where (
                                           administrative: administrative,
                                           instanceOf: new_sub,
                                           isSlaved: true,
-                                          isPublic: false,
-                                          impId: java.util.UUID.randomUUID().toString()).save()
+                                          isPublic: false)
                         if(new_sub.administrative) {
                             new OrgRole(org: cm,
                                     sub: cons_sub,

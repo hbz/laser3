@@ -22,43 +22,17 @@ class TIPPCoverage extends AbstractCoverage implements AuditableTrait {
     static mapping = {
         id column:'tc_id'
         version column:'tc_version'
-        startDate column:'tc_start_date',    index: 'tc_dates_idx'
+        startDate column:'tc_start_date', index: 'tc_dates_idx'
         startVolume column:'tc_start_volume'
         startIssue column:'tc_start_issue'
-        endDate column:'tc_end_date',      index: 'tc_dates_idx'
+        endDate column:'tc_end_date', index: 'tc_dates_idx'
         endVolume column:'tc_end_volume'
         endIssue column:'tc_end_issue'
         embargo column:'tc_embargo'
         coverageDepth column:'tc_coverage_depth'
         coverageNote column:'tc_coverage_note', type: 'text'
         tipp column:'tc_tipp_fk'
-    }
-
-
-    static controlledProperties = [
-            'startDate',
-            'startVolume',
-            'startIssue',
-            'endDate',
-            'endVolume',
-            'endIssue',
-            'embargo',
-            'coverageDepth',
-            'coverageNote',
-    ]
-
-    static Set<Map> checkCoverageChanges(oldMap, newMap) {
-        Set<Map> diffs = []
-        if(oldMap && newMap) {
-            controlledProperties.each { cp ->
-                log.debug("checking ${cp}")
-                if ( oldMap[cp] != newMap[cp] ) {
-                    log.debug("got coverage diffs, processing ... ${oldMap[cp]} vs. ${newMap[cp]}")
-                    diffs << [prop:cp,old:oldMap[cp],new:newMap[cp]]
-                }
-            }
-        }
-        diffs
+        sort startDate: 'asc', startVolume: 'asc', startIssue: 'asc', endDate: 'asc', endVolume: 'asc', endIssue: 'asc'
     }
 
 }

@@ -16,19 +16,30 @@ abstract class AbstractCoverage {
     String coverageNote
 
     @Transient
-    private Set controlledProperties = ['startDate','startVolume','endDate','endVolume']
+    private static Set<String> controlledProperties = [
+            'startDate',
+            'startVolume',
+            'startIssue',
+            'endDate',
+            'endVolume',
+            'endIssue',
+            'embargo',
+            'coverageDepth',
+            'coverageNote',
+    ]
 
-    @Transient
-    AbstractCoverage findEquivalent(Collection list) {
-        AbstractCoverage equivalent
-        for(String k: controlledProperties) {
-            equivalent = list.find { it[k] == this[k] }
-            if(equivalent) {
-                println "Coverage statement ${equivalent.id} considered as equivalent to ${this.id}"
-                break
+    Map<String,Object> compareWith(Map<String,Object> covB) {
+        Map<String,Object> diffs = [:]
+        controlledProperties.each { cp ->
+            if(this[cp] != covB[cp]) {
+                diffs.field = cp
+                diffs.event = 'updated'
+                diffs.target = this
+                diffs.oldValue = this[cp]
+                diffs.newValue = covB[cp]
             }
         }
-        equivalent
+        diffs
     }
 
 }

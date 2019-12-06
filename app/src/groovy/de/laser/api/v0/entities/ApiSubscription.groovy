@@ -29,9 +29,9 @@ class ApiSubscription {
             case 'globalUID':
                 result = Subscription.findAllWhere(globalUID: value)
                 break
-            case 'impId':
+            /*case 'impId':
                 result = Subscription.findAllWhere(impId: value)
-                break
+                break*/
             case 'ns:identifier':
                 result = Identifier.lookupObjectsByIdentifierString(new Subscription(), value)
                 break

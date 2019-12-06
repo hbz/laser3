@@ -146,7 +146,7 @@ paths:
         - Objects
       summary: Find license by identifier
       description: >
-        Supported are queries by following identifiers: *globalUID*, *impId* and *ns:identifier*. *Ns:identifier* value has to be defined like this: _gasco-lic:0815_
+        Supported are queries by following identifiers: *globalUID* and *ns:identifier*. *Ns:identifier* value has to be defined like this: _gasco-lic:0815_
       parameters:
         - $ref: "#/parameters/q"
         - $ref: "#/parameters/v"
@@ -237,7 +237,7 @@ paths:
         - Organisations
       summary: Find organisation by identifier
       description: >
-        Supported are queries by following identifiers: *globalUID*, *impId* and *ns:identifier*. *Ns:identifier* value has to be defined like this: _isil:DE-123_
+        Supported are queries by following identifiers: *globalUID* and *ns:identifier*. *Ns:identifier* value has to be defined like this: _isil:DE-123_
       parameters:
         - $ref: "#/parameters/q"
         - $ref: "#/parameters/v"
@@ -298,7 +298,7 @@ paths:
         - Packages
       summary: Find packge by identifier
       description: >
-        Supported are queries by following identifiers: *globalUID*, *identifier*, *impId* and *ns:identifier*. *Ns:identifier* value has to be defined like this: _xyz:4711_
+        Supported are queries by following identifiers: *globalUID*, *identifier* and *ns:identifier*. *Ns:identifier* value has to be defined like this: _xyz:4711_
       parameters:
         - $ref: "#/parameters/q"
         - $ref: "#/parameters/v"
@@ -331,7 +331,7 @@ paths:
       - Objects
       summary: Find subscription by identifier
       description: >
-        Supported are queries by following identifiers: *globalUID*, *identifier*, *impId* and *ns:identifier*. Ns:identifier value has to be defined like this: _xyz:4711_
+        Supported are queries by following identifiers: *globalUID*, *identifier* and *ns:identifier*. Ns:identifier value has to be defined like this: _xyz:4711_
       parameters:
         - $ref: "#/parameters/q"
         - $ref: "#/parameters/v"

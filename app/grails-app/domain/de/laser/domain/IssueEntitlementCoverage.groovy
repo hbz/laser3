@@ -31,5 +31,6 @@ class IssueEntitlementCoverage extends AbstractCoverage {
         coverageDepth column:'ic_coverage_depth'
         coverageNote column:'ic_coverage_note',type: 'text'
         issueEntitlement column:'ic_ie_fk'
+        sort startDate: 'asc', startVolume: 'asc', startIssue: 'asc', endDate: 'asc', endVolume: 'asc', endIssue: 'asc'
     }
 }

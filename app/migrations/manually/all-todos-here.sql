@@ -425,3 +425,13 @@ alter table survey_config alter column surconf_scheduled_startdate type timestam
 update survey_config set surconf_scheduled_startdate = (surconf_scheduled_startdate + '1 hour'::interval);
 alter table dashboard_due_date alter column das_last_updated type timestamp using das_last_updated::timestamp;
 update dashboard_due_date set das_last_updated = (das_last_updated + '1 hour'::interval);
+
+-- 2019-12-06
+-- ERMS-1929
+-- removing deprecated field impId
+alter table org drop column org_imp_id;
+alter table package drop column pkg_imp_id;
+alter table platform drop column plat_imp_id;
+alter table subscription drop column sub_imp_id;
+alter table title_instance drop column ti_imp_id;
+alter table title_instance_package_platform drop column tipp_imp_id;

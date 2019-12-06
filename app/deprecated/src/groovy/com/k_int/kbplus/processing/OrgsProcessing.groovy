@@ -3,6 +3,7 @@ package com.k_int.kbplus.processing
 import com.k_int.kbplus.Identifier
 import org.apache.commons.logging.LogFactory
 
+@Deprecated
 public class OrgsProcessing {
 
   private static final log = LogFactory.getLog(this)

@@ -10,11 +10,12 @@ import org.hibernate.ScrollMode
 * This job is only run once on system startup, and is responsible for initializing various fields
 * First run on unpopulated data takes up to 45min, then only few seconds if run again
 */
+@Deprecated
 class BatchTouchJob extends AbstractJob {
 
-    static triggers = {
+    /*static triggers = {
         simple name:'BatchTouchJob', startDelay:50000, repeatInterval:30000, repeatCount:0
-    }
+    }*/
 
     static configFlags = []
 
@@ -33,17 +34,17 @@ class BatchTouchJob extends AbstractJob {
         SystemEvent.createEvent('BATCH_TOUCH_JOB_START')
 
         try {
-            log.debug("BatchTouchJob::execute");
+            com.k_int.kbplus.batch.BatchTouchJob.log.debug("BatchTouchJob::execute");
             //The following will only make changes to objects when required. If fields are populated they will skip
             //Make sure all classes have impIDs, as they are the key used for ES
-            impIdJob();
+            //impIdJob();
             //Make sure all packages have sort name, again used by ES
             pkgBatchUpdate()
             //Generate norm,sort,and key title for TitleInstances,used by ES and app sorting.
             titleBatchUpdate()
         }
         catch (Exception e) {
-            log.error(e)
+            com.k_int.kbplus.batch.BatchTouchJob.log.error(e)
         }
 
         jobIsRunning = false
@@ -51,7 +52,7 @@ class BatchTouchJob extends AbstractJob {
 
   private def titleBatchUpdate() {
 
-    log.debug("BatchTouchJob::titleBatchUpdate");
+    com.k_int.kbplus.batch.BatchTouchJob.log.debug("BatchTouchJob::titleBatchUpdate");
 
     def event = "TitleBatchUpdateJob"
     def startTime = printStart(event)
@@ -74,7 +75,7 @@ class BatchTouchJob extends AbstractJob {
       }
       printDuration(startTime,event)
     }catch( Exception e ) {
-      log.error(e)
+      com.k_int.kbplus.batch.BatchTouchJob.log.error(e)
     }finally{
       //always reset the status
       TitleInstance.auditable = false
@@ -93,7 +94,7 @@ class BatchTouchJob extends AbstractJob {
   }
 
   def impIdJob(){
-    log.debug("BatchTouchJob::impIdJob");
+    com.k_int.kbplus.batch.BatchTouchJob.log.debug("BatchTouchJob::impIdJob");
     def event = "BatchImpIdJob"
     def startTime = printStart(event)
     def counter = 0
@@ -120,7 +121,8 @@ class BatchTouchJob extends AbstractJob {
            cleanUpGorm(session)
         }
 
-      }catch( Exception e ) {log.error(e)}
+      }catch( Exception e ) {
+          com.k_int.kbplus.batch.BatchTouchJob.log.error(e)}
       finally{
         if(currentClass.hasProperty('auditable')) currentClass.auditable = auditable_store?:true ;
       }
@@ -130,7 +132,7 @@ class BatchTouchJob extends AbstractJob {
   }
 
   def pkgBatchUpdate() {
-    log.debug("BatchTouchJob::pkgBatchUpdate");
+    com.k_int.kbplus.batch.BatchTouchJob.log.debug("BatchTouchJob::pkgBatchUpdate");
     def event = "PackageBatchUpdateJob"
     def startTime = printStart(event)
     def counter = 0
@@ -152,7 +154,8 @@ class BatchTouchJob extends AbstractJob {
       }
       printDuration(startTime,event)
 
-    }catch( Exception e ) {log.error(e)}
+    }catch( Exception e ) {
+        com.k_int.kbplus.batch.BatchTouchJob.log.error(e)}
     finally{
       Package.auditable=true
     }
@@ -168,7 +171,7 @@ class BatchTouchJob extends AbstractJob {
 
   }
   private def cleanUpGorm(session) {
-    log.debug("clean up GORM");
+    com.k_int.kbplus.batch.BatchTouchJob.log.debug("clean up GORM");
     session.flush()
     session.clear()
   }
@@ -181,15 +184,15 @@ class BatchTouchJob extends AbstractJob {
   
    private def printStart(event){
        def starttime = new Date();
-       log.debug("******* Start ${event}: ${starttime} *******")
+       com.k_int.kbplus.batch.BatchTouchJob.log.debug("******* Start ${event}: ${starttime} *******")
        return starttime
    }
 
   private def printDuration(starttime, event){
     use(groovy.time.TimeCategory) {
       def duration = new Date() - starttime
-      log.debug("******* End ${event}: ${new Date()} *******")
-      log.debug("Duration: ${(duration.hours*60)+duration.minutes}m ${duration.seconds}s")
+        com.k_int.kbplus.batch.BatchTouchJob.log.debug("******* End ${event}: ${new Date()} *******")
+        com.k_int.kbplus.batch.BatchTouchJob.log.debug("Duration: ${(duration.hours*60)+duration.minutes}m ${duration.seconds}s")
     }
   }
 }

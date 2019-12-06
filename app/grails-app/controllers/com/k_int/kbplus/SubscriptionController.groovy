@@ -3170,7 +3170,7 @@ class SubscriptionController extends AbstractDebugController {
             result.pkgs = []
             if (params.gokbApi) {
                 result.subscriptionInstance.packages.each { sp ->
-                    log.debug("Existing package ${sp.pkg.name} (Adding ImpID: ${sp.pkg.gokbId})")
+                    log.debug("Existing package ${sp.pkg.name} (Adding GOKb ID: ${sp.pkg.gokbId})")
                     result.pkgs.add(sp.pkg.gokbId)
                 }
             }
@@ -3732,7 +3732,6 @@ class SubscriptionController extends AbstractDebugController {
         def new_subscription = new Subscription(
                 identifier: java.util.UUID.randomUUID().toString(),
                 status: sub_status,
-                impId: java.util.UUID.randomUUID().toString(),
                 name: new_subname,
                 startDate: sub_startDate,
                 endDate: sub_endDate,
@@ -3817,12 +3816,11 @@ class SubscriptionController extends AbstractDebugController {
                                 endDate: newSubConsortia.endDate,
                                 manualRenewalDate: subMember.manualRenewalDate,
                                 /* manualCancellationDate: result.subscriptionInstance.manualCancellationDate, */
-                                identifier: java.util.UUID.randomUUID().toString(),
+                                identifier: UUID.randomUUID().toString(),
                                 instanceOf: newSubConsortia?.id,
                                 //previousSubscription: subMember?.id,
                                 isSlaved: subMember.isSlaved,
                                 isPublic: subMember.isPublic,
-                                impId: java.util.UUID.randomUUID().toString(),
                                 owner: newSubConsortia.owner?.id ? subMember.owner?.id : null,
                                 resource: newSubConsortia.resource ?: null,
                                 form: newSubConsortia.form ?: null

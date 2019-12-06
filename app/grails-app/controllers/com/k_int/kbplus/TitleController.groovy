@@ -80,6 +80,10 @@ class TitleController extends AbstractDebugController {
   }
 
   @Secured(['ROLE_ADMIN'])
+  @Deprecated
+  /**
+   * Is a GOKb functionality, no need to keep it in LAS:eR
+   */
   def createTitle() {
     log.debug("Create new title for ${params.title}");
     //def new_title = new TitleInstance(title:params.title, impId:java.util.UUID.randomUUID().toString()

@@ -49,8 +49,6 @@ class TitleInstancePackagePlatform extends AbstractBaseDomain implements Auditab
     Date coreStatusStart
     Date coreStatusEnd
     String rectype="so"
-    @Deprecated
-    String impId
     String gokbId
     //URL originEditUrl
 
@@ -101,7 +99,6 @@ class TitleInstancePackagePlatform extends AbstractBaseDomain implements Auditab
                pkg column:'tipp_pkg_fk',    index: 'tipp_idx'
           platform column:'tipp_plat_fk',   index: 'tipp_idx'
              title column:'tipp_ti_fk',     index: 'tipp_idx'
-             impId column:'tipp_imp_id',        index: 'tipp_imp_id_idx'
             gokbId column:'tipp_gokb_id',       type:'text'
      //originEditUrl column:'tipp_origin_edit_url'
             status column:'tipp_status_rv_fk'
@@ -137,7 +134,6 @@ class TitleInstancePackagePlatform extends AbstractBaseDomain implements Auditab
 
     static constraints = {
         globalUID(nullable:true, blank:false, unique:true, maxSize:255)
-        impId(nullable:true, blank:true)
         gokbId (nullable:true, blank:false)
         //originEditUrl(nullable:true, blank:false)
         status(nullable:true, blank:false)

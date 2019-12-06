@@ -93,7 +93,7 @@ class ApiReaderHelper {
 
         if (hasAccess) {
             result.globalUID    = lic.globalUID
-            result.impId        = lic.impId
+            //result.impId        = lic.impId
             result.reference    = lic.reference
             result.normReference    = lic.sortableReference
             // erms-888
@@ -141,7 +141,7 @@ class ApiReaderHelper {
         result.globalUID    = pkg.globalUID
         result.name         = pkg.name
         //result.identifier   = pkg.identifier // TODO refactor legacy
-        result.impId        = pkg.impId
+        //result.impId        = pkg.impId
         result.gokbId       = pkg.gokbId
 
         // References
@@ -157,7 +157,7 @@ class ApiReaderHelper {
         def result = [:]
         if (pform) {
             result.globalUID    = pform.globalUID
-            result.impId        = pform.impId
+            //result.impId        = pform.impId
             result.gokbId       = pform.gokbId
             result.name         = pform.name
             result.normname     = pform.normname
@@ -188,7 +188,7 @@ class ApiReaderHelper {
             result.globalUID    = sub.globalUID
             result.name         = sub.name
             //result.identifier   = sub.identifier // TODO refactor identifier
-            result.impId        = sub.impId
+            //result.impId        = sub.impId
             // erms-888
             result.calculatedType = sub.getCalculatedType()
             result.startDate      = sub.startDate
@@ -231,7 +231,7 @@ class ApiReaderHelper {
         def result = [:]
 
         result.globalUID    = title.globalUID
-        result.impId        = title.impId
+        //result.impId        = title.impId
         result.gokbId       = title.gokbId
         result.title        = title.title
         result.normTitle    = title.normTitle
@@ -696,7 +696,7 @@ class ApiReaderHelper {
 
         if (pform) {
             result.globalUID        = pform.globalUID
-            result.impId            = pform.impId
+            //result.impId            = pform.impId
             result.gokbId           = pform.gokbId
             result.name             = pform.name
             result.normName         = pform.normname
@@ -877,7 +877,7 @@ class ApiReaderHelper {
         //result.endVolume        = tipp.endVolume           // duplicate information in IE
         //result.endIssue         = tipp.endIssue            // duplicate information in IE
         result.hostPlatformURL  = tipp.hostPlatformURL
-        result.impId            = tipp.impId
+        //result.impId            = tipp.impId
         result.gokbId           = tipp.gokbId
         //result.rectype          = tipp.rectype    // legacy; not needed ?
         //result.startDate        = tipp.startDate           // duplicate information in IE

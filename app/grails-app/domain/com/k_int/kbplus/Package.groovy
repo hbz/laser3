@@ -35,8 +35,6 @@ class Package
   //String identifier
   String name
   String sortName
-  @Deprecated
-  String impId
   String gokbId
    //URL originEditUrl
   String vendorURL
@@ -103,7 +101,6 @@ static hasMany = [  tipps:     TitleInstancePackagePlatform,
             //identifier column:'pkg_identifier'
                     name column:'pkg_name'
                 sortName column:'pkg_sort_name'
-                   impId column:'pkg_imp_id', index:'pkg_imp_id_idx'
                   gokbId column:'pkg_gokb_id', type:'text'
          //originEditUrl column:'pkg_origin_edit_url'
              packageType column:'pkg_type_rv_fk'
@@ -148,7 +145,6 @@ static hasMany = [  tipps:     TitleInstancePackagePlatform,
                   isPublic(nullable:false, blank:false)
               packageScope(nullable:true, blank:false)
                    forumId(nullable:true, blank:false)
-                     impId(nullable:true, blank:false)
                     gokbId(nullable:true, blank:false)
            //originEditUrl(nullable:true, blank:false)
                  vendorURL(nullable:true, blank:false)
@@ -240,7 +236,6 @@ static hasMany = [  tipps:     TitleInstancePackagePlatform,
     def result = new Subscription( name:subname,
                                    status:RefdataValue.getByValueAndCategory('Current','Subscription Status'),
                                    identifier:subidentifier,
-                                   impId:java.util.UUID.randomUUID().toString(),
                                    startDate:startdate,
                                    endDate:enddate,
                                    isPublic: false,
@@ -513,7 +508,6 @@ static hasMany = [  tipps:     TitleInstancePackagePlatform,
     println "processing metadata"
     result.packageName = this.name
     result.packageId = this.identifier
-    result.impId = this.impId
     result.gokbId = this.gokbId
 
     result.tipps = []
@@ -533,7 +527,6 @@ static hasMany = [  tipps:     TitleInstancePackagePlatform,
       def newtip = [
                      title: [
                        name:tip.title.title,
-                       impId:tip.title.impId,
                        identifiers:[],
                        titleType: tip.title.class.name ?: null
                      ],
@@ -588,10 +581,6 @@ static hasMany = [  tipps:     TitleInstancePackagePlatform,
     def beforeInsert() {
         if ( name != null ) {
             sortName = generateSortName(name)
-        }
-
-        if (impId == null) {
-          impId = java.util.UUID.randomUUID().toString();
         }
 
         super.beforeInsert()

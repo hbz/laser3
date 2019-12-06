@@ -703,7 +703,6 @@ class AdminController extends AbstractDebugController {
                     urlGov(o.urlGov)
                     importSource(o.importSource)
                     lastImportDate(o.lastImportDate)
-                    impId(o.impId)
                     gokbId(o.gokbId)
                     comment(o.comment)
                     ipRange(o.ipRange)

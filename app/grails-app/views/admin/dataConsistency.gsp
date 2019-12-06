@@ -19,7 +19,7 @@
 
         <h2 class="ui headerline">${message(code: "admin.duplicateImpIds")}</h2>
 
-        <g:each in="${importIds}" var="obj">
+        <%--<g:each in="${importIds}" var="obj">
             <g:if test="${obj.value}">
 
                 <h3 class="ui headerline" id="jumpMark_1_${obj.key}">${obj.key} (${obj.value.size()})</h3>
@@ -46,7 +46,7 @@
                 </table>
 
             </g:if>
-        </g:each>
+        </g:each>--%>
 
         <h2 class="ui headerline">${message(code: "admin.duplicateNamesAndTitles")}</h2>
 

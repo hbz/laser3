@@ -11,7 +11,7 @@ parameters:
 #    enum:
 #      - id
 #      - identifier
-#      - impId
+#      - gokbId
 #      - uuid
 #      - name
 #      - namespace:identifier

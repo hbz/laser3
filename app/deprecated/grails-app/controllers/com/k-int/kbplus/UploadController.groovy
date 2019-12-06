@@ -77,16 +77,16 @@ class UploadController extends AbstractDebugController {
   private def processUploadSO(upload) {
 
     def new_pkg_id = null
-    log.debug("Content provider value is ${upload.soProvider.value}");
+    com.k_int.kbplus.UploadController.log.debug("Content provider value is ${upload.soProvider.value}");
 
     def content_provider_org = Org.findByName(upload.soProvider.value)
     if ( content_provider_org == null ) {
-      log.debug("content_provider_org is present and set to ${content_provider_org}");
+      com.k_int.kbplus.UploadController.log.debug("content_provider_org is present and set to ${content_provider_org}");
       content_provider_org = new Org(name:upload.soProvider.value,impId:java.util.UUID.randomUUID().toString()).save();
       incrementStatsCounter(upload, message(code:'package.upload.provider_created', default:'Content Provider Org Created'));
     }
     else {
-      log.debug("Matched ${content_provider_org} using name ${upload.soProvider.value}");
+      com.k_int.kbplus.UploadController.log.debug("Matched ${content_provider_org} using name ${upload.soProvider.value}");
       incrementStatsCounter(upload, message(code:'package.upload.provider_matched', default:'Content Provider Org Matched'));
     }
     
@@ -104,7 +104,7 @@ class UploadController extends AbstractDebugController {
     def new_pkg = null;
 
     if ( upload.incremental ) {
-      log.debug("Processing incremental load....");
+      com.k_int.kbplus.UploadController.log.debug("Processing incremental load....");
       new_pkg = Package.findByIdentifier(upload.normPkgIdentifier);
       new_pkg_id = new_pkg.id
     }
@@ -119,7 +119,7 @@ class UploadController extends AbstractDebugController {
 
       if ( new_pkg.save(flush:true, failOnError:true) ) {
 
-        log.debug("Package [${new_pkg.id}] with identifier ${new_pkg.identifier} created......");
+        com.k_int.kbplus.UploadController.log.debug("Package [${new_pkg.id}] with identifier ${new_pkg.identifier} created......");
 
         if ( upload.consortiumOrg ) {
           def sc_role = RefdataValue.getByValueAndCategory('Package Consortia', 'Organisational Role')
@@ -128,19 +128,19 @@ class UploadController extends AbstractDebugController {
 
         // Content Provider?
         if ( content_provider_org ) {
-          log.debug("Linking to org as content provider");
+          com.k_int.kbplus.UploadController.log.debug("Linking to org as content provider");
           def cp_or = new OrgRole(org: content_provider_org, pkg:new_pkg, roleType:cp_role).save();
         }
         else {
-          log.debug("No content provider org");
+          com.k_int.kbplus.UploadController.log.debug("No content provider org");
         }
         new_pkg_id = new_pkg.id
       }
       else {
-        log.error("Problem saving new package");
+        com.k_int.kbplus.UploadController.log.error("Problem saving new package");
         upload.messages.add(message(code:'package.upload.save.error', default:'Problem saving new package'));
         new_pkg.errors.each { pe ->
-          log.error("Problem saving package: ${pe}");
+          com.k_int.kbplus.UploadController.log.error("Problem saving package: ${pe}");
           upload.messages.add(message(code:'package.upload.save.error_pkg', args:[pe]));
         }
         flash.error= message(code:'package.upload.save.error_new', args:[new_pkg.errors]);
@@ -148,7 +148,7 @@ class UploadController extends AbstractDebugController {
       }
     }
 
-    log.debug("processing titles");
+    com.k_int.kbplus.UploadController.log.debug("processing titles");
     // Title info
     upload.tipps.each { tipp ->
 
@@ -215,9 +215,9 @@ class UploadController extends AbstractDebugController {
                                                     ids:[])
 
           if ( ! dbtipp.save() ) {
-            log.error("ERROR Saving tipp");
+            com.k_int.kbplus.UploadController.log.error("ERROR Saving tipp");
             dbtipp.errors.each { err ->
-              log.error("  -> ${err}");
+              com.k_int.kbplus.UploadController.log.error("  -> ${err}");
               tipp.messages.add("Problem saving tipp: ${err}");
               tipp.messages.add([type:'alert-error',message:"Problem creating new tipp: ${dbtipp.id}"]);
             }
@@ -244,7 +244,7 @@ class UploadController extends AbstractDebugController {
 
         }
         else {
-          log.error("TIPP already exists!! this can happen in incrementals... just ignore now");
+          com.k_int.kbplus.UploadController.log.error("TIPP already exists!! this can happen in incrementals... just ignore now");
           tipp.messages.add([type:'alert-error',message:"WARNING: An existing tipp record was located. This can happen in incremental imports. This row has been ignored"]);
         }
       }
@@ -253,7 +253,7 @@ class UploadController extends AbstractDebugController {
       }
     }
 
-    log.debug("Completed New package is ${new_pkg.id}");
+    com.k_int.kbplus.UploadController.log.debug("Completed New package is ${new_pkg.id}");
 
     upload.new_pkg_id = new_pkg_id
   }
@@ -273,7 +273,7 @@ class UploadController extends AbstractDebugController {
       }
     }
     catch ( Throwable t ) {
-      log.error(t);
+      com.k_int.kbplus.UploadController.log.error(t);
       tipp.messages.add([type:'alert-error',message:"WARNING: Failed to look up title from identifiers (${identifiers}) :: ${t.message}"]);
     }
     result;
@@ -324,7 +324,7 @@ class UploadController extends AbstractDebugController {
 
     def upload_mime_type = request.getFile("soFile")?.contentType
     def upload_filename = request.getFile("soFile")?.getOriginalFilename()
-    log.debug("Uploaded so type: ${upload_mime_type} filename was ${upload_filename}");
+    com.k_int.kbplus.UploadController.log.debug("Uploaded so type: ${upload_mime_type} filename was ${upload_filename}");
 
     def charset = checkCharset(request.getFile("soFile")?.inputStream)
 
@@ -333,7 +333,7 @@ class UploadController extends AbstractDebugController {
     // File level messages
     result.messages=[]
 
-    log.debug("Reading Stream");
+    com.k_int.kbplus.UploadController.log.debug("Reading Stream");
 
     if  ( ( charset != null ) && ( ! charset.equals('UTF-8') ) ) {
       result.messages.add("** WARNING: Detected input character stream encoding: ${charset}. Expected UTF-8");
@@ -341,11 +341,11 @@ class UploadController extends AbstractDebugController {
 
     CSVReader r = null
     if ( params.docstyle?.equals("tsv") ) {
-      log.debug("Processing TSV");
+      com.k_int.kbplus.UploadController.log.debug("Processing TSV");
       r = new CSVReader( new InputStreamReader(input_stream, java.nio.charset.Charset.forName('UTF-8') ), (char)'\t' )
     }
     else {
-      log.debug("Processing CSV");
+      com.k_int.kbplus.UploadController.log.debug("Processing CSV");
       r = new CSVReader( new InputStreamReader(input_stream, java.nio.charset.Charset.forName('UTF-8') ) )
     }
 
@@ -432,12 +432,12 @@ class UploadController extends AbstractDebugController {
         }
       }
     }
-    log.debug("readTippRow: ${result}")
+    com.k_int.kbplus.UploadController.log.debug("readTippRow: ${result}")
     return result;
   }
 
   private def processCsvLine(csv_line, field_name, col_num, result_map, parseAs, defval, isMandatory) {
-    log.debug("  processCsvLine ${csv_line} ${field_name} ${col_num}... mandatory=${isMandatory}");
+    com.k_int.kbplus.UploadController.log.debug("  processCsvLine ${csv_line} ${field_name} ${col_num}... mandatory=${isMandatory}");
     def result = [:]
     result.messages = []
     result.origValue = csv_line[col_num]
@@ -449,7 +449,7 @@ class UploadController extends AbstractDebugController {
           break;
         case 'date':
           result.value = parseDate(result.origValue,possible_date_formats)
-          log.debug("Parse date, ${result.origValue}, result = ${result.value}");
+          com.k_int.kbplus.UploadController.log.debug("Parse date, ${result.origValue}, result = ${result.value}");
           break;
         case 'str':
         default:
@@ -461,9 +461,9 @@ class UploadController extends AbstractDebugController {
 
 
     if ( ( result.value == null ) || ( result.value.toString().trim() == '' ) ) {
-      log.debug("Mandatory flag set, checking value");
+      com.k_int.kbplus.UploadController.log.debug("Mandatory flag set, checking value");
       if ( isMandatory ) {
-        log.debug("Mandatory property is null.. error");
+        com.k_int.kbplus.UploadController.log.debug("Mandatory property is null.. error");
         result_map.processFile=false
         result_map[field_name] = [messages:["Missing mandatory property: ${field_name}"]]
       }
@@ -474,7 +474,7 @@ class UploadController extends AbstractDebugController {
     else {
     }
 
-     log.debug("result = ${result}");
+    com.k_int.kbplus.UploadController.log.debug("result = ${result}");
   }
 
   private def validate(upload) {
@@ -657,7 +657,7 @@ class UploadController extends AbstractDebugController {
                                       .replaceAll(' ','_')
                                       .replaceAll(':','_');
       if ( ( upload.normPkgIdentifier == null ) || ( upload.normPkgIdentifier.trim().length() == 0 ) ) {
-        log.error("No package identifier");
+        com.k_int.kbplus.UploadController.log.error("No package identifier");
         upload['soPackageIdentifier'].messages.add("Unable to use this identifier")
         upload.processFile=false
       }
@@ -671,7 +671,7 @@ class UploadController extends AbstractDebugController {
       }
     }
     else {
-      log.error("No package identifier");
+      com.k_int.kbplus.UploadController.log.error("No package identifier");
       upload['soPackageIdentifier'].messages.add("Unable to use this identifier")
       upload.processFile=false
     }
@@ -724,11 +724,11 @@ class UploadController extends AbstractDebugController {
           }
         }
         else {
-          log.debug("no title by identifier match for ${id.key} : ${id.value}");
+          com.k_int.kbplus.UploadController.log.debug("no title by identifier match for ${id.key} : ${id.value}");
         }
       }
       else {
-        log.debug("Not checking identifier of type ${id.key}");
+        com.k_int.kbplus.UploadController.log.debug("Not checking identifier of type ${id.key}");
       }
     }
 

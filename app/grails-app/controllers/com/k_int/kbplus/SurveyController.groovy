@@ -3807,7 +3807,6 @@ class SurveyController {
                             instanceOf: newParentSub,
                             isSlaved: true,
                             isPublic: newParentSub.isPublic,
-                            impId: UUID.randomUUID().toString(),
                             owner: licenseCopy,
                             resource: newParentSub.resource ?: null,
                             form: newParentSub.form ?: null,

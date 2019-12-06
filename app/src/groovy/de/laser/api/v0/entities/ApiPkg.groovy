@@ -27,9 +27,9 @@ class ApiPkg {
             case 'globalUID':
                 result = Package.findAllWhere(globalUID: value)
                 break
-            case 'impId':
+            /*case 'impId':
                 result = Package.findAllWhere(impId: value)
-                break
+                break*/
             case 'gokbId':
                 result = Package.findAllWhere(gokbId: value)
                 break
@@ -66,7 +66,7 @@ class ApiPkg {
 
 		result.globalUID        	= pkg.globalUID
 		result.gokbId           	= pkg.gokbId
-		result.impId            	= pkg.impId
+		//result.impId            	= pkg.impId
 		result.name             	= pkg.name
 		result.sortName         	= pkg.sortName
 

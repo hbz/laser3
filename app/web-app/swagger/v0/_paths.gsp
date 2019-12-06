@@ -108,7 +108,7 @@
         - Objects
       summary: Retrieving a single license
       description: >
-        Supported are queries by following identifiers: *globalUID*, *impId* and *ns:identifier*. *Ns:identifier* value has to be defined like this: _gasco-lic:0815_
+        Supported are queries by following identifiers: *globalUID* and *ns:identifier*. *Ns:identifier* value has to be defined like this: _gasco-lic:0815_
 
       parameters:
         - $ref: "#/components/parameters/q"
@@ -143,7 +143,7 @@
         - Lists
       summary: Retrieving a list of owner related licenses
       description: >
-        Supported are queries by following identifiers: *globalUID*, *impId* and *ns:identifier*. *Ns:identifier* value has to be defined like this: _isil:DE-123_
+        Supported are queries by following identifiers: *globalUID* and *ns:identifier*. *Ns:identifier* value has to be defined like this: _isil:DE-123_
 
       parameters:
         - $ref: "#/components/parameters/q"
@@ -176,7 +176,7 @@
         - Objects
       summary: Retrieving a single organisation
       description: >
-        Supported are queries by following identifiers: *globalUID*, *gokbId*, *impId* and *ns:identifier*. *Ns:identifier* value has to be defined like this: _gasco-lic:0815_
+        Supported are queries by following identifiers: *globalUID*, *gokbId* and *ns:identifier*. *Ns:identifier* value has to be defined like this: _gasco-lic:0815_
 
       parameters:
         - $ref: "#/components/parameters/q"
@@ -211,7 +211,7 @@
         - Objects
       summary: Retrieving packge by identifier
       description: >
-        Supported are queries by following identifiers: *globalUID*, *identifier*, *impId* and *ns:identifier*. *Ns:identifier* value has to be defined like this: _xyz:4711_
+        Supported are queries by following identifiers: *globalUID*, *identifier*, *gokbId* and *ns:identifier*. *Ns:identifier* value has to be defined like this: _xyz:4711_
 
       parameters:
         - $ref: "#/components/parameters/q"
@@ -292,7 +292,7 @@
       - Objects
       summary: Retrieving a single subscription
       description: >
-        Supported are queries by following identifiers: *globalUID*, *identifier*, *impId* and *ns:identifier*. Ns:identifier value has to be defined like this: _xyz:4711_
+        Supported are queries by following identifiers: *globalUID*, *identifier* and *ns:identifier*. Ns:identifier value has to be defined like this: _xyz:4711_
 
       parameters:
         - $ref: "#/components/parameters/q"
@@ -327,7 +327,7 @@
         - Lists
       summary: Retrieving a list of owner related subscriptions
       description: >
-        Supported are queries by following identifiers: *globalUID*, *impId* and *ns:identifier*. *Ns:identifier* value has to be defined like this: _isil:DE-123_
+        Supported are queries by following identifiers: *globalUID* and *ns:identifier*. *Ns:identifier* value has to be defined like this: _isil:DE-123_
 
       parameters:
         - $ref: "#/components/parameters/q"

@@ -53,6 +53,7 @@ class ApiService {
      * @param xml
      * @return
      */
+    @Deprecated
     GPathResult makeshiftOrgImport(GPathResult xml){
 
         def count = xml.institution.size()
@@ -442,10 +443,6 @@ class ApiService {
                         //log.debug("importSource: ${orgData.importSource.text()}")
                         org.importSource = orgData.importSource.text()
                     }
-                    if (orgData.impId.text()) {
-                        //log.debug("impId: ${orgData.impId.text()}")
-                        org.impId = orgData.impId.text()
-                    }
                     if (orgData.gokbId.text()) {
                         //log.debug("gokbId: ${orgData.gokbId.text()}")
                         org.gokbId = orgData.gokbId.text()
@@ -562,10 +559,6 @@ class ApiService {
                     if (org.importSource != orgData.importSource.text()) {
                         //log.debug("importSource: ${orgData.importSource.text()}")
                         org.importSource = orgData.importSource.text()
-                    }
-                    if (org.impId != orgData.impId.text()) {
-                        //log.debug("impId: ${orgData.impId.text()}")
-                        org.impId = orgData.impId.text()
                     }
                     if (org.gokbId != orgData.gokbId.text()) {
                         //log.debug("gokbId: ${orgData.gokbId.text()}")

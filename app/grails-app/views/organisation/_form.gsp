@@ -58,15 +58,6 @@
 	<g:field name="fteStaff" type="number" value="${orgInstance?.fteStaff}" required=""/>
 </div>--}%
 
-<% /*
-<div class="field fieldcontain ${hasErrors(bean: orgInstance, field: 'impId', 'error')} ">
-	<label for="impId">
-		<g:message code="org.impId.label" default="Imp Id" />
-	</label>
-	<g:textArea name="impId" cols="40" rows="5" maxlength="255" value="${orgInstance?.impId}"/>
-</div>
-*/ %>
-
 <%--
 <div class="field fieldcontain ${hasErrors(bean: orgInstance, field: 'comment', 'error')} ">
 	<label for="comment">

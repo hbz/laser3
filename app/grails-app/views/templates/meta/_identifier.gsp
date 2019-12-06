@@ -11,8 +11,6 @@
             <dl>
                 <dt><g:message code="org.globalUID.label" default="Global UID"/></dt>
                 <dd><g:fieldValue bean="${object}" field="globalUID"/></dd>
-                <dt><g:message code="org.impId.label"/></dt>
-                <dd><g:fieldValue bean="${object}" field="impId"/></dd>
 
                 <g:if test="${!(object instanceof com.k_int.kbplus.License) && !(object instanceof com.k_int.kbplus.Subscription)}">
                     <dt><g:message code="org.gokbId.label" default="GOKB UUID"/></dt>

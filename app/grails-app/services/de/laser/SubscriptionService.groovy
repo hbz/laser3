@@ -450,7 +450,6 @@ class SubscriptionService {
                             //previousSubscription: subMember?.id,
                             isSlaved: subMember.isSlaved,
                             isPublic: subMember.isPublic,
-                            impId: java.util.UUID.randomUUID().toString(),
                             owner: targetSub.owner?.id ? subMember.owner?.id : null,
                             resource: targetSub.resource ?: null,
                             form: targetSub.form ?: null

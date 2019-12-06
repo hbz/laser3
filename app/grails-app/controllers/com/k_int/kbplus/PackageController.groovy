@@ -2,7 +2,6 @@ package com.k_int.kbplus
 
 import com.k_int.kbplus.auth.Role
 import com.k_int.kbplus.auth.User
-import com.k_int.properties.PropertyDefinition
 import de.laser.DeletionService
 import de.laser.controller.AbstractDebugController
 import de.laser.helper.DebugAnnotation
@@ -273,6 +272,8 @@ class PackageController extends AbstractDebugController {
     }
 
     @Secured(['ROLE_ADMIN'])
+    @Deprecated
+    // should this not be only possible from GOKb??
     def create() {
         def user = User.get(springSecurityService.principal.id)
 

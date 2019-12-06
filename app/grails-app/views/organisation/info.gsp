@@ -156,10 +156,10 @@
             </dd>
           </g:if>
         
-          <g:if test="${orgInstance?.impId}">
-            <dt><g:message code="org.impId.label" default="Imp Id" /></dt>
+          <g:if test="${orgInstance?.gokbId}">
+            <dt><g:message code="org.gokbId.label"/></dt>
             
-              <dd><g:fieldValue bean="${orgInstance}" field="impId"/></dd>
+              <dd><g:fieldValue bean="${orgInstance}" field="gokbId"/></dd>
             
           </g:if>
         
