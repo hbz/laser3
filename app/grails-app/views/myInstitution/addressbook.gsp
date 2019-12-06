@@ -1,5 +1,5 @@
 <%@ page
-import="com.k_int.kbplus.Org; com.k_int.kbplus.Person; com.k_int.kbplus.PersonRole; com.k_int.kbplus.RefdataValue; com.k_int.kbplus.RefdataCategory"
+import="de.laser.helper.RDStore; com.k_int.kbplus.Org; com.k_int.kbplus.Person; com.k_int.kbplus.PersonRole; com.k_int.kbplus.RefdataValue; com.k_int.kbplus.RefdataCategory"
 %>
 
 <!doctype html>
@@ -37,7 +37,7 @@ import="com.k_int.kbplus.Org; com.k_int.kbplus.Person; com.k_int.kbplus.PersonRo
 
         <g:render template="/person/formModal" model="['org': institution,
                                                        'isPublic': false,
-                                                       'presetFunctionType': RefdataValue.getByValueAndCategory('General contact person', 'Person Function')
+                                                       'presetFunctionType': RDStore.PRS_FUNC_GENERAL_CONTACT_PRS
         ]"/>
 
             <g:render template="../templates/filter/javascript" />
