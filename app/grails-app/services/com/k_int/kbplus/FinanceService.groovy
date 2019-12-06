@@ -672,9 +672,7 @@ class FinanceService {
                 case "tax rate": colMap.taxRate = c
                     break
                 case "wert":
-                case "wert (in eur)":
-                case "value":
-                case "value (in euro)": colMap.value = c
+                case "value": colMap.value = c
                     break
                 case "lizenz":
                 case "subscription": colMap.sub = c
