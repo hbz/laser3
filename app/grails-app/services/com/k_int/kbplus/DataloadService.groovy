@@ -663,9 +663,9 @@ class DataloadService {
             String index = indexResponse.getIndex();
             String id = indexResponse.getId();
             if (indexResponse.getResult() == DocWriteResponse.Result.CREATED) {
-                println("CREATED ${domain.name}")
+                //println("CREATED ${domain.name}")
             } else if (indexResponse.getResult() == DocWriteResponse.Result.UPDATED) {
-                println("UPDATED ${domain.name}")
+                //println("UPDATED ${domain.name}")
             }
             ReplicationResponse.ShardInfo shardInfo = indexResponse.getShardInfo();
             if (shardInfo.getTotal() != shardInfo.getSuccessful()) {

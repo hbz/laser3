@@ -2,6 +2,10 @@
 
 **Ticket    Date    Branch      Author  Feature/Bug     Description/Keywords**
 
+1930    04.12.2019  rc1.1       David   Bug         Jobs & Services ohne Sessions werfen Fehler
+
+1926    04.12.2019  rc1.1       David   Bug         Modaler Dialog: Funktions-/Personenkontakte funktioniert nicht
+
 /       05.12.2019  hbz-dev     Moe      Feature     Workflow für Übertrag nach einer Umfrage-Verlängerung
 
 /       05.12.2019  hbz-dev     Moe/Ingrid   Feature Erweiterte Suche in der Menüleiste 

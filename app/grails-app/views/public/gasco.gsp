@@ -1,4 +1,4 @@
-<%@ page import="com.k_int.kbplus.PersonRole; com.k_int.kbplus.Contact; com.k_int.kbplus.OrgRole; com.k_int.kbplus.RefdataValue" %>
+<%@ page import="de.laser.helper.RDStore; com.k_int.kbplus.PersonRole; com.k_int.kbplus.Contact; com.k_int.kbplus.OrgRole; com.k_int.kbplus.RefdataValue" %>
 <%@ page import="com.k_int.kbplus.OrgRole;com.k_int.kbplus.RefdataCategory;com.k_int.kbplus.RefdataValue;com.k_int.properties.PropertyDefinition" %>
 
 <!doctype html>
@@ -134,21 +134,26 @@
         </tr>
         </thead>
         <tbody>
+        <g:set var="GASCO_INFORMATION_LINK" value="${PropertyDefinition.findByDescrAndName(PropertyDefinition.SUB_PROP, 'GASCO-Information-Link')}" />
+        <g:set var="GASCO_ANZEIGENAME" value="${PropertyDefinition.findByDescrAndName(PropertyDefinition.SUB_PROP, 'GASCO-Anzeigename')}" />
+        <g:set var="GASCO_VERHANDLERNAME" value="${PropertyDefinition.findByDescrAndName(PropertyDefinition.SUB_PROP, 'GASCO-Verhandlername')}" />
             <g:each in="${subscriptions}" var="sub" status="i">
+                <g:set var="gasco_infolink" value="${sub.customProperties.find{ it.type == GASCO_INFORMATION_LINK}?.urlValue}" />
+                <g:set var="gasco_anzeigename" value="${sub.customProperties.find{ it.type == GASCO_ANZEIGENAME}?.stringValue}" />
+                <g:set var="gasco_verhandlername" value="${sub.customProperties.find{ it.type == GASCO_VERHANDLERNAME}?.stringValue}" />
                 <tr>
                     <td class="center aligned">
                         ${i + 1}
                     </td>
                     <td>
-                        <g:set var="gascoInfoLink" value="${sub.customProperties.find{ it.type == PropertyDefinition.findByDescrAndName(PropertyDefinition.SUB_PROP, 'GASCO-Information-Link')}?.urlValue}" />
-                        <g:set var="anzeigeName" value="${sub.customProperties.find{ it.type == PropertyDefinition.findByDescrAndName(PropertyDefinition.SUB_PROP, 'GASCO-Anzeigename')}?.stringValue}" />
-                        <g:if test="${gascoInfoLink}">
-                            <span  class="la-popup-tooltip la-delay" data-position="right center" data-content="Diese URL aufrufen:  ${gascoInfoLink}">
-                                <a href="${gascoInfoLink}" target="_blank">${anzeigeName ?: sub}</a>
+
+                        <g:if test="${gasco_infolink}">
+                            <span  class="la-popup-tooltip la-delay" data-position="right center" data-content="Diese URL aufrufen:  ${gasco_infolink}">
+                                <a href="${gasco_infolink}" target="_blank">${gasco_anzeigename ?: sub}</a>
                             </span>
                         </g:if>
                         <g:else>
-                            ${anzeigeName ?: sub}
+                            ${gasco_anzeigename ?: sub}
                         </g:else>
 
                         <g:each in="${sub.packages}" var="subPkg" status="j">
@@ -160,7 +165,7 @@
                         </g:each>
                     </td>
                     <td>
-                        <g:each in="${OrgRole.findAllBySubAndRoleType(sub, RefdataValue.getByValueAndCategory('Provider', 'Organisational Role'))}" var="role">
+                        <g:each in="${OrgRole.findAllBySubAndRoleType(sub, OR_PROVIDER)}" var="role">
                             ${role.org?.name}<br>
                         </g:each>
                     </td>
@@ -170,19 +175,20 @@
                     %{--</td>--}%
                     <td class="la-break-all">
 
-                    <g:set var="verhandlername" value="${sub.customProperties.find{ it.type == PropertyDefinition.findByDescrAndName(PropertyDefinition.SUB_PROP, 'GASCO-Verhandlername')}?.stringValue}" />
-                    ${verhandlername ?: sub.getConsortia()?.name}
+                    ${gasco_verhandlername ?: sub.getConsortia()?.name}
                     <br>
-                    <g:each in ="${PersonRole.findAllByFunctionTypeAndOrg(RefdataValue.getByValueAndCategory('GASCO-Contact', 'Person Function'), sub.getConsortia())}" var="person">
+                    <g:each in ="${PersonRole.findAllByFunctionTypeAndOrg(RDStore.PRS_FUNC_GASCO_CONTACT, sub.getConsortia())}" var="personRole">
+                        <g:set var="person" value="${personRole.getPrs()}" />
+                        <g:if test="${person.isPublic}">
                             <div class="ui list">
                                 <div class="item">
                                     <div class="content">
                                         <div class="header">
-                                            ${person?.getPrs()?.getFirst_name()} ${person?.getPrs()?.getLast_name()}
+                                            ${person?.getFirst_name()} ${person?.getLast_name()}
                                         </div>
                                         <g:each in ="${Contact.findAllByPrsAndContentType(
-                                                person.getPrs(),
-                                                RefdataValue.getByValueAndCategory('Url', 'ContactContentType')
+                                                person,
+                                                RDStore.CCT_URL
                                         )}" var="prsContact">
                                             <div class="description">
                                                 <i class="icon globe"></i>
@@ -193,12 +199,12 @@
                                             </div>
                                         </g:each>
                                         <g:each in ="${Contact.findAllByPrsAndContentType(
-                                                person.getPrs(),
-                                                RefdataValue.getByValueAndCategory('E-Mail', 'ContactContentType')
+                                                person,
+                                                RDStore.CCT_EMAIL
                                         )}" var="prsContact">
                                             <div class="description">
                                                 <i class="ui icon envelope outline"></i>
-                                                <span  class="la-popup-tooltip la-delay" data-position="right center " data-content="Mail senden an ${person?.getPrs()?.getFirst_name()} ${person?.getPrs()?.getLast_name()}">
+                                                <span  class="la-popup-tooltip la-delay" data-position="right center " data-content="Mail senden an ${person?.getFirst_name()} ${person?.getLast_name()}">
                                                     <a href="mailto:${prsContact?.content}" >${prsContact?.content}</a>
                                                 </span>
                                             </div>
@@ -206,6 +212,7 @@
                                     </div>
                                 </div>
                             </div>
+                        </g:if>
                         </g:each>
                     </td>
                 </tr>
