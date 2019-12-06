@@ -25,7 +25,6 @@ globalDataSync = [
   ]
 ]
 
-//localauth = true
 //showDebugInfo = false
 
 // @NotificationsJob

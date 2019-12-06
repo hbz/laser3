@@ -21028,6 +21028,30 @@ form {
   margin-bottom: 1em;
 }
 
+/* Menue Search Animated Input
+
+.ui.icon.input > i.icon#btn-search:not(.link){
+  pointer-events: auto;
+}
+input#spotlightSearch[type="search"]:hover,
+input#spotlightSearch[type="search"]:focus{
+  background: @lightGrey;
+}
+i.search.icon {
+  color: white;
+}
+i.search.icon.open {
+  color:black;
+}
+input#spotlightSearch[type="search"] {
+  display: none;
+}
+
+.ui.input > input#spotlightSearch:focus  {
+  border-color: @lightGrey;
+}
+*/
+
 .ui.icon.input > i.icon#btn-search:not(.link) {
   pointer-events: auto;
 }
@@ -21037,16 +21061,12 @@ input#spotlightSearch[type="search"]:focus {
   background: #DCDDDE;
 }
 
-i.search.icon {
-  color: white;
-}
-
-i.search.icon.open {
+i.search.icon#btn-search {
   color: black;
 }
 
-input#spotlightSearch[type="search"] {
-  display: none;
+.la-search-advanced i.search.icon {
+  color: white;
 }
 
 .ui.input > input#spotlightSearch:focus {
@@ -25803,6 +25823,19 @@ Floated Menu / Item
 
 .ui.secondary.menu .title ~ .description {
   margin-top: 0.25em;
+}
+
+/* Right Floated */
+
+.la-right-menuPart {
+  -webkit-box-align: center;
+  -ms-flex-align: center;
+  align-items: center;
+}
+
+.la-search-advanced {
+  padding-left: 1rem;
+  padding-right: 1rem;
 }
 /*!
  * # Semantic UI 2.3.1 - Message

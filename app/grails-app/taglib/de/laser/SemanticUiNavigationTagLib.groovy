@@ -1,5 +1,6 @@
 package de.laser
 
+import de.laser.helper.SwissKnife
 import grails.plugin.springsecurity.SpringSecurityUtils
 import org.springframework.web.servlet.support.RequestContextUtils
 
@@ -33,8 +34,7 @@ class SemanticUiNavigationTagLib {
 
     def crumb = { attrs, body ->
 
-        def lbText    = attrs.text ? attrs.text : ''
-        def lbMessage = attrs.message ? "${message(code: attrs.message)}" : ''
+        def (lbText, lbMessage) = SwissKnife.getTextAndMessage(attrs)
         def linkBody  = (lbText && lbMessage) ? lbText + " - " + lbMessage : lbText + lbMessage
 
         if (attrs.controller) {
@@ -64,8 +64,7 @@ class SemanticUiNavigationTagLib {
 
     def crumbAsBadge = { attrs, body ->
 
-        def lbMessage = attrs.message ? "${message(code: attrs.message)}" : ''
-
+        def (lbText, lbMessage) = SwissKnife.getTextAndMessage(attrs)
         out << '<div class="ui horizontal label ' + attrs.class + '">' + lbMessage + '</div>'
     }
 
@@ -258,8 +257,7 @@ class SemanticUiNavigationTagLib {
 
     def mainNavItem = { attrs, body ->
 
-        def lbText    = attrs.text ? attrs.text : ''
-        def lbMessage = attrs.message ? "${message(code: attrs.message)}" : ''
+        def (lbText, lbMessage) = SwissKnife.getTextAndMessage(attrs)
         def linkBody  = (lbText && lbMessage) ? lbText + " - " + lbMessage : lbText + lbMessage
 
         out << g.link(linkBody,
@@ -274,8 +272,7 @@ class SemanticUiNavigationTagLib {
 
     def securedMainNavItem = { attrs, body ->
 
-        def lbText    = attrs.text ? attrs.text : ''
-        def lbMessage = attrs.message ? "${message(code: attrs.message)}" : ''
+        def (lbText, lbMessage) = SwissKnife.getTextAndMessage(attrs)
         def linkBody  = (lbText && lbMessage) ? lbText + " - " + lbMessage : lbText + lbMessage
 
         boolean check = SpringSecurityUtils.ifAnyGranted(attrs.specRole ?: [])
@@ -318,8 +315,7 @@ class SemanticUiNavigationTagLib {
 
     def securedMainNavItemDisabled = { attrs, body ->
 
-        def lbText    = attrs.text ? attrs.text : ''
-        def lbMessage = attrs.message ? "${message(code: attrs.message)}" : ''
+        def (lbText, lbMessage) = SwissKnife.getTextAndMessage(attrs)
         def linkBody  = (lbText && lbMessage) ? lbText + " - " + lbMessage : lbText + lbMessage
 
         out << '<div class="item"><div class="disabled" data-tooltip="Die Funktion \''+lbMessage+'\' ist zur Zeit nicht verfügbar!">' + linkBody + '</div></div>'

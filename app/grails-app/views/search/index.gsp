@@ -212,7 +212,7 @@ String period
         <div class="ui left dividing rail">
             <div class="ui segment">
 
-                <h2>Filter:</h2>
+                <h2><i class="circular filter inverted icon"></i> Filter:</h2>
 
                 <g:each in="${facets}" var="facet">
                     <div class="panel panel-default">

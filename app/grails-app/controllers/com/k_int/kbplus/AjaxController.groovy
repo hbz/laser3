@@ -1918,7 +1918,7 @@ class AjaxController {
     result.iTotalRecords = cq[0]
     result.iTotalDisplayRecords = cq[0]
     def currOrg = genericOIDService.resolveOID(params.oid)
-    List<Person> contacts = Person.findAllByContactTypeAndTenant(RefdataValue.getByValueAndCategory('Personal contact','Person Contact Type'),currOrg)
+    List<Person> contacts = Person.findAllByContactTypeAndTenant(RDStore.CONTACT_TYPE_PERSONAL, currOrg)
     LinkedHashMap personRoles = [:]
     PersonRole.findAll().collect { prs ->
       personRoles.put(prs.org,prs.prs)
