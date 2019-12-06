@@ -13,10 +13,11 @@
     <semui:crumb controller="platform" action="index" message="platform.show.all"/>
     <semui:crumb class="active" id="${platformInstance.id}" text="${platformInstance.name}"/>
 </semui:breadcrumbs>
+<br>
 
 <semui:modeSwitch controller="platform" action="show" params="${params}"/>
 
-<h1 class="ui left aligned icon header"><semui:headerIcon/>
+<h1 class="ui left floated aligned icon header la-clear-before"><semui:headerIcon/>
 
     <g:if test="${editable}"><span id="platformNameEdit"
                                    class="xEditableValue"
@@ -36,15 +37,16 @@
 <g:render template="/package/filter" model="${[params:params]}"/>
 
 
-<h3 class="ui left aligned icon header">${message(code: 'platform.show.availability', default: 'Availability of titles in this platform by package')}
-<semui:totalNumber total="${tipps.size()}"/>
+<h3 class="ui left floated aligned icon header la-clear-before">${message(code: 'platform.show.availability', default: 'Availability of titles in this platform by package')}
+<semui:totalNumber total="${countTipps}"/>
 </h3>
-
+<semui:form>
 <g:render template="/templates/tipps/table"
           model="[tipps: tipps, showPackage: true, showPlattform: false, showBulkFlag: false]"/>
+</semui:form>
 
-<g:if test="${tipps}" >
-    <semui:paginate action="current" controller="package" params="${params}" next="${message(code:'default.paginate.next')}" prev="${message(code:'default.paginate.prev')}" maxsteps="${max}" total="${num_tipp_rows}" />
+<g:if test="${countTipps}" >
+    <semui:paginate action="platformTipps" controller="platform" params="${params}" next="${message(code:'default.paginate.next')}" prev="${message(code:'default.paginate.prev')}" maxsteps="${max}" total="${countTipps}" />
 </g:if>
 
 </body>

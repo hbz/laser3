@@ -1,4 +1,4 @@
-<%@ page import="de.laser.helper.SqlDateUtils; com.k_int.kbplus.*; com.k_int.kbplus.abstract_domain.AbstractProperty; de.laser.DashboardDueDate" %>
+<%@ page import="org.springframework.context.i18n.LocaleContextHolder; de.laser.helper.SqlDateUtils; com.k_int.kbplus.*; com.k_int.kbplus.abstract_domain.AbstractProperty; de.laser.DashboardDueDate" %>
 <laser:serviceInjection />
     <g:if test="${ ! dueDates}">
         <g:message code="profile.noDashboardReminderDates" default="There are no due dates for your personal reminder periods"/>
@@ -6,8 +6,15 @@
     <g:set var="dashboard_last_update" value="${DashboardDueDate.executeQuery("select max(lastUpdated) from DashboardDueDate ")[0]}" />
     <g:if test="${dashboard_last_update != null}" >
         <div class="la-float-right">
-            <g:if test="${ ! SqlDateUtils.isYesterdayOrToday(dashboard_last_update)}"><i class="exclamation triangle icon" id="noData" data-content="${message(code:'myinst.dash.due_dates.tooltip')}"></i></g:if>
-            ${message(code:'myinst.dash.due_dates.lastUpdate')}&nbsp;<g:formatDate format="${message(code:'default.date.format.notime', default:'yyyy-MM-dd')}" date="${dashboard_last_update}"/>&nbsp;
+            <g:if test="${ ! SqlDateUtils.isYesterdayOrToday(dashboard_last_update)}">
+                <span style="color: red;">
+                    <i class="exclamation alternate triangle icon" style="text-decoration:blink;" id="noData" data-content="${message(code:'myinst.dash.due_dates.tooltip')}"></i>
+                    ${message(code:'myinst.dash.due_dates.lastUpdate')}&nbsp;<g:formatDate format="${message(code:'default.date.format.notime', default:'yyyy-MM-dd')}" date="${dashboard_last_update}"/>&nbsp;
+                </span>
+            </g:if>
+            <g:else>
+                ${message(code:'myinst.dash.due_dates.lastUpdate')}&nbsp;<g:formatDate format="${message(code:'default.date.format.notime', default:'yyyy-MM-dd')}" date="${dashboard_last_update}"/>&nbsp;
+            </g:else>
         </div>
     </g:if>
 <r:script>
@@ -27,6 +34,8 @@
                     <th>${message(code:'myinst.dash.due_dates.attribute.label')}</th>
                     <th>${message(code:'myinst.dash.due_date.date.label')}</th>
                     <th>${message(code:'myinst.dash.due_dates.name.label')}</th>
+                    <th>${message(code:'myinst.dash.due_dates.hide.label')}</th>
+                    %{--<th>${message(code:'myinst.dash.due_dates.done.label')}</th>--}%
                 </tr>
             </thead>
             <tbody>
@@ -38,7 +47,12 @@
                                 <g:if test="${obj instanceof AbstractProperty}">
                                     <i class="icon tags la-list-icon"></i>
                                 </g:if>
-                                ${dashDueDate.attribut}
+                                %{--${dashDueDate.id} &nbsp--}%
+                                <g:if test="${Locale.GERMAN.getLanguage() == org.springframework.context.i18n.LocaleContextHolder.getLocale().getLanguage()}">
+                                    ${dashDueDate.attribute_value_de}
+                                </g:if><g:else>
+                                    ${dashDueDate.attribute_value_en}
+                                </g:else>
                             </td>
                             <td>
                                 <g:formatDate format="${message(code:'default.date.format.notime', default:'yyyy-MM-dd')}" date="${dashDueDate.date}"/>
@@ -100,10 +114,12 @@
                                     </g:else>
                                 </div>
                             </td>
+                            <td><semui:xEditableBoolean owner="${dashDueDate}" field="isHidden" /></td>
+                            %{--<td><semui:xEditableBoolean owner="${dashDueDate}" field="isDone" /></td>--}%
                         </tr>
                     </g:if>
                 </g:each>
             </tbody>
         </table>
-        <semui:paginate offset="${dashboardDueDatesOffset ? dashboardDueDatesOffset : '0'}" max="${contextService.getUser().getDefaultPageSizeTMP()}" params="${[view:'dueDatesView']}" total="${dueDatesCount}"/>
+        <semui:paginate offset="${dashboardDueDatesOffset ? dashboardDueDatesOffset : '0'}" max="${max ?: contextService.getUser().getDefaultPageSizeTMP()}" params="${[view:'dueDatesView']}" total="${dueDatesCount}"/>
     </g:if>

@@ -13,7 +13,7 @@
             <g:render template="/user/actions" />
         </semui:controlButtons>
 
-        <h1 class="ui left aligned icon header"><semui:headerIcon />
+        <h1 class="ui left floated aligned icon header la-clear-before"><semui:headerIcon />
             <g:message code="user.edit.label" />: ${user.username}
         </h1>
 
@@ -99,35 +99,38 @@
 
     </div><!-- grid -->
 
+
     <g:if test="${manipulateAffiliations}">
         <div class="ui one column grid">
             <g:render template="/templates/user/membership_table" model="[userInstance: user, tmplUserEdit: true]" />
         </div>
     </g:if>
 
-    <g:if test="${editable}">
-        <g:if test="${availableOrgs}">
-            <div class="ui segment form">
-                <g:set var="orgLabel" value="Organisation" />
 
-                <g:render template="/templates/user/membership_form" model="[userInstance: user, availableOrgs: availableOrgs, availableOrgRoles: availableOrgRoles, orgLabel: orgLabel, tmplUserEdit: true]" />
-            </div>
+        <g:if test="${editable}">
+            <g:if test="${availableOrgs}">
+                <div class="ui segment form">
+                    <g:set var="orgLabel" value="Organisation" />
+
+                    <g:render template="/templates/user/membership_form" model="[userInstance: user, availableOrgs: availableOrgs, availableOrgRoles: availableOrgRoles, orgLabel: orgLabel, tmplUserEdit: true]" />
+                </div>
+            </g:if>
+
+            <g:if test="${availableComboDeptOrgs}">
+                <div class="ui segment form">
+                    <g:render template="/templates/user/membership_form" model="[userInstance: user, availableOrgs: availableComboDeptOrgs, availableOrgRoles: availableOrgRoles, orgLabel: orgLabel, tmplUserEdit: true]" />
+                </div>
+            </g:if>
+
+            <g:if test="${availableComboConsOrgs}">
+                <div class="ui segment form">
+                    <g:set var="orgLabel" value="Konsorten" />
+
+                    <g:render template="/templates/user/membership_form" model="[userInstance: user, availableOrgs: availableComboConsOrgs, availableOrgRoles: availableOrgRoles, orgLabel: orgLabel, tmplUserEdit: true]" />
+                </div>
+            </g:if>
         </g:if>
 
-        <g:if test="${availableComboDeptOrgs}">
-            <div class="ui segment form">
-                <g:render template="/templates/user/membership_form" model="[userInstance: user, availableOrgs: availableComboDeptOrgs, availableOrgRoles: availableOrgRoles, orgLabel: orgLabel, tmplUserEdit: true]" />
-            </div>
-        </g:if>
-
-        <g:if test="${availableComboConsOrgs}">
-            <div class="ui segment form">
-                <g:set var="orgLabel" value="Konsorten" />
-
-                <g:render template="/templates/user/membership_form" model="[userInstance: user, availableOrgs: availableComboConsOrgs, availableOrgRoles: availableOrgRoles, orgLabel: orgLabel, tmplUserEdit: true]" />
-            </div>
-        </g:if>
-    </g:if>
 
     <sec:ifAnyGranted roles="ROLE_ADMIN">
       <h4 class="ui dividing header">${message(code:'user.role.plural', default:'Roles')}</h4>
@@ -165,43 +168,58 @@
                           <input type="hidden" name="role" id="userRoleSelect"/>
                           <input type="submit" class="ui button" value="${message(code:'user.role.add', default:'Add Role...')}"/>
                       </g:form>
-                  </td>
-              </tr>
-              </tfoot>
-            </g:if>
-          </table>
 
-          <r:script language="JavaScript">
+            <%-- TODO [ticket=1612] new identifier handling
+                                  <g:form controller="ajax" action="addIdentifier" class="ui form">
+                                      <input name="owner" type="hidden" value="${user.class.name}:${user.id}" />
 
-            $(function(){
-              $.fn.editable.defaults.mode = 'inline';
-              $('.xEditableValue').editable();
+                                      <div class="fields">
+                                          <div class="field">
+                                              <g:select name="role" id="role" class="ui search dropdown"
+                                                        from="${Role.findAllByRoleType('global')}" optionKey="${{'com.k_int.kbplus.auth.UserRole:' + it.id}}" optionValue="authority" />
+                                          </div>
+                                          <div class="field">
+                                              <button type="submit" class="ui button">Rolle hinzufügen</button>
+                                          </div>
+                                      </div>
+                                  </g:form>
+            --%>
+                              </td>
+                          </tr>
+                          </tfoot>
+                        </g:if>
+                      </table>
 
-              $("#userRoleSelect").select2({
-                placeholder: "${message(code:'user.role.search.ph', default:'Search for an role...')}",
-                minimumInputLength: 0,
-                formatInputTooShort: function () {
-                    return "${message(code:'select2.minChars.note', default:'Please enter 1 or more character')}";
-                },
-                ajax: { // instead of writing the function to execute the request we use Select2's convenient helper
-                  url: "<g:createLink controller='ajax' action='lookup'/>",
-                  dataType: 'json',
-                  data: function (term, page) {
-                      return {
-                          q: term, // search term
-                          page_limit: 10,
-                          baseClass:'com.k_int.kbplus.auth.Role'
-                      };
-                  },
-                  results: function (data, page) {
-                    return {results: data.values};
-                  }
-                }
-              });
-            });
+                  <r:script language="JavaScript">
 
-          </r:script>
+                    $(function(){
+                      $.fn.editable.defaults.mode = 'inline';
+                      $('.xEditableValue').editable();
 
-    </sec:ifAnyGranted>
-  </body>
+                      $("#userRoleSelect").select2({
+                        placeholder: "${message(code:'user.role.search.ph', default:'Search for an role...')}",
+                        minimumInputLength: 0,
+                        formatInputTooShort: function () {
+                            return "${message(code:'select2.minChars.note', default:'Please enter 1 or more character')}";
+                        },
+                        ajax: { // instead of writing the function to execute the request we use Select2's convenient helper
+                          url: "<g:createLink controller='ajax' action='lookup'/>",
+                          dataType: 'json',
+                          data: function (term, page) {
+                              return {
+                                  q: term, // search term
+                                  page_limit: 10,
+                                  baseClass:'com.k_int.kbplus.auth.Role'
+                              };
+                          },
+                          results: function (data, page) {
+                            return {results: data.values};
+                          }
+                        }
+                      });
+                    });
+
+                  </r:script>
+</sec:ifAnyGranted>
+</body>
 </html>

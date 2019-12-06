@@ -7,7 +7,7 @@
 		<title><g:message code="default.edit.label" args="[entityName]" /></title>
 	</head>
 	<body>
-		<h1 class="ui left aligned icon header"><semui:headerIcon /><g:message code="default.edit.label" args="[entityName]" /></h1>
+		<h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon /><g:message code="default.edit.label" args="[entityName]" /></h1>
 
         <semui:messages data="${flash}" />
 
@@ -16,13 +16,13 @@
 			<div class="twelve wide column">
 
 				<g:hasErrors bean="${creatorInstance}">
-				<bootstrap:alert class="alert-error">
-				<ul>
-					<g:eachError bean="${creatorInstance}" var="error">
-					<li <g:if test="${error in org.springframework.validation.FieldError}">data-field-id="${error.field}"</g:if>><g:message error="${error}"/></li>
-					</g:eachError>
-				</ul>
-				</bootstrap:alert>
+				<semui:msg class="negative">
+					<ul>
+						<g:eachError bean="${creatorInstance}" var="error">
+						<li <g:if test="${error in org.springframework.validation.FieldError}">data-field-id="${error.field}"</g:if>><g:message error="${error}"/></li>
+						</g:eachError>
+					</ul>
+				</semui:msg>
 				</g:hasErrors>
 
 				<fieldset>

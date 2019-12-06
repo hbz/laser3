@@ -1235,6 +1235,10 @@ aside.ui.accordion .title:not(.ui) {
 .la-main-object {
   font-weight: bold;
 }
+
+.la-clear-before {
+  clear: both;
+}
 /*!
  * # Semantic UI 2.3.1 - Button
  * http://github.com/semantic-org/semantic-ui/
@@ -5672,28 +5676,15 @@ aside.ui.accordion .title:not(.ui) {
   background-color: #BB1600 !important;
 }
 
-.ui.green.button {
+/*.ui.green.button {
   -webkit-box-shadow: 0 0 0 0 #d3dae3 inset;
   box-shadow: 0 0 0 0 #d3dae3 inset;
 }
-
-.ui.green.button,
-.ui.green.buttons .button {
+.ui.green.button, .ui.green.buttons .button {
   background-color: #98b500;
   color: #fff;
   text-shadow: none;
   background-image: none;
-}
-
-.ui.icon.button,
-.ui.icon.buttons .button {
-  padding: .78571429em .78571429em .78571429em;
-}
-
-.ui.mini.button,
-.ui.mini.buttons .button,
-.ui.mini.buttons .or {
-  font-size: .78571429rem;
 }
 
 .ui.dropdown {
@@ -5702,61 +5693,12 @@ aside.ui.accordion .title:not(.ui) {
   display: inline-block;
   outline: 0;
   text-align: left;
-  -webkit-transition: width 0.1s ease, -webkit-box-shadow 0.1s ease;
-  transition: width 0.1s ease, -webkit-box-shadow 0.1s ease;
-  transition: box-shadow 0.1s ease, width 0.1s ease;
-  transition: box-shadow 0.1s ease, width 0.1s ease, -webkit-box-shadow 0.1s ease;
+  -webkit-transition: width .1s ease,-webkit-box-shadow .1s ease;
+  transition: width .1s ease,-webkit-box-shadow .1s ease;
+  transition: box-shadow .1s ease,width .1s ease;
+  transition: box-shadow .1s ease,width .1s ease,-webkit-box-shadow .1s ease;
   -webkit-tap-highlight-color: transparent;
-}
-
-.ui.button,
-.ui.buttons .button,
-.ui.buttons .or {
-  font-size: 1rem;
-}
-
-.ui.green.button {
-  -webkit-box-shadow: 0 0 0 0 #d3dae3 inset;
-  box-shadow: 0 0 0 0 #d3dae3 inset;
-}
-
-.ui.green.button,
-.ui.green.buttons .button {
-  background-color: #98b500;
-  color: #fff;
-  text-shadow: none;
-  background-image: none;
-}
-
-.ui.icon.button,
-.ui.icon.buttons .button {
-  padding: .78571429em .78571429em .78571429em;
-}
-
-.ui.mini.button,
-.ui.mini.buttons .button,
-.ui.mini.buttons .or {
-  font-size: .78571429rem;
-}
-
-.ui.dropdown {
-  cursor: pointer;
-  position: relative;
-  display: inline-block;
-  outline: 0;
-  text-align: left;
-  -webkit-transition: width 0.1s ease, -webkit-box-shadow 0.1s ease;
-  transition: width 0.1s ease, -webkit-box-shadow 0.1s ease;
-  transition: box-shadow 0.1s ease, width 0.1s ease;
-  transition: box-shadow 0.1s ease, width 0.1s ease, -webkit-box-shadow 0.1s ease;
-  -webkit-tap-highlight-color: transparent;
-}
-
-.ui.button,
-.ui.buttons .button,
-.ui.buttons .or {
-  font-size: 1rem;
-}
+}*/
 
 .ui.button.la-audit-button {
   vertical-align: super;
@@ -5766,6 +5708,21 @@ aside.ui.accordion .title:not(.ui) {
   color: #767676;
   font-size: .8rem;
   text-transform: uppercase;
+}
+
+.ui.button.la-inline-labeled {
+  padding-top: .5em;
+  padding-bottom: .5em;
+  height: 2.571em;
+}
+
+.ui.button.la-inline-labeled i {
+  width: 28px;
+}
+
+.ui.button.la-js-filterButton {
+  margin-top: 14px;
+  margin-bottom: 14px;
 }
 /*!
  * # Semantic UI 2.3.1 - Container
@@ -7222,6 +7179,10 @@ body[class*="platform"] .ui.icon.header .circular.icon.la-object:before {
 
 .ui.icon.header .ui.form input[type=text] {
   font-size: 1rem;
+}
+
+.ui.header.la-noMargin-top {
+  margin-top: 0rem;
 }
 /*!
  * # Semantic UI 2.3.1 - Icon
@@ -19824,6 +19785,7 @@ dd {
 
 .ui.breadcrumb {
   color: #454545;
+  padding-bottom: 21px;
 }
 
 /* Link */
@@ -21066,6 +21028,30 @@ form {
   margin-bottom: 1em;
 }
 
+/* Menue Search Animated Input
+
+.ui.icon.input > i.icon#btn-search:not(.link){
+  pointer-events: auto;
+}
+input#spotlightSearch[type="search"]:hover,
+input#spotlightSearch[type="search"]:focus{
+  background: @lightGrey;
+}
+i.search.icon {
+  color: white;
+}
+i.search.icon.open {
+  color:black;
+}
+input#spotlightSearch[type="search"] {
+  display: none;
+}
+
+.ui.input > input#spotlightSearch:focus  {
+  border-color: @lightGrey;
+}
+*/
+
 .ui.icon.input > i.icon#btn-search:not(.link) {
   pointer-events: auto;
 }
@@ -21075,16 +21061,12 @@ input#spotlightSearch[type="search"]:focus {
   background: #DCDDDE;
 }
 
-i.search.icon {
-  color: white;
-}
-
-i.search.icon.open {
+i.search.icon#btn-search {
   color: black;
 }
 
-input#spotlightSearch[type="search"] {
-  display: none;
+.la-search-advanced i.search.icon {
+  color: white;
 }
 
 .ui.input > input#spotlightSearch:focus {
@@ -25841,6 +25823,19 @@ Floated Menu / Item
 
 .ui.secondary.menu .title ~ .description {
   margin-top: 0.25em;
+}
+
+/* Right Floated */
+
+.la-right-menuPart {
+  -webkit-box-align: center;
+  -ms-flex-align: center;
+  align-items: center;
+}
+
+.la-search-advanced {
+  padding-left: 1rem;
+  padding-right: 1rem;
 }
 /*!
  * # Semantic UI 2.3.1 - Message

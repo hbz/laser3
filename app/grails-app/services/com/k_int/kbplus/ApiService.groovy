@@ -148,10 +148,13 @@ class ApiService {
 
             identifiers.each{ it ->
                 it.each { k, v ->
-                    def ns = IdentifierNamespace.findByNsIlike(k)
-                    if (null == Identifier.findByNsAndValue(ns, v)) {
-                        new IdentifierOccurrence(org: org, identifier: Identifier.lookupOrCreateCanonicalIdentifier(k, v)).save()
-                    }
+                    // TODO [ticket=1789]
+                    Identifier ident = Identifier.construct([value: v, reference: org, namespace: k])
+
+                    //def ns = IdentifierNamespace.findByNsIlike(k)
+                    //if (null == Identifier.findByNsAndValue(ns, v)) {
+                    //    new IdentifierOccurrence(org: org, identifier: Identifier.lookupOrCreateCanonicalIdentifier(k, v)).save()
+                    //}
                 }
             }
 
@@ -506,13 +509,15 @@ class ApiService {
                             ciec.save()
                         }
                         orgData.ids.id.each { idData ->
+                            // TODO [ticket=1789] check setup basic data
                             log.debug("----- processing identifiers -----")
                             //log.debug("ns: ${IdentifierNamespace.findByNs(idData.@namespace.text())}")
                             //log.debug("value: ${idData.@value.text()}")
                             //new Identifier(ns: IdentifierNamespace.findByNs(idData.@namespace.text()), value: idData.@value.text()).save(flush: true)
-                            Identifier id = Identifier.lookupOrCreateCanonicalIdentifier(idData.@namespace.text(), idData.@value.text())
+                            //Identifier id = Identifier.lookupOrCreateCanonicalIdentifier(idData.@namespace.text(), idData.@value.text())
+                            Identifier id = Identifier.construct([value: idData.@value.text(), reference: org, namespace: idData.@namespace.text()])
                             //log.debug("org: ${orgData.globalUID.text()}")
-                            new IdentifierOccurrence(org: org, identifier: id).save()
+                            //new IdentifierOccurrence(org: org, identifier: id).save()
                         }
                         orgData.settings.setting.each { st ->
                             log.debug("name: ${OrgSettings.KEYS.valueOf(st.name.text())}")
@@ -658,13 +663,15 @@ class ApiService {
                     orgData.ids.id.each { idData ->
                         //log.debug("ns: ${IdentifierNamespace.findByNs(idData.@namespace.text())}")
                         //log.debug("value: ${idData.@value.text()}")
-                        Identifier id = Identifier.lookupOrCreateCanonicalIdentifier(idData.@namespace.text(), idData.@value.text())
-                        //log.debug("org: ${orgData.globalUID.text()}")
-                        IdentifierOccurrence idOcc = IdentifierOccurrence.findByOrgAndIdentifier(org, id)
-                        if(!idOcc) {
-                            idOcc = new IdentifierOccurrence()
-                            idOcc.save()
-                        }
+						// TODO [ticket=1789] check setup basic data
+						Identifier id = Identifier.construct([value: idData.@value.text(), reference: org, namespace: idData.@namespace.text()])
+						//Identifier id = Identifier.lookupOrCreateCanonicalIdentifier(idData.@namespace.text(), idData.@value.text())
+						//log.debug("org: ${orgData.globalUID.text()}")
+						//IdentifierOccurrence idOcc = IdentifierOccurrence.findByOrgAndIdentifier(org, id)
+						//if(!idOcc) {
+						//    idOcc = new IdentifierOccurrence()
+						//    idOcc.save()
+						//}
                     }
                     orgData.settings.setting.each { st ->
                         log.debug("name: ${OrgSettings.KEYS.valueOf(st.name.text())}")

@@ -7,11 +7,16 @@ import com.k_int.properties.PropertyDefinitionGroup
 import com.k_int.properties.PropertyDefinitionGroupBinding
 import de.laser.domain.SystemProfiler
 import org.codehaus.groovy.grails.commons.GrailsApplication
+import org.elasticsearch.action.delete.DeleteRequest
+import org.elasticsearch.action.delete.DeleteResponse
+import org.elasticsearch.client.RestHighLevelClient
+import org.elasticsearch.client.*
 
 //@CompileStatic
 class DeletionService {
 
     GrailsApplication grailsApplication
+    def ESWrapperService
 
     static boolean DRY_RUN                  = true
 
@@ -210,6 +215,8 @@ class DeletionService {
         List oapl           = new ArrayList(sub.oapl)
         List privateProps   = new ArrayList(sub.privateProperties)
         List customProps    = new ArrayList(sub.customProperties)
+        List surveys        = SurveyConfig.findAllBySubscription(sub)
+
 
         if (dryRun) {
             result.info = []
@@ -233,6 +240,7 @@ class DeletionService {
             result.info << ['OrgAccessPointLink', oapl]
             result.info << ['Private Merkmale', sub.privateProperties]
             result.info << ['Allgemeine Merkmale', sub.customProperties]
+            result.info << ['Umfragen', surveys, FLAG_WARNING]
         }
         else if (ref_instanceOf) {
             result = [status: RESULT_QUIT, referencedBy_instanceOf: ref_instanceOf]
@@ -739,5 +747,14 @@ class DeletionService {
                 return false
             }
         }
+    }
+
+    def deleteDocumentFromIndex(domainName, id)
+    {
+        def es_index = ESWrapperService.getESSettings().indexName
+        RestHighLevelClient esclient = ESWrapperService.getClient()
+
+        DeleteRequest request = new DeleteRequest(es_index, id)
+        DeleteResponse deleteResponse = esclient.delete(request, RequestOptions.DEFAULT);
     }
 }

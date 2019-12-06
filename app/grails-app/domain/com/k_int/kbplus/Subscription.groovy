@@ -44,6 +44,8 @@ class Subscription
     def accessService
     @Transient
     def propertyService
+    @Transient
+    def deletionService
 
     @RefdataAnnotation(cat = 'Subscription Status')
     RefdataValue status
@@ -87,7 +89,7 @@ class Subscription
   static transients = [ 'subscriber', 'providers', 'agencies', 'consortia' ]
 
   static hasMany = [
-                     ids: IdentifierOccurrence,
+                     ids: Identifier,
                      packages : SubscriptionPackage,
                      issueEntitlements: IssueEntitlement,
                      documents: DocContext,
@@ -98,7 +100,6 @@ class Subscription
                      customProperties: SubscriptionCustomProperty,
                      privateProperties: SubscriptionPrivateProperty,
                      costItems: CostItem,
-                     oapl: OrgAccessPointLink
   ]
 
   static mappedBy = [
@@ -113,7 +114,6 @@ class Subscription
                       costItems: 'sub',
                       customProperties: 'owner',
                       privateProperties: 'owner',
-                      oapl: 'subscription'
                       ]
 
     static mapping = {
@@ -152,7 +152,6 @@ class Subscription
         customProperties    batchSize: 10
         privateProperties   batchSize: 10
         costItems           batchSize: 10
-        oapl                batchSize: 10
     }
 
     static constraints = {
@@ -176,14 +175,18 @@ class Subscription
         manualRenewalDate(nullable:true, blank:false)
         manualCancellationDate(nullable:true, blank:false)
         instanceOf(nullable:true, blank:false)
-        administrative(nullable:false, blank:false, default: false)
+        administrative(nullable:false, blank:false)
         previousSubscription(nullable:true, blank:false) //-> see Links, deleted as ERMS-800
         isSlaved    (nullable:false, blank:false)
         noticePeriod(nullable:true, blank:true)
         isPublic    (nullable:false, blank:false)
         cancellationAllowances(nullable:true, blank:true)
         lastUpdated(nullable: true, blank: true)
-        isMultiYear(nullable: true, blank: false, default: false)
+        isMultiYear(nullable: true, blank: false)
+    }
+
+    def afterDelete() {
+        deletionService.deleteDocumentFromIndex(this.class.name, this.globalUID)
     }
 
     // TODO: implement
@@ -784,6 +787,7 @@ class Subscription
     this.orgRelations.add(or)
   }
 
+/*-- not used
   def addNamespacedIdentifier(ns,value) {
       log.debug("Add Namespaced identifier ${ns}:${value}")
 
@@ -793,6 +797,7 @@ class Subscription
     this.ids.add(new IdentifierOccurrence(sub:this,identifier:canonical_id))
 
   }
+--*/
 
   def getCommaSeperatedPackagesIsilList() {
       def result = []

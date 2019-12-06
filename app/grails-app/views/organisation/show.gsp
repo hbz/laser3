@@ -40,7 +40,7 @@
     </semui:controlButtons>
 </g:if>
 
-<h1 class="ui left aligned icon header"><semui:headerIcon/>${orgInstance.name}</h1>
+<h1 class="ui left floated aligned icon header la-clear-before"><semui:headerIcon/>${orgInstance.name}</h1>
 
 <g:render template="nav" model="${[orgInstance: orgInstance, inContextOrg: inContextOrg]}"/>
 
@@ -130,21 +130,26 @@
                             <dt>ISIL</dt>
                             <dd>
                                 <g:set var="isils"
-                                       value="${orgInstance.ids.findAll { it?.identifier?.ns?.ns == 'ISIL' }}"/>
+                                       value="${orgInstance.ids.findAll { it?.ns?.ns == 'ISIL' }}"/>
                                 <g:if test="${isils}">
                                     <div class="ui divided middle aligned selection list la-flex-list">
                                         <g:each in="${isils}" var="isil">
                                             <div class="ui item">
 
                                                 <div class="content la-space-right">
-                                                    <semui:xEditable owner="${isil.identifier}" field="value"/>
+                                                    <semui:xEditable owner="${isil}" field="value"/>
                                                 </div>
 
                                                 <div class="content">
                                                     <g:if test="${editable}">
+                                                    <%-- TODO [ticket=1612] new identifier handling
                                                         <g:link class="ui mini negative button" controller="ajax"
                                                                 action="deleteThrough"
                                                                 params='${[contextOid: "${orgInstance.class.name}:${orgInstance.id}", contextProperty: "ids", targetOid: "${isil.class.name}:${isil.id}"]}'>
+                                                            <i class="trash alternate icon"></i></g:link>
+                                                    --%>
+                                                        <g:link controller="ajax" action="deleteIdentifier" class="ui icon mini negative button"
+                                                                params='${[owner: "${orgInstance.class.name}:${orgInstance.id}", target: "${isil.class.name}:${isil.id}"]}'>
                                                             <i class="trash alternate icon"></i></g:link>
                                                     </g:if>
                                                 </div>
@@ -156,34 +161,46 @@
 
                                 </g:if>
                                 <g:if test="${editable}">
-                                    <semui:formAddIdentifier owner="${orgInstance}" onlyoneNamespace="ISIL">
-                                    </semui:formAddIdentifier>
-                                </g:if>
-                            </dd>
+                                    <%-- TODO [ticket=1612] new identifier handling --%>
+                                    <g:form controller="ajax" action="addIdentifier" class="ui form">
+                                        <input name="owner" type="hidden" value="${orgInstance.class.name}:${orgInstance.id}" />
+                                        <input name="namespace" type="hidden" value="com.k_int.kbplus.IdentifierNamespace:${com.k_int.kbplus.IdentifierNamespace.findByNs('ISIL').id}" />
 
-                        </dl>
+                                        <div class="fields">
+                                            <div class="field">
+                                                <input name="value" id="value" type="text" class="ui" />
+                                            </div>
+                                            <div class="field">
+                                                <button type="submit" class="ui button">Identifikator hinzufügen</button>
+                                            </div>
+                                        </div>
+                                    </g:form>
+                            </g:if>
+                        </dd>
 
-                        <dl>
-                            <dt>WIB-ID</dt>
-                            <dd>
-                                <g:set var="wibid" value="${orgInstance.ids.find { it?.identifier?.ns?.ns == 'wibid' }}"/>
-                                <g:if test="${wibid}">
-                                    <semui:xEditable owner="${wibid.identifier}" field="value"/>
-                                </g:if>
-                            </dd>
-                        </dl>
-                        <dl>
-                            <dt>EZB-ID</dt>
-                            <dd>
-                                <g:set var="ezb" value="${orgInstance.ids.find { it?.identifier?.ns?.ns == 'ezb' }}"/>
-                                <g:if test="${ezb}">
-                                    <semui:xEditable owner="${ezb.identifier}" field="value"/>
-                                </g:if>
-                            </dd>
-                        </dl>
-                    </div>
-                </div><!-- .card -->
-            </g:if>
+                    </dl>
+
+                    <dl>
+                        <dt>WIB-ID</dt>
+                        <dd>
+                            <g:set var="wibid" value="${orgInstance.ids.find { it?.ns?.ns == 'wibid' }}"/>
+                            <g:if test="${wibid}">
+                                <semui:xEditable owner="${wibid}" field="value"/>
+                            </g:if>
+                        </dd>
+                    </dl>
+                    <dl>
+                        <dt>EZB-ID</dt>
+                        <dd>
+                            <g:set var="ezb" value="${orgInstance.ids.find { it?.ns?.ns == 'ezb' }}"/>
+                            <g:if test="${ezb}">
+                                <semui:xEditable owner="${ezb}" field="value"/>
+                            </g:if>
+                        </dd>
+                    </dl>
+                </div>
+            </div><!-- .card -->
+        </g:if>
 
             <g:if test="${SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN,ROLE_ORG_EDITOR')}">
                 <div class="ui card">
@@ -207,18 +224,18 @@
                         <dl>
                             <dt>${message(code: 'subscription.details.status', default: 'Status')}</dt>
 
-                            <dd>
-                                <g:if test="${SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN,ROLE_ORG_EDITOR')}">
-                                    <semui:xEditableRefData owner="${orgInstance}" field="status" config='OrgStatus'/>
-                                </g:if>
-                                <g:else>
-                                    ${orgInstance.status?.getI10n('value')}
-                                </g:else>
-                            </dd>
-                        </dl>
-                    </div>
-                </div><!-- .card -->
-            </g:if>
+                        <dd>
+                            <g:if test="${SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN,ROLE_ORG_EDITOR')}">
+                                <semui:xEditableRefData owner="${orgInstance}" field="status" config='OrgStatus'/>
+                            </g:if>
+                            <g:else>
+                                ${orgInstance.status?.getI10n('value')}
+                            </g:else>
+                        </dd>
+                    </dl>
+                </div>
+            </div><!-- .card -->
+        </g:if>
 
             <g:if test="${SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN,ROLE_ORG_EDITOR')}">
                 <div class="ui card">

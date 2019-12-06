@@ -3,6 +3,8 @@
 *******************************/
 .ui.breadcrumb {
   color: @darkGrey;
+  //float: left;
+  padding-bottom: 21px;
 }
 /* Link */
 .ui.breadcrumb a {

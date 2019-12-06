@@ -10,8 +10,8 @@
 			<semui:crumb message="menu.admin.dash" controller="admin" action="index" />
 			<semui:crumb message="menu.admin.manageIdentifierNamespaces" class="active"/>
 		</semui:breadcrumbs>
-
-		<h1 class="ui left aligned icon header"><semui:headerIcon /><g:message code="menu.admin.manageIdentifierNamespaces"/></h1>
+		<br>
+		<h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon /><g:message code="menu.admin.manageIdentifierNamespaces"/></h1>
 
 		<semui:messages data="${flash}" />
 
@@ -120,10 +120,12 @@
 									<label for="unique">
 										<g:message code="identifierNamespace.unique.label" />
 									</label>
-									<g:checkBox name="unique" checked="true" />
+									<g:checkBox name="isUnique" checked="true" />
 								</div>
 
 								<br />
+
+								<input name="isHidden" type="hidden" value="false" />
 
 								<button type="submit" class="ui button">
 									<g:message code="default.button.create.label" default="Create" />

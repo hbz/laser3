@@ -100,7 +100,7 @@ class ApiStatistic {
             // References
             result.contentProvider  = retrievePkgOrganisationCollection(pkg.orgs)
             result.license          = requestPkgLicense(pkg.license)
-            result.identifiers      = ApiReaderHelper.retrieveIdentifierCollection(pkg.ids) // com.k_int.kbplus.IdentifierOccurrence
+            result.identifiers      = ApiReaderHelper.retrieveIdentifierCollection(pkg.ids) // com.k_int.kbplus.Identifier
             //result.platforms        = resolvePkgPlatforms(pkg.nominalPlatform)
             //result.tipps            = resolvePkgTipps(pkg.tipps)
             result.subscriptions    = retrievePkgSubscriptionCollection(pkg.subscriptions, getAccessibleOrgs())
@@ -191,7 +191,7 @@ class ApiStatistic {
             OrgRole.findAllBySub(subPkg.subscription).each { ogr ->
 
                 if (ogr.roleType?.id in [RDStore.OR_SUBSCRIBER.id, RDStore.OR_SUBSCRIBER_CONS.id]) {
-                    if (ogr.org.id in accessibleOrgs.collect { it -> it.id }) {
+                    if (ogr.org.id in accessibleOrgs.collect { it.id }) {
 
                         if (ogr.org.status?.value == 'Deleted') {
                         }

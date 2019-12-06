@@ -68,7 +68,7 @@
 </g:if>--}%
 
 <g:if test="${surveyConfig?.type == 'Subscription'}">
-    <h2 class="ui icon header"><semui:headerIcon/>
+    <h2 class="ui icon header la-noMargin-top"><semui:headerIcon/>
         <i class="icon clipboard outline la-list-icon"></i>
     <g:link controller="subscription" action="show" id="${surveyConfig?.subscription?.id}">
         ${surveyConfig?.subscription?.name}
@@ -134,10 +134,10 @@
                                     <g:message code="default.identifiers.label"/>
                                 </dt>
                                 <dd>
-                                    <g:each in="${surveyConfig?.subscription?.ids?.sort { it?.identifier?.ns?.ns }}"
+                                    <g:each in="${surveyConfig?.subscription?.ids?.sort { it?.ns?.ns }}"
                                             var="id">
                                         <span class="ui small teal image label">
-                                            ${id.identifier.ns.ns}: <div class="detail">${id.identifier.value}</div>
+                                            ${id.ns.ns}: <div class="detail">${id.value}</div>
                                         </span>
                                     </g:each>
                                 </dd>
@@ -390,7 +390,7 @@
 <br>
 <g:if test="${surveyConfig?.type == 'Subscription'}">
     <div>
-        <h4 class="ui left aligned icon header">${message(code: 'surveyProperty.selected.label')} <semui:totalNumber
+        <h4 class="ui icon header la-clear-before la-noMargin-top">${message(code: 'surveyProperty.selected.label')} <semui:totalNumber
                 total="${surveyProperties.size()}"/></h4>
         <semui:form>
             <table class="ui celled sortable table la-table">

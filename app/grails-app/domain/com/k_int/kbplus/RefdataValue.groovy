@@ -34,6 +34,7 @@ class RefdataValue extends AbstractI10nTranslatable implements Comparable<Refdat
     ]
 
     static mapping = {
+            cache   true
                     id column: 'rdv_id'
                version column: 'rdv_version'
                  owner column: 'rdv_owner', index: 'rdv_owner_value_idx'
@@ -51,7 +52,7 @@ class RefdataValue extends AbstractI10nTranslatable implements Comparable<Refdat
     static constraints = {
         icon     (nullable:true)
         group    (nullable:true,  blank:false)
-        isHardData (nullable:false, blank:false, default:false)
+        isHardData (nullable:false, blank:false)
         order    (nullable:true,  blank: false)
 
         // Nullable is true, because values are already in the database
@@ -115,6 +116,7 @@ class RefdataValue extends AbstractI10nTranslatable implements Comparable<Refdat
         matches
     }
 
+    // called from AjaxController.resolveOID2()
     static def refdataCreate(value) {
         // return new RefdataValue(value:value);
         return null;

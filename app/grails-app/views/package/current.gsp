@@ -30,8 +30,8 @@
             </semui:exportDropdown>
             <g:render template="actions" />
         </semui:controlButtons>
-
-        <h1 class="ui left aligned icon header"><semui:headerIcon />
+        <br>
+        <h1 class="ui left floated aligned icon header la-clear-before"><semui:headerIcon />
 
             ${packageInstance.name}
         </h1>

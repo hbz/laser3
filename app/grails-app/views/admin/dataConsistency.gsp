@@ -12,7 +12,7 @@
     <semui:crumb message="menu.admin.dataConsistency" class="active"/>
 </semui:breadcrumbs>
 
-<h1 class="ui header">${message(code: "menu.admin.dataConsistency")}</h1>
+<h1 class="ui header la-noMargin-top">${message(code: "menu.admin.dataConsistency")}</h1>
 
 <div class="ui grid">
     <div class="twelve wide column">

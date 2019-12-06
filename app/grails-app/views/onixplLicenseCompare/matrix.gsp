@@ -13,12 +13,10 @@
 		<semui:crumb message="menu.institutions.comp_onix" class="active"/>
 	</semui:breadcrumbs>
 
-	<h1 class="ui left aligned icon header"><semui:headerIcon />${message(code:'menu.institutions.comp_onix')}</h1>
+	<h1 class="ui left floated aligned icon header la-clear-before"><semui:headerIcon />${message(code:'menu.institutions.comp_onix')}</h1>
 
 		<g:if test="${flash.message}">
-			<bootstrap:alert class="alert-info">
-				${flash.message}
-			</bootstrap:alert>
+			<semui:msg class="warning" text="${flash.message}" />
 		</g:if>
 
     <g:render template="tables" model="${request.parameterMap}" />

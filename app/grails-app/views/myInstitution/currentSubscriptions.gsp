@@ -53,12 +53,13 @@
 
         <semui:messages data="${flash}"/>
 
-        <h1 class="ui left aligned icon header"><semui:headerIcon />${message(code:'myinst.currentSubscriptions.label', default:'Current Subscriptions')}
+        <h1 class="ui left floated aligned icon header la-clear-before"><semui:headerIcon />${message(code:'myinst.currentSubscriptions.label', default:'Current Subscriptions')}
             <semui:totalNumber total="${num_sub_rows}"/>
         </h1>
 
-<semui:filter>
-    <g:form action="currentSubscriptions" controller="myInstitution" method="get" class="ui small form">
+    <g:render template="../templates/filter/javascript" />
+    <semui:filter showFilterButton="true">
+    <g:form action="currentSubscriptions" controller="myInstitution" method="get" class="ui small form clearing">
         <input type="hidden" name="isSiteReloaded" value="yes"/>
         <div class="three fields">
         %{--<div class="four fields">--}%
@@ -79,7 +80,7 @@
             <!-- 1-2 -->
             <div class="field">
                 <label for="identifier">${message(code: 'default.search.identifier')}
-                    <span data-position="right center" data-variation="tiny"  class="la-popup-tooltip la-delay" data-content="${message(code:'default.search.tooltip.subscription.identifier')}">
+                    <span data-position="right center" data-variation="tiny" class="la-popup-tooltip la-delay" data-content="${message(code:'default.search.tooltip.subscription.identifier')}">
                         <i class="question circle icon"></i>
                     </span>
                 </label>
@@ -178,9 +179,8 @@
         </div>
 
         <div class="field">
-                <label for="subscritionType">${message(code: 'myinst.currentSubscriptions.subscription_type')}</label>
-
                 <fieldset id="subscritionType">
+                    <legend >${message(code: 'myinst.currentSubscriptions.subscription_type')}</legend>
                     <div class="inline fields la-filter-inline">
                         <%
                             List subTypes = RefdataCategory.getAllRefdataValues('Subscription Type')
@@ -206,7 +206,7 @@
                 </fieldset>
         </div>
 
-        <div class="two fields">
+        <div class="three fields">
             <div class="field">
                 <g:if test="${accessService.checkPerm("ORG_CONSORTIUM")}">
                 <%--
@@ -261,19 +261,18 @@
                     </div>
                 </div>
             </div>
-
-            </div>
-
             <div class="field la-field-right-aligned">
                 <a href="${request.forwardURI}" class="ui reset primary button">${message(code:'default.button.reset.label')}</a>
                 <input type="submit" class="ui secondary button" value="${message(code:'default.button.filter.label', default:'Filter')}">
             </div>
+
+
         </div>
 
     </g:form>
 </semui:filter>
 
-<div class="subscription-results">
+<div class="subscription-results subscription-results la-clear-before">
 <g:if test="${subscriptions}">
     <table class="ui celled sortable table table-tworow la-table">
         <thead>
@@ -523,14 +522,14 @@
         </g:each>
     </table>
 </g:if>
+<g:else>
+    <g:if test="${filterSet}">
+        <br><strong><g:message code="filter.result.empty.object" args="${[message(code:"subscription.plural")]}"/></strong>
+    </g:if>
     <g:else>
-        <g:if test="${filterSet}">
-            <br><strong><g:message code="filter.result.empty.object" args="${[message(code:"subscription.plural")]}"/></strong>
-        </g:if>
-        <g:else>
-            <br><strong><g:message code="result.empty.object" args="${[message(code:"subscription.plural")]}"/></strong>
-        </g:else>
+        <br><strong><g:message code="result.empty.object" args="${[message(code:"subscription.plural")]}"/></strong>
     </g:else>
+</g:else>
 
 </div>
 
@@ -638,6 +637,9 @@
     </r:script>
     --%>
 
+    <semui:debugInfo>
+        <g:render template="/templates/debug/benchMark" model="[debug: benchMark]" />
+    </semui:debugInfo>
 
   </body>
 </html>

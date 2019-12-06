@@ -174,10 +174,10 @@ ${surveyInfo.name}
                                 <g:message code="default.identifiers.label"/>
                             </dt>
                             <dd>
-                                <g:each in="${subscriptionInstance?.ids?.sort { it?.identifier?.ns?.ns }}"
+                                <g:each in="${subscriptionInstance?.ids?.sort { it?.ns?.ns }}"
                                         var="id">
                                     <span class="ui small teal image label">
-                                        ${id.identifier.ns.ns}: <div class="detail">${id.identifier.value}</div>
+                                        ${id.ns.ns}: <div class="detail">${id.value}</div>
                                     </span>
                                 </g:each>
                             </dd>
@@ -348,9 +348,9 @@ ${surveyInfo.name}
                     <div class="content">
 
                         <g:set var="surveyOrg"
-                               value="${com.k_int.kbplus.SurveyOrg.findBySurveyConfigAndOrg(surveyConfig, institution)}"/>
+                               value="${com.k_int.kbplus.SurveyOrg.findBySurveyConfigAndOrg(surveyConfig, participant)}"/>
                         <g:set var="costItem"
-                               value="${com.k_int.kbplus.CostItem.findBySurveyOrg(com.k_int.kbplus.SurveyOrg.findBySurveyConfigAndOrg(surveyConfig, institution))}"/>
+                               value="${com.k_int.kbplus.CostItem.findBySurveyOrg(com.k_int.kbplus.SurveyOrg.findBySurveyConfigAndOrg(surveyConfig, participant))}"/>
                         <g:set var="costItemsSub"
                                value="${subscriptionInstance?.costItems.findAll {
                                    it?.costItemElement?.id == costItem?.costItemElement?.id
@@ -476,7 +476,7 @@ ${surveyInfo.name}
 
                 </td>
                 <g:set var="surveyOrg"
-                       value="${com.k_int.kbplus.SurveyOrg.findBySurveyConfigAndOrg(surveyResult?.surveyConfig, institution)}"/>
+                       value="${com.k_int.kbplus.SurveyOrg.findBySurveyConfigAndOrg(surveyResult?.surveyConfig, participant)}"/>
 
                 <g:if test="${!surveyOrg?.existsMultiYearTerm()}">
 

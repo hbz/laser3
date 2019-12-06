@@ -137,21 +137,24 @@ class UserService {
         Map<String,Role> userRights = ['benutzer':Role.findByAuthority('INST_USER'), //internal 'Anina'
                                        'redakteur':Role.findByAuthority('INST_EDITOR'), //internal 'Rahel'
                                        'admin':Role.findByAuthority('INST_ADM')] //internal 'Viola'
+
         adminUsers.each { adminUser ->
             customerTypes.each { String customerKey ->
                 userRights.each { String rightKey, Role userRole ->
                     String username = "${adminUser.name}_${customerKey}_${rightKey}"
                     User user = User.findByUsername(username)
-                    if(!user) {
-                        log.debug("create new user ${username}")
+
+                    if(! user) {
+                        log.debug("trying to create new user: ${username}")
                         user = addNewUser([username: username, password: "${adminUser.pass}", display: username, email: "${adminUser.email}", enabled: true, org: orgs[customerKey]],null)
-                    }
-                    if(user && !user.hasAffiliationForForeignOrg(rightKey,orgs[customerKey])) {
-                        if(orgs[customerKey]) {
-                            instAdmService.createAffiliation(user,orgs[customerKey],userRole,UserOrg.STATUS_APPROVED,null)
-                            user.getSetting(UserSettings.KEYS.DASHBOARD,orgs[customerKey])
+
+                        if (user && orgs[customerKey]) {
+                            if (! user.hasAffiliationForForeignOrg(rightKey, orgs[customerKey])) {
+
+                                instAdmService.createAffiliation(user, orgs[customerKey], userRole, UserOrg.STATUS_APPROVED, null)
+                                user.getSetting(UserSettings.KEYS.DASHBOARD, orgs[customerKey])
+                            }
                         }
-                        else log.debug("appropriate inst missing for affiliation key, skipping")
                     }
                 }
             }

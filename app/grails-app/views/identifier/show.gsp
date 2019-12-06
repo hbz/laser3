@@ -12,7 +12,7 @@
 			<semui:crumb text="${message(code: 'default.identifier.show')}" class="active"/>
 		</semui:breadcrumbs>
 
-		<h1 class="ui left aligned icon header"><semui:headerIcon /><g:message code="default.show.label" args="[entityName]" /></h1>
+		<h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon /><g:message code="default.show.label" args="[entityName]" /></h1>
 
 		<semui:messages data="${flash}" />
 
@@ -32,6 +32,7 @@
                         <dd><g:fieldValue bean="${identifierInstance}" field="value"/></dd>
 					</g:if>
 
+					<%-- // TODO [ticket=1789]
 					<g:if test="${identifierInstance?.occurrences}">
                         <br />
                         <br />
@@ -48,7 +49,7 @@
                             </ul>
                         </dd>
 				    </g:if>
-
+					--%>
 				</dl>
 			</div><!-- .twelve -->
 

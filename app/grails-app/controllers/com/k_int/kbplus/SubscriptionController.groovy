@@ -27,6 +27,7 @@ import org.apache.poi.ss.usermodel.Row
 import org.apache.poi.ss.usermodel.Sheet
 import org.apache.poi.xssf.streaming.SXSSFWorkbook
 import org.apache.poi.xssf.usermodel.XSSFWorkbook
+import org.codehaus.groovy.grails.commons.GrailsApplication
 import org.codehaus.groovy.grails.plugins.orm.auditable.AuditLogEvent
 import org.codehaus.groovy.runtime.InvokerHelper
 import org.springframework.web.multipart.commons.CommonsMultipartFile
@@ -52,7 +53,7 @@ class SubscriptionController extends AbstractDebugController {
     def genericOIDService
     def transformerService
     def exportService
-    def grailsApplication
+    GrailsApplication grailsApplication
     def pendingChangeService
     def institutionsService
     def ESSearchService
@@ -201,7 +202,7 @@ class SubscriptionController extends AbstractDebugController {
                 qry_params.startDate = date_filter
                 qry_params.endDate = date_filter
             }
-            base_qry += "and ( ( lower(ie.tipp.title.title) like :title ) or ( exists ( from IdentifierOccurrence io where io.ti.id = ie.tipp.title.id and io.identifier.value like :identifier ) ) ) "
+            base_qry += "and ( ( lower(ie.tipp.title.title) like :title ) or ( exists ( from Identifier ident where ident.ti.id = ie.tipp.title.id and ident.value like :identifier ) ) ) "
             qry_params.title = "%${params.filter.trim().toLowerCase()}%"
             qry_params.identifier = "%${params.filter}%"
         } else {
@@ -393,6 +394,10 @@ class SubscriptionController extends AbstractDebugController {
                         PriceItem.executeUpdate("delete from PriceItem pi where pi.issueEntitlement.id in (:delList)",[delList: deleteIdList])
                         IssueEntitlement.executeUpdate("delete from IssueEntitlement ie where ie.id in (:delList)", [delList: deleteIdList])
                     }
+                    SubscriptionPackage subPkg = SubscriptionPackage.findByPkgAndSubscription(result.package, result.subscription)
+                    if (subPkg) {
+                        OrgAccessPointLink.executeUpdate("delete from OrgAccessPointLink oapl where oapl.subPkg=?", [subPkg])
+                    }
                     SubscriptionPackage.executeUpdate("delete from SubscriptionPackage sp where sp.pkg=? and sp.subscription=? ", [result.package, result.subscription])
 
                     flash.message = message(code: 'subscription.details.unlink.successfully')
@@ -414,6 +419,17 @@ class SubscriptionController extends AbstractDebugController {
                     conflicts_list += conflict_item_pc
                 }
 
+                SubscriptionPackage sp = SubscriptionPackage.findByPkgAndSubscription(result.package, result.subscription)
+                List accessPointLinks = []
+                if (sp.oapls){
+                    Map detailItem = ['text':"${g.message(code: "subscription.details.unlink.accessPoints.numbers")} ${sp.oapls.size()}"]
+                    accessPointLinks.add(detailItem)
+                }
+                if (accessPointLinks) {
+                    def conflict_item_oap = [name: "${g.message(code: "subscription.details.unlink.accessPoints")}", details: accessPointLinks, action: [actionRequired: false, text: "${g.message(code: "subscription.details.unlink.accessPoints.numbers.action")}"]]
+                    conflicts_list += conflict_item_oap
+                }
+
                 return render(template: "unlinkPackageModal", model: [pkg: result.package, subscription: result.subscription, conflicts_list: conflicts_list])
             }
         } else {
@@ -431,22 +447,22 @@ class SubscriptionController extends AbstractDebugController {
         def tipp_id_query = "from TitleInstancePackagePlatform tipp where tipp.pkg.id = ?"
         def change_doc_query = "from PendingChange pc where pc.subscription.id = ? "
         def tipp_ids = TitleInstancePackagePlatform.executeQuery("select tipp.id ${tipp_id_query}", [pkg_id])
-        def pendingChanges = PendingChange.executeQuery("select pc.id, pc.changeDoc ${change_doc_query}", [sub_id])
+        def pendingChanges = PendingChange.executeQuery("select pc.id, pc.payload ${change_doc_query}", [sub_id])
 
         def pc_to_delete = []
         pendingChanges.each { pc ->
-            def parsed_change_info = JSON.parse(pc[1])
-            if (parsed_change_info.tippID) {
+            def payload = JSON.parse(pc[1])
+            if (payload.tippID) {
                 pc_to_delete += pc[0]
-            }else if (parsed_change_info.tippId) {
+            }else if (payload.tippId) {
                     pc_to_delete += pc[0]
-            } else if (parsed_change_info.changeDoc) {
-                def (oid_class, ident) = parsed_change_info.changeDoc.OID.split(":")
+            } else if (payload.changeDoc) {
+                def (oid_class, ident) = payload.changeDoc.OID.split(":")
                 if (oid_class == tipp_class && tipp_ids.contains(ident.toLong())) {
                     pc_to_delete += pc[0]
                 }
             } else {
-                log.error("Could not decide if we should delete the pending change id:${pc[0]} - ${parsed_change_info}")
+                log.error("Could not decide if we should delete the pending change id:${pc[0]} - ${payload}")
             }
         }
         if (confirmed && pc_to_delete) {
@@ -616,7 +632,7 @@ class SubscriptionController extends AbstractDebugController {
         }
 
         if (params.filter) {
-            base_qry += " and ( ( lower(ie.tipp.title.title) like ? ) or ( exists ( from IdentifierOccurrence io where io.ti.id = ie.tipp.title.id and io.identifier.value like ? ) ) )"
+            base_qry += " and ( ( lower(ie.tipp.title.title) like ? ) or ( exists ( from Identifier ident where ident.ti.id = ie.tipp.title.id and ident.value like ? ) ) )"
             qry_params.add("%${params.filter.trim().toLowerCase()}%")
             qry_params.add("%${params.filter}%")
         }
@@ -756,7 +772,7 @@ class SubscriptionController extends AbstractDebugController {
 
             if (params.filter) {
                 log.debug("Filtering....");
-                basequery = "from TitleInstancePackagePlatform tipp where tipp.pkg in ( select pkg from SubscriptionPackage sp where sp.subscription = ? ) and tipp.status = ? and ( not exists ( select ie from IssueEntitlement ie where ie.subscription = ? and ie.tipp.id = tipp.id and ie.status = ? ) ) and ( ( lower(tipp.title.title) like ? ) OR ( exists ( select io from IdentifierOccurrence io where io.ti.id = tipp.title.id and io.identifier.value like ? ) ) ) "
+                basequery = "from TitleInstancePackagePlatform tipp where tipp.pkg in ( select pkg from SubscriptionPackage sp where sp.subscription = ? ) and tipp.status = ? and ( not exists ( select ie from IssueEntitlement ie where ie.subscription = ? and ie.tipp.id = tipp.id and ie.status = ? ) ) and ( ( lower(tipp.title.title) like ? ) OR ( exists ( select ident from Identifier ident where ident.ti.id = tipp.title.id and ident.value like ? ) ) ) "
                 qry_params.add("%${params.filter.trim().toLowerCase()}%")
                 qry_params.add("%${params.filter}%")
             } else {
@@ -902,7 +918,7 @@ class SubscriptionController extends AbstractDebugController {
                         //is title in LAS:eR?
                         //List tiObj = TitleInstancePackagePlatform.executeQuery('select tipp from TitleInstancePackagePlatform tipp join tipp.title ti join ti.ids identifiers where identifiers.identifier.value in :idCandidates',[idCandidates:idCandidates])
                         //log.debug(idCandidates)
-                        def tiObj = TitleInstance.executeQuery('select ti from TitleInstance ti join ti.ids ids where ids in (select io from IdentifierOccurrence io join io.identifier id where id.ns in :namespaces and id.value = :value)',[namespaces:idCandidate.namespaces,value:idCandidate.value])
+                        def tiObj = TitleInstance.executeQuery('select ti from TitleInstance ti join ti.ids ids where ids in (select ident from Identifier ident where ident.ns in :namespaces and ident.value = :value)',[namespaces:idCandidate.namespaces,value:idCandidate.value])
                         if(tiObj) {
                             //is title already added?
                             if(addedTipps.get(tiObj)) {
@@ -1104,8 +1120,8 @@ class SubscriptionController extends AbstractDebugController {
                 row.add([field: ie?.tipp?.title?.summaryOfContent ?: '', style:null])
 
                 def identifiers = []
-                ie?.tipp?.title?.ids?.sort { it?.identifier?.ns?.ns }.each{ id ->
-                    identifiers << "${id.identifier.ns.ns}: ${id.identifier.value}"
+                ie?.tipp?.title?.ids?.sort { it?.ns?.ns }?.each{ ident ->
+                    identifiers << "${ident.ns?.ns}: ${ident.value}"
                 }
                 row.add([field: identifiers ? identifiers.join(', ') : '', style:null])
 
@@ -1203,8 +1219,8 @@ class SubscriptionController extends AbstractDebugController {
                 }
 
                 def identifiers = []
-                ie?.tipp?.title?.ids?.sort { it?.identifier?.ns?.ns }.each{ id ->
-                    identifiers << "${id.identifier.ns.ns}: ${id.identifier.value}"
+                ie?.tipp?.title?.ids?.sort { it.ns?.ns }?.each{ ident ->
+                    identifiers << "${ident.ns?.ns}: ${ident.value}"
                 }
                 row.add([field: identifiers ? identifiers.join(', ') : '', style:null])
 
@@ -4279,6 +4295,7 @@ class SubscriptionController extends AbstractDebugController {
             boolean isCopyAuditOn = params.subscription.isCopyAuditOn? true : false
             def sub_startDate = null
             def sub_endDate = null
+            def sub_manualCancellationDate = null
             def sub_status = null
             def old_subOID = null
             def new_subname = null
@@ -4286,6 +4303,7 @@ class SubscriptionController extends AbstractDebugController {
                 use(TimeCategory) {
                     sub_startDate = baseSub.endDate ? (baseSub.endDate + 1.day) : null
                     sub_endDate = baseSub.endDate ? (baseSub.endDate + 1.year) : null
+                    sub_manualCancellationDate = baseSub?.manualCancellationDate ? (baseSub?.manualCancellationDate + 1.year) : null
                 }
                 sub_status = SUBSCRIPTION_INTENDED
                 old_subOID = baseSub.id
@@ -4293,6 +4311,7 @@ class SubscriptionController extends AbstractDebugController {
             } else {
                 sub_startDate = params.subscription?.start_date ? parseDate(params.subscription?.start_date, possible_date_formats) : null
                 sub_endDate = params.subscription?.end_date ? parseDate(params.subscription?.end_date, possible_date_formats): null
+                sub_manualCancellationDate = baseSub?.manualCancellationDate
                 sub_status = params.subStatus
                 old_subOID = params.subscription.old_subid
                 new_subname = params.subscription.name
@@ -4302,7 +4321,7 @@ class SubscriptionController extends AbstractDebugController {
                     name: new_subname,
                     startDate: sub_startDate,
                     endDate: sub_endDate,
-                    manualCancellationDate: (baseSub?.manualCancellationDate && isCopyAuditOn) ? (baseSub?.manualCancellationDate + 1.year) : baseSub?.manualCancellationDate,
+                    manualCancellationDate: sub_manualCancellationDate,
                     identifier: java.util.UUID.randomUUID().toString(),
                     isPublic: baseSub.isPublic,
                     isSlaved: baseSub.isSlaved,

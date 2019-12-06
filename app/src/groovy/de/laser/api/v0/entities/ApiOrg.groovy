@@ -95,14 +95,14 @@ class ApiOrg {
         // RefdataValues
 
         result.sector       = org.sector?.value
-        result.type         = org.orgType?.collect{ it -> it.value }
+        result.type         = org.orgType?.collect{ it.value }
         result.status       = org.status?.value
 
         // References
 
         result.addresses    = ApiReaderHelper.retrieveAddressCollection(org.addresses, ApiReaderHelper.NO_CONSTRAINT) // com.k_int.kbplus.Address
         result.contacts     = ApiReaderHelper.retrieveContactCollection(org.contacts, ApiReaderHelper.NO_CONSTRAINT) // com.k_int.kbplus.Contact
-        result.identifiers  = ApiReaderHelper.retrieveIdentifierCollection(org.ids) // com.k_int.kbplus.IdentifierOccurrence
+        result.identifiers  = ApiReaderHelper.retrieveIdentifierCollection(org.ids) // com.k_int.kbplus.Identifier
         result.persons      = ApiReaderHelper.retrievePrsLinkCollection(
                 org.prsLinks, ApiReaderHelper.NO_CONSTRAINT, ApiReaderHelper.NO_CONSTRAINT, context
         ) // com.k_int.kbplus.PersonRole

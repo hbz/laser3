@@ -48,6 +48,7 @@ class RefdataCategory extends AbstractI10nTranslatable {
     Date lastUpdated
 
     static mapping = {
+            cache   true
               id column: 'rdc_id'
          version column: 'rdc_version'
             desc column: 'rdc_description', index:'rdc_description_idx'
@@ -58,7 +59,7 @@ class RefdataCategory extends AbstractI10nTranslatable {
     }
 
     static constraints = {
-        isHardData (nullable:false, blank:false, default:false)
+        isHardData (nullable:false, blank:false)
 
         // Nullable is true, because values are already in the database
         lastUpdated (nullable: true, blank: false)

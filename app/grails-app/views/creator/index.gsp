@@ -46,7 +46,7 @@
 					
 						<td>${fieldValue(bean: creatorInstance, field: "middlename")}</td>
 					
-						<td>${fieldValue(bean: creatorInstance, field: "gnd_id")}</td>
+						<td><%-- TODO [ticket=1789] ${fieldValue(bean: creatorInstance, field: "gnd_id")} --%></td>
 					
 						<td>${fieldValue(bean: creatorInstance, field: "globalUID")}</td>
 					

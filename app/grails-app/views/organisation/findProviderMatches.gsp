@@ -11,8 +11,8 @@
 		<semui:crumb message="menu.public.all_provider" controller="organisation" action="listProvider"  />
 		<semui:crumb text="${message(code:"default.create.label",args:[entityName])}" class="active"/>
 	</semui:breadcrumbs>
-
-		<h1 class="ui left aligned icon header"><semui:headerIcon /><g:message code="default.create.label" args="[entityName]" /></h1>
+	<br>
+		<h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon /><g:message code="default.create.label" args="[entityName]" /></h1>
 
 		<semui:messages data="${flash}" />
 
@@ -53,7 +53,7 @@
 											<g:if test="${providerInstance.impId}">
 												<li><g:message code="org.impId.label" default="Import ID" />: <g:fieldValue bean="${providerInstance}" field="impId"/></li>
 											</g:if>
-											<g:each in="${providerInstance.ids?.sort{it?.identifier?.ns?.ns}}" var="id"><li>${id.identifier.ns.ns}: ${id.identifier.value}</li></g:each>
+											<g:each in="${providerInstance.ids?.sort{it?.ns?.ns}}" var="id"><li>${id.ns.ns}: ${id.value}</li></g:each>
 									</ul></td>
 									<td>${providerInstance.shortname}</td>
 									<td>${providerInstance.country}</td>
@@ -61,13 +61,11 @@
 							</g:each>
 							</tbody>
 						</table>
-						<bootstrap:alert class="alert-info">
-							${message(code:'org.findProviderMatches.match', args:[params.proposedProvider])}
-						</bootstrap:alert>
+						<semui:msg class="warning" message="org.findProviderMatches.match" args="[params.proposedProvider]" />
 						<g:link controller="organisation" action="createProvider" class="ui negative button" params="${[provider:params.proposedProvider]}">${message(code:'org.findProviderMatches.matches.create', default:'Create New Provider with the Name', args: [params.proposedProvider])}</g:link>
 					</g:if>
 					<g:else>
-						<bootstrap:alert class="alert-info">${message(code:'org.findProviderMatches.no_match', args:[params.proposedProvider])}</bootstrap:alert>
+						<semui:msg class="warning" message="org.findProviderMatches.no_match" args="[params.proposedProvider]" />
 						<g:link controller="organisation" action="createProvider" class="ui positive button" params="${[provider:params.proposedProvider]}">${message(code:'org.findProviderMatches.no_matches.create', default:'Create New Provider with the Name', args: [params.proposedProvider])}</g:link>
 					</g:else>
 				</g:if>

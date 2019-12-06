@@ -11,10 +11,16 @@
     <semui:crumb text="Application Security" class="active"/>
 </semui:breadcrumbs>
 
-<h1 class="ui header">debug only</h1>
+<h1 class="ui header la-noMargin-top">debug only</h1>
 
 
 <pre>numberOfActiveUsers : ${numberOfActiveUsers}</pre>
+
+<h3>TEST: SwissKnife.checkMessageKey()</h3>
+
+<semui:msg class="warning" header="${message(code: 'message.information')}" message="x.myinst.addressBook.visible" />
+<semui:msg class="warning" header="${message(code: 'message.information')}" message="${message(code: 'myinst.addressBook.visible')}" />
+<semui:msg class="warning" header="${message(code: 'message.information')}" message="myinst.addressBook.visible" />
 
 
 <laser:remoteLink controller="ajax" action="readNote" id="1" xyz="xyz" abc="abc" update="#test123"

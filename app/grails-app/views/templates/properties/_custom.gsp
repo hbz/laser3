@@ -8,9 +8,6 @@
     <semui:errors bean="${newProp}" />
 </g:if>
 
-<g:if test="${error}">
-    <bootstrap:alert class="alert-danger">${error}</bootstrap:alert>
-</g:if>
 <table class="ui la-table-small la-table-inCard table">
     <g:if test="${orphanedProperties}">
         <colgroup>
@@ -41,9 +38,11 @@
                     <td class="la-js-dont-hide-this-card">
                         <g:if test="${prop.type.getI10n('expl') != null && !prop.type.getI10n('expl').contains(' °')}">
                             ${prop.type.getI10n('name')}
-                            <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center" data-content="${prop.type.getI10n('expl')}">
-                                <i class="question circle icon"></i>
-                            </span>
+                            <g:if test="${prop.type.getI10n('expl')}">
+                                <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center" data-content="${prop.type.getI10n('expl')}">
+                                    <i class="question circle icon"></i>
+                                </span>
+                            </g:if>
                         </g:if>
                         <g:else>
                             ${prop.type.getI10n('name')}
@@ -195,14 +194,19 @@
     <g:if test="${editable}">
         <tfoot>
             <tr>
+            <g:if test="${orphanedProperties}">
                 <g:if test="${ownobj instanceof com.k_int.kbplus.License}">
                     <td colspan="5">
                 </g:if>
                 <g:else>
                     <td colspan="4">
                 </g:else>
+            </g:if>
+            <g:else>
+                <td>
+            </g:else>
                     <g:formRemote url="[controller: 'ajax', action: 'addCustomPropertyValue']" method="post"
-                                  name="cust_prop_add_value"
+                                  name="cust_prop_add_value_custom"
                                   class="ui form"
                                   update="${custom_props_div}"
                                   onSuccess="c3po.initProperties('${createLink(controller:'ajax', action:'lookup')}', '#${custom_props_div}')"
@@ -223,5 +227,7 @@
             </tr>
         </tfoot>
     </g:if>
-
 </table>
+<g:if test="${error}">
+    <semui:msg class="negative" header="${message(code: 'myinst.message.attention')}" text="${error}"/>
+</g:if>

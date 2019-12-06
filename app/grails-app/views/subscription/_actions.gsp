@@ -112,21 +112,21 @@
         </g:if>
 
         <g:set var="previousSubscriptions" value="${Links.findByLinkTypeAndObjectTypeAndDestination(RDStore.LINKTYPE_FOLLOWS,Subscription.class.name,subscriptionInstance.id)}"/>
-        <sec:ifAnyGranted roles="ROLE_ADMIN, ROLE_YODA">
-            <div class="divider">OLD:</div>
-            <g:if test="${subscriptionInstance.getCalculatedType() == TemplateSupport.CALCULATED_TYPE_LOCAL && !previousSubscriptions}">
-                <semui:actionsDropdownItem controller="subscription" action="launchRenewalsProcess"
-                                       params="${[id: params.id]}" message="subscription.details.renewals.label"/>
-                <semui:actionsDropdownItem controller="myInstitution" action="renewalsUpload"
-                                       message="menu.institutions.imp_renew"/>
-            </g:if>
+        %{--<sec:ifAnyGranted roles="ROLE_ADMIN, ROLE_YODA">--}%
+            %{--<div class="divider">OLD:</div>--}%
+            %{--<g:if test="${subscriptionInstance.getCalculatedType() == TemplateSupport.CALCULATED_TYPE_LOCAL && !previousSubscriptions}">--}%
+                %{--<semui:actionsDropdownItem controller="subscription" action="launchRenewalsProcess"--}%
+                                       %{--params="${[id: params.id]}" message="subscription.details.renewals.label"/>--}%
+                %{--<semui:actionsDropdownItem controller="myInstitution" action="renewalsUpload"--}%
+                                       %{--message="menu.institutions.imp_renew"/>--}%
+            %{--</g:if>--}%
 
-            <g:if test="${subscriptionInstance.getCalculatedType() in [TemplateSupport.CALCULATED_TYPE_CONSORTIAL,TemplateSupport.CALCULATED_TYPE_COLLECTIVE] && accessService.checkPerm("ORG_INST_COLLECTIVE,ORG_CONSORTIUM") && !previousSubscriptions}">
-                <semui:actionsDropdownItem controller="subscription" action="renewSubscriptionConsortia"
-                                           params="${[id: params.id]}" message="subscription.details.renewalsConsortium.label"/>
-            </g:if>
-            <div class="divider"></div>
-        </sec:ifAnyGranted>
+            %{--<g:if test="${subscriptionInstance.getCalculatedType() in [TemplateSupport.CALCULATED_TYPE_CONSORTIAL,TemplateSupport.CALCULATED_TYPE_COLLECTIVE] && accessService.checkPerm("ORG_INST_COLLECTIVE,ORG_CONSORTIUM") && !previousSubscriptions}">--}%
+                %{--<semui:actionsDropdownItem controller="subscription" action="renewSubscriptionConsortia"--}%
+                                           %{--params="${[id: params.id]}" message="subscription.details.renewalsConsortium.label"/>--}%
+            %{--</g:if>--}%
+            %{--<div class="divider"></div>--}%
+        %{--</sec:ifAnyGranted>--}%
 
         <g:if test="${subscriptionInstance.getCalculatedType() in [TemplateSupport.CALCULATED_TYPE_CONSORTIAL,TemplateSupport.CALCULATED_TYPE_COLLECTIVE] && accessService.checkPerm("ORG_INST_COLLECTIVE,ORG_CONSORTIUM")}">
             <g:if test="${previousSubscriptions}">

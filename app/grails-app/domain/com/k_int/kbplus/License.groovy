@@ -40,6 +40,8 @@ class License
     def changeNotificationService
     @Transient
     def propertyService
+    @Transient
+    def deletionService
 
     // AuditableTrait
     static auditable            = [ ignore: ['version', 'lastUpdated', 'pendingChanges'] ]
@@ -79,7 +81,7 @@ class License
   static hasOne = [onixplLicense: OnixplLicense]
 
   static hasMany = [
-          ids: IdentifierOccurrence,
+          ids: Identifier,
           pkgs:         Package,
           subscriptions:Subscription,
           documents:    DocContext,
@@ -166,6 +168,10 @@ class License
             }
         })
         lastUpdated(nullable: true, blank: true)
+    }
+
+    def afterDelete() {
+        deletionService.deleteDocumentFromIndex(this.class.name, this.globalUID)
     }
 
     @Override

@@ -28,11 +28,12 @@
         </g:if>
     </semui:controlButtons>
     
-    <h1 class="ui left aligned icon header"><semui:headerIcon />${message(code: 'menu.public.all_insts')}</h1>
+    <h1 class="ui left floated aligned icon header la-clear-before"><semui:headerIcon />${message(code: 'menu.public.all_insts')}</h1>
 
     <semui:messages data="${flash}" />
 
-    <semui:filter>
+    <g:render template="../templates/filter/javascript" />
+    <semui:filter showFilterButton="true">
         <g:form action="listInstitution" method="get" class="ui form">
             <g:render template="/templates/filter/orgFilter"
                       model="[
@@ -48,7 +49,7 @@
                       consortiaMemberIds: consortiaMemberIds,
                       tmplShowCheckbox: false,
                       tmplConfigShow: [
-                              'sortname', 'name', 'wibid', 'isil', 'federalState', 'libraryNetwork', 'libraryType', 'legalInformation', 'consortia',
+                              'sortname', 'name', 'wibid', 'isil', 'federalState', 'libraryNetwork', 'libraryType', 'legalInformation',
                               (editable ? 'consortiaToggle' : '')
                       ]
               ]"/>

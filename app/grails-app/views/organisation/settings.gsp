@@ -16,12 +16,12 @@
                 <semui:crumb text="${orgInstance.getDesignation()}" class="active"/>
             </g:if>
         </semui:breadcrumbs>
-
+        <br>
         <%--<semui:controlButtons>
             <g:render template="actions" model="${[ org:orgInstance, user:user ]}"/>
         </semui:controlButtons>--%>
 
-        <h1 class="ui left aligned icon header"><semui:headerIcon />${orgInstance.name}</h1>
+        <h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon />${orgInstance.name}</h1>
 
         <semui:objectStatus object="${orgInstance}" status="${orgInstance.status}" />
 
@@ -158,83 +158,104 @@
                     <div class="ui card la-dl-no-table la-js-hideable">
                         <div class="content">
                             <h5 class="ui header">
-                                ${message(code:'org.customerIdentifier')}
+                                ${message(code:'org.customerIdentifier.plural')}
                             </h5>
 
                             <table class="ui la-table table">
                                 <thead>
-                                <tr>
-                                    <th>Anbieter</th>
-                                    <th>Plattform</th>
-                                    <th>Kundennummer</th>
-                                    <th></th>
-                                </tr>
+                                    <tr>
+                                        <th>${message(code:'default.provider.label')} : ${message(code:'platform.label')}</th>
+                                        <th>${message(code:'org.customerIdentifier')}</th>
+                                        <th>${message(code:'default.note.label')}</th>
+                                        <th>${message(code:'default.isPublic.label')}</th>
+                                        <th></th>
+                                    </tr>
                                 </thead>
                                 <tbody>
                                     <g:each in="${customerIdentifier}" var="ci">
-                                        <tr>
-                                            <td>
-                                                ${ci.getProvider()}
-                                            </td>
-                                            <td>
-                                                ${ci.platform}
-                                            <td>
-                                                <g:if test="${editable}">
-                                                    <semui:xEditable owner="${ci}" field="value" />
+                                        <g:if test="${ci.isPublic || (ci.owner.id == contextService.getOrg().id) || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN,ROLE_ORG_EDITOR')}">
+                                            <tr>
+                                                <td>
+                                                    ${ci.getProvider()} : ${ci.platform}
+                                                </td>
+                                                <g:if test="${(editable && ci.owner.id == contextService.getOrg().id) || (isComboRelated && ci.owner.id == contextService.getOrg().id) || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN,ROLE_ORG_EDITOR')}">
+                                                    <td>
+                                                        <semui:xEditable owner="${ci}" field="value" overwriteEditable="true" />
+                                                    </td>
+                                                    <td>
+                                                        <semui:xEditable owner="${ci}" field="note" overwriteEditable="true" />
+                                                    </td>
+                                                    <td>
+                                                        <semui:xEditableBoolean owner="${ci}" field="isPublic" overwriteEditable="true" />
+                                                    </td>
+                                                    <td>
+                                                        <g:link controller="organisation" action="settings" id="${orgInstance.id}"
+                                                            params="${[deleteCI:ci.class.name + ':' + ci.id]}"
+                                                            class="ui button icon red"><i class="trash alternate icon"></i></g:link>
+                                                    </td>
                                                 </g:if>
                                                 <g:else>
-                                                    ${ci.value}
+                                                    <td>
+                                                        ${ci.value}
+                                                    </td>
+                                                    <td>
+                                                        ${ci.note}
+                                                    </td>
+                                                    <td>
+                                                        ${ci.isPublic ? message(code:'refdata.Yes') : message(code:'refdata.No')}
+                                                    </td>
+                                                    <td></td>
                                                 </g:else>
-                                            </td>
-                                            <td>
-                                            <g:if test="${editable}">
-                                                <g:link controller="organisation" action="settings" id="${orgInstance.id}"
-                                                    params="${[deleteCI:ci.class.name + ':' + ci.id]}"
-                                                    class="ui button icon red"><i class="trash alternate icon"></i></g:link>
-                                            </g:if>
-                                            </td>
-                                        </tr>
+                                            </tr>
+                                        </g:if>
                                     </g:each>
                                 </tbody>
-                                <g:if test="${editable}">
+                                <g:if test="${isComboRelated || editable || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN,ROLE_ORG_EDITOR')}">
                                 <tfoot>
-                                <tr>
-                                    <td colspan="4">
-                                        <g:form class="ui form" controller="organisation" action="settings" id="${orgInstance.id}">
-                                            <div class="ui grid">
-                                                <%--
-                                                <g:select id="addCIProvider" name="addCIProvider" class="ui dropdown selection"
-                                                          from="${formAllProviders}"
-                                                          optionKey="${{'com.k_int.kbplus.Org:' + it.id}}" optionValue="${{'(' + it.sortname +') ' + it.name}}" />
-                                                --%>
+                                    <tr>
+                                        <td colspan="4">
+                                            <g:form class="ui form" controller="organisation" action="settings" id="${orgInstance.id}">
+                                                <div class="ui grid">
+                                                    <%--
+                                                    <g:select id="addCIProvider" name="addCIProvider" class="ui dropdown selection"
+                                                              from="${formAllProviders}"
+                                                              optionKey="${{'com.k_int.kbplus.Org:' + it.id}}" optionValue="${{'(' + it.sortname +') ' + it.name}}" />
+                                                    --%>
 
-                                                <div class="eight wide column">
-                                                <div class="field">
-                                                    <label for="addCIPlatform">Anbieter : Plattform</label>
-                                                    <g:select id="addCIPlatform" name="addCIPlatform" class="ui dropdown fluid search selection"
-                                                              from="${allPlatforms}"
-                                                              optionKey="${{'com.k_int.kbplus.Platform:' + it.id}}"
-                                                              optionValue="${{ it.org.name + (it.org.sortname ? " (${it.org.sortname})" : '') + ' : ' + it.name}}" />
-                                                </div>
-                                            </div>
+                                                    <div class="six wide column">
+                                                        <div class="field">
+                                                            <label for="addCIPlatform">${message(code:'default.provider.label')} : ${message(code:'platform.label')}</label>
+                                                            <g:select id="addCIPlatform" name="addCIPlatform" class="ui dropdown fluid search selection"
+                                                                      from="${allPlatforms}"
+                                                                      optionKey="${{'com.k_int.kbplus.Platform:' + it.id}}"
+                                                                      optionValue="${{ it.org.name + (it.org.sortname ? " (${it.org.sortname})" : '') + ' : ' + it.name}}" />
+                                                        </div>
+                                                    </div>
 
-                                                <div class="four wide column">
-                                                    <div class="field">
-                                                    <label for="addCIValue">Kundennummer</label>
-                                                    <input type="text" id="addCIValue" name="addCIValue" value=""/>
-                                                </div>
-                                                </div>
+                                                    <div class="four wide column">
+                                                        <div class="field">
+                                                            <label for="addCIValue">${message(code:'org.customerIdentifier')}</label>
+                                                            <input type="text" id="addCIValue" name="addCIValue" value=""/>
+                                                        </div>
+                                                    </div>
 
-                                                <div class="four wide column">
-                                                    <div class="field">
-                                                    <label>&nbsp;</label>
-                                                    <input type="submit" class="ui button" value="${message(code:'default.button.add.label')}" />
+                                                    <div class="four wide column">
+                                                        <div class="field">
+                                                            <label for="addCINote">${message(code:'default.note.label')}</label>
+                                                            <input type="text" id="addCINote" name="addCINote" value=""/>
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="two wide column">
+                                                        <div class="field">
+                                                            <label>&nbsp;</label>
+                                                            <input type="submit" class="ui button" value="${message(code:'default.button.add.label')}" />
+                                                        </div>
+                                                    </div>
                                                 </div>
-                                                </div>
-                                            </div>
-                                        </g:form>
-                                    </td>
-                                </tr>
+                                            </g:form>
+                                        </td>
+                                    </tr>
                                 </tfoot>
                                 </g:if>
                             </table>

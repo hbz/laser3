@@ -9,7 +9,7 @@
   </head>
   <body>
 
-    <h1 class="ui left aligned icon header"><semui:headerIcon />${orgInstance.name}</h1>
+    <h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon />${orgInstance.name}</h1>
 
     <semui:messages data="${flash}" />
 
@@ -73,10 +73,10 @@
 
       </g:if>
         
-          <g:if test="${orgInstance?.ids?.sort{it?.identifier?.ns?.ns}}">
+          <g:if test="${orgInstance?.ids?.sort{it?.ns?.ns}}">
             <dt><g:message code="org.ids.label" default="Ids" /></dt>
-              <g:each in="${orgInstance.ids?.sort{it?.identifier?.ns?.ns}}" var="i">
-              <dd><g:link controller="identifier" action="show" id="${i.identifier.id}">${i?.identifier?.ns?.ns} : ${i?.identifier?.value}</g:link></dd>
+              <g:each in="${orgInstance.ids?.sort{it?.ns?.ns}}" var="i">
+              <dd><g:link controller="identifier" action="show" id="${i.id}">${i?.ns?.ns} : ${i?.value}</g:link></dd>
               </g:each>
           </g:if>
 
@@ -84,8 +84,8 @@
             <dt><g:message code="org.outgoingCombos.label" default="Outgoing Combos" /></dt>
             <g:each in="${orgInstance.outgoingCombos}" var="i">
               <dd>${i.type?.value} - <g:link controller="organisation" action="show" id="${i.toOrg.id}">${i.toOrg?.name}</g:link>
-                (<g:each in="${i?.toOrg?.ids?.sort{it?.identifier?.ns?.ns}}" var="id">
-                  ${id.identifier.ns.ns}: ${id.identifier.value}
+                (<g:each in="${i?.toOrg?.ids?.sort{it?.ns?.ns}}" var="id">
+                  ${id.ns.ns}: ${id.value}
                 </g:each>)
               </dd>
             </g:each>
@@ -95,8 +95,8 @@
             <dt><g:message code="org.incomingCombos.label" default="Incoming Combos" /></dt>
             <g:each in="${orgInstance.incomingCombos}" var="i">
               <dd>${i.type?.value} - <g:link controller="organisation" action="show" id="${i.toOrg.id}">${i.fromOrg?.name}</g:link>
-                (<g:each in="${i?.fromOrg?.ids?.sort{it?.identifier?.ns?.ns}}" var="id">
-                  ${id.identifier.ns.ns}: ${id.identifier.value}
+                (<g:each in="${i?.fromOrg?.ids?.sort{it?.ns?.ns}}" var="id">
+                  ${id.ns.ns}: ${id.value}
                 </g:each>)
               </dd>
 

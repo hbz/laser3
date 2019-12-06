@@ -1,12 +1,10 @@
 <%@ page import="com.k_int.kbplus.auth.User; com.k_int.kbplus.auth.Role; grails.plugin.springsecurity.SpringSecurityUtils; com.k_int.kbplus.ReaderNumber; de.laser.SubscriptionsQueryService; de.laser.helper.RDStore; com.k_int.kbplus.Subscription; java.text.SimpleDateFormat; com.k_int.kbplus.PersonRole; com.k_int.kbplus.ReaderNumber; com.k_int.kbplus.License; com.k_int.kbplus.Contact; com.k_int.kbplus.Org; com.k_int.kbplus.OrgRole; com.k_int.kbplus.RefdataValue" %>
 <laser:serviceInjection/>
+
 <table id="${tableID ?: ''}" class="ui sortable celled la-table table">
     <g:set var="sqlDateToday" value="${new java.sql.Date(System.currentTimeMillis())}"/>
     <thead>
     <tr>
-        <g:if test="${tmplConfigShow?.contains('lineNumber')}">
-            <th>${message(code: 'sidewide.number')}</th>
-        </g:if>
         <g:if test="${tmplShowCheckbox}">
             <th>
                 <g:if test="${orgList}">
@@ -14,25 +12,32 @@
                 </g:if>
             </th>
         </g:if>
-        <g:if test="${tmplConfigShow?.contains('sortname')}">
+
+        <g:each in="${tmplConfigShow}" var="tmplConfigItem" status="i">
+
+        <g:if test="${tmplConfigItem.equalsIgnoreCase('lineNumber')}">
+            <th>${message(code: 'sidewide.number')}</th>
+        </g:if>
+
+        <g:if test="${tmplConfigItem.equalsIgnoreCase('sortname')}">
             <g:sortableColumn title="${message(code: 'org.sortname.label', default: 'Sortname')}"
                               property="lower(o.sortname)" params="${request.getParameterMap()}"/>
         </g:if>
-        <g:if test="${tmplConfigShow?.contains('shortname')}">
+        <g:if test="${tmplConfigItem.equalsIgnoreCase('shortname')}">
             <g:sortableColumn title="${message(code: 'org.shortname.label', default: 'Shortname')}"
                               property="lower(o.shortname)" params="${request.getParameterMap()}"/>
         </g:if>
-        <g:if test="${tmplConfigShow?.contains('name')}">
+        <g:if test="${tmplConfigItem.equalsIgnoreCase('name')}">
             <g:sortableColumn title="${message(code: 'org.fullName.label', default: 'Name')}" property="lower(o.name)"
                               params="${request.getParameterMap()}"/>
         </g:if>
-        <g:if test="${tmplConfigShow?.contains('mainContact')}">
+        <g:if test="${tmplConfigItem.equalsIgnoreCase('mainContact')}">
             <th>${message(code: 'org.mainContact.label', default: 'Main Contact')}</th>
         </g:if>
-        <g:if test="${tmplConfigShow?.contains('hasInstAdmin')}">
+        <g:if test="${tmplConfigItem.equalsIgnoreCase('hasInstAdmin')}">
             <th>${message(code: 'org.hasInstAdmin.label')}</th>
         </g:if>
-        <g:if test="${tmplConfigShow?.contains('legalInformation')}">
+        <g:if test="${tmplConfigItem.equalsIgnoreCase('legalInformation')}">
             <th class="la-no-uppercase">
                 <span class="la-popup-tooltip la-delay"
                       data-content="${message(code:'org.legalInformation.tooltip')}" >
@@ -40,57 +45,57 @@
                 </span>
             </th>
         </g:if>
-        <g:if test="${tmplConfigShow?.contains('publicContacts')}">
+        <g:if test="${tmplConfigItem.equalsIgnoreCase('publicContacts')}">
             <th>${message(code: 'org.publicContacts.label', default: 'Public Contacts')}</th>
         </g:if>
-        <g:if test="${tmplConfigShow?.contains('privateContacts')}">
+        <g:if test="${tmplConfigItem.equalsIgnoreCase('privateContacts')}">
             <th>${message(code: 'org.privateContacts.label', default: 'Public Contacts')}</th>
         </g:if>
-        <g:if test="${tmplConfigShow?.contains('currentFTEs')}">
+        <g:if test="${tmplConfigItem.equalsIgnoreCase('currentFTEs')}">
             <th class="la-th-wrap">${message(code: 'org.currentFTEs.label', default: 'Current FTEs')}</th>
         </g:if>
-        <g:if test="${tmplConfigShow?.contains('numberOfSubscriptions')}">
+        <g:if test="${tmplConfigItem.equalsIgnoreCase('numberOfSubscriptions')}">
             <th class="la-th-wrap">${message(code: 'org.subscriptions.label', default: 'Public Contacts')}</th>
         </g:if>
         <g:if test="${grailsApplication.config.featureSurvey}">
-            <g:if test="${tmplConfigShow?.contains('numberOfSurveys')}">
+            <g:if test="${tmplConfigItem.equalsIgnoreCase('numberOfSurveys')}">
                 <th class="la-th-wrap">${message(code: 'survey.active')}</th>
             </g:if>
         </g:if>
-        <g:if test="${tmplConfigShow?.contains('identifier')}">
+        <g:if test="${tmplConfigItem.equalsIgnoreCase('identifier')}">
             <th>Identifier</th>
         </g:if>
-        <g:if test="${tmplConfigShow?.contains('wibid')}">
+        <g:if test="${tmplConfigItem.equalsIgnoreCase('wibid')}">
             <th>WIB</th>
         </g:if>
-        <g:if test="${tmplConfigShow?.contains('isil')}">
+        <g:if test="${tmplConfigItem.equalsIgnoreCase('isil')}">
             <th>ISIL</th>
         </g:if>
-        <g:if test="${tmplConfigShow?.contains('type')}">
+        <g:if test="${tmplConfigItem.equalsIgnoreCase('type')}">
             <th>${message(code: 'org.type.label', default: 'Type')}</th>
         </g:if>
-        <g:if test="${tmplConfigShow?.contains('sector')}">
+        <g:if test="${tmplConfigItem.equalsIgnoreCase('sector')}">
             <th>${message(code: 'org.sector.label', default: 'Sector')}</th>
         </g:if>
-        <g:if test="${tmplConfigShow?.contains('federalState')}">
+        <g:if test="${tmplConfigItem.equalsIgnoreCase('federalState')}">
             <th>${message(code: 'org.federalState.label')}</th>
         </g:if>
-        <g:if test="${tmplConfigShow?.contains('libraryNetwork')}">
+        <g:if test="${tmplConfigItem.equalsIgnoreCase('libraryNetwork')}">
             <th class="la-th-wrap la-hyphenation">${message(code: 'org.libraryNetworkTableHead.label')}</th>
         </g:if>
-        <g:if test="${tmplConfigShow?.contains('consortia')}">
+        <g:if test="${tmplConfigItem.equalsIgnoreCase('consortia')}">
             <th class="la-th-wrap la-hyphenation">${message(code: 'consortium.label')}</th>
         </g:if>
-        <g:if test="${tmplConfigShow?.contains('libraryType')}">
+        <g:if test="${tmplConfigItem.equalsIgnoreCase('libraryType')}">
             <th>${message(code: 'org.libraryType.label')}</th>
         </g:if>
-        <g:if test="${tmplConfigShow?.contains('country')}">
+        <g:if test="${tmplConfigItem.equalsIgnoreCase('country')}">
             <th>${message(code: 'org.country.label')}</th>
         </g:if>
-        <g:if test="${tmplConfigShow?.contains('consortiaToggle')}">
+        <g:if test="${tmplConfigItem.equalsIgnoreCase('consortiaToggle')}">
             <th class="la-th-wrap la-hyphenation">${message(code: 'org.consortiaToggle.label')}</th>
         </g:if>
-        <g:if test="${tmplConfigShow?.contains('addSubMembers')}">
+        <g:if test="${tmplConfigItem.equalsIgnoreCase('addSubMembers')}">
             <th>
                 ${message(code: 'subscription.details.addMembers.option.package.label')}
             </th>
@@ -98,22 +103,22 @@
                 ${message(code: 'subscription.details.addMembers.option.issueEntitlement.label')}
             </th>
         </g:if>
-        <g:if test="${tmplConfigShow?.contains('surveySubInfo')}">
+        <g:if test="${tmplConfigItem.equalsIgnoreCase('surveySubInfo')}">
             <th>
                 ${message(code: 'subscription')}
             </th>
         </g:if>
-        <g:if test="${tmplConfigShow?.contains('surveySubInfoStartEndDate')}">
+        <g:if test="${tmplConfigItem.equalsIgnoreCase('surveySubInfoStartEndDate')}">
             <th>
                 ${message(code: 'surveyProperty.subDate')}
             </th>
         </g:if>
-        <g:if test="${tmplConfigShow?.contains('surveySubInfoStatus')}">
+        <g:if test="${tmplConfigItem.equalsIgnoreCase('surveySubInfoStatus')}">
             <th>
                 ${message(code: 'subscription.status.label')}
             </th>
         </g:if>
-        <g:if test="${tmplConfigShow?.contains('surveySubCostItem')}">
+        <g:if test="${tmplConfigItem.equalsIgnoreCase('surveySubCostItem')}">
             <th>
                 <g:set var="costItemElements"
                        value="${com.k_int.kbplus.RefdataValue.executeQuery('select ciec.costItemElement from CostItemElementConfiguration ciec where ciec.forOrganisation = :org', [org: institution])}"/>
@@ -130,12 +135,14 @@
                 </g:form>
             </th>
         </g:if>
-        <g:if test="${tmplConfigShow?.contains('surveyCostItem')}">
+        <g:if test="${tmplConfigItem.equalsIgnoreCase('surveyCostItem')}">
             <th>
                 ${message(code: 'surveyCostItems.label')}
             </th>
             <th></th>
         </g:if>
+
+        </g:each>
     </tr>
     </thead>
     <tbody>
@@ -153,11 +160,7 @@
         <g:else>
             <tr>
         </g:else>
-        <g:if test="${tmplConfigShow?.contains('lineNumber')}">
-            <td class="center aligned">
-                ${(params.int('offset') ?: 0) + i + 1}<br>
-            </td>
-        </g:if>
+
         <g:if test="${tmplShowCheckbox}">
             <td>
                 <g:if test="${comboType == RDStore.COMBO_TYPE_DEPARTMENT}">
@@ -171,12 +174,20 @@
             </td>
         </g:if>
 
-        <g:if test="${tmplConfigShow?.contains('sortname')}">
+        <g:each in="${tmplConfigShow}" var="tmplConfigItem">
+
+        <g:if test="${tmplConfigItem.equalsIgnoreCase('lineNumber')}">
+            <td class="center aligned">
+                ${(params.int('offset') ?: 0) + i + 1}<br>
+            </td>
+        </g:if>
+
+        <g:if test="${tmplConfigItem.equalsIgnoreCase('sortname')}">
             <td>
                 ${org.sortname}
             </td>
         </g:if>
-        <g:if test="${tmplConfigShow?.contains('shortname')}">
+        <g:if test="${tmplConfigItem.equalsIgnoreCase('shortname')}">
             <td>
                 <g:if test="${tmplDisableOrgIds && (org.id in tmplDisableOrgIds)}">
                     <g:if test="${org.shortname}">
@@ -192,18 +203,18 @@
                 </g:else>
             </td>
         </g:if>
-        <g:if test="${tmplConfigShow?.contains('name')}">
+        <g:if test="${tmplConfigItem.equalsIgnoreCase('name')}">
             <td class="la-main-object" >
                 <g:if test="${tmplDisableOrgIds && (org.id in tmplDisableOrgIds)}">
                     ${fieldValue(bean: org, field: "name")} <br>
-                    <g:if test="${org.shortname && !tmplConfigShow?.contains('shortname')}">
+                    <g:if test="${org.shortname && !tmplConfigItem.equalsIgnoreCase('shortname')}">
                         (${fieldValue(bean: org, field: "shortname")})
                     </g:if>
                 </g:if>
                 <g:else>
                     <g:link controller="organisation"  action="show" id="${org.id}">
                         ${fieldValue(bean: org, field: "name")} <br>
-                        <g:if test="${org.shortname && !tmplConfigShow?.contains('shortname')}">
+                        <g:if test="${org.shortname && !tmplConfigItem.equalsIgnoreCase('shortname')}">
                             (${fieldValue(bean: org, field: "shortname")})
                         </g:if>
                     </g:link>
@@ -211,7 +222,7 @@
             </td>
         </g:if>
 
-        <g:if test="${tmplConfigShow?.contains('mainContact')}">
+        <g:if test="${tmplConfigItem.equalsIgnoreCase('mainContact')}">
             <td>
                 <g:each in="${PersonRole.findAllByFunctionTypeAndOrg(RefdataValue.getByValueAndCategory('General contact person', 'Person Function'), org)}"
                         var="personRole">
@@ -254,7 +265,7 @@
                 </g:each>
             </td>
         </g:if>
-        <g:if test="${tmplConfigShow?.contains('hasInstAdmin')}">
+        <g:if test="${tmplConfigItem.equalsIgnoreCase('hasInstAdmin')}">
             <td>
                 <%
                     String instAdminIcon = '<i class="large red times icon"></i>'
@@ -270,7 +281,7 @@
                 </g:else>
             </td>
         </g:if>
-        <g:if test="${tmplConfigShow?.contains('legalInformation')}">
+        <g:if test="${tmplConfigItem.equalsIgnoreCase('legalInformation')}">
             <td>
                 <g:if test="${org.createdBy && org.legallyObligedBy}">
                     <span class="la-popup-tooltip la-delay" data-position="top right"
@@ -292,7 +303,7 @@
                 </g:elseif>
             </td>
         </g:if>
-        <g:if test="${tmplConfigShow?.contains('publicContacts')}">
+        <g:if test="${tmplConfigItem.equalsIgnoreCase('publicContacts')}">
             <td>
                 <g:each in="${org?.prsLinks?.toSorted()}" var="pl">
                     <g:if test="${pl.functionType?.value && pl.prs.isPublic}">
@@ -308,9 +319,34 @@
                 </g:each>
             </td>
         </g:if>
-        <g:if test="${tmplConfigShow?.contains('privateContacts')}">
+        <g:if test="${tmplConfigItem.equalsIgnoreCase('privateContacts')}">
             <td>
+                <g:set var="visiblePrivateContacts" value="[]" />
                 <g:each in="${org?.prsLinks?.toSorted()}" var="pl">
+                    <g:if test="${pl?.functionType?.value && (! pl.prs.isPublic) && pl?.prs?.tenant?.id == contextService.getOrg()?.id}">
+
+                        <g:if test="${! visiblePrivateContacts.contains(pl.prs.id)}">
+                            <g:set var="visiblePrivateContacts" value="${visiblePrivateContacts + pl.prs.id}" />
+
+                            <g:render template="/templates/cpa/person_full_details" model="${[
+                                    person                  : pl.prs,
+                                    personContext           : org,
+                                    tmplShowDeleteButton    : true,
+                                    tmplShowAddPersonRoles  : false,
+                                    tmplShowAddContacts     : false,
+                                    tmplShowAddAddresses    : false,
+                                    tmplShowFunctions       : true,
+                                    tmplShowPositions       : true,
+                                    tmplShowResponsiblities : false,
+                                    tmplConfigShow          : ['E-Mail', 'Mail', 'Phone'],
+                                    controller              : 'organisation',
+                                    action                  : 'show',
+                                    id                      : org.id,
+                                    editable                : true
+                            ]}"/>
+                        </g:if>
+                    </g:if>
+                    <%--
                     <g:if test="${pl?.functionType?.value && (! pl.prs.isPublic) && pl?.prs?.tenant?.id == contextService.getOrg()?.id}">
                         <g:render template="/templates/cpa/person_details" model="${[
                                 personRole          : pl,
@@ -321,10 +357,11 @@
                                 id                  : org.id
                         ]}"/>
                     </g:if>
+                    --%>
                 </g:each>
             </td>
         </g:if>
-        <g:if test="${tmplConfigShow?.contains('currentFTEs')}">
+        <g:if test="${tmplConfigItem.equalsIgnoreCase('currentFTEs')}">
             <td>
                 <g:each in="${ReaderNumber.findAllByOrgAndReferenceGroup(org, RefdataValue.getByValueAndCategory('Students', 'Number Type').getI10n('value'))?.sort {
                     it.type?.getI10n("value")
@@ -335,7 +372,7 @@
                 </g:each>
             </td>
         </g:if>
-        <g:if test="${tmplConfigShow?.contains('numberOfSubscriptions')}">
+        <g:if test="${tmplConfigItem.equalsIgnoreCase('numberOfSubscriptions')}">
             <td class="center aligned">
                 <div class="la-flexbox">
                     <% (base_qry, qry_params) = subscriptionsQueryService.myInstitutionCurrentSubscriptionsBaseQuery([org: org, actionName: actionName, status: RDStore.SUBSCRIPTION_CURRENT.id], contextService.org)
@@ -361,7 +398,7 @@
             </td>
         </g:if>
         <g:if test="${grailsApplication.config.featureSurvey}">
-            <g:if test="${tmplConfigShow?.contains('numberOfSurveys')}">
+            <g:if test="${tmplConfigItem.equalsIgnoreCase('numberOfSurveys')}">
                 <td class="center aligned">
                     <div class="la-flexbox">
 
@@ -402,50 +439,50 @@
                 </td>
             </g:if>
         </g:if>
-        <g:if test="${tmplConfigShow?.contains('identifier')}">
+        <g:if test="${tmplConfigItem.equalsIgnoreCase('identifier')}">
             <td><g:if test="${org.ids}">
                 <div class="ui list">
-                    <g:each in="${org.ids?.sort { it?.identifier?.ns?.ns }}" var="id"><div
-                            class="item">${id.identifier.ns.ns}: ${id.identifier.value}</div></g:each>
+                    <g:each in="${org.ids?.sort { it?.ns?.ns }}" var="id"><div
+                            class="item">${id.ns.ns}: ${id.value}</div></g:each>
                 </div>
             </g:if></td>
         </g:if>
-        <g:if test="${tmplConfigShow?.contains('wibid')}">
+        <g:if test="${tmplConfigItem.equalsIgnoreCase('wibid')}">
             <td>${org.getIdentifiersByType('wibid')?.value?.join(', ')}</td>
         </g:if>
-        <g:if test="${tmplConfigShow?.contains('isil')}">
+        <g:if test="${tmplConfigItem.equalsIgnoreCase('isil')}">
             <td>${org.getIdentifiersByType('isil')?.value?.join(', ')}</td>
         </g:if>
-        <g:if test="${tmplConfigShow?.contains('type')}">
+        <g:if test="${tmplConfigItem.equalsIgnoreCase('type')}">
             <td>
                 <g:each in="${org.orgType?.sort { it?.getI10n("value") }}" var="type">
                     ${type.getI10n("value")}
                 </g:each>
             </td>
         </g:if>
-        <g:if test="${tmplConfigShow?.contains('sector')}">
+        <g:if test="${tmplConfigItem.equalsIgnoreCase('sector')}">
             <td>${org.sector?.getI10n('value')}</td>
         </g:if>
-        <g:if test="${tmplConfigShow?.contains('federalState')}">
+        <g:if test="${tmplConfigItem.equalsIgnoreCase('federalState')}">
             <td>${org.federalState?.getI10n('value')}</td>
         </g:if>
-        <g:if test="${tmplConfigShow?.contains('libraryNetwork')}">
+        <g:if test="${tmplConfigItem.equalsIgnoreCase('libraryNetwork')}">
             <td>${org.libraryNetwork?.getI10n('value')}</td>
         </g:if>
-        <g:if test="${tmplConfigShow?.contains('consortia')}">
+        <g:if test="${tmplConfigItem.equalsIgnoreCase('consortia')}">
             <td>
                 <g:each in="${org.outgoingCombos}" var="combo">
                     ${combo.toOrg.name}<br><br>
                 </g:each>
             </td>
         </g:if>
-        <g:if test="${tmplConfigShow?.contains('libraryType')}">
+        <g:if test="${tmplConfigItem.equalsIgnoreCase('libraryType')}">
             <td>${org.libraryType?.getI10n('value')}</td>
         </g:if>
-        <g:if test="${tmplConfigShow?.contains('country')}">
+        <g:if test="${tmplConfigItem.equalsIgnoreCase('country')}">
             <td>${org.country?.getI10n('value')}</td>
         </g:if>
-        <g:if test="${tmplConfigShow?.contains('consortiaToggle')}">
+        <g:if test="${tmplConfigItem.equalsIgnoreCase('consortiaToggle')}">
             <td>
             <%-- here: switch if in consortia or not --%>
                 <g:if test="${!consortiaMemberIds.contains(org.id)}">
@@ -466,7 +503,7 @@
             </td>
         </g:if>
 
-        <g:if test="${tmplConfigShow?.contains('addSubMembers')}">
+        <g:if test="${tmplConfigItem.equalsIgnoreCase('addSubMembers')}">
             <g:if test="${subInstance?.packages}">
                 <td><g:each in="${subInstance?.packages}">
                     <g:checkBox type="text" id="selectedPackage_${org.id + it.pkg.id}"
@@ -487,7 +524,7 @@
         </g:else>
         </g:if>
 
-        <g:if test="${tmplConfigShow?.contains('surveySubInfo')}">
+        <g:if test="${tmplConfigItem.equalsIgnoreCase('surveySubInfo')}">
             <td>
                 <g:if test="${existSubforOrg}">
 
@@ -504,7 +541,7 @@
                 </g:if>
             </td>
         </g:if>
-        <g:if test="${tmplConfigShow?.contains('surveySubInfoStartEndDate')}">
+        <g:if test="${tmplConfigItem.equalsIgnoreCase('surveySubInfoStartEndDate')}">
             <td>
                 <g:if test="${existSubforOrg}">
                     <g:if test="${orgSub?.isCurrentMultiYearSubscription()}">
@@ -522,7 +559,7 @@
                 </g:if>
             </td>
         </g:if>
-        <g:if test="${tmplConfigShow?.contains('surveySubInfoStatus')}">
+        <g:if test="${tmplConfigItem.equalsIgnoreCase('surveySubInfoStatus')}">
             <td>
                 <g:if test="${existSubforOrg}">
                         <g:if test="${orgSub?.isCurrentMultiYearSubscription()}">
@@ -538,7 +575,7 @@
                 </g:if>
             </td>
         </g:if>
-        <g:if test="${tmplConfigShow?.contains('surveySubCostItem')}">
+        <g:if test="${tmplConfigItem.equalsIgnoreCase('surveySubCostItem')}">
             <td class="center aligned x">
 
             <g:if test="${orgSub?.isCurrentMultiYearSubscription()}">
@@ -620,8 +657,10 @@
 
             </td>
         </g:if>
+
+        </g:each><!-- tmplConfigShow -->
         </tr>
-    </g:each>
+    </g:each><!-- orgList -->
     </tbody>
 </table>
 

@@ -15,7 +15,7 @@ class IdentifierNamespace {
     @Transient
     public static final NS_TITLE        = "com.k_int.kbplus.TitleInstance"
     @Transient
-    public static final NS_CREATOR        = "com.k_int.kbplus.Creator"
+    public static final NS_CREATOR      = "com.k_int.kbplus.Creator"
 
 
     @Transient
@@ -39,13 +39,13 @@ class IdentifierNamespace {
     Date lastUpdated
 
     static mapping = {
-        id column:'idns_id'
-        ns column:'idns_ns'
-        nsType column:'idns_type'
+        id          column:'idns_id'
+        ns          column:'idns_ns'
+        nsType      column:'idns_type'
         isHidden    column:'idns_is_hidden'
         isUnique    column:'idns_is_unique'
         validationRegex column:'idns_val_regex'
-        family column:'idns_family'
+        family      column:'idns_family'
 
         lastUpdated column: 'idns_last_updated'
         dateCreated column: 'idns_date_created'
@@ -53,10 +53,10 @@ class IdentifierNamespace {
 
     static constraints = {
         nsType          nullable:true, blank:false
-        isHidden        nullable:false, blank:false, default: false
+        isHidden        nullable:false, blank:false
         validationRegex nullable:true, blank:false
         family          nullable:true, blank:false
-        isUnique        nullable:false, blank:false, default: true
+        isUnique        nullable:false, blank:false
 
         // Nullable is true, because values are already in the database
         lastUpdated (nullable: true, blank: false)

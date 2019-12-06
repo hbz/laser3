@@ -51,14 +51,15 @@
     </semui:exportDropdown>
 </semui:controlButtons>
 
-<h1 class="ui left aligned icon header">
+<h1 class="ui left floated aligned icon header la-clear-before">
     <semui:headerIcon />${message(code: 'menu.my.consortiaSubscriptions')}
     <semui:totalNumber total="${countCostItems}"/>
 </h1>
 
 <semui:messages data="${flash}"/>
 
-<semui:filter>
+<g:render template="/templates/filter/javascript" />
+<semui:filter showFilterButton="true">
     <g:form action="manageConsortiaSubscriptions" controller="myInstitution" method="get" class="ui small form">
 
         <div class="three fields">
@@ -141,9 +142,10 @@
 
         <div class="two fields">
             <div class="field">
-                <label for="subscritionType">${message(code: 'myinst.currentSubscriptions.subscription_type')}</label>
+
 
                 <fieldset id="subscritionType">
+                    <legend for="subscritionType">${message(code: 'myinst.currentSubscriptions.subscription_type')}</legend>
                     <div class="inline fields la-filter-inline">
 
                         <g:each in="${filterSubTypes}" var="subType">

@@ -35,41 +35,43 @@ double t8 = 0L
 
         <g:if test="${controllerName == 'myInstitution' || controllerName == 'ajax'}">
             <div class="field fieldcontain required">
-                <label for="typ">
-                    <g:message code="task.typ" default="Task Typ"/>
-                </label>
-                <div class="ui radio checkbox">
-                    <input id="generalradio" type="radio" value="general" name="linkto" tabindex="0" class="hidden" checked="">
-                    <label for="generalradio">${message(code: 'task.general')}</label>
-                </div>
-                &nbsp &nbsp
-                <div class="ui radio checkbox">
-                    <input id="licenseradio" type="radio" value="license" name="linkto" tabindex="0" class="hidden">
-                    <label for="licenseradio">
-                        <g:message code="task.license.label" default="License"/>
-                    </label>
-                </div>
-                &nbsp &nbsp
-                <div class="ui radio checkbox">
-                    <input id="pkgradio" type="radio" value="pkg" name="linkto" tabindex="0" class="hidden">
-                    <label for="pkgradio">
-                        <g:message code="task.pkg.label" default="Pkg"/>
-                    </label>
-                </div>
-                &nbsp &nbsp
-                <div class="ui radio checkbox">
-                    <input id="subscriptionradio" type="radio" value="subscription" name="linkto" tabindex="0" class="hidden">
-                    <label for="subscriptionradio">
-                        <g:message code="task.subscription.label" default="Subscription"/>
-                    </label>
-                </div>
-                &nbsp &nbsp
-                <div class="ui radio checkbox">
-                    <input id="orgradio" type="radio" value="org" name="linkto" tabindex="0" class="hidden">
-                    <label for="orgradio">
-                        <g:message code="task.org.label" default="Subscription"/>
-                    </label>
-                </div>
+                <fieldset>
+                    <legend>
+                        <g:message code="task.typ" default="Task Typ"/>
+                    </legend>
+                    <div class="ui radio checkbox">
+                        <input id="generalradio" type="radio" value="general" name="linkto" tabindex="0" class="hidden" checked="">
+                        <label for="generalradio">${message(code: 'task.general')}</label>
+                    </div>
+                    &nbsp &nbsp
+                    <div class="ui radio checkbox">
+                        <input id="licenseradio" type="radio" value="license" name="linkto" tabindex="0" class="hidden">
+                        <label for="licenseradio">
+                            <g:message code="task.license.label" default="License"/>
+                        </label>
+                    </div>
+                    &nbsp &nbsp
+                    <div class="ui radio checkbox">
+                        <input id="pkgradio" type="radio" value="pkg" name="linkto" tabindex="0" class="hidden">
+                        <label for="pkgradio">
+                            <g:message code="task.pkg.label" default="Pkg"/>
+                        </label>
+                    </div>
+                    &nbsp &nbsp
+                    <div class="ui radio checkbox">
+                        <input id="subscriptionradio" type="radio" value="subscription" name="linkto" tabindex="0" class="hidden">
+                        <label for="subscriptionradio">
+                            <g:message code="task.subscription.label" default="Subscription"/>
+                        </label>
+                    </div>
+                    &nbsp &nbsp
+                    <div class="ui radio checkbox">
+                        <input id="orgradio" type="radio" value="org" name="linkto" tabindex="0" class="hidden">
+                        <label for="orgradio">
+                            <g:message code="task.org.label" default="Subscription"/>
+                        </label>
+                    </div>
+                </fieldset>
             </div>
             <% t1 = System.currentTimeMillis() %>
 
@@ -78,22 +80,15 @@ double t8 = 0L
                 <label for="license">
                     <g:message code="task.linkto" default="Task link to "/><g:message code="task.license.label" default="License"/>
                 </label>
-                <g:select id="license"
+                <g:select class="ui dropdown search many-to-one"
+                          id="license"
                           name="license"
                           from="${validLicensesDropdown}"
-                          optionKey="${{it?.optionKey}}"
-                          optionValue="${{it?.optionValue}}"
+                          optionKey="${{it.optionKey}}"
+                          optionValue="${{it.optionValue}}"
                           value="${ownobj?.id}"
-                          class="ui dropdown search many-to-one"
                           noSelection="[null: '']"/>
-                %{--<g:select id="license"--}%
-                          %{--name="license"--}%
-                          %{--from="${validLicensesDropdown}"--}%
-                          %{--optionKey="${{it ? it[0] : null}}"--}%
-                          %{--optionValue="${{it[1] + ' ' + (it[2].getI10n('value')) + ' (' + (it[3] ? it[3]?.format('dd.MM.yy') : '') + ('-') + (it[4] ? it[4]?.format('dd.MM.yy') : '') + ')' }}"--}%
-                          %{--value="${ownobj?.id}"--}%
-                          %{--class="ui dropdown search many-to-one"--}%
-                          %{--noSelection="[null: '']"/>--}%
+
             </div>
             <% t2 = System.currentTimeMillis() %>
 
@@ -101,29 +96,14 @@ double t8 = 0L
             <label for="org">
                 <g:message code="task.linkto" default="Task link to "/><g:message code="task.org.label" default="Org"/>
             </label>
-                <g:if test="${RDStore.OT_INSTITUTION == contextOrg?.getCustomerType()}">
-                    <g:select id="org"
+                <g:select id="org"
                           name="org"
                           from="${validOrgsDropdown}"
-                          optionKey="${{it ? it[0] : null}}"
-                              optionValue="${{(it[1]?:'') + ' (' + (it[2]?:'') +')'}}"
+                          optionKey="${{it.optionKey}}"
+                          optionValue="${{it.optionValue}}"
                           value="${ownobj?.id}"
                           class="ui dropdown search many-to-one"
                           noSelection="[null: '']"/>
-                          %{--optionValue="${{it[1]  + ' (' + it[2] +')'}}"--}%
-                          optionValue="${{it[1]?:'' + ' (' + it[2]?:'' +')'}}"
-                </g:if>
-                <g:else>
-                    <g:select id="org"
-                          name="org"
-                          from="${validOrgsDropdown}"
-                          optionKey="${{it ? it[0] : null}}"
-                          optionValue="${{(it[3]?:'')  + ' (' + (it[1]?:'')  + ')'}}"
-                          value="${ownobj?.id}"
-                          class="ui dropdown search many-to-one"
-                          noSelection="[null: '']"/>
-                </g:else>
-
             </div>
             <% t3 = System.currentTimeMillis()%>
 
@@ -141,21 +121,12 @@ double t8 = 0L
                 <label for="subscription">
                     <g:message code="task.linkto" default="Task link to "/><g:message code="task.subscription.label" default="Subscription"/>
                 </label>
-                %{--TODO instanceOf--}%
-                %{--<g:set var="consortialLicense" value="${message('gasco.filter.consortialLicence')}" />--}%
-                <g:set var="NO_STATUS" value="${RDStore.SUBSCRIPTION_NO_STATUS.getI10n('value')}" />
                 <g:select class="ui dropdown search many-to-one"
                           id="subscription"
                           name="subscription"
-                          from="${validSubscriptionDropdown}"
-                          optionValue="${{it ? (it[1]
-                                  + ((it[2]||it[3]) ? ' (' : ' ')
-                                  + (it[2] ? (it[2]?.format('dd.MM.yy')) : '')
-                                  +  '-'
-                                  + (it[3] ? (it[3]?.format('dd.MM.yy')) : '')
-                                  + ((it[2]||it[3]) ? ') ' : ' ')
-                                  + (it[4]?: NO_STATUS)  ) : null}}"
-                          optionKey="${{it ? it[0] : null}}"
+                          from="${validSubscriptionsDropdown}"
+                          optionKey="${{it.optionKey}}"
+                          optionValue="${{it.optionValue}}"
                           value="${ownobj?.id}"
                           noSelection="[null: '']"/>
 
@@ -177,7 +148,9 @@ double t8 = 0L
                                   from="${com.k_int.kbplus.RefdataCategory.getAllRefdataValues('Task Status')}"
                                   optionValue="value" optionKey="id" required=""
                                   value="${taskInstance?.status?.id ?: com.k_int.kbplus.RefdataValue.findByValueAndOwner("Open", com.k_int.kbplus.RefdataCategory.findByDesc('Task Status')).id}"
-                                  class="ui dropdown search many-to-one"/>
+                                  class="ui dropdown search many-to-one"
+                                  noSelection="${['' : message(code:'default.select.choose.label')]}"
+                    />
                 </div>
 
                 <semui:datepicker class="wide eight" label="task.endDate.label" id="endDate" name="endDate"
@@ -191,38 +164,41 @@ double t8 = 0L
         <div class="field" id="radioGroup">
             <div class="two fields">
                 <div class="field wide eight fieldcontain ${hasErrors(bean: taskInstance, field: 'responsible', 'error')}">
-                    <label for="responsible">
-                        <g:message code="task.responsible.label" default="Responsible"/>
-                    </label>
+                    <fieldset>
+                        <legend>
+                            <g:message code="task.responsible.label" default="Responsible"/>
+                        </legend>
 
-                    <div class="field">
-                        <div class="ui radio checkbox">
-                            <input id="radioresponsibleOrg" type="radio" value="Org" name="responsible" tabindex="0" class="hidden" checked="">
-                            <label for="radioresponsibleOrg">${message(code: 'task.responsibleOrg.label')} <strong>${contextService?.org?.getDesignation()}</strong> </label>
+                        <div class="field">
+                            <div class="ui radio checkbox">
+                                <input id="radioresponsibleOrg" type="radio" value="Org" name="responsible" tabindex="0" class="hidden" checked="">
+                                <label for="radioresponsibleOrg">${message(code: 'task.responsibleOrg.label')} <strong>${contextService?.org?.getDesignation()}</strong> </label>
+                            </div>
                         </div>
-                    </div>
 
-                    <div class="field">
-                        <div class="ui radio checkbox">
-                            <input id="radioresponsibleUser" type="radio" value="User" name="responsible" tabindex="0" class="hidden">
-                            <label for="radioresponsibleUser">${message(code: 'task.responsibleUser.label')}</label>
+                        <div class="field">
+                            <div class="ui radio checkbox">
+                                <input id="radioresponsibleUser" type="radio" value="User" name="responsible" tabindex="0" class="hidden">
+                                <label for="radioresponsibleUser">${message(code: 'task.responsibleUser.label')}</label>
+                            </div>
                         </div>
-                    </div>
+                    </fieldset>
                 </div>
 
                 <div id="responsibleUser"
                      class="field wide eight fieldcontain ${hasErrors(bean: taskInstance, field: 'responsibleUser', 'error')}">
-                    <label for="responsibleUser">
+                    <label for="responsibleUserInput">
                         <g:message code="task.responsibleUser.label" default="Responsible User"/>
                     </label>
-                    <g:select id="responsibleUser"
+                    <g:select id="responsibleUserInput"
                               name="responsibleUser.id"
                               from="${validResponsibleUsers}"
                               optionKey="id"
                               optionValue="display"
                               value="${taskInstance?.responsibleUser?.id}"
                               class="ui dropdown search many-to-one"
-                              noSelection="['null': '']"/>
+                              noSelection="${['' : message(code:'default.select.choose.label')]}"
+                    />
                 </div>
             </div>
             <% t8 = System.currentTimeMillis()%>
@@ -230,14 +206,12 @@ double t8 = 0L
 
     </g:form>
     %{--controllerName ${controllerName}<br>--}%
-    %{--validLicenses ${validLicenses?.size()}<br>--}%
     %{--validLicensesDropdown ${validLicensesDropdown?.size()}<br>--}%
-    %{--validOrgs ${validOrgs?.size()}<br>--}%
     %{--validOrgsDropdown ${validOrgsDropdown?.size()}<br>--}%
     %{--validPackages ${validPackages?.size()}<br>--}%
-    %{--validSubscriptionDropdown ${validSubscriptionDropdown?.size()}<br>--}%
+    %{--validSubscriptionsDropdown ${validSubscriptionsDropdown?.size()}<br>--}%
     %{--validResponsibleUsers ${validResponsibleUsers?.size()}<br><br>--}%
-    %{--Zeiten:--}%
+    %{--Zeiten:<br/>--}%
     %{--<% java.text.DecimalFormat myFormatter = new java.text.DecimalFormat("###,###"); %>--}%
     %{--t1 ${myFormatter.format(t1-start)}<br>--}%
     %{--t2 ${myFormatter.format(t2-t1)}<br>--}%

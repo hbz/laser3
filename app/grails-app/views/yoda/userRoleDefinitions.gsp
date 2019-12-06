@@ -10,10 +10,10 @@
     <semui:crumb message="menu.yoda.dash" controller="yoda" action="index"/>
     <semui:crumb message="menu.yoda.userRoleDefinitions" class="active"/>
 </semui:breadcrumbs>
+<br>
+<h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon />${message(code:'menu.yoda.userRoleDefinitions')}</h1>
 
-<h1 class="ui left aligned icon header"><semui:headerIcon />${message(code:'menu.yoda.userRoleDefinitions')}</h1>
 
-<br />
 
 <table class="ui table la-table">
     <thead>

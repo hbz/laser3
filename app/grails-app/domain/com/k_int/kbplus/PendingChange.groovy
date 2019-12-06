@@ -2,6 +2,8 @@ package com.k_int.kbplus
 
 import com.k_int.kbplus.auth.User
 import de.laser.helper.RefdataAnnotation
+import net.sf.json.JSON
+import org.codehaus.groovy.grails.web.json.JSONElement
 import org.springframework.context.MessageSource
 
 import javax.persistence.Transient
@@ -31,7 +33,7 @@ class PendingChange {
     Date ts
     Org owner
     String oid
-    String changeDoc
+    String payload
     String msgToken
     String msgParams
 
@@ -55,7 +57,7 @@ class PendingChange {
                 pkg column:'pc_pkg_fk',     index:'pending_change_pkg_idx'
            costItem column:'pc_ci_fk',      index:'pending_change_costitem_idx'
                 oid column:'pc_oid',        index:'pending_change_oid_idx'
-          changeDoc column:'pc_change_doc', type:'text'
+            payload column:'pc_payload', type:'text'
            msgToken column:'pc_msg_token'
           msgParams column:'pc_msg_doc', type:'text'
                  ts column:'pc_ts'
@@ -74,7 +76,7 @@ class PendingChange {
         systemObject(nullable:true, blank:false);
         subscription(nullable:true, blank:false);
         license(nullable:true, blank:false);
-        changeDoc(nullable:true, blank:false);
+        payload(nullable:true, blank:false);
         msgToken(nullable:true, blank:false)
         msgParams(nullable:true, blank:false)
         pkg(nullable:true, blank:false)
@@ -94,6 +96,16 @@ class PendingChange {
 
     def resolveOID() {
         genericOIDService.resolveOID(oid)
+    }
+
+    JSONElement getPayloadAsJSON() {
+        payload ? grails.converters.JSON.parse(payload) : grails.converters.JSON.parse('{}')
+    }
+
+    JSONElement getChangeDocAsJSON() {
+        def payload = getPayloadAsJSON()
+
+        payload.changeDoc ?: grails.converters.JSON.parse('{}')
     }
 
     def getMessage() {

@@ -17,7 +17,7 @@
 
 <g:set var="personType" value="${!personInstance.contactType || personInstance.contactType?.id == RDStore.CONTACT_TYPE_PERSONAL.id}" />
 
-<h1 class="ui left aligned icon header"><semui:headerIcon />
+<h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon />
 ${personInstance}
 </h1>
 

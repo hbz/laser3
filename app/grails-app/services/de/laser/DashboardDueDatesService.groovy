@@ -68,11 +68,14 @@ class DashboardDueDatesService {
         }
     }
     private updateDashboardTableInDatabase(def flash){
-        log.debug("Start DashboardDueDatesService updateDashboardTableInDatabase")
         SystemEvent.createEvent('DBDD_SERVICE_START_2')
+        SystemEvent.createEvent('DBDD_SERVICE_START_COLLECT_DASHBOARD_DATA')
+        Date now = new Date();
+        log.debug("Start DashboardDueDatesService updateDashboardTableInDatabase")
 
         List<DashboardDueDate> dashboarEntriesToInsert = []
         def users = User.findAllByEnabledAndAccountExpiredAndAccountLocked(true, false, false)
+//        def users = [User.get(96)]
         users.each { user ->
             def orgs = Org.executeQuery(QRY_ALL_ORGS_OF_USER, user);
             orgs.each {org ->
@@ -81,27 +84,66 @@ class DashboardDueDatesService {
                     if (obj instanceof Subscription) {
                         int reminderPeriodForManualCancellationDate = user.getSetting(UserSettings.KEYS.REMIND_PERIOD_FOR_SUBSCRIPTIONS_NOTICEPERIOD, DEFAULT_REMINDER_PERIOD).value ?: 1
                         if (obj.manualCancellationDate && SqlDateUtils.isDateBetweenTodayAndReminderPeriod(obj.manualCancellationDate, reminderPeriodForManualCancellationDate)) {
-                            dashboarEntriesToInsert.add(new DashboardDueDate(obj, true, user, org, false, false))
+                            dashboarEntriesToInsert.add(new DashboardDueDate(messageSource, obj, true, user, org, false, false))
                         }
                         int reminderPeriodForSubsEnddate = user.getSetting(UserSettings.KEYS.REMIND_PERIOD_FOR_SUBSCRIPTIONS_ENDDATE, DEFAULT_REMINDER_PERIOD).value ?: 1
                         if (obj.endDate && SqlDateUtils.isDateBetweenTodayAndReminderPeriod(obj.endDate, reminderPeriodForSubsEnddate)) {
-                            dashboarEntriesToInsert.add(new DashboardDueDate(obj, false, user, org, false, false))
+                            dashboarEntriesToInsert.add(new DashboardDueDate(messageSource, obj, false, user, org, false, false))
                         }
                     } else {
-                        dashboarEntriesToInsert.add(new DashboardDueDate(obj, user, org, false, false))
+                        dashboarEntriesToInsert.add(new DashboardDueDate(messageSource, obj, user, org, false, false))
                     }
                 }
             }
         }
-        DashboardDueDate.withTransaction { status ->
+        SystemEvent.createEvent('DBDD_SERVICE_END_COLLECT_DASHBOARD_DATA', ['count': dashboarEntriesToInsert.size])
+        DashboardDueDate.withTransaction { session ->
+            SystemEvent.createEvent('DBDD_SERVICE_START_TRANSACTION', ['count': dashboarEntriesToInsert.size])
+
             try {
-                DashboardDueDate.executeUpdate("DELETE from DashboardDueDate ")
-                log.debug("DashboardDueDatesService DELETE from DashboardDueDate");
-                dashboarEntriesToInsert.each {
-                    it.save(flush: true)
-                    log.debug("DashboardDueDatesService INSERT: " + it);
+
+                dashboarEntriesToInsert.each { DashboardDueDate newDueDate ->
+                    //update
+                    int anzUpdates = DashboardDueDate.executeUpdate("""UPDATE DashboardDueDate 
+                        SET version = ((select version from DashboardDueDate WHERE attribute_name = :attribute_name 
+                        AND oid = :oid 
+                        AND responsibleOrg = :org 
+                        AND responsibleUser = :user ) + 1), 
+                        date = :date, 
+                        lastUpdated = :now, 
+                        attribute_value_de = :attribute_value_de, 
+                        attribute_value_en = :attribute_value_en
+                        WHERE attribute_name = :attribute_name 
+                        AND oid = :oid 
+                        AND responsibleOrg = :org 
+                        AND responsibleUser = :user""",
+                            [
+                                    date: newDueDate.date,
+                                    now: now,
+                                    attribute_value_de: newDueDate.attribute_value_de,
+                                    attribute_value_en: newDueDate.attribute_value_en,
+                                    attribute_name: newDueDate.attribute_name,
+                                    oid: newDueDate.oid,
+                                    org: newDueDate.responsibleOrg,
+                                    user: newDueDate.responsibleUser
+                            ])
+
+                    if (anzUpdates == 1) {
+                        log.debug("DashboardDueDatesService UPDATE: " + newDueDate);
+                    //insert if not exist
+                    } else if (anzUpdates < 1){
+                        newDueDate.save(flush: true)
+                        log.debug("DashboardDueDatesService INSERT: " + newDueDate);
+                    } else if (anzUpdates > 1){
+                        log.error("DashboardDueDate Error: Update "+anzUpdates+" records! It should be 0 or 1 record! "+ newDueDate.toString())
+                    }
                 }
+                // delete (not-inserted and non-updated entries, they are obsolet)
+                int anzDeletes = DashboardDueDate.executeUpdate("DELETE from DashboardDueDate WHERE lastUpdated < :now and isDone = false and isHidden = false", [now: now])
+                log.debug("DashboardDueDatesService DELETES: " + anzDeletes);
+
                 log.debug("DashboardDueDatesService INSERT Anzahl: " + dashboarEntriesToInsert.size)
+                SystemEvent.createEvent('DBDD_SERVICE_END_TRANSACTION', ['count': dashboarEntriesToInsert.size])
                 SystemEvent.createEvent('DBDD_SERVICE_PROCESSING_2', ['count': dashboarEntriesToInsert.size])
 
                 flash.message += messageSource.getMessage('menu.admin.updateDashboardTable.successful', null, locale)
@@ -109,7 +151,7 @@ class DashboardDueDatesService {
                 String tMsg = t.message
                 SystemEvent.createEvent('DBDD_SERVICE_ERROR_2', ['error': tMsg])
 
-                status.setRollbackOnly()
+                session.setRollbackOnly()
                 log.error("DashboardDueDatesService - updateDashboardTableInDatabase() :: Rollback for reason: ${tMsg}")
 
                 flash.error += messageSource.getMessage('menu.admin.updateDashboardTable.error', null, locale)
@@ -131,7 +173,7 @@ class DashboardDueDatesService {
                 if (userWantsEmailReminder) {
                     def orgs = Org.executeQuery(QRY_ALL_ORGS_OF_USER, user);
                     orgs.each { org ->
-                        def dashboardEntries = DashboardDueDate.findAllByResponsibleUserAndResponsibleOrg(user, org)
+                        def dashboardEntries = DashboardDueDate.findAllByResponsibleUserAndResponsibleOrgAndIsDoneAndIsHidden(user, org, false, false, [sort: "date", order: "asc"])
                         sendEmail(user, org, dashboardEntries)
                     }
                 }

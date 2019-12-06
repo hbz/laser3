@@ -11,10 +11,11 @@
 <semui:breadcrumbs>
     <semui:crumb message="menu.institutions.help" class="active"/>
 </semui:breadcrumbs>
+<br>
 
-<h1 class="ui left aligned icon header"><semui:headerIcon />${message(code: 'menu.user.help')}</h1>
+<h1 class="ui left floated aligned icon header la-clear-before"><semui:headerIcon />${message(code: 'menu.user.help')}</h1>
 
-<div class="ui styled accordion">
+<div class="ui styled accordion la-clear-before">
     <div class="active title">
         <i class="dropdown icon"></i>
         Wo kann ich das Handbuch, die Anleitungen und die FAQ finden?

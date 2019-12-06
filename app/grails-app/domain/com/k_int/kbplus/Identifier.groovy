@@ -1,73 +1,169 @@
 package com.k_int.kbplus
 
+import org.apache.commons.logging.Log
 import org.apache.commons.logging.LogFactory
-
 import javax.persistence.Transient
 
 class Identifier {
 
-  IdentifierNamespace ns
-  String value
-  IdentifierGroup ig
+    static Log static_logger = LogFactory.getLog(Identifier)
 
-  Date dateCreated
-  Date lastUpdated
+    IdentifierNamespace ns
+    String value
+    IdentifierGroup ig
+    String note = ""
 
-  static hasMany = [ occurrences:IdentifierOccurrence]
-  static mappedBy = [ occurrences:'identifier']
+    Date dateCreated
+    Date lastUpdated
 
-  static constraints = {
-    value validator: {val,obj ->
-      if (obj.ns.validationRegex){
-        def pattern = ~/${obj.ns.validationRegex}/
-        return pattern.matcher(val).matches() 
-      }
+    static belongsTo = [
+            lic:    License,
+            org:    Org,
+            pkg:    Package,
+            sub:    Subscription,
+            ti:     TitleInstance,
+            tipp:   TitleInstancePackagePlatform,
+            cre:    Creator
+    ]
+
+	static constraints = {
+		value validator: {val,obj ->
+		  if (obj.ns.validationRegex){
+			def pattern = ~/${obj.ns.validationRegex}/
+			return pattern.matcher(val).matches()
+		  }
+		}
+
+    	ig      (nullable:true, blank:false)
+        note    (nullable: true, blank: true)
+
+	  	lic     (nullable:true)
+	  	org     (nullable:true)
+	  	pkg     (nullable:true)
+	  	sub     (nullable:true)
+	  	ti      (nullable:true)
+	  	tipp    (nullable:true)
+	  	cre     (nullable:true)
+
+		// Nullable is true, because values are already in the database
+      	lastUpdated (nullable: true, blank: false)
+      	dateCreated (nullable: true, blank: false)
+  	}
+
+    static mapping = {
+       id   column:'id_id'
+    value   column:'id_value', index:'id_value_idx'
+       ns   column:'id_ns_fk', index:'id_value_idx'
+       ig   column:'id_ig_fk', index:'id_ig_idx'
+       note column:'id_note',  type: 'text'
+
+       lic  column:'id_lic_fk'
+       org  column:'id_org_fk'
+       pkg  column:'id_pkg_fk'
+       sub  column:'id_sub_fk'
+       ti   column:'id_ti_fk',      index:'id_title_idx'
+       tipp column:'id_tipp_fk',    index:'id_tipp_idx'
+       cre  column:'id_cre_fk'
+
+        dateCreated column: 'id_date_created'
+        lastUpdated column: 'id_last_updated'
     }
-    ig(nullable:true, blank:false)
 
-      // Nullable is true, because values are already in the database
-      lastUpdated (nullable: true, blank: false)
-      dateCreated (nullable: true, blank: false)
-  }
+    static Identifier construct(Map<String, Object> map) {
 
-  static mapping = {
-       id column:'id_id'
-    value column:'id_value', index:'id_value_idx'
-       ns column:'id_ns_fk', index:'id_value_idx'
-       ig column:'id_ig_fk', index:'id_ig_idx'
+        String value        = map.get('value')
+        Object reference    = map.get('reference')
+        def namespace       = map.get('namespace')
 
-      dateCreated column: 'id_date_created'
-      lastUpdated column: 'id_last_updated'
+		IdentifierNamespace ns
+		if (namespace instanceof IdentifierNamespace) {
+			ns = namespace
+		}
+        else {
+			ns = IdentifierNamespace.findByNsIlike(namespace?.trim())
 
-      occurrences   batchSize: 10
-  }
+			if(! ns) {
+				ns = new IdentifierNamespace(ns: namespace, isUnique: true, isHidden: false)
+				ns.save(flush:true)
+			}
+		}
+
+        String attr = Identifier.getAttributeName(reference)
+
+        def ident = Identifier.executeQuery(
+                'select ident from Identifier ident where ident.value = :val and ident.ns = :ns and ident.' + attr + ' = :ref order by ident.id',
+                [val: value, ns: ns, ref: reference]
+
+        )
+        if (! ident.isEmpty()) {
+            if (ident.size() > 1) {
+                static_logger.debug("WARNING: multiple matches found for ( ${value}, ${ns}, ${reference} )")
+            }
+            ident = ident.first()
+        }
+
+        if (! ident) {
+			if (ns.isUnique && Identifier.findByNsAndValue(ns, value)) {
+                static_logger.debug("NO IDENTIFIER CREATED: multiple occurrences found for unique namespace ( ${value}, ${ns} )")
+			}
+			else {
+                static_logger.debug("INFO: no match found; creating new identifier for ( ${value}, ${ns}, ${reference.class} )")
+				ident = new Identifier(ns: ns, value: value)
+				ident.setReference(reference)
+				ident.save()
+			}
+        }
+
+        ident
+    }
+
+    void setReference(def owner) {
+        lic  = owner instanceof License ? owner : lic
+        org  = owner instanceof Org ? owner : org
+        pkg  = owner instanceof Package ? owner : pkg
+        sub  = owner instanceof Subscription ? owner : sub
+        tipp = owner instanceof TitleInstancePackagePlatform ? owner : tipp
+        ti   = owner instanceof TitleInstance ? owner : ti
+        cre  = owner instanceof Creator ? owner : cre
+    }
+
+    static String getAttributeName(def object) {
+        def name
+
+        name = object instanceof License ?  'lic' : name
+        name = object instanceof Org ?      'org' : name
+        name = object instanceof Package ?  'pkg' : name
+        name = object instanceof Subscription ?                 'sub' :  name
+        name = object instanceof TitleInstancePackagePlatform ? 'tipp' : name
+        name = object instanceof TitleInstance ?                'ti' :   name
+        name = object instanceof Creator ?                      'cre' :  name
+
+        name
+    }
 
   def beforeUpdate() {
     value = value?.trim()
-      boolean forOrg = IdentifierOccurrence.findByIdentifier(this)
-
-      if(forOrg) {
-          if(this.ns?.ns == 'wibid')
-          {
-              if(!(this.value =~ /^WIB/) && this.value != '')
-              {
+      // TODO [ticket=1789]
+      //boolean forOrg = IdentifierOccurrence.findByIdentifier(this)
+      //if(forOrg) {
+      if (org != null) {
+          if(this.ns?.ns == 'wibid') {
+              if(!(this.value =~ /^WIB/) && this.value != '') {
                   this.value = 'WIB'+this.value.trim()
               }
           }
-
-          if(this.ns?.ns == 'ISIL')
-          {
-              if(!(this.value =~ /^DE-/ || this.value =~ /^[A-Z]{2}-/) && this.value != '')
-              {
+          if(this.ns?.ns == 'ISIL') {
+              if(!(this.value =~ /^DE-/ || this.value =~ /^[A-Z]{2}-/) && this.value != '') {
                   this.value = 'DE-'+this.value.trim()
               }
           }
       }
-
   }
 
+    @Deprecated
   static Identifier lookupOrCreateCanonicalIdentifier(ns, value) {
-      println "loc canonical identifier"
+        static_logger.log("loc canonical identifier")
+
       value = value?.trim()
       ns = ns?.trim()
       // println ("lookupOrCreateCanonicalIdentifier(${ns},${value})");
@@ -91,13 +187,13 @@ class Identifier {
               if(result.save())
                   result
               else {
-                  println "error saving identifier"
-                  println result.getErrors()
+                  static_logger.log("error saving identifier")
+                  static_logger.log(result.getErrors())
               }
           }
           else {
-              println "error saving namespace"
-              println namespace.getErrors()
+              static_logger.log("error saving namespace")
+              static_logger.log(namespace.getErrors())
           }
       }
   }
@@ -141,10 +237,13 @@ class Identifier {
         result
     }
 
+    // called from AjaxController.resolveOID2()
+    @Deprecated
+    // front end creation broken
     static def refdataCreate(value) {
         // value is String[] arising from  value.split(':');
         if ( ( value.length == 4 ) && ( value[2] != '' ) && ( value[3] != '' ) )
-            return lookupOrCreateCanonicalIdentifier(value[2],value[3]);
+            return lookupOrCreateCanonicalIdentifier(value[2],value[3]); // ns, value
 
         return null;
     }
@@ -160,10 +259,10 @@ class Identifier {
             def idstrParts = identifierString.split(':');
             switch (idstrParts.size()) {
                 case 1:
-                    result = executeQuery('select t from ' + objType + ' as t join t.ids as io where io.identifier.value = ?', [idstrParts[0]])
+                    result = executeQuery('select t from ' + objType + ' as t join t.ids as ident where ident.value = ?', [idstrParts[0]])
                     break
                 case 2:
-                    result = executeQuery('select t from ' + objType + ' as t join t.ids as io where io.identifier.value = ? and io.identifier.ns.ns = ?', [idstrParts[1], idstrParts[0]])
+                    result = executeQuery('select t from ' + objType + ' as t join t.ids as ident where ident.value = ? and ident.ns.ns = ?', [idstrParts[1], idstrParts[0]])
                     break
                 default:
                     break
@@ -176,21 +275,8 @@ class Identifier {
 
     @Transient
     def afterInsert = {
-
-
-        if(this.ns?.ns == 'wibid')
-        {
-            if(this.value == 'Unknown')
-            {
-                this.value = ''
-                this.save()
-            }
-        }
-
-        if(this.ns?.ns == 'ezb')
-        {
-            if(this.value == 'Unknown')
-            {
+        if(this.ns?.ns in ['wibid','ezb']) {
+            if(this.value == 'Unknown') {
                 this.value = ''
                 this.save()
             }
@@ -207,10 +293,6 @@ class Identifier {
             {
                 this.value = 'DE-'+this.value.trim()
             }
-
         }
     }
-
-
-
 }

@@ -23,8 +23,8 @@
 			<semui:crumb text="${message(code:"default.create.label",args:[entityName])}" class="active"/>
 		</g:elseif>
 	</semui:breadcrumbs>
-
-		<h1 class="ui left aligned icon header"><semui:headerIcon /><g:message code="default.create.label" args="[entityName]" /></h1>
+	<br>
+		<h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon /><g:message code="default.create.label" args="[entityName]" /></h1>
 
 		<semui:messages data="${flash}" />
 
@@ -86,7 +86,7 @@
 												<g:if test="${organisationInstance.impId}">
 													<li><g:message code="org.impId.label" default="Import ID" />: <g:fieldValue bean="${organisationInstance}" field="impId"/></li>
 												</g:if>
-												<g:each in="${organisationInstance.ids?.sort{it?.identifier?.ns?.ns}}" var="id"><li>${id.identifier.ns.ns}: ${id.identifier.value}</li></g:each>
+												<g:each in="${organisationInstance.ids?.sort{it?.ns?.ns}}" var="id"><li>${id.ns.ns}: ${id.value}</li></g:each>
 											</ul>
 										</td>
 										<td>${organisationInstance.shortname}</td>
@@ -131,29 +131,26 @@
 							</tbody>
 						</table>
 						<g:if test="${params.proposedOrganisation && !params.proposedOrganisation.isEmpty()}">
-							<bootstrap:alert class="alert-info">
-								${message(code:'org.findInstitutionMatches.match', args:[params.proposedOrganisation])}
-							</bootstrap:alert>
+							<semui:msg class="warning" message="org.findInstitutionMatches.match" args="[params.proposedOrganisation]" />
 							<g:link controller="organisation" action="createMember" class="ui negative button" params="${[institution:params.proposedOrganisation]}">${message(code:'org.findInstitutionMatches.matches.create', default:'Create New Institution with the Name', args: [params.proposedOrganisation])}</g:link>
 						</g:if>
 						<g:else if="${params.proposedOrganisation.isEmpty()}">
-							<bootstrap:alert class="alert-info">
-								${message(code:'org.findInstitutionMatches.matchNoName', args:[params.proposedOrganisation])}
-							</bootstrap:alert>
+							<semui:msg class="warning" message="org.findInstitutionMatches.matchNoName" args="[params.proposedOrganisation]" />
+
 						</g:else>
 					</g:if>
 					<g:elseif test="${params.proposedOrganisation && !params.proposedOrganisation.isEmpty()}">
 						<g:if test="${comboType == RDStore.COMBO_TYPE_CONSORTIUM}">
-							<bootstrap:alert class="alert-info">${message(code:'org.findInstitutionMatches.no_match', args:[params.proposedOrganisation])}</bootstrap:alert>
+							<semui:msg class="warning" message="org.findInstitutionMatches.no_match" args="[params.proposedOrganisation]" />
 							<g:link controller="organisation" action="createMember" class="ui positive button" params="${[institution:params.proposedOrganisation]}">${message(code:'org.findInstitutionMatches.no_matches.create', args: [params.proposedOrganisation])}</g:link>
 						</g:if>
 						<g:elseif test="${comboType == RDStore.COMBO_TYPE_DEPARTMENT}">
-							<bootstrap:alert class="alert-info">${message(code:'org.findDepartmentMatches.no_match', args:[params.proposedOrganisation])}</bootstrap:alert>
+							<semui:msg class="warning" message="org.findDepartmentMatches.no_match" args="[params.proposedOrganisation]" />
 							<g:link controller="organisation" action="createMember" class="ui positive button" params="${[department:params.proposedOrganisation]}">${message(code:'org.findDepartmentMatches.no_matches.create', args: [params.proposedOrganisation])}</g:link>
 						</g:elseif>
 					</g:elseif>
 					<g:elseif test="${params.proposedOrganisationID && !params.proposedOrganisationID.isEmpty()}">
-						<bootstrap:alert class="alert-info">${message(code:'org.findInstitutionMatches.no_id_match', args:[params.proposedOrganisationID])}</bootstrap:alert>
+						<semui:msg class="warning" message="org.findInstitutionMatches.no_id_match" args="[params.proposedOrganisationID]" />
 					</g:elseif>
 				</g:if>
 

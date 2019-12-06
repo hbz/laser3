@@ -96,3 +96,12 @@
 .ui.secondary.menu .title ~ .description {
    margin-top: @descriptionDistance;
  }
+
+/* Right Floated */
+.la-right-menuPart {
+  align-items: center;
+}
+.la-search-advanced {
+  padding-left:1rem;
+  padding-right:1rem;
+}

@@ -3911,3 +3911,15 @@
   font-size: .8rem;
   text-transform: uppercase;
 }
+.ui.button.la-inline-labeled {
+  padding-top: .5em;
+  padding-bottom: .5em;
+  height: 2.571em;
+}
+.ui.button.la-inline-labeled i {
+  width: 28px;
+}
+.ui.button.la-js-filterButton {
+  margin-top: 14px;
+  margin-bottom: 14px;
+}

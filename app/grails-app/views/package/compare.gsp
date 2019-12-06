@@ -21,12 +21,12 @@
 		</semui:exportDropdown>
 	</semui:controlButtons>
 
-	<h1 class="ui left aligned icon header"><semui:headerIcon />${message(code:'package.compare')}</h1>
+	<h1 class="ui left floated aligned icon header la-clear-before"><semui:headerIcon />${message(code:'package.compare')}</h1>
 
 	<semui:messages data="${flash}" />
 
         <g:if test="${request.message}">
-		    <bootstrap:alert class="alert alert-error">${request.message}</bootstrap:alert>
+		    <semui:msg class="negative" text="${request.message}" />
 	    </g:if>
 
 	<g:form action="compare" controller="package" method="GET" class="ui form">
@@ -211,8 +211,8 @@
 				<semui:listIcon type="${currentTitle[0]?.type?.value}"/><strong><g:link action="show" controller="title" id="${currentTitle[0].id}">${entry.key}</g:link></strong>
                           <i onclick="showMore('${currentTitle[0].id}')" class="icon-info-sign"></i>
 
-                          <g:each in="${currentTitle[0].ids?.sort{it?.identifier?.ns?.ns}}" var="id">
-                              <br>${id.identifier.ns.ns}: ${id.identifier.value}
+                          <g:each in="${currentTitle[0].ids?.sort{it?.ns?.ns}}" var="id">
+                              <br>${id.ns.ns}: ${id.value}
                           </g:each>
 			</td>
 			

@@ -80,6 +80,7 @@ class ApiPkg {
 		result.lastUpdated      	= pkg.lastUpdated
 		result.vendorURL        	= pkg.vendorURL
 		result.startDate        	= pkg.startDate
+		result.listVerifiedDate      = pkg.listVerifiedDate
 
 		// RefdataValues
 
@@ -95,7 +96,7 @@ class ApiPkg {
 		// References
 
 		//result.documents        = ApiReaderHelper.retrieveDocumentCollection(pkg.documents) // com.k_int.kbplus.DocContext
-		result.identifiers      = ApiReaderHelper.retrieveIdentifierCollection(pkg.ids) // com.k_int.kbplus.IdentifierOccurrence
+		result.identifiers      = ApiReaderHelper.retrieveIdentifierCollection(pkg.ids) // com.k_int.kbplus.Identifier
 		//result.license          = ApiReaderHelper.requestLicenseStub(pkg.license, context) // com.k_int.kbplus.License
 		result.nominalPlatform  = ApiReaderHelper.retrievePlatformMap(pkg.nominalPlatform) // com.k_int.kbplus.Platform
 		result.organisations    = ApiReaderHelper.retrieveOrgLinkCollection(pkg.orgs, ApiReaderHelper.IGNORE_PACKAGE, context) // com.k_int.kbplus.OrgRole

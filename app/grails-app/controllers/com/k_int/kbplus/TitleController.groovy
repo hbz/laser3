@@ -16,43 +16,6 @@ class TitleController extends AbstractDebugController {
     def index() {
         redirect controller: 'title', action: 'list', params: params
         return // ----- deprecated
-
-        log.debug("titleSearch : ${params}");
-
-        def result=[:]
-
-        if (springSecurityService.isLoggedIn()) {
-            params.rectype = "Title" // Tells ESSearchService what to look for
-            result.user = springSecurityService.getCurrentUser()
-            params.max = result.user.getDefaultPageSizeTMP()
-
-
-            if(params.search.equals("yes")){
-                //when searching make sure results start from first page
-                params.offset = 0
-                params.remove("search")
-            }
-
-            def old_q = params.q
-            if(!params.q ){
-                params.remove('q');
-                if(!params.sort){
-                    params.sort = "sortTitle"
-                }
-            }
-
-            if(params.filter) params.q ="${params.filter}:${params.q}";
-
-            result =  ESSearchService.search(params)
-            //Double-Quoted search strings wont display without this
-            params.q = old_q?.replace("\"","&quot;")
-        }
-
-        result.editable=SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')
-
-        log.debug(result);
-
-        result
     }
 
     @Secured(['ROLE_USER'])
@@ -77,8 +40,8 @@ class TitleController extends AbstractDebugController {
             def old_q = params.q
             def old_sort = params.sort
 
-            params.q = params.q ?: "*"
-            params.sort = params.sort ?: "sortTitle"
+            params.q = params.q ?: null
+            params.sort = params.sort ?: "sortTitle.keyword"
 
             if (params.filter) {
                 params.q = "${params.filter}:${params.q}"
@@ -138,7 +101,7 @@ class TitleController extends AbstractDebugController {
   }
 
     @Secured(['ROLE_USER'])
-        def show() {
+    def show() {
         def result = [:]
 
         result.editable = SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')
@@ -158,9 +121,25 @@ class TitleController extends AbstractDebugController {
     }
 
     private def reusedIdentifiers(title) {
-    // Test for identifiers that are used accross multiple titles
-    def duplicates = [:]
-    def identifiers = title?.ids?.collect{it.identifier}
+        // Test for identifiers that are used accross multiple titles
+        def duplicates = [:]
+        def identifiers = title?.ids?.collect{it}
+
+        identifiers.each { ident ->
+            List<Identifier> dups = Identifier.findAll {
+                value == ident.value && ti != null && ti.id != title.id && ti.status?.value == 'Current'
+            }
+            dups.each {
+                if (duplicates."${it.ns.ns}:${it.value}") {
+                    duplicates."${it.ns.ns}:${it.value}" += [it.ti]
+                }
+                else{
+                    duplicates."${it.ns.ns}:${it.value}" = [it.ti]
+                }
+            }
+        }
+
+        /*
     identifiers.each{ident ->
       ident.occurrences.each{
         if(it.ti != title && it.ti!=null && it.ti.status?.value == 'Current'){
@@ -171,9 +150,10 @@ class TitleController extends AbstractDebugController {
           }
         }
       }
+
+         */
+        return duplicates
     }
-    return duplicates
-  }
 
     @Secured(['ROLE_ADMIN'])
   def batchUpdate() {

@@ -11,16 +11,16 @@
         <semui:crumb text="TIPP Transfer" class="active"/>
       </semui:breadcrumbs>
 
-      <h1 class="ui left aligned icon header"><semui:headerIcon />TIPP Transfer</h1>
+      <h1 class="ui left floated aligned icon header la-clear-before"><semui:headerIcon />TIPP Transfer</h1>
 
       <semui:messages data="${flash}" />
 
         <g:each in="${error}" var="err">
-          <bootstrap:alert class="alert-danger">${err}</bootstrap:alert>
+            <semui:msg class="negative" header="${message(code: 'myinst.message.attention')}" text="${err}"/>
         </g:each>
 
         <g:if test="${success}">
-          <bootstrap:alert class="alert-info">Transfer Sucessful</bootstrap:alert>
+            <semui:msg class="warning" text="Transfer Sucessful" />
         </g:if>
 
       <semui:form>

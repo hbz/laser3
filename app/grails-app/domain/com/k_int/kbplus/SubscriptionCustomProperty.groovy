@@ -145,11 +145,13 @@ class SubscriptionCustomProperty extends CustomProperty implements AuditableTrai
 
             def openPD = PendingChange.executeQuery("select pc from PendingChange as pc where pc.status is null and pc.changeDoc is not null" )
             openPD.each { pc ->
-                def event = JSON.parse(pc.changeDoc)
-                if (event.changeDoc) {
-                    def scp = genericOIDService.resolveOID(event.changeDoc.OID)
-                    if (scp?.id == id) {
-                        pc.delete()
+                if (pc.payload) {
+                    def payload = JSON.parse(pc.payload)
+                    if (payload.changeDoc) {
+                        def scp = genericOIDService.resolveOID(payload.changeDoc.OID)
+                        if (scp?.id == id) {
+                            pc.delete(flush: true)
+                        }
                     }
                 }
             }

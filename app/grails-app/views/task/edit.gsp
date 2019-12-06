@@ -8,10 +8,10 @@
 	</head>
 	<body>
 
-        <h1 class="ui left aligned icon header"><semui:headerIcon /><g:message code="default.edit.label" args="[entityName]" /></h1>
+        <h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon /><g:message code="default.edit.label" args="[entityName]" /></h1>
 
         <g:if test="${flash.message}">
-            <bootstrap:alert class="alert-info">${flash.message}</bootstrap:alert>
+			<semui:msg class="warning" text="${flash.message}" />
         </g:if>
 
         <semui:errors bean="${taskInstance}" />

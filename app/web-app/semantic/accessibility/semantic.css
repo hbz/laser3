@@ -1271,6 +1271,10 @@ aside.ui.accordion .title:not(.ui) {
     }
 
 }*/
+
+.la-clear-before {
+  clear: both;
+}
 /*!
  * # Semantic UI 2.3.1 - Button
  * http://github.com/semantic-org/semantic-ui/
@@ -5723,6 +5727,21 @@ aside.ui.accordion .title:not(.ui) {
   font-size: .8rem;
   text-transform: uppercase;
 }
+
+.ui.button.la-inline-labeled {
+  padding-top: .5em;
+  padding-bottom: .5em;
+  height: 2.571em;
+}
+
+.ui.button.la-inline-labeled i {
+  width: 28px;
+}
+
+.ui.button.la-js-filterButton {
+  margin-top: 14px;
+  margin-bottom: 14px;
+}
 /*!
  * # Semantic UI 2.3.1 - Container
  * http://github.com/semantic-org/semantic-ui/
@@ -7178,6 +7197,10 @@ body[class*="platform"] .ui.icon.header .circular.icon.la-object:before {
 
 .ui.icon.header .ui.form input[type=text] {
   font-size: 1rem;
+}
+
+.ui.header.la-noMargin-top {
+  margin-top: 0rem;
 }
 /*!
  * # Semantic UI 2.3.1 - Icon
@@ -19819,6 +19842,7 @@ dd {
 
 .ui.breadcrumb {
   color: #1B1C1D;
+  padding-bottom: 21px;
 }
 
 /* Link */
@@ -21061,6 +21085,30 @@ form {
   margin-bottom: 1em;
 }
 
+/* Menue Search Animated Input
+
+.ui.icon.input > i.icon#btn-search:not(.link){
+  pointer-events: auto;
+}
+input#spotlightSearch[type="search"]:hover,
+input#spotlightSearch[type="search"]:focus{
+  background: @lightGrey;
+}
+i.search.icon {
+  color: white;
+}
+i.search.icon.open {
+  color:black;
+}
+input#spotlightSearch[type="search"] {
+  display: none;
+}
+
+.ui.input > input#spotlightSearch:focus  {
+  border-color: @lightGrey;
+}
+*/
+
 .ui.icon.input > i.icon#btn-search:not(.link) {
   pointer-events: auto;
 }
@@ -21070,16 +21118,12 @@ input#spotlightSearch[type="search"]:focus {
   background: #DCDDDE;
 }
 
-i.search.icon {
-  color: white;
-}
-
-i.search.icon.open {
+i.search.icon#btn-search {
   color: black;
 }
 
-input#spotlightSearch[type="search"] {
-  display: none;
+.la-search-advanced i.search.icon {
+  color: white;
 }
 
 .ui.input > input#spotlightSearch:focus {
@@ -25837,6 +25881,19 @@ Floated Menu / Item
 
 .ui.secondary.menu .title ~ .description {
   margin-top: 0.25em;
+}
+
+/* Right Floated */
+
+.la-right-menuPart {
+  -webkit-box-align: center;
+  -ms-flex-align: center;
+  align-items: center;
+}
+
+.la-search-advanced {
+  padding-left: 1rem;
+  padding-right: 1rem;
 }
 /*!
  * # Semantic UI 2.3.1 - Message

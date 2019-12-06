@@ -11,8 +11,8 @@
             <semui:crumb controller="myInstitution" action="dashboard" text="${institution?.getDesignation()}" />
             <semui:crumb message="menu.datamanager.ann" class="active" />
         </semui:breadcrumbs>
-
-        <h1 class="ui left aligned icon header"><semui:headerIcon />
+        <br>
+        <h1 class="ui left floated aligned icon header la-clear-before"><semui:headerIcon />
             ${message(code:'menu.datamanager.ann')}
         </h1>
 

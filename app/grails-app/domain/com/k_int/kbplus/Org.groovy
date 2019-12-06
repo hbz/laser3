@@ -33,6 +33,8 @@ class Org
     def accessService
 	@Transient
 	def propertyService
+    @Transient
+    def deletionService
 
     String name
     String shortname
@@ -52,8 +54,8 @@ class Org
     String scope
     Date dateCreated
     Date lastUpdated
-    Org createdBy           // TODO: refactoring to solve HOTFIX https://jira.hbz-nrw.de/browse/ERMS-1923
-    Org legallyObligedBy    // TODO: refactoring to solve HOTFIX https://jira.hbz-nrw.de/browse/ERMS-1923
+    Org createdBy
+    Org legallyObligedBy
     String categoryId
 
     @RefdataAnnotation(cat = 'OrgSector')
@@ -86,21 +88,23 @@ class Org
     Set ids = []
 
     static mappedBy = [
-        ids:              'org',
-        outgoingCombos:   'fromOrg',
-        incomingCombos:   'toOrg',
-        links:            'org',
-        prsLinks:         'org',
-        contacts:         'org',
-        addresses:        'org',
-        affiliations:     'org',
-        customProperties: 'owner',
-        privateProperties:'owner',
-        documents:        'org'
+        ids:                'org',
+        outgoingCombos:     'fromOrg',
+        incomingCombos:     'toOrg',
+        links:              'org',
+        prsLinks:           'org',
+        contacts:           'org',
+        addresses:          'org',
+        affiliations:       'org',
+        customProperties:   'owner',
+        privateProperties:  'owner',
+        documents:          'org',
+        hasCreated:         'createdBy',
+        hasLegallyObliged:  'legallyObligedBy'
     ]
 
     static hasMany = [
-        ids:                IdentifierOccurrence,
+        ids:                Identifier,
         outgoingCombos:     Combo,
         incomingCombos:     Combo,
         links:              OrgRole,
@@ -112,10 +116,13 @@ class Org
         privateProperties:  OrgPrivateProperty,
         orgType:            RefdataValue,
         documents:          DocContext,
-        platforms:          Platform
+        platforms:          Platform,
+        hasCreated:         Org,
+        hasLegallyObliged:  Org
     ]
 
     static mapping = {
+                cache true
                 sort 'sortname'
                 id          column:'org_id'
            version          column:'org_version'
@@ -154,8 +161,6 @@ class Org
                 key:    'org_id',
                 column: 'refdata_value_id', type:   'BIGINT'
         ], lazy: false
-//        addresses   lazy: false
-//        contacts    lazy: false
 
         ids                 batchSize: 10
         outgoingCombos      batchSize: 10
@@ -167,6 +172,8 @@ class Org
         privateProperties   batchSize: 10
         documents           batchSize: 10
         platforms           batchSize: 10
+        hasCreated          batchSize: 10
+        hasLegallyObliged   batchSize: 10
     }
 
     static constraints = {
@@ -213,6 +220,10 @@ class Org
                 [org: this, active: COMBO_STATUS_ACTIVE])
     }
     */
+
+    def afterDelete() {
+        deletionService.deleteDocumentFromIndex(this.class.name, this.globalUID)
+    }
 
     @Override
     boolean isDeleted() {
@@ -383,8 +394,9 @@ class Org
             }
         }
         */
+        // TODO [ticket=1789]
         def result = Identifier.executeQuery(
-                'select id from Identifier id join id.ns ns join id.occurrences oc where oc.org = :org and lower(ns.ns) = :idtype',
+                'select id from Identifier id join id.ns ns where id.org = :org and lower(ns.ns) = :idtype',
                 [org: this, idtype: idtype.toLowerCase()]
         )
 
@@ -405,6 +417,7 @@ class Org
     result
   }
 
+    // called from AjaxController.resolveOID2()
   static def refdataCreate(value) {
     return new Org(name:value)
   }
@@ -433,7 +446,7 @@ class Org
             identifiers.each { it ->
                 it.each { k, v ->
                     if (v != null) {
-                        def o = Org.executeQuery("select o from Org as o join o.ids as io where io.identifier.ns.ns = ? and io.identifier.value = ?", [k, v])
+                        def o = Org.executeQuery("select o from Org as o join o.ids as ident where ident.ns.ns = ? and ident.value = ?", [k, v])
 
                         if (o.size() > 0) result << o[0]
                     }
@@ -445,7 +458,7 @@ class Org
             // See if we can uniquely match on any of the identifiers
             identifiers.each { k, v ->
                 if (v != null) {
-                    def o = Org.executeQuery("select o from Org as o join o.ids as io where io.identifier.ns.ns = ? and io.identifier.value = ?", [k, v])
+                    def o = Org.executeQuery("select o from Org as o join o.ids as ident where ident.ns.ns = ? and ident.value = ?", [k, v])
 
                     if (o.size() > 0) result << o[0]
                 }
@@ -501,18 +514,23 @@ class Org
             if (identifiers instanceof ArrayList) {
                 identifiers.each{ it ->
                     it.each { k, v ->
+                        // TODO [ticket=1789]
                         if(k.toLowerCase() != 'originediturl') {
-                            def io = new IdentifierOccurrence(org: result, identifier: Identifier.lookupOrCreateCanonicalIdentifier(k, v)).save()
+                            //def io = new IdentifierOccurrence(org: result, identifier: Identifier.lookupOrCreateCanonicalIdentifier(k, v)).save()
+                            Identifier ident = Identifier.construct([value: v, reference: result, namespace: k])
                         }
-                        else {println "org identifier ${v} is deprecated namespace originEditUrl .. ignoring"}
+                        else println "org identifier ${v} is deprecated namespace originEditUrl .. ignoring"
                     }
                 }
             }
             // DEFAULT LOGIC
             else {
                 identifiers.each { k, v ->
-                    if(k.toLowerCase() != 'originediturl')
-                        def io = new IdentifierOccurrence(org: result, identifier: Identifier.lookupOrCreateCanonicalIdentifier(k, v)).save()
+                    // TODO [ticket=1789]
+                    if(k.toLowerCase() != 'originediturl') {
+                        //def io = new IdentifierOccurrence(org: result, identifier: Identifier.lookupOrCreateCanonicalIdentifier(k, v)).save()
+                        Identifier ident = Identifier.construct([value: v, reference: result, namespace: k])
+                    }
                     else println "org identifier ${v} is deprecated namespace originEditUrl .. ignoring"
                 }
             }
@@ -568,7 +586,7 @@ class Org
         }
         builder.'identifiers' () {
           ids?.each { id_oc ->
-            builder.identifier([namespace:id_oc.identifier?.ns.ns, value:id_oc.identifier?.value])
+            builder.identifier([namespace:id_oc.ns.ns, value:id_oc.value])
           }
         }
       }
@@ -645,11 +663,9 @@ class Org
         result
     }
 
-    def getallOrgTypeIds()
+    List getallOrgTypeIds()
     {
-        List result = []
-        orgType.collect{ it -> result.add(it.id) }
-        result
+        orgType.findAll{it}.collect{it.id}
     }
 
     boolean isInComboOfType(RefdataValue comboType) {
@@ -670,7 +686,7 @@ class Org
     def addOnlySpecialIdentifiers(ns,value) {
         boolean found = false
         this.ids.each {
-            if ( it?.identifier?.ns?.ns == ns && it.identifier.value == value ) {
+            if ( it?.ns?.ns == ns && it.value == value ) {
                 found = true
             }
         }
@@ -678,10 +694,12 @@ class Org
         if ( !found && value != '') {
             value = value?.trim()
             ns = ns?.trim()
-            def namespace = IdentifierNamespace.findByNsIlike(ns) ?: new IdentifierNamespace(ns:ns).save()
-            def id = new Identifier(ns:namespace, value:value).save()
-            log.debug("Create new identifier occurrence for pid:${id.getId()} ns:${ns} value:${value}")
-            new IdentifierOccurrence(identifier: id, org: this).save()
+            //def namespace = IdentifierNamespace.findByNsIlike(ns) ?: new IdentifierNamespace(ns:ns).save()
+            // TODO [ticket=1789]
+            Identifier ident = Identifier.construct([value: value, reference: this, namespace: ns])
+            //def id = new Identifier(ns:namespace, value:value).save()
+            //new IdentifierOccurrence(identifier: id, org: this).save()
+            log.debug("Create new identifier: ${ident.getId()} ns:${ns} value:${value}")
         }
     }
 

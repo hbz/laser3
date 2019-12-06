@@ -1,6 +1,7 @@
 import com.k_int.kbplus.auth.User
 import grails.converters.JSON
 import grails.plugin.springsecurity.SpringSecurityUtils
+import org.codehaus.groovy.grails.commons.GrailsApplication
 import org.springframework.security.access.annotation.Secured
 import org.springframework.security.authentication.AccountExpiredException
 import org.springframework.security.authentication.CredentialsExpiredException
@@ -21,7 +22,7 @@ import java.security.MessageDigest
 @Secured('permitAll')
 class LoginController {
 
-  def grailsApplication
+  GrailsApplication grailsApplication
 
   /**
    * Dependency injection for the authenticationTrustResolver.
@@ -51,7 +52,7 @@ class LoginController {
    * Show the login page.
    */
   def auth = {
-    log.debug("auth session:${request.session.id} localauth:${grailsApplication.config.localauth}");
+    log.debug("auth session:${request.session.id}")
 
     def config = SpringSecurityUtils.securityConfig
 
@@ -69,18 +70,8 @@ class LoginController {
     log.debug("auth action - the original ua request was for...");
 
     String requestUrl = savedRequest?.getRedirectUrl();
-
-    if ( grailsApplication.config.localauth ) {
-      log.debug("Using localauth... send login form");
-      String view = 'auth'
-      String postUrl = "${request.contextPath}${config.apf.filterProcessesUrl}"
-      render view: view, model: [postUrl: postUrl, rememberMeParameter: config.rememberMe.parameter]
-    }
-    else {
-      log.debug("Redirecting to ${grailsApplication.config.authuri}, context will be ${requestUrl}");
-      redirect(uri:"${grailsApplication.config.authuri}?context=${requestUrl}");
-    }
-    log.debug("auth completed");
+    String postUrl = "${request.contextPath}${config.apf.filterProcessesUrl}"
+    render view: 'auth', model: [postUrl: postUrl, rememberMeParameter: config.rememberMe.parameter]
   }
 
   /**

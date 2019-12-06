@@ -398,6 +398,9 @@
           endDate:
             type: string
             format: date
+          listVerifiedDate:
+            type: string
+            format: date
           fixed:
             type: string
             description: Mapping RefdataCategory "YN"
@@ -577,7 +580,7 @@
           type: array
           items:
             $ref: "#/components/schemas/Package_in_Subscription"
-        previousSubscription:
+        predecessor:
           $ref: "#/components/schemas/SubscriptionStub"
         properties: # mapping customProperties and privateProperties
           type: array
@@ -596,6 +599,8 @@
           description: Mapping RefdataCategory "Subscription Status"
           enum:
             [${ com.k_int.kbplus.RefdataCategory.getAllRefdataValues('Subscription Status').collect{ it.value }.join(', ') }]
+        successor:
+          $ref: "#/components/schemas/SubscriptionStub"
         type:
           type: string
           description: Mapping RefdataCategory "Subscription Type"
@@ -833,6 +838,49 @@
           type: string
         vendorURL:
           type: string
+
+
+    PropertyList:
+      type: array
+      items:
+        type: object
+        properties:
+          key:
+            type: string
+            description: Primary Identifier
+          scope:
+            type: string
+            enum:
+              [${ com.k_int.properties.PropertyDefinition.AVAILABLE_CUSTOM_DESCR.toList().plus(com.k_int.properties.PropertyDefinition.AVAILABLE_PRIVATE_DESCR.toList()).unique().join(', ') }]
+          type:
+            type: string
+            enum:
+              [${ com.k_int.properties.PropertyDefinition.validTypes2.collect{ it.value['en'] }.join(', ') }]
+          label_de:
+            type: string
+          label_en:
+            type: string
+          explanation_de:
+            type: string
+          explanation_en:
+            type: string
+          multiple:
+            type: string #mapped to boolean
+            description: Mapping RefdataCategory "YN"
+            enum:
+              [${ com.k_int.kbplus.RefdataCategory.getAllRefdataValues('YN').collect{ it.value }.join(', ') }]
+          usedForLogic:
+            type: string #mapped to boolean
+            description: Mapping RefdataCategory "YN"
+            enum:
+              [${ com.k_int.kbplus.RefdataCategory.getAllRefdataValues('YN').collect{ it.value }.join(', ') }]
+          isPublic:
+            type: string #mapped to boolean
+            description: Mapping RefdataCategory "YN". If set *No*, it's an hidden entry to/from the given organisation context
+            enum:
+              [${ com.k_int.kbplus.RefdataCategory.getAllRefdataValues('YN').collect{ it.value }.join(', ') }]
+          refdataCategory:
+            type: string
 
 
     Refdatas_Virtual:

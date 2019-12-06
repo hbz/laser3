@@ -34,7 +34,7 @@
 <semui:messages data="${flash}" />
 
 
-    <h1 class="ui left aligned icon header"><semui:headerIcon />
+    <h1 class="ui left floated aligned icon header la-clear-before"><semui:headerIcon />
 
         ${packageInstance?.name}
     </h1>

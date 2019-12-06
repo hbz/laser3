@@ -126,6 +126,7 @@ class PropertyDefinition extends AbstractI10nTranslatable implements Serializabl
     ]
 
     static mapping = {
+                    cache  true
                       id column: 'pd_id'
                    descr column: 'pd_description', index: 'td_new_idx', type: 'text'
                     name column: 'pd_name',        index: 'td_new_idx'
@@ -149,10 +150,10 @@ class PropertyDefinition extends AbstractI10nTranslatable implements Serializabl
         type                (nullable: false, blank: false)
         refdataCategory     (nullable: true)
         tenant              (nullable: true,  blank: true)
-        multipleOccurrence  (nullable: true,  blank: true,  default: false)
-        mandatory           (nullable: false, blank: false, default: false)
-        isHardData            (nullable: false, blank: false, default: false)
-        isUsedForLogic      (nullable: false, blank: false, default: false)
+        multipleOccurrence  (nullable: true,  blank: true)
+        mandatory           (nullable: false, blank: false)
+        isHardData            (nullable: false, blank: false)
+        isUsedForLogic      (nullable: false, blank: false)
     }
 
     private static def typeIsValid(key) {

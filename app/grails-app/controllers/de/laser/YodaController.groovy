@@ -1,36 +1,26 @@
-package com.k_int.kbplus
+package de.laser
 
-import com.k_int.kbplus.auth.Role
-import com.k_int.kbplus.auth.User
-import com.k_int.kbplus.auth.UserOrg
-import com.k_int.kbplus.auth.UserRole
+import com.k_int.kbplus.*
+import com.k_int.kbplus.auth.*
 import com.k_int.properties.PropertyDefinition
-import de.laser.SystemEvent
-import de.laser.domain.IssueEntitlementCoverage
 import de.laser.domain.SystemProfiler
-import de.laser.domain.TIPPCoverage
 import de.laser.helper.DebugAnnotation
 import de.laser.helper.RDStore
 import grails.converters.JSON
 import grails.plugin.springsecurity.annotation.Secured
 import grails.util.Holders
 import grails.web.Action
-import groovy.json.JsonOutput
 import groovy.xml.MarkupBuilder
 import org.hibernate.SessionFactory
 import org.quartz.JobKey
 import org.quartz.impl.matchers.GroupMatcher
 import org.springframework.transaction.TransactionStatus
-import com.k_int.kbplus.OrgSettings
 import groovy.json.JsonOutput
 import org.springframework.web.multipart.commons.CommonsMultipartFile
 
 import javax.servlet.ServletOutputStream
 import java.lang.reflect.Method
 import java.lang.reflect.Modifier
-
-import static com.k_int.kbplus.UserSettings.DEFAULT_REMINDER_PERIOD
-import static com.k_int.kbplus.UserSettings.KEYS.*
 
 @Secured(['IS_AUTHENTICATED_FULLY'])
 class YodaController {
@@ -191,15 +181,25 @@ class YodaController {
 
         if (params.cmd?.equals('clearCache')) {
             def cache
-            if (params.type?.equals('ehcache')) {
+            if (params.type?.equals('session')) {
+                cache = contextService.getSessionCache()
+                cache.clear()
+            }
+            else if (params.type?.equals('ehcache')) {
                 cache = cacheService.getCache(result.ehcacheManager, params.cache)
                 cacheService.clear(cache)
-            } else {
+            }
+            else {
                 cache = cacheService.getCache(result.plugincacheManager, params.cache)
                 cacheService.clear(cache)
             }
-        }
 
+            params.remove('cmd')
+            params.remove('type')
+            params.remove('cache')
+
+            redirect controller: 'yoda', action: 'cacheInfo', params: params
+        }
         result
     }
 
@@ -226,7 +226,7 @@ class YodaController {
     //@Cacheable('message')
     @Secured(['ROLE_ADMIN'])
     def appInfo() {
-        Map result = [:]
+        Map<String, Object> result = [:]
 
         result.statsSyncService = [:]
         result.dataloadService = [:]
@@ -256,8 +256,8 @@ class YodaController {
 
     @Secured(['ROLE_YODA'])
     def appSecurity() {
-        Map result = [:]
-        Map cList = [:]
+        Map<String, Object> result = [:]
+        Map<String, Object> cList = [:]
 
         grailsApplication.controllerClasses.toList().each { controller ->
             Class controllerClass = controller.clazz
@@ -302,7 +302,7 @@ class YodaController {
 
     @Secured(['ROLE_YODA'])
     def userMatrix() {
-        Map result = [:]
+        Map<String, Object> result = [:]
 
         result.matrix = [:]
 
@@ -318,7 +318,7 @@ class YodaController {
 
     @Secured(['ROLE_YODA'])
     def userRoleDefinitions() {
-        Map result = [:]
+        Map<String, Object> result = [:]
         result.matrix = [:]
         result
     }
@@ -327,7 +327,7 @@ class YodaController {
     def pendingChanges() {
 
         // TODO: DEBUG ONLY
-        Map result = [:]
+        Map<String, Object> result = [:]
 
         result.pending = PendingChange.executeQuery(
                 "SELECT pc FROM PendingChange pc WHERE pc.status IS NULL ORDER BY pc.id DESC",
@@ -380,7 +380,7 @@ class YodaController {
 
     @Secured(['ROLE_YODA'])
     def remapOriginEditUrl() {
-        List<IdentifierOccurrence> originEditUrls = IdentifierOccurrence.executeQuery("select io from IdentifierOccurrence io join io.identifier id where lower(id.ns.ns) = 'originediturl'")
+        List<Identifier> originEditUrls = Identifier.executeQuery("select ident from Identifier ident where lower(ident.ns.ns) = 'originediturl'")
         originEditUrls.each { originEditUrl ->
             def obj
             if(originEditUrl.tipp) {
@@ -414,7 +414,6 @@ class YodaController {
     @Secured(['ROLE_YODA'])
     def esIndexUpdate() {
         log.debug("manual start full text index")
-        dataloadService.updateSiteMapping()
         dataloadService.updateFTIndexes()
         log.debug("redirecting to home ..")
 
@@ -424,29 +423,34 @@ class YodaController {
     @Secured(['ROLE_YODA'])
     def fullReset() {
 
-        if (ftupdate_running == false) {
-            try {
-                ftupdate_running = true
-                SystemEvent.createEvent('YODA_ES_RESET_START')
+        if(dataloadService.update_running == false) {
+            if (ftupdate_running == false) {
+                try {
+                    ftupdate_running = true
+                    SystemEvent.createEvent('YODA_ES_RESET_START')
 
-                log.debug("Delete all existing FT Control entries");
-                FTControl.withTransaction {
-                    FTControl.executeUpdate("delete FTControl c")
+                    log.debug("Delete all existing FT Control entries");
+                    FTControl.withTransaction {
+                        FTControl.executeUpdate("delete FTControl c")
+                    }
+
+                    log.debug("Clear ES")
+                    dataloadService.clearDownAndInitES()
+
+                    log.debug("manual start full text index")
+                    dataloadService.updateFTIndexes()
                 }
-
-                log.debug("Clear ES")
-                dataloadService.clearDownAndInitES()
-
-                log.debug("manual start full text index")
-                dataloadService.updateFTIndexes()
+                finally {
+                    ftupdate_running = false
+                    log.debug("fullReset complete ..")
+                }
+            } else {
+                log.debug("FT update already running")
+                flash.error = 'FT update already running'
             }
-            finally {
-                ftupdate_running = false
-                log.debug("fullReset complete ..")
-            }
-        }
-        else {
-            log.debug("FT update already running")
+        }else{
+            log.debug("Full Reset fail, because IndexUpdateJob running")
+            flash.error = 'Full Reset fail, because IndexUpdateJob running'
         }
         log.debug("redirecting to home ..")
 
@@ -464,7 +468,7 @@ class YodaController {
 
     @Secured(['ROLE_YODA'])
     def manageGlobalSources() {
-        Map result = [:]
+        Map<String, Object> result = [:]
         log.debug("manageGlobalSources ..")
         result.sources = GlobalRecordSource.list()
 
@@ -473,7 +477,7 @@ class YodaController {
 
     @Secured(['ROLE_YODA'])
     def manageESSources() {
-        Map result = [:]
+        Map<String, Object> result = [:]
         log.debug("manageESSources ..")
         result.sources = ElasticsearchSource.list()
 
@@ -482,7 +486,7 @@ class YodaController {
 
     @Secured(['ROLE_YODA'])
     def newESSource() {
-        Map result=[:]
+        Map<String, Object> result = [:]
         log.debug("manageGlobalSources ..")
 
         /*result.newSource = ElasticsearchSource.findByIdentifier(params.identifier) ?: new ElasticsearchSource(
@@ -504,7 +508,7 @@ class YodaController {
 
     @Secured(['ROLE_YODA'])
     def newGlobalSource() {
-        Map result=[:]
+        Map<String, Object> result=[:]
         log.debug("manageGlobalSources ..")
 
         result.newSource = GlobalRecordSource.findByIdentifier(params.identifier) ?: new GlobalRecordSource(
@@ -525,7 +529,7 @@ class YodaController {
 
     @Secured(['ROLE_YODA'])
     def migrateNatStatSettings() {
-        Map result = [:]
+        Map<String, Object> result = [:]
 
         List<OrgCustomProperty> ocpList = OrgCustomProperty.executeQuery(
                 'select ocp from OrgCustomProperty ocp join ocp.type pd where pd.descr = :orgConf', [
@@ -594,7 +598,7 @@ class YodaController {
         if (params.cmd == 'migrate') {
             result.subRoles.each{ so ->
                 Subscription sub = so[0]
-				OrgRole role 	 = so[1]
+                OrgRole role 	 = so[1]
 
 				if (sub.getCalculatedType() == Subscription.CALCULATED_TYPE_LOCAL) {
 					role.setRoleType(RDStore.OR_SUBSCRIPTION_COLLECTIVE)
@@ -630,9 +634,11 @@ class YodaController {
     @Secured(['ROLE_YODA'])
     def migratePackageIdentifiers() {
         IdentifierNamespace isilPaketsigel = IdentifierNamespace.findByNs('ISIL_Paketsigel')
-        Set<Identifier> idList = Identifier.executeQuery("select io.identifier from IdentifierOccurrence io where io.pkg != null and lower(io.identifier.ns.ns) = 'isil'")
+        Set<Identifier> idList = Identifier.executeQuery("select ident from Identifier ident where ident.pkg != null and lower(ident.ns.ns) = 'isil'")
         if(idList) {
-            Identifier.executeUpdate("update IdentifierOccurrence io set io.identifier.ns = :isilPaketsigel where io.pkg != null and lower(io.identifier.ns.ns) = 'isil'",[isilPaketsigel: isilPaketsigel])
+            // TODO [ticket=1789]
+            Identifier.executeUpdate("update Identifier ident set ident.ns = :isilPaketsigel where ident.pkg != null and lower(ident.ns.ns) = 'isil'",[isilPaketsigel: isilPaketsigel])
+            //Identifier.executeUpdate("update IdentifierOccurrence io set io.identifier.ns = :isilPaketsigel where io.pkg != null and lower(io.identifier.ns.ns) = 'isil'",[isilPaketsigel: isilPaketsigel])
             flash.message = "Changes performed on ${idList.size()} package identifiers ..."
         }
         redirect controller: 'home'
@@ -1033,8 +1039,9 @@ class YodaController {
                                     }
                                     ids {
                                         o.ids.each { idObj ->
-                                            IdentifierOccurrence idOcc = (IdentifierOccurrence) idObj
-                                            id (namespace: idOcc.identifier.ns.ns, value: idOcc.identifier.value)
+                                            // TODO [ticket=1789]
+                                            //IdentifierOccurrence idOcc = (IdentifierOccurrence) idObj
+                                            id (namespace: idObj.ns.ns, value: idObj.value)
                                         }
                                     }
                                     //outgoing/ingoingCombos: assembled in branch combos
@@ -1412,8 +1419,7 @@ class YodaController {
                 def users = User.findAll()
                 print users
                 users.each { user ->
-                    UserSettings userSettingDashboardReminderPeriod = user.getSetting(DASHBOARD_REMINDER_PERIOD, DEFAULT_REMINDER_PERIOD)
-                    int oldPeriod = userSettingDashboardReminderPeriod.value
+                    int oldPeriod = 30
                     user.getSetting(REMIND_PERIOD_FOR_LICENSE_PRIVATE_PROP, oldPeriod)
                     user.getSetting(REMIND_PERIOD_FOR_LICENSE_CUSTOM_PROP, oldPeriod)
                     user.getSetting(REMIND_PERIOD_FOR_ORG_CUSTOM_PROP, oldPeriod)
@@ -1424,9 +1430,6 @@ class YodaController {
                     user.getSetting(REMIND_PERIOD_FOR_SUBSCRIPTIONS_NOTICEPERIOD, oldPeriod)
                     user.getSetting(REMIND_PERIOD_FOR_SUBSCRIPTIONS_ENDDATE, oldPeriod)
                     user.getSetting(REMIND_PERIOD_FOR_TASKS, oldPeriod)
-
-                    println '-----> deleting userSetting: ' + userSettingDashboardReminderPeriod.id + ", " + userSettingDashboardReminderPeriod.key
-                    userSettingDashboardReminderPeriod.delete()
                 }
                 result.users = users
                 flash.message = 'Das Ersetzen des Usersettings DASHBOARD_REMINDER_PERIOD für alle Benutzer im System war erfolgreich.'
@@ -1479,31 +1482,31 @@ class YodaController {
         )
 
         if (params.cmd == 'doIt') {
-            println opp.collect{ it -> it.id }
+            println opp.collect{ it.id }
             if (opp.size() > 0) {
                 OrgPrivateProperty.executeUpdate('DELETE FROM OrgPrivateProperty opp WHERE opp.id in :idList',
-                        [idList: opp.collect { it -> it.id }]
+                        [idList: opp.collect { it.id }]
                 )
             }
 
-            println spp.collect{ it -> it.id }
+            println spp.collect{ it.id }
             if (spp.size() > 0) {
                 SubscriptionPrivateProperty.executeUpdate('DELETE FROM SubscriptionPrivateProperty spp WHERE spp.id in :idList',
-                        [idList: spp.collect { it -> it.id }]
+                        [idList: spp.collect { it.id }]
                 )
             }
 
-            println lpp.collect{ it -> it.id }
+            println lpp.collect{ it.id }
             if (lpp.size() > 0) {
                 LicensePrivateProperty.executeUpdate('DELETE FROM LicensePrivateProperty lpp WHERE lpp.id in :idList',
-                        [idList: lpp.collect { it -> it.id }]
+                        [idList: lpp.collect { it.id }]
                 )
             }
 
-            println ppp.collect{ it -> it.id }
+            println ppp.collect{ it.id }
             if (ppp.size() > 0) {
                 PersonPrivateProperty.executeUpdate('DELETE FROM PersonPrivateProperty ppp WHERE ppp.id in :idList',
-                        [idList: ppp.collect { it -> it.id }]
+                        [idList: ppp.collect { it.id }]
                 )
             }
         }
@@ -1703,7 +1706,9 @@ class YodaController {
                 }
                 else {
 
-                    def tiObj = TitleInstance.executeQuery('select ti from TitleInstance ti join ti.ids ids where ids in (select io from IdentifierOccurrence io join io.identifier id where id.ns in :namespaces and id.value = :value)',[namespaces:idCandidate.namespaces,value:idCandidate.value])
+                    // TODO [ticket=1789]
+                    //def tiObj = TitleInstance.executeQuery('select ti from TitleInstance ti join ti.ids ids where ids in (select io from IdentifierOccurrence io join io.identifier id where id.ns in :namespaces and id.value = :value)',[namespaces:idCandidate.namespaces,value:idCandidate.value])
+                    def tiObj = TitleInstance.executeQuery('select ti from TitleInstance ti join ti.ids ident where ident.ns in :namespaces and ident.value = :value', [namespaces:idCandidate.namespaces, value:idCandidate.value])
                     if(tiObj) {
 
                         tiObj?.each { titleInstance ->

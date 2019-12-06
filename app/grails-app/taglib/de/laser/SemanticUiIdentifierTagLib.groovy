@@ -1,7 +1,7 @@
 package de.laser
 
 import com.k_int.kbplus.IdentifierNamespace
-import com.k_int.kbplus.IdentifierOccurrence
+import com.k_int.kbplus.Identifier
 
 class SemanticUiIdentifierTagLib {
     //static defaultEncodeAs = [taglib:'html']
@@ -14,7 +14,7 @@ class SemanticUiIdentifierTagLib {
     def formAddIdentifier = { attrs, body ->
         def formUrl = g.createLink(controller:'ajax', action:'addToCollection')
         def context = "${(attrs.owner).class.name}:${(attrs.owner).id}"
-        def recip   = IdentifierOccurrence.getAttributeName(attrs.owner)
+        def recip   = Identifier.getAttributeName(attrs.owner)
         def onlyNameSpace = attrs.onlyoneNamespace
 
         def cssClass   = attrs.class ? " ${attrs.class}" : ""
@@ -28,7 +28,7 @@ class SemanticUiIdentifierTagLib {
         out << '<form id="' + formSelector + '" class="ui form' + cssClass + '" action="' + formUrl +'" method="post">'
         out <<   body()
 
-        out <<   '<input type="hidden" name="__newObjectClass" value="com.k_int.kbplus.IdentifierOccurrence" />'
+        out <<   '<input type="hidden" name="__newObjectClass" value="com.k_int.kbplus.Identifier" />'
         out <<   '<input type="hidden" name="__context" value="' + context + '" />'
         out <<   '<input type="hidden" name="__recip" value="' + recip + '" />'
 

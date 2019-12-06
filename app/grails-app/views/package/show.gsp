@@ -41,7 +41,7 @@
         <g:render template="actions" />
     </semui:controlButtons>
 
-      <h1 class="ui left aligned icon header"><semui:headerIcon />
+      <h1 class="ui left floated aligned icon header la-clear-before"><semui:headerIcon />
         <g:if test="${params.asAt}">${message(code:'package.show.asAt', args:[params.asAt])}</g:if>
           <g:if test="${editable}"><span id="packageNameEdit"
                     class="xEditableValue"
@@ -84,6 +84,12 @@
                                 <dt>${message(code: 'package.show.end_date')}</dt>
                                 <dd>
                                     <semui:xEditable owner="${packageInstance}" field="endDate" type="date"/>
+                                </dd>
+                            </dl>
+                            <dl>
+                                <dt>${message(code: 'package.listVerifiedDate.label')}</dt>
+                                <dd>
+                                    <semui:xEditable owner="${packageInstance}" field="listVerifiedDate" type="date"/>
                                 </dd>
                             </dl>
                         </div>
@@ -134,6 +140,7 @@
                                 <semui:xEditable owner="${packageInstance}" field="vendorURL" />
                             </dd>
                         </dl>
+
                     </div>
                 </div>
                 <div class="ui card">

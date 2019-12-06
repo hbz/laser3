@@ -18,7 +18,8 @@
                     <semui:crumb controller="organisation" action="accessPoints" id="${orgInstance.id}" message="org.nav.accessPoints"/>
                     <semui:crumb message="accessPoint.new" class="active"/>
                 </semui:breadcrumbs>
-                <h1 class="ui left aligned icon header"><semui:headerIcon />
+                <br>
+                <h1 class="ui left floated aligned icon header la-clear-before"><semui:headerIcon />
                     <g:message code="accessPoint.new" />
                 </h1>
                 <g:render template="/organisation/nav" model="${[orgInstance: orgInstance, inContextOrg: inContextOrg]}"/>

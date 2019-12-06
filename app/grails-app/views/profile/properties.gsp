@@ -11,11 +11,11 @@
 <semui:breadcrumbs>
     <semui:crumb message="menu.user.properties" class="active"/>
 </semui:breadcrumbs>
+<br>
+<h1 class="ui left floated aligned icon header la-clear-before"><semui:headerIcon />${message(code: 'menu.user.properties', default: 'Properties and Refdatas')}</h1>
 
-<h1 class="ui left aligned icon header"><semui:headerIcon />${message(code: 'menu.user.properties', default: 'Properties and Refdatas')}</h1>
 
-
-<h3>${message(code: 'propertyDefinition.plural', default: 'Properties')}</h3>
+<h3 class="la-clear-before">${message(code: 'propertyDefinition.plural', default: 'Properties')}</h3>
 
 <div class="ui styled fluid accordion">
     <g:each in="${propertyDefinitions}" var="entry">

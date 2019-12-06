@@ -1,5 +1,6 @@
 package de.laser
 
+import com.k_int.kbplus.ApiSource
 import com.k_int.kbplus.RefdataValue
 import com.k_int.kbplus.Subscription
 import com.k_int.kbplus.SurveyOrg
@@ -8,8 +9,11 @@ import com.k_int.kbplus.UserSettings
 import com.k_int.kbplus.abstract_domain.PrivateProperty
 import com.k_int.kbplus.auth.User
 import de.laser.helper.RDStore
+import de.laser.helper.SessionCacheWrapper
+import de.laser.helper.SwissKnife
 import org.codehaus.groovy.grails.plugins.web.taglib.ValidationTagLib
 import org.springframework.web.servlet.support.RequestContextUtils
+
 
 // Semantic UI
 
@@ -19,6 +23,8 @@ class SemanticUiTagLib {
     def yodaService
     def auditService
     def systemService
+    def contextService
+    def GOKbService
 
     //static defaultEncodeAs = [taglib:'html']
     //static encodeAsForTags = [tagName: [taglib:'html'], otherTagName: [taglib:'none']]
@@ -32,7 +38,7 @@ class SemanticUiTagLib {
         def flash = attrs.data
 
         if (flash && flash.message) {
-            out << '<div class="ui success message">'
+            out << '<div class="ui success message la-clear-before">'
             out << '<i class="close icon"></i>'
             out << '<p>'
             out << flash.message
@@ -41,7 +47,7 @@ class SemanticUiTagLib {
         }
 
         if (flash && flash.error) {
-            out << '<div class="ui negative message">'
+            out << '<div class="ui negative message la-clear-before">'
             out << '<i class="close icon"></i>'
             out << '<p>'
             out << flash.error
@@ -54,7 +60,7 @@ class SemanticUiTagLib {
 
     def msg = { attrs, body ->
 
-        out << '<div class="ui ' + attrs.class + ' message">'
+        out << '<div class="ui ' + attrs.class + ' message la-clear-before">'
         out << '<i class="close icon"></i>'
         out << '<div class="content">'
 
@@ -69,7 +75,12 @@ class SemanticUiTagLib {
             out << attrs.text
         }
         if (attrs.message) {
+            SwissKnife.checkMessageKey(attrs.message)
+
             out << "${message(code: attrs.message, args: attrs.args)}"
+        }
+        if ( body ) {
+            out << body()
         }
         out << '</p>'
 
@@ -115,8 +126,7 @@ class SemanticUiTagLib {
     // <semui:card>
 
     def card = { attrs, body ->
-        def text = attrs.text ? attrs.text : ''
-        def message = attrs.message ? "${message(code: attrs.message)}" : ''
+        def (text, message) = SwissKnife.getTextAndMessage(attrs)
         def title = (text && message) ? text + " - " + message : text + message
 
         out << '<div class="ui card ' + attrs.class + '">'
@@ -525,11 +535,68 @@ class SemanticUiTagLib {
         out << '<div class="metaboxContent-spacer"></div>'
     }
 
-    //<semui:filter> CONTENT <semui:filter>
+    //<semui:filter showFilterButton="true|false" extended="true|false"> CONTENT <semui:filter>
 
     def filter = { attrs, body ->
 
-        out << '<div class="ui la-filter segment">'
+        boolean extended = true
+        boolean showFilterButton = false
+
+        if (attrs.showFilterButton) {
+            if (attrs.showFilterButton.toLowerCase() == 'true') {
+                showFilterButton = true
+            }
+            else if (attrs.showFilterButton.toLowerCase() == 'false') {
+                showFilterButton = false
+            }
+        }
+
+        if (showFilterButton) {
+
+			// overwrite due attribute
+            if (attrs.extended) {
+                if (attrs.extended.toLowerCase() == 'true') {
+                    extended = true
+                } else if (attrs.extended.toLowerCase() == 'false') {
+                    extended = false
+                }
+            }
+            else {
+				// overwrite due session
+                SessionCacheWrapper sessionCache = contextService.getSessionCache()
+                def cacheEntry = sessionCache.get("${UserSettings.KEYS.SHOW_EXTENDED_FILTER.toString()}/${controllerName}/${actionName}")
+
+                if (cacheEntry) {
+                    if (cacheEntry.toLowerCase() == 'true') {
+                        extended = true
+                    } else if (cacheEntry.toLowerCase() == 'false') {
+                        extended = false
+                    }
+                }
+				// default profile setting
+                else {
+                    User currentUser = contextService.getUser()
+                    String settingValue = currentUser.getSettingsValue(UserSettings.KEYS.SHOW_EXTENDED_FILTER, RefdataValue.getByValueAndCategory('Yes', 'YN')).value
+
+                    if (settingValue.toLowerCase() == 'yes') {
+                        extended = true
+                    } else if (settingValue.toLowerCase() == 'no') {
+                        extended = false
+                    }
+                }
+            }
+        }
+        if (showFilterButton) {
+            out << '<button class="ui right floated button la-inline-labeled la-js-filterButton la-clearfix ' + (extended ?'':'blue') + '">'
+            out << '    Filter'
+            out << '    <i class="filter icon"></i>'
+            out << '   <span class="ui circular label la-js-filter-total hidden">0</span>'
+            out << '</button>'
+        }
+
+
+        //out << '<div class="ui la-filter segment la-clear-before' + (extended ?'':' style="display: none;"') + '">'
+        out << '<div class="ui la-filter segment la-clear-before"' + (extended ?'':' style="display: none;"') + '>'
         out << body()
         out << '</div>'
     }
@@ -558,7 +625,7 @@ class SemanticUiTagLib {
 
     def form = { attrs, body ->
 
-        out << '<div class="ui grey segment">'
+        out << '<div class="ui grey segment la-clear-before">'
         out << body()
         out << '</div>'
     }
@@ -586,8 +653,7 @@ class SemanticUiTagLib {
 
         String id        = attrs.id ? ' id="' + attrs.id + '" ' : ''
         String modalSize = attrs.modalSize ? attrs.modalSize  : ''
-        String text      = attrs.text ? attrs.text : ''
-        String message   = attrs.message ? "${g.message(code: attrs.message)}" : ''
+        def (text, message) = SwissKnife.getTextAndMessage(attrs)
         String title     = (text && message) ? text + " - " + message : text + message
         String isEditModal = attrs.isEditModal
 
@@ -627,7 +693,7 @@ class SemanticUiTagLib {
     //  <semui:confirmationModal  />
     // global included at semanticUI.gsp
     // called by the specific delete button
-    //  - to send a form or
+    //  - to send a form oridden
     //        <g:form data-confirm-id="${person?.id.toString()+ '_form'}">
     //        <div class="....... js-open-confirm-modal" data-confirm-term-what="diese Person" data-confirm-id="${person?.id}" >
     //  - to call a link
@@ -688,7 +754,7 @@ class SemanticUiTagLib {
         out << '<div class="ui calendar datepicker">'
         out << '<div class="ui input left icon">'
         out << '<i class="calendar icon"></i>'
-        out << '<input class="' + inputCssClass + '" name="' + name +  '" id="' + id +'" type="text" placeholder="' + placeholder + '" value="' + value + '"' + required + '>'
+        out << '<input class="' + inputCssClass + '" name="' + name +  '" id="' + id +'" type="text" placeholder="' + placeholder + '" value="' + value + '" ' + required + '>'
         out << '</div>'
         out << '</div>'
         out << '</div>'
@@ -737,10 +803,10 @@ class SemanticUiTagLib {
             if (prev?.size() == 1) {
                 prev?.each { p ->
                     if (attrs.mapping) {
-                        out << g.link("<i class='arrow left icon'></i>", contoller: attrs.controller, action: attrs.action, class: "item", params: [sub: p.id], mapping: attrs.mapping)
+                        out << g.link("<i class='arrow left icon'></i>", controller: attrs.controller, action: attrs.action, class: "item", params: [sub: p.id], mapping: attrs.mapping)
 
                     } else {
-                        out << g.link("<i class='arrow left icon'></i>", contoller: attrs.controller, action: attrs.action, class: "item", id: p.id)
+                        out << g.link("<i class='arrow left icon'></i>", controller: attrs.controller, action: attrs.action, class: "item", id: p.id)
                     }
                 }
             } else {
@@ -758,9 +824,9 @@ class SemanticUiTagLib {
                         prevEndDate = g.formatDate(date: p.endDate, format: message(code: 'default.date.format.notime'))
                     }
                     if (attrs.mapping) {
-                        out << g.link("<b>${p.name}:</b> " + "${prevStartDate}" + "${dash}" + "${prevEndDate}", contoller: attrs.controller, action: attrs.action, class: "item", params: [sub: p.id], mapping: attrs.mapping)
+                        out << g.link("<b>${p.name}:</b> " + "${prevStartDate}" + "${dash}" + "${prevEndDate}", controller: attrs.controller, action: attrs.action, class: "item", params: [sub: p.id], mapping: attrs.mapping)
                     } else {
-                        out << g.link("<b>${p.name}:</b> " + "${prevStartDate}" + "${dash}" + "${prevEndDate}", contoller: attrs.controller, action: attrs.action, class: "item", id: p.id)
+                        out << g.link("<b>${p.name}:</b> " + "${prevStartDate}" + "${dash}" + "${prevEndDate}", controller: attrs.controller, action: attrs.action, class: "item", id: p.id)
                     }
                 }
                 out << "</div>" +
@@ -784,10 +850,10 @@ class SemanticUiTagLib {
             if (next?.size() == 1) {
                 next?.each { n ->
                     if (attrs.mapping) {
-                        out << g.link("<i class='arrow right icon'></i>", contoller: attrs.controller, action: attrs.action, class: "item", params: [sub: n.id], mapping: attrs.mapping)
+                        out << g.link("<i class='arrow right icon'></i>", controller: attrs.controller, action: attrs.action, class: "item", params: [sub: n.id], mapping: attrs.mapping)
 
                     } else {
-                        out << g.link("<i class='arrow right icon'></i>", contoller: attrs.controller, action: attrs.action, class: "item", id: n.id)
+                        out << g.link("<i class='arrow right icon'></i>", controller: attrs.controller, action: attrs.action, class: "item", id: n.id)
                     }
                 }
             } else {
@@ -803,9 +869,9 @@ class SemanticUiTagLib {
                         nextEndDate = g.formatDate(date: n.endDate, format: message(code: 'default.date.format.notime'))
                     }
                     if (attrs.mapping) {
-                        out << g.link("<b>${n.name}:</b> " + "${nextStartDate}" + "${dash}" + "${nextEndDate}", contoller: attrs.controller, action: attrs.action, class: "item", params: [sub: n.id], mapping: attrs.mapping)
+                        out << g.link("<b>${n.name}:</b> " + "${nextStartDate}" + "${dash}" + "${nextEndDate}", controller: attrs.controller, action: attrs.action, class: "item", params: [sub: n.id], mapping: attrs.mapping)
                     } else {
-                        out << g.link("<b>${n.name}:</b> " + "${nextStartDate}" + "${dash}" + "${nextEndDate}", contoller: attrs.controller, action: attrs.action, class: "item", id: n.id)
+                        out << g.link("<b>${n.name}:</b> " + "${nextStartDate}" + "${dash}" + "${nextEndDate}", controller: attrs.controller, action: attrs.action, class: "item", id: n.id)
                     }
                 }
                 out << "</div>" +
@@ -955,8 +1021,7 @@ class SemanticUiTagLib {
 
     def tabsItem = { attrs, body ->
 
-        def text = attrs.text ? attrs.text : ''
-        def message = attrs.message ? "${message(code: attrs.message)}" : ''
+        def (text, message) = SwissKnife.getTextAndMessage(attrs)
         def linkBody = (text && message) ? text + " - " + message : text + message
         def aClass = ((this.pageScope.variables?.actionName == attrs.action && attrs.tab == params.tab) ? 'item active' : 'item') + (attrs.class ? ' ' + attrs.class : '')
 
@@ -981,7 +1046,7 @@ class SemanticUiTagLib {
         def surveyInfo = attrs.surveyInfo
         def surveyConfig = attrs.surveyInfo
         def linkBody = "<i class='write icon'></i>"
-        def message = attrs.message ? "${message(code: attrs.message)}" : ''
+        def (text, message) = SwissKnife.getTextAndMessage(attrs)
         def aClass = attrs.class
 
         out << "<span class='la-popup-tooltip la-delay'"
@@ -1085,6 +1150,21 @@ class SemanticUiTagLib {
                 out << g.formatDate(format: message(code: "default.date.format.notime"), date: surveyResults?.finishDate[0])
             }
         }
+    }
+
+    def gokbValue = { attrs, body ->
+
+        if(attrs.gokbId && attrs.field) {
+
+            ApiSource api = ApiSource.findByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true)
+            String gokbId = "${attrs.gokbId}"
+            def record = GOKbService.getPackageMapWithUUID(api, gokbId)
+
+            if(record && record[attrs.field]){
+                out << ((record[attrs.field] instanceof List) ? record[attrs.field].join(', ') : record[attrs.field])
+            }
+        }
+
     }
 
 }

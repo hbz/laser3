@@ -16,7 +16,7 @@
     </semui:breadcrumbs>
 
 
-    <h1 class="ui left aligned icon header"><semui:headerTitleIcon type="${issueEntitlementInstance?.tipp?.title?.type?.value}"/>
+    <h1 class="ui left floated aligned icon header la-clear-before"><semui:headerTitleIcon type="${issueEntitlementInstance?.tipp?.title?.type?.value}"/>
 
         <g:message code="issueEntitlement.for_title.label"/> ${issueEntitlementInstance?.tipp.title.title}
     </h1>
@@ -58,14 +58,14 @@
                 <g:if test="${issueEntitlementInstance?.tipp.title?.ids}">
                     <dt><g:message code="title.identifiers.label" /></dt>
                     <dd><ul>
-                      <g:each in="${issueEntitlementInstance?.tipp.title?.ids?.sort{it?.identifier?.ns?.ns}}" var="i">
-                          <li>${i.identifier.ns.ns}:
-                              ${i.identifier.value}
-<!--                            <g:if test="${i.identifier.ns.ns.equalsIgnoreCase('issn')}">
-                              (<a href="http://suncat.edina.ac.uk/F?func=find-c&ccl_term=022=${i.identifier.value}">search on SUNCAT</a>)
+                      <g:each in="${issueEntitlementInstance?.tipp.title?.ids?.sort{it?.ns?.ns}}" var="i">
+                          <li>
+                              ${i.ns.ns}:${i.value}
+                              <!--<g:if test="${i.ns.ns.equalsIgnoreCase('issn')}">
+                              (<a href="http://suncat.edina.ac.uk/F?func=find-c&ccl_term=022=${i.value}">search on SUNCAT</a>)
                             </g:if>
-                            <g:if test="${i.identifier.ns.ns.equalsIgnoreCase('eissn')}">
-                              (<a href="http://suncat.edina.ac.uk/F?func=find-c&ccl_term=022=${i.identifier.value}">search on SUNCAT</a>)
+                            <g:if test="${i.ns.ns.equalsIgnoreCase('eissn')}">
+                              (<a href="http://suncat.edina.ac.uk/F?func=find-c&ccl_term=022=${i.value}">search on SUNCAT</a>)
                             </g:if>-->
                           </li>
                       </g:each>

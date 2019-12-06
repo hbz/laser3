@@ -10,8 +10,8 @@
     <semui:crumb message="menu.yoda.dash" controller="yoda" action="index"/>
     <semui:crumb text="Pending Changes" class="active"/>
 </semui:breadcrumbs>
-
-    <h1 class="ui left aligned icon header"><semui:headerIcon />Pending Changes</h1>
+<br>
+    <h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon />Pending Changes</h1>
 
     <table class="ui celled table">
 

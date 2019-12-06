@@ -618,3 +618,6 @@ aside.ui.accordion .title:not(.ui) {
 .la-main-object {
   font-weight: bold;
 }
+.la-clear-before {
+  clear: both;
+}

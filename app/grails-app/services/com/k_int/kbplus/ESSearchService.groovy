@@ -1,27 +1,27 @@
 package com.k_int.kbplus
 
-
-import org.elasticsearch.client.transport.TransportClient
-import org.elasticsearch.common.settings.Settings
-import org.elasticsearch.common.transport.InetSocketTransportAddress
+import org.elasticsearch.action.search.SearchRequest
+import org.elasticsearch.action.search.SearchResponse
+import org.elasticsearch.search.aggregations.bucket.terms.TermsAggregationBuilder
+import org.elasticsearch.search.builder.SearchSourceBuilder
+import org.elasticsearch.search.sort.FieldSortBuilder
 import org.elasticsearch.search.sort.SortOrder;
 import org.elasticsearch.action.search.SearchRequestBuilder;
 import org.elasticsearch.client.*
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.aggregations.AggregationBuilders;
 
+
 class ESSearchService{
 // Map the parameter names we use in the webapp with the ES fields
-  def reversemap = ['subject':'subject', 
-                    'provider':'provid',
-                    'type':'rectype',
+  def reversemap = ['rectype':'rectype',
                     'endYear':'endYear',
                     'startYear':'startYear',
                     'consortiaName':'consortiaName',
-                    'cpname':'cpname',
+                    'providerName':'providerName',
                     'availableToOrgs':'availableToOrgs',
                     'isPublic':'isPublic',
-                    'lastModified':'lastModified']
+                    'status':'status']
 
   def ESWrapperService
   def grailsApplication
@@ -36,12 +36,9 @@ class ESSearchService{
 
    def result = [:]
 
-   List client = getClient()
-    Client esclient = client[0]
-   def index = client[1]
-
-   result.host = esclient.settings().host
-   result.es_host_url = esclient.settings().es_url
+   //List client = getClient()
+   RestHighLevelClient esclient = ESWrapperService.getClient()
+   Map esSettings =  ESWrapperService.getESSettings()
 
     try {
       if ( (params.q && params.q.length() > 0) || params.rectype) {
@@ -56,94 +53,69 @@ class ESSearchService{
             params.remove("tempFQ") //remove from GSP access
         }
 
-        log.debug("index:${index} query: ${query_str}");
-        def search
+        //log.debug("index:${esSettings.indexName} query: ${query_str}");
+        //def search
+        SearchResponse searchResponse
         try {
-          SearchRequestBuilder searchRequestBuilder  = esclient.prepareSearch(index)
+
+          SearchRequest searchRequest = new SearchRequest(esSettings.indexName)
+          SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder()
+
+
+          //SearchRequestBuilder searchRequestBuilder  = esclient.prepareSearch(esSettings.indexName)
           if (params.sort) {
             SortOrder order = SortOrder.ASC
             if (params.order) {
               order = SortOrder.valueOf(params.order?.toUpperCase())
             }
-            searchRequestBuilder = searchRequestBuilder.addSort("${params.sort}".toString()+".keyword", order)
+
+            //searchRequestBuilder = searchRequestBuilder.addSort("${params.sort}".toString()+".keyword", order)
+            searchSourceBuilder.sort(new FieldSortBuilder("${params.sort}").order(order))
           }
-          log.debug("searchRequestBuilder start to add query and aggregration query string is ${query_str}")
 
-          searchRequestBuilder.setQuery(QueryBuilders.queryStringQuery(query_str))
-                  .setFrom(params.offset)
-                  .setSize(params.max)
+          //searchRequestBuilder = searchRequestBuilder.addSort("priority", SortOrder.DESC)
+          searchSourceBuilder.sort(new FieldSortBuilder("priority").order(SortOrder.DESC))
 
-          search = searchRequestBuilder.get()
+          log.debug("index: ${esSettings.indexName} -> searchRequestBuilder start to add query and aggregration query string is ${query_str}")
+
+          if(params.actionName == 'index') {
+
+            searchSourceBuilder.query(QueryBuilders.queryStringQuery(query_str))
+            searchSourceBuilder.aggregation(AggregationBuilders.terms('rectype').size(25).field('rectype.keyword'))
+            searchSourceBuilder.aggregation(AggregationBuilders.terms('providerName').size(50).field('providerName.keyword'))
+            searchSourceBuilder.aggregation(AggregationBuilders.terms('status').size(50).field('status.keyword'))
+            searchSourceBuilder.aggregation(AggregationBuilders.terms('startYear').size(50).field('startYear.keyword'))
+            searchSourceBuilder.aggregation(AggregationBuilders.terms('endYear').size(50).field('endYear.keyword'))
+            searchSourceBuilder.aggregation(AggregationBuilders.terms('consortiaName').size(50).field('consortiaName.keyword'))
+
+            searchSourceBuilder.from(params.offset)
+            searchSourceBuilder.size(params.max)
+            searchRequest.source(searchSourceBuilder)
+          }else{
+
+            searchSourceBuilder.query(QueryBuilders.queryStringQuery(query_str))
+            searchSourceBuilder.from(params.offset)
+            searchSourceBuilder.size(params.max)
+            searchRequest.source(searchSourceBuilder)
+
+          }
+          searchResponse = esclient.search(searchRequest, RequestOptions.DEFAULT)
+          //search = searchRequestBuilder.get()
         }
         catch (Exception ex) {
-          log.error("Error processing ${index} ${query_str}",ex);
+          log.error("Error processing ${esSettings.indexName} ${query_str}",ex);
         }
 
-        //Old search with ES 2.4.6
-        /*def search = esclient.search{
-                  indices index
-                  source {
-                    from = params.offset
-                    size = params.max
-                    sort = params.sort?[
-                      ("${params.sort}".toString()) : [ 'order' : (params.order?:'asc') ]
-                    ] : []
+        if ( searchResponse ) {
 
-                    query {
-                      query_string (query: query_str)
-                    }
-                    aggregations {
-                      consortiaName {
-                        terms {
-                          field = 'consortiaName'
-                          size = 25
-                        }
-                      }
-                      cpname {
-                        terms {
-                          field = 'cpname'
-                          size = 25
-                        }
-                      }
-                      type {
-                        terms {
-                          field = 'rectype'
-                          size = 25
-                        }
-                      }
-                      startYear {
-                        terms {
-                          field = 'startYear'
-                          size = 25
-                        }
-                      }
-                      endYear {
-                        terms {
-                          field = 'endYear'
-                          size = 25
-                        }
-                      }
-                    }
-
-                  }
-
-                }.actionGet()
-
-        if ( search ) {
-          def search_hits = search.hits
-          result.hits = search_hits.hits
-          result.resultsTotal = search_hits.totalHits
-          result.index = index
-
-          // We pre-process the facet response to work around some translation issues in ES
-          if (search.getAggregations()) {
+          if (searchResponse.getAggregations()) {
             result.facets = [:]
-            search.getAggregations().each { entry ->
+            searchResponse.getAggregations().each { entry ->
               def facet_values = []
               entry.buckets.each { bucket ->
-                log.debug("Bucket: ${bucket}");
+                //log.debug("Bucket: ${bucket}");
                 bucket.each { bi ->
-                  log.debug("Bucket item: ${bi} ${bi.getKey()} ${bi.getDocCount()}");
+                  //log.debug("Bucket item: ${bi} ${bi.getKey()} ${bi.getDocCount()}");
                   facet_values.add([term: bi.getKey(), display: bi.getKey(), count: bi.getDocCount()])
                 }
               }
@@ -151,12 +123,10 @@ class ESSearchService{
 
             }
           }
-        }*/
-        if ( search ) {
-          def search_hits = search.getHits()
-          result.hits = search.getHits()
-          result.resultsTotal = search_hits.totalHits
-          result.index = index
+
+          result.hits = searchResponse.getHits()
+          result.resultsTotal = searchResponse.getHits().getTotalHits().value ?: "0"
+          result.index = esSettings.indexName
         }
 
       }
@@ -180,7 +150,25 @@ class ESSearchService{
     StringWriter sw = new StringWriter()
 
     if ( params?.q != null ){
-      sw.write("${params.q}")
+      params.query = "*${params.query}*"
+      //GOKBID, GUUID
+      if(params.q.length() >= 37){
+        if(params.q.contains(":") || params.q.contains("-")){
+          params.q = params.q.replaceAll('\\*', '')
+          sw.write("\"${params.q}\"")
+        }else {
+          sw.write("${params.q}")
+          sw.write(" AND ((NOT gokbId:'${params.q}') AND (NOT guid:'${params.q}')) ")
+        }
+      }else {
+        if((params.q.charAt(1) == '"' && params.q.charAt(params.q.length()-2) == '"') || params.q.contains(":") || params.q.contains("-")) {
+          params.q = params.q.replaceAll('\\*', '')
+          sw.write("\"${params.q}\"")
+        }else{
+          sw.write("${params.q}")
+          sw.write(" AND ((NOT gokbId:'${params.q}') AND (NOT guid:'${params.q}')) ")
+        }
+      }
     }
       
     if(params?.rectype){
@@ -193,7 +181,7 @@ class ESSearchService{
       if ( params[mapping.key] != null ) {
         if ( params[mapping.key].class == java.util.ArrayList) {
           if(sw.toString()) sw.write(" AND ");
-          sw.write(" ( (( NOT rectype:\"Subscription\" ) AND ( NOT rectype:\"License\" ) AND ( NOT rectype:\"ParticipantSurveys\" ) AND ( NOT rectype:\"Surveys\" )) ")
+          sw.write(" ( (( NOT rectype:\"Subscription\" ) AND ( NOT rectype:\"License\" ) AND ( NOT rectype:\"ParticipantSurvey\" ) AND ( NOT rectype:\"Survey\" )) ")
 
           params[mapping.key].each { p ->
             if(p == params[mapping.key].first())
@@ -241,92 +229,22 @@ class ESSearchService{
       }
     }
 
+    if(params?.searchObjects != 'allObjects'){
+      if(sw.toString()) sw.write(" AND ");
+
+        sw.write(" visible:'Private' ")
+    }
+
+    if(!params.showDeleted)
+    {
+      sw.write(  " AND ( NOT status:\"Deleted\" )")
+    }
+
     def result = sw.toString();
     result;
   }
 
-  /*def testIndexExist(esclient, params, field_map, index)
-  {
-    if ( (params.q && params.q.length() > 0) || params.rectype || params.esgokb) {
-
-      params.max = Math.min(params.max ? params.int('max') : 15, 100)
-      params.offset = params.offset ? params.int('offset') : 0
-
-      def query_str = buildQuery(params, field_map)
-      if (params.tempFQ) //add filtered query
-      {
-        query_str = query_str + " AND ( " + params.tempFQ + " ) "
-        params.remove("tempFQ") //remove from GSP access
-      }
-
-      def search
-      try {
-        search = esclient.search {
-          indices index
-          source {
-            from = params.offset
-            size = params.max
-            sort = params.sort ? [
-                    ("${params.sort}".toString()): ['order': (params.order ?: 'asc')]
-            ] : []
-
-            query {
-              query_string(query: query_str)
-            }
-            aggregations {
-              consortiaName {
-                terms {
-                  field = 'consortiaName'
-                  size = 25
-                }
-              }
-              cpname {
-                terms {
-                  field = 'cpname'
-                  size = 25
-                }
-              }
-              type {
-                terms {
-                  field = 'rectype'
-                  size = 25
-                }
-              }
-              startYear {
-                terms {
-                  field = 'startYear'
-                  size = 25
-                }
-              }
-              endYear {
-                terms {
-                  field = 'endYear'
-                  size = 25
-                }
-              }
-            }
-
-          }
-
-        }.actionGet()
-
-      } catch (IndexNotFoundException e) {
-        if (params.esgokb) {
-          params.remove("esgokb")
-          params.rectype = "Package"
-        }
-      }
-      catch (Exception e) {
-        if (params.esgokb) {
-          params.remove("esgokb")
-          params.rectype = "Package"
-        }
-      }
-    }
-    return params
-  }*/
-
-  def getClient(index) {
+  /*def getClient(index) {
     def esclient = null
     def es_cluster_name = null
     def es_index_name = null
@@ -356,16 +274,10 @@ class ESSearchService{
             .put("es_url", es_url)
             .build();
 
-/*    //esclient = TransportClient.builder().settings(settings).build();
-    esclient = new org.elasticsearch.transport.client.PreBuiltTransportClient(settings);
-
-    // add transport addresses
-    esclient.addTransportAddress(new InetSocketTransportAddress(InetAddress.getByName(es_host), 9300 as int))*/
-
     esclient = new org.elasticsearch.transport.client.PreBuiltTransportClient(settings);
     esclient.addTransportAddress(new InetSocketTransportAddress(InetAddress.getByName(es_host), 9300));
 
     return [esclient, es_index_name]
-  }
+  }*/
 
 }

@@ -17,7 +17,7 @@
     <semui:crumb message="survey.label" class="active"/>
 </semui:breadcrumbs>
 
-<h1 class="ui left aligned icon header"><semui:headerIcon/>
+<h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon/>
 ${message(code: 'survey.label')} -
 
 <g:link controller="myInstitution" action="surveyInfos" id="${surveyInfo.id}">${surveyInfo.name}</g:link>
@@ -194,10 +194,10 @@ ${message(code: 'survey.label')} -
                                 <g:message code="default.identifiers.label"/>
                             </dt>
                             <dd>
-                                <g:each in="${subscriptionInstance?.ids?.sort { it?.identifier?.ns?.ns }}"
+                                <g:each in="${subscriptionInstance?.ids?.sort { it?.ns?.ns }}"
                                         var="id">
                                     <span class="ui small teal image label">
-                                        ${id.identifier.ns.ns}: <div class="detail">${id.identifier.value}</div>
+                                        ${id.ns.ns}: <div class="detail">${id.value}</div>
                                     </span>
                                 </g:each>
                             </dd>

@@ -77,3 +77,18 @@
   font-size: .8rem;
   text-transform: uppercase;
 }
+.ui.button {
+  &.la-inline-labeled {
+    padding-top: .5em;
+    padding-bottom: .5em;
+    height: 2.571em;
+    // to put the icon at the same place as the round label inside the button
+    i {
+      width: 28px;
+    }
+  }
+  &.la-js-filterButton {
+    margin-top: 14px;
+    margin-bottom: 14px;
+  }
+}

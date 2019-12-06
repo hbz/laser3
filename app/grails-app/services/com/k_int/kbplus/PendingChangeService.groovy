@@ -61,14 +61,14 @@ class PendingChangeService extends AbstractLockableService {
             boolean saveWithoutError = false
 
             try {
-                def event = JSON.parse(pendingChange.changeDoc)
-                log.debug("Process change ${event}");
-                switch ( event.changeType ) {
+                def payload = JSON.parse(pendingChange.payload)
+                log.debug("Process change ${payload}");
+                switch ( payload.changeType ) {
 
                     case EVENT_TIPP_DELETE :
                         // "changeType":"TIPPDeleted","tippId":"com.k_int.kbplus.TitleInstancePackagePlatform:6482"}
                         def sub_to_change = pendingChange.subscription
-                        def tipp = genericOIDService.resolveOID(event.tippId)
+                        def tipp = genericOIDService.resolveOID(payload.tippId)
                         def ie_to_update = IssueEntitlement.findBySubscriptionAndTipp(sub_to_change,tipp)
                         if ( ie_to_update != null ) {
                             ie_to_update.status = RDStore.TIPP_DELETED
@@ -83,42 +83,42 @@ class PendingChangeService extends AbstractLockableService {
                         break;
 
                     case EVENT_PROPERTY_CHANGE :  // Generic property change
-                        if ( ( event.changeTarget != null ) && ( event.changeTarget.length() > 0 ) ) {
-                            def target_object = genericOIDService.resolveOID(event.changeTarget);
+                        if ( ( payload.changeTarget != null ) && ( payload.changeTarget.length() > 0 ) ) {
+                            def target_object = genericOIDService.resolveOID(payload.changeTarget);
                             target_object.refresh()
                             if ( target_object ) {
                                 // Work out if parsed_change_info.changeDoc.prop is an association - If so we will need to resolve the OID in the value
                                 def domain_class = grailsApplication.getArtefact('Domain',target_object.class.name);
-                                def prop_info = domain_class.getPersistentProperty(event.changeDoc.prop)
+                                def prop_info = domain_class.getPersistentProperty(payload.changeDoc.prop)
                                 if(prop_info == null){
-                                    log.debug("We are dealing with custom properties: ${event}")
-                                    processCustomPropertyChange(event)
+                                    log.debug("We are dealing with custom properties: ${payload}")
+                                    processCustomPropertyChange(payload)
                                 }
                                 else if ( prop_info.name == 'status' ) {
-                                    RefdataValue oldStatus = genericOIDService.resolveOID(event.changeDoc.old)
-                                    RefdataValue newStatus = genericOIDService.resolveOID(event.changeDoc.new)
+                                    RefdataValue oldStatus = genericOIDService.resolveOID(payload.changeDoc.old)
+                                    RefdataValue newStatus = genericOIDService.resolveOID(payload.changeDoc.new)
                                     log.debug("Updating status from ${oldStatus.getI10n('value')} to ${newStatus.getI10n('value')}")
                                     target_object.status = newStatus
                                 }
                                 else if ( prop_info.isAssociation() ) {
-                                    log.debug("Setting association for ${event.changeDoc.prop} to ${event.changeDoc.new}");
-                                    target_object[event.changeDoc.prop] = genericOIDService.resolveOID(event.changeDoc.new)
+                                    log.debug("Setting association for ${payload.changeDoc.prop} to ${payload.changeDoc.new}");
+                                    target_object[payload.changeDoc.prop] = genericOIDService.resolveOID(payload.changeDoc.new)
                                 }
                                 else if ( prop_info.getType() == java.util.Date ) {
-                                    log.debug("Date processing.... parse \"${event.changeDoc.new}\"");
-                                    if ( ( event.changeDoc.new != null ) && ( event.changeDoc.new.toString() != 'null' ) ) {
+                                    log.debug("Date processing.... parse \"${payload.changeDoc.new}\"");
+                                    if ( ( payload.changeDoc.new != null ) && ( payload.changeDoc.new.toString() != 'null' ) ) {
                                         //if ( ( parsed_change_info.changeDoc.new != null ) && ( parsed_change_info.changeDoc.new != 'null' ) ) {
                                         def df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'"); // yyyy-MM-dd'T'HH:mm:ss.SSSZ 2013-08-31T23:00:00Z
-                                        def d = df.parse(event.changeDoc.new)
-                                        target_object[event.changeDoc.prop] = d
+                                        def d = df.parse(payload.changeDoc.new)
+                                        target_object[payload.changeDoc.prop] = d
                                     }
                                     else {
-                                        target_object[event.changeDoc.prop] = null
+                                        target_object[payload.changeDoc.prop] = null
                                     }
                                 }
                                 else {
-                                    log.debug("Setting value for ${event.changeDoc.prop} to ${event.changeDoc.new}");
-                                    target_object[event.changeDoc.prop] = event.changeDoc.new
+                                    log.debug("Setting value for ${payload.changeDoc.prop} to ${payload.changeDoc.new}");
+                                    target_object[payload.changeDoc.prop] = payload.changeDoc.new
                                 }
 
                                 if(target_object.save())
@@ -143,23 +143,23 @@ class PendingChangeService extends AbstractLockableService {
                         break;
 
                     case EVENT_OBJECT_NEW :
-                        def new_domain_class = grailsApplication.getArtefact('Domain',event.newObjectClass);
+                        def new_domain_class = grailsApplication.getArtefact('Domain',payload.newObjectClass);
                         if ( new_domain_class != null ) {
                             def new_instance = new_domain_class.getClazz().newInstance()
                             // like bindData(destination, map), that only exists in controllers
 
                             def sdf = new java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss.S")
-                            if(event.changeDoc?.startDate || event.changeDoc?.endDate)
+                            if(payload.changeDoc?.startDate || payload.changeDoc?.endDate)
                             {
-                                event.changeDoc?.startDate = ((event.changeDoc?.startDate != null) && (event.changeDoc?.startDate.length() > 0)) ? sdf.parse(event.changeDoc?.startDate) : null
-                                event.changeDoc?.endDate = ((event.changeDoc?.endDate != null) && (event.changeDoc?.endDate.length() > 0)) ? sdf.parse(event.changeDoc?.endDate) : null
+                                payload.changeDoc?.startDate = ((payload.changeDoc?.startDate != null) && (payload.changeDoc?.startDate.length() > 0)) ? sdf.parse(payload.changeDoc?.startDate) : null
+                                payload.changeDoc?.endDate = ((payload.changeDoc?.endDate != null) && (payload.changeDoc?.endDate.length() > 0)) ? sdf.parse(payload.changeDoc?.endDate) : null
                             }
-                            if(event.changeDoc?.accessStartDate || event.changeDoc?.accessEndDate) {
-                                event.changeDoc?.accessStartDate = ((event.changeDoc?.accessStartDate != null) && (event.changeDoc?.accessStartDate.length() > 0)) ? sdf.parse(event.changeDoc?.accessStartDate) : null
-                                event.changeDoc?.accessEndDate = ((event.changeDoc?.accessEndDate != null) && (event.changeDoc?.accessEndDate.length() > 0)) ? sdf.parse(event.changeDoc?.accessEndDate) : null
+                            if(payload.changeDoc?.accessStartDate || payload.changeDoc?.accessEndDate) {
+                                payload.changeDoc?.accessStartDate = ((payload.changeDoc?.accessStartDate != null) && (payload.changeDoc?.accessStartDate.length() > 0)) ? sdf.parse(payload.changeDoc?.accessStartDate) : null
+                                payload.changeDoc?.accessEndDate = ((payload.changeDoc?.accessEndDate != null) && (payload.changeDoc?.accessEndDate.length() > 0)) ? sdf.parse(payload.changeDoc?.accessEndDate) : null
                             }
 
-                            DataBindingUtils.bindObjectToInstance(new_instance, event.changeDoc)
+                            DataBindingUtils.bindObjectToInstance(new_instance, payload.changeDoc)
                             if(new_instance.save())
                             {
                                 saveWithoutError = true
@@ -168,26 +168,26 @@ class PendingChangeService extends AbstractLockableService {
                         break;
 
                     case EVENT_OBJECT_UPDATE :
-                        if ( ( event.changeTarget != null ) && ( event.changeTarget.length() > 0 ) ) {
-                            def target_object = genericOIDService.resolveOID(event.changeTarget);
+                        if ( ( payload.changeTarget != null ) && ( payload.changeTarget.length() > 0 ) ) {
+                            def target_object = genericOIDService.resolveOID(payload.changeTarget);
                             if ( target_object ) {
                                 def sdf = new java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss.S")
-                                if(event.changeDoc?.startDate || event.changeDoc?.endDate)
+                                if(payload.changeDoc?.startDate || payload.changeDoc?.endDate)
                                 {
-                                    event.changeDoc?.startDate = ((event.changeDoc?.startDate != null) && (event.changeDoc?.startDate.length() > 0)) ? sdf.parse(event.changeDoc?.startDate) : null
-                                    event.changeDoc?.endDate = ((event.changeDoc?.endDate != null) && (event.changeDoc?.endDate.length() > 0)) ? sdf.parse(event.changeDoc?.endDate) : null
+                                    payload.changeDoc?.startDate = ((payload.changeDoc?.startDate != null) && (payload.changeDoc?.startDate.length() > 0)) ? sdf.parse(payload.changeDoc?.startDate) : null
+                                    payload.changeDoc?.endDate = ((payload.changeDoc?.endDate != null) && (payload.changeDoc?.endDate.length() > 0)) ? sdf.parse(payload.changeDoc?.endDate) : null
                                 }
-                                if(event.changeDoc?.accessStartDate || event.changeDoc?.accessEndDate) {
-                                    event.changeDoc?.accessStartDate = ((event.changeDoc?.accessStartDate != null) && (event.changeDoc?.accessStartDate.length() > 0)) ? sdf.parse(event.changeDoc?.accessStartDate) : null
-                                    event.changeDoc?.accessEndDate = ((event.changeDoc?.accessEndDate != null) && (event.changeDoc?.accessEndDate.length() > 0)) ? sdf.parse(event.changeDoc?.accessEndDate) : null
+                                if(payload.changeDoc?.accessStartDate || payload.changeDoc?.accessEndDate) {
+                                    payload.changeDoc?.accessStartDate = ((payload.changeDoc?.accessStartDate != null) && (payload.changeDoc?.accessStartDate.length() > 0)) ? sdf.parse(payload.changeDoc?.accessStartDate) : null
+                                    payload.changeDoc?.accessEndDate = ((payload.changeDoc?.accessEndDate != null) && (payload.changeDoc?.accessEndDate.length() > 0)) ? sdf.parse(payload.changeDoc?.accessEndDate) : null
                                 }
 
-                                if(event.changeDoc?.status) //continue here: reset DB, perform everything, then check process at this line - status of retired TIPPs goes miraculously to null
+                                if(payload.changeDoc?.status) //continue here: reset DB, perform everything, then check process at this line - status of retired TIPPs goes miraculously to null
                                 {
-                                    event.changeDoc?.status = event.changeDoc?.status?.id
+                                    payload.changeDoc?.status = payload.changeDoc?.status?.id
                                 }
 
-                                DataBindingUtils.bindObjectToInstance(target_object, event.changeDoc)
+                                DataBindingUtils.bindObjectToInstance(target_object, payload.changeDoc)
 
                                 if(target_object.save())
                                 {
@@ -200,9 +200,9 @@ class PendingChangeService extends AbstractLockableService {
                         }
                         break
 
-                    case EVENT_COVERAGE_ADD: IssueEntitlement target = genericOIDService.resolveOID(event.changeTarget)
+                    case EVENT_COVERAGE_ADD: IssueEntitlement target = genericOIDService.resolveOID(payload.changeTarget)
                         if(target) {
-                            Map newCovData = event.changeDoc
+                            Map newCovData = payload.changeDoc
                             IssueEntitlementCoverage cov = new IssueEntitlementCoverage(newCovData)
                             cov.issueEntitlement = target
                             if(cov.save())
@@ -210,12 +210,12 @@ class PendingChangeService extends AbstractLockableService {
                             else log.error(cov.getErrors())
                         }
                         else {
-                            log.error("Target issue entitlement with OID ${event.changeTarget} not found")
+                            log.error("Target issue entitlement with OID ${payload.changeTarget} not found")
                         }
                         break
                     case EVENT_COVERAGE_UPDATE: SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'")
-                        IssueEntitlementCoverage target = genericOIDService.resolveOID(event.changeTarget)
-                        Map changeAttrs = event.changeDoc
+                        IssueEntitlementCoverage target = genericOIDService.resolveOID(payload.changeTarget)
+                        Map changeAttrs = payload.changeDoc
                         if(target) {
                             if(changeAttrs.prop in ['startDate','endDate'])
                                 target[changeAttrs.prop] = sdf.parse(changeAttrs.new)
@@ -225,19 +225,19 @@ class PendingChangeService extends AbstractLockableService {
                                 saveWithoutError = true
                             else log.error(target.getErrors())
                         }
-                        else log.error("Target coverage object does not exist! The erroneous OID is: ${event.changeTarget}")
+                        else log.error("Target coverage object does not exist! The erroneous OID is: ${payload.changeTarget}")
                         break
-                    case EVENT_COVERAGE_DELETE: IssueEntitlementCoverage cov = genericOIDService.resolveOID(event.changeTarget)
+                    case EVENT_COVERAGE_DELETE: IssueEntitlementCoverage cov = genericOIDService.resolveOID(payload.changeTarget)
                         if(cov) {
                             if(cov.delete())
                                 saveWithoutError = true
                             else log.error("Error on deleting issue entitlement coverage statement with id ${cov.id}")
                         }
-                        else log.error("Target coverage object does not exist! The erroneous OID is: ${event.changeTarget}")
+                        else log.error("Target coverage object does not exist! The erroneous OID is: ${payload.changeTarget}")
                         break
 
                     default:
-                        log.error("Unhandled change type : ${pc.changeDoc}");
+                        log.error("Unhandled change type : ${pc.payload}");
                         break;
                 }
 
@@ -284,15 +284,15 @@ class PendingChangeService extends AbstractLockableService {
         }
     }
 
-    private def processCustomPropertyChange(event) {
-        def changeDoc = event.changeDoc
+    private def processCustomPropertyChange(payload) {
+        def changeDoc = payload.changeDoc
 
-        if ((event.changeTarget != null) && (event.changeTarget.length() > 0)) {
+        if ((payload.changeTarget != null) && (payload.changeTarget.length() > 0)) {
 
-            def changeTarget = genericOIDService.resolveOID(event.changeTarget)
+            def changeTarget = genericOIDService.resolveOID(payload.changeTarget)
             if (changeTarget) {
                 if(! changeTarget.hasProperty('customProperties')) {
-                    log.error("Custom property change, but owner doesnt have the custom props: ${event}")
+                    log.error("Custom property change, but owner doesnt have the custom props: ${payload}")
                     return
                 }
 
@@ -327,7 +327,7 @@ class PendingChangeService extends AbstractLockableService {
 
                     if (changeDoc.event.endsWith('CustomProperty.deleted')) {
 
-                        log.debug("Deleting property ${targetProperty.type.name} from ${event.changeTarget}")
+                        log.debug("Deleting property ${targetProperty.type.name} from ${payload.changeTarget}")
                         changeTarget.customProperties.remove(targetProperty)
                         targetProperty.delete()
                     }
@@ -361,7 +361,7 @@ class PendingChangeService extends AbstractLockableService {
                     }
                 }
                 else {
-                    log.error("Custom property changed, but no derived property found: ${event}")
+                    log.error("Custom property changed, but no derived property found: ${payload}")
                 }
             }
         }

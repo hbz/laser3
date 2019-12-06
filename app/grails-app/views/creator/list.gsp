@@ -8,7 +8,7 @@
 		<title><g:message code="default.list.label" args="[entityName]" /></title>
 	</head>
 	<body>
-		<h1 class="ui left aligned icon header"><semui:headerIcon /><g:message code="default.list.label" args="[entityName]" />
+		<h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon /><g:message code="default.list.label" args="[entityName]" />
 			<semui:totalNumber total="${creatorInstanceTotal}"/>
 		</h1>
 
@@ -39,7 +39,7 @@
 						
 							<td>${fieldValue(bean: creatorInstance, field: "middlename")}</td>
 						
-							<td>${fieldValue(bean: creatorInstance, field: "gnd_id")}</td>
+							<td><%-- TODO [ticket=1789] ${fieldValue(bean: creatorInstance, field: "gnd_id")} --%></td>
 
 
 						<td class="link">

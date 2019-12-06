@@ -4,6 +4,7 @@ import com.k_int.ClassUtils
 import com.k_int.properties.PropertyDefinitionGroup
 import com.k_int.properties.PropertyDefinitionGroupBinding
 import de.laser.domain.AbstractBaseDomain
+import de.laser.helper.RDStore
 import de.laser.helper.RefdataAnnotation
 import grails.util.Holders
 import org.apache.commons.logging.Log
@@ -18,6 +19,9 @@ class Platform extends AbstractBaseDomain {
 
   @Transient
   def propertyService
+
+  @Transient
+  def deletionService
 
   static Log static_logger = LogFactory.getLog(Platform)
 
@@ -87,6 +91,10 @@ class Platform extends AbstractBaseDomain {
     softwareProvider(nullable:true, blank:false)
     gokbId (nullable:true, blank:false)
     org (nullable:true, blank:false)
+  }
+
+  def afterDelete() {
+    deletionService.deleteDocumentFromIndex(this.class.name, this.globalUID)
   }
 
   def static lookupOrCreatePlatform(Map params=[:]) {
@@ -184,13 +192,30 @@ class Platform extends AbstractBaseDomain {
     result
   }
 
+  def usesPlatformAccessPoints(contextOrg, subscriptionPackage){
+    // TODO do we need the contextOrg?
+    // look for OrgAccessPointLinks for this platform and a given subscriptionPackage, if we can find that "marker",
+    // we know the AccessPoints are not derived from the AccessPoints configured for the platform
+    def hql = "select oapl from OrgAccessPointLink oapl where oapl.platform=${this.id} and oapl.subPkg = ${subscriptionPackage.id} and oapl.oap is null"
+    def result = OrgAccessPointLink.executeQuery(hql)
+    (result) ? false : true
+  }
+
   def getContextOrgAccessPoints(contextOrg) {
     def hql = "select oap from OrgAccessPoint oap " +
-        "join oap.oapp as oapp where oap.org=:org and oapp.active = true and oapp.platform.id =${this.id} order by LOWER(oap.name)"
+        "join oap.oapp as oapp where oap.org=:org and oapp.active = true and oapp.platform.id =${this.id} and oapp.subPkg is null order by LOWER(oap.name)"
     def result = OrgAccessPoint.executeQuery(hql, ['org' : contextOrg])
     return result
   }
-  
+
+  def getNotActiveAccessPoints(org){
+    def notActiveAPLinkQuery = "select oap from OrgAccessPoint oap where oap.org =:institution "
+    notActiveAPLinkQuery += "and not exists ("
+    notActiveAPLinkQuery += "select 1 from oap.oapp as oapl where oapl.oap=oap and oapl.active=true "
+    notActiveAPLinkQuery += "and oapl.platform.id = ${id}) order by lower(oap.name)"
+    OrgAccessPoint.executeQuery(notActiveAPLinkQuery, [institution : org])
+  }
+
   static def refdataFind(params) {
     def result = [];
     def ql = null;
@@ -217,5 +242,12 @@ class Platform extends AbstractBaseDomain {
   @Override
   String toString() {
     name
+  }
+
+  def getCurrentTipps()
+  {
+    def result = this.tipps?.findAll{it?.status?.id == RDStore.TIPP_STATUS_CURRENT.id}
+
+    result
   }
 }

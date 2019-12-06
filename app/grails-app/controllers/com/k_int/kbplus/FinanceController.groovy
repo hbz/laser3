@@ -1127,7 +1127,7 @@ class FinanceController extends AbstractDebugController {
                           diffs.each { diff ->
                               JSON json = [changeDoc:[OID:"${cci.class.name}:${cci.id}",prop:prop]] as JSON
                               String changeDoc = json.toString()
-                              PendingChange change = new PendingChange(costItem: cci, owner: cci.owner,desc: diff, ts: new Date(), changeDoc: changeDoc)
+                              PendingChange change = new PendingChange(costItem: cci, owner: cci.owner,desc: diff, ts: new Date(), payload: changeDoc)
                               if(!change.save(flush: true))
                                   log.error(change.errors)
                           }

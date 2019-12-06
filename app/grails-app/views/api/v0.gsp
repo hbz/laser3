@@ -19,10 +19,23 @@
           margin:0;
           background: #fff;
         }
-        #swagger-ui {
+        #hmac-info {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            z-index: 999;
+            background-color: #fff;
+            border-top: 1px solid #ccc;
+            border-bottom: 1px solid #ccc;
+        }
+        #hmac-info pre {
+            margin: 3em 0;
+            font-size: 12px;
+        }
+        #main-container {
             margin-top: 100px;
         }
-        #swagger-ui .topbar {
+        #main-container .topbar {
             position: fixed;
             top: 0;
             width: 100%;
@@ -30,38 +43,41 @@
             background-color: rgba(0,0,0, 0.75);
             z-index: 99;
         }
-        #swagger-ui .topbar .topbar-wrapper {
+        #main-container .topbar .topbar-wrapper {
             border-left: 1px solid #000;
             border-right: 1px solid #000;
         }
-        #swagger-ui .topbar .ui-box {
+        #main-container .topbar .ui-box {
             font-family: "Courier New";
             font-size: 12px;
             padding: 5px 10px;
             color: #fff;
         }
-        #swagger-ui .topbar input {
+        #main-container .topbar input {
             width: 200px;
             margin: 3px 0;
             padding: 8px 10px;
             border: none;
         }
-        #swagger-ui .topbar input[name=apiContext] {
+        #main-container .topbar input[name=apiContext] {
             width: 250px;
         }
-        #swagger-ui .topbar input[name=apiAuth] {
+        #main-container .topbar input[name=apiAuth] {
             width: 470px;
         }
-        #swagger-ui .topbar .link,
-        #swagger-ui .topbar .download-url-wrapper {
+        #main-container .topbar .link,
+        #main-container .topbar .download-url-wrapper {
             display: none;
         }
-        #swagger-ui .information-container pre.base-url + a {
+        #main-container .information-container pre.base-url + a {
             display: none;
         }
-        #swagger-ui textarea.curl {
+        #main-container textarea.curl {
             color: #666;
             background-color: #fff;
+        }
+        .display_none {
+            display: none;
         }
     </style>
 
@@ -105,29 +121,43 @@
     </defs>
   </svg>
 
-<!--
-    // calculation of hmac
+<div id="hmac-info" class="display_none">
+    <div class="swagger-ui">
+        <div class="wrapper">
+            <p>
+                <strong>Example:</strong> <br />
+                Runnable javascript implementation for HMAC generation.
+                Just copy into your browser dev-tools.
+            </p>
+<pre>
+var apiKey        = &quot;&lt;your apiKey&gt;&quot;
+var apiPassword   = &quot;&lt;your apiPassword&gt;&quot;
+var method        = &quot;GET&quot;
+var path          = &quot;/api/v0/&lt;apiEndpoint&gt;&quot;
+var timestamp     = &quot;&quot; // not used yet
+var nounce        = &quot;&quot; // not used yet
+var q             = &quot;&lt;q&gt;&quot;
+var v             = &quot;&lt;v&gt;&quot;
+var context       = &quot;&lt;context&gt;&quot;
 
-    var apiKey        = "<apiKey>"
-    var apiPassword   = "<apiPassword>"
-    var method        = "GET"
-    var path          = "/api/v0/<apiEndpoint>"
-    var timestamp     = ""
-    var nounce        = ""
-    var q             = "<q>"
-    var v             = "<v>"
-    var context       = "<context>"
-    var query         = $.grep( [(q ? "q=" + q : null), (v ? "v=" + v : null), (context ? "context=" + context : null)], function(e, i){ return e }).join('&')
-    var body          = ""
-    var algorithm     = "hmac-sha256"
-    var digest        = CryptoJS.HmacSHA256(method + path + timestamp + nounce + query + body, apiPassword)
-    var authorization = "hmac " + apiKey + ":" + timestamp + ":" + nounce + ":" + digest + "," + algorithm
+var query         = $.grep( [(q ? &quot;q=&quot; + q : null), (v ? &quot;v=&quot; + v : null), (context ? &quot;context=&quot; + context : null)], function(e, i){ return e }).join('&amp;')
+var body          = &quot;&quot; // not used yet
 
-    console.log('authorization: ' + authorization)
+var message       = method + path + timestamp + nounce + query + body
+var digest        = CryptoJS.HmacSHA256(message, apiPassword)
+var authorization = &quot;hmac &quot; + apiKey + &quot;:&quot; + timestamp + &quot;:&quot; + nounce + &quot;:&quot; + digest + &quot;,hmac-sha256&quot;
 
--->
+console.log('(debug only) message: ' + message)
+console.log('(http-header) x-authorization: ' + authorization)
+</pre>
+            <p>
+                <button class="btn">Close</button>
+            </p>
+        </div>
+    </div>
+</div>
 
-    <div id="swagger-ui"></div>
+    <div id="main-container"></div>
 
     <script>
         window.onload = function() {
@@ -141,7 +171,7 @@
 
             var jabba = SwaggerUIBundle({
                 url: "${grailsApplication.config.grails.serverURL}/api/${apiVersion}/spec",
-                dom_id: '#swagger-ui',
+                dom_id: '#main-container',
                 presets: [
                     SwaggerUIBundle.presets.apis,
                     SwaggerUIStandalonePreset
@@ -160,6 +190,14 @@
                 jQuery('.topbar-wrapper').append('<span class="ui-box">Context <input name="apiContext" type="text" placeholder="Current Context" value="${apiContext}"></span>')
                 jQuery('.topbar-wrapper').append('<span class="ui-box">Authorization <input name="apiAuth" type="text" placeholder="Generate after the request is defined .." value=""></span>')
 
+                jQuery('.information-container a[href=""]').on('click', function(event) {
+                    event.preventDefault()
+                    jQuery('#hmac-info').removeClass('display_none')
+                })
+
+                jQuery('#hmac-info button').on('click', function(event) {
+                    jQuery('#hmac-info').addClass('display_none')
+                })
             }, 1000)
 
             setTimeout(function(){

@@ -20,8 +20,10 @@ class GOKbService {
             def json = null
 
             if(suggest) {
+                //Get only Package with Status= Current
                 json = geElasticsearchSuggests(apiSource.baseUrl+apiSource.fixToken, esQuery, "Package", null) // 10000 is maximum value allowed by now
             }else {
+                //Get only Package with Status= Current
                 json = geElasticsearchFindings(apiSource.baseUrl+apiSource.fixToken, esQuery, "Package", null, max)
             }
             log.info("getting Package map from gokb (${apiSource.baseUrl+apiSource.fixToken})")
@@ -53,6 +55,8 @@ class GOKbService {
 
                     pkg.updater = r.updater
                     pkg.listStatus = r.listStatus
+                    pkg.listVerifiedDate = (r.listVerifiedDate != "null") ? r.listVerifiedDate : ''
+                    pkg.contentType = (r.contentType != "null") ? r.contentType : ''
                     //pkg.consistent = r.consistent
                     //pkg.global = r.global
 
@@ -112,8 +116,11 @@ class GOKbService {
 
                     pkg.updater = r.updater
                     pkg.listStatus = r.listStatus
+                    pkg.listVerifiedDate = (r.listVerifiedDate != "null") ? r.listVerifiedDate : ''
+                    pkg.contentType = (r.contentType != "null") ? r.contentType : ''
                     //pkg.consistent = r.consistent
                     //pkg.global = r.global
+                    pkg.listVerifiedDate = r.listVerifiedDate
 
                     pkg.curatoryGroups = []
                     r.curatoryGroups?.each{ curatoryGroup ->
@@ -207,4 +214,155 @@ class GOKbService {
         }
         url.substring(0, url.length() - 1)
     }
+
+    Map getPackageMapWithUUID(ApiSource apiSource, String identifier) {
+
+        log.info("getting Package map from gokb ..")
+
+        def result
+
+        if(apiSource && identifier) {
+
+            try {
+
+                String apiUrl = apiSource.baseUrl + apiSource.fixToken
+
+                String url = apiUrl + '/find?uuid=' + identifier
+
+                def json = queryElasticsearch(url)
+
+                log.info("getting Package map from gokb (${apiSource.baseUrl + apiSource.fixToken})")
+
+                if (json?.info?.records) {
+
+                    json.info.records.each { r ->
+                        def pkg = [:]
+
+                        pkg.id = r.id
+                        pkg.uuid = r.uuid
+                        pkg.componentType = r.componentType
+
+                        pkg.identifiers = []
+                        r.identifiers?.each { id ->
+                            pkg.identifiers.add([namespace: id.namespace, value: id.value]);
+                        }
+
+                        pkg.altnames = []
+                        r.altname?.each { name ->
+                            pkg.altnames.add(name);
+                        }
+
+                        pkg.variantNames = []
+                        r.variantNames?.each { name ->
+                            pkg.variantNames.add(name);
+                        }
+
+                        pkg.updater = r.updater
+                        pkg.listStatus = r.listStatus
+                        pkg.listVerifiedDate = (r.listVerifiedDate != "null") ? r.listVerifiedDate : ''
+                        pkg.contentType = (r.contentType != "null") ? r.contentType : ''
+                        //pkg.consistent = r.consistent
+                        //pkg.global = r.global
+
+                        pkg.curatoryGroups = []
+                        r.curatoryGroups?.each { curatoryGroup ->
+                            pkg.curatoryGroups.add(curatoryGroup);
+                        }
+
+                        pkg.titleCount = r.titleCount
+                        pkg.scope = (r.scope != "null") ? r.scope : ''
+                        pkg.name = (r.name != "null") ? r.name : ''
+                        pkg.sortname = (r.sortname != "null") ? r.sortname : ''
+                        //pkg.fixed = r.fixed
+                        pkg.platformName = (r.platformName != "null") ? r.platformName : ''
+                        pkg.platformUuid = r.platformUuid ?: ''
+                        //pkg.breakable = r.breakable
+                        pkg.providerName = (r.cpname != "null") ? r.cpname : ''
+                        pkg.provider = r.provider
+                        pkg.providerUuid = r.providerUuid ?: ''
+                        pkg.status = r.status ?: ''
+                        pkg.description = (r.description != "null") ? r.description : ''
+                        pkg.descriptionURL = r.descriptionURL ?: ''
+
+                        pkg.lastUpdatedDisplay = r.lastUpdatedDisplay
+
+                        pkg.url = apiSource.baseUrl
+                        pkg.editUrl = apiSource.editUrl
+
+                        if (r.uuid && r.uuid != "null") {
+                            result = pkg
+                        }
+                    }
+                }
+                if (json?.warning?.records) {
+
+                    json.warning.records.each { r ->
+                        def pkg = [:]
+
+                        pkg.id = r.id
+                        pkg.uuid = r.uuid
+                        pkg.componentType = r.componentType
+
+                        pkg.identifiers = []
+                        r.identifiers?.each { id ->
+                            pkg.identifiers.add([namespace: id.namespace, value: id.value]);
+                        }
+
+                        pkg.altnames = []
+                        r.altname?.each { name ->
+                            pkg.altnames.add(name);
+                        }
+
+                        pkg.variantNames = []
+                        r.variantNames?.each { name ->
+                            pkg.variantNames.add(name);
+                        }
+
+                        pkg.updater = r.updater
+                        pkg.listStatus = r.listStatus
+                        pkg.listVerifiedDate = (r.listVerifiedDate != "null") ? r.listVerifiedDate : ''
+                        pkg.contentType = (r.contentType != "null") ? r.contentType : ''
+                        //pkg.consistent = r.consistent
+                        //pkg.global = r.global
+
+                        pkg.curatoryGroups = []
+                        r.curatoryGroups?.each { curatoryGroup ->
+                            pkg.curatoryGroups.add(curatoryGroup);
+                        }
+
+                        pkg.titleCount = r.titleCount
+                        pkg.scope = (r.scope != "null") ? r.scope : ''
+                        pkg.name = (r.name != "null") ? r.name : ''
+                        pkg.sortname = (r.sortname != "null") ? r.sortname : ''
+                        //pkg.fixed = r.fixed
+                        pkg.platformName = (r.platformName != "null") ? r.platformName : ''
+                        pkg.platformUuid = r.platformUuid ?: ''
+                        //pkg.breakable = r.breakable
+                        pkg.providerName = (r.cpname != "null") ? r.cpname : ''
+                        pkg.provider = r.provider
+                        pkg.providerUuid = r.providerUuid ?: ''
+                        pkg.status = r.status ?: ''
+                        pkg.description = (r.description != "null") ? r.description : ''
+                        pkg.descriptionURL = r.descriptionURL ?: ''
+
+                        pkg.lastUpdatedDisplay = r.lastUpdatedDisplay
+
+                        pkg.url = apiSource.baseUrl
+                        pkg.editUrl = apiSource.editUrl
+
+                        if (r.uuid && r.uuid != "null") {
+                            result = pkg
+                        }
+                    }
+                }
+
+
+            } catch (Exception e) {
+                log.error(e.getMessage())
+            }
+        }
+
+        result
+    }
+
 }

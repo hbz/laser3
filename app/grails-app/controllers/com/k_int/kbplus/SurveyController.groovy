@@ -11,6 +11,7 @@ import de.laser.helper.DebugAnnotation
 import de.laser.helper.RDStore
 import de.laser.interfaces.ShareSupport
 import de.laser.interfaces.TemplateSupport
+import grails.converters.JSON
 import grails.plugin.springsecurity.annotation.Secured
 import groovy.time.TimeCategory
 import org.apache.poi.xssf.streaming.SXSSFWorkbook
@@ -92,6 +93,8 @@ class SurveyController {
 
         result.surveys = SurveyInfo.executeQuery(fsq.query, fsq.queryParams, params)
         result.countSurveyConfigs = getSurveyConfigCounts()
+
+        result.filterSet = params.filterSet ? true : false
 
         result
     }
@@ -194,7 +197,7 @@ class SurveyController {
         List<Org> agencies = orgTypeService.getCurrentAgencies(contextService.getOrg())
 
         providers.addAll(agencies)
-        List orgIds = providers.unique().collect { it2 -> it2.id }
+        List orgIds = providers.unique().collect { it.id }
 
         result.providers = Org.findAllByIdInList(orgIds).sort { it?.name }
 
@@ -267,7 +270,7 @@ class SurveyController {
         List<Org> agencies = orgTypeService.getCurrentAgencies(contextService.getOrg())
 
         providers.addAll(agencies)
-        List orgIds = providers.unique().collect { it2 -> it2.id }
+        List orgIds = providers.unique().collect { it.id }
 
         result.providers = Org.findAllByIdInList(orgIds).sort { it?.name }
 
@@ -709,6 +712,55 @@ class SurveyController {
         }
 
         result.surveyConfig.costItemsFinish = params.costItemsFinish ?: false
+
+        if (result.surveyConfig.save(flush: true)) {
+            flash.message = g.message(code: 'survey.change.successfull')
+        } else {
+            flash.error = g.message(code: 'survey.change.fail')
+        }
+
+        redirect(url: request.getHeader('referer'))
+
+    }
+
+    @DebugAnnotation(perm = "ORG_CONSORTIUM_SURVEY", affil = "INST_EDITOR", specRole = "ROLE_ADMIN")
+    @Secured(closure = {
+        ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM_SURVEY", "INST_EDITOR", "ROLE_ADMIN")
+    })
+    def surveyTransferConfig() {
+        def result = setResultGenericsAndCheckAccess()
+        if (!result.editable) {
+            response.sendError(401); return
+        }
+
+        def transferWorkflow = result.surveyConfig.transferWorkflow ? JSON.parse(result.surveyConfig.transferWorkflow) : [:]
+
+        if(params.transferMembers != null)
+        {
+            transferWorkflow.transferMembers = params.transferMembers
+        }
+
+        if(params.transferSurveyCostItems != null)
+        {
+            transferWorkflow.transferSurveyCostItems = params.transferSurveyCostItems
+        }
+
+        if(params.transferSurveyProperties != null)
+        {
+            transferWorkflow.transferSurveyProperties = params.transferSurveyProperties
+        }
+
+        if(params.transferCustomProperties != null)
+        {
+            transferWorkflow.transferCustomProperties = params.transferCustomProperties
+        }
+
+        if(params.transferPrivateProperties != null)
+        {
+            transferWorkflow.transferPrivateProperties = params.transferPrivateProperties
+        }
+
+        result.surveyConfig.transferWorkflow = transferWorkflow ?  (new JSON(transferWorkflow)).toString() : null
 
         if (result.surveyConfig.save(flush: true)) {
             flash.message = g.message(code: 'survey.change.successfull')
@@ -3219,6 +3271,14 @@ class SurveyController {
         result.parentSuccessorSubscription = result.surveyConfig?.subscription?.getCalculatedSuccessor()
         result.parentSuccessorSubChilds = result.parentSuccessorSubscription ? subscriptionService.getValidSubChilds(result.parentSuccessorSubscription) : null
 
+        result.superOrgType = []
+        if(accessService.checkPerm('ORG_CONSORTIUM')) {
+            result.superOrgType << message(code:'consortium.superOrgType')
+        }
+        if(accessService.checkPerm('ORG_INST_COLLECTIVE')) {
+            result.superOrgType << message(code:'collective.superOrgType')
+        }
+
         result.participantsList = []
 
         result.parentParticipantsList = []
@@ -4581,6 +4641,12 @@ class SurveyController {
         result.surveyConfig = SurveyConfig.get(params.surveyConfigID) ?: (result.surveyInfo?.isSubscriptionSurvey ? result.surveyInfo?.surveyConfigs[0] : result.surveyInfo?.surveyConfigs[0])
 
         result.editable = result.surveyInfo?.isEditable() ?: false
+
+        if(result.surveyConfig)
+        {
+            result.transferWorkflow = result.surveyConfig.transferWorkflow ? JSON.parse(result.surveyConfig.transferWorkflow) : null
+        }
+
 
 
         result

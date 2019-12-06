@@ -20,6 +20,7 @@ class I10nTranslation {
     String valueFr
 
     static mapping = {
+        cache   true
         id              column:'i10n_id'
         version         column:'i10n_version'
         referenceId     column:'i10n_reference_id',    index: 'i10n_ref_idx'

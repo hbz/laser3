@@ -13,6 +13,7 @@ class DashboardDueDatesJob extends AbstractJob {
         cron name:'DashboardDueDatesTrigger', cronExpression: "0 0 22 * * ?" //Fire at 22:00 every day
 //        cron name:'DashboardDueDatesTrigger', cronExpression: "0 /15 * * * ?" //ONLY FOR DEVELOPMENT AND TESTS: Fire every 15th minute
 //        cron name:'DashboardDueDatesTrigger', cronExpression: "0 /5 * * * ?" //ONLY FOR DEVELOPMENT AND TESTS: Fire every 5th minute
+//        cron name:'DashboardDueDatesTrigger', cronExpression: "0 /1 * * * ?" //ONLY FOR DEVELOPMENT AND TESTS: Fire every minute
     }
 
     static configFlags = ['isUpdateDashboardTableInDatabase', 'isSendEmailsForDueDatesOfAllUsers']
@@ -20,15 +21,12 @@ class DashboardDueDatesJob extends AbstractJob {
     boolean isAvailable() {
         !jobIsRunning && !dashboardDueDatesService.update_running
     }
-    boolean isRunning() {
-        jobIsRunning
-    }
 
     def execute() {
         if (! isAvailable()) {
             return false
         }
-        jobIsRunning = true
+        setJobStart()
 
         try {
             if (grailsApplication.config.isUpdateDashboardTableInDatabase || grailsApplication.config.isSendEmailsForDueDatesOfAllUsers) {
@@ -58,6 +56,6 @@ class DashboardDueDatesJob extends AbstractJob {
             log.error(e)
         }
 
-        jobIsRunning = false
+        setJobEnd()
     }
 }

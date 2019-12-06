@@ -20,11 +20,11 @@
     <g:render template="actions"/>
 </semui:controlButtons>
 
-<h1 class="ui left aligned icon header"><semui:headerIcon/>
+<h1 class="ui left floated aligned icon header la-clear-before"><semui:headerIcon/>
 <g:inPlaceEdit domain="Subscription" pk="${subscriptionInstance.id}" field="name" id="name"
                class="newipe">${subscriptionInstance?.name}</g:inPlaceEdit>
 </h1>
-<h2 class="ui left aligned icon header">${message(code: 'subscription.details.addEntitlements.label')}</h2>
+<h2 class="ui left floated aligned icon header la-clear-before">${message(code: 'subscription.details.addEntitlements.label')}</h2>
 <%-- <g:render template="nav"/> --%>
 
 <g:set var="counter" value="${offset + 1}"/>
@@ -229,9 +229,9 @@ ${message(code: 'subscription.details.availableTitles', default: 'Available Titl
                    target="_blank"><i class="share square icon"></i></a>
             </g:if>
             <br>
-            <g:each in="${tipp?.title?.ids?.sort { it?.identifier?.ns?.ns }}" var="id">
+            <g:each in="${tipp?.title?.ids?.sort { it?.ns?.ns }}" var="id">
                 <span class="ui small teal image label">
-                    ${id.identifier.ns.ns}: <div class="detail">${id.identifier.value}</div>
+                    ${id.ns.ns}: <div class="detail">${id.value}</div>
                 </span>
             </g:each>
 

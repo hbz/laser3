@@ -54,11 +54,15 @@
 
   <semui:messages data="${flash}" />
 
-  <h1 class="ui left aligned icon header"><semui:headerIcon />${message(code:'license.current')}
+  <h1 class="ui left floated aligned icon header la-clear-before"><semui:headerIcon />${message(code:'license.current')}
       <semui:totalNumber total="${licenseCount}"/>
   </h1>
 
-    <semui:filter class="license-searches">
+
+  <g:render template="/templates/filter/javascript" />
+
+
+  <semui:filter showFilterButton="true" class="license-searches">
         <form class="ui form">
             <div class="four fields">
 
@@ -148,7 +152,7 @@
         </form>
     </semui:filter>
 
-        <div class="license-results">
+        <div class="license-results la-clear-before">
         <g:if test="${licenses}">
               <table class="ui sortable celled la-table table">
                 <thead>
@@ -333,6 +337,10 @@
     window.onload = setTypeAndSearch()
 </r:script>
 --%>
+
+      <semui:debugInfo>
+          <g:render template="/templates/debug/benchMark" model="[debug: benchMark]" />
+      </semui:debugInfo>
 
   </body>
 </html>

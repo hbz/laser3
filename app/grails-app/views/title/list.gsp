@@ -9,12 +9,13 @@
     <semui:breadcrumbs>
       <semui:crumb message="menu.public.all_titles" class="active" />
     </semui:breadcrumbs>
-
-    <h1 class="ui left aligned icon header"><semui:headerIcon />${message(code:'menu.public.all_titles')}
+    <br>
+    <h1 class="ui left floated aligned icon header la-clear-before"><semui:headerIcon />${message(code:'menu.public.all_titles')}
       <semui:totalNumber total="${resultsTotal}"/>
     </h1>
 
-    <semui:filter>
+    <g:render template="/templates/filter/javascript" />
+    <semui:filter showFilterButton="true">
       <g:form action="index" role="form" class="ui form" method="get" params="${params}">
         <input type="hidden" name="offset" value="${params.offset}"/>
         <div class="three fields">
@@ -34,25 +35,10 @@
       </g:form>
     </semui:filter>
 
-    <div class="ui grid">
+    <div class="ui grid la-clear-before">
         <div class="sixteen wide column">
 
              <g:if test="${hits}" >
-                <div class="paginateButtons" style="text-align:center">
-                  <g:if test="${params.int('offset')}">
-                    <g:set var="curOffset" value="${params.int('offset') + 1}" />
-                    <g:set var="pageMax" value="${resultsTotal < (params.int('max') + params.int('offset')) ? resultsTotal : (params.int('max') + params.int('offset'))}" />
-                    ${message(code: 'title.search.offset.text', args: [curOffset,pageMax,resultsTotal])}
-                  </g:if>
-                  <g:elseif test="${resultsTotal && resultsTotal > 0}">
-                    <g:set var="pageMax" value="${resultsTotal < params.int('max') ? resultsTotal : params.int('max')}" />
-                    ${message(code: 'title.search.no_offset.text', args: [pageMax,resultsTotal])}
-                  </g:elseif>
-                  <g:else>
-                    ${message(code: 'title.search.no_pagination.text', args: [resultsTotal])}
-                  </g:else>
-                </div><!-- .paginateButtons -->
-
                <semui:messages data="${flash}" />
 
                <div class="ui icon info message">
@@ -66,7 +52,7 @@
                  </div>
                </div>
 
-                <div id="resultsarea">
+                <div id="resultsarea" class="la-clear-before">
                   <table class="ui sortable celled la-table table">
                     <thead>
                       <tr>
@@ -82,17 +68,17 @@
                         <tr>
                           <td>${ (params.int('offset') ?: 0)  + jj + 1 }</td>
                           <td>
-                            <semui:listIcon type="${hit.getSource().typTitle}"/>
-                            <strong><g:link controller="title" action="show" id="${hit.getSource().dbId}">${hit.getSource().title}</g:link></strong>
+                            <semui:listIcon type="${hit.getSourceAsMap().typTitle}"/>
+                            <strong><g:link controller="title" action="show" id="${hit.getSourceAsMap().dbId}">${hit.getSourceAsMap().name}</g:link></strong>
                           </td>
                           <td>
-                            ${com.k_int.kbplus.RefdataValue.getByValueAndCategory(hit.getSource().typTitle, 'Title Type').getI10n('value')}
+                            ${com.k_int.kbplus.RefdataValue.getByValueAndCategory(hit.getSourceAsMap().typTitle, 'Title Type').getI10n('value')}
                           </td>
                           <td>
-                            ${hit.getSource().publisher?:''}
+                            ${hit.getSourceAsMap().publisher?:''}
                           </td>
                           <td>
-                            <g:each in="${hit.getSource().identifiers.sort{it.type}}" var="id">
+                            <g:each in="${hit.getSourceAsMap().identifiers.sort{it.type}}" var="id">
                               <div style="white-space:nowrap"><span>${id.type}:</span> <span>${id.value}</span></div>
                             </g:each>
                           </td>

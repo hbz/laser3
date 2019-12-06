@@ -12,8 +12,8 @@
           <semui:crumb controller="title" action="list" message="menu.public.all_titles" />
           <semui:crumb class="active" text="${message(code:'title.title.label')}: ${ti.title}" />
       </semui:breadcrumbs>
-
-  <h1 class="ui left aligned icon header">
+  <br>
+  <h1 class="ui icon header la-clear-before la-noMargin-top">
             <semui:headerTitleIcon type="${ti.type.('value')}"/>
 
             <% /*
@@ -207,7 +207,7 @@
               </span>
             </g:if>
 
-  <h3 class="ui left aligned icon header"><g:message code="title.edit.tipp"/>
+  <h3 class="ui icon header la-clear-before la-noMargin-top"><g:message code="title.edit.tipp"/>
   <semui:totalNumber total="${ti.tipps.size()}"/>
   </h3>
 %{--<% /*
@@ -402,9 +402,9 @@
                       </a><br>
                   </g:if>
 
-                  <g:each in="${t?.title?.ids?.sort{it?.identifier?.ns?.ns}}" var="id">
+                  <g:each in="${t?.title?.ids?.sort{it?.ns?.ns}}" var="id">
                       <span class="ui small teal image label">
-                          ${id.identifier.ns.ns}: <div class="detail">${id.identifier.value}</div>
+                          ${id.ns.ns}: <div class="detail">${id.value}</div>
                       </span>
                   </g:each>
                   <div class="la-icon-list">

@@ -10,14 +10,15 @@
 <semui:breadcrumbs>
     <semui:crumb message="menu.my.platforms" class="active" />
 </semui:breadcrumbs>
-
-<h1 class="ui left aligned icon header"><semui:headerIcon/>${message(code:'menu.my.platforms')}
+<br>
+<h1 class="ui left floated aligned icon header la-clear-before"><semui:headerIcon/>${message(code:'menu.my.platforms')}
     <semui:totalNumber total="${platformInstanceTotal}"/>
 </h1>
 
 <semui:messages data="${flash}" />
 
-<semui:filter>
+<g:render template="/templates/filter/javascript" />
+<semui:filter showFilterButton="true">
     <g:form action="currentPlatforms" method="get" class="ui form">
         <div class="two fields">
             <div class="field">
@@ -70,7 +71,27 @@
             </td>
             <td>
                 <g:each in="${subscriptionMap.get('platform_' + platformInstance.id)}" var="sub">
-                    <g:link controller="subscription" action="show" id="${sub.id}">${sub}</g:link> <br />
+                    <g:link controller="subscription" action="show" id="${sub.id}">${sub}</g:link>
+                    <g:if test="${sub.packages}">
+                        <g:each in="${sub.packages}" var="sp">
+                            <g:if test="${!platformInstance.usesPlatformAccessPoints(contextOrg, sp)}">
+                                <g:each in="${sp.getAccessPointListForOrgAndPlatform(contextOrg, platformInstance)?.collect()}" var="orgap">
+                                <div class="la-flexbox">
+                                    <span data-position="top right"
+                                    class="la-popup-tooltip la-delay"
+                                    data-content="${message(code: 'myinst.currentPlatforms.tooltip.thumbtack.content', args:[sp.pkg.name])}">
+                                    <i class="icon thumbtack scale la-list-icon"></i>
+                                    </span>
+                                    <g:link controller="accessPoint" action="edit_${orgap.oap.accessMethod}"
+                                            id="${orgap.oap.id}">${orgap.oap.name} (${orgap.oap.accessMethod.getI10n('value')})[Paket: ${sp.pkg.name}]</g:link>
+                                </div>
+                                </g:each>
+                            </g:if>
+                        </g:each>
+                    </g:if>
+
+
+
                 </g:each>
             </td>
             <%--<td class="x">
@@ -86,6 +107,10 @@
                 prev="${message(code:'default.paginate.prev', default:'Prev')}"
                 max="${max}" total="${platformInstanceTotal}" />
 --%>
+
+<semui:debugInfo>
+    <g:render template="/templates/debug/benchMark" model="[debug: benchMark]" />
+</semui:debugInfo>
 
 </body>
 </html>

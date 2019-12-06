@@ -6,7 +6,7 @@ class OrgAccessPointLink extends AbstractBaseDomain{
 
     OrgAccessPoint oap
     Platform platform
-    Subscription subscription
+    SubscriptionPackage subPkg
     Boolean active
     Date dateCreated
     Date lastUpdated
@@ -14,14 +14,14 @@ class OrgAccessPointLink extends AbstractBaseDomain{
     static belongsTo = [
         oap:OrgAccessPoint,
         platform:Platform,
-        subscription:Subscription
+        subPkg:SubscriptionPackage
     ]
 
     static constraints = {
         globalUID(nullable:true, blank:false, unique:true, maxSize:255)
-        subscription(nullable:true)
         platform(nullable:true)
-        oap(nullable:false, blank:false)
+        oap(nullable:true, blank:false) //intentional, null used in program logic
+        subPkg(nullable:true, blank:false) //intentional, null used in program logic
     }
 
 }

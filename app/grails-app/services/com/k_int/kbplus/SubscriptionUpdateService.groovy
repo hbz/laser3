@@ -31,7 +31,7 @@ class SubscriptionUpdateService extends AbstractLockableService {
 
             def intendedSubsIds1 = Subscription.where {
                 status == RDStore.SUBSCRIPTION_INTENDED && startDate < currentDate && (endDate != null && endDate >= currentDate)
-            }.collect{ it -> it.id }
+            }.collect{ it.id }
 
             log.info("Intended subscriptions reached start date and are now running: " + intendedSubsIds1)
 
@@ -52,7 +52,7 @@ class SubscriptionUpdateService extends AbstractLockableService {
 
             def intendedSubsIds2 = Subscription.where {
                 status == RDStore.SUBSCRIPTION_INTENDED && startDate < currentDate && (endDate != null && endDate < currentDate) && isMultiYear == false
-            }.collect{ it -> it.id }
+            }.collect{ it.id }
 
             log.info("Intended subscriptions reached start date and end date are now expired: " + intendedSubsIds2)
 
@@ -73,7 +73,7 @@ class SubscriptionUpdateService extends AbstractLockableService {
 
             def intendedSubsIds3 = Subscription.where {
                 status == RDStore.SUBSCRIPTION_INTENDED_PERENNIAL && startDate < currentDate && (endDate != null && endDate < currentDate) && isMultiYear == true
-            }.collect{ it -> it.id }
+            }.collect{ it.id }
 
             log.info("Intended subscriptions reached start date and end date are now expired pernennial: " + intendedSubsIds2)
 
@@ -94,7 +94,7 @@ class SubscriptionUpdateService extends AbstractLockableService {
 
             def currentSubsIds = Subscription.where {
                 status == RDStore.SUBSCRIPTION_CURRENT && startDate < currentDate && (endDate != null && endDate < currentDate) && isMultiYear == false
-            }.collect{ it -> it.id }
+            }.collect{ it.id }
 
             log.info("Current subscriptions reached end date and are now expired: " + currentSubsIds)
 
@@ -115,7 +115,7 @@ class SubscriptionUpdateService extends AbstractLockableService {
 
             def currentSubsIds2 = Subscription.where {
                 status == RDStore.SUBSCRIPTION_CURRENT && startDate < currentDate && (endDate != null && endDate < currentDate) && isMultiYear == true
-            }.collect{ it -> it.id }
+            }.collect{ it.id }
 
             log.info("Current subscriptions reached end date and are now expired pernennial: " + currentSubsIds2)
 
@@ -176,7 +176,7 @@ class SubscriptionUpdateService extends AbstractLockableService {
      * Sets the status of every subscription without start date to null as of ERMS-847
      */
     boolean startDateCheck() {
-        def subsWithoutStartDate = Subscription.findAllByStartDateIsNullAndStatus(RDStore.SUBSCRIPTION_CURRENT).collect { it -> it.id }
+        def subsWithoutStartDate = Subscription.findAllByStartDateIsNullAndStatus(RDStore.SUBSCRIPTION_CURRENT).collect { it.id }
         if(subsWithoutStartDate) {
             Subscription.executeUpdate('UPDATE Subscription SET status = null where id IN (:subs)',[subs:subsWithoutStartDate])
             log.debug("Writing events")
@@ -202,7 +202,7 @@ class SubscriptionUpdateService extends AbstractLockableService {
             Subscription subscription = ClassUtils.deproxy(pc.subscription)
             if(subscription.status != RDStore.SUBSCRIPTION_EXPIRED) {
                 Set currSubChanges = currentPendingChanges.get(subscription) ?: []
-                currSubChanges.add(JSON.parse(pc.changeDoc).changeDoc)
+                currSubChanges.add(JSON.parse(pc.payload).changeDoc)
                 currentPendingChanges.put(subscription,currSubChanges)
             }
         }

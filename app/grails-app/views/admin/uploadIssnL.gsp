@@ -7,11 +7,9 @@
 
   <body>
 
-        <h1 class="ui left aligned icon header"><semui:headerIcon />Import Identifier Same-As Relations</h1>
+        <h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon />Import Identifier Same-As Relations</h1>
       <g:if test="${hasStarted}">
-        <div>
-            <bootstrap:alert id="procesing_alert" class="alert-info"><g:message code="admin.upload.issnL" default="admin.upload.issnL=CSV Processing has started in the background and will not require intervention"></g:message> </bootstrap:alert>
-        </div>
+          <semui:msg id="procesing_alert" class="warning" message="admin.upload.issnL" />
       </g:if>
         <p>Upload a file of tab separated equivalent identifiers. By default, the assumption is ISSN -&gt; ISSNL mappings</p>
            

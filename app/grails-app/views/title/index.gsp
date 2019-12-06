@@ -60,16 +60,16 @@
                         <tr>
                           <td>${ (params.int('offset') ?: 0)  + jj + 1 }</td>
                           <td>
-                            <g:link controller="title" action="show" id="${hit.getSource().dbId}">${hit.getSource().title}</g:link>
+                            <g:link controller="title" action="show" id="${hit.getSourceAsMap().dbId}">${hit.getSourceAsMap().title}</g:link>
                             <g:if test="${editable}">
-                              <g:link controller="title" action="show" id="${hit.getSource().dbId}">(${message(code: 'default.button.edit.label')})</g:link>
+                              <g:link controller="title" action="show" id="${hit.getSourceAsMap().dbId}">(${message(code: 'default.button.edit.label')})</g:link>
                             </g:if>
                           </td>
                           <td>
-                            ${hit.getSource().publisher?:''}
+                            ${hit.getSourceAsMap().publisher?:''}
                           </td>
                           <td>
-                            <g:each in="${hit.getSource().identifiers}" var="id">
+                            <g:each in="${hit.getSourceAsMap().identifiers}" var="id">
                                 <div style="white-space:nowrap"><span>${id.type}:</span><span>${id.value}</span></div>
                             </g:each>
                           </td>
