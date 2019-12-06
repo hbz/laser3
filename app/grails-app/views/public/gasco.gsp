@@ -174,18 +174,21 @@
                         %{--${sub.type?.getI10n('value')}--}%
                     %{--</td>--}%
                     <td class="la-break-all">
+                    %{--<g:link controller="organisation" action="show" id="${sub.getConsortia().id}">click me</g:link><br>--}%
 
                     ${gasco_verhandlername ?: sub.getConsortia()?.name}
                     <br>
-                    <g:each in ="${PersonRole.findAllByFunctionTypeAndOrg(RDStore.PRS_FUNC_GASCO_CONTACT, sub.getConsortia())}" var="person">
+                    <g:each in ="${PersonRole.findAllByFunctionTypeAndOrg(RDStore.PRS_FUNC_GASCO_CONTACT, sub.getConsortia())}" var="personRole">
+                        <g:set var="person" value="${personRole.getPrs()}" />
+                        %{--<g:if test="${person.isPublic}">--}%
                             <div class="ui list">
                                 <div class="item">
                                     <div class="content">
                                         <div class="header">
-                                            ${person?.getPrs()?.getFirst_name()} ${person?.getPrs()?.getLast_name()}
+                                            ${person?.getFirst_name()} ${person?.getLast_name()}
                                         </div>
                                         <g:each in ="${Contact.findAllByPrsAndContentType(
-                                                person.getPrs(),
+                                                person,
                                                 RDStore.CCT_URL
                                         )}" var="prsContact">
                                             <div class="description">
@@ -197,12 +200,12 @@
                                             </div>
                                         </g:each>
                                         <g:each in ="${Contact.findAllByPrsAndContentType(
-                                                person.getPrs(),
+                                                person,
                                                 RDStore.CCT_EMAIL
                                         )}" var="prsContact">
                                             <div class="description">
                                                 <i class="ui icon envelope outline"></i>
-                                                <span  class="la-popup-tooltip la-delay" data-position="right center " data-content="Mail senden an ${person?.getPrs()?.getFirst_name()} ${person?.getPrs()?.getLast_name()}">
+                                                <span  class="la-popup-tooltip la-delay" data-position="right center " data-content="Mail senden an ${person?.getFirst_name()} ${person?.getLast_name()}">
                                                     <a href="mailto:${prsContact?.content}" >${prsContact?.content}</a>
                                                 </span>
                                             </div>
@@ -210,6 +213,7 @@
                                     </div>
                                 </div>
                             </div>
+                        %{--</g:if>--}%
                         </g:each>
                     </td>
                 </tr>
