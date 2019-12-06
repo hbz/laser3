@@ -9,6 +9,12 @@ abstract class AbstractJob {
     //Todo REDUCE VISIBILITY after changing code to use method setJobStart/End instead of modifying the jobIsRunning attribute
     protected boolean jobIsRunning = false
 
+    abstract boolean isAvailable()
+
+    protected boolean isRunning() {
+        jobIsRunning
+    }
+
     protected setJobStart(){
         job_start = new Date()
     }
@@ -19,11 +25,5 @@ abstract class AbstractJob {
 
     protected long getJobDurationInMillis(){
         job_end.getTime() - job_start.getTime()
-    }
-
-    abstract boolean isAvailable()
-
-    protected boolean isRunning() {
-        jobIsRunning
     }
 }

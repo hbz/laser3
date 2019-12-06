@@ -141,9 +141,15 @@ class YodaController {
                 def triggers = quartzScheduler.getTriggersOfJob(key)
                 def nft = triggers.collect{ it.nextFireTime ?: null }
 
+                def getUsedServices = { clz ->
+                    clz.getDeclaredFields().findAll{ it.getName().endsWith('Service')}.collect{ it.getName().capitalize() }
+                }
+                def services = getUsedServices(clazz)
+
                 Map map = [
                         name: clazz.simpleName,
                         configFlags: cf.join(', '),
+                        services: services,
                         nextFireTime: nft ? nft.get(0)?.toTimestamp() : '',
                         running: applicationContext.getBean(key.getName()).isRunning(),
                         available: applicationContext.getBean(key.getName()).isAvailable()
