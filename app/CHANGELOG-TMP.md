@@ -2,6 +2,10 @@
 
 **Ticket    Date    Branch      Author  Feature/Bug     Description/Keywords**
 
+/       05.12.2019  hbz-dev     Moe      Feature     Workflow für Übertrag nach einer Umfrage-Verlängerung
+
+/       05.12.2019  hbz-dev     Moe/Ingrid   Feature Erweiterte Suche in der Menüleiste 
+
 /       05.12.2019  hbz-dev     Christian Feature   Zugangskonfiguration: Darstellung und Konfiguration auf Lizenzebene
 
 1926    04.12.2019  rc1.1       David   Bug         Modaler Dialog: Funktions-/Personenkontakte funktioniert nicht
