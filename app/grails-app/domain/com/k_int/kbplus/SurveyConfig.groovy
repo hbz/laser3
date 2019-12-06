@@ -99,7 +99,7 @@ class SurveyConfig {
 
         configOrder column: 'surconf_config_order'
 
-        transferWorkflow column: 'surconf_transferWorkflow', type:'text'
+        transferWorkflow column: 'surconf_transfer_workflow', type:'text'
     }
 
     @Transient

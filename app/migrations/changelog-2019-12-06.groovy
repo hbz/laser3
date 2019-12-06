@@ -2,7 +2,7 @@ databaseChangeLog = {
 
 	changeSet(author: "kloberd (generated)", id: "1575618606564-1") {
 		addColumn(schemaName: "public", tableName: "survey_config") {
-			column(name: "surconf_transferWorkflow", type: "text")
+			column(name: "surconf_transfer_workflow", type: "text")
 		}
 	}
 
