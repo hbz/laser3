@@ -174,13 +174,12 @@
                         %{--${sub.type?.getI10n('value')}--}%
                     %{--</td>--}%
                     <td class="la-break-all">
-                    %{--<g:link controller="organisation" action="show" id="${sub.getConsortia().id}">click me</g:link><br>--}%
 
                     ${gasco_verhandlername ?: sub.getConsortia()?.name}
                     <br>
                     <g:each in ="${PersonRole.findAllByFunctionTypeAndOrg(RDStore.PRS_FUNC_GASCO_CONTACT, sub.getConsortia())}" var="personRole">
                         <g:set var="person" value="${personRole.getPrs()}" />
-                        %{--<g:if test="${person.isPublic}">--}%
+                        <g:if test="${person.isPublic}">
                             <div class="ui list">
                                 <div class="item">
                                     <div class="content">
@@ -213,7 +212,7 @@
                                     </div>
                                 </div>
                             </div>
-                        %{--</g:if>--}%
+                        </g:if>
                         </g:each>
                     </td>
                 </tr>
