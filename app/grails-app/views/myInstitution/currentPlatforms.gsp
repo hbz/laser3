@@ -71,7 +71,7 @@
             </td>
             <td>
                 <g:each in="${subscriptionMap.get('platform_' + platformInstance.id)}" var="sub">
-                    <g:link controller="subscription" action="show" id="${sub.id}">${sub}</g:link>
+                    <g:link controller="subscription" action="show" id="${sub.id}">${sub}<br/></g:link>
                     <g:if test="${sub.packages}">
                         <g:each in="${sub.packages}" var="sp">
                             <g:if test="${!platformInstance.usesPlatformAccessPoints(contextOrg, sp)}">
