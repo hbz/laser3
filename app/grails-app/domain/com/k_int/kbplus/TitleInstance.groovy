@@ -246,7 +246,6 @@ class TitleInstance extends AbstractBaseDomain implements AuditableTrait {
 
         String gokbUUID
         List<TitleInstance> ti_candidates = []
-        List<Identifier> canonical_ids = []
 
         if (imp_uuid?.length() == 0) {
             imp_uuid = null
@@ -322,17 +321,14 @@ class TitleInstance extends AbstractBaseDomain implements AuditableTrait {
             }
 
             result.save(failOnError: true)
-
-            canonical_ids.each { i ->
-                Identifier.construct([value: i.value, reference: result, namespace: i.namespace])
-            }
         }
 
-        /* if argument "enrich" = true -> else {
-            canonical_ids.each { i ->
-                Identifier.construct([value: i.value, reference: result, namespace: i.namespace])
-            }
-        }*/
+        // merge in any new identifiers we have
+        candidate_identifiers.each {
+            log.debug("Checking title has ${it.namespace}:${it.value}")
+            result.checkAndAddMissingIdentifier(it.namespace, it.value)
+        }
+
 
         if (result instanceof TitleInstance && status) {
             def ti_status = RDStore.TITLE_STATUS_CURRENT

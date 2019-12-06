@@ -37,7 +37,7 @@ class TaskService {
             def params = [user : user]
             if (queryMap){
                 query += queryMap.query
-                query = addDefaultOrder(query)
+                query = addDefaultOrder("t", query)
                 params << queryMap.queryParams
             }
             tasks = Task.executeQuery(query, params)
@@ -92,7 +92,7 @@ class TaskService {
         def tasks = []
         if (user) {
             def query  = select_with_join + 'where t.responsibleUser = :user' + queryMap.query
-            query = addDefaultOrder(query)
+            query = addDefaultOrder("t", query)
             def params = [user : user] << queryMap.queryParams
             tasks = Task.executeQuery(query, params)
         }
@@ -103,7 +103,7 @@ class TaskService {
         def tasks = []
         if (org) {
             def query  = select_with_join + 'where t.responsibleOrg = :org' + queryMap.query
-            query = addDefaultOrder(query)
+            query = addDefaultOrder("t", query)
             def params = [org : org] << queryMap.queryParams
             tasks = Task.executeQuery(query, params)
         }
@@ -115,7 +115,7 @@ class TaskService {
 
         if (user && org) {
             def query = select_with_join + 'where ( ru = :user or t.responsibleOrg = :org ) ' + queryMap.query
-            query = addDefaultOrder(query)
+            query = addDefaultOrder("t", query)
 
             def params = [user : user, org: org] << queryMap.queryParams
             tasks = Task.executeQuery(query, params)
@@ -148,7 +148,7 @@ class TaskService {
 
     def getTasksByResponsibleAndObject(User user, Object obj,  Map params) {
         def tasks = []
-        params = addDefaultOrder(params)
+        params = addDefaultOrder(null, params)
         if (user && obj) {
             switch (obj.getClass().getSimpleName()) {
                 case 'License':
@@ -173,7 +173,7 @@ class TaskService {
 
     def getTasksByResponsibleAndObject(Org org, Object obj,  Object params) {
         def tasks = []
-        params = addDefaultOrder(params)
+        params = addDefaultOrder(null, params)
         if (org && obj) {
             switch (obj.getClass().getSimpleName()) {
                 case 'License':
@@ -429,20 +429,34 @@ order by lower(s.name), s.endDate""", qry_params_for_sub << [referenceField: 'va
         result
     }
 
-    private String addDefaultOrder(String query){
+    private String addDefaultOrder(String tableAlias, String query){
         if (query && ( ! query.toLowerCase().contains('order by'))){
-            query += ' order by t.endDate asc'
+            if (tableAlias) {
+                query += ' order by '+tableAlias+'.endDate asc'
+            } else {
+                query += ' order by endDate asc'
+            }
         }
         query
     }
 
-    private Map addDefaultOrder(Map params){
+    private Map addDefaultOrder(String tableAlias, Map params){
         if (params) {
-            if ( ! params.sort) {
-                params << [sort: 't.endDate', order: 'asc']
+            if (tableAlias){
+                if ( ! params.sort) {
+                    params << [sort: tableAlias+'.endDate', order: 'asc']
+                }
+            } else {
+                if ( ! params.sort) {
+                    params << [sort: 'endDate', order: 'asc']
+                }
             }
         } else {
-            params =  [sort: 't.endDate', order: 'asc']
+            if (tableAlias) {
+                params = [sort: tableAlias+'.endDate', order: 'asc']
+            } else {
+                params = [sort: 'endDate', order: 'asc']
+            }
         }
         params
     }

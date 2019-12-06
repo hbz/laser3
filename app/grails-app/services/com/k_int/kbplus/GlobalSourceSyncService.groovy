@@ -1065,12 +1065,13 @@ class GlobalSourceSyncService extends AbstractLockableService {
 
             title_instance.refresh()
 
+            // moved to TitleInstance.lookupOrCreate()
             // merge in any new identifiers we have
-            newtitle.identifiers.each {
-                log.debug("Checking title has ${it.namespace}:${it.value}")
-                title_instance.checkAndAddMissingIdentifier(it.namespace, it.value)
-            }
-            title_instance.save()
+            //newtitle.identifiers.each {
+            //    log.debug("Checking title has ${it.namespace}:${it.value}")
+            //    title_instance.checkAndAddMissingIdentifier(it.namespace, it.value)
+            //}
+            //title_instance.save()
 
 
             log.debug("Creating new global record tracker... for title ${title_instance}");
