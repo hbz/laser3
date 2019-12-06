@@ -274,6 +274,7 @@
                     console.log($(that))
                     if ($(that).attr('data-multipleOccurrence') == 'true') {
                         console.log('1a')
+                        targetElem.addClass('willBeReplaced')
                     } else {
                         console.log('1b')
                         targetElem.addClass('willBeReplaced')
