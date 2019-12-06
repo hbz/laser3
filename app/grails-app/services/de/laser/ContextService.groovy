@@ -27,26 +27,28 @@ class ContextService {
     static final ORG_SCOPE   = 'ORG_SCOPE'
 
     void setOrg(Org context) {
-        GrailsHttpSession session = WebUtils.retrieveGrailsWebRequest().getSession()
-        session.setAttribute('contextOrg', context)
+        try {
+            GrailsHttpSession session = WebUtils.retrieveGrailsWebRequest().getSession()
+            session.setAttribute('contextOrg', context)
+        }
+        catch (Exception e) {
+            log.warn('accessing setOrg() without web request')
+        }
     }
 
     Org getOrg() {
         try {
-            GrailsHttpSession session = WebUtils.retrieveGrailsWebRequest().getSession()
-            def context = session.getAttribute('contextOrg') ?: getUser()?.getSettingsValue(UserSettings.KEYS.DASHBOARD)
+            GrailsHttpSession session  = WebUtils.retrieveGrailsWebRequest().getSession()
 
+            def context = session.getAttribute('contextOrg') ?: getUser()?.getSettingsValue(UserSettings.KEYS.DASHBOARD)
             if (context) {
-                (Org) GrailsHibernateUtil.unwrapIfProxy(context)
-            }
-            else {
-                return null
+                return (Org) GrailsHibernateUtil.unwrapIfProxy(context)
             }
         }
-        catch (IllegalStateException e) {
-            log.info("No thread-bound request found thus no context could be established!")
-            return null
+        catch (Exception e) {
+            log.warn('accessing getOrg() without web request')
         }
+        return null
     }
 
     User getUser() {
