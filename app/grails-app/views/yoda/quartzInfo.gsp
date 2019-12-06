@@ -23,6 +23,7 @@
             <tr>
                 <th>Job</th>
                 <th>Config</th>
+                <th>Services</th>
                 <th>s  m  h  DoM  M  DoW  Y</th>
                 <th>Status</th>
                 <th>Nächste Ausführung</th>
@@ -42,6 +43,11 @@
                             <g:else>
                                 <span style="color:lightgrey;font-style:italic">${flag}</span>
                             </g:else>
+                        </g:each>
+                    </td>
+                    <td>
+                        <g:each in="${job.services}" var="srv">
+                            ${srv}
                         </g:each>
                     </td>
                     <td>
