@@ -1,36 +1,26 @@
-package com.k_int.kbplus
+package de.laser
 
-import com.k_int.kbplus.auth.Role
-import com.k_int.kbplus.auth.User
-import com.k_int.kbplus.auth.UserOrg
-import com.k_int.kbplus.auth.UserRole
+import com.k_int.kbplus.*
+import com.k_int.kbplus.auth.*
 import com.k_int.properties.PropertyDefinition
-import de.laser.SystemEvent
-import de.laser.domain.IssueEntitlementCoverage
 import de.laser.domain.SystemProfiler
-import de.laser.domain.TIPPCoverage
 import de.laser.helper.DebugAnnotation
 import de.laser.helper.RDStore
 import grails.converters.JSON
 import grails.plugin.springsecurity.annotation.Secured
 import grails.util.Holders
 import grails.web.Action
-import groovy.json.JsonOutput
 import groovy.xml.MarkupBuilder
 import org.hibernate.SessionFactory
 import org.quartz.JobKey
 import org.quartz.impl.matchers.GroupMatcher
 import org.springframework.transaction.TransactionStatus
-import com.k_int.kbplus.OrgSettings
 import groovy.json.JsonOutput
 import org.springframework.web.multipart.commons.CommonsMultipartFile
 
 import javax.servlet.ServletOutputStream
 import java.lang.reflect.Method
 import java.lang.reflect.Modifier
-
-import static com.k_int.kbplus.UserSettings.DEFAULT_REMINDER_PERIOD
-import static com.k_int.kbplus.UserSettings.KEYS.*
 
 @Secured(['IS_AUTHENTICATED_FULLY'])
 class YodaController {
@@ -151,9 +141,15 @@ class YodaController {
                 def triggers = quartzScheduler.getTriggersOfJob(key)
                 def nft = triggers.collect{ it.nextFireTime ?: null }
 
+                def getUsedServices = { clz ->
+                    clz.getDeclaredFields().findAll{ it.getName().endsWith('Service')}.collect{ it.getName().capitalize() }
+                }
+                def services = getUsedServices(clazz)
+
                 Map map = [
                         name: clazz.simpleName,
                         configFlags: cf.join(', '),
+                        services: services,
                         nextFireTime: nft ? nft.get(0)?.toTimestamp() : '',
                         running: applicationContext.getBean(key.getName()).isRunning(),
                         available: applicationContext.getBean(key.getName()).isAvailable()
@@ -604,7 +600,7 @@ class YodaController {
         if (params.cmd == 'migrate') {
             result.subRoles.each{ so ->
                 Subscription sub = so[0]
-				OrgRole role 	 = so[1]
+                OrgRole role 	 = so[1]
 
 				if (sub.getCalculatedType() == Subscription.CALCULATED_TYPE_LOCAL) {
 					role.setRoleType(RDStore.OR_SUBSCRIPTION_COLLECTIVE)

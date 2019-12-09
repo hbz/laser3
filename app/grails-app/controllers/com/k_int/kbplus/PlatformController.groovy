@@ -7,6 +7,7 @@ import de.laser.helper.DebugAnnotation
 import de.laser.helper.RDStore
 import grails.plugin.springsecurity.SpringSecurityUtils
 import grails.plugin.springsecurity.annotation.Secured
+import org.apache.lucene.index.DocIDMerger
 import org.springframework.dao.DataIntegrityViolationException
 
 @Secured(['IS_AUTHENTICATED_FULLY'])
@@ -374,8 +375,83 @@ class PlatformController extends AbstractDebugController {
         render(view: "_apLinkContent", model: result)
     }
 
-    @DebugAnnotation(test='hasAffiliation("INST_EDITOR")')
-    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_EDITOR") })
+    @Secured(closure = {
+        ctx.accessService.checkPermAffiliation("ORG_BASIC_MEMBER,ORG_CONSORTIUM", "INST_EDITOR")
+    })
+    def addDerivation() {
+        if (!params.sp) {
+            flash.message = message(code: 'subscription.details.linkAccessPoint.missingSubPkg.message')
+            redirect(url: request.getHeader('referer'))
+            return
+        }
+        def subPkg = SubscriptionPackage.get(params.sp)
+        if (!subPkg){
+            flash.message = message(code: 'subscription.details.linkAccessPoint.subPkgNotFound.message')
+            redirect(url: request.getHeader('referer'))
+            return
+        }
+        if (!params.platform_id) {
+            flash.message = message(code: 'subscription.details.linkAccessPoint.missingPlatform.message')
+            redirect(url: request.getHeader('referer'))
+            return
+        }
+        def platform = Platform.get(params.platform_id)
+        if (!platform){
+            flash.message = message(code: 'subscription.details.linkAccessPoint.platformNotFound.message')
+            redirect(url: request.getHeader('referer'))
+            return
+        }
+        // delete marker all OrgAccessPointLinks for the given platform und SubscriptionPackage
+        // The marker (OrgAccessPoint=null), which indicates that want to overwrite platform specific AccessPoint links,
+        // gets deleted too
+        def hql = "delete from OrgAccessPointLink oapl where oapl.platform=:platform_id and oapl.subPkg =:subPkg and oapl.active=true"
+        def oapl = OrgAccessPointLink.executeUpdate(hql, [platform_id:platform, subPkg:subPkg])
+
+        redirect(url: request.getHeader('referer'))
+    }
+    
+    @Secured(closure = {
+        ctx.accessService.checkPermAffiliation("ORG_BASIC_MEMBER,ORG_CONSORTIUM", "INST_EDITOR")
+    })
+    def removeDerivation() {
+        // create an OrgAccessPointLink with
+        // subscriptionPackage=passed subscriptionPackage | Platform = passed Platform | AccessPoint = null
+        // this is a kind of marker to indicate that a subscriptionPackage specific AP configuration and no
+        // AccessPoint derivation from Platform is used
+        if (!params.sp) {
+            flash.message = message(code: 'subscription.details.linkAccessPoint.missingSubPkg.message')
+            redirect(url: request.getHeader('referer'))
+            return
+        }
+        def subPkg = SubscriptionPackage.get(params.sp)
+        if (!subPkg){
+            flash.message = message(code: 'subscription.details.linkAccessPoint.subPkgNotFound.message')
+            redirect(url: request.getHeader('referer'))
+            return
+        }
+        if (!params.platform_id) {
+            flash.message = message(code: 'subscription.details.linkAccessPoint.missingPlatform.message')
+            redirect(url: request.getHeader('referer'))
+            return
+        }
+        def platform = Platform.get(params.platform_id)
+        if (!platform){
+            flash.message = message(code: 'subscription.details.linkAccessPoint.platformNotFound.message')
+            redirect(url: request.getHeader('referer'))
+            return
+        }
+
+        def oapl = new OrgAccessPointLink()
+        oapl.subPkg = subPkg
+        oapl.platform = platform
+        oapl.active = true
+        oapl.save()
+        redirect(url: request.getHeader('referer'))
+    }
+
+    @Secured(closure = {
+        ctx.accessService.checkPermAffiliation("ORG_BASIC_MEMBER,ORG_CONSORTIUM", "INST_EDITOR")
+    })
     def linkAccessPoint() {
         def apInstance = null
         if (params.AccessPoints){
@@ -391,11 +467,19 @@ class PlatformController extends AbstractDebugController {
         oapl.active = true
         oapl.oap = apInstance
         oapl.platform = Platform.get(params.platform_id)
-        def existingActiveAP = OrgAccessPointLink.findAll {
-            active == true && platform == oapl.platform && oap == apInstance
+        if (params.subscriptionPackage_id){
+            def sp = SubscriptionPackage.get(params.subscriptionPackage_id)
+            if (sp) {
+                oapl.subPkg = sp
+            }
         }
+        def existingActiveAP = OrgAccessPointLink.findAllByActiveAndPlatformAndOapAndSubPkgIsNotNull(
+            true, oapl.platform, apInstance
+        )
         if (!existingActiveAP.isEmpty()){
             flash.error = "Existing active AccessPoint for platform"
+            redirect(url: request.getHeader('referer'))
+            return
         }
         if (! oapl.save()) {
             flash.error = "Existing active AccessPoint for platform"
@@ -404,8 +488,9 @@ class PlatformController extends AbstractDebugController {
         redirect(url: request.getHeader('referer'))
     }
 
-    @DebugAnnotation(test='hasAffiliation("INST_EDITOR")')
-    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_EDITOR") })
+    @Secured(closure = {
+        ctx.accessService.checkPermAffiliation("ORG_BASIC_MEMBER,ORG_CONSORTIUM", "INST_EDITOR")
+    })
     def removeAccessPoint() {
         // update active aopl, set active=false
         def aoplInstance = OrgAccessPointLink.get(params.oapl_id)

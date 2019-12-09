@@ -30,15 +30,17 @@
     </semui:exportDropdown>
     <semui:actionsDropdown>
         <g:if test="${parentSuccessorSubscription}">
+
             <semui:actionsDropdownItem data-semui="modal" href="#transferParticipantsModal"
                                        message="surveyInfo.transferParticipants"/>
+
 
             <semui:actionsDropdownItem controller="survey" action="compareMembersOfTwoSubs" params="[id: params.id, surveyConfigID: surveyConfig.id]"
                                        message="surveyInfo.transferOverView"/>
         </g:if>
         <g:else>
             <semui:actionsDropdownItemDisabled data-semui="modal" href="#transferParticipantsModal"
-                                               message="surveyInfo.transferParticipants" tooltip=""/>
+                                               message="surveyInfo.transferParticipants" tooltip="${message(code: 'renewalWithSurvey.noParentSuccessorSubscription')}"/>
         </g:else>
 
     </semui:actionsDropdown>

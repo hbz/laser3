@@ -14,6 +14,7 @@ documentStorageLocation = '/tmp/laser' // for uploaded documents
 deployBackupLocation = documentStorageLocation + '/laserDeployBackups' // for database backups in context of deploys
 
 featureSurvey = false
+//activateTestJob = true
 
 globalDataSync = [
   "replaceLocalImpIds": [
@@ -25,7 +26,6 @@ globalDataSync = [
   ]
 ]
 
-//localauth = true
 //showDebugInfo = false
 
 // @NotificationsJob

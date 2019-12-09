@@ -236,26 +236,46 @@
 
         markAffectedTake = function (that) {
             var multiPropertyIndex = ($(that).closest ('.la-copyElements-flex-container').index()) ;
+            var sourceElem = $(that).parents('.la-replace').parents('.la-copyElements-flex-container');
+            var targetElem = $(that).parents('td').next('td').children('.la-copyElements-flex-container:nth-child(' + (multiPropertyIndex + 1) + ')');
 
-            if ($(that).is(":checked") ||  $(that).parents('tr').find('input[name="subscription.deleteProperty"]').is(':checked')) {
-                $(that).parents('.la-replace').parents('.la-copyElements-flex-container').addClass('willStay');
-                // Mehrfach zu vergebende Merkmale bekommen keine Löschmarkierung, da sie nicht überschreiben sondern kopiert werden
-                if ($(that).attr('data-multipleOccurrence') != 'true') {
-                    $(that).parents('td').next('td').children('.la-copyElements-flex-container:nth-child(' + (multiPropertyIndex + 1) + ')').addClass('willBeReplaced');
+            if ($(that).is(":checked")) {
+                sourceElem.addClass('willStay');
+                // Properties with multipleOccurence do not receive a deletion mark because they are not overwritten but copied
+                if ($(that).attr('data-multipleOccurrence') == 'true') {
+                } else {
+                    targetElem.addClass('willBeReplaced');
                 }
-            }
-            else {
-                $(that).parents('.la-replace').parents('.la-copyElements-flex-container').removeClass('willStay');
-                $(that).parents('td').next('td').children('.la-copyElements-flex-container:nth-child(' + (multiPropertyIndex + 1) + ')').removeClass('willBeReplaced');
+            } else {
+                sourceElem.removeClass('willStay');
+                if ( (that).parents('tr').find('input[name="subscription.deleteProperty"]').is(':checked')){
+                } else {
+                    targetElem.removeClass('willBeReplaced');
+                }
             }
         }
         markAffectedDelete = function (that) {
-            if ($(that).is(":checked") ||  $(that).parents('tr').find('input[name="subscription.takeProperty"]').is(':checked')) {
-                $(that).parents('.la-replace').parents('.la-copyElements-flex-container').removeClass('willStay');
-                $(that).parents('.la-noChange').parents('.la-copyElements-flex-container').addClass('willBeReplaced');
-            }
-            else {
-                $(that).parents('.la-noChange').parents('.la-copyElements-flex-container').removeClass('willBeReplaced');
+            var sourceElem = $(that).parents('.la-replace').parents('.la-copyElements-flex-container');
+            var targetElem = $(that).parents('.la-noChange').parents('.la-copyElements-flex-container');
+            if ($(that).is(":checked")) {
+                if ($(that).parents('tr').find('input[name="subscription.takeProperty"]').is(':checked')) {
+                    if ($(that).attr('data-multipleOccurrence') == 'true') {
+                        targetElem.addClass('willBeReplaced')
+                    } else {
+                        targetElem.addClass('willBeReplaced')
+                    }
+                } else {
+                     targetElem.addClass('willBeReplaced');
+                }
+            } else {
+                if ($(that).parents('tr').find('input[name="subscription.takeProperty"]').is(':checked')) {
+                    if ($(that).attr('data-multipleOccurrence') == 'true') {
+                        targetElem.removeClass('willBeReplaced');
+                    } else {
+                    }
+                } else {
+                    targetElem.removeClass('willBeReplaced');
+                }
             }
         }
 

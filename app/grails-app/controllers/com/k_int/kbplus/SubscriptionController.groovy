@@ -394,6 +394,10 @@ class SubscriptionController extends AbstractDebugController {
                         PriceItem.executeUpdate("delete from PriceItem pi where pi.issueEntitlement.id in (:delList)",[delList: deleteIdList])
                         IssueEntitlement.executeUpdate("delete from IssueEntitlement ie where ie.id in (:delList)", [delList: deleteIdList])
                     }
+                    SubscriptionPackage subPkg = SubscriptionPackage.findByPkgAndSubscription(result.package, result.subscription)
+                    if (subPkg) {
+                        OrgAccessPointLink.executeUpdate("delete from OrgAccessPointLink oapl where oapl.subPkg=?", [subPkg])
+                    }
                     SubscriptionPackage.executeUpdate("delete from SubscriptionPackage sp where sp.pkg=? and sp.subscription=? ", [result.package, result.subscription])
 
                     flash.message = message(code: 'subscription.details.unlink.successfully')
@@ -413,6 +417,17 @@ class SubscriptionController extends AbstractDebugController {
                 if (numOfPCs > 0) {
                     def conflict_item_pc = [name: "${g.message(code: "subscription.details.unlink.pendingChanges")}", details: [['text': "${g.message(code: "subscription.details.unlink.pendingChanges.numbers")} " + numOfPCs]], action: [actionRequired: false, text: "${g.message(code: "subscription.details.unlink.pendingChanges.numbers.action")}"]]
                     conflicts_list += conflict_item_pc
+                }
+
+                SubscriptionPackage sp = SubscriptionPackage.findByPkgAndSubscription(result.package, result.subscription)
+                List accessPointLinks = []
+                if (sp.oapls){
+                    Map detailItem = ['text':"${g.message(code: "subscription.details.unlink.accessPoints.numbers")} ${sp.oapls.size()}"]
+                    accessPointLinks.add(detailItem)
+                }
+                if (accessPointLinks) {
+                    def conflict_item_oap = [name: "${g.message(code: "subscription.details.unlink.accessPoints")}", details: accessPointLinks, action: [actionRequired: false, text: "${g.message(code: "subscription.details.unlink.accessPoints.numbers.action")}"]]
+                    conflicts_list += conflict_item_oap
                 }
 
                 return render(template: "unlinkPackageModal", model: [pkg: result.package, subscription: result.subscription, conflicts_list: conflicts_list])

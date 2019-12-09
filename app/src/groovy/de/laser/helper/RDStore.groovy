@@ -142,8 +142,10 @@ class RDStore {
     static final IE_ACCEPT_STATUS_UNDER_CONSIDERATION= getRefdataValue('Under Consideration','IE Accept Status')
 
     static final PRS_FUNC_GENERAL_CONTACT_PRS   = getRefdataValue('General contact person', 'Person Function')
+    static final PRS_FUNC_GASCO_CONTACT         = getRefdataValue('GASCO-Contact', 'Person Function')
     static final CCT_EMAIL                      = getRefdataValue('E-Mail','ContactContentType')
     static final CCT_PHONE                      = getRefdataValue('Phone','ContactContentType')
+    static final CCT_URL                        = getRefdataValue('Url','ContactContentType')
     static final PRS_RESP_SPEC_SUB_EDITOR       = getRefdataValue('Specific subscription editor', 'Person Responsibility')
 
     static final PENDING_CHANGE_STATUS          = getRefdataValue('Pending', 'PendingChangeStatus')
