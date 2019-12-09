@@ -10,7 +10,7 @@
     <semui:crumb message="menu.admin.dash" controller="admin" action="index" />
     <semui:crumb text="Package Tipps LAS:eR and GOKB" class="active"/>
 </semui:breadcrumbs>
-
+<br>
 <h1 class="ui header la-noMargin-top"> Package Tipps LAS:eR and GOKB</h1>
 
 %{--<g:link action="checkPackageTIPPs" params="${params+[onlyNotEqual: true]}" class="ui button">Show only where Tipps Not Equal</g:link>--}%

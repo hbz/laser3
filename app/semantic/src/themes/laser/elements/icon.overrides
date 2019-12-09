@@ -1805,3 +1805,91 @@ i.icon.la-laser:before { content: "\e90f"; }
   vertical-align: super;
   }
 }
+
+.circular.icon.la-search-license {
+  display: inline-block;
+  background-color: @license;
+  border-color: @license;
+}
+
+.circular.icon.la-search-license:before {
+  content: "\f24e";
+  color: white;
+}
+
+.circular.icon.la-search-package {
+  display: inline-block;
+  background-color: @package;
+  border-color: @package;
+}
+
+.circular.icon.la-search-package:before {
+  content: "\f06b";
+  color: white;
+}
+
+.circular.icon.la-search-subscription {
+  display: inline-block;
+  background-color: @subscription;
+  border-color: @subscription;
+}
+
+.circular.icon.la-search-subscription:before {
+  content: "\f328";
+  color: white;
+}
+
+.circular.icon.la-search-organisation {
+  display: inline-block;
+  background-color: @organisation;
+  border-color: @organisation;
+}
+
+.circular.icon.la-search-organisation:before {
+  content: "\f19c";
+  color: white;
+}
+
+.circular.icon.la-search-platform {
+  display: inline-block;
+  background-color: @platform;
+  border-color: @platform;
+}
+
+.circular.icon.la-search-platform:before {
+  content: "\f0c2";
+  color: white;
+}
+
+.circular.icon.la-search-journal {
+  display: inline-block;
+  background-color: @title;
+  border-color: @title;
+}
+
+.circular.icon.la-search-journal:before {
+  content: "\f1ea";
+  color: white;
+}
+
+.circular.icon.la-search-database {
+  display: inline-block;
+  background-color: @title;
+  border-color: @title;
+}
+
+.circular.icon.la-search-database:before {
+  content: "\f1c0";
+  color: white;
+}
+
+.circular.icon.la-search-ebook {
+  display: inline-block;
+  background-color: @title;
+  border-color: @title;
+}
+.circular.icon.la-search-ebook:before {
+  content: "\f3fa";
+  color: white;
+}
+

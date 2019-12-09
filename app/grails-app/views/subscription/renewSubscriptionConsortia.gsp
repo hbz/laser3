@@ -19,7 +19,7 @@ ${message(code: 'subscription.details.renewalsConsortium.label')}: ${subscriptio
 
 <semui:messages data="${flash}"/>
 
-<div class="ui tablet stackable steps">
+<div class="ui tablet stackable steps la-clear-before">
     <div class="${workFlowPart == 1 ? 'active' : 'disabled'} step">
         <div class="content">
             <div class="title">Auswahl Eigenschaften</div>

@@ -15,7 +15,7 @@
         </semui:breadcrumbs>
 
         <g:render template="actions" />
-
+        <br>
         <h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon />${message(code:'myinst.emptySubscription.label')}</h1>
 
         <semui:messages data="${flash}"/>
