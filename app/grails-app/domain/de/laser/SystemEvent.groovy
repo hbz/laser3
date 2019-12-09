@@ -58,7 +58,6 @@ class SystemEvent {
             'STATS_SYNC_JOB_COMPLETE'       : [category: CATEGORY.CRONJOB, relevance: RELEVANCE.INFO],
             'SUB_UPDATE_JOB_START'          : [category: CATEGORY.CRONJOB, relevance: RELEVANCE.INFO],
             'SUB_UPDATE_JOB_COMPLETE'       : [category: CATEGORY.CRONJOB, relevance: RELEVANCE.INFO],
-            'SUB_UPDATE_JOB_COMPLETE'       : [category: CATEGORY.CRONJOB, relevance: RELEVANCE.INFO],
             'SUS_SEND_MAIL_ERROR'           : [category: CATEGORY.CRONJOB, relevance: RELEVANCE.ERROR],
             'SURVEY_UPDATE_JOB_START'       : [category: CATEGORY.CRONJOB, relevance: RELEVANCE.INFO],
             'SURVEY_UPDATE_JOB_COMPLETE'    : [category: CATEGORY.CRONJOB, relevance: RELEVANCE.INFO],
