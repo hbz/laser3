@@ -206,7 +206,6 @@
                 <g:else>
                     <td>
                 </g:else>
-
                     <g:formRemote url="[controller: 'ajax', action: 'addCustomPropertyValue']" method="post"
                                   name="cust_prop_add_value_group_${propDefGroup.id}"
                                   class="ui form"
