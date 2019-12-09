@@ -14,6 +14,8 @@ class LicensePrivateProperty extends PrivateProperty {
     def messageSource
     @Transient
     def changeNotificationService
+    @Transient
+    def deletionService
 
     PropertyDefinition type
     License owner
@@ -51,6 +53,10 @@ class LicensePrivateProperty extends PrivateProperty {
         type:   PropertyDefinition,
         owner:  License
     ]
+
+    def afterDelete() {
+        deletionService.deleteDocumentFromIndex(this.getClass().getSimpleName().toLowerCase()+":"+this.id)
+    }
 
     @Override
     def copyInto(AbstractProperty newProp){

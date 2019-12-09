@@ -4,7 +4,12 @@ import com.k_int.kbplus.abstract_domain.AbstractProperty
 import com.k_int.kbplus.abstract_domain.PrivateProperty
 import com.k_int.properties.PropertyDefinition
 
+import javax.persistence.Transient
+
 class SubscriptionPrivateProperty extends PrivateProperty {
+
+    @Transient
+    def deletionService
 
     PropertyDefinition type
     Subscription owner
@@ -28,6 +33,10 @@ class SubscriptionPrivateProperty extends PrivateProperty {
             type:  PropertyDefinition,
             owner: Subscription
     ]
+
+    def afterDelete() {
+        deletionService.deleteDocumentFromIndex(this.getClass().getSimpleName().toLowerCase()+":"+this.id)
+    }
 
     static constraints = {
         importFrom AbstractProperty
