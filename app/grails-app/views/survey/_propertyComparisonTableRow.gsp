@@ -172,7 +172,7 @@
                         </g:if>
                         %{--DELETE:--}%
                         <div class="ui checkbox la-toggle-radio la-noChange">
-                            <g:checkBox class="bulkcheck"  name="subscription.deleteProperty" value="${genericOIDService.getOID(propValue)}" data-action="delete" checked="${false}"/>
+                            <g:checkBox class="bulkcheck"  name="subscription.deleteProperty" data-multipleOccurrence="${propKey.multipleOccurrence}" value="${genericOIDService.getOID(propValue)}" data-action="delete" checked="${false}"/>
                         </div>
                         <g:if test="${propValues.get(targetSubscription)?.size() > 1}"><br></g:if>
                     </div>

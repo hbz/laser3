@@ -133,10 +133,10 @@ class SurveyService {
         return result
     }
 
-    boolean copyProperties(List<AbstractProperty> properties, Subscription targetSub, boolean isRenewSub, boolean isCopyAuditOn, def flash, List auditProperties){
+    boolean copyProperties(List<AbstractProperty> properties, Subscription targetSub, boolean isRenewSub, def flash, List auditProperties){
         def contextOrg = contextService.getOrg()
         def targetProp
-        //boolean doCopyAudit = accessService.checkPerm("ORG_CONSORTIUM") && isRenewSub && isCopyAuditOn
+
 
         properties?.each { sourceProp ->
             if (sourceProp instanceof CustomProperty) {
@@ -177,12 +177,12 @@ class SurveyService {
     }
 
 
-    boolean deleteProperties(List<AbstractProperty> properties, Subscription targetSub, boolean isRenewSub, boolean isCopyAuditOn, def flash, List auditProperties){
-        if (isCopyAuditOn){
+    boolean deleteProperties(List<AbstractProperty> properties, Subscription targetSub, boolean isRenewSub, def flash, List auditProperties){
+
             properties.each { AbstractProperty prop ->
                 AuditConfig.removeAllConfigs(prop)
             }
-        }
+
         int anzCP = SubscriptionCustomProperty.executeUpdate("delete from SubscriptionCustomProperty p where p in (:properties)",[properties: properties])
         int anzPP = SubscriptionPrivateProperty.executeUpdate("delete from SubscriptionPrivateProperty p where p in (:properties)",[properties: properties])
     }

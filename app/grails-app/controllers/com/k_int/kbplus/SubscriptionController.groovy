@@ -4292,43 +4292,31 @@ class SubscriptionController extends AbstractDebugController {
         if (previousSubscriptions.size() > 0) {
             flash.error = message(code: 'subscription.renewSubExist', default: 'The Subscription is already renewed!')
         } else {
-            boolean isCopyAuditOn = params.subscription.isCopyAuditOn? true : false
-            def sub_startDate = null
-            def sub_endDate = null
-            def sub_manualCancellationDate = null
-            def sub_status = null
-            def old_subOID = null
-            def new_subname = null
-            if (isCopyAuditOn) {
-                use(TimeCategory) {
-                    sub_startDate = baseSub.endDate ? (baseSub.endDate + 1.day) : null
-                    sub_endDate = baseSub.endDate ? (baseSub.endDate + 1.year) : null
-                    sub_manualCancellationDate = baseSub?.manualCancellationDate ? (baseSub?.manualCancellationDate + 1.year) : null
-                }
-                sub_status = SUBSCRIPTION_INTENDED
-                old_subOID = baseSub.id
-                new_subname = baseSub.name
-            } else {
-                sub_startDate = params.subscription?.start_date ? parseDate(params.subscription?.start_date, possible_date_formats) : null
-                sub_endDate = params.subscription?.end_date ? parseDate(params.subscription?.end_date, possible_date_formats): null
-                sub_manualCancellationDate = baseSub?.manualCancellationDate
-                sub_status = params.subStatus
-                old_subOID = params.subscription.old_subid
-                new_subname = params.subscription.name
-            }
+            def sub_startDate = params.subscription?.start_date ? parseDate(params.subscription?.start_date, possible_date_formats) : null
+            def sub_endDate = params.subscription?.end_date ? parseDate(params.subscription?.end_date, possible_date_formats) : null
+            def sub_status = params.subStatus
+            def sub_type = params.subType
+            def sub_form = params.subForm
+            def sub_resource = params.subResource
+            def old_subOID = params.subscription.old_subid
+            def new_subname = params.subscription.name
+            def manualCancellationDate = null
 
+            use(TimeCategory) {
+                manualCancellationDate =  baseSub?.manualCancellationDate ? (baseSub?.manualCancellationDate + 1.year) : null
+            }
             def newSub = new Subscription(
                     name: new_subname,
                     startDate: sub_startDate,
                     endDate: sub_endDate,
-                    manualCancellationDate: sub_manualCancellationDate,
+                    manualCancellationDate: manualCancellationDate,
                     identifier: java.util.UUID.randomUUID().toString(),
-                    isPublic: baseSub.isPublic,
-                    isSlaved: baseSub.isSlaved,
-                    type: baseSub.type ?: null,
+                    isPublic: baseSub?.isPublic,
+                    isSlaved: baseSub?.isSlaved,
+                    type: sub_type,
                     status: sub_status,
-                    resource: baseSub.resource ?: null,
-                    form: baseSub.form ?: null
+                    resource: sub_resource,
+                    form: sub_form
             )
 
             if (!newSub.save(flush: true)) {
@@ -4336,14 +4324,14 @@ class SubscriptionController extends AbstractDebugController {
                 return newSub
             } else {
                 log.debug("Save ok");
-                if (isCopyAuditOn){
+
+                if (params.list('auditList')) {
                     //copy audit
-                    def auditConfigs = AuditConfig.findAllByReferenceClassAndReferenceId(Subscription.class.name, baseSub.id)
-                    auditConfigs.each {
-                        AuditConfig ac ->
-                            //All ReferenceFields were copied!
-                            //'name', 'startDate', 'endDate', 'manualCancellationDate', 'status', 'type', 'form', 'resource'
-                             AuditConfig.addConfig(newSub, ac.referenceField)
+                    params.list('auditList').each { auditField ->
+                        //All ReferenceFields were copied!
+                        //'name', 'startDate', 'endDate', 'manualCancellationDate', 'status', 'type', 'form', 'resource'
+                        //println(auditField)
+                        AuditConfig.addConfig(newSub, auditField)
                     }
                 }
                 //Copy References
@@ -4368,17 +4356,12 @@ class SubscriptionController extends AbstractDebugController {
 
                 if (params?.targetSubscriptionId == "null") params.remove("targetSubscriptionId")
                 result.isRenewSub = true
-                if (isCopyAuditOn){
-                    redirect controller: 'subscription',
-                            action: 'copyElementsIntoSubscription',
-                            id: old_subOID,
-                            params: [sourceSubscriptionId: old_subOID, targetSubscriptionId: newSub.id, isRenewSub: true, isCopyAuditOn: true]
-                } else {
+
                     redirect controller: 'subscription',
                             action: 'copyElementsIntoSubscription',
                             id: old_subOID,
                             params: [sourceSubscriptionId: old_subOID, targetSubscriptionId: newSub.id, isRenewSub: true]
-                }
+
             }
         }
     }
@@ -4411,7 +4394,13 @@ class SubscriptionController extends AbstractDebugController {
                                  sub_name     : subscription.name,
                                  sub_id       : subscription.id,
                                  sub_license  : subscription?.owner?.reference ?: '',
-                                 sub_status   : SUBSCRIPTION_INTENDED]
+                                 sub_status   : RDStore.SUBSCRIPTION_INTENDED.id.toString(),
+                                 sub_type     : subscription.type?.id.toString(),
+                                 sub_form     : subscription.form?.id.toString(),
+                                 sub_resource : subscription.resource?.id.toString()
+                                ]
+
+        result.subscription = subscription
         result
     }
 
@@ -4552,7 +4541,7 @@ class SubscriptionController extends AbstractDebugController {
         }
         result.workFlowPart = params?.workFlowPart ?: WORKFLOW_DATES_OWNER_RELATIONS
         result.workFlowPartNext = params?.workFlowPartNext ?: WORKFLOW_DOCS_ANNOUNCEMENT_TASKS
-        if (params?.isCopyAuditOn) {result.isCopyAuditOn = params?.isCopyAuditOn}
+
         if (params?.isRenewSub) {result.isRenewSub = params?.isRenewSub}
         result
     }
@@ -4588,6 +4577,22 @@ class SubscriptionController extends AbstractDebugController {
             List<OrgRole> toCopyOrgRelations = params.list('subscription.takeOrgRelations').collect { genericOIDService.resolveOID(it) }
             subscriptionService.copyOrgRelations(toCopyOrgRelations, baseSub, newSub, flash)
             isTargetSubChanged = true
+
+            List<OrgRole> toggleShareOrgRoles = params.list('toggleShareOrgRoles').collect {
+                genericOIDService.resolveOID(it)
+            }
+
+            newSub = newSub.refresh()
+            newSub.orgRelations.each {newSubOrgRole ->
+
+                if(newSubOrgRole.org in toggleShareOrgRoles.org)
+                {
+                    newSubOrgRole.isShared = true
+                    newSubOrgRole.save(flush:true)
+
+                    ((ShareSupport) newSub).updateShare(newSubOrgRole)
+                }
+            }
         }
 
         if (isTargetSubChanged) {
@@ -4719,8 +4724,9 @@ class SubscriptionController extends AbstractDebugController {
         LinkedHashMap result = [customProperties:[:],privateProperties:[:]]
         Subscription baseSub = Subscription.get(params.sourceSubscriptionId ?: params.id)
         boolean isRenewSub = params?.isRenewSub ? true : false
-        boolean isCopyAuditOn = params?.isCopyAuditOn ? true : false
+
         Subscription newSub = null
+        List auditProperties = params.list('auditProperties')
         List<Subscription> subsToCompare = [baseSub]
         if (params.targetSubscriptionId) {
             newSub = Subscription.get(params.targetSubscriptionId)
@@ -4728,12 +4734,12 @@ class SubscriptionController extends AbstractDebugController {
         }
         List<AbstractProperty> propertiesToTake = params?.list('subscription.takeProperty').collect{ genericOIDService.resolveOID(it)}
         if (propertiesToTake && isBothSubscriptionsSet(baseSub, newSub)) {
-            subscriptionService.copyProperties(propertiesToTake, newSub, isRenewSub, isCopyAuditOn, flash)
+            subscriptionService.copyProperties(propertiesToTake, newSub, isRenewSub, flash, auditProperties)
         }
 
         List<AbstractProperty> propertiesToDelete = params?.list('subscription.deleteProperty').collect{ genericOIDService.resolveOID(it)}
         if (propertiesToDelete && isBothSubscriptionsSet(baseSub, newSub)) {
-            subscriptionService.deleteProperties(propertiesToDelete, newSub, isRenewSub, isCopyAuditOn, flash)
+            subscriptionService.deleteProperties(propertiesToDelete, newSub, isRenewSub, flash, auditProperties)
         }
 
         if (newSub) {

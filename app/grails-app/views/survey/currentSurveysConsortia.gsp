@@ -22,7 +22,7 @@
 
 
 <h1 class="ui left floated aligned icon header la-clear-before"><semui:headerIcon/>${message(code: 'currentSurveys.label', default: 'Current Surveys')}
-<semui:totalNumber total="${surveys.size()?:0}"/>
+<semui:totalNumber total="${countSurveyConfigs."${params.tab}"}"/>
 </h1>
 
 <semui:messages data="${flash}"/>
@@ -361,11 +361,11 @@
 
 </semui:form>
 
-<g:if test="${surveys}">
+<g:if test="${countSurveyConfigs."${params.tab}"}">
     <semui:paginate action="${actionName}" controller="${controllerName}" params="${params}"
                     next="${message(code: 'default.paginate.next', default: 'Next')}"
                     prev="${message(code: 'default.paginate.prev', default: 'Prev')}" max="${max}"
-                    total="${surveys.size()}"/>
+                    total="${countSurveyConfigs."${params.tab}"}"/>
 </g:if>
 
 </body>

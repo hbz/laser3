@@ -428,10 +428,12 @@ String period
                                     </g:if>
                                     <g:if test="${hit.getSourceAsMap().members && contextOrg.getCustomerType() in ['ORG_CONSORTIUM', 'ORG_CONSORTIUM_SURVEY']}">
                                         <b>${message(code: 'subscription.details.consortiaMembers.label')}</b>:
+                                        <article class="la-readmore">
                                         <g:each in="${hit.getSourceAsMap().members}" var="member">
                                         <g:link controller="subscription" action="members"
                                                 id="${hit.getSourceAsMap().dbId}">${member.name}</g:link>
                                         </g:each>
+                                        </article>
                                     </g:if>
                                     <br>
                                     <g:if test="${hit.getSourceAsMap().typeId == RDStore.SUBSCRIPTION_TYPE_CONSORTIAL.id && !(contextOrg.getCustomerType() in ['ORG_CONSORTIUM', 'ORG_CONSORTIUM_SURVEY'])}">
@@ -485,10 +487,12 @@ String period
                                     </g:if>
                                     <g:if test="${hit.getSourceAsMap().members && contextOrg.getCustomerType() in ['ORG_CONSORTIUM', 'ORG_CONSORTIUM_SURVEY']}">
                                         <b>${message(code: 'subscription.details.consortiaMembers.label')}</b>:
+                                        <g:link controller="subscription" action="members" id="${hit.getSourceAsMap().dbId}"> ${hit.getSourceAsMap().members.size()}</g:link>
+                                        <article class="la-readmore">
                                         <g:each in="${hit.getSourceAsMap().members}" var="member">
-                                            <g:link controller="subscription" action="members"
-                                                    id="${hit.getSourceAsMap().dbId}">${member.name}</g:link>
+                                            ${member.name},
                                         </g:each>
+                                        </article>
                                     </g:if>
                                     <br>
                                     <g:if test="${!(contextOrg.getCustomerType() in ['ORG_CONSORTIUM', 'ORG_CONSORTIUM_SURVEY'])}">

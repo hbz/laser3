@@ -2531,7 +2531,7 @@ class SurveyController {
                 log.error("Problem saving subscription ${newSub.errors}");
                 return newSub
             } else {
-                boolean isCopyAuditOn = params.auditProperties ? true : false
+
                 log.debug("Save ok");
                 if (params.list('auditList')) {
                     //copy audit
@@ -2562,17 +2562,12 @@ class SurveyController {
 
                 if (params?.targetSubscriptionId == "null") params.remove("targetSubscriptionId")
                 result.isRenewSub = true
-                if (isCopyAuditOn) {
-                    redirect controller: 'survey',
-                            action: 'copyElementsIntoRenewalSubscription',
-                            id: old_subOID,
-                            params: [sourceSubscriptionId: old_subOID, targetSubscriptionId: newSub.id, isRenewSub: true, isCopyAuditOn: true]
-                } else {
+
                     redirect controller: 'survey',
                             action: 'copyElementsIntoRenewalSubscription',
                             id: old_subOID,
                             params: [sourceSubscriptionId: old_subOID, targetSubscriptionId: newSub.id, isRenewSub: true]
-                }
+
             }
         }
     }
@@ -2680,9 +2675,7 @@ class SurveyController {
         }
         result.workFlowPart = params?.workFlowPart ?: WORKFLOW_DATES_OWNER_RELATIONS
         result.workFlowPartNext = params?.workFlowPartNext ?: WORKFLOW_DOCS_ANNOUNCEMENT_TASKS
-        if (params?.isCopyAuditOn) {
-            result.isCopyAuditOn = params?.isCopyAuditOn
-        }
+
         if (params?.isRenewSub) {
             result.isRenewSub = params?.isRenewSub
         }
@@ -2697,7 +2690,7 @@ class SurveyController {
         LinkedHashMap result = [customProperties: [:], privateProperties: [:]]
         Subscription baseSub = Subscription.get(params.sourceSubscriptionId ? Long.parseLong(params.sourceSubscriptionId) : params.id)
         boolean isRenewSub = params?.isRenewSub ? true : false
-        boolean isCopyAuditOn = params?.isCopyAuditOn ? true : false
+
         Subscription newSub = null
         List auditProperties = params.list('auditProperties')
         List<Subscription> subsToCompare = [baseSub]
@@ -2709,14 +2702,14 @@ class SurveyController {
             genericOIDService.resolveOID(it)
         }
         if (propertiesToTake && isBothSubscriptionsSet(baseSub, newSub)) {
-            surveyService.copyProperties(propertiesToTake, newSub, isRenewSub, isCopyAuditOn, flash, auditProperties)
+            surveyService.copyProperties(propertiesToTake, newSub, isRenewSub, flash, auditProperties)
         }
 
         List<AbstractProperty> propertiesToDelete = params?.list('subscription.deleteProperty').collect {
             genericOIDService.resolveOID(it)
         }
         if (propertiesToDelete && isBothSubscriptionsSet(baseSub, newSub)) {
-            surveyService.deleteProperties(propertiesToDelete, newSub, isRenewSub, isCopyAuditOn, flash, auditProperties)
+            surveyService.deleteProperties(propertiesToDelete, newSub, isRenewSub, flash, auditProperties)
         }
 
         if (newSub) {
