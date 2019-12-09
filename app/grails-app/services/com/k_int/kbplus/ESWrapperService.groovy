@@ -89,7 +89,7 @@ class ESWrapperService {
         ClusterHealthResponse response = esclient.cluster().health(request, RequestOptions.DEFAULT);
 
         String clusterName = response.getClusterName();
-        ClusterHealthStatus status = response.getStatus();
+        //ClusterHealthStatus status = response.getStatus();
 
         boolean timedOut = response.isTimedOut();
         RestStatus restStatus = response.status();
