@@ -74,7 +74,7 @@
                     <g:if test="${platform.usesPlatformAccessPoints(contextOrg, sp)}">
                       <span data-position="top right"
                             class="la-popup-tooltip la-delay"
-                            data-content="${message(code:'subscription.details.linkAccessPoint.accessConfig.tooltip.thumbtack.content')}">
+                            data-content="${accessConfigEditable ? message(code:'subscription.details.linkAccessPoint.accessConfig.tooltip.thumbtack.content') : message(code:'subscription.details.linkAccessPoint.accessConfig.tooltip.thumbtack.contentNotEditable')}">
                         <g:render template="/subscription/accessPointInheritModal"
                                   model="${[tmplText           : message(code:'subscription.details.linkAccessPoint.accessConfig.modal.removeDerivation.header'),
                                             tmplID             : 'removeDerivation',
@@ -93,7 +93,7 @@
                     <g:else>
                       <span data-position="top right"
                             class="la-popup-tooltip la-delay"
-                            data-content="${message(code:'subscription.details.linkAccessPoint.accessConfig.tooltip.inherit.content')}">
+                            data-content="${accessConfigEditable ? message(code:'subscription.details.linkAccessPoint.accessConfig.tooltip.inherit.content') : message(code:'subscription.details.linkAccessPoint.accessConfig.tooltip.inherit.contentNotEditable')}">
                         <g:render template="/subscription/accessPointInheritModal"
                                   model="${[tmplText           : message(code:'subscription.details.linkAccessPoint.accessConfig.modal.addDerivation.header'),
                                             tmplID             : 'addDerivation',

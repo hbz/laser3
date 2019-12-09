@@ -80,18 +80,15 @@
                                     <span data-position="top right"
                                     class="la-popup-tooltip la-delay"
                                     data-content="${message(code: 'myinst.currentPlatforms.tooltip.thumbtack.content', args:[sp.pkg.name])}">
-                                    <i class="icon thumbtack scale la-list-icon"></i>
+                                    <i class="icon la-thumbtack slash scale la-list-icon"></i>
                                     </span>
                                     <g:link controller="accessPoint" action="edit_${orgap.oap.accessMethod}"
-                                            id="${orgap.oap.id}">${orgap.oap.name} (${orgap.oap.accessMethod.getI10n('value')})[Paket: ${sp.pkg.name}]</g:link>
+                                            id="${orgap.oap.id}">${orgap.oap.name} (${orgap.oap.accessMethod.getI10n('value')})</g:link>
                                 </div>
                                 </g:each>
                             </g:if>
                         </g:each>
                     </g:if>
-
-
-
                 </g:each>
             </td>
             <%--<td class="x">

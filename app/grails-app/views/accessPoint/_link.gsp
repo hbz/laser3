@@ -25,11 +25,6 @@
         <thead>
         <tr>
             <g:sortableColumn property="platform" title="${message(code: "platform.label", default: "Platform")}" />
-            <th>${message(code: 'accessPoint.cusomerId', default: 'Customer ID')}</th>
-            <th>${message(code: 'accessPoint.notifcationType', default: 'Notification Type')}</th>
-            <th>${message(code: 'accessPoint.lastNotificationDate', default: 'Last Notification')}</th>
-            <th>${message(code: 'accessPoint.providerConfirmation', default: 'Provider Confirmation')}</th>
-            <th>${message(code: 'accessPoint.note', default: 'Note')}</th>
     <g:if test="${ accessService.checkPermAffiliation('ORG_BASIC_MEMBER','INST_EDITOR') || (accessService.checkPermAffiliation('ORG_CONSORTIUM','INST_EDITOR') && inContextOrg)}">
             <th>${message(code: 'accessPoint.action', default: 'Action')}</th>
     </g:if>
@@ -39,11 +34,6 @@
         <g:each in="${linkedPlatformsMap}" var="linkedPlatform">
             <tr>
                 <td><g:link controller="platform" action="show" id="${linkedPlatform.platform.id}">${linkedPlatform.platform.name}</g:link></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
             <g:if test="${ accessService.checkPermAffiliation('ORG_BASIC_MEMBER','INST_EDITOR') || (accessService.checkPermAffiliation('ORG_CONSORTIUM','INST_EDITOR') && inContextOrg)}">
                 <td class="center aligned">
                     <g:link class="ui negative icon button button js-open-confirm-modal" controller="accessPoint" action="unlinkPlatform" id="${linkedPlatform.aplink.id}"
@@ -59,27 +49,4 @@
         </tbody>
     </table>
 
-
-    <h5>${message(code: 'accessPoint.link.with.subscription', default: 'Link with Platform')}
-        <span class="la-long-tooltip la-popup-tooltip la-delay"
-              data-content="${message(code:'accessPoint.platformHelp')}">
-            <i class="question circle icon la-popup"></i>
-        </span>
-    </h5>
-
-    <table class="ui celled la-table table compact">
-        <thead>
-        <tr>
-            <g:sortableColumn property="platform" title="${message(code: "license.label", default: "License")}" />
-        </tr>
-        </thead>
-        <tbody>
-        <g:each in="${linkedSubscriptionPackagesMap}" var="linkedSubscriptionPackage">
-            %{--
-            <tr>
-                <td><g:link controller="subscription" action="show" id="${linkedSubscription.subscription.id}">${linkedSubscription.subscription.name}</g:link></td>
-            </tr>--}%
-        </g:each>
-        </tbody>
-    </table>
 </g:form>
