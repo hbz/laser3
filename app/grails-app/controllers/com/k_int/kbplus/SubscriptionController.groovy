@@ -5325,7 +5325,7 @@ class SubscriptionController extends AbstractDebugController {
 
     private def exportOrg(orgs, message, addHigherEducationTitles, format) {
         def titles = [
-            'Name', g.message(code: 'org.shortname.label'), g.message(code: 'org.sortname.label')]
+                g.message(code: 'org.sortname.label'), 'Name', g.message(code: 'org.shortname.label')]
 
         def orgSector = RefdataValue.getByValueAndCategory('Higher Education', 'OrgSector')
         def orgType = RefdataValue.getByValueAndCategory('Provider', 'OrgRoleType')
@@ -5388,6 +5388,10 @@ class SubscriptionController extends AbstractDebugController {
                     int cellnum = 0
                     row = sheet.createRow(rownum)
 
+                    //Sortname
+                    cell = row.createCell(cellnum++)
+                    cell.setCellValue(org.sortname ?: '')
+
                     //Name
                     cell = row.createCell(cellnum++)
                     cell.setCellValue(org.name ?: '')
@@ -5395,10 +5399,6 @@ class SubscriptionController extends AbstractDebugController {
                     //Shortname
                     cell = row.createCell(cellnum++)
                     cell.setCellValue(org.shortname ?: '')
-
-                    //Sortname
-                    cell = row.createCell(cellnum++)
-                    cell.setCellValue(org.sortname ?: '')
 
 
                     if (addHigherEducationTitles) {
@@ -5496,12 +5496,12 @@ class SubscriptionController extends AbstractDebugController {
                 List orgData = []
                 orgs.each{  org ->
                     List row = []
+                    //Sortname
+                    row.add(org.sortname ? org.sortname.replaceAll(',','') : '')
                     //Name
                     row.add(org.name ? org.name.replaceAll(',','') : '')
                     //Shortname
                     row.add(org.shortname ? org.shortname.replaceAll(',','') : '')
-                    //Sortname
-                    row.add(org.sortname ? org.sortname.replaceAll(',','') : '')
                     if(addHigherEducationTitles) {
                         //libraryType
                         row.add(org.libraryType?.getI10n('value') ?: ' ')

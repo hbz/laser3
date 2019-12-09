@@ -2599,8 +2599,41 @@ AND EXISTS (
         result.mappingCols = ["title","element","elementSign","referenceCodes","budgetCode","status","invoiceTotal",
                               "currency","exchangeRate","taxType","taxRate","value","subscription","package",
                               "issueEntitlement","datePaid","financialYear","dateFrom","dateTo","invoiceDate",
-                              "description","invoiceNumber","orderNumber","institution"]
+                              "description","invoiceNumber","orderNumber"/*,"institution"*/]
         result
+    }
+
+    @DebugAnnotation(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_EDITOR", specRole="ROLE_ADMIN")
+    @Secured(closure = {
+        ctx.accessService.checkPermAffiliationX("ORG_INST,ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN")
+    })
+    def generateFinanceImportWorksheet() {
+        Subscription subscription = Subscription.get(params.id)
+        Set<String> keys = ["title","element","elementSign","referenceCodes","budgetCode","status","invoiceTotal",
+                            "currency","exchangeRate","taxType","taxRate","value","subscription","package",
+                            "issueEntitlement","datePaid","financialYear","dateFrom","dateTo","invoiceDate",
+                            "description","invoiceNumber","orderNumber"]
+        Set<List<String>> identifierRows = []
+        Set<String> colHeaders = []
+        subscription.derivedSubscriptions.each { subChild ->
+            List<String> row = []
+            keys.eachWithIndex { String entry, int i ->
+                colHeaders << message(code:"myinst.financeImport.${entry}")
+                if(entry == "subscription") {
+                    row[i] = subChild.globalUID
+                }
+                else row[i] = ""
+            }
+            identifierRows << row
+        }
+        String template = exportService.generateSeparatorTableString(colHeaders,identifierRows,",")
+        response.setHeader("Content-disposition", "attachment; filename=\"bulk_upload_template_${escapeService.escapeString(subscription.name)}.csv\"")
+        response.contentType = "text/csv"
+        ServletOutputStream out = response.outputStream
+        out.withWriter { writer ->
+            writer.write(template)
+        }
+        out.close()
     }
 
     @DebugAnnotation(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_EDITOR", specRole="ROLE_ADMIN")
@@ -2617,7 +2650,7 @@ AND EXISTS (
                 Map<String,Map> financialData = financeService.financeImport(tsvFile)
                 result.candidates = financialData.candidates
                 result.budgetCodes = financialData.budgetCodes
-                result.criticalErrors = ['ownerMismatchError','noValidSubscription','multipleSubError','packageWithoutSubscription','noValidPackage','multipleSubPkgError',
+                result.criticalErrors = [/*'ownerMismatchError',*/'noValidSubscription','multipleSubError','packageWithoutSubscription','noValidPackage','multipleSubPkgError',
                                          'packageNotInSubscription','entitlementWithoutPackageOrSubscription','noValidTitle','multipleTitleError','noValidEntitlement','multipleEntitlementError',
                                          'entitlementNotInSubscriptionPackage','multipleOrderError','multipleInvoiceError','invalidCurrencyError','invoiceTotalInvalid','valueInvalid','exchangeRateInvalid',
                                          'invalidTaxType','invalidYearFormat','noValidStatus','noValidElement','noValidSign']
@@ -4156,7 +4189,7 @@ AND EXISTS (
     private setResultGenerics() {
 
         def result          = [:]
-        result.user         = User.get(springSecurityService.principal.id)
+        result.user         = contextService.getUser()
         //result.institution  = Org.findByShortcode(params.shortcode)
         result.institution  = contextService.getOrg()
         result.editable = accessService.checkMinUserOrgRole(result.user, result.institution, 'INST_EDITOR') || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN,ROLE_YODA')

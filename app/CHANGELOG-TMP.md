@@ -1,6 +1,16 @@
 ## temporary change log
 
 **Ticket    Date    Branch      Author  Feature/Bug     Description/Keywords**
+ 
+ /      06.12.2019  rc1.1       Andreas Bug         Entfernen der Währungsbezeichnung aus den Finanzsichten
+
+ /      05.12.2019  rc1.1       Andreas Bug         Sicherheitslücke behoben und Template-Generierung angelegt für Kostenimport
+
+1924    05.12.2019  rc1.1       Andreas Bug         Anpassung der calculatedType-Überprüfung bei Verwaltungslizenzen
+
+--      09.12.2019  hbz-dev     Andreas Bug         Sortiername bei Export der Konsorten nach vorn geschoben
+
+1802    09.12.2019  hbz-dev     David   Bug         Dropdowns für "Allgemeine Merkmale" beinhalten gruppenbezogene Merkmale
 
 1945    09.12.2019  hbz-dev     David   Bug         Falsche Aktualisierungsmeldung im Nutzerprofil
 
