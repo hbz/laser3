@@ -47,8 +47,7 @@ class AdminController extends AbstractDebugController {
 
   def docstoreService
   def propertyInstanceMap = org.codehaus.groovy.grails.plugins.DomainClassGrailsPlugin.PROPERTY_INSTANCE_MAP
-  def executorService
-  def ESSearchService
+
   def apiService
 
     @Secured(['ROLE_ADMIN'])

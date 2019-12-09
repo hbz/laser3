@@ -12,6 +12,9 @@ import java.text.SimpleDateFormat
 class SurveyConfig {
 
     @Transient
+    def deletionService
+
+    @Transient
     public static final ALL_RESULTS_PROCESSED_BY_ORG = "All Processed"
 
     @Transient
@@ -100,6 +103,10 @@ class SurveyConfig {
         configOrder column: 'surconf_config_order'
 
         transferWorkflow column: 'surconf_transfer_workflow', type:'text'
+    }
+
+    def afterDelete() {
+        deletionService.deleteDocumentFromIndex(this.getClass().getSimpleName().toLowerCase()+":"+this.id)
     }
 
     @Transient

@@ -1239,6 +1239,12 @@ aside.ui.accordion .title:not(.ui) {
 .la-clear-before {
   clear: both;
 }
+
+.la-readmore[data-readmore] {
+  -webkit-transition: height 500ms;
+  transition: height 500ms;
+  overflow: hidden;
+}
 /*!
  * # Semantic UI 2.3.1 - Button
  * http://github.com/semantic-org/semantic-ui/
@@ -13465,6 +13471,94 @@ i.icon.la-laser:before {
 .la-header-with-icon .la-clone {
   vertical-align: super;
 }
+
+.circular.icon.la-search-license {
+  display: inline-block;
+  background-color: #008C25;
+  border-color: #008C25;
+}
+
+.circular.icon.la-search-license:before {
+  content: "\f24e";
+  color: white;
+}
+
+.circular.icon.la-search-package {
+  display: inline-block;
+  background-color: #76007A;
+  border-color: #76007A;
+}
+
+.circular.icon.la-search-package:before {
+  content: "\f06b";
+  color: white;
+}
+
+.circular.icon.la-search-subscription {
+  display: inline-block;
+  background-color: #fa820a;
+  border-color: #fa820a;
+}
+
+.circular.icon.la-search-subscription:before {
+  content: "\f328";
+  color: white;
+}
+
+.circular.icon.la-search-organisation {
+  display: inline-block;
+  background-color: #00B5AD;
+  border-color: #00B5AD;
+}
+
+.circular.icon.la-search-organisation:before {
+  content: "\f19c";
+  color: white;
+}
+
+.circular.icon.la-search-platform {
+  display: inline-block;
+  background-color: #FBC71C;
+  border-color: #FBC71C;
+}
+
+.circular.icon.la-search-platform:before {
+  content: "\f0c2";
+  color: white;
+}
+
+.circular.icon.la-search-journal {
+  display: inline-block;
+  background-color: #004678;
+  border-color: #004678;
+}
+
+.circular.icon.la-search-journal:before {
+  content: "\f1ea";
+  color: white;
+}
+
+.circular.icon.la-search-database {
+  display: inline-block;
+  background-color: #004678;
+  border-color: #004678;
+}
+
+.circular.icon.la-search-database:before {
+  content: "\f1c0";
+  color: white;
+}
+
+.circular.icon.la-search-ebook {
+  display: inline-block;
+  background-color: #004678;
+  border-color: #004678;
+}
+
+.circular.icon.la-search-ebook:before {
+  content: "\f3fa";
+  color: white;
+}
 /*!
  * # Semantic UI 2.3.1 - Image
  * http://github.com/semantic-org/semantic-ui/
@@ -21051,10 +21145,6 @@ input#spotlightSearch[type="search"] {
   border-color: @lightGrey;
 }
 */
-
-.ui.icon.input > i.icon#btn-search:not(.link) {
-  pointer-events: auto;
-}
 
 input#spotlightSearch[type="search"]:hover,
 input#spotlightSearch[type="search"]:focus {

@@ -749,7 +749,7 @@ class DeletionService {
         }
     }
 
-    def deleteDocumentFromIndex(domainName, id)
+    def deleteDocumentFromIndex(id)
     {
         def es_index = ESWrapperService.getESSettings().indexName
         RestHighLevelClient esclient = ESWrapperService.getClient()

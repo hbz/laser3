@@ -20,6 +20,8 @@ class LicenseCustomProperty extends CustomProperty implements AuditableTrait  {
     def messageSource
     @Transient
     def pendingChangeService
+    @Transient
+    def deletionService
 
     // AuditableTrait
     static auditable = true
@@ -56,6 +58,10 @@ class LicenseCustomProperty extends CustomProperty implements AuditableTrait  {
         type : PropertyDefinition,
         owner: License
     ]
+
+    def afterDelete() {
+        deletionService.deleteDocumentFromIndex(this.getClass().getSimpleName().toLowerCase()+":"+this.id)
+    }
 
     @Override
     def copyInto(AbstractProperty newProp){

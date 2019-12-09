@@ -292,6 +292,13 @@ r2d2 = {
                 }
             }
         });
+
+        $('.la-readmore').readmore({
+                speed: 75,
+                lessLink: '<a href="#">${message(code:"link.readless")}</a>',
+                moreLink: '<a href="#">${message(code:"link.readmore")}</a>',
+                collapsedHeight: 115
+        });
     },
 
     countSettedFilters: function () {

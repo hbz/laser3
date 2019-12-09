@@ -21,7 +21,7 @@ class SearchController extends AbstractDebugController {
         params.offset = params.offset ? params.int('offset') : 0
 
         params.searchObjects = params.searchObjects ?: 'allObjects'
-
+        result.contextOrg = contextService.getOrg()
 
         def query = params.q ? "${params.q}": null
         if (!query) {
@@ -38,14 +38,23 @@ class SearchController extends AbstractDebugController {
                 params.q += " ${params.advancedSearchOption2} ${params.advancedSearchText2} "
             }
 
-            if(params.advancedSearchText || params.advancedSearchText2)
+            if(params.advancedSearchText3){
+                params.q += " ${params.advancedSearchOption3} ${params.advancedSearchText3} "
+            }
+
+            if(params.advancedSearchText || params.advancedSearchText2 || params.advancedSearchText3)
             {
                 params.q = "( ${params.q} )"
+            }
+
+            if(params.showMembersObjects && result.contextOrg.getCustomerType() in ['ORG_CONSORTIUM', 'ORG_CONSORTIUM_SURVEY']){
+                params.consortiaGUID = result.contextOrg.globalUID
             }
 
             params.actionName = actionName
 
             params.availableToOrgs = [contextService.org.id]
+            params.availableToUser = [result.user.id]
 
             result = ESSearchService.search(params)
 
@@ -53,7 +62,6 @@ class SearchController extends AbstractDebugController {
 
         }
         result.contextOrg = contextService.getOrg()
-
         result
     }
 
