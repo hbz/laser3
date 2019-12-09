@@ -38,10 +38,10 @@
             <g:each in="${sp.pkg.tipps.platform.unique()}" var="platform">
               <div class="item">
                 <div class="right floated content">
-                  <g:each in="${sp.getAccessPointListForOrgAndPlatform(contextOrg, platform)?.collect()}" var="orgap">
+                  <g:each in="${sp.getAccessPointListForOrgAndPlatform(subscriptionInstance.getSubscriber(), platform)?.collect()}" var="orgap">
                     <g:link controller="accessPoint" action="edit_${orgap.oap.accessMethod}"
                             id="${orgap.oap.id}">${orgap.oap.name} (${orgap.oap.accessMethod.getI10n('value')})</g:link>
-                    <g:if test="${editmode && !platform.usesPlatformAccessPoints(contextOrg, sp)}">
+                    <g:if test="${accessConfigEditable && !platform.usesPlatformAccessPoints(contextOrg, sp)}">
                       <g:link class="ui mini negative icon button js-open-confirm-modal" controller="accessPoint"
                               action="unlinkPlatform" id="${orgap.id}"
                               data-confirm-tokenMsg="${message(code: 'confirm.dialog.unlink.accessPoint.platform', args: [orgap.oap.name, orgap.platform.name])}"
@@ -58,7 +58,7 @@
                                         tmplIcon           : 'plus',
                                         tmplCss            : 'icon small la-selectable-button',
                                         tmplModalID        : "platf_link_ap-${sp.id}",
-                                        editmode           : editable,
+                                        editmode           : accessConfigEditable,
                                         accessPointList    : sp.getNotActiveAccessPoints(contextOrg),
                                         institution        : contextService.getUser().getAuthorizedOrgs(),
                                         selectedInstitution: contextOrg,
@@ -79,9 +79,9 @@
                                   model="${[tmplText           : message(code:'subscription.details.linkAccessPoint.accessConfig.modal.removeDerivation.header'),
                                             tmplID             : 'removeDerivation',
                                             tmplIcon           : 'thumbtack blue',
-                                            tmplCss            : editable ? 'icon small la-selectable-button' : 'icon small',
+                                            tmplCss            : accessConfigEditable ? 'icon small la-selectable-button' : 'icon small',
                                             tmplModalID        : "removeDerivationModal-${sp.id}",
-                                            editmode           : editable,
+                                            editmode           : accessConfigEditable,
                                             accessPointList    : platform.getNotActiveAccessPoints(contextOrg),
                                             institution        : contextService.getUser().getAuthorizedOrgs(),
                                             selectedInstitution: contextOrg,
@@ -98,9 +98,9 @@
                                   model="${[tmplText           : message(code:'subscription.details.linkAccessPoint.accessConfig.modal.addDerivation.header'),
                                             tmplID             : 'addDerivation',
                                             tmplIcon           : 'la-thumbtack slash blue',
-                                            tmplCss            : editable ? 'icon small la-selectable-button' : 'icon small',
+                                            tmplCss            : accessConfigEditable ? 'icon small la-selectable-button' : 'icon small',
                                             tmplModalID        : "derivationModal-${sp.id}",
-                                            editmode           : editable,
+                                            editmode           : accessConfigEditable,
                                             accessPointList    : platform.getNotActiveAccessPoints(contextOrg),
                                             institution        : contextService.getUser().getAuthorizedOrgs(),
                                             selectedInstitution: contextOrg,

@@ -278,7 +278,7 @@
                                           roleObject: subscriptionInstance,
                                           roleRespValue: 'Specific subscription editor',
                                           editmode: editable,
-                                          showPersons: true
+                                          accessConfigEditable : accessService.checkPermAffiliation('ORG_BASIC_MEMBER','INST_EDITOR') || (accessService.checkPermAffiliation('ORG_CONSORTIUM','INST_EDITOR') && subscriptionInstance.getSubscriber().id == contextOrg.id)
                                 ]}" />
                   </div><!-- .content -->
                 </div>
