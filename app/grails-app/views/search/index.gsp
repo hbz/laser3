@@ -565,6 +565,8 @@ String period
                                         <g:if test="${hit.getSourceAsMap()?.endDate}">
                                             <g:formatDate format="${message(code:'default.date.format.notime', default:'yyyy-MM-dd')}" date="${new Date().parse("yyyy-MM-dd'T'HH:mm:ssZ", hit.getSourceAsMap().endDate)}"/>
                                         </g:if>
+                                    <br>
+                                    <b>${message(code: 'default.description.label')}</b>: <article class="la-readmore"><p>${hit.getSourceAsMap()?.description}</p></article>
                                 </td>
                             </g:if>
                             <g:if test="${hit.getSourceAsMap().rectype == 'Note'}">

@@ -621,3 +621,8 @@ aside.ui.accordion .title:not(.ui) {
 .la-clear-before {
   clear: both;
 }
+.la-readmore[data-readmore] {
+  -webkit-transition: height 500ms;
+  transition: height 500ms;
+  overflow: hidden;
+}
