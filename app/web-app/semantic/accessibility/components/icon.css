@@ -4972,3 +4972,6 @@ i.icon.la-laser:before {
   content: "\f3fa";
   color: white;
 }
+i.inverted.circular.icon.la-filter-icon {
+  background-color: #8699b1!important;
+}

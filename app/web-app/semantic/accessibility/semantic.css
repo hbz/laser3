@@ -13571,6 +13571,10 @@ i.icon.la-laser:before {
   content: "\f3fa";
   color: white;
 }
+
+i.inverted.circular.icon.la-filter-icon {
+  background-color: #8699b1!important;
+}
 /*!
  * # Semantic UI 2.3.1 - Image
  * http://github.com/semantic-org/semantic-ui/
@@ -16046,6 +16050,10 @@ a.ui.basic.label:hover {
 .ui.image.label .detail a {
   color: white;
   text-decoration: underline;
+}
+
+.ui.label.la-advanced-label {
+  background-color: #d3dae3;
 }
 /*!
  * # Semantic UI 2.3.1 - List
