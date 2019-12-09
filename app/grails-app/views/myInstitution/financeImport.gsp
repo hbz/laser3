@@ -16,7 +16,6 @@
     <h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon />${message(code:'menu.institutions.financeImport')}</h1>
        <semui:msg class="warning" header="${message(code: 'message.information')}" message="myinst.financeImport.headline" />
 
-       ${message(code:'myinst.financeImport.headline', default:'Bulk load cost item records')}
           <g:if test="${params.id}">
               <g:link action="generateFinanceImportWorksheet" params="${[id:params.id]}">
                   <p>${message(code:'myinst.financeImport.template', default:'Template for bulk import.')}</p>
