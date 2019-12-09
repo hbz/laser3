@@ -82,4 +82,4 @@
 
 1837    06.11.2019  rc-1.1      David   Bug         Standard-Dashboard beim Einloggen setzen
 
-/       09.12.2019  hbz-dev     Daniel  Feature     Allgemeine Subscriptionmerkmale umd "EZB Kollektionsdatenweitergabe an Drittsysteme erlaubt?" ergänzt 
+/       09.12.2019  hbz-dev     Daniel  Feature     Allgemeine Subscriptionmerkmale um "EZB Kollektionsdatenweitergabe an Drittsysteme erlaubt?" ergänzt 
