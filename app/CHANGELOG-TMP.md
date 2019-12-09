@@ -2,6 +2,10 @@
 
 **Ticket    Date    Branch      Author  Feature/Bug     Description/Keywords**
 
+1945    09.12.2019  hbz-dev     David   Bug         Falsche Aktualisierungsmeldung im Nutzerprofil
+
+1941    09.12.2019  hbz-dev     David   Feature     Tabelle "Meine Konsorten" angepasst
+
 1935    06.12.2019  hbz-dev     Anja    Feature     GASCO-Monitor: Es werden Kontakte nur noch aus öffentichem Adressbuch angezeigt
 
 1546    06.12.2019  hbz-def     Anja    Bug         Merkmale zwischen Lizenzen kopieren: Löschmarkierungen sind jetzt korrekt.
@@ -10,11 +14,11 @@
 
 1926    04.12.2019  rc1.1       David   Bug         Modaler Dialog: Funktions-/Personenkontakte funktioniert nicht
 
-/       05.12.2019  hbz-dev     Moe      Feature     Workflow für Übertrag nach einer Umfrage-Verlängerung
+--      05.12.2019  hbz-dev     Moe      Feature    Workflow für Übertrag nach einer Umfrage-Verlängerung
 
-/       05.12.2019  hbz-dev     Moe/Ingrid   Feature Erweiterte Suche in der Menüleiste 
+--      05.12.2019  hbz-dev     Moe/Ingrid  Feature Erweiterte Suche in der Menüleiste 
 
-/       05.12.2019  hbz-dev     Christian Feature   Zugangskonfiguration: Darstellung und Konfiguration auf Lizenzebene
+--      05.12.2019  hbz-dev     Christian Feature   Zugangskonfiguration: Darstellung und Konfiguration auf Lizenzebene
 
 1926    04.12.2019  rc1.1       David   Bug         Modaler Dialog: Funktions-/Personenkontakte funktioniert nicht
 
@@ -34,7 +38,7 @@
 
 1902    26.11.2019  hbz-dev     Moe     Feature     Meine Pakete Sicht
 
-1584    27.11.2019  hbz-dev     Anja    Bugfixes     Dashboard Fällige Termine: Pagination alle Termine anzeigen funktioniert wieder
+1584    27.11.2019  hbz-dev     Anja    Bugfixes    Dashboard Fällige Termine: Pagination alle Termine anzeigen funktioniert wieder
 
 1584    27.11.2019  hbz-dev     Anja    Feature     Dashboard Fällige Termine: Mehrsprachigkeit ist neu (auch in E-Mails), Einträge können ausgeblendet werden, (Einträge auf Erledigt setzen ist neu aber z.Zt. ausgeblendet), verfeinerte Kontrollausgaben des Cronjobs, 
 
@@ -56,13 +60,13 @@
 
 1888    21.11.2019  hbz-dev     Moe     Feature     improve global search
 
- /      20.11.2019  rc-1.1      Andreas Bug         pending changes are now filtered out when deactivating audit
+--      20.11.2019  rc-1.1      Andreas Bug         pending changes are now filtered out when deactivating audit
 
 1830    21.11.2019  rc-1.1      Moe     Bug         filter cost element requires defined cost elements
     
- /      21.11.2019  rc-1.1      Moe     Bug         export of Entitlements by renew with survey
+--      21.11.2019  rc-1.1      Moe     Bug         export of Entitlements by renew with survey
  
- /      20.11.2019  rc-1.1      Andreas Bug         pending changes are now filtered out when deactivating audit
+--      20.11.2019  rc-1.1      Andreas Bug         pending changes are now filtered out when deactivating audit
     
 1869    20.11.2019  hbz-dev     David   Feature     API-Endpunkt /subscription liefert Vorgänger und Nachfolger (0.72)
 

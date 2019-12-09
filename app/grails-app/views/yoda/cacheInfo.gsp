@@ -59,25 +59,25 @@
 
         <h4 class="ui header">${cacheName}
             <span class="ui label">${cache.class}</span>
-            <span class="ui label">
-                <%
-                    try {
-                        println "disk: ${Math.round(cacheStats.getLocalDiskSizeInBytes() / 1024)} kb, "
-                    } catch (Exception e) {
-                        println "error, "
-                    }
-                    try {
-                        println "heap: ${Math.round(cacheStats.getLocalHeapSizeInBytes() / 1024)} kb / "
-                    } catch (Exception e) {
-                        println "error / "
-                    }
-                    try {
-                        println "${Math.round(cacheStats.getLocalOffHeapSizeInBytes() / 1024)} kb"
-                    } catch (Exception e) {
-                        println "error"
-                    }
-                %>
-            </span>
+            <%-- <span class="ui label">
+
+                try {
+                    println "disk: ${Math.round(cacheStats.getLocalDiskSizeInBytes() / 1024)} kb, "
+                } catch (Exception e) {
+                    println "error, "
+                }
+                try {
+                    println "heap: ${Math.round(cacheStats.getLocalHeapSizeInBytes() / 1024)} kb / "
+                } catch (Exception e) {
+                    println "error / "
+                }
+                try {
+                    println "${Math.round(cacheStats.getLocalOffHeapSizeInBytes() / 1024)} kb"
+                } catch (Exception e) {
+                    println "error"
+                }
+
+            </span> --%>
             <g:if test="${cache.getKeys().size() > 0}">
                 <span class="ui label button" onclick="$(this).parent('h4').next('.segment').find('.cacheContent').toggleClass('hidden')">count: ${cache.getKeys().size()}</span>
             </g:if>
@@ -88,19 +88,19 @@
 
             <dl>
                 <div class="cacheContent hidden">
-                    <g:each in="${cache.getKeys()}" var="key">
+                    <g:each in="${cache.getKeys().toSorted()}" var="key">
                         <g:set var="cacheEntry" value="${cache.get(key)}" />
                         <g:if test="${cacheEntry}">
                             <dt>
-                                ${cacheEntry.key instanceof String ? cacheEntry.key : cacheEntry.key.key}
-                                : version=${cacheEntry.version}
-                                : hitCount=${cacheEntry.hitCount} </dt>
+                                ${cacheEntry.getObjectKey() instanceof String ? cacheEntry.getObjectKey() : cacheEntry.getObjectKey().key}
+                                [ version=${cacheEntry.version} : hitCount=${cacheEntry.hitCount} ]
+                            </dt>
                             <dd>
                                 <g:set var="objectValue" value="${cacheEntry.getObjectValue()}" />
-                                ${objectValue instanceof Date ? objectValue : objectValue?.value}
+                                <g:if test="${objectValue.getClass().getSimpleName() != 'Item'}">
+                                    ${objectValue}
+                                </g:if>
                             </dd>
-                            <br />
-
                         </g:if>
                     </g:each>
                 </div>
