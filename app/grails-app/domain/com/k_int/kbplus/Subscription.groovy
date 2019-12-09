@@ -183,7 +183,7 @@ class Subscription
     }
 
     def afterDelete() {
-        deletionService.deleteDocumentFromIndex(this.class.name, this.globalUID)
+        deletionService.deleteDocumentFromIndex(this.globalUID)
     }
 
     // TODO: implement

@@ -14,7 +14,7 @@
         </semui:breadcrumbs>
 
         <semui:modeSwitch controller="platform" action="show" params="${params}" />
-
+        <br>
         <h1 class="ui header la-noMargin-top">
             <g:if test="${editable}"><span id="platformNameEdit"
                                            class="xEditableValue"

@@ -29,7 +29,7 @@ class IndexUpdateJob extends AbstractJob {
         try {
             log.debug("****Running Index Update Job****")
 
-            if (! dataloadService.doFTUpdate()) {
+            if (! dataloadService.updateFTIndexes()) {
                 log.warn( 'Failed. Maybe ignored due blocked dataloadService')
             }
         }

@@ -414,3 +414,7 @@ aside.ui.accordion .title:not(.ui) {
 .la-clear-before {
     clear: both;
 }
+.la-readmore[data-readmore] {
+    transition: height 500ms;
+    overflow: hidden;
+}

@@ -1139,9 +1139,6 @@ input#spotlightSearch[type="search"] {
   border-color: @lightGrey;
 }
 */
-.ui.icon.input > i.icon#btn-search:not(.link) {
-  pointer-events: auto;
-}
 input#spotlightSearch[type="search"]:hover,
 input#spotlightSearch[type="search"]:focus {
   background: #DCDDDE;

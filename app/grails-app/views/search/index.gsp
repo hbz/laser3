@@ -64,7 +64,7 @@ String period
 
 
 <semui:form>
-    <g:form action="index" controller="search" method="post" class="ui form" params="[tab: params.tab]">
+    <g:form action="index" controller="search" method="post" class="ui form" >
 
         <g:each in="${['rectype', 'endYear', 'startYear', 'consortiaName', 'providerName', 'status']}" var="facet">
             <g:each in="${params.list(facet)}" var="selected_facet_value">
@@ -108,6 +108,29 @@ String period
             </div>
         </div>
 
+        <div class="fields">
+            <div class="three wide field">
+                <g:select class="ui dropdown"
+                          from="${['AND', 'OR', 'NOT']}"
+                          name="advancedSearchOption3"
+                          valueMessagePrefix="search.advancedSearch.option"
+                          value="${params.advancedSearchOption3}"/>
+            </div>
+
+            <div class="fourteen wide field">
+                <input type="text" placeholder="${message(code: 'search.placeholder')}"
+                       name="advancedSearchText3" value="${params.advancedSearchText3}"/>
+            </div>
+        </div>
+
+        <div class="field">
+            <g:if test="${contextOrg.getCustomerType() in ['ORG_CONSORTIUM', 'ORG_CONSORTIUM_SURVEY']}">
+                <div class="ui checkbox">
+                    <input type="checkbox" name="showMembersObjects" tabindex="0" ${params.showMembersObjects ? 'checked' : ''}>
+                    <label><g:message code="search.advancedSearch.showMembersObjects"/></label>
+                </div>
+            </g:if>
+        </div>
 
         <div class="three fields">
             <div class="field">
@@ -159,7 +182,6 @@ String period
             <div class="field">
 
             </div>
-
 
             <div class="field la-field-right-aligned">
                 <a href="${request.forwardURI}"
@@ -398,17 +420,28 @@ String period
                                     </g:each>
                                     <br>
 
-                                    <b>${message(code: 'subscription.status.label')}</b>: ${RefdataValue.findByValue(hit.getSourceAsMap().status) ? RefdataValue.findByValue(hit.getSourceAsMap().status).getI10n('value') : hit.getSourceAsMap().status}
+                                    <b>${message(code: 'subscription.status.label')}</b>: ${RefdataValue.get(hit.getSourceAsMap().statusId) ? RefdataValue.get(hit.getSourceAsMap().statusId).getI10n('value') : hit.getSourceAsMap().status}
+                                    <br>
+                                    <b>${message(code: 'subscription.details.type')}</b>: ${RefdataValue.get(hit.getSourceAsMap().typeId) ? RefdataValue.get(hit.getSourceAsMap().typeId).getI10n('value') : ''}
                                     <br>
                                     <b>${message(code: 'subscription.periodOfValidity.label')}</b>: ${period}
                                     <br>
-                                    <g:if test="${contextOrg.getCustomerType() in ['ORG_CONSORTIUM', 'ORG_CONSORTIUM_SURVEY']}">
+                                    <g:if test="${hit.getSourceAsMap().membersCount && contextOrg.getCustomerType() in ['ORG_CONSORTIUM', 'ORG_CONSORTIUM_SURVEY']}">
                                         <b>${message(code: 'subscription.details.consortiaMembers.label')}</b>:
                                         <g:link controller="subscription" action="members"
-                                                id="${hit.getSourceAsMap().dbId}">${hit.getSourceAsMap().members}</g:link>
+                                                id="${hit.getSourceAsMap().dbId}">${hit.getSourceAsMap().membersCount}</g:link>
+                                    </g:if>
+                                    <g:if test="${hit.getSourceAsMap().members && contextOrg.getCustomerType() in ['ORG_CONSORTIUM', 'ORG_CONSORTIUM_SURVEY']}">
+                                        <b>${message(code: 'subscription.details.consortiaMembers.label')}</b>:
+                                        <g:each in="${hit.getSourceAsMap().members}" var="member">
+                                        <g:link controller="subscription" action="members"
+                                                id="${hit.getSourceAsMap().dbId}">${member.name}</g:link>
+                                        </g:each>
                                     </g:if>
                                     <br>
+                                    <g:if test="${hit.getSourceAsMap().typeId == RDStore.SUBSCRIPTION_TYPE_CONSORTIAL.id && !(contextOrg.getCustomerType() in ['ORG_CONSORTIUM', 'ORG_CONSORTIUM_SURVEY'])}">
                                     <b>${message(code: 'facet.so.consortiaName')}</b>: ${hit.getSourceAsMap().consortiaName}
+                                    </g:if>
                                 </td>
                             </g:if>
                             <g:if test="${hit.getSourceAsMap().rectype == 'License'}">
@@ -444,17 +477,28 @@ String period
                                         ${id.type}: ${id.value} &nbsp;
                                     </g:each>
                                     <br>
-                                    <b>${message(code: 'license.status')}</b>: ${RefdataValue.findByValue(hit.getSourceAsMap().status) ? RefdataValue.findByValue(hit.getSourceAsMap().status).getI10n('value') : hit.getSourceAsMap().status}
+                                    <b>${message(code: 'license.status')}</b>: ${RefdataValue.get(hit.getSourceAsMap().statusId) ? RefdataValue.get(hit.getSourceAsMap().statusId).getI10n('value') : hit.getSourceAsMap().status}
+                                    <br>
+                                    <b>${message(code: 'subscription.details.type')}</b>: ${RefdataValue.get(hit.getSourceAsMap().typeId) ? RefdataValue.get(hit.getSourceAsMap().typeId).getI10n('value') : ''}
                                     <br>
                                     <b>${message(code: 'subscription.periodOfValidity.label')}</b>: ${period}
                                     <br>
-                                    <g:if test="${contextOrg.getCustomerType() in ['ORG_CONSORTIUM', 'ORG_CONSORTIUM_SURVEY']}">
+                                    <g:if test="${hit.getSourceAsMap().membersCount && contextOrg.getCustomerType() in ['ORG_CONSORTIUM', 'ORG_CONSORTIUM_SURVEY']}">
                                         <b>${message(code: 'subscription.details.consortiaMembers.label')}</b>:
                                         <g:link controller="license" action="members"
-                                                id="${hit.getSourceAsMap().dbId}">${hit.getSourceAsMap().members}</g:link>
+                                                id="${hit.getSourceAsMap().dbId}">${hit.getSourceAsMap().membersCount}</g:link>
+                                    </g:if>
+                                    <g:if test="${hit.getSourceAsMap().members && contextOrg.getCustomerType() in ['ORG_CONSORTIUM', 'ORG_CONSORTIUM_SURVEY']}">
+                                        <b>${message(code: 'subscription.details.consortiaMembers.label')}</b>:
+                                        <g:each in="${hit.getSourceAsMap().members}" var="member">
+                                            <g:link controller="subscription" action="members"
+                                                    id="${hit.getSourceAsMap().dbId}">${member.name}</g:link>
+                                        </g:each>
                                     </g:if>
                                     <br>
-                                    <b>${message(code: 'facet.so.consortiaName')}</b>: ${hit.getSourceAsMap().consortiaName}
+                                    <g:if test="${!(contextOrg.getCustomerType() in ['ORG_CONSORTIUM', 'ORG_CONSORTIUM_SURVEY'])}">
+                                        <b>${message(code: 'facet.so.consortiaName')}</b>: ${hit.getSourceAsMap().consortiaName}
+                                    </g:if>
                                 </td>
                             </g:if>
 
@@ -489,12 +533,12 @@ String period
                                         period = period ? period : ''
                                     %>
 
-                                    <b>${message(code: 'surveyInfo.status.label')}</b>: ${RefdataValue.findByValue(hit.getSourceAsMap().status) ? RefdataValue.findByValue(hit.getSourceAsMap().status).getI10n('value') : hit.getSourceAsMap().status}
+                                    <b>${message(code: 'surveyInfo.status.label')}</b>: ${RefdataValue.get(hit.getSourceAsMap().statusId) ? RefdataValue.get(hit.getSourceAsMap().statusId).getI10n('value') : hit.getSourceAsMap().status}
                                     <br>
                                     <b>${message(code: 'renewalWithSurvey.period')}</b>: ${period}
                                     <br>
                                     <g:if test="${contextOrg.getCustomerType() in ['ORG_CONSORTIUM', 'ORG_CONSORTIUM_SURVEY']}">
-                                        <b>${message(code: 'surveyParticipants.label')}</b>: ${hit.getSourceAsMap().members}
+                                        <b>${message(code: 'surveyParticipants.label')}</b>: ${hit.getSourceAsMap().membersCount}
                                     </g:if>
                                 </td>
                             </g:if>
@@ -528,7 +572,7 @@ String period
                                         period = period ? period : ''
                                     %>
 
-                                    <b>${message(code: 'surveyInfo.status.label')}</b>: ${RefdataValue.findByValue(hit.getSourceAsMap().status) ? RefdataValue.findByValue(hit.getSourceAsMap().status).getI10n('value') : hit.getSourceAsMap().status}
+                                    <b>${message(code: 'surveyInfo.status.label')}</b>: ${RefdataValue.get(hit.getSourceAsMap().statusId) ? RefdataValue.get(hit.getSourceAsMap().statusId).getI10n('value') : hit.getSourceAsMap().status}
                                     <br>
                                     <b>${message(code: 'renewalWithSurvey.period')}</b>: ${period}
                                 </td>
@@ -556,10 +600,15 @@ String period
                                     </div>
                                 </td>
                                 <td>
-                                    <b>${message(code: 'search.object.'+hit.getSourceAsMap().objectType)}</b>:
-                                    <g:link controller="${hit.getSourceAsMap().objectType}" action="show" id="${hit.getSourceAsMap().objectId}">${hit.getSourceAsMap().objectName}</g:link>
+                                    <g:if test="${hit.getSourceAsMap().objectClassName}">
+                                    <b>${message(code: 'task.typ')}</b>:${message(code: 'search.object.'+hit.getSourceAsMap().objectClassName)}
+                                    <g:link controller="${hit.getSourceAsMap().objectClassName}" action="show" id="${hit.getSourceAsMap().objectId}">${hit.getSourceAsMap().objectName}</g:link>
+                                    </g:if>
+                                    <g:else>
+                                        ${message(code: 'task.general')}
+                                    </g:else>
                                     <br>
-                                    <b>${message(code: 'task.status.label')}</b>: ${RefdataValue.findByValue(hit.getSourceAsMap().status) ? RefdataValue.findByValue(hit.getSourceAsMap().status).getI10n('value') : hit.getSourceAsMap().status}
+                                    <b>${message(code: 'task.status.label')}</b>: ${RefdataValue.get(hit.getSourceAsMap().statusId) ? RefdataValue.get(hit.getSourceAsMap().statusId).getI10n('value') : hit.getSourceAsMap().status}
                                     <br>
                                     <b>${message(code: 'task.endDate.label')}</b>:
                                         <g:if test="${hit.getSourceAsMap()?.endDate}">
@@ -574,7 +623,7 @@ String period
                                         <i class="circular icon inverted red sticky note"></i>
                                     </span>
 
-                                    <g:link controller="${hit.getSourceAsMap().objectType}" action="notes" id="${hit.getSourceAsMap().objectId}">${hit.getSourceAsMap().name}</g:link>
+                                    <g:link controller="${hit.getSourceAsMap().objectClassName}" action="notes" id="${hit.getSourceAsMap().objectId}">${hit.getSourceAsMap().name}</g:link>
 
                                     <div class="ui grid">
                                         <div class="right aligned wide column">
@@ -588,8 +637,8 @@ String period
                                     </div>
                                 </td>
                                 <td>
-                                    <b>${message(code: 'search.object.'+hit.getSourceAsMap().objectType)}</b>:
-                                    <g:link controller="${hit.getSourceAsMap().objectType}" action="show" id="${hit.getSourceAsMap().objectId}">${hit.getSourceAsMap().objectName}</g:link>
+                                    <b>${message(code: 'search.object.'+hit.getSourceAsMap().objectClassName)}</b>:
+                                    <g:link controller="${hit.getSourceAsMap().objectClassName}" action="show" id="${hit.getSourceAsMap().objectId}">${hit.getSourceAsMap().objectName}</g:link>
                                     <br>
 
                                 </td>
@@ -600,11 +649,11 @@ String period
                                     <g:set var="docContext" value="${com.k_int.kbplus.DocContext.get(hit.getSourceAsMap().dbId)}"/>
                                     <span data-position="top right" class="la-popup-tooltip la-delay"
                                           data-content="${message(code: "facet.so.rectype.${hit.getSourceAsMap().rectype.toLowerCase()}")}">
-                                        <i class="circular icon inverted red sticky note"></i>
+                                        <i class="circular icon inverted orange file alternate outline"></i>
                                     </span>
 
 
-                                    <g:link controller="${hit.getSourceAsMap().objectType}" action="documents" id="${hit.getSourceAsMap().objectId}">${hit.getSourceAsMap().name}</g:link>
+                                    <g:link controller="${hit.getSourceAsMap().objectClassName}" action="documents" id="${hit.getSourceAsMap().objectId}">${hit.getSourceAsMap().name}</g:link>
 
                                     <div class="ui grid">
                                         <div class="right aligned wide column">
@@ -618,10 +667,145 @@ String period
                                     </div>
                                 </td>
                                 <td>
-                                    <b>${message(code: 'search.object.'+hit.getSourceAsMap().objectType)}</b>:
-                                    <g:link controller="${hit.getSourceAsMap().objectType}" action="show" id="${hit.getSourceAsMap().objectId}">${hit.getSourceAsMap().objectName}</g:link>
+                                    <b>${message(code: 'search.object.'+hit.getSourceAsMap().objectClassName)}</b>:
+                                    <g:link controller="${hit.getSourceAsMap().objectClassName}" action="show" id="${hit.getSourceAsMap().objectId}">${hit.getSourceAsMap().objectName}</g:link>
                                     <br>
-                                    <b>${message(code: 'license.docs.table.type')}</b>: ${docctx.owner?.type?.getI10n('value')}
+                                    <b>${message(code: 'license.docs.table.type')}</b>: ${docContext.owner?.type?.getI10n('value')}
+
+                                </td>
+                            </g:if>
+                            <g:if test="${hit.getSourceAsMap().rectype == 'IssueEntitlement'}">
+                                <td>
+                                    <span data-position="top right" class="la-popup-tooltip la-delay"
+                                          data-content="${message(code: "facet.so.rectype.${hit.getSourceAsMap().rectype.toLowerCase()}")}">
+                                        <i class="circular icon inverted red sticky note"></i>
+                                    </span>
+
+                                    <g:link controller="${hit.getSourceAsMap().objectClassName}" action="index" id="${hit.getSourceAsMap().objectId}" params="[filter: hit.getSourceAsMap().name]">${hit.getSourceAsMap().name}</g:link>
+
+                                    <div class="ui grid">
+                                        <div class="right aligned wide column">
+                                            <g:if test="${hit.getSourceAsMap().visible == 'Private'}">
+                                                <span data-position="top right" class="la-popup-tooltip la-delay"
+                                                      data-content="${message(code: 'search.myObject')}">
+                                                    <i class="shield alternate red large icon"></i>
+                                                </span>
+                                            </g:if>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <b>${message(code: 'search.object.'+hit.getSourceAsMap().objectClassName)}</b>:
+                                    <g:link controller="${hit.getSourceAsMap().objectClassName}" action="show" id="${hit.getSourceAsMap().objectId}">${hit.getSourceAsMap().objectName}</g:link>
+                                    <br>
+
+                                </td>
+                            </g:if>
+                            <g:if test="${hit.getSourceAsMap().rectype == 'SubscriptionCustomProperty'}">
+                                <td>
+                                    <span data-position="top right" class="la-popup-tooltip la-delay"
+                                          data-content="${message(code: "facet.so.rectype.${hit.getSourceAsMap().rectype.toLowerCase()}")}">
+                                        <i class="circular icon inverted red sticky note"></i>
+                                    </span>
+
+                                    <g:link controller="${hit.getSourceAsMap().objectClassName}" action="show" id="${hit.getSourceAsMap().objectId}">${hit.getSourceAsMap().name}</g:link>
+
+                                    <div class="ui grid">
+                                        <div class="right aligned wide column">
+                                            <g:if test="${hit.getSourceAsMap().visible == 'Private'}">
+                                                <span data-position="top right" class="la-popup-tooltip la-delay"
+                                                      data-content="${message(code: 'search.myObject')}">
+                                                    <i class="shield alternate red large icon"></i>
+                                                </span>
+                                            </g:if>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <b>${message(code: 'search.object.'+hit.getSourceAsMap().objectClassName)}</b>:
+                                <g:link controller="${hit.getSourceAsMap().objectClassName}" action="show" id="${hit.getSourceAsMap().objectId}">${hit.getSourceAsMap().objectName}</g:link>
+                                    <br>
+
+                                </td>
+                            </g:if>
+                            <g:if test="${hit.getSourceAsMap().rectype == 'SubscriptionPrivateProperty'}">
+                                <td>
+                                    <span data-position="top right" class="la-popup-tooltip la-delay"
+                                          data-content="${message(code: "facet.so.rectype.${hit.getSourceAsMap().rectype.toLowerCase()}")}">
+                                        <i class="circular icon inverted red sticky note"></i>
+                                    </span>
+
+                                    <g:link controller="${hit.getSourceAsMap().objectClassName}" action="show" id="${hit.getSourceAsMap().objectId}">${hit.getSourceAsMap().name}</g:link>
+
+                                    <div class="ui grid">
+                                        <div class="right aligned wide column">
+                                            <g:if test="${hit.getSourceAsMap().visible == 'Private'}">
+                                                <span data-position="top right" class="la-popup-tooltip la-delay"
+                                                      data-content="${message(code: 'search.myObject')}">
+                                                    <i class="shield alternate red large icon"></i>
+                                                </span>
+                                            </g:if>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <b>${message(code: 'search.object.'+hit.getSourceAsMap().objectClassName)}</b>:
+                                <g:link controller="${hit.getSourceAsMap().objectClassName}" action="show" id="${hit.getSourceAsMap().objectId}">${hit.getSourceAsMap().objectName}</g:link>
+                                    <br>
+
+                                </td>
+                            </g:if>
+                            <g:if test="${hit.getSourceAsMap().rectype == 'LicenseCustomProperty'}">
+                                <td>
+                                    <span data-position="top right" class="la-popup-tooltip la-delay"
+                                          data-content="${message(code: "facet.so.rectype.${hit.getSourceAsMap().rectype.toLowerCase()}")}">
+                                        <i class="circular icon inverted red sticky note"></i>
+                                    </span>
+
+                                    <g:link controller="${hit.getSourceAsMap().objectClassName}" action="show" id="${hit.getSourceAsMap().objectId}">${hit.getSourceAsMap().name}</g:link>
+
+                                    <div class="ui grid">
+                                        <div class="right aligned wide column">
+                                            <g:if test="${hit.getSourceAsMap().visible == 'Private'}">
+                                                <span data-position="top right" class="la-popup-tooltip la-delay"
+                                                      data-content="${message(code: 'search.myObject')}">
+                                                    <i class="shield alternate red large icon"></i>
+                                                </span>
+                                            </g:if>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <b>${message(code: 'search.object.'+hit.getSourceAsMap().objectClassName)}</b>:
+                                <g:link controller="${hit.getSourceAsMap().objectClassName}" action="show" id="${hit.getSourceAsMap().objectId}">${hit.getSourceAsMap().objectName}</g:link>
+                                    <br>
+
+                                </td>
+                            </g:if>
+                            <g:if test="${hit.getSourceAsMap().rectype == 'LicensePrivateProperty'}">
+                                <td>
+                                    <span data-position="top right" class="la-popup-tooltip la-delay"
+                                          data-content="${message(code: "facet.so.rectype.${hit.getSourceAsMap().rectype.toLowerCase()}")}">
+                                        <i class="circular icon inverted red sticky note"></i>
+                                    </span>
+
+                                    <g:link controller="${hit.getSourceAsMap().objectClassName}" action="show" id="${hit.getSourceAsMap().objectId}">${hit.getSourceAsMap().name}</g:link>
+
+                                    <div class="ui grid">
+                                        <div class="right aligned wide column">
+                                            <g:if test="${hit.getSourceAsMap().visible == 'Private'}">
+                                                <span data-position="top right" class="la-popup-tooltip la-delay"
+                                                      data-content="${message(code: 'search.myObject')}">
+                                                    <i class="shield alternate red large icon"></i>
+                                                </span>
+                                            </g:if>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <b>${message(code: 'search.object.'+hit.getSourceAsMap().objectClassName)}</b>:
+                                <g:link controller="${hit.getSourceAsMap().objectClassName}" action="show" id="${hit.getSourceAsMap().objectId}">${hit.getSourceAsMap().objectName}</g:link>
+                                    <br>
 
                                 </td>
                             </g:if>

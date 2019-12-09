@@ -37,7 +37,6 @@ class YodaController {
     def contextService
     def dashboardDueDatesService
     def subscriptionUpdateService
-    def executorService
     def costItemUpdateService
     def documentUpdateService
     def quartzScheduler

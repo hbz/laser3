@@ -18,6 +18,8 @@ class SubscriptionCustomProperty extends CustomProperty implements AuditableTrai
     def messageSource
     @Transient
     def pendingChangeService
+    @Transient
+    def deletionService
 
     // AuditableTrait
     static auditable = true
@@ -51,6 +53,10 @@ class SubscriptionCustomProperty extends CustomProperty implements AuditableTrai
         type:  PropertyDefinition,
         owner: Subscription
     ]
+
+    def afterDelete() {
+        deletionService.deleteDocumentFromIndex(this.getClass().getSimpleName().toLowerCase()+":"+this.id)
+    }
 
     @Transient
     def onDelete = { oldMap ->

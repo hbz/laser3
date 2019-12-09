@@ -11,7 +11,7 @@
     <semui:crumb message="menu.admin.dash" controller="admin" action="index"/>
     <semui:crumb message="menu.admin.dataConsistency" class="active"/>
 </semui:breadcrumbs>
-
+<br>
 <h1 class="ui header la-noMargin-top">${message(code: "menu.admin.dataConsistency")}</h1>
 
 <div class="ui grid">

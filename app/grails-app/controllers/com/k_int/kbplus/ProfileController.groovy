@@ -159,23 +159,21 @@ class ProfileController {
       }
     }
 
-      user.save();
+        user.save()
 
-    if ( params.defaultDash != user.getSettingsValue(UserSettings.KEYS.DASHBOARD)?.getId().toString() ) {
-      flash.message+= message(code:'profile.updateProfile.updated.dash', default:"User default dashboard updated<br/>")
-        def setting = user.getSetting(UserSettings.KEYS.DASHBOARD, null)
+        if (params.defaultDash) {
+            Org org = genericOIDService.resolveOID(params.defaultDash)
+            UserSettings us = user.getSetting(UserSettings.KEYS.DASHBOARD, null)
 
-      if ( params.defaultDash == '' ) {
-          setting.setValue(null)
-      }
-      else {
-          def org = genericOIDService.resolveOID(params.defaultDash)
-          setting.setValue(org)
-      }
+            if (org?.id != us.getValue()?.id) {
+                us.setValue(org)
+                flash.message += message(code: 'profile.updateProfile.updated.dash', default: "User default dashboard updated<br/>")
+            }
+        }
+
+        redirect(action: "index")
     }
 
-    redirect(action: "index")
-  }
   @Secured(['ROLE_USER'])
   def updateReminderSettings() {
     def user = User.get(springSecurityService.principal.id)

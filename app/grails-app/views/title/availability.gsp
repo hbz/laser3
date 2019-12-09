@@ -18,7 +18,7 @@
       <g:if test="${editable}">
         <semui:crumbAsBadge message="default.editable" class="orange" />
       </g:if>
-
+  <br>
   <h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon />${ti.title}</h1>
 
     <g:render template="nav" />

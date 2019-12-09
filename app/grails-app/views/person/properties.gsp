@@ -15,7 +15,7 @@
         <semui:crumb message="menu.public.all_orgs" controller="organisation" action="index" />
         <g:message code="default.show.label" args="[entityName]" class="active"/>
     </semui:breadcrumbs>
-
+    <br>
     <h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon />
         <g:if test="${personInstance?.contactType?.id == RDStore.CONTACT_TYPE_FUNCTIONAL.id}">
             ${personInstance.contactType.getI10n('value') + ': ' + personInstance?.last_name}
