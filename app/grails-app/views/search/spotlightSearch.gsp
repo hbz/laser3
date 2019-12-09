@@ -1,4 +1,4 @@
-<%@ page import="com.k_int.kbplus.SurveyConfig; de.laser.helper.RDStore; com.k_int.kbplus.RefdataValue; java.text.SimpleDateFormat;" %>
+<%@ page import="com.k_int.kbplus.SurveyConfig; de.laser.helper.RDStore; com.k_int.kbplus.RefdataValue; java.text.SimpleDateFormat;com.k_int.kbplus.DocContext;" %>
 <%
     def result = []
     SimpleDateFormat sdf = new SimpleDateFormat(message(code: 'default.date.format.notime'))
@@ -8,7 +8,7 @@
         String period = hit.getSourceAsMap().startDate ? sdf.format(new Date().parse("yyyy-MM-dd'T'HH:mm:ssZ", hit.getSourceAsMap().startDate))  : ''
         period = hit.getSourceAsMap().endDate ? period + ' - ' + sdf.format(new Date().parse("yyyy-MM-dd'T'HH:mm:ssZ", hit.getSourceAsMap().endDate))  : ''
         period = period ? '('+period+')' : ''
-        String statusString = hit.getSourceAsMap().statusId ? RefdataValue.get(hit.getSourceAsMap().statusId).getI10n('value') : RDStore.SUBSCRIPTION_NO_STATUS.getI10n('value')
+        String statusString = hit.getSourceAsMap().statusId ? RefdataValue.get(hit.getSourceAsMap().statusId).getI10n('value') : hit.getSourceAsMap().status
 
         if (hit.getSourceAsMap().rectype == 'License') {
             result << [
@@ -73,7 +73,63 @@
                     "category": "${message(code: "spotlight.${hit.getSourceAsMap().rectype.toLowerCase()}")}",
                     "description": "${statusString + ' ' +period}"
             ]
+        }else if (hit.getSourceAsMap().rectype == 'Note') {
+            result << [
+                    "title": "${hit.getSourceAsMap().name}",
+                    "url":   g.createLink(controller:"${hit.getSourceAsMap().objectClassName}", action:"notes", id:"${hit.getSourceAsMap().objectId}"),
+                    "category": "${message(code: "spotlight.${hit.getSourceAsMap().rectype.toLowerCase()}")}",
+                    "description": "${message(code: 'search.object.' + hit.getSourceAsMap().objectClassName)}: ${hit.getSourceAsMap().objectName}"
+            ]
         }
+        else if (hit.getSourceAsMap().rectype == 'Document') {
+            result << [
+                    "title": "${hit.getSourceAsMap().name}",
+                    "url":   g.createLink(controller:"${hit.getSourceAsMap().objectClassName}", action:"documents", id:"${hit.getSourceAsMap().objectId}"),
+                    "category": "${message(code: "spotlight.${hit.getSourceAsMap().rectype.toLowerCase()}")}",
+                    "description": "${message(code: 'search.object.' + hit.getSourceAsMap().objectClassName)}: ${hit.getSourceAsMap().objectName}, ${message(code: 'license.docs.table.type')}: ${DocContext.get(hit.getSourceAsMap().dbId)?.owner?.type?.getI10n('value')}"
+            ]
+        }
+        else if (hit.getSourceAsMap().rectype == 'IssueEntitlement') {
+            result << [
+                    "title": "${hit.getSourceAsMap().name}",
+                    "url":   g.createLink(controller:"${hit.getSourceAsMap().objectClassName}", action:"index", id:"${hit.getSourceAsMap().objectId}", params:[filter: hit.getSourceAsMap().name]),
+                    "category": "${message(code: "spotlight.${hit.getSourceAsMap().rectype.toLowerCase()}")}",
+                    "description": "${message(code: 'search.object.' + hit.getSourceAsMap().objectClassName)}: ${hit.getSourceAsMap().objectName}"
+            ]
+        }
+        else if (hit.getSourceAsMap().rectype == 'SubscriptionCustomProperty') {
+            result << [
+                    "title": "${hit.getSourceAsMap().name}",
+                    "url":   g.createLink(controller:"${hit.getSourceAsMap().objectClassName}", action:"show", id:"${hit.getSourceAsMap().objectId}"),
+                    "category": "${message(code: "spotlight.${hit.getSourceAsMap().rectype.toLowerCase()}")}",
+                    "description": "${message(code: 'search.object.' + hit.getSourceAsMap().objectClassName)}: ${hit.getSourceAsMap().objectName}"
+            ]
+        }
+        else if (hit.getSourceAsMap().rectype == 'SubscriptionPrivateProperty') {
+            result << [
+                    "title": "${hit.getSourceAsMap().name}",
+                    "url":   g.createLink(controller:"${hit.getSourceAsMap().objectClassName}", action:"show", id:"${hit.getSourceAsMap().objectId}"),
+                    "category": "${message(code: "spotlight.${hit.getSourceAsMap().rectype.toLowerCase()}")}",
+                    "description": "${message(code: 'search.object.' + hit.getSourceAsMap().objectClassName)}: ${hit.getSourceAsMap().objectName}"
+            ]
+        }
+        else if (hit.getSourceAsMap().rectype == 'LicenseCustomProperty') {
+            result << [
+                    "title": "${hit.getSourceAsMap().name}",
+                    "url":   g.createLink(controller:"${hit.getSourceAsMap().objectClassName}", action:"show", id:"${hit.getSourceAsMap().objectId}"),
+                    "category": "${message(code: "spotlight.${hit.getSourceAsMap().rectype.toLowerCase()}")}",
+                    "description": "${message(code: 'search.object.' + hit.getSourceAsMap().objectClassName)}: ${hit.getSourceAsMap().objectName}"
+            ]
+        }
+        else if (hit.getSourceAsMap().rectype == 'LicensePrivateProperty') {
+            result << [
+                    "title": "${hit.getSourceAsMap().name}",
+                    "url":   g.createLink(controller:"${hit.getSourceAsMap().objectClassName}", action:"show", id:"${hit.getSourceAsMap().objectId}"),
+                    "category": "${message(code: "spotlight.${hit.getSourceAsMap().rectype.toLowerCase()}")}",
+                    "description": "${message(code: 'search.object.' + hit.getSourceAsMap().objectClassName)}: ${hit.getSourceAsMap().objectName}"
+            ]
+        }
+
     }
 %>
 {

@@ -94,7 +94,7 @@ class Platform extends AbstractBaseDomain {
   }
 
   def afterDelete() {
-    deletionService.deleteDocumentFromIndex(this.class.name, this.globalUID)
+    deletionService.deleteDocumentFromIndex(this.globalUID)
   }
 
   def static lookupOrCreatePlatform(Map params=[:]) {
