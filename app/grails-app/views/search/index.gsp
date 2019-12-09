@@ -62,8 +62,8 @@ String period
 
 
 
+<div class="ui la-search segment">
 
-<semui:form>
     <g:form action="index" controller="search" method="post" class="ui form" params="[tab: params.tab]">
 
         <g:each in="${['rectype', 'endYear', 'startYear', 'consortiaName', 'providerName', 'status']}" var="facet">
@@ -171,8 +171,8 @@ String period
         </div>
 
     </g:form>
-</semui:form>
 
+</div>
 
 
 <g:if test="${hits}">
