@@ -2,8 +2,12 @@ package com.k_int.kbplus
 
 import com.k_int.properties.PropertyDefinition
 
+import javax.persistence.Transient
+
 class SurveyOrg {
 
+    @Transient
+    def deletionService
 
     SurveyConfig surveyConfig
     Org org
@@ -30,6 +34,10 @@ class SurveyOrg {
         dateCreated column: 'surorg_date_created'
         lastUpdated column: 'surorg_last_updated'
         finishDate  column: 'surorg_finish_date'
+    }
+
+    def afterDelete() {
+        deletionService.deleteDocumentFromIndex(this.getClass().getSimpleName().toLowerCase()+":"+this.id)
     }
 
     boolean existsMultiYearTerm() {

@@ -9,6 +9,9 @@ import javax.persistence.Transient
 class DocContext implements ShareableTrait {
 
     @Transient
+    def deletionService
+
+    @Transient
     def shareService
 
     static belongsTo = [
@@ -83,6 +86,9 @@ class DocContext implements ShareableTrait {
       lastUpdated (nullable: true, blank: false)
       dateCreated (nullable: true, blank: false)
   }
+    def afterDelete() {
+        deletionService.deleteDocumentFromIndex(this.getClass().getSimpleName().toLowerCase()+":"+this.id)
+    }
 
     void afterUpdate(PostUpdateEvent event) {
         log.debug('afterUpdate')

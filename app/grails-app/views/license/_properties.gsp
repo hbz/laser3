@@ -100,8 +100,6 @@
 
 <%-- orphaned properties --%>
 
-<g:if test="${true}"><%-- todo: restrict? --%>
-
     <%--<div class="ui card la-dl-no-table la-js-hideable">--%>
     <div class="content">
         <h5 class="ui header">
@@ -125,11 +123,9 @@
 
     <r:script language="JavaScript">
         $(document).ready(function(){
-            c3po.initProperties("<g:createLink controller='ajax' action='lookup'/>", "#custom_props_div_props");
+            c3po.initProperties("<g:createLink controller='ajax' action='lookup' params='[oid:"${license.class.simpleName}:${license.id}"]'/>", "#custom_props_div_props");
         });
     </r:script>
-
-</g:if>
 
 </div><!-- .card -->
 

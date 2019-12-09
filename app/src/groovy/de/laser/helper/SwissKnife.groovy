@@ -1,5 +1,6 @@
 package de.laser.helper
 
+import com.k_int.properties.PropertyDefinition
 import grails.util.Holders
 import groovy.util.logging.Log4j
 import org.apache.commons.logging.Log
@@ -52,5 +53,31 @@ class SwissKnife {
             }
         }
         return false
+    }
+
+    static List<PropertyDefinition> getCalculatedPropertiesForPropDefGroups(Map<String, Object> propDefStruct) {
+
+        List<PropertyDefinition> result = []
+
+        propDefStruct.global.each { it ->
+            List<PropertyDefinition> tmp = it.getPropertyDefinitions()
+            result.addAll(tmp)
+        }
+        propDefStruct.local.each {it ->
+            List<PropertyDefinition> tmp = it[0].getPropertyDefinitions()
+            result.addAll(tmp)
+        }
+        propDefStruct.member.each {it ->
+            List<PropertyDefinition> tmp = it[0].getPropertyDefinitions()
+            result.addAll(tmp)
+        }
+
+        if (propDefStruct.orphanedProperties) {
+            result.addAll(propDefStruct.orphanedProperties)
+        }
+
+        //println " >>>>> " + result.unique().collect { it.id }
+
+        result.unique()
     }
 }

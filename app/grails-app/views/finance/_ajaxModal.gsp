@@ -270,10 +270,10 @@
 
                 <div class="two fields">
                     <div class="field">
-                        <label>${g.message(code:'financials.newCosts.valueInEuro')}</label>
-                        <input title="${g.message(code:'financials.addNew.LocalCurrency')}" type="text" class="calc"
+                        <label><g:message code="financials.newCosts.value"/></label>
+                        <input title="<g:message code="financials.addNew.LocalCurrency"/>" type="text" class="calc"
                                name="newCostInLocalCurrency" id="newCostInLocalCurrency"
-                               placeholder="${message(code:'financials.newCosts.valueInEuro')}"
+                               placeholder="${message(code:'financials.newCosts.value')}"
                                value="<g:formatNumber number="${fromConsortia ? costItem?.costInLocalCurrencyAfterTax : costItem?.costInLocalCurrency}" minFractionDigits="2" maxFractionDigits="2"/>" />
 
                         <div class="ui icon button la-popup-tooltip la-delay" id="costButton1" data-content="${g.message(code: 'financials.newCosts.buttonExplanation')}" data-position="top center" data-variation="tiny">
@@ -281,8 +281,8 @@
                         </div>
                     </div><!-- .field -->
                     <div class="field">
-                        <label>Endpreis (in EUR)</label>
-                        <input title="Wert nach Steuer (in EUR)" type="text" readonly="readonly"
+                        <label><g:message code="financials.newCosts.finalSum" /></label>
+                        <input title="<g:message code="financials.newCosts.finalSum" />" type="text" readonly="readonly"
                                name="newCostInLocalCurrencyAfterTax" id="newCostInLocalCurrencyAfterTax"
                                value="<g:formatNumber number="${fromConsortia ? 0.0 : costItem?.costInLocalCurrencyAfterTax}" minFractionDigits="2" maxFractionDigits="2"/>"/>
                     </div><!-- .field -->

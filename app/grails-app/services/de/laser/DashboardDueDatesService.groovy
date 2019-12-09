@@ -13,7 +13,6 @@ class DashboardDueDatesService {
 
     def queryService
     def mailService
-    def executorService
     def grailsApplication
     def messageSource
     def locale

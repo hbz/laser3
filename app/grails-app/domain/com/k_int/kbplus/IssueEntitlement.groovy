@@ -9,6 +9,8 @@ import javax.persistence.Transient
 
 class IssueEntitlement extends AbstractBaseDomain implements Comparable {
 
+    @Transient
+    def deletionService
     /*
     Date startDate
     String startVolume
@@ -119,6 +121,10 @@ class IssueEntitlement extends AbstractBaseDomain implements Comparable {
     // Nullable is true, because values are already in the database
     lastUpdated (nullable: true, blank: false)
     dateCreated (nullable: true, blank: false)
+  }
+
+  def afterDelete() {
+    deletionService.deleteDocumentFromIndex(this.globalUID)
   }
 
   Date getDerivedAccessStartDate() {

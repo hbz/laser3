@@ -186,7 +186,7 @@ class Subscription
     }
 
     def afterDelete() {
-        deletionService.deleteDocumentFromIndex(this.class.name, this.globalUID)
+        deletionService.deleteDocumentFromIndex(this.globalUID)
     }
 
     // TODO: implement
@@ -300,9 +300,6 @@ class Subscription
         if (isTemplate()) {
             result = CALCULATED_TYPE_TEMPLATE
         }
-        else if(administrative) {
-            result = CALCULATED_TYPE_ADMINISTRATIVE
-        }
         else if(getCollective() && getConsortia() && instanceOf) {
             result = CALCULATED_TYPE_PARTICIPATION_AS_COLLECTIVE
         }
@@ -310,7 +307,11 @@ class Subscription
             result = CALCULATED_TYPE_COLLECTIVE
         }
         else if(getConsortia() && !getAllSubscribers() && !instanceOf) {
-            result = CALCULATED_TYPE_CONSORTIAL
+            if(administrative) {
+                log.debug(administrative)
+                result = CALCULATED_TYPE_ADMINISTRATIVE
+            }
+            else result = CALCULATED_TYPE_CONSORTIAL
         }
         else if((getCollective() || getConsortia()) && instanceOf) {
             result = CALCULATED_TYPE_PARTICIPATION

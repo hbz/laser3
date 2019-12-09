@@ -101,7 +101,7 @@
 
     <r:script language="JavaScript">
         $(document).ready(function(){
-            c3po.initProperties("<g:createLink controller='ajax' action='lookup'/>", "#custom_props_div_props");
+            c3po.initProperties("<g:createLink controller='ajax' action='lookup' params='[oid:"${orgInstance.class.simpleName}:${orgInstance.id}"]'/>", "#custom_props_div_props");
         });
     </r:script>
 

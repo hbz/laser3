@@ -129,8 +129,8 @@
                                   value="${costItem?.billingCurrency?.id}"/>
                     </div><!-- .field -->
                     <div class="field">
-                        <label>Endpreis</label>
-                        <input title="Rechnungssumme nach Steuer (in EUR)" type="text" readonly="readonly"
+                        <label><g:message code="financials.newCosts.billingSum"/></label>
+                        <input title="<g:message code="financials.newCosts.billingSum"/>" type="text" readonly="readonly"
                                name="newCostInBillingCurrencyAfterTax" id="newCostInBillingCurrencyAfterTax"
                                value="<g:formatNumber
                                        number="${consCostTransfer ? 0.0 : costItem?.costInBillingCurrencyAfterTax}"
@@ -180,10 +180,10 @@
 
                 <div class="two fields">
                     <div class="field">
-                        <label>${g.message(code: 'financials.newCosts.valueInEuro')}</label>
+                        <label>${g.message(code: 'financials.newCosts.value')}</label>
                         <input title="${g.message(code: 'financials.addNew.LocalCurrency')}" type="text" class="calc"
                                name="newCostInLocalCurrency" id="newCostInLocalCurrency"
-                               placeholder="${message(code: 'financials.newCosts.valueInEuro')}"
+                               placeholder="${message(code: 'financials.newCosts.value')}"
                                value="<g:formatNumber
                                        number="${consCostTransfer ? costItem?.costInLocalCurrencyAfterTax : costItem?.costInLocalCurrency}"
                                        minFractionDigits="2" maxFractionDigits="2"/>"/>
@@ -195,8 +195,8 @@
                         </div>
                     </div><!-- .field -->
                     <div class="field">
-                        <label>Endpreis (in EUR)</label>
-                        <input title="Wert nach Steuer (in EUR)" type="text" readonly="readonly"
+                        <label><g:message code="financials.newCosts.finalSum"/></label>
+                        <input title="<g:message code="financials.newCosts.finalSum"/>" type="text" readonly="readonly"
                                name="newCostInLocalCurrencyAfterTax" id="newCostInLocalCurrencyAfterTax"
                                value="<g:formatNumber
                                        number="${consCostTransfer ? 0.0 : costItem?.costInLocalCurrencyAfterTax}"
