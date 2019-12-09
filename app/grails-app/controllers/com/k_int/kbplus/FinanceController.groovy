@@ -1166,12 +1166,13 @@ class FinanceController extends AbstractDebugController {
         def bcJSON = JSON.parse(params.budgetCodes)
         List budgetCodes = []
         bcJSON.each { k,v ->
-            budgetCodes[Integer.parseInt(k)] = v
+            if(v)
+                budgetCodes[Integer.parseInt(k)] = v
         }
         candidates.eachWithIndex { ci, Integer c ->
             if(params["take${c}"]) {
                 //a single cast did not work because of financialYear type mismatch
-                CostItem costItem = new CostItem(owner: Org.get(ci.owner.id))
+                CostItem costItem = new CostItem(owner: contextOrg)
                 costItem.sub = Subscription.get(ci.sub.id) ?: null
                 costItem.subPkg = SubscriptionPackage.get(ci.subPkg?.id) ?: null
                 costItem.issueEntitlement = IssueEntitlement.get(ci.issueEntitlement?.id) ?: null
@@ -1231,7 +1232,7 @@ class FinanceController extends AbstractDebugController {
         }
         if(!withErrors)
             redirect action: 'index'
-        else redirect(url: request.getHeader("referer"))
+        else redirect(controller: 'myInstitution', action: 'financeImport')
     }
 
     @DebugAnnotation(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_EDITOR")
