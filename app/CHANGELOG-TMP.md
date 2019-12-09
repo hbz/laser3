@@ -2,6 +2,10 @@
 
 **Ticket    Date    Branch      Author  Feature/Bug     Description/Keywords**
 
+1935    06.12.2019  hbz-dev     Anja    Feature     GASCO-Monitor: Es werden Kontakte nur noch aus öffentichem Adressbuch angezeigt
+
+1546    06.12.2019  hbz-def     Anja    Bug         Merkmale zwischen Lizenzen kopieren: Löschmarkierungen sind jetzt korrekt.
+
 1930    04.12.2019  rc1.1       David   Bug         Jobs & Services ohne Sessions werfen Fehler
 
 1926    04.12.2019  rc1.1       David   Bug         Modaler Dialog: Funktions-/Personenkontakte funktioniert nicht
