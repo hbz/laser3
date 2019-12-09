@@ -2,6 +2,8 @@
 
 **Ticket    Date    Branch      Author  Feature/Bug     Description/Keywords**
 
+1802    09.12.2019  hbz-dev     David   Bug         Dropdowns für "Allgemeine Merkmale" beinhalten gruppenbezogene Merkmale
+
 1945    09.12.2019  hbz-dev     David   Bug         Falsche Aktualisierungsmeldung im Nutzerprofil
 
 1941    09.12.2019  hbz-dev     David   Feature     Tabelle "Meine Konsorten" angepasst
