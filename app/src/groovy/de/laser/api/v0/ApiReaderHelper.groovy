@@ -35,214 +35,6 @@ class ApiReaderHelper {
     final static IGNORE_CUSTOM_PROPERTIES   = "IGNORE_CUSTOM_PROPERTIES"
     final static IGNORE_PRIVATE_PROPERTIES  = "IGNORE_PRIVATE_PROPERTIES"
 
-
-    // ################### HELPER ###################
-
-    /**
-     * Resolving collection of items to stubs. Delegate context to gain access
-     *
-     * @param Collection<Object> list
-     * @param type
-     * @param com.k_int.kbplus.Org context
-     * @return Collection<Object>
-     */
-    static Collection<Object> retrieveStubCollection(Collection<Object> list, def type, Org context) {
-        def result = []
-
-        list?.each { it ->
-            if(LICENSE_STUB == type) {
-                result << requestLicenseStub(it, context)
-            }
-            else if(PACKAGE_STUB == type) {
-                result << retrievePackageStubMap(it, context)
-            }
-            else if(SUBSCRIPTION_STUB == type) {
-                result << requestSubscriptionStub(it, context)
-            }
-        }
-
-        result
-    }
-
-    // ################### STUBS ###################
-
-    @Deprecated
-    static Map<String, Object> retrieveClusterStubMap(Cluster cluster) {
-        def result = [:]
-        if (cluster) {
-            result.id           = cluster.id
-            result.name         = cluster.name
-        }
-        return ApiToolkit.cleanUp(result, true, true)
-    }
-
-    static requestLicenseStub(License lic, Org context) {
-        requestLicenseStub(lic, context, false)
-    }
-
-    static requestLicenseStub(License lic, Org context, boolean hasAccess) {
-        def result = [:]
-
-        if (!lic) {
-            return null
-        }
-
-        if (! hasAccess) {
-            hasAccess = ApiLicense.calculateAccess(lic, context, hasAccess)
-        }
-
-        if (hasAccess) {
-            result.globalUID    = lic.globalUID
-            result.impId        = lic.impId
-            result.reference    = lic.reference
-            result.normReference    = lic.sortableReference
-            // erms-888
-            result.calculatedType   = lic.getCalculatedType()
-            result.startDate        = lic.startDate
-            result.endDate          = lic.endDate
-
-            // References
-            result.identifiers = retrieveIdentifierCollection(lic.ids) // com.k_int.kbplus.Identifier
-
-            result = ApiToolkit.cleanUp(result, true, true)
-        }
-
-        return (hasAccess ? result : Constants.HTTP_FORBIDDEN)
-    }
-
-    /**
-     * @return Map<String, Object>
-     */
-    static Map<String, Object> retrieveOrganisationStubMap(Org org, Org context) {
-        if (!org) {
-            return null
-        }
-
-        def result = [:]
-        result.globalUID    = org.globalUID
-        result.gokbId       = org.gokbId
-        result.name         = org.name
-
-        // References
-        result.identifiers = retrieveIdentifierCollection(org.ids) // com.k_int.kbplus.Identifier
-
-        return ApiToolkit.cleanUp(result, true, true)
-    }
-
-    /**
-     * @return Map<String, Object>
-     */
-    static Map<String, Object> retrievePackageStubMap(Package pkg, Org context) {
-        if (!pkg) {
-            return null
-        }
-
-        def result = [:]
-        result.globalUID    = pkg.globalUID
-        result.name         = pkg.name
-        //result.identifier   = pkg.identifier // TODO refactor legacy
-        result.impId        = pkg.impId
-        result.gokbId       = pkg.gokbId
-
-        // References
-        result.identifiers = retrieveIdentifierCollection(pkg.ids) // com.k_int.kbplus.Identifier
-
-        return ApiToolkit.cleanUp(result, true, true)
-    }
-
-    /**
-     * @return Map<String, Object>
-     */
-    static Map<String, Object> retrievePlatformStubMap(Platform pform) {
-        def result = [:]
-        if (pform) {
-            result.globalUID    = pform.globalUID
-            result.impId        = pform.impId
-            result.gokbId       = pform.gokbId
-            result.name         = pform.name
-            result.normname     = pform.normname
-            result.primaryUrl   = pform.primaryUrl
-        }
-        return ApiToolkit.cleanUp(result, true, true)
-    }
-
-    /**
-     * @return MAP | Constants.HTTP_FORBIDDEN
-     */
-    static requestSubscriptionStub(Subscription sub, Org context) {
-        requestSubscriptionStub(sub, context, false)
-    }
-
-    static requestSubscriptionStub(Subscription sub, Org context, boolean hasAccess) {
-        def result = [:]
-
-        if (!sub) {
-            return null
-        }
-
-        if (! hasAccess) {
-            hasAccess = ApiSubscription.calculateAccess(sub, context, hasAccess)
-        }
-
-        if (hasAccess) {
-            result.globalUID    = sub.globalUID
-            result.name         = sub.name
-            //result.identifier   = sub.identifier // TODO refactor identifier
-            result.impId        = sub.impId
-            // erms-888
-            result.calculatedType = sub.getCalculatedType()
-            result.startDate      = sub.startDate
-            result.endDate        = sub.endDate
-
-            // References
-            result.identifiers = retrieveIdentifierCollection(sub.ids) // com.k_int.kbplus.Identifier
-
-            result = ApiToolkit.cleanUp(result, true, true)
-        }
-
-        return (hasAccess ? result : Constants.HTTP_FORBIDDEN)
-    }
-
-    static retrieveSubscriptionPackageStubMixed(SubscriptionPackage subpkg, ignoreRelation, Org context) {
-        if (subpkg) {
-            if (IGNORE_SUBSCRIPTION == ignoreRelation) {
-                return retrievePackageStubMap(subpkg.pkg, context)
-            }
-            else if (IGNORE_PACKAGE == ignoreRelation) {
-                return requestSubscriptionStub(subpkg.subscription, context)
-            }
-        }
-        return null
-    }
-
-    static Collection<Object> retrieveSubscriptionPackageStubCollection(Collection<SubscriptionPackage> list, def ignoreRelation, Org context) {
-        def result = []
-        if (! list) {
-            return null
-        }
-
-        list?.each { it -> // com.k_int.kbplus.SubscriptionPackage
-            result << retrieveSubscriptionPackageStubMixed(it, ignoreRelation, context)
-        }
-        result
-    }
-
-    static Map<String, Object> retrieveTitleStubMap(TitleInstance title) {
-        def result = [:]
-
-        result.globalUID    = title.globalUID
-        result.impId        = title.impId
-        result.gokbId       = title.gokbId
-        result.title        = title.title
-        result.normTitle    = title.normTitle
-        result.type         = title.type?.value
-
-        // References
-        result.identifiers = retrieveIdentifierCollection(title.ids) // com.k_int.kbplus.Identifier
-
-        return ApiToolkit.cleanUp(result, true, true)
-    }
-
     // ################### FULL OBJECTS ###################
 
     static Collection<Object> retrieveAddressCollection(Collection<Address> list, allowedTypes) {
@@ -343,9 +135,9 @@ class ApiReaderHelper {
             tmp.invoiceNumber       = it.invoice?.invoiceNumber // retrieveInvoiceMap(it.invoice) // com.k_int.kbplus.Invoice
             // tmp.issueEntitlement    = ApiIssueEntitlement.retrieveIssueEntitlementMap(it.issueEntitlement, IGNORE_ALL, context) // com.k_int.kbplus.issueEntitlement
             tmp.orderNumber         = it.order?.orderNumber // retrieveOrderMap(it.order) // com.k_int.kbplus.Order
-            // tmp.owner               = retrieveOrganisationStubMap(it.owner, context) // com.k_int.kbplus.Org
-            // tmp.sub                 = requestSubscriptionStub(it.sub, context) // com.k_int.kbplus.Subscription // RECURSION ???
-            // tmp.package             = retrieveSubscriptionPackageStubMixed(it.subPkg, IGNORE_SUBSCRIPTION, context) // com.k_int.kbplus.SubscriptionPackage
+            // tmp.owner               = ApiStubReader.retrieveOrganisationStubMap(it.owner, context) // com.k_int.kbplus.Org
+            // tmp.sub                 = ApiStubReader.requestSubscriptionStub(it.sub, context) // com.k_int.kbplus.Subscription // RECURSION ???
+            // tmp.package             = ApiStubReader.retrieveSubscriptionPackageStubMixed(it.subPkg, IGNORE_SUBSCRIPTION, context) // com.k_int.kbplus.SubscriptionPackage
             //tmp.surveyOrg
             //tmp.subPkg
 
@@ -449,7 +241,7 @@ class ApiReaderHelper {
 
         // References
         def context = null // TODO: use context
-        result.owner               = retrieveOrganisationStubMap(invoice.owner, context) // com.k_int.kbplus.Org
+        result.owner               = ApiStubReader.retrieveOrganisationStubMap(invoice.owner, context) // com.k_int.kbplus.Org
 
         return ApiToolkit.cleanUp(result, true, true)
     }
@@ -510,7 +302,7 @@ class ApiReaderHelper {
         def result = []
 
         list?.each { subPkg ->
-            def pkg = retrievePackageStubMap(subPkg.pkg, context) // com.k_int.kbplus.Package
+            def pkg = ApiStubReader.retrievePackageStubMap(subPkg.pkg, context) // com.k_int.kbplus.Package
             result << pkg
 
             if (pkg != Constants.HTTP_FORBIDDEN) {
@@ -551,8 +343,8 @@ class ApiReaderHelper {
         result.isSlaved = link.isSlaved?.value
 
         def context = null // TODO: use context
-        result.fromLic  = resolveLicenseStub(link.fromLic, context) // com.k_int.kbplus.License
-        result.toLic    = resolveLicenseStub(link.toLic, context) // com.k_int.kbplus.License
+        result.fromLic  = ApiStubReader.resolveLicenseStub(link.fromLic, context) // com.k_int.kbplus.License
+        result.toLic    = ApiStubReader.resolveLicenseStub(link.toLic, context) // com.k_int.kbplus.License
 
         return ApiToolkit.cleanUp(result, true, true)
     }
@@ -602,7 +394,7 @@ class ApiReaderHelper {
 
             // References
             result.document = ApiDoc.retrieveDocumentMap(opl.doc) // com.k_int.kbplus.Doc
-            //result.licenses = resolveLicenseStubs(opl.licenses) // com.k_int.kbplus.License
+            //result.licenses = ApiStubReader.resolveLicenseStubs(opl.licenses) // com.k_int.kbplus.License
             //result.xml = opl.xml // XMLDoc // TODO
             result = ApiToolkit.cleanUp(result, true, true)
         }
@@ -620,7 +412,7 @@ class ApiReaderHelper {
 
         // References
         def context = null // TODO: use context
-        result.owner        = retrieveOrganisationStubMap(order.owner, context) // com.k_int.kbplus.Org
+        result.owner        = ApiStubReader.retrieveOrganisationStubMap(order.owner, context) // com.k_int.kbplus.Org
 
         return ApiToolkit.cleanUp(result, true, true)
     }
@@ -638,22 +430,22 @@ class ApiReaderHelper {
 
             // References
             if (it.org && (IGNORE_ORGANISATION != ignoreRelationType)) {
-                tmp.organisation = retrieveOrganisationStubMap(it.org, context) // com.k_int.kbplus.Org
+                tmp.organisation = ApiStubReader.retrieveOrganisationStubMap(it.org, context) // com.k_int.kbplus.Org
             }
             if (it.cluster && (IGNORE_CLUSTER != ignoreRelationType)) {
-                tmp.cluster = retrieveClusterStubMap(it.cluster) // com.k_int.kbplus.Cluster
+                tmp.cluster = ApiStubReader.retrieveClusterStubMap(it.cluster) // com.k_int.kbplus.Cluster
             }
             if (it.lic && (IGNORE_LICENSE != ignoreRelationType)) {
-                tmp.license = requestLicenseStub(it.lic, context) // com.k_int.kbplus.License
+                tmp.license = ApiStubReader.requestLicenseStub(it.lic, context) // com.k_int.kbplus.License
             }
             if (it.pkg && (IGNORE_PACKAGE != ignoreRelationType)) {
-                tmp.package = retrievePackageStubMap(it.pkg, context) // com.k_int.kbplus.Package
+                tmp.package = ApiStubReader.retrievePackageStubMap(it.pkg, context) // com.k_int.kbplus.Package
             }
             if (it.sub && (IGNORE_SUBSCRIPTION != ignoreRelationType)) {
-                tmp.subscription = requestSubscriptionStub(it.sub, context) // com.k_int.kbplus.Subscription
+                tmp.subscription = ApiStubReader.requestSubscriptionStub(it.sub, context) // com.k_int.kbplus.Subscription
             }
             if (it.title && (IGNORE_TITLE != ignoreRelationType)) {
-                tmp.title = retrieveTitleStubMap(it.title) // com.k_int.kbplus.TitleInstance
+                tmp.title = ApiStubReader.retrieveTitleStubMap(it.title) // com.k_int.kbplus.TitleInstance
             }
 
             result << ApiToolkit.cleanUp(tmp, true, false)
@@ -742,7 +534,7 @@ class ApiReaderHelper {
             tmp.name            = it.type?.name     // com.k_int.kbplus.PropertyDefinition.String
             tmp.description     = it.type?.descr    // com.k_int.kbplus.PropertyDefinition.String
             tmp.explanation     = it.type?.expl     // com.k_int.kbplus.PropertyDefinition.String
-            //tmp.tenant          = resolveOrganisationStub(it.tenant, context) // com.k_int.kbplus.Org
+            //tmp.tenant          = ApiStubReader.resolveOrganisationStub(it.tenant, context) // com.k_int.kbplus.Org
             tmp.value           = (it.stringValue ?: (it.intValue ?: (it.decValue ?: (it.refValue?.value ?: (it.urlValue ?: (it.dateValue ?: null)))))) // RefdataValue
             tmp.note            = it.note
 
@@ -819,23 +611,23 @@ class ApiReaderHelper {
                 /*if (role.responsibilityType) {
                     // References
                     //if (it.org) {
-                    //    role.organisation = resolveOrganisationStub(it.org, context) // com.k_int.kbplus.Org
+                    //    role.organisation = ApiStubReader.resolveOrganisationStub(it.org, context) // com.k_int.kbplus.Org
                     //}
 
                     if (it.cluster) {
-                        role.cluster = resolveClusterStub(it.cluster) // com.k_int.kbplus.Cluster
+                        role.cluster = ApiStubReader.resolveClusterStub(it.cluster) // com.k_int.kbplus.Cluster
                     }
                     if (it.lic) {
-                        role.license = resolveLicenseStub(it.lic, context) // com.k_int.kbplus.License
+                        role.license = ApiStubReader.resolveLicenseStub(it.lic, context) // com.k_int.kbplus.License
                     }
                     if (it.pkg) {
-                        role.package = resolvePackageStub(it.pkg, context) // com.k_int.kbplus.Package
+                        role.package = ApiStubReader.resolvePackageStub(it.pkg, context) // com.k_int.kbplus.Package
                     }
                     if (it.sub) {
-                        role.subscription = resolveSubscriptionStub(it.sub, context) // com.k_int.kbplus.Subscription
+                        role.subscription = ApiStubReader.resolveSubscriptionStub(it.sub, context) // com.k_int.kbplus.Subscription
                     }
                     if (it.title) {
-                        role.title = resolveTitleStub(it.title) // com.k_int.kbplus.TitleInstance
+                        role.title = ApiStubReader.resolveTitleStub(it.title) // com.k_int.kbplus.TitleInstance
                     }
                 }*/
             }
@@ -895,19 +687,19 @@ class ApiReaderHelper {
         // References
         result.additionalPlatforms  = retrievePlatformTippCollection(tipp.additionalPlatforms) // com.k_int.kbplus.PlatformTIPP
         result.identifiers          = retrieveIdentifierCollection(tipp.ids)       // com.k_int.kbplus.Identifier
-        result.platform             = retrievePlatformStubMap(tipp.platform) // com.k_int.kbplus.Platform
-        result.title                = retrieveTitleStubMap(tipp.title)       // com.k_int.kbplus.TitleInstance
+        result.platform             = ApiStubReader.retrievePlatformStubMap(tipp.platform) // com.k_int.kbplus.Platform
+        result.title                = ApiStubReader.retrieveTitleStubMap(tipp.title)       // com.k_int.kbplus.TitleInstance
 
         if (ignoreRelation != IGNORE_ALL) {
             if (ignoreRelation != IGNORE_PACKAGE) {
-                result.package = retrievePackageStubMap(tipp.pkg, context) // com.k_int.kbplus.Package
+                result.package = ApiStubReader.retrievePackageStubMap(tipp.pkg, context) // com.k_int.kbplus.Package
             }
             if (ignoreRelation != IGNORE_SUBSCRIPTION) {
-                result.subscription = requestSubscriptionStub(tipp.sub, context) // com.k_int.kbplus.Subscription
+                result.subscription = ApiStubReader.requestSubscriptionStub(tipp.sub, context) // com.k_int.kbplus.Subscription
             }
         }
-        //result.derivedFrom      = resolveTippStub(tipp.derivedFrom)  // com.k_int.kbplus.TitleInstancePackagePlatform
-        //result.masterTipp       = resolveTippStub(tipp.masterTipp)   // com.k_int.kbplus.TitleInstancePackagePlatform
+        //result.derivedFrom      = ApiStubReader.resolveTippStub(tipp.derivedFrom)  // com.k_int.kbplus.TitleInstancePackagePlatform
+        //result.masterTipp       = ApiStubReader.resolveTippStub(tipp.masterTipp)   // com.k_int.kbplus.TitleInstancePackagePlatform
 
         return ApiToolkit.cleanUp(result, true, true)
     }

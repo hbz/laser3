@@ -6,6 +6,7 @@ import com.k_int.kbplus.Org
 import com.k_int.kbplus.OrgRole
 import de.laser.api.v0.ApiReader
 import de.laser.api.v0.ApiReaderHelper
+import de.laser.api.v0.ApiStubReader
 import de.laser.api.v0.ApiToolkit
 import de.laser.helper.Constants
 import de.laser.helper.RDStore
@@ -147,7 +148,7 @@ class ApiLicense {
 
         if (ignoreRelation != ApiReaderHelper.IGNORE_ALL) {
             if (ignoreRelation != ApiReaderHelper.IGNORE_SUBSCRIPTION) {
-                result.subscriptions = ApiReaderHelper.retrieveStubCollection(lic.subscriptions, ApiReaderHelper.SUBSCRIPTION_STUB, context) // com.k_int.kbplus.Subscription
+                result.subscriptions = ApiStubReader.retrieveStubCollection(lic.subscriptions, ApiReaderHelper.SUBSCRIPTION_STUB, context) // com.k_int.kbplus.Subscription
             }
             if (ignoreRelation != ApiReaderHelper.IGNORE_LICENSE) {
                 def allOrgRoles = []

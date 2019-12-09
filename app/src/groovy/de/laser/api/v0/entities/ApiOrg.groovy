@@ -88,6 +88,7 @@ class ApiOrg {
         result.federalState = org.federalState?.value
         result.country      = org.country?.value
         result.libraryType  = org.libraryType?.value
+        result.lastUpdated  = org.lastUpdated
 
         //result.fteStudents  = org.fteStudents // TODO dc/table readerNumber
         //result.fteStaff     = org.fteStaff // TODO dc/table readerNumber

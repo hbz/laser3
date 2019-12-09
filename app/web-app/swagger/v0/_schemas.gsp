@@ -115,6 +115,9 @@
           type: string
         mimetype:
           type: string
+        lastUpdated:
+          type: string
+          format: date-time
         title:
           type: string
         type:
@@ -322,6 +325,9 @@
         impId:
           type: string
           example: "9ef8a0d4-a87c-4b39-71b9-c29b269f311b"
+        lastUpdated:
+          type: string
+          format: date-time
         libraryType:
           type: string
           description: Mapping RefdataCategory "LibraryType"
