@@ -922,7 +922,8 @@ from License as l where (
                 subProviders = providers.get(provider.sub)
             }
             else subProviders = new TreeSet()
-            subProviders.add(provider.org.name)
+            String providerName = provider.org.name ? provider.org.name : ' '
+            subProviders.add(providerName)
             providers.put(provider.sub,subProviders)
         }
         allAgencies.each { agency ->
@@ -931,7 +932,8 @@ from License as l where (
                 subAgencies = agencies.get(agency.sub)
             }
             else subAgencies = new TreeSet()
-            subAgencies.add(agency.org.name)
+            String agencyName = agency.org.name ? agency.org.name : ' '
+            subAgencies.add(agencyName)
             agencies.put(agency.sub,subAgencies)
         }
         allIdentifiers.each { identifier ->
