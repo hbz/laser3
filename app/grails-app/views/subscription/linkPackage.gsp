@@ -21,8 +21,8 @@
     <g:render template="actions"/>
 </semui:controlButtons>
 
-<h1 class="ui left aligned icon header la-clear-before"><semui:headerIcon/>${subscriptionInstance.name}</h1>
-<h2 class="ui left aligned icon header la-clear-before">${message(code: 'subscription.details.linkPackage.heading')}</h2>
+<h1 class="ui left floated aligned icon header la-clear-before"><semui:headerIcon/>${subscriptionInstance.name}</h1>
+<h2 class="ui left floated aligned icon header la-clear-before">${message(code: 'subscription.details.linkPackage.heading')}</h2>
 
 <semui:filter>
     <g:form name="LinkPackageForm" action="linkPackage" method="get" params="${params}" class="ui form">
@@ -36,7 +36,7 @@
 
             <div class="field la-field-right-aligned">
                 <a href="${request.forwardURI}"
-                   class="ui button">${message(code: 'default.button.filterreset.label')}</a>
+                   class="ui reset primary button">${message(code: 'default.button.filterreset.label')}</a>
                 <button type="submit" name="search" value="yes"
                         class="ui secondary button">${message(code: 'default.button.filter.label', default: 'Filter')}</button>
             </div>
