@@ -313,22 +313,6 @@ class ApiReaderHelper {
         return ApiToolkit.cleanUp(result, true, false)
     }
 
-    /**
-     * Access rights due wrapping object
-     *
-     * @param com.k_int.kbplus.License lic
-     * @param ignoreRelation
-     * @param com.k_int.kbplus.Org context
-     * @return
-     */
-    static requestLicense(License lic, def ignoreRelation, Org context) {
-        if (!lic) {
-            return null
-        }
-
-        return ApiLicense.retrieveLicenseMap(lic, ignoreRelation, context)
-    }
-
     /* not used
     def resolveLink(Link link) {
         def result = [:]
