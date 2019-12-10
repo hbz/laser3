@@ -20,8 +20,8 @@ String period
     <semui:crumb message="search.advancedSearch" class="active"/>
 </semui:breadcrumbs>
 
-<h1 class="ui left aligned icon header"><i
-        class="circular icon inverted blue search"></i> ${message(code: 'search.advancedSearch')}
+<h1 class="ui left aligned icon header">
+    <i class="circular icon search"></i> ${message(code: 'search.advancedSearch')}
 </h1>
 
 <%
@@ -63,7 +63,7 @@ String period
 
 
 
-<semui:form>
+<div class="ui la-search segment">
     <g:form action="index" controller="search" method="post" class="ui form" >
 
         <g:each in="${['rectype', 'endYear', 'startYear', 'consortiaName', 'providerName', 'status']}" var="facet">
@@ -193,105 +193,100 @@ String period
         </div>
 
     </g:form>
-</semui:form>
+</div>
 
 
 
 <g:if test="${hits}">
 
-    <p>
-        <g:each in="${['rectype', 'endYear', 'startYear', 'consortiaName', 'providerName', 'status']}" var="facet">
-            <g:each in="${params.list(facet)}" var="fv">
-
-                <span class="ui facet-${facet} label"><g:message code="facet.so.${facet}"/>:
-
-                    <g:if test="${facet == 'rectype'}">
-                        ${message(code: "facet.so.${facet}.${fv.toLowerCase()}")}
-                    </g:if>
-                    <g:elseif test="${facet == 'status'}">
-                        ${RefdataValue.findByValue(fv) ? RefdataValue.findByValue(fv).getI10n('value') : fv}
-                    </g:elseif>
-                    <g:else>
-                        ${fv}
-                    </g:else>
-
-                    <g:link controller="search" action="index" params="${removeFacet(params, facet, fv)}">
-                        <i class="delete icon"></i>
-                    </g:link>
-                </span>
-            </g:each>
-        </g:each>
-    </p>
-
-    <div class="ui info message">
-        <g:message code="search.result" default="Your search found ${resultsTotal} records"
-                   args="${resultsTotal}"/>
-    </div>
-    <br>
 
 
-    <div class="ui segment">
-        <div class="ui left dividing rail">
-            <div class="ui segment">
+        <br>
+        <div class="ui stackable grid">
+            <div class="four wide column">
+                <div class="ui la-filter segment">
 
-                <h2><i class="circular filter inverted icon"></i> Filter:</h2>
+                    <h3><i class="circular filter inverted icon la-filter-icon"></i> Filter</h3>
 
-                <g:each in="${facets}" var="facet">
-                    <div class="panel panel-default">
-                        <div class="panel-heading">
-                            <h3 class="ui header"><g:message code="facet.so.${facet.key}"
-                                                             default="${facet.key}"/></h3>
-                        </div>
+                    <g:each in="${facets}" var="facet">
+                        <div class="panel panel-default">
+                            <div class="panel-heading">
+                                <h4 class="ui header"><g:message code="facet.so.${facet.key}"
+                                                                 default="${facet.key}"/></h4>
+                            </div>
 
-                        <div class="panel-body">
-                            <ul>
-                                <g:each in="${facet.value.sort {
-                                    message(code: "facet.so.${facet.key}.${it.display.toLowerCase()}")
-                                }}" var="v">
-                                    <li>
+                            <div class="panel-body">
+                                <ul>
+                                    <g:each in="${facet.value.sort {
+                                        message(code: "facet.so.${facet.key}.${it.display.toLowerCase()}")
+                                    }}" var="v">
+                                        <li>
 
-                                        <g:if test="${params.list(facet.key).contains(v.term.toString())}">
-                                            <g:if test="${facet.key == 'rectype'}">
-                                                ${message(code: "facet.so.${facet.key}.${v.display.toLowerCase()}")} (${v.count})
-                                            </g:if>
-                                            <g:elseif test="${facet.key == 'status'}">
-                                                ${RefdataValue.findByValue(v.display) ? RefdataValue.findByValue(v.display).getI10n('value') : v.display} (${v.count})
-                                            </g:elseif>
-                                            <g:else>
-                                                ${v.display} (${v.count})
-                                            </g:else>
-                                        </g:if>
-                                        <g:else>
-                                            <g:link controller="search" action="index"
-                                                    params="${addFacet(params, facet.key, v.term)}">
+                                            <g:if test="${params.list(facet.key).contains(v.term.toString())}">
                                                 <g:if test="${facet.key == 'rectype'}">
-                                                    ${message(code: "facet.so.${facet.key}.${v.display.toLowerCase()}")}
+                                                    ${message(code: "facet.so.${facet.key}.${v.display.toLowerCase()}")} (${v.count})
                                                 </g:if>
                                                 <g:elseif test="${facet.key == 'status'}">
-                                                    ${RefdataValue.findByValue(v.display) ? RefdataValue.findByValue(v.display).getI10n('value') : v.display}
+                                                    ${RefdataValue.findByValue(v.display) ? RefdataValue.findByValue(v.display).getI10n('value') : v.display} (${v.count})
                                                 </g:elseif>
                                                 <g:else>
-                                                    ${v.display}
+                                                    ${v.display} (${v.count})
                                                 </g:else>
-                                            </g:link> (${v.count})
-                                        </g:else>
-                                    </li>
-                                </g:each>
-                            </ul>
+                                            </g:if>
+                                            <g:else>
+                                                <g:link controller="search" action="index"
+                                                        params="${addFacet(params, facet.key, v.term)}">
+                                                    <g:if test="${facet.key == 'rectype'}">
+                                                        ${message(code: "facet.so.${facet.key}.${v.display.toLowerCase()}")}
+                                                    </g:if>
+                                                    <g:elseif test="${facet.key == 'status'}">
+                                                        ${RefdataValue.findByValue(v.display) ? RefdataValue.findByValue(v.display).getI10n('value') : v.display}
+                                                    </g:elseif>
+                                                    <g:else>
+                                                        ${v.display}
+                                                    </g:else>
+                                                </g:link> (${v.count})
+                                            </g:else>
+                                        </li>
+                                    </g:each>
+                                </ul>
+                            </div>
                         </div>
-                    </div>
-                </g:each>
+                    </g:each>
+                </div>
             </div>
-        </div>
+            <div class="twelve wide column">
+                <h3 class="ui header">${message(code: 'search.search.filter')} <semui:totalNumber total="${resultsTotal}"/></h3>
+                <p>
+                    <g:each in="${['rectype', 'endYear', 'startYear', 'consortiaName', 'providerName', 'status']}" var="facet">
+                        <g:each in="${params.list(facet)}" var="fv">
 
-        <div class="ui stackable grid">
-            <div class="sixteen wide column">
+                            <span class="ui label la-advanced-label"><g:message code="facet.so.${facet}"/>:
 
-                <table class="ui celled sortable table table-tworow la-table">
-                    <tr>
-                        <th class="six wide">Title/Name</th>
-                        <th class="ten wide ">${message(code: 'search.additionalinfo', default: "Additional Info")}</th>
-                    </tr>
+                                <g:if test="${facet == 'rectype'}">
+                                    ${message(code: "facet.so.${facet}.${fv.toLowerCase()}")}
+                                </g:if>
+                                <g:elseif test="${facet == 'status'}">
+                                    ${RefdataValue.findByValue(fv) ? RefdataValue.findByValue(fv).getI10n('value') : fv}
+                                </g:elseif>
+                                <g:else>
+                                    ${fv}
+                                </g:else>
+
+                                <g:link controller="search" action="index" params="${removeFacet(params, facet, fv)}">
+                                    <i class="delete icon"></i>
+                                </g:link>
+                            </span>
+                        </g:each>
+                    </g:each>
+                </p>
+                <table class="ui sortable celled la-table table">
+                    <thead>
+                        <tr>
+                            <th class="six wide">Title/Name</th>
+                            <th class="ten wide ">${message(code: 'search.additionalinfo', default: "Additional Info")}</th>
+                        </tr>
+                    </thead>
                     <g:each in="${hits}" var="hit">
                         <tr>
                             <g:if test="${hit.getSourceAsMap().rectype == 'Organisation'}">
@@ -614,6 +609,8 @@ String period
                                         <g:if test="${hit.getSourceAsMap()?.endDate}">
                                             <g:formatDate format="${message(code:'default.date.format.notime', default:'yyyy-MM-dd')}" date="${new Date().parse("yyyy-MM-dd'T'HH:mm:ssZ", hit.getSourceAsMap().endDate)}"/>
                                         </g:if>
+                                    <br>
+                                    <b>${message(code: 'default.description.label')}</b>: <article class="la-readmore">${hit.getSourceAsMap()?.description}</article>
                                 </td>
                             </g:if>
                             <g:if test="${hit.getSourceAsMap().rectype == 'Note'}">
@@ -820,7 +817,7 @@ String period
 
             </div>
         </div>
-    </div>
+
 </g:if>
 
 </body>

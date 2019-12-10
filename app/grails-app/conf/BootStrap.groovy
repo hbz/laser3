@@ -1431,6 +1431,11 @@ class BootStrap {
                         descr:allDescr, type: OT.Rdv, cat:'YN'
                 ],
                 [
+                        name: [en: "EZB Collection Transfer", de: "EZB Kollektionsdatenweitergabe an Drittsysteme erlaubt?"],
+                        expl : [en: "", de: "Ist die Kollektionsdatenweitergabe an Drittsysteme erlaubt?"],
+                        descr:allDescr, type: OT.Rdv, cat:'YN'
+                ],
+                [
                         name: [en: "Metadata Delivery", de: "Metadatenlieferung"],
                         expl : [en: "", de: "Ist eine automatische Metadatenlieferung vorhanden?"],
                         descr:allDescr, type: OT.Rdv, cat:'YN'
