@@ -38,7 +38,7 @@
         if (sourceSubscriptionId)   params << [sourceSubscriptionId: sourceSubscriptionId];
         if (targetSubscriptionId)   params << [targetSubscriptionId: targetSubscriptionId];
         if (isRenewSub)             params << [isRenewSub: isRenewSub];
-        if (isCopyAuditOn)          params << [isCopyAuditOn: isCopyAuditOn];
+
     %>
     <g:if test="${isRenewSub}">
         <div class="ui tablet stackable steps la-clear-before">

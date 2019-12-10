@@ -99,6 +99,9 @@ class PropertyDefinition extends AbstractI10nTranslatable implements Serializabl
     // indicates hard coded logic
     boolean isUsedForLogic
 
+    Date dateCreated
+    Date lastUpdated
+
     //Map keys can change and they wont affect any of the functionality
     @Deprecated
     @Transient
@@ -140,6 +143,8 @@ class PropertyDefinition extends AbstractI10nTranslatable implements Serializabl
                 isHardData column: 'pd_hard_data'
           isUsedForLogic column: 'pd_used_for_logic'
                       sort name: 'desc'
+        lastUpdated     column: 'pd_last_updated'
+        dateCreated     column: 'pd_date_created'
 
         propDefGroupItems cascade: 'all', batchSize: 10
     }
@@ -155,6 +160,8 @@ class PropertyDefinition extends AbstractI10nTranslatable implements Serializabl
         mandatory           (nullable: false, blank: false)
         isHardData            (nullable: false, blank: false)
         isUsedForLogic      (nullable: false, blank: false)
+        lastUpdated (nullable: true, blank: false)
+        dateCreated (nullable: true, blank: false)
     }
 
     private static def typeIsValid(key) {
