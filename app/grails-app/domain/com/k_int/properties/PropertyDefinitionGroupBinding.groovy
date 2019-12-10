@@ -13,6 +13,9 @@ class PropertyDefinitionGroupBinding {
     boolean isVisible // default value: will overwrite existing groups
     boolean isVisibleForConsortiaMembers  // Subscriber_Consortial, Licensee_Consortial
 
+    Date dateCreated
+    Date lastUpdated
+
     static belongsTo = [
             lic:    License,
             org:    Org,
@@ -29,6 +32,8 @@ class PropertyDefinitionGroupBinding {
         propDefGroup    column: 'pgb_property_definition_group_fk'
         isVisible       column: 'pbg_is_visible'
         isVisibleForConsortiaMembers column: 'pbg_is_visible_for_cons_member'
+        lastUpdated     column: 'pbg_last_updated'
+        dateCreated     column: 'pbg_date_created'
     }
 
     static constraints = {
@@ -38,6 +43,8 @@ class PropertyDefinitionGroupBinding {
         propDefGroup                (nullable: false, blank: false)
         isVisible                   (nullable: false, blank: false)
         isVisibleForConsortiaMembers(nullable: false, blank: false)
+        lastUpdated (nullable: true, blank: false)
+        dateCreated (nullable: true, blank: false)
     }
 }
 

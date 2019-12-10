@@ -4,6 +4,9 @@ import com.k_int.kbplus.IssueEntitlement
 
 class IssueEntitlementCoverage extends AbstractCoverage {
 
+    Date dateCreated
+    Date lastUpdated
+
     static belongsTo = [issueEntitlement: IssueEntitlement]
 
     static constraints = {
@@ -16,6 +19,8 @@ class IssueEntitlementCoverage extends AbstractCoverage {
         embargo       (nullable:true, blank:true)
         coverageDepth (nullable:true, blank:true)
         coverageNote  (nullable:true, blank:true)
+        lastUpdated   (nullable: true, blank: false)
+        dateCreated   (nullable: true, blank: false)
     }
 
     static mapping = {
@@ -31,5 +36,7 @@ class IssueEntitlementCoverage extends AbstractCoverage {
         coverageDepth column:'ic_coverage_depth'
         coverageNote column:'ic_coverage_note',type: 'text'
         issueEntitlement column:'ic_ie_fk'
+        lastUpdated column:'ic_last_updated'
+        dateCreated column:'ic_date_created'
     }
 }

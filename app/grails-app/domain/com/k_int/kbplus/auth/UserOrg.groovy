@@ -22,14 +22,21 @@ class UserOrg implements Comparable {
     User user
     Role formalRole
 
+    Date dateCreated
+    Date lastUpdated
+
     static mapping = {
         cache true
+        lastUpdated     column: 'uo_last_updated'
+        dateCreated     column: 'uo_date_created'
     }
 
     static constraints = {
         dateActioned    (nullable: true)
         dateRequested   (nullable: true)
         formalRole      (nullable: true)
+        lastUpdated (nullable: true, blank: false)
+        dateCreated (nullable: true, blank: false)
     }
 
     @Transient
