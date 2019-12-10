@@ -2,6 +2,8 @@
 
 **Ticket    Date    Branch      Author  Feature/Bug     Description/Keywords**
  
+1954/1955   10.12.2019  rc1.1   Andreas Bug         NullPointerException bei Laden der Lizenz für Kostenposten behoben
+
 1953    10.12.2019  rc1.1       Andreas Bug         NullPointerException bei Prozessierung der Anbieternamen behoben
  
  /      06.12.2019  rc1.1       Andreas Bug         Entfernen der Währungsbezeichnung aus den Finanzsichten
