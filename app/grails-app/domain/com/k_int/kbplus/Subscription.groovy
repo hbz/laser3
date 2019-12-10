@@ -827,6 +827,21 @@ class Subscription
       return hasUsageSupplier
   }
 
+  def deduplicatedAccessPointsForOrgAndPlatform(org, platform) {
+      def hql = """
+select distinct oap from OrgAccessPoint oap 
+    join oap.oapp as oapl
+    join oapl.subPkg as subPkg
+    join subPkg.subscription as sub
+    where sub=:sub
+    and oap.org=:org
+    and oapl.active=true
+    and oapl.platform=:platform
+    
+"""
+      return OrgAccessPointLink.executeQuery(hql, [sub:this, org:org, platform:platform])
+  }
+
   def getHoldingTypes() {
       def types = issueEntitlements?.tipp?.title?.type?.unique()
       types
