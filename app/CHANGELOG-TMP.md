@@ -2,7 +2,9 @@
 
 **Ticket    Date    Branch      Author  Feature/Bug     Description/Keywords**
  
- /      10.12.2019  hbz-dev     Moe     Feature    Für restliche Domain Klassen lastUpdated und dateCreated einführen
+ /      10.12.2019  rc1.2       Andreas Bug         OID-Auflösung in addEntitlements korrigiert
+ 
+ /      10.12.2019  hbz-dev     Moe     Feature     Für restliche Domain Klassen lastUpdated und dateCreated einführen
 
  /      06.12.2019  rc1.1       Andreas Bug         Entfernen der Währungsbezeichnung aus den Finanzsichten
 
