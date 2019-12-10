@@ -21,8 +21,7 @@
 </semui:controlButtons>
 
 <h1 class="ui left floated aligned icon header la-clear-before"><semui:headerIcon/>
-<g:inPlaceEdit domain="Subscription" pk="${subscriptionInstance.id}" field="name" id="name"
-               class="newipe">${subscriptionInstance?.name}</g:inPlaceEdit>
+<g:inPlaceEdit domain="${Subscription.class.name}" pk="${subscriptionInstance.id}" field="name" id="name" class="newipe">${subscriptionInstance?.name}</g:inPlaceEdit>
 </h1>
 <h2 class="ui left floated aligned icon header la-clear-before">${message(code: 'subscription.details.addEntitlements.label')}</h2>
 <%-- <g:render template="nav"/> --%>
