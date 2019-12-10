@@ -111,17 +111,17 @@ class ApiSubscription {
 
 		sub = GrailsHibernateUtil.unwrapIfProxy(sub)
 
-		result.globalUID            = sub.globalUID
-		result.cancellationAllowances = sub.cancellationAllowances
-		result.dateCreated          = sub.dateCreated
-		result.endDate              = sub.endDate
-		//result.identifier           = sub.identifier // TODO: refactor legacy
-		result.lastUpdated          = sub.lastUpdated
-		result.manualCancellationDate = sub.manualCancellationDate
-		result.manualRenewalDate    = sub.manualRenewalDate
-		result.name                 = sub.name
-		result.noticePeriod         = sub.noticePeriod
-		result.startDate            = sub.startDate
+		result.globalUID            	= sub.globalUID
+		result.cancellationAllowances 	= sub.cancellationAllowances
+		result.dateCreated          	= sub.dateCreated
+		result.endDate              	= sub.endDate
+		//result.identifier           	= sub.identifier // TODO: refactor legacy
+		result.lastUpdated          	= sub.lastUpdated
+		result.manualCancellationDate 	= sub.manualCancellationDate
+		result.manualRenewalDate    	= sub.manualRenewalDate
+		result.name                 	= sub.name
+		result.noticePeriod         	= sub.noticePeriod
+		result.startDate            	= sub.startDate
 
 		// erms-888
 		result.calculatedType       = sub.getCalculatedType()

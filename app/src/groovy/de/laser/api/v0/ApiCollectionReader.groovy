@@ -15,17 +15,18 @@ class ApiCollectionReader {
         def result = []
 
         list?.each { it ->   // com.k_int.kbplus.Address
-            def tmp         = [:]
-            tmp.street1     = it.street_1
-            tmp.street2     = it.street_2
-            tmp.pob         = it.pob
-            tmp.pobZipcode  = it.pobZipcode
-            tmp.pobCity     = it.pobCity
-            tmp.zipcode     = it.zipcode
-            tmp.city        = it.city
-            tmp.name        = it.name
-            tmp.additionFirst  = it.additionFirst
-            tmp.additionSecond = it.additionSecond
+            def tmp             = [:]
+            tmp.street1         = it.street_1
+            tmp.street2         = it.street_2
+            tmp.pob             = it.pob
+            tmp.pobZipcode      = it.pobZipcode
+            tmp.pobCity         = it.pobCity
+            tmp.zipcode         = it.zipcode
+            tmp.city            = it.city
+            tmp.name            = it.name
+            tmp.additionFirst   = it.additionFirst
+            tmp.additionSecond  = it.additionSecond
+            tmp.lastUpdated     = it.lastUpdated
 
             // RefdataValues
             tmp.state       = it.state?.value
@@ -47,6 +48,7 @@ class ApiCollectionReader {
         list?.each { it ->       // com.k_int.kbplus.Contact
             def tmp             = [:]
             tmp.content         = it.content
+            tmp.lastUpdated     = it.lastUpdated
 
             // RefdataValues
             tmp.category        = it.contentType?.value
@@ -212,6 +214,7 @@ class ApiCollectionReader {
         result.endDate             = invoice.endDate
         result.invoiceNumber       = invoice.invoiceNumber
         result.startDate           = invoice.startDate
+        result.lastUpdated         = invoice.lastUpdated
 
         // References
         def context = null // TODO: use context
@@ -327,6 +330,7 @@ class ApiCollectionReader {
         }
         result.id           = order.id
         result.orderNumber  = order.orderNumber
+        result.lastUpdated  = order.lastUpdated
 
         // References
         def context = null // TODO: use context
@@ -380,6 +384,7 @@ class ApiCollectionReader {
             result.middleName      = prs.middle_name
             result.lastName        = prs.last_name
             result.title           = prs.title
+            result.lastUpdated     = prs.lastUpdated
 
             // RefdataValues
             result.gender          = prs.gender?.value
@@ -589,6 +594,7 @@ class ApiCollectionReader {
         result.hostPlatformURL  = tipp.hostPlatformURL
         result.impId            = tipp.impId
         result.gokbId           = tipp.gokbId
+        result.lastUpdated      = tipp.lastUpdated
         //result.rectype          = tipp.rectype    // legacy; not needed ?
         //result.startDate        = tipp.startDate           // duplicate information in IE
         //result.startIssue       = tipp.startIssue          // duplicate information in IE

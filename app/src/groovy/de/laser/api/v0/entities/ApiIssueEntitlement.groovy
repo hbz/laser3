@@ -85,13 +85,14 @@ class ApiIssueEntitlement {
         result.ieReason         = ie?.ieReason
         result.coreStatusStart  = ie?.coreStatusStart
         result.coreStatusEnd    = ie?.coreStatusEnd
+        result.lastUpdated      = ie?.lastUpdated
 
         // RefdataValues
         result.coreStatus       = ie.coreStatus?.value
         result.medium           = ie.medium?.value
         //result.status           = ie.status?.value // legacy; not needed ?
 
-        result.coverages            = retrieveIssueEntitlementCoverageCollection(ie.coverages, ApiReader.IGNORE_ALL, context) // com.k_int.kbplus.TitleInstancePackagePlatform
+        result.coverages        = retrieveIssueEntitlementCoverageCollection(ie.coverages, ApiReader.IGNORE_ALL, context) // com.k_int.kbplus.TitleInstancePackagePlatform
 
         // References
         if (ignoreRelation != ApiReader.IGNORE_ALL) {
@@ -131,6 +132,7 @@ class ApiIssueEntitlement {
         result.embargo          = coverage?.embargo
         result.coverageDepth    = coverage?.coverageDepth
         result.coverageNote     = coverage?.coverageNote
+        result.lastUpdated      = coverage?.lastUpdated
 
         return ApiToolkit.cleanUp(result, true, true)
     }
