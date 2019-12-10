@@ -3405,6 +3405,8 @@ class SurveyController {
         if(params.tab == 'surveyProperties') {
             result.properties = SurveyConfigProperties.findAllBySurveyConfig(result.surveyConfig).surveyProperty.findAll{it.owner == null}
             result.properties -= SurveyProperty.findByNameAndOwnerIsNull("Participation")
+            result.properties -= SurveyProperty.findByNameAndOwnerIsNull("Multi-year term 2 years")
+            result.properties -= SurveyProperty.findByNameAndOwnerIsNull("Multi-year term 3 years")
         }
 
         if(params.tab == 'customProperties') {
