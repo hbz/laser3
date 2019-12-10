@@ -3,37 +3,11 @@ package de.laser.api.v0
 import com.k_int.kbplus.*
 import de.laser.api.v0.entities.ApiDoc
 import de.laser.api.v0.entities.ApiIssueEntitlement
-import de.laser.api.v0.entities.ApiLicense
-import de.laser.api.v0.entities.ApiSubscription
 import de.laser.helper.Constants
 import groovy.util.logging.Log4j
 
 @Log4j
-class ApiReaderHelper {
-
-    final static NO_CONSTRAINT          = "NO_CONSTRAINT"
-    final static LICENSE_STUB           = "LICENSE_STUB"
-
-    // type of stub to return
-    final static PACKAGE_STUB           = "PACKAGE_STUB"
-    final static SUBSCRIPTION_STUB      = "SUBSCRIPTION_STUB"
-
-    // ignoring relations
-    final static IGNORE_ALL             = "IGNORE_ALL"  // cutter for nested objects
-    final static IGNORE_NONE            = "IGNORE_NONE" // placeholder, if needed
-    final static IGNORE_CLUSTER         = "IGNORE_CLUSTER"
-
-    final static IGNORE_LICENSE         = "IGNORE_LICENSE"
-    final static IGNORE_ORGANISATION    = "IGNORE_ORGANISATION"
-    final static IGNORE_PACKAGE         = "IGNORE_PACKAGE"
-    final static IGNORE_SUBSCRIPTION    = "IGNORE_SUBSCRIPTION"
-    final static IGNORE_TITLE           = "IGNORE_TITLE"
-    final static IGNORE_TIPP            = "IGNORE_TIPP"
-
-    final static IGNORE_SUBSCRIPTION_AND_PACKAGE = "IGNORE_SUBSCRIPTION_AND_PACKAGE"
-
-    final static IGNORE_CUSTOM_PROPERTIES   = "IGNORE_CUSTOM_PROPERTIES"
-    final static IGNORE_PRIVATE_PROPERTIES  = "IGNORE_PRIVATE_PROPERTIES"
+class ApiCollectionReader {
 
     // ################### FULL OBJECTS ###################
 
@@ -60,7 +34,7 @@ class ApiReaderHelper {
 
             tmp = ApiToolkit.cleanUp(tmp, true, false)
 
-            if(NO_CONSTRAINT == allowedTypes || allowedTypes.contains(it.type?.value)) {
+            if(ApiReader.NO_CONSTRAINT == allowedTypes || allowedTypes.contains(it.type?.value)) {
                 result << tmp
             }
         }
@@ -80,7 +54,7 @@ class ApiReaderHelper {
 
             tmp = ApiToolkit.cleanUp(tmp, true, false)
 
-            if(NO_CONSTRAINT == allowedTypes || allowedTypes.contains(it.type?.value)) {
+            if(ApiReader.NO_CONSTRAINT == allowedTypes || allowedTypes.contains(it.type?.value)) {
                 result << tmp
             }
         }
@@ -133,11 +107,11 @@ class ApiReaderHelper {
             tmp.budgetCodes         = CostItemGroup.findAllByCostItem(it).collect{ it.budgetCode?.value }.unique()
             tmp.copyBase            = it.copyBase?.globalUID
             tmp.invoiceNumber       = it.invoice?.invoiceNumber // retrieveInvoiceMap(it.invoice) // com.k_int.kbplus.Invoice
-            // tmp.issueEntitlement    = ApiIssueEntitlement.retrieveIssueEntitlementMap(it.issueEntitlement, IGNORE_ALL, context) // com.k_int.kbplus.issueEntitlement
+            // tmp.issueEntitlement    = ApiIssueEntitlement.retrieveIssueEntitlementMap(it.issueEntitlement, ApiReader.IGNORE_ALL, context) // com.k_int.kbplus.issueEntitlement
             tmp.orderNumber         = it.order?.orderNumber // retrieveOrderMap(it.order) // com.k_int.kbplus.Order
             // tmp.owner               = ApiStubReader.retrieveOrganisationStubMap(it.owner, context) // com.k_int.kbplus.Org
             // tmp.sub                 = ApiStubReader.requestSubscriptionStub(it.sub, context) // com.k_int.kbplus.Subscription // RECURSION ???
-            // tmp.package             = ApiStubReader.retrieveSubscriptionPackageStubMixed(it.subPkg, IGNORE_SUBSCRIPTION, context) // com.k_int.kbplus.SubscriptionPackage
+            // tmp.package             = ApiStubReader.retrieveSubscriptionPackageStubMixed(it.subPkg, ApiReader.IGNORE_SUBSCRIPTION, context) // com.k_int.kbplus.SubscriptionPackage
             //tmp.surveyOrg
             //tmp.subPkg
 
@@ -268,7 +242,7 @@ class ApiReaderHelper {
         tipps.each{ tipp ->
             def ie = IssueEntitlement.findBySubscriptionAndTipp(subPkg.subscription, tipp)
             if (ie) {
-                result << ApiReaderHelper.resolveIssueEntitlement(ie, ignoreRelation, context) // com.k_int.kbplus.IssueEntitlement
+                result << ApiCollectionReader.resolveIssueEntitlement(ie, ignoreRelation, context) // com.k_int.kbplus.IssueEntitlement
             }
         }
         */
@@ -306,7 +280,7 @@ class ApiReaderHelper {
             result << pkg
 
             if (pkg != Constants.HTTP_FORBIDDEN) {
-                pkg.issueEntitlements = retrieveIssueEntitlementCollection(subPkg, ApiReaderHelper.IGNORE_SUBSCRIPTION_AND_PACKAGE, context)
+                pkg.issueEntitlements = retrieveIssueEntitlementCollection(subPkg, ApiReader.IGNORE_SUBSCRIPTION_AND_PACKAGE, context)
             }
         }
 
@@ -346,46 +320,6 @@ class ApiReaderHelper {
     }
     */
 
-    /**
-     * Access rights due wrapping license
-     *
-     * @param com.k_int.kbplus.OnixplLicense opl
-     * @param com.k_int.kbplus.License lic
-     * @param com.k_int.kbplus.Org context
-     * @return Map | Constants.HTTP_FORBIDDEN
-     */
-    static requestOnixplLicense(OnixplLicense opl, License lic, Org context) {
-        def result = [:]
-        def hasAccess = false
-
-        if (!opl) {
-            return null
-        }
-
-        if (opl.getLicenses().contains(lic)) {
-            lic.orgLinks.each { orgRole ->
-                // TODO check orgRole.roleType
-                if (orgRole.getOrg().id == context?.id) {
-                    hasAccess = true
-                }
-            }
-        }
-
-        if (hasAccess) {
-            //result.id       = opl.id
-            result.lastmod  = opl.lastmod
-            result.title    = opl.title
-
-            // References
-            result.document = ApiDoc.retrieveDocumentMap(opl.doc) // com.k_int.kbplus.Doc
-            //result.licenses = ApiStubReader.resolveLicenseStubs(opl.licenses) // com.k_int.kbplus.License
-            //result.xml = opl.xml // XMLDoc // TODO
-            result = ApiToolkit.cleanUp(result, true, true)
-        }
-
-        return (hasAccess ? result : Constants.HTTP_FORBIDDEN)
-    }
-
     static Map<String, Object> retrieveOrderMap(Order order) {
         def result = [:]
         if (!order) {
@@ -413,22 +347,22 @@ class ApiReaderHelper {
             tmp.roleType    = it.roleType?.value
 
             // References
-            if (it.org && (IGNORE_ORGANISATION != ignoreRelationType)) {
+            if (it.org && (ApiReader.IGNORE_ORGANISATION != ignoreRelationType)) {
                 tmp.organisation = ApiStubReader.retrieveOrganisationStubMap(it.org, context) // com.k_int.kbplus.Org
             }
-            if (it.cluster && (IGNORE_CLUSTER != ignoreRelationType)) {
+            if (it.cluster && (ApiReader.IGNORE_CLUSTER != ignoreRelationType)) {
                 tmp.cluster = ApiStubReader.retrieveClusterStubMap(it.cluster) // com.k_int.kbplus.Cluster
             }
-            if (it.lic && (IGNORE_LICENSE != ignoreRelationType)) {
+            if (it.lic && (ApiReader.IGNORE_LICENSE != ignoreRelationType)) {
                 tmp.license = ApiStubReader.requestLicenseStub(it.lic, context) // com.k_int.kbplus.License
             }
-            if (it.pkg && (IGNORE_PACKAGE != ignoreRelationType)) {
+            if (it.pkg && (ApiReader.IGNORE_PACKAGE != ignoreRelationType)) {
                 tmp.package = ApiStubReader.retrievePackageStubMap(it.pkg, context) // com.k_int.kbplus.Package
             }
-            if (it.sub && (IGNORE_SUBSCRIPTION != ignoreRelationType)) {
+            if (it.sub && (ApiReader.IGNORE_SUBSCRIPTION != ignoreRelationType)) {
                 tmp.subscription = ApiStubReader.requestSubscriptionStub(it.sub, context) // com.k_int.kbplus.Subscription
             }
-            if (it.title && (IGNORE_TITLE != ignoreRelationType)) {
+            if (it.title && (ApiReader.IGNORE_TITLE != ignoreRelationType)) {
                 tmp.title = ApiStubReader.retrieveTitleStubMap(it.title) // com.k_int.kbplus.TitleInstance
             }
 
@@ -538,10 +472,10 @@ class ApiReaderHelper {
         def cp = retrieveCustomPropertyCollection(generic.customProperties, generic, context)
         def pp = retrievePrivatePropertyCollection(generic.privateProperties, context)
 
-        if (ignoreFlag == IGNORE_CUSTOM_PROPERTIES) {
+        if (ignoreFlag == ApiReader.IGNORE_CUSTOM_PROPERTIES) {
             return pp
         }
-        else if (ignoreFlag == IGNORE_PRIVATE_PROPERTIES) {
+        else if (ignoreFlag == ApiReader.IGNORE_PRIVATE_PROPERTIES) {
             return cp
         }
 
@@ -674,11 +608,11 @@ class ApiReaderHelper {
         result.platform             = ApiStubReader.retrievePlatformStubMap(tipp.platform) // com.k_int.kbplus.Platform
         result.title                = ApiStubReader.retrieveTitleStubMap(tipp.title)       // com.k_int.kbplus.TitleInstance
 
-        if (ignoreRelation != IGNORE_ALL) {
-            if (ignoreRelation != IGNORE_PACKAGE) {
+        if (ignoreRelation != ApiReader.IGNORE_ALL) {
+            if (ignoreRelation != ApiReader.IGNORE_PACKAGE) {
                 result.package = ApiStubReader.retrievePackageStubMap(tipp.pkg, context) // com.k_int.kbplus.Package
             }
-            if (ignoreRelation != IGNORE_SUBSCRIPTION) {
+            if (ignoreRelation != ApiReader.IGNORE_SUBSCRIPTION) {
                 result.subscription = ApiStubReader.requestSubscriptionStub(tipp.sub, context) // com.k_int.kbplus.Subscription
             }
         }

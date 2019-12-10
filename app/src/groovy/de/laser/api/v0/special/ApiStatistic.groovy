@@ -1,7 +1,9 @@
 package de.laser.api.v0.special
 
 import com.k_int.kbplus.*
-import de.laser.api.v0.ApiReaderHelper
+import de.laser.api.v0.ApiCollectionReader
+import de.laser.api.v0.ApiReader
+import de.laser.api.v0.ApiStubReader
 import de.laser.api.v0.ApiToolkit
 import de.laser.helper.Constants
 import de.laser.helper.RDStore
@@ -68,7 +70,7 @@ class ApiStatistic {
 
         if (hasAccess) {
             getAccessiblePackages().each { p ->
-                result << ApiReaderHelper.retrievePackageStubMap(p, null) // ? null
+                result << ApiStubReader.retrievePackageStubMap(p, null) // ? null
             }
         }
 
@@ -100,7 +102,7 @@ class ApiStatistic {
             // References
             result.contentProvider  = retrievePkgOrganisationCollection(pkg.orgs)
             result.license          = requestPkgLicense(pkg.license)
-            result.identifiers      = ApiReaderHelper.retrieveIdentifierCollection(pkg.ids) // com.k_int.kbplus.Identifier
+            result.identifiers      = ApiCollectionReader.retrieveIdentifierCollection(pkg.ids) // com.k_int.kbplus.Identifier
             //result.platforms        = resolvePkgPlatforms(pkg.nominalPlatform)
             //result.tipps            = resolvePkgTipps(pkg.tipps)
             result.subscriptions    = retrievePkgSubscriptionCollection(pkg.subscriptions, getAccessibleOrgs())
@@ -122,7 +124,7 @@ class ApiStatistic {
                 if (ogr.org.status?.value == 'Deleted') {
                 }
                 else {
-                    result.add(ApiReaderHelper.retrieveOrganisationStubMap(ogr.org, null))
+                    result.add(ApiStubReader.retrieveOrganisationStubMap(ogr.org, null))
                 }
             }
         }
@@ -134,7 +136,7 @@ class ApiStatistic {
         if (! lic || lic.status?.value == 'Deleted') {
             return null
         }
-        def result = ApiReaderHelper.requestLicenseStub(lic, null, true)
+        def result = ApiStubReader.requestLicenseStub(lic, null, true)
 
         return ApiToolkit.cleanUp(result, true, true)
     }
@@ -149,7 +151,7 @@ class ApiStatistic {
 
         result.globalUID    = pform.globalUID
         result.name         = pform.name
-        //result.identifiers  = ApiReaderHelper.resolveIdentifiers(pform.ids) // com.k_int.kbplus.IdentifierOccurrence
+        //result.identifiers  = ApiCollectionReader.resolveIdentifiers(pform.ids) // com.k_int.kbplus.IdentifierOccurrence
 
         return ApiToolkit.cleanUp(result, true, true)
     }
@@ -163,7 +165,7 @@ class ApiStatistic {
         }
         def result = []
         tipps.each{ tipp ->
-            result.add( ApiReaderHelper.resolveTipp(tipp, ApiReaderHelper.IGNORE_NONE, null))
+            result.add( ApiCollectionReader.resolveTipp(tipp, ApiCollectionReader.IGNORE_NONE, null))
         }
 
         return ApiToolkit.cleanUp(result, true, true)
@@ -183,7 +185,7 @@ class ApiStatistic {
             if (subPkg.subscription.status?.value == 'Deleted') {
             }
             else {
-                sub = ApiReaderHelper.requestSubscriptionStub(subPkg.subscription, null, true)
+                sub = ApiStubReader.requestSubscriptionStub(subPkg.subscription, null, true)
             }
 
             List<Org> orgList = []
@@ -196,7 +198,7 @@ class ApiStatistic {
                         if (ogr.org.status?.value == 'Deleted') {
                         }
                         else {
-                            def org = ApiReaderHelper.retrieveOrganisationStubMap(ogr.org, null)
+                            def org = ApiStubReader.retrieveOrganisationStubMap(ogr.org, null)
                             if (org) {
                                 orgList.add(ApiToolkit.cleanUp(org, true, true))
                             }
@@ -222,7 +224,7 @@ class ApiStatistic {
                             if (ie.status?.value == 'Deleted') {
 
                             } else {
-                                ieList.add(ApiReaderHelper.retrieveIssueEntitlementMap(ie, ApiReaderHelper.IGNORE_SUBSCRIPTION_AND_PACKAGE, null))
+                                ieList.add(ApiCollectionReader.retrieveIssueEntitlementMap(ie, ApiReader.IGNORE_SUBSCRIPTION_AND_PACKAGE, null))
                             }
                         }
                     }
@@ -231,8 +233,8 @@ class ApiStatistic {
                     sub?.put('issueEntitlements', ApiToolkit.cleanUp(ieList, true, true))
                 }
 
-                //result.add( ApiReaderHelper.resolveSubscriptionStub(subPkg.subscription, null, true))
-                //result.add( ApiReader.exportIssueEntitlements(subPkg, ApiReaderHelper.IGNORE_TIPP, null))
+                //result.add( ApiStubReader.resolveSubscriptionStub(subPkg.subscription, null, true))
+                //result.add( ApiReader.exportIssueEntitlements(subPkg, ApiCollectionReader.IGNORE_TIPP, null))
 
                 // only add sub if orgList is not empty
                 result.add(sub)

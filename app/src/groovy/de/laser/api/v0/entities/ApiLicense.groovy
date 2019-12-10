@@ -4,8 +4,8 @@ import com.k_int.kbplus.Identifier
 import com.k_int.kbplus.License
 import com.k_int.kbplus.Org
 import com.k_int.kbplus.OrgRole
+import de.laser.api.v0.ApiCollectionReader
 import de.laser.api.v0.ApiReader
-import de.laser.api.v0.ApiReaderHelper
 import de.laser.api.v0.ApiStubReader
 import de.laser.api.v0.ApiToolkit
 import de.laser.helper.Constants
@@ -73,7 +73,7 @@ class ApiLicense {
         hasAccess = calculateAccess(lic, context, hasAccess)
 
         if (hasAccess) {
-            result = retrieveLicenseMap(lic, ApiReaderHelper.IGNORE_NONE, context)
+            result = retrieveLicenseMap(lic, ApiReader.IGNORE_NONE, context)
         }
 
         return (hasAccess ? new JSON(result) : Constants.HTTP_FORBIDDEN)
@@ -96,7 +96,7 @@ class ApiLicense {
         available.each { lic ->
             //if (calculateAccess(lic, context, hasAccess)) {
                 //println lic.id + ' ' + lic.reference
-                result.add(ApiReaderHelper.requestLicenseStub(lic, context, true))
+                result.add(ApiStubReader.requestLicenseStub(lic, context, true))
                 //result.add([globalUID: lic.globalUID])
             //}
         }
@@ -140,17 +140,17 @@ class ApiLicense {
 
         // References
 
-        result.identifiers      = ApiReaderHelper.retrieveIdentifierCollection(lic.ids) // com.k_int.kbplus.Identifier
-        result.instanceOf       = ApiReaderHelper.requestLicenseStub(lic.instanceOf, context) // com.k_int.kbplus.License
-        result.properties       = ApiReaderHelper.retrievePropertyCollection(lic, context, ApiReaderHelper.IGNORE_NONE)  // com.k_int.kbplus.(LicenseCustomProperty, LicensePrivateProperty)
-        result.documents        = ApiReaderHelper.retrieveDocumentCollection(lic.documents) // com.k_int.kbplus.DocContext
-        result.onixplLicense    = ApiReaderHelper.requestOnixplLicense(lic.onixplLicense, lic, context) // com.k_int.kbplus.OnixplLicense
+        result.identifiers      = ApiCollectionReader.retrieveIdentifierCollection(lic.ids) // com.k_int.kbplus.Identifier
+        result.instanceOf       = ApiStubReader.requestLicenseStub(lic.instanceOf, context) // com.k_int.kbplus.License
+        result.properties       = ApiCollectionReader.retrievePropertyCollection(lic, context, ApiReader.IGNORE_NONE)  // com.k_int.kbplus.(LicenseCustomProperty, LicensePrivateProperty)
+        result.documents        = ApiCollectionReader.retrieveDocumentCollection(lic.documents) // com.k_int.kbplus.DocContext
+        result.onixplLicense    = ApiReader.requestOnixplLicense(lic.onixplLicense, lic, context) // com.k_int.kbplus.OnixplLicense
 
-        if (ignoreRelation != ApiReaderHelper.IGNORE_ALL) {
-            if (ignoreRelation != ApiReaderHelper.IGNORE_SUBSCRIPTION) {
-                result.subscriptions = ApiStubReader.retrieveStubCollection(lic.subscriptions, ApiReaderHelper.SUBSCRIPTION_STUB, context) // com.k_int.kbplus.Subscription
+        if (ignoreRelation != ApiReader.IGNORE_ALL) {
+            if (ignoreRelation != ApiReader.IGNORE_SUBSCRIPTION) {
+                result.subscriptions = ApiStubReader.retrieveStubCollection(lic.subscriptions, ApiReader.SUBSCRIPTION_STUB, context) // com.k_int.kbplus.Subscription
             }
-            if (ignoreRelation != ApiReaderHelper.IGNORE_LICENSE) {
+            if (ignoreRelation != ApiReader.IGNORE_LICENSE) {
                 def allOrgRoles = []
 
                 def licenseeConsortial = OrgRole.findByOrgAndLicAndRoleType(context, lic, RDStore.OR_LICENSEE_CONS)
@@ -180,7 +180,7 @@ class ApiLicense {
                 }
                 allOrgRoles = allOrgRoles.unique()
 
-                result.organisations = ApiReaderHelper.retrieveOrgLinkCollection(allOrgRoles, ApiReaderHelper.IGNORE_LICENSE, context) // com.k_int.kbplus.OrgRole
+                result.organisations = ApiCollectionReader.retrieveOrgLinkCollection(allOrgRoles, ApiReader.IGNORE_LICENSE, context) // com.k_int.kbplus.OrgRole
             }
         }
 

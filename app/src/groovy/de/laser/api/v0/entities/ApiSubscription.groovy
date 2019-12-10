@@ -4,8 +4,9 @@ import com.k_int.kbplus.Identifier
 import com.k_int.kbplus.Org
 import com.k_int.kbplus.OrgRole
 import com.k_int.kbplus.Subscription
+import de.laser.api.v0.ApiCollectionReader
 import de.laser.api.v0.ApiReader
-import de.laser.api.v0.ApiReaderHelper
+import de.laser.api.v0.ApiStubReader
 import de.laser.api.v0.ApiToolkit
 import de.laser.helper.Constants
 import de.laser.helper.RDStore
@@ -71,7 +72,7 @@ class ApiSubscription {
         hasAccess = calculateAccess(sub, context, hasAccess)
 
         if (hasAccess) {
-            result = retrieveSubscriptionMap(sub, ApiReaderHelper.IGNORE_NONE, context)
+            result = retrieveSubscriptionMap(sub, ApiReader.IGNORE_NONE, context)
         }
 
         return (hasAccess ? new JSON(result) : Constants.HTTP_FORBIDDEN)
@@ -94,7 +95,7 @@ class ApiSubscription {
         available.each { sub ->
             //if (calculateAccess(sub, context, hasAccess)) {
                 println sub.id + ' ' + sub.name
-                result.add(ApiReaderHelper.requestSubscriptionStub(sub, context, true))
+                result.add(ApiStubReader.requestSubscriptionStub(sub, context, true))
                 //result.add([globalUID: sub.globalUID])
             //}
         }
@@ -137,18 +138,18 @@ class ApiSubscription {
 
 		// References
 
-		result.documents            = ApiReaderHelper.retrieveDocumentCollection(sub.documents) // com.k_int.kbplus.DocContext
-		//result.derivedSubscriptions = ApiReaderHelper.resolveStubs(sub.derivedSubscriptions, ApiReaderHelper.SUBSCRIPTION_STUB, context) // com.k_int.kbplus.Subscription
-		result.identifiers          = ApiReaderHelper.retrieveIdentifierCollection(sub.ids) // com.k_int.kbplus.Identifier
-		result.instanceOf           = ApiReaderHelper.requestSubscriptionStub(sub.instanceOf, context) // com.k_int.kbplus.Subscription
-		result.license              = ApiReaderHelper.requestLicenseStub(sub.owner, context) // com.k_int.kbplus.License
-		//removed: result.license          = ApiReaderHelper.resolveLicense(sub.owner, ApiReaderHelper.IGNORE_ALL, context) // com.k_int.kbplus.License
+		result.documents            = ApiCollectionReader.retrieveDocumentCollection(sub.documents) // com.k_int.kbplus.DocContext
+		//result.derivedSubscriptions = ApiStubReader.resolveStubs(sub.derivedSubscriptions, ApiCollectionReader.SUBSCRIPTION_STUB, context) // com.k_int.kbplus.Subscription
+		result.identifiers          = ApiCollectionReader.retrieveIdentifierCollection(sub.ids) // com.k_int.kbplus.Identifier
+		result.instanceOf           = ApiStubReader.requestSubscriptionStub(sub.instanceOf, context) // com.k_int.kbplus.Subscription
+		result.license              = ApiStubReader.requestLicenseStub(sub.owner, context) // com.k_int.kbplus.License
+		//removed: result.license          = ApiCollectionReader.resolveLicense(sub.owner, ApiCollectionReader.IGNORE_ALL, context) // com.k_int.kbplus.License
 
-		//result.organisations        = ApiReaderHelper.resolveOrgLinks(sub.orgRelations, ApiReaderHelper.IGNORE_SUBSCRIPTION, context) // com.k_int.kbplus.OrgRole
+		//result.organisations        = ApiCollectionReader.resolveOrgLinks(sub.orgRelations, ApiCollectionReader.IGNORE_SUBSCRIPTION, context) // com.k_int.kbplus.OrgRole
 
-		result.predecessor = ApiReaderHelper.requestSubscriptionStub(sub.getCalculatedPrevious(), context) // com.k_int.kbplus.Subscription
-		result.successor   = ApiReaderHelper.requestSubscriptionStub(sub.getCalculatedSuccessor(), context) // com.k_int.kbplus.Subscription
-		result.properties  = ApiReaderHelper.retrievePropertyCollection(sub, context, ApiReaderHelper.IGNORE_NONE) // com.k_int.kbplus.(SubscriptionCustomProperty, SubscriptionPrivateProperty)
+		result.predecessor = ApiStubReader.requestSubscriptionStub(sub.getCalculatedPrevious(), context) // com.k_int.kbplus.Subscription
+		result.successor   = ApiStubReader.requestSubscriptionStub(sub.getCalculatedSuccessor(), context) // com.k_int.kbplus.Subscription
+		result.properties  = ApiCollectionReader.retrievePropertyCollection(sub, context, ApiReader.IGNORE_NONE) // com.k_int.kbplus.(SubscriptionCustomProperty, SubscriptionPrivateProperty)
 
 		def allOrgRoles = []
 
@@ -161,10 +162,10 @@ class ApiSubscription {
 		}
 		allOrgRoles.addAll(sub.orgRelations)
 
-		result.organisations = ApiReaderHelper.retrieveOrgLinkCollection(allOrgRoles, ApiReaderHelper.IGNORE_SUBSCRIPTION, context) // com.k_int.kbplus.OrgRole
+		result.organisations = ApiCollectionReader.retrieveOrgLinkCollection(allOrgRoles, ApiReader.IGNORE_SUBSCRIPTION, context) // com.k_int.kbplus.OrgRole
 
 		// TODO refactoring with issueEntitlementService
-		result.packages = ApiReaderHelper.retrievePackageWithIssueEntitlementsCollection(sub.packages, context) // com.k_int.kbplus.SubscriptionPackage
+		result.packages = ApiCollectionReader.retrievePackageWithIssueEntitlementsCollection(sub.packages, context) // com.k_int.kbplus.SubscriptionPackage
 
 		// Ignored
 
@@ -178,7 +179,7 @@ class ApiSubscription {
 		*/
 
 		// TODO: oaMonitor
-		result.costItems    = ApiReaderHelper.retrieveCostItemCollection(sub.costItems) // com.k_int.kbplus.CostItem
+		result.costItems    = ApiCollectionReader.retrieveCostItemCollection(sub.costItems) // com.k_int.kbplus.CostItem
 
 		return ApiToolkit.cleanUp(result, true, true)
 	}

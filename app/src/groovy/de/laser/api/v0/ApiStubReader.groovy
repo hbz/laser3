@@ -1,8 +1,6 @@
 package de.laser.api.v0
 
 import com.k_int.kbplus.*
-import de.laser.api.v0.entities.ApiDoc
-import de.laser.api.v0.entities.ApiIssueEntitlement
 import de.laser.api.v0.entities.ApiLicense
 import de.laser.api.v0.entities.ApiSubscription
 import de.laser.helper.Constants
@@ -25,14 +23,14 @@ class ApiStubReader {
         def result = []
 
         list?.each { it ->
-            if(ApiReaderHelper.LICENSE_STUB == type) {
-                result << requestLicenseStub(it, context)
+            if(ApiReader.LICENSE_STUB == type) {
+                result << requestLicenseStub((License) it, context)
             }
-            else if(ApiReaderHelper.PACKAGE_STUB == type) {
-                result << retrievePackageStubMap(it, context)
+            else if(ApiReader.PACKAGE_STUB == type) {
+                result << retrievePackageStubMap((Package) it, context)
             }
-            else if(ApiReaderHelper.SUBSCRIPTION_STUB == type) {
-                result << requestSubscriptionStub(it, context)
+            else if(ApiReader.SUBSCRIPTION_STUB == type) {
+                result << requestSubscriptionStub((Subscription) it, context)
             }
         }
 
@@ -77,7 +75,7 @@ class ApiStubReader {
             result.endDate          = lic.endDate
 
             // References
-            result.identifiers = ApiReaderHelper.retrieveIdentifierCollection(lic.ids) // com.k_int.kbplus.Identifier
+            result.identifiers = ApiCollectionReader.retrieveIdentifierCollection(lic.ids) // com.k_int.kbplus.Identifier
 
             result = ApiToolkit.cleanUp(result, true, true)
         }
@@ -99,7 +97,7 @@ class ApiStubReader {
         result.name         = org.name
 
         // References
-        result.identifiers = ApiReaderHelper.retrieveIdentifierCollection(org.ids) // com.k_int.kbplus.Identifier
+        result.identifiers = ApiCollectionReader.retrieveIdentifierCollection(org.ids) // com.k_int.kbplus.Identifier
 
         return ApiToolkit.cleanUp(result, true, true)
     }
@@ -120,7 +118,7 @@ class ApiStubReader {
         result.gokbId       = pkg.gokbId
 
         // References
-        result.identifiers = ApiReaderHelper.retrieveIdentifierCollection(pkg.ids) // com.k_int.kbplus.Identifier
+        result.identifiers = ApiCollectionReader.retrieveIdentifierCollection(pkg.ids) // com.k_int.kbplus.Identifier
 
         return ApiToolkit.cleanUp(result, true, true)
     }
@@ -170,7 +168,7 @@ class ApiStubReader {
             result.endDate        = sub.endDate
 
             // References
-            result.identifiers = ApiReaderHelper.retrieveIdentifierCollection(sub.ids) // com.k_int.kbplus.Identifier
+            result.identifiers = ApiCollectionReader.retrieveIdentifierCollection(sub.ids) // com.k_int.kbplus.Identifier
 
             result = ApiToolkit.cleanUp(result, true, true)
         }
@@ -180,10 +178,10 @@ class ApiStubReader {
 
     static retrieveSubscriptionPackageStubMixed(SubscriptionPackage subpkg, ignoreRelation, Org context) {
         if (subpkg) {
-            if (ApiReaderHelper.IGNORE_SUBSCRIPTION == ignoreRelation) {
+            if (ApiReader.IGNORE_SUBSCRIPTION == ignoreRelation) {
                 return retrievePackageStubMap(subpkg.pkg, context)
             }
-            else if (ApiReaderHelper.IGNORE_PACKAGE == ignoreRelation) {
+            else if (ApiReader.IGNORE_PACKAGE == ignoreRelation) {
                 return requestSubscriptionStub(subpkg.subscription, context)
             }
         }
@@ -213,7 +211,7 @@ class ApiStubReader {
         result.type         = title.type?.value
 
         // References
-        result.identifiers = ApiReaderHelper.retrieveIdentifierCollection(title.ids) // com.k_int.kbplus.Identifier
+        result.identifiers = ApiCollectionReader.retrieveIdentifierCollection(title.ids) // com.k_int.kbplus.Identifier
 
         return ApiToolkit.cleanUp(result, true, true)
     }
