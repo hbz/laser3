@@ -976,7 +976,8 @@ from Subscription as s where
                                         filename: dctx.owner.filename,
                                         mimeType: dctx.owner.mimeType,
                                         user: dctx.owner.user,
-                                        migrated: dctx.owner.migrated
+                                        migrated: dctx.owner.migrated,
+                                        owner: dctx.owner.owner
                                 ).save()
 
                                 DocContext ndc = new DocContext(
