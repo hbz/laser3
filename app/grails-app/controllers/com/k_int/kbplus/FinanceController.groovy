@@ -787,11 +787,11 @@ class FinanceController extends AbstractDebugController {
 
         if(!params.sub.isEmpty() && StringUtils.isNumeric(params.sub)){
             result.sub = Subscription.get(Long.parseLong(params.sub))
-            if(contextService.org.id == result.sub.getConsortia().id) {
+            if(contextService.org.id == result.sub.getConsortia()?.id) {
                 result.licenseeLabel = message(code: 'consortium.member')
                 result.licenseeTargetLabel = message(code:'consortium.member.plural')
             }
-            else if(contextService.org.id == result.sub.getCollective().id) {
+            else if(contextService.org.id == result.sub.getCollective()?.id) {
                 result.licenseeLabel = message(code:'collective.member')
                 result.licenseeTargetLabel = message(code:'collective.member.plural')
             }
