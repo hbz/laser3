@@ -14,7 +14,7 @@ import org.springframework.context.i18n.LocaleContextHolder
 
 import javax.persistence.Transient
 
-class TitleInstancePackagePlatform extends AbstractBaseDomain implements AuditableTrait {
+class TitleInstancePackagePlatform extends AbstractBaseDomain /*implements AuditableTrait*/ {
   @Transient
   def grailsLinkGenerator
 
@@ -30,7 +30,7 @@ class TitleInstancePackagePlatform extends AbstractBaseDomain implements Auditab
   static Log static_logger = LogFactory.getLog(TitleInstancePackagePlatform)
 
     // AuditableTrait
-    static auditable = true
+    //static auditable = true
     static controlledProperties = ['status', 'platform','accessStartDate','accessEndDate','coverages']
 
     /*

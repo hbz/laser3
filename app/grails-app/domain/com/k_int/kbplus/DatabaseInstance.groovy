@@ -16,7 +16,7 @@ class DatabaseInstance extends TitleInstance{
     }
 
     String printTitleType() {
-        RefdataValue.getByValueAndCategory('Database',RefdataCategory.TI_TYPE).getI10n('value')
+        RefdataValue.getByValueAndCategory('Database',RefdataCategory.TI_MEDIUM).getI10n('value')
     }
 
 }

@@ -16,7 +16,7 @@ class JournalInstance extends TitleInstance {
     }
 
     String printTitleType() {
-        RefdataValue.getByValueAndCategory('Journal',RefdataCategory.TI_TYPE).getI10n('value')
+        RefdataValue.getByValueAndCategory('Journal',RefdataCategory.TI_MEDIUM).getI10n('value')
     }
 
 }

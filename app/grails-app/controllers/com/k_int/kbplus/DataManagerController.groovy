@@ -1,6 +1,7 @@
 package com.k_int.kbplus
 
 import com.k_int.kbplus.auth.User
+import de.laser.DeletionService
 import de.laser.controller.AbstractDebugController
 import de.laser.domain.MailTemplate
 import de.laser.helper.RDStore
@@ -18,6 +19,7 @@ class DataManagerController extends AbstractDebugController {
     def GOKbService
     def contextService
     def genericOIDService
+    DeletionService deletionService
 
     @Secured(['ROLE_ADMIN'])
     def index() {
@@ -425,70 +427,27 @@ class DataManagerController extends AbstractDebugController {
         redirect(controller:'home')
     }
 
-    @Secured(['ROLE_ADMIN'])
-    def expungeDeletedTIPPS() {
-
+    @Secured(['ROLE_YODA'])
+    Map<String,Object> listDeletedTIPPS() {
         log.debug("expungeDeletedTIPPS ...")
-        /*
-      if(SpringSecurityUtils.ifNotGranted('ROLE_ADMIN')){
-        flash.error =  message(code:"default.access.error")
-        response.sendError(401)
-        return;
-      }
-      def p = TitleInstance.async.task {
-
-        def ctr = 0;
-
-        try {
-          log.debug("Delayed start");
-          synchronized(this) {
-            Thread.sleep(2000);
-          }
-
-          log.debug("Query...");
-          def l = TitleInstancePackagePlatform.executeQuery('select t.id from TitleInstancePackagePlatform t where t.status.value=?',['Deleted']);
-
-          if ( ( l != null ) && ( l instanceof List ) ) {
-            log.debug("Processing...");
-            l.each { ti_id ->
-              TitleInstance.withNewTransaction {
-                log.debug("Expunging title [${ctr++}] ${ti_id}");
-                TitleInstancePackagePlatform.expunge(ti_id);
-              }
-            }
-          }
-          else {
-            log.error("${l} was null or not a list -- ${l?.class.name}");
-          }
-
-          log.debug("Completed processing - ${ctr}");
+        List<IssueEntitlement> allIE = IssueEntitlement.findAll()
+        Map<Long,List<IssueEntitlement>> tippIEMap = [:]
+        allIE.each { ie ->
+            List<IssueEntitlement> tippIEs = tippIEMap.get(ie.tipp)
+            if(!tippIEs)
+                tippIEs = []
+            tippIEs << ie
+            tippIEMap.put(ie.tipp.id,tippIEs)
         }
-        catch( Exception e ) {
-          e.printStackTrace()
-          log.error("Problem",e);
-        }
-
-        return "expungeDeletedTIPPS Completed - ${ctr} TIPPS expunged"
-
-      }
-
-
-      p.onError { Throwable err ->
-          log.debug("An error occured ${err.message}")
-      }
-
-      p.onComplete { result ->
-          log.debug("Promise returned $result")
-      }
-
-      log.debug("Got promise : ${p}. ${p.class.name}");
-       */
-        List<TitleInstancePackagePlatform> deletedTIPPsWithIEs = TitleInstancePackagePlatform.executeQuery("select ie.tipp from IssueEntitlement ie where ie.tipp.status = :deleted",[deleted:RDStore.TIPP_DELETED])
+        List<TitleInstancePackagePlatform> deletedTIPPs = TitleInstancePackagePlatform.findAllByStatus(RDStore.TIPP_DELETED,[sort:'pkg.name',order:'asc'])
         GlobalRecordSource grs = GlobalRecordSource.findAll().get(0)
         HTTPBuilder http = new HTTPBuilder(grs.uri)
         Map<String,NodeChildren> oaiRecords = [:]
-        deletedTIPPsWithIEs.eachWithIndex { delTIPP, int ctr ->
-            log.debug("now processing entry #${ctr} ${delTIPP.gokbId} of package ${delTIPP.pkg} with uuid ${delTIPP.pkg.gokbId}")
+        List<Map<TitleInstancePackagePlatform,List<IssueEntitlement>>> deletedWithoutGOKbRecord = [], deletedWithGOKbRecord = []
+        deletedTIPPs.each { delTIPP ->
+            log.debug("now processing entry #${delTIPP.id} ${delTIPP.gokbId} of package ${delTIPP.pkg} with uuid ${delTIPP.pkg.gokbId}")
+            Map<TitleInstancePackagePlatform,List<IssueEntitlement>> result = [:]
+            result.put(delTIPP,tippIEMap.get(delTIPP.id))
             NodeChildren oaiRecord = oaiRecords.get(delTIPP.pkg.gokbId)
             if(!oaiRecord) {
                 def packageRecord = http.get(path:'packages',query:[verb:'getRecord',metadataPrefix:'gokb',identifier:delTIPP.pkg.gokbId],contentType:'xml') { resp, xml ->
@@ -507,19 +466,17 @@ class DataManagerController extends AbstractDebugController {
             def gokbTIPP = oaiRecord.'**'.find { tipp ->
                 tipp.@uuid == delTIPP.gokbId && tipp.status.text() != RDStore.TIPP_DELETED.value
             }
-            if(!gokbTIPP)
-                log.debug("TIPP ${delTIPP.gokbId} inexistent or deleted")
+            if(!gokbTIPP) {
+                deletedWithoutGOKbRecord << result
+            }
             else {
-                log.debug("TIPP ${delTIPP.gokbId} is current in GOKb!")
-                TitleInstancePackagePlatform currTIPPDuplicate = TitleInstancePackagePlatform.findByGokbIdAndStatus(delTIPP.gokbId,RDStore.TIPP_STATUS_CURRENT)
-                if(currTIPPDuplicate) {
-                    log.debug("located current tipp duplicate with same GOKb ID: ${currTIPPDuplicate}")
-                }
+                deletedWithGOKbRecord << result
             }
         }
+
         log.debug("expungeDeletedTIPPS ... returning")
 
-        redirect(controller:'home')
+        [deletedWithoutGOKbRecord:deletedWithoutGOKbRecord,deletedWithGOKbRecord:deletedWithGOKbRecord]
     }
 
     @Secured(['ROLE_ADMIN'])

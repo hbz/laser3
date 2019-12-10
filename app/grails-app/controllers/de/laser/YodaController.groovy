@@ -348,7 +348,7 @@ class YodaController {
     @Secured(['ROLE_YODA'])
     def getTIPPsWithoutGOKBId() {
         log.debug("delete TIPPs without GOKb-ID")
-        List<TitleInstancePackagePlatform> tippsWithoutGOKbID = TitleInstancePackagePlatform.findAllByGokbIdIsNullAndStatusNotEqual(RDStore.TIPP_DELETED)
+        List<TitleInstancePackagePlatform> tippsWithoutGOKbID = TitleInstancePackagePlatform.findAllByGokbIdIsNull()
         List<IssueEntitlement> issueEntitlementsAffected = IssueEntitlement.executeQuery('select ie from IssueEntitlement ie where ie.tipp in :tipps',[tipps:tippsWithoutGOKbID])
         Map<TitleInstancePackagePlatform,Set<IssueEntitlement>> ieTippMap = [:]
         issueEntitlementsAffected.each { IssueEntitlement ie ->

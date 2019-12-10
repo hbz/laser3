@@ -56,7 +56,7 @@ class BookInstance extends TitleInstance {
     }
 
     String printTitleType() {
-        RefdataValue.getByValueAndCategory('EBook',RefdataCategory.TI_TYPE).getI10n('value')
+        RefdataValue.getByValueAndCategory('EBook',RefdataCategory.TI_MEDIUM).getI10n('value')
     }
 
     def getEbookFirstAutorOrFirstEditor(){

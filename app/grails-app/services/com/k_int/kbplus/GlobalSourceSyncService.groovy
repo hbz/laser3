@@ -74,40 +74,50 @@ class GlobalSourceSyncService extends AbstractLockableService {
                 String resumption = null
                 // perform GET request, expection XML response data
                 while(more) {
-                    log.info("in loop, making request ...")
                     Map<String,String> queryParams = [verb:'ListRecords',metadataPrefix:'gokb',resumptionToken:resumption]
                     if(resumption) {
+                        //continue here: check if platforms are extracted correctly
                         queryParams.resumptionToken = resumption
+                        log.info("in loop, making request with link ${source.uri}?verb=ListRecords&metadataPrefix=gokb&resumptionToken=${resumption} ...")
                     }
                     else {
                         String fromParam = oldDate ? xmlTimestampFormat.format(oldDate) : ''
+                        log.info("in loop, making first request, timestamp: ${fromParam} ...")
                         queryParams.metadataPrefix = source.fullPrefix
                         queryParams.from = fromParam
                     }
                     GPathResult listOAI = fetchRecord(source.uri,'packages',queryParams)
                     if(listOAI) {
-                        Set<String> titlesToUpdate = listOAI.'**'.findAll { node ->
+                        List titleNodes = listOAI.'**'.findAll { node ->
                             node.name() == "title"
-                        }.'@uuid'
-                        def platformNodes = listOAI.'**'.findAll { node ->
+                        }
+                        Set<String> titlesToUpdate = []
+                        titleNodes.each { title ->
+                            titlesToUpdate << title.'@uuid'.text()
+                        }
+                        List platformNodes = listOAI.'**'.findAll { node ->
                             node.name() in ["nominalPlatform","platform"]
                         }
                         Set<Map<String,String>> platformsToUpdate = []
                         platformNodes.each { platform ->
                             if(!platformsToUpdate.find { plat -> plat.platformUUID == platform.'@uuid'.text()})
-                                platformsToUpdate << [platformUUID: platform.'@uuid'.text(),platformName: platform.name.text(),platformPrimaryUrl: platform.primaryUrl.text()]
+                                platformsToUpdate << [gokbId: platform.'@uuid'.text(),name: platform.name.text(),primaryUrl: platform.primaryUrl.text()]
                         }
-                        Set<String> providersToUpdate = listOAI.'**'.findAll { node ->
+                        List providerNodes = listOAI.'**'.findAll { node ->
                             node.name() == "nominalProvider"
-                        }.'@uuid'
+                        }
+                        Set<String> providersToUpdate = []
+                        providerNodes.each { provider ->
+                            providersToUpdate << provider.'@uuid'.text()
+                        }
                         titlesToUpdate.each { titleUUID ->
-                            createOrUpdateTitle((String) titleUUID.text())
+                            createOrUpdateTitle(titleUUID)
                         }
                         platformsToUpdate.each { Map<String,String> platformParams ->
                             createOrUpdatePlatform(platformParams)
                         }
                         providersToUpdate.each { providerUUID ->
-                            createOrUpdateProvider((String) providerUUID.text())
+                            createOrUpdateProvider(providerUUID)
                         }
                         listOAI.record.each { NodeChild r ->
                             //continue processing here, original code jumps back to GlobalSourceSyncService
@@ -192,9 +202,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
                             gokbId: tipp.title.'@uuid'.text()
                     ],
                     status: tipp.status.text(),
-                    platformName: tipp.platform.name.text(),
                     platformUUID: tipp.platform.'@uuid'.text(),
-                    platformPrimaryUrl: tipp.platform.primaryUrl.text(),
                     coverages: [],
                     hostPlatformURL: tipp.url.text(),
                     identifiers: [],
@@ -291,7 +299,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
                                     //createOrUpdatePlatform([name:tippB.platformName,gokbId:tippB.platformUUID,primaryUrl:tippB.primaryUrl],tippA.platform)
                                     if(titleInstance) {
                                         tippA.title = titleInstance
-                                        tippA.platform = Platform.findByGokbId(platformUUID)
+                                        tippA.platform = Platform.findByGokbId(tippB.platformUUID)
                                         if(!tippA.save())
                                             throw new SyncException("Error on updating TIPP with UUID ${tippA.gokbId}: ${tippA.errors}")
                                     }
@@ -328,6 +336,9 @@ class GlobalSourceSyncService extends AbstractLockableService {
                         if(providerUUID) {
                             Org provider = Org.findByGokbId(providerUUID)
                             createOrUpdatePackageProvider(provider,result)
+                        }
+                        if(platformUUID) {
+                            result.nominalPlatform = Platform.findByGokbId(platformUUID)
                         }
                         tipps.each { tipp ->
                             addNewTIPP(result,tipp)
@@ -414,12 +425,12 @@ class GlobalSourceSyncService extends AbstractLockableService {
             if(titleRecord.type.text()) {
                 RefdataValue status = RefdataValue.getByValueAndCategory(titleRecord.status.text(),RefdataCategory.TI_STATUS)
                 //titleRecord.medium.text()
-                RefdataValue medium = RefdataValue.getByValueAndCategory(titleRecord.medium.text(),RefdataCategory.TI_TYPE) //misunderstandable mapping ...
+                RefdataValue medium = RefdataValue.getByValueAndCategory(titleRecord.medium.text(),RefdataCategory.TI_MEDIUM) //misunderstandable mapping ...
                 try {
                     switch(titleRecord.type.text()) {
                         case 'BookInstance': titleInstance = titleInstance ? (BookInstance) titleInstance : BookInstance.construct([gokbId:titleUUID])
-                            titleInstance.editionNumber = titleRecord.edititonNumber.text()
-                            titleInstance.editionDifferentiator = titleRecord.edititonDifferentiator.text()
+                            titleInstance.editionNumber = titleRecord.editionNumber.text() ? Integer.parseInt(titleRecord.editionNumber.text()) : null
+                            titleInstance.editionDifferentiator = titleRecord.editionDifferentiator.text()
                             titleInstance.editionStatement = titleRecord.editionStatement.text()
                             titleInstance.volume = titleRecord.volumeNumber.text()
                             titleInstance.dateFirstInPrint = titleRecord.dateFirstInPrint ? escapeService.parseDate(titleRecord.dateFirstInPrint.text()) : null
@@ -655,17 +666,18 @@ class GlobalSourceSyncService extends AbstractLockableService {
     }
 
     void createOrUpdatePlatform(Map<String,String> platformParams) throws SyncException {
-        Platform platform = Platform.findByGokbId(platformParams.platformUUID)
+        Platform platform = Platform.findByGokbId(platformParams.gokbId)
         if(platform) {
-            platform.name = platformParams.platformName
-            platform.primaryUrl = new URL(platformParams.platformPrimaryUrl)
+            platform.name = platformParams.name
         }
         else {
-            platform = new Platform(platformParams)
+            platform = new Platform(name: platformParams.name, gokbId: platformParams.gokbId)
         }
-        platform.normname = platformParams.platformName.trim().toLowerCase()
+        platform.normname = platformParams.name.trim().toLowerCase()
+        if(platformParams.primaryUrl)
+            platform.primaryUrl = new URL(platformParams.primaryUrl)
         if(!platform.save()) {
-            throw new SyncException(platform.errors)
+            throw new SyncException("Error on saving platform: ${platform.errors}")
         }
     }
 
@@ -700,7 +712,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
 
         // This is the boss enemy when refactoring coverage statements ... works so far, is going to be kept
         Set<Map<String, Object>> coverageDiffs = getCoverageDiffs(tippa,(List<Map<String,Object>>) tippb.coverages)
-        if(coverageDiffs.isEmpty())
+        if(!coverageDiffs.isEmpty())
             result.add([field: 'coverage', covDiffs: coverageDiffs])
 
         if (tippa.accessStartDate != tippb.accessStartDate) {

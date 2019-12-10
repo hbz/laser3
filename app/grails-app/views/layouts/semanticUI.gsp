@@ -365,24 +365,6 @@
                             <% /* g:link class="item" controller="admin" action="juspSync">Run JUSP Sync</g:link */ %>
                             <g:link class="item" controller="admin" action="forceSendNotifications">${message(code:'menu.admin.sendNotifications')}</g:link>
 
-                            <div class="ui dropdown item">
-                                ${message(code:'menu.admin.dataManagement')}
-                                <i class="dropdown icon"></i>
-
-                                <div class="menu">
-                                    <g:link class="item" controller="dataManager" action="expungeDeletedTitles" onclick="return confirm('${message(code:'confirm.expunge.deleted.titles')}')">Expunge Deleted Titles</g:link>
-                                    <g:link class="item" controller="dataManager" onclick="return confirm('${message(code:'confirm.expunge.deleted.tipps')}')" action="expungeDeletedTIPPS">Expunge Deleted TIPPS</g:link>
-                                    <g:link class="item" controller="admin" action="titleMerge">${message(code:'menu.admin.titleMerge')}</g:link>
-                                    <g:link class="item" controller="admin" action="tippTransfer">${message(code:'menu.admin.tippTransfer')}</g:link>
-                                    <g:link class="item" controller="admin" action="ieTransfer">${message(code:'menu.admin.ieTransfer')}</g:link>
-                                    <g:link class="item" controller="admin" action="userMerge">${message(code:'menu.admin.userMerge')}</g:link>
-                                    <g:link class="item" controller="admin" action="hardDeletePkgs">${message(code:'menu.admin.hardDeletePkgs')}</g:link>
-                                    <g:link class="item" controller="admin" action="manageDeletedObjects">${message(code: "menu.admin.deletedObjects")}</g:link>
-                                    <g:link class="item" controller="admin" action="databaseStatistics">${message(code: "menu.admin.databaseStatistics")}</g:link>
-                                    <g:link class="item" controller="admin" action="dataConsistency">${message(code: "menu.admin.dataConsistency")}</g:link>
-                                </div>
-                            </div>
-
                             <div class="divider"></div>
 
                             <div class="ui dropdown item">
@@ -457,6 +439,24 @@
                             </div>
 
                             <div class="divider"></div>
+
+                            <div class="ui dropdown item">
+                                ${message(code:'menu.admin.dataManagement')}
+                                <i class="dropdown icon"></i>
+
+                                <div class="menu">
+                                    <g:link class="item" controller="dataManager" action="expungeDeletedTitles" onclick="return confirm('${message(code:'confirm.expunge.deleted.titles')}')">Expunge Deleted Titles</g:link>
+                                    <g:link class="item" controller="dataManager" onclick="return confirm('${message(code:'confirm.expunge.deleted.tipps')}')" action="listDeletedTIPPS">Expunge Deleted TIPPS</g:link>
+                                    <g:link class="item" controller="admin" action="titleMerge">${message(code:'menu.admin.titleMerge')}</g:link>
+                                    <g:link class="item" controller="admin" action="tippTransfer">${message(code:'menu.admin.tippTransfer')}</g:link>
+                                    <g:link class="item" controller="admin" action="ieTransfer">${message(code:'menu.admin.ieTransfer')}</g:link>
+                                    <g:link class="item" controller="admin" action="userMerge">${message(code:'menu.admin.userMerge')}</g:link>
+                                    <g:link class="item" controller="admin" action="hardDeletePkgs">${message(code:'menu.admin.hardDeletePkgs')}</g:link>
+                                    <g:link class="item" controller="admin" action="manageDeletedObjects">${message(code: "menu.admin.deletedObjects")}</g:link>
+                                    <g:link class="item" controller="admin" action="databaseStatistics">${message(code: "menu.admin.databaseStatistics")}</g:link>
+                                    <g:link class="item" controller="admin" action="dataConsistency">${message(code: "menu.admin.dataConsistency")}</g:link>
+                                </div>
+                            </div>
 
                             <div class="ui dropdown item">
                                 ${message(code:'menu.admin.syncManagement')}

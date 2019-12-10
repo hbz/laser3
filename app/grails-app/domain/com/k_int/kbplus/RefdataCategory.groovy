@@ -31,7 +31,7 @@ class RefdataCategory extends AbstractI10nTranslatable {
     @Transient
     public static final TIPP_STATUS = 'TIPP Status'
     @Transient
-    public static final TI_TYPE = 'Title Type'
+    public static final TI_MEDIUM = 'Title Medium'
     @Transient
     public static final PKG_PAYMENTTYPE = 'Package Payment Type'
     @Transient

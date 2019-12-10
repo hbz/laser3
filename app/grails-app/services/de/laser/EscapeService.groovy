@@ -41,7 +41,7 @@ class EscapeService {
                     parsed_date = next.parse(datestr.toString())
                 }
                 catch (Exception e) {
-                    log.info("Invalid parser. Trying next one ...")
+                    log.info("Invalid parser for ${datestr}. Trying next one ...")
                 }
             }
         }

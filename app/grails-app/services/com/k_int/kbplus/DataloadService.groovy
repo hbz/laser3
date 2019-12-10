@@ -163,7 +163,7 @@ class DataloadService {
                     result.publisher = ti.getPublisher()?.name ?: ''
                     result.sortTitle = ti.sortTitle
 
-                    result.typTitle = ti.type?.value
+                    result.typTitle = ti.medium?.value
 
                     result.identifiers = []
                     ti.ids?.each { ident ->
