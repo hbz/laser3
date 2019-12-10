@@ -186,10 +186,6 @@ a.editable-click.editable-disabled:hover {
   text-decoration: none;
 }
 */
-.editable-empty:after {
-    content: "\f303";
-    background: 0 0!important;
-}
 .editable-empty, .editable-empty:hover, .editable-empty:focus{
     background:#f1ebe5;
     padding: 0 4px;
