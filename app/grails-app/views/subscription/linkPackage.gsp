@@ -21,25 +21,26 @@
     <g:render template="actions"/>
 </semui:controlButtons>
 
-<h1 class="ui left floated aligned icon header la-clear-before"><semui:headerIcon/>${subscriptionInstance.name}</h1>
-<h2 class="ui left floated aligned icon header la-clear-before">${message(code: 'subscription.details.linkPackage.heading')}</h2>
+<h1 class="ui left aligned icon header la-clear-before"><semui:headerIcon/>${subscriptionInstance.name}</h1>
+<h2 class="ui left aligned icon header la-clear-before">${message(code: 'subscription.details.linkPackage.heading')}</h2>
 
 <semui:filter>
     <g:form name="LinkPackageForm" action="linkPackage" method="get" params="${params}" class="ui form">
         <input type="hidden" name="offset" value="${params.offset}"/>
         <input type="hidden" name="id" value="${params.id}"/>
 
-        <div class="field">
-            <label for="q">${message(code: 'package.show.pkg_name', default: 'Package Name')}</label>
-            <input id="q" name="q" value="${params.q}"/>
-        </div>
+            <div class="field">
+                <label for="q">${message(code: 'package.show.pkg_name', default: 'Package Name')}</label>
+                <input id="q" name="q" value="${params.q}"/>
+            </div>
 
-        <div class="field">
-            <button type="submit" name="search" value="yes"
-                    class="ui secondary button">${message(code: 'default.button.filter.label', default: 'Filter')}</button>
-            <a href="${request.forwardURI}"
-               class="ui button">${message(code: 'default.button.filterreset.label')}</a>
-        </div>
+            <div class="field la-field-right-aligned">
+                <a href="${request.forwardURI}"
+                   class="ui button">${message(code: 'default.button.filterreset.label')}</a>
+                <button type="submit" name="search" value="yes"
+                        class="ui secondary button">${message(code: 'default.button.filter.label', default: 'Filter')}</button>
+            </div>
+
     </g:form>
 </semui:filter>
 
