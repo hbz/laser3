@@ -839,7 +839,7 @@ select distinct oap from OrgAccessPoint oap
     and oapl.platform=:platform
     
 """
-      return OrgAccessPointLink.executeQuery(hql, [sub:this, org:org, platform:platform])
+      return OrgAccessPoint.executeQuery(hql, [sub:this, org:org, platform:platform])
   }
 
   def getHoldingTypes() {
