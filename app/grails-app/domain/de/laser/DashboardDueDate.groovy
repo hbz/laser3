@@ -26,6 +26,8 @@ class DashboardDueDate {
     boolean isHidden
     Date lastUpdated
 
+    Date dateCreated
+
     DashboardDueDate(messageSource, Subscription obj, boolean isManualCancellationDate, User responsibleUser, Org responsibleOrg, boolean isDone, boolean isHidden){
         this(
                 isManualCancellationDate? messageSource.getMessage('dashboardDueDate.subscription.manualCancellationDate', null, Locale.GERMAN) :
@@ -85,6 +87,7 @@ class DashboardDueDate {
         responsibleOrg          column: 'das_responsible_org_fk',  index: 'das_responsible_org_fk_idx'
         isDone                  column: 'das_is_done'
         isHidden                column: 'das_is_hidden'
+        dateCreated             column: 'das_date_created'
         autoTimestamp true
     }
 
@@ -99,6 +102,7 @@ class DashboardDueDate {
         isDone                  (nullable:false, blank:false)
         isHidden                (nullable:false, blank:false)
         lastUpdated             (nullable:true, blank:false)
+        dateCreated (nullable: true, blank: false)
     }
 
     private static String getPropertyValue(String messageKey) {

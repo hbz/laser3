@@ -72,6 +72,96 @@ ${surveyInfo?.name}
 
     </div>
 
+
+    <div class="${(actionName == 'copyProperties' && params.tab == 'surveyProperties') ? 'active' : ''} step">
+
+        <div class="content">
+            <div class="title">
+                <g:link controller="survey" action="copyProperties"
+                        params="[id: surveyInfo?.id, surveyConfigID: surveyConfig?.id, tab: 'surveyProperties']">
+                    ${message(code: 'copyProperties.surveyProperties.short')}
+                </g:link>
+            </div>
+
+            <div class="description">
+                <i class="tags icon"></i>${message(code: 'properties')}
+            </div>
+        </div>
+
+        <g:if test="${transferWorkflow && transferWorkflow.transferSurveyProperties == 'true'}">
+            <g:link controller="survey" action="surveyTransferConfig"
+                    params="[id: surveyInfo?.id, surveyConfigID: surveyConfig?.id, transferSurveyProperties: false]">
+                <i class="check bordered large green icon"></i>
+            </g:link>
+        </g:if>
+        <g:else>
+            <g:link controller="survey" action="surveyTransferConfig"
+                    params="[id: surveyInfo?.id, surveyConfigID: surveyConfig?.id, transferSurveyProperties: true]">
+                <i class="close bordered large red icon"></i>
+            </g:link>
+        </g:else>
+    </div>
+
+    <div class="${(actionName == 'copyProperties' && params.tab == 'customProperties') ? 'active' : ''}  step">
+
+        <div class="content">
+            <div class="title">
+                <g:link controller="survey" action="copyProperties"
+                        params="[id: surveyInfo?.id, surveyConfigID: surveyConfig?.id, tab: 'customProperties']">
+                    ${message(code: 'copyProperties.customProperties.short')}
+                </g:link>
+            </div>
+
+            <div class="description">
+                <i class="tags icon"></i>${message(code: 'properties')}
+            </div>
+        </div>
+
+        <g:if test="${transferWorkflow && transferWorkflow.transferCustomProperties == 'true'}">
+            <g:link controller="survey" action="surveyTransferConfig"
+                    params="[id: surveyInfo?.id, surveyConfigID: surveyConfig?.id, transferCustomProperties: false]">
+                <i class="check bordered large green icon"></i>
+            </g:link>
+        </g:if>
+        <g:else>
+            <g:link controller="survey" action="surveyTransferConfig"
+                    params="[id: surveyInfo?.id, surveyConfigID: surveyConfig?.id, transferCustomProperties: true]">
+                <i class="close bordered large red icon"></i>
+            </g:link>
+        </g:else>
+
+    </div>
+
+    <div class="${(actionName == 'copyProperties' && params.tab == 'privateProperties') ? 'active' : ''} step">
+
+        <div class="content">
+            <div class="title">
+                <g:link controller="survey" action="copyProperties"
+                        params="[id: surveyInfo?.id, surveyConfigID: surveyConfig?.id, tab: 'privateProperties']">
+                    ${message(code: 'copyProperties.privateProperties.short')}
+                </g:link>
+            </div>
+
+            <div class="description">
+                <i class="tags icon"></i>${message(code: 'properties')}
+            </div>
+        </div>
+
+        <g:if test="${transferWorkflow && transferWorkflow.transferPrivateProperties == 'true'}">
+            <g:link controller="survey" action="surveyTransferConfig"
+                    params="[id: surveyInfo?.id, surveyConfigID: surveyConfig?.id, transferPrivateProperties: false]">
+                <i class="check bordered large green icon"></i>
+            </g:link>
+        </g:if>
+        <g:else>
+            <g:link controller="survey" action="surveyTransferConfig"
+                    params="[id: surveyInfo?.id, surveyConfigID: surveyConfig?.id, transferPrivateProperties: true]">
+                <i class="close bordered large red icon"></i>
+            </g:link>
+        </g:else>
+
+    </div>
+
     <div class="${(actionName == 'copySurveyCostItems') ? 'active' : ''} step">
 
         <div class="content">
@@ -102,94 +192,6 @@ ${surveyInfo?.name}
 
     </div>
 
-    <div class="${(actionName == 'copyProperties' && params.tab == 'surveyProperties') ? 'active' : ''} step">
-
-        <div class="content">
-            <div class="title">
-                <g:link controller="survey" action="copyProperties"
-                        params="[id: surveyInfo?.id, surveyConfigID: surveyConfig?.id, tab: 'surveyProperties']">
-                    ${message(code: 'copyProperties.surveyProperties')}
-                </g:link>
-            </div>
-
-            <div class="description">
-                <i class="tags icon"></i>${message(code: 'properties')}
-            </div>
-        </div>
-
-        <g:if test="${transferWorkflow && transferWorkflow.transferSurveyProperties == 'true'}">
-            <g:link controller="survey" action="surveyTransferConfig"
-                    params="[id: surveyInfo?.id, surveyConfigID: surveyConfig?.id, transferSurveyProperties: false]">
-                <i class="check bordered large green icon"></i>
-            </g:link>
-        </g:if>
-        <g:else>
-            <g:link controller="survey" action="surveyTransferConfig"
-                    params="[id: surveyInfo?.id, surveyConfigID: surveyConfig?.id, transferSurveyProperties: true]">
-                <i class="close bordered large red icon"></i>
-            </g:link>
-        </g:else>
-    </div>
-
-    <div class="${(actionName == 'copyProperties' && params.tab == 'customProperties') ? 'active' : ''}  step">
-
-        <div class="content">
-            <div class="title">
-                <g:link controller="survey" action="copyProperties"
-                        params="[id: surveyInfo?.id, surveyConfigID: surveyConfig?.id, tab: 'customProperties']">
-                    ${message(code: 'copyProperties.customProperties')}
-                </g:link>
-            </div>
-
-            <div class="description">
-                <i class="tags icon"></i>${message(code: 'properties')}
-            </div>
-        </div>
-
-        <g:if test="${transferWorkflow && transferWorkflow.transferCustomProperties == 'true'}">
-            <g:link controller="survey" action="surveyTransferConfig"
-                    params="[id: surveyInfo?.id, surveyConfigID: surveyConfig?.id, transferCustomProperties: false]">
-                <i class="check bordered large green icon"></i>
-            </g:link>
-        </g:if>
-        <g:else>
-            <g:link controller="survey" action="surveyTransferConfig"
-                    params="[id: surveyInfo?.id, surveyConfigID: surveyConfig?.id, transferCustomProperties: true]">
-                <i class="close bordered large red icon"></i>
-            </g:link>
-        </g:else>
-
-    </div>
-
-    <div class="${(actionName == 'copyProperties' && params.tab == 'privateProperties') ? 'active' : ''} step">
-
-        <div class="content">
-            <div class="title">
-                <g:link controller="survey" action="copyProperties"
-                        params="[id: surveyInfo?.id, surveyConfigID: surveyConfig?.id, tab: 'privateProperties']">
-                    ${message(code: 'copyProperties.privateProperties')}
-                </g:link>
-            </div>
-
-            <div class="description">
-                <i class="tags icon"></i>${message(code: 'properties')}
-            </div>
-        </div>
-
-        <g:if test="${transferWorkflow && transferWorkflow.transferPrivateProperties == 'true'}">
-            <g:link controller="survey" action="surveyTransferConfig"
-                    params="[id: surveyInfo?.id, surveyConfigID: surveyConfig?.id, transferPrivateProperties: false]">
-                <i class="check bordered large green icon"></i>
-            </g:link>
-        </g:if>
-        <g:else>
-            <g:link controller="survey" action="surveyTransferConfig"
-                    params="[id: surveyInfo?.id, surveyConfigID: surveyConfig?.id, transferPrivateProperties: true]">
-                <i class="close bordered large red icon"></i>
-            </g:link>
-        </g:else>
-
-    </div>
 </div>
 
 <semui:messages data="${flash}"/>
@@ -273,7 +275,7 @@ ${surveyInfo?.name}
                     <th>${message(code: 'subscription.details.consortiaMembers.label')}</th>
 
                     <g:if test="${params.tab == 'surveyProperties'}">
-                        <th></th>
+                        <th><g:message code="renewalWithSurvey.parentSubscription"/></th>
                         <th>
                             <g:form id="selectedPropertyForm" action="copyProperties" method="post"
                                     params="${params + [id: surveyInfo.id, surveyConfigID: surveyConfig.id, tab: params.tab]}">
@@ -288,7 +290,7 @@ ${surveyInfo?.name}
                         </th>
                     </g:if>
                     <g:else>
-                        <th>
+                        <th><g:message code="renewalWithSurvey.parentSubscription"/>
                             <g:form action="copyProperties" method="post"
                                     params="${params + [id: surveyInfo.id, surveyConfigID: surveyConfig.id, tab: params.tab]}">
                                 <laser:select name="selectedProperty"
@@ -301,7 +303,7 @@ ${surveyInfo?.name}
                             </g:form>
                         </th>
                     </g:else>
-                    <th></th>
+                    <th><g:message code="renewalWithSurvey.parentSuccessorSubscription"/></th>
                     <th></th>
                 </tr>
                 </thead>
@@ -505,7 +507,7 @@ ${surveyInfo?.name}
 
                                 </g:if><g:else>
 
-                                    ${message(code: 'subscription.propertiesMembers.noCustomProperty')}
+                                    ${message(code: 'copyProperties.surveyProperties.noProperty')}
 
                                 </g:else>
                             </td>
@@ -633,44 +635,38 @@ ${surveyInfo?.name}
                 </tbody>
             </table>
 
-
             <div class="two fields">
                 <div class="eight wide field" style="text-align: left;">
-                    <button class="ui button positive"
-                            type="submit">${message(code: 'copyProperties.copyProperties', args: [message(code: 'copyProperties.' + params.tab)])}</button>
                 </div>
 
-
                 <div class="eight wide field" style="text-align: right;">
-                    <g:if test="${params.tab != 'privateProperties'}">
-                        <g:link class="ui button" controller="survey" action="copyProperties"
-                                params="[id: surveyInfo?.id, surveyConfigID: surveyConfig?.id, tab: ((params.tab == 'customProperties') ? 'privateProperties' : ((params.tab == 'surveyProperties') ? 'customProperties' : 'surveyProperties'))]">
-                            ${message(code: 'copySurveyCostItems.workFlowSteps.nextStep')}
-                        </g:link>
-                    </g:if>
+                    <button class="ui button positive"
+                            type="submit">${message(code: 'copyProperties.copyProperties', args: [message(code: 'copyProperties.' + params.tab)])}</button>
                 </div>
             </div>
         </g:form>
     </g:if>
     <g:else>
         <g:message code="copyProperties.noCopyProperties" args="[message(code: 'copyProperties.' + params.tab)]"/>
-
-        <div class="two fields">
-            <div class="eight wide field" style="text-align: left;">
-            </div>
-
-
-            <div class="eight wide field" style="text-align: right;">
-                <g:if test="${params.tab != 'privateProperties'}">
-                    <g:link class="ui button" controller="survey" action="copyProperties"
-                            params="[id: surveyInfo?.id, surveyConfigID: surveyConfig?.id, tab: ((params.tab == 'customProperties') ? 'privateProperties' : ((params.tab == 'surveyProperties') ? 'customProperties' : 'surveyProperties'))]">
-                        ${message(code: 'copySurveyCostItems.workFlowSteps.nextStep')}
-                    </g:link>
-                </g:if>
-            </div>
-        </div>
     </g:else>
 </semui:form>
+
+<div class="sixteen wide field" style="text-align: center;">
+<g:if test="${params.tab != 'privateProperties'}">
+    <g:link class="ui button" controller="survey" action="copyProperties"
+            params="[id: surveyInfo?.id, surveyConfigID: surveyConfig?.id, tab: ((params.tab == 'customProperties') ? 'privateProperties' : ((params.tab == 'surveyProperties') ? 'customProperties' : 'surveyProperties'))]">
+        ${message(code: 'copySurveyCostItems.workFlowSteps.nextStep')}
+    </g:link>
+</g:if>
+
+<g:if test="${params.tab == 'privateProperties'}">
+    <g:link class="ui button" controller="survey" action="copySurveyCostItems"
+            params="[id: surveyInfo?.id, surveyConfigID: surveyConfig?.id]">
+        ${message(code: 'copySurveyCostItems.workFlowSteps.nextStep')}
+    </g:link>
+</g:if>
+</div>
+
 <script language="JavaScript">
     $('#propertiesToggler').click(function () {
         if ($(this).prop('checked')) {

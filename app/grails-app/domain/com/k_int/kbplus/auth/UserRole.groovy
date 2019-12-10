@@ -11,9 +11,19 @@ class UserRole implements Serializable, Comparable {
     User user
     Role role
 
+    Date dateCreated
+    Date lastUpdated
+
     static mapping = {
         id composite: ['role', 'user']
         version false
+        lastUpdated     column: 'ur_last_updated'
+        dateCreated     column: 'ur_date_created'
+    }
+
+    static constraints = {
+        lastUpdated (nullable: true, blank: false)
+        dateCreated (nullable: true, blank: false)
     }
 
     boolean equals(other) {
