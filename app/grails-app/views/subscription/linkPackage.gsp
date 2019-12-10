@@ -219,11 +219,10 @@
             <div class="content">
                 <div class="header">${message(code: 'subscription.details.linkPackage.current', default: 'Current Links', args: [subscriptionInstance.name])}</div>
             </div>
-
-            <div class="content">
-                <g:each in="${subscriptionInstance.packages.sort { it.pkg.name }}" var="sp">
+            <g:each in="${subscriptionInstance.packages.sort { it.pkg.name }}" var="sp">
+                <div class="content">
                     <div class="item"><g:link controller="package" action="show"
-                                              id="${sp.pkg.id}">${sp.pkg.name}</g:link>
+                                          id="${sp.pkg.id}">${sp.pkg.name}</g:link>
                         <g:set var="hasCostItems" value="${CostItem.executeQuery('select ci from CostItem ci where ci.subPkg.subscription = :sub and ci.subPkg = :sp',[sub:subscriptionInstance,sp:sp])}"/>
                         <br>
                         <g:if test="${editable && !hasCostItems}">
@@ -242,20 +241,12 @@
                             </div>
                         </g:elseif>
                         <br/>
-                    </div><hr>
-                </g:each>
-            </div>
+                    </div>
+                </div>
+            </g:each>
         </div>
     </div>
-</div>
 
-<div class="ui segment">
-
-    <div class="ui dimmer">
-        <div class="ui large text loader">Die Paketverküpfung kann einige Zeit beanspruchen!</div>
-    </div>
-
-</div>
 
 <div id="magicArea"></div>
 
