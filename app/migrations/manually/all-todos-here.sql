@@ -426,5 +426,52 @@
 -- update survey_property set surpro_refdata_category = 'Category A-F', surpro_type = 'class com.k_int.kbplus.RefdataValue' where surpro_name = 'Category A-F';
 -- update survey_property set surpro_refdata_category = 'Access choice remote', surpro_name= 'Access choice remote', surpro_type = 'class com.k_int.kbplus.RefdataValue' where surpro_name = 'Access choice';
 
-
+-- 2019-12-05
+-- changesets in changelog-2019-12-10.groovy
+alter table user_org alter column uo_date_created type timestamp using uo_date_created::timestamp;
+update user_org set uo_date_created = (uo_date_created + '1 hour'::interval);
+alter table user_org alter column uo_last_updated type timestamp using uo_last_updated::timestamp;
+update user_org set uo_last_updated = (uo_last_updated + '1 hour'::interval);
+alter table user_role alter column ur_date_created type timestamp using ur_date_created::timestamp;
+update user_role set ur_date_created = (ur_date_created + '1 hour'::interval);
+alter table user_role alter column ur_last_updated type timestamp using ur_last_updated::timestamp;
+update user_role set ur_last_updated = (ur_last_updated + '1 hour'::interval);
+alter table audit_config alter column auc_date_created type timestamp using auc_date_created::timestamp;
+update audit_config set auc_date_created = (auc_date_created + '1 hour'::interval);
+alter table audit_config alter column auc_last_updated type timestamp using auc_last_updated::timestamp;
+update audit_config set auc_last_updated = (auc_last_updated + '1 hour'::interval);
+alter table dashboard_due_date alter column das_date_created type timestamp using das_date_created::timestamp;
+update dashboard_due_date set das_date_created = (das_date_created + '1 hour'::interval);
+alter table i10n_translation alter column i10n_date_created type timestamp using i10n_date_created::timestamp;
+update i10n_translation set i10n_date_created = (i10n_date_created + '1 hour'::interval);
+alter table i10n_translation alter column i10n_last_updated type timestamp using i10n_last_updated::timestamp;
+update i10n_translation set i10n_last_updated = (i10n_last_updated + '1 hour'::interval);
+alter table issue_entitlement_coverage alter column ic_date_created type timestamp using ic_date_created::timestamp;
+update issue_entitlement_coverage set ic_date_created = (ic_date_created + '1 hour'::interval);
+alter table issue_entitlement_coverage alter column ic_last_updated type timestamp using ic_last_updated::timestamp;
+update issue_entitlement_coverage set ic_last_updated = (ic_last_updated + '1 hour'::interval);
+alter table tippcoverage alter column tc_date_created type timestamp using tc_date_created::timestamp;
+update tippcoverage set tc_date_created = (tc_date_created + '1 hour'::interval);
+alter table tippcoverage alter column tc_last_updated type timestamp using tc_last_updated::timestamp;
+update tippcoverage set tc_last_updated = (tc_last_updated + '1 hour'::interval);
+alter table price_item alter column pi_date_created type timestamp using pi_date_created::timestamp;
+update price_item set pi_date_created = (pi_date_created + '1 hour'::interval);
+alter table price_item alter column pi_last_updated type timestamp using pi_last_updated::timestamp;
+update price_item set pi_last_updated = (pi_last_updated + '1 hour'::interval);
+alter table property_definition_group_item alter column pde_date_created type timestamp using pde_date_created::timestamp;
+update property_definition_group_item set pde_date_created = (pde_date_created + '1 hour'::interval);
+alter table property_definition_group_item alter column pde_last_updated type timestamp using pde_last_updated::timestamp;
+update property_definition_group_item set pde_last_updated = (pde_last_updated + '1 hour'::interval);
+alter table property_definition alter column pd_date_created type timestamp using pd_date_created::timestamp;
+update property_definition set pd_date_created = (pd_date_created + '1 hour'::interval);
+alter table property_definition alter column pd_last_updated type timestamp using pd_last_updated::timestamp;
+update property_definition set pd_last_updated = (pd_last_updated + '1 hour'::interval);
+alter table property_definition_group alter column pdg_date_created type timestamp using pdg_date_created::timestamp;
+update property_definition_group set pdg_date_created = (pdg_date_created + '1 hour'::interval);
+alter table property_definition_group alter column pdg_last_updated type timestamp using pdg_last_updated::timestamp;
+update property_definition_group set pdg_last_updated = (pdg_last_updated + '1 hour'::interval);
+alter table property_definition_group_binding alter column pbg_date_created type timestamp using pbg_date_created::timestamp;
+update property_definition_group_binding set pbg_date_created = (pbg_date_created + '1 hour'::interval);
+alter table property_definition_group_binding alter column pbg_last_updated type timestamp using pbg_last_updated::timestamp;
+update property_definition_group_binding set pbg_last_updated = (pbg_last_updated + '1 hour'::interval);
 
