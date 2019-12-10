@@ -1456,3 +1456,6 @@ a.ui.basic.label:hover {
   color: white;
   text-decoration: underline;
 }
+.ui.label.la-advanced-label {
+  background-color: #d3dae3;
+}

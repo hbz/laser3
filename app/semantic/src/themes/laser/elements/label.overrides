@@ -165,3 +165,6 @@
     }
   }
 }
+.ui.label.la-advanced-label {
+  background-color: #d3dae3;
+}

@@ -299,7 +299,7 @@ class DataloadService {
 
                     result.members = []
                     orgs.each{ org ->
-                        result.members.add([dbId: org.id, name: org.name])
+                        result.members.add([dbId: org.id, name: org.name, shortname: org.shortname, sortname: org.sortname])
                     }
                     break
                 case TemplateSupport.CALCULATED_TYPE_LOCAL:
@@ -362,7 +362,7 @@ class DataloadService {
 
                         result.members = []
                         orgs.each{ org ->
-                            result.members.add([dbId: org.id, name: org.name])
+                            result.members.add([dbId: org.id, name: org.name, shortname: org.shortname, sortname: org.sortname])
                         }
 
                         break
@@ -380,7 +380,7 @@ class DataloadService {
 
                         result.members = []
                         orgs.each{ org ->
-                            result.members.add([dbId: org.id, name: org.name])
+                            result.members.add([dbId: org.id, name: org.name, shortname: org.shortname, sortname: org.sortname])
                         }
                         break
                     case TemplateSupport.CALCULATED_TYPE_LOCAL:

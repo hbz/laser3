@@ -22,7 +22,7 @@ class EscapeService {
         String output = input.replaceAll(' ','_')
         String[] escapingChars = ['ä','ö','ü','ß','Ä','Ö','Ü']
         String[] replacement = ['ae','oe','ue','ss','Ae','Oe','Ue']
-        output = StringUtils.replaceEach(output,escapingChars,replacement).replaceAll('[-,\\\\./;:]','')
+        output = StringUtils.replaceEach(output,escapingChars,replacement).replaceAll('[\'-,\\\\./;:]','')
         output
     }
 

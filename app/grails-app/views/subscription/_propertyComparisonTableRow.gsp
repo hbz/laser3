@@ -1,4 +1,4 @@
-<%@page import="com.k_int.properties.PropertyDefinition; de.laser.helper.RDStore;com.k_int.kbplus.*" %>
+<%@page import="com.k_int.properties.PropertyDefinition; de.laser.helper.RDStore; de.laser.AuditConfig; com.k_int.kbplus.SubscriptionCustomProperty;" %>
 <laser:serviceInjection/>
 
 <g:set var="overwriteEditable" value="${false}"/>
@@ -91,6 +91,15 @@
                             </g:if>
                             <g:if test="${propValues.get(sourceSubscription)?.size() > 1}"><br></g:if>
                         </div>
+                        <g:if test="${isRenewSub && accessService.checkPermAffiliation("ORG_CONSORTIUM_SURVEY,ORG_CONSORTIUM", "INST_USER")}">
+                            <g:if test="${propValue instanceof SubscriptionCustomProperty}">
+                                <div class="la-copyElements-flex-item right aligned wide column">
+                                    <g:message code="subscription.details.copyElementsIntoSubscription.audit"/>:&nbsp;
+                                    <input type="checkbox" name="auditProperties" value="${propValue.id}" ${!AuditConfig.getConfig(propValue) ? '' : 'checked' }/>
+
+                                </div>
+                            </g:if>
+                        </g:if>
 
                         %{--COPY:--}%
                         <g:if test="${propValues.containsKey(sourceSubscription)}">
@@ -152,6 +161,19 @@
                             </g:if>
                             <g:if test="${propValues.get(targetSubscription)?.size() > 1}"><br></g:if>
                         </div>
+                        <g:if test="${isRenewSub && accessService.checkPermAffiliation("ORG_CONSORTIUM_SURVEY,ORG_CONSORTIUM", "INST_USER")}">
+                            <g:if test="${propValue instanceof SubscriptionCustomProperty}">
+                                <div class="la-copyElements-flex-item">
+                                    <g:if test="${! AuditConfig.getConfig(propValue)}">
+                                        <i class="icon la-thumbtack slash la-js-editmode-icon"></i>
+                                    </g:if>
+                                    <g:else>
+                                        <i class="thumbtack icon la-js-editmode-icon"></i>
+                                    </g:else>
+                                </div>
+                            </g:if>
+                        </g:if>
+
                         %{--DELETE:--}%
                         <div class="ui checkbox la-toggle-radio la-noChange">
                             <g:checkBox class="bulkcheck"  name="subscription.deleteProperty" data-multipleOccurrence="${propKey.multipleOccurrence}"value="${genericOIDService.getOID(propValue)}" data-action="delete" checked="${false}"/>

@@ -17,18 +17,25 @@ class AuditConfig {
 
     String referenceField
 
+    Date dateCreated
+    Date lastUpdated
+
     static mapping = {
         id              column: 'auc_id'
         version         column: 'auc_version'
         referenceId     column: 'auc_reference_id',    index:'auc_ref_idx'
         referenceClass  column: 'auc_reference_class', index:'auc_ref_idx'
         referenceField  column: 'auc_reference_field'
+        lastUpdated     column: 'auc_last_updated'
+        dateCreated     column: 'auc_date_created'
     }
 
     static constraints = {
         referenceId     (nullable:false, blank:false)
         referenceClass  (nullable:false, blank:false, maxSize:255)
         referenceField  (nullable:false, blank:false, maxSize:255)
+        lastUpdated     (nullable: true, blank: false)
+        dateCreated     (nullable: true, blank: false)
     }
 
     static addConfig(Object obj) {
