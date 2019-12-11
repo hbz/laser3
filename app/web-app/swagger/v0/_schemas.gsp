@@ -589,10 +589,13 @@
           type: array
           items:
             $ref: "#/components/schemas/Property"
-<%--        roles:
+        roles:
           type: array
           items:
-            $ref: "#/definitions/PersonRole(usedAsFunction)" --%>
+            type: string
+          description: Mapping RefdataCategory "Person Function"
+          enum:
+            [${ com.k_int.kbplus.RefdataCategory.getAllRefdataValues('Person Function').collect{ it.value }.join(', ') }]
         title:
           type: string
 

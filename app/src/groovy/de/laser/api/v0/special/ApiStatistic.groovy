@@ -240,7 +240,8 @@ class ApiStatistic {
                 result.add(sub)
             }
             else {
-                result.add( ['NO_APPROVAL': subPkg.subscription.globalUID] )
+                // result.add( ['NO_APPROVAL': subPkg.subscription.globalUID] )
+                result.add( ['NO_APPROVAL': 'NO_APPROVAL'] )
             }
         }
 
