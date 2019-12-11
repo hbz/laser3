@@ -18,7 +18,7 @@
                                   from="${com.k_int.kbplus.Person.getAllRefdataValues('Person Contact Type')}"
                                   optionKey="id"
                                   optionValue="value"
-                                  value="${personInstance?.contactType?.id ?: RDStore.CONTACT_TYPE_PERSONAL?.id}"
+                                  value="${personInstance?.contactType?.id ?: RDStore.CONTACT_TYPE_PERSONAL.id}"
                                   noSelection="['': '']"/>
                 </div>
             </div>
@@ -292,7 +292,7 @@
                 }
              }
         });
-        var fc = "${RDStore.CONTACT_TYPE_FUNCTIONAL?.getI10n('value')}";
+        var fc = "${RDStore.CONTACT_TYPE_FUNCTIONAL.getI10n('value')}";
 
         $(document).ready( function(){
             changeForm( ($("#${modalId} #contactType option:selected").text() == fc), "${modalId}")
