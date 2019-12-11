@@ -2,7 +2,11 @@
 
 **Ticket    Date    Branch      Author  Feature/Bug     Description/Keywords**
  
+
 1971    11.12.2019  hbz-dev     David   Feature     "Organisiert durch" automatisch beim Anlegen von Inst-Admins setzen
+
+1968    10.12.2019  rc1.2       Andreas Bug         Bezeichnung und Darstellung bei Dokumentensicht einer Fremdeinrichtung angepasst 
+
 
 1960    10.12.2019  rc1.2       Andreas Bug         Owner-Einrichtungen von Dokumenten werden bei Kopie von Lizenzen und Verträgen mit angelegt 
  
