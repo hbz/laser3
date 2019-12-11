@@ -18,7 +18,6 @@
     <g:render template="nav" />
 
     <semui:messages data="${flash}" />
-
     <g:if test="${false}">
         <div class="content ui form">
             <div class="fields">

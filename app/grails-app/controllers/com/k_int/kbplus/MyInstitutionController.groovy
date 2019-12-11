@@ -4010,25 +4010,26 @@ AND EXISTS (
         def result = setResultGenerics()
 
         result.editable = true // true, because action is protected
-        result.privatePropertyDefinitions = PropertyDefinition.findAllWhere([tenant: result.institution])
+        result.propertyDefinitions = PropertyDefinition.findAllWhere([tenant: result.institution])
 
         if('add' == params.cmd) {
             flash.message = addPrivatePropertyDefinition(params)
-            result.privatePropertyDefinitions = PropertyDefinition.findAllWhere([tenant: result.institution])
+            result.propertyDefinitions = PropertyDefinition.findAllWhere([tenant: result.institution])
         }
         else if('delete' == params.cmd) {
             flash.message = deletePrivatePropertyDefinition(params)
-            result.privatePropertyDefinitions = PropertyDefinition.findAllWhere([tenant: result.institution])
+            result.propertyDefinitions = PropertyDefinition.findAllWhere([tenant: result.institution])
         }
 
         RuleBasedCollator clt = SortUtil.getCollator()
-        result.privatePropertyDefinitions.sort{a, b -> clt.compare(
+        result.propertyDefinitions.sort{a, b -> clt.compare(
                 message(code: "propertyDefinition.${a.descr}.label", args:[]) + '|' + a.name,
                 message(code: "propertyDefinition.${b.descr}.label", args:[]) + '|' + b.name
         )}
 
         result.language = LocaleContextHolder.getLocale().toString()
-        result
+        result.propertyType = 'private'
+        render view: 'managePropertyDefinitions', model: result
     }
 
     @DebugAnnotation(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_EDITOR")
@@ -4051,7 +4052,8 @@ AND EXISTS (
         result.usedPdList = usedPdList
 
         result.language = LocaleContextHolder.getLocale().toString()
-        result
+        result.propertyType = 'custom'
+        render view: 'managePropertyDefinitions', model: result
     }
 
     @Secured(['ROLE_USER'])
