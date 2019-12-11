@@ -1,15 +1,21 @@
 package de.laser.controller
 
+import de.laser.ContextService
 import de.laser.helper.DebugUtil
+import de.laser.helper.EhcacheWrapper
+import de.laser.helper.SessionCacheWrapper
+import grails.util.Holders
 
 abstract class AbstractDebugController {
 
     def debugService
+    def contextService
 
     def beforeInterceptor = {
-        DebugUtil debugUtil = debugService.getDebugUtilAsSingleton()
 
-        debugUtil.startSimpleBench(session.id + '#' + actionUri)
+        SessionCacheWrapper cache = contextService.getSessionCache()
+        DebugUtil debugUtil = cache.get('debugUtil')
+        debugUtil.startSimpleBench(actionUri)
     }
 
 

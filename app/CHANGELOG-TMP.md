@@ -2,6 +2,8 @@
 
 **Ticket    Date    Branch      Author  Feature/Bug     Description/Keywords**
  
+1966    09.12.2019  rc1.2       David   Bug         DebugUtils werfen Fehler im Log
+
  /      10.12.2019  rc1.2       Andreas Bug         OID-Auflösung in addEntitlements korrigiert
  
  /      10.12.2019  hbz-dev     Moe     Feature     Für restliche Domain Klassen lastUpdated und dateCreated einführen
@@ -11,6 +13,8 @@
 1953    10.12.2019  rc1.1       Andreas Bug         NullPointerException bei Prozessierung der Anbieternamen behoben
  
  /      06.12.2019  rc1.1       Andreas Bug         Entfernen der Währungsbezeichnung aus den Finanzsichten
+ 
+ /      06.12.2019  hbz-dev     David   Feature     Verbesserte Cronjob-Übersicht
 
  /      05.12.2019  rc1.1       Andreas Bug         Sicherheitslücke behoben und Template-Generierung angelegt für Kostenimport
 

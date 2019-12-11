@@ -117,15 +117,20 @@ class AjaxController {
   ]
 
     def notifyProfiler() {
-        Map<String, Object> result = [:]
+        Map<String, Object> result = [status:'failed']
 
-        DebugUtil debugUtil = debugService.getDebugUtilAsSingleton()
-        long delta = debugUtil.stopSimpleBench(session.id + '#' + params.uri)
+        SessionCacheWrapper cache = contextService.getSessionCache()
+        DebugUtil debugUtil = (DebugUtil) cache.get('debugUtil')
 
-        SystemProfiler.update(delta, params.uri)
+        if (debugUtil) {
+            long delta = debugUtil.stopSimpleBench(params.uri)
 
-        result.uri = params.uri
-        result.delta = delta
+            SystemProfiler.update(delta, params.uri)
+
+            result.uri = params.uri
+            result.delta = delta
+            result.status = 'ok'
+        }
 
         render result as JSON
     }
