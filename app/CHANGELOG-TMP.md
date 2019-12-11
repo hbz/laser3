@@ -2,6 +2,8 @@
 
 **Ticket    Date    Branch      Author  Feature/Bug     Description/Keywords**
  
+1960    10.12.2019  rc1.2       Andreas Bug         Owner-Einrichtungen von Dokumenten werden bei Kopie von Lizenzen und Verträgen mit angelegt 
+ 
 1966    09.12.2019  rc1.2       David   Bug         DebugUtils werfen Fehler im Log
 
  /      10.12.2019  rc1.2       Andreas Bug         OID-Auflösung in addEntitlements korrigiert
