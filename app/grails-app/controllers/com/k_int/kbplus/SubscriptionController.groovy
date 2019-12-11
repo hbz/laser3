@@ -3958,10 +3958,24 @@ class SubscriptionController extends AbstractDebugController {
                         if (subMember.packages && newSubConsortia.packages) {
                             //Package
                             subMember.packages?.each { pkg ->
+                                def pkgProperties = pkg.properties
+                                pkgProperties.oapls = null
                                 SubscriptionPackage newSubscriptionPackage = new SubscriptionPackage()
                                 InvokerHelper.setProperties(newSubscriptionPackage, pkg.properties)
                                 newSubscriptionPackage.subscription = newSubscription
-                                newSubscriptionPackage.save(flush: true)
+                                newSubscriptionPackage.oapls = null
+
+                                if(newSubscriptionPackage.save(flush: true)){
+                                    pkg.properties.oapls.each{ oapl ->
+
+                                        def oaplProperties = oapl.properties
+                                        oaplProperties.globalUID = null
+                                        OrgAccessPointLink newOrgAccessPointLink = new OrgAccessPointLink()
+                                        InvokerHelper.setProperties(newOrgAccessPointLink, oaplProperties)
+                                        newOrgAccessPointLink.subPkg = newSubscriptionPackage
+                                        newOrgAccessPointLink.save(flush: true)
+                                    }
+                                }
                             }
                         }
                         if (subMember.issueEntitlements && newSubConsortia.issueEntitlements) {
@@ -4157,10 +4171,24 @@ class SubscriptionController extends AbstractDebugController {
                             if (params.subscription.takeLinks) {
                                 //Package
                                 baseSub.packages?.each { pkg ->
+                                    def pkgProperties = pkg.properties
+                                    pkgProperties.oapls = null
                                     SubscriptionPackage newSubscriptionPackage = new SubscriptionPackage()
                                     InvokerHelper.setProperties(newSubscriptionPackage, pkg.properties)
                                     newSubscriptionPackage.subscription = newSub
-                                    newSubscriptionPackage.save(flush: true)
+                                    newSubscriptionPackage.oapls = null
+
+                                    if(newSubscriptionPackage.save(flush: true)){
+                                        pkg.properties.oapls.each{ oapl ->
+
+                                            def oaplProperties = oapl.properties
+                                            oaplProperties.globalUID = null
+                                            OrgAccessPointLink newOrgAccessPointLink = new OrgAccessPointLink()
+                                            InvokerHelper.setProperties(newOrgAccessPointLink, oaplProperties)
+                                            newOrgAccessPointLink.subPkg = newSubscriptionPackage
+                                            newOrgAccessPointLink.save(flush: true)
+                                        }
+                                    }
                                 }
                                 // fixed hibernate error: java.util.ConcurrentModificationException
                                 // change owner before first save
@@ -5021,10 +5049,24 @@ class SubscriptionController extends AbstractDebugController {
                 //Copy Package
                 if (params.subscription.copyPackages) {
                     baseSubscription.packages?.each { pkg ->
+                        def pkgProperties = pkg.properties
+                        pkgProperties.oapls = null
                         SubscriptionPackage newSubscriptionPackage = new SubscriptionPackage()
                         InvokerHelper.setProperties(newSubscriptionPackage, pkg.properties)
                         newSubscriptionPackage.subscription = newSubscriptionInstance
-                        newSubscriptionPackage.save(flush: true)
+                        newSubscriptionPackage.oapls = null
+
+                        if(newSubscriptionPackage.save(flush: true)){
+                            pkg.properties.oapls.each{ oapl ->
+
+                                def oaplProperties = oapl.properties
+                                oaplProperties.globalUID = null
+                                OrgAccessPointLink newOrgAccessPointLink = new OrgAccessPointLink()
+                                InvokerHelper.setProperties(newOrgAccessPointLink, oaplProperties)
+                                newOrgAccessPointLink.subPkg = newSubscriptionPackage
+                                newOrgAccessPointLink.save(flush: true)
+                            }
+                        }
                     }
                 }
                 //Copy License
