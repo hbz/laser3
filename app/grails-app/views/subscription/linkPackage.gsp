@@ -29,17 +29,18 @@
         <input type="hidden" name="offset" value="${params.offset}"/>
         <input type="hidden" name="id" value="${params.id}"/>
 
-        <div class="field">
-            <label for="q">${message(code: 'package.show.pkg_name', default: 'Package Name')}</label>
-            <input id="q" name="q" value="${params.q}"/>
-        </div>
+            <div class="field">
+                <label for="q">${message(code: 'package.show.pkg_name', default: 'Package Name')}</label>
+                <input id="q" name="q" value="${params.q}"/>
+            </div>
 
-        <div class="field">
-            <button type="submit" name="search" value="yes"
-                    class="ui secondary button">${message(code: 'default.button.filter.label', default: 'Filter')}</button>
-            <a href="${request.forwardURI}"
-               class="ui button">${message(code: 'default.button.filterreset.label')}</a>
-        </div>
+            <div class="field la-field-right-aligned">
+                <a href="${request.forwardURI}"
+                   class="ui reset primary button">${message(code: 'default.button.filterreset.label')}</a>
+                <button type="submit" name="search" value="yes"
+                        class="ui secondary button">${message(code: 'default.button.filter.label', default: 'Filter')}</button>
+            </div>
+
     </g:form>
 </semui:filter>
 
@@ -218,11 +219,10 @@
             <div class="content">
                 <div class="header">${message(code: 'subscription.details.linkPackage.current', default: 'Current Links', args: [subscriptionInstance.name])}</div>
             </div>
-
-            <div class="content">
-                <g:each in="${subscriptionInstance.packages.sort { it.pkg.name }}" var="sp">
+            <g:each in="${subscriptionInstance.packages.sort { it.pkg.name }}" var="sp">
+                <div class="content">
                     <div class="item"><g:link controller="package" action="show"
-                                              id="${sp.pkg.id}">${sp.pkg.name}</g:link>
+                                          id="${sp.pkg.id}">${sp.pkg.name}</g:link>
                         <g:set var="hasCostItems" value="${CostItem.executeQuery('select ci from CostItem ci where ci.subPkg.subscription = :sub and ci.subPkg = :sp',[sub:subscriptionInstance,sp:sp])}"/>
                         <br>
                         <g:if test="${editable && !hasCostItems}">
@@ -241,20 +241,12 @@
                             </div>
                         </g:elseif>
                         <br/>
-                    </div><hr>
-                </g:each>
-            </div>
+                    </div>
+                </div>
+            </g:each>
         </div>
     </div>
-</div>
 
-<div class="ui segment">
-
-    <div class="ui dimmer">
-        <div class="ui large text loader">Die Paketverküpfung kann einige Zeit beanspruchen!</div>
-    </div>
-
-</div>
 
 <div id="magicArea"></div>
 
