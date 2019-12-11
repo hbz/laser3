@@ -187,7 +187,7 @@ a.editable-click.editable-disabled:hover {
 }
 */
 .editable-empty, .editable-empty:hover, .editable-empty:focus{
-    background-color:#f1ebe5;
+    background:#f1ebe5;
     padding: 0 4px;
 }
 /*
