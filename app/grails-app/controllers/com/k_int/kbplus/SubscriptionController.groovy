@@ -3482,14 +3482,14 @@ class SubscriptionController extends AbstractDebugController {
     def show() {
 
         DebugUtil du = new DebugUtil()
-        du.setBenchMark('1')
+        du.setBenchmark('1')
 
         def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
         if (!result) {
             response.sendError(401); return
         }
 
-        du.setBenchMark('this-n-that')
+        du.setBenchmark('this-n-that')
 
         // unlink license
 
@@ -3510,7 +3510,7 @@ class SubscriptionController extends AbstractDebugController {
             result.institutional_usage_identifier = OrgSettings.get(result.institution, OrgSettings.KEYS.NATSTAT_SERVER_REQUESTOR_ID)
         }
 
-        du.setBenchMark('links')
+        du.setBenchmark('links')
 
         LinkedHashMap<String, List> links = navigationGenerationService.generateNavigation(Subscription.class.name, result.subscription.id)
         result.navPrevSubscription = links.prevLink
@@ -3543,7 +3543,7 @@ class SubscriptionController extends AbstractDebugController {
         }
 
 
-        du.setBenchMark('pending changes')
+        du.setBenchmark('pending changes')
 
         // ---- pendingChanges : start
 
@@ -3576,7 +3576,7 @@ class SubscriptionController extends AbstractDebugController {
 
         // ---- pendingChanges : end
 
-        du.setBenchMark('tasks')
+        du.setBenchmark('tasks')
 
         // TODO: experimental asynchronous task
         //def task_tasks = task {
@@ -3598,7 +3598,7 @@ class SubscriptionController extends AbstractDebugController {
             result.visibleOrgRelations.sort { it.org.sortname }
         //}
 
-        du.setBenchMark('properties')
+        du.setBenchmark('properties')
 
         // TODO: experimental asynchronous task
         //def task_properties = task {
@@ -3647,7 +3647,7 @@ class SubscriptionController extends AbstractDebugController {
             }
         //}
 
-        du.setBenchMark('usage')
+        du.setBenchmark('usage')
 
         // TODO: experimental asynchronous task
         //def task_usage = task {
@@ -3696,7 +3696,7 @@ class SubscriptionController extends AbstractDebugController {
             }
         //}
 
-        du.setBenchMark('costs')
+        du.setBenchmark('costs')
 
         //determine org role
         if (result.subscription.getCalculatedType().equals(TemplateSupport.CALCULATED_TYPE_CONSORTIAL))
@@ -3722,7 +3722,7 @@ class SubscriptionController extends AbstractDebugController {
             result.costItemSums.subscrCosts = costItems.subscr.sums
         }
 
-        du.setBenchMark('provider & agency filter')
+        du.setBenchmark('provider & agency filter')
 
         // TODO: experimental asynchronous task
         //def task_providerFilter = task {
@@ -3748,7 +3748,7 @@ class SubscriptionController extends AbstractDebugController {
 
         result.publicSubscriptionEditors = Person.getPublicByOrgAndObjectResp(null, result.subscriptionInstance, 'Specific subscription editor')
 
-        List bm = du.stopBenchMark()
+        List bm = du.stopBenchmark()
         result.benchMark = bm
 
         // TODO: experimental asynchronous task

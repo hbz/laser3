@@ -41,7 +41,7 @@ class LicenseController extends AbstractDebugController {
     def show() {
 
         DebugUtil du = new DebugUtil()
-        du.setBenchMark('this-n-that')
+        du.setBenchmark('this-n-that')
 
         log.debug("license: ${params}");
         def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
@@ -63,7 +63,7 @@ class LicenseController extends AbstractDebugController {
 
         // ---- pendingChanges : start
 
-        du.setBenchMark('pending changes')
+        du.setBenchmark('pending changes')
 
         if (executorWrapperService.hasRunningProcess(result.license)) {
             log.debug("PendingChange processing in progress")
@@ -97,7 +97,7 @@ class LicenseController extends AbstractDebugController {
 
         //result.availableSubs = getAvailableSubscriptions(result.license, result.user)
 
-        du.setBenchMark('tasks')
+        du.setBenchmark('tasks')
 
         // TODO: experimental asynchronous task
         //def task_tasks = task {
@@ -117,7 +117,7 @@ class LicenseController extends AbstractDebugController {
             result.visibleOrgLinks.sort { it.org.sortname }
         //}
 
-        du.setBenchMark('properties')
+        du.setBenchmark('properties')
 
         // TODO: experimental asynchronous task
         //def task_properties = task {
@@ -166,7 +166,7 @@ class LicenseController extends AbstractDebugController {
             }
         //}
 
-        du.setBenchMark('licensor filter')
+        du.setBenchmark('licensor filter')
 
         // TODO: experimental asynchronous task
         //def task_licensorFilter = task {
@@ -184,7 +184,7 @@ class LicenseController extends AbstractDebugController {
         // performance problems: orgTypeService.getCurrentLicensors(contextService.getOrg()).collect { it -> it.id }
        // }
 
-        List bm = du.stopBenchMark()
+        List bm = du.stopBenchmark()
         result.benchMark = bm
 
         // TODO: experimental asynchronous task

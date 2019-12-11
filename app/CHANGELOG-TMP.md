@@ -4,10 +4,16 @@
 
 1871    11.12.2019  rc1.2       David   Feature     Kleine Verbesserungen und API-Beschreibung aktualisieren (0.74)
  
+1971    11.12.2019  hbz-dev     David   Feature     "Organisiert durch" automatisch beim Anlegen von Inst-Admins setzen
+
+1968    10.12.2019  rc1.2       Andreas Bug         Bezeichnung und Darstellung bei Dokumentensicht einer Fremdeinrichtung angepasst 
+
 1960    10.12.2019  rc1.2       Andreas Bug         Owner-Einrichtungen von Dokumenten werden bei Kopie von Lizenzen und Verträgen mit angelegt 
  
 --      10.12.2019  rc1.2       Andreas Bug         OID-Auflösung in addEntitlements korrigiert
- 
+
+1966    09.12.2019  rc1.2       David   Bug         DebugUtils werfen Fehler im Log
+
 --      10.12.2019  hbz-dev     Moe     Feature     Für restliche Domain Klassen lastUpdated und dateCreated einführen
 
 1954/1955 10.12.2019  rc1.1     Andreas Bug         NullPointerException bei Laden der Lizenz für Kostenposten behoben
@@ -15,6 +21,8 @@
 1953    10.12.2019  rc1.1       Andreas Bug         NullPointerException bei Prozessierung der Anbieternamen behoben
  
 --      06.12.2019  rc1.1       Andreas Bug         Entfernen der Währungsbezeichnung aus den Finanzsichten
+
+ /      06.12.2019  hbz-dev     David   Feature     Verbesserte Cronjob-Übersicht
 
 --      05.12.2019  rc1.1       Andreas Bug         Sicherheitslücke behoben und Template-Generierung angelegt für Kostenimport
 
