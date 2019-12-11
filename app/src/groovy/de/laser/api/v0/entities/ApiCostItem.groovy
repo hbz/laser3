@@ -2,8 +2,9 @@ package de.laser.api.v0.entities
 
 import com.k_int.kbplus.CostItem
 import com.k_int.kbplus.Org
+import de.laser.api.v0.ApiCollectionReader
 import de.laser.api.v0.ApiReader
-import de.laser.api.v0.ApiReaderHelper
+import de.laser.api.v0.ApiStubReader
 import de.laser.api.v0.ApiToolkit
 import de.laser.helper.Constants
 import grails.converters.JSON
@@ -140,12 +141,12 @@ class ApiCostItem {
 
         // References
 
-        result.owner    = ApiReaderHelper.retrieveOrganisationStubMap(costItem.owner, context) // com.k_int.kbplus.Org
-        result.sub      = ApiReaderHelper.requestSubscriptionStub(costItem.sub, context) // com.k_int.kbplus.Subscription // RECURSION ???
-        //result.subPkg   = ApiReaderHelper.resolveSubscriptionPackageStub(costItem.subPkg, ApiReaderHelper.IGNORE_SUBSCRIPTION, context) // com.k_int.kbplus.SubscriptionPackage
-        result.issueEntitlement = ApiIssueEntitlement.retrieveIssueEntitlementMap(costItem.issueEntitlement, ApiReaderHelper.IGNORE_ALL, context) // com.k_int.kbplus.issueEntitlement
-        result.order    = ApiReaderHelper.retrieveOrderMap(costItem.order) // com.k_int.kbplus.Order
-        result.invoice  = ApiReaderHelper.retrieveInvoiceMap(costItem.invoice)
+        result.owner    = ApiStubReader.retrieveOrganisationStubMap(costItem.owner, context) // com.k_int.kbplus.Org
+        result.sub      = ApiStubReader.requestSubscriptionStub(costItem.sub, context) // com.k_int.kbplus.Subscription // RECURSION ???
+        //result.subPkg   = ApiStubReader.resolveSubscriptionPackageStub(costItem.subPkg, ApiCollectionReader.IGNORE_SUBSCRIPTION, context) // com.k_int.kbplus.SubscriptionPackage
+        result.issueEntitlement = ApiIssueEntitlement.retrieveIssueEntitlementMap(costItem.issueEntitlement, ApiReader.IGNORE_ALL, context) // com.k_int.kbplus.issueEntitlement
+        result.order    = ApiCollectionReader.retrieveOrderMap(costItem.order) // com.k_int.kbplus.Order
+        result.invoice  = ApiCollectionReader.retrieveInvoiceMap(costItem.invoice)
         result.surveyOrg = costItem?.surveyOrg ?: null
 
         return ApiToolkit.cleanUp(result, true, true)

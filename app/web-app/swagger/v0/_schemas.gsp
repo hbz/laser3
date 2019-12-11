@@ -16,6 +16,68 @@
 
 <%-- objects --%>
 
+    Address:
+      type: object
+      properties:
+        street1:
+          type: string
+        street2:
+          type: string
+        pob:
+          type: string
+        pobZipcode:
+          type: string
+        pobCity:
+          type: string
+        zipcode:
+          type: string
+        city:
+          type: string
+        name:
+          type: string
+        additionFirst:
+          type: string
+        additionSecond:
+          type: string
+        state:
+          type: string
+          description: Mapping RefdataCategory "Federal State"
+          enum:
+            [${ com.k_int.kbplus.RefdataCategory.getAllRefdataValues('Federal State').collect{ it.value }.join(', ') }]
+        country:
+          type: string
+          description: Mapping RefdataCategory "Country"
+          enum:
+            [${ com.k_int.kbplus.RefdataCategory.getAllRefdataValues('Country').collect{ it.value }.join(', ') }]
+        type:
+          type: string
+          description: Mapping RefdataCategory "AddressType"
+          enum:
+            [${ com.k_int.kbplus.RefdataCategory.getAllRefdataValues('AddressType').collect{ it.value }.join(', ') }]
+        lastUpdated:
+          type: string
+          format: date-time
+
+
+    Contact:
+      type: object
+      properties:
+        category: # mapping attr contentType
+          type: string
+          description: Mapping RefdataCategory "ContactContentType"
+          enum:
+            [${ com.k_int.kbplus.RefdataCategory.getAllRefdataValues('ContactContentType').collect{ it.value }.join(', ') }]
+        content:
+          type: string
+        lastUpdated:
+          type: string
+          format: date-time
+        type:
+          type: string
+          description: Mapping RefdataCategory "ContactType"
+          enum:
+            [${ com.k_int.kbplus.RefdataCategory.getAllRefdataValues('ContactType').collect{ it.value }.join(', ') }]
+
 
     CostItem:
       type: object
@@ -105,7 +167,6 @@
           type: string
 
 
-
     Document:
       type: object
       properties:
@@ -115,6 +176,9 @@
           type: string
         mimetype:
           type: string
+        lastUpdated:
+          type: string
+          format: date-time
         title:
           type: string
         type:
@@ -135,6 +199,7 @@
         value:
           type: string
 
+
     Invoice:
       type: object
       properties:
@@ -154,6 +219,9 @@
           format: date-time
         invoiceNumber:
           type: string
+        lastUpdated:
+          type: string
+          format: date-time
         startDate:
           type: string
           format: date-time
@@ -200,6 +268,9 @@
           type: string
         ieReason:
           type: string
+        lastUpdated:
+          type: string
+          format: date-time
         medium:
           type: string
           description: Mapping RefdataCategory
@@ -285,6 +356,9 @@
       properties:
         id:
           type: string
+        lastUpdated:
+          type: string
+          format: date-time
         orderNumber:
           type: string
         owner:
@@ -293,18 +367,18 @@
 
     Organisation:
       allOf:
-        - $ref: "#/definitions/OrganisationStub"
+        - $ref: "#/components/schemas/OrganisationStub"
       properties:
         addresses:
           type: array
           items:
-            $ref: "#/definitions/Address"
+            $ref: "#/components/schemas/Address"
         comment:
           type: string
         contacts:
           type: array
           items:
-            $ref: "#/definitions/Contact"
+            $ref: "#/components/schemas/Contact"
         country:
           type: string
           description: Mapping RefdataCategory "Country"
@@ -322,6 +396,9 @@
         impId:
           type: string
           example: "9ef8a0d4-a87c-4b39-71b9-c29b269f311b"
+        lastUpdated:
+          type: string
+          format: date-time
         libraryType:
           type: string
           description: Mapping RefdataCategory "LibraryType"
@@ -330,15 +407,15 @@
         persons: # mapping attr prsLinks
           type: array
           items:
-            $ref: "#/definitions/Person" # resolved PersonRole
+            $ref: "#/components/schemas/Person" # resolved PersonRole
         properties: # mapping attr customProperties and privateProperties
           type: array
           items:
-            $ref: "#/definitions/Property"
+            $ref: "#/components/schemas/Property"
         roleType:
           type: array
           items:
-            $ref: "#/definitions/OrgRoleType"
+            type: string
           description: Mapping RefdataCategory "OrgRoleType"
           enum:
             [${ com.k_int.kbplus.RefdataCategory.getAllRefdataValues('OrgRoleType').collect{ it.value }.join(', ') }]
@@ -415,7 +492,7 @@
               [${ com.k_int.kbplus.RefdataCategory.getAllRefdataValues('YN').collect{ it.value }.join(', ') }]
           lastUpdated:
             type: string
-            format: date
+            format: date-time
 <%--          license:
             $ref: "#/definitions/LicenseStub" --%>
           nominalPlatform:
@@ -465,6 +542,64 @@
             type: string
 
 
+    Person:
+      type: object
+      properties:
+        globalUID:
+          type: string
+          example: "person:a45a3cf0-f3ad-f231-d5ab-fc1d217f583c"
+        addresses:
+          type: array
+          items:
+            $ref: "#/components/schemas/Address"
+        contacts:
+          type: array
+          items:
+            $ref: "#/components/schemas/Contact"
+        firstName:
+          type: string
+        gender:
+          type: string
+          description: Mapping RefdataCategory "Gender"
+          enum:
+            [${ com.k_int.kbplus.RefdataCategory.getAllRefdataValues('Gender').collect{ it.value }.join(', ') }]
+        isPublic:
+          type: string
+          description: Mapping RefdataCategory "YN". If set *No*, it's an hidden entry to/from an addressbook (depending on the given organisation context)
+          enum:
+            [${ com.k_int.kbplus.RefdataCategory.getAllRefdataValues('YN').collect{ it.value }.join(', ') }]
+        lastName:
+          type: string
+        middleName:
+          type: string
+        lastUpdated:
+          type: string
+          format: date-time
+        contactType:
+          type: string
+          description: Mapping RefdataCategory "Person Contact Type"
+          enum:
+            [${ com.k_int.kbplus.RefdataCategory.getAllRefdataValues('Person Contact Type').collect{ it.value }.join(', ') }]
+        roleType:
+          type: string
+          description: Mapping RefdataCategory "Person Position"
+          enum:
+            [${ com.k_int.kbplus.RefdataCategory.getAllRefdataValues('Person Position').collect{ it.value }.join(', ') }]
+        properties: # mapping attr privateProperties
+          type: array
+          items:
+            $ref: "#/components/schemas/Property"
+        roles:
+          type: array
+          items:
+            type: string
+          description: Mapping RefdataCategory "Person Function"
+          enum:
+            [${ com.k_int.kbplus.RefdataCategory.getAllRefdataValues('Person Function').collect{ it.value }.join(', ') }]
+        title:
+          type: string
+
+
     Platform:
       allOf:
         - $ref: "#/components/schemas/PlatformStub"
@@ -475,7 +610,7 @@
               format: date
             lastUpdated:
               type: string
-              format: date
+              format: date-time
             primaryUrl:
               type: string
             provenance:
@@ -756,6 +891,9 @@
             [""]
         ieReason:
           type: string
+        lastUpdated:
+          type: string
+          format: date-time
         medium:
           type: string
           description: Mapping RefdataCategory
@@ -782,6 +920,9 @@
             type: string
           embargo:
             type: string
+          lastUpdated:
+            type: string
+            format: date-time
           startVolume:
             type: string
           startIssue:
@@ -932,6 +1073,9 @@
           description: Mapping RefdataCategory
           enum:
             [""]
+        lastUpdated:
+          type: string
+          format: date-time
         option:
           type: string
           description: Mapping RefdataCategory
