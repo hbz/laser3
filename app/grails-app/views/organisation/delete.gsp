@@ -18,26 +18,42 @@
         <g:render template="nav" />
     </g:if>
 
-    <h3>{ BAUSTELLE }</h3>
+    <h3>[ Funktionalität unvollständig implementiert ]</h3>
 
-    <g:if test="${dryRun}">
-        <g:if test="${dryRun?.status == deletionService.RESULT_SUBSTITUTE_NEEDED}">
+    <g:if test="${delResult}">
+        <g:if test="${delResult.status == deletionService.RESULT_SUBSTITUTE_NEEDED}">
             <semui:msg class="info" header="" message="org.delete.info2" />
         </g:if>
         <g:else>
             <semui:msg class="info" header="" message="org.delete.info" />
         </g:else>
 
-        <br />
+        <%-- --%>
+
+        <g:if test="${delResult.status == deletionService.RESULT_BLOCKED}">
+            <semui:msg class="negative" header="Löschvorgang blockiert"
+                       text="Es existieren relevante Verknüpfungen. Diese müssen zuerst gelöscht werden." />
+            <g:link controller="organisation" action="_delete" params="${[id: orgInstance.id]}" class="ui button">Zur Übersicht</g:link>
+        </g:if>
+        <g:if test="${delResult.status == deletionService.RESULT_SUCCESS}">
+            <semui:msg class="positive" header=""
+                       text="Löschvorgang wurde erfolgreich durchgeführt." />
+            <g:link controller="organisation" action="listInstitution" class="ui button">Alle Einrichtungen</g:link>
+        </g:if>
+        <g:if test="${delResult.status == deletionService.RESULT_ERROR}">
+            <semui:msg class="negative" header="Unbekannter Fehler"
+                       text="Der Löschvorgang wurde abgebrochen." />
+            <g:link controller="organisation" action="_delete" params="${[id: orgInstance.id]}" class="ui button">Zur Übersicht</g:link>
+        </g:if>
 
         <g:if test="${editable}">
-            <g:form controller="organisation" action="_delete" params="${[id: orgInstance.id, process: true]}">
+            <g:form controller="organisation" action="_delete" params="${[id: orgInstance.id, process: true]}" style="display:inline-block;">
                 <g:link controller="organisation" action="show" params="${[id: orgInstance.id]}" class="ui button">Vorgang abbrechen</g:link>
 
-                <g:if test="${dryRun?.deletable}">
+                <g:if test="${delResult.deletable}">
                     <input type="submit" class="ui button red" value="Organisation löschen" />
 
-                    <g:if test="${dryRun?.status == deletionService.RESULT_SUBSTITUTE_NEEDED}">
+                    <g:if test="${delResult.status == deletionService.RESULT_SUBSTITUTE_NEEDED}">
 
                         <br /><br />
                         Die gekennzeichneten Daten dabei an folgende Organisation übertragen:
@@ -53,7 +69,7 @@
             </g:form>
         </g:if>
 
-        <br />
+        <%-- --%>
 
         <table class="ui celled la-table la-table-small table">
             <thead>
@@ -64,7 +80,7 @@
             </tr>
             </thead>
             <tbody>
-            <g:each in="${dryRun.info.sort{ a,b -> a[0] <=> b[0] }}" var="info">
+            <g:each in="${delResult.info.sort{ a,b -> a[0] <=> b[0] }}" var="info">
                 <tr>
                     <td>
                         ${info[0]}
@@ -72,8 +88,14 @@
                     <td style="text-align:center">
                         <g:if test="${info.size() > 2 && info[1].size() > 0}">
                             <span class="ui circular label la-popup-tooltip la-delay ${info[2]}"
+                                <g:if test="${info[2] == 'red'}">
+                                    data-content="${message(code:'subscription.delete.blocker')}"
+                                </g:if>
                                 <g:if test="${info[2] == 'blue'}">
                                     data-content="${message(code:'org.delete.moveToNewOrg')}"
+                                </g:if>
+                                <g:if test="${info[2] == 'yellow'}">
+                                    data-content="${message(code:'subscription.existingCostItems.warning')}"
                                 </g:if>
                             >${info[1].size()}</span>
                         </g:if>
@@ -90,22 +112,6 @@
             </g:each>
             </tbody>
         </table>
-    </g:if>
-
-    <g:if test="${result?.status == deletionService.RESULT_SUCCESS}">
-        <semui:msg class="positive" header=""
-                   text="Löschvorgang wurde erfolgreich durchgeführt." />
-        <g:link controller="organisation" action="listInstitution" class="ui button">Alle Einrichtungen</g:link>
-    </g:if>
-    <g:if test="${result?.status == deletionService.RESULT_QUIT}">
-        <semui:msg class="negative" header="Löschvorgang abgebrochen"
-                   text="Es existieren relevante Verknüpfungen. Diese müssen zuerst gelöscht werden." />
-        <g:link controller="organisation" action="_delete" params="${[id: orgInstance.id]}" class="ui button">Zur Übersicht</g:link>
-    </g:if>
-    <g:if test="${result?.status == deletionService.RESULT_ERROR}">
-        <semui:msg class="negative" header="Unbekannter Fehler"
-                   text="Der Löschvorgang wurde abgebrochen." />
-        <g:link controller="organisation" action="_delete" params="${[id: orgInstance.id]}" class="ui button">Zur Übersicht</g:link>
     </g:if>
 
 </body>

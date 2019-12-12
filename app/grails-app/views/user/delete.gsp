@@ -14,23 +14,40 @@
         ${user?.username} : ${user?.displayName?:'Nutzer unbekannt'}
     </h1>
 
-    <g:if test="${dryRun}">
-        <g:if test="${dryRun?.status == deletionService.RESULT_SUBSTITUTE_NEEDED}">
+    <g:if test="${delResult}">
+        <g:if test="${delResult?.status == deletionService.RESULT_SUBSTITUTE_NEEDED}">
             <semui:msg class="info" header="" message="user.delete.info2" />
         </g:if>
         <g:else>
             <semui:msg class="info" header="" message="user.delete.info" />
         </g:else>
-        <br />
+
+        <%-- --%>
+
+        <g:if test="${delResult.status == deletionService.RESULT_BLOCKED}">
+            <semui:msg class="negative" header="Löschvorgang blockiert"
+                       text="Es existieren Referenzen. Diese müssen zuerst gelöscht werden." />
+            <g:link controller="user" action="delete" params="${[id: user.id]}" class="ui button">Zur Übersicht</g:link>
+        </g:if>
+        <g:if test="${delResult.status == deletionService.RESULT_SUCCESS}">
+            <semui:msg class="positive" header=""
+                       text="Löschvorgang wurde erfolgreich durchgeführt." />
+            <g:link controller="organisation" action="users" params="${[id: contextService.getOrg()?.id]}" class="ui button">Nutzerverwaltung</g:link>
+        </g:if>
+        <g:if test="${delResult.status == deletionService.RESULT_ERROR}">
+            <semui:msg class="negative" header="Unbekannter Fehler"
+                       text="Der Löschvorgang wurde abgebrochen." />
+            <g:link controller="user" action="delete" params="${[id: user.id]}" class="ui button">Zur Übersicht</g:link>
+        </g:if>
 
         <g:if test="${editable}">
             <g:form controller="user" action="_delete" params="${[id: user.id, process: true]}">
                 <g:link controller="user" action="edit" params="${[id: user.id]}" class="ui button">Vorgang abbrechen</g:link>
 
-                <g:if test="${dryRun?.deletable}">
+                <g:if test="${delResult.deletable}">
                     <input type="submit" class="ui button red" value="Benutzer löschen" />
 
-                    <g:if test="${dryRun?.status == deletionService.RESULT_SUBSTITUTE_NEEDED}">
+                    <g:if test="${delResult.status == deletionService.RESULT_SUBSTITUTE_NEEDED}">
                         <br /><br />
                         Die gekennzeichneten Daten dabei an folgenden Nutzer übertragen:
 
@@ -45,7 +62,7 @@
             </g:form>
         </g:if>
 
-        <br />
+        <%-- --%>
 
         <table class="ui celled la-table la-table-small table">
             <thead>
@@ -56,7 +73,7 @@
             </tr>
             </thead>
             <tbody>
-            <g:each in="${dryRun.info.sort{ a,b -> a[0] <=> b[0] }}" var="info">
+            <g:each in="${delResult.info.sort{ a,b -> a[0] <=> b[0] }}" var="info">
                 <tr>
                     <td>
                         ${info[0]}
@@ -82,22 +99,6 @@
             </g:each>
             </tbody>
         </table>
-    </g:if>
-
-    <g:if test="${result?.status == deletionService.RESULT_SUCCESS}">
-        <semui:msg class="positive" header=""
-                   text="Löschvorgang wurde erfolgreich durchgeführt." />
-        <g:link controller="organisation" action="users" params="${[id: contextService.getOrg()?.id]}" class="ui button">Nutzerverwaltung</g:link>
-    </g:if>
-    <g:if test="${result?.status == deletionService.RESULT_QUIT}">
-        <semui:msg class="negative" header="Löschvorgang abgebrochen"
-                   text="Es existieren Referenzen. Diese müssen zuerst gelöscht werden." />
-        <g:link controller="user" action="delete" params="${[id: user.id]}" class="ui button">Zur Übersicht</g:link>
-    </g:if>
-    <g:if test="${result?.status == deletionService.RESULT_ERROR}">
-        <semui:msg class="negative" header="Unbekannter Fehler"
-                   text="Der Löschvorgang wurde abgebrochen." />
-        <g:link controller="user" action="delete" params="${[id: user.id]}" class="ui button">Zur Übersicht</g:link>
     </g:if>
 
 </body>

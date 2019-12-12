@@ -20,10 +20,9 @@ class DeletionService {
 
     static boolean DRY_RUN                  = true
 
-    static String RESULT_SUCCESS            = 'RESULT_SUCCESS'
-    static String RESULT_QUIT               = 'RESULT_QUIT'
-    static String RESULT_ERROR              = 'RESULT_ERROR'
     static String RESULT_BLOCKED            = 'RESULT_BLOCKED'
+    static String RESULT_SUCCESS            = 'RESULT_SUCCESS'
+    static String RESULT_ERROR              = 'RESULT_ERROR'
     static String RESULT_SUBSTITUTE_NEEDED  = 'RESULT_SUBSTITUTE_NEEDED'
 
     static String FLAG_BLOCKER      = 'red'
@@ -36,17 +35,16 @@ class DeletionService {
 
         // gathering references
 
-        List ref_instanceOf         = License.findAllByInstanceOf(lic)
+        List links = Links.where { objectType == lic.class.name && (source == lic.id || destination == lic.id) }.findAll()
 
-        List links                  = Links.where { objectType == lic.class.name &&
-                                        (source == lic.id || destination == lic.id) }.findAll()
+        List ref_instanceOf         = License.findAllByInstanceOf(lic)
 
         List tasks                  = Task.findAllByLicense(lic)
         List propDefGroupBindings   = PropertyDefinitionGroupBinding.findAllByLic(lic)
         List subs                   = Subscription.findAllByOwner(lic)
         AuditConfig ac              = AuditConfig.getConfig(lic)
 
-        List ios            = new ArrayList(lic.ids)
+        List ids            = new ArrayList(lic.ids)
         List docContexts    = new ArrayList(lic.documents)
         List oRoles         = new ArrayList(lic.orgLinks)
         List pRoles         = new ArrayList(lic.prsLinks)
@@ -68,7 +66,7 @@ class DeletionService {
 
         // lic.onixplLicense
 
-        result.info << ['Identifikatoren', ios]
+        result.info << ['Identifikatoren', ids]
         result.info << ['Dokumente', docContexts]  // delete ? docContext->doc
         result.info << ['Organisationen', oRoles]
         result.info << ['Personen', pRoles]     // delete ? personRole->person
@@ -79,20 +77,20 @@ class DeletionService {
 
         // checking constraints and/or processing
 
-        boolean deletable = true
+        result.deletable = true
 
         result.info.each { it ->
             if (! it.get(1).isEmpty() && it.size() == 3 && it.get(2) == FLAG_BLOCKER) {
                 result.status = RESULT_BLOCKED
-                deletable = false
+                result.deletable = false
             }
         }
 
-        if (dryRun) {
-            result.deletable = deletable
+        if (dryRun || ! result.deletable) {
+            return result
         }
         else if (ref_instanceOf) {
-            result.status = RESULT_QUIT
+            result.status = RESULT_BLOCKED
             result.referencedBy_instanceOf = ref_instanceOf
         }
         else {
@@ -159,7 +157,7 @@ class DeletionService {
 
                     // identifiers
                     lic.ids.clear()
-                    ios.each{ tmp -> tmp.delete() }
+                    ids.each{ tmp -> tmp.delete() }
 
                     // documents
                     lic.documents.clear()
@@ -215,14 +213,13 @@ class DeletionService {
         List ref_instanceOf = Subscription.findAllByInstanceOf(sub)
         List ref_previousSubscription = Subscription.findAllByPreviousSubscription(sub)
 
-        List links                  = Links.where { objectType == sub.class.name &&
-                                        (source == sub.id || destination == sub.id) }.findAll()
+        List links = Links.where { objectType == sub.class.name && (source == sub.id || destination == sub.id) }.findAll()
 
         List tasks                  = Task.findAllBySubscription(sub)
         List propDefGroupBindings   = PropertyDefinitionGroupBinding.findAllBySub(sub)
         AuditConfig ac              = AuditConfig.getConfig(sub)
 
-        List ios            = new ArrayList(sub.ids)
+        List ids            = new ArrayList(sub.ids)
         List docContexts    = new ArrayList(sub.documents)
         List oRoles         = new ArrayList(sub.orgRelations)
         List pRoles         = new ArrayList(sub.prsLinks)
@@ -250,7 +247,7 @@ class DeletionService {
         result.info << ['Merkmalsgruppen', propDefGroupBindings]
         result.info << ['Vererbungskonfigurationen', ac ? [ac] : []]
 
-        result.info << ['Identifikatoren', ios]
+        result.info << ['Identifikatoren', ids]
         result.info << ['Dokumente', docContexts]   // delete ? docContext->doc
         result.info << ['Organisationen', oRoles]
         result.info << ['Personen', pRoles]       // delete ? personRole->person
@@ -265,20 +262,20 @@ class DeletionService {
 
         // checking constraints and/or processing
 
-        boolean deletable = true
+        result.deletable = true
 
         result.info.each { it ->
             if (! it.get(1).isEmpty() && it.size() == 3 && it.get(2) == FLAG_BLOCKER) {
                 result.status = RESULT_BLOCKED
-                deletable = false
+                result.deletable = false
             }
         }
 
-        if (dryRun) {
-            result.deletable = deletable
+        if (dryRun || ! result.deletable) {
+            return result
         }
         else if (ref_instanceOf) {
-            result.status = RESULT_QUIT
+            result.status = RESULT_BLOCKED
             result.referencedBy_instanceOf = ref_instanceOf
         }
         else {
@@ -338,7 +335,7 @@ class DeletionService {
 
                     // identifiers
                     sub.ids.clear()
-                    ios.each{ tmp -> tmp.delete() }
+                    ids.each{ tmp -> tmp.delete() }
 
                     // documents
                     sub.documents.clear()
@@ -420,10 +417,9 @@ class DeletionService {
 
         // gathering references
 
-        List links          = Links.where { objectType == org.class.name &&
-                (source == org.id || destination == org.id) }.findAll()
+        List links = Links.where { objectType == org.class.name && (source == org.id || destination == org.id) }.findAll()
 
-        List ios            = new ArrayList(org.ids)
+        List ids            = new ArrayList(org.ids)
         List outgoingCombos = new ArrayList(org.outgoingCombos)
         List incomingCombos = new ArrayList(org.incomingCombos)
 
@@ -476,116 +472,149 @@ class DeletionService {
 
         result.info = []
 
-        result.info << ['Links: Orgs', links]
+        result.info << ['Links: Orgs', links, FLAG_BLOCKER]
 
-        result.info << ['Identifikatoren', ios]
+        result.info << ['Identifikatoren', ids]
         result.info << ['Combos (out)', outgoingCombos]
-        result.info << ['Combos (in)', incomingCombos]
+        result.info << ['Combos (in)', incomingCombos, FLAG_BLOCKER]
 
         result.info << ['Typen', orgTypes]
-        result.info << ['OrgRoles', orgLinks]
+        result.info << ['OrgRoles', orgLinks, FLAG_BLOCKER]
         result.info << ['Einstellungen', orgSettings]
-        result.info << ['Nutzereinstellungen', userSettings]
+        result.info << ['Nutzereinstellungen', userSettings, FLAG_BLOCKER]
 
         result.info << ['Adressen', addresses]
         result.info << ['Kontaktdaten', contacts]
-        result.info << ['Personen', prsLinks]
-        result.info << ['Personen (tenant)', persons]
-        result.info << ['Nutzerzugehörigkeiten', affiliations]
-        result.info << ['Dokumente', docContexts]   // delete ? docContext->doc
-        result.info << ['Platformen', platforms]
-        result.info << ['TitleInstitutionProvider (inst)', tips]
-        result.info << ['TitleInstitutionProvider (provider)', tipsProviders, FLAG_SUBSTITUTE]
+        result.info << ['Personen', prsLinks, FLAG_BLOCKER]
+        result.info << ['Personen (tenant)', persons, FLAG_BLOCKER]
+        result.info << ['Nutzerzugehörigkeiten', affiliations, FLAG_BLOCKER]
+        result.info << ['Dokumente', docContexts, FLAG_BLOCKER]   // delete ? docContext->doc
+        result.info << ['Platformen', platforms, FLAG_BLOCKER]
+        result.info << ['TitleInstitutionProvider (inst)', tips, FLAG_BLOCKER]
+        result.info << ['TitleInstitutionProvider (provider)', tipsProviders, FLAG_BLOCKER]
+        //result.info << ['TitleInstitutionProvider (provider)', tipsProviders, FLAG_SUBSTITUTE]
 
         result.info << ['Allgemeine Merkmale', customProperties]
         result.info << ['Private Merkmale', privateProperties]
-        result.info << ['Merkmalsdefinitionen', propertyDefinitions]
-        result.info << ['Merkmalsgruppen', propDefGroups]
-        result.info << ['Merkmalsgruppen (gebunden)', propDefGroupBindings]
+        result.info << ['Merkmalsdefinitionen', propertyDefinitions, FLAG_BLOCKER]
+        result.info << ['Merkmalsgruppen', propDefGroups, FLAG_BLOCKER]
+        result.info << ['Merkmalsgruppen (gebunden)', propDefGroupBindings, FLAG_BLOCKER]
 
-        result.info << ['BudgetCodes', budgetCodes]
-        result.info << ['Kostenposten', costItems]
-        result.info << ['Kostenposten-Konfigurationen', costItemsECs]
-        result.info << ['Rechnungen', invoices]
-        result.info << ['Aufträge', orderings]
+        result.info << ['BudgetCodes', budgetCodes, FLAG_BLOCKER]
+        result.info << ['Kostenposten', costItems, FLAG_BLOCKER]
+        result.info << ['Kostenposten-Konfigurationen', costItemsECs, FLAG_BLOCKER]
+        result.info << ['Rechnungen', invoices, FLAG_BLOCKER]
+        result.info << ['Aufträge', orderings, FLAG_BLOCKER]
 
-        result.info << ['Dokumente (owner)', documents]
-        result.info << ['DashboardDueDates (responsibility)', dashboardDueDates]
-        result.info << ['Anstehende Änderungen', pendingChanges]
-        result.info << ['Aufgaben (owner)', tasks]
-        result.info << ['Aufgaben (responsibility)', tasksResp]
-        result.info << ['SystemMessages', systemMessages]
-        result.info << ['SystemProfilers', systemProfilers]
+        result.info << ['Dokumente (owner)', documents, FLAG_BLOCKER]
+        result.info << ['DashboardDueDates (responsibility)', dashboardDueDates, FLAG_BLOCKER]
+        result.info << ['Anstehende Änderungen', pendingChanges, FLAG_BLOCKER]
+        result.info << ['Aufgaben (owner)', tasks, FLAG_BLOCKER]
+        result.info << ['Aufgaben (responsibility)', tasksResp, FLAG_BLOCKER]
+        result.info << ['SystemMessages', systemMessages, FLAG_BLOCKER]
+        result.info << ['SystemProfilers', systemProfilers, FLAG_BLOCKER]
 
-        result.info << ['Facts', facts]
-        result.info << ['ReaderNumbers', readerNumbers]
-        result.info << ['OrgAccessPoints', orgAccessPoints]
-        result.info << ['OrgTitleStats', orgTitleStats]
+        result.info << ['Facts', facts, FLAG_BLOCKER]
+        result.info << ['ReaderNumbers', readerNumbers, FLAG_BLOCKER]
+        result.info << ['OrgAccessPoints', orgAccessPoints, FLAG_BLOCKER]
+        result.info << ['OrgTitleStats', orgTitleStats, FLAG_BLOCKER]
 
-        result.info << ['SurveyInfos', surveyInfos]
-        result.info << ['Umfrage-Merkmale', surveyProperties]
-        result.info << ['Umfrageergebnisse (owner)', surveyResults]
-        result.info << ['Umfrageergebnisse (participant)', surveyResultsParts]
+        result.info << ['SurveyInfos', surveyInfos, FLAG_BLOCKER]
+        result.info << ['Umfrage-Merkmale', surveyProperties, FLAG_BLOCKER]
+        result.info << ['Umfrageergebnisse (owner)', surveyResults, FLAG_BLOCKER]
+        result.info << ['Umfrageergebnisse (participant)', surveyResultsParts, FLAG_BLOCKER]
 
         // checking constraints and/or processing
 
-        boolean deletable = true
+        result.deletable = true
 
-        int count = 0
-        int constraint = 0
+        //int count = 0
+        //int constraint = 0
 
         result.info.each { it ->
-            if (! it.get(1).isEmpty() && it.size() == 3 && it.get(2) == FLAG_BLOCKER) {
-                result.status = RESULT_BLOCKED
-                deletable = false
-            }
-
-            count += it.get(1).size()
+            //count += it.get(1).size()
 
             if (it.size() > 2 && ! it.get(1).isEmpty() && it.get(2) == FLAG_SUBSTITUTE) {
                 result.status = RESULT_SUBSTITUTE_NEEDED
 
-                if (it.get(0).equals('TitleInstitutionProvider (provider)')) { // ERMS-1512 workaound for data cleanup
-                    constraint = it.get(1).size()
-                }
+                //if (it.get(0).equals('TitleInstitutionProvider (provider)')) { // ERMS-1512 workaound for data cleanup
+                //    constraint = it.get(1).size()
+                //}
+            }
+
+            if (! it.get(1).isEmpty() && it.size() == 3 && it.get(2) == FLAG_BLOCKER) {
+                result.status = RESULT_BLOCKED
+                result.deletable = false
             }
         }
 
-        if (dryRun) {
-            result.deletable = deletable
-            //result << [deletable: count == 0, mergeable: constraint == count]
+        if (dryRun || ! result.deletable) {
+            return result
         }
         else {
-            if (constraint == count) {
-                Org.withTransaction { status ->
+            Org.withTransaction { status ->
 
-                    try {
-                        // TODO delete routine
-                        // TODO delete routine
-                        // TODO delete routine
+                try {
+                    // TODO delete routine
+                    // TODO delete routine
+                    // TODO delete routine
 
-                        tipsProviders.each { tmp ->
-                            tmp.provider = replacement
-                            tmp.save()
-                        }
+                    // identifiers
+                    org.ids.clear()
+                    ids.each{ tmp -> tmp.delete() }
 
-                        org.delete()
-                        status.flush()
+                    // outgoingCombos
+                    org.outgoingCombos.clear()
+                    outgoingCombos.each{ tmp -> tmp.delete() }
 
-                        result.status = RESULT_SUCCESS
+                    // orgTypes
+                    //org.orgType.clear()
+                    //orgTypes.each{ tmp -> tmp.delete() }
+
+                    // orgSettings
+                    orgSettings.each { tmp -> tmp.delete() }
+
+                    // addresses
+                    org.addresses.clear()
+                    addresses.each{ tmp -> tmp.delete() }
+
+                    // contacts
+                    org.contacts.clear()
+                    contacts.each{ tmp -> tmp.delete() }
+
+                    // private properties
+                    org.privateProperties.clear()
+                    privateProperties.each { tmp -> tmp.delete() }
+
+                    // custom properties
+                    org.customProperties.clear()
+                    customProperties.each { tmp -> // incomprehensible fix // ??
+                        tmp.owner = null
+                        tmp.save()
                     }
-                    catch (Exception e) {
-                        println 'error while deleting org ' + org.id + ' .. rollback'
-                        println e.message
-                        status.setRollbackOnly()
-                        result.status = RESULT_ERROR
-                    }
+                    customProperties.each { tmp -> tmp.delete() }
+
+
+                    //tipsProviders.each { tmp ->
+                    //    tmp.provider = replacement
+                    //    tmp.save()
+                    //}
+
+                    // TODO delete routine
+                    // TODO delete routine
+                    // TODO delete routine
+
+                    org.delete()
+                    status.flush()
+
+                    result.status = RESULT_SUCCESS
                 }
-            }
-            else {
-                result.status    = RESULT_SUBSTITUTE_NEEDED
-                result.deletable = (count == 0)
-                result.mergeable = (constraint == count)
+                catch (Exception e) {
+                    println 'error while deleting org ' + org.id + ' .. rollback'
+                    println e.message
+                    status.setRollbackOnly()
+                    result.status = RESULT_ERROR
+                }
             }
         }
 
@@ -647,27 +676,21 @@ class DeletionService {
 
         // checking constraints and/or processing
 
-        boolean deletable = true
-
-        int count = 0
-        int constraint = 0
+        result.deletable = true
 
         result.info.each { it ->
-            if (! it.get(1).isEmpty() && it.size() == 3 && it.get(2) == FLAG_BLOCKER) {
-                result << [status: RESULT_BLOCKED]
-                deletable = false
+            if (it.size() > 2 && ! it.get(1).isEmpty() && it.get(2) == FLAG_SUBSTITUTE) {
+                result.status = RESULT_SUBSTITUTE_NEEDED
             }
 
-            count += it.get(1).size()
-
-            if (it.size() > 2 && ! it.get(1).isEmpty() && it.get(2) == FLAG_SUBSTITUTE) {
-                result << [status: RESULT_SUBSTITUTE_NEEDED]
+            if (! it.get(1).isEmpty() && it.size() == 3 && it.get(2) == FLAG_BLOCKER) {
+                result.status = RESULT_BLOCKED
+                result.deletable = false
             }
         }
 
-        if (dryRun) {
-            result << [deletable: deletable]
-            //result << [deletable: count == 0, mergeable: constraint == count]
+        if (dryRun || ! result.deletable) {
+            return result
         }
         else {
             User.withTransaction { status ->
