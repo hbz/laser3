@@ -212,7 +212,7 @@ class DeletionService {
                             // = new ArrayList(sub.issueEntitlements)
 
         List costs          = new ArrayList(sub.costItems)
-        List oapl           = new ArrayList(sub.oapl)
+        List oapl           = new ArrayList(sub.packages?.oapls)
         List privateProps   = new ArrayList(sub.privateProperties)
         List customProps    = new ArrayList(sub.customProperties)
         List surveys        = SurveyConfig.findAllBySubscription(sub)
@@ -318,7 +318,12 @@ class DeletionService {
 
                     // subscription packages
                     sub.packages.clear()
-                    subPkgs.each{ tmp -> tmp.delete() }
+                    subPkgs.each{ tmp ->
+                        tmp.oapls?.each{ item ->
+                            item.delete()
+                        }
+                        tmp.delete()
+                    }
 
                     // pending changes
                     sub.pendingChanges.clear()
@@ -333,10 +338,6 @@ class DeletionService {
                         }
                         tmp.delete()
                     }
-
-                    // org access point link
-                    sub.oapl.clear()
-                    oapl.each { tmp -> tmp.delete() }
 
                     // private properties
                     sub.privateProperties.clear()
