@@ -1540,16 +1540,19 @@ class AjaxController {
 
                     // delete pending changes
                     // e.g. PendingChange.changeDoc = {changeTarget, changeType, changeDoc:{OID,  event}}
-                    def openPD = PendingChange.executeQuery("select pc from PendingChange as pc where pc.status is null" )
-                    openPD.each { pc ->
-                        if (pc.payload) {
-                            def payload = JSON.parse(pc.payload)
-                            if (payload.changeDoc) {
-                                def eventObj = genericOIDService.resolveOID(payload.changeDoc.OID)
-                                def eventProp = payload.changeDoc.prop
+                    members.each { m ->
+                        def openPD = PendingChange.executeQuery("select pc from PendingChange as pc where pc.status is null and pc.oid = :objectID",
+                                [objectID: "${m.class.name}:${m.id}"])
+                        openPD.each { pc ->
+                            if (pc.payload) {
+                                def payload = JSON.parse(pc.payload)
+                                if (payload.changeDoc) {
+                                    def eventObj = genericOIDService.resolveOID(payload.changeDoc.OID)
+                                    def eventProp = payload.changeDoc.prop
 
-                                if (eventObj?.id == owner.id && eventProp.equalsIgnoreCase(prop)) {
-                                    pc.delete(flush: true)
+                                    if (eventObj?.id == owner.id && eventProp.equalsIgnoreCase(prop)) {
+                                        pc.delete(flush: true)
+                                    }
                                 }
                             }
                         }
@@ -1632,14 +1635,18 @@ class AjaxController {
 
                     // delete pending changes
                     // e.g. PendingChange.changeDoc = {changeTarget, changeType, changeDoc:{OID,  event}}
-                    def openPD = PendingChange.executeQuery("select pc from PendingChange as pc where pc.status is null and pc.costItem is null" )
-                    openPD?.each { pc ->
-                        def payload = JSON.parse(pc?.payload)
-                        if (payload && payload?.changeDoc) {
-                            def eventObj = genericOIDService.resolveOID(payload.changeDoc?.OID)
-                            def eventProp = payload.changeDoc?.prop
-                            if (eventObj?.id == owner?.id && eventProp.equalsIgnoreCase(prop)) {
-                                pc.delete(flush: true)
+                    members.each { m ->
+                        def openPD = PendingChange.executeQuery("select pc from PendingChange as pc where pc.status is null and pc.costItem is null and pc.oid = :objectID",
+                                [objectID: "${m.class.name}:${m.id}"])
+
+                        openPD?.each { pc ->
+                            def payload = JSON.parse(pc?.payload)
+                            if (payload && payload?.changeDoc) {
+                                def eventObj = genericOIDService.resolveOID(payload.changeDoc?.OID)
+                                def eventProp = payload.changeDoc?.prop
+                                if (eventObj?.id == owner?.id && eventProp.equalsIgnoreCase(prop)) {
+                                    pc.delete(flush: true)
+                                }
                             }
                         }
                     }
@@ -1660,14 +1667,16 @@ class AjaxController {
 
         if (AuditConfig.getConfig(property, AuditConfig.COMPLETE_OBJECT)) {
 
+            AuditConfig.removeAllConfigs(property)
+
             property.getClass().findAllByInstanceOf(property).each{ prop ->
                 prop.delete()
             }
-            AuditConfig.removeAllConfigs(property)
+
 
             // delete pending changes
 
-            def openPD = PendingChange.executeQuery("select pc from PendingChange as pc where pc.status is null" )
+            /*def openPD = PendingChange.executeQuery("select pc from PendingChange as pc where pc.status is null" )
             openPD.each { pc ->
                 if (pc.payload) {
                     def payload = JSON.parse(pc.payload)
@@ -1678,7 +1687,7 @@ class AjaxController {
                         }
                     }
                 }
-            }
+            }*/
         }
         else {
 
