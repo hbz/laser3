@@ -3958,15 +3958,14 @@ class SubscriptionController extends AbstractDebugController {
                         if (subMember.packages && newSubConsortia.packages) {
                             //Package
                             subMember.packages?.each { pkg ->
-                                def pkgProperties = pkg.properties
-                                pkgProperties.oapls = null
+                                def pkgOapls = pkg.oapls
+                                pkg.properties.oapls = null
                                 SubscriptionPackage newSubscriptionPackage = new SubscriptionPackage()
                                 InvokerHelper.setProperties(newSubscriptionPackage, pkg.properties)
                                 newSubscriptionPackage.subscription = newSubscription
-                                newSubscriptionPackage.oapls = null
 
                                 if(newSubscriptionPackage.save(flush: true)){
-                                    pkg.properties.oapls.each{ oapl ->
+                                    pkgOapls.each{ oapl ->
 
                                         def oaplProperties = oapl.properties
                                         oaplProperties.globalUID = null
@@ -4168,18 +4167,18 @@ class SubscriptionController extends AbstractDebugController {
                             if (!prevLink.save(flush: true)) {
                                 log.error("Problem linking to previous subscription: ${prevLink.errors}")
                             }
+
                             if (params.subscription.takeLinks) {
                                 //Package
                                 baseSub.packages?.each { pkg ->
-                                    def pkgProperties = pkg.properties
-                                    pkgProperties.oapls = null
+                                    def pkgOapls = pkg.oapls
+                                    pkg.properties.oapls = null
                                     SubscriptionPackage newSubscriptionPackage = new SubscriptionPackage()
                                     InvokerHelper.setProperties(newSubscriptionPackage, pkg.properties)
                                     newSubscriptionPackage.subscription = newSub
-                                    newSubscriptionPackage.oapls = null
 
                                     if(newSubscriptionPackage.save(flush: true)){
-                                        pkg.properties.oapls.each{ oapl ->
+                                        pkgOapls.each{ oapl ->
 
                                             def oaplProperties = oapl.properties
                                             oaplProperties.globalUID = null
@@ -5049,15 +5048,14 @@ class SubscriptionController extends AbstractDebugController {
                 //Copy Package
                 if (params.subscription.copyPackages) {
                     baseSubscription.packages?.each { pkg ->
-                        def pkgProperties = pkg.properties
-                        pkgProperties.oapls = null
+                        def pkgOapls = pkg.oapls
+                        pkg.properties.oapls = null
                         SubscriptionPackage newSubscriptionPackage = new SubscriptionPackage()
                         InvokerHelper.setProperties(newSubscriptionPackage, pkg.properties)
                         newSubscriptionPackage.subscription = newSubscriptionInstance
-                        newSubscriptionPackage.oapls = null
 
                         if(newSubscriptionPackage.save(flush: true)){
-                            pkg.properties.oapls.each{ oapl ->
+                            pkgOapls.each{ oapl ->
 
                                 def oaplProperties = oapl.properties
                                 oaplProperties.globalUID = null
