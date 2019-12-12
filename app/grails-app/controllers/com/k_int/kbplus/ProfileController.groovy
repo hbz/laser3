@@ -26,6 +26,7 @@ class ProfileController {
     def refdataService
     def propertyService
     def instAdmService
+    def deletionService
 
     @Secured(['ROLE_USER'])
     def index() {
@@ -108,6 +109,32 @@ class ProfileController {
         }
 
         redirect(action: "index")
+    }
+
+    @Secured(['ROLE_USER'])
+    def processDeleteUser() {
+        def result = [:]
+        result.user = User.get(springSecurityService.principal.id)
+
+        String name = result.user.getDisplayName()
+        boolean isLastAdminForOrg = false
+
+        result.user.affiliations.each { aff ->
+            if(aff.status == UserOrg.STATUS_APPROVED) {
+                if (instAdmService.isLastAdminForOrg(aff.org, result.user)) {
+                    isLastAdminForOrg = true
+                }
+            }
+        }
+
+        if (!isLastAdminForOrg) {
+            result = deletionService.deleteUser(result.user, User.findByUsername('anonymous'), false)
+            redirect(controller: 'logout', action: 'index')
+        }else{
+            flash.error = message(code:'user.affiliation.lastAdminForOrg', args: [name])
+            redirect(action: "index")
+        }
+
     }
 
     private validateEmailAddress(String email) {

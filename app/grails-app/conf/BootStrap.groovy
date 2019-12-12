@@ -173,6 +173,29 @@ class BootStrap {
 
     def setupSystemUsers = {
 
+        // Create anonymousUser that serves as a replacement when users are deleted
+        User anonymousUser = User.findByUsername('anonymous')
+        if (anonymousUser) {
+            log.debug("${anonymousUser.name} exists .. skipped")
+        }
+        else {
+            log.debug("creating user ..")
+
+            anonymousUser = new User(
+                    username: 'anonymous',
+                    password: "laser@514@2019",
+                    display: 'Anonymous User',
+                    email: 'laser_support@hbz-nrw.de',
+                    enabled: false
+            ).save(failOnError: true)
+
+                def role = Role.findByAuthority('ROLE_USER')
+                if (role.roleType != 'user') {
+                    log.debug("  -> adding role: ${role}")
+                    UserRole.create anonymousUser, role
+                }
+        }
+
         if (grailsApplication.config.systemUsers) {
             log.debug("found systemUsers in local config file ..")
 
