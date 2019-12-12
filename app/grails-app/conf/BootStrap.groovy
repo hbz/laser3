@@ -2502,7 +2502,7 @@ class BootStrap {
         RefdataValue.loc('Person Contact Type', [en: 'Personal Contact', de: 'Personenkontakt'], BOOTSTRAP)
         RefdataValue.loc('Person Contact Type', [en: 'Functional Contact', de: 'Funktionskontakt'], BOOTSTRAP)
 
-        RefdataValue.loc('Person Function',     [en: 'General contact person', de: 'Hauptkontakt'], BOOTSTRAP)
+        RefdataValue.loc('Person Function',     [en: 'General Contact Person', de: 'Hauptkontakt'], BOOTSTRAP)
         RefdataValue.loc('Person Function',     [en: 'Responsible Admin', de: 'Verantwortlicher Admin'], BOOTSTRAP)
         RefdataValue.loc('Person Function',     [en: 'GASCO-Contact', de: 'GASCO-Kontakt'], BOOTSTRAP)
         RefdataValue.loc('Person Function',     [en: 'Statistical Support', de: 'Statistischer Support'], BOOTSTRAP) // neu
