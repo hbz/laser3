@@ -12,10 +12,10 @@
       <semui:crumb controller="myInstitution" action="currentSubscriptions" message="myinst.currentSubscriptions.label" />
     <semui:crumb message="menu.institutions.subscriptionImport" class="active"/>
   </semui:breadcrumbs>
-
+  <br>
     <semui:messages data="${flash}" />
 
-    <h1 class="ui left floated aligned icon header la-clear-before"><semui:headerIcon /><g:message code="menu.institutions.subscriptionImport"/></h1>
+    <h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon /><g:message code="menu.institutions.subscriptionImport"/></h1>
 
           <g:message code="myinst.subscriptionImport.headline"/>
           <a href="${resource(dir: 'resources/downloadFile', file: 'bulk_load_subscription_records_template_01.csv')}" download="template_bulk_load_subscription_records.csv">

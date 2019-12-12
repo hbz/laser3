@@ -14,7 +14,7 @@
     <semui:crumb message="menu.institutions.help" class="active"/>
 </semui:breadcrumbs>
 <br>
-<h1 class="ui left floated aligned icon header la-clear-before"><semui:headerIcon />${message(code: 'menu.user.errorReport')}</h1>
+<h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon />${message(code: 'menu.user.errorReport')}</h1>
 
 <semui:subNav actionName="${actionName}">
     <semui:subNavItem controller="profile" action="errorOverview" message="profile.errorOverview.label" />

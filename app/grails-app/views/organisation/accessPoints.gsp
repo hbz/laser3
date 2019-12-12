@@ -16,7 +16,7 @@
             <semui:crumb text="${orgInstance.getDesignation()}" class="active"/>
         </g:if>
     </semui:breadcrumbs>
-
+    <br>
     <g:if test="${accessService.checkPermAffiliation('ORG_BASIC_MEMBER','INST_EDITOR')
         || (accessService.checkPermAffiliation('ORG_CONSORTIUM','INST_EDITOR') && inContextOrg)}">
         <semui:controlButtons>

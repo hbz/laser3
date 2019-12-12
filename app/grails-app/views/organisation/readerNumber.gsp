@@ -27,7 +27,7 @@
     </semui:controlButtons>
 </g:if>
 
-<h1 class="ui left floated aligned icon header la-clear-before"><semui:headerIcon/>${orgInstance.name}</h1>
+<h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon/>${orgInstance.name}</h1>
 
 <g:render template="nav" model="${[orgInstance: orgInstance, inContextOrg: orgInstance.id == contextService.getOrg().id]}"/>
 

@@ -20,8 +20,8 @@
                  text="${message(code: 'subscription.details.subscriberManagement.label', args: args.memberType)}"/>
 
 </semui:breadcrumbs>
-
-<h1 class="ui left floated aligned icon header la-clear-before"><semui:headerIcon/>${subscriptionInstance.name}</h1>
+<br>
+<h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon/>${subscriptionInstance.name}</h1>
 
 <g:render template="navSubscriberManagement"/>
 

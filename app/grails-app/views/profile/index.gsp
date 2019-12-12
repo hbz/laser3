@@ -14,7 +14,7 @@
     <semui:crumb message="profile.bc.profile" class="active"/>
 </semui:breadcrumbs>
 <br>
-<h1 class="ui left floated aligned icon header la-clear-before"><semui:headerIcon />${message(code: 'profile', default: 'LAS:eR User Profile')}</h1>
+<h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon />${message(code: 'profile', default: 'LAS:eR User Profile')}</h1>
 
 <semui:messages data="${flash}" />
 

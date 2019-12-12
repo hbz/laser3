@@ -21,7 +21,7 @@
 		</semui:exportDropdown>
 	</semui:controlButtons>
 
-	<h1 class="ui left floated aligned icon header la-clear-before"><semui:headerIcon />${message(code:'package.compare')}</h1>
+	<h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon />${message(code:'package.compare')}</h1>
 
 	<semui:messages data="${flash}" />
 

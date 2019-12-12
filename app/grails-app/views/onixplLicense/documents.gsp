@@ -23,8 +23,8 @@
     <g:if test="${editable}">
         <semui:crumbAsBadge message="default.editable" class="orange" />
     </g:if>
-
-    <h1 class="ui left floated aligned icon header la-clear-before"><semui:headerIcon />${onixplLicense.license.getLicensee()?.name} ${onixplLicense.license.type?.value} License : <span id="reference"
+    <br>
+    <h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon />${onixplLicense.license.getLicensee()?.name} ${onixplLicense.license.type?.value} License : <span id="reference"
                                                                                                      style="padding-top: 5px;">${onixplLicense.license.reference}</span>
     </h1>
 

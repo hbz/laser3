@@ -96,7 +96,7 @@
             <g:set var="totalString" value="${subscr.count} ${message(code:'financials.header.subscriptionCosts')}"/>
         </g:else>
 
-        <h1 class="ui left floated aligned icon header la-clear-before"><semui:headerIcon />${message(code:'subscription.details.financials.label')}<semui:totalNumber total="${totalString}"/></h1>
+        <h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon />${message(code:'subscription.details.financials.label')}<semui:totalNumber total="${totalString}"/></h1>
         <g:render template="result" model="[own:own,cons:cons,subscr:subscr,coll:coll,view:view,showView:showView,filterPresets:filterPresets]" />
     </body>
 </html>
