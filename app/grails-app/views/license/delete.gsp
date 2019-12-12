@@ -22,7 +22,12 @@
         <br />
         <g:link controller="license" action="show" params="${[id: license.id]}" class="ui button">Vorgang abbrechen</g:link>
         <g:if test="${editable}">
-            <g:link controller="license" action="delete" params="${[id: license.id, process: true]}" class="ui button red">Vertrag löschen</g:link>
+            <g:if test="${dryRun?.deletable}">
+                <g:link controller="license" action="delete" params="${[id: license.id, process: true]}" class="ui button red">Vertrag löschen</g:link>
+            </g:if>
+            <g:else>
+                <input disabled type="submit" class="ui button red" value="Vertrag löschen" />
+            </g:else>
         </g:if>
         <br />
 

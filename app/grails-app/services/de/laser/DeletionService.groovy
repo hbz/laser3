@@ -23,6 +23,7 @@ class DeletionService {
     static String RESULT_SUCCESS            = 'RESULT_SUCCESS'
     static String RESULT_QUIT               = 'RESULT_QUIT'
     static String RESULT_ERROR              = 'RESULT_ERROR'
+    static String RESULT_BLOCKED            = 'RESULT_BLOCKED'
     static String RESULT_SUBSTITUTE_NEEDED  = 'RESULT_SUBSTITUTE_NEEDED'
 
     static String FLAG_BLOCKER      = 'red'
@@ -32,6 +33,8 @@ class DeletionService {
     static Map<String, Object> deleteLicense(License lic, boolean dryRun) {
 
         Map<String, Object> result = [:]
+
+        // gathering references
 
         List ref_instanceOf         = License.findAllByInstanceOf(lic)
 
@@ -52,29 +55,45 @@ class DeletionService {
         List privateProps   = new ArrayList(lic.privateProperties)
         List customProps    = new ArrayList(lic.customProperties)
 
+        // collecting informations
+
+        result.info = []
+        result.info << ['Referenzen: Teilnehmer', ref_instanceOf, FLAG_BLOCKER]
+
+        result.info << ['Links: Verträge', links]
+        result.info << ['Aufgaben', tasks]
+        result.info << ['Merkmalsgruppen', propDefGroupBindings]
+        result.info << ['Lizenzen', subs]
+        result.info << ['Vererbungskonfigurationen', ac ? [ac] : []]
+
+        // lic.onixplLicense
+
+        result.info << ['Identifikatoren', ios]
+        result.info << ['Dokumente', docContexts]  // delete ? docContext->doc
+        result.info << ['Organisationen', oRoles]
+        result.info << ['Personen', pRoles]     // delete ? personRole->person
+        result.info << ['Pakete', packages]
+        result.info << ['Anstehende Änderungen', pendingChanges]
+        result.info << ['Private Merkmale', lic.privateProperties]
+        result.info << ['Allgemeine Merkmale', lic.customProperties]
+
+        // checking constraints and/or processing
+
+        boolean deletable = true
+
+        result.info.each { it ->
+            if (! it.get(1).isEmpty() && it.size() == 3 && it.get(2) == FLAG_BLOCKER) {
+                result.status = RESULT_BLOCKED
+                deletable = false
+            }
+        }
+
         if (dryRun) {
-            result.info = []
-            result.info << ['Referenzen: Teilnehmer', ref_instanceOf, FLAG_BLOCKER]
-
-            result.info << ['Links: Verträge', links]
-            result.info << ['Aufgaben', tasks]
-            result.info << ['Merkmalsgruppen', propDefGroupBindings]
-            result.info << ['Lizenzen', subs]
-            result.info << ['Vererbungskonfigurationen', ac ? [ac] : []]
-
-            // lic.onixplLicense
-
-            result.info << ['Identifikatoren', ios]
-            result.info << ['Dokumente', docContexts]  // delete ? docContext->doc
-            result.info << ['Organisationen', oRoles]
-            result.info << ['Personen', pRoles]     // delete ? personRole->person
-            result.info << ['Pakete', packages]
-            result.info << ['Anstehende Änderungen', pendingChanges]
-            result.info << ['Private Merkmale', lic.privateProperties]
-            result.info << ['Allgemeine Merkmale', lic.customProperties]
+            result.deletable = deletable
         }
         else if (ref_instanceOf) {
-            result = [status: RESULT_QUIT, referencedBy_instanceOf: ref_instanceOf]
+            result.status = RESULT_QUIT
+            result.referencedBy_instanceOf = ref_instanceOf
         }
         else {
             License.withTransaction { status ->
@@ -173,13 +192,13 @@ class DeletionService {
                     lic.delete()
                     status.flush()
 
-                    result = [status: RESULT_SUCCESS]
+                    result.status = RESULT_SUCCESS
                 }
                 catch (Exception e) {
                     println 'error while deleting license ' + lic.id + ' .. rollback'
                     println e.message
                     status.setRollbackOnly()
-                    result = [status: RESULT_ERROR]
+                    result.status = RESULT_ERROR
                 }
             }
         }
@@ -190,6 +209,8 @@ class DeletionService {
     static Map<String, Object> deleteSubscription(Subscription sub, boolean dryRun) {
 
         Map<String, Object> result = [:]
+
+        // gathering references
 
         List ref_instanceOf = Subscription.findAllByInstanceOf(sub)
         List ref_previousSubscription = Subscription.findAllByPreviousSubscription(sub)
@@ -212,38 +233,53 @@ class DeletionService {
                             // = new ArrayList(sub.issueEntitlements)
 
         List costs          = new ArrayList(sub.costItems)
-        List oapl           = new ArrayList(sub.oapl)
+        List oapl           = new ArrayList(sub.packages?.oapls)
         List privateProps   = new ArrayList(sub.privateProperties)
         List customProps    = new ArrayList(sub.customProperties)
         List surveys        = SurveyConfig.findAllBySubscription(sub)
 
+        // collecting informations
+
+        result.info = []
+
+        result.info << ['Referenzen: Teilnehmer', ref_instanceOf, FLAG_BLOCKER]
+        result.info << ['Referenzen: Nachfolger', ref_previousSubscription]
+
+        result.info << ['Links: Lizenzen', links]
+        result.info << ['Aufgaben', tasks]
+        result.info << ['Merkmalsgruppen', propDefGroupBindings]
+        result.info << ['Vererbungskonfigurationen', ac ? [ac] : []]
+
+        result.info << ['Identifikatoren', ios]
+        result.info << ['Dokumente', docContexts]   // delete ? docContext->doc
+        result.info << ['Organisationen', oRoles]
+        result.info << ['Personen', pRoles]       // delete ? personRole->person
+        result.info << ['Pakete', subPkgs]
+        result.info << ['Anstehende Änderungen', pendingChanges]
+        result.info << ['IssueEntitlements', ies]
+        result.info << ['Kostenposten', costs, FLAG_WARNING]
+        result.info << ['OrgAccessPointLink', oapl]
+        result.info << ['Private Merkmale', sub.privateProperties]
+        result.info << ['Allgemeine Merkmale', sub.customProperties]
+        result.info << ['Umfragen', surveys, FLAG_WARNING]
+
+        // checking constraints and/or processing
+
+        boolean deletable = true
+
+        result.info.each { it ->
+            if (! it.get(1).isEmpty() && it.size() == 3 && it.get(2) == FLAG_BLOCKER) {
+                result.status = RESULT_BLOCKED
+                deletable = false
+            }
+        }
 
         if (dryRun) {
-            result.info = []
-
-            result.info << ['Referenzen: Teilnehmer', ref_instanceOf, FLAG_BLOCKER]
-            result.info << ['Referenzen: Nachfolger', ref_previousSubscription]
-
-            result.info << ['Links: Lizenzen', links]
-            result.info << ['Aufgaben', tasks]
-            result.info << ['Merkmalsgruppen', propDefGroupBindings]
-            result.info << ['Vererbungskonfigurationen', ac ? [ac] : []]
-
-            result.info << ['Identifikatoren', ios]
-            result.info << ['Dokumente', docContexts]   // delete ? docContext->doc
-            result.info << ['Organisationen', oRoles]
-            result.info << ['Personen', pRoles]       // delete ? personRole->person
-            result.info << ['Pakete', subPkgs]
-            result.info << ['Anstehende Änderungen', pendingChanges]
-            result.info << ['IssueEntitlements', ies]
-            result.info << ['Kostenposten', costs, FLAG_WARNING]
-            result.info << ['OrgAccessPointLink', oapl]
-            result.info << ['Private Merkmale', sub.privateProperties]
-            result.info << ['Allgemeine Merkmale', sub.customProperties]
-            result.info << ['Umfragen', surveys, FLAG_WARNING]
+            result.deletable = deletable
         }
         else if (ref_instanceOf) {
-            result = [status: RESULT_QUIT, referencedBy_instanceOf: ref_instanceOf]
+            result.status = RESULT_QUIT
+            result.referencedBy_instanceOf = ref_instanceOf
         }
         else {
             Subscription.withTransaction { status ->
@@ -364,13 +400,13 @@ class DeletionService {
                     sub.delete()
                     status.flush()
 
-                    result = [status: RESULT_SUCCESS]
+                    result.status = RESULT_SUCCESS
                 }
                 catch (Exception e) {
                     println 'error while deleting subscription ' + sub.id + ' .. rollback'
                     println e.message
                     status.setRollbackOnly()
-                    result = [status: RESULT_ERROR]
+                    result.status = RESULT_ERROR
                 }
             }
         }
@@ -381,6 +417,8 @@ class DeletionService {
     static Map<String, Object> deleteOrganisation(Org org, Org replacement, boolean dryRun) {
 
         Map<String, Object> result = [:]
+
+        // gathering references
 
         List links          = Links.where { objectType == org.class.name &&
                 (source == org.id || destination == org.id) }.findAll()
@@ -434,7 +472,7 @@ class DeletionService {
         List surveyResults      = SurveyResult.findAllByOwner(org)
         List surveyResultsParts = SurveyResult.findAllByParticipant(org)
 
-        // collect informations
+        // collecting informations
 
         result.info = []
 
@@ -489,14 +527,23 @@ class DeletionService {
         result.info << ['Umfrageergebnisse (owner)', surveyResults]
         result.info << ['Umfrageergebnisse (participant)', surveyResultsParts]
 
+        // checking constraints and/or processing
+
+        boolean deletable = true
+
         int count = 0
         int constraint = 0
 
         result.info.each { it ->
+            if (! it.get(1).isEmpty() && it.size() == 3 && it.get(2) == FLAG_BLOCKER) {
+                result.status = RESULT_BLOCKED
+                deletable = false
+            }
+
             count += it.get(1).size()
 
             if (it.size() > 2 && ! it.get(1).isEmpty() && it.get(2) == FLAG_SUBSTITUTE) {
-                result << [status: RESULT_SUBSTITUTE_NEEDED]
+                result.status = RESULT_SUBSTITUTE_NEEDED
 
                 if (it.get(0).equals('TitleInstitutionProvider (provider)')) { // ERMS-1512 workaound for data cleanup
                     constraint = it.get(1).size()
@@ -505,7 +552,8 @@ class DeletionService {
         }
 
         if (dryRun) {
-            result << [deletable: count == 0, mergeable: constraint == count]
+            result.deletable = deletable
+            //result << [deletable: count == 0, mergeable: constraint == count]
         }
         else {
             if (constraint == count) {
@@ -524,19 +572,20 @@ class DeletionService {
                         org.delete()
                         status.flush()
 
-                        result = [status: RESULT_SUCCESS]
+                        result.status = RESULT_SUCCESS
                     }
                     catch (Exception e) {
                         println 'error while deleting org ' + org.id + ' .. rollback'
                         println e.message
                         status.setRollbackOnly()
-                        result = [status: RESULT_ERROR]
+                        result.status = RESULT_ERROR
                     }
                 }
             }
             else {
-                result = [status: RESULT_SUBSTITUTE_NEEDED]
-                result << [deletable: count == 0, mergeable: constraint == count]
+                result.status    = RESULT_SUBSTITUTE_NEEDED
+                result.deletable = (count == 0)
+                result.mergeable = (constraint == count)
             }
         }
 
@@ -546,6 +595,8 @@ class DeletionService {
     static Map<String, Object> deleteUser(User user, User replacement, boolean dryRun) {
 
         Map<String, Object> result = [:]
+
+        // gathering references
 
         List userOrgs       = new ArrayList(user.affiliations)
         List userRoles      = new ArrayList(user.roles)
@@ -574,7 +625,7 @@ class DeletionService {
         List tasks = Task.executeQuery(
                 'select x from Task x where x.creator = :user or x.responsibleUser = :user', [user: user])
 
-        // collect informations
+        // collecting informations
 
         result.info = []
 
@@ -594,9 +645,19 @@ class DeletionService {
         result.info << ['Tickets', systemTickets, FLAG_SUBSTITUTE]
         result.info << ['Aufgaben', tasks, FLAG_SUBSTITUTE]
 
+        // checking constraints and/or processing
+
+        boolean deletable = true
+
         int count = 0
+        int constraint = 0
 
         result.info.each { it ->
+            if (! it.get(1).isEmpty() && it.size() == 3 && it.get(2) == FLAG_BLOCKER) {
+                result << [status: RESULT_BLOCKED]
+                deletable = false
+            }
+
             count += it.get(1).size()
 
             if (it.size() > 2 && ! it.get(1).isEmpty() && it.get(2) == FLAG_SUBSTITUTE) {
@@ -605,7 +666,8 @@ class DeletionService {
         }
 
         if (dryRun) {
-            // TODO
+            result << [deletable: deletable]
+            //result << [deletable: count == 0, mergeable: constraint == count]
         }
         else {
             User.withTransaction { status ->
@@ -681,13 +743,13 @@ class DeletionService {
                     user.delete()
                     status.flush()
 
-                    result = [status: RESULT_SUCCESS]
+                    result.status = RESULT_SUCCESS
                 }
                 catch (Exception e) {
                     println 'error while deleting user ' + user.id + ' .. rollback'
                     println e.message
                     status.setRollbackOnly()
-                    result = [status: RESULT_ERROR]
+                    result.status = RESULT_ERROR
                 }
             }
         }

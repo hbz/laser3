@@ -26,16 +26,22 @@
         <g:if test="${editable}">
             <g:form controller="user" action="_delete" params="${[id: user.id, process: true]}">
                 <g:link controller="user" action="edit" params="${[id: user.id]}" class="ui button">Vorgang abbrechen</g:link>
-                <input type="submit" class="ui button red" value="Benutzer löschen" />
 
-                <g:if test="${dryRun?.status == deletionService.RESULT_SUBSTITUTE_NEEDED}">
-                    <br /><br />
-                    Die gekennzeichneten Daten dabei an folgenden Nutzer übertragen:
+                <g:if test="${dryRun?.deletable}">
+                    <input type="submit" class="ui button red" value="Benutzer löschen" />
 
-                    <g:select id="userReplacement" name="userReplacement" class="ui dropdown selection"
-                          from="${substituteList.sort()}"
-                          optionKey="${{'com.k_int.kbplus.auth.User:' + it.id}}" optionValue="${{it.displayName + ' (' + it.username + ')'}}" />
+                    <g:if test="${dryRun?.status == deletionService.RESULT_SUBSTITUTE_NEEDED}">
+                        <br /><br />
+                        Die gekennzeichneten Daten dabei an folgenden Nutzer übertragen:
+
+                        <g:select id="userReplacement" name="userReplacement" class="ui dropdown selection"
+                              from="${substituteList.sort()}"
+                              optionKey="${{'com.k_int.kbplus.auth.User:' + it.id}}" optionValue="${{it.displayName + ' (' + it.username + ')'}}" />
+                    </g:if>
                 </g:if>
+                <g:else>
+                    <input disabled type="submit" class="ui button red" value="Benutzer löschen" />
+                </g:else>
             </g:form>
         </g:if>
 
