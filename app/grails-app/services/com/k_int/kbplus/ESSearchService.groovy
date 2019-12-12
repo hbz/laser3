@@ -245,7 +245,7 @@ class ESSearchService{
       }
     }
 
-    if(params?.searchObjects != 'allObjects'){
+    if(params?.searchObjects && params?.searchObjects != 'allObjects'){
       if(sw.toString()) sw.write(" AND ");
 
         sw.write(" visible:'Private' ")
