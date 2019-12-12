@@ -510,7 +510,7 @@ class SubscriptionService {
                             InvokerHelper.setProperties(newSubscriptionPackage, pkg.properties)
                             newSubscriptionPackage.subscription = newSubscription
 
-                            if(newSubscriptionPackage.save(flush: true)){
+                            if(newSubscriptionPackage.save()){
                                 pkgOapls.each{ oapl ->
 
                                     def oaplProperties = oapl.properties
