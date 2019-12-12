@@ -150,7 +150,6 @@ class SubscriptionCustomProperty extends CustomProperty implements AuditableTrai
                 if (event.changeDoc) {
                     def scp = genericOIDService.resolveOID(event.changeDoc.OID)
                     if (scp?.id == id) {
-                        println(pc)
                         pc.delete()
                     }
                 }
