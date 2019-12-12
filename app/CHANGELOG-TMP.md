@@ -9,6 +9,8 @@
 --      11.12.2019  rc1.2       Christian Bug       Fehler beim Löschen einer Lizenz
 
 1871    11.12.2019  rc1.2       David   Feature     Kleine Verbesserungen und API-Beschreibung aktualisieren (0.74)
+
+1958    10.12.2019  rc1.1       Moe     Bug         Nach dem Entknüpfung einer Vererbung bleibt das System hängen
  
 1971    11.12.2019  hbz-dev     David   Feature     "Organisiert durch" automatisch beim Anlegen von Inst-Admins setzen
 
