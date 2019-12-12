@@ -1,6 +1,8 @@
 ## temporary change log
 
 **Ticket    Date    Branch      Author  Feature/Bug     Description/Keywords**
+
+1958    10.12.2019  rc1.1       Moe     Bug         Nach dem Entknüpfung einer Vererbung bleibt das System hängen
  
 1954/1955   10.12.2019  rc1.1   Andreas Bug         NullPointerException bei Laden der Lizenz für Kostenposten behoben
 
