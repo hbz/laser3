@@ -4,6 +4,10 @@
 
 1959    11.12.2019  rc1.2       Moe     Bug         Lizenz kopieren fehlerhaft
 
+1970    12.12.2019  rc1.2       Andreas Feature     Admin-gesicherter Batchskript zum Aktualisieren von Testlizenzen auf QA
+
+--      11.12.2019  rc1.2       Christian Bug       Fehler beim Löschen einer Lizenz
+
 1871    11.12.2019  rc1.2       David   Feature     Kleine Verbesserungen und API-Beschreibung aktualisieren (0.74)
  
 1971    11.12.2019  hbz-dev     David   Feature     "Organisiert durch" automatisch beim Anlegen von Inst-Admins setzen
