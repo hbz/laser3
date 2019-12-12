@@ -9,7 +9,6 @@ import de.laser.controller.AbstractDebugController
 import de.laser.helper.DebugAnnotation
 import de.laser.helper.DebugUtil
 import de.laser.helper.RDStore
-import grails.plugin.springsecurity.SpringSecurityService
 import org.apache.poi.xssf.streaming.SXSSFWorkbook
 import grails.plugin.springsecurity.annotation.Secured
 import grails.plugin.springsecurity.SpringSecurityUtils
@@ -485,7 +484,7 @@ class OrganisationController extends AbstractDebugController {
     def show() {
 
         DebugUtil du = new DebugUtil()
-        du.setBenchMark('this-n-that')
+        du.setBenchmark('this-n-that')
 
         Map result = setResultGenericsAndCheckAccess(params)
         if(!result) {
@@ -500,7 +499,7 @@ class OrganisationController extends AbstractDebugController {
         //def sorted_links = [:]
         //def offsets = [:]
 
-        du.setBenchMark('orgRoles')
+        du.setBenchmark('orgRoles')
 
         // TODO: experimental asynchronous task
         /*def task_orgRoles = task {
@@ -542,7 +541,7 @@ class OrganisationController extends AbstractDebugController {
             return
         }*/
 
-        du.setBenchMark('editable')
+        du.setBenchmark('editable')
 
         //result.sorted_links = sorted_links
 
@@ -551,12 +550,12 @@ class OrganisationController extends AbstractDebugController {
 
         //IF ORG is a Provider
         if(result.orgInstance.sector == orgSector || orgType?.id in result.orgInstance?.getallOrgTypeIds()) {
-            du.setBenchMark('editable2')
+            du.setBenchmark('editable2')
             result.editable = accessService.checkMinUserOrgRole(result.user, result.orgInstance, 'INST_EDITOR') ||
                     accessService.checkPermAffiliationX("ORG_INST,ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN,ROLE_ORG_EDITOR")
         }
         else {
-            du.setBenchMark('editable2')
+            du.setBenchmark('editable2')
             if(accessService.checkPerm("ORG_CONSORTIUM")) {
                 List<Long> consortia = Combo.findAllByTypeAndFromOrg(COMBO_TYPE_CONSORTIUM,result.orgInstance).collect { it ->
                     it.toOrg.id
@@ -581,7 +580,7 @@ class OrganisationController extends AbstractDebugController {
         return
       }
 
-        du.setBenchMark('properties')
+        du.setBenchmark('properties')
 
         // TODO: experimental asynchronous task
         //def task_properties = task {
@@ -613,7 +612,7 @@ class OrganisationController extends AbstractDebugController {
         //documents
         //du.setBenchMark('documents')
 
-        List bm = du.stopBenchMark()
+        List bm = du.stopBenchmark()
         result.benchMark = bm
 
         // TODO: experimental asynchronous task

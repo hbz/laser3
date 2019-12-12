@@ -160,7 +160,12 @@ class BootStrap {
         log.debug("adjustDatabasePermissions ..")
         adjustDatabasePermissions()
 
-        log.debug("here we go ..")
+        log.debug("                                                 ")
+        log.debug(" _                                               ")
+        log.debug("| |_ ___ ___ ___    _ _ _ ___    ___ ___         ")
+        log.debug("|   | -_|  _| -_|  | | | | -_|  | . | . |  _ _   ")
+        log.debug("|_|_|___|_| |___|  |_____|___|  |_  |___| |_|_|  ")
+        log.debug("                                |___|            ")
     }
 
     def destroy = {

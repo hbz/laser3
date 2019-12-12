@@ -5,8 +5,9 @@ import com.k_int.kbplus.Org
 import com.k_int.kbplus.Package
 import com.k_int.kbplus.Subscription
 import com.k_int.kbplus.SubscriptionPackage
+import de.laser.api.v0.ApiCollectionReader
 import de.laser.api.v0.ApiReader
-import de.laser.api.v0.ApiReaderHelper
+import de.laser.api.v0.ApiStubReader
 import de.laser.api.v0.ApiToolkit
 import de.laser.domain.IssueEntitlementCoverage
 import de.laser.helper.Constants
@@ -61,7 +62,7 @@ class ApiIssueEntitlement {
         }
 
         if (hasAccess) {
-            result = ApiReaderHelper.retrieveIssueEntitlementCollection(subPkg, ApiReaderHelper.IGNORE_NONE, context) // TODO check orgRole.roleType
+            result = ApiCollectionReader.retrieveIssueEntitlementCollection(subPkg, ApiReader.IGNORE_NONE, context) // TODO check orgRole.roleType
         }
 
         // this is different to other Api<x>.get<x>-methods;
@@ -84,26 +85,27 @@ class ApiIssueEntitlement {
         result.ieReason         = ie?.ieReason
         result.coreStatusStart  = ie?.coreStatusStart
         result.coreStatusEnd    = ie?.coreStatusEnd
+        result.lastUpdated      = ie?.lastUpdated
 
         // RefdataValues
         result.coreStatus       = ie.coreStatus?.value
         result.medium           = ie.medium?.value
         //result.status           = ie.status?.value // legacy; not needed ?
 
-        result.coverages            = retrieveIssueEntitlementCoverageCollection(ie.coverages, ApiReaderHelper.IGNORE_ALL, context) // com.k_int.kbplus.TitleInstancePackagePlatform
+        result.coverages        = retrieveIssueEntitlementCoverageCollection(ie.coverages, ApiReader.IGNORE_ALL, context) // com.k_int.kbplus.TitleInstancePackagePlatform
 
         // References
-        if (ignoreRelation != ApiReaderHelper.IGNORE_ALL) {
-            if (ignoreRelation == ApiReaderHelper.IGNORE_SUBSCRIPTION_AND_PACKAGE) {
-                result.tipp = ApiReaderHelper.retrieveTippMap(ie.tipp, ApiReaderHelper.IGNORE_ALL, context) // com.k_int.kbplus.TitleInstancePackagePlatform
+        if (ignoreRelation != ApiReader.IGNORE_ALL) {
+            if (ignoreRelation == ApiReader.IGNORE_SUBSCRIPTION_AND_PACKAGE) {
+                result.tipp = ApiCollectionReader.retrieveTippMap(ie.tipp, ApiReader.IGNORE_ALL, context) // com.k_int.kbplus.TitleInstancePackagePlatform
             }
             else {
-                if (ignoreRelation != ApiReaderHelper.IGNORE_TIPP) {
-                    result.tipp = ApiReaderHelper.retrieveTippMap(ie.tipp, ApiReaderHelper.IGNORE_NONE, context)
+                if (ignoreRelation != ApiReader.IGNORE_TIPP) {
+                    result.tipp = ApiCollectionReader.retrieveTippMap(ie.tipp, ApiReader.IGNORE_NONE, context)
                     // com.k_int.kbplus.TitleInstancePackagePlatform
                 }
-                if (ignoreRelation != ApiReaderHelper.IGNORE_SUBSCRIPTION) {
-                    result.subscription = ApiReaderHelper.requestSubscriptionStub(ie.subscription, context)
+                if (ignoreRelation != ApiReader.IGNORE_SUBSCRIPTION) {
+                    result.subscription = ApiStubReader.requestSubscriptionStub(ie.subscription, context)
                     // com.k_int.kbplus.Subscription
                 }
             }
@@ -130,6 +132,7 @@ class ApiIssueEntitlement {
         result.embargo          = coverage?.embargo
         result.coverageDepth    = coverage?.coverageDepth
         result.coverageNote     = coverage?.coverageNote
+        result.lastUpdated      = coverage?.lastUpdated
 
         return ApiToolkit.cleanUp(result, true, true)
     }

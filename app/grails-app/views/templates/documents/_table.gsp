@@ -28,10 +28,14 @@
                 <th>${message(code:'license.docs.table.fileName', default:'File Name')}</th>
                 <th>${message(code:'license.docs.table.type', default:'Type')}</th>
                 <%--<th>${message(code:'org.docs.table.ownerOrg')}</th>--%>
-                <g:if test="${controllerName in ['myInstitution','organisation']}">
-                    <th>${message(code:'org.docs.table.target')}</th>
+                <g:if test="${controllerName == 'myInstitution'}">
+                    <th>${message(code:'org.docs.table.targetBy')}</th>
                     <th>${message(code:'org.docs.table.shareConf')}</th>
                 </g:if>
+                <%--<g:elseif test="${controllerName == 'organisation'}">
+                    <th>${message(code:'org.docs.table.targetFor')}</th>
+                    <th>${message(code:'org.docs.table.shareConf')}</th>
+                </g:elseif>--%>
                 <th>${message(code:'default.actions', default:'Actions')}</th>
             </tr>
         </thead>
@@ -91,7 +95,7 @@
                         <td>
                             ${docctx.owner?.type?.getI10n('value')}
                         </td>
-                        <g:if test="${instance instanceof Org}">
+                        <g:if test="${controllerName == 'myInstitution'}">
                             <td>
                                 ${inTargetOrg ? docctx.owner?.owner?.sortname :  docctx.targetOrg?.sortname}
                             </td>

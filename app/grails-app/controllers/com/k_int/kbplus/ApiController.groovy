@@ -395,21 +395,25 @@ where tipp.title = ? and orl.roleType.value=?''', [title, 'Content Provider']);
                 result = Constants.HTTP_NOT_IMPLEMENTED
             }
         }
-        def responseStruct = ApiManager.buildResponse(request, obj, query, value, context, contextOrg, result)
+        Map<String, Object> respStruct = ApiManager.buildResponse(request, obj, query, value, context, contextOrg, result)
 
-        def responseJson = responseStruct[0]
-        def responseCode = responseStruct[1]
+        JSON json   = (JSON) respStruct.json
+        int status  = (int) respStruct.status
 
         String responseTime = ((System.currentTimeMillis() - startTimeMillis) / 1000).toString()
 
         response.setContentType(Constants.MIME_APPLICATION_JSON)
         response.setCharacterEncoding(Constants.UTF8)
-        response.setHeader("Debug-Result-Length", responseJson.toString().length().toString())
+        response.setHeader("Debug-Result-Length", json.toString().length().toString())
         response.setHeader("Debug-Result-Time", responseTime)
-        response.setStatus(responseCode)
 
-        log.debug("API Call (Response Code: ${responseCode}, Response Time: ${responseTime})")
+        if (json.target instanceof List) {
+            response.setHeader("Debug-Result-Size", json.target.size().toString())
+        }
+        response.setStatus(status)
 
-        render responseJson.toString(true)
+        log.debug("API Call (Response Code: ${status}, Response Time: ${responseTime})")
+
+        render json.toString(true)
     }
 }

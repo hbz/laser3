@@ -1,29 +1,26 @@
 package de.laser.helper
 
-import de.laser.CacheService
 import de.laser.ContextService
-import de.laser.domain.SystemProfiler
 import grails.util.Holders
-import groovy.transform.CompileStatic
 
-@CompileStatic
+//@CompileStatic
 class DebugUtil {
 
-    CacheService   cacheService   = (CacheService) Holders.grailsApplication.mainContext.getBean('cacheService')
+    //CacheService   cacheService   = (CacheService) Holders.grailsApplication.mainContext.getBean('cacheService')
     ContextService contextService = (ContextService) Holders.grailsApplication.mainContext.getBean('contextService')
     EhcacheWrapper benchCache
 
-    final static String CK_PREFIX_GLOBAL_INTERCEPTOR = 'DebugUtil/Session/'
-    final static String CK_PREFIX_RANDOM             = 'DebugUtil/Random/'
+    final static String DU_SYSPROFILER_PREFIX   = 'DebugUtil/SystemProfiler:'
+    final static String DU_BENCHMARK_PREFIX     = 'DebugUtil/Benchmark:'
 
     // for global interceptors
-    DebugUtil(String cacheKeyPrefix) {
-        benchCache = cacheService.getTTL300Cache(cacheKeyPrefix)
+    DebugUtil(String cacheKeyPrefix, String scope) {
+        benchCache = contextService.getCache(cacheKeyPrefix, scope)
     }
 
     // for inner method benches
     DebugUtil() {
-        benchCache = cacheService.getTTL300Cache(CK_PREFIX_RANDOM + UUID.randomUUID().toString())
+        benchCache = contextService.getCache(DU_BENCHMARK_PREFIX + UUID.randomUUID().toString(), ContextService.USER_SCOPE)
     }
 
     // handling interceptor benches
@@ -46,7 +43,7 @@ class DebugUtil {
 
     // complex list with timestamps for inner method benches
 
-    List setBenchMark(String step) {
+    List setBenchmark(String step) {
         List marks = (List) benchCache.get('') ?: []
         marks.add([step, System.currentTimeMillis()])
 
@@ -54,8 +51,8 @@ class DebugUtil {
         marks
     }
 
-    List stopBenchMark() {
-        setBenchMark('abs(STEP_N - STEP_0)')
+    List stopBenchmark() {
+        setBenchmark('abs(STEP_N - STEP_0)')
 
         List marks = (List) benchCache.get('')
         benchCache.remove('')

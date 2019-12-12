@@ -2,8 +2,8 @@ package de.laser.api.v0.entities
 
 import com.k_int.kbplus.Identifier
 import com.k_int.kbplus.Org
+import de.laser.api.v0.ApiCollectionReader
 import de.laser.api.v0.ApiReader
-import de.laser.api.v0.ApiReaderHelper
 import de.laser.api.v0.ApiToolkit
 import de.laser.helper.Constants
 import grails.converters.JSON
@@ -88,6 +88,7 @@ class ApiOrg {
         result.federalState = org.federalState?.value
         result.country      = org.country?.value
         result.libraryType  = org.libraryType?.value
+        result.lastUpdated  = org.lastUpdated
 
         //result.fteStudents  = org.fteStudents // TODO dc/table readerNumber
         //result.fteStaff     = org.fteStaff // TODO dc/table readerNumber
@@ -100,14 +101,14 @@ class ApiOrg {
 
         // References
 
-        result.addresses    = ApiReaderHelper.retrieveAddressCollection(org.addresses, ApiReaderHelper.NO_CONSTRAINT) // com.k_int.kbplus.Address
-        result.contacts     = ApiReaderHelper.retrieveContactCollection(org.contacts, ApiReaderHelper.NO_CONSTRAINT) // com.k_int.kbplus.Contact
-        result.identifiers  = ApiReaderHelper.retrieveIdentifierCollection(org.ids) // com.k_int.kbplus.Identifier
-        result.persons      = ApiReaderHelper.retrievePrsLinkCollection(
-                org.prsLinks, ApiReaderHelper.NO_CONSTRAINT, ApiReaderHelper.NO_CONSTRAINT, context
+        result.addresses    = ApiCollectionReader.retrieveAddressCollection(org.addresses, ApiReader.NO_CONSTRAINT) // com.k_int.kbplus.Address
+        result.contacts     = ApiCollectionReader.retrieveContactCollection(org.contacts, ApiReader.NO_CONSTRAINT) // com.k_int.kbplus.Contact
+        result.identifiers  = ApiCollectionReader.retrieveIdentifierCollection(org.ids) // com.k_int.kbplus.Identifier
+        result.persons      = ApiCollectionReader.retrievePrsLinkCollection(
+                org.prsLinks, ApiReader.NO_CONSTRAINT, ApiReader.NO_CONSTRAINT, context
         ) // com.k_int.kbplus.PersonRole
 
-        result.properties   = ApiReaderHelper.retrievePropertyCollection(org, context, ApiReaderHelper.IGNORE_NONE) // com.k_int.kbplus.(OrgCustomProperty, OrgPrivateProperty)
+        result.properties   = ApiCollectionReader.retrievePropertyCollection(org, context, ApiReader.IGNORE_NONE) // com.k_int.kbplus.(OrgCustomProperty, OrgPrivateProperty)
 
         // Ignored
 

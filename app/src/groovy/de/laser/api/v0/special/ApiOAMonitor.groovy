@@ -4,8 +4,10 @@ import com.k_int.kbplus.Org
 import com.k_int.kbplus.OrgRole
 import com.k_int.kbplus.OrgSettings
 import com.k_int.kbplus.RefdataValue
-import de.laser.api.v0.ApiReaderHelper
+import de.laser.api.v0.ApiCollectionReader
+import de.laser.api.v0.ApiReader
 import de.laser.api.v0.ApiToolkit
+import de.laser.api.v0.ApiStubReader
 import de.laser.helper.Constants
 import de.laser.helper.RDStore
 import grails.converters.JSON
@@ -57,7 +59,7 @@ class ApiOAMonitor {
             List<Org> orgs = getAccessibleOrgs()
 
             orgs.each { o ->
-                result << ApiReaderHelper.retrieveOrganisationStubMap(o, o)
+                result << ApiStubReader.retrieveOrganisationStubMap(o, o)
             }
         }
 
@@ -87,6 +89,7 @@ class ApiOAMonitor {
             result.federalState = org.federalState?.value
             result.country      = org.country?.value
             result.libraryType  = org.libraryType?.value
+            result.lastUpdated  = org.lastUpdated
 
             //result.fteStudents  = org.fteStudents // TODO dc/table readerNumber
             //result.fteStaff     = org.fteStaff // TODO dc/table readerNumber
@@ -99,14 +102,14 @@ class ApiOAMonitor {
 
             // References
 
-            //result.addresses    = ApiReaderHelper.retrieveAddressCollection(org.addresses, ApiReaderHelper.NO_CONSTRAINT) // com.k_int.kbplus.Address
-            //result.contacts     = ApiReaderHelper.retrieveContactCollection(org.contacts, ApiReaderHelper.NO_CONSTRAINT) // com.k_int.kbplus.Contact
-            result.identifiers  = ApiReaderHelper.retrieveIdentifierCollection(org.ids) // com.k_int.kbplus.Identifier
-            //result.persons      = ApiReaderHelper.retrievePrsLinkCollection(
-            //        org.prsLinks, ApiReaderHelper.NO_CONSTRAINT, ApiReaderHelper.NO_CONSTRAINT, context
+            //result.addresses    = ApiCollectionReader.retrieveAddressCollection(org.addresses, ApiReader.NO_CONSTRAINT) // com.k_int.kbplus.Address
+            //result.contacts     = ApiCollectionReader.retrieveContactCollection(org.contacts, ApiReader.NO_CONSTRAINT) // com.k_int.kbplus.Contact
+            result.identifiers  = ApiCollectionReader.retrieveIdentifierCollection(org.ids) // com.k_int.kbplus.Identifier
+            //result.persons      = ApiCollectionReader.retrievePrsLinkCollection(
+            //        org.prsLinks, ApiCollectionReader.NO_CONSTRAINT, ApiCollectionReader.NO_CONSTRAINT, context
             //) // com.k_int.kbplus.PersonRole
 
-            result.properties    = ApiReaderHelper.retrievePropertyCollection(org, context, ApiReaderHelper.IGNORE_PRIVATE_PROPERTIES) // com.k_int.kbplus.(OrgCustomProperty, OrgPrivateProperty)
+            result.properties    = ApiCollectionReader.retrievePropertyCollection(org, context, ApiReader.IGNORE_PRIVATE_PROPERTIES) // com.k_int.kbplus.(OrgCustomProperty, OrgPrivateProperty)
             result.subscriptions = retrieveSubscriptionCollection(org)
 
             result = ApiToolkit.cleanUp(result, true, true)
@@ -129,7 +132,7 @@ class ApiOAMonitor {
                 'select distinct(oo.sub) from OrgRole oo where oo.roleType in (:roleTypes)',
                 [roleTypes: [RDStore.OR_SUBSCRIPTION_CONSORTIA, RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER]]
         ).each { sub ->
-            result.add(ApiReaderHelper.requestSubscriptionStub(sub, org, true))
+            result.add(ApiStubReader.requestSubscriptionStub(sub, org, true))
         }
 
         result = ApiToolkit.cleanUp(result, true, true)

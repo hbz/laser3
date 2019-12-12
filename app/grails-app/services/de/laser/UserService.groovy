@@ -88,7 +88,7 @@ class UserService {
         result
     }
 
-    def addNewUser(Map params, FlashScope flash) {
+    User addNewUser(Map params, FlashScope flash) {
         User user = new User(params)
         user.enabled = true
 
@@ -111,8 +111,20 @@ class UserService {
         if (params.org && params.formalRole) {
             Org org = Org.get(params.org)
             Role formalRole = Role.get(params.formalRole)
+
             if (org && formalRole) {
+                def existingUserOrgs = UserOrg.findAllByOrgAndFormalRole(org, formalRole).size()
+
                 instAdmService.createAffiliation(user, org, formalRole, UserOrg.STATUS_APPROVED, flash)
+
+                if (formalRole.authority == 'INST_ADM' && existingUserOrgs == 0 && ! org.legallyObligedBy) { // only if new instAdm
+                    if (UserOrg.findByOrgAndUserAndFormalRole(org, user, formalRole)) { // only on success
+                        org.legallyObligedBy = contextService.getOrg()
+                        org.save()
+                        log.debug("set legallyObligedBy for ${org} -> ${contextService.getOrg()}")
+                    }
+                }
+
                 user.getSetting(UserSettings.KEYS.DASHBOARD, org)
                 user.getSetting(UserSettings.KEYS.DASHBOARD_TAB, RefdataValue.getByValueAndCategory('Due Dates', 'User.Settings.Dashboard.Tab'))
             }

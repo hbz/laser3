@@ -210,6 +210,8 @@ r2d2 = {
         });
 
         $(ctxSel + ' .xEditableValue').editable({
+
+            highlight: false,
             language: gspLocale,
             format:   gspDateFormat,
             validate: function(value) {

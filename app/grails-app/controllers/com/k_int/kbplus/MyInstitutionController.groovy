@@ -178,7 +178,7 @@ class MyInstitutionController extends AbstractDebugController {
 
         def result = [:]
 		DebugUtil du = new DebugUtil()
-		du.setBenchMark('init')
+		du.setBenchmark('init')
 
         result.user = User.get(springSecurityService.principal.id)
         result.max = params.max ?: result.user.getDefaultPageSizeTMP()
@@ -292,7 +292,7 @@ class MyInstitutionController extends AbstractDebugController {
 
         result.cachedContent = true
 
-		List bm = du.stopBenchMark()
+		List bm = du.stopBenchmark()
 		result.benchMark = bm
 
         result
@@ -315,7 +315,7 @@ class MyInstitutionController extends AbstractDebugController {
 
         def result = setResultGenerics()
 		DebugUtil du = new DebugUtil()
-		du.setBenchMark('init')
+		du.setBenchmark('init')
 
         result.transforms = grailsApplication.config.licenseTransforms
 
@@ -441,7 +441,7 @@ from License as l where (
             result.orgRoles.put(oo.lic.id,oo.roleType)
         }
 
-		List bm = du.stopBenchMark()
+		List bm = du.stopBenchmark()
 		result.benchMark = bm
 
         def filename = "${g.message(code: 'export.my.currentLicenses')}_${sdf.format(new Date(System.currentTimeMillis()))}"
@@ -701,7 +701,7 @@ from License as l where (
 
         def result = setResultGenerics()
 		DebugUtil du = new DebugUtil()
-		du.setBenchMark('init')
+		du.setBenchmark('init')
 
         def cache = contextService.getCache('MyInstitutionController/currentProviders/', contextService.ORG_SCOPE)
         List orgIds = []
@@ -743,7 +743,7 @@ from License as l where (
 
         result.cachedContent = true
 
-		List bm = du.stopBenchMark()
+		List bm = du.stopBenchmark()
 		result.benchMark = bm
 
         if ( params.exportXLS ) {
@@ -789,7 +789,7 @@ from License as l where (
 
         def result = setResultGenerics()
 		DebugUtil du = new DebugUtil()
-		du.setBenchMark('init')
+		du.setBenchmark('init')
 
         result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeTMP()
         result.offset = params.offset ? Integer.parseInt(params.offset) : 0
@@ -862,7 +862,7 @@ from License as l where (
         String datetoday = sdf.format(new Date(System.currentTimeMillis()))
         String filename = "${datetoday}_" + g.message(code: "export.my.currentSubscriptions")
 
-		List bm = du.stopBenchMark()
+		List bm = du.stopBenchmark()
 		result.benchMark = bm
 
         if ( params.exportXLS ) {
@@ -931,7 +931,8 @@ from License as l where (
                 subProviders = providers.get(provider.sub)
             }
             else subProviders = new TreeSet()
-            subProviders.add(provider.org.name)
+            String providerName = provider.org.name ? provider.org.name : ' '
+            subProviders.add(providerName)
             providers.put(provider.sub,subProviders)
         }
         allAgencies.each { agency ->
@@ -940,7 +941,8 @@ from License as l where (
                 subAgencies = agencies.get(agency.sub)
             }
             else subAgencies = new TreeSet()
-            subAgencies.add(agency.org.name)
+            String agencyName = agency.org.name ? agency.org.name : ' '
+            subAgencies.add(agencyName)
             agencies.put(agency.sub,subAgencies)
         }
         allIdentifiers.each { identifier ->
@@ -1700,7 +1702,7 @@ from License as l where (
 
         def result = setResultGenerics()
 		DebugUtil du = new DebugUtil()
-		du.setBenchMark('init')
+		du.setBenchmark('init')
 		
         result.transforms = grailsApplication.config.titlelistTransforms
 
@@ -1906,7 +1908,7 @@ from License as l where (
         result.filterSet = params.filterSet || defaultSet
         String filename = "titles_listing_${result.institution.shortcode}"
 
-		List bm = du.stopBenchMark()
+		List bm = du.stopBenchmark()
 		result.benchMark = bm
 
         if(params.exportKBart) {
@@ -3350,7 +3352,7 @@ AND EXISTS (
         def result = setResultGenerics()
 
         DebugUtil du = new DebugUtil()
-        du.setBenchMark('start')
+        du.setBenchmark('start')
 
         // new: filter preset
         if(accessService.checkPerm('ORG_CONSORTIUM')) {
@@ -3393,7 +3395,7 @@ AND EXISTS (
         def tmpQuery = "select o.id " + fsq.query.minus("select o ")
         def memberIds = Org.executeQuery(tmpQuery, fsq.queryParams)
 
-		du.setBenchMark('query')
+		du.setBenchmark('query')
 
         if (params.filterPropDef && memberIds) {
             fsq                      = propertyService.evalFilterQuery(params, "select o FROM Org o WHERE o.id IN (:oids) order by o.sortname asc", 'o', [oids: memberIds])
@@ -3418,7 +3420,7 @@ AND EXISTS (
         // Write the output to a file
         String file = "${sdf.format(new Date(System.currentTimeMillis()))}_"+exportHeader
 
-		List bm = du.stopBenchMark()
+		List bm = du.stopBenchmark()
 		result.benchMark = bm
 
         if ( params.exportXLS ) {
@@ -3468,7 +3470,7 @@ AND EXISTS (
         def result = setResultGenerics()
 
         DebugUtil du = new DebugUtil()
-        du.setBenchMark('filterService')
+        du.setBenchmark('filterService')
 
         result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeTMP()
         result.offset = params.offset ? Integer.parseInt(params.offset) : 0
@@ -3476,7 +3478,7 @@ AND EXISTS (
         Map fsq = filterService.getOrgComboQuery([comboType:RDStore.COMBO_TYPE_CONSORTIUM.value,sort: 'o.sortname'], contextService.getOrg())
         result.filterConsortiaMembers = Org.executeQuery(fsq.query, fsq.queryParams)
 
-        du.setBenchMark('filterSubTypes & filterPropList')
+        du.setBenchmark('filterSubTypes & filterPropList')
 
         if(params.filterSet)
             result.filterSet = params.filterSet
@@ -3504,7 +3506,7 @@ AND EXISTS (
 
         // CostItem ci
 
-        du.setBenchMark('filter query')
+        du.setBenchmark('filter query')
 
         String query = "select ci, subT, roleT.org " +
                 " from CostItem ci right outer join ci.sub subT join subT.instanceOf subK " +
@@ -3591,7 +3593,7 @@ AND EXISTS (
         //log.debug( query + " " + orderQuery )
         // log.debug( qarams )
 
-        du.setBenchMark('costs')
+        du.setBenchmark('costs')
 
         List costs = CostItem.executeQuery(
                 query + " " + orderQuery, qarams
@@ -3621,7 +3623,7 @@ AND EXISTS (
             entries
         }()
 
-        List bm = du.stopBenchMark()
+        List bm = du.stopBenchmark()
         result.benchMark = bm
 
         BidiMap subLinks = new DualHashBidiMap()
@@ -3925,7 +3927,7 @@ AND EXISTS (
         def result = setResultGenerics()
 
         DebugUtil du = new DebugUtil()
-        du.setBenchMark('filterService')
+        du.setBenchmark('filterService')
 
         result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeTMP()
         result.offset = params.offset ? Integer.parseInt(params.offset) : 0
