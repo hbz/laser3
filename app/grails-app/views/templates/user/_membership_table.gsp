@@ -10,7 +10,9 @@
             <th>${message(code: 'profile.membership.role', default:'Role')}</th>
             <th>${message(code: 'profile.membership.status', default:'Status')}</th>
             <th>${message(code: 'profile.membership.date', default:'Date Requested / Actioned')}</th>
-            <th class="la-action-info">${message(code:'default.actions')}</th>
+            <g:if test="${tmplUserEdit}">
+                <th class="la-action-info">${message(code:'default.actions')}</th>
+            </g:if>
         </tr>
         </thead>
         <tbody>
@@ -43,11 +45,14 @@
                         /
                         <g:formatDate format="${message(code:'default.date.format.notime', default:'yyyy-MM-dd')}" date="${aff.dateActioned}"/>
                     </td>
-                    <td class="x">
-                        <g:if test="${tmplProfile}">
+
+                        %{--<g:if test="${tmplProfile}">
+                            <td class="x">
                             <g:link class="ui button" controller="profile" action="processCancelRequest" params="${[assoc:aff.id]}">${message(code:'default.button.revoke.label', default:'Revoke')}</g:link>
-                        </g:if>
+                            </td>
+                        </g:if>--}%
                         <g:if test="${tmplUserEdit}">
+                            <td class="x">
                             <g:if test="${(editor.hasRole('ROLE_ADMIN') || (aff.org.id == contextService.getOrg().id) || (aff.org.id in comboOrgIds))}">
                                 <g:if test="${!instAdmService.isLastAdminForOrg(aff.org, userInstance) || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')}">
                                     <g:link controller="ajax" action="deleteThrough" params='${[contextOid:"${userInstance.class.name}:${userInstance.id}",contextProperty:"affiliations",targetOid:"${aff.class.name}:${aff.id}"]}'
@@ -63,8 +68,8 @@
                                     </span>
                                 </g:else>
                             </g:if>
+                            </td>
                         </g:if>
-                    </td>
                 </tr>
             </g:if>
         </g:each>
