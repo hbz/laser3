@@ -3,6 +3,7 @@ package de.laser
 import com.k_int.kbplus.*
 import com.k_int.kbplus.auth.*
 import com.k_int.properties.PropertyDefinition
+import de.laser.domain.ActivityProfiler
 import de.laser.domain.SystemProfiler
 import de.laser.helper.DebugAnnotation
 import de.laser.helper.RDStore
@@ -11,7 +12,9 @@ import grails.plugin.springsecurity.annotation.Secured
 import grails.util.Holders
 import grails.web.Action
 import groovy.xml.MarkupBuilder
+import junit.extensions.ActiveTestSuite
 import org.hibernate.SessionFactory
+import org.joda.time.LocalDate
 import org.quartz.JobKey
 import org.quartz.impl.matchers.GroupMatcher
 import org.springframework.transaction.TransactionStatus
@@ -162,7 +165,7 @@ class YodaController {
                 group << map
             }
 
-            groups << ["${groupName}" : group.sort{ it.nextFireTime }]
+            groups << ["${groupName}" : group.sort{ a, b -> (a.name < b.name ? -1 : 1)}]
         }
         result.quartz = groups
         result
@@ -205,7 +208,19 @@ class YodaController {
     }
 
     @Secured(['ROLE_YODA'])
-    def profiler() {
+    def activityProfiler() {
+        Map result = [:]
+
+        result.activity = ActivityProfiler.executeQuery(
+                "select min(dateCreated), max(dateCreated), min(userCount), max(userCount), avg(userCount) from ActivityProfiler ap " +
+                        " where dateCreated > :fromDate " +
+                        " group by date_trunc('hour', dateCreated) order by min(dateCreated), max(dateCreated)",
+                [fromDate: LocalDate.now().minusMonths(1).toDate(), max: 500])
+        result
+    }
+
+    @Secured(['ROLE_YODA'])
+    def systemProfiler() {
         Map result = [:]
 
         result.globalCountByUri = [:]

@@ -2,7 +2,9 @@
 
 **Ticket    Date    Branch      Author  Feature/Bug     Description/Keywords**
 
---      13.12.2019  rc1.2       David   Feature     Verbesserter Profiler
+1986    13.12.2019  rc1.2       David   Feature     Aktivitäts-Profiler
+
+--      13.12.2019  rc1.2       David   Feature     Verbesserter System-Profiler
 
 1346    12.12.2019  rc1.2       David   Feature     Rudimentäres Löschen von Organisationen; Überarbeitung der Löschfunktion für Lizenzen, Verträge und User
 

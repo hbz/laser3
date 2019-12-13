@@ -1,5 +1,6 @@
 package com.k_int.kbplus.batch
 
+import de.laser.domain.ActivityProfiler
 import de.laser.quartz.AbstractJob
 
 class HeartbeatJob extends AbstractJob {
@@ -11,7 +12,7 @@ class HeartbeatJob extends AbstractJob {
     // Cron:: Min Hour DayOfMonth Month DayOfWeek Year
     // Example - every 10 mins 0 0/10 * * * ? 
     // Every 10 mins
-    cron name:'heartbeatTrigger', startDelay:10000, cronExpression: "0 0/10 * * * ?"
+    cron name:'heartbeatTrigger', startDelay:10000, cronExpression: "0 0/5 * * * ?"
     // cronExpression: "s m h D M W Y"
     //                  | | | | | | `- Year [optional]
     //                  | | | | | `- Day of Week, 1-7 or SUN-SAT, ?
@@ -37,8 +38,9 @@ class HeartbeatJob extends AbstractJob {
         }
         jobIsRunning = true
 
-        log.debug("Heartbeat Job");
+        log.debug("Heartbeat Job")
         grailsApplication.config.quartzHeartbeat = new Date()
+        ActivityProfiler.update()
 
         jobIsRunning = false
     }

@@ -2,16 +2,16 @@
 <html>
 <head>
     <meta name="layout" content="semanticUI">
-    <title>${message(code:'laser', default:'LAS:eR')} : ${message(code:'menu.yoda.profiler')}</title>
+    <title>${message(code:'laser', default:'LAS:eR')} : ${message(code:'menu.yoda.systemProfiler')}</title>
 </head>
 <body>
 
 <semui:breadcrumbs>
     <semui:crumb message="menu.yoda.dash" controller="yoda" action="index"/>
-    <semui:crumb message="menu.yoda.profiler" class="active"/>
+    <semui:crumb message="menu.yoda.systemProfiler" class="active"/>
 </semui:breadcrumbs>
 <br>
-    <h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon />${message(code:'menu.yoda.profiler')}</h1>
+    <h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon />${message(code:'menu.yoda.systemProfiler')}</h1>
 
     <h3 class="ui header">Global</h3>
 
