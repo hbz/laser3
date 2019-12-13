@@ -14,7 +14,7 @@
     <semui:crumb message="profile.bc.profile" class="active"/>
 </semui:breadcrumbs>
 
-<semui:controlButtons>
+%{--<semui:controlButtons>
     <semui:actionsDropdown>
 
         <g:link class="ui item js-open-confirm-modal la-popup-tooltip la-delay"
@@ -26,7 +26,7 @@
         </g:link>
 
     </semui:actionsDropdown>
-</semui:controlButtons>
+</semui:controlButtons>--}%
 
 <br>
 <h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon />${message(code: 'profile', default: 'LAS:eR User Profile')}</h1>
