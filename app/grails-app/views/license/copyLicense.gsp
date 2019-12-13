@@ -17,8 +17,8 @@
     <g:render template="actions"/>
 </semui:controlButtons>
 
-<h1 class="ui left floated aligned icon header la-clear-before"><semui:headerIcon />${license.reference}</h1>
-<h2 class="ui left floated aligned icon header la-clear-before">${message(code: 'myinst.copyLicense')}</h2>
+<h1 class="ui left aligned icon header la-clear-before"><semui:headerIcon />${license.reference}</h1>
+<h2 class="ui left aligned icon header la-clear-before">${message(code: 'myinst.copyLicense')}</h2>
 
 <semui:messages data="${flash}"/>
 

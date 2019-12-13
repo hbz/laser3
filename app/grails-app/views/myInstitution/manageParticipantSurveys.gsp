@@ -14,7 +14,7 @@
     <semui:crumb controller="myInstitution" action="dashboard" text="${institution?.getDesignation()}"/>
     <semui:crumb message="manageParticipantSurveys.header" class="active"/>
 </semui:breadcrumbs>
-
+<br>
 <h1 class="ui left floated aligned icon header la-clear-before">
     <semui:headerIcon/>${message(code: 'manageParticipantSurveys.header')}
     <semui:totalNumber total="${countSurveys.values().sum { it }}"/>
@@ -22,7 +22,8 @@
 
 <semui:messages data="${flash}"/>
 
-<semui:filter>
+<g:render template="../templates/filter/javascript" />
+<semui:filter showFilterButton="true">
     <g:form action="manageParticipantSurveys" controller="myInstitution" method="post" id="${params.id}"
             params="[tab: params.tab]" class="ui small form">
 

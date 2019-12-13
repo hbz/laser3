@@ -17,8 +17,8 @@
     <semui:crumb controller="survey" action="currentSurveysConsortia" text="${message(code: 'menu.my.surveys')}"/>
     <semui:crumb message="createIssueEntitlementsSurvey.label" class="active"/>
 </semui:breadcrumbs>
-
-<h1 class="ui left floated aligned icon header la-clear-before"><semui:headerTitleIcon
+<br>
+<h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerTitleIcon
         type="Survey"/>${message(code: 'createIssueEntitlementsSurvey.label')}</h1>
 
 
@@ -35,7 +35,8 @@
 <semui:totalNumber total="${num_sub_rows}"/>
 </h1>
 
-<semui:filter>
+<g:render template="../templates/filter/javascript" />
+<semui:filter showFilterButton="true">
     <g:form action="createIssueEntitlementsSurvey" controller="survey" method="get" class="ui small form">
         <input type="hidden" name="isSiteReloaded" value="yes"/>
         <input type="hidden" name="id" value="${params.id}"/>
@@ -122,22 +123,19 @@
                           noSelection="${['': message(code: 'default.select.choose.label')]}"/>
             </div>
 
-            <div class="field">
-                <div class="two fields">
+            <div class="field la-field-right-aligned">
 
-                    <div class="field la-field-right-aligned">
                         <a href="${request.forwardURI}"
                            class="ui reset primary button">${message(code: 'default.button.reset.label')}</a>
                         <input type="submit" class="ui secondary button"
                                value="${message(code: 'default.button.filter.label', default: 'Filter')}">
-                    </div>
-                </div>
+
             </div>
         </div>
     </g:form>
 </semui:filter>
-<semui:form>
-    <div class="subscription-results">
+
+<div class="subscription-results">
     <g:if test="${subscriptions}">
         <table class="ui celled sortable table table-tworow la-table">
             <thead>
@@ -301,7 +299,7 @@
             </g:else>
     </div>
 
-</semui:form>
+
 
 <g:if test="${true}">
     <semui:paginate action="createSubscriptionSurvey" controller="survey" params="${params}"

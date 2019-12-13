@@ -19,7 +19,7 @@
                     <semui:crumb message="accessPoint.new" class="active"/>
                 </semui:breadcrumbs>
                 <br>
-                <h1 class="ui left floated aligned icon header la-clear-before"><semui:headerIcon />
+                <h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon />
                     <g:message code="accessPoint.new" />
                 </h1>
                 <g:render template="/organisation/nav" model="${[orgInstance: orgInstance, inContextOrg: inContextOrg]}"/>

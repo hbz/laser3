@@ -14,9 +14,9 @@
         <semui:crumb controller="subscription" action="index" id="${issueEntitlementInstance?.subscription.id}"  text="${issueEntitlementInstance?.subscription.name}" />
         <semui:crumb class="active" id="${issueEntitlementInstance?.id}" text="${issueEntitlementInstance?.tipp.title.title}" />
     </semui:breadcrumbs>
+    <br>
 
-
-    <h1 class="ui left floated aligned icon header la-clear-before"><semui:headerTitleIcon type="${issueEntitlementInstance?.tipp?.title?.type?.value}"/>
+    <h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerTitleIcon type="${issueEntitlementInstance?.tipp?.title?.type?.value}"/>
 
         <g:message code="issueEntitlement.for_title.label"/> ${issueEntitlementInstance?.tipp.title.title}
     </h1>
