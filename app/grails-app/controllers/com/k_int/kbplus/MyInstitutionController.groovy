@@ -4010,7 +4010,12 @@ AND EXISTS (
         def result = setResultGenerics()
 
         result.editable = true // true, because action is protected
-        result.propertyDefinitions = PropertyDefinition.findAllWhere([tenant: result.institution])
+        def propDefs = [:]
+        PropertyDefinition.AVAILABLE_PRIVATE_DESCR_LIST.each { it ->
+            def itResult = PropertyDefinition.findAllByDescrAndTenant(it, result.institution, [sort: 'name']) // ONLY private properties!
+            propDefs << ["${it}": itResult]
+        }
+        result.propertyDefinitions = propDefs
 
         if('add' == params.cmd) {
             flash.message = addPrivatePropertyDefinition(params)
@@ -4021,11 +4026,9 @@ AND EXISTS (
             result.propertyDefinitions = PropertyDefinition.findAllWhere([tenant: result.institution])
         }
 
-        RuleBasedCollator clt = SortUtil.getCollator()
-        result.propertyDefinitions.sort{a, b -> clt.compare(
-                message(code: "propertyDefinition.${a.descr}.label", args:[]) + '|' + a.name,
-                message(code: "propertyDefinition.${b.descr}.label", args:[]) + '|' + b.name
-        )}
+        def (usedPdList, attrMap) = propertyService.getUsageDetails()
+        result.usedPdList = usedPdList
+        result.attrMap = attrMap
 
         result.language = LocaleContextHolder.getLocale().toString()
         result.propertyType = 'private'
@@ -4040,7 +4043,7 @@ AND EXISTS (
         def result = setResultGenerics()
 
         def propDefs = [:]
-        PropertyDefinition.AVAILABLE_CUSTOM_DESCR.each { it ->
+        PropertyDefinition.AVAILABLE_CUSTOM_DESCR_LIST.each { it ->
             def itResult = PropertyDefinition.findAllByDescrAndTenant(it, null, [sort: 'name']) // NO private properties!
             propDefs << ["${it}": itResult]
         }
@@ -4152,7 +4155,10 @@ AND EXISTS (
                 messages << message(code: 'default.deleted.message', args:[privatePropDef.descr, privatePropDef.name])
             }
         }
-        messages
+        def result = [:]
+        result.messages = messages
+        redirect(url: request.getHeader('referer'), result: result)
+
     }
 
     private setResultGenerics() {

@@ -5,10 +5,14 @@
     <head>
         <meta name="layout" content="semanticUI">
         <g:set var="entityName" value="${message(code: 'org.label', default: 'Org')}" />
-        <title>${message(code:'laser', default:'LAS:eR')} : ${message(code: 'menu.institutions.prop_defs')}</title>
+        <g:if test="${propertyType == 'private'}">
+            <title>${message(code:'laser', default:'LAS:eR')} : ${message(code: 'menu.institutions.prop_defs')}</title>
+        </g:if>
+        <g:else>
+            <title>${message(code:'laser', default:'LAS:eR')} : ${message(code: 'menu.institutions.private_props')}</title>
+        </g:else>
     </head>
     <body>
-
     <semui:breadcrumbs>
         <semui:crumb message="menu.institutions.manage_props" class="active" />
     </semui:breadcrumbs>
@@ -18,6 +22,13 @@
     <g:render template="nav" />
 
     <semui:messages data="${flash}" />
+    <g:if test="${propertyType == 'private'}">
+        <input class="ui button" value="${message(code:'menu.institutions.manage_props.create_new')}"
+               data-semui="modal" data-href="#addPropertyDefinitionModal" type="submit">
+        <div class="ui info message">
+            ${message(code:'propertyDefinition.private.info')}
+        </div>
+    </g:if>
     <g:if test="${false}">
         <div class="content ui form">
             <div class="fields">
@@ -28,9 +39,15 @@
         </div>
     </g:if>
     <g:else>
-        <br />
-        <br />
+    <br />
     </g:else>
+    <g:if test="${language?.toLowerCase() in ['de_de', 'de']}">
+        <g:set var="value_SUBSTITUTE" value="valueDe" />
+    </g:if>
+    <g:else>
+        <g:set var="value_SUBSTITUTE" value="valueEn" />
+    </g:else>
+
 		<div class="ui styled fluid accordion">
 			<g:each in="${propertyDefinitions}" var="entry">
                 <div class="title">
@@ -38,24 +55,20 @@
                     <g:message code="propertyDefinitions.${entry.key}.label" default="${entry.key}" />
                 </div>
                 <div class="content">
+                <g:form class="ui form" action="managePrivateProperties" method="post">
                     <table class="ui celled la-table la-table-small table">
                         <thead>
                         <tr>
                             <th></th>
                             <th>${message(code:'propertyDefinition.key.label')}</th>
-
-                            <g:if test="${language?.toLowerCase() in ['de_de', 'de']}">
-                                <g:set var="value_SUBSTITUTE" value="valueDe" />
-                                <th>${message(code:'propertyDefinition.name.label')}</th>
-                                <th>${message(code:'propertyDefinition.expl.label')}</th>
-                            </g:if>
-                            <g:else>
-                                <g:set var="value_SUBSTITUTE" value="valueEn" />
-                                <th>${message(code:'propertyDefinition.name.label')}</th>
-                                <th>${message(code:'propertyDefinition.expl.label')}</th>
-                            </g:else>
+                            <th>${message(code:'propertyDefinition.name.label')}</th>
+                            <th>${message(code:'propertyDefinition.expl.label')}</th>
                             <th>${message(code:'propertyDefinition.type.label')}</th>
-                            <%--<th class="la-action-info">${message(code:'default.actions')}</th>--%>
+
+                            <g:if test="${propertyType == 'private'}">
+                                <th>${message(code:'propertyDefinition.count.label', default:'Count in Use')}</th>
+                                <th class="la-action-info">${message(code:'default.actions')}</th>
+                            </g:if>
                         </tr>
                         </thead>
                         <tbody>
@@ -68,6 +81,7 @@
                                             <span class="la-popup-tooltip la-delay" data-position="top left" data-content="${message(code:'default.hardData.tooltip')}">
                                                 <i class="check circle icon green"></i>
                                             </span>
+                                            <br>${entry.class.simpleName}
                                         </g:if>
                                         <g:if test="${pd.multipleOccurrence}">
                                             <span class="la-popup-tooltip la-delay" data-position="top right" data-content="${message(code:'default.multipleOccurrence.tooltip')}">
@@ -95,7 +109,7 @@
                                         </g:else>
                                     </td>
                                     <td>
-                                        <g:if test="${!pd.isHardData && SpringSecurityUtils.ifAnyGranted('ROLE_YODA')}">
+                                        <g:if test="${(propertyType == 'private') || (!pd.isHardData && SpringSecurityUtils.ifAnyGranted('ROLE_YODA'))}">
                                             <semui:xEditable owner="${pdI10nName}" field="${value_SUBSTITUTE}" />
                                         </g:if>
                                         <g:else>
@@ -103,7 +117,7 @@
                                         </g:else>
                                     </td>
                                     <td>
-                                        <g:if test="${!pd.isHardData && SpringSecurityUtils.ifAnyGranted('ROLE_YODA')}">
+                                        <g:if test="${(propertyType == 'private') || (!pd.isHardData && SpringSecurityUtils.ifAnyGranted('ROLE_YODA'))}">
                                             <semui:xEditable owner="${pdI10nExpl}" field="${value_SUBSTITUTE}" type="textarea" />
                                         </g:if>
                                         <g:else>
@@ -123,6 +137,18 @@
                                             (${refdataValues.join('/')})
                                         </g:if>
                                     </td>
+                                    <g:if test="${propertyType == 'private'}">
+                                        <td>
+                                            <span class="ui circular label">${pd.countUsages()}</span>
+                                        </td>
+                                        <td class="x">
+                                            <g:if test="${pd.countUsages()==0}">
+                                                <g:link action="managePrivateProperties" params="[cmd:'delete', deleteIds: pd?.id]" class="ui icon negative button">
+                                                    <i class="trash alternate icon"></i>
+                                                </g:link>
+                                            </g:if>
+                                        </td>
+                                    </g:if>
                                     <%--<td class="x">
 
                                         <g:if test="${false}">
@@ -153,11 +179,12 @@
 
                         </tbody>
                     </table>
+                </g:form>
                 </div>
 			</g:each>
         </div>
 
-        <g:if test="${false}">
+    <g:if test="${propertyType == 'private'}">
         <semui:modal id="replacePropertyDefinitionModal" message="propertyDefinition.exchange.label" isEditModal="isEditModal">
             <g:form class="ui form" url="[controller: 'admin', action: 'managePropertyDefinitions']">
                 <input type="hidden" name="cmd" value="replacePropertyDefinition"/>
@@ -217,12 +244,12 @@
             </r:script>
 
         </semui:modal>
-
-
         <semui:modal id="addPropertyDefinitionModal" message="propertyDefinition.create_new.label">
 
+            %{--<g:form class="ui form" id="create_cust_prop" url="[controller: 'ajax', action: 'addCustomPropertyType']" >--}%
             <g:form class="ui form" id="create_cust_prop" url="[controller: 'ajax', action: 'addCustomPropertyType']" >
-                <input type="hidden" name="reloadReferer" value="/admin/managePropertyDefinitions"/>
+                %{--<input type="hidden" name="reloadReferer" value="/admin/managePropertyDefinitions"/>--}%
+                <input type="hidden" name="reloadReferer" value="/myInstitution/managePrivateProperties"/>
                 <input type="hidden" name="ownerClass" value="${this.class}"/>
 
 				<div class="field">
@@ -267,7 +294,6 @@
                 </div>
 
             </g:form>
-
         </semui:modal>
 
 		<g:javascript>
@@ -316,7 +342,7 @@
 				}
 			});
 
-		</g:javascript>
+        </g:javascript>
         </g:if>
 	</body>
 </html>

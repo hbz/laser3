@@ -66,7 +66,22 @@ class PropertyDefinition extends AbstractI10nTranslatable implements Serializabl
             ORG_PROP
     ]
     @Transient
+    final static List<String> AVAILABLE_CUSTOM_DESCR_LIST = [
+            LIC_PROP,
+            ORG_CONF,
+            SUB_PROP,
+            //SYS_CONF,
+            ORG_PROP
+    ]
+    @Transient
     final static String[] AVAILABLE_PRIVATE_DESCR = [
+            LIC_PROP,
+            SUB_PROP,
+            ORG_PROP,
+            PRS_PROP
+    ]
+    @Transient
+    final static List<String> AVAILABLE_PRIVATE_DESCR_LIST = [
             LIC_PROP,
             SUB_PROP,
             ORG_PROP,
