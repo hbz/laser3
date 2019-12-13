@@ -362,10 +362,10 @@ class SubscriptionController extends AbstractDebugController {
         def result = setResultGenericsAndCheckAccess(AccessService.CHECK_EDIT)
 
         if (params.process  && result.editable) {
-            result.result = deletionService.deleteSubscription(result.subscription, false)
+            result.delResult = deletionService.deleteSubscription(result.subscription, false)
         }
         else {
-            result.dryRun = deletionService.deleteSubscription(result.subscription, DeletionService.DRY_RUN)
+            result.delResult = deletionService.deleteSubscription(result.subscription, DeletionService.DRY_RUN)
         }
 
         result
