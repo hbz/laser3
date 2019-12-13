@@ -160,7 +160,6 @@ class BootStrap {
         log.debug("adjustDatabasePermissions ..")
         adjustDatabasePermissions()
 
-        log.debug("                                                 ")
         log.debug(" _                                               ")
         log.debug("| |_ ___ ___ ___    _ _ _ ___    ___ ___         ")
         log.debug("|   | -_|  _| -_|  | | | | -_|  | . | . |  _ _   ")

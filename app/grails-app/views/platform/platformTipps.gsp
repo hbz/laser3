@@ -17,7 +17,7 @@
 
 <semui:modeSwitch controller="platform" action="show" params="${params}"/>
 
-<h1 class="ui left floated aligned icon header la-clear-before"><semui:headerIcon/>
+<h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon/>
 
     <g:if test="${editable}"><span id="platformNameEdit"
                                    class="xEditableValue"
@@ -37,13 +37,12 @@
 <g:render template="/package/filter" model="${[params:params]}"/>
 
 
-<h3 class="ui left floated aligned icon header la-clear-before">${message(code: 'platform.show.availability', default: 'Availability of titles in this platform by package')}
+<h3 class="ui header la-clear-before">${message(code: 'platform.show.availability', default: 'Availability of titles in this platform by package')}
 <semui:totalNumber total="${countTipps}"/>
 </h3>
-<semui:form>
+
 <g:render template="/templates/tipps/table"
           model="[tipps: tipps, showPackage: true, showPlattform: false, showBulkFlag: false]"/>
-</semui:form>
 
 <g:if test="${countTipps}" >
     <semui:paginate action="platformTipps" controller="platform" params="${params}" next="${message(code:'default.paginate.next')}" prev="${message(code:'default.paginate.prev')}" maxsteps="${max}" total="${countTipps}" />

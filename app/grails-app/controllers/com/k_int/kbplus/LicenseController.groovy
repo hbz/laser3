@@ -243,10 +243,10 @@ class LicenseController extends AbstractDebugController {
         def result = setResultGenericsAndCheckAccess(AccessService.CHECK_EDIT)
 
         if (params.process && result.editable) {
-            result.result = deletionService.deleteLicense(result.license, false)
+            result.delResult = deletionService.deleteLicense(result.license, false)
         }
         else {
-            result.dryRun = deletionService.deleteLicense(result.license, DeletionService.DRY_RUN)
+            result.delResult = deletionService.deleteLicense(result.license, DeletionService.DRY_RUN)
         }
 
         result

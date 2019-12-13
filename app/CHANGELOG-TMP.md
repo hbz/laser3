@@ -2,6 +2,8 @@
 
 **Ticket    Date    Branch      Author  Feature/Bug     Description/Keywords**
 
+1893    12.12.2019  rc1.2       Moe     Feature     Zugehörigkeit aufheben im Nutzerprofil ausblenden?
+
 1959    11.12.2019  rc1.2       Moe     Bug         Lizenz kopieren fehlerhaft
 
 1970    12.12.2019  rc1.2       Andreas Feature     Admin-gesicherter Batchskript zum Aktualisieren von Testlizenzen auf QA

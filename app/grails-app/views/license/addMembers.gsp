@@ -19,11 +19,11 @@
     <g:render template="actions"/>
 </semui:controlButtons>
 
-<h1 class="ui left floated aligned icon header la-clear-before"><semui:headerIcon />
+<h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon />
     <g:if test="${license.type?.value == 'Template'}">${message(code:'license.label')} (${license.type.getI10n('value')}):</g:if>
     <semui:xEditable owner="${license}" field="reference" id="reference"/>
 </h1>
-<h2 class="ui left floated aligned icon header la-clear-before">${message(code: 'license.details.addMembers.label', args:[message(code:'consortium.subscriber')])}</h2>
+<h2 class="ui left aligned icon header la-clear-before">${message(code: 'license.details.addMembers.label', args:[message(code:'consortium.subscriber')])}</h2>
 
 <g:if test="${license.instanceOf && (institution.id == license.getLicensingConsortium()?.id)}">
     <div class="ui negative message">
@@ -49,7 +49,8 @@
         </p>
     </div>
 
-    <semui:filter>
+    <g:render template="../templates/filter/javascript" />
+    <semui:filter showFilterButton="true">
         <g:form action="addMembers" method="get" params="[id: params.id]" class="ui form">
             <input type="hidden" name="shortcode" value="${institution.shortcode}"/>
             <g:render template="/templates/filter/orgFilter"
@@ -61,7 +62,7 @@
         </g:form>
     </semui:filter>
 
-    <g:form action="processAddMembers" params="${[id: params.id]}" controller="license" method="post" class="ui form">
+    <g:form action="processAddMembers" params="${[id: params.id]}" controller="license" method="post" class="ui form la-clear-before">
 
         <g:render template="/templates/filter/orgFilterTable"
                   model="[orgList: members,

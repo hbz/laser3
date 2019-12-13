@@ -20,7 +20,7 @@ import="de.laser.helper.RDStore; com.k_int.kbplus.Org; com.k_int.kbplus.Person; 
             <g:render template="actions" />
         </semui:controlButtons>
 
-        <h1 class="ui left floated aligned icon header la-clear-before"><semui:headerIcon />${message(code:'menu.institutions.myAddressbook')}
+        <h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon />${message(code:'menu.institutions.myAddressbook')}
             <semui:totalNumber total="${num_visiblePersons}"/>
         </h1>
 

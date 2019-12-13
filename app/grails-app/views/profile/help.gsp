@@ -13,10 +13,10 @@
 </semui:breadcrumbs>
 <br>
 
-<h1 class="ui left floated aligned icon header la-clear-before"><semui:headerIcon />${message(code: 'menu.user.help')}</h1>
+<h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon />${message(code: 'menu.user.help')}</h1>
 
 <br>
-<h3 class="ui left floated aligned icon header la-clear-before"><g:message code="help.contentHelp"/></h3>
+<h3 class="ui icon header la-clear-before la-noMargin-top"><g:message code="help.contentHelp"/></h3>
 
 <div class="ui accordion styled fluid la-clear-before">
     <div class="title">
@@ -53,7 +53,7 @@
 
 <br>
 
-<h3 class="ui left floated aligned icon header la-clear-before"><g:message code="help.technicalHelp"/></h3>
+<h3 class="ui icon header la-clear-before la-noMargin-top"><g:message code="help.technicalHelp"/></h3>
 
     <div class="ui accordion styled fluid la-clear-before">
 

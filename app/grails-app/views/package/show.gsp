@@ -41,7 +41,7 @@
         <g:render template="actions" />
     </semui:controlButtons>
 
-      <h1 class="ui left floated aligned icon header la-clear-before"><semui:headerIcon />
+      <h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon />
         <g:if test="${params.asAt}">${message(code:'package.show.asAt', args:[params.asAt])}</g:if>
           <g:if test="${editable}"><span id="packageNameEdit"
                     class="xEditableValue"

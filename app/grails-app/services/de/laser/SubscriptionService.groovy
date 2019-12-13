@@ -358,16 +358,14 @@ class SubscriptionService {
                 Object[] args = [pkg.name]
                 flash.error += messageSource.getMessage('subscription.err.packageAlreadyExistsInTargetSub', args, locale)
             } else {
-
-                def pkgProperties = pkg.properties
-                pkgProperties.oapls = null
+                def pkgOapls = pkg.oapls
+                pkg.properties.oapls = null
                 SubscriptionPackage newSubscriptionPackage = new SubscriptionPackage()
                 InvokerHelper.setProperties(newSubscriptionPackage, pkg.properties)
                 newSubscriptionPackage.subscription = targetSub
-                newSubscriptionPackage.oapls = null
 
                 if(save(newSubscriptionPackage, flash)){
-                    pkg.properties.oapls.each{ oapl ->
+                    pkgOapls.each{ oapl ->
 
                         def oaplProperties = oapl.properties
                         oaplProperties.globalUID = null
@@ -506,15 +504,14 @@ class SubscriptionService {
                     if (subMember.packages && targetSub.packages) {
                         //Package
                         subMember.packages?.each { pkg ->
-                            def pkgProperties = pkg.properties
-                            pkgProperties.oapls = null
+                            def pkgOapls = pkg.oapls
+                            pkg.properties.oapls = null
                             SubscriptionPackage newSubscriptionPackage = new SubscriptionPackage()
                             InvokerHelper.setProperties(newSubscriptionPackage, pkg.properties)
                             newSubscriptionPackage.subscription = newSubscription
-                            newSubscriptionPackage.oapls = null
 
-                            if(newSubscriptionPackage.save(flush: true)){
-                                pkg.properties.oapls.each{ oapl ->
+                            if(newSubscriptionPackage.save()){
+                                pkgOapls.each{ oapl ->
 
                                     def oaplProperties = oapl.properties
                                     oaplProperties.globalUID = null
