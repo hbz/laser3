@@ -12,7 +12,7 @@ class ActivityProfiler {
         id          column:'ap_id'
         version     column:'ap_version'
         userCount   column:'ap_user_count'
-        dateCreated column:'ap_created'
+        dateCreated column:'ap_date_created'
     }
 
     static constraints = {
