@@ -2,6 +2,10 @@
 
 **Ticket    Date    Branch      Author  Feature/Bug     Description/Keywords**
 
+--      13.12.2019  rc1.2       David   Feature     Verbesserter Profiler
+
+1346    12.12.2019  rc1.2       David   Feature     Rudimentäres Löschen von Organisationen; Überarbeitung der Löschfunktion für Lizenzen, Verträge und User
+
 1893    12.12.2019  rc1.2       Moe     Feature     Zugehörigkeit aufheben im Nutzerprofil ausblenden?
 
 1959    11.12.2019  rc1.2       Moe     Bug         Lizenz kopieren fehlerhaft
