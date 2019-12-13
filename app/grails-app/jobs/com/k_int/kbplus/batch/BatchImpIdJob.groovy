@@ -9,9 +9,11 @@ import org.hibernate.ScrollMode
 */
 class BatchImpIdJob extends AbstractJob {
 
+    /* DISABLED
     static triggers = {
         simple name:'BatchImpIdJob', startDelay:40000, repeatInterval:30000, repeatCount:0
     }
+    */
 
     static configFlags = []
 

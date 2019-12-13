@@ -175,7 +175,7 @@ class BootStrap {
         // Create anonymousUser that serves as a replacement when users are deleted
         User anonymousUser = User.findByUsername('anonymous')
         if (anonymousUser) {
-            log.debug("${anonymousUser.name} exists .. skipped")
+            log.debug("${anonymousUser.username} exists .. skipped")
         }
         else {
             log.debug("creating user ..")
