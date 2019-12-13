@@ -12,10 +12,12 @@ import org.hibernate.ScrollMode
 */
 class BatchTouchJob extends AbstractJob {
 
+
+    /* DISABLED
     static triggers = {
         simple name:'BatchTouchJob', startDelay:50000, repeatInterval:30000, repeatCount:0
     }
-
+    */
     static configFlags = []
 
     boolean isAvailable() {
@@ -97,7 +99,7 @@ class BatchTouchJob extends AbstractJob {
     def event = "BatchImpIdJob"
     def startTime = printStart(event)
     def counter = 0
-    def classList = [com.k_int.kbplus.Package,com.k_int.kbplus.Org,com.k_int.kbplus.License,com.k_int.kbplus.Subscription,com.k_int.kbplus.Platform,com.k_int.kbplus.TitleInstance] 
+    def classList = [com.k_int.kbplus.Package,com.k_int.kbplus.Org,com.k_int.kbplus.License,com.k_int.kbplus.Subscription,com.k_int.kbplus.Platform,com.k_int.kbplus.TitleInstance]
     classList.each{ currentClass ->
       def auditable_store = null
       try{
@@ -110,7 +112,7 @@ class BatchTouchJob extends AbstractJob {
            while (scroll_res.next()) {
               def obj = scroll_res.get(0)
               if(updateObject(obj)){
-                counter ++ 
+                counter ++
               }
               if(counter == 500){
                 cleanUpGorm(session)
@@ -124,7 +126,7 @@ class BatchTouchJob extends AbstractJob {
       finally{
         if(currentClass.hasProperty('auditable')) currentClass.auditable = auditable_store?:true ;
       }
-      
+
     }
     printDuration(startTime,event)
   }
@@ -141,7 +143,7 @@ class BatchTouchJob extends AbstractJob {
          while (scroll_res.next()) {
             def pkg = scroll_res.get(0)
             if(updatePackage(pkg)){
-              counter ++ 
+              counter ++
             }
             if(counter == 500){
               cleanUpGorm(session)
@@ -178,7 +180,7 @@ class BatchTouchJob extends AbstractJob {
     obj.impId = java.util.UUID.randomUUID().toString();
     obj.save()
   }
-  
+
    private def printStart(event){
        def starttime = new Date();
        log.debug("******* Start ${event}: ${starttime} *******")
