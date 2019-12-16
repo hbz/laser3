@@ -19,78 +19,90 @@
 
     <semui:messages data="${flash}" />
 
-            <input class="ui button" value="${message(code:'menu.institutions.manage_props.create_new')}"
-                   data-semui="modal" data-href="#addPropertyDefinitionModal" type="submit">
+    <input class="ui button" value="${message(code:'menu.institutions.manage_props.create_new')}"
+           data-semui="modal" data-href="#addPropertyDefinitionModal" type="submit">
 
-            <g:if test="${privatePropertyDefinitions}">
+    <g:if test="${propertyDefinitions}">
 
-                <div class="ui info message">
-                    ${message(code:'propertyDefinition.private.info')}
+        <div class="ui info message">
+            ${message(code:'propertyDefinition.private.info')}
+        </div>
+        <g:if test="${language?.toLowerCase() in ['de_de', 'de']}">
+            <g:set var="value_SUBSTITUTE" value="valueDe" />
+        </g:if>
+        <g:else>
+            <g:set var="value_SUBSTITUTE" value="valueEn" />
+        </g:else>
+
+        <div class="ui styled fluid accordion">
+            <g:each in="${propertyDefinitions}" var="entry">
+                <div class="title">
+                    <i class="dropdown icon"></i>
+                    <g:message code="propertyDefinitions.${entry.key}.label" default="${entry.key}" />
                 </div>
-
-                <g:form class="ui form" action="managePrivateProperties" method="post">
-                    <table class="ui celled la-table table">
-                        <thead>
-                            <tr>
-                                <th>${message(code:'propertyDefinition.descr.label', default:'Description')}</th>
-                                <th>${message(code:'propertyDefinition.name.label', default:'Name')}</th>
-                                <th>Name (DE)</th>
-                                <th>Name (EN)</th>
-                                <th>${message(code:'propertyDefinition.type.label')}</th>
-                                <th>${message(code:'propertyDefinition.count.label', default:'Count in Use')}</th>
-                                <th class="la-action-info">${message(code:'default.actions')}</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <g:each in="${privatePropertyDefinitions}" var="ppd">
-                                <g:set var="pdI10nName" value="${I10nTranslation.createI10nOnTheFly(ppd, 'name')}" />
+                <div class="content">
+                    <g:form class="ui form" action="managePrivateProperties" method="post">
+                        <table class="ui celled la-table la-table-small table">
+                            <thead>
                                 <tr>
-                                    <td><g:message code="propertyDefinition.${ppd.descr}.label" default="${ppd.descr}" /></td>
-                                    <td>
-                                        ${ppd.name}
-
-                                        <g:if test="${ppd.mandatory}">
-                                            <span data-position="top right"  class="la-popup-tooltip la-delay" data-content="${message(code:'default.mandatory.tooltip')}">
-                                                <i class="star icon yellow"></i>
-                                            </span>
-                                        </g:if>
-                                        <g:if test="${ppd.multipleOccurrence}">
-                                            <span data-position="top right"  class="la-popup-tooltip la-delay" data-content="${message(code:'default.multipleOccurrence.tooltip')}">
-                                                <i class="redo icon orange"></i>
-                                            </span>
-                                        </g:if>
-                                    </td>
-                                    <td><semui:xEditable owner="${pdI10nName}" field="valueDe" /></td>
-                                    <td><semui:xEditable owner="${pdI10nName}" field="valueEn" /></td>
-                                    <td>
-                                        ${PropertyDefinition.getLocalizedValue(ppd?.type)}
-                                        <g:if test="${ppd?.type == 'class com.k_int.kbplus.RefdataValue'}">
-                                            <g:set var="refdataValues" value="${[]}"/>
-                                            <g:each in="${com.k_int.kbplus.RefdataCategory.getAllRefdataValues(ppd.refdataCategory)}"
-                                                    var="refdataValue">
-                                                <g:set var="refdataValues"
-                                                       value="${refdataValues + refdataValue?.getI10n('value')}"/>
-                                            </g:each>
-                                            <br>
-                                            (${refdataValues.join('/')})
-                                        </g:if>
-                                    </td>
-                                    <td>
-                                        <span class="ui circular label">${ppd.countUsages()}</span>
-                                    </td>
-                                    <td class="x">
-                                        <g:if test="${ppd.countUsages()==0}">
-                                            <g:link action="managePrivateProperties" params="[cmd:'delete', deleteIds: ppd?.id]" class="ui icon negative button">
-                                            <i class="trash alternate icon"></i>
-                                            </g:link>
-                                        </g:if>
-                                    </td>
+                                    <th>${message(code:'propertyDefinition.key.label')}</th>
+                                    <th>${message(code:'propertyDefinition.name.label')}</th>
+                                    <th>${message(code:'propertyDefinition.expl.label')}</th>
+                                    <th>${message(code:'propertyDefinition.type.label')}</th>
+                                    <th>${message(code:'propertyDefinition.count.label', default:'Count in Use')}</th>
+                                    <th class="la-action-info">${message(code:'default.actions')}</th>
                                 </tr>
-                            </g:each>
-                        </tbody>
-                    </table>
-                </g:form>
-            </g:if>
+                            </thead>
+                            <tbody>
+                                <g:each in="${entry.value}" var="pd">
+                                    <g:set var="pdI10nName" value="${I10nTranslation.createI10nOnTheFly(pd, 'name')}" />
+                                    <g:set var="pdI10nExpl" value="${I10nTranslation.createI10nOnTheFly(pd, 'expl')}" />
+                                        <td>
+                                            <g:if test="${pd.isUsedForLogic}">
+                                                <span style="color:orange">${fieldValue(bean: pd, field: "name")}</span>
+                                            </g:if>
+                                            <g:else>
+                                                ${fieldValue(bean: pd, field: "name")}
+                                            </g:else>
+                                        </td>
+                                        <td>
+                                            <semui:xEditable owner="${pdI10nName}" field="${value_SUBSTITUTE}" />
+                                        </td>
+                                        <td>
+                                            <semui:xEditable owner="${pdI10nExpl}" field="${value_SUBSTITUTE}" type="textarea" />
+                                        </td>
+                                        <td>
+                                            ${PropertyDefinition.getLocalizedValue(pd?.type)}
+                                            <g:if test="${pd?.type == 'class com.k_int.kbplus.RefdataValue'}">
+                                                <g:set var="refdataValues" value="${[]}"/>
+                                                <g:each in="${com.k_int.kbplus.RefdataCategory.getAllRefdataValues(pd.refdataCategory)}"
+                                                        var="refdataValue">
+                                                    <g:set var="refdataValues"
+                                                           value="${refdataValues + refdataValue?.getI10n('value')}"/>
+                                                </g:each>
+                                                <br>
+                                                (${refdataValues.join('/')})
+                                            </g:if>
+                                        </td>
+                                        <td>
+                                            <span class="ui circular label">${pd.countUsages()}</span>
+                                        </td>
+                                        <td class="x">
+                                            <g:if test="${pd.countUsages()==0}">
+                                                <g:link action="managePrivateProperties" params="[cmd:'delete', deleteIds: pd?.id]" class="ui icon negative button">
+                                                    <i class="trash alternate icon"></i>
+                                                </g:link>
+                                            </g:if>
+                                        </td>
+                                    </tr>
+                                </g:each>
+                            </tbody>
+                        </table>
+                    </g:form>
+                </div>
+            </g:each>
+        </div>
+     </g:if>
 
 
     <semui:modal id="addPropertyDefinitionModal" message="propertyDefinition.create_new.label">

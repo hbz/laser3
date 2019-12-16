@@ -4009,7 +4009,13 @@ AND EXISTS (
     def managePrivateProperties() {
         def result = setResultGenerics()
 
-        result.editable = true // true, because action is protected
+        if('add' == params.cmd) {
+            flash.message = addPrivatePropertyDefinition(params)
+        }
+        else if('delete' == params.cmd) {
+            flash.message = deletePrivatePropertyDefinition(params)
+        }
+
         def propDefs = [:]
         PropertyDefinition.AVAILABLE_PRIVATE_DESCR_LIST.each { it ->
             def itResult = PropertyDefinition.findAllByDescrAndTenant(it, result.institution, [sort: 'name']) // ONLY private properties!
@@ -4017,22 +4023,13 @@ AND EXISTS (
         }
         result.propertyDefinitions = propDefs
 
-        if('add' == params.cmd) {
-            flash.message = addPrivatePropertyDefinition(params)
-            result.propertyDefinitions = PropertyDefinition.findAllWhere([tenant: result.institution])
-        }
-        else if('delete' == params.cmd) {
-            flash.message = deletePrivatePropertyDefinition(params)
-            result.propertyDefinitions = PropertyDefinition.findAllWhere([tenant: result.institution])
-        }
-
         def (usedPdList, attrMap) = propertyService.getUsageDetails()
         result.usedPdList = usedPdList
         result.attrMap = attrMap
-
+        result.editable = true // true, because action is protected
         result.language = LocaleContextHolder.getLocale().toString()
         result.propertyType = 'private'
-        render view: 'managePropertyDefinitions', model: result
+        result
     }
 
     @DebugAnnotation(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_EDITOR")
@@ -4126,7 +4123,7 @@ AND EXISTS (
     private deletePrivatePropertyDefinition(params) {
         log.debug("delete private property definition for institution: " + params)
 
-        def messages  = []
+        def messages  = ""
         def tenant    = contextService.getOrg()
         def deleteIds = params.list('deleteIds')
 
@@ -4152,13 +4149,10 @@ AND EXISTS (
                 }
 
                 privatePropDef.delete()
-                messages << message(code: 'default.deleted.message', args:[privatePropDef.descr, privatePropDef.name])
+                messages += message(code: 'default.deleted.message', args:[privatePropDef.descr, privatePropDef.name])
             }
         }
-        def result = [:]
-        result.messages = messages
-        redirect(url: request.getHeader('referer'), result: result)
-
+        messages
     }
 
     private setResultGenerics() {
