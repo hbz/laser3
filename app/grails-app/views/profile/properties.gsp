@@ -12,8 +12,8 @@
     <semui:crumb message="menu.user.properties" class="active"/>
 </semui:breadcrumbs>
 <br>
-<h1 class="ui left floated aligned icon header la-clear-before"><semui:headerIcon />${message(code: 'menu.user.properties', default: 'Properties and Refdatas')}</h1>
-
+<h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon />${message(code: 'menu.user.properties', default: 'Properties and Refdatas')}</h1>
+<br>
 
 <h3 class="la-clear-before">${message(code: 'propertyDefinition.plural', default: 'Properties')}</h3>
 

@@ -361,10 +361,10 @@ class SubscriptionController extends AbstractDebugController {
         def result = setResultGenericsAndCheckAccess(accessService.CHECK_EDIT)
 
         if (params.process  && result.editable) {
-            result.result = deletionService.deleteSubscription(result.subscription, false)
+            result.delResult = deletionService.deleteSubscription(result.subscription, false)
         }
         else {
-            result.dryRun = deletionService.deleteSubscription(result.subscription, DeletionService.DRY_RUN)
+            result.delResult = deletionService.deleteSubscription(result.subscription, DeletionService.DRY_RUN)
         }
 
         result
@@ -3863,10 +3863,23 @@ class SubscriptionController extends AbstractDebugController {
                         if (subMember.packages && newSubConsortia.packages) {
                             //Package
                             subMember.packages?.each { pkg ->
+                                def pkgOapls = pkg.oapls
+                                pkg.properties.oapls = null
                                 SubscriptionPackage newSubscriptionPackage = new SubscriptionPackage()
                                 InvokerHelper.setProperties(newSubscriptionPackage, pkg.properties)
                                 newSubscriptionPackage.subscription = newSubscription
-                                newSubscriptionPackage.save(flush: true)
+
+                                if(newSubscriptionPackage.save()){
+                                    pkgOapls.each{ oapl ->
+
+                                        def oaplProperties = oapl.properties
+                                        oaplProperties.globalUID = null
+                                        OrgAccessPointLink newOrgAccessPointLink = new OrgAccessPointLink()
+                                        InvokerHelper.setProperties(newOrgAccessPointLink, oaplProperties)
+                                        newOrgAccessPointLink.subPkg = newSubscriptionPackage
+                                        newOrgAccessPointLink.save(flush: true)
+                                    }
+                                }
                             }
                         }
                         if (subMember.issueEntitlements && newSubConsortia.issueEntitlements) {
@@ -4059,13 +4072,27 @@ class SubscriptionController extends AbstractDebugController {
                             if (!prevLink.save(flush: true)) {
                                 log.error("Problem linking to previous subscription: ${prevLink.errors}")
                             }
+
                             if (params.subscription.takeLinks) {
                                 //Package
                                 baseSub.packages?.each { pkg ->
+                                    def pkgOapls = pkg.oapls
+                                    pkg.properties.oapls = null
                                     SubscriptionPackage newSubscriptionPackage = new SubscriptionPackage()
                                     InvokerHelper.setProperties(newSubscriptionPackage, pkg.properties)
                                     newSubscriptionPackage.subscription = newSub
-                                    newSubscriptionPackage.save(flush: true)
+
+                                    if(newSubscriptionPackage.save()){
+                                        pkgOapls.each{ oapl ->
+
+                                            def oaplProperties = oapl.properties
+                                            oaplProperties.globalUID = null
+                                            OrgAccessPointLink newOrgAccessPointLink = new OrgAccessPointLink()
+                                            InvokerHelper.setProperties(newOrgAccessPointLink, oaplProperties)
+                                            newOrgAccessPointLink.subPkg = newSubscriptionPackage
+                                            newOrgAccessPointLink.save(flush: true)
+                                        }
+                                    }
                                 }
                                 // fixed hibernate error: java.util.ConcurrentModificationException
                                 // change owner before first save
@@ -4926,10 +4953,23 @@ class SubscriptionController extends AbstractDebugController {
                 //Copy Package
                 if (params.subscription.copyPackages) {
                     baseSubscription.packages?.each { pkg ->
+                        def pkgOapls = pkg.oapls
+                        pkg.properties.oapls = null
                         SubscriptionPackage newSubscriptionPackage = new SubscriptionPackage()
                         InvokerHelper.setProperties(newSubscriptionPackage, pkg.properties)
                         newSubscriptionPackage.subscription = newSubscriptionInstance
-                        newSubscriptionPackage.save(flush: true)
+
+                        if(newSubscriptionPackage.save()){
+                            pkgOapls.each{ oapl ->
+
+                                def oaplProperties = oapl.properties
+                                oaplProperties.globalUID = null
+                                OrgAccessPointLink newOrgAccessPointLink = new OrgAccessPointLink()
+                                InvokerHelper.setProperties(newOrgAccessPointLink, oaplProperties)
+                                newOrgAccessPointLink.subPkg = newSubscriptionPackage
+                                newOrgAccessPointLink.save(flush: true)
+                            }
+                        }
                     }
                 }
                 //Copy License

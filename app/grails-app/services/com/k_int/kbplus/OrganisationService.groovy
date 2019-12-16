@@ -402,14 +402,26 @@ class OrganisationService {
                 cal.set(Calendar.MONTH, Calendar.DECEMBER)
                 cal.set(Calendar.DAY_OF_MONTH, 31)
                 dates.defaultEndDate = cal.getTime()
-                dates.startDateCurrent = sdf.parse('2019-05-01') //as you wish ... but do not forget to update these dates regularly!!
-                dates.endDateCurrent = sdf.parse('2019-12-31')
-                dates.startDateExpired = sdf.parse('2019-04-01')
-                dates.endDateExpired = sdf.parse('2019-04-30')
-                dates.previousYearRingStart = sdf.parse('2018-01-01')
-                dates.previousYearRingEnd = sdf.parse('2018-12-31')
-                dates.nextYearRingStart = sdf.parse('2020-01-01')
-                dates.nextYearRingEnd = sdf.parse('2020-12-31')
+                cal.set(Calendar.MONTH, Calendar.MAY)
+                cal.set(Calendar.DAY_OF_MONTH, 1)
+                dates.startDateCurrent = cal.getTime()
+                dates.endDateCurrent = dates.defaultEndDate
+                cal.set(Calendar.MONTH, Calendar.APRIL)
+                dates.startDateExpired = cal.getTime()
+                cal.set(Calendar.DAY_OF_MONTH, 30)
+                dates.endDateExpired = cal.getTime()
+                cal.set(Calendar.MONTH, Calendar.JANUARY)
+                cal.set(Calendar.DAY_OF_MONTH, 1)
+                cal.add(Calendar.YEAR, -1)
+                dates.previousYearRingStart = cal.getTime()
+                cal.add(Calendar.YEAR, 2)
+                dates.nextYearRingStart = cal.getTime()
+                cal.set(Calendar.MONTH, Calendar.DECEMBER)
+                cal.set(Calendar.DAY_OF_MONTH, 31)
+                cal.add(Calendar.YEAR, -2)
+                dates.previousYearRingEnd = cal.getTime()
+                cal.add(Calendar.YEAR, 2)
+                dates.nextYearRingEnd = cal.getTime()
                 Map<String,RefdataValue> localRDStoreSubscriptionForm = [:]
                 RefdataCategory.getAllRefdataValues('Subscription Form').each { rdv ->
                     localRDStoreSubscriptionForm.put(rdv.value,rdv)
@@ -724,7 +736,7 @@ class OrganisationService {
                              name: "Journal-Paket",
                              startDate: generalData.dates.previousYearRingStart,
                              endDate: generalData.dates.previousYearRingEnd,
-                             manualCancellationDate: generalData.sdf.parse('2018-10-31'),
+                             manualCancellationDate: generalData.sdf.parse('2019-10-31'),
                              status: RDStore.SUBSCRIPTION_EXPIRED,
                              identifier: expiredJournalPaketIdentifier,
                              isPublic: false,
@@ -766,7 +778,7 @@ class OrganisationService {
                              name: "Musterdatenbank",
                              startDate: generalData.dates.defaultStartDate,
                              endDate: generalData.dates.defaultEndDate,
-                             manualCancellationDate: generalData.sdf.parse('2019-09-30'),
+                             manualCancellationDate: generalData.sdf.parse('2020-09-30'),
                              status: RDStore.SUBSCRIPTION_CURRENT,
                              identifier: musterdatenbankIdentifier,
                              isPublic: false,
@@ -844,7 +856,7 @@ class OrganisationService {
                 mainParams: [reference: "Datenbank-Muster",
                              type: generalData.licenseType,
                              status: RDStore.LICENSE_CURRENT,
-                             startDate: generalData.sdf.parse('2018-01-01')],
+                             startDate: generalData.sdf.parse('2019-01-01')],
                 addParams: [ownedSubscriptions:[musterdatenbankIdentifier],
                             licensors: [
                                     [generalData.exampleOrgs.get('Musteranbieter A')]
@@ -858,7 +870,7 @@ class OrganisationService {
                             tasks: [
                                     [title: 'Mehrjahresvariante verhandeln',
                                      status: RefdataValue.getByValueAndCategory('Open','Task Status'),
-                                     endDate: generalData.sdf.parse('2020-01-01'),
+                                     endDate: generalData.sdf.parse('2021-01-01'),
                                      responsibleOrg: current,
                                      description:'Es sollte mit der nächsten Lizenzverlängerung auch eine Mehrjahresvariante geben, die vertraglich festgehalten wird.']
                             ],
@@ -1266,7 +1278,7 @@ class OrganisationService {
                 mainParams: [reference: "Rahmenvertrag eBook",
                              type: generalData.licenseType,
                              status: RDStore.LICENSE_CURRENT,
-                             startDate: generalData.sdf.parse('2018-01-01')],
+                             startDate: generalData.sdf.parse('2019-01-01')],
                 addParams: [licensors: [
                         [generalData.exampleOrgs.get('Musteranbieter E-Books')]
                 ],
@@ -1304,7 +1316,7 @@ class OrganisationService {
                              name: 'Daten A',
                              startDate: generalData.dates.previousYearRingStart,
                              endDate: generalData.dates.previousYearRingEnd,
-                             manualCancellationDate: generalData.sdf.parse('2018-10-31'),
+                             manualCancellationDate: generalData.sdf.parse('2019-10-31'),
                              status: RDStore.SUBSCRIPTION_EXPIRED,
                              identifier: expiredDatenAIdentifier,
                              isPublic: false,
@@ -1474,8 +1486,8 @@ class OrganisationService {
                                                   subIdentifier:consortialPartnerIdentifiers.modelMember.testDatenAIdentifier],
                                                  [subMember:member3Munich,
                                                   subOwner:consortialLicenses.get('Rahmenvertrag (Teilnehmervertrag)'),
-                                                  startDate:generalData.sdf.parse('2018-05-01'),
-                                                  endDate:generalData.sdf.parse('2018-05-31'),
+                                                  startDate:generalData.sdf.parse('2019-05-01'),
+                                                  endDate:generalData.sdf.parse('2019-05-31'),
                                                   subIdentifier:consortialPartnerIdentifiers.member3Munich.testDatenAIdentifier],
                                                  [subMember:member4Greifswald,
                                                   subOwner:consortialLicenses.get('Rahmenvertrag (Teilnehmervertrag)'),
@@ -1758,7 +1770,7 @@ class OrganisationService {
                                     [type:PropertyDefinition.findByName('GASCO Entry').id,refValue:RDStore.YN_YES],
                                     [type:PropertyDefinition.findByName('GASCO-Information-Link').id,urlValue:'https://musterlink.de',isShared:true],
                                     [type:PropertyDefinition.findByName('Bundesweit offen').id,refValue:RDStore.YN_NO,note:'regionales Konsortium'],
-                                    [type:PropertyDefinition.findByName('Mengenrabatt Stichtag').id,dateValue:generalData.sdf.parse('2019-11-30')],
+                                    [type:PropertyDefinition.findByName('Mengenrabatt Stichtag').id,dateValue:generalData.sdf.parse('2020-11-30')],
                                     [type:PropertyDefinition.findByName('Preis gerundet').id,refValue:RDStore.YN_YES],
                                     [type:PropertyDefinition.findByName('Simuser Zahl').id,stringValue:'unlimitiert',isShared:true],
                                     [type:PropertyDefinition.findByName('Testzeitraum').id,stringValue:'60'],
@@ -1852,7 +1864,7 @@ class OrganisationService {
                              name: 'Journal-Paket_Extrem',
                              startDate: generalData.dates.defaultStartDate,
                              endDate: generalData.dates.defaultEndDate,
-                             manualCancellationDate: generalData.sdf.parse('2019-10-31'),
+                             manualCancellationDate: generalData.sdf.parse('2020-10-31'),
                              status: RDStore.SUBSCRIPTION_CURRENT,
                              identifier: journalPaketExtremIdentifier,
                              isPublic: false,
@@ -1875,7 +1887,7 @@ class OrganisationService {
                             tasks: [
                                     [title: 'Statistiken Counter5 & Sushi',
                                      status: RefdataValue.getByValueAndCategory('Open','Task Status'),
-                                     endDate: generalData.sdf.parse('2019-06-30'),
+                                     endDate: generalData.sdf.parse('2020-06-30'),
                                      responsibleOrg: current,
                                      description:'dringend mit dem Anbieter die Lieferung von Counter 5 via Sushi besprechen']
                             ],

@@ -4,6 +4,7 @@ import com.k_int.kbplus.*
 import com.k_int.kbplus.auth.*
 import com.k_int.properties.PropertyDefinition
 import de.laser.SystemEvent
+import de.laser.domain.ActivityProfiler
 import de.laser.domain.SystemProfiler
 import de.laser.helper.DebugAnnotation
 import de.laser.helper.RDStore
@@ -12,7 +13,9 @@ import grails.plugin.springsecurity.annotation.Secured
 import grails.util.Holders
 import grails.web.Action
 import groovy.xml.MarkupBuilder
+import junit.extensions.ActiveTestSuite
 import org.hibernate.SessionFactory
+import org.joda.time.LocalDate
 import org.quartz.JobKey
 import org.quartz.impl.matchers.GroupMatcher
 import org.springframework.transaction.TransactionStatus
@@ -163,7 +166,7 @@ class YodaController {
                 group << map
             }
 
-            groups << ["${groupName}" : group.sort{ it.nextFireTime }]
+            groups << ["${groupName}" : group.sort{ a, b -> (a.name < b.name ? -1 : 1)}]
         }
         result.quartz = groups
         result
@@ -206,7 +209,19 @@ class YodaController {
     }
 
     @Secured(['ROLE_YODA'])
-    def profiler() {
+    def activityProfiler() {
+        Map result = [:]
+
+        result.activity = ActivityProfiler.executeQuery(
+                "select min(dateCreated), max(dateCreated), min(userCount), max(userCount), avg(userCount) from ActivityProfiler ap " +
+                        " where dateCreated > :fromDate " +
+                        " group by date_trunc('hour', dateCreated) order by min(dateCreated), max(dateCreated)",
+                [fromDate: LocalDate.now().minusMonths(1).toDate(), max: 500])
+        result
+    }
+
+    @Secured(['ROLE_YODA'])
+    def systemProfiler() {
         Map result = [:]
 
         result.globalCountByUri = [:]
@@ -218,7 +233,14 @@ class YodaController {
         }
 
         result.byUri =
-                SystemProfiler.executeQuery("select sp.uri, max(sp.ms) as max, avg(sp.ms) as ms, count(sp.id) as count from SystemProfiler sp where sp.context is not null group by sp.uri").sort{it[2]}.reverse()
+                SystemProfiler.executeQuery("select sp.uri, max(sp.ms) as max, sum(sp.ms) as ms, count(sp.id) as count from SystemProfiler sp where sp.context is not null group by sp.uri")
+
+        result.byUri.each{ it ->
+            def tmp = ((it[2] + (de.laser.domain.SystemProfiler.THRESHOLD_MS * (result.globalCountByUri.get(it[0]) - it[3]))) / result.globalCountByUri.get(it[0]))
+            it[2] = tmp
+        }
+        result.byUri.sort{a,b -> Double.compare(a[2], b[2]) * -1}
+
         result.byUriAndContext =
                 SystemProfiler.executeQuery("select sp.uri, org.id, max(sp.ms) as max, avg(sp.ms) as ms, count(org.id) as count from SystemProfiler sp join sp.context as org group by sp.uri, org.id").sort{it[3]}.reverse()
 

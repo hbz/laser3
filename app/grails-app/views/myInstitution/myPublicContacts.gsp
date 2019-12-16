@@ -21,7 +21,7 @@ import="de.laser.helper.RDStore; com.k_int.kbplus.Org; com.k_int.kbplus.Person; 
         <semui:controlButtons>
             <g:render template="actions" />
         </semui:controlButtons>
-        <h1 class="ui left floated aligned icon header la-clear-before"><semui:headerIcon />${institution.name}</h1>
+        <h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon />${institution.name}</h1>
 
         <semui:messages data="${flash}" />
 

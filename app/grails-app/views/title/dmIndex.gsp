@@ -11,7 +11,7 @@
       <semui:crumb text="${message(code:'datamanager.titleView.label', default:'Data Manager Titles View')}" class="active"/>
     </semui:breadcrumbs>
     <br>
-    <h1 class="ui left floated aligned icon header la-clear-before"><semui:headerIcon /><g:message code="datamanager.titleView.label"/>
+    <h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon /><g:message code="datamanager.titleView.label"/>
       <semui:totalNumber total="${totalHits}"/>
     </h1>
     <semui:filter>

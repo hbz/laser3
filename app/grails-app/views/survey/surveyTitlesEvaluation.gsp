@@ -55,7 +55,7 @@
 
         <div class="ui bottom attached tab segment active" data-tab="participantsViewAllFinish">
 
-                <h2 class="ui left floated aligned icon header la-clear-before"><g:message code="surveyEvaluation.participants"/><semui:totalNumber
+                <h2 class="ui icon header la-clear-before la-noMargin-top"><g:message code="surveyEvaluation.participants"/><semui:totalNumber
                         total="${participantsFinish?.size()}"/></h2>
                 <g:if test="${surveyInfo && surveyInfo.status?.id == de.laser.helper.RDStore.SURVEY_IN_EVALUATION?.id}">
                                 <g:link controller="survey" action="completeIssueEntitlementsSurvey" id="${surveyConfig?.id}"
@@ -233,7 +233,7 @@
 
         <div class="ui bottom attached tab segment" data-tab="participantsViewAllNotFinish">
 
-            <h2 class="ui left floated aligned icon header la-clear-before"><g:message code="surveyEvaluation.participants"/><semui:totalNumber
+            <h2 class="ui icon header la-clear-before la-noMargin-top"><g:message code="surveyEvaluation.participants"/><semui:totalNumber
                     total="${participantsNotFinish?.size()}"/></h2>
             <br>
 
@@ -404,7 +404,7 @@
 
         <div class="ui bottom attached tab segment" data-tab="participantsView">
 
-            <h2 class="ui left floated aligned icon header la-clear-before"><g:message code="surveyEvaluation.participants"/><semui:totalNumber
+            <h2 class="ui icon header la-clear-before la-noMargin-top"><g:message code="surveyEvaluation.participants"/><semui:totalNumber
                     total="${participants?.size()}"/></h2>
             <br>
 

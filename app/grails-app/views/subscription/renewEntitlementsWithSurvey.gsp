@@ -32,7 +32,7 @@
     </semui:exportDropdown>
 </semui:controlButtons>
 
-<h1 class="ui left floated aligned icon header la-clear-before"><semui:headerTitleIcon type="Survey"/>
+<h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerTitleIcon type="Survey"/>
 <g:message code="issueEntitlementsSurvey.label" />: ${surveyConfig?.surveyInfo?.name}
 </h1>
 

@@ -358,10 +358,23 @@ class SubscriptionService {
                 Object[] args = [pkg.name]
                 flash.error += messageSource.getMessage('subscription.err.packageAlreadyExistsInTargetSub', args, locale)
             } else {
+                def pkgOapls = pkg.oapls
+                pkg.properties.oapls = null
                 SubscriptionPackage newSubscriptionPackage = new SubscriptionPackage()
+                InvokerHelper.setProperties(newSubscriptionPackage, pkg.properties)
                 newSubscriptionPackage.subscription = targetSub
-                newSubscriptionPackage.pkg = pkg
-                save(newSubscriptionPackage, flash)
+
+                if(save(newSubscriptionPackage, flash)){
+                    pkgOapls.each{ oapl ->
+
+                        def oaplProperties = oapl.properties
+                        oaplProperties.globalUID = null
+                        OrgAccessPointLink newOrgAccessPointLink = new OrgAccessPointLink()
+                        InvokerHelper.setProperties(newOrgAccessPointLink, oaplProperties)
+                        newOrgAccessPointLink.subPkg = newSubscriptionPackage
+                        newOrgAccessPointLink.save(flush: true)
+                    }
+                }
             }
         }
     }
@@ -490,10 +503,23 @@ class SubscriptionService {
                     if (subMember.packages && targetSub.packages) {
                         //Package
                         subMember.packages?.each { pkg ->
+                            def pkgOapls = pkg.oapls
+                            pkg.properties.oapls = null
                             SubscriptionPackage newSubscriptionPackage = new SubscriptionPackage()
                             InvokerHelper.setProperties(newSubscriptionPackage, pkg.properties)
                             newSubscriptionPackage.subscription = newSubscription
-                            newSubscriptionPackage.save(flush: true)
+
+                            if(newSubscriptionPackage.save()){
+                                pkgOapls.each{ oapl ->
+
+                                    def oaplProperties = oapl.properties
+                                    oaplProperties.globalUID = null
+                                    OrgAccessPointLink newOrgAccessPointLink = new OrgAccessPointLink()
+                                    InvokerHelper.setProperties(newOrgAccessPointLink, oaplProperties)
+                                    newOrgAccessPointLink.subPkg = newSubscriptionPackage
+                                    newOrgAccessPointLink.save(flush: true)
+                                }
+                            }
                         }
                     }
                     if (subMember.issueEntitlements && targetSub.issueEntitlements) {

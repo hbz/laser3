@@ -55,10 +55,10 @@ class UserController extends AbstractDebugController {
             if (params.process && result.editable) {
                 User userReplacement = genericOIDService.resolveOID(params.userReplacement)
 
-                result.result = deletionService.deleteUser(result.user, userReplacement, false)
+                result.delResult = deletionService.deleteUser(result.user, userReplacement, false)
             }
             else {
-                result.dryRun = deletionService.deleteUser(result.user, null, DeletionService.DRY_RUN)
+                result.delResult = deletionService.deleteUser(result.user, null, DeletionService.DRY_RUN)
             }
 
             result.substituteList = User.executeQuery(

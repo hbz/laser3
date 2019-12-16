@@ -10,9 +10,11 @@ import org.hibernate.ScrollMode
 @Deprecated
 class BatchImpIdJob extends AbstractJob {
 
-    /*static triggers = {
+    /* DISABLED
+    static triggers = {
         simple name:'BatchImpIdJob', startDelay:40000, repeatInterval:30000, repeatCount:0
-    }*/
+    }
+    */
 
     static configFlags = []
 
@@ -31,7 +33,7 @@ class BatchImpIdJob extends AbstractJob {
         jobIsRunning = true
         SystemEvent.createEvent('BATCH_IMP_JOB_START')
 
-        com.k_int.kbplus.batch.BatchImpIdJob.log.debug("BatchImpIdJob::execute()");
+        log.debug("BatchImpIdJob::execute()");
 
 
     def event = "BatchImpIdJob"
@@ -62,7 +64,7 @@ class BatchImpIdJob extends AbstractJob {
 
       }
       catch( Exception e ) {
-          com.k_int.kbplus.batch.BatchImpIdJob.log.error(e)
+          log.error(e)
       }
       finally {
         if(currentClass.hasProperty('auditable')) currentClass.auditable = auditable_store?:true ;
@@ -87,15 +89,15 @@ class BatchImpIdJob extends AbstractJob {
 
     private def printStart(event){
        def starttime = new Date();
-        com.k_int.kbplus.batch.BatchImpIdJob.log.debug("******* Start ${event}: ${starttime} *******")
+       log.debug("******* Start ${event}: ${starttime} *******")
        return starttime
    }
 
     private def printDuration(starttime, event){
       use(groovy.time.TimeCategory) {
       def duration = new Date() - starttime
-          com.k_int.kbplus.batch.BatchImpIdJob.log.debug("******* End ${event}: ${new Date()} *******")
-          com.k_int.kbplus.batch.BatchImpIdJob.log.debug("Duration: ${(duration.hours*60)+duration.minutes}m ${duration.seconds}s")
+      log.debug("******* End ${event}: ${new Date()} *******")
+      log.debug("Duration: ${(duration.hours*60)+duration.minutes}m ${duration.seconds}s")
     }
   }
 }

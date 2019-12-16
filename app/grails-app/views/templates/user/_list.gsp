@@ -14,7 +14,7 @@
             <g:render template="/user/actions" />
         </semui:controlButtons>
 
-        <h1 class="ui left floated aligned icon header la-clear-before">
+        <h1 class="ui icon header la-clear-before la-noMargin-top">
             <semui:headerIcon />
             ${titleMessage}
             <semui:totalNumber total="${total}"/>
@@ -85,7 +85,7 @@
         </g:if>
 
         <g:if test="${multipleAffiliationsWarning}">
-            <div class="ui info message">${message(code:'user.edit.info')}</div>
+            <div class="ui info message la-clear-before">${message(code:'user.edit.info')}</div>
         </g:if>
 
         <semui:messages data="${flash}" />
