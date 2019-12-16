@@ -4365,7 +4365,7 @@ class SubscriptionController extends AbstractDebugController {
                 //OrgRole
                 baseSub.orgRelations?.each { or ->
 
-                    if ((or.org?.id == contextService.getOrg()?.id) || (or.roleType.value in ['Subscriber', 'Subscriber_Consortial'])) {
+                    if ((or.org?.id == contextService.getOrg()?.id) || (or.roleType in [RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER_CONS_HIDDEN])) {
                         OrgRole newOrgRole = new OrgRole()
                         InvokerHelper.setProperties(newOrgRole, or.properties)
                         newOrgRole.sub = newSub
