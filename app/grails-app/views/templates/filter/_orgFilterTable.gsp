@@ -219,6 +219,9 @@
                         </g:if>
                     </g:link>
                 </g:else>
+                <g:if test="${org.getCustomerType() in ['ORG_INST', 'ORG_INST_COLLECTIVE']}">
+                    <i class="gem outline icon"></i>
+                </g:if>
             </td>
         </g:if>
 
