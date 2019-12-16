@@ -114,7 +114,7 @@
                                     else x.sortname <=> y.sortname
                                 }
                             %>
-                            <g:select name="targetOrg" id="targetOrg" from="${orgs}" optionKey="id" class="ui search select dropdown fluid" optionValue="${docctx?.targetOrg?.id}" noSelection="${['': message(code: 'default.select.choose.label')]}"/>
+                            <g:select name="targetOrg" id="targetOrg" from="${orgs}" optionKey="id" class="ui search select dropdown fluid" value="${docctx?.targetOrg?.id}" noSelection="${['': message(code: 'default.select.choose.label')]}"/>
                         </dd>
                     </dl>
                 </g:if>

@@ -15,7 +15,7 @@
     <semui:crumb controller="myInstitution" action="currentSurveys" message="currentSurveys.label"/>
     <semui:crumb message="issueEntitlementsSurvey.label" class="active"/>
 </semui:breadcrumbs>
-
+<br>
 
 %{--<semui:controlButtons>
     <semui:exportDropdown>
@@ -28,7 +28,7 @@
 
 
 
-<h1 class="ui left floated aligned icon header la-clear-before"><semui:headerIcon/>
+<h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon/>
 ${message(code: 'issueEntitlementsSurvey.label')} - ${surveyInfo.name}
 <semui:surveyStatus object="${surveyInfo}"/>
 </h1>

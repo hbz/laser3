@@ -7,6 +7,7 @@ class AdminJob extends AbstractJob {
     def grailsApplication
     def adminReminderService
 
+    /* --> DISABLED
     static triggers = {
         // Delay 20 seconds, run every 10 mins.
         // Cron:: Min Hour DayOfMonth Month DayOfWeek Year
@@ -21,7 +22,7 @@ class AdminJob extends AbstractJob {
         //                  | | `- Hour, 0-23
         //                  | `- Minute, 0-59
         //                  `- Second, 0-59
-    }
+    }*/
 
     static configFlags = ['hbzMaster', 'AdminReminderJobActiv']
 

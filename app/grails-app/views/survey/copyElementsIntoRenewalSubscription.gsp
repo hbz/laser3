@@ -23,8 +23,8 @@
     <semui:crumb class="active" message="subscription.details.renewals.renew_sub.label" />
 
 </semui:breadcrumbs>
-
-    <h1 class="ui left floated aligned icon header la-clear-before"><semui:headerIcon />
+<br>
+    <h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon />
         <g:if test="${isRenewSub}">
             ${message(code: 'subscription.details.renewals.renew_sub.label')}: <g:if test="${sourceSubscription}">${sourceSubscription.name}</g:if>
         </g:if>
@@ -38,10 +38,10 @@
         if (sourceSubscriptionId)   params << [sourceSubscriptionId: sourceSubscriptionId];
         if (targetSubscriptionId)   params << [targetSubscriptionId: targetSubscriptionId];
         if (isRenewSub)             params << [isRenewSub: isRenewSub];
-        if (isCopyAuditOn)          params << [isCopyAuditOn: isCopyAuditOn];
+
     %>
     <g:if test="${isRenewSub}">
-        <div class="ui tablet stackable steps">
+        <div class="ui tablet stackable steps la-clear-before">
             <div class="${workFlowPart == WORKFLOW_DATES_OWNER_RELATIONS ? 'active' : ''} step">
                 <div class="content">
                     <div class="content" >

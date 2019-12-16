@@ -18,7 +18,9 @@ var currLanguage = $('html').attr('lang');
         'confirm.dialog.share',
         'confirm.dialog.inherit',
         'confirm.dialog.ok',
-        'confirm.dialog.concludeBinding'
+        'confirm.dialog.concludeBinding',
+        'loc.January', 'loc.February', 'loc.March', 'loc.April', 'loc.May', 'loc.June', 'loc.July', 'loc.August', 'loc.September', 'loc.October', 'loc.November', 'loc.December',
+        'loc.weekday.short.Sunday','loc.weekday.short.Monday','loc.weekday.short.Tuesday','loc.weekday.short.Wednesday','loc.weekday.short.Thursday','loc.weekday.short.Friday','loc.weekday.short.Saturday'
     ]
 
 println """
@@ -81,6 +83,31 @@ r2d2 = {
                         alert('Please report this error: ' + gspDateFormat + ' for semui-datepicker unsupported');
                     }
                 }
+            },
+            text: {
+                days: [
+                    dict.get('loc.weekday.short.Sunday',currLanguage),
+                    dict.get('loc.weekday.short.Monday',currLanguage),
+                    dict.get('loc.weekday.short.Tuesday',currLanguage),
+                    dict.get('loc.weekday.short.Wednesday',currLanguage),
+                    dict.get('loc.weekday.short.Thursday',currLanguage),
+                    dict.get('loc.weekday.short.Friday',currLanguage),
+                    dict.get('loc.weekday.short.Saturday',currLanguage)
+                    ],
+                months: [
+                    dict.get('loc.January',currLanguage),
+                    dict.get('loc.February',currLanguage),
+                    dict.get('loc.March',currLanguage),
+                    dict.get('loc.April',currLanguage),
+                    dict.get('loc.May',currLanguage),
+                    dict.get('loc.June',currLanguage),
+                    dict.get('loc.July',currLanguage),
+                    dict.get('loc.August',currLanguage),
+                    dict.get('loc.September',currLanguage),
+                    dict.get('loc.October',currLanguage),
+                    dict.get('loc.November',currLanguage),
+                    dict.get('loc.December',currLanguage)
+                ]
             }
         }
     },
@@ -210,6 +237,8 @@ r2d2 = {
         });
 
         $(ctxSel + ' .xEditableValue').editable({
+
+            highlight: false,
             language: gspLocale,
             format:   gspDateFormat,
             validate: function(value) {
@@ -291,6 +320,13 @@ r2d2 = {
                     return {results: data.values};
                 }
             }
+        });
+
+        $('.la-readmore').readmore({
+                speed: 75,
+                lessLink: '<a href="#">${message(code:"link.readless")}</a>',
+                moreLink: '<a href="#">${message(code:"link.readmore")}</a>',
+                collapsedHeight: 115
         });
     },
 

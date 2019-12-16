@@ -358,10 +358,23 @@ class SubscriptionService {
                 Object[] args = [pkg.name]
                 flash.error += messageSource.getMessage('subscription.err.packageAlreadyExistsInTargetSub', args, locale)
             } else {
+                def pkgOapls = pkg.oapls
+                pkg.properties.oapls = null
                 SubscriptionPackage newSubscriptionPackage = new SubscriptionPackage()
+                InvokerHelper.setProperties(newSubscriptionPackage, pkg.properties)
                 newSubscriptionPackage.subscription = targetSub
-                newSubscriptionPackage.pkg = pkg
-                save(newSubscriptionPackage, flash)
+
+                if(save(newSubscriptionPackage, flash)){
+                    pkgOapls.each{ oapl ->
+
+                        def oaplProperties = oapl.properties
+                        oaplProperties.globalUID = null
+                        OrgAccessPointLink newOrgAccessPointLink = new OrgAccessPointLink()
+                        InvokerHelper.setProperties(newOrgAccessPointLink, oaplProperties)
+                        newOrgAccessPointLink.subPkg = newSubscriptionPackage
+                        newOrgAccessPointLink.save(flush: true)
+                    }
+                }
             }
         }
     }
@@ -491,10 +504,23 @@ class SubscriptionService {
                     if (subMember.packages && targetSub.packages) {
                         //Package
                         subMember.packages?.each { pkg ->
+                            def pkgOapls = pkg.oapls
+                            pkg.properties.oapls = null
                             SubscriptionPackage newSubscriptionPackage = new SubscriptionPackage()
                             InvokerHelper.setProperties(newSubscriptionPackage, pkg.properties)
                             newSubscriptionPackage.subscription = newSubscription
-                            newSubscriptionPackage.save(flush: true)
+
+                            if(newSubscriptionPackage.save()){
+                                pkgOapls.each{ oapl ->
+
+                                    def oaplProperties = oapl.properties
+                                    oaplProperties.globalUID = null
+                                    OrgAccessPointLink newOrgAccessPointLink = new OrgAccessPointLink()
+                                    InvokerHelper.setProperties(newOrgAccessPointLink, oaplProperties)
+                                    newOrgAccessPointLink.subPkg = newSubscriptionPackage
+                                    newOrgAccessPointLink.save(flush: true)
+                                }
+                            }
                         }
                     }
                     if (subMember.issueEntitlements && targetSub.issueEntitlements) {
@@ -654,10 +680,10 @@ class SubscriptionService {
     }
 
 
-    boolean copyProperties(List<AbstractProperty> properties, Subscription targetSub, boolean isRenewSub, boolean isCopyAuditOn, def flash){
+    boolean copyProperties(List<AbstractProperty> properties, Subscription targetSub, boolean isRenewSub, def flash, List auditProperties){
         def contextOrg = contextService.getOrg()
         def targetProp
-        boolean doCopyAudit = accessService.checkPerm("ORG_CONSORTIUM") && isRenewSub && isCopyAuditOn
+
 
         properties?.each { sourceProp ->
             if (sourceProp instanceof CustomProperty) {
@@ -675,13 +701,18 @@ class SubscriptionService {
                 }
                 targetProp = sourceProp.copyInto(targetProp)
                 save(targetProp, flash)
-                if (doCopyAudit && targetProp instanceof CustomProperty) {
+                if (((sourceProp.id.toString() in auditProperties)) && targetProp instanceof CustomProperty) {
                     //copy audit
-                    def auditConfigs = AuditConfig.findAllByReferenceClassAndReferenceId(SubscriptionCustomProperty.class.name, sourceProp.id)
-                    auditConfigs.each {
-                        AuditConfig ac ->
-                            //All ReferenceFields were copied!
-                            AuditConfig.addConfig(targetProp, ac.referenceField)
+                    if (!AuditConfig.getConfig(targetProp, AuditConfig.COMPLETE_OBJECT)) {
+                        def auditConfigs = AuditConfig.findAllByReferenceClassAndReferenceId(SubscriptionCustomProperty.class.name, sourceProp.id)
+                        auditConfigs.each {
+                            AuditConfig ac ->
+                                //All ReferenceFields were copied!
+                                AuditConfig.addConfig(targetProp, ac.referenceField)
+                        }
+                        if (!auditConfigs) {
+                            AuditConfig.addConfig(targetProp, AuditConfig.COMPLETE_OBJECT)
+                        }
                     }
                 }
             } else {
@@ -692,7 +723,7 @@ class SubscriptionService {
     }
 
 
-    boolean deleteProperties(List<AbstractProperty> properties, Subscription targetSub, boolean isRenewSub, boolean isCopyAuditOn, def flash){
+    boolean deleteProperties(List<AbstractProperty> properties, Subscription targetSub, boolean isRenewSub, def flash, List auditProperties){
         if (true){
             properties.each { AbstractProperty prop ->
                 AuditConfig.removeAllConfigs(prop)

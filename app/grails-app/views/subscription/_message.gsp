@@ -28,14 +28,19 @@
         <g:if test="${checkCons}">
             <g:message code="myinst.subscriptionDetails.message.hereLink" />
             <g:link controller="subscription" action="show" id="${subscriptionInstance.instanceOf.id}">
-                <g:message code="myinst.subscriptionDetails.message.consortialLicence" />
+                <g:if test="${subscriptionInstance.administrative}">
+                    <g:message code="myinst.subscriptionDetails.message.administrativeSubscription" />
+                </g:if>
+                <g:else>
+                    <g:message code="myinst.subscriptionDetails.message.consortialSubscription" />
+                </g:else>
             </g:link>
         </g:if>
 
         <g:elseif test="${checkColl}">
             <g:message code="myinst.subscriptionDetails.message.hereLink" />
             <g:link controller="subscription" action="show" id="${subscriptionInstance.instanceOf.id}">
-                <g:message code="myinst.subscriptionDetails.message.collectiveLicence" />
+                <g:message code="myinst.subscriptionDetails.message.collectiveSubscription" />
             </g:link>
         </g:elseif>
 

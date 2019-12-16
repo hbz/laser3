@@ -8,6 +8,7 @@ import com.k_int.kbplus.auth.UserRole
 import com.k_int.properties.PropertyDefinition
 import com.k_int.properties.PropertyDefinitionGroup
 import com.k_int.properties.PropertyDefinitionGroupItem
+import de.laser.ContextService
 import de.laser.SystemEvent
 import de.laser.api.v0.ApiToolkit
 import de.laser.controller.AbstractDebugController
@@ -30,7 +31,7 @@ class AdminController extends AbstractDebugController {
   def springSecurityService
   def dataloadService
   def statsSyncService
-  def globalSourceSyncService
+  SubscriptionUpdateService subscriptionUpdateService
   def messageService
   def changeNotificationService
   def enrichmentService
@@ -47,8 +48,7 @@ class AdminController extends AbstractDebugController {
 
   def docstoreService
   def propertyInstanceMap = org.codehaus.groovy.grails.plugins.DomainClassGrailsPlugin.PROPERTY_INSTANCE_MAP
-  def executorService
-  def ESSearchService
+
   def apiService
 
     @Secured(['ROLE_ADMIN'])
@@ -420,9 +420,17 @@ class AdminController extends AbstractDebugController {
   }
 
   @Secured(['ROLE_ADMIN'])
-  def licenseLink() {
-    if ( ( params.sub_identifier ) && ( params.lic_reference.length() > 0 ) ) {
+  def updateQASubscriptionDates() {
+    if (grailsApplication.config.getCurrentServer() in [ContextService.SERVER_QA,ContextService.SERVER_LOCAL]) {
+      def updateReport = subscriptionUpdateService.updateQASubscriptionDates()
+      if(updateReport instanceof Boolean)
+        flash.message = message(code:'subscription.qaTestDateUpdate.success')
+      else {
+        flash.error = message(code:'subscription.qaTestDateUpdate.updateError',updateReport)
+      }
     }
+    else flash.error = message(code:'subscription.qaTestDateUpdate.wrongServer')
+    redirect(url: request.getHeader('referer'))
   }
 
   @Secured(['ROLE_ADMIN'])

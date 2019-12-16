@@ -10,7 +10,7 @@
                 <th>${message(code:'sidewide.number')}</th>
                 <th class="la-no-uppercase"><span class="la-popup-tooltip la-delay" data-content="${message(code:'financials.costItemConfiguration')}" data-position="left center"><i class="money bill alternate icon"></i></span></th>
                 <g:sortableColumn property="ci.costInBillingCurrency" title="${message(code:'financials.invoice_total')}" params="[subscrSort: true, sub: fixedSubscription.id]" mapping="subfinance"/>
-                <g:sortableColumn property="ci.costInLocalCurrency" title="${message(code:'financials.newCosts.valueInEuro')}" params="[subscrSort: true, sub: fixedSubscription.id]" mapping="subfinance"/>
+                <g:sortableColumn property="ci.costInLocalCurrency" title="${message(code:'financials.newCosts.value')}" params="[subscrSort: true, sub: fixedSubscription.id]" mapping="subfinance"/>
                 <g:sortableColumn property="ci.costItemElement" title="${message(code:'financials.costItemElement')}" params="[subscrSort: true, sub: fixedSubscription.id]" mapping="subfinance"/>
                 <g:sortableColumn property="sub.name" title="${message(code:'financials.forSubscription')}" params="[subscrSort: true, sub: fixedSubscription.id]" mapping="subfinance"/>
                 <g:sortableColumn property="subPkg.pkg" title="${message(code:'financials.forPackage')}" params="[subscrSort: true, sub: fixedSubscription.id]" mapping="subfinance"/>
@@ -20,7 +20,7 @@
                 <th>${message(code:'sidewide.number')}</th>
                 <th class="la-no-uppercase"><span class="la-popup-tooltip la-delay" data-content="${message(code:'financials.costItemConfiguration')}" data-position="left center"><i class="money bill alternate icon"></i></span></th>
                 <g:sortableColumn property="ci.costInBillingCurrency" title="${message(code:'financials.invoice_total')}" params="[subscrSort: true]"/>
-                <g:sortableColumn property="ci.costInLocalCurrency" title="${message(code:'financials.newCosts.valueInEuro')}" params="[subscrSort: true]"/>
+                <g:sortableColumn property="ci.costInLocalCurrency" title="${message(code:'financials.newCosts.value')}" params="[subscrSort: true]"/>
                 <g:sortableColumn property="ci.costItemElement" title="${message(code:'financials.costItemElement')}" params="[subscrSort: true]"/>
                 <g:sortableColumn property="sub.name" title="${message(code:'financials.forSubscription')}" params="[subscrSort: true]"/>
                 <g:sortableColumn property="subPkg.pkg" title="${message(code:'financials.forPackage')}" params="[subscrSort: true]"/>

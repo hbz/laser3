@@ -25,7 +25,8 @@
 
     <g:render template="nav" model="${[orgInstance: orgInstance, inContextOrg: orgInstance.id == contextService.getOrg().id]}"/>
 
-    <semui:filter>
+    <g:render template="../templates/filter/javascript" />
+    <semui:filter showFilterButton="true">
         <g:form controller="organisation" action="users" params="${[id: orgInstance.id]}" method="get" class="ui form">
 
             <div class="three fields">

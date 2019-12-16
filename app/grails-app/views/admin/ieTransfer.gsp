@@ -11,8 +11,8 @@
           <semui:crumb message="menu.admin.dash" controller="admin" action="index" />
           <semui:crumb text="IE Transfer" class="active"/>
       </semui:breadcrumbs>
-
-      <h1 class="ui left floated aligned icon header la-clear-before"><semui:headerIcon />IE Transfer</h1>
+        <br>
+      <h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon />IE Transfer</h1>
 
       <semui:messages data="${flash}" />
 

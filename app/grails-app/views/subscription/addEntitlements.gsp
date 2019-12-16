@@ -21,16 +21,16 @@
 </semui:controlButtons>
 
 <h1 class="ui left floated aligned icon header la-clear-before"><semui:headerIcon/>
-<g:inPlaceEdit domain="Subscription" pk="${subscriptionInstance.id}" field="name" id="name"
-               class="newipe">${subscriptionInstance?.name}</g:inPlaceEdit>
+<g:inPlaceEdit domain="${Subscription.class.name}" pk="${subscriptionInstance.id}" field="name" id="name" class="newipe">${subscriptionInstance?.name}</g:inPlaceEdit>
 </h1>
-<h2 class="ui left floated aligned icon header la-clear-before">${message(code: 'subscription.details.addEntitlements.label')}</h2>
+<h2 class="ui left aligned icon header la-clear-before">${message(code: 'subscription.details.addEntitlements.label')}</h2>
 <%-- <g:render template="nav"/> --%>
 
 <g:set var="counter" value="${offset + 1}"/>
 ${message(code: 'subscription.details.availableTitles', default: 'Available Titles')} ( ${message(code: 'default.paginate.offset', args: [(offset + 1), (offset + (tipps?.size())), num_tipp_rows])} )
 
-<semui:filter>
+<g:render template="../templates/filter/javascript" />
+<semui:filter showFilterButton="true">
     <g:form class="ui form" action="addEntitlements" params="${params}" method="get">
         <input type="hidden" name="sort" value="${params.sort}">
         <input type="hidden" name="order" value="${params.order}">

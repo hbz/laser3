@@ -47,6 +47,7 @@ class DataloadService {
     def dataload_message=''
     boolean update_running = false
     def lastIndexUpdate = null
+    def activeFuture
 
     @javax.annotation.PostConstruct
     def init () {
@@ -55,13 +56,18 @@ class DataloadService {
 
     def updateFTIndexes() {
         //log.debug("updateFTIndexes ${this.hashCode()}")
-
-        SystemEvent.createEvent('FT_INDEX_UPDATE_START')
-
-        def future = executorService.submit({
-            doFTUpdate()
-        } as java.util.concurrent.Callable)
-        log.debug("updateFTIndexes returning")
+        if(update_running == false) {
+            SystemEvent.createEvent('FT_INDEX_UPDATE_START')
+            if(!activeFuture || activeFuture.isDone()) {
+                activeFuture = executorService.submit({
+                    doFTUpdate()
+                } as java.util.concurrent.Callable)
+                log.debug("updateFTIndexes returning")
+            }
+        } else {
+            return false
+        log.debug("FT update already running")
+        }
     }
 
     boolean doFTUpdate() {
@@ -92,6 +98,13 @@ class DataloadService {
                 result.guid = org.globalUID ?: ''
 
                 result.name = org.name
+                result.status = org.status?.value
+                result.statusId = org.status?.id
+                result.visible = 'Public'
+                result.rectype = 'Organisation'
+
+                result.sector = org.sector?.value
+
                 result.shortname = org.shortname
                 result.sortname = org.sortname
 
@@ -112,11 +125,7 @@ class DataloadService {
                         log.error(e)
                     }
                 }
-                result.rectype = 'Organisation'
-                result.sector = org.sector?.value
-                result.status = org.status?.value
-                result.statusId = org.status?.id
-                result.visible = 'Public'
+
 
             result
         }
@@ -143,6 +152,18 @@ class DataloadService {
 
                     result.gokbId = ti.gokbId
                     result.guid = ti.globalUID ?: ''
+                    result.name = ti.title
+                    result.status = ti.status?.value
+                    result.statusId = ti.status?.id
+                    result.visible = 'Public'
+                    result.rectype = 'Title'
+
+                    //result.keyTitle = ti.keyTitle
+                    //result.normTitle = ti.normTitle
+                    result.publisher = ti.getPublisher()?.name ?: ''
+                    result.sortTitle = ti.sortTitle
+
+                    result.typTitle = ti.type?.value
 
                     result.identifiers = []
                     ti.ids?.each { ident ->
@@ -152,16 +173,6 @@ class DataloadService {
                             log.error(e)
                         }
                     }
-                    //result.keyTitle = ti.keyTitle
-                    //result.normTitle = ti.normTitle
-                    result.publisher = ti.getPublisher()?.name ?: ''
-                    result.rectype = 'Title'
-                    result.sortTitle = ti.sortTitle
-                    result.status = ti.status?.value
-                    result.statusId = ti.status?.id
-                    result.typTitle = ti.type?.value
-                    result.name = ti.title
-                    result.visible = 'Public'
                 } else {
                     log.warn("Title with no title string - ${ti.id}")
                 }
@@ -175,17 +186,34 @@ class DataloadService {
                 result._id = pkg.globalUID
                 result.priority = 30
                 result.dbId = pkg.id
-
                 result.gokbId = pkg.gokbId
                 result.guid = pkg.globalUID ?: ''
+                result.name = "${pkg.name}"
+                result.status = pkg.packageStatus?.value
+                result.statusId = pkg.packageStatus?.id
+                result.visible = 'Public'
+                result.rectype = 'Package'
 
-                result.consortiaId = pkg.getConsortia()?.id
+                result.consortiaGUID = pkg.getConsortia()?.globalUID
                 result.consortiaName = pkg.getConsortia()?.name
                 result.providerId = pkg.getContentProvider()?.id
                 result.providerName = pkg.getContentProvider()?.name
 
                 result.nominalPlatformId = pkg.nominalPlatform?.id
                 result.nominalPlatformName = pkg.nominalPlatform?.name
+
+                result.isPublic = (pkg?.isPublic) ? 'Yes' : 'No'
+
+                result.sortname = pkg.sortName
+                result.startDate = pkg.startDate
+                result.endDate = pkg.endDate
+                def lastmod = pkg.lastUpdated ?: pkg.dateCreated
+                if (lastmod != null) {
+                    result.lastModified = lastmod
+                }
+
+                result.titleCount = pkg.tipps.size()?:0
+                result.titleCountCurrent = pkg.getCurrentTipps().size()?:0
 
                 result.identifiers = []
                 pkg.ids?.each { ident ->
@@ -195,24 +223,6 @@ class DataloadService {
                         log.error(e)
                     }
                 }
-                //result.identifiers = pkg.ids.collect{"${it?.identifier?.ns?.ns} : ${it?.identifier?.value}"}
-                result.isPublic = (pkg?.isPublic) ? 'Yes' : 'No'
-                result.endDate = pkg.endDate
-                def lastmod = pkg.lastUpdated ?: pkg.dateCreated
-                if (lastmod != null) {
-                    result.lastModified = lastmod
-                }
-                result.name = "${pkg.name}"
-
-                result.rectype = 'Package'
-                result.sortname = pkg.sortName
-                result.startDate = pkg.startDate
-                result.status = pkg.packageStatus?.value
-                result.statusId = pkg.packageStatus?.id
-                result.titleCount = pkg.tipps.size()?:0
-                result.titleCountCurrent = pkg.getCurrentTipps().size()?:0
-
-                result.visible = 'Public'
 
 /*                if (pkg.startDate) {
                     GregorianCalendar c = new GregorianCalendar()
@@ -230,34 +240,64 @@ class DataloadService {
             result
         }
 
+        updateES(esclient, com.k_int.kbplus.Platform.class) { plat ->
+            def result = [:]
+
+                result._id = plat.globalUID
+                result.priority = 30
+                result.dbId = plat.id
+                result.gokbId = plat.gokbId
+                result.guid = plat.globalUID ?: ''
+                result.name = plat.name
+                result.status = plat.status?.value
+                result.statusId = plat.status?.id
+                result.visible = 'Public'
+                result.rectype = 'Platform'
+
+                result.normname = plat.normname
+                result.primaryUrl = plat.primaryUrl
+                result.orgId = plat.org?.id
+                result.orgName = plat.org?.name
+                result.titleCountCurrent = plat.getCurrentTipps().size()?:0
+
+            result
+        }
+
         updateES(esclient, com.k_int.kbplus.License.class) { lic ->
             def result = [:]
 
             result._id = lic.globalUID
-            result.priority = 40
+            result.priority = 50
             result.dbId = lic.id
             result.guid = lic.globalUID ?:''
-            switch(lic.getCalculatedType()) {
-                case TemplateSupport.CALCULATED_TYPE_CONSORTIAL:
-                    result.availableToOrgs = lic.orgLinks.findAll{it.roleType?.value in ["Licensing Consortium"]}?.org?.id
-                    break
-                case TemplateSupport.CALCULATED_TYPE_PARTICIPATION:
-                    result.availableToOrgs = lic.orgLinks.findAll{it.roleType?.value in ["Licensee_Consortial"]}?.org?.id
-                    break
-                default:
-                    result.availableToOrgs = lic.orgLinks.findAll{it.roleType?.value in ["Licensee"]}?.org?.id
-                    break
-            }
             result.name = lic.reference
-            result.rectype = 'License'
             result.status = lic.status?.value
             result.statusId = lic.status?.id
-            result.endDate = lic.endDate
-            result.startDate = lic.startDate
-            result.members = License.findAllByInstanceOf(lic).size()
+            result.visible = 'Private'
+            result.rectype = 'License'
 
-            result.consortiaId = lic.getLicensor()?.id
-            result.consortiaName = lic.getLicensor()?.name
+            switch(lic.getCalculatedType()) {
+                case TemplateSupport.CALCULATED_TYPE_CONSORTIAL:
+                    result.availableToOrgs = lic.orgLinks.findAll{it.roleType?.value in [RDStore.OR_LICENSING_CONSORTIUM.value]}?.org?.id
+                    result.membersCount = License.findAllByInstanceOf(lic).size()?:0
+                    break
+                case TemplateSupport.CALCULATED_TYPE_PARTICIPATION:
+                    List orgs = lic.orgLinks.findAll{it.roleType?.value in [RDStore.OR_LICENSEE_CONS.value]}?.org
+                    result.availableToOrgs = orgs?.id
+                    result.consortiaGUID = lic.getLicensingConsortium()?.globalUID
+                    result.consortiaName = lic.getLicensingConsortium()?.name
+
+                    result.members = []
+                    orgs.each{ org ->
+                        result.members.add([dbId: org.id, name: org.name, shortname: org.shortname, sortname: org.sortname])
+                    }
+                    break
+                case TemplateSupport.CALCULATED_TYPE_LOCAL:
+                    result.availableToOrgs = lic.orgLinks.findAll{it.roleType?.value in [RDStore.OR_LICENSEE.value]}?.org?.id
+                    break
+            }
+
+            result.typeId = lic.type?.id
 
             result.identifiers = []
             lic.ids?.each { ident ->
@@ -268,6 +308,8 @@ class DataloadService {
                 }
             }
 
+            result.endDate = lic.endDate
+            result.startDate = lic.startDate
             if (lic.startDate) {
                 GregorianCalendar c = new GregorianCalendar()
                 c.setTime(lic.startDate)
@@ -280,32 +322,6 @@ class DataloadService {
                 result.endYear = "${c.get(Calendar.YEAR)}"
             }
 
-            result.visible = 'Private'
-            result
-        }
-
-        updateES(esclient, com.k_int.kbplus.Platform.class) { plat ->
-            def result = [:]
-
-                result._id = plat.globalUID
-                result.priority = 30
-                result.dbId = plat.id
-
-                result.gokbId = plat.gokbId
-                result.guid = plat.globalUID ?: ''
-
-                result.name = plat.name
-                result.normname = plat.normname
-                result.primaryUrl = plat.primaryUrl
-                result.rectype = 'Platform'
-                result.status = plat.status?.value
-                result.statusId = plat.status?.id
-                result.orgId = plat.org?.id
-                result.orgName = plat.org?.name
-                result.primaryUrl = plat.primaryUrl
-                result.titleCountCurrent = plat.getCurrentTipps().size()?:0
-
-                result.visible = 'Public'
 
             result
         }
@@ -314,41 +330,55 @@ class DataloadService {
             def result = [:]
 
                 result._id = sub.globalUID
-                result.priority = 50
+                result.priority = 70
                 result.dbId = sub.id
                 result.guid = sub.globalUID ?: ''
-                switch (sub.getCalculatedType()) {
-                    case TemplateSupport.CALCULATED_TYPE_CONSORTIAL:
-                        result.availableToOrgs = sub.orgRelations.find {
-                            it.roleType?.value in ["Subscription Consortia"]
-                        }?.org?.id
-                        break
-                    case TemplateSupport.CALCULATED_TYPE_PARTICIPATION:
-                        result.availableToOrgs = sub.orgRelations.find {
-                            it.roleType.value in ["Subscriber_Consortial"]
-                        }?.org?.id
-                        break
-                    default:
-                        result.availableToOrgs = sub.orgRelations.find {
-                            it.roleType?.value in ["Subscriber", "Subscriber_Consortial", "Subscription Consortia"]
-                        }?.org?.id
-                        break
-                }
-                result.consortiaId = sub.getConsortia()?.id
-                result.consortiaName = sub.getConsortia()?.name
                 result.name = sub.name
-                //result.identifier = sub.identifier
-                result.packages = []
-                // There really should only be one here? So think od this as SubscriptionOrg, but easier
-                // to leave it as availableToOrgs I guess.
-                result.rectype = 'Subscription'
-                result.endDate = sub.endDate
-                result.startDate = sub.startDate
                 result.status = sub.status?.value
                 result.statusId = sub.status?.id
-                result.subtype = sub.type?.value
-                result.members = Subscription.findAllByInstanceOf(sub).size()
                 result.visible = 'Private'
+                result.rectype = 'Subscription'
+
+                switch (sub.getCalculatedType()) {
+                    case TemplateSupport.CALCULATED_TYPE_CONSORTIAL:
+                        result.availableToOrgs = sub.orgRelations.findAll{it.roleType.value in [RDStore.OR_SUBSCRIPTION_CONSORTIA.value]}?.org?.id
+                        result.membersCount = Subscription.findAllByInstanceOf(sub).size() ?:0
+                        break
+                    case TemplateSupport.CALCULATED_TYPE_PARTICIPATION:
+                        List orgs = sub.orgRelations.findAll{it.roleType.value in [RDStore.OR_SUBSCRIBER_CONS.value, RDStore.OR_SUBSCRIBER_COLLECTIVE.value]}?.org
+                        result.availableToOrgs = orgs?.id
+                        result.consortiaGUID = sub.getConsortia()?.globalUID
+                        result.consortiaName = sub.getConsortia()?.name
+
+                        result.members = []
+                        orgs.each{ org ->
+                            result.members.add([dbId: org.id, name: org.name, shortname: org.shortname, sortname: org.sortname])
+                        }
+
+                        break
+                    case TemplateSupport.CALCULATED_TYPE_COLLECTIVE:
+                        result.availableToOrgs = sub.orgRelations.findAll{it.roleType.value in [RDStore.OR_SUBSCRIPTION_COLLECTIVE.value]}?.org?.id
+                        break
+                /*              case TemplateSupport.CALCULATED_TYPE_ADMINISTRATIVE:
+                                  result.availableToOrgs = sub.orgRelations.findAll {it.roleType.value in [RDStore.OR_SUBSCRIBER_CONS.value]}?.org?.id
+                                  break*/
+                    case TemplateSupport.CALCULATED_TYPE_PARTICIPATION_AS_COLLECTIVE:
+                        List orgs = sub.orgRelations.findAll{it.roleType.value in [RDStore.OR_SUBSCRIPTION_COLLECTIVE.value, RDStore.OR_SUBSCRIBER_CONS.value]}?.org
+                        result.availableToOrgs = orgs?.id
+                        result.consortiaGUID = sub.getConsortia()?.globalUID
+                        result.consortiaName = sub.getConsortia()?.name
+
+                        result.members = []
+                        orgs.each{ org ->
+                            result.members.add([dbId: org.id, name: org.name, shortname: org.shortname, sortname: org.sortname])
+                        }
+                        break
+                    case TemplateSupport.CALCULATED_TYPE_LOCAL:
+                        result.availableToOrgs = sub.orgRelations.findAll{it.roleType.value in [RDStore.OR_SUBSCRIBER.value]}?.org?.id
+                        break
+                }
+
+                result.typeId = sub.type?.id
 
                 result.identifiers = []
                 sub.ids?.each { ident ->
@@ -359,6 +389,8 @@ class DataloadService {
                         }
                     }
 
+                result.endDate = sub.endDate
+                result.startDate = sub.startDate
                 if (sub.startDate) {
                     GregorianCalendar c = new GregorianCalendar()
                     c.setTime(sub.startDate)
@@ -370,7 +402,7 @@ class DataloadService {
                     c.setTime(sub.endDate)
                     result.endYear = "${c.get(Calendar.YEAR)}"
                 }
-
+                result.packages = []
                 sub.packages.each { sp ->
                     def pgkinfo = [:]
                     if (sp.pkg != null) {
@@ -382,7 +414,6 @@ class DataloadService {
                         result.packages.add(pgkinfo);
                     }
                 }
-                //result.suggest = [input: [sub.name.split(' ')]]
 
             result
         }
@@ -391,12 +422,20 @@ class DataloadService {
             def result = [:]
 
             result._id = surveyConfig.getClass().getSimpleName().toLowerCase()+":"+surveyConfig.id
-            result.priority = 50
+            result.priority = 60
             result.dbId = surveyConfig.id
-            result.availableToOrgs = surveyConfig.surveyInfo.owner?.id
             result.name = surveyConfig.getSurveyName()
             result.status= surveyConfig.surveyInfo.status?.value
             result.statusId= surveyConfig.surveyInfo.status?.id
+            result.visible = 'Private'
+            result.rectype = 'Survey'
+
+            result.availableToOrgs = [surveyConfig.surveyInfo.owner?.id]
+
+            result.membersCount = surveyConfig.orgs?.size() ?: 0
+
+            result.endDate = surveyConfig.surveyInfo.endDate
+            result.startDate = surveyConfig.surveyInfo.startDate
 
             if (surveyConfig.surveyInfo.startDate) {
                 GregorianCalendar c = new GregorianCalendar()
@@ -410,11 +449,6 @@ class DataloadService {
                 result.endYear = "${c.get(Calendar.YEAR)}"
             }
 
-            result.members = surveyConfig.orgs?.size() ?: 0
-            result.visible = 'Private'
-
-            result.rectype = 'Survey'
-
             result
         }
 
@@ -422,12 +456,18 @@ class DataloadService {
             def result = [:]
 
             result._id = surOrg.getClass().getSimpleName().toLowerCase()+":"+surOrg.id
-            result.priority = 50
+            result.priority = 60
             result.dbId = surOrg.id
-            result.availableToOrgs = (surOrg.surveyConfig.surveyInfo.status != RDStore.SURVEY_IN_PROCESSING) ? [surOrg.org.id] : []
             result.name = surOrg.surveyConfig.getSurveyName()
             result.status= surOrg.surveyConfig.surveyInfo.status?.value
             result.statusId= surOrg.surveyConfig.surveyInfo.status?.id
+            result.visible = 'Private'
+            result.rectype = 'ParticipantSurvey'
+
+            result.availableToOrgs = (surOrg.surveyConfig.surveyInfo.status.value != RDStore.SURVEY_IN_PROCESSING.value) ? [surOrg.org.id] : []
+
+            result.endDate = surOrg.surveyConfig.surveyInfo.endDate
+            result.startDate = surOrg.surveyConfig.surveyInfo.startDate
 
             if (surOrg.surveyConfig.surveyInfo.startDate) {
                 GregorianCalendar c = new GregorianCalendar()
@@ -441,10 +481,6 @@ class DataloadService {
                 result.endYear = "${c.get(Calendar.YEAR)}"
             }
 
-            result.visible = 'Private'
-
-            result.rectype = 'ParticipantSurvey'
-
             result
         }
 
@@ -452,41 +488,44 @@ class DataloadService {
             def result = [:]
 
             result._id = task.getClass().getSimpleName().toLowerCase()+":"+task.id
-            result.priority = 35
+            result.priority = 40
             result.dbId = task.id
-            result.availableToOrgs = [task.responsibleOrg?.id]
             result.name = task.title
-            result.description = task.description
             result.status= task.status?.value
             result.statusId= task.status?.id
-            result.endDate= task.endDate
-
             result.visible = 'Private'
-
             result.rectype = 'Task'
+
+            result.availableToOrgs = [task.responsibleOrg?.id]
+            result.availableToUser = [task.responsibleUser?.id]
+
+            result.description = task.description
+            result.endDate= task.endDate
 
             if(task.subscription){
                 result.objectId = task.subscription.id
                 result.objectName = task.subscription.name
-                result.objectType = task.subscription.getClass().getSimpleName().toLowerCase()
+                result.objectTypeId = task.subscription.type?.id
+                result.objectClassName = task.subscription.getClass().getSimpleName().toLowerCase()
             }
 
             if(task.org){
                 result.objectId = task.org.id
                 result.objectName = task.org.name
-                result.objectType = task.org.getClass().getSimpleName().toLowerCase()
+                result.objectClassName = task.org.getClass().getSimpleName().toLowerCase()
             }
 
             if(task.license){
                 result.objectId = task.license.id
                 result.objectName = task.license.reference
-                result.objectType = task.license.getClass().getSimpleName().toLowerCase()
+                result.objectTypeId = task.license.type?.id
+                result.objectClassName = task.license.getClass().getSimpleName().toLowerCase()
             }
 
             if(task.surveyConfig){
                 result.objectId = task.surveyConfig.id
-                result.objectName = task.surveyConfig.name
-                result.objectType = task.surveyConfig.getClass().getSimpleName().toLowerCase()
+                result.objectName = task.surveyConfig.getSurveyName()
+                result.objectClassName = task.surveyConfig.getClass().getSimpleName().toLowerCase()
             }
 
             result
@@ -496,89 +535,302 @@ class DataloadService {
             def result = [:]
 
             result._id = docCon.getClass().getSimpleName().toLowerCase()+":"+docCon.id
-            result.priority = 35
+            result.priority = 40
             result.dbId = docCon.id
-            result.availableToOrgs = [docCon.owner?.owner.id ?: 0]
             result.name = docCon.owner?.title
-            result.description = docCon.owner?.content
             result.status= docCon.status?.value
             result.statusId= docCon.status?.id
-
             result.visible = 'Private'
-
             result.rectype = (docCon.owner?.contentType == 0) ? 'Note' : 'Document'
+
+            result.availableToOrgs = [docCon.owner?.owner?.id ?: 0]
+
+            result.description = docCon.owner?.content
 
             if(docCon.subscription){
                 result.objectId = docCon.subscription.id
                 result.objectName = docCon.subscription.name
-                result.objectType = docCon.subscription.getClass().getSimpleName().toLowerCase()
+                result.objectTypeId = docCon.subscription.type?.id
+                result.objectClassName = docCon.subscription.getClass().getSimpleName().toLowerCase()
             }
 
             if(docCon.org){
                 result.objectId = docCon.org.id
                 result.objectName = docCon.org.name
-                result.objectType = docCon.org.getClass().getSimpleName().toLowerCase()
+                result.objectClassName = docCon.org.getClass().getSimpleName().toLowerCase()
             }
 
             if(docCon.license){
                 result.objectId = docCon.license.id
                 result.objectName = docCon.license.reference
-                result.objectType = docCon.license.getClass().getSimpleName().toLowerCase()
+                result.objectTypeId = docCon.license.type?.id
+                result.objectClassName = docCon.license.getClass().getSimpleName().toLowerCase()
             }
 
             if(docCon.surveyConfig){
                 result.objectId = docCon.surveyConfig.id
-                result.objectName = docCon.surveyConfig.name
-                result.objectType = docCon.surveyConfig.getClass().getSimpleName().toLowerCase()
+                result.objectName = docCon.surveyConfig.getSurveyName()
+                result.objectClassName = docCon.surveyConfig.getClass().getSimpleName().toLowerCase()
             }
 
             result
         }
 
-        updateES(esclient, com.k_int.kbplus.DocContext.class) { docCon ->
+        updateES(esclient, com.k_int.kbplus.IssueEntitlement.class) { ie ->
             def result = [:]
 
-            result._id = docCon.getClass().getSimpleName().toLowerCase()+":"+docCon.id
-            result.priority = 35
-            result.dbId = docCon.id
-            result.availableToOrgs = [docCon.owner?.owner.id ?: 0]
-            result.name = docCon.owner?.title
-            result.description = docCon.owner?.content
-            result.status= docCon.status?.value
-            result.statusId= docCon.status?.id
-
+            result._id = ie.globalUID
+            result.priority = 45
+            result.dbId = ie.id
+            result.name = ie.tipp?.title?.title
+            result.status= ie.status?.value
+            result.statusId= ie.status?.id
             result.visible = 'Private'
+            result.rectype = 'IssueEntitlement'
 
-            result.rectype = (docCon.owner?.contentType == 0) ? 'Note' : 'Document'
-
-            if(docCon.subscription){
-                result.objectId = docCon.subscription.id
-                result.objectName = docCon.subscription.name
-                result.objectType = docCon.subscription.getClass().getSimpleName().toLowerCase()
+            switch (ie.subscription.getCalculatedType()) {
+                case TemplateSupport.CALCULATED_TYPE_CONSORTIAL:
+                    result.availableToOrgs = ie.subscription.orgRelations.findAll{it.roleType.value in [RDStore.OR_SUBSCRIPTION_CONSORTIA.value]}?.org?.id
+                    break
+                case TemplateSupport.CALCULATED_TYPE_PARTICIPATION:
+                    result.availableToOrgs = ie.subscription.orgRelations.findAll{it.roleType.value in [RDStore.OR_SUBSCRIBER_CONS.value, RDStore.OR_SUBSCRIBER_COLLECTIVE.value]}?.org?.id
+                    break
+                case TemplateSupport.CALCULATED_TYPE_COLLECTIVE:
+                    result.availableToOrgs = ie.subscription.orgRelations.findAll{it.roleType.value in [RDStore.OR_SUBSCRIPTION_COLLECTIVE.value]}?.org?.id
+                    break
+            /*              case TemplateSupport.CALCULATED_TYPE_ADMINISTRATIVE:
+                              result.availableToOrgs = sub.orgRelations.findAll {it.roleType.value in [RDStore.OR_SUBSCRIBER_CONS.value]}?.org?.id
+                              break*/
+                case TemplateSupport.CALCULATED_TYPE_PARTICIPATION_AS_COLLECTIVE:
+                    result.availableToOrgs = ie.subscription.orgRelations.findAll{it.roleType.value in [RDStore.OR_SUBSCRIPTION_COLLECTIVE.value, RDStore.OR_SUBSCRIBER_CONS.value]}?.org?.id
+                    break
+                case TemplateSupport.CALCULATED_TYPE_LOCAL:
+                    result.availableToOrgs = ie.subscription.orgRelations.findAll{it.roleType.value in [RDStore.OR_SUBSCRIBER.value]}?.org?.id
+                    break
             }
 
-            if(docCon.org){
-                result.objectId = docCon.org.id
-                result.objectName = docCon.org.name
-                result.objectType = docCon.org.getClass().getSimpleName().toLowerCase()
+            if(ie.subscription){
+                result.objectId = ie.subscription.id
+                result.objectName = ie.subscription.name
+                result.objectTypeId = ie.subscription.type?.id
+                result.objectClassName = ie.subscription.getClass().getSimpleName().toLowerCase()
             }
 
-            if(docCon.license){
-                result.objectId = docCon.license.id
-                result.objectName = docCon.license.reference
-                result.objectType = docCon.license.getClass().getSimpleName().toLowerCase()
+            if (ie.accessStartDate) {
+                GregorianCalendar c = new GregorianCalendar()
+                c.setTime(ie.accessStartDate)
+                result.startYear = "${c.get(Calendar.YEAR)}"
             }
 
-            if(docCon.surveyConfig){
-                result.objectId = docCon.surveyConfig.id
-                result.objectName = docCon.surveyConfig.name
-                result.objectType = docCon.surveyConfig.getClass().getSimpleName().toLowerCase()
+            if (ie.accessEndDate) {
+                GregorianCalendar c = new GregorianCalendar()
+                c.setTime(ie.accessEndDate)
+                result.endYear = "${c.get(Calendar.YEAR)}"
             }
 
             result
         }
 
-        esclient = ESWrapperService.getClient()
+        updateES(esclient, com.k_int.kbplus.SubscriptionCustomProperty.class) { subCustProp ->
+            def result = [:]
+
+            result._id = subCustProp.getClass().getSimpleName().toLowerCase()+":"+subCustProp.id
+            result.priority = 45
+            result.dbId = subCustProp.id
+            result.name = subCustProp.type?.name
+
+            result.visible = 'Private'
+            result.rectype = 'SubscriptionCustomProperty'
+
+            if(subCustProp.type.type == Integer.toString()){
+                result.description = subCustProp.intValue
+            }
+            else if(subCustProp.type.type == String.toString()){
+                result.description = subCustProp.stringValue
+            }
+            else if(subCustProp.type.type == BigDecimal.toString()){
+                result.description = subCustProp.decValue
+            }
+            else if(subCustProp.type.type == Date.toString()){
+                result.description = subCustProp.dateValue
+            }
+            else if(subCustProp.type.type == URL.toString()){
+                result.description = subCustProp.urlValue
+            }
+            else if(subCustProp.type.type == RefdataValue.toString()){
+                result.description = subCustProp.refValue
+            }
+
+            switch (subCustProp.owner.getCalculatedType()) {
+                case TemplateSupport.CALCULATED_TYPE_CONSORTIAL:
+                    result.availableToOrgs = subCustProp.owner.orgRelations.findAll{it.roleType.value in [RDStore.OR_SUBSCRIPTION_CONSORTIA.value]}?.org?.id
+                    break
+                case TemplateSupport.CALCULATED_TYPE_PARTICIPATION:
+                    result.availableToOrgs = subCustProp.owner.orgRelations.findAll{it.roleType.value in [RDStore.OR_SUBSCRIBER_CONS.value, RDStore.OR_SUBSCRIBER_COLLECTIVE.value]}?.org?.id
+                    break
+                case TemplateSupport.CALCULATED_TYPE_COLLECTIVE:
+                    result.availableToOrgs = subCustProp.owner.orgRelations.findAll{it.roleType.value in [RDStore.OR_SUBSCRIPTION_COLLECTIVE.value]}?.org?.id
+                    break
+            /*              case TemplateSupport.CALCULATED_TYPE_ADMINISTRATIVE:
+                              result.availableToOrgs = sub.orgRelations.findAll {it.roleType.value in [RDStore.OR_SUBSCRIBER_CONS.value]}?.org?.id
+                              break*/
+                case TemplateSupport.CALCULATED_TYPE_PARTICIPATION_AS_COLLECTIVE:
+                    result.availableToOrgs = subCustProp.owner.orgRelations.findAll{it.roleType.value in [RDStore.OR_SUBSCRIPTION_COLLECTIVE.value, RDStore.OR_SUBSCRIBER_CONS.value]}?.org?.id
+                    break
+                case TemplateSupport.CALCULATED_TYPE_LOCAL:
+                    result.availableToOrgs = subCustProp.owner.orgRelations.findAll{it.roleType.value in [RDStore.OR_SUBSCRIBER.value]}?.org?.id
+                    break
+            }
+
+            if(subCustProp.owner){
+                result.objectId = subCustProp.owner.id
+                result.objectName = subCustProp.owner.name
+                result.objectTypeId = subCustProp.owner.type?.id
+                result.objectClassName = subCustProp.owner.getClass().getSimpleName().toLowerCase()
+            }
+
+            result
+        }
+
+        updateES(esclient, com.k_int.kbplus.SubscriptionPrivateProperty.class) { subPrivProp ->
+            def result = [:]
+
+            result._id = subPrivProp.getClass().getSimpleName().toLowerCase()+":"+subPrivProp.id
+            result.priority = 45
+            result.dbId = subPrivProp.id
+            result.name = subPrivProp.type?.name
+
+            result.visible = 'Private'
+            result.rectype = 'SubscriptionPrivateProperty'
+
+            if(subPrivProp.type.type == Integer.toString()){
+                result.description = subPrivProp.intValue
+            }
+            else if(subPrivProp.type.type == String.toString()){
+                result.description = subPrivProp.stringValue
+            }
+            else if(subPrivProp.type.type == BigDecimal.toString()){
+                result.description = subPrivProp.decValue
+            }
+            else if(subPrivProp.type.type == Date.toString()){
+                result.description = subPrivProp.dateValue
+            }
+            else if(subPrivProp.type.type == URL.toString()){
+                result.description = subPrivProp.urlValue
+            }
+            else if(subPrivProp.type.type == RefdataValue.toString()){
+                result.description = subPrivProp.refValue
+            }
+
+            result.availableToOrgs = subPrivProp.type.tenant.id
+
+
+            if(subPrivProp.owner){
+                result.objectId = subPrivProp.owner.id
+                result.objectName = subPrivProp.owner.name
+                result.objectTypeId = subPrivProp.owner.type?.id
+                result.objectClassName = subPrivProp.owner.getClass().getSimpleName().toLowerCase()
+            }
+
+            result
+        }
+
+        updateES(esclient, com.k_int.kbplus.LicenseCustomProperty.class) { licCustProp ->
+            def result = [:]
+
+            result._id = licCustProp.getClass().getSimpleName().toLowerCase()+":"+licCustProp.id
+            result.priority = 45
+            result.dbId = licCustProp.id
+            result.name = licCustProp.type?.name
+
+            result.visible = 'Private'
+            result.rectype = 'LicenseCustomProperty'
+
+            if(licCustProp.type.type == Integer.toString()){
+                result.description = licCustProp.intValue
+            }
+            else if(licCustProp.type.type == String.toString()){
+                result.description = licCustProp.stringValue
+            }
+            else if(licCustProp.type.type == BigDecimal.toString()){
+                result.description = licCustProp.decValue
+            }
+            else if(licCustProp.type.type == Date.toString()){
+                result.description = licCustProp.dateValue
+            }
+            else if(licCustProp.type.type == URL.toString()){
+                result.description = licCustProp.urlValue
+            }
+            else if(licCustProp.type.type == RefdataValue.toString()){
+                result.description = licCustProp.refValue
+            }
+
+            switch(licCustProp.owner.getCalculatedType()) {
+                case TemplateSupport.CALCULATED_TYPE_CONSORTIAL:
+                    result.availableToOrgs = licCustProp.owner.orgLinks.findAll{it.roleType?.value in [RDStore.OR_LICENSING_CONSORTIUM.value]}?.org?.id
+                    break
+                case TemplateSupport.CALCULATED_TYPE_PARTICIPATION:
+                    result.availableToOrgs = licCustProp.owner.orgLinks.findAll{it.roleType?.value in [RDStore.OR_LICENSEE_CONS.value]}?.org?.id
+                    break
+                case TemplateSupport.CALCULATED_TYPE_LOCAL:
+                    result.availableToOrgs = licCustProp.owner.orgLinks.findAll{it.roleType?.value in [RDStore.OR_LICENSEE.value]}?.org?.id
+                    break
+            }
+
+            if(licCustProp.owner){
+                result.objectId = licCustProp.owner.id
+                result.objectName = licCustProp.owner.name
+                result.objectTypeId = licCustProp.owner.type?.id
+                result.objectClassName = licCustProp.owner.getClass().getSimpleName().toLowerCase()
+            }
+
+            result
+        }
+
+        updateES(esclient, com.k_int.kbplus.LicensePrivateProperty.class) { licPrivProp ->
+            def result = [:]
+
+            result._id = licPrivProp.getClass().getSimpleName().toLowerCase()+":"+licPrivProp.id
+            result.priority = 45
+            result.dbId = licPrivProp.id
+            result.name = licPrivProp.type?.name
+
+            result.visible = 'Private'
+            result.rectype = 'LicensePrivateProperty'
+
+            if(licPrivProp.type.type == Integer.toString()){
+                result.description = licPrivProp.intValue
+            }
+            else if(licPrivProp.type.type == String.toString()){
+                result.description = licPrivProp.stringValue
+            }
+            else if(licPrivProp.type.type == BigDecimal.toString()){
+                result.description = licPrivProp.decValue
+            }
+            else if(licPrivProp.type.type == Date.toString()){
+                result.description = licPrivProp.dateValue
+            }
+            else if(licPrivProp.type.type == URL.toString()){
+                result.description = licPrivProp.urlValue
+            }
+            else if(licPrivProp.type.type == RefdataValue.toString()){
+                result.description = licPrivProp.refValue
+            }
+
+            result.availableToOrgs = licPrivProp.type.tenant.id
+
+
+            if(licPrivProp.owner){
+                result.objectId = licPrivProp.owner.id
+                result.objectName = licPrivProp.owner.name
+                result.objectTypeId = licPrivProp.owner.type?.id
+                result.objectClassName = licPrivProp.owner.getClass().getSimpleName().toLowerCase()
+            }
+
+            result
+        }
+
+
         update_running = false
         def elapsed = System.currentTimeMillis() - start_time;
         lastIndexUpdate = new Date(System.currentTimeMillis())
@@ -589,7 +841,7 @@ class DataloadService {
 
         ESWrapperService.clusterHealth()
 
-        esclient.close()
+        //esclient.close()
 
         return true
     }
@@ -597,7 +849,7 @@ class DataloadService {
     def updateES(esclient, domain, recgen_closure) {
 
     def count = 0;
-
+    def total = 0;
     try {
         //log.debug("updateES - ${domain.name}")
 
@@ -617,7 +869,6 @@ class DataloadService {
         //log.debug("result of findByDomain: ${latest_ft_record}")
 
         log.debug("updateES ${domain.name} since ${latest_ft_record.lastTimestamp}")
-        def total = 0;
         Date from = new Date(latest_ft_record.lastTimestamp)
         // def qry = domain.findAllByLastUpdatedGreaterThan(from,[sort:'lastUpdated'])
 
@@ -641,6 +892,7 @@ class DataloadService {
 
         //log.debug("Query completed .. processing rows ..")
 
+        String rectype
         while (results.next()) {
           Object r = results.get(0);
           def idx_record = recgen_closure(r)
@@ -652,6 +904,7 @@ class DataloadService {
 
           def recid = idx_record['_id'].toString()
           idx_record.remove('_id');
+          rectype = idx_record['rectype'].toString()
 
             IndexRequest request = new IndexRequest(es_index);
             request.id(recid);
@@ -663,9 +916,9 @@ class DataloadService {
             String index = indexResponse.getIndex();
             String id = indexResponse.getId();
             if (indexResponse.getResult() == DocWriteResponse.Result.CREATED) {
-                //println("CREATED ${domain.name}")
+                //log.debug("CREATED ${domain.name}")
             } else if (indexResponse.getResult() == DocWriteResponse.Result.UPDATED) {
-                //println("UPDATED ${domain.name}")
+                //log.debug("UPDATED ${domain.name}")
             }
             ReplicationResponse.ShardInfo shardInfo = indexResponse.getShardInfo();
             if (shardInfo.getTotal() != shardInfo.getSuccessful()) {
@@ -700,11 +953,34 @@ class DataloadService {
 
         // update timestamp
         latest_ft_record.lastTimestamp = highest_timestamp
-        latest_ft_record.esElements = total
-        latest_ft_record.dbElements = 0
-        latest_ft_record.save(flush:true);
 
-        checkESElementswithDBElements(domain, latest_ft_record)
+        //ES Abfrage
+        def query_str = "rectype: '${rectype}'"
+
+        if (domain.name == 'com.k_int.kbplus.DocContext'){
+            query_str = "rectype: 'Document' OR rectype: 'Note'"
+        }
+
+        SearchRequest searchRequest = new SearchRequest(es_index)
+        SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder()
+        searchSourceBuilder.query(QueryBuilders.queryStringQuery(query_str))
+        searchRequest.source(searchSourceBuilder)
+        searchRequest.scroll(TimeValue.timeValueMinutes(1L))
+
+        SearchResponse searchResponse = esclient.search(searchRequest, RequestOptions.DEFAULT)
+        Integer resultsTotal =  searchResponse ? searchResponse.getHits().getTotalHits().value.toInteger() : 0
+
+        //Datenbank Abfrage
+        def resultsinDB = domain.createCriteria().list(){}
+
+        latest_ft_record.dbElements = resultsinDB.size()?:0
+        latest_ft_record.esElements = resultsTotal
+        latest_ft_record.save(flush: true)
+        if(latest_ft_record.dbElements != latest_ft_record.esElements) {
+            log.debug("****ES NOT COMPLETE FOR ${rectype}: ES Results = ${resultsTotal}, DB Results = ${resultsinDB.size()}****")
+        }
+
+        //checkESElementswithDBElements(domain, latest_ft_record, esclient)
     }
     catch ( Exception e ) {
       log.error("Problem with FT index", e)
@@ -712,7 +988,7 @@ class DataloadService {
         SystemEvent.createEvent('FT_INDEX_UPDATE_ERROR', ["index": domain.name])
     }
     finally {
-      log.debug("Completed processing on ${domain.name} - saved ${count} records")
+      log.debug("Completed processing on ${domain.name} - saved ${total} records")
 
     }
   }
@@ -869,7 +1145,7 @@ class DataloadService {
         client.close()
     }
 
-    def checkESElementswithDBElements(domain, ft_record) {
+    def checkESElementswithDBElements(domain, ft_record, esclient) {
 
         //Datenbank Abfrage
         def c = domain.createCriteria()
@@ -913,10 +1189,14 @@ class DataloadService {
             rectype = "Task"
         }
 
+        else if (domain.name == 'com.k_int.kbplus.Task')
+        {
+            rectype = "Task"
+        }
+
         def query_str = "rectype: '${rectype}'"
 
         def index = ESWrapperService.getESSettings().indexName
-        RestHighLevelClient esclient = ESWrapperService.getClient()
 
         SearchRequest searchRequest = new SearchRequest(index)
         SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder()

@@ -71,27 +71,21 @@
             </td>
             <td>
                 <g:each in="${subscriptionMap.get('platform_' + platformInstance.id)}" var="sub">
-                    <g:link controller="subscription" action="show" id="${sub.id}">${sub}</g:link>
+                    <g:link controller="subscription" action="show" id="${sub.id}">${sub}<br/></g:link>
+
                     <g:if test="${sub.packages}">
-                        <g:each in="${sub.packages}" var="sp">
-                            <g:if test="${!platformInstance.usesPlatformAccessPoints(contextOrg, sp)}">
-                                <g:each in="${sp.getAccessPointListForOrgAndPlatform(contextOrg, platformInstance)?.collect()}" var="orgap">
-                                <div class="la-flexbox">
-                                    <span data-position="top right"
-                                    class="la-popup-tooltip la-delay"
-                                    data-content="${message(code: 'myinst.currentPlatforms.tooltip.thumbtack.content', args:[sp.pkg.name])}">
-                                    <i class="icon thumbtack scale la-list-icon"></i>
-                                    </span>
-                                    <g:link controller="accessPoint" action="edit_${orgap.oap.accessMethod}"
-                                            id="${orgap.oap.id}">${orgap.oap.name} (${orgap.oap.accessMethod.getI10n('value')})[Paket: ${sp.pkg.name}]</g:link>
-                                </div>
-                                </g:each>
-                            </g:if>
+                        <g:each in="${sub.deduplicatedAccessPointsForOrgAndPlatform(contextOrg, platformInstance)}" var="orgap">
+                            <div class="la-flexbox">
+                                <span data-position="top right"
+                                      class="la-popup-tooltip la-delay"
+                                      data-content="${message(code: 'myinst.currentPlatforms.tooltip.thumbtack.content')}">
+                                    <i class="icon la-thumbtack slash scale la-list-icon"></i>
+                                </span>
+                                <g:link controller="accessPoint" action="edit_${orgap.accessMethod}"
+                                        id="${orgap.id}">${orgap.name} (${orgap.accessMethod.getI10n('value')})</g:link>
+                            </div>
                         </g:each>
                     </g:if>
-
-
-
                 </g:each>
             </td>
             <%--<td class="x">

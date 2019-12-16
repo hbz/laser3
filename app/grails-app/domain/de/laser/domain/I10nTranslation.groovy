@@ -19,6 +19,9 @@ class I10nTranslation {
     String valueEn
     String valueFr
 
+    Date dateCreated
+    Date lastUpdated
+
     static mapping = {
         cache   true
         id              column:'i10n_id'
@@ -29,6 +32,8 @@ class I10nTranslation {
         valueDe         column:'i10n_value_de', type: 'text'
         valueEn         column:'i10n_value_en', type: 'text'
         valueFr         column:'i10n_value_fr', type: 'text'
+        lastUpdated     column:'i10n_last_updated'
+        dateCreated     column:'i10n_date_created'
     }
 
     static constraints = {
@@ -38,6 +43,8 @@ class I10nTranslation {
         valueDe         (nullable:true,  blank:false)
         valueEn         (nullable:true,  blank:false)
         valueFr         (nullable:true,  blank:false)
+        lastUpdated     (nullable: true, blank: false)
+        dateCreated     (nullable: true, blank: false)
 
         referenceId(unique: ['referenceClass', 'referenceField'])
     }

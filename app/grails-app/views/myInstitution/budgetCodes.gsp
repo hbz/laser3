@@ -12,7 +12,7 @@
             <semui:crumb message="menu.institutions.budgetCodes" class="active"/>
         </semui:breadcrumbs>
         <br>
-        <h1 class="ui left floated aligned icon header la-clear-before"><semui:headerIcon />${message(code:'menu.institutions.budgetCodes')}</h1>
+        <h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon />${message(code:'menu.institutions.budgetCodes')}</h1>
 
         <semui:messages data="${flash}" />
 

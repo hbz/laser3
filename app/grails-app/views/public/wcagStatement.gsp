@@ -9,7 +9,7 @@
 </head>
 
 <body>
-            <h1 class="ui left floated aligned icon header la-clear-before"><semui:headerIcon />${message(code:'wcagStatement')}</h1>
+            <h1 class="ui icon header"><semui:headerIcon />${message(code:'wcagStatement')}</h1>
 
             <h2 class="ui header">Erklärung zur digitalen Barrierefreiheit</h2>
             <p>

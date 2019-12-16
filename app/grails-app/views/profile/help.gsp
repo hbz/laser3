@@ -13,54 +13,86 @@
 </semui:breadcrumbs>
 <br>
 
-<h1 class="ui left floated aligned icon header la-clear-before"><semui:headerIcon />${message(code: 'menu.user.help')}</h1>
+<h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon />${message(code: 'menu.user.help')}</h1>
 
-<div class="ui styled accordion la-clear-before">
-    <div class="active title">
+<br>
+<h3 class="ui icon header la-clear-before la-noMargin-top"><g:message code="help.contentHelp"/></h3>
+
+<div class="ui accordion styled fluid la-clear-before">
+    <div class="title">
         <i class="dropdown icon"></i>
-        Wo kann ich das Handbuch, die Anleitungen und die FAQ finden?
+        <g:message code="help.contentHelp.manuel.title"/>
     </div>
-    <div class="active content">
+    <div class="content">
         <div class="ui relaxed divided list">
             <p>
-                Das Handbuch, die Anleitungen und die FAQ finden Sie hier:
+                <g:message code="help.contentHelp.manuel.content"/>:
                 <a href="https://service-wiki.hbz-nrw.de/display/LAS/Startseite" class="header" target="_blank">https://service-wiki.hbz-nrw.de/display/LAS/Startseite</a>
 
             </p>
 
         </div>
     </div>
-    <div class="active title">
+
+    <div class="title">
         <i class="dropdown icon"></i>
-        Symbole, Schriften oder Farben werden nicht richtig dargestellt
+        <g:message code="help.contentHelp.properties.title"/>
     </div>
-    <div class="active content">
+    <div class="content">
         <div class="ui relaxed divided list">
-            <p>Vermutlich greift Ihr Browser noch auf veraltete Dateien aus dem Cache zu. Bitte leeren Sie den Speicher in den Einstellungen Ihres Webbrowsers:</p>
-            <div class="item">
-                <i class="large internet explorer middle aligned icon"></i>
-                <div class="content">
-                    <div class="description">Internet Explorer</div>
-                    <a href="https://support.microsoft.com/de-de/help/17438/windows-internet-explorer-view-delete-browsing-history" class="header" target="_blank">https://support.microsoft.com/de-de/help/17438/windows-internet-explorer-view-delete-browsing-history</a>
+            <p>
+
+                <g:link class="item" controller="profile" action="properties">${message(code: 'menu.user.properties', default: 'Properties and Refdatas')}</g:link>
+
+            </p>
+
+        </div>
+    </div>
+
+</div>
+
+<br>
+
+<h3 class="ui icon header la-clear-before la-noMargin-top"><g:message code="help.technicalHelp"/></h3>
+
+    <div class="ui accordion styled fluid la-clear-before">
+
+        <div class="title">
+            <i class="dropdown icon"></i>
+            <g:message code="help.technicalHelp.browser.title"/>
+        </div>
+        <div class="content">
+            <div class="ui relaxed divided list">
+                <p><g:message code="help.technicalHelp.browser.content"/>:</p>
+                <div class="item">
+                    <i class="large internet explorer middle aligned icon"></i>
+                    <div class="content">
+                        <div class="description">Internet Explorer</div>
+                        <a href="https://support.microsoft.com/de-de/help/17438/windows-internet-explorer-view-delete-browsing-history" class="header" target="_blank">https://support.microsoft.com/de-de/help/17438/windows-internet-explorer-view-delete-browsing-history</a>
+                    </div>
                 </div>
-            </div>
-            <div class="item">
-                <i class="large chrome middle aligned icon"></i>
-                <div class="content">
-                    <div class="description">Google Chrome</div>
-                    <a href="https://support.google.com/chrome/answer/2392709?hl=de&ref_topic=7438008" class="header" target="_blank">https://support.google.com/chrome/answer/2392709?hl=de&ref_topic=7438008</a>
+                <div class="item">
+                    <i class="large chrome middle aligned icon"></i>
+                    <div class="content">
+                        <div class="description">Google Chrome</div>
+                        <a href="https://support.google.com/chrome/answer/2392709?hl=de&ref_topic=7438008" class="header" target="_blank">https://support.google.com/chrome/answer/2392709?hl=de&ref_topic=7438008</a>
+                    </div>
                 </div>
-            </div>
-            <div class="item">
-                <i class="large firefox middle aligned icon"></i>
-                <div class="content">
-                    <div class="description">Firefox</div>
-                    <a href="https://support.mozilla.org/de/kb/Wie-Sie-den-Cache-leeren-konnen#w_cache-manuell-leeren" target="_blank" class="header">https://support.mozilla.org/de/kb/Wie-Sie-den-Cache-leeren-konnen#w_cache-manuell-leeren</a>
+                <div class="item">
+                    <i class="large firefox middle aligned icon"></i>
+                    <div class="content">
+                        <div class="description">Firefox</div>
+                        <a href="https://support.mozilla.org/de/kb/Wie-Sie-den-Cache-leeren-konnen#w_cache-manuell-leeren" target="_blank" class="header">https://support.mozilla.org/de/kb/Wie-Sie-den-Cache-leeren-konnen#w_cache-manuell-leeren</a>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
-</div>
 
 </body>
 </html>
+<g:javascript>
+    $(document).ready(function() {
+            $('.ui.accordion').accordion('exclusive', false);
+    });
+</g:javascript>

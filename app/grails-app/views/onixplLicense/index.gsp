@@ -15,8 +15,8 @@
     <g:if test="${editable}">
         <semui:crumbAsBadge message="default.editable" class="orange" />
     </g:if>
-
-    <h1 class="ui left floated aligned icon header la-clear-before"><semui:headerIcon />ONIX-PL License : ${onixplLicense?.title}</h1>
+    <br>
+    <h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon />ONIX-PL License : ${onixplLicense?.title}</h1>
 
     <h6 class="ui header">${message(code:'laser', default:'LAS:eR')} ${message(code:'license.information')}</h6>
 

@@ -28,7 +28,7 @@
 
 
 
-<h1 class="ui left floated aligned icon header la-clear-before"><semui:headerIcon/>
+<h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon/>
 ${message(code: 'subscriptionSurvey.label')} - ${surveyInfo.name}
 <semui:surveyStatus object="${surveyInfo}"/>
 %{--<g:if test="${surveyInfo.startDate || surveyInfo.endDate}">

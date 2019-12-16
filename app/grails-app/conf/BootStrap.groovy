@@ -160,13 +160,40 @@ class BootStrap {
         log.debug("adjustDatabasePermissions ..")
         adjustDatabasePermissions()
 
-        log.debug("here we go ..")
+        log.debug(" _                                               ")
+        log.debug("| |_ ___ ___ ___    _ _ _ ___    ___ ___         ")
+        log.debug("|   | -_|  _| -_|  | | | | -_|  | . | . |  _ _   ")
+        log.debug("|_|_|___|_| |___|  |_____|___|  |_  |___| |_|_|  ")
+        log.debug("                                |___|            ")
     }
 
     def destroy = {
     }
 
     def setupSystemUsers = {
+
+        // Create anonymousUser that serves as a replacement when users are deleted
+        User anonymousUser = User.findByUsername('anonymous')
+        if (anonymousUser) {
+            log.debug("${anonymousUser.username} exists .. skipped")
+        }
+        else {
+            log.debug("creating user ..")
+
+            anonymousUser = new User(
+                    username: 'anonymous',
+                    password: "laser@514@2019",
+                    display: 'Anonymous User',
+                    email: 'laser_support@hbz-nrw.de',
+                    enabled: false
+            ).save(failOnError: true)
+
+                def role = Role.findByAuthority('ROLE_USER')
+                if (role.roleType != 'user') {
+                    log.debug("  -> adding role: ${role}")
+                    UserRole.create anonymousUser, role
+                }
+        }
 
         if (grailsApplication.config.systemUsers) {
             log.debug("found systemUsers in local config file ..")
@@ -1431,6 +1458,11 @@ class BootStrap {
                         descr:allDescr, type: OT.Rdv, cat:'YN'
                 ],
                 [
+                        name: [en: "EZB Collection Transfer", de: "EZB Kollektionsdatenweitergabe an Drittsysteme erlaubt?"],
+                        expl : [en: "", de: "Ist die Kollektionsdatenweitergabe an Drittsysteme erlaubt?"],
+                        descr:allDescr, type: OT.Rdv, cat:'YN'
+                ],
+                [
                         name: [en: "Metadata Delivery", de: "Metadatenlieferung"],
                         expl : [en: "", de: "Ist eine automatische Metadatenlieferung vorhanden?"],
                         descr:allDescr, type: OT.Rdv, cat:'YN'
@@ -2492,7 +2524,7 @@ class BootStrap {
         RefdataValue.loc('Person Contact Type', [en: 'Personal Contact', de: 'Personenkontakt'], BOOTSTRAP)
         RefdataValue.loc('Person Contact Type', [en: 'Functional Contact', de: 'Funktionskontakt'], BOOTSTRAP)
 
-        RefdataValue.loc('Person Function',     [en: 'General contact person', de: 'Hauptkontakt'], BOOTSTRAP)
+        RefdataValue.loc('Person Function',     [en: 'General Contact Person', de: 'Hauptkontakt'], BOOTSTRAP)
         RefdataValue.loc('Person Function',     [en: 'Responsible Admin', de: 'Verantwortlicher Admin'], BOOTSTRAP)
         RefdataValue.loc('Person Function',     [en: 'GASCO-Contact', de: 'GASCO-Kontakt'], BOOTSTRAP)
         RefdataValue.loc('Person Function',     [en: 'Statistical Support', de: 'Statistischer Support'], BOOTSTRAP) // neu

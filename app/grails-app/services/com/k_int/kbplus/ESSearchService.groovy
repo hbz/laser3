@@ -145,7 +145,7 @@ class ESSearchService{
   }
 
   def buildQuery(params,field_map) {
-    log.debug("BuildQuery... with params ${params}. ReverseMap: ${field_map}");
+    //log.debug("BuildQuery... with params ${params}. ReverseMap: ${field_map}");
 
     StringWriter sw = new StringWriter()
 
@@ -181,7 +181,13 @@ class ESSearchService{
       if ( params[mapping.key] != null ) {
         if ( params[mapping.key].class == java.util.ArrayList) {
           if(sw.toString()) sw.write(" AND ");
-          sw.write(" ( (( NOT rectype:\"Subscription\" ) AND ( NOT rectype:\"License\" ) AND ( NOT rectype:\"ParticipantSurvey\" ) AND ( NOT rectype:\"Survey\" )) ")
+          sw.write(" ( (( NOT rectype:\"Subscription\" ) AND ( NOT rectype:\"License\" ) " +
+                  "AND ( NOT rectype:\"ParticipantSurvey\" ) AND ( NOT rectype:\"Survey\" ) " +
+                  "AND ( NOT rectype:\"Task\" ) AND ( NOT rectype:\"Note\" ) AND ( NOT rectype:\"Document\" ) " +
+                  "AND ( NOT rectype:\"IssueEntitlement\" )" +
+                  "AND ( NOT rectype:\"SubscriptionCustomProperty\" ) AND ( NOT rectype:\"SubscriptionPrivateProperty\" )" +
+                  "AND ( NOT rectype:\"LicenseCustomProperty\" ) AND ( NOT rectype:\"LicensePrivateProperty\" )" +
+                  ") ")
 
           params[mapping.key].each { p ->
             if(p == params[mapping.key].first())
@@ -192,6 +198,15 @@ class ESSearchService{
             sw.write(mapping.value)
             sw.write(":")
             sw.write("\"${p}\"")
+
+            if(mapping.value == 'availableToOrgs')
+            {
+              if(params?.consortiaGUID){
+                if(sw.toString()) sw.write(" OR ");
+
+                sw.write(" consortiaGUID:\"${params?.consortiaGUID}\"")
+              }
+            }
             sw.write(" ) ")
             if(p == params[mapping.key].last()) {
               sw.write(" ) ")
@@ -200,6 +215,7 @@ class ESSearchService{
             }
 
           }
+
           sw.write(" ) ")
         }
         else {
@@ -229,7 +245,7 @@ class ESSearchService{
       }
     }
 
-    if(params?.searchObjects != 'allObjects'){
+    if(params?.searchObjects && params?.searchObjects != 'allObjects'){
       if(sw.toString()) sw.write(" AND ");
 
         sw.write(" visible:'Private' ")

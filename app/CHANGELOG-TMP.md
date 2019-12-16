@@ -2,6 +2,52 @@
 
 **Ticket    Date    Branch      Author  Feature/Bug     Description/Keywords**
 
+1986    13.12.2019  rc1.2       David   Feature     Aktivitäts-Profiler
+
+--      13.12.2019  rc1.2       David   Feature     Verbesserter System-Profiler
+
+1346    12.12.2019  rc1.2       David   Feature     Rudimentäres Löschen von Organisationen; Überarbeitung der Löschfunktion für Lizenzen, Verträge und User
+
+1893    12.12.2019  rc1.2       Moe     Feature     Zugehörigkeit aufheben im Nutzerprofil ausblenden?
+
+1959    11.12.2019  rc1.2       Moe     Bug         Lizenz kopieren fehlerhaft
+
+1970    12.12.2019  rc1.2       Andreas Feature     Admin-gesicherter Batchskript zum Aktualisieren von Testlizenzen auf QA
+
+--      11.12.2019  rc1.2       Christian Bug       Fehler beim Löschen einer Lizenz
+
+1871    11.12.2019  rc1.2       David   Feature     Kleine Verbesserungen und API-Beschreibung aktualisieren (0.74)
+
+1958    10.12.2019  rc1.1       Moe     Bug         Nach dem Entknüpfung einer Vererbung bleibt das System hängen
+ 
+1971    11.12.2019  hbz-dev     David   Feature     "Organisiert durch" automatisch beim Anlegen von Inst-Admins setzen
+
+1968    10.12.2019  rc1.2       Andreas Bug         Bezeichnung und Darstellung bei Dokumentensicht einer Fremdeinrichtung angepasst 
+
+1960    10.12.2019  rc1.2       Andreas Bug         Owner-Einrichtungen von Dokumenten werden bei Kopie von Lizenzen und Verträgen mit angelegt 
+ 
+--      10.12.2019  rc1.2       Andreas Bug         OID-Auflösung in addEntitlements korrigiert
+
+1966    09.12.2019  rc1.2       David   Bug         DebugUtils werfen Fehler im Log
+
+--      10.12.2019  hbz-dev     Moe     Feature     Für restliche Domain Klassen lastUpdated und dateCreated einführen
+
+1954/1955 10.12.2019  rc1.1     Andreas Bug         NullPointerException bei Laden der Lizenz für Kostenposten behoben
+
+1953    10.12.2019  rc1.1       Andreas Bug         NullPointerException bei Prozessierung der Anbieternamen behoben
+ 
+--      06.12.2019  rc1.1       Andreas Bug         Entfernen der Währungsbezeichnung aus den Finanzsichten
+
+ /      06.12.2019  hbz-dev     David   Feature     Verbesserte Cronjob-Übersicht
+
+--      05.12.2019  rc1.1       Andreas Bug         Sicherheitslücke behoben und Template-Generierung angelegt für Kostenimport
+
+1924    05.12.2019  rc1.1       Andreas Bug         Anpassung der calculatedType-Überprüfung bei Verwaltungslizenzen
+
+--      09.12.2019  hbz-dev     Andreas Bug         Sortiername bei Export der Konsorten nach vorn geschoben
+
+1802    09.12.2019  hbz-dev     David   Bug         Dropdowns für "Allgemeine Merkmale" beinhalten gruppenbezogene Merkmale
+
 1945    09.12.2019  hbz-dev     David   Bug         Falsche Aktualisierungsmeldung im Nutzerprofil
 
 1941    09.12.2019  hbz-dev     David   Feature     Tabelle "Meine Konsorten" angepasst
@@ -89,3 +135,5 @@
 1867    12.11.2019  rc-1.1      David   Bug         Fehlende Merkmale bei verschiedenen API-Enpunkten (0.70)
 
 1837    06.11.2019  rc-1.1      David   Bug         Standard-Dashboard beim Einloggen setzen
+
+/       09.12.2019  hbz-dev     Daniel  Feature     Allgemeine Subscriptionmerkmale um "EZB Kollektionsdatenweitergabe an Drittsysteme erlaubt?" ergänzt 

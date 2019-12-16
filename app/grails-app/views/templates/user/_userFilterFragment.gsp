@@ -1,6 +1,7 @@
 <%@ page import="com.k_int.kbplus.auth.Role" %>
 <laser:serviceInjection/>
-<semui:filter>
+<g:render template="../templates/filter/javascript" />
+<semui:filter showFilterButton="true">
     <g:form controller="${controllerName}" action="${actionName}" params="${params.id ? [id:params.id] : []}" method="get" class="ui form">
 
         <div class="four fields">

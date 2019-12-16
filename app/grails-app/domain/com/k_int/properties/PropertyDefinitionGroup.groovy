@@ -22,6 +22,9 @@ class PropertyDefinitionGroup {
 
     boolean isVisible // default value: will be overwritten by existing bindings
 
+    Date dateCreated
+    Date lastUpdated
+
     static hasMany = [
             items: PropertyDefinitionGroupItem,
             bindings: PropertyDefinitionGroupBinding
@@ -39,6 +42,8 @@ class PropertyDefinitionGroup {
         tenant      column: 'pdg_tenant_fk',    index: 'pdg_tenant_idx'
         ownerType   column: 'pdg_owner_type'
         isVisible   column: 'pdg_is_visible'
+        lastUpdated     column: 'pdg_last_updated'
+        dateCreated     column: 'pdg_date_created'
 
         items       cascade: 'all', batchSize: 10
         bindings    cascade: 'all', batchSize: 10
@@ -50,6 +55,8 @@ class PropertyDefinitionGroup {
         tenant      (nullable: true, blank: false)
         ownerType   (nullable: false, blank: false)
         isVisible   (nullable: false, blank: false)
+        lastUpdated (nullable: true, blank: false)
+        dateCreated (nullable: true, blank: false)
     }
 
     def getPropertyDefinitions() {

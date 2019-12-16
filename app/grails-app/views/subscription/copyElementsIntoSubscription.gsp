@@ -30,10 +30,9 @@
         if (sourceSubscriptionId)   params << [sourceSubscriptionId: sourceSubscriptionId];
         if (targetSubscriptionId)   params << [targetSubscriptionId: targetSubscriptionId];
         if (isRenewSub)             params << [isRenewSub: isRenewSub];
-        if (isCopyAuditOn)          params << [isCopyAuditOn: isCopyAuditOn];
     %>
     <g:if test="${isRenewSub}">
-        <div class="ui tablet stackable steps">
+        <div class="ui tablet stackable steps la-clear-before">
             <div class="${workFlowPart == WORKFLOW_DATES_OWNER_RELATIONS ? 'active' : ''} step">
                 <div class="content">
                     <div class="content" >

@@ -18,6 +18,9 @@ class PriceItem extends AbstractBaseDomain {
 
     Date priceDate
 
+    Date dateCreated
+    Date lastUpdated
+
     static belongsTo = [issueEntitlement: IssueEntitlement]
 
     static mapping = {
@@ -29,6 +32,8 @@ class PriceItem extends AbstractBaseDomain {
         localCurrency       column: 'pi_local_currency_rv_fk'
         priceDate           column: 'pi_price_date'
         issueEntitlement    column: 'pi_ie_fk'
+        lastUpdated         column: 'pi_last_updated'
+        dateCreated         column: 'pi_date_created'
     }
 
     static constraints = {
@@ -39,6 +44,8 @@ class PriceItem extends AbstractBaseDomain {
         localCurrency       (nullable: true, blank: false)
         priceDate           (nullable: true, blank: false)
         issueEntitlement    (nullable: false, blank: false)
+        lastUpdated         (nullable: true, blank: false)
+        dateCreated         (nullable: true, blank: false)
     }
 
 }

@@ -672,15 +672,10 @@ class FinanceService {
                 case "tax rate": colMap.taxRate = c
                     break
                 case "wert":
-                case "wert (in eur)":
-                case "value":
-                case "value (in euro)": colMap.value = c
+                case "value": colMap.value = c
                     break
                 case "lizenz":
                 case "subscription": colMap.sub = c
-                    break
-                case "teilnehmer":
-                case "member": colMap.member = c
                     break
                 case "paket":
                 case "package": colMap.subPkg = c
@@ -712,9 +707,9 @@ class FinanceService {
                 case "auftragsnummer":
                 case "order number": colMap.orderNumber = c
                     break
-                case "einrichtung":
+                /*case "einrichtung":
                 case "organisation": colMap.institution = c
-                    break
+                    break*/
                 default: log.info("unhandled parameter type ${headerCol}, ignoring ...")
                     break
             }
@@ -734,11 +729,11 @@ class FinanceService {
             List<String> cols = row.split('\t')
             //check if we have some mandatory properties ...
             //owner(nullable: false, blank: false) -> to institution, defaults to context org
-            Org owner
+            /*Org owner
             String orgIdentifier
             if(colMap.institution)
                 orgIdentifier = cols[colMap.institution]
-            else if(orgIdentifier){
+            if(orgIdentifier){
                 //fetch possible identifier namespaces
                 // TODO [ticket=1789]
                 //List<Org> orgMatches = Org.executeQuery("select distinct idOcc.org from IdentifierOccurrence idOcc join idOcc.identifier id where cast(idOcc.org.id as string) = :idCandidate or idOcc.org.globalUID = :idCandidate or (id.value = :idCandidate and id.ns = :wibid)",[idCandidate:orgIdentifier,wibid:namespaces.wibid])
@@ -746,7 +741,7 @@ class FinanceService {
                 if(orgMatches.size() > 1)
                     mappingErrorBag.multipleOrgsError = orgMatches.collect { org -> org.sortname ?: org.name }
                 else if(orgMatches.size() == 1) {
-                    if(!accessService.checkPerm('ORG_CONSORTIUM') && orgMatches[0].id != contextOrg.id) {
+                    if(accessService.checkPerm('ORG_CONSORTIUM') && orgMatches[0].id != contextOrg.id) {
                         mappingErrorBag.ownerMismatchError = orgMatches[0]
                     }
                     else {
@@ -759,8 +754,8 @@ class FinanceService {
             }
             else {
                 owner = contextOrg
-            }
-            CostItem costItem = new CostItem(owner: owner)
+            }*/
+            CostItem costItem = new CostItem(owner: contextOrg)
             //sub(nullable: true, blank: false) -> to subscription
             Subscription subscription
             if(colMap.sub != null) {
@@ -769,9 +764,9 @@ class FinanceService {
                     //fetch possible identifier namespaces
                     List<Subscription> subMatches
                     if(accessService.checkPerm("ORG_CONSORTIUM"))
-                        subMatches = Subscription.executeQuery("select oo.sub from OrgRole oo where (cast(oo.sub.id as string) = :idCandidate or oo.sub.globalUID = :idCandidate) and oo.org = :org and oo.roleType in :roleType",[idCandidate:subIdentifier,org:owner,roleType:[OR_SUBSCRIPTION_CONSORTIA,OR_SUBSCRIBER]])
+                        subMatches = Subscription.executeQuery("select oo.sub from OrgRole oo where (cast(oo.sub.id as string) = :idCandidate or oo.sub.globalUID = :idCandidate) and oo.org = :org and oo.roleType in :roleType",[idCandidate:subIdentifier,org:costItem.owner,roleType:[OR_SUBSCRIPTION_CONSORTIA,OR_SUBSCRIBER]])
                     else if(accessService.checkPerm("ORG_INST"))
-                        subMatches = Subscription.executeQuery("select oo.sub from OrgRole oo where (cast(oo.sub.id as string) = :idCandidate or oo.sub.globalUID = :idCandidate) and oo.org = :org and oo.roleType in :roleType",[idCandidate:subIdentifier,org:owner,roleType:[OR_SUBSCRIBER_CONS,OR_SUBSCRIBER]])
+                        subMatches = Subscription.executeQuery("select oo.sub from OrgRole oo where (cast(oo.sub.id as string) = :idCandidate or oo.sub.globalUID = :idCandidate) and oo.org = :org and oo.roleType in :roleType",[idCandidate:subIdentifier,org:costItem.owner,roleType:[OR_SUBSCRIBER_CONS,OR_SUBSCRIBER]])
                     if(!subMatches)
                         mappingErrorBag.noValidSubscription = subIdentifier
                     else if(subMatches.size() > 1)

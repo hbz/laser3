@@ -5,6 +5,9 @@ import de.laser.traits.AuditableTrait
 
 class TIPPCoverage extends AbstractCoverage implements AuditableTrait {
 
+    Date dateCreated
+    Date lastUpdated
+
     static belongsTo = [tipp: TitleInstancePackagePlatform]
 
     static constraints = {
@@ -17,6 +20,8 @@ class TIPPCoverage extends AbstractCoverage implements AuditableTrait {
         embargo(nullable:true, blank:true)
         coverageDepth(nullable:true, blank:true)
         coverageNote(nullable:true, blank:true)
+        lastUpdated (nullable: true, blank: false)
+        dateCreated (nullable: true, blank: false)
     }
 
     static mapping = {
@@ -32,6 +37,8 @@ class TIPPCoverage extends AbstractCoverage implements AuditableTrait {
         coverageDepth column:'tc_coverage_depth'
         coverageNote column:'tc_coverage_note', type: 'text'
         tipp column:'tc_tipp_fk'
+        lastUpdated column:'tc_last_updated'
+        dateCreated column:'tc_date_created'
     }
 
 

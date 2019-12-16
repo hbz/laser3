@@ -3,7 +3,12 @@ package com.k_int.kbplus
 import com.k_int.kbplus.auth.User
 import de.laser.helper.RefdataAnnotation
 
+import javax.persistence.Transient
+
 class Task {
+
+    @Transient
+    def deletionService
 
     License         license
     Org             org
@@ -74,6 +79,10 @@ class Task {
         dateCreated     column: 'tsk_date_created'
         lastUpdated     column: 'tsk_last_updated'
 
+    }
+
+    def afterDelete() {
+        deletionService.deleteDocumentFromIndex(this.getClass().getSimpleName().toLowerCase()+":"+this.id)
     }
 
     def getObjects() {

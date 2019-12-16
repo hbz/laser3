@@ -205,8 +205,9 @@
 
                             <g:link class="item" controller="organisation" action="show" params="[id: contextOrg?.id]">${message(code:'menu.institutions.org_info')}</g:link>
 
-                            <semui:securedMainNavItem orgPerm="ORG_INST,ORG_CONSORTIUM" affiliation="INST_USER" controller="myInstitution" action="tasks" message="task.plural" />
                             <semui:securedMainNavItem orgPerm="ORG_INST,ORG_CONSORTIUM" affiliation="INST_USER" controller="myInstitution" action="addressbook" message="menu.institutions.myAddressbook" />
+
+                            <semui:securedMainNavItem orgPerm="ORG_INST,ORG_CONSORTIUM" affiliation="INST_USER" controller="myInstitution" action="tasks" message="task.plural" />
 
                             <semui:securedMainNavItem affiliation="INST_USER" controller="myInstitution" action="changes" message="menu.institutions.todo" />
 
@@ -360,7 +361,7 @@
                             <g:link class="item" controller="user" action="list">${message(code:'menu.institutions.users')}</g:link>
                             <g:link class="item" controller="admin" action="showAffiliations">${message(code:'menu.admin.showAffiliations')}</g:link>
                             <g:link class="item" controller="usage">${message(code:'menu.admin.manageUsageStats')}</g:link>
-                            <% /* g:link class="item" controller="admin" action="forumSync">Run Forum Sync</g:link */ %>
+                            <g:link class="item" controller="admin" action="updateQASubscriptionDates">${message(code:'menu.admin.updateTestSubscriptionDates')}</g:link>
                             <% /* g:link class="item" controller="admin" action="juspSync">Run JUSP Sync</g:link */ %>
                             <g:link class="item" controller="admin" action="forceSendNotifications">${message(code:'menu.admin.sendNotifications')}</g:link>
 
@@ -433,7 +434,8 @@
                                     <g:link class="item" controller="yoda" action="appConfig">${message(code:'menu.yoda.appConfig')}</g:link>
 
 
-                                    <g:link class="item" controller="yoda" action="profiler">${message(code:'menu.yoda.profiler')}</g:link>
+                                    <g:link class="item" controller="yoda" action="systemProfiler">${message(code:'menu.yoda.systemProfiler')}</g:link>
+                                    <g:link class="item" controller="yoda" action="activityProfiler">${message(code:'menu.yoda.activityProfiler')}</g:link>
                                     <g:link class="item" controller="yoda" action="quartzInfo">${message(code:'menu.yoda.quartzInfo')}</g:link>
                                     <g:link class="item" controller="yoda" action="cacheInfo">${message(code:'menu.yoda.cacheInfo')}</g:link>
 
@@ -558,9 +560,7 @@
                                     </g:each>
                                 </g:if>
 
-                                <div class="divider"></div>
 
-                                <g:link class="item" controller="profile" action="properties">${message(code: 'menu.user.properties', default: 'Properties and Refdatas')}</g:link>
 
                                 <div class="divider"></div>
 

@@ -101,11 +101,12 @@ class ApiDoc {
         def result = [:]
 
         if (doc) {
-            result.content  = doc.content
-            result.filename = doc.filename
-            result.mimeType = doc.mimeType
-            result.title    = doc.title
-            result.uuid     = doc.uuid
+            result.content      = doc.content
+            result.filename     = doc.filename
+            result.mimeType     = doc.mimeType
+            result.title        = doc.title
+            result.uuid         = doc.uuid
+            result.lastUpdated  = doc.lastUpdated
 
             // RefdataValues
             result.type     = doc.type?.value

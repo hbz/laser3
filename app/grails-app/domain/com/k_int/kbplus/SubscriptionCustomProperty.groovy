@@ -18,6 +18,8 @@ class SubscriptionCustomProperty extends CustomProperty implements AuditableTrai
     def messageSource
     @Transient
     def pendingChangeService
+    @Transient
+    def deletionService
 
     // AuditableTrait
     static auditable = true
@@ -51,6 +53,10 @@ class SubscriptionCustomProperty extends CustomProperty implements AuditableTrai
         type:  PropertyDefinition,
         owner: Subscription
     ]
+
+    def afterDelete() {
+        deletionService.deleteDocumentFromIndex(this.getClass().getSimpleName().toLowerCase()+":"+this.id)
+    }
 
     @Transient
     def onDelete = { oldMap ->
@@ -143,7 +149,8 @@ class SubscriptionCustomProperty extends CustomProperty implements AuditableTrai
         }
         else if (changeDocument.event.equalsIgnoreCase('SubscriptionCustomProperty.deleted')) {
 
-            def openPD = PendingChange.executeQuery("select pc from PendingChange as pc where pc.status is null and pc.changeDoc is not null" )
+            def openPD = PendingChange.executeQuery("select pc from PendingChange as pc where pc.status is null and pc.changeDoc is not null and pc.oid = :objectID",
+                    [objectID: "${this.class.name}:${this.id}"] )
             openPD.each { pc ->
                 if (pc.payload) {
                     def payload = JSON.parse(pc.payload)

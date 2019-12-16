@@ -1,5 +1,6 @@
 package com.k_int.properties
 
+import com.k_int.kbplus.GenericOIDService
 import com.k_int.kbplus.Org
 import com.k_int.kbplus.RefdataCategory
 import com.k_int.kbplus.RefdataValue
@@ -8,7 +9,7 @@ import de.laser.CacheService
 import de.laser.ContextService
 import de.laser.domain.AbstractI10nTranslatable
 import de.laser.domain.I10nTranslation
-import de.laser.helper.EhcacheWrapper
+import de.laser.helper.SwissKnife
 import grails.util.Holders
 import groovy.util.logging.Log4j
 import org.codehaus.groovy.grails.orm.hibernate.cfg.GrailsHibernateUtil
@@ -113,6 +114,9 @@ class PropertyDefinition extends AbstractI10nTranslatable implements Serializabl
     // indicates hard coded logic
     boolean isUsedForLogic
 
+    Date dateCreated
+    Date lastUpdated
+
     //Map keys can change and they wont affect any of the functionality
     @Deprecated
     @Transient
@@ -154,6 +158,8 @@ class PropertyDefinition extends AbstractI10nTranslatable implements Serializabl
                 isHardData column: 'pd_hard_data'
           isUsedForLogic column: 'pd_used_for_logic'
                       sort name: 'desc'
+        lastUpdated     column: 'pd_last_updated'
+        dateCreated     column: 'pd_date_created'
 
         propDefGroupItems cascade: 'all', batchSize: 10
     }
@@ -169,6 +175,8 @@ class PropertyDefinition extends AbstractI10nTranslatable implements Serializabl
         mandatory           (nullable: false, blank: false)
         isHardData            (nullable: false, blank: false)
         isUsedForLogic      (nullable: false, blank: false)
+        lastUpdated (nullable: true, blank: false)
+        dateCreated (nullable: true, blank: false)
     }
 
     private static def typeIsValid(key) {
@@ -254,30 +262,18 @@ class PropertyDefinition extends AbstractI10nTranslatable implements Serializabl
 
     static def refdataFind(params) {
         def result = []
+        def propDefsInCalcGroups = []
 
-        /*
-        def matches = I10nTranslation.refdataFindHelper(
-                params.baseClass,
-                'name',
-                params.q,
-                LocaleContextHolder.getLocale()
-        )
-        matches.each { it ->
-            // used for private properties
-            def tenantMatch = (params.tenant.equals(it.getTenant()?.id?.toString()))
+        if (params.oid) {
+            GenericOIDService genericOIDService = (GenericOIDService) Holders.grailsApplication.mainContext.getBean('genericOIDService')
+            def obj = genericOIDService.resolveOID(params.oid)
 
-            if (tenantMatch) {
-                if (params.desc && params.desc != "*") {
-                    if (it.getDescr() == params.desc) {
-                        result.add([id: "${it.id}", text: "${it.getI10n('name')}"])
-                    }
-                } else {
-                    result.add([id: "${it.id}", text: "${it.getI10n('name')}"])
-                }
+            if (obj) {
+                ContextService contextService = (ContextService) Holders.grailsApplication.mainContext.getBean('contextService')
+                Map<String, Object> calcPropDefGroups = obj.getCalculatedPropDefGroups(contextService.getOrg())
+                propDefsInCalcGroups = SwissKnife.getCalculatedPropertiesForPropDefGroups(calcPropDefGroups).collect { "${it.id}" } // as String !
             }
         }
-        return result
-        */
 
         def cache
 
@@ -314,7 +310,17 @@ class PropertyDefinition extends AbstractI10nTranslatable implements Serializabl
                 }
             }
         }
-        result
+
+        List resultWithoutExcludes = []
+
+        result.each { it ->
+            if (! propDefsInCalcGroups.contains(it.id)) {
+                resultWithoutExcludes << it
+            }
+        }
+        println "result: ${result.size()} -> resultWithoutExcludes: ${resultWithoutExcludes.size()}"
+
+        resultWithoutExcludes
     }
 
     def getDescrClass() {

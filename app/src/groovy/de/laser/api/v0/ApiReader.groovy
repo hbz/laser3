@@ -3,6 +3,7 @@ package de.laser.api.v0
 import com.k_int.kbplus.*
 import com.k_int.properties.PropertyDefinition
 import de.laser.CacheService
+import de.laser.api.v0.entities.ApiDoc
 import de.laser.helper.Constants
 import de.laser.helper.RDStore
 import groovy.util.logging.Log4j
@@ -31,85 +32,70 @@ class ApiReader {
     static SIMPLE_QUERIES = ['oaMonitorList', 'refdataList', 'propertyList', 'statisticList']
 
 
-    // ################### MIXED CATALOGUE ###################
+    // ##### CONSTANTS #####
+
+    final static NO_CONSTRAINT          = "NO_CONSTRAINT"
+    final static LICENSE_STUB           = "LICENSE_STUB"
+
+    // type of stub to return
+    final static PACKAGE_STUB           = "PACKAGE_STUB"
+    final static SUBSCRIPTION_STUB      = "SUBSCRIPTION_STUB"
+
+    // ignoring relations
+    final static IGNORE_ALL             = "IGNORE_ALL"  // cutter for nested objects
+    final static IGNORE_NONE            = "IGNORE_NONE" // placeholder, if needed
+    final static IGNORE_CLUSTER         = "IGNORE_CLUSTER"
+
+    final static IGNORE_LICENSE         = "IGNORE_LICENSE"
+    final static IGNORE_ORGANISATION    = "IGNORE_ORGANISATION"
+    final static IGNORE_PACKAGE         = "IGNORE_PACKAGE"
+    final static IGNORE_SUBSCRIPTION    = "IGNORE_SUBSCRIPTION"
+    final static IGNORE_TITLE           = "IGNORE_TITLE"
+    final static IGNORE_TIPP            = "IGNORE_TIPP"
+
+    final static IGNORE_SUBSCRIPTION_AND_PACKAGE = "IGNORE_SUBSCRIPTION_AND_PACKAGE"
+
+    final static IGNORE_CUSTOM_PROPERTIES   = "IGNORE_CUSTOM_PROPERTIES"
+    final static IGNORE_PRIVATE_PROPERTIES  = "IGNORE_PRIVATE_PROPERTIES"
+
 
     /**
-     * @return
+     * Access rights due wrapping license
+     *
+     * @param com.k_int.kbplus.OnixplLicense opl
+     * @param com.k_int.kbplus.License lic
+     * @param com.k_int.kbplus.Org context
+     * @return Map | Constants.HTTP_FORBIDDEN
      */
-    static Collection<Object> retrievePropertyCollection(Org context){
-        def result = []
+    static requestOnixplLicense(OnixplLicense opl, License lic, Org context) {
+        def result = [:]
+        def hasAccess = false
 
-        def validLabel = { lb ->
-            return (lb != 'null' && lb != 'null °') ? lb : null
+        if (!opl) {
+            return null
         }
 
-        PropertyDefinition.where { tenant == null || tenant == context }.sort('name').each { pd ->
-            def pdTmp = [:]
-
-            pdTmp.key = pd.name
-            pdTmp.scope = pd.descr
-            pdTmp.type = PropertyDefinition.validTypes2[pd.type]['en']
-
-            pdTmp.label_de = validLabel(pd.getI10n('name', 'de'))
-            pdTmp.label_en = validLabel(pd.getI10n('name', 'en'))
-
-            pdTmp.explanation_de = validLabel(pd.getI10n('expl', 'de'))
-            pdTmp.explanation_en = validLabel(pd.getI10n('expl', 'en'))
-
-            pdTmp.usedForLogic = pd.isUsedForLogic ? 'Yes' : 'No'
-            pdTmp.multiple = pd.multipleOccurrence ? 'Yes' : 'No'
-
-            pdTmp.isPublic = pd.tenant ? 'No' : 'Yes'
-            pdTmp.refdataCategory = pd.refdataCategory
-
-            result << ApiToolkit.cleanUp(pdTmp, true, true)
-        }
-
-        result
-    }
-
-
-    // ################### PUBLIC CATALOGUE ###################
-
-    /**
-     * @return
-     */
-    static Collection<Object> retrieveRefdataCollection(){
-        CacheService cacheService = grails.util.Holders.applicationContext.getBean('cacheService') as CacheService
-
-        def cache = cacheService.getTTL1800Cache('ApiReader/exportRefdatas/')
-        def result = []
-
-        if (cache.get('refdatas')) {
-            result = cache.get('refdatas')
-            log.debug('refdatas from cache')
-        }
-        else {
-            def validLabel = { lb ->
-                return (lb != 'null' && lb != 'null °') ? lb : null
-            }
-
-            RefdataCategory.where {}.sort('desc').each { rdc ->
-                def rdcTmp = [:]
-
-                rdcTmp.desc = rdc.desc
-                rdcTmp.label_de = validLabel(rdc.getI10n('desc', 'de'))
-                rdcTmp.label_en = validLabel(rdc.getI10n('desc', 'en'))
-                rdcTmp.entries = []
-
-                RefdataCategory.getAllRefdataValues(rdc.desc).each { rdv ->
-                    def tmpRdv = [:]
-
-                    tmpRdv.value = rdv.value
-                    tmpRdv.label_de = validLabel(rdv.getI10n('value', 'de'))
-                    tmpRdv.label_en = validLabel(rdv.getI10n('value', 'en'))
-
-                    rdcTmp.entries << ApiToolkit.cleanUp(tmpRdv, true, true)
+        if (opl.getLicenses().contains(lic)) {
+            lic.orgLinks.each { orgRole ->
+                // TODO check orgRole.roleType
+                if (orgRole.getOrg().id == context?.id) {
+                    hasAccess = true
                 }
-                result << ApiToolkit.cleanUp(rdcTmp, true, true)
             }
-            cache.put('refdatas', result)
         }
-        result
+
+        if (hasAccess) {
+            //result.id       = opl.id
+            result.lastmod  = opl.lastmod
+            result.title    = opl.title
+
+            // References
+            result.document = ApiDoc.retrieveDocumentMap(opl.doc) // com.k_int.kbplus.Doc
+            //result.licenses = ApiStubReader.resolveLicenseStubs(opl.licenses) // com.k_int.kbplus.License
+            //result.xml = opl.xml // XMLDoc // TODO
+            result = ApiToolkit.cleanUp(result, true, true)
+        }
+
+        return (hasAccess ? result : Constants.HTTP_FORBIDDEN)
     }
 }

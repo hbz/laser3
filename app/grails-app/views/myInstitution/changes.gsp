@@ -13,7 +13,7 @@
             <semui:crumb message="myinst.todo.label" class="active" />
         </semui:breadcrumbs>
         <br>
-        <h1 class="ui left floated aligned icon header la-clear-before"><semui:headerIcon />
+        <h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon />
             ${message(code:'myinst.todo.label')}
             <%--${message(code:'myinst.todo.pagination', args:[(params.offset?:1), (java.lang.Math.min(num_todos,(params.int('offset')?:0)+10)), num_todos])}--%>
         </h1>

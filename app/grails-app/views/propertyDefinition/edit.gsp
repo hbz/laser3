@@ -35,7 +35,7 @@
 
     <div>
 
-            <h1 class="ui left floated aligned icon header la-clear-before"><semui:headerIcon /><g:message code="default.edit.label" args="[entityName]"/></h1>
+            <h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon /><g:message code="default.edit.label" args="[entityName]"/></h1>
 
 
         <semui:messages data="${flash}" />

@@ -25,6 +25,10 @@
       "type": "long",
       "index": false
     },
+    "typeId": {
+      "type": "long",
+      "index": false
+    },
     "name": {
       "type": "text",
       "fields": {
@@ -44,6 +48,9 @@
       }
     },
     "availableToOrgs": {
+      "type": "long"
+    },
+    "availableToUser": {
       "type": "long"
     },
     "priority": {
@@ -149,9 +156,8 @@
         }
       }
     },
-    "consortiaId": {
-      "type": "long",
-      "index": false
+    "consortiaGUID": {
+      "type": "text"
     },
     "sortname": {
       "type": "text",
@@ -324,9 +330,44 @@
         }
       }
     },
-    "members": {
+    "membersCount": {
       "type": "long",
       "index": false
+    },
+    "members": {
+      "properties": {
+        "dbId": {
+          "type": "long",
+          "index": false
+        },
+        "name": {
+          "type": "text",
+          "fields": {
+            "keyword": {
+              "ignore_above": 256,
+              "type": "keyword"
+            }
+          }
+        },
+        "shortname": {
+          "type": "text",
+          "fields": {
+            "keyword": {
+              "ignore_above": 256,
+              "type": "keyword"
+            }
+          }
+        },
+        "sortname": {
+          "type": "text",
+          "fields": {
+            "keyword": {
+              "ignore_above": 256,
+              "type": "keyword"
+            }
+          }
+        }
+      }
     },
     "objectId": {
       "type": "long",
@@ -341,7 +382,7 @@
         }
       }
     },
-    "objectType": {
+    "objectClassName": {
       "type": "text",
       "fields": {
         "keyword": {
@@ -349,6 +390,10 @@
           "type": "keyword"
         }
       }
+    },
+    "objectTypeId": {
+      "type": "long",
+      "index": false
     }
   }
 }
