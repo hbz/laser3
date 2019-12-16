@@ -3370,6 +3370,7 @@ class SurveyController {
                 InvokerHelper.setProperties(copyCostItem, properties)
                 copyCostItem.globalUID = null
                 copyCostItem.surveyOrg = null
+                copyCostItem.isVisibleForSubscriber = params.isVisibleForSubscriber ? true : null
                 copyCostItem.sub = participantSub
                 if(copyCostItem.save(flush:true)) {
                     countNewCostItems++

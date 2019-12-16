@@ -36,7 +36,7 @@
         <g:if test="${costItem?.isVisibleForSubscriber && tab == "cons"}">
             <div class="content la-twoSided-ribbon">
                 <div class="ui orange ribbon label">
-                    <strong>${message(code:'financials.isVisibleForSubscriber')}</strong>
+                    <strong>${message(code:'financials.isVisibleForSubscriber')}: ${costItem.sub?.getSubscriber()}</strong>
                 </div>
             </div>
         </g:if>
@@ -44,6 +44,13 @@
             <div class="content la-twoSided-ribbon">
                 <div class="ui blue ribbon label">
                     <strong>${message(code:'financials.transferConsortialCosts')}: </strong>
+                </div>
+            </div>
+        </g:elseif>
+        <g:elseif test="${tab == "cons" && costItem.sub?.getSubscriber()}">
+            <div class="content la-twoSided-ribbon">
+                <div class="ui orange ribbon label">
+                    <strong>${costItem.sub?.getSubscriber().name} </strong>
                 </div>
             </div>
         </g:elseif>
