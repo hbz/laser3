@@ -2,17 +2,19 @@
 <html>
   <head>
     <meta name="layout" content="semanticUI"/>
-    <title>${message(code:'laser', default:'LAS:eR')} : Admin Settings</title>
+    <title>${message(code:'laser')} : ${message(code:'menu.yoda.systemSettings')}</title>
   </head>
 
   <body>
 
     <semui:breadcrumbs>
       <semui:crumb message="menu.yoda.dash" controller="yoda" action="index"/>
-      <semui:crumb text="System Settings" class="active"/>
+      <semui:crumb message="menu.yoda.systemSettings" class="active"/>
     </semui:breadcrumbs>
 
     <div>
+      <h2 class="ui header">${message(code:'menu.yoda.systemSettings')}</h2>
+
       <table class="ui celled la-table table">
         <thead>
           <tr>

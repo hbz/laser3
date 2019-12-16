@@ -424,7 +424,7 @@
                             <g:link class="item" controller="yoda" action="dashboard">Dashboard</g:link>
 
                             <div class="ui dropdown item">
-                                Into the Wild ..
+                                <i class="ui icon wrench"></i> ${message(code:'menu.yoda.engine')}
                                 <i class="dropdown icon"></i>
 
                                 <div class="menu">
@@ -432,7 +432,6 @@
                                     <g:link class="item" controller="yoda" action="settings">${message(code:'menu.yoda.systemSettings')}</g:link>
                                     <g:link class="item" controller="yoda" action="manageSystemMessage">${message(code: 'menu.admin.systemMessage')}</g:link>
                                     <g:link class="item" controller="yoda" action="appConfig">${message(code:'menu.yoda.appConfig')}</g:link>
-
 
                                     <g:link class="item" controller="yoda" action="systemProfiler">${message(code:'menu.yoda.systemProfiler')}</g:link>
                                     <g:link class="item" controller="yoda" action="activityProfiler">${message(code:'menu.yoda.activityProfiler')}</g:link>

@@ -2,7 +2,7 @@
 <html>
 <head>
     <meta name="layout" content="semanticUI">
-    <title>${message(code:'laser', default:'LAS:eR')} : ${message(code:'menu.yoda.activityProfiler')}</title>
+    <title>${message(code:'laser')} : ${message(code:'menu.yoda.activityProfiler')}</title>
 </head>
 <body>
 
@@ -11,7 +11,7 @@
     <semui:crumb message="menu.yoda.activityProfiler" class="active"/>
 </semui:breadcrumbs>
 <br>
-    <h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon />${message(code:'menu.yoda.activityProfiler')}</h1>
+    <h2 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon />${message(code:'menu.yoda.activityProfiler')}</h2>
 
     <h3 class="ui header">Aktivität</h3>
 
