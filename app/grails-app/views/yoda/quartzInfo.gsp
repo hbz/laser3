@@ -2,7 +2,7 @@
 <html>
 <head>
     <meta name="layout" content="semanticUI">
-    <title>${message(code:'laser', default:'LAS:eR')} : ${message(code:'menu.yoda.quartzInfo')}</title>
+    <title>${message(code:'laser')} : ${message(code:'menu.yoda.quartzInfo')}</title>
 </head>
 <body>
 
@@ -11,7 +11,7 @@
     <semui:crumb message="menu.yoda.quartzInfo" class="active"/>
 </semui:breadcrumbs>
 <br>
-<h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon />${message(code:'menu.yoda.quartzInfo')}</h1>
+<h2 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon />${message(code:'menu.yoda.quartzInfo')}</h2>
 
 <br />
 
@@ -69,14 +69,15 @@
                             <i class="ui big icon play circle green"></i>
                         </g:if>
                         <g:else>
-                            <g:if test="${isActive}">
-                                <i class="ui icon play green"></i>
+                            <g:if test="${! job.nextFireTime}">
+                                <i class="ui icon minus circle red"></i>
                             </g:if>
-                            <g:elseif test="${job.available}">
-                                <i class="ui icon pause yellow"></i>
+                            <g:elseif test="${isActive}">
+                                <i class="ui icon play green"></i>
                             </g:elseif>
-                            <g:else>
-                            </g:else>
+                            <g:elseif test="${job.available}">
+                                <i class="ui icon stop yellow"></i>
+                            </g:elseif>
                         </g:else>
                     </td>
                     <td>

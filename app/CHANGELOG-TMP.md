@@ -2,6 +2,14 @@
 
 **Ticket    Date    Branch      Author  Feature/Bug     Description/Keywords**
 
+--      16.12.2019  rc1.2       Andreas Bug         Währung an zwei Modal-Felder wieder eingefügt
+
+1986    13.12.2019  rc1.2       David   Feature     Aktivitäts-Profiler
+
+--      13.12.2019  rc1.2       David   Feature     Verbesserter System-Profiler
+
+1346    12.12.2019  rc1.2       David   Feature     Rudimentäres Löschen von Organisationen; Überarbeitung der Löschfunktion für Lizenzen, Verträge und User
+
 1893    12.12.2019  rc1.2       Moe     Feature     Zugehörigkeit aufheben im Nutzerprofil ausblenden?
 
 1959    11.12.2019  rc1.2       Moe     Bug         Lizenz kopieren fehlerhaft

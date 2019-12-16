@@ -68,7 +68,7 @@
         </div>
     </g:if>
     <g:set var="visibilityContextOrgMenu" value="la-hide-context-orgMenu"></g:set>
-    <nav class="ui fixed inverted stackable menu">
+    <nav id="mainMenue" class="ui fixed inverted stackable menu">
         <div class="ui container">
             <g:link controller="home" action="index" aria-label="${message(code:'default.home.label')}" class="header item la-logo-item">
                 <img alt="Logo Laser" class="logo" src="${resource(dir: 'images', file: 'laser.svg')}"/>
@@ -424,7 +424,7 @@
                             <g:link class="item" controller="yoda" action="dashboard">Dashboard</g:link>
 
                             <div class="ui dropdown item">
-                                Into the Wild ..
+                                <i class="ui icon wrench"></i> ${message(code:'menu.yoda.engine')}
                                 <i class="dropdown icon"></i>
 
                                 <div class="menu">
@@ -433,8 +433,8 @@
                                     <g:link class="item" controller="yoda" action="manageSystemMessage">${message(code: 'menu.admin.systemMessage')}</g:link>
                                     <g:link class="item" controller="yoda" action="appConfig">${message(code:'menu.yoda.appConfig')}</g:link>
 
-
-                                    <g:link class="item" controller="yoda" action="profiler">${message(code:'menu.yoda.profiler')}</g:link>
+                                    <g:link class="item" controller="yoda" action="systemProfiler">${message(code:'menu.yoda.systemProfiler')}</g:link>
+                                    <g:link class="item" controller="yoda" action="activityProfiler">${message(code:'menu.yoda.activityProfiler')}</g:link>
                                     <g:link class="item" controller="yoda" action="quartzInfo">${message(code:'menu.yoda.quartzInfo')}</g:link>
                                     <g:link class="item" controller="yoda" action="cacheInfo">${message(code:'menu.yoda.cacheInfo')}</g:link>
 

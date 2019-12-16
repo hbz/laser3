@@ -2,7 +2,7 @@
 <html>
 <head>
     <meta name="layout" content="semanticUI">
-    <title>${message(code:'laser', default:'LAS:eR')} : ${message(code:'menu.yoda.cacheInfo')}</title>
+    <title>${message(code:'laser')} : ${message(code:'menu.yoda.cacheInfo')}</title>
 </head>
 <body>
 
@@ -20,7 +20,7 @@
     sessionCache.get("test")
 %>
 <br>
-<h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon />${message(code:'menu.yoda.cacheInfo')}</h1>
+<h2 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon />${message(code:'menu.yoda.cacheInfo')}</h2>
 
 
 <h3 class="ui header">Session <span class="ui label">${contextService.getSessionCache().class}</span></h3>
