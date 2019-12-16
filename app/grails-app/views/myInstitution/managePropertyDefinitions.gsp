@@ -55,131 +55,131 @@
                     <g:message code="propertyDefinitions.${entry.key}.label" default="${entry.key}" />
                 </div>
                 <div class="content">
-                <g:form class="ui form" action="managePrivateProperties" method="post">
-                    <table class="ui celled la-table la-table-small table">
-                        <thead>
-                        <tr>
-                            <th></th>
-                            <th>${message(code:'propertyDefinition.key.label')}</th>
-                            <th>${message(code:'propertyDefinition.name.label')}</th>
-                            <th>${message(code:'propertyDefinition.expl.label')}</th>
-                            <th>${message(code:'propertyDefinition.type.label')}</th>
+                    <g:form class="ui form" action="managePrivateProperties" method="post">
+                        <table class="ui celled la-table la-table-small table">
+                            <thead>
+                            <tr>
+                                <th></th>
+                                <th>${message(code:'propertyDefinition.key.label')}</th>
+                                <th>${message(code:'propertyDefinition.name.label')}</th>
+                                <th>${message(code:'propertyDefinition.expl.label')}</th>
+                                <th>${message(code:'propertyDefinition.type.label')}</th>
 
-                            <g:if test="${propertyType == 'private'}">
-                                <th>${message(code:'propertyDefinition.count.label', default:'Count in Use')}</th>
-                                <th class="la-action-info">${message(code:'default.actions')}</th>
-                            </g:if>
-                        </tr>
-                        </thead>
-                        <tbody>
-                            <g:each in="${entry.value}" var="pd">
-                                <g:set var="pdI10nName"  value="${I10nTranslation.createI10nOnTheFly(pd, 'name')}" />
-                                <g:set var="pdI10nExpl" value="${I10nTranslation.createI10nOnTheFly(pd, 'expl')}" />
-                                <tr>
-                                    <td>
-                                        <g:if test="${pd.isHardData}">
-                                            <span class="la-popup-tooltip la-delay" data-position="top left" data-content="${message(code:'default.hardData.tooltip')}">
-                                                <i class="check circle icon green"></i>
-                                            </span>
-                                            <br>${entry.class.simpleName}
-                                        </g:if>
-                                        <g:if test="${pd.multipleOccurrence}">
-                                            <span class="la-popup-tooltip la-delay" data-position="top right" data-content="${message(code:'default.multipleOccurrence.tooltip')}">
-                                                <i class="redo icon orange"></i>
-                                            </span>
-                                        </g:if>
-
-                                        <g:if test="${usedPdList?.contains(pd.id)}">
-                                            <span class="la-popup-tooltip la-delay" data-position="top left" data-content="${message(code:'default.dataIsUsed.tooltip', args:[pd.id])}">
-                                                <i class="info circle icon blue"></i>
-                                            </span>
-                                        </g:if>
-                                        <g:if test="${pd.isUsedForLogic}">
-                                            <span class="la-popup-tooltip la-delay" data-position="top left" data-content="${message(code:'default.isUsedForLogic.tooltip')}">
-                                                <i class="ui icon orange cube"></i>
-                                            </span>
-                                        </g:if>
-                                    </td>
-                                    <td>
-                                        <g:if test="${pd.isUsedForLogic}">
-                                            <span style="color:orange">${fieldValue(bean: pd, field: "name")}</span>
-                                        </g:if>
-                                        <g:else>
-                                            ${fieldValue(bean: pd, field: "name")}
-                                        </g:else>
-                                    </td>
-                                    <td>
-                                        <g:if test="${(propertyType == 'private') || (!pd.isHardData && SpringSecurityUtils.ifAnyGranted('ROLE_YODA'))}">
-                                            <semui:xEditable owner="${pdI10nName}" field="${value_SUBSTITUTE}" />
-                                        </g:if>
-                                        <g:else>
-                                            ${pdI10nName?."${value_SUBSTITUTE}"}
-                                        </g:else>
-                                    </td>
-                                    <td>
-                                        <g:if test="${(propertyType == 'private') || (!pd.isHardData && SpringSecurityUtils.ifAnyGranted('ROLE_YODA'))}">
-                                            <semui:xEditable owner="${pdI10nExpl}" field="${value_SUBSTITUTE}" type="textarea" />
-                                        </g:if>
-                                        <g:else>
-                                            ${pdI10nExpl?."${value_SUBSTITUTE}"}
-                                        </g:else>
-                                    </td>
-                                    <td>
-                                        ${PropertyDefinition.getLocalizedValue(pd?.type)}
-                                        <g:if test="${pd?.type == 'class com.k_int.kbplus.RefdataValue'}">
-                                            <g:set var="refdataValues" value="${[]}"/>
-                                            <g:each in="${com.k_int.kbplus.RefdataCategory.getAllRefdataValues(pd.refdataCategory)}"
-                                                    var="refdataValue">
-                                                <g:set var="refdataValues"
-                                                       value="${refdataValues + refdataValue?.getI10n('value')}"/>
-                                            </g:each>
-                                            <br>
-                                            (${refdataValues.join('/')})
-                                        </g:if>
-                                    </td>
-                                    <g:if test="${propertyType == 'private'}">
+                                <g:if test="${propertyType == 'private'}">
+                                    <th>${message(code:'propertyDefinition.count.label', default:'Count in Use')}</th>
+                                    <th class="la-action-info">${message(code:'default.actions')}</th>
+                                </g:if>
+                            </tr>
+                            </thead>
+                            <tbody>
+                                <g:each in="${entry.value}" var="pd">
+                                    <g:set var="pdI10nName"  value="${I10nTranslation.createI10nOnTheFly(pd, 'name')}" />
+                                    <g:set var="pdI10nExpl" value="${I10nTranslation.createI10nOnTheFly(pd, 'expl')}" />
+                                    <tr>
                                         <td>
-                                            <span class="ui circular label">${pd.countUsages()}</span>
+                                            <g:if test="${pd.isHardData}">
+                                                <span class="la-popup-tooltip la-delay" data-position="top left" data-content="${message(code:'default.hardData.tooltip')}">
+                                                    <i class="check circle icon green"></i>
+                                                </span>
+                                                <br>${entry.class.simpleName}
+                                            </g:if>
+                                            <g:if test="${pd.multipleOccurrence}">
+                                                <span class="la-popup-tooltip la-delay" data-position="top right" data-content="${message(code:'default.multipleOccurrence.tooltip')}">
+                                                    <i class="redo icon orange"></i>
+                                                </span>
+                                            </g:if>
+
+                                            <g:if test="${usedPdList?.contains(pd.id)}">
+                                                <span class="la-popup-tooltip la-delay" data-position="top left" data-content="${message(code:'default.dataIsUsed.tooltip', args:[pd.id])}">
+                                                    <i class="info circle icon blue"></i>
+                                                </span>
+                                            </g:if>
+                                            <g:if test="${pd.isUsedForLogic}">
+                                                <span class="la-popup-tooltip la-delay" data-position="top left" data-content="${message(code:'default.isUsedForLogic.tooltip')}">
+                                                    <i class="ui icon orange cube"></i>
+                                                </span>
+                                            </g:if>
                                         </td>
-                                        <td class="x">
-                                            <g:if test="${pd.countUsages()==0}">
-                                                <g:link action="managePrivateProperties" params="[cmd:'delete', deleteIds: pd?.id]" class="ui icon negative button">
+                                        <td>
+                                            <g:if test="${pd.isUsedForLogic}">
+                                                <span style="color:orange">${fieldValue(bean: pd, field: "name")}</span>
+                                            </g:if>
+                                            <g:else>
+                                                ${fieldValue(bean: pd, field: "name")}
+                                            </g:else>
+                                        </td>
+                                        <td>
+                                            <g:if test="${(propertyType == 'private') || (!pd.isHardData && SpringSecurityUtils.ifAnyGranted('ROLE_YODA'))}">
+                                                <semui:xEditable owner="${pdI10nName}" field="${value_SUBSTITUTE}" />
+                                            </g:if>
+                                            <g:else>
+                                                ${pdI10nName?."${value_SUBSTITUTE}"}
+                                            </g:else>
+                                        </td>
+                                        <td>
+                                            <g:if test="${(propertyType == 'private') || (!pd.isHardData && SpringSecurityUtils.ifAnyGranted('ROLE_YODA'))}">
+                                                <semui:xEditable owner="${pdI10nExpl}" field="${value_SUBSTITUTE}" type="textarea" />
+                                            </g:if>
+                                            <g:else>
+                                                ${pdI10nExpl?."${value_SUBSTITUTE}"}
+                                            </g:else>
+                                        </td>
+                                        <td>
+                                            ${PropertyDefinition.getLocalizedValue(pd?.type)}
+                                            <g:if test="${pd?.type == 'class com.k_int.kbplus.RefdataValue'}">
+                                                <g:set var="refdataValues" value="${[]}"/>
+                                                <g:each in="${com.k_int.kbplus.RefdataCategory.getAllRefdataValues(pd.refdataCategory)}"
+                                                        var="refdataValue">
+                                                    <g:set var="refdataValues"
+                                                           value="${refdataValues + refdataValue?.getI10n('value')}"/>
+                                                </g:each>
+                                                <br>
+                                                (${refdataValues.join('/')})
+                                            </g:if>
+                                        </td>
+                                        <g:if test="${propertyType == 'private'}">
+                                            <td>
+                                                <span class="ui circular label">${pd.countUsages()}</span>
+                                            </td>
+                                            <td class="x">
+                                                <g:if test="${pd.countUsages()==0}">
+                                                    <g:link action="managePrivateProperties" params="[cmd:'delete', deleteIds: pd?.id]" class="ui icon negative button">
+                                                        <i class="trash alternate icon"></i>
+                                                    </g:link>
+                                                </g:if>
+                                            </td>
+                                        </g:if>
+                                        <%--<td class="x">
+
+                                            <g:if test="${false}">
+                                            <sec:ifAnyGranted roles="ROLE_YODA">
+                                                <g:if test="${usedPdList?.contains(pd.id)}">
+                                                    <span class="la-popup-tooltip la-delay" data-position="top right" data-content="${message(code:'propertyDefinition.exchange.label')}">
+                                                        <button class="ui icon button" data-href="#replacePropertyDefinitionModal" data-semui="modal"
+                                                                data-xcg-pd="${pd.class.name}:${pd.id}"
+                                                                data-xcg-type="${pd.type}"
+                                                                data-xcg-rdc="${pd.refdataCategory}"
+                                                                data-xcg-debug="${pd.getI10n('name')} (${pd.name})"
+                                                        ><i class="exchange icon"></i></button>
+                                                    </span>
+                                                </g:if>
+                                            </sec:ifAnyGranted>
+
+                                            <g:if test="${! pd.isHardData && ! usedPdList?.contains(pd.id)}">
+                                                <g:link controller="admin" action="managePropertyDefinitions"
+                                                        params="${[cmd: 'deletePropertyDefinition', pd: 'com.k_int.properties.PropertyDefinition:' + pd.id]}" class="ui icon negative button">
                                                     <i class="trash alternate icon"></i>
                                                 </g:link>
                                             </g:if>
-                                        </td>
-                                    </g:if>
-                                    <%--<td class="x">
-
-                                        <g:if test="${false}">
-                                        <sec:ifAnyGranted roles="ROLE_YODA">
-                                            <g:if test="${usedPdList?.contains(pd.id)}">
-                                                <span class="la-popup-tooltip la-delay" data-position="top right" data-content="${message(code:'propertyDefinition.exchange.label')}">
-                                                    <button class="ui icon button" data-href="#replacePropertyDefinitionModal" data-semui="modal"
-                                                            data-xcg-pd="${pd.class.name}:${pd.id}"
-                                                            data-xcg-type="${pd.type}"
-                                                            data-xcg-rdc="${pd.refdataCategory}"
-                                                            data-xcg-debug="${pd.getI10n('name')} (${pd.name})"
-                                                    ><i class="exchange icon"></i></button>
-                                                </span>
                                             </g:if>
-                                        </sec:ifAnyGranted>
+                                        </td>--%>
 
-                                        <g:if test="${! pd.isHardData && ! usedPdList?.contains(pd.id)}">
-                                            <g:link controller="admin" action="managePropertyDefinitions"
-                                                    params="${[cmd: 'deletePropertyDefinition', pd: 'com.k_int.properties.PropertyDefinition:' + pd.id]}" class="ui icon negative button">
-                                                <i class="trash alternate icon"></i>
-                                            </g:link>
-                                        </g:if>
-                                        </g:if>
-                                    </td>--%>
+                                    </tr>
+                                </g:each>
 
-                                </tr>
-                            </g:each>
-
-                        </tbody>
-                    </table>
-                </g:form>
+                            </tbody>
+                        </table>
+                    </g:form>
                 </div>
 			</g:each>
         </div>
