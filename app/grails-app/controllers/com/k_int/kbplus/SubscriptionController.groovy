@@ -4343,7 +4343,8 @@ class SubscriptionController extends AbstractDebugController {
                     type: sub_type,
                     status: sub_status,
                     resource: sub_resource,
-                    form: sub_form
+                    form: sub_form,
+                    administrative: baseSub.administrative
             )
 
             if (!newSub.save(flush: true)) {
@@ -4365,7 +4366,7 @@ class SubscriptionController extends AbstractDebugController {
                 //OrgRole
                 baseSub.orgRelations?.each { or ->
 
-                    if ((or.org?.id == contextService.getOrg()?.id) || (or.roleType in [RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER_CONS_HIDDEN])) {
+                    if ((or.org?.id == contextService.getOrg()?.id) || (or.roleType in [RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIBER_CONS])) {
                         OrgRole newOrgRole = new OrgRole()
                         InvokerHelper.setProperties(newOrgRole, or.properties)
                         newOrgRole.sub = newSub
