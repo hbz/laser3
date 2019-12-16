@@ -150,11 +150,11 @@ class ESSearchService{
     StringWriter sw = new StringWriter()
 
     if ( params?.q != null ){
-      params.query = "*${params.query}*"
+      params.query = "${params.query}"
       //GOKBID, GUUID
       if(params.q.length() >= 37){
         if(params.q.contains(":") || params.q.contains("-")){
-          params.q = params.q.replaceAll('\\*', '')
+          //params.q = params.q.replaceAll('\\*', '')
           sw.write("\"${params.q}\"")
         }else {
           sw.write("${params.q}")
@@ -165,6 +165,7 @@ class ESSearchService{
           params.q = params.q.replaceAll('\\*', '')
           sw.write("\"${params.q}\"")
         }else{
+          params.q = params.q.replaceAll('\\"', '')
           sw.write("${params.q}")
           sw.write(" AND ((NOT gokbId:'${params.q}') AND (NOT guid:'${params.q}')) ")
         }
