@@ -462,6 +462,9 @@ ${surveyInfo?.name}
 
             <div class="eight wide field" style="text-align: right;">
                 <button class="ui button positive" type="submit">${message(code: 'copySurveyCostItems.copyCostItems')}</button>
+                <br>
+                <br>
+                <button class="ui button positive" name="isVisibleForSubscriber" value="true" type="submit">${message(code: 'copySurveyCostItems.copyCostItems')} (${message(code:'financials.isVisibleForSubscriber')})</button>
             </div>
         </div>
     </g:form>
