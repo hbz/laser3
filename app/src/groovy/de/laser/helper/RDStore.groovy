@@ -97,6 +97,8 @@ class RDStore {
     static final CIEC_NEGATIVE              = getRefdataValue('negative','Cost configuration')
     static final CIEC_NEUTRAL               = getRefdataValue('neutral','Cost configuration')
 
+    static final CURRENCY_EUR               = getRefdataValue('EUR','Currency')
+
     static final PERM_PERM_EXPL             = getRefdataValue('Permitted (explicit)', 'Permissions')
     static final PERM_PERM_INTERP           = getRefdataValue('Permitted (interpreted)','Permissions')
     static final PERM_PROH_EXPL             = getRefdataValue('Prohibited (explicit)','Permissions')

@@ -2,6 +2,8 @@
 
 **Ticket    Date    Branch      Author  Feature/Bug     Description/Keywords**
 
+--      16.12.2019  rc1.2       Andreas Bug         Währung an zwei Modal-Felder wieder eingefügt
+
 1986    13.12.2019  rc1.2       David   Feature     Aktivitäts-Profiler
 
 --      13.12.2019  rc1.2       David   Feature     Verbesserter System-Profiler
