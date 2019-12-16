@@ -15,7 +15,7 @@
 
     <h3 class="ui header">Global</h3>
 
-    <table class="ui celled la-table la-table-small table">
+    <table class="ui celled la-table la-table-small table" id="globalTable">
         <thead>
             <tr>
                 <th>url</th>
@@ -39,7 +39,14 @@
     </table>
 
     <h3 class="ui header">Kontextbezogen</h3>
-    <table class="ui celled la-table la-table-small table">
+
+    <g:select id="filterTable" name="filterTable" class="ui dropdown"
+              from="${byUriAndContext.collect{com.k_int.kbplus.Org.get(it[1])}.unique()}"
+              optionKey="id" optionValue="${{it.getDesignation()}}"
+              noSelection="['':'Alle anzeigen']"
+    />
+
+    <table class="ui celled la-table la-table-small table" id="contextTable">
         <thead>
             <tr>
                 <th>url</th>
@@ -63,7 +70,18 @@
     </table>
 
 <r:script>
-   $('.table tr td').mouseover( function(){
+    $('#filterTable').change( function(){
+        var ctx = $('#filterTable option:selected').attr('value')
+
+        if(! ctx) {
+            $('#contextTable > tbody > tr').removeClass('hidden')
+        } else {
+            $('#contextTable > tbody > tr').addClass('hidden')
+            $('#contextTable > tbody > tr[data-context="' + ctx + '"]').removeClass('hidden')
+        }
+    })
+
+    $('.table tr td').mouseover( function(){
        var dUri = $(this).attr('data-uri')
        var dCtx = $(this).attr('data-context')
 
@@ -73,11 +91,11 @@
        if (dCtx) {
            $('.table tr[data-context="' + dCtx + '"]').addClass('trHover')
        }
-   })
+    })
 
-   $('.table tr td').mouseout( function(){
+    $('.table tr td').mouseout( function(){
        $('.table tr').removeClass('trHover')
-   })
+    })
 </r:script>
 
 <style>
