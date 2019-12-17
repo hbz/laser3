@@ -3,8 +3,9 @@
     <semui:messages data="${flash}" />
 
     <g:if test="${editable}">
+        <%--
         <button class="ui left floated  button la-clear-before" value="" data-href="#addBudgetCodeModal" data-semui="modal">${message(code:'budgetCode.create_new.label')}</button>
-
+        --%>
         <semui:modal id="addBudgetCodeModal" message="budgetCode.create_new.label">
 
             <g:form class="ui form" url="[controller: 'myInstitution', action: 'budgetCodes']" method="POST">
