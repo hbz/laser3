@@ -524,7 +524,7 @@
                 </sec:ifAnyGranted>
 
                 <div class="right menu la-right-menuPart">
-                    <div id="mainSearch" class="ui category search">
+                    <div id="mainSearch" class="ui category search spotlight">
                         <div class="ui icon input">
                             <input  type="search" id="spotlightSearch" class="prompt" placeholder="${message(code:'spotlight.search.placeholder')}">
                             <i id="btn-search"  class="search icon"></i>
