@@ -71,13 +71,13 @@ class LicenseCustomProperty extends CustomProperty implements AuditableTrait  {
         newProp
     }
 
-  @Transient
-  def onDelete = { oldMap ->
-    log.debug("onDelete LicenseCustomProperty")
+    @Transient
+    def onDelete = { oldMap ->
+        log.debug("onDelete LicenseCustomProperty")
 
-    //def oid = "${this.owner.class.name}:${this.owner.id}"
-    def oid = "${this.class.name}:${this.id}"
-    def changeDoc = [ OID: oid,
+        //def oid = "${this.owner.class.name}:${this.owner.id}"
+        def oid = "${this.class.name}:${this.id}"
+        Map<String, Object> changeDoc = [ OID: oid,
                      event:'LicenseCustomProperty.deleted',
                      prop: "${this.type.name}",
                      old: "",
@@ -85,8 +85,8 @@ class LicenseCustomProperty extends CustomProperty implements AuditableTrait  {
                      name: this.type.name
                      ]
 
-    changeNotificationService.fireEvent(changeDoc)
-  }
+        changeNotificationService.fireEvent(changeDoc)
+    }
 
     def notifyDependencies_trait(changeDocument) {
         log.debug("notifyDependencies_trait(${changeDocument})")
@@ -117,7 +117,7 @@ class LicenseCustomProperty extends CustomProperty implements AuditableTrait  {
 
             // legacy ++
 
-            def slavedPendingChanges = []
+            List<PendingChange> slavedPendingChanges = []
 
             def depedingProps = LicenseCustomProperty.findAllByInstanceOf( this )
             depedingProps.each{ lcp ->
@@ -148,7 +148,7 @@ class LicenseCustomProperty extends CustomProperty implements AuditableTrait  {
                         "${description}"
                 ]
 
-                def newPendingChange =  changeNotificationService.registerPendingChange(
+                PendingChange newPendingChange =  changeNotificationService.registerPendingChange(
                         PendingChange.PROP_LICENSE,
                         lcp.owner,
                         lcp.owner.getLicensee(),
@@ -169,7 +169,7 @@ class LicenseCustomProperty extends CustomProperty implements AuditableTrait  {
             slavedPendingChanges.each { spc ->
                 log.debug('autoAccept! performing: ' + spc)
                 def user = null
-                pendingChangeService.performAccept(spc.getId(), user)
+                pendingChangeService.performAccept(spc, user)
             }
         }
         else if (changeDocument.event.equalsIgnoreCase('LicenseCustomProperty.deleted')) {

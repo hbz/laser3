@@ -427,17 +427,17 @@ static hasMany = [  tipps:     TitleInstancePackagePlatform,
   //   }
   // }
 
- @Transient
-  def onSave = {
-    log.debug("onSave")
-    def changeNotificationService = grailsApplication.mainContext.getBean("changeNotificationService")
+    @Transient
+    def onSave = {
+        log.debug("onSave")
+        def changeNotificationService = grailsApplication.mainContext.getBean("changeNotificationService")
 
-    changeNotificationService.fireEvent([
-                                                 OID:"com.k_int.kbplus.Package:${id}",
-                                                 event:'Package.created'
-                                                ])
+        changeNotificationService.fireEvent([
+            OID:"com.k_int.kbplus.Package:${id}",
+            event:'Package.created'
+        ])
+    }
 
-  }
   /**
   * OPTIONS: startDate, endDate, hideIdent, inclPkgStartDate, hideDeleted
   **/
