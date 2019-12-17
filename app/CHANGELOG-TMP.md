@@ -2,6 +2,8 @@
 
 **Ticket    Date    Branch      Author  Feature/Bug     Description/Keywords**
 
+--      17.12.2019  rc1.2       Moe     Bug         Bugfix: View and Filter Bugfix by Survey
+
 --      17.12.2019  rc1.2       Moe     Bug         Add Message Properties for Event by EventLog 
 
 #### day of release 1.2
