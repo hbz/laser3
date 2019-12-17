@@ -529,7 +529,7 @@ class BootStrap {
     def adjustDatabasePermissions = {
 
         Sql sql = new Sql(dataSource)
-        sql.rows("SELECT * FROM grants_for_backup()")
+        sql.rows("SELECT * FROM grants_for_maintenance()")
     }
 
     @Deprecated
