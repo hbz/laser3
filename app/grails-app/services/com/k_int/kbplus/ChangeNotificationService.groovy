@@ -5,6 +5,7 @@ import com.k_int.kbplus.auth.User
 import de.laser.helper.EhcacheWrapper
 import de.laser.interfaces.AbstractLockableService
 import grails.converters.JSON
+import org.codehaus.groovy.grails.web.json.JSONElement
 
 import java.sql.Timestamp
 
@@ -18,7 +19,7 @@ class ChangeNotificationService extends AbstractLockableService {
     // N,B, This is critical for this service as it's called from domain object OnChange handlers
     static transactional = false
 
-  def broadcastEvent(contextObjectOID, changeDetailDocument) {
+  void broadcastEvent(String contextObjectOID, changeDetailDocument) {
     // log.debug("broadcastEvent(${contextObjectOID},${changeDetailDocument})");
     def contextObject = genericOIDService.resolveOID(contextObjectOID);
 
@@ -113,7 +114,7 @@ class ChangeNotificationService extends AbstractLockableService {
 
         pendingChanges.each { pc ->
           // log.debug("Process pending change ${pc}");    
-          def parsed_event_info = JSON.parse(pc.changeDocument)
+            JSONElement parsed_event_info = JSON.parse(pc.changeDocument)
           log.debug("Event Info: ${parsed_event_info}")
           def change_template = ContentItem.findByKey("ChangeNotification.${parsed_event_info.event}")
           if ( change_template != null ) {
@@ -204,7 +205,7 @@ class ChangeNotificationService extends AbstractLockableService {
     *  knowledge for what dependencies there are (For example, a title change should propagate to all packages using that title).
     *  Therefore, we get a new handle to the object.
     */
-    def fireEvent(changeDocument) {
+    def fireEvent(Map<String, Object> changeDocument) {
         log.debug("fireEvent(${changeDocument})")
 
         //store changeDoc in cache
@@ -247,7 +248,7 @@ class ChangeNotificationService extends AbstractLockableService {
     }
 
     //def registerPendingChange(prop, target, desc, objowner, changeMap) << legacy
-    def registerPendingChange(String prop, def target, def objowner, def changeMap, String msgToken, def msgParams, String legacyDesc) {
+    PendingChange registerPendingChange(String prop, def target, def objowner, def changeMap, String msgToken, def msgParams, String legacyDesc) {
         log.debug("Register pending change ${prop} ${target.class.name}:${target.id}")
 
         def desc = legacyDesc?.toString() // freeze string before altering referenced values

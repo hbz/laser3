@@ -439,7 +439,7 @@ class License
     def notifyDependencies_trait(changeDocument) {
         log.debug("notifyDependencies_trait(${changeDocument})")
 
-        def slavedPendingChanges = []
+        List<PendingChange> slavedPendingChanges = []
         // Find any licenses derived from this license
         // create a new pending change object
         //def derived_licenses = License.executeQuery('select l from License as l where exists ( select link from Link as link where link.toLic=l and link.fromLic=? )',this)
@@ -467,7 +467,7 @@ class License
                     "${description}"
             ]
 
-            def newPendingChange = changeNotificationService.registerPendingChange(
+            PendingChange newPendingChange = changeNotificationService.registerPendingChange(
                         PendingChange.PROP_LICENSE,
                         dl,
                         dl.getLicensee(),
@@ -489,7 +489,7 @@ class License
         slavedPendingChanges.each { spc ->
             log.debug('autoAccept! performing: ' + spc)
             def user = null
-            pendingChangeService.performAccept(spc.getId(), user)
+            pendingChangeService.performAccept(spc, user)
         }
     }
 

@@ -145,7 +145,7 @@ class SubscriptionController extends AbstractDebugController {
         log.debug("max = ${result.max}");
 
         def pending_change_pending_status = RefdataValue.getByValueAndCategory('Pending', 'PendingChangeStatus')
-        def pendingChanges = PendingChange.executeQuery("select pc.id from PendingChange as pc where subscription=? and ( pc.status is null or pc.status = ? ) order by ts desc", [result.subscriptionInstance, pending_change_pending_status]);
+        List<PendingChange> pendingChanges = PendingChange.executeQuery("select pc.id from PendingChange as pc where subscription=? and ( pc.status is null or pc.status = ? ) order by ts desc", [result.subscriptionInstance, pending_change_pending_status]);
 
         if (result.subscriptionInstance?.isSlaved && pendingChanges) {
             log.debug("Slaved subscription, auto-accept pending changes")
@@ -3554,7 +3554,7 @@ class SubscriptionController extends AbstractDebugController {
         } else {
 
             def pending_change_pending_status = RefdataValue.getByValueAndCategory('Pending', 'PendingChangeStatus')
-            def pendingChanges = PendingChange.executeQuery("select pc.id from PendingChange as pc where subscription=? and ( pc.status is null or pc.status = ? ) order by pc.ts desc", [result.subscription, pending_change_pending_status])
+            List<PendingChange> pendingChanges = PendingChange.executeQuery("select pc.id from PendingChange as pc where subscription=? and ( pc.status is null or pc.status = ? ) order by pc.ts desc", [result.subscription, pending_change_pending_status])
 
             log.debug("pc result is ${result.pendingChanges}")
 

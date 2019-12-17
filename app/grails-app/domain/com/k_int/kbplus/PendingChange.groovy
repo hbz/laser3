@@ -2,7 +2,7 @@ package com.k_int.kbplus
 
 import com.k_int.kbplus.auth.User
 import de.laser.helper.RefdataAnnotation
-import net.sf.json.JSON
+import grails.converters.JSON
 import org.codehaus.groovy.grails.web.json.JSONElement
 import org.springframework.context.MessageSource
 
@@ -32,7 +32,13 @@ class PendingChange {
     CostItem costItem
     Date ts
     Org owner
+
     String oid
+
+    String payloadChangeType        // payload = {changeType:"string", [..]}
+    String payloadChangeTargetOid   // payload = {changeTarget:"class:id", [..]}
+    String payloadChangeDocOid      // payload = {[..], changeDoc:{OID:"class:id"}}
+
     String payload
     String msgToken
     String msgParams
@@ -52,11 +58,14 @@ class PendingChange {
 
     static mapping = {
         systemObject column:'pc_sys_obj'
-        subscription column:'pc_sub_fk',    index:'pending_change_sub_idx'
-            license column:'pc_lic_fk',     index:'pending_change_lic_idx'
-                pkg column:'pc_pkg_fk',     index:'pending_change_pkg_idx'
-           costItem column:'pc_ci_fk',      index:'pending_change_costitem_idx'
-                oid column:'pc_oid',        index:'pending_change_oid_idx'
+        subscription column:'pc_sub_fk',        index:'pending_change_sub_idx'
+            license column:'pc_lic_fk',         index:'pending_change_lic_idx'
+                pkg column:'pc_pkg_fk',         index:'pending_change_pkg_idx'
+           costItem column:'pc_ci_fk',          index:'pending_change_costitem_idx'
+                oid column:'pc_oid',            index:'pending_change_oid_idx'
+            payloadChangeType column:'pc_change_type'
+       payloadChangeTargetOid column:'pc_change_target_oid', index:'pending_change_pl_ct_oid_idx'
+       payloadChangeDocOid    column:'pc_change_doc_oid', index:'pending_change_pl_cd_oid_idx'
             payload column:'pc_payload', type:'text'
            msgToken column:'pc_msg_token'
           msgParams column:'pc_msg_doc', type:'text'
@@ -84,6 +93,9 @@ class PendingChange {
         ts(nullable:true, blank:false);
         owner(nullable:true, blank:false);
         oid(nullable:true, blank:false);
+        payloadChangeType       (nullable:true, blank:true)
+        payloadChangeTargetOid  (nullable:true, blank:false)
+        payloadChangeDocOid     (nullable:true, blank:false)
         desc(nullable:true, blank:false);
         status(nullable:true, blank:false);
         actionDate(nullable:true, blank:false);
@@ -94,18 +106,34 @@ class PendingChange {
         dateCreated (nullable: true, blank: false)
     }
 
+    def beforeInsert() {
+        // workaround until refactoring is done
+        if (payload) {
+            JSONElement pl = getPayloadAsJSON()
+            if (pl.changeType) {
+                payloadChangeType = pl.changeType.toString()
+            }
+            if (pl.changeTarget) {
+                payloadChangeTargetOid = pl.changeTarget.toString()
+            }
+            if (pl.changeDoc?.OID) {
+                payloadChangeDocOid = pl.changeDoc.OID.toString()
+            }
+        }
+    }
+
     def resolveOID() {
         genericOIDService.resolveOID(oid)
     }
 
     JSONElement getPayloadAsJSON() {
-        payload ? grails.converters.JSON.parse(payload) : grails.converters.JSON.parse('{}')
+        payload ? JSON.parse(payload) : JSON.parse('{}')
     }
 
     JSONElement getChangeDocAsJSON() {
         def payload = getPayloadAsJSON()
 
-        payload.changeDoc ?: grails.converters.JSON.parse('{}')
+        payload.changeDoc ?: JSON.parse('{}')
     }
 
     def getMessage() {
@@ -115,7 +143,7 @@ class PendingChange {
     def getParsedParams() {
 
         def locale = org.springframework.context.i18n.LocaleContextHolder.getLocale()
-        def parsedParams = grails.converters.JSON.parse(msgParams)
+        JSONElement parsedParams = JSON.parse(msgParams)
 
         // def value type
 
