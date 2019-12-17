@@ -2,6 +2,8 @@
 
 **Ticket    Date    Branch      Author  Feature/Bug     Description/Keywords**
 
+#### day of release 1.2
+
 1980    16.12.2019  rc1.2       Moe     Bug         Übertrag der Cost Items von einer Umfrage (Sichtbarkeit)
 
 1987    16.12.2019  rc1.2       Moe     Bug         Ausgegraute Funktion "Lizenzen vergleichen" über Zauberstab noch verfügbar
