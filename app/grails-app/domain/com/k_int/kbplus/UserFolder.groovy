@@ -39,7 +39,7 @@ class UserFolder {
 
   @Transient
   def addIfNotPresent(oid) {
-    def present = false;
+    boolean present = false;
     items.each { 
       if ( it.referencedOid && ( it.referencedOid == oid ) ) {
         present = true

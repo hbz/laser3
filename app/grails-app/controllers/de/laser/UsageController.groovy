@@ -90,7 +90,7 @@ class UsageController extends AbstractDebugController {
 
     private initResult()
     {
-        def result = [:]
+        Map<String, Object> result = [:]
         result.statsSyncService = [:]
         result.statsSyncService.running = statsSyncService.running
         result.statsSyncService.submitCount = statsSyncService.submitCount

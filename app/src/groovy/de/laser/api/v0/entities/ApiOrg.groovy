@@ -74,7 +74,7 @@ class ApiOrg {
      * @return Map<String, Object>
      */
     static Map<String, Object> retrieveOrganisationMap(Org org, Org context) {
-        def result = [:]
+        Map<String, Object> result = [:]
 
         org = GrailsHibernateUtil.unwrapIfProxy(org)
 

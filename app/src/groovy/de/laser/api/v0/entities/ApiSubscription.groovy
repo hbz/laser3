@@ -107,7 +107,7 @@ class ApiSubscription {
 	 * @return Map<String, Object>
 	 */
 	static Map<String, Object> retrieveSubscriptionMap(Subscription sub, def ignoreRelation, Org context){
-		def result = [:]
+		Map<String, Object> result = [:]
 
 		sub = GrailsHibernateUtil.unwrapIfProxy(sub)
 

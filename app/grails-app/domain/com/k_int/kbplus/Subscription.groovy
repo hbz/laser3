@@ -812,7 +812,7 @@ class Subscription
   }
 
   def hasPlatformWithUsageSupplierId() {
-      def hasUsageSupplier = false
+      boolean hasUsageSupplier = false
       packages.each { it ->
           def hql="select count(distinct sp) from SubscriptionPackage sp "+
               "join sp.subscription.orgRelations as or "+

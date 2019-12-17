@@ -132,7 +132,7 @@ class DataManagerController extends AbstractDebugController {
     def filterActors = params.change_actors
 
     if(filterActors) {
-      def multipleActors = false;
+      boolean multipleActors = false
       def condition = "AND ( "
       filterActors.each{        
           if (multipleActors) {
@@ -304,7 +304,7 @@ class DataManagerController extends AbstractDebugController {
 
   @Secured(['ROLE_ADMIN'])
   def deletedTitles() {
-    def result = [:]
+    Map<String, Object> result = [:]
 
     result.user = User.get(springSecurityService.principal.id)
     result.max = params.max ? Integer.parseInt(params.max): result.user?.getDefaultPageSizeTMP()
@@ -333,7 +333,7 @@ class DataManagerController extends AbstractDebugController {
 
     @Secured(['ROLE_ORG_MANAGER', 'ROLE_ADMIN'])
     def deletedOrgs() {
-        def result = [:]
+        Map<String, Object> result = [:]
 
         result.user = User.get(springSecurityService.principal.id)
         result.max = params.max ? Integer.parseInt(params.max): result.user?.getDefaultPageSizeTMP()
@@ -483,7 +483,7 @@ class DataManagerController extends AbstractDebugController {
 
   @Secured(['ROLE_ADMIN'])
   def checkPackageTIPPs() {
-    def result = [:]
+    Map<String, Object> result = [:]
     result.user = springSecurityService.getCurrentUser()
     params.max =  params.max ?: result.user.getDefaultPageSizeTMP()
 

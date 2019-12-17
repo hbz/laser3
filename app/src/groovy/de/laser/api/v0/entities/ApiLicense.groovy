@@ -108,7 +108,7 @@ class ApiLicense {
      * @return Map<String, Object>
      */
     static Map<String, Object> retrieveLicenseMap(License lic, def ignoreRelation, Org context){
-        def result = [:]
+        Map<String, Object> result = [:]
 
         lic = GrailsHibernateUtil.unwrapIfProxy(lic)
 

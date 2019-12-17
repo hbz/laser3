@@ -1182,7 +1182,7 @@ select ie from IssueEntitlement as ie JOIN ie.subscription.orgRelations as o
 
   @Transient
   def isInPackage(pkg) {
-    def result = false
+    boolean result = false
     def tipp = TitleInstancePackagePlatform.findByTitleAndPkg(this,pkg)
     if(tipp)
       result=true
@@ -1227,7 +1227,7 @@ select ie from IssueEntitlement as ie JOIN ie.subscription.orgRelations as o
     // Disabled 8-oct-2015 as requested by Magaly via OS
     return true
 
-    def result = true;
+    boolean result = true
     def published_from = null;
     def published_to = null;
 

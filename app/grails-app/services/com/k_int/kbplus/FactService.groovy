@@ -31,7 +31,7 @@ class FactService {
 
     def registerFact(fact) {
       // log.debug("Enter registerFact");
-      def result = false
+      boolean result = false
 
       if ( ( fact.type == null ) ||
            ( fact.type == '' ) ) 

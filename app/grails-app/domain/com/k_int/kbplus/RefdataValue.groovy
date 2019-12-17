@@ -98,7 +98,7 @@ class RefdataValue extends AbstractI10nTranslatable implements Comparable<Refdat
 
     // Call this from code
     static def loc(String category_name, Map i10n) {
-        def hardData = false
+        boolean hardData = false
         loc(category_name, i10n, hardData)
     }
 

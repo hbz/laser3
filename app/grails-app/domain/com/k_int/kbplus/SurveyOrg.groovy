@@ -65,7 +65,7 @@ class SurveyOrg {
     }
 
     def hasOrgSubscription() {
-        def hasOrgSubscription = false
+        boolean hasOrgSubscription = false
         if (surveyConfig.subscription) {
             Subscription.findAllByInstanceOf(surveyConfig.subscription).each { s ->
                 def ors = OrgRole.findAllWhere(sub: s, org: this.org)

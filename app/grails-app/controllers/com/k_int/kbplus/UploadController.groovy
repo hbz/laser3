@@ -49,7 +49,7 @@ class UploadController extends AbstractDebugController {
   @Secured(['ROLE_ADMIN'])
   @Deprecated
   def reviewPackage() {
-    def result = [:]
+    Map<String, Object> result = [:]
     result.user = User.get(springSecurityService.principal.id)
 
     if ( request.method == 'POST' ) {
@@ -318,7 +318,7 @@ class UploadController extends AbstractDebugController {
 
   private def readSubscriptionOfferedCSV(request) {
 
-    def result = [:]
+    Map<String, Object> result = [:]
     result.processFile=true
     result.incremental=false
 
@@ -388,7 +388,7 @@ class UploadController extends AbstractDebugController {
   }
 
   private def readTippRow(cols, nl) {
-    def result = [:]
+    Map<String, Object> result = [:]
 
     result.messages = []
     result.row = []
@@ -438,7 +438,7 @@ class UploadController extends AbstractDebugController {
 
   private def processCsvLine(csv_line, field_name, col_num, result_map, parseAs, defval, isMandatory) {
     log.debug("  processCsvLine ${csv_line} ${field_name} ${col_num}... mandatory=${isMandatory}");
-    def result = [:]
+    Map<String, Object> result = [:]
     result.messages = []
     result.origValue = csv_line[col_num]
 
