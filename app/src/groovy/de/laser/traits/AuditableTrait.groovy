@@ -45,8 +45,8 @@ trait AuditableTrait {
         List<String> gwp = auditService.getWatchedProperties(this)
         gwp?.each { cp ->
             if (oldMap[cp] != newMap[cp]) {
-                def event
-                def clazz = this."${cp}".getClass().getName()
+                Map<String, Object> event = [:]
+                String clazz = this."${cp}".getClass().getName()
 
                 log?.debug("notifyChangeEvent() " + this + " : " + clazz)
 

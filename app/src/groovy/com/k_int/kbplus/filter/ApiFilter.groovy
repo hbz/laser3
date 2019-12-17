@@ -32,7 +32,7 @@ class ApiFilter extends GenericFilterBean {
             // ignore api spec calls
             if (! (request.getServletPath() =~ /api\/v\d+\/spec/)) {
 
-                def isAuthorized = false
+                boolean isAuthorized = false
                 def checksum
 
                 def method = request.getMethod()

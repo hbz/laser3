@@ -166,7 +166,7 @@ class User {
     }
 
     private def affiliationCheck(userRoleName, globalRoleName, mode, orgToCheck) {
-        def result = false
+        boolean result = false
         def rolesToCheck = [userRoleName]
 
         //log.debug("USER.hasAffiliation(): ${userRoleName}, ${globalRoleName}, ${mode} @ ${orgToCheck}")

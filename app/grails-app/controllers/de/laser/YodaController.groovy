@@ -447,35 +447,14 @@ class YodaController {
     @Secured(['ROLE_YODA'])
     def fullReset() {
 
-        if(dataloadService.update_running == false) {
-            if (ftupdate_running == false) {
-                try {
-                    ftupdate_running = true
-                    SystemEvent.createEvent('YODA_ES_RESET_START')
+       log.debug("Delete all existing FT Control entries");
+       FTControl.withTransaction {
+            FTControl.executeUpdate("delete FTControl c")
+       }
 
-                    log.debug("Delete all existing FT Control entries");
-                    FTControl.withTransaction {
-                        FTControl.executeUpdate("delete FTControl c")
-                    }
+       log.debug("Clear ES")
+       dataloadService.clearDownAndInitES()
 
-                    log.debug("Clear ES")
-                    dataloadService.clearDownAndInitES()
-
-                    log.debug("manual start full text index")
-                    dataloadService.updateFTIndexes()
-                }
-                finally {
-                    ftupdate_running = false
-                    log.debug("fullReset complete ..")
-                }
-            } else {
-                log.debug("FT update already running")
-                flash.error = 'FT update already running'
-            }
-        }else{
-            log.debug("Full Reset fail, because IndexUpdateJob running")
-            flash.error = 'Full Reset fail, because IndexUpdateJob running'
-        }
         log.debug("redirecting to home ..")
 
         redirect controller:'home'
@@ -1547,7 +1526,7 @@ class YodaController {
 
     @Secured(['ROLE_YODA'])
     def cleanUpSurveys() {
-        def result = [:]
+        Map<String, Object> result = [:]
 
         def subSurveys = SurveyConfig.findAllBySubscriptionIsNotNull()
         def count = 0
@@ -1673,7 +1652,7 @@ class YodaController {
 
     @Secured(['ROLE_YODA'])
     def importSeriesToEBooks() {
-        def result = [:]
+        Map<String, Object> result = [:]
 
 
         if(params.kbartPreselect) {

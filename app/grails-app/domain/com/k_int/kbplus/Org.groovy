@@ -708,7 +708,7 @@ class Org
     }
 
     //Only INST_ADM
-    def hasAccessOrg(){
+    boolean hasAccessOrg(){
 
         if(UserOrg.findAllByOrgAndStatusAndFormalRole(this, UserOrg.STATUS_APPROVED, Role.findByAuthority('INST_ADM'))) {
             return true
@@ -719,17 +719,15 @@ class Org
 
     }
 
-    def hasAccessOrgListUser(){
+    Map<String, Object> hasAccessOrgListUser(){
 
-        def result = [:]
+        Map<String, Object> result = [:]
 
         result.instAdms = UserOrg.findAllByOrgAndStatusAndFormalRole(this, UserOrg.STATUS_APPROVED, Role.findByAuthority('INST_ADM'))
         result.instEditors = UserOrg.findAllByOrgAndStatusAndFormalRole(this, UserOrg.STATUS_APPROVED, Role.findByAuthority('INST_EDITOR'))
         result.instUsers = UserOrg.findAllByOrgAndStatusAndFormalRole(this, UserOrg.STATUS_APPROVED, Role.findByAuthority('INST_USER'))
 
         return result
-
-
     }
 
     // copied from AccessService

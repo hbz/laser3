@@ -64,7 +64,8 @@ class SubscriptionCustomProperty extends CustomProperty implements AuditableTrai
 
         //def oid = "${this.owner.class.name}:${this.owner.id}"
         def oid = "${this.class.name}:${this.id}"
-        def changeDoc = [ OID: oid,
+        Map<String, Object> changeDoc = [
+                          OID: oid,
                           event:'SubscriptionCustomProperty.deleted',
                           prop: "${this.type.name}",
                           old: "",
@@ -96,7 +97,7 @@ class SubscriptionCustomProperty extends CustomProperty implements AuditableTrai
 
             // legacy ++
 
-            def slavedPendingChanges = []
+            List<PendingChange> slavedPendingChanges = []
 
             def depedingProps = SubscriptionCustomProperty.findAllByInstanceOf( this )
             depedingProps.each{ scp ->
@@ -123,7 +124,7 @@ class SubscriptionCustomProperty extends CustomProperty implements AuditableTrai
                         "${description}"
                 ]
 
-                def newPendingChange = changeNotificationService.registerPendingChange(
+                PendingChange newPendingChange = changeNotificationService.registerPendingChange(
                         PendingChange.PROP_SUBSCRIPTION,
                         scp.owner,
                         scp.owner.getSubscriber(),
@@ -144,7 +145,7 @@ class SubscriptionCustomProperty extends CustomProperty implements AuditableTrai
             slavedPendingChanges.each { spc ->
                 log.debug('autoAccept! performing: ' + spc)
                 def user = null
-                pendingChangeService.performAccept(spc.getId(), user)
+                pendingChangeService.performAccept(spc, user)
             }
         }
         else if (changeDocument.event.equalsIgnoreCase('SubscriptionCustomProperty.deleted')) {

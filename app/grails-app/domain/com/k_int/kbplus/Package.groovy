@@ -502,7 +502,7 @@ static hasMany = [  tipps:     TitleInstancePackagePlatform,
   @Deprecated
   @Transient
   def toComparablePackage() {
-    def result = [:]
+    Map<String, Object> result = [:]
     println "converting old package to comparable package"
     def sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
     println "processing metadata"

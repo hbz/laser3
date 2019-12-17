@@ -203,7 +203,7 @@ class ApiCollectionReader {
     }
 
     static Map<String, Object> retrieveInvoiceMap(Invoice invoice) {
-        def result = [:]
+        Map<String, Object> result = [:]
         if(! invoice) {
             return null
         }
@@ -292,7 +292,7 @@ class ApiCollectionReader {
 
     /* not used
     def resolveLink(Link link) {
-        def result = [:]
+        Map<String, Object> result = [:]
         if (!link) {
             return null
         }
@@ -324,7 +324,7 @@ class ApiCollectionReader {
     */
 
     static Map<String, Object> retrieveOrderMap(Order order) {
-        def result = [:]
+        Map<String, Object> result = [:]
         if (!order) {
             return null
         }
@@ -376,7 +376,7 @@ class ApiCollectionReader {
     }
 
     static Map<String, Object> retrievePersonMap(Person prs, allowedContactTypes, allowedAddressTypes, Org context) {
-        def result = [:]
+        Map<String, Object> result = [:]
 
         if(prs) {
             result.globalUID       = prs.globalUID
@@ -407,7 +407,7 @@ class ApiCollectionReader {
      * @return
      */
     static Map<String, Object> retrievePlatformMap(Platform pform) {
-        def result = [:]
+        Map<String, Object> result = [:]
 
         if (pform) {
             result.globalUID        = pform.globalUID
@@ -575,7 +575,7 @@ class ApiCollectionReader {
      * @return Map<String, Object>
      */
     static Map<String, Object> retrieveTippMap(TitleInstancePackagePlatform tipp, def ignoreRelation, Org context) {
-        def result = [:]
+        Map<String, Object> result = [:]
         if (!tipp) {
             return null
         }
@@ -648,7 +648,7 @@ class ApiCollectionReader {
 
     /* not used
     def resolveTitle(TitleInstance title) {
-        def result = [:]
+        Map<String, Object> result = [:]
         if (!title) {
             return null
         }

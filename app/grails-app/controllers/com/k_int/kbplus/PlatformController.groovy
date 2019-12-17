@@ -28,7 +28,7 @@ class PlatformController extends AbstractDebugController {
 
     @Secured(['ROLE_USER'])
     def list() {
-        def result = [:]
+        Map<String, Object> result = [:]
         result.user = User.get(springSecurityService.principal.id)
         result.max = params.max ?: result.user.getDefaultPageSizeTMP()
 
@@ -174,7 +174,7 @@ class PlatformController extends AbstractDebugController {
         ]
         //List orgAccessPointList = OrgAccessPoint.executeQuery(qry, qryParams)
 
-        //def result = [:]
+        //Map<String, Object> result = [:]
         def selectedInstitution = contextService.getOrg()
 
         def authorizedOrgs = contextService.getUser().getAuthorizedOrgs()
@@ -311,7 +311,7 @@ class PlatformController extends AbstractDebugController {
     @DebugAnnotation(test='hasAffiliation("INST_EDITOR")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_EDITOR") })
     def link() {
-        def result = [:]
+        Map<String, Object> result = [:]
         def platformInstance = Platform.get(params.id)
         if (!platformInstance) {
             flash.message = message(code: 'default.not.found.message',
@@ -344,7 +344,7 @@ class PlatformController extends AbstractDebugController {
     @DebugAnnotation(test='hasAffiliation("INST_EDITOR")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_EDITOR") })
     def dynamicApLink(){
-        def result = [:]
+        Map<String, Object> result = [:]
         def platformInstance = Platform.get(params.platform_id)
         if (!platformInstance) {
             flash.message = message(code: 'default.not.found.message',
@@ -504,7 +504,7 @@ class PlatformController extends AbstractDebugController {
     }
 
     private Map setResultGenerics() {
-        def result = [:]
+        Map<String, Object> result = [:]
         result.user = User.get(springSecurityService.principal.id)
         result.orgInstance = contextService.org
         result

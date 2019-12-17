@@ -21,8 +21,8 @@ class AdminReminderService extends AbstractLockableService {
         log.debug("Initialised adminReminder Service...")
     }
 
-    def checkPendingMembershipReqs() {
-        def result = [:]
+    Map<String, Object> checkPendingMembershipReqs() {
+        Map<String, Object> result = [:]
 
         result.pendingRequests = UserOrg.findAllByStatus(0, [sort: 'dateRequested'])
         result
@@ -30,7 +30,7 @@ class AdminReminderService extends AbstractLockableService {
 
     def errorInLog() {
 
-//        def result = [:]
+//        Map<String, Object> result = [:]
 //        new File("logs/laser-0.3.4.log").eachLine{ line->
 //                def m = line =~ /(\d+-\d+-\d+) (\d+:\d+:\d+,\d+) \[\w+-\d+\] ERROR/
 //                if(m.size()>0) {

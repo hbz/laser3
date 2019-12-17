@@ -139,28 +139,28 @@ class DataManagerController extends AbstractDebugController {
         //def filterActors = params.findAll{it.key.startsWith("change_actor_")}
         def filterActors = params.change_actors
 
-        if(filterActors) {
-            def multipleActors = false;
-            def condition = "AND ( "
-            filterActors.each{
-                if (multipleActors) {
-                    condition = "OR"
-                }
-                if ( it == "change_actor_PEOPLE" ) {
-                    base_query += " ${condition} e.actor <> \'system\' AND e.actor <> \'anonymousUser\' "
-                    multipleActors = true
-                }
-                else if(it != 'change_actor_ALL' && it != 'change_actor_PEOPLE') {
-                    def paramKey = it.replaceAll("[^A-Za-z]", "") //remove things that can cause problems in sql
-                    base_query += " ${condition} e.actor = :${paramKey} "
-                    query_params."${paramKey}" = it.split("change_actor_")[1]
-                    multipleActors = true
-                }
-            }
-            base_query += " ) "
-        }
-
-
+    if(filterActors) {
+      boolean multipleActors = false;
+      def condition = "AND ( "
+      filterActors.each{        
+          if (multipleActors) {
+            condition = "OR"
+          }
+          if ( it == "change_actor_PEOPLE" ) {
+            base_query += " ${condition} e.actor <> \'system\' AND e.actor <> \'anonymousUser\' "
+            multipleActors = true
+          }
+          else if(it != 'change_actor_ALL' && it != 'change_actor_PEOPLE') {
+            def paramKey = it.replaceAll("[^A-Za-z]", "") //remove things that can cause problems in sql
+            base_query += " ${condition} e.actor = :${paramKey} "
+            query_params."${paramKey}" = it.split("change_actor_")[1]
+            multipleActors = true
+          }     
+      } 
+      base_query += " ) "  
+    }
+  
+  
 
         if ( types_to_include.size() > 0 ) {
 
@@ -310,9 +310,9 @@ class DataManagerController extends AbstractDebugController {
         return actors
     }
 
-    @Secured(['ROLE_ADMIN'])
-    def deletedTitles() {
-        def result = [:]
+  @Secured(['ROLE_ADMIN'])
+  def deletedTitles() {
+    Map<String, Object> result = [:]
 
         result.user = User.get(springSecurityService.principal.id)
         result.max = params.max ? Integer.parseInt(params.max): result.user?.getDefaultPageSizeTMP()
@@ -341,7 +341,7 @@ class DataManagerController extends AbstractDebugController {
 
     @Secured(['ROLE_ORG_MANAGER', 'ROLE_ADMIN'])
     def deletedOrgs() {
-        def result = [:]
+        Map<String, Object> result = [:]
 
         result.user = User.get(springSecurityService.principal.id)
         result.max = params.max ? Integer.parseInt(params.max): result.user?.getDefaultPageSizeTMP()
@@ -587,11 +587,11 @@ class DataManagerController extends AbstractDebugController {
         redirect(controller: 'home')
     }
 
-    @Secured(['ROLE_ADMIN'])
-    def checkPackageTIPPs() {
-        def result = [:]
-        result.user = springSecurityService.getCurrentUser()
-        params.max =  params.max ?: result.user.getDefaultPageSizeTMP()
+  @Secured(['ROLE_ADMIN'])
+  def checkPackageTIPPs() {
+    Map<String, Object> result = [:]
+    result.user = springSecurityService.getCurrentUser()
+    params.max =  params.max ?: result.user.getDefaultPageSizeTMP()
 
 
         def gokbRecords = []

@@ -52,7 +52,7 @@ class IssueEntitlementController extends AbstractDebugController {
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
     def show() {
-      def result = [:]
+      Map<String, Object> result = [:]
 
       result.user = User.get(springSecurityService.principal.id)
       result.issueEntitlementInstance = IssueEntitlement.get(params.id)

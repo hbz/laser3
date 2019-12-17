@@ -35,7 +35,7 @@ class CostConfigurationController {
     @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_EDITOR") })
     def getCurrentConfigurations() {
-        def result = [:]
+        Map<String, Object> result = [:]
 
         def org = contextService.getOrg()
         def user = contextService.getUser()

@@ -507,7 +507,7 @@ class TitleInstancePackagePlatform extends AbstractBaseDomain /*implements Audit
   **/
   public int compare(TitleInstancePackagePlatform tippB){
       if(!tippB) return -1;
-      def noChange = true
+      boolean noChange = true
       controlledProperties.each{ noChange &= this."${it}" == tippB."${it}" }
       
       if( noChange ) return 0;      

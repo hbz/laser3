@@ -60,7 +60,7 @@ class ApiPkg {
 	 * @return Map<String, Object>
 	 */
 	static Map<String, Object> retrievePackageMap(com.k_int.kbplus.Package pkg, Org context) {
-		def result = [:]
+		Map<String, Object> result = [:]
 
 		pkg = GrailsHibernateUtil.unwrapIfProxy(pkg)
 

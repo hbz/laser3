@@ -580,7 +580,7 @@ class Subscription
     def notifyDependencies_trait(changeDocument) {
         log.debug("notifyDependencies_trait(${changeDocument})")
 
-        def slavedPendingChanges = []
+        List<PendingChange> slavedPendingChanges = []
         def derived_subscriptions = getNonDeletedDerivedSubscriptions()
 
         derived_subscriptions.each { ds ->
@@ -606,7 +606,7 @@ class Subscription
                     "${description}"
             ]
 
-            def newPendingChange = changeNotificationService.registerPendingChange(
+            PendingChange newPendingChange = changeNotificationService.registerPendingChange(
                     PendingChange.PROP_SUBSCRIPTION,
                     ds,
                     ds.getSubscriber(),
@@ -628,7 +628,7 @@ class Subscription
         slavedPendingChanges.each { spc ->
             log.debug('autoAccept! performing: ' + spc)
             def user = null
-            pendingChangeService.performAccept(spc.getId(), user)
+            pendingChangeService.performAccept(spc, user)
         }
     }
 
@@ -806,7 +806,7 @@ class Subscription
   }
 
   def hasPlatformWithUsageSupplierId() {
-      def hasUsageSupplier = false
+      boolean hasUsageSupplier = false
       packages.each { it ->
           def hql="select count(distinct sp) from SubscriptionPackage sp "+
               "join sp.subscription.orgRelations as or "+

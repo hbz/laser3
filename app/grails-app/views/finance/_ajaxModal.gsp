@@ -36,7 +36,7 @@
         <g:if test="${costItem?.isVisibleForSubscriber && tab == "cons"}">
             <div class="content la-twoSided-ribbon">
                 <div class="ui orange ribbon label">
-                    <strong>${message(code:'financials.isVisibleForSubscriber')}</strong>
+                    <strong>${message(code:'financials.isVisibleForSubscriber')}: ${costItem.sub?.getSubscriber()}</strong>
                 </div>
             </div>
         </g:if>
@@ -44,6 +44,13 @@
             <div class="content la-twoSided-ribbon">
                 <div class="ui blue ribbon label">
                     <strong>${message(code:'financials.transferConsortialCosts')}: </strong>
+                </div>
+            </div>
+        </g:elseif>
+        <g:elseif test="${tab == "cons" && costItem.sub?.getSubscriber()}">
+            <div class="content la-twoSided-ribbon">
+                <div class="ui orange ribbon label">
+                    <strong>${costItem.sub?.getSubscriber().name} </strong>
                 </div>
             </div>
         </g:elseif>
@@ -213,7 +220,7 @@
                                   value="${costItem?.billingCurrency?.id}" />
                     </div><!-- .field -->
                     <div class="field">
-                        <label><g:message code="financials.newCosts.totalAmountInEuro"/></label>
+                        <label><g:message code="financials.newCosts.totalAmount"/></label>
                         <input title="${g.message(code:'financials.newCosts.totalAmount')}" type="text" readonly="readonly"
                                name="newCostInBillingCurrencyAfterTax" id="newCostInBillingCurrencyAfterTax"
                                value="<g:formatNumber number="${fromConsortia ? 0.0 : costItem?.costInBillingCurrencyAfterTax}" minFractionDigits="2" maxFractionDigits="2" />" />
@@ -270,8 +277,8 @@
 
                 <div class="two fields">
                     <div class="field">
-                        <label><g:message code="financials.newCosts.value"/></label>
-                        <input title="<g:message code="financials.addNew.LocalCurrency"/>" type="text" class="calc"
+                        <label><g:message code="financials.newCosts.valueInLocalCurrency" args="${[RDStore.CURRENCY_EUR.value]}"/></label><%-- TODO once we may configure local currency as OrgSetting, this arg has to be replaced! --%>
+                        <input title="<g:message code="financials.newCosts.valueInLocalCurrency" args="${[RDStore.CURRENCY_EUR.value]}"/>" type="text" class="calc"
                                name="newCostInLocalCurrency" id="newCostInLocalCurrency"
                                placeholder="${message(code:'financials.newCosts.value')}"
                                value="<g:formatNumber number="${fromConsortia ? costItem?.costInLocalCurrencyAfterTax : costItem?.costInLocalCurrency}" minFractionDigits="2" maxFractionDigits="2"/>" />
@@ -281,8 +288,8 @@
                         </div>
                     </div><!-- .field -->
                     <div class="field">
-                        <label><g:message code="financials.newCosts.finalSum" /></label>
-                        <input title="<g:message code="financials.newCosts.finalSum" />" type="text" readonly="readonly"
+                        <label><g:message code="financials.newCosts.finalSumInLocalCurrency" args="${[RDStore.CURRENCY_EUR.value]}"/></label><%-- TODO once we may configure local currency as OrgSetting, this arg has to be replaced! --%>
+                        <input title="<g:message code="financials.newCosts.finalSumInLocalCurrency" args="${[RDStore.CURRENCY_EUR.value]}"/>" type="text" readonly="readonly"
                                name="newCostInLocalCurrencyAfterTax" id="newCostInLocalCurrencyAfterTax"
                                value="<g:formatNumber number="${fromConsortia ? 0.0 : costItem?.costInLocalCurrencyAfterTax}" minFractionDigits="2" maxFractionDigits="2"/>"/>
                     </div><!-- .field -->

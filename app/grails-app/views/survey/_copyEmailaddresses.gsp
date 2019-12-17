@@ -96,7 +96,6 @@
         var jsonAllEmailSet = <%=groovy.json.JsonOutput.toJson((Set)functionAllEmailsSet)%>;
 
         updateTextArea();
-        $(this).find('.datepicker').calendar(r2d2.configs.datepicker);
 
 
         $("#${modalID} #prsFunctionMultiSelect").change(function() { updateTextArea(); });

@@ -42,16 +42,16 @@ public class PackageIngestService {
   def processUploadPackage(upload) {
 
     def new_pkg_id = null
-    com.k_int.kbplus.PackageIngestService.log.debug("Content provider value is ${upload.soProvider.value}");
+    log.debug("Content provider value is ${upload.soProvider.value}");
 
     def content_provider_org = Org.findByName(upload.soProvider.value) 
     if ( content_provider_org == null ) {
-      com.k_int.kbplus.PackageIngestService.log.debug("content_provider_org is present and set to ${content_provider_org}");
+      log.debug("content_provider_org is present and set to ${content_provider_org}");
       content_provider_org = new Org(name:upload.soProvider.value,impId:java.util.UUID.randomUUID().toString()).save();    
       incrementStatsCounter(upload,'Content Provider Org Created');
     }
     else {
-      com.k_int.kbplus.PackageIngestService.log.debug("Matched ${content_provider_org} using name ${upload.soProvider.value}");
+      log.debug("Matched ${content_provider_org} using name ${upload.soProvider.value}");
       incrementStatsCounter(upload,'Content Provider Org Matched');
     }
     
@@ -68,7 +68,7 @@ public class PackageIngestService {
     def new_pkg = null;
 
     if ( upload.incremental ) {
-      com.k_int.kbplus.PackageIngestService.log.debug("Processing incremental load....");
+      log.debug("Processing incremental load....");
       new_pkg = Package.findByIdentifier(upload.normPkgIdentifier);
       new_pkg_id = new_pkg.id
     }
@@ -83,7 +83,7 @@ public class PackageIngestService {
 
       if ( new_pkg.save(flush:true, failOnError:true) ) {
 
-        com.k_int.kbplus.PackageIngestService.log.debug("Package [${new_pkg.id}] with identifier ${new_pkg.identifier} created......");
+        log.debug("Package [${new_pkg.id}] with identifier ${new_pkg.identifier} created......");
 
         if ( upload.consortiumOrg ) {                              
           def sc_role = RefdataValue.getByValueAndCategory('Package Consortia', 'Organisational Role')
@@ -92,19 +92,19 @@ public class PackageIngestService {
 
         // Content Provider?
         if ( content_provider_org ) {
-          com.k_int.kbplus.PackageIngestService.log.debug("Linking to org as content provider");
+          log.debug("Linking to org as content provider");
           def cp_or = new OrgRole(org: content_provider_org, pkg:new_pkg, roleType:cp_role).save();
         }
         else {
-          com.k_int.kbplus.PackageIngestService.log.debug("No content provider org");
+          log.debug("No content provider org");
         }
         new_pkg_id = new_pkg.id
       }
       else {
-        com.k_int.kbplus.PackageIngestService.log.error("Problem saving new package");
+        log.error("Problem saving new package");
         upload.messages.add("Problem saving new package");
         new_pkg.errors.each { pe ->
-          com.k_int.kbplus.PackageIngestService.log.error("Problem saving package: ${pe}");
+          log.error("Problem saving package: ${pe}");
           upload.messages.add("Problem saving package: ${pe}");
         }
         flash.error="Problem saving new package ${new_pkg.errors}";
@@ -112,7 +112,7 @@ public class PackageIngestService {
       }
     }
 
-    com.k_int.kbplus.PackageIngestService.log.debug("processing titles");
+    log.debug("processing titles");
     // Title info
     upload.tipps.each { tipp ->
     
@@ -171,9 +171,9 @@ public class PackageIngestService {
                                                     ids:[])
   
           if ( ! dbtipp.save() ) {
-            com.k_int.kbplus.PackageIngestService.log.error("ERROR Saving tipp");
+            log.error("ERROR Saving tipp");
             dbtipp.errors.each { err ->
-              com.k_int.kbplus.PackageIngestService.log.error("  -> ${err}");
+              log.error("  -> ${err}");
               tipp.messages.add("Problem saving tipp: ${err}");
               tipp.messages.add([type:'alert-error',message:"Problem creating new tipp: ${dbtipp.id}"]);
             }
@@ -196,7 +196,7 @@ public class PackageIngestService {
 
         }
         else {
-          com.k_int.kbplus.PackageIngestService.log.error("TIPP already exists!! this can happen in incrementals... just ignore now");
+          log.error("TIPP already exists!! this can happen in incrementals... just ignore now");
           tipp.messages.add([type:'alert-error',message:"WARNING: An existing tipp record was located. This can happen in incremental imports. This row has been ignored"]);
         }        
       }
@@ -205,7 +205,7 @@ public class PackageIngestService {
       }
     }
 
-    com.k_int.kbplus.PackageIngestService.log.debug("Completed New package is ${new_pkg.id}");
+    log.debug("Completed New package is ${new_pkg.id}");
 
     upload.new_pkg_id = new_pkg_id
   }
@@ -264,16 +264,16 @@ public class PackageIngestService {
     return false
   }
 
-  def readPackageCSV(upload_mime_type, upload_filename, charset, input_stream, docstyle) {
+  Map<String, Object> readPackageCSV(upload_mime_type, upload_filename, charset, input_stream, docstyle) {
 
-    def result = [:]
+    Map<String, Object> result = [:]
     result.processFile=true
     result.incremental=false
 
     // File level messages
     result.messages=[]
 
-    com.k_int.kbplus.PackageIngestService.log.debug("Reading Stream");
+    log.debug("Reading Stream");
 
     if  ( ( charset != null ) && ( ! charset.equals('UTF-8') ) ) {
       result.messages.add("** WARNING: Detected input character stream encoding: ${charset}. Expected UTF-8");
@@ -281,11 +281,11 @@ public class PackageIngestService {
 
     CSVReader r = null
     if ( docstyle?.equals("tsv") ) {
-      com.k_int.kbplus.PackageIngestService.log.debug("Processing TSV");
+      log.debug("Processing TSV");
       r = new CSVReader( new InputStreamReader(input_stream, java.nio.charset.Charset.forName('UTF-8') ), (char)'\t' )
     }
     else {
-      com.k_int.kbplus.PackageIngestService.log.debug("Processing CSV");
+      log.debug("Processing CSV");
       r = new CSVReader( new InputStreamReader(input_stream, java.nio.charset.Charset.forName('UTF-8') ) )
     }
 
@@ -326,9 +326,9 @@ public class PackageIngestService {
 
     return result;
   }
-  
-  def readTippRow(cols, nl) {
-    def result = [:]
+
+  Map<String, Object> readTippRow(cols, nl) {
+    Map<String, Object> result = [:]
 
     result.messages = []
     result.row = []
@@ -376,8 +376,8 @@ public class PackageIngestService {
   }
   
   def processCsvLine(csv_line, field_name, col_num,result_map, parseAs, defval, isMandatory) {  
-    com.k_int.kbplus.PackageIngestService.log.debug("  processCsvLine ${csv_line} ${field_name} ${col_num}... mandatory=${isMandatory}");
-    def result = [:]
+    log.debug("  processCsvLine ${csv_line} ${field_name} ${col_num}... mandatory=${isMandatory}");
+    Map<String, Object> result = [:]
     result.messages = []
     result.origValue = csv_line[col_num]
 
@@ -388,7 +388,7 @@ public class PackageIngestService {
           break;
         case 'date':
           result.value = parseDate(result.origValue,possible_date_formats)
-          com.k_int.kbplus.PackageIngestService.log.debug("Parse date, ${result.origValue}, result = ${result.value}");
+          log.debug("Parse date, ${result.origValue}, result = ${result.value}");
           break;
         case 'str':
         default:
@@ -400,9 +400,9 @@ public class PackageIngestService {
   
     
     if ( ( result.value == null ) || ( result.value.toString().trim() == '' ) ) {
-      com.k_int.kbplus.PackageIngestService.log.debug("Mandatory flag set, checking value");
+      log.debug("Mandatory flag set, checking value");
       if ( isMandatory ) {
-        com.k_int.kbplus.PackageIngestService.log.debug("Mandatory property is null.. error");
+        log.debug("Mandatory property is null.. error");
         result_map.processFile=false
         result_map[field_name] = [messages:["Missing mandatory property: ${field_name}"]]
       }
@@ -412,8 +412,8 @@ public class PackageIngestService {
     }
     else {
     }
-
-    com.k_int.kbplus.PackageIngestService.log.debug("result = ${result}");
+    
+     log.debug("result = ${result}");
   }
   
   def validate(upload) {
@@ -579,7 +579,7 @@ public class PackageIngestService {
                                       .replaceAll(' ','_')
                                       .replaceAll(':','_');
       if ( ( upload.normPkgIdentifier == null ) || ( upload.normPkgIdentifier.trim().length() == 0 ) ) {
-        com.k_int.kbplus.PackageIngestService.log.error("No package identifier");
+        log.error("No package identifier");
         upload['soPackageIdentifier'].messages.add("Unable to use this identifier")
         upload.processFile=false
       }
@@ -593,7 +593,7 @@ public class PackageIngestService {
       }
     }
     else {
-      com.k_int.kbplus.PackageIngestService.log.error("No package identifier");
+      log.error("No package identifier");
       upload['soPackageIdentifier'].messages.add("Unable to use this identifier")
       upload.processFile=false
     }
@@ -646,11 +646,11 @@ public class PackageIngestService {
           }
         }
         else {
-          com.k_int.kbplus.PackageIngestService.log.debug("no title by identifier match for ${id.key} : ${id.value}");
+          log.debug("no title by identifier match for ${id.key} : ${id.value}");
         }
       }
       else {
-        com.k_int.kbplus.PackageIngestService.log.debug("Not checking identifier of type ${id.key}");
+        log.debug("Not checking identifier of type ${id.key}");
       }
     }
 

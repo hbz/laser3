@@ -81,7 +81,7 @@ class ApiController extends AbstractDebugController {
     @Secured(['ROLE_API', 'IS_AUTHENTICATED_FULLY'])
     @Deprecated
     def uploadBibJson() {
-        def result = [:]
+        Map<String, Object> result = [:]
         log.debug("uploadBibJson");
         log.debug("Auth request from ${request.getRemoteAddr()}");
         if (request.getRemoteAddr() == '127.0.0.1') {
@@ -139,7 +139,7 @@ class ApiController extends AbstractDebugController {
         //            title - [namespace:]code  Of a title [mandatory]
         //         provider - [namespace:]code  Of an org [optional]
         log.debug("assertCore(${params})");
-        def result = [:]
+        Map<String, Object> result = [:]
         if (request.getRemoteAddr() == '127.0.0.1') {
             if ((params.inst?.length() > 0) && (params.title?.length() > 0)) {
                 def inst = Org.lookupByIdentifierString(params.inst);
@@ -191,7 +191,7 @@ where tipp.title = ? and orl.roleType.value=?''', [title, 'Content Provider']);
     @Secured(['ROLE_API', 'IS_AUTHENTICATED_FULLY'])
     def institutionTitles() {
 
-        def result = [:]
+        Map<String, Object> result = [:]
         result.titles = []
 
         if (params.orgid) {

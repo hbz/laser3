@@ -2,7 +2,7 @@
 <html>
 <head>
     <meta name="layout" content="semanticUI">
-    <title>${message(code:'laser', default:'LAS:eR')} : ${message(code:'menu.yoda.quartzInfo')}</title>
+    <title>${message(code:'laser')} : ${message(code:'menu.yoda.quartzInfo')}</title>
 </head>
 <body>
 
@@ -11,7 +11,7 @@
     <semui:crumb message="menu.yoda.quartzInfo" class="active"/>
 </semui:breadcrumbs>
 <br>
-<h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon />${message(code:'menu.yoda.quartzInfo')}</h1>
+<h2 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon />${message(code:'menu.yoda.quartzInfo')}</h2>
 
 <br />
 

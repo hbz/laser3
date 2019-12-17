@@ -21,7 +21,7 @@ class OaiController extends AbstractDebugController {
   def sdf = new java.text.SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
 
   def index() {
-    def result = [:]
+    Map<String, Object> result = [:]
 
     log.debug("index (${params})");
 

@@ -40,7 +40,7 @@ class PackageController extends AbstractDebugController {
     @Secured(['ROLE_USER'])
     def index() {
 
-        def result = [:]
+        Map<String, Object> result = [:]
         result.user = springSecurityService.getCurrentUser()
         params.max = params.max ?: result.user.getDefaultPageSizeTMP()
 
@@ -103,7 +103,7 @@ class PackageController extends AbstractDebugController {
 
     @Secured(['ROLE_USER'])
     def list() {
-        def result = [:]
+        Map<String, Object> result = [:]
         result.user = User.get(springSecurityService.principal.id)
         result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeTMP();
 
@@ -190,7 +190,7 @@ class PackageController extends AbstractDebugController {
         redirect controller: 'package', action: 'show', params: params
         return
 
-        def result = [:]
+        Map<String, Object> result = [:]
         result.user = User.get(springSecurityService.principal.id)
         result.packageInstance = Package.get(params.id)
         result.editable = isEditable()
@@ -319,7 +319,7 @@ class PackageController extends AbstractDebugController {
         ctx.accessService.checkPermAffiliation("ORG_INST,ORG_CONSORTIUM", "INST_USER")
     })
     def compare() {
-        def result = [:]
+        Map<String, Object> result = [:]
         result.unionList = []
 
         result.user = User.get(springSecurityService.principal.id)
@@ -468,7 +468,7 @@ class PackageController extends AbstractDebugController {
     def show() {
         def verystarttime = exportService.printStart("Package show")
 
-        def result = [:]
+        Map<String, Object> result = [:]
         boolean showDeletedTipps = false
 
         result.transforms = grailsApplication.config.packageTransforms
@@ -607,7 +607,7 @@ class PackageController extends AbstractDebugController {
     @Secured(['ROLE_USER'])
     def current() {
         log.debug("current ${params}");
-        def result = [:]
+        Map<String, Object> result = [:]
         boolean showDeletedTipps = false
         result.user = User.get(springSecurityService.principal.id)
         result.editable = isEditable()
@@ -663,7 +663,7 @@ class PackageController extends AbstractDebugController {
 
     @Secured(['ROLE_USER'])
     def documents() {
-        def result = [:]
+        Map<String, Object> result = [:]
         result.user = User.get(springSecurityService.principal.id)
         result.institution = contextService.org
         result.packageInstance = Package.get(params.id)
@@ -685,7 +685,7 @@ class PackageController extends AbstractDebugController {
     @Secured(['ROLE_USER'])
     def previous_expected(params, func) {
         log.debug("previous_expected ${params}");
-        def result = [:]
+        Map<String, Object> result = [:]
         boolean showDeletedTipps = false
         result.user = User.get(springSecurityService.principal.id)
         result.editable = isEditable()
@@ -900,7 +900,7 @@ class PackageController extends AbstractDebugController {
 
     @Secured(['ROLE_USER'])
     def notes() {
-        def result = [:]
+        Map<String, Object> result = [:]
         result.user = User.get(springSecurityService.principal.id)
         result.packageInstance = Package.get(params.id)
         result.editable = isEditable()
@@ -909,7 +909,7 @@ class PackageController extends AbstractDebugController {
 
     @Secured(['ROLE_USER'])
     def tasks() {
-        def result = [:]
+        Map<String, Object> result = [:]
         result.user = User.get(springSecurityService.principal.id)
         result.packageInstance = Package.get(params.id)
         result.editable = isEditable()
@@ -1055,7 +1055,7 @@ class PackageController extends AbstractDebugController {
 
     @Secured(['ROLE_USER'])
     def history() {
-        def result = [:]
+        Map<String, Object> result = [:]
         def exporting = params.format == 'csv' ? true : false
 
         if (exporting) {

@@ -144,7 +144,7 @@ class SubscriptionController extends AbstractDebugController {
         log.debug("max = ${result.max}");
 
         def pending_change_pending_status = RefdataValue.getByValueAndCategory('Pending', 'PendingChangeStatus')
-        def pendingChanges = PendingChange.executeQuery("select pc.id from PendingChange as pc where subscription=? and ( pc.status is null or pc.status = ? ) order by ts desc", [result.subscriptionInstance, pending_change_pending_status]);
+        List<PendingChange> pendingChanges = PendingChange.executeQuery("select pc.id from PendingChange as pc where subscription=? and ( pc.status is null or pc.status = ? ) order by ts desc", [result.subscriptionInstance, pending_change_pending_status]);
 
         if (result.subscriptionInstance?.isSlaved && pendingChanges) {
             log.debug("Slaved subscription, auto-accept pending changes")
@@ -374,7 +374,7 @@ class SubscriptionController extends AbstractDebugController {
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
     def unlinkPackage() {
         log.debug("unlinkPackage :: ${params}")
-        def result = [:]
+        Map<String, Object> result = [:]
         result.user = User.get(springSecurityService.principal.id)
         result.subscription = Subscription.get(params.subscription.toLong())
         result.package = Package.get(params.package.toLong())
@@ -479,10 +479,11 @@ class SubscriptionController extends AbstractDebugController {
         result.entitlements = result.entitlements.subList(result.offset, (result.offset + result.max).intValue())
     }
 
-    @DebugAnnotation(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_USER")
+    /*@DebugAnnotation(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_USER")
     @Secured(closure = {
         ctx.accessService.checkPermAffiliation("ORG_INST,ORG_CONSORTIUM", "INST_USER")
-    })
+    })*/
+    @Secured(['ROLE_ADMIN'])
     def compare() {
         def result = setResultGenericsAndCheckAccess(accessService.CHECK_VIEW)
 
@@ -1154,7 +1155,7 @@ class SubscriptionController extends AbstractDebugController {
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
     def showEntitlementsRenewWithSurvey() {
-        def result = [:]
+        Map<String, Object> result = [:]
         result.institution = contextService.getOrg()
         result.user = User.get(springSecurityService.principal.id)
 
@@ -2648,7 +2649,7 @@ class SubscriptionController extends AbstractDebugController {
     def processAddIssueEntitlementsSurvey() {
         log.debug("processAddIssueEntitlementsSurvey....");
 
-        def result = [:]
+        Map<String, Object> result = [:]
         result.user = User.get(springSecurityService.principal.id)
         result.subscriptionInstance = Subscription.get(params.id)
         result.subscription = Subscription.get(params.id)
@@ -2720,7 +2721,7 @@ class SubscriptionController extends AbstractDebugController {
     def processRemoveIssueEntitlementsSurvey() {
         log.debug("processRemoveIssueEntitlementsSurvey....");
 
-        def result = [:]
+        Map<String, Object> result = [:]
         result.user = User.get(springSecurityService.principal.id)
         result.subscriptionInstance = Subscription.get(params.id)
         result.subscription = Subscription.get(params.id)
@@ -2790,7 +2791,7 @@ class SubscriptionController extends AbstractDebugController {
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_EDITOR") })
     def processRenewEntitlementsWithSurvey() {
         log.debug("processRenewEntitlementsWithSurvey ...")
-        def result = [:]
+        Map<String, Object> result = [:]
         result.user = User.get(springSecurityService.principal.id)
         result.subscriptionInstance = Subscription.get(params.id)
         result.subscription = Subscription.get(params.id)
@@ -3460,7 +3461,7 @@ class SubscriptionController extends AbstractDebugController {
         } else {
 
             def pending_change_pending_status = RefdataValue.getByValueAndCategory('Pending', 'PendingChangeStatus')
-            def pendingChanges = PendingChange.executeQuery("select pc.id from PendingChange as pc where subscription=? and ( pc.status is null or pc.status = ? ) order by pc.ts desc", [result.subscription, pending_change_pending_status])
+            List<PendingChange> pendingChanges = PendingChange.executeQuery("select pc.id from PendingChange as pc where subscription=? and ( pc.status is null or pc.status = ? ) order by pc.ts desc", [result.subscription, pending_change_pending_status])
 
             log.debug("pc result is ${result.pendingChanges}")
 
@@ -4248,7 +4249,8 @@ class SubscriptionController extends AbstractDebugController {
                     type: sub_type,
                     status: sub_status,
                     resource: sub_resource,
-                    form: sub_form
+                    form: sub_form,
+                    administrative: baseSub.administrative
             )
 
             if (!newSub.save(flush: true)) {
@@ -4270,7 +4272,7 @@ class SubscriptionController extends AbstractDebugController {
                 //OrgRole
                 baseSub.orgRelations?.each { or ->
 
-                    if ((or.org?.id == contextService.getOrg()?.id) || (or.roleType.value in ['Subscriber', 'Subscriber_Consortial'])) {
+                    if ((or.org?.id == contextService.getOrg()?.id) || (or.roleType in [RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIBER_CONS])) {
                         OrgRole newOrgRole = new OrgRole()
                         InvokerHelper.setProperties(newOrgRole, or.properties)
                         newOrgRole.sub = newSub
@@ -5204,7 +5206,7 @@ class SubscriptionController extends AbstractDebugController {
     }
 
     private LinkedHashMap setResultGenericsAndCheckAccess(checkOption) {
-        def result = [:]
+        Map<String, Object> result = [:]
         result.user = contextService.user
         result.subscriptionInstance = Subscription.get(params.id)
         result.subscription = Subscription.get(params.id)

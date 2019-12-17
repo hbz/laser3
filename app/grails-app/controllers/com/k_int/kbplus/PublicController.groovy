@@ -49,7 +49,7 @@ class PublicController {
     }
     @Secured(['permitAll'])
     def gasco() {
-        def result = [:]
+        Map<String, Object> result = [:]
 
         def consRoles = Role.findAll { authority == 'ORG_CONSORTIUM_SURVEY' || authority == 'ORG_CONSORTIUM' }
 
@@ -152,7 +152,7 @@ class PublicController {
 
 //    @Secured(['permitAll'])
 //    def gascoDetails() {
-//        def result = [:]
+//        Map<String, Object> result = [:]
 //
 //        result.tipps = []
 //
@@ -214,7 +214,7 @@ class PublicController {
 
     @Secured(['permitAll'])
     def gascoDetailsIssueEntitlements() {
-        def result = [:]
+        Map<String, Object> result = [:]
 
         result.issueEntitlements = []
 
@@ -276,7 +276,7 @@ class PublicController {
     }
 
   private def checkUserAccessToOrg(user, org, org_access) {
-    def hasAccess = false
+    boolean hasAccess = false
     def org_access_rights = org_access?.getValue() ? org_access.getValue().split(",") : []
     org_access_rights = org_access_rights.collect{it.toLowerCase()}
     if(org_access_rights.contains("public")) return true;

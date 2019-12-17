@@ -14,7 +14,7 @@ class GlobalDataSyncController {
 
   @Secured(['ROLE_GLOBAL_DATA'])
   def index() {
-    def result = [:]
+    Map<String, Object> result = [:]
 
     result.user = User.get(springSecurityService.principal.id)
     result.max = params.max ? Integer.parseInt(params.max) : result.user?.getDefaultPageSizeTMP()
@@ -72,11 +72,11 @@ class GlobalDataSyncController {
 
   @Secured(['ROLE_GLOBAL_DATA'])
   def newCleanTracker() {
-    com.k_int.kbplus.GlobalDataSyncController.log.debug("params:"+params)
-    def result = [:]
+    log.debug("params:"+params)
+    Map<String, Object> result = [:]
     result.item = GlobalRecordInfo.get(params.id)
 
-    com.k_int.kbplus.GlobalDataSyncController.log.debug("Calling diff....");
+    log.debug("Calling diff....");
     result.impact = globalSourceSyncService.diff(null, result.item)
 
     result.type='new'
@@ -85,15 +85,15 @@ class GlobalDataSyncController {
 
   @Secured(['ROLE_ADMIN'])
   def selectLocalPackage() {
-    com.k_int.kbplus.GlobalDataSyncController.log.debug("params:"+params)
-    def result = [:]
+    log.debug("params:"+params)
+    Map<String, Object> result = [:]
     result.item = GlobalRecordInfo.get(params.id)
     result
   }
 
   @Secured(['ROLE_ADMIN'])
   def cancelTracking() {
-    com.k_int.kbplus.GlobalDataSyncController.log.debug("cancelTracking: " + params)
+    log.debug("cancelTracking: " + params)
     GlobalRecordTracker.get(params.trackerId).delete()
 
     redirect(action:'index', params:[q:params.itemName])
@@ -107,7 +107,7 @@ class GlobalDataSyncController {
       flash.error = message(code: 'globalDataSync.noselectedPackage')
       redirect(action:'selectLocalPackage', params:[id:params.id])
     }
-    def result = [:]
+    Map<String, Object> result = [:]
     result.type='existing'
     result.item = GlobalRecordInfo.get(params.id)
     result.localPkgOID = params.localPkg
@@ -121,8 +121,8 @@ class GlobalDataSyncController {
 
   @Secured(['ROLE_GLOBAL_DATA'])
   def createTracker() {
-    com.k_int.kbplus.GlobalDataSyncController.log.debug("params: ${params}")
-    def result = [:]
+    log.debug("params: ${params}")
+    Map<String, Object> result = [:]
 
     result.item = GlobalRecordInfo.get(params.id)
     def new_tracker_id = java.util.UUID.randomUUID().toString()
@@ -132,7 +132,7 @@ class GlobalDataSyncController {
 
       switch ( params.synctype ) {
         case 'new':
-          com.k_int.kbplus.GlobalDataSyncController.log.debug("merge remote package with new local package...");
+          log.debug("merge remote package with new local package...");
           def grt = new GlobalRecordTracker(
                   owner: result.item,
                   identifier: new_tracker_id,
@@ -147,12 +147,12 @@ class GlobalDataSyncController {
             dataloadService.updateFTIndexes();
           }
           else {
-            com.k_int.kbplus.GlobalDataSyncController.log.error(grt.errors)
+            log.error(grt.errors)
           }
           redirect(action:'index',params:[q:result.item.name])
           break;
         case 'existing':
-          com.k_int.kbplus.GlobalDataSyncController.log.debug("merge remote package with existing local package...");
+          log.debug("merge remote package with existing local package...");
           def grt = new GlobalRecordTracker(
                   owner: result.item,
                   identifier: new_tracker_id,
@@ -166,12 +166,12 @@ class GlobalDataSyncController {
             globalSourceSyncService.initialiseTracker(grt, params.localPkg);
           }
           else {
-            com.k_int.kbplus.GlobalDataSyncController.log.error(grt.errors)
+            log.error(grt.errors)
           }
           redirect(action:'index',params:[q:result.item.name])
           break;
         default:
-          com.k_int.kbplus.GlobalDataSyncController.log.error("Unhandled package tracking type ${params.synctype}");
+          log.error("Unhandled package tracking type ${params.synctype}");
           break;
       }
     }

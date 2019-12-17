@@ -70,13 +70,13 @@ class LicensePrivateProperty extends PrivateProperty {
     def onDelete = { oldMap ->
         log.debug("onDelete LicensePrivateProperty")
         def oid = "${this.owner.class.name}:${this.owner.id}"
-        def changeDoc = [ OID: oid,
-                         event:'LicensePrivateProperty.deleted',
-                         prop: "${this.type.name}",
-                         old: "",
-                         new: "property removed",
-                         name: this.type.name
-                         ]
+        Map<String, Object> changeDoc = [ OID: oid,
+                                          event:'LicensePrivateProperty.deleted',
+                                          prop: "${this.type.name}",
+                                          old: "",
+                                          new: "property removed",
+                                          name: this.type.name
+                                          ]
         def changeNotificationService = grailsApplication.mainContext.getBean("changeNotificationService")
         // changeNotificationService.broadcastEvent("com.k_int.kbplus.License:${owner.id}", changeDoc);
         changeNotificationService.fireEvent(changeDoc)

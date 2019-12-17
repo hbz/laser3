@@ -171,8 +171,8 @@ class SurveyConfig {
     }
 
 
-    def getSurveyOrgsIDs() {
-        def result = [:]
+    Map<String, Object> getSurveyOrgsIDs() {
+        Map<String, Object> result = [:]
 
         result.orgsWithoutSubIDs = this.orgs?.org?.id?.minus(this?.subscription?.getDerivedSubscribers()?.id) ?: null
 
@@ -265,9 +265,9 @@ class SurveyConfig {
         return (prev?.id == this?.id) ? null : prev
     }
 
-    def getConfigNavigation(){
+    Map<String, Object> getConfigNavigation(){
 
-        def result = [:]
+        Map<String, Object> result = [:]
         result.prev = prevConfig()
         result.next = nextConfig()
         result.total = this.surveyInfo.surveyConfigs?.size() ?: null
