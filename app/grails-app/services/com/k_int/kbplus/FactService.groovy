@@ -244,7 +244,7 @@ class FactService {
   }
 
   def generateUsageDataForSubscriptionPeriod(org_id, supplier_id, subscription, title_id=null) {
-    def result = [:]
+    Map<String, Object> result = [:]
 
     if (org_id != null &&
         supplier_id != null) {
@@ -407,7 +407,7 @@ class FactService {
   }
 
   def generateUsageData(org_id, supplier_id, subscription, title_id=null) {
-    def result = [:]
+    Map<String, Object> result = [:]
 
     if (org_id != null &&
         supplier_id != null) {

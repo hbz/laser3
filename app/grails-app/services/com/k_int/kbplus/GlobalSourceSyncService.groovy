@@ -157,7 +157,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
 
         log.debug("titleConv.... ${md}");
-        def result = [:]
+        Map<String, Object> result = [:]
         result.parsed_rec = [:]
         result.parsed_rec.identifiers = []
         result.parsed_rec.history = []
@@ -948,7 +948,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
     def packageConv = { md, synctask ->
         log.debug("Package conv...");
         // Convert XML to internal structure and return
-        def result = [:]
+        Map<String, Object> result = [:]
         // result.parsed_rec = xml.text().getBytes();
         result.title = md.gokb.package.name.text()
 

@@ -110,7 +110,7 @@ class DocstoreService {
   }
 
 
-  def uploadBag(bagfile) {
+  Map<String, Object> uploadBag(bagfile) {
     log.debug("uploading bagfile ${bagfile}");
     // def http = new groovyx.net.http.HTTPBuilder('http://knowplus.edina.ac.uk/oledocstore/KBPlusServlet')
     def docstore_uri = grailsApplication.config.docstore
@@ -118,7 +118,7 @@ class DocstoreService {
     log.debug("Using docstore ${docstore_uri}");
 
     def http = new groovyx.net.http.HTTPBuilder(docstore_uri)
-    def result = [:]
+    Map<String, Object> result = [:]
     //edef result_uuid = null
 
     http.request(groovyx.net.http.Method.POST) {request ->

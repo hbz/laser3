@@ -21,8 +21,8 @@ class AdminReminderService extends AbstractLockableService {
         log.debug("Initialised adminReminder Service...")
     }
 
-    def checkPendingMembershipReqs() {
-        def result = [:]
+    Map<String, Object> checkPendingMembershipReqs() {
+        Map<String, Object> result = [:]
 
         result.pendingRequests = UserOrg.findAllByStatus(0, [sort: 'dateRequested'])
         result
