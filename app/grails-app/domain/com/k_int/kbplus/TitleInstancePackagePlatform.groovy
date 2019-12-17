@@ -78,9 +78,9 @@ class TitleInstancePackagePlatform extends AbstractBaseDomain /*implements Audit
   //TitleInstancePackagePlatform derivedFrom
   //TitleInstancePackagePlatform masterTipp
 
-  static mappedBy = [ids: 'tipp', additionalPlatforms: 'tipp']
+  static mappedBy = [ids: 'tipp'/*, additionalPlatforms: 'tipp'*/]
   static hasMany = [ids: Identifier,
-                    additionalPlatforms: PlatformTIPP,
+                    //additionalPlatforms: PlatformTIPP,
                     coverages: TIPPCoverage]
 
 
@@ -125,7 +125,7 @@ class TitleInstancePackagePlatform extends AbstractBaseDomain /*implements Audit
       coverageNote column:'tipp_coverage_note', type: 'text'*/
 
       ids                   batchSize: 10
-      additionalPlatforms   batchSize: 10
+    //additionalPlatforms   batchSize: 10
       coverages             batchSize: 10, sort: 'startDate', order: 'asc'
 
       dateCreated column: 'tipp_date_created'
@@ -189,6 +189,7 @@ class TitleInstancePackagePlatform extends AbstractBaseDomain /*implements Audit
     }
   }
 
+    /*
   def getHostPlatform() {
     def result = null;
     additionalPlatforms.each { p ->
@@ -198,6 +199,7 @@ class TitleInstancePackagePlatform extends AbstractBaseDomain /*implements Audit
     }
     result
   }
+    */
 
   String getIdentifierValue(idtype) {
     def result=null

@@ -355,7 +355,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
             }
             catch (Exception e) {
                 log.error("Error on updating package ${result.id} ... rollback!")
-                log.error(e.message)
+                e.printStackTrace()
                 transactionStatus.setRollbackOnly()
             }
         }

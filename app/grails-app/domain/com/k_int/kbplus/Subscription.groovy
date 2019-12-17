@@ -837,7 +837,7 @@ select distinct oap from OrgAccessPoint oap
   }
 
   def getHoldingTypes() {
-      def types = issueEntitlements?.tipp?.title?.type?.unique()
+      def types = issueEntitlements?.tipp?.title?.medium?.unique()
       types
   }
 
