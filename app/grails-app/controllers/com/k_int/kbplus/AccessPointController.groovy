@@ -46,7 +46,7 @@ class AccessPointController extends AbstractDebugController {
 
                 // so far we know that the input string represents a valid ip range
                 // check if the input string is already saved
-                def isDuplicate = false;
+                boolean isDuplicate = false
                 for (accessPointData in accessPointDataList) {
                     if (accessPointData.getInputStr() == ipRange.toInputString()) {
                         isDuplicate = true

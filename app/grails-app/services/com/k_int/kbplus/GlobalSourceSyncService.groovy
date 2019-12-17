@@ -157,7 +157,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
 
         log.debug("titleConv.... ${md}");
-        def result = [:]
+        Map<String, Object> result = [:]
         result.parsed_rec = [:]
         result.parsed_rec.identifiers = []
         result.parsed_rec.history = []
@@ -579,7 +579,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
                     def contextObject = genericOIDService.resolveOID("Package:${ctx.id}");
                     def locale = org.springframework.context.i18n.LocaleContextHolder.getLocale()
                     def announcement_content_changeTitle = "<p>${messageSource.getMessage('announcement.title.ChangeTitle', null, "Change Title in Package ", locale)}  ${contextObject.getURL() ? "<a href=\"${contextObject.getURL()}\">${contextObject.name}</a>" : "${contextObject.name}"} ${new Date().toString()}</p><p><ul>"
-                    def changeTitle = false
+                    boolean changeTitle = false
 
                     changes.each { chg ->
 
@@ -911,7 +911,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
     // def testKBPlusCompliance = { json_record ->
     def testPackageCompliance = { json_record ->
         // Iterate through all titles..
-        def error = false
+        boolean error = false
         def result = null
         def problem_titles = []
 
@@ -948,7 +948,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
     def packageConv = { md, synctask ->
         log.debug("Package conv...");
         // Convert XML to internal structure and return
-        def result = [:]
+        Map<String, Object> result = [:]
         // result.parsed_rec = xml.text().getBytes();
         result.title = md.gokb.package.name.text()
 

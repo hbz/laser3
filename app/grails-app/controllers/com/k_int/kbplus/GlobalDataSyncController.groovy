@@ -13,7 +13,7 @@ class GlobalDataSyncController {
 
   @Secured(['ROLE_GLOBAL_DATA'])
   def index() {
-    def result = [:]
+    Map<String, Object> result = [:]
 
     result.user = User.get(springSecurityService.principal.id)
     result.max = params.max ? Integer.parseInt(params.max) : result.user?.getDefaultPageSizeTMP()
@@ -72,7 +72,7 @@ class GlobalDataSyncController {
   @Secured(['ROLE_GLOBAL_DATA'])
   def newCleanTracker() {
     log.debug("params:"+params)
-    def result = [:]
+    Map<String, Object> result = [:]
     result.item = GlobalRecordInfo.get(params.id)
 
     log.debug("Calling diff....");
@@ -85,7 +85,7 @@ class GlobalDataSyncController {
   @Secured(['ROLE_ADMIN'])
   def selectLocalPackage() {
     log.debug("params:"+params)
-    def result = [:]
+    Map<String, Object> result = [:]
     result.item = GlobalRecordInfo.get(params.id)
     result
   }
@@ -106,7 +106,7 @@ class GlobalDataSyncController {
       flash.error = message(code: 'globalDataSync.noselectedPackage')
       redirect(action:'selectLocalPackage', params:[id:params.id])
     }
-    def result = [:]
+    Map<String, Object> result = [:]
     result.type='existing'
     result.item = GlobalRecordInfo.get(params.id)
     result.localPkgOID = params.localPkg
@@ -121,7 +121,7 @@ class GlobalDataSyncController {
   @Secured(['ROLE_GLOBAL_DATA'])
   def createTracker() {
     log.debug("params: ${params}")
-    def result = [:]
+    Map<String, Object> result = [:]
 
     result.item = GlobalRecordInfo.get(params.id)
     def new_tracker_id = java.util.UUID.randomUUID().toString()

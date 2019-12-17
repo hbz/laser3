@@ -54,7 +54,7 @@ class PendingChangeService extends AbstractLockableService {
     boolean performAccept(PendingChange pendingChange, User user) {
 
         log.debug('performAccept')
-        def result = true
+        boolean result = true
 
         PendingChange.withNewTransaction { TransactionStatus status ->
             boolean saveWithoutError = false

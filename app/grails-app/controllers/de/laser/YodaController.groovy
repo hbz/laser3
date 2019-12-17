@@ -1526,7 +1526,7 @@ class YodaController {
 
     @Secured(['ROLE_YODA'])
     def cleanUpSurveys() {
-        def result = [:]
+        Map<String, Object> result = [:]
 
         def subSurveys = SurveyConfig.findAllBySubscriptionIsNotNull()
         def count = 0
@@ -1652,7 +1652,7 @@ class YodaController {
 
     @Secured(['ROLE_YODA'])
     def importSeriesToEBooks() {
-        def result = [:]
+        Map<String, Object> result = [:]
 
 
         if(params.kbartPreselect) {

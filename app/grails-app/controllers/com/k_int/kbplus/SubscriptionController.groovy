@@ -375,7 +375,7 @@ class SubscriptionController extends AbstractDebugController {
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
     def unlinkPackage() {
         log.debug("unlinkPackage :: ${params}")
-        def result = [:]
+        Map<String, Object> result = [:]
         result.user = User.get(springSecurityService.principal.id)
         result.subscription = Subscription.get(params.subscription.toLong())
         result.package = Package.get(params.package.toLong())
@@ -1156,7 +1156,7 @@ class SubscriptionController extends AbstractDebugController {
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
     def showEntitlementsRenewWithSurvey() {
-        def result = [:]
+        Map<String, Object> result = [:]
         result.institution = contextService.getOrg()
         result.user = User.get(springSecurityService.principal.id)
 
@@ -2653,7 +2653,7 @@ class SubscriptionController extends AbstractDebugController {
     def processAddIssueEntitlementsSurvey() {
         log.debug("processAddIssueEntitlementsSurvey....");
 
-        def result = [:]
+        Map<String, Object> result = [:]
         result.user = User.get(springSecurityService.principal.id)
         result.subscriptionInstance = Subscription.get(params.id)
         result.subscription = Subscription.get(params.id)
@@ -2725,7 +2725,7 @@ class SubscriptionController extends AbstractDebugController {
     def processRemoveIssueEntitlementsSurvey() {
         log.debug("processRemoveIssueEntitlementsSurvey....");
 
-        def result = [:]
+        Map<String, Object> result = [:]
         result.user = User.get(springSecurityService.principal.id)
         result.subscriptionInstance = Subscription.get(params.id)
         result.subscription = Subscription.get(params.id)
@@ -2795,7 +2795,7 @@ class SubscriptionController extends AbstractDebugController {
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_EDITOR") })
     def processRenewEntitlementsWithSurvey() {
         log.debug("processRenewEntitlementsWithSurvey ...")
-        def result = [:]
+        Map<String, Object> result = [:]
         result.user = User.get(springSecurityService.principal.id)
         result.subscriptionInstance = Subscription.get(params.id)
         result.subscription = Subscription.get(params.id)
@@ -5301,7 +5301,7 @@ class SubscriptionController extends AbstractDebugController {
     }
 
     private LinkedHashMap setResultGenericsAndCheckAccess(checkOption) {
-        def result = [:]
+        Map<String, Object> result = [:]
         result.user = contextService.user
         result.subscriptionInstance = Subscription.get(params.id)
         result.subscription = Subscription.get(params.id)

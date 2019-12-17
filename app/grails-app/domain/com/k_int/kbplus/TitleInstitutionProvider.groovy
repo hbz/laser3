@@ -45,7 +45,7 @@ class TitleInstitutionProvider {
     //Should this be here or on a higher level?
     if(lookupDate == null) lookupDate = new Date();
     // log.debug("coreDates: ${coreDates}")
-    def isCore = false
+    boolean isCore = false
     coreDates.each{ coreDate ->
         if(lookupDate > coreDate.startDate){
           if(coreDate.endDate == null) {
@@ -96,7 +96,7 @@ class TitleInstitutionProvider {
 
     log.debug("For matching purposes, using ${startDate} and ${endDate}");
     
-    def cont = true;
+    boolean cont = true
 
     if ( endDate != null ) {
       log.debug("Working with a set endDate")

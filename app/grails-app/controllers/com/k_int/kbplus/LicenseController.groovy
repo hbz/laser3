@@ -836,7 +836,7 @@ from Subscription as s where
     @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_EDITOR") })
   def create() {
-    def result = [:]
+    Map<String, Object> result = [:]
     result.user = User.get(springSecurityService.principal.id)
     result
   }

@@ -14,7 +14,7 @@ class HomeController {
  
     @Secured(['ROLE_USER'])
     def index() {
-        def result = [:]
+        Map<String, Object> result = [:]
         log.debug("HomeController::index - ${springSecurityService.principal.id}");
 
         result.user = User.get(springSecurityService.principal.id)
@@ -36,7 +36,7 @@ class HomeController {
   def search() {
       redirect(controller: 'search', action: 'search')
 
-    def result = [:]
+    Map<String, Object> result = [:]
   
     result.user = springSecurityService.getCurrentUser()
     params.max = result.user.getDefaultPageSizeTMP()

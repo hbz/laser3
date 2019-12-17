@@ -116,7 +116,7 @@ class OrgAccessPoint extends AbstractBaseDomain {
     }
 
     def hasActiveLink() {
-        def active = false
+        boolean active = false
         def oapps = this.oapp
         oapps.each {
             if (it.active){

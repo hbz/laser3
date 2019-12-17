@@ -82,8 +82,8 @@ class QueryService {
         dueObjects
     }
 
-    private def getQuery(Class propertyClass, Org contextOrg, java.sql.Date fromDateValue, java.sql.Date toDateValue){
-        def result = [:]
+    private Map<String, Object> getQuery(Class propertyClass, Org contextOrg, java.sql.Date fromDateValue, java.sql.Date toDateValue){
+        Map<String, Object> result = [:]
         def query
         def queryParams
         if (toDateValue) {
@@ -155,7 +155,7 @@ class QueryService {
         def base_qry
         def qry_params
         (base_qry, qry_params) = subscriptionsQueryService.myInstitutionCurrentSubscriptionsBaseQuery(queryParams, contextOrg)
-        def result = [:]
+        Map<String, Object> result = [:]
         result.query = "select s ${base_qry}"
         result.queryParams = qry_params
         result
@@ -163,7 +163,7 @@ class QueryService {
 
     private def getMyLicensesQuery(Org institution){
         def template_license_type = RDStore.LICENSE_TYPE_TEMPLATE
-        def result = [:]
+        Map<String, Object> result = [:]
         def base_qry
         def qry_params
         boolean isLicensingConsortium = (institution?.hasPerm("ORG_CONSORTIUM"))
