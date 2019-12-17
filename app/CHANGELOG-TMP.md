@@ -2,6 +2,8 @@
 
 **Ticket    Date    Branch      Author  Feature/Bug     Description/Keywords**
 
+--      17.12.2019  rc1.2       Moe     Bug         Add Message Properties for Event by EventLog 
+
 #### day of release 1.2
 
 1980    16.12.2019  rc1.2       Moe     Bug         Übertrag der Cost Items von einer Umfrage (Sichtbarkeit)
