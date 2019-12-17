@@ -15,7 +15,9 @@ abstract class AbstractDebugController {
 
         SessionCacheWrapper cache = contextService.getSessionCache()
         DebugUtil debugUtil = cache.get('debugUtil')
-        debugUtil.startSimpleBench(actionUri)
+        if (debugUtil) {
+            debugUtil.startSimpleBench(actionUri)
+        }
     }
 
 

@@ -2,7 +2,9 @@
 
 **Ticket    Date    Branch      Author  Feature/Bug     Description/Keywords**
 
---      17.12.2019  rc1.2       Moe     Bug         Add Message Properties for Event by EventLog 
+--      17.12.2019  rc1.2       Moe     Bug         Excluded ApiController from Benchmark
+
+--      17.12.2019  rc1.2       Moe     Bug         Add Message Properties for Event by EventLog
 
 #### day of release 1.2
 
