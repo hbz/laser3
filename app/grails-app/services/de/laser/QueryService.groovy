@@ -30,7 +30,11 @@ class QueryService {
             def endDateTo =                  (contextUser.getSettingsValue(IS_REMIND_FOR_SUBSCRIPTIONS_ENDDATE)==YN_YES)? computeInfoDate(contextUser, REMIND_PERIOD_FOR_SUBSCRIPTIONS_ENDDATE) : null
             def manualCancellationDateFrom = (contextUser.getSettingsValue(IS_REMIND_FOR_SUBSCRIPTIONS_NOTICEPERIOD)==YN_YES)? today : null
             def manualCancellationDateTo =   (contextUser.getSettingsValue(IS_REMIND_FOR_SUBSCRIPTIONS_NOTICEPERIOD)==YN_YES)? computeInfoDate(contextUser, REMIND_PERIOD_FOR_SUBSCRIPTIONS_NOTICEPERIOD) : null
-            dueObjects.addAll(getDueSubscriptions(contextOrg, endDateFrom, endDateTo, manualCancellationDateFrom, manualCancellationDateTo))
+            getDueSubscriptions(contextOrg, endDateFrom, endDateTo, manualCancellationDateFrom, manualCancellationDateTo).collect{
+                if ( ! it.orgRelations.find{it.roleType == RDStore.OR_SUBSCRIBER_CONS}) {
+                    dueObjects << it
+                }
+            }
         }
 
         if (contextUser.getSettingsValue(IS_REMIND_FOR_TASKS)==YN_YES) {
@@ -54,7 +58,11 @@ class QueryService {
         }
 
         if (contextUser.getSettingsValue(IS_REMIND_FOR_LICENSE_CUSTOM_PROP)==YN_YES) {
-            dueObjects.addAll(getDueLicenseCustomProperties(contextOrg, today, computeInfoDate(contextUser, REMIND_PERIOD_FOR_LICENSE_CUSTOM_PROP)))
+            getDueLicenseCustomProperties(contextOrg, today, computeInfoDate(contextUser, REMIND_PERIOD_FOR_LICENSE_CUSTOM_PROP)).collect{
+                if ( ! it.owner.orgRelations.find{it.roleType == RDStore.OR_LICENSEE_CONS}) {
+                    dueObjects << it
+                }
+            }
         }
         if (contextUser.getSettingsValue(IS_REMIND_FOR_LIZENSE_PRIVATE_PROP)==YN_YES) {
             dueObjects.addAll(getDueLicensePrivateProperties(contextOrg, today, computeInfoDate(contextUser, REMIND_PERIOD_FOR_LICENSE_PRIVATE_PROP)))
@@ -69,7 +77,11 @@ class QueryService {
             dueObjects.addAll(getDueOrgPrivateProperties(contextOrg, today, computeInfoDate(contextUser, REMIND_PERIOD_FOR_ORG_PRIVATE_PROP)))
         }
         if (contextUser.getSettingsValue(IS_REMIND_FOR_SUBSCRIPTIONS_CUSTOM_PROP)==YN_YES) {
-            dueObjects.addAll(getDueSubscriptionCustomProperties(contextOrg, today, computeInfoDate(contextUser, REMIND_PERIOD_FOR_SUBSCRIPTIONS_CUSTOM_PROP)))
+            getDueSubscriptionCustomProperties(contextOrg, today, computeInfoDate(contextUser, REMIND_PERIOD_FOR_SUBSCRIPTIONS_CUSTOM_PROP)).collect{
+                if ( ! it.owner.orgRelations.find{it.roleType == RDStore.OR_SUBSCRIBER_CONS}) {
+                    dueObjects << it
+                }
+            }
         }
         if (contextUser.getSettingsValue(IS_REMIND_FOR_SUBSCRIPTIONS_PRIVATE_PROP)==YN_YES) {
             dueObjects.addAll(getDueSubscriptionPrivateProperties(contextOrg, today, computeInfoDate(contextUser, REMIND_PERIOD_FOR_SUBSCRIPTIONS_PRIVATE_PROP)))
