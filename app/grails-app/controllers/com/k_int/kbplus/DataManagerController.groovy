@@ -581,10 +581,9 @@ class DataManagerController extends AbstractDebugController {
 
     @Secured(['ROLE_YODA'])
     def executeTIPPCleanup() {
-        log.debug(params)
         //def resultTransfer = JSON.parse(params.resultTransfer)
         //log.debug(resultTransfer)
-        redirect(controller: 'home')
+        render params.toString()
     }
 
   @Secured(['ROLE_ADMIN'])

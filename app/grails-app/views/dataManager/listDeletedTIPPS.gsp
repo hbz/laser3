@@ -9,7 +9,7 @@
 <laser:serviceInjection/>
 <html>
     <head>
-        <meta name="layout" content="semanticUI">
+        <meta name="layout" content="semanticUI"/>
         <title>Expunge deleted TIPPs</title>
     </head>
 
@@ -110,10 +110,11 @@
                 </tr>
             </tbody>
         </table>
-        <g:form name="triggerCleanup" action="executeTIPPCleanup">
+        <g:form name="triggerCleanup" controller="dataManager" action="executeTIPPCleanup">
             <%--<g:hiddenField name="resultTransfer" value="${[deletedWithGOKbRecord:deletedWithGOKbRecord,deletedWithoutGOKbRecord:deletedWithoutGOKbRecord,excludes:excludes,mergingTIPPs:mergingTIPPs,duplicateTIPPKeys:duplicateTIPPKeys] as JSON}"/>--%>
-            <g:hiddenField name="deletedWithGOKbRecord" value="${deletedWithGOKbRecord as JSON}"/>
-            <input type="submit" class="ui negative button" value="Daten bereinigen (bitte mit EXTREMER VORSICHT betätigen!!!)"/>
+            <%--<g:hiddenField name="deletedWithGOKbRecord" value="${deletedWithGOKbRecord as JSON}"/>--%>
+            <g:hiddenField name="test" value="eee" />
+            <input type="submit" class="ui negative button" value="Daten bereinigen (bitte mit EXTREMER VORSICHT betätigen!!!)">
         </g:form>
     </body>
 </html>
