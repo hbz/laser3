@@ -15,7 +15,7 @@ class DashboardDueDatesService {
     def mailService
     def grailsApplication
     def messageSource
-    def locale
+    Locale locale
     String from
     String replyTo
     def update_running = false

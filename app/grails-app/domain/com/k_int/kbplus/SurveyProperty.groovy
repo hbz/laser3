@@ -64,7 +64,7 @@ class SurveyProperty extends AbstractI10nTranslatable {
     }
 
     static getLocalizedValue(key) {
-        def locale = I10nTranslation.decodeLocale(LocaleContextHolder.getLocale().toString())
+        String locale = I10nTranslation.decodeLocale(LocaleContextHolder.getLocale().toString())
 
         //println locale
         if (SurveyProperty.validTypes.containsKey(key)) {

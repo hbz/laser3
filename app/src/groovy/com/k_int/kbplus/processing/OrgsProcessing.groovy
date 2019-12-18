@@ -3,18 +3,18 @@ package com.k_int.kbplus.processing
 import com.k_int.kbplus.Identifier
 import org.apache.commons.logging.LogFactory
 
-public class OrgsProcessing {
+class OrgsProcessing {
 
   private static final log = LogFactory.getLog(this)
 
-  public static def addIdentifier(value, appctx, type, domain_object) {
+  static def addIdentifier(value, appctx, type, domain_object) {
     log.debug("This is a testMethodCall");
     if ( domain_object ) {
       if ( value ) {
         // TODO [ticket=1789]
         //def identifier = Identifier.lookupOrCreateCanonicalIdentifier(type,value);
         //domain_object.ids.add(new IdentifierOccurrence(identifier:identifier,org:domain_object));
-        def identifier = Identifier.construct([value: value, reference: domain_object, namespace:type])
+        Identifier identifier = Identifier.construct([value: value, reference: domain_object, namespace:type])
       }
     }
     else {
@@ -24,7 +24,7 @@ public class OrgsProcessing {
   }
 
 
-  public static def orgs_reconciliation_ruleset = [
+  static def orgs_reconciliation_ruleset = [
     // Root identifies root object type
     domainClass:'com.k_int.kbplus.Org',
     recordMatching:[

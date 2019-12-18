@@ -4188,7 +4188,7 @@ AND EXISTS (
 
     private setResultGenerics() {
 
-        def result          = [:]
+        Map<String, Object> result = [:]
         result.user         = contextService.getUser()
         //result.institution  = Org.findByShortcode(params.shortcode)
         result.institution  = contextService.getOrg()

@@ -27,7 +27,7 @@ class SubscriptionService {
     def messageSource
     def escapeService
     def refdataService
-    def locale
+    Locale locale
 
     @javax.annotation.PostConstruct
     void init() {

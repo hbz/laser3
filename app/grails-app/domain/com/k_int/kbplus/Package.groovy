@@ -269,7 +269,7 @@ static hasMany = [  tipps:     TitleInstancePackagePlatform,
 
   @Transient
   void updateNominalPlatform() {
-    def platforms = [:]
+      Map<String, Object> platforms = [:]
     tipps.each{ tipp ->
       if ( !platforms.keySet().contains(tipp.platform.id) ) {
         platforms[tipp.platform.id] = [count:1, platform:tipp.platform]
@@ -630,6 +630,7 @@ static hasMany = [  tipps:     TitleInstancePackagePlatform,
     s1 = s1.replaceFirst('^der ','')
 
     return s1.trim()
+
   }
 
     Identifier getIdentifierByType(idtype) {

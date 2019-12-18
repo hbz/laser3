@@ -38,7 +38,7 @@ class AccessPointData extends AbstractBaseDomain {
         dateCreated (nullable: true, blank: false)
     }
     
-    static getAllRefdataValues(String category) {
+    static List<RefdataValue> getAllRefdataValues(String category) {
         RefdataCategory.getAllRefdataValues(category)
     }
 

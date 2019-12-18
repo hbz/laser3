@@ -447,7 +447,7 @@ class License
         derived_licenses.each { dl ->
             log.debug("Send pending change to ${dl.id}")
 
-            def locale = org.springframework.context.i18n.LocaleContextHolder.getLocale()
+            Locale locale = org.springframework.context.i18n.LocaleContextHolder.getLocale()
             def description = messageSource.getMessage('default.accept.placeholder',null, locale)
 
             def definedType = 'text'

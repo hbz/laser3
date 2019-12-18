@@ -142,7 +142,7 @@ class PendingChange {
 
     def getParsedParams() {
 
-        def locale = org.springframework.context.i18n.LocaleContextHolder.getLocale()
+        Locale locale = org.springframework.context.i18n.LocaleContextHolder.getLocale()
         JSONElement parsedParams = JSON.parse(msgParams)
 
         // def value type

@@ -43,7 +43,7 @@ class OrgAccessPoint extends AbstractBaseDomain {
         name(unique: ['org'])
   }
     
-    static getAllRefdataValues(String category) {
+    static List<RefdataValue> getAllRefdataValues(String category) {
         RefdataCategory.getAllRefdataValues(category)
     }
 

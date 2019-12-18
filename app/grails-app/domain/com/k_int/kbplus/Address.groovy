@@ -82,7 +82,7 @@ class Address {
         dateCreated (nullable: true, blank: false)
     }
     
-    static getAllRefdataValues() {
+    static List<RefdataValue> getAllRefdataValues() {
         RefdataCategory.getAllRefdataValues('AddressType')
     }
     

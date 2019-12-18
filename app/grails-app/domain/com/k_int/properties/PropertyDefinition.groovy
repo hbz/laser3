@@ -216,11 +216,11 @@ class PropertyDefinition extends AbstractI10nTranslatable implements Serializabl
         GrailsHibernateUtil.unwrapIfProxy(newProp)
     }
 
-    static def loc(String name, String descr, String typeClass, RefdataCategory rdc, String expl, multipleOccurence, mandatory, Org tenant) {
+    static PropertyDefinition loc(String name, String descr, String typeClass, RefdataCategory rdc, String expl, multipleOccurence, mandatory, Org tenant) {
 
         typeIsValid(typeClass)
 
-        def type = findWhere(
+        PropertyDefinition type = findWhere(
             name:   name,
             descr:  descr,
             tenant: tenant
@@ -410,7 +410,7 @@ class PropertyDefinition extends AbstractI10nTranslatable implements Serializabl
   }
 
     @Transient
-    def removeProperty() {
+    void removeProperty() {
         log.debug("Remove");
         PropertyDefinition.executeUpdate('delete from com.k_int.kbplus.LicenseCustomProperty c where c.type = ?', [this])
         PropertyDefinition.executeUpdate('delete from com.k_int.kbplus.LicensePrivateProperty c where c.type = ?', [this])

@@ -12,15 +12,15 @@ class DateUtil {
     }
     static DateFormat getSimpleDateFormat_NoTime(){
         def messageSource = Holders.grailsApplication.mainContext.getBean('messageSource')
-        def locale = org.springframework.context.i18n.LocaleContextHolder.getLocale()
-        def format = messageSource.getMessage('default.date.format.notime', null, locale)
+        Locale locale = org.springframework.context.i18n.LocaleContextHolder.getLocale()
+        String format = messageSource.getMessage('default.date.format.notime', null, locale)
         new SimpleDateFormat(format)
     }
 
     static DateFormat getSimpleDateFormat_NoZ(){
         def messageSource = Holders.grailsApplication.mainContext.getBean('messageSource')
-        def locale = org.springframework.context.i18n.LocaleContextHolder.getLocale()
-        def format = messageSource.getMessage('default.date.format.noZ', null, locale)
+        Locale locale = org.springframework.context.i18n.LocaleContextHolder.getLocale()
+        String format = messageSource.getMessage('default.date.format.noZ', null, locale)
         new SimpleDateFormat(format)
     }
 }
