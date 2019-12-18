@@ -63,6 +63,10 @@
                         <dt><g:message code="org.name.label" default="Name"/></dt>
                         <dd>
                             <semui:xEditable owner="${orgInstance}" field="name"/>
+                            <g:if test="${orgInstance.getCustomerType() in ['ORG_INST', 'ORG_INST_COLLECTIVE']}">
+                                <i class="gem outline icon"></i>
+                            </g:if>
+
                         </dd>
                     </dl>
                     <g:if test="${!inContextOrg || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN,ROLE_ORG_EDITOR')}">
