@@ -639,7 +639,7 @@ class Subscription
     }
 
     def getNonDeletedDerivedSubscriptions() {
-        Subscription.where { instanceOf == this }
+        Subscription.where { instanceOf == this }.findAll()
     }
 
     Map<String, Object> getCalculatedPropDefGroups(Org contextOrg) {
