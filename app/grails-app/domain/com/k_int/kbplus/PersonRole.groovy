@@ -96,7 +96,7 @@ class PersonRole implements Comparable<PersonRole>{
         if (title)      return 'title:' + title.id
     }
 
-    static getAllRefdataValues(String category) {
+    static List<RefdataValue> getAllRefdataValues(String category) {
         RefdataCategory.getAllRefdataValues(category).sort {it.getI10n("value")}
     }
 
@@ -125,9 +125,9 @@ class PersonRole implements Comparable<PersonRole>{
     }
     */
 
-    static def getByPersonAndOrgAndRespValue(Person prs, Org org, def resp) {
+    static PersonRole getByPersonAndOrgAndRespValue(Person prs, Org org, def resp) {
 
-        def result = PersonRole.findAllWhere(
+        List<PersonRole> result = PersonRole.findAllWhere(
             prs: prs,
             org: org,
             responsibilityType: RefdataValue.getByValueAndCategory(resp, 'Person Responsibility')

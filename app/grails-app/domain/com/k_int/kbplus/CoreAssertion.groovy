@@ -1,5 +1,7 @@
 package com.k_int.kbplus
 
+import java.text.SimpleDateFormat
+
 class CoreAssertion {
 
   Date startDate
@@ -44,9 +46,9 @@ class CoreAssertion {
   }
 
   @Override
-  public String toString(){
-    def strFormat = 'yyyy-MM-dd'
-    def formatter = new java.text.SimpleDateFormat(strFormat)
+  String toString(){
+    String strFormat = 'yyyy-MM-dd'
+    SimpleDateFormat formatter = new SimpleDateFormat(strFormat)
     return "${startDate?formatter.format(startDate):''} : ${endDate?formatter.format(endDate):''}"
   }
 

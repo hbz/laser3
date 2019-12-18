@@ -91,7 +91,7 @@ class Address {
         zipcode + ' ' + city + ', ' + street_1 + ' ' + street_2 + ' (' + id + '); ' + type?.value
     }
 
-    static def lookup(
+    static Address lookup(
             name,
             street1,
             street2,
@@ -106,8 +106,8 @@ class Address {
             person,
             organisation) {
 
-        def address
-        def check = Address.findAllWhere(
+        Address address
+        List<Address> check = Address.findAllWhere(
                 name:           name ?: null,
                 street_1: street1 ?: null,
                 street_2: street2 ?: null,
@@ -129,7 +129,7 @@ class Address {
         address
     }
 
-    static def lookupOrCreate(
+    static Address lookupOrCreate(
             name,
             street1,
             street2,
@@ -143,15 +143,15 @@ class Address {
             type,
             person,
             organisation) {
-        
-        def info   = "saving new address: ${type}"
-        def result = null
-        
+
+        Address result
+        String info = "saving new address: ${type}"
+
         if (person && organisation) {
             type = RefdataValue.findByValue("Job-related")
         }
 
-        def check = Address.lookup(name, street1, street2, zipcode, city, state, country, postbox, pobZipcode, pobCity, type, person, organisation)
+        Address check = Address.lookup(name, street1, street2, zipcode, city, state, country, postbox, pobZipcode, pobCity, type, person, organisation)
         if (check) {
             result = check
             info += " > ignored; duplicate found"
@@ -173,7 +173,7 @@ class Address {
                 org:      organisation
                 )
                 
-            if(!result.save()){
+            if(! result.save()){
                 result.errors.each{ println it }
             }
             else {

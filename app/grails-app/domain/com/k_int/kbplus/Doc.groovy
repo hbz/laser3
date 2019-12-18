@@ -81,14 +81,14 @@ class Doc {
   }
 
     @Deprecated
-  def getBlobData() {
-    return blobContent?.binaryStream
-  }
+    InputStream getBlobData() {
+        blobContent?.binaryStream
+    }
 
     @Deprecated
-  Long getBlobSize() {
-    return blobContent?.length() ?: 0
-  }
+    Long getBlobSize() {
+        blobContent?.length() ?: 0
+    }
 
     def render(def response, def filename) {
         // erms-790
@@ -113,14 +113,14 @@ class Doc {
         response.outputStream << output
     }
     
-  static fromUpload(def file) {
+  static Doc fromUpload(def file) {
     if(!file) return new Doc()
         
-    def filename = file.originalFilename
+    String filename = file.originalFilename
     def slashIndex = Math.max(filename.lastIndexOf("/"),filename.lastIndexOf("\\"))
     if(slashIndex > -1) filename = filename.substring(slashIndex + 1)
-        
-    def doc = new Doc(filename: filename)
+
+      Doc doc = new Doc(filename: filename)
     doc.setBlobData(file.inputStream, file.size)
     return doc
   }
