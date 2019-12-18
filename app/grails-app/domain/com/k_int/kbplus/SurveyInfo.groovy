@@ -90,7 +90,7 @@ class SurveyInfo {
     def checkSurveyInfoFinishByOrg(Org org) {
         Map<String, Object> result = [:]
 
-        def count = 0
+        int count = 0
         surveyConfigs.each {
 
             def checkResultsEditByOrg = result."${it.checkResultsEditByOrg(org)}"

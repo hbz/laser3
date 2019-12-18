@@ -124,7 +124,7 @@ class TitleInstance extends AbstractBaseDomain implements AuditableTrait {
   }
 
   Org getPublisher() {
-    def result = null;
+    Org result
     orgs.each { o ->
       if ( o.roleType?.value == 'Publisher' ) {
         result = o.org
@@ -133,11 +133,11 @@ class TitleInstance extends AbstractBaseDomain implements AuditableTrait {
     result
   }
 
-  static def lookupByIdentifierString(idstr) {
+  static TitleInstance lookupByIdentifierString(idstr) {
 
       static_logger.debug("lookupByIdentifierString(${idstr})")
 
-    def result = null;
+      TitleInstance result
     def qr = null;
     def idstr_components = idstr.split(':');
 
@@ -1222,14 +1222,14 @@ select ie from IssueEntitlement as ie JOIN ie.subscription.orgRelations as o
    * Validate a tipp start and end date by ensuring that the date range lies within known dates when this Title
    * was published. Null start dates are only valid when there is no earliest published dates.
   */
-  def isValidCoverage(start, end) {
+  boolean isValidCoverage(start, end) {
 
     // Disabled 8-oct-2015 as requested by Magaly via OS
     return true
 
     boolean result = true
-    def published_from = null;
-    def published_to = null;
+    Date published_from
+    Date published_to
 
     orgs.each { o ->
       if ( o.roleType?.value == 'Publisher' ) {

@@ -147,7 +147,7 @@ class SurveyProperty extends AbstractI10nTranslatable {
 
     }
 
-    static def getByName(String name)
+    static SurveyProperty getByName(String name)
     {
         SurveyProperty.findByName(name)
     }

@@ -105,7 +105,7 @@ class User {
 
   @Transient
   String getDisplayName() {
-    def result = null;
+    String result
     if ( display ) {
       result = display
     }
@@ -123,18 +123,18 @@ class User {
     affiliations.findAll { it.status == UserOrg.STATUS_APPROVED }
   }
 
-  @Transient List<Org> getAuthorizedOrgs() {
-    // def result = Org.find(
-    def qry = "select o from Org as o where exists ( select uo from UserOrg as uo where uo.org = o and uo.user = ? and ( uo.status=1 or uo.status=3)) order by o.name"
-    def o = Org.executeQuery(qry, [this]);
-    o
-  }
-  @Transient def getAuthorizedOrgsIds() {
-    // def result = Org.find(
-    def qry = "select o.id from Org as o where exists ( select uo from UserOrg as uo where uo.org = o and uo.user = ? and ( uo.status=1 or uo.status=3)) order by o.name"
-    def o = Org.executeQuery(qry, [this]);
-    o
-  }
+    @Transient List<Org> getAuthorizedOrgs() {
+        // def result = Org.find(
+        String qry = "select o from Org as o where exists ( select uo from UserOrg as uo where uo.org = o and uo.user = ? and ( uo.status=1 or uo.status=3)) order by o.name"
+        def o = Org.executeQuery(qry, [this]);
+        o
+    }
+    @Transient def getAuthorizedOrgsIds() {
+        // def result = Org.find(
+        String qry = "select o.id from Org as o where exists ( select uo from UserOrg as uo where uo.org = o and uo.user = ? and ( uo.status=1 or uo.status=3)) order by o.name"
+        def o = Org.executeQuery(qry, [this]);
+        o
+    }
 
     def hasRole(String roleName) {
         SpringSecurityUtils.ifAnyGranted(roleName)
@@ -165,9 +165,9 @@ class User {
         affiliationCheck(userRoleName, 'ROLE_USER', 'AND', orgToCheck)
     }
 
-    private def affiliationCheck(userRoleName, globalRoleName, mode, orgToCheck) {
+    private boolean affiliationCheck(String userRoleName, String globalRoleName, mode, orgToCheck) {
         boolean result = false
-        def rolesToCheck = [userRoleName]
+        List<String> rolesToCheck = [userRoleName]
 
         //log.debug("USER.hasAffiliation(): ${userRoleName}, ${globalRoleName}, ${mode} @ ${orgToCheck}")
 
@@ -203,9 +203,9 @@ class User {
         }
 
         rolesToCheck.each{ rot ->
-            def role = Role.findByAuthority(rot)
+            Role role = Role.findByAuthority(rot)
             if (role) {
-                def uo = UserOrg.findByUserAndOrgAndFormalRole(this, orgToCheck, role)
+                UserOrg uo = UserOrg.findByUserAndOrgAndFormalRole(this, orgToCheck, role)
                 result = result || (uo && getAuthorizedAffiliations()?.contains(uo))
             }
         }

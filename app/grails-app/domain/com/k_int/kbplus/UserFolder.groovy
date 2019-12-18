@@ -38,7 +38,7 @@ class UserFolder {
 
 
   @Transient
-  def addIfNotPresent(oid) {
+  void addIfNotPresent(oid) {
     boolean present = false;
     items.each { 
       if ( it.referencedOid && ( it.referencedOid == oid ) ) {
@@ -52,9 +52,9 @@ class UserFolder {
   }
 
     @Transient
-    def removeItem(oid) {
+    void removeItem(oid) {
 
-        def folderitem = FolderItem.findByFolderAndReferencedOid(this, oid)
+        FolderItem folderitem = FolderItem.findByFolderAndReferencedOid(this, oid)
         if (folderitem) {
             this.items.remove(folderitem)
             while (this.items.remove(null));
@@ -62,9 +62,9 @@ class UserFolder {
 
     }
 
-    def removePackageItems() {
+    void removePackageItems() {
 
-        def itemstoremove = FolderItem.findAllByFolder(this)
+        List<FolderItem> itemstoremove = FolderItem.findAllByFolder(this)
         //Remove only Package Items
         itemstoremove.each {
 
@@ -72,7 +72,7 @@ class UserFolder {
             if (oid_components[0].startsWith("com.k_int.kbplus")) {
                 def components = oid_components[0].toString().split("[.]");
                 if (components[3].contains('Package')) {
-                    def folderitem = FolderItem.findByFolderAndReferencedOid(this, it.referencedOid)
+                    FolderItem folderitem = FolderItem.findByFolderAndReferencedOid(this, it.referencedOid)
                     if (folderitem) {
                         folderitem.delete()
                     }

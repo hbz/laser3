@@ -69,11 +69,11 @@ class AuditConfig {
         )
     }
 
-    static List getConfigs(Object obj) {
+    static List<AuditConfig> getConfigs(Object obj) {
         if (! obj)
             return null
 
-        List configs = []
+        List<AuditConfig> configs = []
 
         obj.getClass().controlledProperties.each{ prop ->
             def config = getConfig(obj, prop)
