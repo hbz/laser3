@@ -59,7 +59,7 @@ class QueryService {
 
         if (contextUser.getSettingsValue(IS_REMIND_FOR_LICENSE_CUSTOM_PROP)==YN_YES) {
             getDueLicenseCustomProperties(contextOrg, today, computeInfoDate(contextUser, REMIND_PERIOD_FOR_LICENSE_CUSTOM_PROP)).collect{
-                if ( ! it.owner.orgRelations.find{it.roleType == RDStore.OR_LICENSEE_CONS}) {
+                if ( ! it.owner.orgLinks.find{it.roleType == RDStore.OR_LICENSEE_CONS}) {
                     dueObjects << it
                 }
             }
