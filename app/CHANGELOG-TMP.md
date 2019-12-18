@@ -2,6 +2,8 @@
 
 **Ticket    Date    Branch      Author  Feature/Bug     Description/Keywords**
 
+--      18.12.2019  rc1.2       Moe   Bug           Unlink Package by linkPackagesMembers 
+
 --      18.12.2019  rc1.2       David   Bug         accessor for undeleted derived subscriptions
 
 --      17.12.2019  rc1.2       Moe     Bug         Bugfix: View and Filter Bugfix by Survey
