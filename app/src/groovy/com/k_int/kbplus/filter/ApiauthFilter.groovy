@@ -43,8 +43,8 @@ class ApiauthFilter extends GenericFilterBean implements ApplicationEventPublish
          
          
     if (SecurityContextHolder.getContext().getAuthentication() == null) {
-      def username = request.getParameter("apikey")         
-      def password = request.getParameter("apisec") 
+      String username = request.getParameter("apikey")
+      String password = request.getParameter("apisec")
              
       Authentication auth
       UsernamePasswordAuthenticationToken upat

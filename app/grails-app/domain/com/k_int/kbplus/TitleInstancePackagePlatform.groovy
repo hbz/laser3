@@ -13,6 +13,7 @@ import org.apache.commons.logging.LogFactory
 import org.springframework.context.i18n.LocaleContextHolder
 
 import javax.persistence.Transient
+import java.text.SimpleDateFormat
 
 class TitleInstancePackagePlatform extends AbstractBaseDomain /*implements AuditableTrait*/ {
   @Transient
@@ -180,7 +181,7 @@ class TitleInstancePackagePlatform extends AbstractBaseDomain /*implements Audit
     }
 
   @Transient
-  def touchPkgLastUpdated(){
+  void touchPkgLastUpdated() {
     if(pkg!=null){
       use(TimeCategory) {
         pkg.lastUpdated += 1.seconds
@@ -190,8 +191,8 @@ class TitleInstancePackagePlatform extends AbstractBaseDomain /*implements Audit
   }
 
     /*
-  def getHostPlatform() {
-    def result = null;
+  String getHostPlatform() {
+    String result = null;
     additionalPlatforms.each { p ->
       if ( p.rel == 'host' ) {
         result = p.titleUrl
@@ -202,7 +203,7 @@ class TitleInstancePackagePlatform extends AbstractBaseDomain /*implements Audit
     */
 
   String getIdentifierValue(idtype) {
-    def result=null
+      String result
     ids?.each { ident ->
       if ( ident.ns?.ns?.toLowerCase() == idtype.toLowerCase() )
         result = ident.value
@@ -235,7 +236,6 @@ class TitleInstancePackagePlatform extends AbstractBaseDomain /*implements Audit
       def oldLabel = stringify(oldMap[cp])
       def newLabel = stringify(newMap[cp])
 
-
       if ( prop_info.isAssociation() ) {
           log.debug("Convert object reference into OID")
           oldMap[cp]= oldMap[cp] != null ? "${ClassUtils.deproxy(oldMap[cp]).class.name}:${oldMap[cp].id}" : null
@@ -254,19 +254,19 @@ class TitleInstancePackagePlatform extends AbstractBaseDomain /*implements Audit
       ])
   }
 
-  private def stringify(obj) {
-    def result = null
+    private String stringify(obj) {
+      String result
     if ( obj != null ) {
       if ( obj instanceof Date ) {
-        def df = new java.text.SimpleDateFormat('yyyy-MM-dd');
+          SimpleDateFormat df = new SimpleDateFormat('yyyy-MM-dd');
         result = df.format(obj);
       }
       else {
         result = obj.toString()
       }
     }
-    result
-  }
+        result
+    }
 
     /*
   @Transient
@@ -346,11 +346,12 @@ class TitleInstancePackagePlatform extends AbstractBaseDomain /*implements Audit
     }
     else if ( (changeDocument.event=='TitleInstancePackagePlatform.updated') && ( changeDocument.new != changeDocument.old ) ) {
         ContentItem contentItemDesc = ContentItem.findByKeyAndLocale("kbplus.change.tipp."+changeDocument.prop, locale.toString())
-        def description = messageSource.getMessage('default.accept.change.ie',null,locale)
+        String description = messageSource.getMessage('default.accept.change.ie',null,locale)
         if(contentItemDesc){
             description = contentItemDesc.content
-        }else{
-            def defaultMsg =  ContentItem.findByKeyAndLocale("kbplus.change.tipp.default",locale.toString())
+        }
+        else {
+            ContentItem defaultMsg =  ContentItem.findByKeyAndLocale("kbplus.change.tipp.default",locale.toString())
             if(defaultMsg)
                 description = defaultMsg.content
         }
@@ -429,24 +430,24 @@ class TitleInstancePackagePlatform extends AbstractBaseDomain /*implements Audit
   }
     */
 
-  public Date getDerivedAccessStartDate() {
+  Date getDerivedAccessStartDate() {
     accessStartDate ? accessStartDate : pkg?.startDate
   }
 
-  public Date getDerivedAccessEndDate() {
+  Date getDerivedAccessEndDate() {
     accessEndDate ? accessEndDate : pkg?.endDate
   }
 
-  public RefdataValue getAvailabilityStatus() {
+  RefdataValue getAvailabilityStatus() {
     return getAvailabilityStatus(new Date());
   }
   
-  public String getAvailabilityStatusAsString() {
-	  def result = null
+  String getAvailabilityStatusAsString() {
+	  String result
 	  def loc = LocaleContextHolder.locale?.toString()
-	  Date as_at = new Date();
-	  def tipp_access_start_date = getDerivedAccessStartDate()
-	  def tipp_access_end_date = getDerivedAccessEndDate()
+	  Date as_at = new Date()
+      Date tipp_access_start_date = getDerivedAccessStartDate()
+      Date tipp_access_end_date = getDerivedAccessEndDate()
 	  
 	  if ( tipp_access_end_date == null ) {
 		result = RefdataCategory.lookupOrCreate("TIPP Access Status","Current(*)").getI10n("value");
@@ -466,13 +467,14 @@ class TitleInstancePackagePlatform extends AbstractBaseDomain /*implements Audit
   }
   
 
-  public RefdataValue getAvailabilityStatus(Date as_at) {
-    def result = null
+  RefdataValue getAvailabilityStatus(Date as_at) {
+      RefdataValue result
     // If StartDate <= as_at <= EndDate - Current
     // if Date < StartDate - Expected
     // if Date > EndDate - Expired
-    def tipp_access_start_date = getDerivedAccessStartDate()
-    def tipp_access_end_date = getDerivedAccessEndDate()
+      Date tipp_access_start_date = getDerivedAccessStartDate()
+      Date tipp_access_end_date = getDerivedAccessEndDate()
+
     // if ( ( accessEndDate == null ) && ( as_at > tipp_access_end_date ) ) {
     if ( tipp_access_end_date == null ) {
       result = RefdataCategory.lookupOrCreate('TIPP Access Status','Current(*)');
@@ -491,21 +493,19 @@ class TitleInstancePackagePlatform extends AbstractBaseDomain /*implements Audit
     result
   }
 
-  public getAvailabilityStatusExplanation() {
-    return getAvailabilityStatusExplanation(new Date());
-  }
+    String getAvailabilityStatusExplanation() {
+        return getAvailabilityStatusExplanation(new Date());
+    }
 
-  public getAvailabilityStatusExplanation(Date as_at) {
-    StringWriter sw = new StringWriter()
-
-    sw.write("This tipp is ${getAvailabilityStatus(as_at).value} as at ${as_at} because the date specified was between the start date (${getDerivedAccessStartDate()} ${accessStartDate ? 'Set explicitly on this TIPP' : 'Defaulted from package start date'}) and the end date (${getDerivedAccessEndDate()} ${accessEndDate ? 'Set explicitly on this TIPP' : 'Defaulted from package end date'})");
-
-    return sw.toString();
-  }
+    String getAvailabilityStatusExplanation(Date as_at) {
+        StringWriter sw = new StringWriter()
+        sw.write("This tipp is ${getAvailabilityStatus(as_at).value} as at ${as_at} because the date specified was between the start date (${getDerivedAccessStartDate()} ${accessStartDate ? 'Set explicitly on this TIPP' : 'Defaulted from package start date'}) and the end date (${getDerivedAccessEndDate()} ${accessEndDate ? 'Set explicitly on this TIPP' : 'Defaulted from package end date'})");
+        return sw.toString();
+    }
   /**
    * Compare the controlledPropertie of two tipps
   **/
-  public int compare(TitleInstancePackagePlatform tippB){
+  int compare(TitleInstancePackagePlatform tippB){
       if(!tippB) return -1;
       boolean noChange = true
       controlledProperties.each{ noChange &= this."${it}" == tippB."${it}" }

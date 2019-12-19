@@ -483,7 +483,7 @@ class SubscriptionImportController extends AbstractDebugController {
 
   @Secured(['ROLE_USER'])
   def importSubscriptionWorksheet() {
-    def result = [:]
+    Map<String, Object> result = [:]
       com.k_int.kbplus.SubscriptionImportController.log.debug("importSubscriptionWorksheet :: ${params}")
     result.user = User.get(springSecurityService.principal.id)
     // result.institution = Org.findByShortcode(params.shortcode)
@@ -629,7 +629,7 @@ class SubscriptionImportController extends AbstractDebugController {
 
     com.k_int.kbplus.SubscriptionImportController.log.debug("processSubscriptionImport...");
 
-    def result = [:]
+    Map<String, Object> result = [:]
 
     result.user = User.get(springSecurityService.principal.id)
     result.institution = Org.get(params.orgId)

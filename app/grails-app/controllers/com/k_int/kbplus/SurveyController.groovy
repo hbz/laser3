@@ -92,6 +92,7 @@ class SurveyController {
         def fsq = filterService.getSurveyConfigQueryConsortia(params, sdFormat, result.institution)
 
         result.surveys = SurveyInfo.executeQuery(fsq.query, fsq.queryParams, params)
+        result.surveysCount = SurveyInfo.executeQuery(fsq.query, fsq.queryParams).size()
         result.countSurveyConfigs = getSurveyConfigCounts()
 
         result.filterSet = params.filterSet ? true : false
@@ -2115,11 +2116,39 @@ class SurveyController {
         }
 
         result.surveyInfo.status = RDStore.SURVEY_IN_EVALUATION
-        result.surveyInfo.save(flush: true)
+
+        if (result.surveyInfo.save(flush: true)) {
+            flash.message = g.message(code: 'survey.change.successfull')
+        } else {
+            flash.error = g.message(code: 'survey.change.fail')
+        }
+        redirect(url: request.getHeader('referer'))
+
+    }
+
+    @DebugAnnotation(perm = "ORG_CONSORTIUM_SURVEY", affil = "INST_EDITOR", specRole = "ROLE_ADMIN")
+    @Secured(closure = {
+        ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM_SURVEY", "INST_EDITOR", "ROLE_ADMIN")
+    })
+    def setCompleted() {
+        def result = setResultGenericsAndCheckAccess()
+        if (!result.editable) {
+            response.sendError(401); return
+        }
+
+        result.surveyInfo.status = RDStore.SURVEY_COMPLETED
+
+
+        if (result.surveyInfo.save(flush: true)) {
+            flash.message = g.message(code: 'survey.change.successfull')
+        } else {
+            flash.error = g.message(code: 'survey.change.fail')
+        }
 
         redirect(url: request.getHeader('referer'))
 
     }
+
 
     @DebugAnnotation(perm = "ORG_CONSORTIUM_SURVEY", affil = "INST_EDITOR", specRole = "ROLE_ADMIN")
     @Secured(closure = {
@@ -2132,7 +2161,11 @@ class SurveyController {
         }
 
         result.surveyInfo.status = RDStore.SURVEY_SURVEY_COMPLETED
-        result.surveyInfo.save(flush: true)
+        if (result.surveyInfo.save(flush: true)) {
+            flash.message = g.message(code: 'survey.change.successfull')
+        } else {
+            flash.error = g.message(code: 'survey.change.fail')
+        }
 
         redirect(url: request.getHeader('referer'))
 

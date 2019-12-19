@@ -115,7 +115,7 @@ class TitleInstance extends AbstractBaseDomain /*implements AuditableTrait*/ {
 
 
   Org getPublisher() {
-    def result = null;
+    Org result
     orgs.each { o ->
       if ( o.roleType?.value == 'Publisher' ) {
         result = o.org
@@ -124,12 +124,12 @@ class TitleInstance extends AbstractBaseDomain /*implements AuditableTrait*/ {
     result
   }
 
-    @Deprecated
-  static def lookupByIdentifierString(idstr) {
+  @Deprecated
+  static TitleInstance lookupByIdentifierString(idstr) {
 
       static_logger.debug("lookupByIdentifierString(${idstr})")
 
-    def result = null;
+      TitleInstance result
     def qr = null;
     def idstr_components = idstr.split(':');
 

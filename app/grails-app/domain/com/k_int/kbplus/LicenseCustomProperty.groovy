@@ -94,7 +94,7 @@ class LicenseCustomProperty extends CustomProperty implements AuditableTrait  {
         if (changeDocument.event.equalsIgnoreCase('LicenseCustomProperty.updated')) {
             // legacy ++
 
-            def locale = org.springframework.context.i18n.LocaleContextHolder.getLocale()
+            Locale locale = org.springframework.context.i18n.LocaleContextHolder.getLocale()
             ContentItem contentItemDesc = ContentItem.findByKeyAndLocale("kbplus.change.subscription."+changeDocument.prop, locale.toString())
             def description = messageSource.getMessage('default.accept.placeholder',null, locale)
             if (contentItemDesc) {

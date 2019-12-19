@@ -30,6 +30,9 @@
                                    params="[id: params.id, surveyConfigID: surveyConfig.id]"
                                    message="surveyInfo.renewalOverView"/>
 
+        <semui:actionsDropdownItem controller="survey" action="setCompleted"
+                                   params="[id: params.id, surveyConfigID: surveyConfig.id]"
+                                   message="surveyInfo.completed.action"/>
     </semui:actionsDropdown>
 </semui:controlButtons>
 
@@ -332,8 +335,8 @@ ${surveyInfo?.name}
                                 <g:set var="sumOldCostItemAfterTax"
                                        value="${sumOldCostItemAfterTax + costItemParticipantSub.costInBillingCurrencyAfterTax?:0}"/>
 
-                                <g:set var="OldCostItem" value="${costItemParticipantSub.costInBillingCurrency?:0.0}"/>
-                                <g:set var="OldCostItemAfterTax" value="${costItemParticipantSub.costInBillingCurrencyAfterTax?:0.0}"/>
+                                <g:set var="OldCostItem" value="${costItemParticipantSub.costInBillingCurrency?:null}"/>
+                                <g:set var="OldCostItemAfterTax" value="${costItemParticipantSub.costInBillingCurrencyAfterTax?:null}"/>
                             </g:each>
                         </g:if>
                     </td>

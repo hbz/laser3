@@ -31,8 +31,6 @@ class BookInstance extends TitleInstance {
         editionNumber column: 'bk_edition_number'
         editionStatement column: 'bk_edition_statement'
         editionDifferentiator column: 'bk_edition_differentiator'
-
-
     }
 
     static constraints = {
@@ -59,10 +57,10 @@ class BookInstance extends TitleInstance {
         RefdataValue.getByValueAndCategory('EBook',RefdataCategory.TI_MEDIUM).getI10n('value')
     }
 
-    def getEbookFirstAutorOrFirstEditor(){
+    String getEbookFirstAutorOrFirstEditor(){
 
         def messageSource = Holders.grailsApplication.mainContext.getBean('messageSource')
-        def label = messageSource.getMessage('title.firstAuthor.firstEditor.label',null, LocaleContextHolder.getLocale())
+        String label = messageSource.getMessage('title.firstAuthor.firstEditor.label',null, LocaleContextHolder.getLocale())
 
         if(firstEditor && firstAuthor)
         {

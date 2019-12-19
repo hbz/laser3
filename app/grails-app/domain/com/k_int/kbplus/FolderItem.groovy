@@ -24,7 +24,7 @@ class FolderItem {
   static constraints = {
   }
 
-  public boolean equals(Object o) {
+  boolean equals(Object o) {
     if ( o.id == this.id ) {
       return true;
     }

@@ -2,6 +2,7 @@ package de.laser
 
 import com.k_int.kbplus.*
 import com.k_int.kbplus.auth.Role
+import com.k_int.kbplus.auth.User
 import de.laser.helper.DebugAnnotation
 import grails.plugin.springsecurity.annotation.Secured
 
@@ -37,8 +38,8 @@ class CostConfigurationController {
     def getCurrentConfigurations() {
         Map<String, Object> result = [:]
 
-        def org = contextService.getOrg()
-        def user = contextService.getUser()
+        Org org = contextService.getOrg()
+        User user = contextService.getUser()
         def costItemElementConfigurations = []
         def costItemElements = RefdataCategory.getAllRefdataValues('CostItemElement')
 

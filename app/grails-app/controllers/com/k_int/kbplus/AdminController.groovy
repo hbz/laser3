@@ -500,7 +500,7 @@ class AdminController extends AbstractDebugController {
     def result=[:]
     if ( ( params.key != null ) && ( params.content != null ) && ( params.key.length() > 0 ) && ( params.content.length() > 0 ) ) {
 
-      def locale = ( ( params.locale != null ) && ( params.locale.length() > 0 ) ) ? params.locale : ''
+      String locale = ( ( params.locale != null ) && ( params.locale.length() > 0 ) ) ? params.locale : ''
 
       if ( ContentItem.findByKeyAndLocale(params.key,locale) != null ) {
         flash.message = 'Content item already exists'
@@ -521,9 +521,9 @@ class AdminController extends AbstractDebugController {
     def idparts = params.id?.split(':')
     if ( idparts.length > 0 ) {
       def key = idparts[0]
-      def locale = idparts.length > 1 ? idparts[1] : ''
+      String locale = idparts.length > 1 ? idparts[1] : ''
 
-      def contentItem = ContentItem.findByKeyAndLocale(key,locale)
+      ContentItem contentItem = ContentItem.findByKeyAndLocale(key,locale)
       if ( contentItem != null ) {
         result.contentItem = contentItem
       }

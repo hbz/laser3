@@ -14,7 +14,7 @@ import grails.plugin.springsecurity.annotation.Secured
 import java.text.SimpleDateFormat
 
 @Secured(['permitAll']) // TODO
-class ApiController extends AbstractDebugController {
+class ApiController {
 
     def springSecurityService
     ContextService contextService

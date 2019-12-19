@@ -95,10 +95,10 @@ class Platform extends AbstractBaseDomain {
   }
 
   @Deprecated
-  def static lookupOrCreatePlatform(Map params=[:]) {
+  static Platform lookupOrCreatePlatform(Map params=[:]) {
 
-    def platform = null;
-    def platform_candidates = null;
+    Platform platform
+    List<Platform> platform_candidates = []
 
 /*    if ( params.impId && params.impId.trim().length() > 0) {
       platform = Platform.findByImpId(params.impId)
@@ -158,17 +158,17 @@ class Platform extends AbstractBaseDomain {
       platform.save(flush:true)
     }
 
-    platform;
+    platform
   }
 
   Map<String, Object> getCalculatedPropDefGroups(Org contextOrg) {
-    def result = [ 'global':[], 'local':[], 'orphanedProperties':[] ]
+    Map<String, Object> result = [ 'global':[], 'local':[], 'orphanedProperties':[] ]
 
     // ALL type depending groups without checking tenants or bindings
-    def groups = PropertyDefinitionGroup.findAllByOwnerType(Platform.class.name)
+    List<PropertyDefinitionGroup> groups = PropertyDefinitionGroup.findAllByOwnerType(Platform.class.name)
     groups.each{ it ->
 
-      def binding = PropertyDefinitionGroupBinding.findByPropDefGroupAndOrg(it, this)
+      PropertyDefinitionGroupBinding binding = PropertyDefinitionGroupBinding.findByPropDefGroupAndOrg(it, this)
 
       if (it.tenant == null || it.tenant?.id == contextOrg?.id) {
         if (binding) {
@@ -185,24 +185,24 @@ class Platform extends AbstractBaseDomain {
     result
   }
 
-  def usesPlatformAccessPoints(contextOrg, subscriptionPackage){
+  boolean usesPlatformAccessPoints(contextOrg, subscriptionPackage){
     // TODO do we need the contextOrg?
     // look for OrgAccessPointLinks for this platform and a given subscriptionPackage, if we can find that "marker",
     // we know the AccessPoints are not derived from the AccessPoints configured for the platform
-    def hql = "select oapl from OrgAccessPointLink oapl where oapl.platform=${this.id} and oapl.subPkg = ${subscriptionPackage.id} and oapl.oap is null"
+    String hql = "select oapl from OrgAccessPointLink oapl where oapl.platform=${this.id} and oapl.subPkg = ${subscriptionPackage.id} and oapl.oap is null"
     def result = OrgAccessPointLink.executeQuery(hql)
     (result) ? false : true
   }
 
   def getContextOrgAccessPoints(contextOrg) {
-    def hql = "select oap from OrgAccessPoint oap " +
+    String hql = "select oap from OrgAccessPoint oap " +
         "join oap.oapp as oapp where oap.org=:org and oapp.active = true and oapp.platform.id =${this.id} and oapp.subPkg is null order by LOWER(oap.name)"
     def result = OrgAccessPoint.executeQuery(hql, ['org' : contextOrg])
     return result
   }
 
   def getNotActiveAccessPoints(org){
-    def notActiveAPLinkQuery = "select oap from OrgAccessPoint oap where oap.org =:institution "
+    String notActiveAPLinkQuery = "select oap from OrgAccessPoint oap where oap.org =:institution "
     notActiveAPLinkQuery += "and not exists ("
     notActiveAPLinkQuery += "select 1 from oap.oapp as oapl where oapl.oap=oap and oapl.active=true "
     notActiveAPLinkQuery += "and oapl.platform.id = ${id}) order by lower(oap.name)"
@@ -222,8 +222,9 @@ class Platform extends AbstractBaseDomain {
 
     result
   }
+
   @Override
-  public boolean equals (Object o) {
+  boolean equals (Object o) {
     def obj = ClassUtils.deproxy(o)
     if (obj != null) {
       if ( obj instanceof Platform ) {
@@ -232,13 +233,13 @@ class Platform extends AbstractBaseDomain {
     }
     return false
   }
+
   @Override
   String toString() {
     name
   }
 
-  def getCurrentTipps()
-  {
+  def getCurrentTipps() {
     def result = this.tipps?.findAll{it?.status?.id == RDStore.TIPP_STATUS_CURRENT.id}
 
     result

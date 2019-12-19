@@ -1031,7 +1031,7 @@ class SemanticUiTagLib {
         def linkBody = (text && message) ? text + " - " + message : text + message
         def aClass = ((this.pageScope.variables?.actionName == attrs.action && attrs.tab == params.tab) ? 'item active' : 'item') + (attrs.class ? ' ' + attrs.class : '')
 
-        def counts = (attrs.counts >= 0) ? '<div class="ui floating ' + (attrs.countsClass ?: 'blue') + ' circular label">' + attrs.counts + '</div>' : null
+        def counts = (attrs.counts >= 0) ? '<div class="ui '  + ' circular label">' + attrs.counts + '</div>' : null
 
         linkBody = counts ? linkBody + counts : linkBody
 

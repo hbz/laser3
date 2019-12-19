@@ -123,7 +123,7 @@ class IssueEntitlement extends AbstractBaseDomain implements Comparable {
     dateCreated (nullable: true, blank: false)
   }
 
-  def afterDelete() {
+  void afterDelete() {
     deletionService.deleteDocumentFromIndex(this.globalUID)
   }
 
@@ -135,12 +135,12 @@ class IssueEntitlement extends AbstractBaseDomain implements Comparable {
     accessEndDate ? accessEndDate : subscription?.endDate
   }
 
-  public RefdataValue getAvailabilityStatus() {
-    return getAvailabilityStatus(new Date());
+  RefdataValue getAvailabilityStatus() {
+    getAvailabilityStatus(new Date())
   }
 
   @Transient
-  public int compare(IssueEntitlement ieB){
+  int compare(IssueEntitlement ieB){
     if(ieB == null) return -1;
 
     def noChange =true 
@@ -150,8 +150,8 @@ class IssueEntitlement extends AbstractBaseDomain implements Comparable {
     return 1;
   }
 
-  public RefdataValue getAvailabilityStatus(Date as_at) {
-    def result = null
+  RefdataValue getAvailabilityStatus(Date as_at) {
+    RefdataValue result
     // If StartDate <= as_at <= EndDate - Current
     // if Date < StartDate - Expected
     // if Date > EndDate - Expired
@@ -191,12 +191,13 @@ class IssueEntitlement extends AbstractBaseDomain implements Comparable {
   }
 
   @Transient
-  def getTIP(){
-    def inst = subscription?.getSubscriber()
+  TitleInstitutionProvider getTIP(){
+    Org inst = subscription?.getSubscriber()
     def title = tipp?.title
-    def provider = tipp?.pkg?.getContentProvider()
+    Org provider = tipp?.pkg?.getContentProvider()
+
     if ( inst && title && provider ) {
-      def tip = TitleInstitutionProvider.findByTitleAndInstitutionAndprovider(title, inst, provider)
+      TitleInstitutionProvider tip = TitleInstitutionProvider.findByTitleAndInstitutionAndprovider(title, inst, provider)
       if(!tip){
         tip = new TitleInstitutionProvider(title:title,institution:inst,provider:provider)
         tip.save()
@@ -209,7 +210,7 @@ class IssueEntitlement extends AbstractBaseDomain implements Comparable {
   @Transient
   def coreStatusOn(as_at) {
     // Use the new core system to determine if this title really is core
-    def tip = getTIP()
+    TitleInstitutionProvider tip = getTIP()
     if(tip) return tip.coreStatus(as_at);
     return false
   }

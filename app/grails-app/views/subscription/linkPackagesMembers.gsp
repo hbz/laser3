@@ -23,6 +23,8 @@
 <br>
 <h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon/>${subscriptionInstance.name}</h1>
 
+<semui:anualRings object="${subscriptionInstance}" controller="subscription" action="${actionName}" navNext="${navNextSubscription}" navPrev="${navPrevSubscription}"/>
+
 <g:render template="navSubscriberManagement" model="${[args: args]}"/>
 
 <semui:messages data="${flash}"/>

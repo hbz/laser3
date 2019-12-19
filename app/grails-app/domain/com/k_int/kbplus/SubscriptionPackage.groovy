@@ -52,7 +52,7 @@ class SubscriptionPackage {
 
     def result = [];
     def hqlParams = []
-    def hqlString = "select sp from SubscriptionPackage as sp"
+    String hqlString = "select sp from SubscriptionPackage as sp"
 
     if ( params.subFilter ) {
       hqlString += ' where sp.subscription.id = ?'
@@ -62,7 +62,7 @@ class SubscriptionPackage {
     def results = SubscriptionPackage.executeQuery(hqlString,hqlParams)
 
     results?.each { t ->
-      def resultText = t.subscription.name + '/' + t.pkg.name
+      String resultText = t.subscription.name + '/' + t.pkg.name
       result.add([id:"${t.class.name}:${t.id}",text:resultText])
     }
 
@@ -85,7 +85,7 @@ class SubscriptionPackage {
     result
   }
 
-  def getIEandPackageSize(){
+  String getIEandPackageSize(){
 
     return '(<span data-tooltip="Titel in der Lizenz"><i class="ui icon archive"></i></span>' + this.getIssueEntitlementsofPackage().size() + ' / <span data-tooltip="Titel im Paket"><i class="ui icon book"></i></span>' + this.getCurrentTippsofPkg()?.size() + ')'
   }
@@ -95,29 +95,27 @@ class SubscriptionPackage {
     def result = this.pkg.tipps?.findAll{it?.status?.value == 'Current'}
 
     result
-
   }
 
-  def getPackageName(){
-
+  String getPackageName() {
     return this.pkg.name
   }
 
-  def getNotActiveAccessPoints(org){
-    def notActiveAPLinkQuery = "select oap from OrgAccessPoint oap where oap.org =:institution "
+  def getNotActiveAccessPoints(Org org){
+    String notActiveAPLinkQuery = "select oap from OrgAccessPoint oap where oap.org =:institution "
     notActiveAPLinkQuery += "and not exists ("
     notActiveAPLinkQuery += "select 1 from oap.oapp as oapl where oapl.oap=oap and oapl.active=true "
     notActiveAPLinkQuery += "and oapl.subPkg.id = ${id}) order by lower(oap.name)"
     OrgAccessPoint.executeQuery(notActiveAPLinkQuery, [institution : org])
   }
 
-  def getAccessPointListForOrgAndPlatform(org,platform){
+  def getAccessPointListForOrgAndPlatform(Org org, Platform platform){
     // do not mix derived and not derived
     if (platform.usesPlatformAccessPoints(org, this)){
-      def hql = "select oapl from OrgAccessPointLink oapl join oapl.oap as oap where oap.org=:org and oapl.platform=:platform and oapl.active=true"
+      String hql = "select oapl from OrgAccessPointLink oapl join oapl.oap as oap where oap.org=:org and oapl.platform=:platform and oapl.active=true"
       return OrgAccessPointLink.executeQuery(hql, [org:org, platform:platform])
     } else {
-        def hql = "select oapl from OrgAccessPointLink oapl join oapl.oap as oap where oapl.subPkg=:subPkg and oap.org=:org and oapl.active=true"
+        String hql = "select oapl from OrgAccessPointLink oapl join oapl.oap as oap where oapl.subPkg=:subPkg and oap.org=:org and oapl.active=true"
         return OrgAccessPointLink.executeQuery(hql, [subPkg:this, org:org])
     }
   }

@@ -59,18 +59,16 @@ class GlobalRecordSource {
       dateCreated (nullable: true, blank: false)
   }
 
-  @Transient
-  def getBaseUrl() {
-    // For now, assume type=gokb - and trim off the oai/packages
-    def result = uri.replaceAll('oai.*','');
-    result
-  }
+    @Transient
+    String getBaseUrl() {
+        // For now, assume type=gokb - and trim off the oai/packages
+        uri.replaceAll('oai.*','');
+    }
 
-  @Transient
-  def getBaseEditUrl() {
-      def result = editUri.replaceAll('oai.*','')
-      result
-  }
+    @Transient
+    String getBaseEditUrl() {
+        editUri.replaceAll('oai.*','')
+    }
 
   @Transient
   def getNumberLocalPackages() {
@@ -78,7 +76,7 @@ class GlobalRecordSource {
   }
 
   @Transient
-  static def removeSource(source_id) {
+  static void removeSource(source_id) {
     def rel_info = GlobalRecordSource.executeQuery("select gri from GlobalRecordInfo as gri where gri.source.id = ?",[source_id])
 
     if(rel_info.size() > 0){

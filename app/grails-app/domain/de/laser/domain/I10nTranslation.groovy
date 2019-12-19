@@ -51,18 +51,18 @@ class I10nTranslation {
 
     // -- getter and setter --
 
-    static get(Object reference, String referenceField) {
+    static I10nTranslation get(Object reference, String referenceField) {
         reference = GrailsHibernateUtil.unwrapIfProxy(reference)
 
-        def i10n = findByReferenceClassAndReferenceIdAndReferenceField(reference.getClass().getCanonicalName(), reference.getId(), referenceField)
+        I10nTranslation i10n = findByReferenceClassAndReferenceIdAndReferenceField(reference.getClass().getCanonicalName(), reference.getId(), referenceField)
 
         i10n
     }
 
-    static get(Object reference, String referenceField, String locale) {
+    static String get(Object reference, String referenceField, String locale) {
         reference = GrailsHibernateUtil.unwrapIfProxy(reference)
 
-        def i10n = findByReferenceClassAndReferenceIdAndReferenceField(reference.getClass().getCanonicalName(), reference.getId(), referenceField)
+        I10nTranslation i10n = findByReferenceClassAndReferenceIdAndReferenceField(reference.getClass().getCanonicalName(), reference.getId(), referenceField)
 
         switch(locale.toLowerCase()){
             case 'de':
@@ -77,13 +77,13 @@ class I10nTranslation {
         }
     }
 
-    static set(Object reference, String referenceField, Map values) {
+    static I10nTranslation set(Object reference, String referenceField, Map values) {
         if (!reference || !referenceField)
             return
 
         reference = GrailsHibernateUtil.unwrapIfProxy(reference)
 
-        def i10n = get(reference, referenceField)
+        I10nTranslation i10n = get(reference, referenceField)
         if (!i10n) {
             i10n = new I10nTranslation(
                     referenceClass: reference.getClass().getCanonicalName(),
@@ -113,10 +113,10 @@ class I10nTranslation {
     // -- initializations --
 
     // used in gsp to create translations for on-the-fly-created refdatas and property definitions
-    static createI10nOnTheFly(Object reference, String referenceField) {
+    static I10nTranslation createI10nOnTheFly(Object reference, String referenceField) {
 
-        def values = [:] // no effect in set()
-        def existing = get(reference, referenceField)
+        Map<String, Object> values = [:] // no effect in set()
+        I10nTranslation existing = get(reference, referenceField)
         if (! existing) { // set default values
             values = [
                     'en': reference."${referenceField}",
@@ -130,9 +130,9 @@ class I10nTranslation {
     }
 
     // used in bootstap
-    static createOrUpdateI10n(Object reference, String referenceField, Map translations) {
+    static I10nTranslation createOrUpdateI10n(Object reference, String referenceField, Map translations) {
 
-        def values = [:] // no effect in set()
+        Map<String, Object> values = [:] // no effect in set()
 
         translations['en'] ? (values << ['en':translations['en']]) : null
         translations['de'] ? (values << ['de':translations['de']]) : null
@@ -144,7 +144,7 @@ class I10nTranslation {
     // -- helper --
 
     // de => de, de-DE => de, de_DE => de
-    static decodeLocale(String locale) {
+    static String decodeLocale(String locale) {
 
         if(locale?.contains("-")) {
             return locale.split("-").first().toLowerCase()
@@ -159,7 +159,7 @@ class I10nTranslation {
 
     static def refdataFindHelper(String referenceClass, String referenceField, String query, def locale) {
 
-        def matches = []
+        List<I10nTranslation> matches = []
         def result = []
 
         if(! query) {
@@ -187,7 +187,7 @@ class I10nTranslation {
             }
         }
         matches.each { it ->
-            def obj = (new I10nTranslation().getDomainClass().grailsApplication.classLoader.loadClass(it.referenceClass)).findById(it.referenceId)
+            I10nTranslation obj = (new I10nTranslation().getDomainClass().grailsApplication.classLoader.loadClass(it.referenceClass)).findById(it.referenceId)
             if (obj) {
                 result << obj
             }
@@ -199,8 +199,8 @@ class I10nTranslation {
         from = GrailsHibernateUtil.unwrapIfProxy(from)
         to = GrailsHibernateUtil.unwrapIfProxy(to)
 
-        def i10n = findByReferenceClassAndReferenceIdAndReferenceField(from.getClass().getCanonicalName(), from.getId(), referenceField)
-        def values = [:]
+        I10nTranslation i10n = findByReferenceClassAndReferenceIdAndReferenceField(from.getClass().getCanonicalName(), from.getId(), referenceField)
+        Map<String, Object> values = [:]
         if(i10n)
         {
             values = [

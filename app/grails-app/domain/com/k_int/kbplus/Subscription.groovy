@@ -364,9 +364,9 @@ class Subscription
     }
 
     // used for views and dropdowns
-    def getNameConcatenated() {
-        def cons = getConsortia()
-        def subscr = getAllSubscribers()
+    String getNameConcatenated() {
+        Org cons = getConsortia()
+        List<Org> subscr = getAllSubscribers()
         if (subscr) {
             "${name} (" + subscr.join(', ') + ")"
         }
@@ -378,14 +378,14 @@ class Subscription
         }
     }
 
-  def getIsSlavedAsString() {
-    isSlaved ? "Yes" : "No"
-  }
+    String getIsSlavedAsString() {
+        isSlaved ? "Yes" : "No"
+    }
 
   Org getSubscriber() {
-    Org result = null
-    Org cons = null
-    Org coll = null
+    Org result
+    Org cons
+    Org coll
     
     orgRelations.each { or ->
       if ( or?.roleType?.id in [RDStore.OR_SUBSCRIBER.id, RDStore.OR_SUBSCRIBER_CONS.id, RDStore.OR_SUBSCRIBER_CONS_HIDDEN.id, RDStore.OR_SUBSCRIBER_COLLECTIVE.id] )
@@ -407,47 +407,46 @@ class Subscription
     result
   }
 
-  def getAllSubscribers() {
-    def result = [];
-    orgRelations.each { or ->
-      if ( or?.roleType?.value in ['Subscriber', 'Subscriber_Consortial', 'Subscriber_Consortial_Hidden', 'Subscriber_Collective'] )
-        result.add(or.org)
+    List<Org> getAllSubscribers() {
+        List<Org> result = []
+        orgRelations.each { or ->
+            if ( or?.roleType?.value in ['Subscriber', 'Subscriber_Consortial', 'Subscriber_Consortial_Hidden', 'Subscriber_Collective'] )
+                result.add(or.org)
+            }
+        result
     }
-    result
-  }
-  
-  def getProvider() {
-    def result = null;
-    orgRelations.each { or ->
-      if ( or?.roleType?.value=='Content Provider' )
-        result = or.org;
-    }
-    result
-  }
 
-    def getConsortia() {
-        def result = null;
+    Org getProvider() {
+        Org result
+        orgRelations.each { or ->
+            if ( or?.roleType?.value=='Content Provider' )
+                result = or.org
+            }
+        result
+    }
+
+    Org getConsortia() {
+        Org result
         orgRelations.each { or ->
             if ( or?.roleType?.value=='Subscription Consortia' )
                 result = or.org
-        }
+            }
         result
     }
 
     Org getCollective() {
-        Org result = null
+        Org result
         result = orgRelations.find { OrgRole or ->
             or.roleType.id == RDStore.OR_SUBSCRIPTION_COLLECTIVE.id
         }?.org
         result
     }
 
-    // TODO: rename
-    def getDerivedSubscribers() {
-        def result = []
+    List<Org> getDerivedSubscribers() {
+        List<Org> result = []
 
         Subscription.findAllByInstanceOf(this).each { s ->
-            def ors = OrgRole.findAllWhere( sub: s )
+            List<OrgRole> ors = OrgRole.findAllWhere( sub: s )
             ors.each { or ->
                 if (or.roleType?.value in ['Subscriber', 'Subscriber_Consortial']) {
                     result << or.org
@@ -477,41 +476,41 @@ class Subscription
 
     boolean isMultiYearSubscription()
     {
-        if(this.startDate && this.endDate && (this.endDate.minus(this.startDate) > 366))
-        {
+        if(this.startDate && this.endDate && (this.endDate.minus(this.startDate) > 366)) {
             return true
-        }else {
+        }
+        else {
             return false
         }
     }
 
     boolean isCurrentMultiYearSubscription()
     {
-        def currentDate = new Date(System.currentTimeMillis())
+        Date currentDate = new Date(System.currentTimeMillis())
         //println(this.endDate.minus(currentDate))
-        if(this.isMultiYearSubscription() && this.endDate && (this.endDate.minus(currentDate) > 366))
-        {
+        if(this.isMultiYearSubscription() && this.endDate && (this.endDate.minus(currentDate) > 366)) {
             return true
-        }else {
+        }
+        else {
             return false
         }
     }
 
     boolean isCurrentMultiYearSubscriptionNew()
     {
-        def currentDate = new Date(System.currentTimeMillis())
+        Date currentDate = new Date(System.currentTimeMillis())
         //println(this.endDate.minus(currentDate))
-        if(this.isMultiYear && this.endDate && (this.endDate.minus(currentDate) > 366))
-        {
+        if(this.isMultiYear && this.endDate && (this.endDate.minus(currentDate) > 366)) {
             return true
-        }else {
+        }
+        else {
             return false
         }
     }
 
     boolean islateCommer()
     {
-        def currentDate = new Date(System.currentTimeMillis())
+        Date currentDate = new Date(System.currentTimeMillis())
         //println(this.endDate.minus(currentDate))
         if(this.endDate && (this.endDate.minus(this.startDate) > 366 && this.endDate.minus(this.startDate) < 728))
         {
@@ -533,8 +532,8 @@ class Subscription
         if (perm == 'view' && this.isPublic) {
             return true
         }
-        def adm = Role.findByAuthority('ROLE_ADMIN')
-        def yda = Role.findByAuthority('ROLE_YODA')
+        Role adm = Role.findByAuthority('ROLE_ADMIN')
+        Role yda = Role.findByAuthority('ROLE_YODA')
 
         if (user.getAuthorities().contains(adm) || user.getAuthorities().contains(yda)) {
             return true
@@ -581,14 +580,14 @@ class Subscription
         log.debug("notifyDependencies_trait(${changeDocument})")
 
         List<PendingChange> slavedPendingChanges = []
-        def derived_subscriptions = getNonDeletedDerivedSubscriptions()
+        List<Subscription> derived_subscriptions = getNonDeletedDerivedSubscriptions()
 
         derived_subscriptions.each { ds ->
 
             log.debug("Send pending change to ${ds.id}")
 
-            def locale = org.springframework.context.i18n.LocaleContextHolder.getLocale()
-            def description = messageSource.getMessage('default.accept.placeholder',null, locale)
+            Locale locale = org.springframework.context.i18n.LocaleContextHolder.getLocale()
+            String description = messageSource.getMessage('default.accept.placeholder',null, locale)
 
             def definedType = 'text'
             if (this."${changeDocument.prop}" instanceof RefdataValue) {
@@ -632,20 +631,21 @@ class Subscription
         }
     }
 
-    def getNonDeletedDerivedSubscriptions() {
-        Subscription.where { instanceOf == this }
+    List<Subscription> getNonDeletedDerivedSubscriptions() {
+
+        Subscription.where { instanceOf == this }.findAll()
     }
 
     Map<String, Object> getCalculatedPropDefGroups(Org contextOrg) {
         def result = [ 'global':[], 'local':[], 'member':[], 'orphanedProperties':[]]
 
         // ALL type depending groups without checking tenants or bindings
-        def groups = PropertyDefinitionGroup.findAllByOwnerType(Subscription.class.name)
+        List<PropertyDefinitionGroup> groups = PropertyDefinitionGroup.findAllByOwnerType(Subscription.class.name)
         groups.each{ it ->
 
             // cons_members
             if (this.instanceOf && ! this.instanceOf.isTemplate()) {
-                def binding = PropertyDefinitionGroupBinding.findByPropDefGroupAndSub(it, this.instanceOf)
+                PropertyDefinitionGroupBinding binding = PropertyDefinitionGroupBinding.findByPropDefGroupAndSub(it, this.instanceOf)
 
                 // global groups
                 if (it.tenant == null) {
@@ -670,7 +670,7 @@ class Subscription
             }
             // consortium or locals
             else {
-                def binding = PropertyDefinitionGroupBinding.findByPropDefGroupAndSub(it, this)
+                PropertyDefinitionGroupBinding binding = PropertyDefinitionGroupBinding.findByPropDefGroupAndSub(it, this)
 
                 if (it.tenant == null || it.tenant?.id == contextOrg?.id) {
                     if (binding) {
@@ -688,7 +688,7 @@ class Subscription
         result
     }
 
-  public String toString() {
+  String toString() {
       name ? "${name}" : "Subscription ${id}"
   }
 
@@ -710,7 +710,7 @@ class Subscription
   //    }
   //  }
 
-  public Date getRenewalDate() {
+  Date getRenewalDate() {
     manualRenewalDate ? manualRenewalDate : null
   }
   /**
@@ -720,12 +720,12 @@ class Subscription
   static def refdataFind(params) {
     def result = [];
 
-    def hqlString = "select sub from Subscription sub where lower(sub.name) like :name "
+      String hqlString = "select sub from Subscription sub where lower(sub.name) like :name "
     def hqlParams = [name: ((params.q ? params.q.toLowerCase() : '' ) + "%")]
-    def sdf = new java.text.SimpleDateFormat("yyyy-MM-dd")
-    def cons_role = RDStore.OR_SUBSCRIPTION_CONSORTIA
-    def subscr_role = RDStore.OR_SUBSCRIBER
-    def subscr_cons_role = RDStore.OR_SUBSCRIBER_CONS
+      SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd")
+      RefdataValue cons_role        = RDStore.OR_SUBSCRIPTION_CONSORTIA
+      RefdataValue subscr_role      = RDStore.OR_SUBSCRIBER
+      RefdataValue subscr_cons_role = RDStore.OR_SUBSCRIBER_CONS
     def viableRoles = [cons_role, subscr_role, subscr_cons_role]
     
     hqlParams.put('viableRoles', viableRoles)
@@ -762,7 +762,7 @@ class Subscription
     }
 
     results?.each { t ->
-      def resultText = t.name
+      String resultText = t.name
       def date = t.startDate ? " (${sdf.format(t.startDate)})" : ""
       resultText = params.inclSubStartDate == "true"? resultText + date : resultText
       resultText = params.hideIdent == "true"? resultText : resultText + " (${t.identifier})"
