@@ -1438,22 +1438,22 @@ class BootStrap {
                         descr:allDescr, type: OT.Rdv, cat:'YN', isUsedForLogic: true
                 ],
                 [
-                        name: [en: "GASCO-Anzeigename", de: "GASCO-Anzeigename"],
+                        name: [key: "GASCO-Anzeigename", en: "GASCO display name", de: "GASCO-Anzeigename"],
                         expl : [en: "", de: "Dieses Merkmal setzen, um bei Bedarf im GASCO-Monitor einen anderen Lizenznamen anzugeben als in LAS:eR aufgenommen."],
                         descr:allDescr, type: OT.String, isUsedForLogic: true
                 ],
                 [
-                        name: [en: "GASCO-Verhandlername", de: "GASCO-Verhandlername"],
+                        name: [key: "GASCO-Verhandlername", en: "GASCO negotiator name", de: "GASCO-Verhandlername"],
                         expl : [en: "", de: "Dieses Merkmal als Konsortialstelle verwenden, um im GASCO-Monitor einen anderen Verhandlungsführer-Namen anzugeben."],
                         descr:allDescr, type: OT.String, isUsedForLogic: true
                 ],
                 [
-                        name: [en: "GASCO-Information-Link", de: "GASCO-Informations-Link"],
+                        name: [key: "GASCO-Information-Link", en: "GASCO information link", de: "GASCO-Informations-Link"],
                         expl : [en: "", de: "Unter welchem Link finden sich Informationen zum Produkt?"],
                         descr:allDescr, type: OT.URL, isUsedForLogic: true
                 ],
                 [
-                        name: [en: "EZB Gelbschaltung", de: "EZB Gelbschaltung"],
+                        name: [key: "EZB Gelbschaltung", en: "EZB tagging (yellow)", de: "EZB Gelbschaltung"],
                         expl : [en: "", de: "Wird eine Gelbschaltung in der EZB vorgenommen?"],
                         descr:allDescr, type: OT.Rdv, cat:'YN'
                 ],
@@ -1473,42 +1473,42 @@ class BootStrap {
                         descr:allDescr, type: OT.String
                 ],
                 [
-                        name: [en: "Preisvorteil durch weitere Produktteilnahme", de: "Preisvorteil durch weitere Produktteilnahme"],
+                        name: [key: "Preisvorteil durch weitere Produktteilnahme", en: "Pricing advantage by licensing of another product", de: "Preisvorteil durch weitere Produktteilnahme"],
                         expl : [en: "", de: "Kann durch die Lizenzierung eines weiteren Produktes ein Preisvorteil gesichert werden?"],
                         descr:allDescr, type: OT.Rdv, cat:'YN'
                 ],
                 [
-                        name: [en: "Produktabhängigkeit", de: "Produktabhängigkeit"],
+                        name: [key: "Produktabhängigkeit", en: "Product dependency", de: "Produktabhängigkeit"],
                         expl : [en: "", de: "Ist die Lizenz von einem anderen Produkt abhängig?"],
                         descr:allDescr, type: OT.Rdv, cat:'YN'
                 ],
                 [
-                        name: [en: "Bundesweit offen", de: "Bundesweit offen"],
+                        name: [key: "Bundesweit offen", en: "Open country-wide", de: "Bundesweit offen"],
                         expl : [en: "", de: "Hat die Lizenz eine überregionale Ausrichtung?"],
                         descr:allDescr, type: OT.Rdv, cat:'YN'
                 ],
                 [
-                        name: [en: "Rechnungsstellung durch Anbieter", de: "Rechnungsstellung durch Anbieter"],
+                        name: [key: "Rechnungsstellung durch Anbieter", en: "Billing done by provider", de: "Rechnungsstellung durch Anbieter"],
                         expl: [en: "", de: "Erfolgt die Rechnungsstellung direkt über den Anbieter?"],
                         descr:allDescr, type: OT.Rdv, cat:'YN'
                 ],
                 [
-                        name: [en: "Mengenrabatt Stichtag", de: "Mengenrabatt Stichtag"],
+                        name: [key: "Mengenrabatt Stichtag", en: "Due date for volume discount", de: "Mengenrabatt Stichtag"],
                         expl: [en: "", de: "Wann ist der Stichtag für die Findung der erreichten Rabattstufe?"],
                         descr:allDescr, type: OT.Date, cat:'YN'
                 ],
                 [
-                        name: [en: "Testzeitraum", de: "Testzeitraum"],
+                        name: [key: "Testzeitraum", en: "Time span for testing", de: "Testzeitraum"],
                         expl: [en: "", de: "Wie lange ermöglicht der Anbieter einen kostenfreien Testzugriff?"],
                         descr:allDescr, type: OT.String
                 ],
                 [
-                        name: [en: "Unterjähriger Einstieg", de: "Unterjähriger Einstieg"],
+                        name: [key: "Unterjähriger Einstieg", en: "Joining during the period", de: "Unterjähriger Einstieg"],
                         expl: [en: "", de: "Ist ein unterjähriger Einstieg in die Lizenz möglich?"],
                         descr:allDescr, type: OT.Rdv, cat:'YN'
                 ],
                 [
-                        name: [en: "Neueinsteigerrabatt", de: "Neueinsteigerrabatt"],
+                        name: [key: "Neueinsteigerrabatt", en: "Newcomer discount", de: "Neueinsteigerrabatt"],
                         expl : [en: "", de: "Existiert ein zusätzlicher Neueinsteigerpreis?"],
                         descr:allDescr, type: OT.Rdv, cat:'YN'
                 ],
@@ -1533,33 +1533,33 @@ class BootStrap {
                         descr:allDescr, type: OT.Rdv, cat:'Category A-F'
                 ],
                 [
-                        name: [en: "Rechnungszeitpunkt", de: "Rechnungszeitpunkt"],
-                        expl : [en: "", de: "Zeitpunkt der Rechnung."],
+                        name: [key:"Rechnungszeitpunkt", en: "Time of billing", de: "Rechnungszeitpunkt"],
+                        expl : [en: "Time of billing.", de: "Zeitpunkt der Rechnung."],
                         descr:allDescr, type: OT.String
                 ],
                 [
-                        name: [en: "Zahlungsziel", de: "Zahlungsziel"],
+                        name: [key: "Payment target", en: "Zahlungsziel", de: "Zahlungsziel"],
                         expl : [en: "", de: "Zahlungsziel"],
                         descr:allDescr, type: OT.String
                 ],
                 [
-                        name: [en: "Preis gerundet", de: "Preis gerundet"],
-                        expl : [en: "", de: "Gerundeter Preis."],
+                        name: [key: "Preis gerundet", en: "Price rounded", de: "Preis gerundet"],
+                        expl : [en: "Rounded price.", de: "Gerundeter Preis."],
                         descr:allDescr, type: OT.Rdv, cat:'YN'
                 ],
                 [
-                        name: [en: "Teilzahlung", de: "Teilzahlung"],
-                        expl : [en: "", de: "Ist bei der Lizenz eine Teilzahlung der Rechnung vorgesehen?"],
+                        name: [key: "Teilzahlung", en: "Partial payment", de: "Teilzahlung"],
+                        expl : [en: "Is a partial payment of bills intended in this subscription?", de: "Ist bei der Lizenz eine Teilzahlung der Rechnung vorgesehen?"],
                         descr:allDescr, type: OT.Rdv, cat:'YN'
                 ],
                 [
-                        name: [en: "Statistik", de: "Statistik"],
+                        name: [key: "Statistik", en: "Statistic", de: "Statistik"],
                         expl : [en: "", de: ""],
                         descr:allDescr, type: OT.String
                 ],
                 [
-                        name: [en: "Statistikzugang", de: "Statistikzugang"],
-                        expl : [en: "", de: "Mit welchen Zugangsdaten können die Statistiken abgerufen werden?"],
+                        name: [key: "Statistikzugang", en: "Statistic access", de: "Statistikzugang"],
+                        expl : [en: "With which credentials may the statistics be fetched?", de: "Mit welchen Zugangsdaten können die Statistiken abgerufen werden?"],
                         descr:allDescr, type: OT.String
                 ],
                 [
@@ -1588,67 +1588,67 @@ class BootStrap {
                         descr:allDescr, type: OT.Rdv, cat:'YN'
                 ],
                 [
-                        name: [en: "Private Einrichtungen", de: "Private Einrichtungen"],
+                        name: [key: "Private Einrichtungen", en: "Private institutions", de: "Private Einrichtungen"],
                         expl: [en: "", de: "Dürfen auch private Einrichtungen an der Lizenz teilnehmen?"],
                         descr:allDescr, type: OT.Rdv, cat:'YN'
                 ],
                 [
-                        name: [en: "Mehrjahreslaufzeit", de: "Mehrjahreslaufzeit"],
+                        name: [key: "Mehrjahreslaufzeit", en: "Perennial term", de: "Mehrjahreslaufzeit"],
                         expl: [en: "", de: "Ist für die Lizenze eine Mehrjahreslaufzeit möglich?"],
                         descr:allDescr, type: OT.Rdv, cat:'YN'
                 ],
                 [
-                        name: [en: "Mehrjahreslaufzeit ausgewählt", de: "Mehrjahreslaufzeit ausgewählt"],
+                        name: [key: "Mehrjahreslaufzeit ausgewählt", en: "Perennial term checked", de: "Mehrjahreslaufzeit ausgewählt"],
                         expl: [en: "", de: "Hat der Teilnehmer sich für eine Mehrjahreslaufzeit entschieden?"],
                         descr:allDescr, type: OT.Rdv, cat:'YN', isUsedForLogic: true
                 ],
                 [
-                        name: [en: "Rabatt", de: "Rabatt"],
+                        name: [key: "Rabatt", en: "Discount", de: "Rabatt"],
                         expl: [en: "", de: "Höhe des Rabattes."],
                         descr:allDescr, type: OT.String
                 ],
                 [
-                        name: [en: "Rabattstaffel", de: "Rabattstaffel"],
+                        name: [key: "Rabattstaffel", en: "Scale of discount", de: "Rabattstaffel"],
                         expl: [en: "", de: "Wie sieht die Rabattstaffel für die Lizenz aus?"],
                         descr:allDescr, type: OT.String
                 ],
                 [
-                        name: [en: "Rabatt Zählung", de: "Rabatt Zählung"],
+                        name: [key: "Rabatt Zählung", en: "Discount calculation", de: "Rabatt Zählung"],
                         expl: [en: "", de: "Wie wird die Rabatthöhe errechnet? Z.B. durch Zählung aller Teilnehmer bei dem Anbieter…"],
                         descr:allDescr, type: OT.Rdv, cat:'YN'
                 ],
                 [
-                        name: [en: "Kündigungsfrist", de: "Kündigungsfrist"],
+                        name: [key: "Kündigungsfrist", en: "Term of notice", de: "Kündigungsfrist"],
                         expl: [en: "", de: "Kündigungsfrist."],
                         descr:allDescr, type: OT.Rdv, cat:'YN'
                 ],
                 [
-                        name: [en: "Zusätzliche Software erforderlich?", de: "Zusätzliche Software erforderlich?"],
+                        name: [key: "Zusätzliche Software erforderlich?", en: "Additional software necessary?", de: "Zusätzliche Software erforderlich?"],
                         expl : [en: "", de: "Wird für die Lizenzierung eine zusätzliche Software benötigt?"],
                         descr:allDescr, type: OT.Rdv, cat:'YN'
                 ],
                 [
-                        name: [en: "Preissteigerung", de: "Preissteigerung"],
+                        name: [key: "Preissteigerung", en: "Price increase", de: "Preissteigerung"],
                         expl: [en: "", de: "Preissteigerung."],
                         descr:allDescr, type: OT.String
                 ],
                 [
-                        name: [en: "Preis abhängig von", de: "Preis abhängig von"],
+                        name: [key: "Preis abhängig von", en: "Price depending on", de: "Preis abhängig von"],
                         expl : [en: "", de: "Ist der Preis von etwas abhängig?"],
                         descr:allDescr, type: OT.String, multiple:true
                 ],
                 [
-                        name: [en: "Abbestellquote", de: "Abbestellquote"],
-                        expl: [en: "", de: "Abbestellquote."],
+                        name: [key: "Abbestellquote", en: "Cancellation rate", de: "Abbestellquote"],
+                        expl: [en: "Cancellation rate.", de: "Abbestellquote."],
                         descr:allDescr, type: OT.String
                 ],
                 [
-                        name: [en: "Bestellnummer im Erwerbungssystem", de: "Bestellnummer im Erwerbungssystem"],
+                        name: [key: "Bestellnummer im Erwerbungssystem", en: "Order number in purchasing system", de: "Bestellnummer im Erwerbungssystem"],
                         expl: [en: "", de: "Bestellnummer im Erwerbungssystem."],
                         descr:allDescr, type: OT.String
                 ],
                 [
-                        name: [en: "Zugangskennungen für Nutzer (pro Zeitschrift)", de: "Zugangskennungen für Nutzer (pro Zeitschrift)"],
+                        name: [key: "Zugangskennungen für Nutzer (pro Zeitschrift)", en: "Credentials for users (per journal)", de: "Zugangskennungen für Nutzer (pro Zeitschrift)"],
                         expl: [en: "", de: "Zugangskennungen für Nutzer (pro Zeitschrift)."],
                         descr:allDescr, type: OT.String
                 ],
@@ -1658,63 +1658,63 @@ class BootStrap {
                         descr:allDescr, type: OT.Rdv, cat:'YN'
                 ],
                 [
-                        name: [en: "Subscriptionsnummer vom Verlag", de: "Subskriptionsnummer des Verlags"],
+                        name: [key: "Subscriptionsnummer vom Verlag", en: "Subscription number of editor", de: "Subskriptionsnummer des Verlags"],
                         expl: [en: "", de: "Subskriptionsnummer des Verlags."],
                         descr:allDescr, type: OT.String, multiple:true
                 ],
                 [
-                        name: [en: "Subskriptionsnummer des Lieferanten", de: "Subskriptionsnummer des Lieferanten"],
+                        name: [key: "Subskriptionsnummer des Lieferanten", en: "Subscription number of provider", de: "Subskriptionsnummer des Lieferanten"],
                         expl: [en: "", de: "Subskriptionsnummer des Lieferanten."],
                         descr:allDescr, type: OT.String, multiple:true
                 ],
                 [
-                        name: [en: "DBIS-Eintrag", de: "DBIS-Eintrag"],
+                        name: [key: "DBIS-Eintrag", en: "DBIS entry", de: "DBIS-Eintrag"],
                         expl: [en: "", de: "Existiert ein DBIS-Eintrag?"],
                         descr:allDescr, type: OT.Rdv, cat:'YN'
                 ],
                 [
-                        name: [en: "DBIS-Link", de: "DBIS-Link"],
+                        name: [key: "DBIS-Link", en: "DBIS link", de: "DBIS-Link"],
                         expl: [en: "", de: "Link zum DBIS-Eintrag."],
                         descr:allDescr, type: OT.URL
                 ],
                 [
-                        name: [en: "Abbestellgrund", de: "Abbestellgrund"],
+                        name: [key: "Abbestellgrund", en: "Cancellation reason", de: "Abbestellgrund"],
                         expl: [en: "", de: "Welchen Grund gab es für die Abbestellung?"],
                         descr:allDescr, type: OT.String
                 ],
                 [
-                        name: [en: "Hosting-Gebühr", de: "Hosting-Gebühr"],
+                        name: [key: "Hosting-Gebühr", en: "Hosting fee", de: "Hosting-Gebühr"],
                         expl: [en: "", de: "Ist eine Hosting-Gebühr zu entrichten?"],
                         descr:allDescr, type: OT.String
                 ],
                 [
-                        name: [en: "Pick&Choose-Paket", de: "Pick&Choose-Paket"],
+                        name: [key: "Pick&Choose-Paket", en: "Pick&Choose package", de: "Pick&Choose-Paket"],
                         expl: [en: "", de: "Handelt es sich um ein Paket mit Einzeltitelauswahl (Pick & Choose)?"],
                         descr:allDescr, type: OT.String
                 ],
                 [
-                        name: [en: "PDA/EBS-Programm", de: "PDA/EBS-Programm"],
+                        name: [key: "PDA/EBS-Programm", en: "PDA/EBS model", de: "PDA/EBS-Programm"],
                         expl: [en: "", de: "Basiert die Lizenz auf einem PDA-, EBS- oder EBA-Modell?"],
                         descr:allDescr, type: OT.String
                 ],
                                 //[name: [en: "Produktsigel beantragt", de: "Produktsigel beantragt"],                    descr:allDescr, type: OT.String],
                 [
-                        name: [en: "Fachstatistik / Klassifikation", de: "Fachstatistik / Klassifikation"],
+                        name: [key: "Fachstatistik / Klassifikation", en: "Specialised statistics / classification", de: "Fachstatistik / Klassifikation"],
                         expl: [en: "", de: "Fachstatistik / Klassifikation"],
                         descr:allDescr, type: OT.Int, multiple:true
                 ],
                 [
-                        name: [en: "Archivzugriff", de: "Archivzugriff"],
+                        name: [key: "Archivzugriff", en: "Perpetual access", de: "Archivzugriff"],
                         expl: [en: "", de: "Gibt es einen Archivzugriff?"],
                         descr:allDescr, type: OT.Rdv, cat:'YN'
                 ],
                 [
-                        name: [en: "Eingeschränkter Benutzerkreis", de: "Eingeschränkter Benutzerkreis"],
+                        name: [key: "Eingeschränkter Benutzerkreis", en: "Resrticed user group", de: "Eingeschränkter Benutzerkreis"],
                         expl: [en: "", de: "Welche Einschränkung des Benutzerkreises gibt es?"],
                         descr:allDescr, type: OT.String
                 ],
                 [
-                        name: [en: "SFX-Eintrag", de: "SFX-Eintrag"],
+                        name: [key: "SFX-Eintrag", en: "SFX entry", de: "SFX-Eintrag"],
                         expl: [en: "", de: "Gibt es einen SFX-Eintrag?"],
                         descr:allDescr, type: OT.Rdv, cat:'YN'
                 ],

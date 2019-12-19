@@ -456,7 +456,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
                     //} else {
                     //    log.error("Error creating identifier instance for new TIPP!")
                     //}
-                    tipp_id = Identifier.construct([value: tipp.tippId, reference: new_tipp, namespace: 'uri'])
+                    Identifier tipp_id = Identifier.construct([value: tipp.tippId, reference: new_tipp, namespace: 'uri'])
                 }
 
                 def tipps = TitleInstancePackagePlatform.findAllByGokbId(tipp?.tippUuid)
