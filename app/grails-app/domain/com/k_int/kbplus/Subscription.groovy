@@ -638,6 +638,7 @@ class Subscription
     }
 
     List<Subscription> getNonDeletedDerivedSubscriptions() {
+
         Subscription.where { instanceOf == this }.findAll()
     }
 
