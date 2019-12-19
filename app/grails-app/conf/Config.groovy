@@ -475,10 +475,10 @@ licenseTransforms = [
 
 
 // Log directory/created in current working dir if tomcat var not found.
-def logWatchFile
+File logWatchFile
 
 // First lets see if we have a log file present.
-def base = System.getProperty("catalina.base")
+String base = System.getProperty("catalina.base")
 if (base) {
     logWatchFile = new File ("${base}/logs/catalina.out")
 

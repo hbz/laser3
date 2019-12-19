@@ -145,9 +145,9 @@ class ClusterController extends AbstractDebugController {
     }
 
     def private ajaxList() {
-        def clusterInstance = Cluster.get(params.id)
-        def orgs  = Org.getAll()
-        def roles = RefdataValue.findAllByOwner(com.k_int.kbplus.RefdataCategory.findByDesc('Cluster Role'))
+        Cluster clusterInstance = Cluster.get(params.id)
+        List<Org> orgs  = Org.getAll()
+        List<RefdataValue> roles = RefdataValue.findAllByOwner(com.k_int.kbplus.RefdataCategory.findByDesc('Cluster Role'))
         
         render view: 'ajax/orgRoleList', model: [
             clusterInstance: clusterInstance, 
@@ -159,7 +159,7 @@ class ClusterController extends AbstractDebugController {
 
     def private ajaxDelete() {
         
-        def orgRole = OrgRole.get(params.orgRole)
+        OrgRole orgRole = OrgRole.get(params.orgRole)
         // TODO: switch to resolveOID/resolveOID2 ?
         
         //def orgRole = AjaxController.resolveOID(params.orgRole[0])
@@ -172,9 +172,9 @@ class ClusterController extends AbstractDebugController {
 
     def private ajaxAdd() {
         
-        def x    = Cluster.get(params.id)
-        def org  = Org.get(params.org)
-        def role = RefdataValue.get(params.role)
+        Cluster x = Cluster.get(params.id)
+        Org org = Org.get(params.org)
+        RefdataValue role = RefdataValue.get(params.role)
         
         if(OrgRole.find("from OrgRole as GOR where GOR.org = ${org.id} and GOR.roleType = ${role.id} and GOR.cluster = ${x.id}")) {
             log.debug("ignoring to add OrgRole because of existing duplicate")
