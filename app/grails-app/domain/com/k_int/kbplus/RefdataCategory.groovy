@@ -76,9 +76,9 @@ class RefdataCategory extends AbstractI10nTranslatable {
      * @param hardData = only true if called from bootstrap
      * @return
      */
-    static def loc(String category_name, Map i10n, def hardData) {
+    static RefdataCategory loc(String category_name, Map i10n, def hardData) {
 
-        def result = RefdataCategory.findByDescIlike(category_name)
+        RefdataCategory result = RefdataCategory.findByDescIlike(category_name)
         if (! result) {
             result = new RefdataCategory(desc:category_name)
         }
@@ -91,19 +91,19 @@ class RefdataCategory extends AbstractI10nTranslatable {
     }
 
     // Call this from code
-    static def loc(String category_name, Map i10n) {
+    static RefdataCategory loc(String category_name, Map i10n) {
         boolean hardData = false
         loc(category_name, i10n, hardData)
     }
 
     @Deprecated
-    static def lookupOrCreate(String category_name, String value) {
-        def cat = RefdataCategory.findByDescIlike(category_name);
+    static RefdataValue lookupOrCreate(String category_name, String value) {
+        RefdataCategory cat = RefdataCategory.findByDescIlike(category_name);
         if (! cat) {
             cat = new RefdataCategory(desc:category_name).save(flush: true);
         }
 
-        def result = RefdataValue.findByOwnerAndValueIlike(cat, value)
+        RefdataValue result = RefdataValue.findByOwnerAndValueIlike(cat, value)
 
         if (! result) {
             new RefdataValue(owner:cat, value:value).save(flush:true);
@@ -113,19 +113,19 @@ class RefdataCategory extends AbstractI10nTranslatable {
         result
     }
 
-    static def getByI10nDesc(desc) {
+    static RefdataCategory getByI10nDesc(desc) {
 
-        def i10n = I10nTranslation.findByReferenceClassAndReferenceFieldAndValueDeIlike(
+        I10nTranslation i10n = I10nTranslation.findByReferenceClassAndReferenceFieldAndValueDeIlike(
                 RefdataCategory.class.name, 'desc', "${desc}"
         )
-        def rdc   = RefdataCategory.get(i10n?.referenceId)
+        RefdataCategory rdc = RefdataCategory.get(i10n?.referenceId)
 
         rdc
     }
 
     @Deprecated
-    static def lookupOrCreate(String category_name, String icon, String value) {
-        def result = lookupOrCreate(category_name, value)
+    static RefdataValue lookupOrCreate(String category_name, String icon, String value) {
+        RefdataValue result = lookupOrCreate(category_name, value)
         result.icon = icon
         result
     }
@@ -150,7 +150,7 @@ class RefdataCategory extends AbstractI10nTranslatable {
    * @param category_name
    * @return ArrayList
    */
-  static getAllRefdataValues(category_name) {
+  static List<RefdataValue> getAllRefdataValues(category_name) {
       //println("RefdataCategory.getAllRefdataValues(" + category_name + ")")
 
       /*
@@ -164,17 +164,16 @@ class RefdataCategory extends AbstractI10nTranslatable {
               icon:  it.icon.toString()
               ]}
       */
-      def result = RefdataValue.findAllByOwner( RefdataCategory.findByDesc(category_name)).sort{a,b -> a.getI10n('value').compareToIgnoreCase b.getI10n('value')}
-      result
+      RefdataValue.findAllByOwner( RefdataCategory.findByDesc(category_name)).sort{a,b -> a.getI10n('value').compareToIgnoreCase b.getI10n('value')}
   }
 
     static getAllRefdataValuesWithI10nExplanation(String category_name, Map sort) {
-        List refdatas = RefdataValue.findAllByOwner(RefdataCategory.findByDesc(category_name),sort)
+        List<RefdataValue> refdatas = RefdataValue.findAllByOwner(RefdataCategory.findByDesc(category_name),sort)
         return fetchData(refdatas)
     }
 
     static getAllRefdataValuesWithI10nExplanation(String category_name) {
-        List refdatas = getAllRefdataValues(category_name)
+        List<RefdataValue> refdatas = getAllRefdataValues(category_name)
         return fetchData(refdatas)
     }
 

@@ -30,6 +30,10 @@
                                    params="[id: params.id, surveyConfigID: surveyConfig.id]"
                                    message="surveyInfo.renewalOverView"/>
 
+        <semui:actionsDropdownItem controller="survey" action="setCompleted"
+                                   params="[id: params.id, surveyConfigID: surveyConfig.id]"
+                                   message="surveyInfo.completed.action"/>
+
     </semui:actionsDropdown>
 </semui:controlButtons>
 

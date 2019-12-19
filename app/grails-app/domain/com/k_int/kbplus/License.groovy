@@ -62,21 +62,21 @@ class License
     @RefdataAnnotation(cat = 'LicenseCategory')
     RefdataValue licenseCategory
 
-  String reference
-  String sortableReference
+    String reference
+    String sortableReference
 
-  String noticePeriod
-  String licenseUrl
-  String licenseType
-  //String licenseStatus
-  String impId
+    String noticePeriod
+    String licenseUrl
+    String licenseType
+    //String licenseStatus
+    String impId
 
-  long lastmod
-  Date startDate
-  Date endDate
+    long lastmod
+    Date startDate
+    Date endDate
 
-  Date dateCreated
-  Date lastUpdated
+    Date dateCreated
+    Date lastUpdated
 
   static hasOne = [onixplLicense: OnixplLicense]
 
@@ -249,7 +249,7 @@ class License
 
     @Override
     String getCalculatedType() {
-        def result = TemplateSupport.CALCULATED_TYPE_UNKOWN
+        String result = TemplateSupport.CALCULATED_TYPE_UNKOWN
 
         if (isTemplate()) {
             result = TemplateSupport.CALCULATED_TYPE_TEMPLATE
@@ -267,11 +267,11 @@ class License
         result
     }
 
-    def getDerivedLicensees() {
-        def result = []
+    List<Org> getDerivedLicensees() {
+        List<Org> result = []
 
         License.findAllByInstanceOf(this).each { l ->
-            def ors = OrgRole.findAllWhere( lic: l )
+            List<OrgRole> ors = OrgRole.findAllWhere( lic: l )
             ors.each { or ->
                 if (or.roleType?.value in ['Licensee', 'Licensee_Consortial']) {
                     result << or.org
@@ -296,17 +296,17 @@ class License
         }
     }
 
-    def getLicensingConsortium() {
-        def result = null;
+    Org getLicensingConsortium() {
+        Org result
         orgLinks.each { or ->
             if ( or?.roleType?.value in ['Licensing Consortium'] )
-                result = or.org;
+                result = or.org
             }
         result
     }
 
-    def getLicensor() {
-        def result = null;
+    Org getLicensor() {
+        Org result
         orgLinks.each { or ->
             if ( or?.roleType?.value in ['Licensor'] )
                 result = or.org;
@@ -314,16 +314,16 @@ class License
         result
     }
 
-    def getLicensee() {
-        def result = null;
+    Org getLicensee() {
+        Org result
         orgLinks.each { or ->
             if ( or?.roleType?.value in ['Licensee', 'Licensee_Consortial'] )
                 result = or.org;
         }
         result
     }
-    def getAllLicensee() {
-        def result = [];
+    List<Org> getAllLicensee() {
+        List<Org> result = []
         orgLinks.each { or ->
             if ( or?.roleType?.value in ['Licensee', 'Licensee_Consortial'] )
                 result << or.org
@@ -336,13 +336,12 @@ class License
     return type?.value
   }
 
-  def getNote(domain) {
-    def note = DocContext.findByLicenseAndDomain(this, domain)
-    note
-  }
+    DocContext getNote(domain) {
+        DocContext.findByLicenseAndDomain(this, domain)
+    }
 
-  def setNote(domain, note_content) {
-    def note = DocContext.findByLicenseAndDomain(this, domain)
+  void setNote(domain, note_content) {
+      DocContext note = DocContext.findByLicenseAndDomain(this, domain)
     if ( note ) {
       log.debug("update existing note...");
       if ( note_content == '' ) {
@@ -366,9 +365,9 @@ class License
     }
   }
 
-  def getGenericLabel() {
-    return reference
-  }
+    String getGenericLabel() {
+        return reference
+    }
 
     boolean isEditableBy(user) {
         hasPerm("edit", user)
@@ -414,7 +413,7 @@ class License
     }
 
   @Override
-  public boolean equals (Object o) {
+  boolean equals (Object o) {
     def obj = ClassUtils.deproxy(o)
     if (obj != null) {
       if ( obj instanceof License ) {
@@ -425,12 +424,12 @@ class License
   }
 
   @Override
-  public String toString() {
+  String toString() {
     reference ? "${reference}" : "License ${id}"
   }
   
   @Override
-  public int compareTo(License other){
+  int compareTo(License other){
       return other.id? other.id.compareTo(this.id) : -1
   }
 
@@ -448,7 +447,7 @@ class License
         derived_licenses.each { dl ->
             log.debug("Send pending change to ${dl.id}")
 
-            def locale = org.springframework.context.i18n.LocaleContextHolder.getLocale()
+            Locale locale = org.springframework.context.i18n.LocaleContextHolder.getLocale()
             def description = messageSource.getMessage('default.accept.placeholder',null, locale)
 
             def definedType = 'text'
@@ -498,15 +497,15 @@ class License
     }
 
     Map<String, Object> getCalculatedPropDefGroups(Org contextOrg) {
-        def result = [ 'global':[], 'local':[], 'member':[], 'orphanedProperties':[]]
+        Map<String, Object> result = [ 'global':[], 'local':[], 'member':[], 'orphanedProperties':[]]
 
         // ALL type depending groups without checking tenants or bindings
-        def groups = PropertyDefinitionGroup.findAllByOwnerType(License.class.name)
+        List<PropertyDefinitionGroup> groups = PropertyDefinitionGroup.findAllByOwnerType(License.class.name)
         groups.each{ it ->
 
             // cons_members
             if (this.instanceOf && ! this.instanceOf.isTemplate()) {
-                def binding = PropertyDefinitionGroupBinding.findByPropDefGroupAndLic(it, this.instanceOf)
+                PropertyDefinitionGroupBinding binding = PropertyDefinitionGroupBinding.findByPropDefGroupAndLic(it, this.instanceOf)
 
                 // global groups
                 if (it.tenant == null) {
@@ -531,7 +530,7 @@ class License
             }
             // consortium or locals
             else {
-                def binding = PropertyDefinitionGroupBinding.findByPropDefGroupAndLic(it, this)
+                PropertyDefinitionGroupBinding binding = PropertyDefinitionGroupBinding.findByPropDefGroupAndLic(it, this)
 
                 if (it.tenant == null || it.tenant?.id == contextOrg?.id) {
                     if (binding) {
@@ -572,10 +571,11 @@ class License
     }
 
 
-  public static String generateSortableReference(String input_title) {
-    def result=null
-    if ( input_title ) {
-      def s1 = Normalizer.normalize(input_title, Normalizer.Form.NFKD).trim().toLowerCase()
+  static String generateSortableReference(String input_title) {
+    String result = ''
+
+    if (input_title) {
+      String s1 = Normalizer.normalize(input_title, Normalizer.Form.NFKD).trim().toLowerCase()
       s1 = s1.replaceFirst('^copy of ','')
       s1 = s1.replaceFirst('^the ','')
       s1 = s1.replaceFirst('^a ','')

@@ -62,15 +62,15 @@ class Package
     @RefdataAnnotation(cat = '?')
     RefdataValue packageScope
 
-  Platform nominalPlatform
-  Date startDate
-  Date endDate
-  Date dateCreated
-  Date lastUpdated
-  License license
-  String forumId
-  Set pendingChanges
-  Boolean autoAccept = false
+    Platform nominalPlatform
+    Date startDate
+    Date endDate
+    Date dateCreated
+    Date lastUpdated
+    License license
+    String forumId
+    Set pendingChanges
+    Boolean autoAccept = false
 
 static hasMany = [  tipps:     TitleInstancePackagePlatform,
                     orgs:      OrgRole,
@@ -173,11 +173,11 @@ static hasMany = [  tipps:     TitleInstancePackagePlatform,
         false // NO SHARES
     }
 
-  def getConsortia() {
-    def result = null;
+  Org getConsortia() {
+    Org result
     orgs.each { or ->
       if ( ( or?.roleType?.value=='Subscription Consortia' ) || ( or?.roleType?.value=='Package Consortia' ) )
-        result = or.org;
+        result = or.org
     }
     result
   }
@@ -257,18 +257,19 @@ static hasMany = [  tipps:     TitleInstancePackagePlatform,
   }
 
   @Transient
-  def getContentProvider() {
-    def result = null;
+  Org getContentProvider() {
+    Org result
+
     orgs.each { or ->
       if ( or?.roleType?.value=='Content Provider' )
-        result = or.org;
+        result = or.org
     }
     result
   }
 
   @Transient
-  def updateNominalPlatform() {
-    def platforms = [:]
+  void updateNominalPlatform() {
+      Map<String, Object> platforms = [:]
     tipps.each{ tipp ->
       if ( !platforms.keySet().contains(tipp.platform.id) ) {
         platforms[tipp.platform.id] = [count:1, platform:tipp.platform]
@@ -291,21 +292,23 @@ static hasMany = [  tipps:     TitleInstancePackagePlatform,
   }
 
   @Transient
-  def addToSubscription(subscription, createEntitlements) {
+  void addToSubscription(subscription, createEntitlements) {
     // Add this package to the specified subscription
     // Step 1 - Make sure this package is not already attached to the sub
     // Step 2 - Connect
-    def dupe = SubscriptionPackage.executeQuery("from SubscriptionPackage where subscription = ? and pkg = ?", [subscription, this])
+    List<SubscriptionPackage> dupe = SubscriptionPackage.executeQuery(
+            "from SubscriptionPackage where subscription = ? and pkg = ?", [subscription, this])
 
     if (!dupe){
-      def new_pkg_sub = new SubscriptionPackage(subscription:subscription, pkg:this).save();
+        SubscriptionPackage new_pkg_sub = new SubscriptionPackage(subscription:subscription, pkg:this).save();
       // Step 3 - If createEntitlements ...
 
       if ( createEntitlements ) {
         def live_issue_entitlement = RDStore.TIPP_STATUS_CURRENT
         TitleInstancePackagePlatform.findAllByPkg(this).each { tipp ->
           if(tipp.status?.value == "Current"){
-            def new_ie = new IssueEntitlement(status: live_issue_entitlement,
+              IssueEntitlement new_ie = new IssueEntitlement(
+                                              status: live_issue_entitlement,
                                               subscription: subscription,
                                               tipp: tipp,
                                               accessStartDate:tipp.accessStartDate,
@@ -336,7 +339,7 @@ static hasMany = [  tipps:     TitleInstancePackagePlatform,
   }
 
     @Transient
-    def addToSubscriptionCurrentStock(Subscription target, Subscription consortia) {
+    void addToSubscriptionCurrentStock(Subscription target, Subscription consortia) {
 
         // copy from: addToSubscription(subscription, createEntitlements) { .. }
 
@@ -396,12 +399,12 @@ static hasMany = [  tipps:     TitleInstancePackagePlatform,
     ]
   }
 
-  public String toString() {
+  String toString() {
     name ? "${name}" : "Package ${id}"
   }
 
   @Transient
-  public String getURL() {
+  String getURL() {
     "${grailsApplication.config.grails.serverURL}/package/show/${id}".toString();
   }
 
@@ -453,9 +456,9 @@ static hasMany = [  tipps:     TitleInstancePackagePlatform,
   static def refdataFind(params) {
     def result = [];
 
-    def hqlString = "select pkg from Package pkg where lower(pkg.name) like ? "
+    String hqlString = "select pkg from Package pkg where lower(pkg.name) like ? "
     def hqlParams = [((params.q ? params.q.toLowerCase() : '' ) + "%")]
-    def sdf = new java.text.SimpleDateFormat("yyyy-MM-dd")
+      SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd")
 
     if(params.hasDate ){
 
@@ -618,31 +621,33 @@ static hasMany = [  tipps:     TitleInstancePackagePlatform,
     }
   }
 
-  public static String generateSortName(String input_title) {
-    if(!input_title) return null
-    def s1 = Normalizer.normalize(input_title, Normalizer.Form.NFKD).trim().toLowerCase()
+  static String generateSortName(String input_title) {
+    if (!input_title) return null
+    String s1 = Normalizer.normalize(input_title, Normalizer.Form.NFKD).trim().toLowerCase()
     s1 = s1.replaceFirst('^copy of ','')
     s1 = s1.replaceFirst('^the ','')
     s1 = s1.replaceFirst('^a ','')
     s1 = s1.replaceFirst('^der ','')
+
     return s1.trim()
 
   }
 
-    def getIdentifierByType(idtype) {
+    Identifier getIdentifierByType(idtype) {
         def result = null
         ids.each { ident ->
             if ( ident.ns.ns.equalsIgnoreCase(idtype) ) {
-                result = ident;
+                result = ident
             }
         }
         result
     }
 
-    def getCurrentTipps()
-    {
-        def result = this.tipps?.findAll{it?.status?.id == RDStore.TIPP_STATUS_CURRENT.id}
-
+    List<TitleInstancePackagePlatform> getCurrentTipps() {
+        List<TitleInstancePackagePlatform> result = []
+        if (this.tipps) {
+            result = this.tipps?.findAll{it?.status?.id == RDStore.TIPP_STATUS_CURRENT.id}
+        }
         result
     }
 }

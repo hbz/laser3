@@ -213,18 +213,16 @@ class CostItem
 
     @Override
     String getCalculatedType() {
-        def result = TemplateSupport.CALCULATED_TYPE_UNKOWN
+        String result = TemplateSupport.CALCULATED_TYPE_UNKOWN
 
         if (isTemplate()) {
             result = TemplateSupport.CALCULATED_TYPE_TEMPLATE
         }
-
         result
     }
 
-    def getBudgetcodes() {
-        def result = BudgetCode.executeQuery("select bc from BudgetCode as bc, CostItemGroup as cig, CostItem as ci where cig.costItem = ci and cig.budgetCode = bc and ci = ?", [this])
-        return result
+    List<BudgetCode> getBudgetcodes() {
+        BudgetCode.executeQuery("select bc from BudgetCode as bc, CostItemGroup as cig, CostItem as ci where cig.costItem = ci and cig.budgetCode = bc and ci = ?", [this])
     }
 
     def getCostInLocalCurrencyAfterTax() {

@@ -42,10 +42,10 @@ class SurveyOrg {
 
     boolean existsMultiYearTerm() {
         boolean existsMultiYearTerm = false
-        def sub = surveyConfig.subscription
+        Subscription sub = surveyConfig.subscription
         if (sub) {
             def subChild = sub?.getDerivedSubscriptionBySubscribers(org)
-            def property = PropertyDefinition.findByName("Mehrjahreslaufzeit ausgewählt")
+            PropertyDefinition property = PropertyDefinition.findByName("Mehrjahreslaufzeit ausgewählt")
 
             if (subChild?.isCurrentMultiYearSubscription()) {
                 existsMultiYearTerm = true
@@ -64,11 +64,11 @@ class SurveyOrg {
         return existsMultiYearTerm
     }
 
-    def hasOrgSubscription() {
+    boolean hasOrgSubscription() {
         boolean hasOrgSubscription = false
         if (surveyConfig.subscription) {
             Subscription.findAllByInstanceOf(surveyConfig.subscription).each { s ->
-                def ors = OrgRole.findAllWhere(sub: s, org: this.org)
+                List<OrgRole> ors = OrgRole.findAllWhere(sub: s, org: this.org)
                 ors.each { or ->
                     if (or.roleType?.value in ['Subscriber', 'Subscriber_Consortial']) {
                         hasOrgSubscription = true

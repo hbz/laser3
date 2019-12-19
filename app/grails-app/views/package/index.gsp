@@ -229,7 +229,19 @@
                             <td>${record.listVerifiedDate}</td>
                             <td>${record.scope}</td>
                             <td>${record.contentType}</td>
-                            <td>${record.listStatus}</td>
+                            <td class="center aligned">
+                                <g:if test="${record.listStatus == 'In Progress'}">
+                                    <span class="la-popup-tooltip la-delay" data-position="right center" data-content="${message(code:'package.show.record.listStatus.inProgress')}">
+                                        <i class="exclamation triangle yellow icon"></i>
+                                    </span>
+                                </g:if>
+                                <g:elseif test="${record.listStatus == 'Checked'}">
+                                    <span class="la-popup-tooltip la-delay" data-position="right center" data-content="${message(code:'package.show.record.listStatus.Checked')}">
+                                        <i class="check green circle icon"></i>
+                                    </span>
+                                </g:elseif>
+                                <g:else></g:else>
+                            </td>
                         </tr>
                     </g:each>
                     </tbody>

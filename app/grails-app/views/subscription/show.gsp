@@ -105,7 +105,14 @@
                                 <dt class="control-label">${message(code: 'subscription.details.type')}</dt>
                                 <dd>
                                     <%-- TODO: subscribers may not edit type, but admins and yoda --%>
-                                    <g:if test="${subscriptionInstance.administrative || subscriptionInstance.getAllSubscribers().contains(contextOrg)}">
+                                    <%
+                                        //does not work for some reason, proceed to IDs
+                                        Set<Long> subscriberIDs = []
+                                        subscriptionInstance.getAllSubscribers().each { subscriber ->
+                                            subscriberIDs << subscriber.id
+                                        }
+                                    %>
+                                    <g:if test="${subscriptionInstance.administrative || subscriberIDs.contains(contextOrg?.id)}">
                                         ${subscriptionInstance.type?.getI10n('value')}
                                     </g:if>
                                     <g:else>

@@ -1528,7 +1528,7 @@ class BootStrap {
                         descr:allDescr, type: OT.Rdv, cat:'Access choice remote'
                 ],
                 [
-                        name: [en: "Category A-F", de: "Kategorie A-F"],
+                        name: [en: "Beck Price Category A-F", de: "Beck Preiskategorie A-F"],
                         expl: [en: "Please indicate which price category your facility falls into. These can be found in the price tables. A-C each Uni with and without lawyers; D-F FH with and without law and other facilities.", de: "Bitte geben Sie an, in welche Preis-Kategorie Ihre Einrichtung fällt. Diese können Sie den Preistabellen entnehmen. A-C jeweils Uni mit und ohne Jurastutenten; D-F FH mit und ohne Jura und sonstige Einrichtungen."],
                         descr:allDescr, type: OT.Rdv, cat:'Category A-F'
                 ],
@@ -1752,7 +1752,7 @@ class BootStrap {
                         type: OT.Rdv, cat:'Access choice remote'
                 ],
                 [
-                        name: [en: "Category A-F", de: "Kategorie A-F"],
+                        name: [en: "Beck Price Category A-F", de: "Beck Preiskategorie A-F"],
                         expl: [en: "Please indicate which price category your facility falls into. These can be found in the price tables. A-C each Uni with and without lawyers; D-F FH with and without law and other facilities.", de: "Bitte geben Sie an, in welche Preis-Kategorie Ihre Einrichtung fällt. Diese können Sie den Preistabellen entnehmen. A-C jeweils Uni mit und ohne Jurastutenten; D-F FH mit und ohne Jura und sonstige Einrichtungen."],
                         type: OT.Rdv, cat:'Category A-F'
                 ],

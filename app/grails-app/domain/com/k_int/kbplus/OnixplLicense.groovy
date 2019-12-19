@@ -38,18 +38,18 @@ class OnixplLicense implements Permissions {
   private OnixPLHelperService onixHelperService
 
   @Transient
-  public setOnixPLService (service) {
+  void setOnixPLService (service) {
     onixService = service
   }
 
   @Transient
-  public setOnixPLHelperService (service) {
+  void setOnixPLHelperService (service) {
     onixHelperService = service
   }
 
 
   @Transient
-  public XMLDoc getXML() {
+  XMLDoc getXML() {
     xml = xml ?: new XMLDoc (doc.getBlobContent().binaryStream)
     xml
   }
@@ -86,8 +86,8 @@ class OnixplLicense implements Permissions {
   }
 
   boolean isEditableBy(user) {
-        hasPerm('edit', user)
-    }
+    hasPerm('edit', user)
+  }
 
   boolean isVisibleBy(user) {
     hasPerm('view', user)
@@ -110,7 +110,7 @@ class OnixplLicense implements Permissions {
 
 
   @Override
-  public java.lang.String toString() {
+  String toString() {
     return "OnixplLicense{" +
         "id=" + id +
         ", lastmod=" + lastmod +
@@ -119,7 +119,7 @@ class OnixplLicense implements Permissions {
         '}';
   }
 
-  public Map toMap (List<String> sections = null) {
+  Map toMap (List<String> sections = null) {
 
     // Get all comparison points as a map.
     Map all_points = onixService.allComparisonPointsMap

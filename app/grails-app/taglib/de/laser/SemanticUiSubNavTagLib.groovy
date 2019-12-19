@@ -61,7 +61,7 @@ class SemanticUiSubNavTagLib {
             )
         }
         else {
-            out << linkBody
+            out << '<a href="" class="' + aClass + '">' + linkBody + '</a>'
         }
 
     }

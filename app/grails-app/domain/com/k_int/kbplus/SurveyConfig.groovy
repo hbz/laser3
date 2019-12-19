@@ -116,7 +116,7 @@ class SurveyConfig {
     ]
 
     static getLocalizedValue(key) {
-        def locale = I10nTranslation.decodeLocale(LocaleContextHolder.getLocale().toString())
+        String locale = I10nTranslation.decodeLocale(LocaleContextHolder.getLocale().toString())
 
         //println locale
         if (SurveyConfig.validTypes.containsKey(key)) {
@@ -131,7 +131,7 @@ class SurveyConfig {
         return documents.findAll { (it.status?.value != 'Deleted' && ((it.owner?.contentType == 1) || (it.owner?.contentType == 3)))}
     }
 
-    def getConfigNameShort() {
+    String getConfigNameShort() {
 
         if (type == 'Subscription') {
             return subscription?.name
@@ -140,7 +140,7 @@ class SurveyConfig {
         }
     }
 
-    def getSurveyName() {
+    String getSurveyName() {
 
         if (type == 'Subscription' && surveyInfo.isSubscriptionSurvey) {
             return subscription?.name
@@ -149,7 +149,7 @@ class SurveyConfig {
         }
     }
 
-    def getConfigName() {
+    String getConfigName() {
 
         def messageSource = Holders.grailsApplication.mainContext.getBean('messageSource')
         SimpleDateFormat sdf = new SimpleDateFormat(messageSource.getMessage('default.date.format.notime', null, LocaleContextHolder.getLocale()))
@@ -188,10 +188,10 @@ class SurveyConfig {
             return ALL_RESULTS_PROCESSED_BY_ORG
         } else {
 
-            def countFinish = 0
-            def countNotFinish = 0
+            int countFinish = 0
+            int countNotFinish = 0
 
-            def surveyResult = SurveyResult.findAllBySurveyConfigAndParticipant(this, org)
+            List<SurveyResult> surveyResult = SurveyResult.findAllBySurveyConfigAndParticipant(this, org)
 
                 surveyResult.each {
                     if (it.isResultProcessed()) {
@@ -218,8 +218,8 @@ class SurveyConfig {
             return true
         } else {
 
-            def countFinish = 0
-            def countNotFinish = 0
+            int countFinish = 0
+            int countNotFinish = 0
 
             def surveyResults = SurveyResult.findAllBySurveyConfigAndParticipant(this, org)
 
@@ -279,7 +279,7 @@ class SurveyConfig {
         return result
     }
 
-    public String toString() {
+    String toString() {
         subscription ? "${subscription?.name}" : "Survey Element ${id}"
     }
 
@@ -288,7 +288,7 @@ class SurveyConfig {
         return false
     }
 
-    def getSurveyConfigCostItems(){
+    List<CostItem> getSurveyConfigCostItems(){
 
         return CostItem.findAllBySurveyOrgInList(this.orgs)
 

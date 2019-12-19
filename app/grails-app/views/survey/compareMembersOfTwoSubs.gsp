@@ -32,6 +32,10 @@
             </g:if>
             <semui:actionsDropdownItem controller="survey" action="renewalWithSurvey" params="[id: params.id, surveyConfigID: surveyConfig.id]"
                                        message="surveyInfo.renewalOverView"/>
+
+        <semui:actionsDropdownItem controller="survey" action="setCompleted"
+                                   params="[id: params.id, surveyConfigID: surveyConfig.id]"
+                                   message="surveyInfo.completed.action"/>
     </semui:actionsDropdown>
 </semui:controlButtons>
 
@@ -250,7 +254,8 @@ ${surveyInfo?.name}
     </div>
 </semui:form>
 <semui:form>
-
+        <g:set var="count" value="${0}"/>
+        <g:set var="count2" value="${0}"/>
         <div class="ui grid">
 
             <div class="row">
@@ -271,7 +276,8 @@ ${surveyInfo?.name}
                                 <g:set var="termination" value="${!(participant in parentSuccessortParticipantsList)}"/>
                                 <g:set var="participantSub" value="${parentSubscription?.getDerivedSubscriptionBySubscribers(participant)}"/>
                                 <tr class=" ${termination ? 'negative' : ''}">
-                                    <td>${i + 1}</td>
+                                    <g:set var="count" value="${count + 1}"/>
+                                    <td>${count}</td>
                                     <td class="titleCell">
                                         <g:if test="${participantSub && participantSub.isMultiYear}">
                                             <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="bottom center"
@@ -310,7 +316,7 @@ ${surveyInfo?.name}
                             </g:if>
                             <g:else>
                                 <tr>
-                                    <td>${i + 1}</td>
+                                    <td></td>
                                     <td class="titleCell"></td>
                                     <td></td>
                                 </tr>
@@ -335,7 +341,8 @@ ${surveyInfo?.name}
                             <g:if test="${participant in parentSuccessortParticipantsList}">
                                 <g:set var="participantSub" value="${parentSuccessorSubscription?.getDerivedSubscriptionBySubscribers(participant)}"/>
                                 <tr class=" ${participant in parentParticipantsList ? '' : 'positive'}">
-                                    <td>${j+1}</td>
+                                    <g:set var="count2" value="${count2 + 1}"/>
+                                    <td>${count2}</td>
                                     <td class="titleCell">
                                         <g:if test="${participantSub && participantSub.isMultiYear}">
                                             <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="bottom center"
@@ -376,7 +383,7 @@ ${surveyInfo?.name}
                             </g:if>
                             <g:else>
                                 <tr>
-                                    <td>${j+1}</td>
+                                    <td></td>
                                     <td class="titleCell"></td>
                                 </tr>
                             </g:else>
