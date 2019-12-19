@@ -26,19 +26,31 @@
             </tr>
         </thead>
         <tbody>
-            <g:each in="${activity}" var="aa">
+            <g:each in="${activity}" var="item">
                 <tr>
                     <td>
-                        ${(new java.text.SimpleDateFormat(message(code:'default.date.format.notime'))).format(aa[0])}
+                        ${item.key}
                     </td>
                     <td>
-                        ${(new java.text.SimpleDateFormat(message(code:'default.date.format.onlytime'))).format(aa[0])}
-                        -
-                        ${(new java.text.SimpleDateFormat(message(code:'default.date.format.onlytime'))).format(aa[1])}
+                        <g:each in="${item.value}" var="slot">
+                            <span>${slot[1]} - ${slot[2]}</span> <br/>
+                        </g:each>
                     </td>
-                    <td>${aa[2]}</td><%-- //min() --%>
-                    <td>${aa[3]}</td><%-- //max() --%>
-                    <td>${((double) aa[4]).round(2)}</td><%-- //avg() --%>
+                    <td>
+                        <g:each in="${item.value}" var="slot">
+                            <span>${slot[3]}</span> <br/>
+                        </g:each>
+                    </td>
+                    <td>
+                        <g:each in="${item.value}" var="slot">
+                            <span>${slot[4]}</span> <br/>
+                        </g:each>
+                    </td>
+                    <td>
+                        <g:each in="${item.value}" var="slot">
+                            <span>${((double) slot[5]).round(2)}</span> <br/>
+                        </g:each>
+                    </td>
                 </tr>
             </g:each>
         </tbody>
