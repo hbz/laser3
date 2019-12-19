@@ -11,7 +11,7 @@ class IndexUpdateJob extends AbstractJob {
         cron name:'cronTrigger', startDelay:190000, cronExpression: "0 0/10 7-20 * * ?"
     }
 
-    static configFlags = []
+    static List<String> configFlags = []
 
     boolean isAvailable() {
         !jobIsRunning && !dataloadService.update_running

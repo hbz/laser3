@@ -14,6 +14,7 @@ documentStorageLocation = '/tmp/laser' // for uploaded documents
 deployBackupLocation = documentStorageLocation + '/laserDeployBackups' // for database backups in context of deploys
 
 featureSurvey = false
+//notificationsJobActive = true
 //activateTestJob = true
 
 globalDataSync = [
@@ -31,7 +32,7 @@ globalDataSync = [
 // @NotificationsJob
 // - enable notification
 // - enable reminder
-//hbzMaster = true
+
 isUpdateDashboardTableInDatabase = true
 isSendEmailsForDueDatesOfAllUsers = true
 
