@@ -1448,7 +1448,7 @@ class BootStrap {
                         descr:allDescr, type: OT.String, isUsedForLogic: true
                 ],
                 [
-                        name: [key: "GASCO-Information-Link", en: "GASCO information link", de: "GASCO-Informations-Link"],
+                        name: [key: "GASCO-Informations-Link", en: "GASCO information link", de: "GASCO-Informations-Link"],
                         expl : [en: "", de: "Unter welchem Link finden sich Informationen zum Produkt?"],
                         descr:allDescr, type: OT.URL, isUsedForLogic: true
                 ],
@@ -1538,7 +1538,7 @@ class BootStrap {
                         descr:allDescr, type: OT.String
                 ],
                 [
-                        name: [key: "Payment target", en: "Zahlungsziel", de: "Zahlungsziel"],
+                        name: [key: "Zahlungsziel", en: "Payment target", de: "Zahlungsziel"],
                         expl : [en: "", de: "Zahlungsziel"],
                         descr:allDescr, type: OT.String
                 ],
@@ -1613,7 +1613,7 @@ class BootStrap {
                         descr:allDescr, type: OT.String
                 ],
                 [
-                        name: [key: "Rabatt Zählung", en: "Discount calculation", de: "Rabatt Zählung"],
+                        name: [key: "Rabatt Zählung", en: "Calculation of discount", de: "Rabatt Zählung"],
                         expl: [en: "", de: "Wie wird die Rabatthöhe errechnet? Z.B. durch Zählung aller Teilnehmer bei dem Anbieter…"],
                         descr:allDescr, type: OT.Rdv, cat:'YN'
                 ],
@@ -1653,7 +1653,7 @@ class BootStrap {
                         descr:allDescr, type: OT.String
                 ],
                 [
-                        name: [key: "TaxExemption", en: "TaxExemption", de: "Steuerbefreiung"],
+                        name: [key: "TaxExemption", en: "Tax exemption", de: "Steuerbefreiung"],
                         expl : [en: "", de: "Liegt eine Steuerbefreiung für die Lizenz vor?"],
                         descr:allDescr, type: OT.Rdv, cat:'YN'
                 ],
@@ -1709,7 +1709,7 @@ class BootStrap {
                         descr:allDescr, type: OT.Rdv, cat:'YN'
                 ],
                 [
-                        name: [key: "Eingeschränkter Benutzerkreis", en: "Resrticed user group", de: "Eingeschränkter Benutzerkreis"],
+                        name: [key: "Eingeschränkter Benutzerkreis", en: "Restricted user group", de: "Eingeschränkter Benutzerkreis"],
                         expl: [en: "", de: "Welche Einschränkung des Benutzerkreises gibt es?"],
                         descr:allDescr, type: OT.String
                 ],
