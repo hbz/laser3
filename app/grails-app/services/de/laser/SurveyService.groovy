@@ -22,7 +22,7 @@ class SurveyService {
     def accessService
     def contextService
     def messageSource
-    def locale
+    Locale locale
 
     @javax.annotation.PostConstruct
     void init() {

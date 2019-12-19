@@ -477,7 +477,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
             } else {
                 log.debug("Register new tipp event for user to accept or reject");
 
-                def locale = org.springframework.context.i18n.LocaleContextHolder.getLocale()
+                Locale locale = org.springframework.context.i18n.LocaleContextHolder.getLocale()
                 def sdf2 = new SimpleDateFormat(messageSource.getMessage('default.date.format.notime', null, 'yyyy-MM-dd', locale));
                 def datetoday = sdf2.format(new Date(System.currentTimeMillis()))
 
@@ -577,7 +577,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
                     def change_doc = [:]
 
                     def contextObject = genericOIDService.resolveOID("Package:${ctx.id}");
-                    def locale = org.springframework.context.i18n.LocaleContextHolder.getLocale()
+                    Locale locale = org.springframework.context.i18n.LocaleContextHolder.getLocale()
                     def announcement_content_changeTitle = "<p>${messageSource.getMessage('announcement.title.ChangeTitle', null, "Change Title in Package ", locale)}  ${contextObject.getURL() ? "<a href=\"${contextObject.getURL()}\">${contextObject.name}</a>" : "${contextObject.name}"} ${new Date().toString()}</p><p><ul>"
                     boolean changeTitle = false
 
@@ -857,7 +857,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
                     def contextObject = genericOIDService.resolveOID("Package:${ctx.id}");
                     oldvalue = ctx.name
                     ctx.name = value
-                    def locale = org.springframework.context.i18n.LocaleContextHolder.getLocale()
+                    Locale locale = org.springframework.context.i18n.LocaleContextHolder.getLocale()
                     announcement_content = "<p>${messageSource.getMessage('announcement.package.ChangeTitle', null, "Change Package Title on ", locale)}  ${contextObject.getURL() ? "<a href=\"${contextObject.getURL()}\">${ctx.name}</a>" : "${ctx.name}"} ${new Date().toString()}</p>"
                     announcement_content += "<p><ul><li>${messageSource.getMessage("announcement.package.TitleChange", [oldvalue, value] as Object[], "Package Title was change from {0} to {1}.", locale)}</li></ul></p>"
                     log.debug("updated pkg prop");

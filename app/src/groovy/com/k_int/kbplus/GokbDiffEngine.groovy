@@ -4,7 +4,7 @@ import de.laser.domain.TIPPCoverage
 import de.laser.helper.RDStore
 import grails.util.Holders
 
-public class GokbDiffEngine {
+class GokbDiffEngine {
 
     def static diff(ctx, oldpkg, newpkg, newTippClosure, updatedTippClosure, deletedTippClosure, pkgPropChangeClosure, tippUnchangedClosure, auto_accept) {
 

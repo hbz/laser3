@@ -10,10 +10,10 @@ class GOKbTextUtils {
 	"from"
   ];
 
-  public static int levenshteinDistance(String str1, String str2) {
+  static int levenshteinDistance(String str1, String str2) {
     if ( ( str1 != null ) && ( str2 != null ) ) {
-      def str1_len = str1.length()
-      def str2_len = str2.length()
+      int str1_len = str1.length()
+      int str2_len = str2.length()
       int[][] distance = new int[str1_len + 1][str2_len + 1]
       (str1_len + 1).times { distance[it][0] = it }
       (str2_len + 1).times { distance[0][it] = it }
@@ -28,7 +28,7 @@ class GOKbTextUtils {
     return 0
   }
   
-  public static String normaliseString(String s) {
+  static String normaliseString(String s) {
 
 	// Ensure s is not null.
 	if (!s) s = "";
@@ -57,7 +57,7 @@ class GOKbTextUtils {
 	normstring.trim();
   }
   
-  public static double cosineSimilarity(String s1, String s2, int degree = 2) {
+  static double cosineSimilarity(String s1, String s2, int degree = 2) {
     if ( ( s1 != null ) && ( s2 != null ) ) {
       return cosineSimilarity(s1.toLowerCase()?.toCharArray(), s2.toLowerCase()?.toCharArray(), degree)
     }
@@ -66,12 +66,12 @@ class GOKbTextUtils {
   }
 
 
-  public static generateSortKey(value) {
+  static String generateSortKey(value) {
     // Normalise
     // Trim
     // Lowercase
     // Remove Leading Articles
-    def s1 = Normalizer.normalize(value, Normalizer.Form.NFKD).trim().toLowerCase()
+    String s1 = Normalizer.normalize(value, Normalizer.Form.NFKD).trim().toLowerCase()
 
     s1 = s1.replaceFirst('^copy of ','')
     s1 = s1.replaceFirst('^the ','')
@@ -80,7 +80,7 @@ class GOKbTextUtils {
 
   }
   
-  public static double cosineSimilarity(char[] sequence1, char[] sequence2, int degree = 2) {
+  static double cosineSimilarity(char[] sequence1, char[] sequence2, int degree = 2) {
 	Map<List, Integer> m1 = countNgramFrequency(sequence1, degree)
 	Map<List, Integer> m2 = countNgramFrequency(sequence2, degree)
   

@@ -52,7 +52,7 @@ class Transforms {
 		dateCreated (nullable: true, blank: false)
 	}
 	
-	public def displayTypes(){
+	String displayTypes(){
 		String typesStr = ""
 		accepts_types.eachWithIndex{ ref, index ->
 			if(index > 0) typesStr += ","
@@ -61,7 +61,7 @@ class Transforms {
 		return typesStr
 	}
 	
-	public boolean hasType(String type){
+	boolean hasType(String type){
 		boolean found = false
 		log.debug("type: ${type}")
 		for ( ref in accepts_types ){

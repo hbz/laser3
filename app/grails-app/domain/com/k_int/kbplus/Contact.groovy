@@ -19,7 +19,6 @@ class Contact implements Comparable<Contact>{
     Date dateCreated
     Date lastUpdated
 
-
     @RefdataAnnotation(cat = 'ContactContentType')
     RefdataValue contentType
 
@@ -52,7 +51,7 @@ class Contact implements Comparable<Contact>{
         dateCreated (nullable: true, blank: false)
     }
     
-    static getAllRefdataValues(String category) {
+    static List<RefdataValue> getAllRefdataValues(String category) {
         RefdataCategory.getAllRefdataValues(category)
     }
     
@@ -61,10 +60,10 @@ class Contact implements Comparable<Contact>{
         contentType?.value + ', ' + content + ' (' + id + '); ' + type?.value
     }
 
-    static def lookup(content, contentType, type, person, organisation) {
+    static Contact lookup(content, contentType, type, person, organisation) {
 
-        def contact
-        def check = Contact.findAllWhere(
+        Contact contact
+        List<Contact>  check = Contact.findAllWhere(
                 content: content ?: null,
                 contentType: contentType,
                 type: type,
@@ -78,10 +77,10 @@ class Contact implements Comparable<Contact>{
         contact
     }
 
-    static def lookupOrCreate(content, contentType, type, person, organisation) {
+    static Contact lookupOrCreate(content, contentType, type, person, organisation) {
 
-        def info   = "saving new contact: ${content} ${contentType} ${type}"
-        def result = null
+        Contact result
+        def info = "saving new contact: ${content} ${contentType} ${type}"
 
         if (! content) {
             LogFactory.getLog(this).debug( info + " > ignored; empty content")

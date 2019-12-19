@@ -49,7 +49,7 @@ class CostItemElementConfiguration extends AbstractBaseDomain {
     def beforeInsert() {
         super.beforeInsert()
 
-        def user = springSecurityService.getCurrentUser()
+        User user = springSecurityService.getCurrentUser()
         if (user) {
             createdBy     = user
             lastUpdatedBy = user
@@ -60,7 +60,7 @@ class CostItemElementConfiguration extends AbstractBaseDomain {
     def beforeUpdate() {
         super.beforeUpdate()
 
-        def user = springSecurityService.getCurrentUser()
+        User user = springSecurityService.getCurrentUser()
         if (user)
             lastUpdatedBy = user
         else

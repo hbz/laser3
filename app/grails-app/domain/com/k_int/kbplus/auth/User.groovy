@@ -105,7 +105,7 @@ class User {
 
   @Transient
   String getDisplayName() {
-    def result = null;
+    String result
     if ( display ) {
       result = display
     }
@@ -123,51 +123,51 @@ class User {
     affiliations.findAll { it.status == UserOrg.STATUS_APPROVED }
   }
 
-  @Transient List<Org> getAuthorizedOrgs() {
-    // def result = Org.find(
-    def qry = "select o from Org as o where exists ( select uo from UserOrg as uo where uo.org = o and uo.user = ? and ( uo.status=1 or uo.status=3)) order by o.name"
-    def o = Org.executeQuery(qry, [this]);
-    o
-  }
-  @Transient def getAuthorizedOrgsIds() {
-    // def result = Org.find(
-    def qry = "select o.id from Org as o where exists ( select uo from UserOrg as uo where uo.org = o and uo.user = ? and ( uo.status=1 or uo.status=3)) order by o.name"
-    def o = Org.executeQuery(qry, [this]);
-    o
-  }
+    @Transient List<Org> getAuthorizedOrgs() {
+        // def result = Org.find(
+        String qry = "select o from Org as o where exists ( select uo from UserOrg as uo where uo.org = o and uo.user = ? and ( uo.status=1 or uo.status=3)) order by o.name"
+        def o = Org.executeQuery(qry, [this]);
+        o
+    }
+    @Transient def getAuthorizedOrgsIds() {
+        // def result = Org.find(
+        String qry = "select o.id from Org as o where exists ( select uo from UserOrg as uo where uo.org = o and uo.user = ? and ( uo.status=1 or uo.status=3)) order by o.name"
+        def o = Org.executeQuery(qry, [this]);
+        o
+    }
 
-    def hasRole(String roleName) {
+    boolean hasRole(String roleName) {
         SpringSecurityUtils.ifAnyGranted(roleName)
     }
-    def hasRole(List<String> roleNames) {
+    boolean hasRole(List<String> roleNames) {
         SpringSecurityUtils.ifAnyGranted(roleNames?.join(','))
     }
 
-    def isAdmin() {
+    boolean isAdmin() {
         SpringSecurityUtils.ifAnyGranted("ROLE_ADMIN")
     }
-    def isYoda() {
+    boolean isYoda() {
         SpringSecurityUtils.ifAnyGranted("ROLE_YODA")
     }
 
-    def hasAffiliation(userRoleName) {
+    boolean hasAffiliation(userRoleName) {
         hasAffiliationAND(userRoleName, 'ROLE_USER')
     }
 
-    def hasAffiliationAND(userRoleName, globalRoleName) {
+    boolean hasAffiliationAND(userRoleName, globalRoleName) {
         affiliationCheck(userRoleName, globalRoleName, 'AND', contextService.getOrg())
     }
-    def hasAffiliationOR(userRoleName, globalRoleName) {
+    boolean hasAffiliationOR(userRoleName, globalRoleName) {
         affiliationCheck(userRoleName, globalRoleName, 'OR', contextService.getOrg())
     }
 
-    def hasAffiliationForForeignOrg(userRoleName, orgToCheck) {
+    boolean hasAffiliationForForeignOrg(userRoleName, orgToCheck) {
         affiliationCheck(userRoleName, 'ROLE_USER', 'AND', orgToCheck)
     }
 
-    private def affiliationCheck(userRoleName, globalRoleName, mode, orgToCheck) {
+    private boolean affiliationCheck(String userRoleName, String globalRoleName, mode, orgToCheck) {
         boolean result = false
-        def rolesToCheck = [userRoleName]
+        List<String> rolesToCheck = [userRoleName]
 
         //log.debug("USER.hasAffiliation(): ${userRoleName}, ${globalRoleName}, ${mode} @ ${orgToCheck}")
 
@@ -203,9 +203,9 @@ class User {
         }
 
         rolesToCheck.each{ rot ->
-            def role = Role.findByAuthority(rot)
+            Role role = Role.findByAuthority(rot)
             if (role) {
-                def uo = UserOrg.findByUserAndOrgAndFormalRole(this, orgToCheck, role)
+                UserOrg uo = UserOrg.findByUserAndOrgAndFormalRole(this, orgToCheck, role)
                 result = result || (uo && getAuthorizedAffiliations()?.contains(uo))
             }
         }

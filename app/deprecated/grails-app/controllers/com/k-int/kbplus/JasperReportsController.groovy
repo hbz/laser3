@@ -58,7 +58,7 @@ class JasperReportsController extends AbstractDebugController {
 
 	@Secured(['ROLE_ADMIN'])
 	def uploadReport(){
-		def result = [:]
+		Map<String, Object> result = [:]
 		flash.error = params.errorMsg ?: ""
  		flash.message = ""
 

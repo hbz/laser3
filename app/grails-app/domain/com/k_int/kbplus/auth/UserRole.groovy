@@ -73,7 +73,7 @@ class UserRole implements Serializable, Comparable {
     }
 
     @Transient
-    def getSortString() {
+    String getSortString() {
         return user?.display + ' ' + role?.authority
     }
 

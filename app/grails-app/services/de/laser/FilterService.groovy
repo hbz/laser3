@@ -16,7 +16,7 @@ class FilterService {
     def genericOIDService
     def contextService
     def messageSource
-    def locale
+    Locale locale
 
     @PostConstruct
     void init() {
