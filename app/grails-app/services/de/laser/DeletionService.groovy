@@ -5,11 +5,13 @@ import com.k_int.kbplus.auth.User
 import com.k_int.properties.PropertyDefinition
 import com.k_int.properties.PropertyDefinitionGroup
 import com.k_int.properties.PropertyDefinitionGroupBinding
+import de.laser.domain.IssueEntitlementCoverage
+import de.laser.domain.PriceItem
 import de.laser.domain.SystemProfiler
+import de.laser.domain.TIPPCoverage
 import org.codehaus.groovy.grails.commons.GrailsApplication
 import org.elasticsearch.action.delete.DeleteRequest
 import org.elasticsearch.action.delete.DeleteResponse
-import org.elasticsearch.client.RestHighLevelClient
 import org.elasticsearch.client.*
 
 //@CompileStatic
@@ -815,12 +817,15 @@ class DeletionService {
         }
     }
 
-    boolean deleteTIPP(TitleInstancePackagePlatform tipp, TitleInstancePackagePlatform replacement) {
+    static boolean deleteTIPP(TitleInstancePackagePlatform tipp, TitleInstancePackagePlatform replacement) {
         println "processing tipp #${tipp.id}"
         TitleInstancePackagePlatform.withTransaction { status ->
             try {
                 //rebasing subscriptions
-                IssueEntitlement.executeUpdate('update IssueEntitlement ie set ie.tipp = :replacement where ie.tipp = :old',[old:tipp,replacement:replacement])
+                Map<String,TitleInstancePackagePlatform> rebasingParams = [old:tipp,replacement:replacement]
+                IssueEntitlement.executeUpdate('update IssueEntitlement ie set ie.tipp = :replacement where ie.tipp = :old',rebasingParams)
+                Identifier.executeUpdate('update Identifier i set i.tipp = :replacement where i.tipp = :old',rebasingParams)
+                TIPPCoverage.executeUpdate('update TIPPCoverage tc set tc.tipp = :replacement where tc.tipp = :old',rebasingParams)
                 //deleting old TIPPs
                 tipp.delete()
                 status.flush()
@@ -828,6 +833,49 @@ class DeletionService {
             }
             catch(Exception e) {
                 println 'error while deleting tipp ' + tipp.id + ' .. rollback'
+                println e.message
+                status.setRollbackOnly()
+                return false
+            }
+        }
+    }
+
+    /**
+     * Use this method with VERY MUCH CARE!
+     * Deletes a {@link Collection} of {@link TitleInstancePackagePlatform} objects WITH their depending objects ({@link TIPPCoverage} and {@link Identifier})
+     * @param tipp - the {@link Collection} of {@link TitleInstancePackagePlatform} to delete
+     * @return the success flag
+     */
+    static boolean deleteTIPPsCascaded(Collection<TitleInstancePackagePlatform> tippsToDelete) {
+        println "processing tipps ${tippsToDelete}"
+        TitleInstancePackagePlatform.withTransaction { status ->
+            try {
+                Map<String,Collection<TitleInstancePackagePlatform>> toDelete = [toDelete:tippsToDelete]
+                TIPPCoverage.executeUpdate('delete from TIPPCoverage tc where tc.tipp in (:toDelete)',toDelete)
+                Identifier.executeUpdate('delete from Identifier i where i.tipp in (:toDelete)',toDelete)
+                TitleInstancePackagePlatform.executeUpdate('delete from TitleInstancePackagePlatform tipp where tipp in (:toDelete)',toDelete)
+                return true
+            }
+            catch (Exception e) {
+                println 'error while deleting tipp collection ' + tippsToDelete + ' .. rollback'
+                println e.message
+                status.setRollbackOnly()
+                return false
+            }
+        }
+    }
+
+    static boolean deleteIssueEntitlement(IssueEntitlement ie) {
+        println "processing issue entitlement ${ie}"
+        IssueEntitlement.withTransaction { status ->
+            try {
+                Map<String,IssueEntitlement> toDelete = [ie:ie]
+                PriceItem.executeUpdate('delete from PriceItem pi where pi.issueEntitlement = :ie',toDelete)
+                IssueEntitlementCoverage.executeUpdate('delete from IssueEntitlementCoverage ic where ic.issueEntitlement = :ie',toDelete)
+                return true
+            }
+            catch (Exception e) {
+                println 'error while deleting issue entitlement ' + ie + ' .. rollback'
                 println e.message
                 status.setRollbackOnly()
                 return false

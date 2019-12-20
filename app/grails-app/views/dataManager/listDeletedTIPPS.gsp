@@ -110,11 +110,9 @@
                 </tr>
             </tbody>
         </table>
-        <g:form name="triggerCleanup" controller="dataManager" action="executeTIPPCleanup">
-            <%--<g:hiddenField name="resultTransfer" value="${[deletedWithGOKbRecord:deletedWithGOKbRecord,deletedWithoutGOKbRecord:deletedWithoutGOKbRecord,excludes:excludes,mergingTIPPs:mergingTIPPs,duplicateTIPPKeys:duplicateTIPPKeys] as JSON}"/>--%>
-            <%--<g:hiddenField name="deletedWithGOKbRecord" value="${deletedWithGOKbRecord as JSON}"/>--%>
-            <g:hiddenField name="test" value="eee" />
-            <input type="submit" class="ui negative button" value="Daten bereinigen (bitte mit EXTREMER VORSICHT betätigen!!!)">
+        <g:form name="triggerCleanup" controller="dataManager" action="executeTIPPCleanup" params="[format:'csv']">
+            <input type="submit" class="ui negative button js-open-confirm-modal" value="Daten bereinigen (bitte mit EXTREMER VORSICHT betätigen!!!)" data-confirm-tokenMsg = "${message(code: 'confirmation.content.deleteTIPPsWithoutGOKBId')}"
+                   data-confirm-term-how="ok">
         </g:form>
     </body>
 </html>
