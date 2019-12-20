@@ -14,7 +14,7 @@ import org.springframework.context.i18n.LocaleContextHolder
 
 import javax.persistence.Transient
 
-class TitleInstancePackagePlatform extends AbstractBaseDomain implements AuditableTrait {
+class TitleInstancePackagePlatform extends AbstractBaseDomain /*implements AuditableTrait*/ {
   @Transient
   def grailsLinkGenerator
 
