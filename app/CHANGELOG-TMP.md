@@ -2,6 +2,8 @@
 
 **Ticket    Date    Branch      Author  Feature/Bug     Description/Keywords**
 
+--      20.12.2019  rc1.2       David   Bug         creating property definitions via bootstrap
+
 1992    19.12.2019  rc1.2       Andreas Feature     translations provided for SusbscriptionCustomProperties
 
 2004    19.12.2019  rc1.2       Andreas Bug         local package sync failed because of identifier processing failure (ClassCastException)

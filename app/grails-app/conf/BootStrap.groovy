@@ -1811,22 +1811,22 @@ class BootStrap {
                 tenant = Org.findByShortname(default_prop.tenant)
 
                 if (tenant) {
-                    prop = PropertyDefinition.findByNameAndTenant(default_prop.name['en'], tenant)
+                    prop = PropertyDefinition.findByNameAndDescrAndTenant(default_prop.name['en'], default_prop.descr['en'], tenant)
                 } else {
                     log.debug("unable to locate tenant: ${default_prop.tenant} .. skipped")
                     return
                 }
             } else {
-                prop = PropertyDefinition.findWhere(name: default_prop.name['en'], tenant: null)
+                prop = PropertyDefinition.findWhere(name: default_prop.name['en'], descr: default_prop.descr['en'], tenant: null)
             }
 
             if (! prop) {
                 if (tenant) {
-                    log.debug("unable to locate private property definition for ${default_prop.name['en']} for tenant: ${tenant} .. creating")
-                    prop = new PropertyDefinition(name: default_prop.name['en'], tenant: tenant)
+                    log.debug("unable to locate private property definition for ${default_prop.name['en']} / ${default_prop.descr['en']} for tenant: ${tenant} .. creating")
+                    prop = new PropertyDefinition(name: default_prop.name['en'], descr: default_prop.descr['en'], tenant: tenant)
                 } else {
-                    log.debug("unable to locate property definition for ${default_prop.name['en']} .. creating")
-                    prop = new PropertyDefinition(name: default_prop.name['en'])
+                    log.debug("unable to locate property definition for ${default_prop.name['en']} / ${default_prop.descr['en']} .. creating")
+                    prop = new PropertyDefinition(name: default_prop.name['en'], descr: default_prop.descr['en'])
                 }
             }
 
@@ -1843,7 +1843,6 @@ class BootStrap {
             }
 
             prop.type  = default_prop.type
-            prop.descr = default_prop.descr['en']
             //prop.softData = false
             prop.isHardData = BOOTSTRAP
             prop.save(failOnError: true)
