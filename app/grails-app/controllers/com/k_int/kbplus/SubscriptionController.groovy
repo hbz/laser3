@@ -3880,7 +3880,7 @@ class SubscriptionController extends AbstractDebugController {
 
         if (new_subscription.save()) {
             // assert an org-role
-            def org_link = new OrgRole(org: result.institution,
+            OrgRole org_link = new OrgRole(org: result.institution,
                     sub: new_subscription,
                     roleType: OR_SUBSCRIBER
             ).save();
@@ -3888,7 +3888,8 @@ class SubscriptionController extends AbstractDebugController {
             if(old_subOID) {
                 Links prevLink = new Links(source: new_subscription.id, destination: old_subOID, objectType: Subscription.class.name, linkType: LINKTYPE_FOLLOWS, owner: contextService.org)
                 prevLink.save()
-            } else { log.error("Problem linking new subscription, ${prevLink.errors}") }
+            }
+            else { log.error("Problem linking new subscription, ${prevLink.errors}") }
         } else {
             log.error("Problem saving new subscription, ${new_subscription.errors}");
         }
@@ -5416,8 +5417,8 @@ class SubscriptionController extends AbstractDebugController {
         def titles = [
                 g.message(code: 'org.sortname.label'), 'Name', g.message(code: 'org.shortname.label')]
 
-        def orgSector = RefdataValue.getByValueAndCategory('Higher Education', 'OrgSector')
-        def orgType = RefdataValue.getByValueAndCategory('Provider', 'OrgRoleType')
+        RefdataValue orgSector = RefdataValue.getByValueAndCategory('Higher Education', 'OrgSector')
+        RefdataValue orgType = RefdataValue.getByValueAndCategory('Provider', 'OrgRoleType')
 
 
         if (addHigherEducationTitles) {

@@ -1460,8 +1460,8 @@ from License as l where (
     @DebugAnnotation(test='hasAffiliation("INST_USER")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
     def processEmptyLicense() {
-        def user = User.get(springSecurityService.principal.id)
-        def org = contextService.getOrg()
+        User user = User.get(springSecurityService.principal.id)
+        Org org = contextService.getOrg()
 
         params.asOrgType = params.asOrgType ? [params.asOrgType] : [RDStore.OT_INSTITUTION.id.toString()]
 
@@ -1557,8 +1557,8 @@ from License as l where (
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
     @Deprecated
     def newLicense_DEPR(params) {
-        def user = User.get(springSecurityService.principal.id)
-        def org = contextService.getOrg()
+        User user = User.get(springSecurityService.principal.id)
+        Org org = contextService.getOrg()
 
         if (! accessService.checkMinUserOrgRole(user, org, 'INST_EDITOR')) {
             flash.error = message(code:'myinst.error.noAdmin', args:[org.name]);
@@ -4089,8 +4089,8 @@ AND EXISTS (
 
     @Secured(['ROLE_USER'])
     def switchContext() {
-        def user = User.get(springSecurityService.principal.id)
-        def org  = genericOIDService.resolveOID(params.oid)
+        User user = User.get(springSecurityService.principal.id)
+        Org org  = genericOIDService.resolveOID(params.oid)
 
         if (user && org && org.id in user.getAuthorizedOrgsIds()) {
             log.debug('switched context to: ' + org)

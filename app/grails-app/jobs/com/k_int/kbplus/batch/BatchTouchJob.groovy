@@ -18,7 +18,7 @@ class BatchTouchJob extends AbstractJob {
         simple name:'BatchTouchJob', startDelay:50000, repeatInterval:30000, repeatCount:0
     }
     */
-    static configFlags = []
+    static List<String> configFlags = []
 
     boolean isAvailable() {
         !jobIsRunning // no service needed
@@ -55,9 +55,9 @@ class BatchTouchJob extends AbstractJob {
 
     log.debug("BatchTouchJob::titleBatchUpdate");
 
-    def event = "TitleBatchUpdateJob"
-    def startTime = printStart(event)
-    def counter = 0
+    String event = "TitleBatchUpdateJob"
+    Date startTime = printStart(event)
+    int counter = 0
     try{
       TitleInstance.auditable = false
       TitleInstance.withSession { session ->
@@ -75,9 +75,11 @@ class BatchTouchJob extends AbstractJob {
          cleanUpGorm(session)
       }
       printDuration(startTime,event)
-    }catch( Exception e ) {
+    }
+    catch( Exception e ) {
       log.error(e)
-    }finally{
+    }
+    finally{
       //always reset the status
       TitleInstance.auditable = false
     }
@@ -96,9 +98,9 @@ class BatchTouchJob extends AbstractJob {
 
   def impIdJob(){
     log.debug("BatchTouchJob::impIdJob");
-    def event = "BatchImpIdJob"
-    def startTime = printStart(event)
-    def counter = 0
+    String event = "BatchImpIdJob"
+    Date startTime = printStart(event)
+    int counter = 0
     def classList = [com.k_int.kbplus.Package,com.k_int.kbplus.Org,com.k_int.kbplus.License,com.k_int.kbplus.Subscription,com.k_int.kbplus.Platform,com.k_int.kbplus.TitleInstance]
     classList.each{ currentClass ->
       def auditable_store = null
@@ -124,7 +126,9 @@ class BatchTouchJob extends AbstractJob {
 
       }catch( Exception e ) {log.error(e)}
       finally{
-        if(currentClass.hasProperty('auditable')) currentClass.auditable = auditable_store?:true ;
+        if(currentClass.hasProperty('auditable')) {
+            currentClass.auditable = auditable_store?:true
+        }
       }
 
     }
@@ -133,9 +137,9 @@ class BatchTouchJob extends AbstractJob {
 
   def pkgBatchUpdate() {
     log.debug("BatchTouchJob::pkgBatchUpdate");
-    def event = "PackageBatchUpdateJob"
+    String event = "PackageBatchUpdateJob"
     def startTime = printStart(event)
-    def counter = 0
+    int counter = 0
     try{
       Package.auditable = false
       Package.withSession { session ->
@@ -181,15 +185,15 @@ class BatchTouchJob extends AbstractJob {
     obj.save()
   }
 
-   private def printStart(event){
-       def starttime = new Date();
+   private Date printStart(String event){
+       Date starttime = new Date()
        log.debug("******* Start ${event}: ${starttime} *******")
        return starttime
    }
 
-  private def printDuration(starttime, event){
+  private void printDuration(Date starttime, String event){
     use(groovy.time.TimeCategory) {
-      def duration = new Date() - starttime
+        def duration = new Date() - starttime
       log.debug("******* End ${event}: ${new Date()} *******")
       log.debug("Duration: ${(duration.hours*60)+duration.minutes}m ${duration.seconds}s")
     }

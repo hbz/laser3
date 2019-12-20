@@ -204,7 +204,7 @@ class Identifier {
     if ( params.q.contains(':') ) {
       def qp=params.q.split(':');
       // println("Search by namspace identifier: ${qp}");
-      def namespace = IdentifierNamespace.findByNsIlike(qp[0]);
+        IdentifierNamespace namespace = IdentifierNamespace.findByNsIlike(qp[0]);
       if ( namespace && qp.size() == 2) {
         ql = Identifier.findAllByNsAndValueIlike(namespace,"${qp[1]}%")
       }
@@ -226,7 +226,7 @@ class Identifier {
         def result = []
         if (params.q.contains(':')) {
             def qp = params.q.split(':');
-            def namespace = IdentifierNamespace.findByNsIlike(qp[0]);
+            IdentifierNamespace namespace = IdentifierNamespace.findByNsIlike(qp[0]);
             if (namespace && qp.size() == 2) {
                 def ql = Identifier.findAllByNsAndValueIlike(namespace,"${qp[1]}%")
                 ql.each { id ->

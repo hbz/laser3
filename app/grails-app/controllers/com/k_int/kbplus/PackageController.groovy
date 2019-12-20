@@ -250,7 +250,7 @@ class PackageController extends AbstractDebugController {
         params.each { p ->
             if (p.key.startsWith("_create.")) {
                 def orgID = p.key.substring(8)
-                def orgaisation = Org.get(orgID)
+                Org orgaisation = Org.get(orgID)
                 if (orgaisation)
                     log.debug("Create slave subscription for ${orgaisation.name}")
                 createNewSubscription(orgaisation, params.id, params.genSubName);

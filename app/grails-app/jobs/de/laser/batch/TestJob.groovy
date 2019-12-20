@@ -10,7 +10,7 @@ class TestJob extends AbstractJob {
 
     static triggers = {
 
-    cron name:'TestJob', startDelay:0, cronExpression: "0/10 * * * * ?"
+    //cron name:'TestJob', startDelay:0, cronExpression: "0/10 * * * * ?"
     // cronExpression: "s m h D M W Y"
     //                  | | | | | | `- Year [optional]
     //                  | | | | | `- Day of Week, 1-7 or SUN-SAT, ?
@@ -21,7 +21,7 @@ class TestJob extends AbstractJob {
     //                  `- Second, 0-59
     }
 
-    static configFlags = ['activateTestJob']
+    static List<String> configFlags = ['activateTestJob']
 
     boolean isAvailable() {
         !jobIsRunning // no service needed

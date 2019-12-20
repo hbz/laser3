@@ -508,7 +508,7 @@ from Subscription as s where
     params.each { p ->
         if(p.key.startsWith("_create.")){
          def orgID = p.key.substring(8)
-         def orgaisation = Org.get(orgID)
+         Org orgaisation = Org.get(orgID)
           def attrMap = [baselicense:params.baselicense,lic_name:params.lic_name,isSlaved:true]
           log.debug("Create slave license for ${orgaisation.name}")
           attrMap.copyStartEnd = true

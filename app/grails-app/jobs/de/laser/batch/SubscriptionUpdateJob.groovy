@@ -14,7 +14,7 @@ class SubscriptionUpdateJob extends AbstractJob {
 //        cron name:'SubscriptionUpdateTrigger', cronExpression: "0 /3 * * * ?" //ONLY FOR DEVELOPMENT AND TESTS: Fire every three minutes
     }
 
-    static configFlags = []
+    static List<String> configFlags = []
 
     boolean isAvailable() {
         !jobIsRunning && !subscriptionUpdateService.running
