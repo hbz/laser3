@@ -1,13 +1,9 @@
--- add all migrations (for local and/or remote environments) here
--- add all migrations (for local and/or remote environments) here
--- add all migrations (for local and/or remote environments) here
+databaseChangeLog = {
 
--- yyyy-mm-dd
--- <short description>
-
--- 2019-12-19
--- ERMS-1992: translations provided for subscription custom properties
--- changesets in changelog-2019-12-20.groovy
+	changeSet(author: "kloberd (modified)", id: "1576828793575-1") {
+		grailsChange {
+			change {
+				sql.execute("""
 update property_definition set pd_name = 'GASCO display name' where pd_name = 'GASCO-Anzeigename' and pd_description ='Subscription Property';
 update property_definition set pd_name = 'GASCO negotiator name' where pd_name = 'GASCO-Verhandlername' and pd_description ='Subscription Property';
 update property_definition set pd_name = 'GASCO information link' where pd_name = 'GASCO-Information-Link' and pd_description ='Subscription Property';
@@ -55,3 +51,9 @@ update property_definition set pd_name = 'Specialised statistics / classificatio
 update property_definition set pd_name = 'Perpetual access' where pd_name = 'Archivzugriff' and pd_description ='Subscription Property';
 update property_definition set pd_name = 'Restricted user group' where pd_name = 'Eingeschränkter Benutzerkreis' and pd_description ='Subscription Property';
 update property_definition set pd_name = 'SFX entry' where pd_name = 'SFX-Eintrag' and pd_description ='Subscription Property';
+""")
+			}
+			rollback {}
+		}
+	}
+}
