@@ -1,6 +1,7 @@
 package com.k_int.kbplus
 
 import com.k_int.kbplus.auth.User
+import de.laser.DeletionService
 import de.laser.YodaService
 import de.laser.controller.AbstractDebugController
 import de.laser.domain.MailTemplate
@@ -18,6 +19,7 @@ class DataManagerController extends AbstractDebugController {
     def genericOIDService
     YodaService yodaService
     ExportService exportService
+    DeletionService deletionService
 
     @Secured(['ROLE_ADMIN'])
     def index() {
@@ -431,7 +433,7 @@ class DataManagerController extends AbstractDebugController {
         SessionCacheWrapper sessionCache = contextService.getSessionCache()
         Map<String,Object> result = sessionCache.get("DataManagerController/listDeletedTIPPS/result")
         if(!result){
-            result = yodaService.processDeletedTIPPs(false)
+            result = yodaService.processDeletedTIPPs()
             sessionCache.put("DataManagerController/listDeletedTIPPS/result",result)
         }
         log.debug("expungeDeletedTIPPS ... returning")
@@ -441,28 +443,73 @@ class DataManagerController extends AbstractDebugController {
     @Secured(['ROLE_YODA'])
     def executeTIPPCleanup() {
         log.debug("WARNING: bulk deletion of TIPP entries triggered! Start nuking!")
-        //Map<String,Object> result = yodaService.processDeletedTIPPs(true)
-        log.debug("Cleanup finished!")
-        //continue here: provide CSV sheet with subscriptions, packages and organisations to notify (process report)
-        List<String> colHeaders = ['Konsortium','Teilnehmer','Lizenz','Paket','Titel']
-        List<List<String>> reportRows = []
-        result.report.each { report ->
-            reportRows << [report.consortium,report.subscriber,report.subscription,report.package,report.title]
-        }
-        withFormat {
-            html {
-
-            }
-            csv {
-                response.setHeader("Content-disposition","attachment; filename=\"Subscriptions_to_report.csv\"")
-                response.outputStream.withWriter { writer ->
-                    writer.write(exportService.generateSeparatorTableString(colHeaders,reportRows,','))
+        SessionCacheWrapper sessionCache = contextService.getSessionCache()
+        Map<String,Object> result = (Map<String,Object>) sessionCache.get("DataManagerController/listDeletedTIPPS/result")
+        if(result) {
+            //first: merge duplicate entries
+            result.mergingTIPPS.each { mergingTIPP ->
+                IssueEntitlement.withTransaction { status ->
+                    try {
+                        IssueEntitlement.executeUpdate('update IssueEntitlement ie set ie.tipp = :mergeTarget where ie.id in (:iesToMerge)',[mergeTarget:mergingTIPP.mergeTarget,iesToMerge:mergingTIPP.iesToMerge])
+                    }
+                    catch (Exception e) {
+                        log.error("failure on merging TIPPs ... rollback!")
+                        status.setRollbackOnly()
+                    }
                 }
-                response.outputStream.flush()
-                response.outputStream.close()
+            }
+            log.debug("remapping done, purge now duplicate entries ...")
+            Set<TitleInstancePackagePlatform> tippsToDelete = TitleInstancePackagePlatform.findAllByGokbIdInListAndIdNotInList(result.duplicateTIPPKeys,result.excludes)
+            deletionService.deleteTIPPsCascaded(tippsToDelete)
+            List<String> colHeaders = ['Konsortium','Teilnehmer','Lizenz','Paket','Titel','Grund']
+            List<List<String>> reportRows = []
+            List<Map<TitleInstancePackagePlatform,String>> remappingTargets = []
+            Map<RefdataValue,Set<TitleInstancePackagePlatform>> pendingChangeSetupMap = [:]
+            result.deletedWithoutGOKbRecord.each { delTIPP ->
+                delTIPP.issueEntitlements.each { ieDetails ->
+                    IssueEntitlement ie = (IssueEntitlement) ieDetails.ie
+                    switch(ieDetails.action) {
+                        case "deleteCascade":
+                            log.debug("deletion cascade: deleting ${ie}, deleting ${ie.subscription}")
+                            deletionService.deleteIssueEntitlement(ie)
+                            deletionService.deleteSubscription(ie.subscription,false)
+                            break
+                        case "report": reportRows << [ieDetails.report.consortium,ieDetails.report.subscriber,ieDetails.report.subscription,ieDetails.report.package,ieDetails.report.title,ieDetails.report.cause]
+                            break
+                        case "remap": remappingTargets[delTIPP] = ieDetails.target
+                            break
+                    }
+                }
+            }
+            result.deletedWithGOKbRecord.each { delTIPP ->
+                Set<TitleInstancePackagePlatform> tippsToUpdate = pendingChangeSetupMap[delTIPP.status]
+                if(!tippsToUpdate)
+                    tippsToUpdate = []
+                tippsToUpdate << delTIPP
+                pendingChangeSetupMap[delTIPP.status] = tippsToUpdate
+            }
+            pendingChangeSetupMap.each { RefdataValue status, Set<TitleInstancePackagePlatform> tippsToUpdate ->
+                TitleInstancePackagePlatform.executeUpdate('update TitleInstancePackagePlatform tipp set tipp.status = :status where tipp in :tippsToUpdate',[status:status,tippsToUpdate:tippsToUpdate])
+                //hook up pending changes
+            }
+            log.debug("Cleanup finished!")
+            withFormat {
+                html {
+
+                }
+                csv {
+                    response.setHeader("Content-disposition","attachment; filename=\"Subscriptions_to_report.csv\"")
+                    response.outputStream.withWriter { writer ->
+                        writer.write(exportService.generateSeparatorTableString(colHeaders,reportRows,','))
+                    }
+                    response.outputStream.flush()
+                    response.outputStream.close()
+                }
             }
         }
-        //render params.toString()
+        else
+            log.error("data missing, rebuilding data")
+        redirect(action:'listDeletedTIPPS')
     }
 
   @Secured(['ROLE_ADMIN'])
