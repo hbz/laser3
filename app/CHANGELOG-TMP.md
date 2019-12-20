@@ -2,6 +2,11 @@
 
 **Ticket    Date    Branch      Author  Feature/Bug     Description/Keywords**
 
+
+1999    20.12.2019  rc1.2       Moe   Bug           Filter Mehrjahreslaufzeit erweitern oder erläutern
+
+--      20.12.2019  rc1.2       Moe   Bug           Copy IEs and Correct AnualRings by Survey Consortia
+
 --      20.12.2019  rc1.2       David   Bug         fixed regression bug: pending change payload
 
 --      20.12.2019  rc1.2       David   Bug         creating property definitions via bootstrap
