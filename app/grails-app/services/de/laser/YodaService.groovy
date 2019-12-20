@@ -103,6 +103,7 @@ class YodaService {
         HTTPBuilder http = new HTTPBuilder(grs.uri)
         Map<String, NodeChildren> oaiRecords = [:]
         List<Map<TitleInstancePackagePlatform,Map<String,Object>>> deletedWithoutGOKbRecord = [], deletedWithGOKbRecord = []
+        Map<RefdataValue,Set<TitleInstancePackagePlatform>> pendingChangeSetupMap = [:]
         deletedTIPPs.each { delTIPP ->
             log.debug("now processing entry #${delTIPP.id} ${delTIPP.gokbId} of package ${delTIPP.pkg} with uuid ${delTIPP.pkg.gokbId}")
             NodeChildren oaiRecord = oaiRecords.get(delTIPP.pkg.gokbId)
@@ -214,15 +215,20 @@ class YodaService {
                     set TIPP and IssueEntitlement (by pending change) to that status
                     otherwise do nothing
                  */
-                Map<String,Object> tippDetails = [issueEntitlements: tippIEMap.get(delTIPP.id), action: 'updateStatus', status: gokbTIPP.status.text()]
-                if(doIt)
-                    delTIPP.status = RefdataValue.getByValueAndCategory(gokbTIPP.status.text(), RefdataCategory.TIPP_STATUS)
                 Map<TitleInstancePackagePlatform,Map<String,Object>> result = [:]
+                RefdataValue currTippStatus = RefdataValue.getByValueAndCategory(gokbTIPP.status.text(),RefdataCategory.TIPP_STATUS)
+                Map<String,Object> tippDetails = [issueEntitlements: tippIEMap.get(delTIPP.id), action: 'updateStatus', status: currTippStatus]
+                if(doIt){
+                    Set<TitleInstancePackagePlatform> tippsToUpdate = pendingChangeSetupMap[currTippStatus]
+                    if(!tippsToUpdate)
+                        tippsToUpdate = []
+                    tippsToUpdate << delTIPP
+                    pendingChangeSetupMap[currTippStatus] = tippsToUpdate
+                }
                 result[delTIPP] = tippDetails
                 deletedWithGOKbRecord << result
             }
             /*
-
             concernedIssueEntitlements.each { ie ->
                 ie.tipp = nonDeletedRecord
                 if(!ie.save())
@@ -230,8 +236,13 @@ class YodaService {
             }
              */
         }
-        if(doIt)
+        if(doIt){
+            pendingChangeSetupMap.each { RefdataValue status, Set<TitleInstancePackagePlatform> tippsToUpdate ->
+                TitleInstancePackagePlatform.executeUpdate('update TitleInstancePackagePlatform tipp set tipp.status = :status where tipp in :tippsToUpdate',[status:status,tippsToUpdate:tippsToUpdate])
+                //hook up pending changes
+            }
             [reports:reports]
+        }
         else
             [deletedWithoutGOKbRecord:deletedWithoutGOKbRecord,deletedWithGOKbRecord:deletedWithGOKbRecord,mergingTIPPs:mergingTIPPs,duplicateTIPPKeys:duplicateTIPPKeys,excludes:excludes]
     }

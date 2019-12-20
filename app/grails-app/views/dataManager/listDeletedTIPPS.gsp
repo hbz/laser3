@@ -111,8 +111,7 @@
             </tbody>
         </table>
         <g:form name="triggerCleanup" controller="dataManager" action="executeTIPPCleanup" params="[format:'csv']">
-            <input type="submit" class="ui negative button js-open-confirm-modal" value="Daten bereinigen (bitte mit EXTREMER VORSICHT betätigen!!!)" data-confirm-tokenMsg = "${message(code: 'confirmation.content.deleteTIPPsWithoutGOKBId')}"
-                   data-confirm-term-how="ok">
+            <input type="submit" class="ui negative button <%--js-open-confirm-modal--%>" value="Daten bereinigen (bitte mit EXTREMER VORSICHT betätigen!!!)" <%--data-confirm-tokenMsg = "${message(code: 'confirmation.content.deleteTIPPsWithoutGOKBId')}" data-confirm-term-how="ok"--%>>
         </g:form>
     </body>
 </html>

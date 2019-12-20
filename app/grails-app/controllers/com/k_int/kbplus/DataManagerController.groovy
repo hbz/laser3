@@ -4,6 +4,7 @@ import com.k_int.kbplus.auth.User
 import de.laser.YodaService
 import de.laser.controller.AbstractDebugController
 import de.laser.domain.MailTemplate
+import de.laser.helper.SessionCacheWrapper
 import grails.plugin.springsecurity.SpringSecurityUtils
 import grails.plugin.springsecurity.annotation.Secured
 import org.codehaus.groovy.grails.plugins.orm.auditable.AuditLogEvent
@@ -427,7 +428,12 @@ class DataManagerController extends AbstractDebugController {
     @Secured(['ROLE_YODA'])
     Map<String,Object> listDeletedTIPPS() {
         log.debug("expungeDeletedTIPPS ...")
-        Map<String,Object> result = yodaService.processDeletedTIPPs(false)
+        SessionCacheWrapper sessionCache = contextService.getSessionCache()
+        Map<String,Object> result = sessionCache.get("DataManagerController/listDeletedTIPPS/result")
+        if(!result){
+            result = yodaService.processDeletedTIPPs(false)
+            sessionCache.put("DataManagerController/listDeletedTIPPS/result",result)
+        }
         log.debug("expungeDeletedTIPPS ... returning")
         result
     }
@@ -435,7 +441,7 @@ class DataManagerController extends AbstractDebugController {
     @Secured(['ROLE_YODA'])
     def executeTIPPCleanup() {
         log.debug("WARNING: bulk deletion of TIPP entries triggered! Start nuking!")
-        Map<String,Object> result = yodaService.processDeletedTIPPs(true)
+        //Map<String,Object> result = yodaService.processDeletedTIPPs(true)
         log.debug("Cleanup finished!")
         //continue here: provide CSV sheet with subscriptions, packages and organisations to notify (process report)
         List<String> colHeaders = ['Konsortium','Teilnehmer','Lizenz','Paket','Titel']
