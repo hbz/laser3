@@ -47,28 +47,28 @@
                                 String outputWithoutGOKb
                                 tipp.each { k, v ->
                                     outputWithoutGOKb = "${k.gokbId}: "
-                                    if(v.issueEntitlements) {
+                                    if(v) {
                                         List<String> subscriptionHolders = []
-                                        v.issueEntitlements.each { ie ->
-                                            subscriptionHolders << g.link([controller:'subscription',action:'show',params:[id:ie.subscription.id]],"${ie.subscription.getConsortia() ?: ie.subscription.getSubscriber()} (Issue Entitlement Status: ${ie.status}, Subscription Status: ${ie.subscription.status})")
+                                        v.each { entry ->
+                                            //outputWithoutGOKb += entry.ie
+                                            String action = "actions to be taken: "
+                                            switch(entry.action) {
+                                                case "remap": action += "remap to ${entry.target}"
+                                                    break
+                                                case "report": action += " ${entry.report}"
+                                                    break
+                                                case "updateStatus": action += " set status to ${entry.status}"
+                                                    break
+                                                default: action += entry.action
+                                                    break
+                                            }
+                                            subscriptionHolders << "${g.link([controller:'subscription',action:'show',params:[id:entry.ie.subscription.id]],"${entry.ie.subscription.getConsortia() ?: entry.ie.subscription.getSubscriber()} (Issue Entitlement Status: ${entry.ie.status}, Subscription Status: ${entry.ie.subscription.status})")} - ${action}"
                                         }
                                         outputWithoutGOKb += "<ul><li>${subscriptionHolders.join('</li><li>')}</li></ul>"
                                     }
                                     else {
                                         outputWithoutGOKb += "no entitlements<br>"
                                     }
-                                    String action = "actions to be taken: "
-                                    switch(v.action) {
-                                        case "remap": action += "remap to ${v.target}"
-                                            break
-                                        case "report": action += " ${v.report}"
-                                            break
-                                        case "updateStatus": action += " set status to ${v.status}"
-                                            break
-                                        default: action += v.action
-                                            break
-                                    }
-                                    outputWithoutGOKb += action
                                 }
                             %>
                             ${raw(outputWithoutGOKb)}
@@ -80,18 +80,18 @@
                                 String outputWithGOKb
                                 tipp.each { k, v ->
                                     outputWithGOKb = "${k.gokbId}: "
-                                    if(v.issueEntitlements) {
+                                    if (v.issueEntitlements) {
                                         List<String> subscriptionHolders = []
                                         v.issueEntitlements.each { ie ->
-                                            subscriptionHolders << g.link([controller: 'subscription',action:'show',params:[id:ie.subscription.id]],"${ie.subscription.getConsortia() ?: ie.subscription.getSubscriber()} (Issue Entitlement Status: ${ie.status}, Subscription Status: ${ie.subscription.status})")
+                                            subscriptionHolders << g.link([controller: 'subscription', action: 'show', params: [id: ie.subscription.id]], "${ie.subscription.getConsortia() ?: ie.subscription.getSubscriber()} (Issue Entitlement Status: ${ie.status}, Subscription Status: ${ie.subscription.status})")
                                         }
                                         outputWithGOKb += "<ul><li>${subscriptionHolders.join('</li><li>')}</li></ul>"
                                     }
-                                    else {
+                                     else {
                                         outputWithGOKb += "no entitlements<br>"
                                     }
                                     String action = "actions to be taken: "
-                                    switch(v.action) {
+                                     switch(v.action) {
                                         case "remap": action += "remap to ${v.target}"
                                             break
                                         case "report": action += " ${v.report}"
