@@ -241,8 +241,11 @@ class Org
             impId = java.util.UUID.randomUUID().toString();
         }
 
-        if (contextService.getOrg()) {
-            createdBy = contextService.getOrg()
+        //ugliest HOTFIX ever #2
+        if(!Thread.currentThread().name.contains("Sync")) {
+            if (contextService.getOrg()) {
+                createdBy = contextService.getOrg()
+            }
         }
 
         super.beforeInsert()
@@ -483,7 +486,7 @@ class Org
                            sector:sector,
                            ipRange:iprange,
                            impId: null,
-                           gokbId: imp_uuid?.length() > 0 ? imp_uuid : null).save(flush: true)
+                           gokbId: imp_uuid?.length() > 0 ? imp_uuid : null).save()
           if(orgRoleTyp) {
               result.addToOrgType(orgRoleTyp).save()
           }
