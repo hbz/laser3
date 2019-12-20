@@ -65,6 +65,10 @@ modules = {
         resource url:'js/libs/datatables.min.js'
         resource url:'css/datatables.css', attrs: [media: 'screen,print']
     }
+    chartist {
+        resource url:'chartist/javascript/chartist.min.js'
+        resource url:'chartist/css/chartist.css', attrs: [media: 'screen,print']
+    }
     base {
         dependsOn 'jquery'
         dependsOn 'deprecated'
