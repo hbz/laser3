@@ -80,7 +80,7 @@ class Contact implements Comparable<Contact>{
     static Contact lookupOrCreate(content, contentType, type, person, organisation) {
 
         Contact result
-        def info = "saving new contact: ${content} ${contentType} ${type}"
+        String info = "saving new contact: ${content} ${contentType} ${type}"
 
         if (! content) {
             LogFactory.getLog(this).debug( info + " > ignored; empty content")
@@ -91,7 +91,7 @@ class Contact implements Comparable<Contact>{
             type = RefdataValue.findByValue("Job-related")
         }
         
-        def check = Contact.lookup(content, contentType, type, person, organisation)
+        Contact check = Contact.lookup(content, contentType, type, person, organisation)
         if (check) {
             result = check
             info += " > ignored/duplicate"

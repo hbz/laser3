@@ -4,7 +4,7 @@ abstract class AbstractJob {
     private Date job_start
     private Date job_end
 
-    static configFlags = []
+    static List<String> configFlags = []
 
     //Todo REDUCE VISIBILITY after changing code to use method setJobStart/End instead of modifying the jobIsRunning attribute
     protected boolean jobIsRunning = false

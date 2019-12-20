@@ -67,7 +67,7 @@ class TitleInstitutionProvider {
   * -1 DataA Before(<) DateB
   **/
   @Transient
-  int compareDates(dateA, dateB){
+  int compareDates(Date dateA, Date dateB){
     def daysDiff
     def duration
     if(dateA == null && dateB == null) return 0;

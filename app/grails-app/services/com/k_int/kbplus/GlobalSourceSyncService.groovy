@@ -71,10 +71,10 @@ class GlobalSourceSyncService extends AbstractLockableService {
             newtitle.publishers.each { pub ->
 //         def publisher_identifiers = pub.identifiers
                 def publisher_identifiers = []
-                def orgSector = RefdataValue.loc('OrgSector', [en: 'Publisher', de: 'Veröffentlicher']);
-                def publisher = Org.lookupOrCreate(pub.name, orgSector, null, publisher_identifiers, null, pub.uuid)
-                def pub_role = RefdataValue.loc('Organisational Role', [en: 'Publisher', de: 'Veröffentlicher']);
-                def sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
+                RefdataValue orgSector = RefdataValue.loc('OrgSector', [en: 'Publisher', de: 'Veröffentlicher']);
+                Org publisher = Org.lookupOrCreate(pub.name, orgSector, null, publisher_identifiers, null, pub.uuid)
+                RefdataValue pub_role = RefdataValue.loc('Organisational Role', [en: 'Publisher', de: 'Veröffentlicher']);
+                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
                 def start_date
                 def end_date
 
@@ -263,20 +263,20 @@ class GlobalSourceSyncService extends AbstractLockableService {
 
         println "Reconciling new Package!"
 
-        def scope = RefdataValue.loc(RefdataCategory.PKG_SCOPE, [en: (newpkg?.scope) ?: 'Unknown']);
-        def listStatus = RefdataValue.loc(RefdataCategory.PKG_LIST_STAT, [en: (newpkg?.listStatus) ?: 'Unknown']);
-        def breakable = RefdataValue.loc(RefdataCategory.PKG_BREAKABLE, [en: (newpkg?.breakable) ?: 'Unknown']);
-        def consistent = RefdataValue.loc(RefdataCategory.PKG_CONSISTENT, [en: (newpkg?.consistent) ?: 'Unknown']);
-        def fixed = RefdataValue.loc(RefdataCategory.PKG_FIXED, [en: (newpkg?.fixed) ?: 'Unknown']);
-        def paymentType = RefdataValue.loc(RefdataCategory.PKG_PAYMENTTYPE, [en: (newpkg?.paymentType) ?: 'Unknown']);
-        def global = RefdataValue.loc(RefdataCategory.PKG_GLOBAL, [en: (newpkg?.global) ?: 'Unknown']);
-        def ref_pprovider = RefdataValue.loc('Organisational Role', [en: 'Content Provider', de: 'Anbieter']);
+        RefdataValue scope = RefdataValue.loc(RefdataCategory.PKG_SCOPE, [en: (newpkg?.scope) ?: 'Unknown']);
+        RefdataValue listStatus = RefdataValue.loc(RefdataCategory.PKG_LIST_STAT, [en: (newpkg?.listStatus) ?: 'Unknown']);
+        RefdataValue breakable = RefdataValue.loc(RefdataCategory.PKG_BREAKABLE, [en: (newpkg?.breakable) ?: 'Unknown']);
+        RefdataValue consistent = RefdataValue.loc(RefdataCategory.PKG_CONSISTENT, [en: (newpkg?.consistent) ?: 'Unknown']);
+        RefdataValue fixed = RefdataValue.loc(RefdataCategory.PKG_FIXED, [en: (newpkg?.fixed) ?: 'Unknown']);
+        RefdataValue paymentType = RefdataValue.loc(RefdataCategory.PKG_PAYMENTTYPE, [en: (newpkg?.paymentType) ?: 'Unknown']);
+        RefdataValue global = RefdataValue.loc(RefdataCategory.PKG_GLOBAL, [en: (newpkg?.global) ?: 'Unknown']);
+        RefdataValue ref_pprovider = RefdataValue.loc('Organisational Role', [en: 'Content Provider', de: 'Anbieter']);
 
         //we should now first setup the provider and then proceed to package
         Org provider
-        def orgSector = RefdataValue.getByValueAndCategory('Publisher', 'OrgSector')
-        def orgType = RefdataValue.getByValueAndCategory('Provider', 'OrgRoleType')
-        def orgRole = RefdataValue.loc('Organisational Role', [en: 'Content Provider', de: 'Anbieter'])
+        RefdataValue orgSector = RefdataValue.getByValueAndCategory('Publisher', 'OrgSector')
+        RefdataValue orgType = RefdataValue.getByValueAndCategory('Provider', 'OrgRoleType')
+        RefdataValue orgRole = RefdataValue.loc('Organisational Role', [en: 'Content Provider', de: 'Anbieter'])
         if(newpkg.packageProvider) {
             println "checking package provider ${newpkg.packageProvider}"
             provider = (Org) Org.lookupOrCreate2(newpkg.packageProvider, orgSector, null, [:], null, orgType, newpkg.packageProviderUuid ?: null)
@@ -456,7 +456,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
                     //} else {
                     //    log.error("Error creating identifier instance for new TIPP!")
                     //}
-                    tipp_id = Identifier.construct([value: tipp.tippId, reference: new_tipp, namespace: 'uri'])
+                    Identifier tipp_id = Identifier.construct([value: tipp.tippId, reference: new_tipp, namespace: 'uri'])
                 }
 
                 def tipps = TitleInstancePackagePlatform.findAllByGokbId(tipp?.tippUuid)

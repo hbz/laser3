@@ -12,7 +12,7 @@ class SurveyUpdateJob extends AbstractJob {
         cron name:'SurveyUpdateJobTrigger', cronExpression: "0 0 23 * * ?" //Fire at 23:00 every day
     }
 
-    static configFlags = []
+    static List<String> configFlags = []
 
     boolean isAvailable() {
         !jobIsRunning && !surveyUpdateService.running

@@ -72,8 +72,8 @@ class OrganisationService {
      */
     def exportOrg(List orgs, message, boolean addHigherEducationTitles, String format) {
         def titles = [messageSource.getMessage('org.sortname.label',null,LocaleContextHolder.getLocale()),messageSource.getMessage('org.shortname.label',null, LocaleContextHolder.getLocale()),'Name']
-        def orgSector = RefdataValue.getByValueAndCategory('Higher Education','OrgSector')
-        def orgType = RefdataValue.getByValueAndCategory('Provider','OrgRoleType')
+        RefdataValue orgSector = RefdataValue.getByValueAndCategory('Higher Education','OrgSector')
+        RefdataValue orgType = RefdataValue.getByValueAndCategory('Provider','OrgRoleType')
         if(addHigherEducationTitles) {
             titles.add(messageSource.getMessage('org.libraryType.label',null,LocaleContextHolder.getLocale()))
             titles.add(messageSource.getMessage('org.libraryNetwork.label',null,LocaleContextHolder.getLocale()))

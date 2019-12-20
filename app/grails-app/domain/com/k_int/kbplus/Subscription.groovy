@@ -894,7 +894,7 @@ select distinct oap from OrgAccessPoint oap
         return dropdownNamingConventionWithoutOrg(contextService.org)
     }
 
-    def dropdownNamingConventionWithoutOrg(contextOrg){
+    def dropdownNamingConventionWithoutOrg(Org contextOrg){
         def messageSource = Holders.grailsApplication.mainContext.getBean('messageSource')
         SimpleDateFormat sdf = new SimpleDateFormat(messageSource.getMessage('default.date.format.notime',null, LocaleContextHolder.getLocale()))
         String period = startDate ? sdf.format(startDate)  : ''

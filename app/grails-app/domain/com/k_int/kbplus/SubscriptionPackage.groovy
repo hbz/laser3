@@ -59,7 +59,7 @@ class SubscriptionPackage {
       hqlParams.add(params.long('subFilter'))
     }
 
-    def results = SubscriptionPackage.executeQuery(hqlString,hqlParams)
+    List<SubscriptionPackage> results = SubscriptionPackage.executeQuery(hqlString,hqlParams)
 
     results?.each { t ->
       String resultText = t.subscription.name + '/' + t.pkg.name
