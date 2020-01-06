@@ -53,7 +53,7 @@
 
         <semui:messages data="${flash}" />
 
-        <g:render template="/templates/pdendingChanges" model="${['pendingChanges': pendingChanges,'flash':flash,'model':subscriptionInstance]}"/>
+        <g:render template="/templates/pendingChanges" model="${['pendingChanges': pendingChanges,'flash':flash,'model':subscriptionInstance]}"/>
 
 
     <div id="collapseableSubDetails" class="ui stackable grid">
