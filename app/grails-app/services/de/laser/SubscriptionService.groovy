@@ -345,6 +345,18 @@ class SubscriptionService {
 
         //alle zugeordneten Packages löschen
         if (packagesToDelete) {
+
+            packagesToDelete.each { subPkg ->
+                OrgAccessPointLink.executeUpdate("delete from OrgAccessPointLink oapl where oapl.subPkg=?", [subPkg])
+                CostItem.findAllBySubPkg(subPkg).each { costItem ->
+                    costItem.subPkg = null
+                    if(!costItem.sub){
+                        costItem.sub = subPkg.subscription
+                    }
+                    costItem.save(flush: true)
+                }
+            }
+
             SubscriptionPackage.executeUpdate(
                     "delete from SubscriptionPackage sp where sp in (:packagesToDelete) and sp.subscription = :sub ",
                     [packagesToDelete: packagesToDelete, sub: targetSub])

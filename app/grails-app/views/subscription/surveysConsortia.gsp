@@ -20,7 +20,7 @@
 <semui:xEditable owner="${subscriptionInstance}" field="name"/>
 <semui:totalNumber total="${surveys.size() ?: 0}"/>
 </h1>
-<semui:anualRings object="${subscriptionInstance}" controller="subscription" action="surveys"
+<semui:anualRings object="${subscriptionInstance}" controller="subscription" action="surveysConsortia"
                   navNext="${navNextSubscription}" navPrev="${navPrevSubscription}"/>
 
 
