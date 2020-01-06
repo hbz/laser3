@@ -553,7 +553,7 @@ class OrganisationService {
                 ],
                 [group:new PropertyDefinitionGroup(name: 'Fremdsysteme', description: '', ownerType: Subscription.class.name, tenant: current, isVisible: true),
                  items:[PropertyDefinition.findByName('DBIS-Link'),
-                        PropertyDefinition.findByName('EZB Gelbschaltung'),
+                        PropertyDefinition.findByName('EZB tagging (yellow)'),
                         PropertyDefinition.findByName('SFX-Eintrag')]
                 ],
                 [group:new PropertyDefinitionGroup(name: 'Statistik', description: '', ownerType: Subscription.class.name, tenant: current, isVisible: true),
@@ -943,9 +943,9 @@ class OrganisationService {
                 ],
                 [group:new PropertyDefinitionGroup(name: 'GASCO', description: 'Merkmale, die den GASCO-Monitor steuern', ownerType: Subscription.class.name, tenant: current, isVisible: true),
                  items:[PropertyDefinition.findByName('GASCO Entry'),
-                        PropertyDefinition.findByName('GASCO-Anzeigename'),
-                        PropertyDefinition.findByName('GASCO-Verhandlername'),
-                        PropertyDefinition.findByName('GASCO-Information-Link')]
+                        PropertyDefinition.findByName('GASCO display name'),
+                        PropertyDefinition.findByName('GASCO negotiator name'),
+                        PropertyDefinition.findByName('GASCO information link')]
                 ],
                 [group:new PropertyDefinitionGroup(name: 'meinKonsortium', description: 'alle für meine Konsortialstelle relevanten Merkmale', ownerType: Subscription.class.name, tenant: current, isVisible: true),
                  items:[PropertyDefinition.findByName('Bundesweit offen'),
@@ -1631,7 +1631,7 @@ class OrganisationService {
                             customProperties: [
                                     [type:PropertyDefinition.findByName('GASCO Entry').id,refValue:RDStore.YN_YES],
                                     [type:PropertyDefinition.findByName('GASCO-Information-Link').id,urlValue:null,isShared:true],
-                                    [type:PropertyDefinition.findByName('GASCO-Verhandlername').id,stringValue:'Allianzlizenz Team'],
+                                    [type:PropertyDefinition.findByName('GASCO negotiator name').id,stringValue:'Allianzlizenz Team'],
                                     [type:PropertyDefinition.findByName('Mehrjahreslaufzeit').id,refValue:RDStore.YN_NO,note:'opt out Klausel vorhanden',isShared:true],
                                     [type:PropertyDefinition.findByName('Mehrjahreslaufzeit ausgewählt').id,refValue:null,isShared:true],
                                     [type:PropertyDefinition.findByName('Preis gerundet').id,refValue:RDStore.YN_YES],
@@ -1738,7 +1738,7 @@ class OrganisationService {
                             customProperties: [
                                     [type:PropertyDefinition.findByName('GASCO Entry').id,refValue:RDStore.YN_YES],
                                     [type:PropertyDefinition.findByName('GASCO-Information-Link').id,urlValue:null,isShared:true],
-                                    [type:PropertyDefinition.findByName('GASCO-Verhandlername').id,stringValue:'Allianzlizenz Team'],
+                                    [type:PropertyDefinition.findByName('GASCO negotiator name').id,stringValue:'Allianzlizenz Team'],
                                     [type:PropertyDefinition.findByName('Mehrjahreslaufzeit').id,refValue:RDStore.YN_NO,note:'opt out Klausel vorhanden',isShared:true],
                                     [type:PropertyDefinition.findByName('Mehrjahreslaufzeit ausgewählt').id,refValue:null],
                                     [type:PropertyDefinition.findByName('Preis gerundet').id,refValue:RDStore.YN_YES],
