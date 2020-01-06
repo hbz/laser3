@@ -46,6 +46,9 @@
                                     series2.putAt(indexOf, val[3])
                                 }
                             }
+                            labels.add("")
+                            series1.add(series1[0])
+                            series2.add(series2[0])
                         %>
 
                         <div id="ct-chart-${index}"></div>
@@ -55,7 +58,7 @@
 
                                 var chartData = {
                                     labels: [
-                                        <% println '"' + labels.collect{ it.substring(0,3) + 'xx' }.join('","') + '"' %>
+                                        <% println '"' + labels.collect{ it.length() ? it.substring(0,3) + 'xx' : it }.join('","') + '"' %>
                                     ],
                                     series: [
                                         [<% println '"' + series1.join('","') + '"' %>],
@@ -70,6 +73,10 @@
                                     lineSmooth: Chartist.Interpolation.simple({
                                         divisor: 2
                                     }),
+                                    fullWidth: true,
+                                    chartPadding: {
+                                        right: 20
+                                    },
                                     axisY: {
                                         onlyInteger: true
                                     }
