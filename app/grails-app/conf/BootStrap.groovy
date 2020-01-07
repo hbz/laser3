@@ -1,3 +1,4 @@
+import au.com.bytecode.opencsv.CSVReader
 import com.k_int.kbplus.*
 
 import com.k_int.kbplus.auth.*
@@ -60,6 +61,32 @@ class BootStrap {
 
         log.debug("updatePsqlRoutines ..")
         updatePsqlRoutines()
+
+        // --
+
+        File refdataCategories = grailsApplication.mainContext.getResource("setup/RefdataCategory.csv").file
+        println refdataCategories
+
+        refdataCategories.withReader { reader ->
+            au.com.bytecode.opencsv.CSVReader csvr = new CSVReader(reader)
+
+            String[] line
+            while (line = csvr.readNext()) {
+                println line
+                if (line[0]) {
+                    Map<String, Object> map = [
+                            token: "${line[0]}",
+                            hardData: true,
+                            i10n : [en: "${line[2]}", de: "${line[1]}"],
+                    ]
+
+                    println map
+                }
+            }
+        }
+
+        // --
+
 
         log.debug("setupRefdata ..")
         setupRefdata()

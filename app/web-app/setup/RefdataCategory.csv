@@ -1,0 +1,78 @@
+token,value_de,value_en
+test1,test1_de,test1_en
+test2,test2_de test2_de,"test1_en ,sgssagas"
+filter.fake.values,filter.fake.values,filter.fake.values
+YN,Yes/No,Ja/Nein
+YNU,Yes/No/Unknown,Ja/Nein/Unbekannt
+YNO,Yes/No/Others,Ja/Nein/Anderes
+Permissions,Permissions,Berechtigungen
+Existence,Existence,Vorliegen
+Ill code,Ill code,Fernleihindikator
+Indemnification,Indemnification Choice,Entschädigung Auswahl
+Confidentiality,Confidentiality Choice,Vertraulichkeit Auswahl
+Termination Condition,Termination Condition,Kündigung Voraussetzung
+AddressType,Address Type,Art der Adresse
+Cluster Type,Cluster Type,Cluster Type
+CreatorType,Creator Type,Creator Type
+Combo Type,Combo Type,Combo Type
+Combo Status,Combo Status,Combo Status
+ConcurrentAccess,Concurrent Access,SimUser
+ContactContentType,Type of Contact,Kontakttyp
+ContactType,Contact Type,Art des Kontaktes
+CoreStatus,Core Status,Kerntitel-Status
+Cost configuration,Cost configuration,Kostenkonfiguration
+Country,Country,Land
+CustomerIdentifier.Type,Customer Identifier Type,Kategorie der Kundennummer
+FactType,FactType,FactType
+Federal State,Federal State,Bundesland
+Funder Type,Funder Type,Trägerschaft
+Gender,Gender,Geschlecht
+Invoicing,Invoicing,Rechnungsstellung
+Library Network,Library Network,Verbundzugehörigkeit
+Library Type,Library Type,Bibliothekstyp
+OrgSector,OrgSector,Bereich
+OrgStatus,Status,Status
+OrgRoleType,Organisation Type,Organisationstyp
+Person Function,Person Function,Funktion
+Person Contact Type,Person: Contact Type,Kontaktart
+Person Position,Person Position,Position
+Person Responsibility,Person Responsibility,Verantwortlich
+Subscription Form,Subscription Form,Lizenzform
+Subscription Resource,Resource type,Ressourcentyp
+Subscription Status,Subscription Status,Lizenzstatus
+Task Priority,Task Priority,Aufgabenpriorität
+Task Status,Task Status,Aufgabenstatus
+Ticket.Category,Ticket Category,Kategorie
+Ticket.Status,Ticket Status,Ticketstatus
+License.RemoteAccess,Remote Access,Remote-Zugriff
+License.OA.ReceivingModalities,Receiving Modalities,Bezugsmodalitäten
+License.OA.Repository,Repository,Repositorium
+License.OA.CorrespondingAuthorIdentification,Corresponding Author Identification,Autorenindentifikation
+License.OA.LicenseToPublish,License to Publish,Publikationslizenz
+License.Arc.PaymentNote,Archive Payment Note,Zugriffsrechte Kosten
+License.Arc.TitletransferRegulation,Titletransfer Regulation,Titeltransfer Regeln
+License.Arc.ArchivalCopyCost,Archival Copy Cost,Archivkopie Kosten
+License.Arc.ArchivalCopyTime,Archival Copy Time,Archivkopie Zeitpunkt
+License.Arc.ArchivalCopyContent,Archival Copy Content,Archivkopie Form
+License.Arc.ArchivalCopyTransmissionFormat,Archival Copy Transmission Format,Archivkopie Übermittlungsformat
+License.Arc.HostingTime,Hosting Time,Hostingrecht Zeitpunkt
+License.Arc.Authorized,Hosting Authorized,Hostingrecht Berechtigte
+License.Arc.HostingRestriction,Hosting Restriction,Hostingrecht Einschränkung
+License.Arc.HostingSolution,Hosting Solution,Hostingrecht Lösung
+License.Statistics.Standards,Statistics Standards,Statistikstandard
+License.Statistics.Delivery,Statistics Delivery,Statistik Liefermethode
+License.Statistics.Format,Statistics Format,Statistik Auslieferungsformat
+License.Statistics.Frequency,Statistics Frequency,Statistik Auslieferungsfrequenz
+License.Statistics.UserCreds,Statistics User Credentials,Statistik Nutzeridentifikation
+Package Status,Package Status,Paketstatus
+Number Type,Number Type,Zahlen-Typ
+Semester,Semester,Semester
+User.Settings.Dashboard.Tab,Dashboard Tab,Dashbord Tab
+User.Settings.Theme,Theme,Theme
+Survey Type,Survey Type,Umfrage-Typ
+Survey Status,Survey Status,Umfrage-Status
+MailTemplate Type,MailTemplate Type,MailTemplate Typ
+MailTemplate Language,MailTemplate Language,MailTemplate Sprache
+Sim-User Number,Sim-User Number,Sim User Zahl
+Access choice remote,Access choice remote,Zugangswahl Remote
+Category A-F,Category A-F,Kategorie A - F

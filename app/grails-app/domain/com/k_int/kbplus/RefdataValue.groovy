@@ -3,6 +3,7 @@ package com.k_int.kbplus
 import com.k_int.ClassUtils
 import de.laser.domain.AbstractI10nTranslatable
 import de.laser.domain.I10nTranslation
+import groovy.transform.NotYetImplemented
 import org.springframework.context.i18n.LocaleContextHolder
 
 import javax.persistence.Transient
@@ -58,6 +59,14 @@ class RefdataValue extends AbstractI10nTranslatable implements Comparable<Refdat
         // Nullable is true, because values are already in the database
         lastUpdated (nullable: true, blank: false)
         dateCreated (nullable: true, blank: false)
+    }
+
+    @NotYetImplemented
+    static Identifier construct(Map<String, Object> map) {
+
+        String token     = map.get('token')
+        boolean hardData = map.get('hardData')
+        Map i10n         = map.get('i10n')
     }
 
     /**
