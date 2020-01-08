@@ -2,9 +2,9 @@
 
 **Ticket    Date    Branch      Author  Feature/Bug     Description/Keywords**
 
-2023    20.12.2019  rc1.2       David   Bug         UserCaches blockieren Threads
+2023    08.01.2020  rc1.2       David   Bug         UserCaches blockieren Threads
 
-2017    20.12.2019  rc1.2       David   Bug         Fehlermeldung bei Suche im Gasco-Monitor
+2017    06.01.2020  rc1.2       David   Bug         Fehlermeldung bei Suche im Gasco-Monitor
 
 1999    20.12.2019  rc1.2       Moe   Bug           Filter Mehrjahreslaufzeit erweitern oder erläutern
 
