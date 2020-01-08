@@ -2,6 +2,8 @@
 
 **Ticket    Date    Branch      Author  Feature/Bug     Description/Keywords**
 
+2202    08.01.2020  dev         Anja    Bug         Keine Erinnerungen (duedates) mehr für  Kollektivlizenzen und -Verträge 
+
 2023    08.01.2020  rc1.2       David   Bug         UserCaches blockieren Threads
 
 2017    06.01.2020  rc1.2       David   Bug         Fehlermeldung bei Suche im Gasco-Monitor
