@@ -213,8 +213,9 @@
                 </g:if>
                 <g:else>
                     <g:link controller="organisation"  action="show" id="${org.id}">
-                        ${fieldValue(bean: org, field: "name")} <br>
+                        ${fieldValue(bean: org, field: "name")}
                         <g:if test="${org.shortname && !tmplConfigItem.equalsIgnoreCase('shortname')}">
+                            <br>
                             (${fieldValue(bean: org, field: "shortname")})
                         </g:if>
                     </g:link>
@@ -222,7 +223,7 @@
                 <g:if test="${org.getCustomerType() in ['ORG_INST', 'ORG_INST_COLLECTIVE']}">
                     <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="bottom center"
                           data-content="${org.getCustomerTypeI10n()}">
-                        <i class="chess rook icon"></i>
+                        <i class="chess rook grey icon"></i>
                     </span>
                 </g:if>
             </td>

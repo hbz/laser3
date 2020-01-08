@@ -40,14 +40,7 @@
     </semui:controlButtons>
 </g:if>
 
-<h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon/>${orgInstance.name}
-    <g:if test="${orgInstance.getCustomerType() in ['ORG_INST', 'ORG_INST_COLLECTIVE']}">
-        <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="bottom center"
-              data-content="${orgInstance.getCustomerTypeI10n()}">
-            <i class="chess rook icon"></i>
-        </span>
-    </g:if>
-</h1>
+<h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon/>${orgInstance.name}</h1>
 
 <g:render template="nav" model="${[orgInstance: orgInstance, inContextOrg: inContextOrg]}"/>
 
@@ -73,10 +66,9 @@
                             <g:if test="${orgInstance.getCustomerType() in ['ORG_INST', 'ORG_INST_COLLECTIVE']}">
                                 <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="bottom center"
                                       data-content="${orgInstance.getCustomerTypeI10n()}">
-                                    <i class="chess rook icon"></i>
+                                    <i class="chess rook grey icon"></i>
                                 </span>
                             </g:if>
-
                         </dd>
                     </dl>
                     <g:if test="${!inContextOrg || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN,ROLE_ORG_EDITOR')}">
@@ -644,15 +636,15 @@
 
             </g:if>
 
-            <g:if test="${accessService.checkPerm("ORG_INST,ORG_CONSORTIUM")}">
-                <div id="new-dynamic-properties-block">
-                    <g:render template="properties" model="${[
-                            orgInstance   : orgInstance,
-                            authorizedOrgs: authorizedOrgs,
-                            contextOrg: institution
-                    ]}"/>
-                </div><!-- #new-dynamic-properties-block -->
-            </g:if>
+            %{--<g:if test="${accessService.checkPerm("ORG_INST,ORG_CONSORTIUM")}">--}%
+                %{--<div id="new-dynamic-properties-block">--}%
+                    %{--<g:render template="properties" model="${[--}%
+                            %{--orgInstance   : orgInstance,--}%
+                            %{--authorizedOrgs: authorizedOrgs,--}%
+                            %{--contextOrg: institution--}%
+                    %{--]}"/>--}%
+                %{--</div><!-- #new-dynamic-properties-block -->--}%
+            %{--</g:if>--}%
 
         </div>
     </div>
