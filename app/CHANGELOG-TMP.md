@@ -2,6 +2,8 @@
 
 **Ticket    Date    Branch      Author  Feature/Bug     Description/Keywords**
 
+2022    08.01.2020  hbz-dev     David   Bug         Merkmal hinzufügen funktioniert nicht mehr
+
 2023    08.01.2020  rc1.2       David   Bug         UserCaches blockieren Threads
 
 2017    06.01.2020  rc1.2       David   Bug         Fehlermeldung bei Suche im Gasco-Monitor
