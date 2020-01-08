@@ -849,7 +849,7 @@ class DataloadService {
         SystemEvent.createEvent('FT_INDEX_UPDATE_END')
         ESWrapperService.clusterHealth()
 
-        //esclient.close()
+        esclient.close()
 
         return true
     }
