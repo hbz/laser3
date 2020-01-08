@@ -1,6 +1,6 @@
 package de.laser
 
-
+import com.k_int.kbplus.auth.User
 import grails.plugin.springsecurity.SpringSecurityUtils
 import grails.util.Holders
 import org.codehaus.groovy.grails.commons.GrailsApplication
@@ -22,7 +22,11 @@ class YodaService {
     }
 
     int getNumberOfActiveUsers() {
-        int count = 0
+        getActiveUsers().size()
+    }
+
+    List getActiveUsers() {
+        List result = []
 
         sessionRegistry.getAllPrincipals().each { user ->
             List lastAccessTimes = []
@@ -34,9 +38,9 @@ class YodaService {
                 lastAccessTimes << userSession.getLastRequest().getTime()
             }
             if (lastAccessTimes.max() > System.currentTimeMillis() - (1000 * 600)) { // 10 minutes
-                count++
+                result.add(user)
             }
         }
-        count
+        result
     }
 }

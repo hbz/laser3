@@ -33,6 +33,8 @@ import org.codehaus.groovy.runtime.InvokerHelper
 import org.springframework.web.multipart.commons.CommonsMultipartFile
 
 import javax.servlet.ServletOutputStream
+import java.nio.file.Files
+import java.nio.file.Path
 import java.text.NumberFormat
 import java.text.SimpleDateFormat
 
@@ -4100,15 +4102,28 @@ class SubscriptionController extends AbstractDebugController {
                         if (dctx.id in toCopyDocs) {
                             if (((dctx.owner?.contentType == 1) || (dctx.owner?.contentType == 3)) && (dctx.status?.value != 'Deleted')) {
 
-                                Doc newDoc = new Doc()
-                                InvokerHelper.setProperties(newDoc, dctx.owner.properties)
-                                newDoc.save(flush: true)
+                                try {
 
-                                DocContext newDocContext = new DocContext()
-                                InvokerHelper.setProperties(newDocContext, dctx.properties)
-                                newDocContext.subscription = newSub2
-                                newDocContext.owner = newDoc
-                                newDocContext.save(flush: true)
+                                    Doc newDoc = new Doc()
+                                    InvokerHelper.setProperties(newDoc, dctx.owner.properties)
+                                    newDoc.save(flush: true)
+
+                                    DocContext newDocContext = new DocContext()
+                                    InvokerHelper.setProperties(newDocContext, dctx.properties)
+                                    newDocContext.subscription = newSub2
+                                    newDocContext.owner = newDoc
+                                    newDocContext.save(flush: true)
+
+                                    String fPath = grailsApplication.config.documentStorageLocation ?: '/tmp/laser'
+
+                                    Path source = new File("${fPath}/${dctx.owner.uuid}").toPath()
+                                    Path target = new File("${fPath}/${newDoc.uuid}").toPath()
+                                    Files.copy(source, target)
+
+                                }
+                                catch (Exception e) {
+                                    log.error("Problem by Saving Doc in documentStorageLocation (Doc ID: ${dctx.owner.id} -> ${e})")
+                                }
                             }
                         }
                         //Copy Announcements
