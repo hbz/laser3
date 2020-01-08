@@ -39,7 +39,7 @@
                     <b>${message(code: 'subscription.packages.label')}: ${sourceSubscription?.packages?.size()}</b>
                     <g:each in="${sourceSubscription?.packages?.sort { it.pkg?.name }}" var="sp">
                         <div class="la-copyPack-container la-element">
-                            <div data-pkgoid="${genericOIDService.getOID(sp.pkg)}" class="la-copyPack-item">
+                            <div data-pkgoid="${genericOIDService.getOID(sp)}" class="la-copyPack-item">
                                     <label>
                                         <i class="gift icon"></i>
                                         <g:link controller="package" action="show" target="_blank" id="${sp.pkg?.id}">${sp?.pkg?.name}</g:link>
@@ -50,9 +50,9 @@
 
                             %{--COPY:--}%
 
-                            <div data-pkgoid="${genericOIDService.getOID(sp.pkg)}">
+                            <div data-pkgoid="${genericOIDService.getOID(sp)}">
                                 <div class="ui checkbox la-toggle-radio la-replace">
-                                    <g:checkBox name="subscription.takePackageIds" value="${genericOIDService.getOID(sp.pkg)}" data-pkgid="${sp.pkg?.id}" data-action="copy" checked="${true}"/>
+                                    <g:checkBox name="subscription.takePackageIds" value="${genericOIDService.getOID(sp)}" data-pkgid="${sp.id}" data-action="copy" checked="${true}"/>
                                 </div>
                                 <br />
                             </div>
