@@ -127,6 +127,7 @@ class ESSearchService{
           result.hits = searchResponse.getHits()
           result.resultsTotal = searchResponse.getHits().getTotalHits().value ?: "0"
           result.index = esSettings.indexName
+
         }
 
       }
@@ -136,9 +137,10 @@ class ESSearchService{
     }
     finally {
       try {
+        esclient.close()
       }
       catch ( Exception e ) {
-        log.error("problem",e);
+        log.error("Problem by Close ES Client",e);
       }
     }
     result
