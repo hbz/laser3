@@ -13,6 +13,10 @@ import de.laser.exceptions.EntitlementCreationException
 import de.laser.helper.DebugAnnotation
 import org.springframework.web.multipart.commons.CommonsMultipartFile
 import de.laser.helper.RDStore
+
+import java.nio.file.Path
+import java.nio.file.Files
+
 import static de.laser.helper.RDStore.*
 import grails.plugin.springsecurity.annotation.Secured
 import grails.util.Holders
@@ -28,6 +32,7 @@ class SubscriptionService {
     def escapeService
     def refdataService
     def locale
+    def grailsApplication
 
     @javax.annotation.PostConstruct
     void init() {
@@ -678,14 +683,27 @@ class SubscriptionService {
         sourceSub.documents?.each { dctx ->
             if (dctx.id in toCopyDocs) {
                 if (((dctx.owner?.contentType == Doc.CONTENT_TYPE_DOCSTORE) || (dctx.owner?.contentType == Doc.CONTENT_TYPE_BLOB)) && (dctx.status?.value != 'Deleted')) {
-                    Doc newDoc = new Doc()
-                    InvokerHelper.setProperties(newDoc, dctx.owner.properties)
-                    save(newDoc, flash)
-                    DocContext newDocContext = new DocContext()
-                    InvokerHelper.setProperties(newDocContext, dctx.properties)
-                    newDocContext.subscription = targetSub
-                    newDocContext.owner = newDoc
-                    save(newDocContext, flash)
+                    try {
+
+                        Doc newDoc = new Doc()
+                        InvokerHelper.setProperties(newDoc, dctx.owner.properties)
+                        save(newDoc, flash)
+                        DocContext newDocContext = new DocContext()
+                        InvokerHelper.setProperties(newDocContext, dctx.properties)
+                        newDocContext.subscription = targetSub
+                        newDocContext.owner = newDoc
+                        save(newDocContext, flash)
+
+                        String fPath = grailsApplication.config.documentStorageLocation ?: '/tmp/laser'
+
+                        Path source = new File("${fPath}/${dctx.owner.uuid}").toPath()
+                        Path target = new File("${fPath}/${newDoc.uuid}").toPath()
+                        Files.copy(source, target)
+
+                    }
+                    catch (Exception e) {
+                        log.error("Problem by Saving Doc in documentStorageLocation (Doc ID: ${dctx.owner.id} -> ${e})")
+                    }
                 }
             }
         }
