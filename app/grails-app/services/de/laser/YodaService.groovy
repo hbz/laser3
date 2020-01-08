@@ -22,10 +22,10 @@ class YodaService {
     }
 
     int getNumberOfActiveUsers() {
-        getActiveUsers().size()
+        getActiveUsers( (1000 * 60 * 10) ).size() // 10 minutes
     }
 
-    List getActiveUsers() {
+    List getActiveUsers(long ms) {
         List result = []
 
         sessionRegistry.getAllPrincipals().each { user ->
@@ -37,7 +37,7 @@ class YodaService {
                 }
                 lastAccessTimes << userSession.getLastRequest().getTime()
             }
-            if (lastAccessTimes.max() > System.currentTimeMillis() - (1000 * 600)) { // 10 minutes
+            if (lastAccessTimes.max() > System.currentTimeMillis() - ms) {
                 result.add(user)
             }
         }

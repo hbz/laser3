@@ -7,6 +7,7 @@ import grails.plugin.springsecurity.SpringSecurityService
 import net.sf.ehcache.Cache
 import net.sf.ehcache.CacheManager
 import net.sf.ehcache.Element
+import net.sf.ehcache.Status
 import org.springframework.context.ApplicationContext
 import org.springframework.context.ApplicationContextAware
 
@@ -92,7 +93,9 @@ class CacheService implements ApplicationContextAware {
     def put(def cache, String key, def value) {
 
         if (cache instanceof Cache) {
-            cache.put( new Element(key, value) )
+            if (cache.getStatus() == Status.STATUS_ALIVE) { // TODO [ticket=2023] HOTFIX remove
+                cache.put(new Element(key, value))
+            }
         }
         else if (cache instanceof GrailsConcurrentMapCache) {
             cache.put( key, value )
@@ -102,7 +105,9 @@ class CacheService implements ApplicationContextAware {
     def get(def cache, String key) {
 
         if (cache instanceof Cache) {
-            cache.get(key)?.objectValue
+            if (cache.getStatus() == Status.STATUS_ALIVE) { // TODO [ticket=2023] HOTFIX remove
+                cache.get(key)?.objectValue
+            }
         }
         else if (cache instanceof GrailsConcurrentMapCache) {
             cache.get(key)
@@ -112,7 +117,9 @@ class CacheService implements ApplicationContextAware {
     def remove(def cache, String key) {
 
         if (cache instanceof Cache) {
-            cache.remove(key)
+            if (cache.getStatus() == Status.STATUS_ALIVE) { // TODO [ticket=2023] HOTFIX remove
+                cache.remove(key)
+            }
         }
         else if (cache instanceof GrailsConcurrentMapCache) {
             println " TODO -> IMPLEMENT GrailsConcurrentMapCache.remove()"
@@ -122,7 +129,9 @@ class CacheService implements ApplicationContextAware {
     def clear(def cache) {
 
         if (cache instanceof Cache) {
-            cache.removeAll()
+            if (cache.getStatus() == Status.STATUS_ALIVE) { // TODO [ticket=2023] HOTFIX remove
+                cache.removeAll()
+            }
         }
         else if (cache instanceof GrailsConcurrentMapCache) {
             cache.clear()

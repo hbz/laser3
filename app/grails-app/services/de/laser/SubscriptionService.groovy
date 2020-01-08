@@ -369,16 +369,17 @@ class SubscriptionService {
     }
 
 
-    boolean copyPackages(List<Package> packagesToTake, Subscription targetSub, def flash) {
-        packagesToTake?.each { pkg ->
-            if (targetSub.packages?.find { it.pkg?.id == pkg?.id }) {
-                Object[] args = [pkg.name]
+    boolean copyPackages(List<SubscriptionPackage> packagesToTake, Subscription targetSub, def flash) {
+        packagesToTake?.each { subscriptionPackage ->
+            if (targetSub.packages?.find { it.pkg?.id == subscriptionPackage.pkg?.id }) {
+                Object[] args = [subscriptionPackage.pkg.name]
                 flash.error += messageSource.getMessage('subscription.err.packageAlreadyExistsInTargetSub', args, locale)
             } else {
-                def pkgOapls = pkg.oapls
-                pkg.properties.oapls = null
+
+                List<OrgAccessPointLink> pkgOapls = OrgAccessPointLink.findAllByIdInList(subscriptionPackage.oapls.id)
+                subscriptionPackage.properties.oapls = null
                 SubscriptionPackage newSubscriptionPackage = new SubscriptionPackage()
-                InvokerHelper.setProperties(newSubscriptionPackage, pkg.properties)
+                InvokerHelper.setProperties(newSubscriptionPackage, subscriptionPackage.properties)
                 newSubscriptionPackage.subscription = targetSub
 
                 if(save(newSubscriptionPackage, flash)){
