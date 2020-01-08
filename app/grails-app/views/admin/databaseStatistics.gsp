@@ -12,7 +12,7 @@
     <semui:crumb message="menu.admin.databaseStatistics" class="active"/>
 </semui:breadcrumbs>
 
-<h1 class="ui header la-noMargin-top">${message(code: "menu.admin.databaseStatistics")}</h1>
+<h2 class="ui header la-noMargin-top">${message(code: "menu.admin.databaseStatistics")}</h2>
 
 <div class="ui grid">
     <div class="twelve wide column">

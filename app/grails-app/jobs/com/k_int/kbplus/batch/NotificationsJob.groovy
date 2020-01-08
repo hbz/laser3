@@ -18,7 +18,7 @@ class NotificationsJob extends AbstractJob {
     cron name:'notificationsTrigger', cronExpression: "0 0 0/1 * * ?"
   }
     */
-    static configFlags = ['hbzMaster']
+    static List<String> configFlags = ['notificationsJobActive']
 
     boolean isAvailable() {
         !jobIsRunning && !changeNotificationService.running
@@ -36,9 +36,7 @@ class NotificationsJob extends AbstractJob {
         try {
             log.debug("NotificationsJob")
 
-            if (grailsApplication.config.hbzMaster == true) {
-                log.debug("This server is marked as hbzMaster")
-
+            if (grailsApplication.config.notificationsJobActive == true) {
                 if (! changeNotificationService.aggregateAndNotifyChanges()) {
                     log.warn( 'Failed. Maybe ignored due blocked changeNotificationService')
                 }
@@ -48,9 +46,6 @@ class NotificationsJob extends AbstractJob {
                 if (! reminderService.runReminders()) {
                     log.warn( 'Failed. Maybe ignored due blocked reminderService')
                 }
-            }
-            else {
-                log.debug("This server is NOT marked as hbzMaster .. nothing done")
             }
         }
         catch (Exception e) {

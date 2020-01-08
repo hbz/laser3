@@ -2,7 +2,7 @@
 <html>
 <head>
     <meta name="layout" content="semanticUI">
-    <title>${message(code:'laser', default:'LAS:eR')} : ${message(code:'menu.yoda.cacheInfo')}</title>
+    <title>${message(code:'laser')} : ${message(code:'menu.yoda.cacheInfo')}</title>
 </head>
 <body>
 
@@ -20,7 +20,7 @@
     sessionCache.get("test")
 %>
 <br>
-<h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon />${message(code:'menu.yoda.cacheInfo')}</h1>
+<h2 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon />${message(code:'menu.yoda.cacheInfo')}</h2>
 
 
 <h3 class="ui header">Session <span class="ui label">${contextService.getSessionCache().class}</span></h3>
@@ -37,7 +37,7 @@
     </g:if>
 
     <br />
-    <g:link class="ui button negative"
+    <g:link class="ui button"
             controller="yoda" action="cacheInfo" params="[cmd: 'clearCache', type: 'session']">Cache leeren</g:link>
 </div>
 
@@ -49,6 +49,21 @@
         ehcacheManager.getCacheNames().findAll { it -> !it.startsWith('com.k_int.') && !it.startsWith('de.laser.')},
         ehcacheManager.getCacheNames().findAll { it -> it.startsWith('com.k_int.') || it.startsWith('de.laser.')}
     ]
+%>
+
+<%
+
+    net.sf.ehcache.CacheManager ehcacheManager = (net.sf.ehcache.CacheManager) cacheService.getCacheManager(cacheService.EHCACHE)
+    String[] userCaches = ehcacheManager.getCacheNames().findAll { it -> it.startsWith('USER:') }
+
+    String[] activeUsers = yodaService.getActiveUsers().collect{ 'USER:' + it.id }
+    String[] retiredUserCaches = userCaches.collect{ (it in activeUsers) ? null : it }.findAll{ it }
+
+    println "<pre>"
+    println " - user caches: " + userCaches.collect{ it }
+    println " - retired:     " + retiredUserCaches.collect{ it }
+    println "</pre>"
+
 %>
 
 <g:each in="${ehCaches}" var="ehCache">
@@ -106,8 +121,13 @@
                 </div>
             </dl>
 
-            <g:link class="ui button negative"
+            <g:link class="ui button"
                     controller="yoda" action="cacheInfo" params="[cmd: 'clearCache', cache: cacheName, type: 'ehcache']">Cache leeren</g:link>
+
+            <g:if test="${cacheName.startsWith('USER:') || cacheName.startsWith('ORG:') }">
+                <g:link class="ui button negative"
+                        controller="yoda" action="cacheInfo" params="[cmd: 'deleteCache', cache: cacheName, type: 'ehcache']">Cache löschen</g:link>
+            </g:if>
 
         </div>
     </g:each>
@@ -141,7 +161,7 @@
             </g:each>
         </ul>
 
-        <g:link class="ui button negative"
+        <g:link class="ui button"
                 controller="yoda" action="cacheInfo" params="[cmd: 'clearCache', cache: cacheName, type: 'cache']">Cache leeren</g:link>
 
     </div>

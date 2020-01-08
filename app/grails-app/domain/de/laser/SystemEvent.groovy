@@ -47,6 +47,7 @@ class SystemEvent {
             'DBDD_SERVICE_COMPLETE_3'       : [category: CATEGORY.SYSTEM, relevance: RELEVANCE.INFO],
             'DBDD_SERVICE_ERROR_3'          : [category: CATEGORY.SYSTEM, relevance: RELEVANCE.ERROR],
             'FT_INDEX_UPDATE_START'         : [category: CATEGORY.SYSTEM, relevance: RELEVANCE.INFO],
+            'FT_INDEX_UPDATE_END'           : [category: CATEGORY.SYSTEM, relevance: RELEVANCE.INFO],
             'FT_INDEX_UPDATE_ERROR'         : [category: CATEGORY.SYSTEM, relevance: RELEVANCE.ERROR],
             'FT_INDEX_CLEANUP_ERROR'        : [category: CATEGORY.SYSTEM, relevance: RELEVANCE.ERROR],
             'GD_SYNC_JOB_START'             : [category: CATEGORY.CRONJOB, relevance: RELEVANCE.INFO],
@@ -62,7 +63,10 @@ class SystemEvent {
             'SURVEY_UPDATE_JOB_START'       : [category: CATEGORY.CRONJOB, relevance: RELEVANCE.INFO],
             'SURVEY_UPDATE_JOB_COMPLETE'    : [category: CATEGORY.CRONJOB, relevance: RELEVANCE.INFO],
             'SURVEY_UPDATE_SERVICE_PROCESSING' : [category: CATEGORY.SYSTEM, relevance: RELEVANCE.INFO],
-            'YODA_ES_RESET_START'           : [category: CATEGORY.OTHER, relevance: RELEVANCE.INFO]
+            'YODA_ES_RESET_START'           : [category: CATEGORY.OTHER, relevance: RELEVANCE.INFO],
+            'YODA_ES_RESET_DROP_OK'         : [category: CATEGORY.OTHER, relevance: RELEVANCE.INFO],
+            'YODA_ES_RESET_CREATE_OK'       : [category: CATEGORY.OTHER, relevance: RELEVANCE.INFO],
+            'YODA_ES_RESET_END'             : [category: CATEGORY.OTHER, relevance: RELEVANCE.INFO]
     ]
 
     static enum RELEVANCE {

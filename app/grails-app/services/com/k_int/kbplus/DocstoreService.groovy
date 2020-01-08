@@ -9,6 +9,8 @@ import org.apache.http.entity.mime.HttpMultipartMode
 import org.apache.http.entity.mime.MultipartEntity
 import org.codehaus.groovy.runtime.InvokerHelper
 
+import java.nio.file.Files
+import java.nio.file.Path
 import java.util.zip.ZipEntry
 import java.util.zip.ZipOutputStream
 
@@ -110,7 +112,7 @@ class DocstoreService {
   }
 
 
-  def uploadBag(bagfile) {
+  Map<String, Object> uploadBag(bagfile) {
     log.debug("uploading bagfile ${bagfile}");
     // def http = new groovyx.net.http.HTTPBuilder('http://knowplus.edina.ac.uk/oledocstore/KBPlusServlet')
     def docstore_uri = grailsApplication.config.docstore
@@ -118,7 +120,7 @@ class DocstoreService {
     log.debug("Using docstore ${docstore_uri}");
 
     def http = new groovyx.net.http.HTTPBuilder(docstore_uri)
-    def result = [:]
+    Map<String, Object> result = [:]
     //edef result_uuid = null
 
     http.request(groovyx.net.http.Method.POST) {request ->
@@ -368,16 +370,27 @@ class DocstoreService {
       /*def docCopy = new DocContext(owner:it.owner,globannounce:it.globannounce,status:it.status,doctype:it.doctype,alert:it.alert,domain:it.domain)
       destination.addToDocuments(docCopy)
       destination.save(flush:true)*/
+      try {
+        Doc newDoc = new Doc()
+        InvokerHelper.setProperties(newDoc, it.owner.properties)
+        newDoc.save(flush: true)
 
-      Doc newDoc = new Doc()
-      InvokerHelper.setProperties(newDoc, it.owner.properties)
-      newDoc.save(flush: true)
+        DocContext newDocContext = new DocContext()
+        InvokerHelper.setProperties(newDocContext, it.properties)
+        newDocContext.subscription = destination
+        newDocContext.owner = newDoc
+        newDocContext.save(flush: true)
 
-      DocContext newDocContext = new DocContext()
-      InvokerHelper.setProperties(newDocContext, it.properties)
-      newDocContext.subscription = destination
-      newDocContext.owner = newDoc
-      newDocContext.save(flush: true)
+        String fPath = grailsApplication.config.documentStorageLocation ?: '/tmp/laser'
+
+        Path sourceFile = new File("${fPath}/${it.owner.uuid}").toPath()
+        Path targetFile = new File("${fPath}/${newDoc.uuid}").toPath()
+        Files.copy(sourceFile, targetFile)
+
+      }
+      catch (Exception e) {
+        log.error("Problem by Saving Doc in documentStorageLocation (Doc ID: ${it.owner.id} -> ${e})")
+      }
 
     }
   }

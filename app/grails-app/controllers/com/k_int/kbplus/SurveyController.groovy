@@ -69,7 +69,7 @@ class SurveyController {
         ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM_SURVEY", "INST_EDITOR", "ROLE_ADMIN")
     })
     def currentSurveysConsortia() {
-        def result = [:]
+        Map<String, Object> result = [:]
         result.institution = contextService.getOrg()
         result.user = User.get(springSecurityService.principal.id)
 
@@ -92,6 +92,7 @@ class SurveyController {
         def fsq = filterService.getSurveyConfigQueryConsortia(params, sdFormat, result.institution)
 
         result.surveys = SurveyInfo.executeQuery(fsq.query, fsq.queryParams, params)
+        result.surveysCount = SurveyInfo.executeQuery(fsq.query, fsq.queryParams).size()
         result.countSurveyConfigs = getSurveyConfigCounts()
 
         result.filterSet = params.filterSet ? true : false
@@ -105,7 +106,7 @@ class SurveyController {
         ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM_SURVEY", "INST_EDITOR", "ROLE_ADMIN")
     })
     def createGeneralSurvey() {
-        def result = [:]
+        Map<String, Object> result = [:]
         result.institution = contextService.getOrg()
         result.user = User.get(springSecurityService.principal.id)
 
@@ -124,7 +125,7 @@ class SurveyController {
         ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM_SURVEY", "INST_EDITOR", "ROLE_ADMIN")
     })
     def processCreateGeneralSurvey() {
-        def result = [:]
+        Map<String, Object> result = [:]
         result.institution = contextService.getOrg()
         result.user = User.get(springSecurityService.principal.id)
 
@@ -160,7 +161,7 @@ class SurveyController {
         ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM_SURVEY", "INST_EDITOR", "ROLE_ADMIN")
     })
     def createSubscriptionSurvey() {
-        def result = [:]
+        Map<String, Object> result = [:]
         result.institution = contextService.getOrg()
         result.user = User.get(springSecurityService.principal.id)
 
@@ -233,7 +234,7 @@ class SurveyController {
         ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM_SURVEY", "INST_EDITOR", "ROLE_ADMIN")
     })
     def createIssueEntitlementsSurvey() {
-        def result = [:]
+        Map<String, Object> result = [:]
         result.institution = contextService.getOrg()
         result.user = User.get(springSecurityService.principal.id)
 
@@ -306,7 +307,7 @@ class SurveyController {
         ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM_SURVEY", "INST_EDITOR", "ROLE_ADMIN")
     })
     def addSubtoSubscriptionSurvey() {
-        def result = [:]
+        Map<String, Object> result = [:]
         result.institution = contextService.getOrg()
         result.user = User.get(springSecurityService.principal.id)
 
@@ -331,7 +332,7 @@ class SurveyController {
         ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM_SURVEY", "INST_EDITOR", "ROLE_ADMIN")
     })
     def addSubtoIssueEntitlementsSurvey() {
-        def result = [:]
+        Map<String, Object> result = [:]
         result.institution = contextService.getOrg()
         result.user = User.get(springSecurityService.principal.id)
 
@@ -357,7 +358,7 @@ class SurveyController {
         ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM_SURVEY", "INST_EDITOR", "ROLE_ADMIN")
     })
     def processCreateSubscriptionSurvey() {
-        def result = [:]
+        Map<String, Object> result = [:]
         result.institution = contextService.getOrg()
         result.user = User.get(springSecurityService.principal.id)
 
@@ -428,7 +429,7 @@ class SurveyController {
         ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM_SURVEY", "INST_EDITOR", "ROLE_ADMIN")
     })
     def processCreateIssueEntitlementsSurvey() {
-        def result = [:]
+        Map<String, Object> result = [:]
         result.institution = contextService.getOrg()
         result.user = User.get(springSecurityService.principal.id)
 
@@ -830,7 +831,7 @@ class SurveyController {
         ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM_SURVEY", "INST_EDITOR", "ROLE_ADMIN")
     })
     def showEntitlementsRenew() {
-        def result = [:]
+        Map<String, Object> result = [:]
         result.institution = contextService.getOrg()
         result.user = User.get(springSecurityService.principal.id)
         result.participant = params.participant ? Org.get(params.participant) : null
@@ -927,7 +928,7 @@ class SurveyController {
         ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM_SURVEY", "INST_EDITOR", "ROLE_ADMIN")
     })
     def openIssueEntitlementsSurveyAgain() {
-        def result = [:]
+        Map<String, Object> result = [:]
         result.institution = contextService.getOrg()
         result.user = User.get(springSecurityService.principal.id)
         result.participant = params.participant ? Org.get(params.participant) : null
@@ -967,7 +968,7 @@ class SurveyController {
         ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM_SURVEY", "INST_EDITOR", "ROLE_ADMIN")
     })
     def completeIssueEntitlementsSurveyforParticipant() {
-        def result = [:]
+        Map<String, Object> result = [:]
         result.institution = contextService.getOrg()
         result.user = User.get(springSecurityService.principal.id)
         result.participant = params.participant ? Org.get(params.participant) : null
@@ -1000,7 +1001,7 @@ class SurveyController {
         ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM_SURVEY", "INST_EDITOR", "ROLE_ADMIN")
     })
     def completeIssueEntitlementsSurvey() {
-        def result = [:]
+        Map<String, Object> result = [:]
         result.institution = contextService.getOrg()
         result.user = User.get(springSecurityService.principal.id)
 
@@ -1261,7 +1262,7 @@ class SurveyController {
     })
     def addSurveyConfig() {
 
-        def result = [:]
+        Map<String, Object> result = [:]
         result.institution = contextService.getOrg()
         result.user = User.get(springSecurityService.principal.id)
 
@@ -1551,7 +1552,7 @@ class SurveyController {
         ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM_SURVEY", "INST_EDITOR", "ROLE_ADMIN")
     })
     def deleteSurveyConfig() {
-        def result = [:]
+        Map<String, Object> result = [:]
         result.institution = contextService.getOrg()
         result.user = User.get(springSecurityService.principal.id)
 
@@ -1596,7 +1597,7 @@ class SurveyController {
         ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM_SURVEY", "INST_EDITOR", "ROLE_ADMIN")
     })
     def deleteSurveyPropfromSub() {
-        def result = [:]
+        Map<String, Object> result = [:]
         result.institution = contextService.getOrg()
         result.user = User.get(springSecurityService.principal.id)
 
@@ -1632,7 +1633,7 @@ class SurveyController {
         ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM_SURVEY", "INST_EDITOR", "ROLE_ADMIN")
     })
     def addSurveyProperty() {
-        def result = [:]
+        Map<String, Object> result = [:]
         result.institution = contextService.getOrg()
         result.user = User.get(springSecurityService.principal.id)
 
@@ -1684,7 +1685,7 @@ class SurveyController {
         ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM_SURVEY", "INST_EDITOR", "ROLE_ADMIN")
     })
     def deleteSurveyProperty() {
-        def result = [:]
+        Map<String, Object> result = [:]
         result.institution = contextService.getOrg()
         result.user = User.get(springSecurityService.principal.id)
 
@@ -1711,7 +1712,7 @@ class SurveyController {
         ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM_SURVEY", "INST_EDITOR", "ROLE_ADMIN")
     })
     def addSurveyParticipants() {
-        def result = [:]
+        Map<String, Object> result = [:]
         result.institution = contextService.getOrg()
         result.user = User.get(springSecurityService.principal.id)
 
@@ -1731,10 +1732,10 @@ class SurveyController {
 
             params.list('selectedOrgs').each { soId ->
 
-                def org = Org.get(Long.parseLong(soId))
+                Org org = Org.get(Long.parseLong(soId))
 
                 if (!(SurveyOrg.findAllBySurveyConfigAndOrg(surveyConfig, org))) {
-                    def surveyOrg = new SurveyOrg(
+                    SurveyOrg surveyOrg = new SurveyOrg(
                             surveyConfig: surveyConfig,
                             org: org
                     )
@@ -2115,11 +2116,39 @@ class SurveyController {
         }
 
         result.surveyInfo.status = RDStore.SURVEY_IN_EVALUATION
-        result.surveyInfo.save(flush: true)
+
+        if (result.surveyInfo.save(flush: true)) {
+            flash.message = g.message(code: 'survey.change.successfull')
+        } else {
+            flash.error = g.message(code: 'survey.change.fail')
+        }
+        redirect(url: request.getHeader('referer'))
+
+    }
+
+    @DebugAnnotation(perm = "ORG_CONSORTIUM_SURVEY", affil = "INST_EDITOR", specRole = "ROLE_ADMIN")
+    @Secured(closure = {
+        ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM_SURVEY", "INST_EDITOR", "ROLE_ADMIN")
+    })
+    def setCompleted() {
+        def result = setResultGenericsAndCheckAccess()
+        if (!result.editable) {
+            response.sendError(401); return
+        }
+
+        result.surveyInfo.status = RDStore.SURVEY_COMPLETED
+
+
+        if (result.surveyInfo.save(flush: true)) {
+            flash.message = g.message(code: 'survey.change.successfull')
+        } else {
+            flash.error = g.message(code: 'survey.change.fail')
+        }
 
         redirect(url: request.getHeader('referer'))
 
     }
+
 
     @DebugAnnotation(perm = "ORG_CONSORTIUM_SURVEY", affil = "INST_EDITOR", specRole = "ROLE_ADMIN")
     @Secured(closure = {
@@ -2132,7 +2161,11 @@ class SurveyController {
         }
 
         result.surveyInfo.status = RDStore.SURVEY_SURVEY_COMPLETED
-        result.surveyInfo.save(flush: true)
+        if (result.surveyInfo.save(flush: true)) {
+            flash.message = g.message(code: 'survey.change.successfull')
+        } else {
+            flash.error = g.message(code: 'survey.change.fail')
+        }
 
         redirect(url: request.getHeader('referer'))
 
@@ -3023,7 +3056,7 @@ class SurveyController {
     @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_EDITOR") })
     def copyEmailaddresses() {
-        def result = [:]
+        Map<String, Object> result = [:]
         result.modalID = params.targetId
         result.orgList = []
 
@@ -3042,7 +3075,7 @@ class SurveyController {
 
         def dateFormat = new java.text.SimpleDateFormat(message(code: 'default.date.format.notime', default: 'yyyy-MM-dd'))
 
-        def result = [:]
+        Map<String, Object> result = [:]
         def newCostItem = null
 
         try {
@@ -3125,7 +3158,7 @@ class SurveyController {
             }
             def cost_item_element_configuration = params.ciec ? genericOIDService.resolveOID(params.ciec) : null
 
-            def cost_item_isVisibleForSubscriber = false
+            boolean cost_item_isVisibleForSubscriber = false
             // (params.newIsVisibleForSubscriber ? (RefdataValue.get(params.newIsVisibleForSubscriber)?.value == 'Yes') : false)
 
             def surveyOrgsDo = []
@@ -3370,6 +3403,7 @@ class SurveyController {
                 InvokerHelper.setProperties(copyCostItem, properties)
                 copyCostItem.globalUID = null
                 copyCostItem.surveyOrg = null
+                copyCostItem.isVisibleForSubscriber = params.isVisibleForSubscriber ? true : null
                 copyCostItem.sub = participantSub
                 if(copyCostItem.save(flush:true)) {
                     countNewCostItems++
@@ -3958,7 +3992,7 @@ class SurveyController {
     }
 
     private def addSubMembers(SurveyConfig surveyConfig) {
-        def result = [:]
+        Map<String, Object> result = [:]
         result.institution = contextService.getOrg()
         result.user = User.get(springSecurityService.principal.id)
 
@@ -4019,7 +4053,7 @@ class SurveyController {
     }
 
     private def deleteSubMembers(SurveyConfig surveyConfig) {
-        def result = [:]
+        Map<String, Object> result = [:]
         result.institution = contextService.getOrg()
         result.user = User.get(springSecurityService.principal.id)
 
@@ -4606,7 +4640,7 @@ class SurveyController {
     }
 
     private def getSurveyConfigCounts() {
-        def result = [:]
+        Map<String, Object> result = [:]
 
         def contextOrg = contextService.getOrg()
 
@@ -4629,7 +4663,7 @@ class SurveyController {
     }
 
     private LinkedHashMap setResultGenericsAndCheckAccess() {
-        def result = [:]
+        Map<String, Object> result = [:]
         result.institution = contextService.getOrg()
         result.user = User.get(springSecurityService.principal.id)
         result.surveyInfo = SurveyInfo.get(params.id)
@@ -4648,7 +4682,7 @@ class SurveyController {
     }
 
     private LinkedHashMap setResultGenericsAndCheckAccessforSub(checkOption) {
-        def result = [:]
+        Map<String, Object> result = [:]
         result.user = User.get(springSecurityService.principal.id)
         result.subscriptionInstance = Subscription.get(params.id)
         result.subscription = Subscription.get(params.id)

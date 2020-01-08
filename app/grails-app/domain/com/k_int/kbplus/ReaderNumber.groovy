@@ -43,7 +43,7 @@ class ReaderNumber {
         org             column:'num_org_fk'
     }
 
-    static getAllRefdataValues(String category) {
+    static List<RefdataValue> getAllRefdataValues(String category) {
         RefdataCategory.getAllRefdataValues(category)
     }
 }

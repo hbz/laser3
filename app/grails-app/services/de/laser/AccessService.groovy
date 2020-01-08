@@ -205,7 +205,7 @@ class AccessService {
 
     boolean checkMinUserOrgRole(User user, Org org, def role) {
 
-        def result = false
+        boolean result = false
         def rolesToCheck = []
 
         if (! user || ! org) {

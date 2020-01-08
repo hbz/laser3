@@ -4,7 +4,7 @@
 <html>
 <head>
     <meta name="layout" content="semanticUI">
-    <title>${message(code:'laser', default:'LAS:eR')} : Application Config</title>
+    <title>${message(code:'laser')} : ${message(code:'menu.yoda.appConfig')} </title>
     <%-- r:require module="annotations" / --%>
     <g:javascript src="properties.js"/>
 </head>
@@ -15,7 +15,9 @@
     <semui:crumb text="Application Config" class="active"/>
 </semui:breadcrumbs>
 
-<h6 class="ui header">${message(code:'sys.properties')}</h6>
+<h2 class="ui header">${message(code:'menu.yoda.appConfig')}</h2>
+
+<p>${message(code:'sys.properties')}</p>
 
 <%--<div id="custom_props_div_1">
     <g:render template="/templates/properties/custom" model="${[

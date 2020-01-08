@@ -30,7 +30,7 @@ class AccessPointController extends AbstractDebugController {
     })
     def addIpRange() {
         def orgAccessPoint = OrgAccessPoint.get(params.id)
-        def org = orgAccessPoint.org;
+        Org org = orgAccessPoint.org;
         def orgId = org.id;
         // need to check if contextOrg == orgAccessPoint.org for ORG_CONSORTIUM? The template has no editable elements
         // in that context (would need to fake a post request), similar for deleteIpRange method.
@@ -46,7 +46,7 @@ class AccessPointController extends AbstractDebugController {
 
                 // so far we know that the input string represents a valid ip range
                 // check if the input string is already saved
-                def isDuplicate = false;
+                boolean isDuplicate = false
                 for (accessPointData in accessPointDataList) {
                     if (accessPointData.getInputStr() == ipRange.toInputString()) {
                         isDuplicate = true
@@ -101,7 +101,7 @@ class AccessPointController extends AbstractDebugController {
      */
     private def availableIPOptions() {
 
-        def organisation = contextService.getOrg()
+        Org organisation = contextService.getOrg()
         params.orgInstance = organisation
 
         def availableLanguageKeys = ['accessPoint.option.remoteAccess', 'accessPoint.option.woRemoteAccess']
@@ -139,7 +139,7 @@ class AccessPointController extends AbstractDebugController {
     })
     def create() {
         params.max = params.max ?: ((User) springSecurityService.getCurrentUser())?.getDefaultPageSizeTMP()
-        def organisation = contextService.getOrg()
+        Org organisation = contextService.getOrg()
         params.orgInstance = organisation
         params.availableIpOptions = availableIPOptions()
 
@@ -162,7 +162,7 @@ class AccessPointController extends AbstractDebugController {
     })
     def create_ip() {
         // without the org somehow passed we can only create AccessPoints for the context org
-        def orgInstance = contextService.getOrg()
+        Org orgInstance = contextService.getOrg()
         def oap = OrgAccessPoint.findAllByNameAndOrg(params.name, orgInstance)
 
         if (! params.name) {
@@ -191,7 +191,7 @@ class AccessPointController extends AbstractDebugController {
     })
     def create_proxy() {
         // without the org somehow passed we can only create AccessPoints for the context org
-        def orgInstance = contextService.getOrg()
+        Org orgInstance = contextService.getOrg()
         def oap = OrgAccessPoint.findAllByNameAndOrg(params.name, orgInstance)
 
         if (! params.name) {
@@ -220,7 +220,7 @@ class AccessPointController extends AbstractDebugController {
     })
     def create_vpn() {
         // without the org somehow passed we can only create AccessPoints for the context org
-        def orgInstance = contextService.getOrg()
+        Org orgInstance = contextService.getOrg()
 
         if (! params.name) {
             flash.error = message(code: 'accessPoint.require.name', args: [params.name])
@@ -249,7 +249,7 @@ class AccessPointController extends AbstractDebugController {
     })
     def create_ezproxy() {
         // without the org somehow passed we can only create AccessPoints for the context org
-        def orgInstance = contextService.getOrg()
+        Org orgInstance = contextService.getOrg()
 
         if (! params.name) {
             flash.error = message(code: 'accessPoint.require.name', args: [params.name])
@@ -285,7 +285,7 @@ class AccessPointController extends AbstractDebugController {
     })
     def create_shibboleth() {
         // without the org somehow passed we can only create AccessPoints for the context org
-        def orgInstance = contextService.getOrg()
+        Org orgInstance = contextService.getOrg()
 
         if (! params.name) {
             flash.error = message(code: 'accessPoint.require.name')
@@ -321,7 +321,7 @@ class AccessPointController extends AbstractDebugController {
     def delete() {
         def accessPoint = OrgAccessPoint.get(params.id)
 
-        def org = accessPoint.org;
+        Org org = accessPoint.org;
         def orgId = org.id;
 
         if (!accessPoint) {
@@ -368,7 +368,7 @@ class AccessPointController extends AbstractDebugController {
 
     def private _edit() {
 
-        def orgAccessPoint = OrgAccessPoint.get(params.id)
+        OrgAccessPoint orgAccessPoint = OrgAccessPoint.get(params.id)
 
         String ipv4Format = (params.ipv4Format) ? params.ipv4Format : 'v4ranges'
         String ipv6Format = (params.ipv6Format) ? params.ipv6Format : 'v6ranges'
@@ -376,7 +376,7 @@ class AccessPointController extends AbstractDebugController {
 
         //String ipv4Format = 'range'
 
-        def org = orgAccessPoint.org;
+        Org org = orgAccessPoint.org;
         def orgId = org.id;
 
         def accessPointDataList = AccessPointData.findAllByOrgAccessPoint(orgAccessPoint);

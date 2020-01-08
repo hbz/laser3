@@ -47,7 +47,7 @@ class ApiIssueEntitlement {
         Collection<Object> result = []
 
         if (! hasAccess) {
-            def hasAccess2 = false
+            boolean hasAccess2 = false
             // TODO
             subPkg.subscription.orgRelations.each{ orgRole ->
                 if(orgRole.getOrg().id == context?.id) {
@@ -74,7 +74,7 @@ class ApiIssueEntitlement {
      * @return Map<String, Object>
      */
     static Map<String, Object> retrieveIssueEntitlementMap(IssueEntitlement ie, def ignoreRelation, Org context) {
-        def result = [:]
+        Map<String, Object> result = [:]
         if (! ie) {
             return null
         }
@@ -118,7 +118,7 @@ class ApiIssueEntitlement {
      * @return Map<String, Object>
      */
     static Map<String, Object> retrieveIssueEntitlementCoverageMap(IssueEntitlementCoverage coverage, def ignoreRelation, Org context) {
-        def result = [:]
+        Map<String, Object> result = [:]
         if (! coverage) {
             return null
         }

@@ -39,13 +39,13 @@ class TitleInstitutionProvider {
   }
 
   @Transient
-  def coreStatus(lookupDate) {
+  boolean coreStatus(lookupDate) {
     // log.debug("TitleInstitutionProvider::coreStatus(${lookupDate})")
     if(!coreDates) return null;
     //Should this be here or on a higher level?
     if(lookupDate == null) lookupDate = new Date();
     // log.debug("coreDates: ${coreDates}")
-    def isCore = false
+    boolean isCore = false
     coreDates.each{ coreDate ->
         if(lookupDate > coreDate.startDate){
           if(coreDate.endDate == null) {
@@ -67,7 +67,7 @@ class TitleInstitutionProvider {
   * -1 DataA Before(<) DateB
   **/
   @Transient
-  def compareDates(dateA, dateB){
+  int compareDates(Date dateA, Date dateB){
     def daysDiff
     def duration
     if(dateA == null && dateB == null) return 0;
@@ -87,16 +87,16 @@ class TitleInstitutionProvider {
     return -1;
   }
 
-  def extendCoreExtent(givenStartDate, givenEndDate) {
+  def extendCoreExtent(Date givenStartDate, Date givenEndDate) {
     log.debug("TIP:${this.id} :: extendCoreExtent(${givenStartDate}, ${givenEndDate})");
     // See if we can extend and existing CoreAssertion or create a new one to represent this
     // We soften then edges for extending by a day.
-    def startDate = new Date(givenStartDate.getTime())
-    def endDate = givenEndDate ? new Date(givenEndDate.getTime()) : null;
+    Date startDate = new Date(givenStartDate.getTime())
+    Date endDate = givenEndDate ? new Date(givenEndDate.getTime()) : null;
 
     log.debug("For matching purposes, using ${startDate} and ${endDate}");
     
-    def cont = true;
+    boolean cont = true
 
     if ( endDate != null ) {
       log.debug("Working with a set endDate")
@@ -172,7 +172,7 @@ class TitleInstitutionProvider {
 
     if ( cont ) {
       log.debug("No obvious overlaps -Create new core assertion ${givenStartDate} - ${givenEndDate}");
-      def new_core_statement =new CoreAssertion()
+      CoreAssertion new_core_statement = new CoreAssertion()
       this.addToCoreDates(startDate:givenStartDate, endDate:givenEndDate)
       this.save()
       // See if the new range fully encloses any current assertions

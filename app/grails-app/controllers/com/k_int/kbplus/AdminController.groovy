@@ -261,7 +261,7 @@ class AdminController extends AbstractDebugController {
      log.debug("AdminController :: userMerge :: ${params}");
      def usrMrgId = params.userToMerge == "null"?null:params.userToMerge
      def usrKeepId = params.userToKeep == "null"?null:params.userToKeep
-     def result = [:]
+     Map<String, Object> result = [:]
      try {
        log.debug("Determine user merge operation : ${request.method}");
        switch (request.method) {
@@ -283,9 +283,9 @@ class AdminController extends AbstractDebugController {
          case 'POST':
            log.debug("Post...");
            if(usrMrgId && usrKeepId){
-             def usrMrg = User.get(usrMrgId)
-             def usrKeep =  User.get(usrKeepId)
-             def success = false
+             User usrMrg = User.get(usrMrgId)
+             User usrKeep =  User.get(usrKeepId)
+             boolean success = false
              try{
                log.debug("Copying user roles... from ${usrMrg} to ${usrKeep}");
                success = copyUserRoles(usrMrg, usrKeep)
@@ -369,7 +369,7 @@ class AdminController extends AbstractDebugController {
 
   @Secured(['ROLE_ADMIN'])
   def showAffiliations() {
-    def result = [:]
+    Map<String, Object> result = [:]
     result.user = User.get(springSecurityService.principal.id)
     result.users = User.list()
 
@@ -402,7 +402,7 @@ class AdminController extends AbstractDebugController {
 
     @Secured(['ROLE_ADMIN'])
     def systemEvents() {
-        def result = [:]
+        Map<String, Object> result = [:]
 
         params.sort =   params.sort ?: 'created'
         params.order =  params.order ?: 'desc'
@@ -500,7 +500,7 @@ class AdminController extends AbstractDebugController {
     def result=[:]
     if ( ( params.key != null ) && ( params.content != null ) && ( params.key.length() > 0 ) && ( params.content.length() > 0 ) ) {
 
-      def locale = ( ( params.locale != null ) && ( params.locale.length() > 0 ) ) ? params.locale : ''
+      String locale = ( ( params.locale != null ) && ( params.locale.length() > 0 ) ) ? params.locale : ''
 
       if ( ContentItem.findByKeyAndLocale(params.key,locale) != null ) {
         flash.message = 'Content item already exists'
@@ -521,9 +521,9 @@ class AdminController extends AbstractDebugController {
     def idparts = params.id?.split(':')
     if ( idparts.length > 0 ) {
       def key = idparts[0]
-      def locale = idparts.length > 1 ? idparts[1] : ''
+      String locale = idparts.length > 1 ? idparts[1] : ''
 
-      def contentItem = ContentItem.findByKeyAndLocale(key,locale)
+      ContentItem contentItem = ContentItem.findByKeyAndLocale(key,locale)
       if ( contentItem != null ) {
         result.contentItem = contentItem
       }
@@ -555,7 +555,7 @@ class AdminController extends AbstractDebugController {
   @Secured(['ROLE_ADMIN'])
   def tippTransfer(){
     log.debug("tippTransfer :: ${params}")
-    def result = [:]
+    Map<String, Object> result = [:]
     result.error = []
 
     if(params.sourceTIPP && params.targetTI){
@@ -582,7 +582,7 @@ class AdminController extends AbstractDebugController {
   @Secured(['ROLE_ADMIN'])
   def ieTransfer(){
     log.debug(params)
-    def result = [:]
+    Map<String, Object> result = [:]
     if(params.sourceTIPP && params.targetTIPP){
       result.sourceTIPPObj = TitleInstancePackagePlatform.get(params.sourceTIPP)
       result.targetTIPPObj = TitleInstancePackagePlatform.get(params.targetTIPP)
@@ -1476,7 +1476,7 @@ class AdminController extends AbstractDebugController {
     @Secured(['ROLE_ADMIN'])
     def managePropertyGroups() {
         //def result = setResultGenerics()
-        def result = [:]
+        Map<String, Object> result = [:]
         result.editable = true // true, because action is protected
 
         if (params.cmd == 'new') {

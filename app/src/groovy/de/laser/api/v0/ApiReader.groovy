@@ -68,8 +68,8 @@ class ApiReader {
      * @return Map | Constants.HTTP_FORBIDDEN
      */
     static requestOnixplLicense(OnixplLicense opl, License lic, Org context) {
-        def result = [:]
-        def hasAccess = false
+        Map<String, Object> result = [:]
+        boolean hasAccess = false
 
         if (!opl) {
             return null

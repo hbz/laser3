@@ -24,16 +24,8 @@ class LoginController {
 
   GrailsApplication grailsApplication
 
-  /**
-   * Dependency injection for the authenticationTrustResolver.
-   */
   def authenticationTrustResolver
-
-  /**
-   * Dependency injection for the springSecurityService.
-   */
   def springSecurityService
-
   def instAdmService
 
   /**
@@ -54,7 +46,7 @@ class LoginController {
   def auth = {
     log.debug("auth session:${request.session.id}")
 
-    def config = SpringSecurityUtils.securityConfig
+    ConfigObject config = SpringSecurityUtils.securityConfig
 
     if (springSecurityService.isLoggedIn()) {
       log.debug("already logged in");
@@ -97,7 +89,7 @@ class LoginController {
    * Login page for users with a remember-me cookie but accessing a IS_AUTHENTICATED_FULLY page.
    */
   def full = {
-    def config = SpringSecurityUtils.securityConfig
+    ConfigObject config = SpringSecurityUtils.securityConfig
     render view: 'auth', params: params,
       model: [hasCookie: authenticationTrustResolver.isRememberMe(SCH.context?.authentication),
               postUrl: "${request.contextPath}${config.apf.filterProcessesUrl}"]

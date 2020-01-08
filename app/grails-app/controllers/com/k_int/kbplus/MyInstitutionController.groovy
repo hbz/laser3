@@ -80,7 +80,7 @@ class MyInstitutionController extends AbstractDebugController {
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_ADM") })
     def index() {
         // Work out what orgs this user has admin level access to
-        def result = [:]
+        Map<String, Object> result = [:]
         result.institution  = contextService.getOrg()
         result.user = User.get(springSecurityService.principal.id)
         def currentOrg = contextService.getOrg()
@@ -102,7 +102,7 @@ class MyInstitutionController extends AbstractDebugController {
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
     def tipview() {
         log.debug("admin::tipview ${params}")
-        def result = [:]
+        Map<String, Object> result = [:]
 
         result.user = User.get(springSecurityService.principal.id)
         result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeTMP();
@@ -164,7 +164,7 @@ class MyInstitutionController extends AbstractDebugController {
     def manageAffiliationRequests() {
         redirect controller: 'organisation', action: 'users', id: contextService.getOrg().id
 
-        def result = [:]
+        Map<String, Object> result = [:]
         result.institution        = contextService.getOrg()
         result.user               = User.get(springSecurityService.principal.id)
         result.editable           = true // inherit
@@ -176,7 +176,7 @@ class MyInstitutionController extends AbstractDebugController {
     @Secured(['ROLE_USER'])
     def currentPlatforms() {
 
-        def result = [:]
+        Map<String, Object> result = [:]
 		DebugUtil du = new DebugUtil()
 		du.setBenchmark('init')
 
@@ -574,7 +574,7 @@ from License as l where (
     }
 
     private buildPropertySearchQuery(params,propDef) {
-        def result = [:]
+        Map<String, Object> result = [:]
 
         def query = " and exists ( select cp from l.customProperties as cp where cp.type.name = :prop_filter_name and  "
         def queryParam = [prop_filter_name:params.propertyFilterType];
@@ -652,7 +652,7 @@ from License as l where (
 
         def template_license_type = RefdataValue.getByValueAndCategory('Template', 'License Type')
         def qparams = [template_license_type]
-        def public_flag = false
+        boolean public_flag = false
 
        // This query used to allow institutions to copy their own licenses - now users only want to copy template licenses
         // (OS License specs)
@@ -1460,8 +1460,8 @@ from License as l where (
     @DebugAnnotation(test='hasAffiliation("INST_USER")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
     def processEmptyLicense() {
-        def user = User.get(springSecurityService.principal.id)
-        def org = contextService.getOrg()
+        User user = User.get(springSecurityService.principal.id)
+        Org org = contextService.getOrg()
 
         params.asOrgType = params.asOrgType ? [params.asOrgType] : [RDStore.OT_INSTITUTION.id.toString()]
 
@@ -1557,8 +1557,8 @@ from License as l where (
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
     @Deprecated
     def newLicense_DEPR(params) {
-        def user = User.get(springSecurityService.principal.id)
-        def org = contextService.getOrg()
+        User user = User.get(springSecurityService.principal.id)
+        Org org = contextService.getOrg()
 
         if (! accessService.checkMinUserOrgRole(user, org, 'INST_EDITOR')) {
             flash.error = message(code:'myinst.error.noAdmin', args:[org.name]);
@@ -1969,7 +1969,7 @@ from License as l where (
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
     def currentPackages() {
 
-        def result = [:]
+        Map<String, Object> result = [:]
         result.user = User.get(springSecurityService.principal.id)
         result.max = params.max ?: result.user.getDefaultPageSizeTMP()
         result.offset = params.offset ?: 0
@@ -2259,7 +2259,7 @@ AND EXISTS (
         def licensee_cons_role = RDStore.OR_LICENSEE_CONS
 
         // Find all licenses for this institution...
-        def result = [:]
+        Map<String, Object> result = [:]
         OrgRole.findAllByOrg(institution).each { it ->
             if (it.roleType in [licensee_role, licensee_cons_role]) {
                 result["License:${it.lic?.id}"] = it.lic?.reference
@@ -2282,7 +2282,7 @@ AND EXISTS (
     @DebugAnnotation(test='hasAffiliation("INST_USER")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
     def actionCurrentSubscriptions() {
-        def result = [:]
+        Map<String, Object> result = [:]
         result.user = User.get(springSecurityService.principal.id)
         def subscription = Subscription.get(params.basesubscription)
         def inst = Org.get(params.curInst)
@@ -2716,7 +2716,7 @@ AND EXISTS (
         ctx.accessService.checkPermAffiliationX("ORG_BASIC_MEMBER", "INST_USER", "ROLE_ADMIN")
     })
     def currentSurveys() {
-        def result = [:]
+        Map<String, Object> result = [:]
         result.institution = contextService.getOrg()
         result.user = User.get(springSecurityService.principal.id)
 
@@ -2743,7 +2743,7 @@ AND EXISTS (
         ctx.accessService.checkPermAffiliationX("ORG_BASIC_MEMBER", "INST_USER", "ROLE_ADMIN")
     })
     def surveyInfos() {
-        def result = [:]
+        Map<String, Object> result = [:]
         result.institution = contextService.getOrg()
         result.user = User.get(springSecurityService.principal.id)
 
@@ -2795,7 +2795,7 @@ AND EXISTS (
         ctx.accessService.checkPermAffiliationX("ORG_BASIC_MEMBER", "INST_USER", "ROLE_ADMIN")
     })
     def surveyConfigsInfo() {
-        def result = [:]
+        Map<String, Object> result = [:]
         result.institution = contextService.getOrg()
         result.user = User.get(springSecurityService.principal.id)
 
@@ -2842,7 +2842,7 @@ AND EXISTS (
         ctx.accessService.checkPermAffiliationX("ORG_BASIC_MEMBER", "INST_USER", "ROLE_ADMIN")
     })
     def surveyInfosIssueEntitlements() {
-        def result = [:]
+        Map<String, Object> result = [:]
         result.institution = contextService.getOrg()
         result.user = User.get(springSecurityService.principal.id)
 
@@ -2898,7 +2898,7 @@ AND EXISTS (
         ctx.accessService.checkPermAffiliationX("ORG_BASIC_MEMBER", "INST_EDITOR", "ROLE_ADMIN")
     })
     def surveyInfoFinish() {
-        def result = [:]
+        Map<String, Object> result = [:]
         result.institution = contextService.getOrg()
         result.user = User.get(springSecurityService.principal.id)
 
@@ -2967,7 +2967,7 @@ AND EXISTS (
         ctx.accessService.checkPermAffiliationX("ORG_BASIC_MEMBER", "INST_EDITOR", "ROLE_ADMIN")
     })
     def surveyResultFinish() {
-        def result = [:]
+        Map<String, Object> result = [:]
         result.institution = contextService.getOrg()
         result.user = User.get(springSecurityService.principal.id)
 
@@ -4089,8 +4089,8 @@ AND EXISTS (
 
     @Secured(['ROLE_USER'])
     def switchContext() {
-        def user = User.get(springSecurityService.principal.id)
-        def org  = genericOIDService.resolveOID(params.oid)
+        User user = User.get(springSecurityService.principal.id)
+        Org org  = genericOIDService.resolveOID(params.oid)
 
         if (user && org && org.id in user.getAuthorizedOrgsIds()) {
             log.debug('switched context to: ' + org)
@@ -4188,7 +4188,7 @@ AND EXISTS (
 
     private setResultGenerics() {
 
-        def result          = [:]
+        Map<String, Object> result = [:]
         result.user         = contextService.getUser()
         //result.institution  = Org.findByShortcode(params.shortcode)
         result.institution  = contextService.getOrg()
@@ -4287,7 +4287,7 @@ AND EXISTS (
         ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM_SURVEY", "INST_EDITOR", "ROLE_ADMIN")
     })
     def surveyParticipantConsortia() {
-        def result = [:]
+        Map<String, Object> result = [:]
         result.institution = contextService.getOrg()
         result.user = User.get(springSecurityService.principal.id)
 
@@ -4315,7 +4315,7 @@ AND EXISTS (
         ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM_SURVEY", "INST_EDITOR", "ROLE_ADMIN")
     })
     def surveyParticipantConsortiaNew() {
-        def result = [:]
+        Map<String, Object> result = [:]
         result.institution = contextService.getOrg()
         result.user = User.get(springSecurityService.principal.id)
 
@@ -4362,7 +4362,7 @@ AND EXISTS (
 
 
     private def getSurveyParticipantCounts(Org participant){
-        def result = [:]
+        Map<String, Object> result = [:]
 
         result.new = SurveyInfo.executeQuery("from SurveyInfo surInfo left join surInfo.surveyConfigs surConfig left join surConfig.surResults surResult  where surResult.participant = :participant and (surResult.surveyConfig.surveyInfo.status = :status and surResult.id in (select sr.id from SurveyResult sr where sr.surveyConfig  = surveyConfig and sr.dateCreated = sr.lastUpdated and sr.finishDate is null))",
                 [status: RDStore.SURVEY_SURVEY_STARTED,
@@ -4387,7 +4387,7 @@ AND EXISTS (
     }
 
     private def getSurveyParticipantCounts_New(Org participant){
-        def result = [:]
+        Map<String, Object> result = [:]
 
         result.new = SurveyInfo.executeQuery("from SurveyInfo surInfo left join surInfo.surveyConfigs surConfig where (exists (select surOrg from SurveyOrg surOrg where surOrg.surveyConfig = surConfig AND surOrg.org = :org and surOrg.finishDate is null and surConfig.pickAndChoose = true and surConfig.surveyInfo.status = :status) " +
                 "or exists (select surResult from SurveyResult surResult where surResult.surveyConfig = surConfig and surConfig.surveyInfo.status = :status and surResult.dateCreated = surResult.lastUpdated and surResult.finishDate is null and surResult.participant = :org))",

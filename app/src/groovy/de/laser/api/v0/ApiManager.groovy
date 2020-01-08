@@ -204,7 +204,7 @@ class ApiManager {
         // TODO check isDataManager, etc for contextOrg
 
         // check existing resources
-        def conflict = false
+        boolean conflict = false
 
         if (NOT_SUPPORTED && 'organisation'.equalsIgnoreCase(obj)) {
 

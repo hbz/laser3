@@ -20,7 +20,7 @@ public class OaiClient {
 
     def http = new HTTPBuilder( host )
 
-    def more = true
+    boolean more = true
     println("Attempt get...");
     def resumption=null
 

@@ -33,7 +33,7 @@ class Order {
 
     @Transient
     static def refdataFind(params) {
-        def owner  = Org.findByShortcode(params.shortcode)
+        Org owner  = Org.findByShortcode(params.shortcode)
         def result = [];
         def ql     = null;
         if (owner)

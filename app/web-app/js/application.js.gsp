@@ -130,11 +130,44 @@ r2d2 = {
     initGlobalSemuiStuff : function() {
         console.log("r2d2.initGlobalSemuiStuff()")
 
+        //overwriting the template for input search (spotlight)
+        // see https://jsfiddle.net/xnfkLnwe/1/
+        // and https://github.com/Semantic-Org/Semantic-UI/issues/2405
+        $.fn.search.settings.templates.message = function (message, type) {
+            var
+                html = '';
+            if (message !== undefined && type !== undefined) {
+                html += '' + '<div class="message ' + type + '">';
+                // message type
+                if (type == 'empty') {
+                    html += '' + '<div class="header">${message(code:"search.API.heading.noResults")}</div class="header">' + '<div class="description">' + message + '</div class="description">';
+                } else {
+                    html += ' <div class="description">' + message + '</div>';
+                }
+                html += '</div>';
+            }
+            return html;
+        };
+
+
         // spotlight
-        $('.ui.search').search({
+
+        $('.ui.search.spotlight').search({
+            error : {
+                source          : '${message(code:"search.API.source")}',
+                noResults       : '',
+                logging         : '${message(code:"search.API.logging")}',
+                noEndpoint      : '${message(code:"search.API.noEndpoint")}',
+                noTemplate      : '${message(code:"search.API.noTemplate")}',
+                serverError     : '${message(code:"search.API.serverError")}',
+                maxResults      : '${message(code:"search.API.maxResults")}',
+                method          : '${message(code:"search.API.method")}',
+            },
+
             type: 'category',
             minCharacters: 3,
             apiSettings: {
+
                 url: "<g:createLink controller='search' action='spotlightSearch'/>/?query={query}",
                 onResponse: function(elasticResponse) {
                     var response = { results : {} };
@@ -457,7 +490,7 @@ r2d2 = {
         $(ctxSel + ' .datepicker').calendar(r2d2.configs.datepicker);
 
         // dropdowns
-        $(ctxSel + ' .ui.dropdown').not('nav.menu .ui.dropdown').dropdown({
+        $(ctxSel + ' .ui.dropdown').not('#mainMenue .ui.dropdown').dropdown({
             duration: 150,
             transition: 'fade',
             apiSettings: {

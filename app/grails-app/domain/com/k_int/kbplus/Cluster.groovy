@@ -42,7 +42,7 @@ class Cluster {
         dateCreated (nullable: true, blank: false)
     }
 
-    static getAllRefdataValues() {
+    static List<RefdataValue> getAllRefdataValues() {
         RefdataCategory.getAllRefdataValues('ClusterType')
     }
     

@@ -43,14 +43,14 @@ class OrgAccessPoint extends AbstractBaseDomain {
         name(unique: ['org'])
   }
     
-    static getAllRefdataValues(String category) {
+    static List<RefdataValue> getAllRefdataValues(String category) {
         RefdataCategory.getAllRefdataValues(category)
     }
 
-    def String[] getIpRangeStrings(String datatype, String format) {
+    String[] getIpRangeStrings(String datatype, String format) {
 
-        def jsonSluper = new JsonSlurper()
-        def ipRanges = new IpRangeCollection()
+        JsonSlurper jsonSluper = new JsonSlurper()
+        IpRangeCollection ipRanges = new IpRangeCollection()
 
         for (data in accessPointData) {
             if (data.datatype == datatype) {
@@ -115,8 +115,8 @@ class OrgAccessPoint extends AbstractBaseDomain {
         return Subscription.executeQuery(hql, [status: statusList])
     }
 
-    def hasActiveLink() {
-        def active = false
+    boolean hasActiveLink() {
+        boolean active = false
         def oapps = this.oapp
         oapps.each {
             if (it.active){

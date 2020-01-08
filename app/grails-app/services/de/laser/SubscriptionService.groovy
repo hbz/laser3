@@ -13,6 +13,10 @@ import de.laser.exceptions.EntitlementCreationException
 import de.laser.helper.DebugAnnotation
 import org.springframework.web.multipart.commons.CommonsMultipartFile
 import de.laser.helper.RDStore
+
+import java.nio.file.Path
+import java.nio.file.Files
+
 import static de.laser.helper.RDStore.*
 import grails.plugin.springsecurity.annotation.Secured
 import grails.util.Holders
@@ -27,7 +31,8 @@ class SubscriptionService {
     def messageSource
     def escapeService
     def refdataService
-    def locale
+    Locale locale
+    def grailsApplication
 
     @javax.annotation.PostConstruct
     void init() {
@@ -345,6 +350,18 @@ class SubscriptionService {
 
         //alle zugeordneten Packages löschen
         if (packagesToDelete) {
+
+            packagesToDelete.each { subPkg ->
+                OrgAccessPointLink.executeUpdate("delete from OrgAccessPointLink oapl where oapl.subPkg=?", [subPkg])
+                CostItem.findAllBySubPkg(subPkg).each { costItem ->
+                    costItem.subPkg = null
+                    if(!costItem.sub){
+                        costItem.sub = subPkg.subscription
+                    }
+                    costItem.save(flush: true)
+                }
+            }
+
             SubscriptionPackage.executeUpdate(
                     "delete from SubscriptionPackage sp where sp in (:packagesToDelete) and sp.subscription = :sub ",
                     [packagesToDelete: packagesToDelete, sub: targetSub])
@@ -550,7 +567,7 @@ class SubscriptionService {
 
                     //OrgRole
                     subMember.orgRelations?.each { or ->
-                        if ((or.org?.id == contextService.getOrg()?.id) || (or.roleType.value in ['Subscriber', 'Subscriber_Consortial']) || (targetSub.orgRelations.size() >= 1)) {
+                        if ((or.org?.id == contextService.getOrg()?.id) || (or.roleType in [RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER_CONS_HIDDEN]) || (targetSub.orgRelations.size() >= 1)) {
                             OrgRole newOrgRole = new OrgRole()
                             InvokerHelper.setProperties(newOrgRole, or.properties)
                             newOrgRole.sub = newSubscription
@@ -666,14 +683,27 @@ class SubscriptionService {
         sourceSub.documents?.each { dctx ->
             if (dctx.id in toCopyDocs) {
                 if (((dctx.owner?.contentType == Doc.CONTENT_TYPE_DOCSTORE) || (dctx.owner?.contentType == Doc.CONTENT_TYPE_BLOB)) && (dctx.status?.value != 'Deleted')) {
-                    Doc newDoc = new Doc()
-                    InvokerHelper.setProperties(newDoc, dctx.owner.properties)
-                    save(newDoc, flash)
-                    DocContext newDocContext = new DocContext()
-                    InvokerHelper.setProperties(newDocContext, dctx.properties)
-                    newDocContext.subscription = targetSub
-                    newDocContext.owner = newDoc
-                    save(newDocContext, flash)
+                    try {
+
+                        Doc newDoc = new Doc()
+                        InvokerHelper.setProperties(newDoc, dctx.owner.properties)
+                        save(newDoc, flash)
+                        DocContext newDocContext = new DocContext()
+                        InvokerHelper.setProperties(newDocContext, dctx.properties)
+                        newDocContext.subscription = targetSub
+                        newDocContext.owner = newDoc
+                        save(newDocContext, flash)
+
+                        String fPath = grailsApplication.config.documentStorageLocation ?: '/tmp/laser'
+
+                        Path source = new File("${fPath}/${dctx.owner.uuid}").toPath()
+                        Path target = new File("${fPath}/${newDoc.uuid}").toPath()
+                        Files.copy(source, target)
+
+                    }
+                    catch (Exception e) {
+                        log.error("Problem by Saving Doc in documentStorageLocation (Doc ID: ${dctx.owner.id} -> ${e})")
+                    }
                 }
             }
         }

@@ -20,8 +20,8 @@ class InstitutionsService {
         def org = params.consortium ?: contextService.getOrg()
 
         def lic_name = params.lic_name ?: "Kopie von ${base.reference}"
-        def license_type = RefdataValue.getByValueAndCategory('Actual', 'License Type')
-        def license_status = RefdataValue.getByValueAndCategory('Current', 'License Status')
+        RefdataValue license_type = RefdataValue.getByValueAndCategory('Actual', 'License Type')
+        RefdataValue license_status = RefdataValue.getByValueAndCategory('Current', 'License Status')
 
         boolean slavedBool = false // ERMS-1562
         if (params.isSlaved) {
@@ -158,10 +158,10 @@ class InstitutionsService {
     @Deprecated
     def copyLicense(params) {
         def baseLicense = params.baselicense ? License.get(params.baselicense) : null;
-        def org = contextService.getOrg()
+        Org org = contextService.getOrg()
 
-        def license_type = RefdataValue.getByValueAndCategory('Actual','License Type')
-        def license_status = RefdataValue.getByValueAndCategory('Current', 'License Status')
+        RefdataValue license_type = RefdataValue.getByValueAndCategory('Actual','License Type')
+        RefdataValue license_status = RefdataValue.getByValueAndCategory('Current', 'License Status')
         def lic_name = params.lic_name ?: "Kopie von ${baseLicense?.reference}"
 
         boolean slavedBool = false // ERMS-1562

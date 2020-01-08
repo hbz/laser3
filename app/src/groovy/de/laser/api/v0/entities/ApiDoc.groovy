@@ -98,7 +98,7 @@ class ApiDoc {
      * @return Map<String, Object>
      */
     static Map<String, Object> retrieveDocumentMap(Doc doc) {
-        def result = [:]
+        Map<String, Object> result = [:]
 
         if (doc) {
             result.content      = doc.content

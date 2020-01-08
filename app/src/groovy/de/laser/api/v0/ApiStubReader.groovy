@@ -41,7 +41,7 @@ class ApiStubReader {
 
     @Deprecated
     static Map<String, Object> retrieveClusterStubMap(Cluster cluster) {
-        def result = [:]
+        Map<String, Object> result = [:]
         if (cluster) {
             result.id           = cluster.id
             result.name         = cluster.name
@@ -54,7 +54,7 @@ class ApiStubReader {
     }
 
     static requestLicenseStub(License lic, Org context, boolean hasAccess) {
-        def result = [:]
+        Map<String, Object> result = [:]
 
         if (!lic) {
             return null
@@ -91,7 +91,7 @@ class ApiStubReader {
             return null
         }
 
-        def result = [:]
+        Map<String, Object> result = [:]
         result.globalUID    = org.globalUID
         result.gokbId       = org.gokbId
         result.name         = org.name
@@ -110,7 +110,7 @@ class ApiStubReader {
             return null
         }
 
-        def result = [:]
+        Map<String, Object> result = [:]
         result.globalUID    = pkg.globalUID
         result.name         = pkg.name
         //result.identifier   = pkg.identifier // TODO refactor legacy
@@ -127,7 +127,7 @@ class ApiStubReader {
      * @return Map<String, Object>
      */
     static Map<String, Object> retrievePlatformStubMap(Platform pform) {
-        def result = [:]
+        Map<String, Object> result = [:]
         if (pform) {
             result.globalUID    = pform.globalUID
             result.impId        = pform.impId
@@ -147,7 +147,7 @@ class ApiStubReader {
     }
 
     static requestSubscriptionStub(Subscription sub, Org context, boolean hasAccess) {
-        def result = [:]
+        Map<String, Object> result = [:]
 
         if (!sub) {
             return null
@@ -201,7 +201,7 @@ class ApiStubReader {
     }
 
     static Map<String, Object> retrieveTitleStubMap(TitleInstance title) {
-        def result = [:]
+        Map<String, Object> result = [:]
 
         result.globalUID    = title.globalUID
         result.impId        = title.impId

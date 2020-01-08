@@ -166,7 +166,7 @@ class ApiWriterHelper {
                 log.debug("create new orgRole")
                 def org = candidates.get(0)
 
-                def orgRole = new OrgRole(
+                OrgRole orgRole = new OrgRole(
                         org:        org,
                         endDate:    getValidDateFormat(it.endDate),
                         startDate:  getValidDateFormat(it.startDate),

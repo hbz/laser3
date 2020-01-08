@@ -2,10 +2,13 @@ package com.k_int.kbplus.batch
 
 import de.laser.domain.ActivityProfiler
 import de.laser.quartz.AbstractJob
+import net.sf.ehcache.CacheManager
 
 class HeartbeatJob extends AbstractJob {
 
     def grailsApplication
+    def cacheService
+    def yodaService
 
     static triggers = {
     // Delay 20 seconds, run every 10 mins.
@@ -23,7 +26,7 @@ class HeartbeatJob extends AbstractJob {
     //                  `- Second, 0-59
     }
 
-    static configFlags = ['quartzHeartbeat']
+    static List<String> configFlags = ['quartzHeartbeat']
 
     boolean isAvailable() {
         !jobIsRunning // no service needed
@@ -42,6 +45,27 @@ class HeartbeatJob extends AbstractJob {
         grailsApplication.config.quartzHeartbeat = new Date()
         ActivityProfiler.update()
 
+        deleteUnusedUserCaches()
+
         jobIsRunning = false
+    }
+
+    // HOTFIX: ERMS-2023
+    // TODO [ticket=2029] refactoring caches
+    def deleteUnusedUserCaches() {
+        CacheManager ehcacheManager = (CacheManager) cacheService.getCacheManager(cacheService.EHCACHE)
+        String[] userCaches = ehcacheManager.getCacheNames().findAll { it -> it.startsWith('USER:') }
+
+        String[] activeUsers = yodaService.getActiveUsers().collect{ 'USER:' + it.id }
+        String[] retiredUserCaches = userCaches.collect{ (it in activeUsers) ? null : it }.findAll{ it }
+
+        retiredUserCaches.each { it ->
+            ehcacheManager.removeCache(it)
+        }
+
+        if (retiredUserCaches) {
+            log.debug("user caches found: " + userCaches.collect{ it })
+            log.debug("user caches NOT in use:" + retiredUserCaches.collect{ it })
+        }
     }
 }

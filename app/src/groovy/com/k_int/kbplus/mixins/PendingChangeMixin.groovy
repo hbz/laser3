@@ -7,18 +7,18 @@ import com.k_int.kbplus.auth.User
 
 // 2.0
 
-public class PendingChangeMixin {
+class PendingChangeMixin {
 
 
   def processAcceptChange(params, targetObject, genericOIDService) {
-    def user = User.get(springSecurityService.principal.id)
+    User user = User.get(springSecurityService.principal.id)
 
     if ( ! targetObject.isEditableBy(user) ) {
       render status: 401
       return
     }
 
-    def pc = PendingChange.get(params.changeid)
+    PendingChange pc = PendingChange.get(params.changeid)
 
     if ( pc ) {
 
@@ -37,14 +37,14 @@ public class PendingChangeMixin {
   }
 
   def processRejectChange(params, targetObject) {
-    def user = User.get(springSecurityService.principal.id)
+    User user = User.get(springSecurityService.principal.id)
 
     if ( ! targetObject.isEditableBy(user) ) {
       render status: 401
       return
     }
 
-    def pc = PendingChange.get(params.changeid)
+    PendingChange pc = PendingChange.get(params.changeid)
     if ( pc ) {
       expungePendingChange(targetObject, pc);
     }

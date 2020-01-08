@@ -151,7 +151,7 @@ class AjaxController {
         if (params.redirect) {
             redirect(url: request.getHeader('referer'))
         }
-        def result = [:]
+        Map<String, Object> result = [:]
         render result as JSON
     }
 
@@ -312,10 +312,10 @@ class AjaxController {
             target.save();
             if (target instanceof SurveyResult) {
 
-                def org = contextService.getOrg()
+                Org org = contextService.getOrg()
                 //If Survey Owner set Value then set FinishDate
                 if (org?.id == target?.owner?.id && target?.finishDate == null) {
-                    def property = ""
+                    String property = ""
                     if (target?.type?.type == Integer.toString()) {
                         property = "intValue"
                     } else if (target?.type?.type == String.toString()) {
@@ -405,7 +405,7 @@ class AjaxController {
   }
 
   def validatePackageId() {
-    def result = [:]
+    Map<String, Object> result = [:]
     result.response = false;
     if( params.id ) {
       def p = Package.findByIdentifier(params.id)
@@ -429,7 +429,7 @@ class AjaxController {
 
     //log.debug("refdataSearch params: ${params}");
     
-    def result = [:]
+    Map<String, Object> result = [:]
     //we call toString in case we got a GString
     def config = refdata_config.get(params.id?.toString())
 
@@ -1060,7 +1060,7 @@ class AjaxController {
         def orgIds = params.list('orm_orgOid')
         orgIds.each{ oid ->
             def org_to_link = genericOIDService.resolveOID(oid)
-            def duplicateOrgRole = false
+            boolean duplicateOrgRole = false
 
             if(params.recip_prop == 'sub') {
                 duplicateOrgRole = OrgRole.findAllBySubAndRoleTypeAndOrg(owner, rel, org_to_link) ? true : false
@@ -1911,7 +1911,7 @@ class AjaxController {
   }
 
   def getProvidersWithPrivateContacts() {
-    def result = [:]
+    Map<String, Object> result = [:]
     def query_params = []
     String fuzzyString = '%'
     if(params.sSearch) {
@@ -1957,7 +1957,7 @@ class AjaxController {
       params.shortcode  = contextService.getOrg()?.shortcode
 
     // log.debug("AjaxController::lookup ${params}");
-    def result = [:]
+    Map<String, Object> result = [:]
     // params.max = params.max ?: 20;
     params.max = params.max ?: 40;
     def domain_class = grailsApplication.getArtefact('Domain',params.baseClass)
@@ -1981,7 +1981,7 @@ class AjaxController {
       // fallback for static refdataFind calls
       params.shortcode  = contextService.getOrg()?.shortcode
 
-    def result = [:]
+    Map<String, Object> result = [:]
     def domain_class = grailsApplication.getArtefact('Domain', params.baseClass)
     if (domain_class) {
       result.values = domain_class.getClazz().refdataFind2(params);
@@ -2119,7 +2119,7 @@ class AjaxController {
 
   def validateIdentifierUniqueness(){
     log.debug("validateIdentifierUniqueness - ${params}")
-    def result = [:]
+    Map<String, Object> result = [:]
     def owner = resolveOID2(params.owner)
     def identifier = resolveOID2(params.identifier)
 
@@ -2279,10 +2279,10 @@ class AjaxController {
 
                 if (target_object instanceof SurveyResult) {
 
-                    def org = contextService.getOrg()
+                    Org org = contextService.getOrg()
                     //If Survey Owner set Value then set FinishDate
                     if (org?.id == target_object?.owner?.id && target_object?.finishDate == null) {
-                        def property = ""
+                        String property = ""
                         if (target_object?.type?.type == Integer.toString()) {
                             property = "intValue"
                         } else if (target_object?.type?.type == String.toString()) {
@@ -2401,7 +2401,7 @@ class AjaxController {
 
     @Secured(['ROLE_USER'])
     def NoteEdit() {
-        def result = [:]
+        Map<String, Object> result = [:]
         result.params = params
         result.noteInstance = Doc.get(params.id)
 
@@ -2410,7 +2410,7 @@ class AjaxController {
 
     @Secured(['ROLE_USER'])
     def readNote() {
-        def result = [:]
+        Map<String, Object> result = [:]
         result.params = params
         result.noteInstance = Doc.get(params.id)
 

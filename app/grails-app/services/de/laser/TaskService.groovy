@@ -205,8 +205,8 @@ class TaskService {
         tasks
     }
 
-    def getPreconditions(Org contextOrg) {
-        def result = [:]
+    Map<String, Object> getPreconditions(Org contextOrg) {
+        Map<String, Object> result = [:]
 
         result.taskCreator                  = springSecurityService.getCurrentUser()
         result.validResponsibleOrgs         = contextOrg ? [contextOrg] : []
@@ -419,8 +419,8 @@ order by lower(s.name), s.endDate""", qry_params_for_sub << [referenceField: 'va
         validLicensesDropdown
     }
 
-    def getPreconditionsWithoutTargets(Org contextOrg) {
-        def result = [:]
+    Map<String, Object> getPreconditionsWithoutTargets(Org contextOrg) {
+        Map<String, Object> result = [:]
         def validResponsibleUsers   = contextOrg ? User.executeQuery(
                 "select u from User as u where exists (select uo from UserOrg as uo where uo.user = u and uo.org = ? and (uo.status=1 or uo.status=3)) order by lower(u.display)",
                 [contextOrg]) : []

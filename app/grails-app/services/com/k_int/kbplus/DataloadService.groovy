@@ -24,6 +24,8 @@ import org.elasticsearch.rest.*
 import org.elasticsearch.search.builder.SearchSourceBuilder
 import org.hibernate.ScrollMode
 
+import java.util.concurrent.Future
+
 class DataloadService {
 
     def stats = [:]
@@ -47,7 +49,7 @@ class DataloadService {
     def dataload_message=''
     boolean update_running = false
     def lastIndexUpdate = null
-    def activeFuture
+    Future activeFuture
 
     @javax.annotation.PostConstruct
     def init () {
@@ -57,12 +59,17 @@ class DataloadService {
     def updateFTIndexes() {
         //log.debug("updateFTIndexes ${this.hashCode()}")
         if(update_running == false) {
-            SystemEvent.createEvent('FT_INDEX_UPDATE_START')
-            if(!activeFuture || activeFuture.isDone()) {
+
+            if(!(activeFuture) || activeFuture.isDone()) {
+
                 activeFuture = executorService.submit({
+                    Thread.currentThread().setName("DataloadService UpdateFTIndexes")
                     doFTUpdate()
                 } as java.util.concurrent.Callable)
-                log.debug("updateFTIndexes returning")
+                //log.debug("updateFTIndexes returning")
+            }else{
+                log.debug("FT update already running")
+                return false
             }
         } else {
             return false
@@ -72,6 +79,7 @@ class DataloadService {
 
     boolean doFTUpdate() {
 
+        SystemEvent.createEvent('FT_INDEX_UPDATE_START')
         synchronized(this) {
             if ( update_running ) {
                 return false
@@ -88,7 +96,7 @@ class DataloadService {
         RestHighLevelClient esclient = ESWrapperService.getClient()
 
         updateES(esclient, com.k_int.kbplus.Org.class) { org ->
-            def result = [:]
+            Map<String, Object> result = [:]
 
                 result._id = org.globalUID
                 result.priority = 30
@@ -132,7 +140,7 @@ class DataloadService {
 
         updateES(esclient, com.k_int.kbplus.TitleInstance.class) { ti ->
 
-            def result = [:]
+            Map<String, Object> result = [:]
 
                 if (ti.title != null) {
                     def new_key_title = com.k_int.kbplus.TitleInstance.generateKeyTitle(ti.title)
@@ -181,7 +189,7 @@ class DataloadService {
         }
 
         updateES(esclient, com.k_int.kbplus.Package.class) { pkg ->
-            def result = [:]
+            Map<String, Object> result = [:]
 
                 result._id = pkg.globalUID
                 result.priority = 30
@@ -241,7 +249,7 @@ class DataloadService {
         }
 
         updateES(esclient, com.k_int.kbplus.Platform.class) { plat ->
-            def result = [:]
+            Map<String, Object> result = [:]
 
                 result._id = plat.globalUID
                 result.priority = 30
@@ -264,7 +272,7 @@ class DataloadService {
         }
 
         updateES(esclient, com.k_int.kbplus.License.class) { lic ->
-            def result = [:]
+            Map<String, Object> result = [:]
 
             result._id = lic.globalUID
             result.priority = 50
@@ -327,7 +335,7 @@ class DataloadService {
         }
 
         updateES(esclient, com.k_int.kbplus.Subscription.class) { sub ->
-            def result = [:]
+            Map<String, Object> result = [:]
 
                 result._id = sub.globalUID
                 result.priority = 70
@@ -419,7 +427,7 @@ class DataloadService {
         }
 
         updateES(esclient, com.k_int.kbplus.SurveyConfig.class) { surveyConfig ->
-            def result = [:]
+            Map<String, Object> result = [:]
 
             result._id = surveyConfig.getClass().getSimpleName().toLowerCase()+":"+surveyConfig.id
             result.priority = 60
@@ -453,7 +461,7 @@ class DataloadService {
         }
 
         updateES(esclient, com.k_int.kbplus.SurveyOrg.class) { surOrg ->
-            def result = [:]
+            Map<String, Object> result = [:]
 
             result._id = surOrg.getClass().getSimpleName().toLowerCase()+":"+surOrg.id
             result.priority = 60
@@ -485,7 +493,7 @@ class DataloadService {
         }
 
         updateES(esclient, com.k_int.kbplus.Task.class) { task ->
-            def result = [:]
+            Map<String, Object> result = [:]
 
             result._id = task.getClass().getSimpleName().toLowerCase()+":"+task.id
             result.priority = 40
@@ -532,7 +540,7 @@ class DataloadService {
         }
 
         updateES(esclient, com.k_int.kbplus.DocContext.class) { docCon ->
-            def result = [:]
+            Map<String, Object> result = [:]
 
             result._id = docCon.getClass().getSimpleName().toLowerCase()+":"+docCon.id
             result.priority = 40
@@ -577,7 +585,7 @@ class DataloadService {
         }
 
         updateES(esclient, com.k_int.kbplus.IssueEntitlement.class) { ie ->
-            def result = [:]
+            Map<String, Object> result = [:]
 
             result._id = ie.globalUID
             result.priority = 45
@@ -632,7 +640,7 @@ class DataloadService {
         }
 
         updateES(esclient, com.k_int.kbplus.SubscriptionCustomProperty.class) { subCustProp ->
-            def result = [:]
+            Map<String, Object> result = [:]
 
             result._id = subCustProp.getClass().getSimpleName().toLowerCase()+":"+subCustProp.id
             result.priority = 45
@@ -693,7 +701,7 @@ class DataloadService {
         }
 
         updateES(esclient, com.k_int.kbplus.SubscriptionPrivateProperty.class) { subPrivProp ->
-            def result = [:]
+            Map<String, Object> result = [:]
 
             result._id = subPrivProp.getClass().getSimpleName().toLowerCase()+":"+subPrivProp.id
             result.priority = 45
@@ -736,7 +744,7 @@ class DataloadService {
         }
 
         updateES(esclient, com.k_int.kbplus.LicenseCustomProperty.class) { licCustProp ->
-            def result = [:]
+            Map<String, Object> result = [:]
 
             result._id = licCustProp.getClass().getSimpleName().toLowerCase()+":"+licCustProp.id
             result.priority = 45
@@ -788,7 +796,7 @@ class DataloadService {
         }
 
         updateES(esclient, com.k_int.kbplus.LicensePrivateProperty.class) { licPrivProp ->
-            def result = [:]
+            Map<String, Object> result = [:]
 
             result._id = licPrivProp.getClass().getSimpleName().toLowerCase()+":"+licPrivProp.id
             result.priority = 45
@@ -838,7 +846,7 @@ class DataloadService {
         FlushResponse flushResponse = esclient.indices().flush(request, RequestOptions.DEFAULT)
 
         log.debug("IndexUpdateJob completed in ${elapsed}ms at ${new Date()} ")
-
+        SystemEvent.createEvent('FT_INDEX_UPDATE_END')
         ESWrapperService.clusterHealth()
 
         //esclient.close()
@@ -1098,51 +1106,58 @@ class DataloadService {
 
     def clearDownAndInitES() {
         log.debug("Clear down and init ES");
+
         RestHighLevelClient client = ESWrapperService.getClient()
+        SystemEvent.createEvent('YODA_ES_RESET_START')
 
-        try {
-            // Drop any existing kbplus index
-            log.debug("Dropping old ES index ..")
-            DeleteIndexRequest deleteRequest = new DeleteIndexRequest(es_index)
-            def deleteIndexResponse = client.indices().delete(deleteRequest, RequestOptions.DEFAULT)
-            boolean acknowledged = deleteIndexResponse.isAcknowledged()
-            if (acknowledged) {
-                log.debug("Drop old ES index completed OK")
+        if(!(activeFuture) || (activeFuture && activeFuture.cancel(false))) {
+            try {
+                // Drop any existing kbplus index
+                log.debug("Dropping old ES index ..")
+                DeleteIndexRequest deleteRequest = new DeleteIndexRequest(es_index)
+                def deleteIndexResponse = client.indices().delete(deleteRequest, RequestOptions.DEFAULT)
+                boolean acknowledged = deleteIndexResponse.isAcknowledged()
+                if (acknowledged) {
+                    log.debug("Drop old ES index completed OK")
+                    SystemEvent.createEvent('YODA_ES_RESET_DROP_OK')
+                } else {
+                    log.error("Index wasn't deleted")
+                }
             }
-            else {
-                log.error("Index wasn't deleted")
+            catch (ElasticsearchException e) {
+                if (e.status() == RestStatus.NOT_FOUND) {
+                    log.warn("index does not exist ..")
+                } else {
+                    log.warn("Problem deleting index ..", e)
+                }
+
+                SystemEvent.createEvent('FT_INDEX_CLEANUP_ERROR', ["index": es_index])
             }
-        }
-        catch ( ElasticsearchException  e ) {
-            if (e.status() == RestStatus.NOT_FOUND) {
-                log.warn("index does not exist ..")
-            }else {
-                log.warn("Problem deleting index ..", e)
+
+            log.debug("Create new ES index ..")
+            //def createResponse = client.admin().indices().prepareCreate(es_index).get()
+            CreateIndexRequest createRequest = new CreateIndexRequest(es_index)
+
+            def es_mapping = ESWrapperService.getESMapping()
+            //println(es_mapping)
+
+            createRequest.mapping(JsonOutput.toJson(es_mapping), XContentType.JSON)
+
+            CreateIndexResponse createIndexResponse = client.indices().create(createRequest, RequestOptions.DEFAULT)
+            boolean acknowledgedCreate = createIndexResponse.isAcknowledged()
+            if (acknowledgedCreate) {
+                SystemEvent.createEvent('YODA_ES_RESET_CREATE_OK')
+                log.debug("Create ES index completed OK")
+                log.debug("manual start full text index")
+                updateFTIndexes()
+            } else {
+                log.error("Index wasn't created")
             }
 
-            SystemEvent.createEvent('FT_INDEX_CLEANUP_ERROR', ["index": es_index])
+            //log.debug("Clear down and init ES completed...")
+            client.close()
         }
-
-        log.debug("Create new ES index ..")
-        //def createResponse = client.admin().indices().prepareCreate(es_index).get()
-        CreateIndexRequest createRequest = new CreateIndexRequest(es_index)
-
-        def es_mapping = ESWrapperService.getESMapping()
-        //println(es_mapping)
-
-        createRequest.mapping(JsonOutput.toJson(es_mapping), XContentType.JSON)
-
-        CreateIndexResponse createIndexResponse = client.indices().create(createRequest, RequestOptions.DEFAULT)
-        boolean acknowledgedCreate = createIndexResponse.isAcknowledged()
-        if (acknowledgedCreate) {
-            log.debug("Create ES index completed OK")
-        }
-        else {
-            log.error("Index wasn't created")
-        }
-
-        log.debug("Clear down and init ES completed...")
-        client.close()
+        SystemEvent.createEvent('YODA_ES_RESET_END')
     }
 
     def checkESElementswithDBElements(domain, ft_record, esclient) {

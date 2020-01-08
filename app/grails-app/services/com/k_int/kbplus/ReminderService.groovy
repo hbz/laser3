@@ -35,7 +35,7 @@ class ReminderService extends AbstractLockableService implements ApplicationCont
     //[1:[com.k_int.kbplus.Reminder : 8, com.k_int.kbplus.Reminder : 9, com.k_int.kbplus.Reminder : 10]]
     def getActiveEmailRemindersByUserID() {
         //Get active reminders and users who have email
-        def result = [:]
+        Map<String, Object> result = [:]
         Reminder.executeQuery('select r from Reminder as r where r.active = ? and r.user.email != null and r.reminderMethod.value = ? order by r.user.id',[Boolean.TRUE,'email']).each { r ->
             if (result.containsKey(r.user.id)) {
                 ArrayList userReminders = result.get(r.user.id)  //Group Reminders and organise via users ID
@@ -135,7 +135,7 @@ select s from Subscription as s where
      */
     private def isSubInReminderRange(ArrayList reminders, Subscription sub, LocalDate today, User u)
     {
-        def result = [:]
+        Map<String, Object> result = [:]
         result.isFound = false
         LocalDate renewalDate = new LocalDate(sub.manualRenewalDate) //std Java date
 

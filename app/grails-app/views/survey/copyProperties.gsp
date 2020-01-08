@@ -30,6 +30,10 @@
                                    params="[id: params.id, surveyConfigID: surveyConfig.id]"
                                    message="surveyInfo.renewalOverView"/>
 
+        <semui:actionsDropdownItem controller="survey" action="setCompleted"
+                                   params="[id: params.id, surveyConfigID: surveyConfig.id]"
+                                   message="surveyInfo.completed.action"/>
+
     </semui:actionsDropdown>
 </semui:controlButtons>
 
@@ -670,9 +674,9 @@ ${surveyInfo?.name}
 <script language="JavaScript">
     $('#propertiesToggler').click(function () {
         if ($(this).prop('checked')) {
-            $("tr[class!=disabled] input[name=selectedProperty]").prop('checked', true)
+            $("tr[class!=disabled] input[name=selectedSub]").prop('checked', true)
         } else {
-            $("tr[class!=disabled] input[name=selectedProperty]").prop('checked', false)
+            $("tr[class!=disabled] input[name=selectedSub]").prop('checked', false)
         }
     })
 </script>

@@ -107,7 +107,7 @@ class DashboardDueDate {
 
     private static String getPropertyValue(String messageKey) {
         def messageSource = Holders.grailsApplication.mainContext.getBean('messageSource')
-        def locale = org.springframework.context.i18n.LocaleContextHolder.getLocale()
+        Locale locale = org.springframework.context.i18n.LocaleContextHolder.getLocale()
         String value = messageSource.getMessage(messageKey, null, locale)
         value
     }
