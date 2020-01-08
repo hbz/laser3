@@ -1,4 +1,4 @@
-<%@ page import="com.k_int.kbplus.auth.User; com.k_int.kbplus.auth.Role; grails.plugin.springsecurity.SpringSecurityUtils; com.k_int.kbplus.ReaderNumber; de.laser.SubscriptionsQueryService; de.laser.helper.RDStore; com.k_int.kbplus.Subscription; java.text.SimpleDateFormat; com.k_int.kbplus.PersonRole; com.k_int.kbplus.ReaderNumber; com.k_int.kbplus.License; com.k_int.kbplus.Contact; com.k_int.kbplus.Org; com.k_int.kbplus.OrgRole; com.k_int.kbplus.RefdataValue" %>
+<%@ page import="com.k_int.kbplus.auth.User; com.k_int.kbplus.auth.Role; grails.plugin.springsecurity.SpringSecurityUtils; com.k_int.kbplus.ReaderNumber; de.laser.SubscriptionsQueryService; de.laser.helper.RDStore; com.k_int.kbplus.Subscription; java.text.SimpleDateFormat; com.k_int.kbplus.PersonRole; com.k_int.kbplus.ReaderNumber; com.k_int.kbplus.License; com.k_int.kbplus.Contact; com.k_int.kbplus.Org; com.k_int.kbplus.OrgRole; com.k_int.kbplus.RefdataValue; com.k_int.kbplus.OrgSettings" %>
 <laser:serviceInjection/>
 
 <table id="${tableID ?: ''}" class="ui sortable celled la-table table">
@@ -220,7 +220,10 @@
                     </g:link>
                 </g:else>
                 <g:if test="${org.getCustomerType() in ['ORG_INST', 'ORG_INST_COLLECTIVE']}">
-                    <i class="gem outline icon"></i>
+                    <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="bottom center"
+                          data-content="${org.getCustomerTypeI10n()}">
+                        <i class="chess rook icon"></i>
+                    </span>
                 </g:if>
             </td>
         </g:if>
