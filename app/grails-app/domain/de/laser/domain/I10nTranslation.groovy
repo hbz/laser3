@@ -187,7 +187,7 @@ class I10nTranslation {
             }
         }
         matches.each { it ->
-            I10nTranslation obj = (new I10nTranslation().getDomainClass().grailsApplication.classLoader.loadClass(it.referenceClass)).findById(it.referenceId)
+            def obj = (new I10nTranslation().getDomainClass().grailsApplication.classLoader.loadClass(it.referenceClass)).findById(it.referenceId)
             if (obj) {
                 result << obj
             }
