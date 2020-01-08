@@ -32,7 +32,7 @@ class QueryService {
             def manualCancellationDateFrom = (contextUser.getSettingsValue(IS_REMIND_FOR_SUBSCRIPTIONS_NOTICEPERIOD)==YN_YES)? today : null
             def manualCancellationDateTo =   (contextUser.getSettingsValue(IS_REMIND_FOR_SUBSCRIPTIONS_NOTICEPERIOD)==YN_YES)? computeInfoDate(contextUser, REMIND_PERIOD_FOR_SUBSCRIPTIONS_NOTICEPERIOD) : null
             getDueSubscriptions(contextOrg, endDateFrom, endDateTo, manualCancellationDateFrom, manualCancellationDateTo).each{
-                boolean isConsortialOrCollective = it.getCalculatedType() in [TemplateSupport.CALCULATED_TYPE_PARTICIPATION || TemplateSupport.CALCULATED_TYPE_PARTICIPATION_AS_COLLECTIVE]
+                boolean isConsortialOrCollective = it.getCalculatedType() in [TemplateSupport.CALCULATED_TYPE_PARTICIPATION, TemplateSupport.CALCULATED_TYPE_PARTICIPATION_AS_COLLECTIVE]
                 if ( ! isConsortialOrCollective ) {
                     dueObjects << it
                 }
@@ -62,7 +62,7 @@ class QueryService {
         if (contextUser.getSettingsValue(IS_REMIND_FOR_LICENSE_CUSTOM_PROP)==YN_YES) {
             getDueLicenseCustomProperties(contextOrg, today, computeInfoDate(contextUser, REMIND_PERIOD_FOR_LICENSE_CUSTOM_PROP)).each{
 
-                boolean isConsortialOrCollective = it.owner.getCalculatedType() in [TemplateSupport.CALCULATED_TYPE_PARTICIPATION || TemplateSupport.CALCULATED_TYPE_PARTICIPATION_AS_COLLECTIVE]
+                boolean isConsortialOrCollective = it.owner.getCalculatedType() in [TemplateSupport.CALCULATED_TYPE_PARTICIPATION, TemplateSupport.CALCULATED_TYPE_PARTICIPATION_AS_COLLECTIVE]
                 if ( ! isConsortialOrCollective ) {
                     dueObjects << it
                 }
@@ -83,7 +83,7 @@ class QueryService {
         if (contextUser.getSettingsValue(IS_REMIND_FOR_SUBSCRIPTIONS_CUSTOM_PROP)==YN_YES) {
             getDueSubscriptionCustomProperties(contextOrg, today, computeInfoDate(contextUser, REMIND_PERIOD_FOR_SUBSCRIPTIONS_CUSTOM_PROP)).each{
 
-                boolean isConsortialOrCollective = it.owner.getCalculatedType() in [TemplateSupport.CALCULATED_TYPE_PARTICIPATION || TemplateSupport.CALCULATED_TYPE_PARTICIPATION_AS_COLLECTIVE]
+                boolean isConsortialOrCollective = it.owner.getCalculatedType() in [TemplateSupport.CALCULATED_TYPE_PARTICIPATION, TemplateSupport.CALCULATED_TYPE_PARTICIPATION_AS_COLLECTIVE]
 
                 if ( ! isConsortialOrCollective ) {
                     dueObjects << it
