@@ -3559,9 +3559,6 @@ AND EXISTS (
             qarams.put('status', RDStore.SUBSCRIPTION_CURRENT.id)
             params.status = RDStore.SUBSCRIPTION_CURRENT.id
             result.defaultSet = true
-        } else {
-            query += " and subT.status.id != :deleted "
-            qarams.put('deleted', RDStore.SUBSCRIPTION_DELETED.id)
         }
 
         if (params.filterPropDef?.size() > 0) {

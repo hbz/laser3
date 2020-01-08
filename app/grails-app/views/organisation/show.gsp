@@ -40,7 +40,14 @@
     </semui:controlButtons>
 </g:if>
 
-<h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon/>${orgInstance.name}</h1>
+<h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon/>${orgInstance.name}
+    <g:if test="${orgInstance.getCustomerType() in ['ORG_INST', 'ORG_INST_COLLECTIVE']}">
+        <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="bottom center"
+              data-content="${orgInstance.getCustomerTypeI10n()}">
+            <i class="chess rook icon"></i>
+        </span>
+    </g:if>
+</h1>
 
 <g:render template="nav" model="${[orgInstance: orgInstance, inContextOrg: inContextOrg]}"/>
 

@@ -275,6 +275,13 @@
                             <i class="low vision grey icon"></i>
                         </span>
                     </g:if>
+                    <g:if test="${subscr.getCustomerType() in ['ORG_INST', 'ORG_INST_COLLECTIVE']}">
+                        <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="bottom center"
+                              data-content="${subscr.getCustomerTypeI10n()}">
+                            <i class="chess rook icon"></i>
+                        </span>
+                    </g:if>
+
                 </td>
                 <td>
 

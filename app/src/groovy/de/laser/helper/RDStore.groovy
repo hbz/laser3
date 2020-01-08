@@ -50,6 +50,8 @@ class RDStore {
     static final PLATFORM_DELETED           = getRefdataValue('Deleted', 'Platform Status')
     static final TIPP_DELETED               = getRefdataValue('Deleted', 'TIPP Status')
 
+//DO NOT USE THIS STATUS. Subs have no longer a deleted flag. They ARE deleted!
+    @Deprecated
     static final SUBSCRIPTION_DELETED       = getRefdataValue('Deleted', 'Subscription Status')
     static final SUBSCRIPTION_CURRENT       = getRefdataValue('Current', 'Subscription Status')
     static final SUBSCRIPTION_INTENDED      = getRefdataValue('Intended', 'Subscription Status')
