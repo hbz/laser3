@@ -56,12 +56,12 @@
     net.sf.ehcache.CacheManager ehcacheManager = (net.sf.ehcache.CacheManager) cacheService.getCacheManager(cacheService.EHCACHE)
     String[] userCaches = ehcacheManager.getCacheNames().findAll { it -> it.startsWith('USER:') }
 
-    String[] activeUsers = yodaService.getActiveUsers().collect{ 'USER:' + it.id }
+    String[] activeUsers = yodaService.getActiveUsers( (1000 * 60 * 180) ).collect{ 'USER:' + it.id } // 180 minutes
     String[] retiredUserCaches = userCaches.collect{ (it in activeUsers) ? null : it }.findAll{ it }
 
     println "<pre>"
     println " - user caches: " + userCaches.collect{ it }
-    println " - retired:     " + retiredUserCaches.collect{ it }
+    println " - retired (after 180 minutes): " + retiredUserCaches.collect{ it }
     println "</pre>"
 
 %>
