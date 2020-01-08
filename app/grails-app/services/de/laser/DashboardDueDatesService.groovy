@@ -4,6 +4,9 @@ import com.k_int.kbplus.Org
 import com.k_int.kbplus.Subscription
 import com.k_int.kbplus.UserSettings
 import com.k_int.kbplus.auth.User
+import grails.plugin.mail.MailService
+import org.codehaus.groovy.grails.commons.GrailsApplication
+
 import static de.laser.helper.RDStore.*
 import de.laser.helper.SqlDateUtils
 import static com.k_int.kbplus.UserSettings.DEFAULT_REMINDER_PERIOD
@@ -11,9 +14,9 @@ import grails.util.Holders
 
 class DashboardDueDatesService {
 
-    def queryService
-    def mailService
-    def grailsApplication
+    QueryService queryService
+    MailService mailService
+    GrailsApplication grailsApplication
     def messageSource
     Locale locale
     String from
@@ -78,7 +81,7 @@ class DashboardDueDatesService {
         users.each { user ->
             List<Org> orgs = Org.executeQuery(QRY_ALL_ORGS_OF_USER, user);
             orgs.each {org ->
-                def dueObjects = queryService.getDueObjectsCorrespondingUserSettings(org, user)
+                List dueObjects = queryService.getDueObjectsCorrespondingUserSettings(org, user)
                 dueObjects.each { obj ->
                     if (obj instanceof Subscription) {
                         int reminderPeriodForManualCancellationDate = user.getSetting(UserSettings.KEYS.REMIND_PERIOD_FOR_SUBSCRIPTIONS_NOTICEPERIOD, DEFAULT_REMINDER_PERIOD).value ?: 1

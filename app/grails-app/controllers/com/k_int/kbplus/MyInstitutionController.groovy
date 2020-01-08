@@ -847,10 +847,13 @@ from License as l where (
                     subscriptions.sort { x,y ->
                         String a = x.getProviders().size() > 0 ? x.getProviders().first().name : ''
                         String b = y.getProviders().size() > 0 ? y.getProviders().first().name : ''
-                        a.compareToIgnoreCase b
+
+                        if(params.order.equals("desc")){
+                            b.compareToIgnoreCase a
+                        } else {
+                            a.compareToIgnoreCase b
+                        }
                     }
-                    if(params.order.equals("desc"))
-                        subscriptions.reverse(true)
                 break
             }
         }
