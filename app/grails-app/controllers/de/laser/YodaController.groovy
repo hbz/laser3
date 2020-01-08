@@ -205,6 +205,17 @@ class YodaController {
 
             redirect controller: 'yoda', action: 'cacheInfo', params: params
         }
+        else if (params.cmd?.equals('deleteCache')) {
+            if (params.type?.equals('ehcache')) {
+                result.ehcacheManager.removeCache(params.cache)
+            }
+
+            params.remove('cmd')
+            params.remove('type')
+            params.remove('cache')
+
+            redirect controller: 'yoda', action: 'cacheInfo', params: params
+        }
         result
     }
 

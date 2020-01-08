@@ -52,7 +52,7 @@
         <br />
         <g:select id="filterTable" name="filterTable" class="ui dropdown search"
                   from="${byUriAndContext.collect{com.k_int.kbplus.Org.get(it[1])}.unique()}"
-                  optionKey="id" optionValue="${{it.getDesignation()}}"
+                  optionKey="id" optionValue="${{it.sortname + ' (' + it.shortname + ')'}}"
                   noSelection="['':'Alle anzeigen']"
         />
 
