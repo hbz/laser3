@@ -56,7 +56,7 @@ class HeartbeatJob extends AbstractJob {
         CacheManager ehcacheManager = (CacheManager) cacheService.getCacheManager(cacheService.EHCACHE)
         String[] userCaches = ehcacheManager.getCacheNames().findAll { it -> it.startsWith('USER:') }
 
-        String[] activeUsers = yodaService.getActiveUsers().collect{ 'USER:' + it.id }
+        String[] activeUsers = yodaService.getActiveUsers( (1000 * 60 * 180) ).collect{ 'USER:' + it.id } // 180 minutes
         String[] retiredUserCaches = userCaches.collect{ (it in activeUsers) ? null : it }.findAll{ it }
 
         retiredUserCaches.each { it ->
@@ -64,8 +64,8 @@ class HeartbeatJob extends AbstractJob {
         }
 
         if (retiredUserCaches) {
-            log.debug("user caches found: " + userCaches.collect{ it })
-            log.debug("user caches NOT in use:" + retiredUserCaches.collect{ it })
+            log.debug("user caches: " + userCaches.collect{ it })
+            log.debug("retired (after 180 minutes): " + retiredUserCaches.collect{ it })
         }
     }
 }

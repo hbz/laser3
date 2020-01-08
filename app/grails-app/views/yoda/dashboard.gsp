@@ -88,6 +88,15 @@
                     <tr>
                         <td>${thread.getId()}</td>
                         <td>${thread.getName().replaceAll('%002e', '.')}</td>
+                        <td>
+                            ${thread.getThreadGroup().getName()}
+                            <%
+                                java.lang.ThreadGroup tmp = thread.getThreadGroup()
+                                while( (tmp = tmp.getParent()) != null ) {
+                                    println " / ${tmp.getName()}"
+                                }
+                            %>
+                        </td>
                         <td>${thread.getState()}</td>
                         <td>${thread.isAlive()}</td>
                     </tr>

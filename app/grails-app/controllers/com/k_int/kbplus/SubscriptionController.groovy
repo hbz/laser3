@@ -4869,7 +4869,7 @@ class SubscriptionController extends AbstractDebugController {
             isTargetSubChanged = true
         }
         if (params?.subscription?.takePackageIds && isBothSubscriptionsSet(baseSub, newSub)) {
-            List<Package> packagesToTake = params?.list('subscription.takePackageIds').collect{ genericOIDService.resolveOID(it)}
+            List<SubscriptionPackage> packagesToTake = params?.list('subscription.takePackageIds').collect{ genericOIDService.resolveOID(it)}
             subscriptionService.copyPackages(packagesToTake, newSub, flash)
             isTargetSubChanged = true
         }
