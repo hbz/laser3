@@ -34,7 +34,7 @@ class ESSearchService{
     // log.debug("Search Index, params.coursetitle=${params.coursetitle}, params.coursedescription=${params.coursedescription}, params.freetext=${params.freetext}")
     log.debug("ESSearchService::search - ${params}")
 
-   def result = [:]
+   Map<String, Object> result = [:]
 
    //List client = getClient()
    RestHighLevelClient esclient = ESWrapperService.getClient()

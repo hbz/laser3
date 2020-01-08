@@ -32,12 +32,12 @@ class ApiFilter extends GenericFilterBean {
             // ignore api spec calls
             if (! (request.getServletPath() =~ /api\/v\d+\/spec/)) {
 
-                def isAuthorized = false
-                def checksum
+                boolean isAuthorized = false
+                String checksum
 
-                def method = request.getMethod()
-                def path = request.getServletPath()
-                def query = request.getQueryString()
+                String method = request.getMethod()
+                String path = request.getServletPath()
+                String query = request.getQueryString()
                 def body = IOUtils.toString(request.getInputStream())
 
                 String authorization = request.getHeader('X-Authorization')
@@ -64,6 +64,7 @@ class ApiFilter extends GenericFilterBean {
                             )?.get(0)
 
                             String apiSecret = OrgSettings.get(apiOrg, OrgSettings.KEYS.API_PASSWORD)?.getValue()
+
 
                             checksum = hmac(
                                         method +    // http-method
@@ -110,7 +111,7 @@ class ApiFilter extends GenericFilterBean {
         filterChain.doFilter(servletRequest, servletResponse)
     }
 
-    def hmac(String data, String secret) throws SignatureException {
+    String hmac(String data, String secret) throws SignatureException {
         String result
         try {
             SecretKeySpec signingKey = new SecretKeySpec(secret.getBytes(), "HmacSHA256")

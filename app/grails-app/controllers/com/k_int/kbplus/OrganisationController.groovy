@@ -156,7 +156,7 @@ class OrganisationController extends AbstractDebugController {
     @Secured(['ROLE_ORG_EDITOR','ROLE_ADMIN'])
     def list() {
 
-        def result = [:]
+        Map<String, Object> result = [:]
         result.user = User.get(springSecurityService.principal.id)
         result.max  = params.max ? Long.parseLong(params.max) : result.user?.getDefaultPageSizeTMP()
         result.offset = params.offset ? Long.parseLong(params.offset) : 0
@@ -236,7 +236,7 @@ class OrganisationController extends AbstractDebugController {
 
     @Secured(['ROLE_USER'])
     def listProvider() {
-        def result = [:]
+        Map<String, Object> result = [:]
         result.propList    = PropertyDefinition.findAllPublicAndPrivateOrgProp(contextService.getOrg())
         result.user        = User.get(springSecurityService.principal.id)
         result.editable    = SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN,ROLE_ORG_EDITOR') || accessService.checkConstraint_ORG_COM_EDITOR()
@@ -340,10 +340,10 @@ class OrganisationController extends AbstractDebugController {
     })
     def createProvider() {
 
-        def orgSector = RefdataValue.getByValueAndCategory('Publisher','OrgSector')
-        def orgType = RefdataValue.getByValueAndCategory('Provider','OrgRoleType')
-        def orgType2 = RefdataValue.getByValueAndCategory('Agency','OrgRoleType')
-        def orgInstance = new Org(name: params.provider, sector: orgSector.id)
+        RefdataValue orgSector = RefdataValue.getByValueAndCategory('Publisher','OrgSector')
+        RefdataValue orgType = RefdataValue.getByValueAndCategory('Provider','OrgRoleType')
+        RefdataValue orgType2 = RefdataValue.getByValueAndCategory('Agency','OrgRoleType')
+        Org orgInstance = new Org(name: params.provider, sector: orgSector.id)
 
         if ( orgInstance.save(flush:true) ) {
 
@@ -620,9 +620,9 @@ class OrganisationController extends AbstractDebugController {
 
         if(!Combo.findByFromOrgAndType(result.orgInstance,COMBO_TYPE_DEPARTMENT) && !(OT_PROVIDER.id in result.orgInstance.getallOrgTypeIds())){
 
-            def foundIsil = false
-            def foundWibid = false
-            def foundEZB = false
+            boolean foundIsil = false
+            boolean foundWibid = false
+            boolean foundEZB = false
 
             result.orgInstance.ids.each {ident ->
                 if(ident.ns?.ns == 'ISIL') {
@@ -711,9 +711,9 @@ class OrganisationController extends AbstractDebugController {
     @Deprecated
     @Secured(['ROLE_ADMIN'])
     def properties() {
-        def result = [:]
+        Map<String, Object> result = [:]
         result.user = User.get(springSecurityService.principal.id)
-        def orgInstance = Org.get(params.id)
+        Org orgInstance = Org.get(params.id)
 
         result.editable = accessService.checkMinUserOrgRole(result.user, orgInstance, 'INST_EDITOR') || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')
 
@@ -752,9 +752,9 @@ class OrganisationController extends AbstractDebugController {
     @DebugAnnotation(test = 'hasAffiliation("INST_ADM")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_ADM") })
     def users() {
-        def result = [:]
+        Map<String, Object> result = [:]
         result.user = User.get(springSecurityService.principal.id)
-        def orgInstance = Org.get(params.id)
+        Org orgInstance = Org.get(params.id)
 
         result.editable = SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN') || instAdmService.hasInstAdmPivileges(result.user, orgInstance, [COMBO_TYPE_DEPARTMENT, COMBO_TYPE_CONSORTIUM])
 
@@ -848,7 +848,7 @@ class OrganisationController extends AbstractDebugController {
 
     @Secured(['ROLE_ADMIN'])
     def _delete() {
-        def result = [:]
+        Map<String, Object> result = [:]
 
         result.editable = SpringSecurityUtils.ifAnyGranted("ROLE_ORG_EDITOR,ROLE_ADMIN")
         result.orgInstance = Org.get(params.id)
@@ -880,7 +880,7 @@ class OrganisationController extends AbstractDebugController {
     @DebugAnnotation(test = 'hasAffiliation("INST_ADM")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_ADM") })
     def processAffiliation() {
-      def result = [:]
+      Map<String, Object> result = [:]
       result.user = User.get(springSecurityService.principal.id)
       UserOrg uo = UserOrg.get(params.assoc)
 
@@ -1013,9 +1013,9 @@ class OrganisationController extends AbstractDebugController {
 
     def addOrgType()
     {
-        def result = [:]
+        Map<String, Object> result = [:]
         result.user = User.get(springSecurityService.principal.id)
-        def orgInstance = Org.get(params.org)
+        Org orgInstance = Org.get(params.org)
 
         if (!orgInstance) {
             flash.message = message(code: 'default.not.found.message', args: [message(code: 'org.label', default: 'Org'), params.id])
@@ -1040,9 +1040,9 @@ class OrganisationController extends AbstractDebugController {
     }
     def deleteOrgType()
     {
-        def result = [:]
+        Map<String, Object> result = [:]
         result.user = User.get(springSecurityService.principal.id)
-        def orgInstance = Org.get(params.org)
+        Org orgInstance = Org.get(params.org)
 
         if (!orgInstance) {
             flash.message = message(code: 'default.not.found.message', args: [message(code: 'org.label', default: 'Org'), params.id])

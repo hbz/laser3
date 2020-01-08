@@ -22,7 +22,7 @@ class SurveyService {
     def accessService
     def contextService
     def messageSource
-    def locale
+    Locale locale
 
     @javax.annotation.PostConstruct
     void init() {
@@ -85,8 +85,8 @@ class SurveyService {
 
     }
 
-    def getParticipantConfigNavigation(Org org, SurveyInfo surveyInfo, SurveyConfig surveyConfig){
-        def result = [:]
+    Map<String, Object> getParticipantConfigNavigation(Org org, SurveyInfo surveyInfo, SurveyConfig surveyConfig){
+        Map<String, Object> result = [:]
         def surveyResults = SurveyResult.findAllByParticipantAndSurveyConfigInList(org, surveyInfo?.surveyConfigs).sort {it.surveyConfig.configOrder}
 
         int currentOrder = surveyConfig?.configOrder
@@ -106,8 +106,8 @@ class SurveyService {
 
     }
 
-    def getConfigNavigation(SurveyInfo surveyInfo, SurveyConfig surveyConfig){
-        def result = [:]
+    Map<String, Object> getConfigNavigation(SurveyInfo surveyInfo, SurveyConfig surveyConfig){
+        Map<String, Object> result = [:]
         int currentOrder = surveyConfig?.configOrder
         List<Integer> configOrders = surveyInfo?.surveyConfigs?.sort{it.configOrder}.configOrder
         int currentOrderIndex = configOrders.indexOf(currentOrder)

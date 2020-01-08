@@ -780,7 +780,7 @@ class FinanceController extends AbstractDebugController {
     @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_EDITOR") })
     def editCostItem() {
-        def result = [:]
+        Map<String, Object> result = [:]
         def costItemElementConfigurations = []
         def orgConfigurations = []
         result.tab = params.tab
@@ -817,7 +817,7 @@ class FinanceController extends AbstractDebugController {
     @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_EDITOR") })
     def copyCostItem() {
-        def result = [:]
+        Map<String, Object> result = [:]
 
         result.id = params.id
 
@@ -849,7 +849,7 @@ class FinanceController extends AbstractDebugController {
     @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_EDITOR") })
     def deleteCostItem() {
-        def result = [:]
+        Map<String, Object> result = [:]
 
         def user = User.get(springSecurityService.principal.id)
         def institution = contextService.getOrg()

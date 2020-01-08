@@ -27,7 +27,7 @@ class TitleHistoryEvent {
   }
 
   @Transient 
-  public boolean inRole(String role, TitleInstance t) {
+  boolean inRole(String role, TitleInstance t) {
     boolean result = false
     participants.each { p ->
       if ( ( p.participant.id == t.id ) && ( p.participantRole == role ) )
@@ -37,12 +37,12 @@ class TitleHistoryEvent {
   }
 
   @Transient 
-  def fromTitles() {
+  List<TitleInstance> fromTitles() {
     participants.findAll{it.participantRole=='from'}.collect{ it.participant }
   }
 
-  @Transient 
-  def toTitles() {
+  @Transient
+  List<TitleInstance> toTitles() {
     participants.findAll{it.participantRole=='to'}.collect{ it.participant }
   }
 }

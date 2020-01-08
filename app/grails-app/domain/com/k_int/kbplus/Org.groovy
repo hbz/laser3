@@ -17,6 +17,7 @@ import org.apache.commons.lang3.StringUtils
 import org.apache.commons.logging.LogFactory
 import org.codehaus.groovy.grails.orm.hibernate.cfg.GrailsHibernateUtil
 
+import javax.persistence.Id
 import javax.persistence.Transient
 
 @Log4j
@@ -240,8 +241,11 @@ class Org
             impId = java.util.UUID.randomUUID().toString();
         }
 
-        if (contextService.getOrg()) {
-            createdBy = contextService.getOrg()
+        //ugliest HOTFIX ever #2
+        if(!Thread.currentThread().name.contains("Sync")) {
+            if (contextService.getOrg()) {
+                createdBy = contextService.getOrg()
+            }
         }
 
         super.beforeInsert()
@@ -304,17 +308,17 @@ class Org
         super.beforeUpdate()
     }
 
-    static generateShortcodeFunction(name) {
+    static String generateShortcodeFunction(name) {
         return StringUtils.left(name.trim().replaceAll(" ","_"), 128) // FIX
     }
 
-    def generateShortcode(name) {
-        def candidate = Org.generateShortcodeFunction(name)
+    String generateShortcode(name) {
+        String candidate = Org.generateShortcodeFunction(name)
         return incUntilUnique(candidate);
     }
 
-    def incUntilUnique(name) {
-        def result = name;
+    String incUntilUnique(name) {
+        String result = name
         if ( Org.findByShortcode(result) ) {
             // There is already a shortcode for that identfier
             int i = 2;
@@ -323,7 +327,7 @@ class Org
             }
             result = "${name}_${i}"
         }
-        result;
+        result
     }
 
     static def lookupByIdentifierString(idstr) {
@@ -340,13 +344,13 @@ class Org
     }
 
     Map<String, Object> getCalculatedPropDefGroups(Org contextOrg) {
-        def result = [ 'global':[], 'local':[], 'orphanedProperties':[] ]
+        Map<String, Object> result = [ 'global':[], 'local':[], 'orphanedProperties':[] ]
 
         // ALL type depending groups without checking tenants or bindings
-        def groups = PropertyDefinitionGroup.findAllByOwnerType(Org.class.name)
+        List<PropertyDefinitionGroup> groups = PropertyDefinitionGroup.findAllByOwnerType(Org.class.name)
         groups.each{ it ->
 
-            def binding = PropertyDefinitionGroupBinding.findByPropDefGroupAndOrg(it, this)
+            PropertyDefinitionGroupBinding binding = PropertyDefinitionGroupBinding.findByPropDefGroupAndOrg(it, this)
 
             if (it.tenant == null || it.tenant?.id == contextOrg?.id) {
                 if (binding) {
@@ -363,50 +367,27 @@ class Org
         result
     }
 
-    def getIdentifierByType(String idtype) {
-        def result = null
+    Identifier getIdentifierByType(String idtype) {
+        Identifier result
 
-        def test = getIdentifiersByType(idtype)
+        List<Identifier> test = getIdentifiersByType(idtype)
         if (test.size() > 0) {
             result = test.get(0)  // TODO refactoring: multiple occurrences
         }
-
-      /*
-      org.hibernate.LazyInitializationException: failed to lazily initialize a collection of role: com.k_int.kbplus.Org.ids, could not initialize proxy
-
-    ids.each { id ->
-      if ( id.identifier.ns.ns.equalsIgnoreCase(idtype) ) {
-        result = id.identifier;
-      }
+        result
     }
-    */
-    result
-  }
 
-    def getIdentifiersByType(String idtype) {
-        /*
-        org.hibernate.LazyInitializationException: failed to lazily initialize a collection of role: com.k_int.kbplus.Org.ids, could not initialize proxy -
+    List<Identifier> getIdentifiersByType(String idtype) {
 
-        def result = []
-        ids.each { id ->
-            if ( id.identifier.ns.ns.equalsIgnoreCase(idtype) ) {
-                result << id.identifier;
-            }
-        }
-        */
-        // TODO [ticket=1789]
-        def result = Identifier.executeQuery(
+        Identifier.executeQuery(
                 'select id from Identifier id join id.ns ns where id.org = :org and lower(ns.ns) = :idtype',
                 [org: this, idtype: idtype.toLowerCase()]
         )
-
-        result
     }
 
   static def refdataFind(params) {
     def result = [];
-    def ql = null;
-    ql = Org.findAllByNameIlike("%${params.q}%",params)
+    List<Org> ql = Org.findAllByNameIlike("%${params.q}%",params)
 
     if ( ql ) {
       ql.each { id ->
@@ -418,7 +399,7 @@ class Org
   }
 
     // called from AjaxController.resolveOID2()
-  static def refdataCreate(value) {
+  static Org refdataCreate(value) {
     return new Org(name:value)
   }
 
@@ -505,7 +486,7 @@ class Org
                            sector:sector,
                            ipRange:iprange,
                            impId: null,
-                           gokbId: imp_uuid?.length() > 0 ? imp_uuid : null).save(flush: true)
+                           gokbId: imp_uuid?.length() > 0 ? imp_uuid : null).save()
           if(orgRoleTyp) {
               result.addToOrgType(orgRoleTyp).save()
           }
@@ -597,7 +578,7 @@ class Org
 
   }
 
-    def getDesignation() {
+    String getDesignation() {
         String ret = ""
         Org hasDept = Combo.findByFromOrgAndType(this,RDStore.COMBO_TYPE_DEPARTMENT)?.toOrg
         if(hasDept)
@@ -683,7 +664,7 @@ class Org
     }
 
     // Only for ISIL, EZB, WIBID
-    def addOnlySpecialIdentifiers(ns,value) {
+    void addOnlySpecialIdentifiers(String ns, String value) {
         boolean found = false
         this.ids.each {
             if ( it?.ns?.ns == ns && it.value == value ) {
@@ -704,28 +685,24 @@ class Org
     }
 
     //Only INST_ADM
-    def hasAccessOrg(){
-
-        if(UserOrg.findAllByOrgAndStatusAndFormalRole(this, UserOrg.STATUS_APPROVED, Role.findByAuthority('INST_ADM'))) {
+    boolean hasAccessOrg(){
+        if (UserOrg.findAllByOrgAndStatusAndFormalRole(this, UserOrg.STATUS_APPROVED, Role.findByAuthority('INST_ADM'))) {
             return true
-        }else {
+        }
+        else {
             return false
         }
-
-
     }
 
-    def hasAccessOrgListUser(){
+    Map<String, Object> hasAccessOrgListUser(){
 
-        def result = [:]
+        Map<String, Object> result = [:]
 
         result.instAdms = UserOrg.findAllByOrgAndStatusAndFormalRole(this, UserOrg.STATUS_APPROVED, Role.findByAuthority('INST_ADM'))
         result.instEditors = UserOrg.findAllByOrgAndStatusAndFormalRole(this, UserOrg.STATUS_APPROVED, Role.findByAuthority('INST_EDITOR'))
         result.instUsers = UserOrg.findAllByOrgAndStatusAndFormalRole(this, UserOrg.STATUS_APPROVED, Role.findByAuthority('INST_USER'))
 
         return result
-
-
     }
 
     // copied from AccessService
@@ -746,6 +723,7 @@ class Org
         }
         check
     }
+
     String dropdownNamingConvention(Org contextOrg){
         String result = ''
         if (RDStore.OT_INSTITUTION == contextOrg?.getCustomerType()){

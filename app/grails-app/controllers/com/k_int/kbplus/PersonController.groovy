@@ -229,12 +229,12 @@ class PersonController extends AbstractDebugController {
             return
         }
         
-        def user = User.get(springSecurityService.principal.id)
-        def editable = SpringSecurityUtils.ifAllGranted('ROLE_ADMIN')
+        User user = User.get(springSecurityService.principal.id)
+        boolean editable = SpringSecurityUtils.ifAllGranted('ROLE_ADMIN')
 
         // create mandatory PersonPrivateProperties if not existing
 
-        def org = contextService.getOrg()
+        Org org = contextService.getOrg()
         def mandatories = PropertyDefinition.findAllByDescrAndMandatoryAndTenant("Person Property", true, org)
 
         mandatories.each{ pd ->
@@ -382,8 +382,8 @@ class PersonController extends AbstractDebugController {
         if (addressbookService.isPersonEditable(prs, springSecurityService.getCurrentUser())) {
 
             if (params.newPrsRoleOrg && params.newPrsRoleType) {
-                def org = Org.get(params.newPrsRoleOrg)
-                def rdv = RefdataValue.get(params.newPrsRoleType)
+                Org org = Org.get(params.newPrsRoleOrg)
+                RefdataValue rdv = RefdataValue.get(params.newPrsRoleType)
 
                 def prAttr = params.roleType ?: PersonRole.TYPE_FUNCTION
 
@@ -481,8 +481,8 @@ class PersonController extends AbstractDebugController {
        params?.responsibilityType?.each{ key, value ->
            def result
 
-           def roleRdv      = RefdataValue.get(params.responsibilityType[key])
-           def org          = Org.get(params.org[key])
+           RefdataValue roleRdv = RefdataValue.get(params.responsibilityType[key])
+           Org org              = Org.get(params.org[key])
 
            if (roleRdv && org) {
                def subject      // dynamic

@@ -16,7 +16,7 @@ class PendingChangeController extends AbstractDebugController {
     @Secured(['ROLE_USER'])
     def accept() {
         log.debug("Accept");
-        pendingChangeService.performAccept(params.id, User.get(springSecurityService.principal.id))
+        pendingChangeService.performAccept(PendingChange.get((Long) params.id), User.get(springSecurityService.principal.id))
         redirect(url: request.getHeader('referer'))
     }
 
@@ -34,11 +34,10 @@ class PendingChangeController extends AbstractDebugController {
 
         def changes_to_accept = []
         def pending_change_pending_status = RefdataValue.getByValueAndCategory("Pending", "PendingChangeStatus")
-        def pendingChanges = owner?.pendingChanges.findAll {
+        List<PendingChange> pendingChanges = owner?.pendingChanges.findAll {
             (it.status == pending_change_pending_status) || it.status == null
         }
         def user = User.get(springSecurityService.principal.id)
-        pendingChanges = pendingChanges.collect { it.id }
         executorWrapperService.processClosure({
             pendingChanges.each { pc ->
                 pendingChangeService.performAccept(pc, user)

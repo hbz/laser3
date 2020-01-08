@@ -166,7 +166,12 @@ class RDStore {
     static final SURVEY_PARTICIPATION_PROPERTY = getSurveyProperty('Participation')
 
     static RefdataValue getRefdataValue(String value, String category) {
-        (RefdataValue) GrailsHibernateUtil.unwrapIfProxy( RefdataValue.getByValueAndCategory(value, category))
+        RefdataValue result = RefdataValue.getByValueAndCategory(value, category)
+
+        if (! result) {
+            println "WARNING: No RefdataValue found by RDStore for value:'${value}', category:'${category}'"
+        }
+        (RefdataValue) GrailsHibernateUtil.unwrapIfProxy( result)
     }
 
     static SurveyProperty getSurveyProperty(String name) {

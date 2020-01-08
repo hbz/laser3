@@ -13,7 +13,7 @@ class TippController extends AbstractDebugController {
 
   @Secured(['ROLE_USER'])
   def show() { 
-    def result = [:]
+    Map<String, Object> result = [:]
 
     result.user = User.get(springSecurityService.principal.id)
     result.editable = SpringSecurityUtils.ifAllGranted('ROLE_ADMIN')

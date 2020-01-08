@@ -45,8 +45,8 @@ trait AuditableTrait {
         List<String> gwp = auditService.getWatchedProperties(this)
         gwp?.each { cp ->
             if (oldMap[cp] != newMap[cp]) {
-                def event
-                def clazz = this."${cp}".getClass().getName()
+                Map<String, Object> event = [:]
+                String clazz = this."${cp}".getClass().getName()
 
                 log?.debug("notifyChangeEvent() " + this + " : " + clazz)
 
@@ -54,7 +54,8 @@ trait AuditableTrait {
 
                     if (auditService.getAuditConfig(this)) {
 
-                        def old_oid, new_oid
+                        String old_oid
+                        String new_oid
                         if (oldMap[cp] instanceof RefdataValue ) {
                             old_oid = oldMap[cp] ? "${oldMap[cp].class.name}:${oldMap[cp].id}" : null
                             new_oid = newMap[cp] ? "${newMap[cp].class.name}:${newMap[cp].id}" : null
@@ -80,14 +81,14 @@ trait AuditableTrait {
                 } // CustomProperty
                 else {
 
-                    def isSubOrLic = (this instanceof Subscription || this instanceof License)
+                    boolean isSubOrLic = (this instanceof Subscription || this instanceof License)
 
                     if ( ! isSubOrLic || (isSubOrLic && auditService.getAuditConfig(this, cp)) ) {
 
                         if (clazz.equals("com.k_int.kbplus.RefdataValue")) {
 
-                            def old_oid = oldMap[cp] ? "${oldMap[cp].class.name}:${oldMap[cp].id}" : null
-                            def new_oid = newMap[cp] ? "${newMap[cp].class.name}:${newMap[cp].id}" : null
+                            String old_oid = oldMap[cp] ? "${oldMap[cp].class.name}:${oldMap[cp].id}" : null
+                            String new_oid = newMap[cp] ? "${newMap[cp].class.name}:${newMap[cp].id}" : null
 
                             event = [
                                     OID     : "${this.class.name}:${this.id}",

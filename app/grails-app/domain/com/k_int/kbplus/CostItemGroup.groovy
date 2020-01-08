@@ -28,7 +28,7 @@ class CostItemGroup {
         def result     = [];
         def qryResults = null
         def searchTerm = (params.q ? params.q.toLowerCase() : '' ) + "%"
-        def orgOwner   = Org.findByShortcode(params.shortcode)
+        Org orgOwner   = Org.findByShortcode(params.shortcode)
         /*
         def owner      = BudgetCode.findByOwner(orgOwner)
 

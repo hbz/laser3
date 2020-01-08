@@ -147,7 +147,7 @@ class ApiStatistic {
         if (! pform) {
             return null
         }
-        def result = [:]
+        Map<String, Object> result = [:]
 
         result.globalUID    = pform.globalUID
         result.name         = pform.name

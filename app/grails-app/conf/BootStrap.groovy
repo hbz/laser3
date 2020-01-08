@@ -314,36 +314,36 @@ class BootStrap {
 
         // Global System Roles
 
-        def yodaRole    = Role.findByAuthority('ROLE_YODA')        ?: new Role(authority: 'ROLE_YODA', roleType: 'transcendent').save(failOnError: true)
-        def adminRole   = Role.findByAuthority('ROLE_ADMIN')       ?: new Role(authority: 'ROLE_ADMIN', roleType: 'global').save(failOnError: true)
-        //def dmRole      = Role.findByAuthority('ROLE_DATAMANAGER') ?: new Role(authority: 'ROLE_DATAMANAGER', roleType: 'global').save(failOnError: true)
-        def userRole    = Role.findByAuthority('ROLE_USER')        ?: new Role(authority: 'ROLE_USER', roleType: 'global').save(failOnError: true)
-        def apiRole     = Role.findByAuthority('ROLE_API')         ?: new Role(authority: 'ROLE_API', roleType: 'global').save(failOnError: true)
+        Role yodaRole    = Role.findByAuthority('ROLE_YODA')        ?: new Role(authority: 'ROLE_YODA', roleType: 'transcendent').save(failOnError: true)
+        Role adminRole   = Role.findByAuthority('ROLE_ADMIN')       ?: new Role(authority: 'ROLE_ADMIN', roleType: 'global').save(failOnError: true)
+        //Role dmRole      = Role.findByAuthority('ROLE_DATAMANAGER') ?: new Role(authority: 'ROLE_DATAMANAGER', roleType: 'global').save(failOnError: true)
+        Role userRole    = Role.findByAuthority('ROLE_USER')        ?: new Role(authority: 'ROLE_USER', roleType: 'global').save(failOnError: true)
+        Role apiRole     = Role.findByAuthority('ROLE_API')         ?: new Role(authority: 'ROLE_API', roleType: 'global').save(failOnError: true)
 
-        def globalDataRole    = Role.findByAuthority('ROLE_GLOBAL_DATA')        ?: new Role(authority: 'ROLE_GLOBAL_DATA', roleType: 'global').save(failOnError: true)
-        def orgEditorRole     = Role.findByAuthority('ROLE_ORG_EDITOR')         ?: new Role(authority: 'ROLE_ORG_EDITOR', roleType: 'global').save(failOnError: true)
-        //def orgComRole        = Role.findByAuthority('ROLE_ORG_COM_EDITOR')     ?: new Role(authority: 'ROLE_ORG_COM_EDITOR', roleType: 'global').save(failOnError: true)
-        def packageEditorRole = Role.findByAuthority('ROLE_PACKAGE_EDITOR')     ?: new Role(authority: 'ROLE_PACKAGE_EDITOR', roleType: 'global').save(failOnError: true)
-        def statsEditorRole   = Role.findByAuthority('ROLE_STATISTICS_EDITOR')  ?: new Role(authority: 'ROLE_STATISTICS_EDITOR', roleType: 'global').save(failOnError: true)
-        def ticketEditorRole  = Role.findByAuthority('ROLE_TICKET_EDITOR')      ?: new Role(authority: 'ROLE_TICKET_EDITOR', roleType: 'global').save(failOnError: true)
+        Role globalDataRole    = Role.findByAuthority('ROLE_GLOBAL_DATA')        ?: new Role(authority: 'ROLE_GLOBAL_DATA', roleType: 'global').save(failOnError: true)
+        Role orgEditorRole     = Role.findByAuthority('ROLE_ORG_EDITOR')         ?: new Role(authority: 'ROLE_ORG_EDITOR', roleType: 'global').save(failOnError: true)
+        //Role orgComRole        = Role.findByAuthority('ROLE_ORG_COM_EDITOR')     ?: new Role(authority: 'ROLE_ORG_COM_EDITOR', roleType: 'global').save(failOnError: true)
+        Role packageEditorRole = Role.findByAuthority('ROLE_PACKAGE_EDITOR')     ?: new Role(authority: 'ROLE_PACKAGE_EDITOR', roleType: 'global').save(failOnError: true)
+        Role statsEditorRole   = Role.findByAuthority('ROLE_STATISTICS_EDITOR')  ?: new Role(authority: 'ROLE_STATISTICS_EDITOR', roleType: 'global').save(failOnError: true)
+        Role ticketEditorRole  = Role.findByAuthority('ROLE_TICKET_EDITOR')      ?: new Role(authority: 'ROLE_TICKET_EDITOR', roleType: 'global').save(failOnError: true)
 
         // Institutional Roles
 
-        def instAdmin = Role.findByAuthority('INST_ADM')
+        Role instAdmin = Role.findByAuthority('INST_ADM')
         if (! instAdmin) {
             instAdmin = new Role(authority: 'INST_ADM', roleType: 'user').save(failOnError: true)
         }
         ensurePermGrant(instAdmin, edit_permission)
         ensurePermGrant(instAdmin, view_permission)
 
-        def instEditor = Role.findByAuthority('INST_EDITOR')
+        Role instEditor = Role.findByAuthority('INST_EDITOR')
         if (! instEditor) {
             instEditor = new Role(authority: 'INST_EDITOR', roleType: 'user').save(failOnError: true)
         }
         ensurePermGrant(instEditor, edit_permission)
         ensurePermGrant(instEditor, view_permission)
 
-        def instUser = Role.findByAuthority('INST_USER')
+        Role instUser = Role.findByAuthority('INST_USER')
         if (! instUser) {
             instUser = new Role(authority: 'INST_USER', roleType: 'user').save(failOnError: true)
         }
@@ -368,12 +368,12 @@ class BootStrap {
             }
         }
 
-        def fakeRole                = locOrgRole('FAKE',                   'fake', [en: 'Fake', de: 'Fake'])
-        def orgMemberRole           = locOrgRole('ORG_BASIC_MEMBER',       'org', [en: 'Institution consortium member', de: 'Konsorte'])
-        def orgSingleRole           = locOrgRole('ORG_INST',               'org', [en: 'Institution basic', de: 'Singlenutzer'])
-        def orgCollectiveRole       = locOrgRole('ORG_INST_COLLECTIVE',    'org', [en: 'Institution collective', de: 'Kollektivnutzer'])
-        def orgConsortiumRole       = locOrgRole('ORG_CONSORTIUM',         'org', [en: 'Consortium basic', de: 'Konsortium ohne Umfragefunktion'])
-        def orgConsortiumSurveyRole = locOrgRole('ORG_CONSORTIUM_SURVEY',  'org', [en: 'Consortium survey', de: 'Konsortium mit Umfragefunktion'])
+        Role fakeRole                = locOrgRole('FAKE',                   'fake', [en: 'Fake', de: 'Fake'])
+        Role orgMemberRole           = locOrgRole('ORG_BASIC_MEMBER',       'org', [en: 'Institution consortium member', de: 'Konsorte'])
+        Role orgSingleRole           = locOrgRole('ORG_INST',               'org', [en: 'Institution basic', de: 'Singlenutzer'])
+        Role orgCollectiveRole       = locOrgRole('ORG_INST_COLLECTIVE',    'org', [en: 'Institution collective', de: 'Kollektivnutzer'])
+        Role orgConsortiumRole       = locOrgRole('ORG_CONSORTIUM',         'org', [en: 'Consortium basic', de: 'Konsortium ohne Umfragefunktion'])
+        Role orgConsortiumSurveyRole = locOrgRole('ORG_CONSORTIUM_SURVEY',  'org', [en: 'Consortium survey', de: 'Konsortium mit Umfragefunktion'])
 
         createOrgPerms(fakeRole,                    ['FAKE'])
         createOrgPerms(orgMemberRole,               ['ORG_BASIC_MEMBER'])
@@ -1438,22 +1438,22 @@ class BootStrap {
                         descr:allDescr, type: OT.Rdv, cat:'YN', isUsedForLogic: true
                 ],
                 [
-                        name: [en: "GASCO-Anzeigename", de: "GASCO-Anzeigename"],
+                        name: [en: "GASCO display name", de: "GASCO-Anzeigename"],
                         expl : [en: "", de: "Dieses Merkmal setzen, um bei Bedarf im GASCO-Monitor einen anderen Lizenznamen anzugeben als in LAS:eR aufgenommen."],
                         descr:allDescr, type: OT.String, isUsedForLogic: true
                 ],
                 [
-                        name: [en: "GASCO-Verhandlername", de: "GASCO-Verhandlername"],
+                        name: [en: "GASCO negotiator name", de: "GASCO-Verhandlername"],
                         expl : [en: "", de: "Dieses Merkmal als Konsortialstelle verwenden, um im GASCO-Monitor einen anderen Verhandlungsführer-Namen anzugeben."],
                         descr:allDescr, type: OT.String, isUsedForLogic: true
                 ],
                 [
-                        name: [en: "GASCO-Information-Link", de: "GASCO-Informations-Link"],
+                        name: [en: "GASCO information link", de: "GASCO-Informations-Link"],
                         expl : [en: "", de: "Unter welchem Link finden sich Informationen zum Produkt?"],
                         descr:allDescr, type: OT.URL, isUsedForLogic: true
                 ],
                 [
-                        name: [en: "EZB Gelbschaltung", de: "EZB Gelbschaltung"],
+                        name: [en: "EZB tagging (yellow)", de: "EZB Gelbschaltung"],
                         expl : [en: "", de: "Wird eine Gelbschaltung in der EZB vorgenommen?"],
                         descr:allDescr, type: OT.Rdv, cat:'YN'
                 ],
@@ -1473,42 +1473,42 @@ class BootStrap {
                         descr:allDescr, type: OT.String
                 ],
                 [
-                        name: [en: "Preisvorteil durch weitere Produktteilnahme", de: "Preisvorteil durch weitere Produktteilnahme"],
+                        name: [en: "Pricing advantage by licensing of another product", de: "Preisvorteil durch weitere Produktteilnahme"],
                         expl : [en: "", de: "Kann durch die Lizenzierung eines weiteren Produktes ein Preisvorteil gesichert werden?"],
                         descr:allDescr, type: OT.Rdv, cat:'YN'
                 ],
                 [
-                        name: [en: "Produktabhängigkeit", de: "Produktabhängigkeit"],
+                        name: [en: "Product dependency", de: "Produktabhängigkeit"],
                         expl : [en: "", de: "Ist die Lizenz von einem anderen Produkt abhängig?"],
                         descr:allDescr, type: OT.Rdv, cat:'YN'
                 ],
                 [
-                        name: [en: "Bundesweit offen", de: "Bundesweit offen"],
+                        name: [en: "Open country-wide", de: "Bundesweit offen"],
                         expl : [en: "", de: "Hat die Lizenz eine überregionale Ausrichtung?"],
                         descr:allDescr, type: OT.Rdv, cat:'YN'
                 ],
                 [
-                        name: [en: "Rechnungsstellung durch Anbieter", de: "Rechnungsstellung durch Anbieter"],
+                        name: [en: "Billing done by provider", de: "Rechnungsstellung durch Anbieter"],
                         expl: [en: "", de: "Erfolgt die Rechnungsstellung direkt über den Anbieter?"],
                         descr:allDescr, type: OT.Rdv, cat:'YN'
                 ],
                 [
-                        name: [en: "Mengenrabatt Stichtag", de: "Mengenrabatt Stichtag"],
+                        name: [en: "Due date for volume discount", de: "Mengenrabatt Stichtag"],
                         expl: [en: "", de: "Wann ist der Stichtag für die Findung der erreichten Rabattstufe?"],
                         descr:allDescr, type: OT.Date, cat:'YN'
                 ],
                 [
-                        name: [en: "Testzeitraum", de: "Testzeitraum"],
+                        name: [en: "Time span for testing", de: "Testzeitraum"],
                         expl: [en: "", de: "Wie lange ermöglicht der Anbieter einen kostenfreien Testzugriff?"],
                         descr:allDescr, type: OT.String
                 ],
                 [
-                        name: [en: "Unterjähriger Einstieg", de: "Unterjähriger Einstieg"],
+                        name: [en: "Joining during the period", de: "Unterjähriger Einstieg"],
                         expl: [en: "", de: "Ist ein unterjähriger Einstieg in die Lizenz möglich?"],
                         descr:allDescr, type: OT.Rdv, cat:'YN'
                 ],
                 [
-                        name: [en: "Neueinsteigerrabatt", de: "Neueinsteigerrabatt"],
+                        name: [en: "Newcomer discount", de: "Neueinsteigerrabatt"],
                         expl : [en: "", de: "Existiert ein zusätzlicher Neueinsteigerpreis?"],
                         descr:allDescr, type: OT.Rdv, cat:'YN'
                 ],
@@ -1533,47 +1533,47 @@ class BootStrap {
                         descr:allDescr, type: OT.Rdv, cat:'Category A-F'
                 ],
                 [
-                        name: [en: "Rechnungszeitpunkt", de: "Rechnungszeitpunkt"],
-                        expl : [en: "", de: "Zeitpunkt der Rechnung."],
+                        name: [en: "Time of billing", de: "Rechnungszeitpunkt"],
+                        expl : [en: "Time of billing.", de: "Zeitpunkt der Rechnung."],
                         descr:allDescr, type: OT.String
                 ],
                 [
-                        name: [en: "Zahlungsziel", de: "Zahlungsziel"],
+                        name: [en: "Payment target", de: "Zahlungsziel"],
                         expl : [en: "", de: "Zahlungsziel"],
                         descr:allDescr, type: OT.String
                 ],
                 [
-                        name: [en: "Preis gerundet", de: "Preis gerundet"],
-                        expl : [en: "", de: "Gerundeter Preis."],
+                        name: [en: "Price rounded", de: "Preis gerundet"],
+                        expl : [en: "Rounded price.", de: "Gerundeter Preis."],
                         descr:allDescr, type: OT.Rdv, cat:'YN'
                 ],
                 [
-                        name: [en: "Teilzahlung", de: "Teilzahlung"],
-                        expl : [en: "", de: "Ist bei der Lizenz eine Teilzahlung der Rechnung vorgesehen?"],
+                        name: [en: "Partial payment", de: "Teilzahlung"],
+                        expl : [en: "Is a partial payment of bills intended in this subscription?", de: "Ist bei der Lizenz eine Teilzahlung der Rechnung vorgesehen?"],
                         descr:allDescr, type: OT.Rdv, cat:'YN'
                 ],
                 [
-                        name: [en: "Statistik", de: "Statistik"],
+                        name: [en: "Statistic", de: "Statistik"],
                         expl : [en: "", de: ""],
                         descr:allDescr, type: OT.String
                 ],
                 [
-                        name: [en: "Statistikzugang", de: "Statistikzugang"],
-                        expl : [en: "", de: "Mit welchen Zugangsdaten können die Statistiken abgerufen werden?"],
+                        name: [en: "Statistic access", de: "Statistikzugang"],
+                        expl : [en: "With which credentials may the statistics be fetched?", de: "Mit welchen Zugangsdaten können die Statistiken abgerufen werden?"],
                         descr:allDescr, type: OT.String
                 ],
                 [
-                        name: [key: "StatisticsLink", en: "Statistics Link", de: "Statistik-Link"],
+                        name: [en: "Statistics Link", de: "Statistik-Link"],
                         expl : [en: "", de: "Über welchen Link können die Statistiken abgerufen werden?"],
                         descr:allDescr, type: OT.URL
                 ],
                 [
-                        name: [key: "AdminAccess", en: "Admin Access", de: "Adminzugang"],
+                        name: [en: "Admin Access", de: "Adminzugang"],
                         expl : [en: "", de: "Mit welchen Zugangsdaten gelangt in den Admin-Bereich auf der Anbieterplattform?"],
                         descr:allDescr, type: OT.String
                 ],
                 [
-                        name: [key: "AdminLink", en: "Admin Link", de: "Admin-Link"],
+                        name: [en: "Admin Link", de: "Admin-Link"],
                         expl : [en: "", de: "Über welchen Link gelangt in den Admin-Bereich auf der Anbieterplattform?"],
                         descr:allDescr, type: OT.URL
                 ],
@@ -1588,143 +1588,143 @@ class BootStrap {
                         descr:allDescr, type: OT.Rdv, cat:'YN'
                 ],
                 [
-                        name: [en: "Private Einrichtungen", de: "Private Einrichtungen"],
+                        name: [en: "Private institutions", de: "Private Einrichtungen"],
                         expl: [en: "", de: "Dürfen auch private Einrichtungen an der Lizenz teilnehmen?"],
                         descr:allDescr, type: OT.Rdv, cat:'YN'
                 ],
                 [
-                        name: [en: "Mehrjahreslaufzeit", de: "Mehrjahreslaufzeit"],
+                        name: [en: "Perennial term", de: "Mehrjahreslaufzeit"],
                         expl: [en: "", de: "Ist für die Lizenze eine Mehrjahreslaufzeit möglich?"],
                         descr:allDescr, type: OT.Rdv, cat:'YN'
                 ],
                 [
-                        name: [en: "Mehrjahreslaufzeit ausgewählt", de: "Mehrjahreslaufzeit ausgewählt"],
+                        name: [en: "Perennial term checked", de: "Mehrjahreslaufzeit ausgewählt"],
                         expl: [en: "", de: "Hat der Teilnehmer sich für eine Mehrjahreslaufzeit entschieden?"],
                         descr:allDescr, type: OT.Rdv, cat:'YN', isUsedForLogic: true
                 ],
                 [
-                        name: [en: "Rabatt", de: "Rabatt"],
+                        name: [en: "Discount", de: "Rabatt"],
                         expl: [en: "", de: "Höhe des Rabattes."],
                         descr:allDescr, type: OT.String
                 ],
                 [
-                        name: [en: "Rabattstaffel", de: "Rabattstaffel"],
+                        name: [en: "Scale of discount", de: "Rabattstaffel"],
                         expl: [en: "", de: "Wie sieht die Rabattstaffel für die Lizenz aus?"],
                         descr:allDescr, type: OT.String
                 ],
                 [
-                        name: [en: "Rabatt Zählung", de: "Rabatt Zählung"],
+                        name: [en: "Calculation of discount", de: "Rabatt Zählung"],
                         expl: [en: "", de: "Wie wird die Rabatthöhe errechnet? Z.B. durch Zählung aller Teilnehmer bei dem Anbieter…"],
                         descr:allDescr, type: OT.Rdv, cat:'YN'
                 ],
                 [
-                        name: [en: "Kündigungsfrist", de: "Kündigungsfrist"],
+                        name: [en: "Term of notice", de: "Kündigungsfrist"],
                         expl: [en: "", de: "Kündigungsfrist."],
                         descr:allDescr, type: OT.Rdv, cat:'YN'
                 ],
                 [
-                        name: [en: "Zusätzliche Software erforderlich?", de: "Zusätzliche Software erforderlich?"],
+                        name: [en: "Additional software necessary?", de: "Zusätzliche Software erforderlich?"],
                         expl : [en: "", de: "Wird für die Lizenzierung eine zusätzliche Software benötigt?"],
                         descr:allDescr, type: OT.Rdv, cat:'YN'
                 ],
                 [
-                        name: [en: "Preissteigerung", de: "Preissteigerung"],
+                        name: [en: "Price increase", de: "Preissteigerung"],
                         expl: [en: "", de: "Preissteigerung."],
                         descr:allDescr, type: OT.String
                 ],
                 [
-                        name: [en: "Preis abhängig von", de: "Preis abhängig von"],
+                        name: [en: "Price depending on", de: "Preis abhängig von"],
                         expl : [en: "", de: "Ist der Preis von etwas abhängig?"],
                         descr:allDescr, type: OT.String, multiple:true
                 ],
                 [
-                        name: [en: "Abbestellquote", de: "Abbestellquote"],
-                        expl: [en: "", de: "Abbestellquote."],
+                        name: [en: "Cancellation rate", de: "Abbestellquote"],
+                        expl: [en: "Cancellation rate.", de: "Abbestellquote."],
                         descr:allDescr, type: OT.String
                 ],
                 [
-                        name: [en: "Bestellnummer im Erwerbungssystem", de: "Bestellnummer im Erwerbungssystem"],
+                        name: [en: "Order number in purchasing system", de: "Bestellnummer im Erwerbungssystem"],
                         expl: [en: "", de: "Bestellnummer im Erwerbungssystem."],
                         descr:allDescr, type: OT.String
                 ],
                 [
-                        name: [en: "Zugangskennungen für Nutzer (pro Zeitschrift)", de: "Zugangskennungen für Nutzer (pro Zeitschrift)"],
+                        name: [en: "Credentials for users (per journal)", de: "Zugangskennungen für Nutzer (pro Zeitschrift)"],
                         expl: [en: "", de: "Zugangskennungen für Nutzer (pro Zeitschrift)."],
                         descr:allDescr, type: OT.String
                 ],
                 [
-                        name: [key: "TaxExemption", en: "TaxExemption", de: "Steuerbefreiung"],
+                        name: [en: "Tax exemption", de: "Steuerbefreiung"],
                         expl : [en: "", de: "Liegt eine Steuerbefreiung für die Lizenz vor?"],
                         descr:allDescr, type: OT.Rdv, cat:'YN'
                 ],
                 [
-                        name: [en: "Subscriptionsnummer vom Verlag", de: "Subskriptionsnummer des Verlags"],
+                        name: [en: "Subscription number of editor", de: "Subskriptionsnummer des Verlags"],
                         expl: [en: "", de: "Subskriptionsnummer des Verlags."],
                         descr:allDescr, type: OT.String, multiple:true
                 ],
                 [
-                        name: [en: "Subskriptionsnummer des Lieferanten", de: "Subskriptionsnummer des Lieferanten"],
+                        name: [en: "Subscription number of provider", de: "Subskriptionsnummer des Lieferanten"],
                         expl: [en: "", de: "Subskriptionsnummer des Lieferanten."],
                         descr:allDescr, type: OT.String, multiple:true
                 ],
                 [
-                        name: [en: "DBIS-Eintrag", de: "DBIS-Eintrag"],
+                        name: [en: "DBIS entry", de: "DBIS-Eintrag"],
                         expl: [en: "", de: "Existiert ein DBIS-Eintrag?"],
                         descr:allDescr, type: OT.Rdv, cat:'YN'
                 ],
                 [
-                        name: [en: "DBIS-Link", de: "DBIS-Link"],
+                        name: [en: "DBIS link", de: "DBIS-Link"],
                         expl: [en: "", de: "Link zum DBIS-Eintrag."],
                         descr:allDescr, type: OT.URL
                 ],
                 [
-                        name: [en: "Abbestellgrund", de: "Abbestellgrund"],
+                        name: [en: "Cancellation reason", de: "Abbestellgrund"],
                         expl: [en: "", de: "Welchen Grund gab es für die Abbestellung?"],
                         descr:allDescr, type: OT.String
                 ],
                 [
-                        name: [en: "Hosting-Gebühr", de: "Hosting-Gebühr"],
+                        name: [en: "Hosting fee", de: "Hosting-Gebühr"],
                         expl: [en: "", de: "Ist eine Hosting-Gebühr zu entrichten?"],
                         descr:allDescr, type: OT.String
                 ],
                 [
-                        name: [en: "Pick&Choose-Paket", de: "Pick&Choose-Paket"],
+                        name: [en: "Pick&Choose package", de: "Pick&Choose-Paket"],
                         expl: [en: "", de: "Handelt es sich um ein Paket mit Einzeltitelauswahl (Pick & Choose)?"],
                         descr:allDescr, type: OT.String
                 ],
                 [
-                        name: [en: "PDA/EBS-Programm", de: "PDA/EBS-Programm"],
+                        name: [en: "PDA/EBS model", de: "PDA/EBS-Programm"],
                         expl: [en: "", de: "Basiert die Lizenz auf einem PDA-, EBS- oder EBA-Modell?"],
                         descr:allDescr, type: OT.String
                 ],
                                 //[name: [en: "Produktsigel beantragt", de: "Produktsigel beantragt"],                    descr:allDescr, type: OT.String],
                 [
-                        name: [en: "Fachstatistik / Klassifikation", de: "Fachstatistik / Klassifikation"],
+                        name: [en: "Specialised statistics / classification", de: "Fachstatistik / Klassifikation"],
                         expl: [en: "", de: "Fachstatistik / Klassifikation"],
                         descr:allDescr, type: OT.Int, multiple:true
                 ],
                 [
-                        name: [en: "Archivzugriff", de: "Archivzugriff"],
+                        name: [en: "Perpetual access", de: "Archivzugriff"],
                         expl: [en: "", de: "Gibt es einen Archivzugriff?"],
                         descr:allDescr, type: OT.Rdv, cat:'YN'
                 ],
                 [
-                        name: [en: "Eingeschränkter Benutzerkreis", de: "Eingeschränkter Benutzerkreis"],
+                        name: [en: "Restricted user group", de: "Eingeschränkter Benutzerkreis"],
                         expl: [en: "", de: "Welche Einschränkung des Benutzerkreises gibt es?"],
                         descr:allDescr, type: OT.String
                 ],
                 [
-                        name: [en: "SFX-Eintrag", de: "SFX-Eintrag"],
+                        name: [en: "SFX entry", de: "SFX-Eintrag"],
                         expl: [en: "", de: "Gibt es einen SFX-Eintrag?"],
                         descr:allDescr, type: OT.Rdv, cat:'YN'
                 ],
                 [
-                        name: [key: "Take Over Titles", en: "Take Over Titles", de: "Take-Over-Titel"],
+                        name: [en: "Take Over Titles", de: "Take-Over-Titel"],
                         expl: [en: "", de: "Bedingungen für während der Vertragslaufzeit vom Verlag übernommene oder neu veröffentlichte Titel."],
                         descr:allDescr, type: OT.String
                 ],
                 [
-                        name: [key: "Deep Discount Price", en: "Deep Discount Price", de: "Deep-Discount-Preis"],
+                        name: [en: "Deep Discount Price", de: "Deep-Discount-Preis"],
                         expl: [en: "", de: "Bietet der Verlag einen Deep-Discount-Preis für Printabonnements an?"],
                         descr:allDescr, type: OT.Rdv, cat:'YN'
                 ],
@@ -1811,22 +1811,22 @@ class BootStrap {
                 tenant = Org.findByShortname(default_prop.tenant)
 
                 if (tenant) {
-                    prop = PropertyDefinition.findByNameAndTenant(default_prop.name['en'], tenant)
+                    prop = PropertyDefinition.findByNameAndDescrAndTenant(default_prop.name['en'], default_prop.descr['en'], tenant)
                 } else {
                     log.debug("unable to locate tenant: ${default_prop.tenant} .. skipped")
                     return
                 }
             } else {
-                prop = PropertyDefinition.findWhere(name: default_prop.name['en'], tenant: null)
+                prop = PropertyDefinition.findWhere(name: default_prop.name['en'], descr: default_prop.descr['en'], tenant: null)
             }
 
             if (! prop) {
                 if (tenant) {
-                    log.debug("unable to locate private property definition for ${default_prop.name['en']} for tenant: ${tenant} .. creating")
-                    prop = new PropertyDefinition(name: default_prop.name['en'], tenant: tenant)
+                    log.debug("unable to locate private property definition for ${default_prop.name['en']} / ${default_prop.descr['en']} for tenant: ${tenant} .. creating")
+                    prop = new PropertyDefinition(name: default_prop.name['en'], descr: default_prop.descr['en'], tenant: tenant)
                 } else {
-                    log.debug("unable to locate property definition for ${default_prop.name['en']} .. creating")
-                    prop = new PropertyDefinition(name: default_prop.name['en'])
+                    log.debug("unable to locate property definition for ${default_prop.name['en']} / ${default_prop.descr['en']} .. creating")
+                    prop = new PropertyDefinition(name: default_prop.name['en'], descr: default_prop.descr['en'])
                 }
             }
 
@@ -1843,7 +1843,6 @@ class BootStrap {
             }
 
             prop.type  = default_prop.type
-            prop.descr = default_prop.descr['en']
             //prop.softData = false
             prop.isHardData = BOOTSTRAP
             prop.save(failOnError: true)

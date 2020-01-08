@@ -30,7 +30,7 @@ class ProfileController {
 
     @Secured(['ROLE_USER'])
     def index() {
-        def result = [:]
+        Map<String, Object> result = [:]
         result.user = User.get(springSecurityService.principal.id)
         result.editable = true
 
@@ -41,7 +41,7 @@ class ProfileController {
 
     @Secured(['ROLE_USER'])
     def errorReport() {
-        def result = [:]
+        Map<String, Object> result = [:]
         result.user = User.get(springSecurityService.principal.id)
 
         if (params.sendErrorReport) {
@@ -67,7 +67,7 @@ class ProfileController {
 
     @Secured(['ROLE_USER'])
     def errorOverview() {
-        def result = [:]
+        Map<String, Object> result = [:]
         result.user = User.get(springSecurityService.principal.id)
 
         result.tickets = SystemTicket.where{}.list(sort: 'dateCreated', order: 'desc')
@@ -78,7 +78,7 @@ class ProfileController {
 
     @Secured(['ROLE_USER'])
     def help() {
-        def result = [:]
+        Map<String, Object> result = [:]
         result.user = User.get(springSecurityService.principal.id)
         result
     }
@@ -113,7 +113,7 @@ class ProfileController {
 
     @Secured(['ROLE_USER'])
     def processDeleteUser() {
-        def result = [:]
+        Map<String, Object> result = [:]
         result.user = User.get(springSecurityService.principal.id)
 
         String name = result.user.getDisplayName()

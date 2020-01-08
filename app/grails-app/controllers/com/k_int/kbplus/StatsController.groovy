@@ -11,7 +11,7 @@ class StatsController extends AbstractDebugController {
 
   @Secured(['ROLE_ADMIN'])
   def statsHome() { 
-    def result = [:]
+    Map<String, Object> result = [:]
 
     result.orginfo = [:]
 

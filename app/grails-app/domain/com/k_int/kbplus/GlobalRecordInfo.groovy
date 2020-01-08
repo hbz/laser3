@@ -61,7 +61,7 @@ class GlobalRecordInfo {
   }
 
   transient String getDisplayRectype() {
-    def result=""
+    String result = ""
     switch ( rectype ) {
       case 0:
         result = 'Package'

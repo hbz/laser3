@@ -34,7 +34,7 @@ class PlatformAccessMethod extends AbstractBaseDomain {
         validTo(nullable: true)
   }
     
-    static getAllRefdataValues(String category) {
+    static List<RefdataValue> getAllRefdataValues(String category) {
         RefdataCategory.getAllRefdataValues(category)
     }
     

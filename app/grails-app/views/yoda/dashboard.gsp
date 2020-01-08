@@ -1,3 +1,4 @@
+<%@ page import="com.k_int.kbplus.batch.HeartbeatJob" %>
 <!doctype html>
 <html>
 <head>
@@ -6,6 +7,7 @@
 </head>
 
 <body>
+    <laser:serviceInjection />
 
     <semui:breadcrumbs>
         <semui:crumb message="menu.yoda.dash" class="active"/>
@@ -77,6 +79,21 @@
 
         <br />
         <br />
+
+        <h2 class="ui header">Anzahl Threads: ${Thread.getAllStackTraces().keySet().size()}</h2>
+
+        <table class="ui celled la-table la-table-small table" id="contextTable">
+            <tbody>
+                <g:each in="${Thread.getAllStackTraces().keySet().sort{ it.id }}" var="thread">
+                    <tr>
+                        <td>${thread.getId()}</td>
+                        <td>${thread.getName().replaceAll('%002e', '.')}</td>
+                        <td>${thread.getState()}</td>
+                        <td>${thread.isAlive()}</td>
+                    </tr>
+                </g:each>
+            </tbody>
+        </table>
 
     <%--
     <p>TODO: Offene Beitrittsanfragen</p>

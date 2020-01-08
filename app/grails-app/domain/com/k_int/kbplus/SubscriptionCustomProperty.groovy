@@ -5,6 +5,7 @@ import com.k_int.kbplus.abstract_domain.CustomProperty
 import com.k_int.properties.PropertyDefinition
 import de.laser.traits.AuditableTrait
 import grails.converters.JSON
+import org.codehaus.groovy.grails.web.json.JSONElement
 
 import javax.persistence.Transient
 
@@ -63,8 +64,9 @@ class SubscriptionCustomProperty extends CustomProperty implements AuditableTrai
         log.debug("onDelete SubscriptionCustomProperty")
 
         //def oid = "${this.owner.class.name}:${this.owner.id}"
-        def oid = "${this.class.name}:${this.id}"
-        def changeDoc = [ OID: oid,
+        String oid = "${this.class.name}:${this.id}"
+        Map<String, Object> changeDoc = [
+                          OID: oid,
                           event:'SubscriptionCustomProperty.deleted',
                           prop: "${this.type.name}",
                           old: "",
@@ -82,26 +84,26 @@ class SubscriptionCustomProperty extends CustomProperty implements AuditableTrai
 
             // legacy ++
 
-            def locale = org.springframework.context.i18n.LocaleContextHolder.getLocale()
+            Locale locale = org.springframework.context.i18n.LocaleContextHolder.getLocale()
             ContentItem contentItemDesc = ContentItem.findByKeyAndLocale("kbplus.change.subscription."+changeDocument.prop, locale.toString())
-            def description = messageSource.getMessage('default.accept.placeholder',null, locale)
+            String description = messageSource.getMessage('default.accept.placeholder',null, locale)
             if (contentItemDesc) {
                 description = contentItemDesc.content
             }
             else {
-                def defaultMsg = ContentItem.findByKeyAndLocale("kbplus.change.subscription.default", locale.toString())
+                ContentItem defaultMsg = ContentItem.findByKeyAndLocale("kbplus.change.subscription.default", locale.toString())
                 if( defaultMsg)
                     description = defaultMsg.content
             }
 
             // legacy ++
 
-            def slavedPendingChanges = []
+            List<PendingChange> slavedPendingChanges = []
 
-            def depedingProps = SubscriptionCustomProperty.findAllByInstanceOf( this )
+            List<SubscriptionCustomProperty> depedingProps = SubscriptionCustomProperty.findAllByInstanceOf( this )
             depedingProps.each{ scp ->
 
-                def definedType = 'text'
+                String definedType = 'text'
                 if (scp.type.type == RefdataValue.class.toString()) {
                     definedType = 'rdv'
                 }
@@ -123,7 +125,7 @@ class SubscriptionCustomProperty extends CustomProperty implements AuditableTrai
                         "${description}"
                 ]
 
-                def newPendingChange = changeNotificationService.registerPendingChange(
+                PendingChange newPendingChange = changeNotificationService.registerPendingChange(
                         PendingChange.PROP_SUBSCRIPTION,
                         scp.owner,
                         scp.owner.getSubscriber(),
@@ -144,16 +146,16 @@ class SubscriptionCustomProperty extends CustomProperty implements AuditableTrai
             slavedPendingChanges.each { spc ->
                 log.debug('autoAccept! performing: ' + spc)
                 def user = null
-                pendingChangeService.performAccept(spc.getId(), user)
+                pendingChangeService.performAccept(spc, user)
             }
         }
         else if (changeDocument.event.equalsIgnoreCase('SubscriptionCustomProperty.deleted')) {
 
-            def openPD = PendingChange.executeQuery("select pc from PendingChange as pc where pc.status is null and pc.changeDoc is not null and pc.oid = :objectID",
+            List<PendingChange> openPD = PendingChange.executeQuery("select pc from PendingChange as pc where pc.status is null and pc.payload is not null and pc.oid = :objectID",
                     [objectID: "${this.class.name}:${this.id}"] )
             openPD.each { pc ->
                 if (pc.payload) {
-                    def payload = JSON.parse(pc.payload)
+                    JSONElement payload = JSON.parse(pc.payload)
                     if (payload.changeDoc) {
                         def scp = genericOIDService.resolveOID(payload.changeDoc.OID)
                         if (scp?.id == id) {

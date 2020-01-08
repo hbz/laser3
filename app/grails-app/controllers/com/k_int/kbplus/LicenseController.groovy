@@ -71,7 +71,7 @@ class LicenseController extends AbstractDebugController {
         } else {
 
             def pending_change_pending_status = RefdataValue.getByValueAndCategory('Pending', 'PendingChangeStatus')
-            def pendingChanges = PendingChange.executeQuery("select pc.id from PendingChange as pc where license=? and ( pc.status is null or pc.status = ? ) order by pc.ts desc", [result.license, pending_change_pending_status]);
+            List<PendingChange> pendingChanges = PendingChange.executeQuery("select pc.id from PendingChange as pc where license=? and ( pc.status is null or pc.status = ? ) order by pc.ts desc", [result.license, pending_change_pending_status]);
 
             log.debug("pc result is ${result.pendingChanges}");
             // refactoring: replace link table with instanceOf
@@ -508,7 +508,7 @@ from Subscription as s where
     params.each { p ->
         if(p.key.startsWith("_create.")){
          def orgID = p.key.substring(8)
-         def orgaisation = Org.get(orgID)
+         Org orgaisation = Org.get(orgID)
           def attrMap = [baselicense:params.baselicense,lic_name:params.lic_name,isSlaved:true]
           log.debug("Create slave license for ${orgaisation.name}")
           attrMap.copyStartEnd = true
@@ -836,7 +836,7 @@ from Subscription as s where
     @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_EDITOR") })
   def create() {
-    def result = [:]
+    Map<String, Object> result = [:]
     result.user = User.get(springSecurityService.principal.id)
     result
   }

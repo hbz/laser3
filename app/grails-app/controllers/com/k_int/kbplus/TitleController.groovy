@@ -102,7 +102,7 @@ class TitleController extends AbstractDebugController {
 
     @Secured(['ROLE_USER'])
     def show() {
-        def result = [:]
+        Map<String, Object> result = [:]
 
         result.editable = SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')
 
@@ -211,7 +211,7 @@ class TitleController extends AbstractDebugController {
 
   @Secured(['ROLE_USER'])
   def history() {
-    def result = [:]
+    Map<String, Object> result = [:]
     def exporting = params.format == 'csv' ? true : false
 
     if ( exporting ) {
@@ -281,7 +281,7 @@ class TitleController extends AbstractDebugController {
 
   @Secured(['ROLE_ADMIN'])
   def availability() {
-    def result = [:]
+    Map<String, Object> result = [:]
     result.ti = TitleInstance.get(params.id)
     result.availability = IssueEntitlement.executeQuery("select ie from IssueEntitlement as ie where ie.tipp.title = ?",[result.ti]);
 
@@ -297,7 +297,7 @@ class TitleController extends AbstractDebugController {
       params.remove("search")
     }
     def user = User.get(springSecurityService.principal.id)
-    def result = [:]
+    Map<String, Object> result = [:]
     result.max = params.max ? Integer.parseInt(params.max) : user.getDefaultPageSizeTMP()
     result.offset = params.offset ? Integer.parseInt(params.offset) : 0;
     

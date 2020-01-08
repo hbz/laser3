@@ -35,7 +35,7 @@ class LicenseImportController extends AbstractDebugController {
   def doImport() {
     // log.debug("Ghost_license" + grails.util.Holders.config.onix_ghost_license);
     // Setup result object
-    def result = [:]
+    Map<String, Object> result = [:]
     result.validationResult = [:]
     result.validationResult.messages = []
     result.validationResult.errors = []

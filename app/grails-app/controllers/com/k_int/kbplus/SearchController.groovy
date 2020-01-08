@@ -14,7 +14,7 @@ class SearchController extends AbstractDebugController {
     @Secured(['ROLE_USER'])
     def index() {
         log.debug("searchController: index");
-        def result = [:]
+        Map<String, Object> result = [:]
 
         result.user = springSecurityService.getCurrentUser()
         params.max = params.max ?: result.user.getDefaultPageSizeTMP()
@@ -68,7 +68,7 @@ class SearchController extends AbstractDebugController {
     @Secured(['ROLE_USER'])
     def spotlightSearch() {
         log.debug("searchController: spotlightSearch");
-        def result = [:]
+        Map<String, Object> result = [:]
         def filtered
         def query = "${params.query}"
         result.user = springSecurityService.getCurrentUser()

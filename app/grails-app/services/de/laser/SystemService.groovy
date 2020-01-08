@@ -23,10 +23,9 @@ class SystemService {
                 checks.apiSource = "Api Source is not active"
             }
 
-            if (!grailsApplication.config.hbzMaster) {
-                checks.hbzMaster = "hbzMaster is not true"
+            if (!grailsApplication.config.notificationsJobActive) {
+                checks.notificationsJobActive = "NotificationsJob is not active"
             }
-
             if (!grailsApplication.config.globalDataSyncJobActiv) {
                 checks.globalDataSyncJob = "global Data Sync Job is not active"
             }

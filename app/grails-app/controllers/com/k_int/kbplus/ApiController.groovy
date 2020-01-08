@@ -80,7 +80,7 @@ class ApiController {
 
     @Secured(['ROLE_API', 'IS_AUTHENTICATED_FULLY'])
     def uploadBibJson() {
-        def result = [:]
+        Map<String, Object> result = [:]
         log.debug("uploadBibJson");
         log.debug("Auth request from ${request.getRemoteAddr()}");
         if (request.getRemoteAddr() == '127.0.0.1') {
@@ -138,7 +138,7 @@ class ApiController {
         //            title - [namespace:]code  Of a title [mandatory]
         //         provider - [namespace:]code  Of an org [optional]
         log.debug("assertCore(${params})");
-        def result = [:]
+        Map<String, Object> result = [:]
         if (request.getRemoteAddr() == '127.0.0.1') {
             if ((params.inst?.length() > 0) && (params.title?.length() > 0)) {
                 def inst = Org.lookupByIdentifierString(params.inst);
@@ -190,7 +190,7 @@ where tipp.title = ? and orl.roleType.value=?''', [title, 'Content Provider']);
     @Secured(['ROLE_API', 'IS_AUTHENTICATED_FULLY'])
     def institutionTitles() {
 
-        def result = [:]
+        Map<String, Object> result = [:]
         result.titles = []
 
         if (params.orgid) {
@@ -198,13 +198,13 @@ where tipp.title = ? and orl.roleType.value=?''', [title, 'Content Provider']);
             if (name_components.length == 2) {
                 // Lookup org by ID
                 // TODO [ticket=1789]
-                def orghql = "select distinct ident.org from Identifier ident where ident.org is not null and ident.ns.ns = ? and ident.value like ? )"
+                String orghql = "select distinct ident.org from Identifier ident where ident.org is not null and ident.ns.ns = ? and ident.value like ? )"
                 // def orghql = "select org from Org org where exists ( select io from IdentifierOccurrence io, Identifier id, IdentifierNamespace ns where io.org = org and id.ns = ns and io.identifier = id and ns.ns = ? and id.value like ? )"
-                def orgs = Org.executeQuery(orghql, [name_components[0], name_components[1]])
+                List<Org> orgs = Org.executeQuery(orghql, [name_components[0], name_components[1]])
                 if (orgs.size() == 1) {
-                    def org = orgs[0]
+                    Org org = orgs[0]
 
-                    def today = new Date()
+                    Date today = new Date()
 
                     // Find all TitleInstitutionProvider where institution = org
                     def titles = TitleInstitutionProvider.executeQuery('select tip.title.title, tip.title.id, count(cd) from TitleInstitutionProvider as tip left join tip.coreDates as cd where tip.institution = ? and cd.startDate < ? and cd.endDate > ?',

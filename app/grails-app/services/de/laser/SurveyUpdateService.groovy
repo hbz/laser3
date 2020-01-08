@@ -20,7 +20,7 @@ class SurveyUpdateService extends AbstractLockableService {
     def grailsApplication
     def mailService
     def messageSource
-    def locale
+    Locale locale
     String from
     String replyTo
 

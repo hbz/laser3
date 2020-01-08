@@ -169,11 +169,11 @@ class DashboardDueDatesService {
         try {
             SystemEvent.createEvent('DBDD_SERVICE_START_3')
 
-            def users = User.findAllByEnabledAndAccountExpiredAndAccountLocked(true, false, false)
+            List<User> users = User.findAllByEnabledAndAccountExpiredAndAccountLocked(true, false, false)
             users.each { user ->
                 boolean userWantsEmailReminder = YN_YES.equals(user.getSetting(UserSettings.KEYS.IS_REMIND_BY_EMAIL, YN_NO).rdValue)
                 if (userWantsEmailReminder) {
-                    def orgs = Org.executeQuery(QRY_ALL_ORGS_OF_USER, user);
+                    List<Org> orgs = Org.executeQuery(QRY_ALL_ORGS_OF_USER, user);
                     orgs.each { org ->
                         def dashboardEntries = DashboardDueDate.findAllByResponsibleUserAndResponsibleOrgAndIsDoneAndIsHidden(user, org, false, false, [sort: "date", order: "asc"])
                         sendEmail(user, org, dashboardEntries)

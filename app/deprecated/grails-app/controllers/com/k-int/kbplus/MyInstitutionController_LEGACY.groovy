@@ -11,7 +11,7 @@
         // Be mindful that the behavior of this controller is strongly influenced by the schema setup in ES.
         // Specifically, see KBPlus/import/processing/processing/dbreset.sh for the mappings that control field type and analysers
         // Internal testing with http://localhost:9200/kbplus/_search?q=subtype:'Subscription%20Offered'
-        def result = [:]
+        Map<String, Object> result = [:]
 
         result.institution = contextService.getOrg()
         result.user = springSecurityService.getCurrentUser()
@@ -127,7 +127,7 @@
     @DebugAnnotation(test='hasAffiliation("INST_USER")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
     def selectPackages() {
-        def result = [:]
+        Map<String, Object> result = [:]
         result.user = User.get(springSecurityService.principal.id)
         result.subscriptionInstance = Subscription.get(params.id)
 

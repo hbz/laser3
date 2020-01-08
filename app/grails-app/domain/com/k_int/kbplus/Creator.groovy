@@ -36,6 +36,5 @@ class Creator extends AbstractBaseDomain{
         middlename  (nullable:true, blank:false);
         globalUID   (nullable:true, blank:false, unique:true, maxSize:255)
         title       (nullable:true)
-
     }
 }

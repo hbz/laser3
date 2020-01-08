@@ -33,6 +33,8 @@ import org.codehaus.groovy.runtime.InvokerHelper
 import org.springframework.web.multipart.commons.CommonsMultipartFile
 
 import javax.servlet.ServletOutputStream
+import java.nio.file.Files
+import java.nio.file.Path
 import java.text.NumberFormat
 import java.text.SimpleDateFormat
 
@@ -145,7 +147,7 @@ class SubscriptionController extends AbstractDebugController {
         log.debug("max = ${result.max}");
 
         def pending_change_pending_status = RefdataValue.getByValueAndCategory('Pending', 'PendingChangeStatus')
-        def pendingChanges = PendingChange.executeQuery("select pc.id from PendingChange as pc where subscription=? and ( pc.status is null or pc.status = ? ) order by ts desc", [result.subscriptionInstance, pending_change_pending_status]);
+        List<PendingChange> pendingChanges = PendingChange.executeQuery("select pc.id from PendingChange as pc where subscription=? and ( pc.status is null or pc.status = ? ) order by ts desc", [result.subscriptionInstance, pending_change_pending_status]);
 
         if (result.subscriptionInstance?.isSlaved && pendingChanges) {
             log.debug("Slaved subscription, auto-accept pending changes")
@@ -375,7 +377,7 @@ class SubscriptionController extends AbstractDebugController {
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
     def unlinkPackage() {
         log.debug("unlinkPackage :: ${params}")
-        def result = [:]
+        Map<String, Object> result = [:]
         result.user = User.get(springSecurityService.principal.id)
         result.subscription = Subscription.get(params.subscription.toLong())
         result.package = Package.get(params.package.toLong())
@@ -1156,7 +1158,7 @@ class SubscriptionController extends AbstractDebugController {
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
     def showEntitlementsRenewWithSurvey() {
-        def result = [:]
+        Map<String, Object> result = [:]
         result.institution = contextService.getOrg()
         result.user = User.get(springSecurityService.principal.id)
 
@@ -2693,7 +2695,7 @@ class SubscriptionController extends AbstractDebugController {
     def processAddIssueEntitlementsSurvey() {
         log.debug("processAddIssueEntitlementsSurvey....");
 
-        def result = [:]
+        Map<String, Object> result = [:]
         result.user = User.get(springSecurityService.principal.id)
         result.subscriptionInstance = Subscription.get(params.id)
         result.subscription = Subscription.get(params.id)
@@ -2765,7 +2767,7 @@ class SubscriptionController extends AbstractDebugController {
     def processRemoveIssueEntitlementsSurvey() {
         log.debug("processRemoveIssueEntitlementsSurvey....");
 
-        def result = [:]
+        Map<String, Object> result = [:]
         result.user = User.get(springSecurityService.principal.id)
         result.subscriptionInstance = Subscription.get(params.id)
         result.subscription = Subscription.get(params.id)
@@ -2835,7 +2837,7 @@ class SubscriptionController extends AbstractDebugController {
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_EDITOR") })
     def processRenewEntitlementsWithSurvey() {
         log.debug("processRenewEntitlementsWithSurvey ...")
-        def result = [:]
+        Map<String, Object> result = [:]
         result.user = User.get(springSecurityService.principal.id)
         result.subscriptionInstance = Subscription.get(params.id)
         result.subscription = Subscription.get(params.id)
@@ -3594,7 +3596,7 @@ class SubscriptionController extends AbstractDebugController {
         } else {
 
             def pending_change_pending_status = RefdataValue.getByValueAndCategory('Pending', 'PendingChangeStatus')
-            def pendingChanges = PendingChange.executeQuery("select pc.id from PendingChange as pc where subscription=? and ( pc.status is null or pc.status = ? ) order by pc.ts desc", [result.subscription, pending_change_pending_status])
+            List<PendingChange> pendingChanges = PendingChange.executeQuery("select pc.id from PendingChange as pc where subscription=? and ( pc.status is null or pc.status = ? ) order by pc.ts desc", [result.subscription, pending_change_pending_status])
 
             log.debug("pc result is ${result.pendingChanges}")
 
@@ -3880,7 +3882,7 @@ class SubscriptionController extends AbstractDebugController {
 
         if (new_subscription.save()) {
             // assert an org-role
-            def org_link = new OrgRole(org: result.institution,
+            OrgRole org_link = new OrgRole(org: result.institution,
                     sub: new_subscription,
                     roleType: OR_SUBSCRIBER
             ).save();
@@ -3888,7 +3890,8 @@ class SubscriptionController extends AbstractDebugController {
             if(old_subOID) {
                 Links prevLink = new Links(source: new_subscription.id, destination: old_subOID, objectType: Subscription.class.name, linkType: LINKTYPE_FOLLOWS, owner: contextService.org)
                 prevLink.save()
-            } else { log.error("Problem linking new subscription, ${prevLink.errors}") }
+            }
+            else { log.error("Problem linking new subscription, ${prevLink.errors}") }
         } else {
             log.error("Problem saving new subscription, ${new_subscription.errors}");
         }
@@ -4099,15 +4102,28 @@ class SubscriptionController extends AbstractDebugController {
                         if (dctx.id in toCopyDocs) {
                             if (((dctx.owner?.contentType == 1) || (dctx.owner?.contentType == 3)) && (dctx.status?.value != 'Deleted')) {
 
-                                Doc newDoc = new Doc()
-                                InvokerHelper.setProperties(newDoc, dctx.owner.properties)
-                                newDoc.save(flush: true)
+                                try {
 
-                                DocContext newDocContext = new DocContext()
-                                InvokerHelper.setProperties(newDocContext, dctx.properties)
-                                newDocContext.subscription = newSub2
-                                newDocContext.owner = newDoc
-                                newDocContext.save(flush: true)
+                                    Doc newDoc = new Doc()
+                                    InvokerHelper.setProperties(newDoc, dctx.owner.properties)
+                                    newDoc.save(flush: true)
+
+                                    DocContext newDocContext = new DocContext()
+                                    InvokerHelper.setProperties(newDocContext, dctx.properties)
+                                    newDocContext.subscription = newSub2
+                                    newDocContext.owner = newDoc
+                                    newDocContext.save(flush: true)
+
+                                    String fPath = grailsApplication.config.documentStorageLocation ?: '/tmp/laser'
+
+                                    Path source = new File("${fPath}/${dctx.owner.uuid}").toPath()
+                                    Path target = new File("${fPath}/${newDoc.uuid}").toPath()
+                                    Files.copy(source, target)
+
+                                }
+                                catch (Exception e) {
+                                    log.error("Problem by Saving Doc in documentStorageLocation (Doc ID: ${dctx.owner.id} -> ${e})")
+                                }
                             }
                         }
                         //Copy Announcements
@@ -5341,7 +5357,7 @@ class SubscriptionController extends AbstractDebugController {
     }
 
     private LinkedHashMap setResultGenericsAndCheckAccess(checkOption) {
-        def result = [:]
+        Map<String, Object> result = [:]
         result.user = contextService.user
         result.subscriptionInstance = Subscription.get(params.id)
         result.subscription = Subscription.get(params.id)
@@ -5416,8 +5432,8 @@ class SubscriptionController extends AbstractDebugController {
         def titles = [
                 g.message(code: 'org.sortname.label'), 'Name', g.message(code: 'org.shortname.label')]
 
-        def orgSector = RefdataValue.getByValueAndCategory('Higher Education', 'OrgSector')
-        def orgType = RefdataValue.getByValueAndCategory('Provider', 'OrgRoleType')
+        RefdataValue orgSector = RefdataValue.getByValueAndCategory('Higher Education', 'OrgSector')
+        RefdataValue orgType = RefdataValue.getByValueAndCategory('Provider', 'OrgRoleType')
 
 
         if (addHigherEducationTitles) {

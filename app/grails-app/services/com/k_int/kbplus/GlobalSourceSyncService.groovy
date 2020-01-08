@@ -71,10 +71,10 @@ class GlobalSourceSyncService extends AbstractLockableService {
             newtitle.publishers.each { pub ->
 //         def publisher_identifiers = pub.identifiers
                 def publisher_identifiers = []
-                def orgSector = RefdataValue.loc('OrgSector', [en: 'Publisher', de: 'Veröffentlicher']);
-                def publisher = Org.lookupOrCreate(pub.name, orgSector, null, publisher_identifiers, null, pub.uuid)
-                def pub_role = RefdataValue.loc('Organisational Role', [en: 'Publisher', de: 'Veröffentlicher']);
-                def sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
+                RefdataValue orgSector = RefdataValue.loc('OrgSector', [en: 'Publisher', de: 'Veröffentlicher']);
+                Org publisher = Org.lookupOrCreate(pub.name, orgSector, null, publisher_identifiers, null, pub.uuid)
+                RefdataValue pub_role = RefdataValue.loc('Organisational Role', [en: 'Publisher', de: 'Veröffentlicher']);
+                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
                 def start_date
                 def end_date
 
@@ -157,7 +157,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
 
         log.debug("titleConv.... ${md}");
-        def result = [:]
+        Map<String, Object> result = [:]
         result.parsed_rec = [:]
         result.parsed_rec.identifiers = []
         result.parsed_rec.history = []
@@ -263,20 +263,20 @@ class GlobalSourceSyncService extends AbstractLockableService {
 
         println "Reconciling new Package!"
 
-        def scope = RefdataValue.loc(RefdataCategory.PKG_SCOPE, [en: (newpkg?.scope) ?: 'Unknown']);
-        def listStatus = RefdataValue.loc(RefdataCategory.PKG_LIST_STAT, [en: (newpkg?.listStatus) ?: 'Unknown']);
-        def breakable = RefdataValue.loc(RefdataCategory.PKG_BREAKABLE, [en: (newpkg?.breakable) ?: 'Unknown']);
-        def consistent = RefdataValue.loc(RefdataCategory.PKG_CONSISTENT, [en: (newpkg?.consistent) ?: 'Unknown']);
-        def fixed = RefdataValue.loc(RefdataCategory.PKG_FIXED, [en: (newpkg?.fixed) ?: 'Unknown']);
-        def paymentType = RefdataValue.loc(RefdataCategory.PKG_PAYMENTTYPE, [en: (newpkg?.paymentType) ?: 'Unknown']);
-        def global = RefdataValue.loc(RefdataCategory.PKG_GLOBAL, [en: (newpkg?.global) ?: 'Unknown']);
-        def ref_pprovider = RefdataValue.loc('Organisational Role', [en: 'Content Provider', de: 'Anbieter']);
+        RefdataValue scope = RefdataValue.loc(RefdataCategory.PKG_SCOPE, [en: (newpkg?.scope) ?: 'Unknown']);
+        RefdataValue listStatus = RefdataValue.loc(RefdataCategory.PKG_LIST_STAT, [en: (newpkg?.listStatus) ?: 'Unknown']);
+        RefdataValue breakable = RefdataValue.loc(RefdataCategory.PKG_BREAKABLE, [en: (newpkg?.breakable) ?: 'Unknown']);
+        RefdataValue consistent = RefdataValue.loc(RefdataCategory.PKG_CONSISTENT, [en: (newpkg?.consistent) ?: 'Unknown']);
+        RefdataValue fixed = RefdataValue.loc(RefdataCategory.PKG_FIXED, [en: (newpkg?.fixed) ?: 'Unknown']);
+        RefdataValue paymentType = RefdataValue.loc(RefdataCategory.PKG_PAYMENTTYPE, [en: (newpkg?.paymentType) ?: 'Unknown']);
+        RefdataValue global = RefdataValue.loc(RefdataCategory.PKG_GLOBAL, [en: (newpkg?.global) ?: 'Unknown']);
+        RefdataValue ref_pprovider = RefdataValue.loc('Organisational Role', [en: 'Content Provider', de: 'Anbieter']);
 
         //we should now first setup the provider and then proceed to package
         Org provider
-        def orgSector = RefdataValue.getByValueAndCategory('Publisher', 'OrgSector')
-        def orgType = RefdataValue.getByValueAndCategory('Provider', 'OrgRoleType')
-        def orgRole = RefdataValue.loc('Organisational Role', [en: 'Content Provider', de: 'Anbieter'])
+        RefdataValue orgSector = RefdataValue.getByValueAndCategory('Publisher', 'OrgSector')
+        RefdataValue orgType = RefdataValue.getByValueAndCategory('Provider', 'OrgRoleType')
+        RefdataValue orgRole = RefdataValue.loc('Organisational Role', [en: 'Content Provider', de: 'Anbieter'])
         if(newpkg.packageProvider) {
             println "checking package provider ${newpkg.packageProvider}"
             provider = (Org) Org.lookupOrCreate2(newpkg.packageProvider, orgSector, null, [:], null, orgType, newpkg.packageProviderUuid ?: null)
@@ -456,7 +456,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
                     //} else {
                     //    log.error("Error creating identifier instance for new TIPP!")
                     //}
-                    tipp_id = Identifier.construct([value: tipp.tippId, reference: new_tipp, namespace: 'uri'])
+                    Identifier tipp_id = Identifier.construct([value: tipp.tippId, reference: new_tipp, namespace: 'uri'])
                 }
 
                 def tipps = TitleInstancePackagePlatform.findAllByGokbId(tipp?.tippUuid)
@@ -477,7 +477,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
             } else {
                 log.debug("Register new tipp event for user to accept or reject");
 
-                def locale = org.springframework.context.i18n.LocaleContextHolder.getLocale()
+                Locale locale = org.springframework.context.i18n.LocaleContextHolder.getLocale()
                 def sdf2 = new SimpleDateFormat(messageSource.getMessage('default.date.format.notime', null, 'yyyy-MM-dd', locale));
                 def datetoday = sdf2.format(new Date(System.currentTimeMillis()))
 
@@ -577,9 +577,9 @@ class GlobalSourceSyncService extends AbstractLockableService {
                     def change_doc = [:]
 
                     def contextObject = genericOIDService.resolveOID("Package:${ctx.id}");
-                    def locale = org.springframework.context.i18n.LocaleContextHolder.getLocale()
+                    Locale locale = org.springframework.context.i18n.LocaleContextHolder.getLocale()
                     def announcement_content_changeTitle = "<p>${messageSource.getMessage('announcement.title.ChangeTitle', null, "Change Title in Package ", locale)}  ${contextObject.getURL() ? "<a href=\"${contextObject.getURL()}\">${contextObject.name}</a>" : "${contextObject.name}"} ${new Date().toString()}</p><p><ul>"
-                    def changeTitle = false
+                    boolean changeTitle = false
 
                     changes.each { chg ->
 
@@ -857,7 +857,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
                     def contextObject = genericOIDService.resolveOID("Package:${ctx.id}");
                     oldvalue = ctx.name
                     ctx.name = value
-                    def locale = org.springframework.context.i18n.LocaleContextHolder.getLocale()
+                    Locale locale = org.springframework.context.i18n.LocaleContextHolder.getLocale()
                     announcement_content = "<p>${messageSource.getMessage('announcement.package.ChangeTitle', null, "Change Package Title on ", locale)}  ${contextObject.getURL() ? "<a href=\"${contextObject.getURL()}\">${ctx.name}</a>" : "${ctx.name}"} ${new Date().toString()}</p>"
                     announcement_content += "<p><ul><li>${messageSource.getMessage("announcement.package.TitleChange", [oldvalue, value] as Object[], "Package Title was change from {0} to {1}.", locale)}</li></ul></p>"
                     log.debug("updated pkg prop");
@@ -911,7 +911,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
     // def testKBPlusCompliance = { json_record ->
     def testPackageCompliance = { json_record ->
         // Iterate through all titles..
-        def error = false
+        boolean error = false
         def result = null
         def problem_titles = []
 
@@ -948,7 +948,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
     def packageConv = { md, synctask ->
         log.debug("Package conv...");
         // Convert XML to internal structure and return
-        def result = [:]
+        Map<String, Object> result = [:]
         // result.parsed_rec = xml.text().getBytes();
         result.title = md.gokb.package.name.text()
 

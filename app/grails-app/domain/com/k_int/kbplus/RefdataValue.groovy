@@ -71,10 +71,10 @@ class RefdataValue extends AbstractI10nTranslatable implements Comparable<Refdat
      * @param hardData = only true if called from bootstrap
      * @return
      */
-    static def loc(String category_name, Map i10n, def hardData) {
+    static RefdataValue loc(String category_name, Map i10n, def hardData) {
 
         // avoid harddata reset @ RefdataCategory.loc
-        def cat = RefdataCategory.findByDescIlike(category_name)
+        RefdataCategory cat = RefdataCategory.findByDescIlike(category_name)
         if (! cat) {
             cat = new RefdataCategory(desc:category_name)
             cat.save(flush: true)
@@ -82,9 +82,9 @@ class RefdataValue extends AbstractI10nTranslatable implements Comparable<Refdat
             I10nTranslation.createOrUpdateI10n(cat, 'desc', [:])
         }
 
-        def rdvValue = i10n['key'] ?: i10n['en']
+        String rdvValue = i10n['key'] ?: i10n['en']
 
-        def result = findByOwnerAndValueIlike(cat, rdvValue)
+        RefdataValue result = findByOwnerAndValueIlike(cat, rdvValue)
         if (! result) {
             result = new RefdataValue(owner: cat, value: rdvValue)
         }
@@ -97,8 +97,8 @@ class RefdataValue extends AbstractI10nTranslatable implements Comparable<Refdat
     }
 
     // Call this from code
-    static def loc(String category_name, Map i10n) {
-        def hardData = false
+    static RefdataValue loc(String category_name, Map i10n) {
+        boolean hardData = false
         loc(category_name, i10n, hardData)
     }
 
@@ -122,14 +122,14 @@ class RefdataValue extends AbstractI10nTranslatable implements Comparable<Refdat
         return null;
     }
 
-    static def getByValueAndCategory(value, category) {
+    static RefdataValue getByValueAndCategory(value, category) {
 
         RefdataValue.findByValueAndOwner(value, RefdataCategory.findByDesc(category))
     }
 
-    static def getByCategoryDescAndI10nValueDe(categoryName, value) {
+    static RefdataValue getByCategoryDescAndI10nValueDe(categoryName, value) {
 
-        def data = RefdataValue.executeQuery("select rdv from RefdataValue as rdv, RefdataCategory as rdc, I10nTranslation as i10n "
+        List<RefdataValue> data = RefdataValue.executeQuery("select rdv from RefdataValue as rdv, RefdataCategory as rdc, I10nTranslation as i10n "
                     + " where rdv.owner = rdc and rdc.desc = ? "
                     + " and i10n.referenceId = rdv.id and i10n.valueDe = ?"
                     + " and i10n.referenceClass = 'com.k_int.kbplus.RefdataValue' and i10n.referenceField = 'value'"
@@ -162,7 +162,7 @@ class RefdataValue extends AbstractI10nTranslatable implements Comparable<Refdat
     }
 
     // still provide OLD mapping for string compares and such stuff
-    public String toString() {
+    String toString() {
         value
     }
 
@@ -171,7 +171,7 @@ class RefdataValue extends AbstractI10nTranslatable implements Comparable<Refdat
     * refdatavalue for same string value
     **/
     @Override
-    public boolean equals (Object o) {
+    boolean equals (Object o) {
         def obj = ClassUtils.deproxy(o)
         if (obj != null) {
             if ( obj instanceof RefdataValue ) {
@@ -186,7 +186,7 @@ class RefdataValue extends AbstractI10nTranslatable implements Comparable<Refdat
     }
 
     def afterDelete() {
-        def rc = this.getClass().getName()
+        String rc = this.getClass().getName()
         def id = this.getId()
         I10nTranslation.where{referenceClass == rc && referenceId == id}.deleteAll()
     }

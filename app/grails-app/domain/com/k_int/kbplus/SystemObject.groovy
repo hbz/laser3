@@ -39,7 +39,7 @@ class SystemObject {
   }
 
 
-  public String toString() {
+  String toString() {
     sysId
   }
 }
