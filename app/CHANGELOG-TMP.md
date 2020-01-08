@@ -2,6 +2,9 @@
 
 **Ticket    Date    Branch      Author  Feature/Bug     Description/Keywords**
 
+2023    08.01.2020  rc1.2       David   Bug         UserCaches blockieren Threads
+
+2017    06.01.2020  rc1.2       David   Bug         Fehlermeldung bei Suche im Gasco-Monitor
 
 2010    20.12.2019  rc1.2       Moe     Bug         Neues Verfahrensverzeichnis für 2020 einhängen
 
