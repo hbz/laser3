@@ -10,17 +10,19 @@ class DebugUtil {
     ContextService contextService = (ContextService) Holders.grailsApplication.mainContext.getBean('contextService')
     EhcacheWrapper benchCache
 
-    final static String DU_SYSPROFILER_PREFIX   = 'DebugUtil/SystemProfiler:'
-    final static String DU_BENCHMARK_PREFIX     = 'DebugUtil/Benchmark:'
+    final static String SYSPROFILER_SESSION = 'DebugUtil/Session/SystemProfiler'
+    final static String BENCHMARK_LOCAL     = 'DebugUtil/Local/Benchmark'
 
-    // for global interceptors
-    DebugUtil(String cacheKeyPrefix, String scope) {
-        benchCache = contextService.getCache(cacheKeyPrefix, scope)
+    // for global interceptors; object stored in session caches
+    DebugUtil(String cacheKeyPrefix) {
+        benchCache = contextService.getCache(cacheKeyPrefix, ContextService.USER_SCOPE)
     }
 
-    // for inner method benches
+    // for inner method benches; object not stored
     DebugUtil() {
-        benchCache = contextService.getCache(DU_BENCHMARK_PREFIX + UUID.randomUUID().toString(), ContextService.USER_SCOPE)
+        benchCache = contextService.getCache(
+                BENCHMARK_LOCAL + EhcacheWrapper.SEPARATOR + UUID.randomUUID().toString(),
+                ContextService.USER_SCOPE)
     }
 
     // handling interceptor benches
@@ -52,7 +54,7 @@ class DebugUtil {
     }
 
     List stopBenchmark() {
-        setBenchmark('abs(STEP_N - STEP_0)')
+        setBenchmark('sum (step_1 .. step_n-1)')
 
         List marks = (List) benchCache.get('')
         benchCache.remove('')
