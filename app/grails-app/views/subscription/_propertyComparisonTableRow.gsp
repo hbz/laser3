@@ -1,4 +1,4 @@
-<%@page import="com.k_int.properties.PropertyDefinition; de.laser.helper.RDStore; de.laser.AuditConfig; com.k_int.kbplus.SubscriptionCustomProperty;" %>
+<%@page import="com.k_int.properties.PropertyDefinition; de.laser.helper.RDStore; de.laser.AuditConfig; com.k_int.kbplus.*;" %>
 <laser:serviceInjection/>
 
 <g:set var="overwriteEditable" value="${false}"/>

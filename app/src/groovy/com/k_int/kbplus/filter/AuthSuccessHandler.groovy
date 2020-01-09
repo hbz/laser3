@@ -1,7 +1,6 @@
 package de.laser.helper
 
 import com.k_int.kbplus.auth.User
-import de.laser.ContextService
 import grails.plugin.springsecurity.web.authentication.AjaxAwareAuthenticationSuccessHandler
 import grails.util.Holders
 import org.springframework.security.core.Authentication
@@ -24,7 +23,7 @@ class AuthSuccessHandler extends AjaxAwareAuthenticationSuccessHandler {
         userService.initMandatorySettings(user)
 
         SessionCacheWrapper cache = contextService.getSessionCache()
-        cache.put('debugUtil', new DebugUtil(DebugUtil.DU_SYSPROFILER_PREFIX, ContextService.USER_SCOPE))
+        cache.put(DebugUtil.SYSPROFILER_SESSION, new DebugUtil(DebugUtil.SYSPROFILER_SESSION))
 
         super.onAuthenticationSuccess(request, response, authentication)
     }

@@ -469,11 +469,12 @@ class SubscriptionService {
                             [result.subscriptionInstance, it.id])*/
 
                     def newSubscription = new Subscription(
+                            isMultiYear: subMember.isMultiYear,
                             type: subMember.type,
                             status: targetSub.status,
                             name: subMember.name,
-                            startDate: targetSub.startDate,
-                            endDate: targetSub.endDate,
+                            startDate: subMember.isMultiYear ? subMember.startDate : targetSub.startDate,
+                            endDate: subMember.isMultiYear ? subMember.endDate : targetSub.endDate,
                             manualRenewalDate: subMember.manualRenewalDate,
                             /* manualCancellationDate: result.subscriptionInstance.manualCancellationDate, */
                             identifier: java.util.UUID.randomUUID().toString(),
