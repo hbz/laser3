@@ -1,4 +1,3 @@
-<%@ page import="com.k_int.kbplus.batch.HeartbeatJob" %>
 <!doctype html>
 <html>
 <head>
@@ -41,6 +40,9 @@
             <div class="column">
                 <div class="ui divided relaxed list">
                     <div class="item">
+                        <g:link controller="yoda" action="appThreads" target="_blank">${message(code:'menu.yoda.appThreads')}</g:link>
+                    </div>
+                    <div class="item">
                         <g:link controller="yoda" action="systemProfiler" target="_blank">${message(code:'menu.yoda.systemProfiler')}</g:link>
                     </div>
                     <div class="item">
@@ -76,33 +78,6 @@
     </div>
 
     <semui:messages data="${flash}" />
-
-        <br />
-        <br />
-
-        <h2 class="ui header">Anzahl Threads: ${Thread.getAllStackTraces().keySet().size()}</h2>
-
-        <table class="ui celled la-table la-table-small table" id="contextTable">
-            <tbody>
-                <g:each in="${Thread.getAllStackTraces().keySet().sort{ it.id }}" var="thread">
-                    <tr>
-                        <td>${thread.getId()}</td>
-                        <td>${thread.getName().replaceAll('%002e', '.')}</td>
-                        <td>
-                            ${thread.getThreadGroup().getName()}
-                            <%
-                                java.lang.ThreadGroup tmp = thread.getThreadGroup()
-                                while( (tmp = tmp.getParent()) != null ) {
-                                    println " / ${tmp.getName()}"
-                                }
-                            %>
-                        </td>
-                        <td>${thread.getState()}</td>
-                        <td>${thread.isAlive()}</td>
-                    </tr>
-                </g:each>
-            </tbody>
-        </table>
 
     <%--
     <p>TODO: Offene Beitrittsanfragen</p>

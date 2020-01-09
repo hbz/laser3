@@ -100,7 +100,7 @@ class PropertyDefinitionGroup {
         CacheService cacheService = (CacheService) Holders.grailsApplication.mainContext.getBean('cacheService')
         EhcacheWrapper cache
 
-        cache = cacheService.getTTL300Cache("PropertyDefinitionGroup/refdataFind/${params.desc}/pdgid/${currentObject.id}/${LocaleContextHolder.getLocale()}/")
+        cache = cacheService.getTTL300Cache("PropertyDefinitionGroup/refdataFind/${params.desc}/pdgid/${currentObject.id}/${LocaleContextHolder.getLocale()}")
 
         if (! cache.get('propDefs')) {
             def propDefs = currentObject.getPropertyDefinitions()
