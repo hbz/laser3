@@ -9,6 +9,8 @@ import de.laser.DeletionService
 import de.laser.controller.AbstractDebugController
 import de.laser.helper.DebugAnnotation
 import de.laser.helper.DebugUtil
+import de.laser.helper.RDStore
+
 import static de.laser.helper.RDStore.*
 import grails.converters.JSON
 import grails.plugin.springsecurity.annotation.Secured
@@ -70,7 +72,7 @@ class LicenseController extends AbstractDebugController {
             result.processingpc = true
         } else {
 
-            def pending_change_pending_status = RefdataValue.getByValueAndCategory('Pending', 'PendingChangeStatus')
+            def pending_change_pending_status = RDStore.PENDING_CHANGE_STATUS
             List<PendingChange> pendingChanges = PendingChange.executeQuery("select pc.id from PendingChange as pc where license=? and ( pc.status is null or pc.status = ? ) order by pc.ts desc", [result.license, pending_change_pending_status]);
 
             log.debug("pc result is ${result.pendingChanges}");
@@ -145,7 +147,7 @@ class LicenseController extends AbstractDebugController {
 
             // -- private properties
 
-            result.modalPrsLinkRole = RefdataValue.findByValue('Specific license editor')
+            result.modalPrsLinkRole = RDStore.PRS_RESP_SPEC_LIC_EDITOR
             result.modalVisiblePersons = addressbookService.getPrivatePersonsByTenant(result.contextOrg)
 
             result.visiblePrsLinks = []
@@ -598,7 +600,7 @@ from Subscription as s where
                 result.processingpc = true
             }
             else {
-                def pending_change_pending_status = RefdataValue.getByValueAndCategory('Pending','PendingChangeStatus')
+                def pending_change_pending_status = RDStore.PENDING_CHANGE_STATUS
                 def pendingChanges = PendingChange.executeQuery("select pc.id from PendingChange as pc where license.id=? and ( pc.status is null or pc.status = ? ) order by pc.ts desc", [member.id, pending_change_pending_status])
 
                 result.pendingChanges << ["${member.id}": pendingChanges.collect { PendingChange.get(it) }]
@@ -846,8 +848,8 @@ from Subscription as s where
   def processNewTemplateLicense() {
     if ( params.reference && ( ! params.reference.trim().equals('') ) ) {
 
-      def template_license_type = RefdataValue.getByValueAndCategory('Template', 'License Type')
-      def license_status_current = RefdataValue.getByValueAndCategory('Current', 'License Status')
+      def template_license_type = RDStore.LICENSE_TYPE_TEMPLATE
+      def license_status_current = RDStore.LICENSE_TYPE_CURRENT
       
       def new_template_license = new License(reference:params.reference,
                                              type:template_license_type,
