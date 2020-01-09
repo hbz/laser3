@@ -45,27 +45,6 @@ class HeartbeatJob extends AbstractJob {
         grailsApplication.config.quartzHeartbeat = new Date()
         ActivityProfiler.update()
 
-        deleteUnusedUserCaches()
-
         jobIsRunning = false
-    }
-
-    // HOTFIX: ERMS-2023
-    // TODO [ticket=2029] refactoring caches
-    def deleteUnusedUserCaches() {
-        CacheManager ehcacheManager = (CacheManager) cacheService.getCacheManager(cacheService.EHCACHE)
-        String[] userCaches = ehcacheManager.getCacheNames().findAll { it -> it.startsWith('USER:') }
-
-        String[] activeUsers = yodaService.getActiveUsers( (1000 * 60 * 180) ).collect{ 'USER:' + it.id } // 180 minutes
-        String[] retiredUserCaches = userCaches.collect{ (it in activeUsers) ? null : it }.findAll{ it }
-
-        retiredUserCaches.each { it ->
-            ehcacheManager.removeCache(it)
-        }
-
-        if (retiredUserCaches) {
-            log.debug("user caches: " + userCaches.collect{ it })
-            log.debug("retired (after 180 minutes): " + retiredUserCaches.collect{ it })
-        }
     }
 }

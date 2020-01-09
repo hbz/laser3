@@ -487,7 +487,7 @@ class ProfileController {
     @Secured(['ROLE_USER'])
     def properties() {
 
-        EhcacheWrapper cache = cacheService.getTTL300Cache('ProfileController/properties/')
+        EhcacheWrapper cache = cacheService.getTTL300Cache('ProfileController/properties')
 
         def propDefs = [:]
 

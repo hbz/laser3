@@ -2,6 +2,17 @@
 
 **Ticket    Date    Branch      Author  Feature/Bug     Description/Keywords**
 
+--      09.01.2020  rc1.2       Moe     Bug         Verlängerung Konsortial: Mehrjahres Flag setzen, Merkmale kopieren
+
+2029    09.01.2020  rc1.2       David   Feature     Refactoring: Shared Caches für User, bzw Organisationen
+
+--      08.01.2020  rc1.2       Moe     Bug         ES Searchs blockieren Threads
+
+2025    08.01.2020  rc1.2       Moe     Bug         Verlängerung: Dokumentreferenzen stimmen nicht mehr.
+
+2021    08.01.2020  rc1.2       Moe     Bug         Verträge: Lizenzgeber verknüpfen funktioniert nicht
+
+2026    08.01.2020  rc1.2       Moe     Bug         Umfragübertrag von Paketen
 
 2022    08.01.2020  hbz-dev     David   Bug         Merkmal hinzufügen funktioniert nicht mehr
 
