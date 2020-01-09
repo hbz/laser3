@@ -2,6 +2,8 @@
 
 **Ticket    Date    Branch      Author  Feature/Bug     Description/Keywords**
 
+2029    08.01.2020  rc1.2       David   Feature     Refactoring: Shared Caches für User, bzw Organisationen
+
 2023    08.01.2020  rc1.2       David   Bug         UserCaches blockieren Threads
 
 2017    06.01.2020  rc1.2       David   Bug         Fehlermeldung bei Suche im Gasco-Monitor
