@@ -683,6 +683,11 @@
   font-family: Icons;
   content: "\f2ed";
 }
+/* VERERBEN*/
+.ui.checkbox.la-toggle-radio.la-inherit label:before {
+  font-family: Icons;
+  content: "\f08d";
+}
 /* COPY LICENCE WITH PACKAGES, TITELS ETC */
 table tr td div.willStay {
   background-color: #D4E096;
