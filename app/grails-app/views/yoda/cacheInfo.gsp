@@ -41,6 +41,7 @@
             controller="yoda" action="cacheInfo" params="[cmd: 'clearCache', type: 'session']">Cache leeren</g:link>
 </div>
 
+<hr />
 
 <h3 class="ui header">Ehcache <span class="ui label">${ehcacheManager.class}</span></h3>
 
@@ -49,21 +50,6 @@
         ehcacheManager.getCacheNames().findAll { it -> !it.startsWith('com.k_int.') && !it.startsWith('de.laser.')},
         ehcacheManager.getCacheNames().findAll { it -> it.startsWith('com.k_int.') || it.startsWith('de.laser.')}
     ]
-%>
-
-<%
-
-    net.sf.ehcache.CacheManager ehcacheManager = (net.sf.ehcache.CacheManager) cacheService.getCacheManager(cacheService.EHCACHE)
-    String[] userCaches = ehcacheManager.getCacheNames().findAll { it -> it.startsWith('USER:') }
-
-    String[] activeUsers = yodaService.getActiveUsers( (1000 * 60 * 180) ).collect{ 'USER:' + it.id } // 180 minutes
-    String[] retiredUserCaches = userCaches.collect{ (it in activeUsers) ? null : it }.findAll{ it }
-
-    println "<pre>"
-    println " - user caches: " + userCaches.collect{ it }
-    println " - retired (after 180 minutes): " + retiredUserCaches.collect{ it }
-    println "</pre>"
-
 %>
 
 <g:each in="${ehCaches}" var="ehCache">
@@ -124,16 +110,12 @@
             <g:link class="ui button"
                     controller="yoda" action="cacheInfo" params="[cmd: 'clearCache', cache: cacheName, type: 'ehcache']">Cache leeren</g:link>
 
-            <g:if test="${cacheName.startsWith('USER:') || cacheName.startsWith('ORG:') }">
-                <g:link class="ui button negative"
-                        controller="yoda" action="cacheInfo" params="[cmd: 'deleteCache', cache: cacheName, type: 'ehcache']">Cache löschen</g:link>
-            </g:if>
-
         </div>
     </g:each>
 
 </g:each>
 
+<hr />
 
 <h3 class="ui header">Hibernate <span class="ui label">${hibernateSession.class}</span></h3>
 
@@ -143,6 +125,7 @@
     </g:each>
 </div>
 
+<hr />
 
 <h3 class="ui header">Plugin-Cache ; not expiring <span class="ui label">${plugincacheManager.class}</span></h3>
 

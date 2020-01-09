@@ -8,6 +8,8 @@ import net.sf.ehcache.Cache
 @CompileStatic
 class EhcacheWrapper {
 
+    final static String SEPARATOR = '_'
+
     CacheService cacheService = (CacheService) Holders.grailsApplication.mainContext.getBean('cacheService')
 
     private Cache cache // net.sf.ehcache.Cache
@@ -22,13 +24,13 @@ class EhcacheWrapper {
         cache
     }
     def put(String key, def value) {
-        cacheService.put(cache, keyPrefix + key, value)
+        cacheService.put(cache, keyPrefix + SEPARATOR + key, value)
     }
     def get(String key) {
-        cacheService.get(cache, keyPrefix + key)
+        cacheService.get(cache, keyPrefix + SEPARATOR + key)
     }
     def remove(String key) {
-        cacheService.remove(cache, keyPrefix + key)
+        cacheService.remove(cache, keyPrefix + SEPARATOR + key)
     }
     def clear() {
         cacheService.clear(cache)
