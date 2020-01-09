@@ -64,30 +64,6 @@ class BootStrap {
 
         // --
 
-        File refdataCategories = grailsApplication.mainContext.getResource("setup/RefdataCategory.csv").file
-        println refdataCategories
-
-        refdataCategories.withReader { reader ->
-            au.com.bytecode.opencsv.CSVReader csvr = new CSVReader(reader)
-
-            String[] line
-            while (line = csvr.readNext()) {
-                println line
-                if (line[0]) {
-                    Map<String, Object> map = [
-                            token: "${line[0]}",
-                            hardData: true,
-                            i10n : [en: "${line[2]}", de: "${line[1]}"],
-                    ]
-
-                    println map
-                }
-            }
-        }
-
-        // --
-
-
         log.debug("setupRefdata ..")
         setupRefdata()
 
@@ -410,13 +386,62 @@ class BootStrap {
         createOrgPerms(orgConsortiumSurveyRole,     ['ORG_CONSORTIUM_SURVEY', 'ORG_CONSORTIUM'])
     }
 
+    List getParsedCsvData(String filePath, String objType) {
+
+        List result = []
+        File csvFile = grailsApplication.mainContext.getResource(filePath).file
+
+        if (! ['RefdataCategory', 'RefdataValue' /*, 'PropertyDefinition' */].contains(objType)) {
+            println "WARNING: invalid object type ${objType}!"
+        }
+        else if (! csvFile.exists()) {
+            println "WARNING: ${filePath} not found!"
+        }
+        else {
+            csvFile.withReader { reader ->
+                CSVReader csvr = new CSVReader(reader, (char) ',', (char) '"', (char) '\\', (int) 1)
+                String[] line
+
+                while (line = csvr.readNext()) {
+                    if (line[0]) {
+                        if (objType == 'RefdataCategory') {
+                            Map<String, Object> map = [
+                                    token   : "${line[0].trim()}",
+                                    hardData: BOOTSTRAP,
+                                    i10n    : [en: "${line[2].trim()}", de: "${line[1].trim()}"],
+                            ]
+                            result.add(map)
+                        }
+                        if (objType == 'RefdataValue') {
+                            Map<String, Object> map = [
+                                    token   : "${line[0].trim()}",
+                                    rdc     : "${line[1].trim()}",
+                                    hardData: BOOTSTRAP,
+                                    i10n    : [en: "${line[3].trim()}", de: "${line[2].trim()}"],
+                            ]
+                            result.add(map)
+                        }
+                        /*
+                        if (objType == 'PropertyDefinition') {
+                            Map<String, Object> map = [
+                                    token   : "${line[0].trim()}",
+                                    hardData: true,
+                                    i10n    : [en: "${line[2].trim()}", de: "${line[1].trim()}"],
+                            ]
+                            result.add(map)
+                        }*/
+                    }
+                }
+            }
+        }
+
+        result
+    }
+
+
     def setupTransforms = {
 
         // Transforms types and formats Refdata
-
-        RefdataCategory.loc('Transform Format', [en: 'Transform Format', de: 'Transform Format'], BOOTSTRAP)
-        RefdataCategory.loc('Transform Type', [en: 'Transform Type', de: 'Transform Type'], BOOTSTRAP)
-
         // !!! HAS TO BE BEFORE the script adding the Transformers as it is used by those tables !!!
 
         RefdataValue.loc('Transform Format', [en: 'json'], BOOTSTRAP)
@@ -1998,8 +2023,6 @@ class BootStrap {
                 [[en: 'Agency', de: 'Lieferant'], sub]
         ]
 
-        RefdataCategory.loc('Organisational Role',  [en: 'Organisational Role', de: 'Organisational Role'], BOOTSTRAP)
-
         entries.each{ rdv ->
             def i10n = rdv[0]
             def group = rdv[1]
@@ -2019,101 +2042,22 @@ class BootStrap {
 
         // because legacy logic is hardcoded against RefdataCategory.desc & RefdataValue.value
 
-        RefdataCategory.loc('filter.fake.values', [en: 'filter.fake.values', de: 'filter.fake.values'], BOOTSTRAP)
-        RefdataValue.loc('filter.fake.values',   [key: 'subscription.status.no.status.set.but.null', en: 'No Status', de: 'Kein Status'], BOOTSTRAP)
-        RefdataValue.loc('filter.fake.values',   [key: 'generic.null.value', en: 'Not set', de: 'Nicht gesetzt'], BOOTSTRAP)
-        // refdata categories
+        List rdcList = getParsedCsvData('setup/RefdataCategory.csv', 'RefdataCategory')
 
-        RefdataCategory.loc('YN',                   	                    [en: 'Yes/No', de: 'Ja/Nein'], BOOTSTRAP)
-        RefdataCategory.loc('YNU',                   	                    [en: 'Yes/No/Unknown', de: 'Ja/Nein/Unbekannt'], BOOTSTRAP)
-        RefdataCategory.loc('YNO',                  	                    [en: 'Yes/No/Others', de: 'Ja/Nein/Anderes'], BOOTSTRAP)
-        RefdataCategory.loc('Permissions',                                  [en: 'Permissions', de: 'Berechtigungen'], BOOTSTRAP)
-        RefdataCategory.loc('Existence',                                    [en: 'Existence', de: 'Vorliegen'], BOOTSTRAP)
-        RefdataCategory.loc('Ill code',                                     [en: 'Ill code', de:'Fernleihindikator'], BOOTSTRAP)
-        RefdataCategory.loc('Indemnification',                              [en: 'Indemnification Choice', de: 'Entschädigung Auswahl'], BOOTSTRAP)
-        RefdataCategory.loc('Confidentiality',                              [en: 'Confidentiality Choice', de: 'Vertraulichkeit Auswahl'], BOOTSTRAP)
-        RefdataCategory.loc('Termination Condition',                        [en: 'Termination Condition', de: 'Kündigung Voraussetzung'], BOOTSTRAP)
-        RefdataCategory.loc('AddressType',          	                    [en: 'Address Type', de: 'Art der Adresse'], BOOTSTRAP)
-        RefdataCategory.loc('Cluster Type',         	                    [en: 'Cluster Type', de: 'Cluster Type'], BOOTSTRAP)
-        RefdataCategory.loc('CreatorType',         	                        [en: 'Creator Type', de: 'Creator Type'], BOOTSTRAP)
-        RefdataCategory.loc('Combo Type',           	                    [en: 'Combo Type', de: 'Combo Type'], BOOTSTRAP)
-        RefdataCategory.loc('Combo Status',           	                    [en: 'Combo Status', de: 'Combo Status'], BOOTSTRAP)
-        RefdataCategory.loc('ConcurrentAccess',     	                    [en: 'Concurrent Access', de: 'SimUser'], BOOTSTRAP)
-        RefdataCategory.loc('ContactContentType',   	                    [en: 'Type of Contact', de: 'Kontakttyp'], BOOTSTRAP)
-        RefdataCategory.loc('ContactType',          	                    [en: 'Contact Type', de: 'Art des Kontaktes'], BOOTSTRAP)
-        RefdataCategory.loc('CoreStatus',           	                    [en: 'Core Status', de: 'Kerntitel-Status'], BOOTSTRAP)
-        RefdataCategory.loc('Cost configuration',                        [en: 'Cost configuration', de: 'Kostenkonfiguration'], BOOTSTRAP)
-        RefdataCategory.loc('Country',              	                    [en: 'Country', de: 'Land'], BOOTSTRAP)
-        RefdataCategory.loc('CustomerIdentifier.Type',             	        [en: 'Customer Identifier Type', de: 'Kategorie der Kundennummer'], BOOTSTRAP)
-        RefdataCategory.loc('FactType',             	                    [en: 'FactType', de: 'FactType'], BOOTSTRAP)
-        RefdataCategory.loc('Federal State',        	                    [en: 'Federal State', de: 'Bundesland'], BOOTSTRAP)
-        RefdataCategory.loc('Funder Type',          	                    [en: 'Funder Type', de: 'Trägerschaft'], BOOTSTRAP)
-        RefdataCategory.loc('Gender',               	                    [en: 'Gender', de: 'Geschlecht'], BOOTSTRAP)
-        RefdataCategory.loc('Invoicing',               	                    [en: 'Invoicing', de: 'Rechnungsstellung'], BOOTSTRAP)
-        RefdataCategory.loc('Library Network',      	                    [en: 'Library Network', de: 'Verbundzugehörigkeit'], BOOTSTRAP)
-        RefdataCategory.loc('Library Type',         	                    [en: 'Library Type', de: 'Bibliothekstyp'], BOOTSTRAP)
-        RefdataCategory.loc('OrgSector',            	                    [en: 'OrgSector', de: 'Bereich'], BOOTSTRAP)
-        RefdataCategory.loc('OrgStatus',                	                [en: 'Status', de: 'Status'], BOOTSTRAP)
-        RefdataCategory.loc('OrgRoleType',              	                    [en: 'Organisation Type', de: 'Organisationstyp'], BOOTSTRAP)
-        RefdataCategory.loc('Person Function',      	                    [en: 'Person Function', de: 'Funktion'], BOOTSTRAP)
-        RefdataCategory.loc('Person Contact Type',  	                    [en: 'Person: Contact Type', de: 'Kontaktart'], BOOTSTRAP)
-        RefdataCategory.loc('Person Position',      	                    [en: 'Person Position', de: 'Position'], BOOTSTRAP)
-        RefdataCategory.loc('Person Responsibility',	                    [en: 'Person Responsibility', de: 'Verantwortlich'], BOOTSTRAP)
-        RefdataCategory.loc('Subscription Form',          	                [en: 'Subscription Form', de: 'Lizenzform'], BOOTSTRAP)
-        RefdataCategory.loc('Subscription Resource',          	            [en: 'Resource type', de: 'Ressourcentyp'], BOOTSTRAP)
-        RefdataCategory.loc('Subscription Status',          	            [en: 'Subscription Status', de: 'Lizenzstatus'], BOOTSTRAP)
-        RefdataCategory.loc('Task Priority',                	            [en: 'Task Priority', de: 'Aufgabenpriorität'], BOOTSTRAP)
-        RefdataCategory.loc('Task Status',          	                    [en: 'Task Status', de: 'Aufgabenstatus'], BOOTSTRAP)
-        RefdataCategory.loc('Ticket.Category',          	                  [en: 'Ticket Category', de: 'Kategorie'], BOOTSTRAP)
-        RefdataCategory.loc('Ticket.Status',          	                      [en: 'Ticket Status', de: 'Ticketstatus'], BOOTSTRAP)
-        RefdataCategory.loc('License.RemoteAccess',          	                      [en: 'Remote Access', de: 'Remote-Zugriff'], BOOTSTRAP)
-        RefdataCategory.loc('License.OA.ReceivingModalities',               [en: 'Receiving Modalities', de: 'Bezugsmodalitäten'], BOOTSTRAP)
-        RefdataCategory.loc('License.OA.Repository',                        [en: 'Repository', de: 'Repositorium'], BOOTSTRAP)
-        RefdataCategory.loc('License.OA.CorrespondingAuthorIdentification', [en: 'Corresponding Author Identification', de: 'Autorenindentifikation'], BOOTSTRAP)
-        RefdataCategory.loc('License.OA.LicenseToPublish',                  [en: 'License to Publish', de: 'Publikationslizenz'], BOOTSTRAP)
-        RefdataCategory.loc('License.Arc.PaymentNote',                      [en: 'Archive Payment Note', de: 'Zugriffsrechte Kosten'], BOOTSTRAP)
-		RefdataCategory.loc('License.Arc.TitletransferRegulation',          [en: 'Titletransfer Regulation', de: 'Titeltransfer Regeln'], BOOTSTRAP)
-		RefdataCategory.loc('License.Arc.ArchivalCopyCost',                 [en: 'Archival Copy Cost', de: 'Archivkopie Kosten'], BOOTSTRAP)
-		RefdataCategory.loc('License.Arc.ArchivalCopyTime',                 [en: 'Archival Copy Time', de: 'Archivkopie Zeitpunkt'], BOOTSTRAP)
-        RefdataCategory.loc('License.Arc.ArchivalCopyContent',              [en: 'Archival Copy Content', de: 'Archivkopie Form'], BOOTSTRAP)
-        RefdataCategory.loc('License.Arc.ArchivalCopyTransmissionFormat',      [en: 'Archival Copy Transmission Format', de: 'Archivkopie Übermittlungsformat'], BOOTSTRAP)
-        RefdataCategory.loc('License.Arc.HostingTime',                      [en: 'Hosting Time', de: 'Hostingrecht Zeitpunkt'], BOOTSTRAP)
-        RefdataCategory.loc('License.Arc.Authorized',                       [en: 'Hosting Authorized', de: 'Hostingrecht Berechtigte'], BOOTSTRAP)
-        RefdataCategory.loc('License.Arc.HostingRestriction',               [en: 'Hosting Restriction', de: 'Hostingrecht Einschränkung'], BOOTSTRAP)
-        RefdataCategory.loc('License.Arc.HostingSolution',                  [en: 'Hosting Solution', de: 'Hostingrecht Lösung'], BOOTSTRAP)
-        RefdataCategory.loc('License.Statistics.Standards',                  [en: 'Statistics Standards', de: 'Statistikstandard'], BOOTSTRAP)
-        RefdataCategory.loc('License.Statistics.Delivery',                  [en: 'Statistics Delivery', de: 'Statistik Liefermethode'], BOOTSTRAP)
-        RefdataCategory.loc('License.Statistics.Format',                  [en: 'Statistics Format', de: 'Statistik Auslieferungsformat'], BOOTSTRAP)
-        RefdataCategory.loc('License.Statistics.Frequency',                  [en: 'Statistics Frequency', de: 'Statistik Auslieferungsfrequenz'], BOOTSTRAP)
-        RefdataCategory.loc('License.Statistics.UserCreds',                  [en: 'Statistics User Credentials', de: 'Statistik Nutzeridentifikation'], BOOTSTRAP)
-        RefdataCategory.loc('Package Status',                               [en: 'Package Status', de: 'Paketstatus'], BOOTSTRAP)
-        RefdataCategory.loc('Number Type',                                  [en: 'Number Type', de: 'Zahlen-Typ'], BOOTSTRAP)
-        RefdataCategory.loc('Semester',                                  [en: 'Semester', de: 'Semester'], BOOTSTRAP)
-        RefdataCategory.loc('User.Settings.Dashboard.Tab',                  [en: 'Dashboard Tab', de: 'Dashbord Tab'], BOOTSTRAP)
-        RefdataCategory.loc('User.Settings.Theme',                  [en: 'Theme', de: 'Theme'], BOOTSTRAP)
-        RefdataCategory.loc('Survey Type',                          [en: 'Survey Type', de: 'Umfrage-Typ'], BOOTSTRAP)
-        RefdataCategory.loc('Survey Status',                        [en: 'Survey Status', de: 'Umfrage-Status'], BOOTSTRAP)
-        RefdataCategory.loc('MailTemplate Type',                        [en: 'MailTemplate Type', de: 'MailTemplate Typ'], BOOTSTRAP)
-        RefdataCategory.loc('MailTemplate Language',                        [en: 'MailTemplate Language', de: 'MailTemplate Sprache'], BOOTSTRAP)
-        RefdataCategory.loc('Sim-User Number',                                         [en: 'Sim-User Number', de: 'Sim User Zahl'], BOOTSTRAP)
-        RefdataCategory.loc('Access choice remote',                                         [en: 'Access choice remote', de: 'Zugangswahl Remote'], BOOTSTRAP)
-        RefdataCategory.loc('Category A-F',                                         [en: 'Category A-F', de: 'Kategorie A - F '], BOOTSTRAP)
+        rdcList.each { map ->
+            RefdataCategory.construct(map)
+        }
+
+        List rdvList = getParsedCsvData('setup/RefdataValue.csv', 'RefdataValue')
+
+        rdvList.each { map ->
+            RefdataValue.construct(map)
+        }
 
         // refdata values
 
-        RefdataValue.loc('YN',   [en: 'Yes', de: 'Ja'], BOOTSTRAP)
-        RefdataValue.loc('YN',   [en: 'No', de: 'Nein'], BOOTSTRAP)
-
-        RefdataValue.loc('YNU',   [en: 'Yes', de: 'Ja'], BOOTSTRAP)
-        RefdataValue.loc('YNU',   [en: 'No', de: 'Nein'], BOOTSTRAP)
-        RefdataValue.loc('YNU',   [en: 'Unknown', de: 'Unbekannt'], BOOTSTRAP)
-
-        RefdataValue.loc('YNO',  [en: 'Yes', de: 'Ja'], BOOTSTRAP)
-        RefdataValue.loc('YNO',  [en: 'No', de: 'Nein'], BOOTSTRAP)
-        RefdataValue.loc('YNO',  [en: 'Not applicable', de: 'Nicht zutreffend'], BOOTSTRAP)
-        RefdataValue.loc('YNO',  [en: 'Planed', de: 'Geplant'], BOOTSTRAP)
-        RefdataValue.loc('YNO',  [en: 'Unknown', de: 'Unklar'], BOOTSTRAP)
-        RefdataValue.loc('YNO',  [en: 'Other', de: 'Andere'], BOOTSTRAP)
+        RefdataValue.loc('filter.fake.values',   [key: 'subscription.status.no.status.set.but.null', en: 'No Status', de: 'Kein Status'], BOOTSTRAP)
+        RefdataValue.loc('filter.fake.values',   [key: 'generic.null.value', en: 'Not set', de: 'Nicht gesetzt'], BOOTSTRAP)
 
         RefdataValue.loc('Permissions',  [en: 'Permitted (explicit)', de: 'Ausdrücklich erlaubt'], BOOTSTRAP)
         RefdataValue.loc('Permissions',  [en: 'Permitted (interpreted)', de: 'Vermutlich erlaubt'], BOOTSTRAP)
@@ -2131,28 +2075,6 @@ class BootStrap {
         RefdataValue.loc('Ill code',   [key: 'c', en: 'c - Ill (loan and copy)', de: 'c - Fernleihe (Papierkopie und Ausleihe)'], BOOTSTRAP)
         RefdataValue.loc('Ill code',   [key: 'd', en: 'd - Ill forbidden', de: 'd - keine Fernleihe'], BOOTSTRAP)
         RefdataValue.loc('Ill code',   [key: 'e', en: 'e - Ill (electronic delivery)', de: 'e - Fernleihe (Elektronischer Versand an Endnutzer)'], BOOTSTRAP)
-
-        RefdataValue.loc('Indemnification',  [en: 'General', de: 'Generell'], BOOTSTRAP)
-        RefdataValue.loc('Indemnification',  [en: 'Intellectual Property Only', de: 'Nur geistiges Eigentum'], BOOTSTRAP)
-        RefdataValue.loc('Indemnification',  [en: 'Other', de: 'Andere'], BOOTSTRAP)
-        RefdataValue.loc('Indemnification',  [en: 'Unknown', de: 'Unklar'], BOOTSTRAP)
-
-        RefdataValue.loc('Confidentiality',  [en: 'All', de: 'Alles'], BOOTSTRAP)
-        RefdataValue.loc('Confidentiality',  [en: 'All but user terms', de: 'Alles außer Nutzungsbedingungen'], BOOTSTRAP)
-        RefdataValue.loc('Confidentiality',  [en: 'Financial only', de: 'Nur Finanzangelegenheiten'], BOOTSTRAP)
-        RefdataValue.loc('Confidentiality',  [en: 'No', de: 'Nein'], BOOTSTRAP)
-        RefdataValue.loc('Confidentiality',  [en: 'Unknown', de: 'Unklar'], BOOTSTRAP)
-
-        RefdataValue.loc('Termination Condition',  [en: 'At will', de: 'Nach Belieben'], BOOTSTRAP)
-        RefdataValue.loc('Termination Condition',  [en: 'Breach by Licensor/Licensee', de: 'Wegen Verstoß des Vertragspartners'], BOOTSTRAP)
-        RefdataValue.loc('Termination Condition',  [en: 'Other', de: 'Andere Gründe'], BOOTSTRAP)
-        RefdataValue.loc('Termination Condition',  [en: 'Unknown', de: 'Unklar'], BOOTSTRAP)
-
-        RefdataValue.loc('AddressType', [en: 'Postal address', de: 'Postanschrift'], BOOTSTRAP)
-        RefdataValue.loc('AddressType', [en: 'Billing address', de: 'Rechnungsanschrift'], BOOTSTRAP)
-        RefdataValue.loc('AddressType', [en: 'Delivery address', de: 'Lieferanschrift'], BOOTSTRAP)
-        RefdataValue.loc('AddressType', [en: 'Library address', de: 'Anschrift'], BOOTSTRAP)
-        RefdataValue.loc('AddressType', [en: 'Legal patron address', de: 'Anschrift des rechtlichen Trägers'], BOOTSTRAP)
 
         RefdataValue.loc('ClusterType', [en: 'Undefined'], BOOTSTRAP)
 
@@ -2195,255 +2117,6 @@ class BootStrap {
         // RefdataValue.loc('Country',   [en: 'Italy', de: 'Italien'], BOOTSTRAP)
         // RefdataValue.loc('Country',   [en: 'Netherlands', de: 'Niederlande'], BOOTSTRAP)
         // RefdataValue.loc('Country',   [en: 'Italy', de: 'Italien'], BOOTSTRAP)
-        RefdataValue.loc('Country', [key: 'AD', en: 'Andorra', de: 'Andorra'], BOOTSTRAP)
-        RefdataValue.loc('Country', [key: 'AE', en: 'United Arab Emirates', de: 'Vereinigte Arabische Emirate'], BOOTSTRAP)
-        RefdataValue.loc('Country', [key: 'AF', en: 'Afghanistan', de: 'Afghanistan'], BOOTSTRAP)
-        RefdataValue.loc('Country', [key: 'AG', en: 'Antigua and Barbuda', de: 'Antigua und Barbuda'], BOOTSTRAP)
-        RefdataValue.loc('Country', [key: 'AI', en: 'Anguilla', de: 'Anguilla'], BOOTSTRAP)
-        RefdataValue.loc('Country', [key: 'AL', en: 'Albania', de: 'Albanien'], BOOTSTRAP)
-        RefdataValue.loc('Country', [key: 'AM', en: 'Armenia', de: 'Armenien'], BOOTSTRAP)
-        RefdataValue.loc('Country', [key: 'AO', en: 'Angola', de: 'Angola'], BOOTSTRAP)
-        RefdataValue.loc('Country', [key: 'AQ', en: 'Antarctica', de: 'Antarktis'], BOOTSTRAP)
-        RefdataValue.loc('Country', [key: 'AR', en: 'Argentina', de: 'Argentinien'], BOOTSTRAP)
-        RefdataValue.loc('Country', [key: 'AS', en: 'American Samoa', de: 'Samoa, amerikanischer Teil'], BOOTSTRAP)
-        RefdataValue.loc('Country', [key: 'AT', en: 'Austria', de: 'Österreich'], BOOTSTRAP)
-        RefdataValue.loc('Country', [key: 'AU', en: 'Australia', de: 'Australien'], BOOTSTRAP)
-        RefdataValue.loc('Country', [key: 'AW', en: 'Aruba', de: 'Aruba'], BOOTSTRAP)
-        RefdataValue.loc('Country', [key: 'AX', en: 'Åland Islands', de: 'Åland'], BOOTSTRAP)
-        RefdataValue.loc('Country', [key: 'AZ', en: 'Azerbaijan', de: 'Aserbaidschan'], BOOTSTRAP)
-        RefdataValue.loc('Country', [key: 'BA', en: 'Bosnia and Herzegovina', de: 'Bosnien-Herzegowina'], BOOTSTRAP)
-        RefdataValue.loc('Country', [key: 'BB', en: 'Barbados', de: 'Barbados'], BOOTSTRAP)
-        RefdataValue.loc('Country', [key: 'BD', en: 'Bangladesh', de: 'Bangladesh'], BOOTSTRAP)
-        RefdataValue.loc('Country', [key: 'BE', en: 'Belgium', de: 'Belgien'], BOOTSTRAP)
-        RefdataValue.loc('Country', [key: 'BF', en: 'Burkina Faso', de: 'Burkina Faso'], BOOTSTRAP)
-        RefdataValue.loc('Country', [key: 'BG', en: 'Bulgaria', de: 'Bulgarien'], BOOTSTRAP)
-        RefdataValue.loc('Country', [key: 'BH', en: 'Bahrain', de: 'Bahrain'], BOOTSTRAP)
-        RefdataValue.loc('Country', [key: 'BI', en: 'Burundi', de: 'Burundi'], BOOTSTRAP)
-        RefdataValue.loc('Country', [key: 'BJ', en: 'Benin', de: 'Benin'], BOOTSTRAP)
-        RefdataValue.loc('Country', [key: 'BL', en: 'Saint Barthélemy', de: 'St. Barthélemy'], BOOTSTRAP)
-        RefdataValue.loc('Country', [key: 'BM', en: 'Bermuda', de: 'Bermuda'], BOOTSTRAP)
-        RefdataValue.loc('Country', [key: 'BN', en: 'Brunei Darussalam', de: 'Brunei'], BOOTSTRAP)
-        RefdataValue.loc('Country', [key: 'BO', en: 'Bolivia, Plurinational State of', de: 'Bolivien'], BOOTSTRAP)
-        RefdataValue.loc('Country', [key: 'BQ', en: 'Bonaire, Sint Eustatius and Saba', de: 'Karibische Niederlande'], BOOTSTRAP)
-        RefdataValue.loc('Country', [key: 'BR', en: 'Brazil', de: 'Brasilien'], BOOTSTRAP)
-        RefdataValue.loc('Country', [key: 'BS', en: 'Bahamas', de: 'Bahamas'], BOOTSTRAP)
-        RefdataValue.loc('Country', [key: 'BT', en: 'Bhutan', de: 'Bhutan'], BOOTSTRAP)
-        RefdataValue.loc('Country', [key: 'BV', en: 'Bouvet Island', de: 'Bouvet-Insel'], BOOTSTRAP)
-        RefdataValue.loc('Country', [key: 'BW', en: 'Botswana', de: 'Botswana'], BOOTSTRAP)
-        RefdataValue.loc('Country', [key: 'BY', en: 'Belarus', de: 'Belarus'], BOOTSTRAP)
-        RefdataValue.loc('Country', [key: 'BZ', en: 'Belize', de: 'Belize'], BOOTSTRAP)
-        RefdataValue.loc('Country', [key: 'CA', en: 'Canada', de: 'Kanada'], BOOTSTRAP)
-        RefdataValue.loc('Country', [key: 'CC', en: 'Cocos (Keeling) Islands', de: 'Kokos-Insel (Keeling)'], BOOTSTRAP)
-        RefdataValue.loc('Country', [key: 'CD', en: 'Congo, the Democratic Republic of the', de: 'Kongo, demokratische Republik'], BOOTSTRAP)
-        RefdataValue.loc('Country', [key: 'CF', en: 'Central African Republic', de: 'Zentralafrika'], BOOTSTRAP)
-        RefdataValue.loc('Country', [key: 'CG', en: 'Congo', de: 'Kongo (Republik)'], BOOTSTRAP)
-        RefdataValue.loc('Country', [key: 'CH', en: 'Switzerland', de: 'Schweiz'], BOOTSTRAP)
-        RefdataValue.loc('Country', [key: 'CI', en: 'Côte d\'Ivoire', de: 'Elfenbeinküste'], BOOTSTRAP)
-        RefdataValue.loc('Country', [key: 'CK', en: 'Cook Islands', de: 'Cook-Inseln'], BOOTSTRAP)
-        RefdataValue.loc('Country', [key: 'CL', en: 'Chile', de: 'Chile'], BOOTSTRAP)
-        RefdataValue.loc('Country', [key: 'CM', en: 'Cameroon', de: 'Kamerun'], BOOTSTRAP)
-        RefdataValue.loc('Country', [key: 'CN', en: 'China', de: 'China (Volksrepublik)'], BOOTSTRAP)
-        RefdataValue.loc('Country', [key: 'CO', en: 'Colombia', de: 'Kolumbien'], BOOTSTRAP)
-        RefdataValue.loc('Country', [key: 'CR', en: 'Costa Rica', de: 'Costa Rica'], BOOTSTRAP)
-        RefdataValue.loc('Country', [key: 'CU', en: 'Cuba', de: 'Kuba'], BOOTSTRAP)
-        RefdataValue.loc('Country', [key: 'CV', en: 'Cape Verde', de: 'Kapverdische Inseln'], BOOTSTRAP)
-        RefdataValue.loc('Country', [key: 'CW', en: 'Curaçao', de: 'Curaçao'], BOOTSTRAP)
-        RefdataValue.loc('Country', [key: 'CX', en: 'Christmas Island', de: 'Weihnachtsinseln (indischer Ozean)'], BOOTSTRAP)
-        RefdataValue.loc('Country', [key: 'CY', en: 'Cyprus', de: 'Zypern'], BOOTSTRAP)
-        RefdataValue.loc('Country', [key: 'CZ', en: 'Czech Republic', de: 'Tschechische Republik'], BOOTSTRAP)
-        RefdataValue.loc('Country', [key: 'DE', en: 'Germany', de: 'Deutschland'], BOOTSTRAP)
-        RefdataValue.loc('Country', [key: 'DJ', en: 'Djibouti', de: 'Djibouti'], BOOTSTRAP)
-        RefdataValue.loc('Country', [key: 'DK', en: 'Denmark', de: 'Dänemark'], BOOTSTRAP)
-        RefdataValue.loc('Country', [key: 'DM', en: 'Dominica', de: 'Dominica'], BOOTSTRAP)
-        RefdataValue.loc('Country', [key: 'DO', en: 'Dominican Republic', de: 'Dominikanische Republik'], BOOTSTRAP)
-        RefdataValue.loc('Country', [key: 'DZ', en: 'Algeria', de: 'Algerien'], BOOTSTRAP)
-        RefdataValue.loc('Country', [key: 'EC', en: 'Ecuador', de: 'Ekuador'], BOOTSTRAP)
-        RefdataValue.loc('Country', [key: 'EE', en: 'Estonia', de: 'Estland'], BOOTSTRAP)
-        RefdataValue.loc('Country', [key: 'EG', en: 'Egypt', de: 'Ägypten'], BOOTSTRAP)
-        RefdataValue.loc('Country', [key: 'EH', en: 'Western Sahara', de: 'Westsahara'], BOOTSTRAP)
-        RefdataValue.loc('Country', [key: 'ER', en: 'Eritrea', de: 'Eritrea'], BOOTSTRAP)
-        RefdataValue.loc('Country', [key: 'ES', en: 'Spain', de: 'Spanien'], BOOTSTRAP)
-        RefdataValue.loc('Country', [key: 'ET', en: 'Ethiopia', de: 'Äthiopien'], BOOTSTRAP)
-        RefdataValue.loc('Country', [key: 'FI', en: 'Finland', de: 'Finnland'], BOOTSTRAP)
-        RefdataValue.loc('Country', [key: 'FJ', en: 'Fiji', de: 'Fidschi'], BOOTSTRAP)
-        RefdataValue.loc('Country', [key: 'FK', en: 'Falkland Islands (Malvinas)', de: 'Falkland-Inseln'], BOOTSTRAP)
-        RefdataValue.loc('Country', [key: 'FM', en: 'Micronesia, Federated States of', de: 'Mikronesien (Föderierte Staaten von)'], BOOTSTRAP)
-        RefdataValue.loc('Country', [key: 'FO', en: 'Faroe Islands', de: 'Färöer-Inseln'], BOOTSTRAP)
-        RefdataValue.loc('Country', [key: 'FR', en: 'France', de: 'Frankreich'], BOOTSTRAP)
-        RefdataValue.loc('Country', [key: 'GA', en: 'Gabon', de: 'Gabun'], BOOTSTRAP)
-        RefdataValue.loc('Country', [key: 'GB', en: 'United Kingdom', de: 'Grossbritannien und Nordirland'], BOOTSTRAP)
-        RefdataValue.loc('Country', [key: 'GD', en: 'Grenada', de: 'Grenada'], BOOTSTRAP)
-        RefdataValue.loc('Country', [key: 'GE', en: 'Georgia', de: 'Georgien'], BOOTSTRAP)
-        RefdataValue.loc('Country', [key: 'GF', en: 'French Guiana', de: 'Französisch-Guyana'], BOOTSTRAP)
-        RefdataValue.loc('Country', [key: 'GG', en: 'Guernsey', de: 'Guernsey'], BOOTSTRAP)
-        RefdataValue.loc('Country', [key: 'GH', en: 'Ghana', de: 'Ghana'], BOOTSTRAP)
-        RefdataValue.loc('Country', [key: 'GI', en: 'Gibraltar', de: 'Gibraltar'], BOOTSTRAP)
-        RefdataValue.loc('Country', [key: 'GL', en: 'Greenland', de: 'Grönland'], BOOTSTRAP)
-        RefdataValue.loc('Country', [key: 'GM', en: 'Gambia', de: 'Gambia'], BOOTSTRAP)
-        RefdataValue.loc('Country', [key: 'GN', en: 'Guinea', de: 'Guinea (Republik)'], BOOTSTRAP)
-        RefdataValue.loc('Country', [key: 'GP', en: 'Guadeloupe', de: 'Guadeloupe'], BOOTSTRAP)
-        RefdataValue.loc('Country', [key: 'GQ', en: 'Equatorial Guinea', de: 'Äquatorial-Guinea'], BOOTSTRAP)
-        RefdataValue.loc('Country', [key: 'GR', en: 'Greece', de: 'Griechenland'], BOOTSTRAP)
-        RefdataValue.loc('Country', [key: 'GS', en: 'South Georgia and the South Sandwich Islands', de: 'Südgeorgien und die südlichen Sandwichinseln'], BOOTSTRAP)
-        RefdataValue.loc('Country', [key: 'GT', en: 'Guatemala', de: 'Guatemala'], BOOTSTRAP)
-        RefdataValue.loc('Country', [key: 'GU', en: 'Guam', de: 'Guam'], BOOTSTRAP)
-        RefdataValue.loc('Country', [key: 'GW', en: 'Guinea-Bissau', de: 'Guinea-Bissau'], BOOTSTRAP)
-        RefdataValue.loc('Country', [key: 'GY', en: 'Guyana', de: 'Guyana'], BOOTSTRAP)
-        RefdataValue.loc('Country', [key: 'HK', en: 'Hong Kong', de: 'Hongkong'], BOOTSTRAP)
-        RefdataValue.loc('Country', [key: 'HM', en: 'Heard Island and McDonald Islands', de: 'Heard- und McDonald-Inseln'], BOOTSTRAP)
-        RefdataValue.loc('Country', [key: 'HN', en: 'Honduras', de: 'Honduras'], BOOTSTRAP)
-        RefdataValue.loc('Country', [key: 'HR', en: 'Croatia', de: 'Kroatien'], BOOTSTRAP)
-        RefdataValue.loc('Country', [key: 'HT', en: 'Haiti', de: 'Haiti'], BOOTSTRAP)
-        RefdataValue.loc('Country', [key: 'HU', en: 'Hungary', de: 'Ungarn'], BOOTSTRAP)
-        RefdataValue.loc('Country', [key: 'ID', en: 'Indonesia', de: 'Indonesien'], BOOTSTRAP)
-        RefdataValue.loc('Country', [key: 'IE', en: 'Ireland', de: 'Irland'], BOOTSTRAP)
-        RefdataValue.loc('Country', [key: 'IL', en: 'Israel', de: 'Israel'], BOOTSTRAP)
-        RefdataValue.loc('Country', [key: 'IM', en: 'Isle of Man', de: 'Man, Insel'], BOOTSTRAP)
-        RefdataValue.loc('Country', [key: 'IN', en: 'India', de: 'Indien'], BOOTSTRAP)
-        RefdataValue.loc('Country', [key: 'IO', en: 'British Indian Ocean Territory', de: 'Britisches Territorium im indischen Ozean'], BOOTSTRAP)
-        RefdataValue.loc('Country', [key: 'IQ', en: 'Iraq', de: 'Irak'], BOOTSTRAP)
-        RefdataValue.loc('Country', [key: 'IR', en: 'Iran, Islamic Republic of', de: 'Iran'], BOOTSTRAP)
-        RefdataValue.loc('Country', [key: 'IS', en: 'Iceland', de: 'Island'], BOOTSTRAP)
-        RefdataValue.loc('Country', [key: 'IT', en: 'Italy', de: 'Italien'], BOOTSTRAP)
-        RefdataValue.loc('Country', [key: 'JE', en: 'Jersey', de: 'Jersey'], BOOTSTRAP)
-        RefdataValue.loc('Country', [key: 'JM', en: 'Jamaica', de: 'Jamaika'], BOOTSTRAP)
-        RefdataValue.loc('Country', [key: 'JO', en: 'Jordan', de: 'Jordanien'], BOOTSTRAP)
-        RefdataValue.loc('Country', [key: 'JP', en: 'Japan', de: 'Japan'], BOOTSTRAP)
-        RefdataValue.loc('Country', [key: 'KE', en: 'Kenya', de: 'Kenia'], BOOTSTRAP)
-        RefdataValue.loc('Country', [key: 'KG', en: 'Kyrgyzstan', de: 'Kirgisistan'], BOOTSTRAP)
-        RefdataValue.loc('Country', [key: 'KH', en: 'Cambodia', de: 'Kambodscha'], BOOTSTRAP)
-        RefdataValue.loc('Country', [key: 'KI', en: 'Kiribati', de: 'Kiribati'], BOOTSTRAP)
-        RefdataValue.loc('Country', [key: 'KM', en: 'Comoros', de: 'Komoren'], BOOTSTRAP)
-        RefdataValue.loc('Country', [key: 'KN', en: 'Saint Kitts and Nevis', de: 'St. Christoph (St. Kitts) und Nevis'], BOOTSTRAP)
-        RefdataValue.loc('Country', [key: 'KP', en: 'Korea, Democratic People\'s Republic of', de: 'Korea, demokratische Volksrepublik (Nordkorea)'], BOOTSTRAP)
-        RefdataValue.loc('Country', [key: 'KR', en: 'Korea, Republic of', de: 'Korea, Republik (Südkorea)'], BOOTSTRAP)
-        RefdataValue.loc('Country', [key: 'KW', en: 'Kuwait', de: 'Kuwait'], BOOTSTRAP)
-        RefdataValue.loc('Country', [key: 'KY', en: 'Cayman Islands', de: 'Cayman'], BOOTSTRAP)
-        RefdataValue.loc('Country', [key: 'KZ', en: 'Kazakhstan', de: 'Kasachstan'], BOOTSTRAP)
-        RefdataValue.loc('Country', [key: 'LA', en: 'Lao People\'s Democratic Republic', de: 'Laos'], BOOTSTRAP)
-        RefdataValue.loc('Country', [key: 'LB', en: 'Lebanon', de: 'Libanon'], BOOTSTRAP)
-        RefdataValue.loc('Country', [key: 'LC', en: 'Saint Lucia', de: 'St. Lucia'], BOOTSTRAP)
-        RefdataValue.loc('Country', [key: 'LI', en: 'Liechtenstein', de: 'Liechtenstein'], BOOTSTRAP)
-        RefdataValue.loc('Country', [key: 'LK', en: 'Sri Lanka', de: 'Sri Lanka'], BOOTSTRAP)
-        RefdataValue.loc('Country', [key: 'LR', en: 'Liberia', de: 'Liberia'], BOOTSTRAP)
-        RefdataValue.loc('Country', [key: 'LS', en: 'Lesotho', de: 'Lesotho'], BOOTSTRAP)
-        RefdataValue.loc('Country', [key: 'LT', en: 'Lithuania', de: 'Litauen'], BOOTSTRAP)
-        RefdataValue.loc('Country', [key: 'LU', en: 'Luxembourg', de: 'Luxemburg'], BOOTSTRAP)
-        RefdataValue.loc('Country', [key: 'LV', en: 'Latvia', de: 'Lettland'], BOOTSTRAP)
-        RefdataValue.loc('Country', [key: 'LY', en: 'Libya', de: 'Libyen'], BOOTSTRAP)
-        RefdataValue.loc('Country', [key: 'MA', en: 'Morocco', de: 'Marokko'], BOOTSTRAP)
-        RefdataValue.loc('Country', [key: 'MC', en: 'Monaco', de: 'Monaco'], BOOTSTRAP)
-        RefdataValue.loc('Country', [key: 'MD', en: 'Moldova, Republic of', de: 'Moldova'], BOOTSTRAP)
-        RefdataValue.loc('Country', [key: 'ME', en: 'Montenegro', de: 'Montenegro, Republik'], BOOTSTRAP)
-        RefdataValue.loc('Country', [key: 'MF', en: 'Saint Martin (French part)', de: 'St. Martin'], BOOTSTRAP)
-        RefdataValue.loc('Country', [key: 'MG', en: 'Madagascar', de: 'Madagaskar'], BOOTSTRAP)
-        RefdataValue.loc('Country', [key: 'MH', en: 'Marshall Islands', de: 'Marshall-Inseln'], BOOTSTRAP)
-        RefdataValue.loc('Country', [key: 'MK', en: 'Macedonia, the Former Yugoslav Republic of', de: 'Mazedonien, ehemalige jugoslawische Republik'], BOOTSTRAP)
-        RefdataValue.loc('Country', [key: 'ML', en: 'Mali', de: 'Mali'], BOOTSTRAP)
-        RefdataValue.loc('Country', [key: 'MM', en: 'Myanmar', de: 'Myanmar (Union)'], BOOTSTRAP)
-        RefdataValue.loc('Country', [key: 'MN', en: 'Mongolia', de: 'Mongolei'], BOOTSTRAP)
-        RefdataValue.loc('Country', [key: 'MO', en: 'Macao', de: 'Macao'], BOOTSTRAP)
-        RefdataValue.loc('Country', [key: 'MP', en: 'Northern Mariana Islands', de: 'Marianen-Inseln'], BOOTSTRAP)
-        RefdataValue.loc('Country', [key: 'MQ', en: 'Martinique', de: 'Martinique'], BOOTSTRAP)
-        RefdataValue.loc('Country', [key: 'MR', en: 'Mauritania', de: 'Mauretanien'], BOOTSTRAP)
-        RefdataValue.loc('Country', [key: 'MS', en: 'Montserrat', de: 'Montserrat'], BOOTSTRAP)
-        RefdataValue.loc('Country', [key: 'MT', en: 'Malta', de: 'Malta'], BOOTSTRAP)
-        RefdataValue.loc('Country', [key: 'MU', en: 'Mauritius', de: 'Mauritius, Insel'], BOOTSTRAP)
-        RefdataValue.loc('Country', [key: 'MV', en: 'Maldives', de: 'Malediven'], BOOTSTRAP)
-        RefdataValue.loc('Country', [key: 'MW', en: 'Malawi', de: 'Malawi'], BOOTSTRAP)
-        RefdataValue.loc('Country', [key: 'MX', en: 'Mexico', de: 'Mexiko'], BOOTSTRAP)
-        RefdataValue.loc('Country', [key: 'MY', en: 'Malaysia', de: 'Malaysia'], BOOTSTRAP)
-        RefdataValue.loc('Country', [key: 'MZ', en: 'Mozambique', de: 'Mosambik'], BOOTSTRAP)
-        RefdataValue.loc('Country', [key: 'NA', en: 'Namibia', de: 'Namibia'], BOOTSTRAP)
-        RefdataValue.loc('Country', [key: 'NC', en: 'New Caledonia', de: 'Neukaledonien'], BOOTSTRAP)
-        RefdataValue.loc('Country', [key: 'NE', en: 'Niger', de: 'Niger'], BOOTSTRAP)
-        RefdataValue.loc('Country', [key: 'NF', en: 'Norfolk Island', de: 'Norfolk-Insel'], BOOTSTRAP)
-        RefdataValue.loc('Country', [key: 'NG', en: 'Nigeria', de: 'Nigeria'], BOOTSTRAP)
-        RefdataValue.loc('Country', [key: 'NI', en: 'Nicaragua', de: 'Nicaragua'], BOOTSTRAP)
-        RefdataValue.loc('Country', [key: 'NL', en: 'Netherlands', de: 'Niederlande'], BOOTSTRAP)
-        RefdataValue.loc('Country', [key: 'NO', en: 'Norway', de: 'Norwegen'], BOOTSTRAP)
-        RefdataValue.loc('Country', [key: 'NP', en: 'Nepal', de: 'Nepal'], BOOTSTRAP)
-        RefdataValue.loc('Country', [key: 'NR', en: 'Nauru', de: 'Nauru'], BOOTSTRAP)
-        RefdataValue.loc('Country', [key: 'NU', en: 'Niue', de: 'Niue'], BOOTSTRAP)
-        RefdataValue.loc('Country', [key: 'NZ', en: 'New Zealand', de: 'Neuseeland'], BOOTSTRAP)
-        RefdataValue.loc('Country', [key: 'OM', en: 'Oman', de: 'Oman'], BOOTSTRAP)
-        RefdataValue.loc('Country', [key: 'PA', en: 'Panama', de: 'Panama'], BOOTSTRAP)
-        RefdataValue.loc('Country', [key: 'PE', en: 'Peru', de: 'Peru'], BOOTSTRAP)
-        RefdataValue.loc('Country', [key: 'PF', en: 'French Polynesia', de: 'Französisch-Polynesien'], BOOTSTRAP)
-        RefdataValue.loc('Country', [key: 'PG', en: 'Papua New Guinea', de: 'Papua-Neuguinea'], BOOTSTRAP)
-        RefdataValue.loc('Country', [key: 'PH', en: 'Philippines', de: 'Philippinen'], BOOTSTRAP)
-        RefdataValue.loc('Country', [key: 'PK', en: 'Pakistan', de: 'Pakistan'], BOOTSTRAP)
-        RefdataValue.loc('Country', [key: 'PL', en: 'Poland', de: 'Polen'], BOOTSTRAP)
-        RefdataValue.loc('Country', [key: 'PM', en: 'Saint Pierre and Miquelon', de: 'St. Pierre und Miquelon'], BOOTSTRAP)
-        RefdataValue.loc('Country', [key: 'PN', en: 'Pitcairn', de: 'Pitcairn'], BOOTSTRAP)
-        RefdataValue.loc('Country', [key: 'PR', en: 'Puerto Rico', de: 'Puerto Rico'], BOOTSTRAP)
-        RefdataValue.loc('Country', [key: 'PS', en: 'Palestine, State of', de: 'Palästina'], BOOTSTRAP)
-        RefdataValue.loc('Country', [key: 'PT', en: 'Portugal', de: 'Portugal'], BOOTSTRAP)
-        RefdataValue.loc('Country', [key: 'PW', en: 'Palau', de: 'Palau'], BOOTSTRAP)
-        RefdataValue.loc('Country', [key: 'PY', en: 'Paraguay', de: 'Paraguay'], BOOTSTRAP)
-        RefdataValue.loc('Country', [key: 'QA', en: 'Qatar', de: 'Qatar'], BOOTSTRAP)
-        RefdataValue.loc('Country', [key: 'RE', en: 'Réunion', de: 'Réunion'], BOOTSTRAP)
-        RefdataValue.loc('Country', [key: 'RO', en: 'Romania', de: 'Rumänien'], BOOTSTRAP)
-        RefdataValue.loc('Country', [key: 'RS', en: 'Serbia', de: 'Serbien, Republik'], BOOTSTRAP)
-        RefdataValue.loc('Country', [key: 'RU', en: 'Russian Federation', de: 'Russische Föderation'], BOOTSTRAP)
-        RefdataValue.loc('Country', [key: 'RW', en: 'Rwanda', de: 'Rwanda'], BOOTSTRAP)
-        RefdataValue.loc('Country', [key: 'SA', en: 'Saudi Arabia', de: 'Saudi-Arabien'], BOOTSTRAP)
-        RefdataValue.loc('Country', [key: 'SB', en: 'Solomon Islands', de: 'Salomon-Inseln'], BOOTSTRAP)
-        RefdataValue.loc('Country', [key: 'SC', en: 'Seychelles', de: 'Seychellen'], BOOTSTRAP)
-        RefdataValue.loc('Country', [key: 'SD', en: 'Sudan', de: 'Sudan'], BOOTSTRAP)
-        RefdataValue.loc('Country', [key: 'SE', en: 'Sweden', de: 'Schweden'], BOOTSTRAP)
-        RefdataValue.loc('Country', [key: 'SG', en: 'Singapore', de: 'Singapur'], BOOTSTRAP)
-        RefdataValue.loc('Country', [key: 'SH', en: 'Saint Helena, Ascension and Tristan da Cunha', de: 'St. Helena, Ascension und Tristan da Cunha'], BOOTSTRAP)
-        RefdataValue.loc('Country', [key: 'SI', en: 'Slovenia', de: 'Slowenien'], BOOTSTRAP)
-        RefdataValue.loc('Country', [key: 'SJ', en: 'Svalbard and Jan Mayen', de: 'Svalbard und Insel Jan Mayen'], BOOTSTRAP)
-        RefdataValue.loc('Country', [key: 'SK', en: 'Slovakia', de: 'Slowakische Republik'], BOOTSTRAP)
-        RefdataValue.loc('Country', [key: 'SL', en: 'Sierra Leone', de: 'Sierra Leone'], BOOTSTRAP)
-        RefdataValue.loc('Country', [key: 'SM', en: 'San Marino', de: 'San Marino'], BOOTSTRAP)
-        RefdataValue.loc('Country', [key: 'SN', en: 'Senegal', de: 'Senegal'], BOOTSTRAP)
-        RefdataValue.loc('Country', [key: 'SO', en: 'Somalia', de: 'Somalia'], BOOTSTRAP)
-        RefdataValue.loc('Country', [key: 'SR', en: 'Suriname', de: 'Suriname'], BOOTSTRAP)
-        RefdataValue.loc('Country', [key: 'SS', en: 'South Sudan', de: 'Südsudan'], BOOTSTRAP)
-        RefdataValue.loc('Country', [key: 'ST', en: 'Sao Tome and Principe', de: 'St. Thomas und Principe'], BOOTSTRAP)
-        RefdataValue.loc('Country', [key: 'SV', en: 'El Salvador', de: 'El Salvador'], BOOTSTRAP)
-        RefdataValue.loc('Country', [key: 'SX', en: 'Sint Maarten (Dutch part)', de: 'St. Maarten'], BOOTSTRAP)
-        RefdataValue.loc('Country', [key: 'SY', en: 'Syrian Arab Republic', de: 'Syrien'], BOOTSTRAP)
-        RefdataValue.loc('Country', [key: 'SZ', en: 'Swaziland', de: 'Swasiland'], BOOTSTRAP)
-        RefdataValue.loc('Country', [key: 'TC', en: 'Turks and Caicos Islands', de: 'Turks und Caicos'], BOOTSTRAP)
-        RefdataValue.loc('Country', [key: 'TD', en: 'Chad', de: 'Tschad'], BOOTSTRAP)
-        RefdataValue.loc('Country', [key: 'TF', en: 'French Southern Territories', de: 'Französische Süd- und Antarktisgebiete'], BOOTSTRAP)
-        RefdataValue.loc('Country', [key: 'TG', en: 'Togo', de: 'Togo'], BOOTSTRAP)
-        RefdataValue.loc('Country', [key: 'TH', en: 'Thailand', de: 'Thailand'], BOOTSTRAP)
-        RefdataValue.loc('Country', [key: 'TJ', en: 'Tajikistan', de: 'Tadschikistan'], BOOTSTRAP)
-        RefdataValue.loc('Country', [key: 'TK', en: 'Tokelau', de: 'Tokelau'], BOOTSTRAP)
-        RefdataValue.loc('Country', [key: 'TL', en: 'Timor-Leste', de: 'Timor-Leste'], BOOTSTRAP)
-        RefdataValue.loc('Country', [key: 'TM', en: 'Turkmenistan', de: 'Turkmenistan'], BOOTSTRAP)
-        RefdataValue.loc('Country', [key: 'TN', en: 'Tunisia', de: 'Tunesien'], BOOTSTRAP)
-        RefdataValue.loc('Country', [key: 'TO', en: 'Tonga', de: 'Tonga'], BOOTSTRAP)
-        RefdataValue.loc('Country', [key: 'TR', en: 'Turkey', de: 'Türkei'], BOOTSTRAP)
-        RefdataValue.loc('Country', [key: 'TT', en: 'Trinidad and Tobago', de: 'Trinidad und Tobago'], BOOTSTRAP)
-        RefdataValue.loc('Country', [key: 'TV', en: 'Tuvalu', de: 'Tuvalu'], BOOTSTRAP)
-        RefdataValue.loc('Country', [key: 'TW', en: 'Taiwan, Province of China', de: 'Taiwan (Chinesisches Taipei)'], BOOTSTRAP)
-        RefdataValue.loc('Country', [key: 'TZ', en: 'Tanzania, United Republic of', de: 'Tansania'], BOOTSTRAP)
-        RefdataValue.loc('Country', [key: 'UA', en: 'Ukraine', de: 'Ukraine'], BOOTSTRAP)
-        RefdataValue.loc('Country', [key: 'UG', en: 'Uganda', de: 'Uganda'], BOOTSTRAP)
-        RefdataValue.loc('Country', [key: 'UM', en: 'United States Minor Outlying Islands', de: 'Amerikanische Überseeinseln, kleinere'], BOOTSTRAP)
-        RefdataValue.loc('Country', [key: 'US', en: 'United States', de: 'Vereinigte Staaten von Amerika'], BOOTSTRAP)
-        RefdataValue.loc('Country', [key: 'UY', en: 'Uruguay', de: 'Uruguay'], BOOTSTRAP)
-        RefdataValue.loc('Country', [key: 'UZ', en: 'Uzbekistan', de: 'Usbekistan'], BOOTSTRAP)
-        RefdataValue.loc('Country', [key: 'VA', en: 'Holy See (Vatican City State)', de: 'Vatikan'], BOOTSTRAP)
-        RefdataValue.loc('Country', [key: 'VC', en: 'Saint Vincent and the Grenadines', de: 'St. Vincent und Grenadinen'], BOOTSTRAP)
-        RefdataValue.loc('Country', [key: 'VE', en: 'Venezuela, Bolivarian Republic of', de: 'Venezuela'], BOOTSTRAP)
-        RefdataValue.loc('Country', [key: 'VG', en: 'Virgin Islands, British', de: 'Virginische Inseln, britischer Teil (Tortola)'], BOOTSTRAP)
-        RefdataValue.loc('Country', [key: 'VI', en: 'Virgin Islands, U.S.', de: 'Amerikanische Jungferninseln'], BOOTSTRAP)
-        RefdataValue.loc('Country', [key: 'VN', en: 'Viet Nam', de: 'Vietnam'], BOOTSTRAP)
-        RefdataValue.loc('Country', [key: 'VU', en: 'Vanuatu', de: 'Vanuatu'], BOOTSTRAP)
-        RefdataValue.loc('Country', [key: 'WF', en: 'Wallis and Futuna', de: 'Wallis und Futuna'], BOOTSTRAP)
-        RefdataValue.loc('Country', [key: 'WS', en: 'Samoa', de: 'Samoa, West'], BOOTSTRAP)
-        RefdataValue.loc('Country', [key: 'YE', en: 'Yemen', de: 'Jemen'], BOOTSTRAP)
-        RefdataValue.loc('Country', [key: 'YT', en: 'Mayotte', de: 'Mayotte'], BOOTSTRAP)
-        RefdataValue.loc('Country', [key: 'ZA', en: 'South Africa', de: 'Südafrika'], BOOTSTRAP)
-        RefdataValue.loc('Country', [key: 'ZM', en: 'Zambia', de: 'Sambia'], BOOTSTRAP)
-        RefdataValue.loc('Country', [key: 'ZW', en: 'Zimbabwe', de: 'Zimbabwe'], BOOTSTRAP)
 
         RefdataValue.loc('CustomerIdentifier.Type', [key: 'Default', en: 'Default', de: 'Default'], BOOTSTRAP)
 
@@ -2928,30 +2601,18 @@ class BootStrap {
         // ONIX-PL Additions
         // -------------------------------------------------------------------
 
-        RefdataCategory.loc('Authority',
-                [en: 'Authority', de: 'Autorität'], BOOTSTRAP)
-
         RefdataValue.loc('Authority', [en: 'Author', de: 'Autor'], BOOTSTRAP)
         RefdataValue.loc('Authority', [en: 'Institution', de: 'Institution'], BOOTSTRAP)
         RefdataValue.loc('Authority', [en: 'Author and Institution', de: 'Autor und Institution'], BOOTSTRAP)
         RefdataValue.loc('Authority', [en: 'Research Funding Institution', de: 'Forschungsförderer'], BOOTSTRAP)
 
-        RefdataCategory.loc('CostItem.Type',
-                [en: 'Type', de: 'Typ'], BOOTSTRAP)
-
         RefdataValue.loc('CostItem.Type', [en: 'Actual', de: 'Konkrete Instanz'], BOOTSTRAP)
         RefdataValue.loc('CostItem.Type', [en: 'Template', de: 'Vorlage'], BOOTSTRAP)
-
-        RefdataCategory.loc('CostItemCategory',
-                [en: 'CostItemCategory', de: 'CostItemCategory'], BOOTSTRAP)
 
         //RefdataValue.loc('CostItemCategory', [en: 'Price', de: 'Preis'], BOOTSTRAP)
         //RefdataValue.loc('CostItemCategory', [en: 'Bank Charge', de: 'Bank Charge'], BOOTSTRAP)
         //RefdataValue.loc('CostItemCategory', [en: 'Refund', de: 'Erstattung'], BOOTSTRAP)
         //RefdataValue.loc('CostItemCategory', [en: 'Other', de: 'Andere'], BOOTSTRAP)
-
-        RefdataCategory.loc('CostItemElement',
-                [en: 'CostItemElement', de: 'CostItemElement'], BOOTSTRAP)
 
         RefdataValue.loc('CostItemElement', [key: 'price: list price', en: 'price: list price', de: 'Preis: Listenpreis'], BOOTSTRAP)
         RefdataValue.loc('CostItemElement', [key: 'price: provider price', en: 'price: provider price', de: 'Preis: Anbieterpreis'], BOOTSTRAP)
@@ -2991,9 +2652,6 @@ class BootStrap {
         RefdataValue.loc('CostItemElement', [key: 'tax: purchase tax 7', en: 'tax: purchase tax 7%', de: 'Steuer: Umsatzsteuer 7%'], BOOTSTRAP)
         RefdataValue.loc('CostItemElement', [key: 'tax: source tax', en: 'tax:  source tax', de: 'Steuer: Quellensteuer'], BOOTSTRAP)
 
-        RefdataCategory.loc('CostItemStatus',
-                [en: 'CostItemStatus', de: 'CostItemStatus'], BOOTSTRAP)
-
         RefdataValue.loc('CostItemStatus', [en: 'Estimate', de: 'geschätzt'], BOOTSTRAP)
         RefdataValue.loc('CostItemStatus', [en: 'Commitment', de: 'zugesagt'], BOOTSTRAP)
         RefdataValue.loc('CostItemStatus', [en: 'Actual', de: 'feststehend'], BOOTSTRAP)
@@ -3001,12 +2659,7 @@ class BootStrap {
         RefdataValue.loc('CostItemStatus', [en: 'Other', de: 'Sonstige'], BOOTSTRAP)
         RefdataValue.loc('CostItemStatus', [en: 'Deleted', de: 'Gelöscht'], BOOTSTRAP)
 
-        RefdataCategory.loc('Document Context Status', [en: 'Document Context Status'], BOOTSTRAP)
-
         RefdataValue.loc('Document Context Status', [en: 'Deleted', de: 'Gelöscht'], BOOTSTRAP)
-
-        RefdataCategory.loc('Document Type',
-                [en: 'Document Type', de: 'Dokumenttyp'], BOOTSTRAP)
 
         RefdataValue.loc('Document Type', [en: 'Announcement', de: 'Angekündigung'], BOOTSTRAP)
         RefdataValue.loc('Document Type', [en: 'Subscription', de: 'Lizenz'], BOOTSTRAP)
@@ -3035,16 +2688,10 @@ class BootStrap {
         RefdataValue.loc('Entitlement Issue Status', [en: 'Current', de: 'Current'], BOOTSTRAP)
         RefdataValue.loc('Entitlement Issue Status', [en: 'Deleted', de: 'Deleted'], BOOTSTRAP)
         */
-	    
-	RefdataCategory.loc(RefdataCategory.IE_ACCEPT_STATUS,
-                [en: RefdataCategory.IE_ACCEPT_STATUS, de: RefdataCategory.IE_ACCEPT_STATUS], BOOTSTRAP)
 
         RefdataValue.loc(RefdataCategory.IE_ACCEPT_STATUS, [en: 'Fixed', de: 'Feststehend'], BOOTSTRAP)
         RefdataValue.loc(RefdataCategory.IE_ACCEPT_STATUS, [en: 'Under Negotiation', de: 'In Verhandlung'], BOOTSTRAP)
         RefdataValue.loc(RefdataCategory.IE_ACCEPT_STATUS, [en: 'Under Consideration', de: 'Entscheidung steht aus'], BOOTSTRAP)
-       
-        RefdataCategory.loc('IE Access Status',
-                [en: 'IE Access Status', de: 'IE Access Status'], BOOTSTRAP)
 
         RefdataValue.loc('IE Access Status', [en: 'ERROR - No Subscription Start and/or End Date', de: 'ERROR - No Subscription Start and/or End Date'], BOOTSTRAP)
         RefdataValue.loc('IE Access Status', [en: 'Current', de: 'Aktuell'], BOOTSTRAP)
@@ -3052,29 +2699,17 @@ class BootStrap {
         RefdataValue.loc('IE Access Status', [en: 'Expected', de: 'Erwartet'], BOOTSTRAP)
         RefdataValue.loc('IE Access Status', [en: 'Expired', de: 'Abgelaufen'], BOOTSTRAP)
 
-        RefdataCategory.loc('IEMedium',
-                [en: 'IEMedium', de: 'IEMedium'], BOOTSTRAP)
-
         RefdataValue.loc('IEMedium', [en: 'Print', de: 'Print'], BOOTSTRAP)
         RefdataValue.loc('IEMedium', [en: 'Electronic', de: 'Elektronisch'], BOOTSTRAP)
         RefdataValue.loc('IEMedium', [en: 'Print and Electronic', de: 'Print und Elektronisch'], BOOTSTRAP)
-
-        RefdataCategory.loc('LicenseCategory',
-                [en: 'LicenseCategory', de: 'Lizenzkategorie'], BOOTSTRAP)
 
         RefdataValue.loc('LicenseCategory', [en: 'Content', de: 'Content'], BOOTSTRAP)
         RefdataValue.loc('LicenseCategory', [en: 'Software', de: 'Software'], BOOTSTRAP)
         RefdataValue.loc('LicenseCategory', [en: 'Other', de: 'Andere'], BOOTSTRAP)
 
-        RefdataCategory.loc(RefdataCategory.LIC_TYPE,
-                [en: 'License Type', de: 'Lizenztyp'], BOOTSTRAP)
-
         RefdataValue.loc(RefdataCategory.LIC_TYPE, [en: 'Actual', de: 'Konkrete Instanz'], BOOTSTRAP)
         RefdataValue.loc(RefdataCategory.LIC_TYPE, [en: 'Template', de: 'Vorlage'], BOOTSTRAP)
         RefdataValue.loc(RefdataCategory.LIC_TYPE, [en: 'Unknown', de: 'Unbekannt'], BOOTSTRAP)
-
-        RefdataCategory.loc('License.OA.Type',
-                [en: 'Open Acces Type', de: 'Open-Acces Typ'], BOOTSTRAP)
 
         RefdataValue.loc('License.OA.Type', [en: 'No Open Access', de: 'Kein Open-Access'], BOOTSTRAP)
         RefdataValue.loc('License.OA.Type', [en: 'Hybrid', de: 'Hybrid'], BOOTSTRAP)
@@ -3085,18 +2720,12 @@ class BootStrap {
         RefdataValue.loc('License.OA.Type', [en: 'Yellow Open Access', de: 'Yellow Open-Access'], BOOTSTRAP)
         RefdataValue.loc('License.OA.Type', [en: 'White Open Access', de: 'White Open-Access'], BOOTSTRAP)
 
-        RefdataCategory.loc('License.OA.eArcVersion',
-                [en: 'License.OA.eArcVersion', de: 'License.OA.eArcVersion'], BOOTSTRAP)
-
         RefdataValue.loc('License.OA.eArcVersion', [en: 'Accepted Author'], BOOTSTRAP)
         RefdataValue.loc('License.OA.eArcVersion', [en: 'Manuscript (AAM)'], BOOTSTRAP)
         RefdataValue.loc('License.OA.eArcVersion', [en: 'Publisher-PDF', de: 'Verlags-PDF-Datei'], BOOTSTRAP)
         RefdataValue.loc('License.OA.eArcVersion', [en: 'Postprint', de: 'Postprint'], BOOTSTRAP)
         RefdataValue.loc('License.OA.eArcVersion', [en: 'Preprint', de: 'Preprint'], BOOTSTRAP)
         RefdataValue.loc('License.OA.eArcVersion', [en: 'Preprint with ePrint URL', de:'Preprint mit ePrint-URL'], BOOTSTRAP)
-
-        RefdataCategory.loc(RefdataCategory.LIC_STATUS,
-                [en: 'License Status', de: 'Lizenzstatus'], BOOTSTRAP)
 
         RefdataValue.loc(RefdataCategory.LIC_STATUS, [en: 'Current', de: 'Aktiv'], BOOTSTRAP)
         //RefdataValue.loc(RefdataCategory.LIC_STATUS, [en: 'Deleted', de: 'Gelöscht'], BOOTSTRAP)
@@ -3105,21 +2734,9 @@ class BootStrap {
         RefdataValue.loc(RefdataCategory.LIC_STATUS, [en: 'Unknown', de: 'Unbekannt'], BOOTSTRAP)
         RefdataValue.loc(RefdataCategory.LIC_STATUS, [en: 'Status not defined', de: 'Status nicht festgelegt'], BOOTSTRAP)
 
-        RefdataCategory.loc('PendingChangeStatus',
-                [en: 'PendingChangeStatus', de: 'PendingChangeStatus'], BOOTSTRAP)
-
         RefdataValue.loc('PendingChangeStatus', [en: 'Pending', de: 'Ausstehend'], BOOTSTRAP)
         RefdataValue.loc('PendingChangeStatus', [en: 'Accepted', de: 'Angenommen'], BOOTSTRAP)
         RefdataValue.loc('PendingChangeStatus', [en: 'Rejected', de: 'Abgelehnt'], BOOTSTRAP)
-
-        RefdataCategory.loc(RefdataCategory.PKG_LIST_STAT,
-                [en: RefdataCategory.PKG_LIST_STAT, de: RefdataCategory.PKG_LIST_STAT], BOOTSTRAP)
-        RefdataCategory.loc(RefdataCategory.PKG_BREAKABLE,
-                [en: RefdataCategory.PKG_BREAKABLE, de: RefdataCategory.PKG_BREAKABLE], BOOTSTRAP)
-        RefdataCategory.loc(RefdataCategory.PKG_CONSISTENT,
-                [en: RefdataCategory.PKG_CONSISTENT, de: RefdataCategory.PKG_CONSISTENT], BOOTSTRAP)
-        RefdataCategory.loc(RefdataCategory.PKG_FIXED,
-                [en: RefdataCategory.PKG_FIXED, de: RefdataCategory.PKG_FIXED], BOOTSTRAP)
 
         RefdataValue.loc(RefdataCategory.PKG_LIST_STAT,  [en: 'Checked', de: 'Überprüft'], BOOTSTRAP)
         RefdataValue.loc(RefdataCategory.PKG_LIST_STAT,  [en: 'In Progress', de: 'In Bearbeitung'], BOOTSTRAP)
@@ -3140,51 +2757,30 @@ class BootStrap {
         RefdataValue.loc(RefdataCategory.PKG_SCOPE,      [en: 'Scope Undefined', de: 'Scope Undefined'], BOOTSTRAP)
         RefdataValue.loc(RefdataCategory.PKG_SCOPE,      [en: 'Unknown', de: 'Unbekannt'], BOOTSTRAP)
 
-        RefdataCategory.loc('TaxType',
-                [en: 'TaxType', de: 'TaxType'], BOOTSTRAP)
-
         RefdataValue.loc('TaxType', [en: 'taxable', de: 'steuerbar'], BOOTSTRAP)
         RefdataValue.loc('TaxType', [en: 'not taxable', de: 'nicht steuerbar'], BOOTSTRAP)
         RefdataValue.loc('TaxType', [en: 'taxable tax-exempt', de: 'steuerbar steuerbefreit'], BOOTSTRAP)
         RefdataValue.loc('TaxType', [en: 'not applicable', de: 'nicht anwendbar'], BOOTSTRAP)
-
-        RefdataCategory.loc(RefdataCategory.TI_STATUS,
-                [en: RefdataCategory.TI_STATUS, de: RefdataCategory.TI_STATUS], BOOTSTRAP)
 
         RefdataValue.loc(RefdataCategory.TI_STATUS, [en: 'Current', de: 'Aktuell'], BOOTSTRAP)
         RefdataValue.loc(RefdataCategory.TI_STATUS, [en: 'Deleted', de: 'Gelöscht'], BOOTSTRAP)
         RefdataValue.loc(RefdataCategory.TI_STATUS, [en: 'In Progress', de:'In Bearbeitung'], BOOTSTRAP)
         RefdataValue.loc(RefdataCategory.TI_STATUS, [en: 'Unknown', de: 'Unbekannt'], BOOTSTRAP)
 
-        RefdataCategory.loc(RefdataCategory.TI_TYPE,
-                [en: RefdataCategory.TI_TYPE, de: RefdataCategory.TI_TYPE], BOOTSTRAP)
-
         RefdataValue.loc(RefdataCategory.TI_TYPE, [en: 'Journal', de: 'Journal'], BOOTSTRAP)
         RefdataValue.loc(RefdataCategory.TI_TYPE, [en: 'EBook', de: 'EBook'], BOOTSTRAP)
         RefdataValue.loc(RefdataCategory.TI_TYPE, [en: 'Database', de:'Datenbank'], BOOTSTRAP)
-
-        RefdataCategory.loc('TitleInstancePackagePlatform.DelayedOA',
-                [en: 'TitleInstancePackagePlatform.DelayedOA', de: 'TitleInstancePackagePlatform.DelayedOA'], BOOTSTRAP)
 
         RefdataValue.loc('TitleInstancePackagePlatform.DelayedOA', [en: 'No', de: 'Nein'], BOOTSTRAP)
         RefdataValue.loc('TitleInstancePackagePlatform.DelayedOA', [en: 'Unknown', de: 'Unbekannt'], BOOTSTRAP)
         RefdataValue.loc('TitleInstancePackagePlatform.DelayedOA', [en: 'Yes', de: 'Ja'], BOOTSTRAP)
 
-        RefdataCategory.loc('TitleInstancePackagePlatform.HybridOA',
-                [en: 'TitleInstancePackagePlatform.HybridOA', de: 'TitleInstancePackagePlatform.HybridOA'], BOOTSTRAP)
-
         RefdataValue.loc('TitleInstancePackagePlatform.HybridOA', [en: 'No', de: 'Nein'], BOOTSTRAP)
         RefdataValue.loc('TitleInstancePackagePlatform.HybridOA', [en: 'Unknown', de: 'Unbekannt'], BOOTSTRAP)
         RefdataValue.loc('TitleInstancePackagePlatform.HybridOA', [en: 'Yes', de: 'Ja'], BOOTSTRAP)
 
-        RefdataCategory.loc('Tipp.StatusReason',
-                [en: 'Tipp.StatusReason', de: 'Tipp.StatusReason'], BOOTSTRAP)
-
         RefdataValue.loc('Tipp.StatusReason', [en: 'Transfer Out', de: 'Transfer Out'], BOOTSTRAP)
         RefdataValue.loc('Tipp.StatusReason', [en: 'Transfer In', de: 'Transfer In'], BOOTSTRAP)
-
-        RefdataCategory.loc('TitleInstancePackagePlatform.PaymentType',
-                [en: 'TitleInstancePackagePlatform.PaymentType', de: 'TitleInstancePackagePlatform.PaymentType'], BOOTSTRAP)
 
         RefdataValue.loc('TitleInstancePackagePlatform.PaymentType', [en: 'Complimentary', de: 'Complimentary'], BOOTSTRAP)
         RefdataValue.loc('TitleInstancePackagePlatform.PaymentType', [en: 'Limited Promotion', de: 'Limited Promotion'], BOOTSTRAP)
@@ -3194,9 +2790,6 @@ class BootStrap {
         RefdataValue.loc('TitleInstancePackagePlatform.PaymentType', [en: 'Uncharged', de: 'Uncharged'], BOOTSTRAP)
         RefdataValue.loc('TitleInstancePackagePlatform.PaymentType', [en: 'Unknown', de: 'Unbekannt'], BOOTSTRAP)
 
-        RefdataCategory.loc(RefdataCategory.TIPP_STATUS,
-                [en: RefdataCategory.TIPP_STATUS, de: RefdataCategory.TIPP_STATUS], BOOTSTRAP)
-
         RefdataValue.loc(RefdataCategory.TIPP_STATUS, [en: 'Current', de: 'Aktuell'], BOOTSTRAP)
         RefdataValue.loc(RefdataCategory.TIPP_STATUS, [en: 'Expected', de: 'Expected'], BOOTSTRAP)
         RefdataValue.loc(RefdataCategory.TIPP_STATUS, [en: 'Deleted', de: 'Gelöscht'], BOOTSTRAP)
@@ -3204,18 +2797,12 @@ class BootStrap {
         RefdataValue.loc(RefdataCategory.TIPP_STATUS, [en: 'Unknown', de: 'Unbekannt'], BOOTSTRAP)
         RefdataValue.loc(RefdataCategory.TIPP_STATUS, [en: 'Retired', de: 'im Ruhestand'], BOOTSTRAP)
 
-        RefdataCategory.loc('TIPP Access Status',
-                [en: 'TIPP Access Status', de: 'TIPP Access Status'], BOOTSTRAP)
-
         RefdataValue.loc('TIPP Access Status', [en: 'Current(*)', de: 'Aktuell(*)'], BOOTSTRAP)
         RefdataValue.loc('TIPP Access Status', [en: 'Expected', de: 'Erwartet'], BOOTSTRAP)
         RefdataValue.loc('TIPP Access Status', [en: 'Expired', de: 'Abgelaufen'], BOOTSTRAP)
         RefdataValue.loc('TIPP Access Status', [en: 'Current', de: 'Aktuell'], BOOTSTRAP)
 
         // Controlled values from the <UsageType> element.
-
-        RefdataCategory.loc('UsageStatus',
-                [en: 'UsageStatus', de: 'UsageStatus'], BOOTSTRAP)
 
         RefdataCategory.lookupOrCreate('UsageStatus', 'greenTick',      'UseForDataMining')
         RefdataCategory.lookupOrCreate('UsageStatus', 'greenTick',      'InterpretedAsPermitted')
@@ -3240,20 +2827,12 @@ class BootStrap {
     // log.debug("new gokb record source: ${gokb_record_source}")
 
         //Reminders for Cron
-        RefdataCategory.loc("Language", [en: "Language", de: "Sprache"], BOOTSTRAP)
         RefdataValue.loc("Language", [key: 'en', en: "English", de:"Englisch"], BOOTSTRAP)
         RefdataValue.loc("Language", [key: 'de', en: "German", de:"Deutsch"], BOOTSTRAP)
-
-        RefdataCategory.loc("ReminderMethod", [en: "email"], BOOTSTRAP)
-
-        RefdataCategory.loc('ReminderUnit',
-                [en: 'ReminderUnit', de: 'ReminderUnit'], BOOTSTRAP)
 
         RefdataValue.loc('ReminderUnit', [en: 'Day', de: 'Tag'], BOOTSTRAP)
         RefdataValue.loc('ReminderUnit', [en: 'Week', de: 'Woche'], BOOTSTRAP)
         RefdataValue.loc('ReminderUnit', [en: 'Month', de: 'Monat'], BOOTSTRAP)
-
-        RefdataCategory.loc("ReminderTrigger", [en: "Subscription Manual Renewal Date"], BOOTSTRAP)
     }
 
     def setupContentItems = {
@@ -3293,8 +2872,6 @@ No Host Platform URL Content
     }
 
     def setupCurrencies = {
-
-        RefdataCategory.loc('Currency', [en: 'Currency', de: 'Währung'], BOOTSTRAP)
         
         RefdataValue.loc('Currency', [key: 'AED',  en:'AED - United Arab Emirates Dirham', de:'AED - United Arab Emirates Dirham'], BOOTSTRAP)
         RefdataValue.loc('Currency', [key: 'AFN',  en:'AFN - Afghanistan Afghani', de:'AFN - Afghanistan Afghani'], BOOTSTRAP)

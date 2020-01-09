@@ -1,0 +1,279 @@
+token,rdc,value_de,value_en
+Billing address,AddressType,Rechnungsanschrift,Billing address
+Delivery address,AddressType,Lieferanschrift,Delivery address
+Legal patron address,AddressType,Anschrift des rechtlichen Trägers,Legal patron address
+Library address,AddressType,Anschrift,Library address
+Postal address,AddressType,Postanschrift,Postal address
+All,Confidentiality,Alles,All
+All but user terms,Confidentiality,Alles außer Nutzungsbedingungen,All but user terms
+Financial only,Confidentiality,Nur Finanzangelegenheiten,Financial only
+No,Confidentiality,Nein,No
+Unknown,Confidentiality,Unklar,Unknown
+AD,Country,Andorra,Andorra
+AE,Country,United Arab Emirates,Vereinigte Arabische Emirate
+AF,Country,Afghanistan,Afghanistan
+AG,Country,Antigua and Barbuda,Antigua und Barbuda
+AI,Country,Anguilla,Anguilla
+AL,Country,Albania,Albanien
+AM,Country,Armenia,Armenien
+AO,Country,Angola,Angola
+AQ,Country,Antarctica,Antarktis
+AR,Country,Argentina,Argentinien
+AS,Country,American Samoa,"Samoa, amerikanischer Teil"
+AT,Country,Austria,Österreich
+AU,Country,Australia,Australien
+AW,Country,Aruba,Aruba
+AX,Country,Åland Islands,Åland
+AZ,Country,Azerbaijan,Aserbaidschan
+BA,Country,Bosnia and Herzegovina,Bosnien-Herzegowina
+BB,Country,Barbados,Barbados
+BD,Country,Bangladesh,Bangladesh
+BE,Country,Belgium,Belgien
+BF,Country,Burkina Faso,Burkina Faso
+BG,Country,Bulgaria,Bulgarien
+BH,Country,Bahrain,Bahrain
+BI,Country,Burundi,Burundi
+BJ,Country,Benin,Benin
+BL,Country,Saint Barthélemy,St. Barthélemy
+BM,Country,Bermuda,Bermuda
+BN,Country,Brunei Darussalam,Brunei
+BO,Country,"Bolivia, Plurinational State of",Bolivien
+BQ,Country,"Bonaire, Sint Eustatius and Saba",Karibische Niederlande
+BR,Country,Brazil,Brasilien
+BS,Country,Bahamas,Bahamas
+BT,Country,Bhutan,Bhutan
+BV,Country,Bouvet Island,Bouvet-Insel
+BW,Country,Botswana,Botswana
+BY,Country,Belarus,Belarus
+BZ,Country,Belize,Belize
+CA,Country,Canada,Kanada
+CC,Country,Cocos (Keeling) Islands,Kokos-Insel (Keeling)
+CD,Country,"Congo, the Democratic Republic of the","Kongo, demokratische Republik"
+CF,Country,Central African Republic,Zentralafrika
+CG,Country,Congo,Kongo (Republik)
+CH,Country,Switzerland,Schweiz
+CI,Country,Côte d'Ivoire,Elfenbeinküste
+CK,Country,Cook Islands,Cook-Inseln
+CL,Country,Chile,Chile
+CM,Country,Cameroon,Kamerun
+CN,Country,China,China (Volksrepublik)
+CO,Country,Colombia,Kolumbien
+CR,Country,Costa Rica,Costa Rica
+CU,Country,Cuba,Kuba
+CV,Country,Cape Verde,Kapverdische Inseln
+CW,Country,Curaçao,Curaçao
+CX,Country,Christmas Island,Weihnachtsinseln (indischer Ozean)
+CY,Country,Cyprus,Zypern
+CZ,Country,Czech Republic,Tschechische Republik
+DE,Country,Germany,Deutschland
+DJ,Country,Djibouti,Djibouti
+DK,Country,Denmark,Dänemark
+DM,Country,Dominica,Dominica
+DO,Country,Dominican Republic,Dominikanische Republik
+DZ,Country,Algeria,Algerien
+EC,Country,Ecuador,Ekuador
+EE,Country,Estonia,Estland
+EG,Country,Egypt,Ägypten
+EH,Country,Western Sahara,Westsahara
+ER,Country,Eritrea,Eritrea
+ES,Country,Spain,Spanien
+ET,Country,Ethiopia,Äthiopien
+FI,Country,Finland,Finnland
+FJ,Country,Fiji,Fidschi
+FK,Country,Falkland Islands (Malvinas),Falkland-Inseln
+FM,Country,"Micronesia, Federated States of",Mikronesien (Föderierte Staaten von)
+FO,Country,Faroe Islands,Färöer-Inseln
+FR,Country,France,Frankreich
+GA,Country,Gabon,Gabun
+GB,Country,United Kingdom,Grossbritannien und Nordirland
+GD,Country,Grenada,Grenada
+GE,Country,Georgia,Georgien
+GF,Country,French Guiana,Französisch-Guyana
+GG,Country,Guernsey,Guernsey
+GH,Country,Ghana,Ghana
+GI,Country,Gibraltar,Gibraltar
+GL,Country,Greenland,Grönland
+GM,Country,Gambia,Gambia
+GN,Country,Guinea,Guinea (Republik)
+GP,Country,Guadeloupe,Guadeloupe
+GQ,Country,Equatorial Guinea,Äquatorial-Guinea
+GR,Country,Greece,Griechenland
+GS,Country,South Georgia and the South Sandwich Islands,Südgeorgien und die südlichen Sandwichinseln
+GT,Country,Guatemala,Guatemala
+GU,Country,Guam,Guam
+GW,Country,Guinea-Bissau,Guinea-Bissau
+GY,Country,Guyana,Guyana
+HK,Country,Hong Kong,Hongkong
+HM,Country,Heard Island and McDonald Islands,Heard- und McDonald-Inseln
+HN,Country,Honduras,Honduras
+HR,Country,Croatia,Kroatien
+HT,Country,Haiti,Haiti
+HU,Country,Hungary,Ungarn
+ID,Country,Indonesia,Indonesien
+IE,Country,Ireland,Irland
+IL,Country,Israel,Israel
+IM,Country,Isle of Man,"Man, Insel"
+IN,Country,India,Indien
+IO,Country,British Indian Ocean Territory,Britisches Territorium im indischen Ozean
+IQ,Country,Iraq,Irak
+IR,Country,"Iran, Islamic Republic of",Iran
+IS,Country,Iceland,Island
+IT,Country,Italy,Italien
+JE,Country,Jersey,Jersey
+JM,Country,Jamaica,Jamaika
+JO,Country,Jordan,Jordanien
+JP,Country,Japan,Japan
+KE,Country,Kenya,Kenia
+KG,Country,Kyrgyzstan,Kirgisistan
+KH,Country,Cambodia,Kambodscha
+KI,Country,Kiribati,Kiribati
+KM,Country,Comoros,Komoren
+KN,Country,Saint Kitts and Nevis,St. Christoph (St. Kitts) und Nevis
+KP,Country,"Korea, Democratic People's Republic of","Korea, demokratische Volksrepublik (Nordkorea)"
+KR,Country,"Korea, Republic of","Korea, Republik (Südkorea)"
+KW,Country,Kuwait,Kuwait
+KY,Country,Cayman Islands,Cayman
+KZ,Country,Kazakhstan,Kasachstan
+LA,Country,Lao People's Democratic Republic,Laos
+LB,Country,Lebanon,Libanon
+LC,Country,Saint Lucia,St. Lucia
+LI,Country,Liechtenstein,Liechtenstein
+LK,Country,Sri Lanka,Sri Lanka
+LR,Country,Liberia,Liberia
+LS,Country,Lesotho,Lesotho
+LT,Country,Lithuania,Litauen
+LU,Country,Luxembourg,Luxemburg
+LV,Country,Latvia,Lettland
+LY,Country,Libya,Libyen
+MA,Country,Morocco,Marokko
+MC,Country,Monaco,Monaco
+MD,Country,"Moldova, Republic of",Moldova
+ME,Country,Montenegro,"Montenegro, Republik"
+MF,Country,Saint Martin (French part),St. Martin
+MG,Country,Madagascar,Madagaskar
+MH,Country,Marshall Islands,Marshall-Inseln
+MK,Country,"Macedonia, the Former Yugoslav Republic of","Mazedonien, ehemalige jugoslawische Republik"
+ML,Country,Mali,Mali
+MM,Country,Myanmar,Myanmar (Union)
+MN,Country,Mongolia,Mongolei
+MO,Country,Macao,Macao
+MP,Country,Northern Mariana Islands,Marianen-Inseln
+MQ,Country,Martinique,Martinique
+MR,Country,Mauritania,Mauretanien
+MS,Country,Montserrat,Montserrat
+MT,Country,Malta,Malta
+MU,Country,Mauritius,"Mauritius, Insel"
+MV,Country,Maldives,Malediven
+MW,Country,Malawi,Malawi
+MX,Country,Mexico,Mexiko
+MY,Country,Malaysia,Malaysia
+MZ,Country,Mozambique,Mosambik
+NA,Country,Namibia,Namibia
+NC,Country,New Caledonia,Neukaledonien
+NE,Country,Niger,Niger
+NF,Country,Norfolk Island,Norfolk-Insel
+NG,Country,Nigeria,Nigeria
+NI,Country,Nicaragua,Nicaragua
+NL,Country,Netherlands,Niederlande
+NO,Country,Norway,Norwegen
+NP,Country,Nepal,Nepal
+NR,Country,Nauru,Nauru
+NU,Country,Niue,Niue
+NZ,Country,New Zealand,Neuseeland
+OM,Country,Oman,Oman
+PA,Country,Panama,Panama
+PE,Country,Peru,Peru
+PF,Country,French Polynesia,Französisch-Polynesien
+PG,Country,Papua New Guinea,Papua-Neuguinea
+PH,Country,Philippines,Philippinen
+PK,Country,Pakistan,Pakistan
+PL,Country,Poland,Polen
+PM,Country,Saint Pierre and Miquelon,St. Pierre und Miquelon
+PN,Country,Pitcairn,Pitcairn
+PR,Country,Puerto Rico,Puerto Rico
+PS,Country,"Palestine, State of",Palästina
+PT,Country,Portugal,Portugal
+PW,Country,Palau,Palau
+PY,Country,Paraguay,Paraguay
+QA,Country,Qatar,Qatar
+RE,Country,Réunion,Réunion
+RO,Country,Romania,Rumänien
+RS,Country,Serbia,"Serbien,  Republik"
+RU,Country,Russian Federation,Russische Föderation
+RW,Country,Rwanda,Rwanda
+SA,Country,Saudi Arabia,Saudi-Arabien
+SB,Country,Solomon Islands,Salomon-Inseln
+SC,Country,Seychelles,Seychellen
+SD,Country,Sudan,Sudan
+SE,Country,Sweden,Schweden
+SG,Country,Singapore,Singapur
+SH,Country,"Saint Helena, Ascension and Tristan da Cunha","St. Helena, Ascension und Tristan da Cunha"
+SI,Country,Slovenia,Slowenien
+SJ,Country,Svalbard and Jan Mayen,Svalbard und Insel Jan Mayen
+SK,Country,Slovakia,Slowakische Republik
+SL,Country,Sierra Leone,Sierra Leone
+SM,Country,San Marino,San Marino
+SN,Country,Senegal,Senegal
+SO,Country,Somalia,Somalia
+SR,Country,Suriname,Suriname
+SS,Country,South Sudan,Südsudan
+ST,Country,Sao Tome and Principe,St. Thomas und Principe
+SV,Country,El Salvador,El Salvador
+SX,Country,Sint Maarten (Dutch part),St. Maarten
+SY,Country,Syrian Arab Republic,Syrien
+SZ,Country,Swaziland,Swasiland
+TC,Country,Turks and Caicos Islands,Turks und Caicos
+TD,Country,Chad,Tschad
+TF,Country,French Southern Territories,Französische Süd- und Antarktisgebiete
+TG,Country,Togo,Togo
+TH,Country,Thailand,Thailand
+TJ,Country,Tajikistan,Tadschikistan
+TK,Country,Tokelau,Tokelau
+TL,Country,Timor-Leste,Timor-Leste
+TM,Country,Turkmenistan,Turkmenistan
+TN,Country,Tunisia,Tunesien
+TO,Country,Tonga,Tonga
+TR,Country,Turkey,Türkei
+TT,Country,Trinidad and Tobago,Trinidad und Tobago
+TV,Country,Tuvalu,Tuvalu
+TW,Country,"Taiwan, Province of China",Taiwan (Chinesisches Taipei)
+TZ,Country,"Tanzania, United Republic of",Tansania
+UA,Country,Ukraine,Ukraine
+UG,Country,Uganda,Uganda
+UM,Country,United States Minor Outlying Islands,"Amerikanische Überseeinseln, kleinere"
+US,Country,United States,Vereinigte Staaten von Amerika
+UY,Country,Uruguay,Uruguay
+UZ,Country,Uzbekistan,Usbekistan
+VA,Country,Holy See (Vatican City State),Vatikan
+VC,Country,Saint Vincent and the Grenadines,St. Vincent und Grenadinen
+VE,Country,"Venezuela, Bolivarian Republic of",Venezuela
+VG,Country,"Virgin Islands, British,Virginische Inseln", britischer Teil (Tortola)
+VI,Country,"Virgin Islands, U.S.",Amerikanische Jungferninseln
+VN,Country,Viet Nam,Vietnam
+VU,Country,Vanuatu,Vanuatu
+WF,Country,Wallis and Futuna,Wallis und Futuna
+WS,Country,Samoa,"Samoa, West"
+YE,Country,Yemen,Jemen
+YT,Country,Mayotte,Mayotte
+ZA,Country,South Africa,Südafrika
+ZM,Country,Zambia,Sambia
+ZW,Country,Zimbabwe,Zimbabwe
+General,Indemnification,Generell,General
+Intellectual Property Only,Indemnification,Nur geistiges Eigentum,Intellectual Property Only
+Other,Indemnification,Andere,Other
+Unknown,Indemnification,Unklar,Unknown
+At will,Termination Condition,Nach Belieben,At will
+Breach by Licensor/Licensee,Termination Condition,Wegen Verstoß des Vertragspartners,Breach by Licensor/Licensee
+Other,Termination Condition,Andere Gründe,Other
+Unknown,Termination Condition,Unklar,Unknown
+No,YN,Nein,No
+Yes,YN,Ja,Yes
+No,YNO,Nein,No
+Not applicable,YNO,Nicht zutreffend,Not applicable
+Other,YNO,Andere,Other
+Planed,YNO,Geplant,Planed
+Unknown,YNO,Unklar,Unknown
+Yes,YNO,Ja,Yes
+No,YNU,Nein,No
+Unknown,YNU,Unbekannt,Unknown
+Yes,YNU,Ja,Yes

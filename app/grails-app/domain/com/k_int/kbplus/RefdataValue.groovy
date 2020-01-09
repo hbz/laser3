@@ -61,12 +61,32 @@ class RefdataValue extends AbstractI10nTranslatable implements Comparable<Refdat
         dateCreated (nullable: true, blank: false)
     }
 
-    @NotYetImplemented
-    static Identifier construct(Map<String, Object> map) {
+    static RefdataValue construct(Map<String, Object> map) {
 
         String token     = map.get('token')
+        String rdc       = map.get('rdc')
         boolean hardData = map.get('hardData')
         Map i10n         = map.get('i10n')
+
+        RefdataCategory cat = RefdataCategory.findByDescIlike(rdc)
+        if (! cat) {
+            cat = RefdataCategory.construct([
+                    token   : "${rdc}",
+                    hardData: false,
+                    i10n    : [en: "${rdc}", de: "${rdc}"],
+            ])
+        }
+
+        RefdataValue rdv = findByOwnerAndValueIlike(cat, token)
+        if (! rdv) {
+            rdv = new RefdataValue(owner: cat, value: token)
+        }
+        rdv.isHardData = hardData
+        rdv.save(flush: true)
+
+        I10nTranslation.createOrUpdateI10n(rdv, 'value', i10n)
+
+        rdv
     }
 
     /**
