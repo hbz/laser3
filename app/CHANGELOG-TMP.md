@@ -2,10 +2,31 @@
 
 **Ticket    Date    Branch      Author  Feature/Bug     Description/Keywords**
 
+--      09.01.2020  rc1.2       Moe     Bug         Verlängerung Konsortial: Mehrjahres Flag setzen, Merkmale kopieren
 
-1999    20.12.2019  rc1.2       Moe   Bug           Filter Mehrjahreslaufzeit erweitern oder erläutern
+2029    09.01.2020  rc1.2       David   Feature     Refactoring: Shared Caches für User, bzw Organisationen
 
---      20.12.2019  rc1.2       Moe   Bug           Copy IEs and Correct AnualRings by Survey Consortia
+--      08.01.2020  rc1.2       Moe     Bug         ES Searchs blockieren Threads
+
+2025    08.01.2020  rc1.2       Moe     Bug         Verlängerung: Dokumentreferenzen stimmen nicht mehr.
+
+2021    08.01.2020  rc1.2       Moe     Bug         Verträge: Lizenzgeber verknüpfen funktioniert nicht
+
+2026    08.01.2020  rc1.2       Moe     Bug         Umfragübertrag von Paketen
+
+2022    08.01.2020  hbz-dev     David   Bug         Merkmal hinzufügen funktioniert nicht mehr
+
+2202    08.01.2020  dev         Anja    Bug         Keine Erinnerungen (duedates) mehr für  Kollektivlizenzen und -Verträge 
+
+2023    08.01.2020  rc1.2       David   Bug         UserCaches blockieren Threads
+
+2017    06.01.2020  rc1.2       David   Bug         Fehlermeldung bei Suche im Gasco-Monitor
+
+2010    20.12.2019  rc1.2       Moe     Bug         Neues Verfahrensverzeichnis für 2020 einhängen
+
+1999    20.12.2019  rc1.2       Moe     Bug         Filter Mehrjahreslaufzeit erweitern oder erläutern
+
+--      20.12.2019  rc1.2       Moe     Bug         Copy IEs and Correct AnualRings by Survey Consortia
 
 --      20.12.2019  rc1.2       David   Bug         fixed regression bug: pending change payload
 

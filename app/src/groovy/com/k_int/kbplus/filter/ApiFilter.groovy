@@ -65,6 +65,7 @@ class ApiFilter extends GenericFilterBean {
 
                             String apiSecret = OrgSettings.get(apiOrg, OrgSettings.KEYS.API_PASSWORD)?.getValue()
 
+
                             checksum = hmac(
                                         method +    // http-method
                                         path +      // uri

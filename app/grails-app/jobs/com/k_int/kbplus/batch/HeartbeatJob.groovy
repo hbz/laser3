@@ -2,10 +2,13 @@ package com.k_int.kbplus.batch
 
 import de.laser.domain.ActivityProfiler
 import de.laser.quartz.AbstractJob
+import net.sf.ehcache.CacheManager
 
 class HeartbeatJob extends AbstractJob {
 
     def grailsApplication
+    def cacheService
+    def yodaService
 
     static triggers = {
     // Delay 20 seconds, run every 10 mins.

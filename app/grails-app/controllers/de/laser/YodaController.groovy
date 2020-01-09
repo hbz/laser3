@@ -91,6 +91,15 @@ class YodaController {
 
         result.numberOfActiveUsers = yodaService.getNumberOfActiveUsers()
 
+        def userCache = cacheService.getSharedUserCache(contextService.getUser(), 'yoda/test1')
+        def orgCache  = cacheService.getSharedOrgCache(contextService.getOrg(), 'yoda/test2')
+
+        userCache.put('X', 123)
+        userCache.put('Y', 456)
+
+        orgCache.put('A', 123)
+        orgCache.put('B', 456)
+
         result
     }
 
@@ -205,6 +214,18 @@ class YodaController {
 
             redirect controller: 'yoda', action: 'cacheInfo', params: params
         }
+        /* else if (params.cmd?.equals('deleteCache')) {
+            if (params.type?.equals('ehcache')) {
+                result.ehcacheManager.removeCache(params.cache)
+            }
+
+            params.remove('cmd')
+            params.remove('type')
+            params.remove('cache')
+
+            redirect controller: 'yoda', action: 'cacheInfo', params: params
+        } */
+
         result
     }
 
@@ -239,6 +260,11 @@ class YodaController {
 
         result.activity = activity
         result
+    }
+
+    @Secured(['ROLE_YODA'])
+    def appThreads() {
+        return [:]
     }
 
     @Secured(['ROLE_YODA'])

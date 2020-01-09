@@ -271,11 +271,11 @@ class PropertyDefinition extends AbstractI10nTranslatable implements Serializabl
 
         if (! params.tenant) {
             CacheService cacheService = (CacheService) Holders.grailsApplication.mainContext.getBean('cacheService')
-            cache = cacheService.getTTL300Cache("PropertyDefinition/refdataFind/custom/${params.desc}/${LocaleContextHolder.getLocale()}/")
+            cache = cacheService.getTTL300Cache("PropertyDefinition/refdataFind/custom/${params.desc}/${LocaleContextHolder.getLocale()}")
         }
         else {
             ContextService contextService = (ContextService) Holders.grailsApplication.mainContext.getBean('contextService')
-            cache = contextService.getCache("PropertyDefinition/refdataFind/private/${params.desc}/${LocaleContextHolder.getLocale()}/", contextService.ORG_SCOPE)
+            cache = contextService.getCache("PropertyDefinition/refdataFind/private/${params.desc}/${LocaleContextHolder.getLocale()}", contextService.ORG_SCOPE)
         }
 
         if (! cache.get('propDefs')) {

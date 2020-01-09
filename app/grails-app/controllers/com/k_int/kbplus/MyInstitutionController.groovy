@@ -185,7 +185,7 @@ class MyInstitutionController extends AbstractDebugController {
         result.offset = params.offset ?: 0
         result.contextOrg = contextService.org
 
-        def cache = contextService.getCache('MyInstitutionController/currentPlatforms/', contextService.ORG_SCOPE)
+        EhcacheWrapper cache = contextService.getCache('MyInstitutionController/currentPlatforms', contextService.ORG_SCOPE)
 
         List currentSubIds = []
         List allLocals     = []
@@ -703,7 +703,7 @@ from License as l where (
 		DebugUtil du = new DebugUtil()
 		du.setBenchmark('init')
 
-        def cache = contextService.getCache('MyInstitutionController/currentProviders/', contextService.ORG_SCOPE)
+        EhcacheWrapper cache = contextService.getCache('MyInstitutionController/currentProviders', contextService.ORG_SCOPE)
         List orgIds = []
 
         if (cache.get('orgIds')) {
@@ -847,10 +847,13 @@ from License as l where (
                     subscriptions.sort { x,y ->
                         String a = x.getProviders().size() > 0 ? x.getProviders().first().name : ''
                         String b = y.getProviders().size() > 0 ? y.getProviders().first().name : ''
-                        a.compareToIgnoreCase b
+
+                        if(params.order.equals("desc")){
+                            b.compareToIgnoreCase a
+                        } else {
+                            a.compareToIgnoreCase b
+                        }
                     }
-                    if(params.order.equals("desc"))
-                        subscriptions.reverse(true)
                 break
             }
         }
