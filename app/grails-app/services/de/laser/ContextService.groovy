@@ -60,15 +60,13 @@ class ContextService {
     }
 
     EhcacheWrapper getCache(String cacheKeyPrefix, String scope) {
-        def cacheManager = cacheService.getCacheManager(cacheService.EHCACHE)
-        def cacheName    = "USER:${getUser().id}"
 
         if (scope == ORG_SCOPE) {
-            cacheName = "ORG:${getOrg().id}"
+            cacheService.getSharedOrgCache(getOrg(), cacheKeyPrefix)
         }
-        Cache cache = (Cache) cacheService.getCache(cacheManager, cacheName)
-
-        return new EhcacheWrapper(cache, cacheKeyPrefix)
+        else if (scope == USER_SCOPE) {
+            cacheService.getSharedUserCache(getUser(), cacheKeyPrefix)
+        }
     }
 
     SessionCacheWrapper getSessionCache() {

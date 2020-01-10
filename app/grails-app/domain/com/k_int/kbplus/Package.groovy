@@ -15,7 +15,7 @@ import java.text.SimpleDateFormat
 
 class Package
         extends AbstractBaseDomain
-        implements ShareSupport {
+        /*implements ShareSupport*/ {
 
     // TODO AuditTrail
   static auditable = [ignore:['version','lastUpdated','pendingChanges']]
@@ -156,7 +156,6 @@ static hasMany = [  tipps:     TitleInstancePackagePlatform,
         deletionService.deleteDocumentFromIndex(this.globalUID)
     }
 
-    @Override
     boolean checkSharePreconditions(ShareableTrait sharedObject) {
         false // NO SHARES
     }

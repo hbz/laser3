@@ -6,6 +6,7 @@
 </head>
 
 <body>
+    <laser:serviceInjection />
 
     <semui:breadcrumbs>
         <semui:crumb message="menu.yoda.dash" class="active"/>
@@ -38,6 +39,9 @@
 
             <div class="column">
                 <div class="ui divided relaxed list">
+                    <div class="item">
+                        <g:link controller="yoda" action="appThreads" target="_blank">${message(code:'menu.yoda.appThreads')}</g:link>
+                    </div>
                     <div class="item">
                         <g:link controller="yoda" action="systemProfiler" target="_blank">${message(code:'menu.yoda.systemProfiler')}</g:link>
                     </div>
@@ -74,9 +78,6 @@
     </div>
 
     <semui:messages data="${flash}" />
-
-        <br />
-        <br />
 
     <%--
     <p>TODO: Offene Beitrittsanfragen</p>

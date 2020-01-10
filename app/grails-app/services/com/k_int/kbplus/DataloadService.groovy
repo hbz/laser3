@@ -93,9 +93,7 @@ class DataloadService {
 
         def start_time = System.currentTimeMillis();
 
-        RestHighLevelClient esclient = ESWrapperService.getClient()
-
-        updateES(esclient, com.k_int.kbplus.Org.class) { org ->
+        updateES(com.k_int.kbplus.Org.class) { org ->
             def result = [:]
 
                 result._id = org.globalUID
@@ -138,7 +136,7 @@ class DataloadService {
             result
         }
 
-        updateES(esclient, com.k_int.kbplus.TitleInstance.class) { ti ->
+        updateES(com.k_int.kbplus.TitleInstance.class) { ti ->
 
             def result = [:]
 
@@ -188,7 +186,7 @@ class DataloadService {
             result
         }
 
-        updateES(esclient, com.k_int.kbplus.Package.class) { pkg ->
+        updateES(com.k_int.kbplus.Package.class) { pkg ->
             def result = [:]
 
                 result._id = pkg.globalUID
@@ -248,7 +246,7 @@ class DataloadService {
             result
         }
 
-        updateES(esclient, com.k_int.kbplus.Platform.class) { plat ->
+        updateES(com.k_int.kbplus.Platform.class) { plat ->
             def result = [:]
 
                 result._id = plat.globalUID
@@ -271,7 +269,7 @@ class DataloadService {
             result
         }
 
-        updateES(esclient, com.k_int.kbplus.License.class) { lic ->
+        updateES(com.k_int.kbplus.License.class) { lic ->
             def result = [:]
 
             result._id = lic.globalUID
@@ -334,7 +332,7 @@ class DataloadService {
             result
         }
 
-        updateES(esclient, com.k_int.kbplus.Subscription.class) { sub ->
+        updateES( com.k_int.kbplus.Subscription.class) { sub ->
             def result = [:]
 
                 result._id = sub.globalUID
@@ -426,7 +424,7 @@ class DataloadService {
             result
         }
 
-        updateES(esclient, com.k_int.kbplus.SurveyConfig.class) { surveyConfig ->
+        updateES(com.k_int.kbplus.SurveyConfig.class) { surveyConfig ->
             def result = [:]
 
             result._id = surveyConfig.getClass().getSimpleName().toLowerCase()+":"+surveyConfig.id
@@ -460,7 +458,7 @@ class DataloadService {
             result
         }
 
-        updateES(esclient, com.k_int.kbplus.SurveyOrg.class) { surOrg ->
+        updateES(com.k_int.kbplus.SurveyOrg.class) { surOrg ->
             def result = [:]
 
             result._id = surOrg.getClass().getSimpleName().toLowerCase()+":"+surOrg.id
@@ -492,7 +490,7 @@ class DataloadService {
             result
         }
 
-        updateES(esclient, com.k_int.kbplus.Task.class) { task ->
+        updateES(com.k_int.kbplus.Task.class) { task ->
             def result = [:]
 
             result._id = task.getClass().getSimpleName().toLowerCase()+":"+task.id
@@ -539,7 +537,7 @@ class DataloadService {
             result
         }
 
-        updateES(esclient, com.k_int.kbplus.DocContext.class) { docCon ->
+        updateES(com.k_int.kbplus.DocContext.class) { docCon ->
             def result = [:]
 
             result._id = docCon.getClass().getSimpleName().toLowerCase()+":"+docCon.id
@@ -584,7 +582,7 @@ class DataloadService {
             result
         }
 
-        updateES(esclient, com.k_int.kbplus.IssueEntitlement.class) { ie ->
+        updateES(com.k_int.kbplus.IssueEntitlement.class) { ie ->
             def result = [:]
 
             result._id = ie.globalUID
@@ -639,7 +637,7 @@ class DataloadService {
             result
         }
 
-        updateES(esclient, com.k_int.kbplus.SubscriptionCustomProperty.class) { subCustProp ->
+        updateES(com.k_int.kbplus.SubscriptionCustomProperty.class) { subCustProp ->
             def result = [:]
 
             result._id = subCustProp.getClass().getSimpleName().toLowerCase()+":"+subCustProp.id
@@ -700,7 +698,7 @@ class DataloadService {
             result
         }
 
-        updateES(esclient, com.k_int.kbplus.SubscriptionPrivateProperty.class) { subPrivProp ->
+        updateES(com.k_int.kbplus.SubscriptionPrivateProperty.class) { subPrivProp ->
             def result = [:]
 
             result._id = subPrivProp.getClass().getSimpleName().toLowerCase()+":"+subPrivProp.id
@@ -743,7 +741,7 @@ class DataloadService {
             result
         }
 
-        updateES(esclient, com.k_int.kbplus.LicenseCustomProperty.class) { licCustProp ->
+        updateES(com.k_int.kbplus.LicenseCustomProperty.class) { licCustProp ->
             def result = [:]
 
             result._id = licCustProp.getClass().getSimpleName().toLowerCase()+":"+licCustProp.id
@@ -795,7 +793,7 @@ class DataloadService {
             result
         }
 
-        updateES(esclient, com.k_int.kbplus.LicensePrivateProperty.class) { licPrivProp ->
+        updateES( com.k_int.kbplus.LicensePrivateProperty.class) { licPrivProp ->
             def result = [:]
 
             result._id = licPrivProp.getClass().getSimpleName().toLowerCase()+":"+licPrivProp.id
@@ -838,7 +836,7 @@ class DataloadService {
             result
         }
 
-
+        RestHighLevelClient esclient = ESWrapperService.getClient()
         update_running = false
         def elapsed = System.currentTimeMillis() - start_time;
         lastIndexUpdate = new Date(System.currentTimeMillis())
@@ -849,12 +847,14 @@ class DataloadService {
         SystemEvent.createEvent('FT_INDEX_UPDATE_END')
         ESWrapperService.clusterHealth()
 
-        //esclient.close()
+        esclient.close()
 
         return true
     }
 
-    def updateES(esclient, domain, recgen_closure) {
+    def updateES( domain, recgen_closure) {
+
+    RestHighLevelClient esclient = ESWrapperService.getClient()
 
     def count = 0;
     def total = 0;
@@ -999,6 +999,7 @@ class DataloadService {
       log.debug("Completed processing on ${domain.name} - saved ${total} records")
 
     }
+        esclient.close()
   }
 
     def lookupOrCreateCanonicalIdentifier(ns, value) {

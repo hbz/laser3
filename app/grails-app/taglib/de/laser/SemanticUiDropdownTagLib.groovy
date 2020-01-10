@@ -49,7 +49,7 @@ class SemanticUiDropdownTagLib {
 
         String id = ''
         if (attrs.name) {
-            id = ' id="' + attrs.name + '" name="' + attrs.name + '" '
+            id = ' id="' + attrs.id + '" name="' + attrs.name + '" '
         }
         out << '<select class="ui fluid labeled search dropdown"' + id + '>'
 

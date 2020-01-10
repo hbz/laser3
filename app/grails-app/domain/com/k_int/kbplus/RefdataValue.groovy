@@ -122,12 +122,12 @@ class RefdataValue extends AbstractI10nTranslatable implements Comparable<Refdat
         return null;
     }
 
-    static def getByValueAndCategory(value, category) {
+    static RefdataValue getByValueAndCategory(value, category) {
 
         RefdataValue.findByValueAndOwner(value, RefdataCategory.findByDesc(category))
     }
 
-    static def getByCategoryDescAndI10nValueDe(categoryName, value) {
+    static RefdataValue getByCategoryDescAndI10nValueDe(categoryName, value) {
 
         def data = RefdataValue.executeQuery("select rdv from RefdataValue as rdv, RefdataCategory as rdc, I10nTranslation as i10n "
                     + " where rdv.owner = rdc and rdc.desc = ? "

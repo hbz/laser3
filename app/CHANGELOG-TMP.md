@@ -2,6 +2,38 @@
 
 **Ticket    Date    Branch      Author  Feature/Bug     Description/Keywords**
 
+--      09.01.2020  rc1.2       Moe     Bug         Verlängerung Konsortial: Mehrjahres Flag setzen, Merkmale kopieren
+
+2029    09.01.2020  rc1.2       David   Feature     Refactoring: Shared Caches für User, bzw Organisationen
+
+--      08.01.2020  rc1.2       Moe     Bug         ES Searchs blockieren Threads
+
+2025    08.01.2020  rc1.2       Moe     Bug         Verlängerung: Dokumentreferenzen stimmen nicht mehr.
+
+2021    08.01.2020  rc1.2       Moe     Bug         Verträge: Lizenzgeber verknüpfen funktioniert nicht
+
+2026    08.01.2020  rc1.2       Moe     Bug         Umfragübertrag von Paketen
+
+2023    08.01.2020  rc1.2       David   Bug         UserCaches blockieren Threads
+
+2017    06.01.2020  rc1.2       David   Bug         Fehlermeldung bei Suche im Gasco-Monitor
+
+2010    20.12.2019  rc1.2       Moe     Bug         Neues Verfahrensverzeichnis für 2020 einhängen
+
+1999    20.12.2019  rc1.2       Moe     Bug         Filter Mehrjahreslaufzeit erweitern oder erläutern
+
+--      20.12.2019  rc1.2       Moe     Bug         Copy IEs and Correct AnualRings by Survey Consortia
+
+--      20.12.2019  rc1.2       David   Bug         fixed regression bug: pending change payload
+
+--      20.12.2019  rc1.2       David   Bug         creating property definitions via bootstrap
+
+1992    19.12.2019  rc1.2       Andreas Feature     translations provided for SusbscriptionCustomProperties
+
+2004    19.12.2019  rc1.2       Andreas Bug         local package sync failed because of identifier processing failure (ClassCastException)
+
+2003    19.12.2019  rc1.2       Andreas Bug         creation of new orgs failed, NullPointerException fixed
+
 --      18.12.2019  rc1.2       Moe   Bug           Unlink Package by linkPackagesMembers 
 
 --      18.12.2019  rc1.2       David   Bug         accessor for undeleted derived subscriptions
