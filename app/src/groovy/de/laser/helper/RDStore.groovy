@@ -28,6 +28,7 @@ class RDStore {
     static final OR_PROVIDER                = getRefdataValue('Provider', 'Organisational Role')
     static final OR_PUBLISHER               = getRefdataValue('Publisher', 'Organisational Role')
     static final OR_CONTENT_PROVIDER        = getRefdataValue('Content Provider', 'Organisational Role')
+    static final OR_PACKAGE_CONSORTIA       = getRefdataValue('Package Consortiar', 'Organisational Role')
 
     static final OT_CONSORTIUM              = getRefdataValue('Consortium', 'OrgRoleType')
     static final OT_INSTITUTION             = getRefdataValue('Institution', 'OrgRoleType')
@@ -42,6 +43,8 @@ class RDStore {
     static final O_STATUS_CURRENT           = getRefdataValue('Current','OrgStatus')
     static final O_STATUS_DELETED           = getRefdataValue('Deleted','OrgStatus')
 
+    static final DOC_TYPE_ANNOUNCEMENT      = getRefdataValue('Announcement', 'Document Type')
+
     static final DOC_DELETED                = getRefdataValue('Deleted', 'Document Context Status')
     @Deprecated
     static final IE_DELETED                 = TIPP_DELETED
@@ -50,6 +53,8 @@ class RDStore {
     static final PLATFORM_DELETED           = getRefdataValue('Deleted', 'Platform Status')
     static final TIPP_DELETED               = getRefdataValue('Deleted', 'TIPP Status')
 
+//DO NOT USE THIS STATUS. Subs have no longer a deleted flag. They ARE deleted!
+    @Deprecated
     static final SUBSCRIPTION_DELETED       = getRefdataValue('Deleted', 'Subscription Status')
     static final SUBSCRIPTION_CURRENT       = getRefdataValue('Current', 'Subscription Status')
     static final SUBSCRIPTION_INTENDED      = getRefdataValue('Intended', 'Subscription Status')
@@ -83,6 +88,8 @@ class RDStore {
     //static final SUBSCRIPTION_TYPE_COLLECTIVE   	= getRefdataValue('Collective Subscription','Subscription Type')
 
     static final LICENSE_TYPE_TEMPLATE      = getRefdataValue('Template', 'License Type')
+    static final LICENSE_TYPE_ACTUAL        = getRefdataValue('Actual', 'License Type')
+    static final LICENSE_TYPE_CURRENT       = getRefdataValue('Current', 'License Type')
     static final LICENSE_NO_STATUS          = getRefdataValue('Status not defined', 'License Status')
 
     static final LINKTYPE_FOLLOWS           = getRefdataValue('follows','Link Type')
@@ -149,6 +156,7 @@ class RDStore {
     static final CCT_PHONE                      = getRefdataValue('Phone','ContactContentType')
     static final CCT_URL                        = getRefdataValue('Url','ContactContentType')
     static final PRS_RESP_SPEC_SUB_EDITOR       = getRefdataValue('Specific subscription editor', 'Person Responsibility')
+    static final PRS_RESP_SPEC_LIC_EDITOR       = getRefdataValue('Specific license editor', 'Person Responsibility')
 
     static final PENDING_CHANGE_STATUS          = getRefdataValue('Pending', 'PendingChangeStatus')
 

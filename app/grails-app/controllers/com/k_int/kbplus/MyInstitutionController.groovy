@@ -650,7 +650,7 @@ from License as l where (
 
         result.is_inst_admin = accessService.checkMinUserOrgRole(result.user, result.institution, 'INST_EDITOR')
 
-        def template_license_type = RefdataValue.getByValueAndCategory('Template', 'License Type')
+        def template_license_type = RDStore.LICENSE_TYPE_TEMPLATE
         def qparams = [template_license_type]
         boolean public_flag = false
 
@@ -1513,7 +1513,7 @@ from License as l where (
             }
         }
 
-        def license_type = RefdataValue.getByValueAndCategory('Actual', 'License Type')
+        def license_type = RDStore.LICENSE_TYPE_ACTUAL
 
         def licenseInstance = new License(type: license_type, reference: params.licenseName,
                 startDate:params.licenseStartDate ? parseDate(params.licenseStartDate, escapeService.possible_date_formats) : null,
@@ -1766,7 +1766,7 @@ from License as l where (
         RefdataValue role_sub_cons   = RDStore.OR_SUBSCRIBER_CONS
 
         RefdataValue role_sub_consortia = RDStore.OR_SUBSCRIPTION_CONSORTIA
-        RefdataValue role_pkg_consortia = RefdataValue.getByValueAndCategory('Package Consortia', 'Organisational Role')
+        RefdataValue role_pkg_consortia = RDStore.OR_PACKAGE_CONSORTIA
         def roles = [role_sub.id,role_sub_consortia.id,role_pkg_consortia.id]
 
         log.debug("viable roles are: ${roles}")
@@ -1825,7 +1825,7 @@ from License as l where (
         }
 
         if (filterPvd) {
-            def cp = RefdataValue.getByValueAndCategory('Content Provider', 'Organisational Role')?.id
+            def cp = RDStore.OR_CONTENT_PROVIDER
             sub_qry += " AND orgrole.or_roletype_fk = :cprole  AND orgrole.or_org_fk IN (" + filterPvd.join(", ") + ")"
             qry_params.cprole = cp
         }
@@ -2092,8 +2092,8 @@ from License as l where (
         def role_sub_cons       = RDStore.OR_SUBSCRIBER_CONS
         def role_sub_consortia  = RDStore.OR_SUBSCRIPTION_CONSORTIA
 
-        def cp = RefdataValue.getByValueAndCategory('Content Provider', 'Organisational Role')
-        def role_consortia = RefdataValue.getByValueAndCategory('Package Consortia', 'Organisational Role')
+        def cp = RDStore.OR_CONTENT_PROVIDER
+        def role_consortia = RDStore.OR_PACKAGE_CONSORTIA
 
         def roles = [role_sub, role_sub_cons, role_sub_consortia]
 
@@ -2289,7 +2289,7 @@ AND EXISTS (
         result.user = User.get(springSecurityService.principal.id)
         def subscription = Subscription.get(params.basesubscription)
         def inst = Org.get(params.curInst)
-        def deletedStatus = RefdataValue.getByValueAndCategory('Deleted', 'Subscription Status')
+        def deletedStatus = RDStore.SUBSCRIPTION_DELETED
 
         if (subscription.hasPerm("edit", result.user)) {
             def derived_subs = Subscription.findByInstanceOf(subscription)
@@ -2516,7 +2516,7 @@ AND EXISTS (
         result.itemsTimeWindow = 365
         result.recentAnnouncements = Doc.executeQuery(
                 'select d from Doc d where d.type = :type and d.dateCreated >= :tsCheck order by d.dateCreated desc',
-                [type: RefdataValue.getByValueAndCategory('Announcement', 'Document Type'), tsCheck: (new Date()).minus(365)]
+                [type: RDStore.DOC_TYPE_ANNOUNCEMENT, tsCheck: (new Date()).minus(365)]
         )
         result.num_announcements = result.recentAnnouncements.size()
 
@@ -3489,17 +3489,9 @@ AND EXISTS (
             result.filterSet = params.filterSet
 
         result.filterSubTypes = RefdataCategory.getAllRefdataValues('Subscription Type').minus(
-                RefdataValue.getByValueAndCategory('Local Licence', 'Subscription Type')
+                RDStore.SUBSCRIPTION_TYPE_LOCAL
         )
-        result.filterPropList =
-                PropertyDefinition.findAllWhere(
-                        descr: PropertyDefinition.SUB_PROP,
-                        tenant: null // public properties
-                ) +
-                        PropertyDefinition.findAllWhere(
-                                descr: PropertyDefinition.SUB_PROP,
-                                tenant: contextService.getOrg() // private properties
-                        )
+        result.filterPropList = PropertDefinition.findAllPublicAndPrivateProp([PropertyDefinition.SUB_PROP], contextService.getOrg())
 
         /*
         String query = "select ci, subT, roleT.org from CostItem ci join ci.owner orgK join ci.sub subT join subT.instanceOf subK " +
@@ -3559,9 +3551,6 @@ AND EXISTS (
             qarams.put('status', RDStore.SUBSCRIPTION_CURRENT.id)
             params.status = RDStore.SUBSCRIPTION_CURRENT.id
             result.defaultSet = true
-        } else {
-            query += " and subT.status.id != :deleted "
-            qarams.put('deleted', RDStore.SUBSCRIPTION_DELETED.id)
         }
 
         if (params.filterPropDef?.size() > 0) {
@@ -4045,25 +4034,26 @@ AND EXISTS (
     def managePrivateProperties() {
         def result = setResultGenerics()
 
-        result.editable = true // true, because action is protected
-        result.privatePropertyDefinitions = PropertyDefinition.findAllWhere([tenant: result.institution])
-
         if('add' == params.cmd) {
             flash.message = addPrivatePropertyDefinition(params)
-            result.privatePropertyDefinitions = PropertyDefinition.findAllWhere([tenant: result.institution])
         }
         else if('delete' == params.cmd) {
             flash.message = deletePrivatePropertyDefinition(params)
-            result.privatePropertyDefinitions = PropertyDefinition.findAllWhere([tenant: result.institution])
         }
 
-        RuleBasedCollator clt = SortUtil.getCollator()
-        result.privatePropertyDefinitions.sort{a, b -> clt.compare(
-                message(code: "propertyDefinition.${a.descr}.label", args:[]) + '|' + a.name,
-                message(code: "propertyDefinition.${b.descr}.label", args:[]) + '|' + b.name
-        )}
+        def propDefs = [:]
+        PropertyDefinition.AVAILABLE_PRIVATE_DESCR.each { it ->
+            def itResult = PropertyDefinition.findAllByDescrAndTenant(it, result.institution, [sort: 'name']) // ONLY private properties!
+            propDefs << ["${it}": itResult]
+        }
+        result.propertyDefinitions = propDefs
 
+        def (usedPdList, attrMap) = propertyService.getUsageDetails()
+        result.usedPdList = usedPdList
+        result.attrMap = attrMap
+        result.editable = true // true, because action is protected
         result.language = LocaleContextHolder.getLocale().toString()
+        result.propertyType = 'private'
         result
     }
 
@@ -4087,7 +4077,8 @@ AND EXISTS (
         result.usedPdList = usedPdList
 
         result.language = LocaleContextHolder.getLocale().toString()
-        result
+        result.propertyType = 'custom'
+        render view: 'managePropertyDefinitions', model: result
     }
 
     @Secured(['ROLE_USER'])
@@ -4157,7 +4148,7 @@ AND EXISTS (
     private deletePrivatePropertyDefinition(params) {
         log.debug("delete private property definition for institution: " + params)
 
-        def messages  = []
+        def messages  = ""
         def tenant    = contextService.getOrg()
         def deleteIds = params.list('deleteIds')
 
@@ -4183,7 +4174,7 @@ AND EXISTS (
                 }
 
                 privatePropDef.delete()
-                messages << message(code: 'default.deleted.message', args:[privatePropDef.descr, privatePropDef.name])
+                messages += message(code: 'default.deleted.message', args:[privatePropDef.descr, privatePropDef.name])
             }
         }
         messages

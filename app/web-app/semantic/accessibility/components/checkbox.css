@@ -678,6 +678,16 @@
   content: "\f061";
 }
 
+/* INHERITY*/
+.ui.checkbox.la-toggle-radio.la-inherit label:before {
+  font-family: Icons;
+  content: "\f08d";
+}
+/* SHARE*/
+.ui.checkbox.la-toggle-radio.la-share label:before {
+  font-family: Icons;
+  content: "\e907";
+}
 /* TRASH*/
 .ui.checkbox.la-toggle-radio.la-noChange label:before {
   font-family: Icons;

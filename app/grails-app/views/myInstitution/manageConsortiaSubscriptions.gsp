@@ -199,22 +199,31 @@
         </div>
     </g:form>
 </semui:filter>
-
 <g:if test="${params.member}">
-    <g:set var="choosenOrg" value="${com.k_int.kbplus.Org.findById(params.member)}" />
-    <g:set var="choosenOrgCPAs" value="${choosenOrg?.getGeneralContactPersons(false)}" />
+    <g:set var="chosenOrg" value="${com.k_int.kbplus.Org.findById(params.member)}" />
+    <g:set var="chosenOrgCPAs" value="${chosenOrg?.getGeneralContactPersons(false)}" />
 
     <table class="ui table la-table la-table-small">
         <tbody>
             <tr>
                 <td>
-                    <p><strong>${choosenOrg?.name} (${choosenOrg?.shortname})</strong></p>
-
-                    ${choosenOrg?.libraryType?.getI10n('value')}
+                    <p>
+                        <strong>
+                            ${chosenOrg?.name}
+                            <g:if test="${chosenOrg?.shortname}">(${chosenOrg?.shortname})</g:if>
+                            <g:if test="${chosenOrg.getCustomerType() in ['ORG_INST', 'ORG_INST_COLLECTIVE']}">
+                                <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="bottom center"
+                                      data-content="${chosenOrg.getCustomerTypeI10n()}">
+                                    <i class="chess rook grey icon"></i>
+                                </span>
+                            </g:if>
+                        </strong>
+                    </p>
+                    ${chosenOrg?.libraryType?.getI10n('value')}
                 </td>
                 <td>
-                    <g:if test="${choosenOrgCPAs}">
-                        <g:each in="${choosenOrgCPAs}" var="gcp">
+                    <g:if test="${chosenOrgCPAs}">
+                        <g:each in="${chosenOrgCPAs}" var="gcp">
                             <g:render template="/templates/cpa/person_details" model="${[person: gcp, tmplHideLinkToAddressbook: true, overwriteEditable: false]}" />
                         </g:each>
                     </g:if>
@@ -223,7 +232,6 @@
         </tbody>
     </table>
 </g:if>
-
 <g:if test="${costItems}">
 <table class="ui celled sortable table table-tworow la-table la-ignore-fixed">
     <thead>
@@ -275,6 +283,13 @@
                             <i class="low vision grey icon"></i>
                         </span>
                     </g:if>
+                    <g:if test="${subscr.getCustomerType() in ['ORG_INST', 'ORG_INST_COLLECTIVE']}">
+                        <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="bottom center"
+                              data-content="${subscr.getCustomerTypeI10n()}">
+                            <i class="chess rook grey icon"></i>
+                        </span>
+                    </g:if>
+
                 </td>
                 <td>
 

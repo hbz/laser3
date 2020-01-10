@@ -229,8 +229,8 @@ class LicenseImportController extends AbstractDebugController {
 
     log.debug("replaceOplRecord: ${replaceOplRecord} createNewDocument: ${createNewDocument} createNewLicense: ${createNewLicense} upload.replace_opl: ${upload.replace_opl} license: ${upload.license!=null}")
     importResult.replace = replaceOplRecord
-    RefdataValue currentStatus = RefdataCategory.lookupOrCreate(RefdataCategory.LIC_STATUS, 'Current')
-    RefdataValue templateType  = RefdataCategory.lookupOrCreate(RefdataCategory.LIC_TYPE, 'Template')
+    RefdataValue currentStatus = RefdataValue.getByValueAndCategory('Current', RefdataCategory.LIC_STATUS)
+    RefdataValue templateType  = RefdataValue.getByValueAndCategory('Template', RefdataCategory.LIC_TYPE)
     // Create a new license
 
     if (createNewLicense) {
@@ -252,7 +252,7 @@ class LicenseImportController extends AbstractDebugController {
       log.debug("Created template KB+ license ${license}")
     }
 
-    def doctype = RefdataCategory.lookupOrCreate(CAT_DOCTYPE, DOCTYPE);
+    RefdataValue doctype = RefdataValue.getByValueAndCategory(DOCTYPE, CAT_DOCTYPE)
     def doc_content, doc_context
 
     // If we are creating a new document for the upload
