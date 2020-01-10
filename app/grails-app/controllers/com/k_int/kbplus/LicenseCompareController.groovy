@@ -21,7 +21,7 @@ class LicenseCompareController extends AbstractDebugController {
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
   def index() {
-        def result = [:]
+        Map<String, Object> result = [:]
         result.user = User.get(springSecurityService.principal.id)
         result.institution = contextService.getOrg()
         result.availableLicenses = controlledListService.getLicenses(params)

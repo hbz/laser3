@@ -66,7 +66,7 @@ class SurveyInfo {
     }
 
 
-    def checkOpenSurvey()
+    boolean checkOpenSurvey()
     {
         boolean check = this.surveyConfigs?.size() > 0 ? true : false
 
@@ -88,9 +88,9 @@ class SurveyInfo {
     }
 
     def checkSurveyInfoFinishByOrg(Org org) {
-        def result = [:]
+        Map<String, Object> result = [:]
 
-        def count = 0
+        int count = 0
         surveyConfigs.each {
 
             def checkResultsEditByOrg = result."${it.checkResultsEditByOrg(org)}"

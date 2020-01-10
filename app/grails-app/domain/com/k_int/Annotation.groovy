@@ -37,7 +37,7 @@ class Annotation {
       key
     }
     
-    public static replaceInCache(Annotation annotation) {
+    static replaceInCache(Annotation annotation) {
       String key = "${annotation.componentType}::${annotation.propertyName}::${annotation.viewType}"
       ANNOTATION_CACHE.put(key, annotation)
     }

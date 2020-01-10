@@ -21,7 +21,7 @@
                             if (c < debug.size() - 1) {
                                 print debug[c+1][1] - bm[1]
                             } else {
-                                print '(' + ( bm[1] - debug[0][1] ) + ') '
+                                print '--> ' + ( bm[1] - debug[0][1] ) + ' <--'
                             }
                         %>
                     </td>

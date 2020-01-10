@@ -4,6 +4,9 @@ import com.k_int.kbplus.Org
 import com.k_int.kbplus.Subscription
 import com.k_int.kbplus.UserSettings
 import com.k_int.kbplus.auth.User
+import grails.plugin.mail.MailService
+import org.codehaus.groovy.grails.commons.GrailsApplication
+
 import static de.laser.helper.RDStore.*
 import de.laser.helper.SqlDateUtils
 import static com.k_int.kbplus.UserSettings.DEFAULT_REMINDER_PERIOD
@@ -11,14 +14,14 @@ import grails.util.Holders
 
 class DashboardDueDatesService {
 
-    def queryService
-    def mailService
-    def grailsApplication
+    QueryService queryService
+    MailService mailService
+    GrailsApplication grailsApplication
     def messageSource
-    def locale
+    Locale locale
     String from
     String replyTo
-    def update_running = false
+    boolean update_running = false
     private static final String QRY_ALL_ORGS_OF_USER = "select distinct o from Org as o where exists ( select uo from UserOrg as uo where uo.org = o and uo.user = ? and ( uo.status=1 or uo.status=3)) order by o.name"
 
     @javax.annotation.PostConstruct
@@ -73,12 +76,12 @@ class DashboardDueDatesService {
         log.debug("Start DashboardDueDatesService updateDashboardTableInDatabase")
 
         List<DashboardDueDate> dashboarEntriesToInsert = []
-        def users = User.findAllByEnabledAndAccountExpiredAndAccountLocked(true, false, false)
-//        def users = [User.get(96)]
+        List<User> users = User.findAllByEnabledAndAccountExpiredAndAccountLocked(true, false, false)
+//        def users = [User.get(6)]
         users.each { user ->
-            def orgs = Org.executeQuery(QRY_ALL_ORGS_OF_USER, user);
+            List<Org> orgs = Org.executeQuery(QRY_ALL_ORGS_OF_USER, user);
             orgs.each {org ->
-                def dueObjects = queryService.getDueObjectsCorrespondingUserSettings(org, user)
+                List dueObjects = queryService.getDueObjectsCorrespondingUserSettings(org, user)
                 dueObjects.each { obj ->
                     if (obj instanceof Subscription) {
                         int reminderPeriodForManualCancellationDate = user.getSetting(UserSettings.KEYS.REMIND_PERIOD_FOR_SUBSCRIPTIONS_NOTICEPERIOD, DEFAULT_REMINDER_PERIOD).value ?: 1
@@ -166,11 +169,11 @@ class DashboardDueDatesService {
         try {
             SystemEvent.createEvent('DBDD_SERVICE_START_3')
 
-            def users = User.findAllByEnabledAndAccountExpiredAndAccountLocked(true, false, false)
+            List<User> users = User.findAllByEnabledAndAccountExpiredAndAccountLocked(true, false, false)
             users.each { user ->
                 boolean userWantsEmailReminder = YN_YES.equals(user.getSetting(UserSettings.KEYS.IS_REMIND_BY_EMAIL, YN_NO).rdValue)
                 if (userWantsEmailReminder) {
-                    def orgs = Org.executeQuery(QRY_ALL_ORGS_OF_USER, user);
+                    List<Org> orgs = Org.executeQuery(QRY_ALL_ORGS_OF_USER, user);
                     orgs.each { org ->
                         def dashboardEntries = DashboardDueDate.findAllByResponsibleUserAndResponsibleOrgAndIsDoneAndIsHidden(user, org, false, false, [sort: "date", order: "asc"])
                         sendEmail(user, org, dashboardEntries)

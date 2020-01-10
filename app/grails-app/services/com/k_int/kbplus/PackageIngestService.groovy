@@ -263,9 +263,9 @@ public class PackageIngestService {
     return false
   }
 
-  def readPackageCSV(upload_mime_type, upload_filename, charset, input_stream, docstyle) {
+  Map<String, Object> readPackageCSV(upload_mime_type, upload_filename, charset, input_stream, docstyle) {
 
-    def result = [:]
+    Map<String, Object> result = [:]
     result.processFile=true
     result.incremental=false
 
@@ -325,9 +325,9 @@ public class PackageIngestService {
 
     return result;
   }
-  
-  def readTippRow(cols, nl) {
-    def result = [:]
+
+  Map<String, Object> readTippRow(cols, nl) {
+    Map<String, Object> result = [:]
 
     result.messages = []
     result.row = []
@@ -376,7 +376,7 @@ public class PackageIngestService {
   
   def processCsvLine(csv_line, field_name, col_num,result_map, parseAs, defval, isMandatory) {  
     log.debug("  processCsvLine ${csv_line} ${field_name} ${col_num}... mandatory=${isMandatory}");
-    def result = [:]
+    Map<String, Object> result = [:]
     result.messages = []
     result.origValue = csv_line[col_num]
 

@@ -14,7 +14,7 @@ import java.text.Normalizer
 import java.util.regex.Pattern
 
 @Log4j
-class TitleInstance extends AbstractBaseDomain implements AuditableTrait {
+class TitleInstance extends AbstractBaseDomain /*implements AuditableTrait*/ {
 
   @Transient
   def grailsApplication
@@ -124,7 +124,7 @@ class TitleInstance extends AbstractBaseDomain implements AuditableTrait {
   }
 
   Org getPublisher() {
-    def result = null;
+    Org result
     orgs.each { o ->
       if ( o.roleType?.value == 'Publisher' ) {
         result = o.org
@@ -133,11 +133,11 @@ class TitleInstance extends AbstractBaseDomain implements AuditableTrait {
     result
   }
 
-  static def lookupByIdentifierString(idstr) {
+  static TitleInstance lookupByIdentifierString(idstr) {
 
       static_logger.debug("lookupByIdentifierString(${idstr})")
 
-    def result = null;
+      TitleInstance result
     def qr = null;
     def idstr_components = idstr.split(':');
 
@@ -271,7 +271,7 @@ class TitleInstance extends AbstractBaseDomain implements AuditableTrait {
                     origin_uri = i.value
                 }
 
-                Identifier matches = Identifier.executeQuery('select i from Identifier i join i.ns ns where i.value = :iValue and ns.ns = :nsValue and i.ti is not null',
+                List<Identifier> matches = Identifier.executeQuery('select i from Identifier i join i.ns ns where i.value = :iValue and ns.ns = :nsValue and i.ti is not null',
                         [iValue: i.value, nsValue: i.namespace])
 
                 matches.each { match ->
@@ -1182,7 +1182,7 @@ select ie from IssueEntitlement as ie JOIN ie.subscription.orgRelations as o
 
   @Transient
   def isInPackage(pkg) {
-    def result = false
+    boolean result = false
     def tipp = TitleInstancePackagePlatform.findByTitleAndPkg(this,pkg)
     if(tipp)
       result=true
@@ -1222,14 +1222,14 @@ select ie from IssueEntitlement as ie JOIN ie.subscription.orgRelations as o
    * Validate a tipp start and end date by ensuring that the date range lies within known dates when this Title
    * was published. Null start dates are only valid when there is no earliest published dates.
   */
-  def isValidCoverage(start, end) {
+  boolean isValidCoverage(start, end) {
 
     // Disabled 8-oct-2015 as requested by Magaly via OS
     return true
 
-    def result = true;
-    def published_from = null;
-    def published_to = null;
+    boolean result = true
+    Date published_from
+    Date published_to
 
     orgs.each { o ->
       if ( o.roleType?.value == 'Publisher' ) {

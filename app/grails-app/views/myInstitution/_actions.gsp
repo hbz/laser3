@@ -9,7 +9,7 @@
             <semui:actionsDropdownItem controller="myInstitution" action="subscriptionImport" message="menu.institutions.subscriptionImport" />
             <div class="divider"></div>
         </g:if>
-        <semui:actionsDropdownItem controller="subscription" action="compare" message="menu.my.comp_sub" />
+        <semui:actionsDropdownItemDisabled controller="subscription" action="compare" message="menu.my.comp_sub" />
     </semui:actionsDropdown>
 </g:if>
 

@@ -22,7 +22,7 @@
 
 
 <h1 class="ui left floated aligned icon header la-clear-before"><semui:headerIcon/>${message(code: 'currentSurveys.label', default: 'Current Surveys')}
-<semui:totalNumber total="${countSurveyConfigs."${params.tab}"}"/>
+<semui:totalNumber total="${surveysCount}"/>
 </h1>
 
 <semui:messages data="${flash}"/>
@@ -83,8 +83,8 @@
         <div class="field la-field-right-aligned">
 
             <div class="field la-field-right-aligned">
-                <a href="${request.forwardURI}"
-                   class="ui reset primary button">${message(code: 'default.button.reset.label')}</a>
+                <g:link controller="survey" action="currentSurveysConsortia" params="[tab: params.tab]"
+                   class="ui reset primary button">${message(code: 'default.button.reset.label')}</g:link>
                 <input type="submit" class="ui secondary button"
                        value="${message(code: 'default.button.filter.label', default: 'Filter')}">
             </div>
@@ -94,22 +94,26 @@
 </semui:filter>
 
 <semui:form>
+<%
+    def tmpParams = params.clone()
+    tmpParams.remove("tab")
+    %>
 
     <semui:tabs actionName="${actionName}">
         <semui:tabsItem controller="survey" action="currentSurveysConsortia"
-                        params="${[id: params.id, tab: 'created']}" text="Erstellt" tab="created"
+                        params="${tmpParams+[tab: 'created']}" text="Erstellt" tab="created"
                         counts="${countSurveyConfigs?.created}"/>
         <semui:tabsItem controller="survey" action="currentSurveysConsortia"
-                        params="${[id: params.id, tab: 'active']}" text="Aktiv" tab="active"
+                        params="${tmpParams+[tab: 'active']}" text="Aktiv" tab="active"
                         counts="${countSurveyConfigs?.active}"/>
         <semui:tabsItem controller="survey" action="currentSurveysConsortia"
-                        params="${[id: params.id, tab: 'finish']}" text="Beendet" tab="finish"
+                        params="${tmpParams+[tab: 'finish']}" text="Beendet" tab="finish"
                         counts="${countSurveyConfigs?.finish}"/>
         <semui:tabsItem controller="survey" action="currentSurveysConsortia"
-                        params="${[id: params.id, tab: 'inEvaluation']}" text="In Auswertung" tab="inEvaluation"
+                        params="${tmpParams+[tab: 'inEvaluation']}" text="In Auswertung" tab="inEvaluation"
                         counts="${countSurveyConfigs?.inEvaluation}"/>
         <semui:tabsItem controller="survey" action="currentSurveysConsortia"
-                        params="${[id: params.id, tab: 'completed']}" text="Abgeschlossen" tab="completed"
+                        params="${tmpParams+[tab: 'completed']}" text="Abgeschlossen" tab="completed"
                         counts="${countSurveyConfigs?.completed}"/>
     </semui:tabs>
 
@@ -361,11 +365,11 @@
 
 </semui:form>
 
-<g:if test="${countSurveyConfigs."${params.tab}"}">
+<g:if test="${surveysCount}">
     <semui:paginate action="${actionName}" controller="${controllerName}" params="${params}"
                     next="${message(code: 'default.paginate.next', default: 'Next')}"
                     prev="${message(code: 'default.paginate.prev', default: 'Prev')}" max="${max}"
-                    total="${countSurveyConfigs."${params.tab}"}"/>
+                    total="${surveysCount}"/>
 </g:if>
 
 </body>

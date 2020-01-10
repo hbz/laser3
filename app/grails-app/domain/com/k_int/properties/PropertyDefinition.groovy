@@ -1,6 +1,7 @@
 package com.k_int.properties
 
 import com.k_int.kbplus.GenericOIDService
+import com.k_int.kbplus.Identifier
 import com.k_int.kbplus.Org
 import com.k_int.kbplus.RefdataCategory
 import com.k_int.kbplus.RefdataValue
@@ -11,6 +12,7 @@ import de.laser.domain.AbstractI10nTranslatable
 import de.laser.domain.I10nTranslation
 import de.laser.helper.SwissKnife
 import grails.util.Holders
+import groovy.transform.NotYetImplemented
 import groovy.util.logging.Log4j
 import org.codehaus.groovy.grails.orm.hibernate.cfg.GrailsHibernateUtil
 
@@ -179,6 +181,11 @@ class PropertyDefinition extends AbstractI10nTranslatable implements Serializabl
         dateCreated (nullable: true, blank: false)
     }
 
+    @NotYetImplemented
+    static PropertyDefinition construct(Map<String, Object> map) {
+        println "WARNING: NotYetImplemented"
+    }
+
     private static def typeIsValid(key) {
         if (validTypes2.containsKey(key)) {
             return true;
@@ -231,11 +238,11 @@ class PropertyDefinition extends AbstractI10nTranslatable implements Serializabl
         GrailsHibernateUtil.unwrapIfProxy(newProp)
     }
 
-    static def loc(String name, String descr, String typeClass, RefdataCategory rdc, String expl, multipleOccurence, mandatory, Org tenant) {
+    static PropertyDefinition loc(String name, String descr, String typeClass, RefdataCategory rdc, String expl, multipleOccurence, mandatory, Org tenant) {
 
         typeIsValid(typeClass)
 
-        def type = findWhere(
+        PropertyDefinition type = findWhere(
             name:   name,
             descr:  descr,
             tenant: tenant
@@ -279,11 +286,11 @@ class PropertyDefinition extends AbstractI10nTranslatable implements Serializabl
 
         if (! params.tenant) {
             CacheService cacheService = (CacheService) Holders.grailsApplication.mainContext.getBean('cacheService')
-            cache = cacheService.getTTL300Cache("PropertyDefinition/refdataFind/custom/${params.desc}/${LocaleContextHolder.getLocale()}/")
+            cache = cacheService.getTTL300Cache("PropertyDefinition/refdataFind/custom/${params.desc}/${LocaleContextHolder.getLocale()}")
         }
         else {
             ContextService contextService = (ContextService) Holders.grailsApplication.mainContext.getBean('contextService')
-            cache = contextService.getCache("PropertyDefinition/refdataFind/private/${params.desc}/${LocaleContextHolder.getLocale()}/", contextService.ORG_SCOPE)
+            cache = contextService.getCache("PropertyDefinition/refdataFind/private/${params.desc}/${LocaleContextHolder.getLocale()}", contextService.ORG_SCOPE)
         }
 
         if (! cache.get('propDefs')) {
@@ -323,13 +330,13 @@ class PropertyDefinition extends AbstractI10nTranslatable implements Serializabl
         resultWithoutExcludes
     }
 
-    def getDescrClass() {
+    String getDescrClass() {
         getDescrClass(this.descr)
     }
 
-    static getDescrClass(String descr) {
-        def result
-        def parts = descr.split(" ")
+    static String getDescrClass(String descr) {
+        String result
+        String[] parts = descr.split(" ")
 
         if (parts.size() >= 2) {
             if (parts[0] == "Organisation") {
@@ -341,20 +348,20 @@ class PropertyDefinition extends AbstractI10nTranslatable implements Serializabl
         result
     }
 
-    def getImplClass(String customOrPrivate) {
+    String getImplClass(String customOrPrivate) {
         getImplClass(this.descr, customOrPrivate)
     }
 
-    static getImplClass(String descr, String customOrPrivate) {
-        def result
-        def parts = descr.split(" ")
+    static String getImplClass(String descr, String customOrPrivate) {
+        String result
+        String[] parts = descr.split(" ")
 
         if (parts.size() >= 2) {
             if (parts[0] == "Organisation") {
                 parts[0] = "Org"
             }
-            def cp = 'com.k_int.kbplus.' + parts[0] + 'CustomProperty'
-            def pp = 'com.k_int.kbplus.' + parts[0] + 'PrivateProperty'
+            String cp = 'com.k_int.kbplus.' + parts[0] + 'CustomProperty'
+            String pp = 'com.k_int.kbplus.' + parts[0] + 'PrivateProperty'
 
             try {
                 if (customOrPrivate.equalsIgnoreCase('custom') && Class.forName(cp)) {
@@ -387,7 +394,7 @@ class PropertyDefinition extends AbstractI10nTranslatable implements Serializabl
     }
 
     def afterDelete() {
-        def rc = this.getClass().getName()
+        String rc = this.getClass().getName()
         def id = this.getId()
         I10nTranslation.where{referenceClass == rc && referenceId == id}.deleteAll()
     }
@@ -404,27 +411,28 @@ class PropertyDefinition extends AbstractI10nTranslatable implements Serializabl
 
   @Transient
   def getOccurrencesOwner(String cls){
-    def qparams = [this]
-    def qry = 'select c.owner from ' + cls + " as c where c.type = ?"
+    List<PropertyDefinition> qparams = [this]
+    String qry = 'select c.owner from ' + cls + " as c where c.type = ?"
     return PropertyDefinition.executeQuery(qry,qparams); 
   }
 
   @Transient
   def countOccurrences(String cls) {
-    def qparams = [this]
-    def qry = 'select count(c) from ' + cls + " as c where c.type = ?"
+    List<PropertyDefinition> qparams = [this]
+    String qry = 'select count(c) from ' + cls + " as c where c.type = ?"
     return (PropertyDefinition.executeQuery(qry,qparams))[0]; 
   }
   @Transient
-  def countOccurrences(String[] cls){
-    def total_count = 0
+  int countOccurrences(String[] cls){
+    int total_count = 0
     cls.each{
         total_count += countOccurrences(it)
     }
     return total_count
   }
+
     @Transient
-    def removeProperty() {
+    void removeProperty() {
         log.debug("Remove");
         PropertyDefinition.executeUpdate('delete from com.k_int.kbplus.LicenseCustomProperty c where c.type = ?', [this])
         PropertyDefinition.executeUpdate('delete from com.k_int.kbplus.LicensePrivateProperty c where c.type = ?', [this])
@@ -436,7 +444,7 @@ class PropertyDefinition extends AbstractI10nTranslatable implements Serializabl
     }
 
     /* tmp only */
-    static getAvailablePropertyDescriptions() {
+    static Map<String, Object> getAvailablePropertyDescriptions() {
         return [
                 "com.k_int.kbplus.Org"      : PropertyDefinition.ORG_PROP,
                 "com.k_int.kbplus.License"  : PropertyDefinition.LIC_PROP,
@@ -445,7 +453,7 @@ class PropertyDefinition extends AbstractI10nTranslatable implements Serializabl
     }
 
     static getLocalizedValue(key){
-        def locale = I10nTranslation.decodeLocale(LocaleContextHolder.getLocale().toString())
+        String locale = I10nTranslation.decodeLocale(LocaleContextHolder.getLocale().toString())
 
         //println locale
         if (PropertyDefinition.validTypes2.containsKey(key)) {
@@ -455,26 +463,22 @@ class PropertyDefinition extends AbstractI10nTranslatable implements Serializabl
         }
     }
 
-    static findAllPublicAndPrivateOrgProp(Org contextOrg){
-        def result = PropertyDefinition.findAll( "from PropertyDefinition as pd where pd.descr in :defList and (pd.tenant is null or pd.tenant = :tenant)", [
+    static List<PropertyDefinition> findAllPublicAndPrivateOrgProp(Org contextOrg){
+        PropertyDefinition.findAll( "from PropertyDefinition as pd where pd.descr in :defList and (pd.tenant is null or pd.tenant = :tenant)", [
                         defList: [PropertyDefinition.ORG_PROP],
                         tenant: contextOrg
                     ])
-        result
     }
 
-    static findAllPublicAndPrivateProp(List propertyDefinitionList, Org contextOrg){
-        def result = PropertyDefinition.findAll( "from PropertyDefinition as pd where pd.descr in :defList and (pd.tenant is null or pd.tenant = :tenant)", [
+    static List<PropertyDefinition> findAllPublicAndPrivateProp(List propertyDefinitionList, Org contextOrg){
+        PropertyDefinition.findAll( "from PropertyDefinition as pd where pd.descr in :defList and (pd.tenant is null or pd.tenant = :tenant)", [
                         defList: propertyDefinitionList,
                         tenant: contextOrg
                     ])
-        result
     }
 
     int compareTo(PropertyDefinition pd) {
         return this.getI10n('name').toLowerCase()?.compareTo(pd.getI10n('name').toLowerCase())
     }
-
-
 }
 

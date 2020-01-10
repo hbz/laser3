@@ -59,7 +59,7 @@ class PropertyDefinitionGroup {
         dateCreated (nullable: true, blank: false)
     }
 
-    def getPropertyDefinitions() {
+    List<PropertyDefinition> getPropertyDefinitions() {
 
         PropertyDefinition.executeQuery(
             "SELECT pd from PropertyDefinition pd, PropertyDefinitionGroupItem pdgi WHERE pdgi.propDef = pd AND pdgi.propDefGroup = ?",
@@ -67,9 +67,9 @@ class PropertyDefinitionGroup {
         )
     }
 
-    def getCurrentProperties(def currentObject) {
+    List getCurrentProperties(def currentObject) {
 
-        def result = []
+        List result = []
         def givenIds = getPropertyDefinitions().collect{ it.id }
 
         currentObject?.customProperties?.each{ cp ->
@@ -80,10 +80,10 @@ class PropertyDefinitionGroup {
         result
     }
 
-    static getAvailableGroups(Org tenant, String ownerType) {
-        def result = []
-        def global  = findAllWhere( tenant: null, ownerType: ownerType)
-        def context = findAllByTenantAndOwnerType(tenant, ownerType)
+    static List<PropertyDefinitionGroup> getAvailableGroups(Org tenant, String ownerType) {
+        List<PropertyDefinitionGroup> result = []
+        List<PropertyDefinitionGroup> global  = findAllWhere( tenant: null, ownerType: ownerType)
+        List<PropertyDefinitionGroup> context = findAllByTenantAndOwnerType(tenant, ownerType)
 
         result.addAll(global)
         result.addAll(context)
@@ -100,7 +100,7 @@ class PropertyDefinitionGroup {
         CacheService cacheService = (CacheService) Holders.grailsApplication.mainContext.getBean('cacheService')
         EhcacheWrapper cache
 
-        cache = cacheService.getTTL300Cache("PropertyDefinitionGroup/refdataFind/${params.desc}/pdgid/${currentObject.id}/${LocaleContextHolder.getLocale()}/")
+        cache = cacheService.getTTL300Cache("PropertyDefinitionGroup/refdataFind/${params.desc}/pdgid/${currentObject.id}/${LocaleContextHolder.getLocale()}")
 
         if (! cache.get('propDefs')) {
             def propDefs = currentObject.getPropertyDefinitions()

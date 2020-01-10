@@ -27,7 +27,7 @@ class EnrichmentService implements ApplicationContextAware {
 
   def doHousekeeping() {
     try {
-      def result = [:]
+      Map<String, Object> result = [:]
       result.possibleDuplicates = []
       result.packagesInLastWeek = []
       doDuplicateTitleDetection(result)

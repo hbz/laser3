@@ -34,7 +34,7 @@ class ESSearchService{
     // log.debug("Search Index, params.coursetitle=${params.coursetitle}, params.coursedescription=${params.coursedescription}, params.freetext=${params.freetext}")
     log.debug("ESSearchService::search - ${params}")
 
-   def result = [:]
+   Map<String, Object> result = [:]
 
    //List client = getClient()
    RestHighLevelClient esclient = ESWrapperService.getClient()
@@ -127,6 +127,7 @@ class ESSearchService{
           result.hits = searchResponse.getHits()
           result.resultsTotal = searchResponse.getHits().getTotalHits().value ?: "0"
           result.index = esSettings.indexName
+
         }
 
       }
@@ -136,9 +137,10 @@ class ESSearchService{
     }
     finally {
       try {
+        esclient.close()
       }
       catch ( Exception e ) {
-        log.error("problem",e);
+        log.error("Problem by Close ES Client",e);
       }
     }
     result
@@ -150,11 +152,11 @@ class ESSearchService{
     StringWriter sw = new StringWriter()
 
     if ( params?.q != null ){
-      params.query = "*${params.query}*"
+      params.query = "${params.query}"
       //GOKBID, GUUID
       if(params.q.length() >= 37){
         if(params.q.contains(":") || params.q.contains("-")){
-          params.q = params.q.replaceAll('\\*', '')
+          //params.q = params.q.replaceAll('\\*', '')
           sw.write("\"${params.q}\"")
         }else {
           sw.write("${params.q}")
@@ -165,6 +167,7 @@ class ESSearchService{
           params.q = params.q.replaceAll('\\*', '')
           sw.write("\"${params.q}\"")
         }else{
+          params.q = params.q.replaceAll('\\"', '')
           sw.write("${params.q}")
           sw.write(" AND ((NOT gokbId:'${params.q}') AND (NOT guid:'${params.q}')) ")
         }

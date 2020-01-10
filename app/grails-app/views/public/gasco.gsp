@@ -134,9 +134,9 @@
         </tr>
         </thead>
         <tbody>
-        <g:set var="GASCO_INFORMATION_LINK" value="${PropertyDefinition.findByDescrAndName(PropertyDefinition.SUB_PROP, 'GASCO-Information-Link')}" />
-        <g:set var="GASCO_ANZEIGENAME" value="${PropertyDefinition.findByDescrAndName(PropertyDefinition.SUB_PROP, 'GASCO-Anzeigename')}" />
-        <g:set var="GASCO_VERHANDLERNAME" value="${PropertyDefinition.findByDescrAndName(PropertyDefinition.SUB_PROP, 'GASCO-Verhandlername')}" />
+        <g:set var="GASCO_INFORMATION_LINK" value="${PropertyDefinition.findByDescrAndName(PropertyDefinition.SUB_PROP, 'GASCO information link')}" />
+        <g:set var="GASCO_ANZEIGENAME" value="${PropertyDefinition.findByDescrAndName(PropertyDefinition.SUB_PROP, 'GASCO display name')}" />
+        <g:set var="GASCO_VERHANDLERNAME" value="${PropertyDefinition.findByDescrAndName(PropertyDefinition.SUB_PROP, 'GASCO negotiator name')}" />
             <g:each in="${subscriptions}" var="sub" status="i">
                 <g:set var="gasco_infolink" value="${sub.customProperties.find{ it.type == GASCO_INFORMATION_LINK}?.urlValue}" />
                 <g:set var="gasco_anzeigename" value="${sub.customProperties.find{ it.type == GASCO_ANZEIGENAME}?.stringValue}" />

@@ -15,9 +15,9 @@ class MigrationCallbacks {
 		println '   dumping current database ..'
 
 		def dataSource = grailsApplication.config.dataSource
-		def uri		   = new URI(dataSource.url.substring(5))
+		URI uri		   = new URI(dataSource.url.substring(5))
 
-		def backupFile = grailsApplication.config.deployBackupLocation + "/laser-backup-${new Date().format('yyyy-MM-dd-HH:mm:ss')}.sql"
+		String backupFile = grailsApplication.config.deployBackupLocation + "/laser-backup-${new Date().format('yyyy-MM-dd-HH:mm:ss')}.sql"
 
 		Map<String, String> config = [
 				dbname:	"${uri.getScheme()}://${dataSource.username}:${dataSource.password}@${uri.getHost()}:${uri.getPort()}${uri.getRawPath()}",
@@ -30,9 +30,8 @@ class MigrationCallbacks {
 
 		try {
 			String cmd = "/usr/bin/pg_dump -x " + (config.collect{ '--' + it.key + '=' + it.value }).join(' ')
-			//println cmd
 
-			def result = cmd.execute().waitForProcessOutput(System.out, System.err)
+			cmd.execute().waitForProcessOutput(System.out, System.err)
 
 		} catch (Exception e) {
 			println '   error: ' + e.getMessage()

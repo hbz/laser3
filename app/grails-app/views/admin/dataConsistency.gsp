@@ -2,7 +2,7 @@
 <html>
 <head>
     <meta name="layout" content="semanticUI"/>
-    <title>${message(code:'laser', default:'LAS:eR')} : ${message(code: "menu.admin.dataConsistency")}</title>
+    <title>${message(code:'laser')} : ${message(code: "menu.admin.dataConsistency")}</title>
 </head>
 
 <body>
@@ -12,17 +12,18 @@
     <semui:crumb message="menu.admin.dataConsistency" class="active"/>
 </semui:breadcrumbs>
 <br>
-<h1 class="ui header la-noMargin-top">${message(code: "menu.admin.dataConsistency")}</h1>
+
+<h2 class="ui header la-noMargin-top">${message(code: "menu.admin.dataConsistency")}</h2>
 
 <div class="ui grid">
     <div class="twelve wide column">
 
-        <h2 class="ui headerline">${message(code: "admin.duplicateImpIds")}</h2>
+        <h3 class="ui headerline">${message(code: "admin.duplicateImpIds")}</h3>
 
         <g:each in="${importIds}" var="obj">
             <g:if test="${obj.value}">
 
-                <h3 class="ui headerline" id="jumpMark_1_${obj.key}">${obj.key} (${obj.value.size()})</h3>
+                <h4 class="ui headerline" id="jumpMark_1_${obj.key}">${obj.key} (${obj.value.size()})</h4>
 
                 <table class="ui sortable celled la-table la-table-small la-ignore-fixed table">
                     <thead>
@@ -48,12 +49,12 @@
             </g:if>
         </g:each>
 
-        <h2 class="ui headerline">${message(code: "admin.duplicateNamesAndTitles")}</h2>
+        <h3 class="ui headerline">${message(code: "admin.duplicateNamesAndTitles")}</h3>
 
         <g:each in="${titles}" var="obj">
             <g:if test="${true}">
 
-                <h3 class="ui headerline" id="jumpMark_2_${obj.key}">${obj.key}</h3>
+                <h4 class="ui headerline" id="jumpMark_2_${obj.key}">${obj.key}</h4>
 
                 <table class="ui sortable celled la-table la-table-small la-ignore-fixed table">
                     <thead>

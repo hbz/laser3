@@ -24,6 +24,7 @@ import org.springframework.web.multipart.commons.CommonsMultipartFile
 import javax.servlet.ServletOutputStream
 import java.lang.reflect.Method
 import java.lang.reflect.Modifier
+import java.sql.Timestamp
 
 @Secured(['IS_AUTHENTICATED_FULLY'])
 class YodaController {
@@ -89,6 +90,15 @@ class YodaController {
         result.q6 = User.executeQuery('select u from User u where u.accountLocked is not null and u.id < 4')
 
         result.numberOfActiveUsers = yodaService.getNumberOfActiveUsers()
+
+        def userCache = cacheService.getSharedUserCache(contextService.getUser(), 'yoda/test1')
+        def orgCache  = cacheService.getSharedOrgCache(contextService.getOrg(), 'yoda/test2')
+
+        userCache.put('X', 123)
+        userCache.put('Y', 456)
+
+        orgCache.put('A', 123)
+        orgCache.put('B', 456)
 
         result
     }
@@ -204,6 +214,18 @@ class YodaController {
 
             redirect controller: 'yoda', action: 'cacheInfo', params: params
         }
+        /* else if (params.cmd?.equals('deleteCache')) {
+            if (params.type?.equals('ehcache')) {
+                result.ehcacheManager.removeCache(params.cache)
+            }
+
+            params.remove('cmd')
+            params.remove('type')
+            params.remove('cache')
+
+            redirect controller: 'yoda', action: 'cacheInfo', params: params
+        } */
+
         result
     }
 
@@ -211,17 +233,43 @@ class YodaController {
     def activityProfiler() {
         Map result = [:]
 
-        result.activity = ActivityProfiler.executeQuery(
-                "select min(dateCreated), max(dateCreated), min(userCount), max(userCount), avg(userCount) from ActivityProfiler ap " +
-                        " where dateCreated > :fromDate " +
-                        " group by date_trunc('hour', dateCreated) order by min(dateCreated), max(dateCreated)",
-                [fromDate: LocalDate.now().minusMonths(1).toDate(), max: 500])
+        Map<String, Object> activity = [:]
+
+        List<Timestamp> dayDates = ActivityProfiler.executeQuery("select date_trunc('day', dateCreated) as day from ActivityProfiler group by date_trunc('day', dateCreated), dateCreated order by dateCreated desc")
+        dayDates.unique().each { it ->
+            List<Timestamp, Timestamp, Timestamp, Integer, Integer, Double> slots = ActivityProfiler.executeQuery(
+                    "select date_trunc('hour', dateCreated), min(dateCreated), max(dateCreated), min(userCount), max(userCount), avg(userCount) " +
+                            "  from ActivityProfiler where date_trunc('day', dateCreated) = :day " +
+                            " group by date_trunc('hour', dateCreated) order by min(dateCreated), max(dateCreated)",
+                    [day: it])
+
+            String key = (new java.text.SimpleDateFormat(message(code:'default.date.format.notime'))).format(new Date(it.getTime()))
+            activity.put(key, [])
+
+            slots.each { hour ->
+                activity[key].add([
+                        (new java.text.SimpleDateFormat(message(code: 'default.date.format.onlytime'))).format(new Date(hour[0].getTime())),
+                        (new java.text.SimpleDateFormat(message(code: 'default.date.format.onlytime'))).format(new Date(hour[1].getTime())),
+                        (new java.text.SimpleDateFormat(message(code: 'default.date.format.onlytime'))).format(new Date(hour[2].getTime())),
+                        hour[3],
+                        hour[4],
+                        hour[5]
+                ])
+            }
+        }
+
+        result.activity = activity
         result
     }
 
     @Secured(['ROLE_YODA'])
+    def appThreads() {
+        return [:]
+    }
+
+    @Secured(['ROLE_YODA'])
     def systemProfiler() {
-        Map result = [:]
+        Map<String, Object> result = [:]
 
         result.globalCountByUri = [:]
 
@@ -446,35 +494,14 @@ class YodaController {
     @Secured(['ROLE_YODA'])
     def fullReset() {
 
-        if(dataloadService.update_running == false) {
-            if (ftupdate_running == false) {
-                try {
-                    ftupdate_running = true
-                    SystemEvent.createEvent('YODA_ES_RESET_START')
+       log.debug("Delete all existing FT Control entries");
+       FTControl.withTransaction {
+            FTControl.executeUpdate("delete FTControl c")
+       }
 
-                    log.debug("Delete all existing FT Control entries");
-                    FTControl.withTransaction {
-                        FTControl.executeUpdate("delete FTControl c")
-                    }
+       log.debug("Clear ES")
+       dataloadService.clearDownAndInitES()
 
-                    log.debug("Clear ES")
-                    dataloadService.clearDownAndInitES()
-
-                    log.debug("manual start full text index")
-                    dataloadService.updateFTIndexes()
-                }
-                finally {
-                    ftupdate_running = false
-                    log.debug("fullReset complete ..")
-                }
-            } else {
-                log.debug("FT update already running")
-                flash.error = 'FT update already running'
-            }
-        }else{
-            log.debug("Full Reset fail, because IndexUpdateJob running")
-            flash.error = 'Full Reset fail, because IndexUpdateJob running'
-        }
         log.debug("redirecting to home ..")
 
         redirect controller:'home'
@@ -1547,7 +1574,7 @@ class YodaController {
 
     @Secured(['ROLE_YODA'])
     def cleanUpSurveys() {
-        def result = [:]
+        Map<String, Object> result = [:]
 
         def subSurveys = SurveyConfig.findAllBySubscriptionIsNotNull()
         def count = 0
@@ -1673,7 +1700,7 @@ class YodaController {
 
     @Secured(['ROLE_YODA'])
     def importSeriesToEBooks() {
-        def result = [:]
+        Map<String, Object> result = [:]
 
 
         if(params.kbartPreselect) {

@@ -29,10 +29,10 @@ class ContentItem {
     dateCreated (nullable: true, blank: false)
   }
 
-  static def lookupOrCreate(key,locale,content) {
-    def result = ContentItem.findByKeyAndLocale(key,locale)
+  static ContentItem lookupOrCreate(String key, String locale, String content) {
+    ContentItem result = ContentItem.findByKeyAndLocale(key, locale)
     if ( result == null ) {
-      result = new ContentItem(key:key, locale:locale, content:content);
+      result = new ContentItem(key:key, locale:locale, content:content)
       result.locale = locale
       result.save()
     }

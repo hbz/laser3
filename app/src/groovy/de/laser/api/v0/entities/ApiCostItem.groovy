@@ -102,7 +102,7 @@ class ApiCostItem {
      * @return Map<String, Object>
      */
     static Map<String, Object> retrieveCostItemMap(CostItem costItem, Org context){
-        def result = [:]
+        Map<String, Object> result = [:]
 
         costItem = GrailsHibernateUtil.unwrapIfProxy(costItem)
 

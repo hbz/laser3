@@ -7,6 +7,7 @@ import de.laser.helper.RDStore
 import de.laser.interfaces.AbstractLockableService
 import grails.converters.JSON
 import org.codehaus.groovy.grails.web.binding.DataBindingUtils
+import org.codehaus.groovy.grails.web.json.JSONElement
 import org.springframework.transaction.TransactionStatus
 
 import java.text.SimpleDateFormat
@@ -50,18 +51,16 @@ class PendingChangeService extends AbstractLockableService {
         }
     }
 
-    def performAccept(change, User user) {
+    boolean performAccept(PendingChange pendingChange, User user) {
 
         log.debug('performAccept')
-        def result = true
+        boolean result = true
 
         PendingChange.withNewTransaction { TransactionStatus status ->
-            PendingChange pendingChange = (change instanceof PendingChange) ? change : PendingChange.get(change)
-
             boolean saveWithoutError = false
 
             try {
-                def payload = JSON.parse(pendingChange.payload)
+                JSONElement payload = JSON.parse(pendingChange.payload)
                 log.debug("Process change ${payload}");
                 switch ( payload.changeType ) {
 
@@ -73,26 +72,27 @@ class PendingChangeService extends AbstractLockableService {
                         if ( ie_to_update != null ) {
                             ie_to_update.status = RDStore.TIPP_DELETED
 
-                            if( ie_to_update.save())
-                            {
-
+                            if( ie_to_update.save()){
                                 saveWithoutError = true
                             }
-
                         }
-                        break;
+                        break
 
                     case EVENT_PROPERTY_CHANGE :  // Generic property change
-                        if ( ( payload.changeTarget != null ) && ( payload.changeTarget.length() > 0 ) ) {
-                            def target_object = genericOIDService.resolveOID(payload.changeTarget);
-                            target_object.refresh()
+                        // TODO [ticket=1894]
+                        // if ( ( payload.changeTarget != null ) && ( payload.changeTarget.length() > 0 ) ) {
+                        if ( pendingChange.payloadChangeTargetOid?.length() > 0 ) {
+                            //def target_object = genericOIDService.resolveOID(payload.changeTarget);
+                            def target_object = genericOIDService.resolveOID(pendingChange.payloadChangeTargetOid)
                             if ( target_object ) {
+                                target_object.refresh()
                                 // Work out if parsed_change_info.changeDoc.prop is an association - If so we will need to resolve the OID in the value
                                 def domain_class = grailsApplication.getArtefact('Domain',target_object.class.name);
                                 def prop_info = domain_class.getPersistentProperty(payload.changeDoc.prop)
                                 if(prop_info == null){
                                     log.debug("We are dealing with custom properties: ${payload}")
-                                    processCustomPropertyChange(payload)
+                                    //processCustomPropertyChange(payload)
+                                    processCustomPropertyChange(pendingChange, payload) // TODO [ticket=1894]
                                 }
                                 else if ( prop_info.name == 'status' ) {
                                     RefdataValue oldStatus = genericOIDService.resolveOID(payload.changeDoc.old)
@@ -121,9 +121,7 @@ class PendingChangeService extends AbstractLockableService {
                                     target_object[payload.changeDoc.prop] = payload.changeDoc.new
                                 }
 
-                                if(target_object.save())
-                                {
-
+                                if(target_object.save()) {
                                     saveWithoutError = true
                                 }
 
@@ -136,11 +134,11 @@ class PendingChangeService extends AbstractLockableService {
                                 def change_audit_class_name = change_audit_object.class.name*/
                             }
                         }
-                        break;
+                        break
 
                     case EVENT_TIPP_EDIT :
                         // A tipp was edited, the user wants their change applied to the IE
-                        break;
+                        break
 
                     case EVENT_OBJECT_NEW :
                         def new_domain_class = grailsApplication.getArtefact('Domain',payload.newObjectClass);
@@ -160,16 +158,18 @@ class PendingChangeService extends AbstractLockableService {
                             }
 
                             DataBindingUtils.bindObjectToInstance(new_instance, payload.changeDoc)
-                            if(new_instance.save())
-                            {
+                            if(new_instance.save()) {
                                 saveWithoutError = true
                             }
                         }
-                        break;
+                        break
 
                     case EVENT_OBJECT_UPDATE :
-                        if ( ( payload.changeTarget != null ) && ( payload.changeTarget.length() > 0 ) ) {
-                            def target_object = genericOIDService.resolveOID(payload.changeTarget);
+                        // TODO [ticket=1894]
+                        //if ( ( payload.changeTarget != null ) && ( payload.changeTarget.length() > 0 ) ) {
+                        if ( pendingChange.payloadChangeTargetOid?.length() > 0 ) {
+                            //def target_object = genericOIDService.resolveOID(payload.changeTarget);
+                            def target_object = genericOIDService.resolveOID(pendingChange.payloadChangeTargetOid)
                             if ( target_object ) {
                                 def sdf = new java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss.S")
                                 if(payload.changeDoc?.startDate || payload.changeDoc?.endDate)
@@ -189,8 +189,7 @@ class PendingChangeService extends AbstractLockableService {
 
                                 DataBindingUtils.bindObjectToInstance(target_object, payload.changeDoc)
 
-                                if(target_object.save())
-                                {
+                                if(target_object.save()) {
                                     saveWithoutError = true
                                 }
                                 else {
@@ -200,40 +199,64 @@ class PendingChangeService extends AbstractLockableService {
                         }
                         break
 
-                    case EVENT_COVERAGE_ADD: IssueEntitlement target = genericOIDService.resolveOID(payload.changeTarget)
+                    case EVENT_COVERAGE_ADD:
+                        // TODO [ticket=1894]
+                        //IssueEntitlement target = genericOIDService.resolveOID(payload.changeTarget)
+                        IssueEntitlement target = genericOIDService.resolveOID(pendingChange.payloadChangeTargetOid)
                         if(target) {
                             Map newCovData = payload.changeDoc
                             IssueEntitlementCoverage cov = new IssueEntitlementCoverage(newCovData)
                             cov.issueEntitlement = target
-                            if(cov.save())
+                            if(cov.save()) {
                                 saveWithoutError = true
-                            else log.error(cov.getErrors())
+                            }
+                            else {
+                                log.error(cov.getErrors())
+                            }
                         }
                         else {
-                            log.error("Target issue entitlement with OID ${payload.changeTarget} not found")
+                            log.error("Target issue entitlement with OID ${pendingChange.payloadChangeTargetOid} not found")
                         }
                         break
-                    case EVENT_COVERAGE_UPDATE: SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'")
-                        IssueEntitlementCoverage target = genericOIDService.resolveOID(payload.changeTarget)
+
+                    case EVENT_COVERAGE_UPDATE:
+                        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'")
+                        // TODO [ticket=1894]
+                        //IssueEntitlementCoverage target = genericOIDService.resolveOID(payload.changeTarget)
+                        IssueEntitlementCoverage target = genericOIDService.resolveOID(pendingChange.payloadChangeTargetOid)
                         Map changeAttrs = payload.changeDoc
                         if(target) {
-                            if(changeAttrs.prop in ['startDate','endDate'])
+                            if(changeAttrs.prop in ['startDate','endDate']) {
                                 target[changeAttrs.prop] = sdf.parse(changeAttrs.new)
-                            else
+                            }
+                            else {
                                 target[changeAttrs.prop] = changeAttrs.new
-                            if(target.save())
+                            }
+                            if(target.save()) {
                                 saveWithoutError = true
-                            else log.error(target.getErrors())
+                            }
+                            else {
+                                log.error(target.getErrors())
+                            }
                         }
-                        else log.error("Target coverage object does not exist! The erroneous OID is: ${payload.changeTarget}")
+                        else log.error("Target coverage object does not exist! The erroneous OID is: ${pendingChange.payloadChangeTargetOid}")
                         break
-                    case EVENT_COVERAGE_DELETE: IssueEntitlementCoverage cov = genericOIDService.resolveOID(payload.changeTarget)
+
+                    case EVENT_COVERAGE_DELETE:
+                        // TODO [ticket=1894]
+                        //IssueEntitlementCoverage cov = genericOIDService.resolveOID(payload.changeTarget)
+                        IssueEntitlementCoverage cov = genericOIDService.resolveOID(pendingChange.payloadChangeTargetOid)
                         if(cov) {
-                            if(cov.delete())
+                            if(cov.delete()) {
                                 saveWithoutError = true
-                            else log.error("Error on deleting issue entitlement coverage statement with id ${cov.id}")
+                            }
+                            else {
+                                log.error("Error on deleting issue entitlement coverage statement with id ${cov.id}")
+                            }
                         }
-                        else log.error("Target coverage object does not exist! The erroneous OID is: ${payload.changeTarget}")
+                        else {
+                            log.error("Target coverage object does not exist! The erroneous OID is: ${pendingChange.payloadChangeTargetOid}")
+                        }
                         break
 
                     default:
@@ -241,7 +264,7 @@ class PendingChangeService extends AbstractLockableService {
                         break;
                 }
 
-                if(saveWithoutError && pendingChange instanceof PendingChange) {
+                if (saveWithoutError && pendingChange instanceof PendingChange) {
                     /*if(pendingChange.pkg?.pendingChanges) pendingChange.pkg?.pendingChanges?.remove(pendingChange)
                     pendingChange.pkg?.save();
                     if(pendingChange.license?.pendingChanges) pendingChange.license?.pendingChanges?.remove(pendingChange)
@@ -252,7 +275,6 @@ class PendingChangeService extends AbstractLockableService {
                     pendingChange.actionDate = new Date()
                     pendingChange.user = user
                     pendingChange.save()
-                    def x = pendingChange
                     log.debug("Pending change accepted and saved")
                 }
             }
@@ -264,32 +286,32 @@ class PendingChangeService extends AbstractLockableService {
         }
     }
 
-    def performReject(change, User user) {
+    void performReject(Long pcId, User user) {
         PendingChange.withNewTransaction { TransactionStatus status ->
-            change = PendingChange.get(change)
-            change.license?.pendingChanges?.remove(change)
-            change.license?.save();
-            change.subscription?.pendingChanges?.remove(change)
-            change.subscription?.save();
-            change.actionDate = new Date()
-            change.user = user
-            change.status = RefdataValue.getByValueAndCategory("Rejected","PendingChangeStatus")
-            change.save()
-           /* def change_audit_object = null
-            if ( change.license ) change_audit_object = change.license;
-            if ( change.subscription ) change_audit_object = change.subscription;
-            if ( change.pkg ) change_audit_object = change.pkg;
-            def change_audit_id = change_audit_object.id
-            def change_audit_class_name = change_audit_object.class.name*/
+            PendingChange change = PendingChange.get(pcId)
+
+            if (change) {
+                change.license?.pendingChanges?.remove(change)
+                change.license?.save()
+                change.subscription?.pendingChanges?.remove(change)
+                change.subscription?.save()
+                change.actionDate = new Date()
+                change.user = user
+                change.status = RefdataValue.getByValueAndCategory("Rejected","PendingChangeStatus")
+                change.save()
+            }
         }
     }
 
-    private def processCustomPropertyChange(payload) {
+    private void processCustomPropertyChange(PendingChange pendingChange, JSONElement payload) {
         def changeDoc = payload.changeDoc
 
-        if ((payload.changeTarget != null) && (payload.changeTarget.length() > 0)) {
+        // TODO [ticket=1894]
+        //if ( ( payload.changeTarget != null ) && ( payload.changeTarget.length() > 0 ) ) {
+        if (pendingChange.payloadChangeTargetOid?.length() > 0) {
+            //def changeTarget = genericOIDService.resolveOID(payload.changeTarget)
+            def changeTarget = genericOIDService.resolveOID(pendingChange.payloadChangeTargetOid)
 
-            def changeTarget = genericOIDService.resolveOID(payload.changeTarget)
             if (changeTarget) {
                 if(! changeTarget.hasProperty('customProperties')) {
                     log.error("Custom property change, but owner doesnt have the custom props: ${payload}")
@@ -297,7 +319,8 @@ class PendingChangeService extends AbstractLockableService {
                 }
 
                 //def srcProperty = genericOIDService.resolveOID(changeDoc.propertyOID)
-                def srcObject = genericOIDService.resolveOID(changeDoc.OID)
+                //def srcObject = genericOIDService.resolveOID(changeDoc.OID)
+                def srcObject = genericOIDService.resolveOID(pendingChange.payloadChangeDocOid)
 
                 // A: get existing targetProperty by instanceOf
                 def targetProperty = srcObject.getClass().findByOwnerAndInstanceOf(changeTarget, srcObject)
@@ -327,7 +350,7 @@ class PendingChangeService extends AbstractLockableService {
 
                     if (changeDoc.event.endsWith('CustomProperty.deleted')) {
 
-                        log.debug("Deleting property ${targetProperty.type.name} from ${payload.changeTarget}")
+                        log.debug("Deleting property ${targetProperty.type.name} from ${pendingChange.payloadChangeTargetOid}")
                         changeTarget.customProperties.remove(targetProperty)
                         targetProperty.delete()
                     }

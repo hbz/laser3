@@ -5,6 +5,7 @@ import com.k_int.kbplus.abstract_domain.AbstractProperty
 import com.k_int.kbplus.auth.User
 import de.laser.helper.RDStore
 import de.laser.helper.SqlDateUtils
+import de.laser.interfaces.TemplateSupport
 
 import static com.k_int.kbplus.UserSettings.KEYS.*
 import static com.k_int.kbplus.UserSettings.DEFAULT_REMINDER_PERIOD
@@ -14,14 +15,14 @@ class QueryService {
     def subscriptionsQueryService
     def taskService
 
-    private computeInfoDate(User user, UserSettings.KEYS userSettingsKey){
+    private java.sql.Date computeInfoDate(User user, UserSettings.KEYS userSettingsKey){
         int daysToBeInformedBeforeToday = user.getSetting(userSettingsKey, DEFAULT_REMINDER_PERIOD)?.getValue() ?: 1
         java.sql.Date infoDate = daysToBeInformedBeforeToday? SqlDateUtils.getDateInNrOfDays(daysToBeInformedBeforeToday) : null
         infoDate
     }
 
 
-    def getDueObjectsCorrespondingUserSettings(Org contextOrg, User contextUser) {
+    List getDueObjectsCorrespondingUserSettings(Org contextOrg, User contextUser) {
         java.sql.Date today = new java.sql.Date(System.currentTimeMillis());
         ArrayList dueObjects = new ArrayList()
 
@@ -30,7 +31,12 @@ class QueryService {
             def endDateTo =                  (contextUser.getSettingsValue(IS_REMIND_FOR_SUBSCRIPTIONS_ENDDATE)==YN_YES)? computeInfoDate(contextUser, REMIND_PERIOD_FOR_SUBSCRIPTIONS_ENDDATE) : null
             def manualCancellationDateFrom = (contextUser.getSettingsValue(IS_REMIND_FOR_SUBSCRIPTIONS_NOTICEPERIOD)==YN_YES)? today : null
             def manualCancellationDateTo =   (contextUser.getSettingsValue(IS_REMIND_FOR_SUBSCRIPTIONS_NOTICEPERIOD)==YN_YES)? computeInfoDate(contextUser, REMIND_PERIOD_FOR_SUBSCRIPTIONS_NOTICEPERIOD) : null
-            dueObjects.addAll(getDueSubscriptions(contextOrg, endDateFrom, endDateTo, manualCancellationDateFrom, manualCancellationDateTo))
+            getDueSubscriptions(contextOrg, endDateFrom, endDateTo, manualCancellationDateFrom, manualCancellationDateTo).each{
+                boolean isConsortialOrCollective = it.getCalculatedType() in [TemplateSupport.CALCULATED_TYPE_PARTICIPATION, TemplateSupport.CALCULATED_TYPE_PARTICIPATION_AS_COLLECTIVE]
+                if ( ! isConsortialOrCollective ) {
+                    dueObjects << it
+                }
+            }
         }
 
         if (contextUser.getSettingsValue(IS_REMIND_FOR_TASKS)==YN_YES) {
@@ -54,7 +60,13 @@ class QueryService {
         }
 
         if (contextUser.getSettingsValue(IS_REMIND_FOR_LICENSE_CUSTOM_PROP)==YN_YES) {
-            dueObjects.addAll(getDueLicenseCustomProperties(contextOrg, today, computeInfoDate(contextUser, REMIND_PERIOD_FOR_LICENSE_CUSTOM_PROP)))
+            getDueLicenseCustomProperties(contextOrg, today, computeInfoDate(contextUser, REMIND_PERIOD_FOR_LICENSE_CUSTOM_PROP)).each{
+
+                boolean isConsortialOrCollective = it.owner.getCalculatedType() in [TemplateSupport.CALCULATED_TYPE_PARTICIPATION, TemplateSupport.CALCULATED_TYPE_PARTICIPATION_AS_COLLECTIVE]
+                if ( ! isConsortialOrCollective ) {
+                    dueObjects << it
+                }
+            }
         }
         if (contextUser.getSettingsValue(IS_REMIND_FOR_LIZENSE_PRIVATE_PROP)==YN_YES) {
             dueObjects.addAll(getDueLicensePrivateProperties(contextOrg, today, computeInfoDate(contextUser, REMIND_PERIOD_FOR_LICENSE_PRIVATE_PROP)))
@@ -69,7 +81,14 @@ class QueryService {
             dueObjects.addAll(getDueOrgPrivateProperties(contextOrg, today, computeInfoDate(contextUser, REMIND_PERIOD_FOR_ORG_PRIVATE_PROP)))
         }
         if (contextUser.getSettingsValue(IS_REMIND_FOR_SUBSCRIPTIONS_CUSTOM_PROP)==YN_YES) {
-            dueObjects.addAll(getDueSubscriptionCustomProperties(contextOrg, today, computeInfoDate(contextUser, REMIND_PERIOD_FOR_SUBSCRIPTIONS_CUSTOM_PROP)))
+            getDueSubscriptionCustomProperties(contextOrg, today, computeInfoDate(contextUser, REMIND_PERIOD_FOR_SUBSCRIPTIONS_CUSTOM_PROP)).each{
+
+                boolean isConsortialOrCollective = it.owner.getCalculatedType() in [TemplateSupport.CALCULATED_TYPE_PARTICIPATION, TemplateSupport.CALCULATED_TYPE_PARTICIPATION_AS_COLLECTIVE]
+
+                if ( ! isConsortialOrCollective ) {
+                    dueObjects << it
+                }
+            }
         }
         if (contextUser.getSettingsValue(IS_REMIND_FOR_SUBSCRIPTIONS_PRIVATE_PROP)==YN_YES) {
             dueObjects.addAll(getDueSubscriptionPrivateProperties(contextOrg, today, computeInfoDate(contextUser, REMIND_PERIOD_FOR_SUBSCRIPTIONS_PRIVATE_PROP)))
@@ -82,8 +101,8 @@ class QueryService {
         dueObjects
     }
 
-    private def getQuery(Class propertyClass, Org contextOrg, java.sql.Date fromDateValue, java.sql.Date toDateValue){
-        def result = [:]
+    private Map<String, Object> getQuery(Class propertyClass, Org contextOrg, java.sql.Date fromDateValue, java.sql.Date toDateValue){
+        Map<String, Object> result = [:]
         def query
         def queryParams
         if (toDateValue) {
@@ -111,41 +130,41 @@ class QueryService {
         result
     }
 
-    def getDueSubscriptionCustomProperties(Org contextOrg, java.sql.Date fromDateValue, java.sql.Date toDateValue){
+    List<SubscriptionCustomProperty> getDueSubscriptionCustomProperties(Org contextOrg, java.sql.Date fromDateValue, java.sql.Date toDateValue){
         def query = getQuery(SubscriptionCustomProperty.class, contextOrg, fromDateValue, toDateValue)
         SubscriptionCustomProperty.executeQuery(query.query, query.queryParams)
     }
 
-    def getDueLicenseCustomProperties(Org contextOrg, java.sql.Date fromDateValue, java.sql.Date toDateValue){
+    List<LicenseCustomProperty> getDueLicenseCustomProperties(Org contextOrg, java.sql.Date fromDateValue, java.sql.Date toDateValue){
         def query = getQuery(LicenseCustomProperty.class, contextOrg, fromDateValue, toDateValue)
         LicenseCustomProperty.executeQuery(query.query, query.queryParams)
     }
 
-    def getDueOrgPrivateProperties(Org contextOrg, java.sql.Date fromDateValue, java.sql.Date toDateValue) {
+    List<OrgPrivateProperty> getDueOrgPrivateProperties(Org contextOrg, java.sql.Date fromDateValue, java.sql.Date toDateValue) {
         def query = getQuery(OrgPrivateProperty.class, contextOrg, fromDateValue, toDateValue)
         OrgPrivateProperty.executeQuery(query.query, query.queryParams)
     }
 
-    def getDueSubscriptionPrivateProperties(Org contextOrg, java.sql.Date fromDateValue, java.sql.Date toDateValue){
+    List<SubscriptionPrivateProperty> getDueSubscriptionPrivateProperties(Org contextOrg, java.sql.Date fromDateValue, java.sql.Date toDateValue){
         def query = getQuery(SubscriptionPrivateProperty.class, contextOrg, fromDateValue, toDateValue)
         SubscriptionPrivateProperty.executeQuery(query.query, query.queryParams)
     }
 
-    def getDueLicensePrivateProperties(Org contextOrg, java.sql.Date fromDateValue, java.sql.Date toDateValue){
+    List<LicensePrivateProperty> getDueLicensePrivateProperties(Org contextOrg, java.sql.Date fromDateValue, java.sql.Date toDateValue){
         def query = getQuery(LicensePrivateProperty.class, contextOrg, fromDateValue, toDateValue)
         LicensePrivateProperty.executeQuery(query.query, query.queryParams)
     }
 
-    private def getMySubscriptionsQuery(Org contextOrg){
+    private Map getMySubscriptionsQuery(Org contextOrg){
         getDueSubscriptionsQuery(contextOrg, null, null, null, null)
     }
 
-    def getDueSubscriptions(Org contextOrg, java.sql.Date endDateFrom, java.sql.Date endDateTo, java.sql.Date manualCancellationDateFrom, java.sql.Date manualCancellationDateTo) {
+    List<Subscription> getDueSubscriptions(Org contextOrg, java.sql.Date endDateFrom, java.sql.Date endDateTo, java.sql.Date manualCancellationDateFrom, java.sql.Date manualCancellationDateTo) {
         def query = getDueSubscriptionsQuery(contextOrg, endDateFrom, endDateTo, manualCancellationDateFrom, manualCancellationDateTo)
         Subscription.executeQuery(query.query, query.queryParams)
     }
 
-    private def getDueSubscriptionsQuery(Org contextOrg, java.sql.Date endDateFrom, java.sql.Date endDateTo, java.sql.Date manualCancellationDateFrom, java.sql.Date manualCancellationDateTo) {
+    private Map<String, Object> getDueSubscriptionsQuery(Org contextOrg, java.sql.Date endDateFrom, java.sql.Date endDateTo, java.sql.Date manualCancellationDateFrom, java.sql.Date manualCancellationDateTo) {
         def queryParams = [:]
         queryParams.endDateFrom = endDateFrom
         queryParams.endDateTo = endDateTo
@@ -155,15 +174,15 @@ class QueryService {
         def base_qry
         def qry_params
         (base_qry, qry_params) = subscriptionsQueryService.myInstitutionCurrentSubscriptionsBaseQuery(queryParams, contextOrg)
-        def result = [:]
+        Map<String, Object> result = [:]
         result.query = "select s ${base_qry}"
         result.queryParams = qry_params
         result
     }
 
-    private def getMyLicensesQuery(Org institution){
+    private Map<String, Object> getMyLicensesQuery(Org institution){
         def template_license_type = RDStore.LICENSE_TYPE_TEMPLATE
-        def result = [:]
+        Map<String, Object> result = [:]
         def base_qry
         def qry_params
         boolean isLicensingConsortium = (institution?.hasPerm("ORG_CONSORTIUM"))

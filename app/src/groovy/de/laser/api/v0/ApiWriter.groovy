@@ -91,7 +91,7 @@ class ApiWriter {
         Org.withTransaction { TransactionStatus status ->
 
             try {
-                def org = new Org(
+                Org org = new Org(
                         name: data.name,
                         comment: data.comment,
                         scope: data.scope

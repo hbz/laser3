@@ -84,7 +84,7 @@ class ApiCatalogue {
     static Collection<Object> retrieveRefdataCollection(){
         CacheService cacheService = grails.util.Holders.applicationContext.getBean('cacheService') as CacheService
 
-        def cache = cacheService.getTTL1800Cache('ApiReader/exportRefdatas/')
+        def cache = cacheService.getTTL1800Cache('ApiReader/exportRefdatas')
         def result = []
 
         if (cache.get('refdatas')) {

@@ -21,7 +21,7 @@ class DocController extends AbstractDebugController {
 
 	@Secured(['ROLE_ADMIN'])
     def list() {
-      	def result = [:]
+      	Map<String, Object> result = [:]
       	result.user = User.get(springSecurityService.principal.id)
 
 		params.max = params.max ?: result.user?.getDefaultPageSizeTMP()

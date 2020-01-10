@@ -83,7 +83,7 @@ class Person extends AbstractBaseDomain {
         dateCreated (nullable: true, blank: false)
     }
     
-    static getAllRefdataValues(String category) {
+    static List<RefdataValue> getAllRefdataValues(String category) {
         RefdataCategory.getAllRefdataValues(category)
     }
     
@@ -110,10 +110,10 @@ class Person extends AbstractBaseDomain {
     }
     */
 
-    static def lookup(firstName, lastName, tenant, isPublic, contactType, org, functionType) {
+    static Person lookup(firstName, lastName, tenant, isPublic, contactType, org, functionType) {
 
-        def person
-        def prsList = []
+        Person person
+        List<Person> prsList = []
 
         Person.findAllWhere(
                 first_name: firstName,
@@ -132,12 +132,11 @@ class Person extends AbstractBaseDomain {
         person
     }
 
-    static def getPublicByOrgAndFunc(Org org, String func) {
-        def result = Person.executeQuery(
+    static List<Person> getPublicByOrgAndFunc(Org org, String func) {
+        Person.executeQuery(
                 "select p from Person as p inner join p.roleLinks pr where p.isPublic = true and pr.org = ? and pr.functionType.value = ?",
                 [org, func]
         )
-        result
     }
 
     static Map getPublicAndPrivateEmailByFunc(String func,Org contextOrg) {
@@ -175,8 +174,8 @@ class Person extends AbstractBaseDomain {
     }
 
     // if org is null, get ALL public responsibilities
-    static def getPublicByOrgAndObjectResp(Org org, def obj, String resp) {
-        def q = ''
+    static List<Person> getPublicByOrgAndObjectResp(Org org, def obj, String resp) {
+        String q = ''
         def p = org ? ['org': org, 'resp': resp] : ['resp': resp]
 
         if (obj instanceof License) {
@@ -200,7 +199,7 @@ class Person extends AbstractBaseDomain {
             p << ['obj': obj]
         }
 
-        def result = Person.executeQuery(
+        List<Person> result = Person.executeQuery(
                 "select p from Person as p inner join p.roleLinks pr where p.isPublic = true " +
                         (org ? "and pr.org = :org " : "" ) +
                         "and pr.responsibilityType.value = :resp " + q,
@@ -209,16 +208,16 @@ class Person extends AbstractBaseDomain {
         result
     }
 
-    static def getPrivateByOrgAndFuncFromAddressbook(Org org, String func, Org tenant) {
-        def result = Person.executeQuery(
+    static List<Person> getPrivateByOrgAndFuncFromAddressbook(Org org, String func, Org tenant) {
+        List<Person> result = Person.executeQuery(
                 "select p from Person as p inner join p.roleLinks pr where p.isPublic = false and pr.org = ? and pr.functionType.value = ? and p.tenant = ?",
                 [org, func, tenant]
         )
         result
     }
 
-    static def getPrivateByOrgAndObjectRespFromAddressbook(Org org, def obj, String resp, Org tenant) {
-        def q = ''
+    static List<Person> getPrivateByOrgAndObjectRespFromAddressbook(Org org, def obj, String resp, Org tenant) {
+        String q = ''
         def p = ['org': org, 'resp': resp, 'tnt': tenant]
 
         if (obj instanceof License) {
@@ -242,7 +241,7 @@ class Person extends AbstractBaseDomain {
             p << ['obj': obj]
         }
 
-        def result = Person.executeQuery(
+        List<Person> result = Person.executeQuery(
                 "select p from Person as p inner join p.roleLinks pr where p.isPublic = false and pr.org = :org and pr.responsibilityType.value = :resp and p.tenant = :tnt " + q,
                 p
         )

@@ -8,11 +8,11 @@ import groovyx.net.http.Method
 @Transactional
 class GOKbService {
 
-    Map getPackagesMap(ApiSource apiSource, def qterm = null, def suggest = true, def max = 2000) {
+    Map<String, Object> getPackagesMap(ApiSource apiSource, def qterm = null, def suggest = true, def max = 2000) {
 
         log.info("getting Package map from gokb ..")
 
-        def result = [:]
+        Map<String, Object> result = [:]
 
         try {
             String esQuery = qterm ? URLEncoder.encode(qterm) : ""

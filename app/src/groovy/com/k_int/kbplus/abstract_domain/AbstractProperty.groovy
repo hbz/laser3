@@ -47,12 +47,12 @@ abstract class AbstractProperty implements Serializable {
             return "urlValue"
     }
 
-    public String getValue() {
+    String getValue() {
         return toString()
     }
 
     @Override
-    public String toString(){
+    String toString(){
         if(stringValue)
             return stringValue
         if(intValue != null)
