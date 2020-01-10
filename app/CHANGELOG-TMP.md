@@ -4,6 +4,8 @@
 
 2016    10.01.2020  hbz-dev     David   Feature     Refactoring: Deprecated RefdataCategory.lookupOrCreate()
 
+2019    09.01.2020  hbz-dev     David   Feature     Refactoring: Factory für RefdataValue und RefdataCategory
+
 1743    09.01.2020  hbz-dev     Anja    Feature     Turm-Icon kennzeichnet Single- und Kollektivnutzer
 
 --      09.01.2020  hbz-dev     Anja    Feature     PerformanceImprovements an verschiedenen Stellen
