@@ -189,7 +189,7 @@
             var sourceElem = $(that).closest('tr').find('.la-colorCode-source');
             var targetElem = $(that).closest('tr').find('.la-colorCode-target');
             // ADD GREEN BACKGROUND
-            if ($(that).is(":checked") ||  $(that).parents('tr').find('input[name="subscription.deleteProperty"]').is(':checked')) {
+            if ($(that).is(":checked") ) {
                 // Properties with multipleOccurence do
                 // - not receive a deletion mark because they are not overwritten but copied
                 // - need to have the specific child of la-copyElements-flex-container
