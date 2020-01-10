@@ -40,9 +40,7 @@ class SurveyUpdateService extends AbstractLockableService {
             def currentDate = new Date(System.currentTimeMillis())
 
             // Ready -> Started
-            def readySurveysIds = SurveyInfo.where {
-                status == RDStore.SURVEY_READY && startDate <= currentDate
-            }.collect { it.id }
+            List readySurveysIds = SurveyInfo.findAllByStatusAndStartDateLessThanEquals(RDStore.SURVEY_READY, currentDate).collect {it.id}
 
             log.info("surveyCheck (Ready to Started) readySurveysIds: " + readySurveysIds)
 
@@ -123,12 +121,15 @@ class SurveyUpdateService extends AbstractLockableService {
                 if (emailReceiver == null || emailReceiver.isEmpty()) {
                     log.debug("The following user does not have an email address and can not be informed about surveys: " + user.username);
                 } else if (surveyEntries == null || surveyEntries.isEmpty()) {
-                    log.debug("The user has no due dates, so no email will be sent (" + user.username + "/"+ org.name + ")");
+                    log.debug("The user has no surveys, so no email will be sent (" + user.username + "/"+ org.name + ")");
                 } else {
-                    boolean isNotificationCCbyEmail = user.getSettingsValue(UserSettings.KEYS.IS_NOTIFICATION_CC_BY_EMAIL)?.rdValue == RDStore.YN_YES
+                    if (user.id == 6){
+                        print "User: "+user.displayName
+                    }
+                    boolean isNotificationCCbyEmail = user.getSetting(UserSettings.KEYS.IS_NOTIFICATION_BY_EMAIL, YN_NO)?.rdValue == YN_YES
                     String ccAddress = null
                     if (isNotificationCCbyEmail){
-                        ccAddress = user.getSettingsValue(UserSettings.KEYS.NOTIFICATION_CC_EMAILADDRESS)?.getValue()
+                        ccAddress = user.getSetting(UserSettings.KEYS.NOTIFICATION_CC_EMAILADDRESS, null)?.getValue()
                     }
 
                     List generalContactsEMails = []
