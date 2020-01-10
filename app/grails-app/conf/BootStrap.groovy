@@ -402,6 +402,7 @@ class BootStrap {
                 while (line = csvr.readNext()) {
                     if (line[0]) {
                         if (objType == 'RefdataCategory') {
+                            // CSV: [token, value_de, value_en]
                             Map<String, Object> map = [
                                     token   : "${line[0].trim()}",
                                     hardData: BOOTSTRAP,
@@ -410,6 +411,7 @@ class BootStrap {
                             result.add(map)
                         }
                         if (objType == 'RefdataValue') {
+                            // CSV: [token, rdc, value_de, value_en]
                             Map<String, Object> map = [
                                     token   : "${line[0].trim()}",
                                     rdc     : "${line[1].trim()}",
