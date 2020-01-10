@@ -443,18 +443,18 @@ class TitleInstancePackagePlatform extends AbstractBaseDomain /*implements Audit
       Date tipp_access_end_date = getDerivedAccessEndDate()
 	  
 	  if ( tipp_access_end_date == null ) {
-		result = RefdataCategory.lookupOrCreate("TIPP Access Status","Current(*)").getI10n("value");
+		result = RefdataValue.getByValueAndCategory("Current(*)", "TIPP Access Status").getI10n("value")
 	  }
 	  else if ( as_at < tipp_access_start_date ) {
 		// expected
-		result = RefdataCategory.lookupOrCreate("TIPP Access Status","Expected").getI10n("value");
+		result = RefdataValue.getByValueAndCategory("Expected", "TIPP Access Status").getI10n("value")
 	  }
 	  else if ( as_at > tipp_access_end_date ) {
 		// expired
-		result = RefdataCategory.lookupOrCreate("TIPP Access Status","Expired").getI10n("value");
+		result = RefdataValue.getByValueAndCategory("Expired", "TIPP Access Status").getI10n("value")
 	  }
 	  else {
-		result = RefdataCategory.lookupOrCreate("TIPP Access Status","Current").getI10n("value");
+		result = RefdataValue.getByValueAndCategory("Current", "TIPP Access Status").getI10n("value")
 	  }
 	  result
   }
@@ -470,18 +470,18 @@ class TitleInstancePackagePlatform extends AbstractBaseDomain /*implements Audit
 
     // if ( ( accessEndDate == null ) && ( as_at > tipp_access_end_date ) ) {
     if ( tipp_access_end_date == null ) {
-      result = RefdataCategory.lookupOrCreate('TIPP Access Status','Current(*)');
+      result = RefdataValue.getByValueAndCategory('Current(*)', 'TIPP Access Status')
     }
     else if ( as_at < tipp_access_start_date ) {
       // expected
-      result = RefdataCategory.lookupOrCreate('TIPP Access Status','Expected');
+      result = RefdataValue.getByValueAndCategory('Expected', 'TIPP Access Status')
     }
     else if ( as_at > tipp_access_end_date ) {
       // expired
-      result = RefdataCategory.lookupOrCreate('TIPP Access Status','Expired');
+      result = RefdataValue.getByValueAndCategory('Expired', 'TIPP Access Status')
     }
     else {
-      result = RefdataCategory.lookupOrCreate('TIPP Access Status','Current');
+      result = RefdataValue.getByValueAndCategory('Current', 'TIPP Access Status')
     }
     result
   }

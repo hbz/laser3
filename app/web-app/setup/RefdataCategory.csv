@@ -80,8 +80,8 @@ Person Contact Type,Kontaktart,Person: Contact Type
 Person Function,Funktion,Person Function
 Person Position,Position,Person Position
 Person Responsibility,Verantwortlich,Person Responsibility
-ReminderMethod,email,email
-ReminderTrigger,Subscription Manual Renewal Date,Subscription Manual Renewal Date
+ReminderMethod,ReminderMethod,ReminderMethod
+ReminderTrigger,ReminderTrigger,ReminderTrigger
 ReminderUnit,ReminderUnit,ReminderUnit
 Semester,Semester,Semester
 Sim-User Number,Sim User Zahl,Sim-User Number

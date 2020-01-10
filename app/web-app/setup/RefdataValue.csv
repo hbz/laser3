@@ -704,3 +704,5 @@ Yes,YNO,Ja,Yes
 No,YNU,Nein,No
 Unknown,YNU,Unbekannt,Unknown
 Yes,YNU,Ja,Yes
+email,ReminderMethod,email,email
+Subscription Manual Renewal Date,ReminderTrigger,Subscription Manual Renewal Date,Subscription Manual Renewal Date
