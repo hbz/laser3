@@ -4053,7 +4053,7 @@ AND EXISTS (
         }
 
         def propDefs = [:]
-        PropertyDefinition.AVAILABLE_PRIVATE_DESCR_LIST.each { it ->
+        PropertyDefinition.AVAILABLE_PRIVATE_DESCR.each { it ->
             def itResult = PropertyDefinition.findAllByDescrAndTenant(it, result.institution, [sort: 'name']) // ONLY private properties!
             propDefs << ["${it}": itResult]
         }
@@ -4076,7 +4076,7 @@ AND EXISTS (
         def result = setResultGenerics()
 
         def propDefs = [:]
-        PropertyDefinition.AVAILABLE_CUSTOM_DESCR_LIST.each { it ->
+        PropertyDefinition.AVAILABLE_CUSTOM_DESCR.each { it ->
             def itResult = PropertyDefinition.findAllByDescrAndTenant(it, null, [sort: 'name']) // NO private properties!
             propDefs << ["${it}": itResult]
         }
