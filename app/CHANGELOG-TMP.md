@@ -2,6 +2,8 @@
 
 **Ticket    Date    Branch      Author  Feature/Bug     Description/Keywords**
 
+2016    10.01.2020  hbz-dev     David   Feature     Refactoring: Deprecated RefdataCategory.lookupOrCreate()
+
 --      09.01.2020  rc1.2       Moe     Bug         Verlängerung Konsortial: Mehrjahres Flag setzen, Merkmale kopieren
 
 2029    09.01.2020  rc1.2       David   Feature     Refactoring: Shared Caches für User, bzw Organisationen
