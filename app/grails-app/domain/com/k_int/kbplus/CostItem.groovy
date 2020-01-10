@@ -247,7 +247,18 @@ class CostItem
         def staticOrder    = grails.util.Holders.config?.financials?.currency?.split("[|]")
 
         if (staticOrder) {
-            def currencyPriorityList = staticOrder.collect {RefdataCategory.lookupOrCreate('Currency', it)}
+            def currencyPriorityList = staticOrder.collect {
+
+                // ERMS-2016: RefdataCategory.lookupOrCreate('Currency', it)
+                // if value exists --> RefdataValue.getByValueAndCategory()
+
+                RefdataValue.construct([
+                        token   : "${it}",
+                        rdc     : "Currency",
+                        hardData: false,
+                        i10n    : [en: "${it}", de: "${it}"]
+                ])
+            }
             if (currencyPriorityList) {
                 all_currencies.removeAll(currencyPriorityList)
                 all_currencies.addAll(0, currencyPriorityList)

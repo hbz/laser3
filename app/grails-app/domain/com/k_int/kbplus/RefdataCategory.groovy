@@ -92,23 +92,6 @@ class RefdataCategory extends AbstractI10nTranslatable {
         rdc
     }
 
-    @Deprecated
-    static RefdataValue lookupOrCreate(String category_name, String value) {
-        RefdataCategory cat = RefdataCategory.findByDescIlike(category_name);
-        if (! cat) {
-            cat = new RefdataCategory(desc:category_name).save(flush: true);
-        }
-
-        RefdataValue result = RefdataValue.findByOwnerAndValueIlike(cat, value)
-
-        if (! result) {
-            new RefdataValue(owner:cat, value:value).save(flush:true);
-            result = RefdataValue.findByOwnerAndValue(cat, value);
-        }
-
-        result
-    }
-
     static RefdataCategory getByI10nDesc(desc) {
 
         I10nTranslation i10n = I10nTranslation.findByReferenceClassAndReferenceFieldAndValueDeIlike(
@@ -121,7 +104,18 @@ class RefdataCategory extends AbstractI10nTranslatable {
 
     @Deprecated
     static RefdataValue lookupOrCreate(String category_name, String icon, String value) {
-        RefdataValue result = lookupOrCreate(category_name, value)
+        RefdataCategory cat = RefdataCategory.findByDescIlike(category_name);
+        if (! cat) {
+            cat = new RefdataCategory(desc:category_name).save(flush: true);
+        }
+
+        RefdataValue result = RefdataValue.findByOwnerAndValueIlike(cat, value)
+
+        if (! result) {
+            new RefdataValue(owner:cat, value:value).save(flush:true);
+            result = RefdataValue.findByOwnerAndValue(cat, value);
+        }
+
         result.icon = icon
         result
     }

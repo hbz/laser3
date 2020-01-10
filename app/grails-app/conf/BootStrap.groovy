@@ -406,7 +406,7 @@ class BootStrap {
                             Map<String, Object> map = [
                                     token   : "${line[0].trim()}",
                                     hardData: BOOTSTRAP,
-                                    i10n    : [en: "${line[2].trim()}", de: "${line[1].trim()}"],
+                                    i10n    : [en: "${line[2].trim()}", de: "${line[1].trim()}"]
                             ]
                             result.add(map)
                         }
@@ -416,7 +416,7 @@ class BootStrap {
                                     token   : "${line[0].trim()}",
                                     rdc     : "${line[1].trim()}",
                                     hardData: BOOTSTRAP,
-                                    i10n    : [en: "${line[3].trim()}", de: "${line[2].trim()}"],
+                                    i10n    : [en: "${line[3].trim()}", de: "${line[2].trim()}"]
                             ]
                             result.add(map)
                         }
@@ -425,7 +425,7 @@ class BootStrap {
                             Map<String, Object> map = [
                                     token   : "${line[0].trim()}",
                                     hardData: true,
-                                    i10n    : [en: "${line[2].trim()}", de: "${line[1].trim()}"],
+                                    i10n    : [en: "${line[2].trim()}", de: "${line[1].trim()}"]
                             ]
                             result.add(map)
                         }*/

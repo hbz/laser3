@@ -38,7 +38,15 @@ class FactService {
         return result
 
       try {
-          def fact_type_refdata_value = RefdataCategory.lookupOrCreate('FactType',fact.type)
+          // ERMS-2016: def fact_type_refdata_value = RefdataCategory.lookupOrCreate('FactType',fact.type)
+          // if value exists --> RefdataValue.getByValueAndCategory()
+
+          RefdataValue fact_type_refdata_value = RefdataValue.construct([
+                  token   : "${fact.type}",
+                  rdc     : "FactType",
+                  hardData: false,
+                  i10n    : [en: "${fact.type}", de: "${fact.type}"]
+          ])
 
           // Are we updating an existing fact?
           if ( fact.uid != null ) {

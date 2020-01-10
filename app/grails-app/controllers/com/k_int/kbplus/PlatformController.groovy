@@ -34,7 +34,7 @@ class PlatformController extends AbstractDebugController {
 
         result.offset = params.offset ?: 0
 
-        def deleted_platform_status =  RefdataCategory.lookupOrCreate( 'Platform Status', 'Deleted' )
+        def deleted_platform_status = RefdataValue.getByValueAndCategory( 'Deleted', 'Platform Status')
         def qry_params = [delStatus: deleted_platform_status]
 
         def base_qry = " from Platform as p left join p.org o where ((p.status is null) OR (p.status = :delStatus)) "
