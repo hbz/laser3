@@ -11,8 +11,6 @@ import de.laser.interfaces.AbstractLockableService
 import grails.transaction.Transactional
 import grails.util.Holders
 
-import static de.laser.helper.RDStore.getYN_NO
-import static de.laser.helper.RDStore.getYN_YES
 
 @Transactional
 class SurveyUpdateService extends AbstractLockableService {
@@ -123,7 +121,7 @@ class SurveyUpdateService extends AbstractLockableService {
                 } else if (surveyEntries == null || surveyEntries.isEmpty()) {
                     log.debug("The user has no surveys, so no email will be sent (" + user.username + "/"+ org.name + ")");
                 } else {
-                    boolean isNotificationCCbyEmail = user.getSetting(UserSettings.KEYS.IS_NOTIFICATION_BY_EMAIL, YN_NO)?.rdValue == YN_YES
+                    boolean isNotificationCCbyEmail = user.getSetting(UserSettings.KEYS.IS_NOTIFICATION_CC_BY_EMAIL, RDStore.YN_NO)?.rdValue == RDStore.YN_YES
                     String ccAddress = null
                     if (isNotificationCCbyEmail){
                         ccAddress = user.getSetting(UserSettings.KEYS.NOTIFICATION_CC_EMAILADDRESS, null)?.getValue()
