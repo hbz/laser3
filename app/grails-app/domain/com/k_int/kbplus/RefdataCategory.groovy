@@ -92,23 +92,6 @@ class RefdataCategory extends AbstractI10nTranslatable {
         rdc
     }
 
-    @Deprecated
-    static RefdataValue lookupOrCreate(String category_name, String value) {
-        RefdataCategory cat = RefdataCategory.findByDescIlike(category_name);
-        if (! cat) {
-            cat = new RefdataCategory(desc:category_name).save(flush: true);
-        }
-
-        RefdataValue result = RefdataValue.findByOwnerAndValueIlike(cat, value)
-
-        if (! result) {
-            new RefdataValue(owner:cat, value:value).save(flush:true);
-            result = RefdataValue.findByOwnerAndValue(cat, value);
-        }
-
-        result
-    }
-
     static RefdataCategory getByI10nDesc(desc) {
 
         I10nTranslation i10n = I10nTranslation.findByReferenceClassAndReferenceFieldAndValueDeIlike(
@@ -121,7 +104,18 @@ class RefdataCategory extends AbstractI10nTranslatable {
 
     @Deprecated
     static RefdataValue lookupOrCreate(String category_name, String icon, String value) {
-        RefdataValue result = lookupOrCreate(category_name, value)
+        RefdataCategory cat = RefdataCategory.findByDescIlike(category_name);
+        if (! cat) {
+            cat = new RefdataCategory(desc:category_name).save(flush: true);
+        }
+
+        RefdataValue result = RefdataValue.findByOwnerAndValueIlike(cat, value)
+
+        if (! result) {
+            new RefdataValue(owner:cat, value:value).save(flush:true);
+            result = RefdataValue.findByOwnerAndValue(cat, value);
+        }
+
         result.icon = icon
         result
     }
@@ -160,7 +154,15 @@ class RefdataCategory extends AbstractI10nTranslatable {
               icon:  it.icon.toString()
               ]}
       */
-      RefdataValue.findAllByOwner( RefdataCategory.findByDesc(category_name)).sort{a,b -> a.getI10n('value').compareToIgnoreCase b.getI10n('value')}
+//      RefdataValue.findAllByOwner( RefdataCategory.findByDesc(category_name)).sort{a,b -> a.getI10n('value').compareToIgnoreCase b.getI10n('value')}
+      String i10value = LocaleContextHolder.getLocale().getLanguage() == Locale.GERMAN.getLanguage() ? 'valueDe' : 'valueEn'
+
+      RefdataValue.executeQuery("""select rdv from RefdataValue as rdv, RefdataCategory as rdc, I10nTranslation as i10n
+               where rdv.owner = rdc and rdc.desc = ? 
+               and i10n.referenceId = rdv.id 
+               and i10n.referenceClass = 'com.k_int.kbplus.RefdataValue' and i10n.referenceField = 'value'
+               order by i10n.${i10value}"""
+              , ["${category_name}"] )
   }
 
     static getAllRefdataValuesWithI10nExplanation(String category_name, Map sort) {

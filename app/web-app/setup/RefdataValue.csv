@@ -1,706 +1,934 @@
-token,rdc,value_de,value_en
-Billing address,AddressType,Rechnungsanschrift,Billing address
-Delivery address,AddressType,Lieferanschrift,Delivery address
-Legal patron address,AddressType,Anschrift des rechtlichen Trägers,Legal patron address
-Library address,AddressType,Anschrift,Library address
-Postal address,AddressType,Postanschrift,Postal address
-Author,Authority,Autor,Author
-Author and Institution,Authority,Autor und Institution,Author and Institution
-Institution,Authority,Institution,Institution
-Research Funding Institution,Authority,Forschungsförderer,Research Funding Institution
-Active,Combo Status,Aktiv,Active
-Inactive,Combo Status,Inaktiv,Inactive
-No limit,ConcurrentAccess,Ohne Begrenzung,No limit
-Not Specified,ConcurrentAccess,Nicht festgelegt,Not Specified
-Other,ConcurrentAccess,Andere,Other
-Specified,ConcurrentAccess,Festgelegt,Specified
-All,Confidentiality,Alles,All
-All but user terms,Confidentiality,Alles außer Nutzungsbedingungen,All but user terms
-Financial only,Confidentiality,Nur Finanzangelegenheiten,Financial only
-No,Confidentiality,Nein,No
-Unknown,Confidentiality,Unklar,Unknown
-E-Mail,ContactContentType,E-Mail,E-Mail
-Fax,ContactContentType,Fax,Fax
-Phone,ContactContentType,Telefon,Phone
-Url,ContactContentType,Url,Url
-Job-related,ContactType,Geschäftlich,Job-related
-Personal,ContactType,Privat,Personal
-Electronic,CoreStatus,Elektronisch,Electronic
-No,CoreStatus,Nein,No
-Print,CoreStatus,Print,Print
-Print+Electronic,CoreStatus,Print & Elektronisch,Print+Electronic
-Yes,CoreStatus,Ja,Yes
-negative,Cost configuration,negativ,negative
-neutral,Cost configuration,neutral,neutral
-positive,Cost configuration,positiv,positive
-Actual,CostItem.Type,Konkrete Instanz,Actual
-Template,CostItem.Type,Vorlage,Template
-Actual,CostItemStatus,feststehend,Actual
-Calculated,CostItemStatus,kalkuliert,Calculated
-Commitment,CostItemStatus,zugesagt,Commitment
-Deleted,CostItemStatus,Gelöscht,Deleted
-Estimate,CostItemStatus,geschätzt,Estimate
-Other,CostItemStatus,Sonstige,Other
-AD,Country,Andorra,Andorra
-AE,Country,Vereinigte Arabische Emirate,United Arab Emirates
-AF,Country,Afghanistan,Afghanistan
-AG,Country,Antigua und Barbuda,Antigua and Barbuda
-AI,Country,Anguilla,Anguilla
-AL,Country,Albanien,Albania
-AM,Country,Armenien,Armenia
-AO,Country,Angola,Angola
-AQ,Country,Antarktis,Antarctica
-AR,Country,Argentinien,Argentina
-AS,Country,"Samoa, amerikanischer Teil",American Samoa
-AT,Country,Österreich,Austria
-AU,Country,Australien,Australia
-AW,Country,Aruba,Aruba
-AX,Country,Åland,Åland Islands
-AZ,Country,Aserbaidschan,Azerbaijan
-BA,Country,Bosnien-Herzegowina,Bosnia and Herzegovina
-BB,Country,Barbados,Barbados
-BD,Country,Bangladesh,Bangladesh
-BE,Country,Belgien,Belgium
-BF,Country,Burkina Faso,Burkina Faso
-BG,Country,Bulgarien,Bulgaria
-BH,Country,Bahrain,Bahrain
-BI,Country,Burundi,Burundi
-BJ,Country,Benin,Benin
-BL,Country,St. Barthélemy,Saint Barthélemy
-BM,Country,Bermuda,Bermuda
-BN,Country,Brunei,Brunei Darussalam
-BO,Country,Bolivien,"Bolivia, Plurinational State of"
-BQ,Country,Karibische Niederlande,"Bonaire, Sint Eustatius and Saba"
-BR,Country,Brasilien,Brazil
-BS,Country,Bahamas,Bahamas
-BT,Country,Bhutan,Bhutan
-BV,Country,Bouvet-Insel,Bouvet Island
-BW,Country,Botswana,Botswana
-BY,Country,Belarus,Belarus
-BZ,Country,Belize,Belize
-CA,Country,Kanada,Canada
-CC,Country,Kokos-Insel (Keeling),Cocos (Keeling) Islands
-CD,Country,"Kongo, demokratische Republik","Congo, the Democratic Republic of the"
-CF,Country,Zentralafrika,Central African Republic
-CG,Country,Kongo (Republik),Congo
-CH,Country,Schweiz,Switzerland
-CI,Country,Elfenbeinküste,Côte d'Ivoire
-CK,Country,Cook-Inseln,Cook Islands
-CL,Country,Chile,Chile
-CM,Country,Kamerun,Cameroon
-CN,Country,China (Volksrepublik),China
-CO,Country,Kolumbien,Colombia
-CR,Country,Costa Rica,Costa Rica
-CU,Country,Kuba,Cuba
-CV,Country,Kapverdische Inseln,Cape Verde
-CW,Country,Curaçao,Curaçao
-CX,Country,Weihnachtsinseln (indischer Ozean),Christmas Island
-CY,Country,Zypern,Cyprus
-CZ,Country,Tschechische Republik,Czech Republic
-DE,Country,Deutschland,Germany
-DJ,Country,Djibouti,Djibouti
-DK,Country,Dänemark,Denmark
-DM,Country,Dominica,Dominica
-DO,Country,Dominikanische Republik,Dominican Republic
-DZ,Country,Algerien,Algeria
-EC,Country,Ekuador,Ecuador
-EE,Country,Estland,Estonia
-EG,Country,Ägypten,Egypt
-EH,Country,Westsahara,Western Sahara
-ER,Country,Eritrea,Eritrea
-ES,Country,Spanien,Spain
-ET,Country,Äthiopien,Ethiopia
-FI,Country,Finnland,Finland
-FJ,Country,Fidschi,Fiji
-FK,Country,Falkland-Inseln,Falkland Islands (Malvinas)
-FM,Country,Mikronesien (Föderierte Staaten von),"Micronesia, Federated States of"
-FO,Country,Färöer-Inseln,Faroe Islands
-FR,Country,Frankreich,France
-GA,Country,Gabun,Gabon
-GB,Country,Grossbritannien und Nordirland,United Kingdom
-GD,Country,Grenada,Grenada
-GE,Country,Georgien,Georgia
-GF,Country,Französisch-Guyana,French Guiana
-GG,Country,Guernsey,Guernsey
-GH,Country,Ghana,Ghana
-GI,Country,Gibraltar,Gibraltar
-GL,Country,Grönland,Greenland
-GM,Country,Gambia,Gambia
-GN,Country,Guinea (Republik),Guinea
-GP,Country,Guadeloupe,Guadeloupe
-GQ,Country,Äquatorial-Guinea,Equatorial Guinea
-GR,Country,Griechenland,Greece
-GS,Country,Südgeorgien und die südlichen Sandwichinseln,South Georgia and the South Sandwich Islands
-GT,Country,Guatemala,Guatemala
-GU,Country,Guam,Guam
-GW,Country,Guinea-Bissau,Guinea-Bissau
-GY,Country,Guyana,Guyana
-HK,Country,Hongkong,Hong Kong
-HM,Country,Heard- und McDonald-Inseln,Heard Island and McDonald Islands
-HN,Country,Honduras,Honduras
-HR,Country,Kroatien,Croatia
-HT,Country,Haiti,Haiti
-HU,Country,Ungarn,Hungary
-ID,Country,Indonesien,Indonesia
-IE,Country,Irland,Ireland
-IL,Country,Israel,Israel
-IM,Country,"Man, Insel",Isle of Man
-IN,Country,Indien,India
-IO,Country,Britisches Territorium im indischen Ozean,British Indian Ocean Territory
-IQ,Country,Irak,Iraq
-IR,Country,Iran,"Iran, Islamic Republic of"
-IS,Country,Island,Iceland
-IT,Country,Italien,Italy
-JE,Country,Jersey,Jersey
-JM,Country,Jamaika,Jamaica
-JO,Country,Jordanien,Jordan
-JP,Country,Japan,Japan
-KE,Country,Kenia,Kenya
-KG,Country,Kirgisistan,Kyrgyzstan
-KH,Country,Kambodscha,Cambodia
-KI,Country,Kiribati,Kiribati
-KM,Country,Komoren,Comoros
-KN,Country,St. Christoph (St. Kitts) und Nevis,Saint Kitts and Nevis
-KP,Country,"Korea, demokratische Volksrepublik (Nordkorea)","Korea, Democratic People's Republic of"
-KR,Country,"Korea, Republik (Südkorea)","Korea, Republic of"
-KW,Country,Kuwait,Kuwait
-KY,Country,Cayman,Cayman Islands
-KZ,Country,Kasachstan,Kazakhstan
-LA,Country,Laos,Lao People's Democratic Republic
-LB,Country,Libanon,Lebanon
-LC,Country,St. Lucia,Saint Lucia
-LI,Country,Liechtenstein,Liechtenstein
-LK,Country,Sri Lanka,Sri Lanka
-LR,Country,Liberia,Liberia
-LS,Country,Lesotho,Lesotho
-LT,Country,Litauen,Lithuania
-LU,Country,Luxemburg,Luxembourg
-LV,Country,Lettland,Latvia
-LY,Country,Libyen,Libya
-MA,Country,Marokko,Morocco
-MC,Country,Monaco,Monaco
-MD,Country,Moldova,"Moldova, Republic of"
-ME,Country,"Montenegro, Republik",Montenegro
-MF,Country,St. Martin,Saint Martin (French part)
-MG,Country,Madagaskar,Madagascar
-MH,Country,Marshall-Inseln,Marshall Islands
-MK,Country,"Mazedonien, ehemalige jugoslawische Republik","Macedonia, the Former Yugoslav Republic of"
-ML,Country,Mali,Mali
-MM,Country,Myanmar (Union),Myanmar
-MN,Country,Mongolei,Mongolia
-MO,Country,Macao,Macao
-MP,Country,Marianen-Inseln,Northern Mariana Islands
-MQ,Country,Martinique,Martinique
-MR,Country,Mauretanien,Mauritania
-MS,Country,Montserrat,Montserrat
-MT,Country,Malta,Malta
-MU,Country,"Mauritius, Insel",Mauritius
-MV,Country,Malediven,Maldives
-MW,Country,Malawi,Malawi
-MX,Country,Mexiko,Mexico
-MY,Country,Malaysia,Malaysia
-MZ,Country,Mosambik,Mozambique
-NA,Country,Namibia,Namibia
-NC,Country,Neukaledonien,New Caledonia
-NE,Country,Niger,Niger
-NF,Country,Norfolk-Insel,Norfolk Island
-NG,Country,Nigeria,Nigeria
-NI,Country,Nicaragua,Nicaragua
-NL,Country,Niederlande,Netherlands
-NO,Country,Norwegen,Norway
-NP,Country,Nepal,Nepal
-NR,Country,Nauru,Nauru
-NU,Country,Niue,Niue
-NZ,Country,Neuseeland,New Zealand
-OM,Country,Oman,Oman
-PA,Country,Panama,Panama
-PE,Country,Peru,Peru
-PF,Country,Französisch-Polynesien,French Polynesia
-PG,Country,Papua-Neuguinea,Papua New Guinea
-PH,Country,Philippinen,Philippines
-PK,Country,Pakistan,Pakistan
-PL,Country,Polen,Poland
-PM,Country,St. Pierre und Miquelon,Saint Pierre and Miquelon
-PN,Country,Pitcairn,Pitcairn
-PR,Country,Puerto Rico,Puerto Rico
-PS,Country,Palästina,"Palestine, State of"
-PT,Country,Portugal,Portugal
-PW,Country,Palau,Palau
-PY,Country,Paraguay,Paraguay
-QA,Country,Qatar,Qatar
-RE,Country,Réunion,Réunion
-RO,Country,Rumänien,Romania
-RS,Country,"Serbien,  Republik",Serbia
-RU,Country,Russische Föderation,Russian Federation
-RW,Country,Rwanda,Rwanda
-SA,Country,Saudi-Arabien,Saudi Arabia
-SB,Country,Salomon-Inseln,Solomon Islands
-SC,Country,Seychellen,Seychelles
-SD,Country,Sudan,Sudan
-SE,Country,Schweden,Sweden
-SG,Country,Singapur,Singapore
-SH,Country,"St. Helena, Ascension und Tristan da Cunha","Saint Helena, Ascension and Tristan da Cunha"
-SI,Country,Slowenien,Slovenia
-SJ,Country,Svalbard und Insel Jan Mayen,Svalbard and Jan Mayen
-SK,Country,Slowakische Republik,Slovakia
-SL,Country,Sierra Leone,Sierra Leone
-SM,Country,San Marino,San Marino
-SN,Country,Senegal,Senegal
-SO,Country,Somalia,Somalia
-SR,Country,Suriname,Suriname
-SS,Country,Südsudan,South Sudan
-ST,Country,St. Thomas und Principe,Sao Tome and Principe
-SV,Country,El Salvador,El Salvador
-SX,Country,St. Maarten,Sint Maarten (Dutch part)
-SY,Country,Syrien,Syrian Arab Republic
-SZ,Country,Swasiland,Swaziland
-TC,Country,Turks und Caicos,Turks and Caicos Islands
-TD,Country,Tschad,Chad
-TF,Country,Französische Süd- und Antarktisgebiete,French Southern Territories
-TG,Country,Togo,Togo
-TH,Country,Thailand,Thailand
-TJ,Country,Tadschikistan,Tajikistan
-TK,Country,Tokelau,Tokelau
-TL,Country,Timor-Leste,Timor-Leste
-TM,Country,Turkmenistan,Turkmenistan
-TN,Country,Tunesien,Tunisia
-TO,Country,Tonga,Tonga
-TR,Country,Türkei,Turkey
-TT,Country,Trinidad und Tobago,Trinidad and Tobago
-TV,Country,Tuvalu,Tuvalu
-TW,Country,Taiwan (Chinesisches Taipei),"Taiwan, Province of China"
-TZ,Country,Tansania,"Tanzania, United Republic of"
-UA,Country,Ukraine,Ukraine
-UG,Country,Uganda,Uganda
-UM,Country,"Amerikanische Überseeinseln, kleinere",United States Minor Outlying Islands
-US,Country,Vereinigte Staaten von Amerika,United States
-UY,Country,Uruguay,Uruguay
-UZ,Country,Usbekistan,Uzbekistan
-VA,Country,Vatikan,Holy See (Vatican City State)
-VC,Country,St. Vincent und Grenadinen,Saint Vincent and the Grenadines
-VE,Country,Venezuela,"Venezuela, Bolivarian Republic of"
-VG,Country, britischer Teil (Tortola),"Virgin Islands, British,Virginische Inseln"
-VI,Country,Amerikanische Jungferninseln,"Virgin Islands, U.S."
-VN,Country,Vietnam,Viet Nam
-VU,Country,Vanuatu,Vanuatu
-WF,Country,Wallis und Futuna,Wallis and Futuna
-WS,Country,"Samoa, West",Samoa
-YE,Country,Jemen,Yemen
-YT,Country,Mayotte,Mayotte
-ZA,Country,Südafrika,South Africa
-ZM,Country,Sambia,Zambia
-ZW,Country,Zimbabwe,Zimbabwe
-Author,CreatorType,Autor,Author
-Editor,CreatorType,Herausgeber,Editor
-AED,Currency,AED - United Arab Emirates Dirham,AED - United Arab Emirates Dirham
-AFN,Currency,AFN - Afghanistan Afghani,AFN - Afghanistan Afghani
-ALL,Currency,ALL - Albania Lek,ALL - Albania Lek
-AMD,Currency,AMD - Armenia Dram,AMD - Armenia Dram
-ANG,Currency,ANG - Netherlands Antilles Guilder,ANG - Netherlands Antilles Guilder
-AOA,Currency,AOA - Angola Kwanza,AOA - Angola Kwanza
-ARS,Currency,ARS - Argentina Peso,ARS - Argentina Peso
-AUD,Currency,AUD - Australia Dollar,AUD - Australia Dollar
-AWG,Currency,AWG - Aruba Guilder,AWG - Aruba Guilder
-AZN,Currency,AZN - Azerbaijan New Manat,AZN - Azerbaijan New Manat
-BAM,Currency,BAM - Bosnia and Herzegovina Convertible Marka,BAM - Bosnia and Herzegovina Convertible Marka
-BBD,Currency,BBD - Barbados Dollar,BBD - Barbados Dollar
-BDT,Currency,BDT - Bangladesh Taka,BDT - Bangladesh Taka
-BGN,Currency,BGN - Bulgaria Lev,BGN - Bulgaria Lev
-BHD,Currency,BHD - Bahrain Dinar,BHD - Bahrain Dinar
-BIF,Currency,BIF - Burundi Franc,BIF - Burundi Franc
-BMD,Currency,BMD - Bermuda Dollar,BMD - Bermuda Dollar
-BND,Currency,BND - Brunei Darussalam Dollar,BND - Brunei Darussalam Dollar
-BOB,Currency,BOB - Bolivia Boliviano,BOB - Bolivia Boliviano
-BRL,Currency,BRL - Brazil Real,BRL - Brazil Real
-BSD,Currency,BSD - Bahamas Dollar,BSD - Bahamas Dollar
-BTN,Currency,BTN - Bhutan Ngultrum,BTN - Bhutan Ngultrum
-BWP,Currency,BWP - Botswana Pula,BWP - Botswana Pula
-BYR,Currency,BYR - Belarus Ruble,BYR - Belarus Ruble
-BZD,Currency,BZD - Belize Dollar,BZD - Belize Dollar
-CAD,Currency,CAD - Canada Dollar,CAD - Canada Dollar
-CDF,Currency,CDF - Congo/Kinshasa Franc,CDF - Congo/Kinshasa Franc
-CHF,Currency,CHF - Switzerland Franc,CHF - Switzerland Franc
-CLP,Currency,CLP - Chile Peso,CLP - Chile Peso
-CNY,Currency,CNY - China Yuan Renminbi,CNY - China Yuan Renminbi
-COP,Currency,COP - Colombia Peso,COP - Colombia Peso
-CRC,Currency,CRC - Costa Rica Colon,CRC - Costa Rica Colon
-CUC,Currency,CUC - Cuba Convertible Peso,CUC - Cuba Convertible Peso
-CUP,Currency,CUP - Cuba Peso,CUP - Cuba Peso
-CVE,Currency,CVE - Cape Verde Escudo,CVE - Cape Verde Escudo
-CZK,Currency,CZK - Czech Republic Koruna,CZK - Czech Republic Koruna
-DJF,Currency,DJF - Djibouti Franc,DJF - Djibouti Franc
-DKK,Currency,DKK - Denmark Krone,DKK - Denmark Krone
-DOP,Currency,DOP - Dominican Republic Peso,DOP - Dominican Republic Peso
-DZD,Currency,DZD - Algeria Dinar,DZD - Algeria Dinar
-EGP,Currency,EGP - Egypt Pound,EGP - Egypt Pound
-ERN,Currency,ERN - Eritrea Nakfa,ERN - Eritrea Nakfa
-ETB,Currency,ETB - Ethiopia Birr,ETB - Ethiopia Birr
-EUR,Currency,EUR - Euro Member Countries,EUR - Euro Member Countries
-FJD,Currency,FJD - Fiji Dollar,FJD - Fiji Dollar
-FKP,Currency,FKP - Falkland Islands (Malvinas) Pound,FKP - Falkland Islands (Malvinas) Pound
-GBP,Currency,GBP - United Kingdom Pound,GBP - United Kingdom Pound
-GEL,Currency,GEL - Georgia Lari,GEL - Georgia Lari
-GGP,Currency,GGP - Guernsey Pound,GGP - Guernsey Pound
-GHS,Currency,GHS - Ghana Cedi,GHS - Ghana Cedi
-GIP,Currency,GIP - Gibraltar Pound,GIP - Gibraltar Pound
-GMD,Currency,GMD - Gambia Dalasi,GMD - Gambia Dalasi
-GNF,Currency,GNF - Guinea Franc,GNF - Guinea Franc
-GTQ,Currency,GTQ - Guatemala Quetzal,GTQ - Guatemala Quetzal
-GYD,Currency,GYD - Guyana Dollar,GYD - Guyana Dollar
-HKD,Currency,HKD - Hong Kong Dollar,HKD - Hong Kong Dollar
-HNL,Currency,HNL - Honduras Lempira,HNL - Honduras Lempira
-HRK,Currency,HRK - Croatia Kuna,HRK - Croatia Kuna
-HTG,Currency,HTG - Haiti Gourde,HTG - Haiti Gourde
-HUF,Currency,HUF - Hungary Forint,HUF - Hungary Forint
-IDR,Currency,IDR - Indonesia Rupiah,IDR - Indonesia Rupiah
-ILS,Currency,ILS - Israel Shekel,ILS - Israel Shekel
-IMP,Currency,IMP - Isle of Man Pound,IMP - Isle of Man Pound
-INR,Currency,INR - India Rupee,INR - India Rupee
-IQD,Currency,IQD - Iraq Dinar,IQD - Iraq Dinar
-IRR,Currency,IRR - Iran Rial,IRR - Iran Rial
-ISK,Currency,ISK - Iceland Krona,ISK - Iceland Krona
-JEP,Currency,JEP - Jersey Pound,JEP - Jersey Pound
-JMD,Currency,JMD - Jamaica Dollar,JMD - Jamaica Dollar
-JOD,Currency,JOD - Jordan Dinar,JOD - Jordan Dinar
-JPY,Currency,JPY - Japan Yen,JPY - Japan Yen
-KES,Currency,KES - Kenya Shilling,KES - Kenya Shilling
-KGS,Currency,KGS - Kyrgyzstan Som,KGS - Kyrgyzstan Som
-KHR,Currency,KHR - Cambodia Riel,KHR - Cambodia Riel
-KMF,Currency,KMF - Comoros Franc,KMF - Comoros Franc
-KPW,Currency,KPW - Korea (North) Won,KPW - Korea (North) Won
-KRW,Currency,KRW - Korea (South) Won,KRW - Korea (South) Won
-KWD,Currency,KWD - Kuwait Dinar,KWD - Kuwait Dinar
-KYD,Currency,KYD - Cayman Islands Dollar,KYD - Cayman Islands Dollar
-KZT,Currency,KZT - Kazakhstan Tenge,KZT - Kazakhstan Tenge
-LAK,Currency,LAK - Laos Kip,LAK - Laos Kip
-LBP,Currency,LBP - Lebanon Pound,LBP - Lebanon Pound
-LKR,Currency,LKR - Sri Lanka Rupee,LKR - Sri Lanka Rupee
-LRD,Currency,LRD - Liberia Dollar,LRD - Liberia Dollar
-LSL,Currency,LSL - Lesotho Loti,LSL - Lesotho Loti
-LYD,Currency,LYD - Libya Dinar,LYD - Libya Dinar
-MAD,Currency,MAD - Morocco Dirham,MAD - Morocco Dirham
-MDL,Currency,MDL - Moldova Leu,MDL - Moldova Leu
-MGA,Currency,MGA - Madagascar Ariary,MGA - Madagascar Ariary
-MKD,Currency,MKD - Macedonia Denar,MKD - Macedonia Denar
-MMK,Currency,MMK - Myanmar (Burma) Kyat,MMK - Myanmar (Burma) Kyat
-MNT,Currency,MNT - Mongolia Tughrik,MNT - Mongolia Tughrik
-MOP,Currency,MOP - Macau Pataca,MOP - Macau Pataca
-MRO,Currency,MRO - Mauritania Ouguiya,MRO - Mauritania Ouguiya
-MUR,Currency,MUR - Mauritius Rupee,MUR - Mauritius Rupee
-MVR,Currency,MVR - Maldives (Maldive Islands) Rufiyaa,MVR - Maldives (Maldive Islands) Rufiyaa
-MWK,Currency,MWK - Malawi Kwacha,MWK - Malawi Kwacha
-MXN,Currency,MXN - Mexico Peso,MXN - Mexico Peso
-MYR,Currency,MYR - Malaysia Ringgit,MYR - Malaysia Ringgit
-MZN,Currency,MZN - Mozambique Metical,MZN - Mozambique Metical
-NAD,Currency,NAD - Namibia Dollar,NAD - Namibia Dollar
-NGN,Currency,NGN - Nigeria Naira,NGN - Nigeria Naira
-NIO,Currency,NIO - Nicaragua Cordoba,NIO - Nicaragua Cordoba
-NOK,Currency,NOK - Norway Krone,NOK - Norway Krone
-NPR,Currency,NPR - Nepal Rupee,NPR - Nepal Rupee
-NZD,Currency,NZD - New Zealand Dollar,NZD - New Zealand Dollar
-OMR,Currency,OMR - Oman Rial,OMR - Oman Rial
-PAB,Currency,PAB - Panama Balboa,PAB - Panama Balboa
-PEN,Currency,PEN - Peru Nuevo Sol,PEN - Peru Nuevo Sol
-PGK,Currency,PGK - Papua New Guinea Kina,PGK - Papua New Guinea Kina
-PHP,Currency,PHP - Philippines Peso,PHP - Philippines Peso
-PKR,Currency,PKR - Pakistan Rupee,PKR - Pakistan Rupee
-PLN,Currency,PLN - Poland Zloty,PLN - Poland Zloty
-PYG,Currency,PYG - Paraguay Guarani,PYG - Paraguay Guarani
-QAR,Currency,QAR - Qatar Riyal,QAR - Qatar Riyal
-RON,Currency,RON - Romania New Leu,RON - Romania New Leu
-RSD,Currency,RSD - Serbia Dinar,RSD - Serbia Dinar
-RUB,Currency,RUB - Russia Ruble,RUB - Russia Ruble
-RWF,Currency,RWF - Rwanda Franc,RWF - Rwanda Franc
-SAR,Currency,SAR - Saudi Arabia Riyal,SAR - Saudi Arabia Riyal
-SBD,Currency,SBD - Solomon Islands Dollar,SBD - Solomon Islands Dollar
-SCR,Currency,SCR - Seychelles Rupee,SCR - Seychelles Rupee
-SDG,Currency,SDG - Sudan Pound,SDG - Sudan Pound
-SEK,Currency,SEK - Sweden Krona,SEK - Sweden Krona
-SGD,Currency,SGD - Singapore Dollar,SGD - Singapore Dollar
-SHP,Currency,SHP - Saint Helena Pound,SHP - Saint Helena Pound
-SLL,Currency,SLL - Sierra Leone Leone,SLL - Sierra Leone Leone
-SOS,Currency,SOS - Somalia Shilling,SOS - Somalia Shilling
-SPL,Currency,SPL - Seborga Luigino,SPL - Seborga Luigino
-SRD,Currency,SRD - Suriname Dollar,SRD - Suriname Dollar
-STD,Currency,STD - São Tomé and Príncipe Dobra,STD - São Tomé and Príncipe Dobra
-SVC,Currency,SVC - El Salvador Colon,SVC - El Salvador Colon
-SYP,Currency,SYP - Syria Pound,SYP - Syria Pound
-SZL,Currency,SZL - Swaziland Lilangeni,SZL - Swaziland Lilangeni
-THB,Currency,THB - Thailand Baht,THB - Thailand Baht
-TJS,Currency,TJS - Tajikistan Somoni,TJS - Tajikistan Somoni
-TMT,Currency,TMT - Turkmenistan Manat,TMT - Turkmenistan Manat
-TND,Currency,TND - Tunisia Dinar,TND - Tunisia Dinar
-TOP,Currency,TOP - Tonga Pa'anga,TOP - Tonga Pa'anga
-TRY,Currency,TRY - Turkey Lira,TRY - Turkey Lira
-TTD,Currency,TTD - Trinidad and Tobago Dollar,TTD - Trinidad and Tobago Dollar
-TVD,Currency,TVD - Tuvalu Dollar,TVD - Tuvalu Dollar
-TWD,Currency,TWD - Taiwan New Dollar,TWD - Taiwan New Dollar
-TZS,Currency,TZS - Tanzania Shilling,TZS - Tanzania Shilling
-UAH,Currency,UAH - Ukraine Hryvnia,UAH - Ukraine Hryvnia
-UGX,Currency,UGX - Uganda Shilling,UGX - Uganda Shilling
-USD,Currency,USD - United States Dollar,USD - United States Dollar
-UYU,Currency,UYU - Uruguay Peso,UYU - Uruguay Peso
-UZS,Currency,UZS - Uzbekistan Som,UZS - Uzbekistan Som
-VEF,Currency,VEF - Venezuela Bolivar,VEF - Venezuela Bolivar
-VND,Currency,VND - Viet Nam Dong,VND - Viet Nam Dong
-VUV,Currency,VUV - Vanuatu Vatu,VUV - Vanuatu Vatu
-WST,Currency,WST - Samoa Tala,WST - Samoa Tala
-XAF,Currency,XAF - Communauté Financière Africaine (BEAC) CFA Franc BEAC,XAF - Communauté Financière Africaine (BEAC) CFA Franc BEAC
-XCD,Currency,XCD - East Caribbean Dollar,XCD - East Caribbean Dollar
-XDR,Currency,XDR - International Monetary Fund (IMF) Special Drawing Rights,XDR - International Monetary Fund (IMF) Special Drawing Rights
-XOF,Currency,XOF - Communauté Financière Africaine (BCEAO) Franc,XOF - Communauté Financière Africaine (BCEAO) Franc
-XPF,Currency,XPF - Comptoirs Français du Pacifique (CFP) Franc,XPF – Comptoirs Français du Pacifique (CFP) Franc
-YER,Currency,YER - Yemen Rial,YER - Yemen Rial
-ZAR,Currency,ZAR - South Africa Rand,ZAR - South Africa Rand
-ZMW,Currency,ZMW - Zambia Kwacha,ZMW - Zambia Kwacha
-ZWD,Currency,ZWD - Zimbabwe Dollar,ZWD - Zimbabwe Dollar
-Baden-Wurttemberg,Federal State,Baden-Württemberg,Baden-Wurttemberg
-Bavaria,Federal State,Bayern,Bavaria
-Berlin,Federal State,Berlin,Berlin
-Brandenburg,Federal State,Brandenburg,Brandenburg
-Bremen,Federal State,Bremen,Bremen
-Hamburg,Federal State,Hamburg,Hamburg
-Hesse,Federal State,Hessen,Hesse
-Lower Saxony,Federal State,Niedersachsen,Lower Saxony
-Mecklenburg-West Pomerania,Federal State,Mecklenburg-Vorpommern,Mecklenburg-West Pomerania
-North Rhine-Westphalia,Federal State,Nordrhein-Westfalen,North Rhine-Westphalia
-Rhineland-Palatinate,Federal State,Rheinland-Pfalz,Rhineland-Palatinate
-Saarland,Federal State,Saarland,Saarland
-Saxony,Federal State,Sachsen,Saxony
-Saxony-Anhalt,Federal State,Sachsen-Anhalt,Saxony-Anhalt
-Schleswig-Holstein,Federal State,Schleswig-Holstein,Schleswig-Holstein
-Thuringia,Federal State,Thüringen,Thuringia
-Catholic Church,Funder Type,Katholische Kirche,Catholic Church
-Commune,Funder Type,Gemeinde,Commune
-Corporate Body or Foundation under Private Law,Funder Type,Körperschaft oder Stiftung des privaten Rechts,Corporate Body or Foundation under Private Law
-Corporate Body or Foundation under Public Law,Funder Type,Körperschaft oder Stiftung des öffentlichen Rechts,Corporate Body or Foundation under Public Law
-County,Funder Type,Kreis,County
-Federal Republic of Germany,Funder Type,Bundesrepublik Deutschland,Federal Republic of Germany
-Federal State,Funder Type,Land,Federal State
-Foreign Funding Body,Funder Type,Ausländische Trägerschaft,Foreign Funding Body
-Other Public Sector Funder,Funder Type,Sonstige öffentliche Trägerschaft,Other Public Sector Funder
-Other Religious Communities,Funder Type,Sonstige Religionsgemeinschaften,Other Religious Communities
-Other Territorial Authority,Funder Type,Sonstige Gebietskörperschaft,Other Territorial Authority
-Private Funding Body (Natural Person),Funder Type,Private Trägerschaft (natürliche Personen),Private Funding Body (Natural Person)
-Protestant Church,Funder Type,Evangelische Kirche,Protestant Church
-Female,Gender,Weiblich,Female
-Male,Gender,Männlich,Male
-Third Gender,Gender,Inter/Divers,Third Gender
-Electronic,IEMedium,Elektronisch,Electronic
-Print,IEMedium,Print,Print
-Print and Electronic,IEMedium,Print und Elektronisch,Print and Electronic
-General,Indemnification,Generell,General
-Intellectual Property Only,Indemnification,Nur geistiges Eigentum,Intellectual Property Only
-Other,Indemnification,Andere,Other
-Unknown,Indemnification,Unklar,Unknown
-BVB,Library Network,BVB,BVB
-GBV,Library Network,GBV,GBV
-hbz,Library Network,hbz,hbz
-HeBIS,Library Network,HeBIS,HeBIS
-KOBV,Library Network,KOBV,KOBV
-No Network,Library Network,Keine Zugehörigkeit,No Network
-SWB,Library Network,SWB,SWB
-Data,License.Arc.ArchivalCopyContent,Rohdaten,Data
-DRM-free,License.Arc.ArchivalCopyContent,Ohne DRM,DRM-free
-With Metadata,License.Arc.ArchivalCopyContent,Inkl. Metadaten,With Metadata
-With Software,License.Arc.ArchivalCopyContent,Inkl. Software,With Software
-Free,License.Arc.ArchivalCopyCost,Kostenlos,Free
-Self-copied,License.Arc.ArchivalCopyCost,Kopie selbst anzufertigen,Self-copied
-With Charge,License.Arc.ArchivalCopyCost,Gegen Gebühr,With Charge
-Licence End Date,License.Arc.ArchivalCopyTime,Mit Vertragsende,Licence End Date
-Licence Start Date,License.Arc.ArchivalCopyTime,Mit Vertragsbeginn,Licence Start Date
-On Request,License.Arc.ArchivalCopyTime,Auf Anfrage,On Request
-Trigger Event,License.Arc.ArchivalCopyTime,Mit Trigger Event,Trigger Event
-CDROM,License.Arc.ArchivalCopyTransmissionFormat,CDROM,CDROM
-Remote,License.Arc.ArchivalCopyTransmissionFormat,Remote,Remote
-Tape,License.Arc.ArchivalCopyTransmissionFormat,Band,Tape
-Unspecified tangible format,License.Arc.ArchivalCopyTransmissionFormat,Unspezifizierter Datenträger,Unspecified tangible format
-Contractor,License.Arc.Authorized,Vertragspartner,Contractor
-Contractor With Publisher's Assent,License.Arc.Authorized,Vertragspartner nach Genehmigung durch Anbieter,Contractor With Publisher's Assent
-FID library,License.Arc.Authorized,FID-Bibliothek,FID library
-Former SSG library,License.Arc.Authorized,Ehemals SSG-Bibliothek,Former SSG library
-Licensee,License.Arc.Authorized,Lizenznehmer,Licensee
-SSG-Library,License.Arc.Authorized,SSG-Bibliothek,SSG-Library
-Access Period,License.Arc.HostingRestriction,Zugriffsdauer,Access Period
-File Format,License.Arc.HostingRestriction,Dateiformat,File Format
-Use,License.Arc.HostingRestriction,Nutzung,Use
-Year,License.Arc.HostingRestriction,Jahrgang,Year
-CLOCKSS,License.Arc.HostingSolution,CLOCKSS,CLOCKSS
-LOCKSS,License.Arc.HostingSolution,LOCKSS,LOCKSS
-NatHosting PLN,License.Arc.HostingSolution,NatHosting PLN,NatHosting PLN
-NatHosting Portico,License.Arc.HostingSolution,NatHosting Portico,NatHosting Portico
-Own Host,License.Arc.HostingSolution,Eigener Host,Own Host
-Portico,License.Arc.HostingSolution,Portico,Portico
-Publisher,License.Arc.HostingSolution,Verlag,Publisher
-Third Party Systems,License.Arc.HostingSolution,Drittsysteme,Third Party Systems
-Always,License.Arc.HostingTime,Immer,Always
-Exclusive,License.Arc.HostingTime,Ohne Anbieter,Exclusive
-From Expiration On,License.Arc.HostingTime,Ab Vertragsende,From Expiration On
-Predefined time,License.Arc.HostingTime,Fester Zeitpunkt,Predefined time
-Trigger Event,License.Arc.HostingTime,Mit Trigger-Event,Trigger Event
-Hosting fee,License.Arc.PaymentNote,Hosting Fee zu zahlen,Hosting fee
-No Hosting fee,License.Arc.PaymentNote,Dauerhaft kostenfrei (keine Hosting Fee),No Hosting fee
-Existing Regulation,License.Arc.TitletransferRegulation,Regelung vorhanden,Existing Regulation
-No Regulation,License.Arc.TitletransferRegulation,Keine Regelung,No Regulation
-Transfer Code of Practice,License.Arc.TitletransferRegulation,Transfer Code of Practice,Transfer Code of Practice
-Email Domain,License.OA.CorrespondingAuthorIdentification,E-Mail-Domäne,Email Domain
-IP Range,License.OA.CorrespondingAuthorIdentification,Über IP-Bereich,IP Range
-ORCID,License.OA.CorrespondingAuthorIdentification,ORCID,ORCID
-Other,License.OA.CorrespondingAuthorIdentification,Anderes,Other
-Research Institute,License.OA.CorrespondingAuthorIdentification,Über Institut,Research Institute
-Accepted Author,License.OA.eArcVersion,Accepted Author,Accepted Author
-Manuscript (AAM),License.OA.eArcVersion,Manuscript (AAM),Manuscript (AAM)
-Postprint,License.OA.eArcVersion,Postprint,Postprint
-Preprint,License.OA.eArcVersion,Preprint,Preprint
-Preprint with ePrint URL,License.OA.eArcVersion,Preprint mit ePrint-URL,Preprint with ePrint URL
-Publisher-PDF,License.OA.eArcVersion,Verlags-PDF-Datei,Publisher-PDF
-CC-BY,License.OA.LicenseToPublish,CC-BY,CC-BY
-CC-BY-NC,License.OA.LicenseToPublish,CC-BY-NC,CC-BY-NC
-CC-BY-NC-ND,License.OA.LicenseToPublish,CC-BY-NC-ND,CC-BY-NC-ND
-CC-BY-NC-SA,License.OA.LicenseToPublish,CC-BY-NC-SA,CC-BY-NC-SA
-CC-BY-ND,License.OA.LicenseToPublish,CC-BY-ND,CC-BY-ND
-CC-BY-SA,License.OA.LicenseToPublish,CC-BY-SA,CC-BY-SA
-Automatic Delivery,License.OA.ReceivingModalities,Automatische Lieferung,Automatic Delivery
-By Author,License.OA.ReceivingModalities,Über Autor,By Author
-From Database,License.OA.ReceivingModalities,Aus Datenank,From Database
-Link by Publisher,License.OA.ReceivingModalities,Verlinkung durch Verlag,Link by Publisher
-On Demand,License.OA.ReceivingModalities,Auf Nachfrage,On Demand
-Institutional,License.OA.Repository,Institutionell,Institutional
-Own Choice,License.OA.Repository,Nach Wahl,Own Choice
-Pre-print Server,License.OA.Repository,Pre-print-Server,Pre-print Server
-Publishers,License.OA.Repository,Verlagseigen,Publishers
-Social Media,License.OA.Repository,Social Media,Social Media
-Subject specific,License.OA.Repository,Fachspezifisch,Subject specific
-Website of Author,License.OA.Repository,Webseite,Website of Author
-Blue Open Access,License.OA.Type,Blue Open-Access,Blue Open Access
-Gold Open Access,License.OA.Type,Gold Open-Access,Gold Open Access
-Green Open Access,License.OA.Type,Green Open-Access,Green Open Access
-Hybrid,License.OA.Type,Hybrid,Hybrid
-No Open Access,License.OA.Type,Kein Open-Access,No Open Access
-White Open Access,License.OA.Type,White Open-Access,White Open Access
-Yellow Open Access,License.OA.Type,Yellow Open-Access,Yellow Open Access
-Email,License.Statistics.Delivery,Email,Email
-Online,License.Statistics.Delivery,Online,Online
-Paper,License.Statistics.Delivery,Papier,Paper
-ASCII,License.Statistics.Format,ASCII,ASCII
-CSV,License.Statistics.Format,CSV,CSV
-Delimited,License.Statistics.Format,Begrenzt (z.B. durch Tab),Delimited
-Excel,License.Statistics.Format,Excel,Excel
-HTML,License.Statistics.Format,HTML,HTML
-Other,License.Statistics.Format,Sonstiges Format,Other
-PDF,License.Statistics.Format,PDF,PDF
-Bi-Annual,License.Statistics.Frequency,Halbjährlich,Bi-Annual
-Monthly,License.Statistics.Frequency,Monatlich,Monthly
-Quarterly,License.Statistics.Frequency,Quartalsweise,Quarterly
-User-selectable,License.Statistics.Frequency,Individuell,User-selectable
-COUNTER version 4,License.Statistics.Standards,COUNTER version 4,COUNTER version 4
-COUNTER version 5,License.Statistics.Standards,COUNTER version 5,COUNTER version 5
-ICOLC 1998,License.Statistics.Standards,ICOLC 1998,ICOLC 1998
-None,License.Statistics.UserCreds,Keins,None
-Other,License.Statistics.UserCreds,Anderes,Other
-Same as Admin,License.Statistics.UserCreds,Das gleiche wie Admin,Same as Admin
-Content,LicenseCategory,Content,Content
-Other,LicenseCategory,Andere,Other
-Software,LicenseCategory,Software,Software
-All but Walk-ins,Lincense.RemoteAccess,Alle außer Walk-In-User,All but Walk-ins
-No,Lincense.RemoteAccess,Nein,No
-Yes,Lincense.RemoteAccess,Ja,Yes
-Agency,OrgRoleType,Lieferant,Agency
-Broker,OrgRoleType,Vermittler,Broker
-Consortium,OrgRoleType,Konsortium,Consortium
-Content Provider,OrgRoleType,Inhaltsanbieter,Content Provider
-Department,OrgRoleType,Institut,Department
-Imprint,OrgRoleType,Imprint,Imprint
-Institution,OrgRoleType,Einrichtung,Institution
-Issuing Body,OrgRoleType,Issuing Body,Issuing Body
-Library Service,OrgRoleType,Bibliotheksservice,Library Service
-Licensee,OrgRoleType,Lizenznehmer,Licensee
-Licensor,OrgRoleType,Lizenzgeber,Licensor
-Other,OrgRoleType,Andere,Other
-Platform Provider,OrgRoleType,Plattformanbieter,Platform Provider
-Provider,OrgRoleType,Anbieter,Provider
-Publisher,OrgRoleType,Verlag,Publisher
-Vendor,OrgRoleType,Verkäufer,Vendor
-Current,Package Status,Aktuell,Current
-Deleted,Package Status,Gelöscht,Deleted
-Retired,Package Status,Abgelaufen,Retired
-Accepted,PendingChangeStatus,Angenommen,Accepted
-Pending,PendingChangeStatus,Ausstehend,Pending
-Rejected,PendingChangeStatus,Abgelehnt,Rejected
-Functional Contact,Person Contact Type,Funktionskontakt,Functional Contact
-Personal Contact,Person Contact Type,Personenkontakt,Personal Contact
-Account Manager,Person Position,Account Manager,Account Manager
-Bereichsbibliotheksleitung,Person Position,Bereichsbibliotheksleitung,Bereichsbibliotheksleitung
-Bestandsaufbau,Person Position,Bestandsaufbau,Bestandsaufbau
-Direktion,Person Position,Direktion,Direktion
-Direktionsassistenz,Person Position,Direktionsassistenz,Direktionsassistenz
-Erwerbungsabteilung,Person Position,Erwerbungsabteilung,Erwerbungsabteilung
-Erwerbungsleitung,Person Position,Erwerbungsleitung,Erwerbungsleitung
-Fachreferat,Person Position,Fachreferat,Fachreferat
-Head Access Services,Person Position,Erwerbungsleiter,Head Access Services
-Library Director,Person Position,Bibliotheksdirektor,Library Director
-Medienbearbeitung,Person Position,Medienbearbeitung,Medienbearbeitung
-Sales Director,Person Position,Sales Director,Sales Director
-Sales Support,Person Position,Sales Support,Sales Support
-Zeitschriftenabteilung,Person Position,Zeitschriftenabteilung,Zeitschriftenabteilung
-Specific cluster editor,Person Responsibility,Gruppenkontakt,Specific cluster editor
-Specific license editor,Person Responsibility,Vertragsbearbeiter,Specific license editor
-Specific package editor,Person Responsibility,Paketbearbeiter,Specific package editor
-Specific subscription editor,Person Responsibility,Lizenzkontakt,Specific subscription editor
-Specific title editor,Person Responsibility,Titelbearbeiter,Specific title editor
-Day,ReminderUnit,Tag,Day
-Month,ReminderUnit,Monat,Month
-Week,ReminderUnit,Woche,Week
-Extreme,Task Priority,Extrem,Extreme
-High,Task Priority,Hoch,High
-Low,Task Priority,Niedrig,Low
-Normal,Task Priority,Mittel,Normal
-Trivial,Task Priority,Trivial,Trivial
-Deferred,Task Status,Zurückgestellt,Deferred
-Done,Task Status,Erledigt,Done
-Open,Task Status,Offen,Open
-not applicable,TaxType,nicht anwendbar,not applicable
-not taxable,TaxType,nicht steuerbar,not taxable
-taxable,TaxType,steuerbar,taxable
-taxable tax-exempt,TaxType,steuerbar steuerbefreit,taxable tax-exempt
-At will,Termination Condition,Nach Belieben,At will
-Breach by Licensor/Licensee,Termination Condition,Wegen Verstoß des Vertragspartners,Breach by Licensor/Licensee
-Other,Termination Condition,Andere Gründe,Other
-Unknown,Termination Condition,Unklar,Unknown
-Bug,Ticket.Category,Fehler,Bug
-Improvement,Ticket.Category,Verbesserungsvorschlag,Improvement
-Deferred,Ticket.Status,Zurückgestellt,Deferred
-Done,Ticket.Status,Erledigt,Done
-In Progress,Ticket.Status,In Bearbeitung,In Progress
-New,Ticket.Status,Neu,New
-Open,Ticket.Status,Angenommen,Open
-Transfer In,Tipp.StatusReason,Transfer In,Transfer In
-Transfer Out,Tipp.StatusReason,Transfer Out,Transfer Out
-No,TitleInstancePackagePlatform.DelayedOA,Nein,No
-Unknown,TitleInstancePackagePlatform.DelayedOA,Unbekannt,Unknown
-Yes,TitleInstancePackagePlatform.DelayedOA,Ja,Yes
-No,TitleInstancePackagePlatform.HybridOA,Nein,No
-Unknown,TitleInstancePackagePlatform.HybridOA,Unbekannt,Unknown
-Yes,TitleInstancePackagePlatform.HybridOA,Ja,Yes
-Complimentary,TitleInstancePackagePlatform.PaymentType,Complimentary,Complimentary
-Limited Promotion,TitleInstancePackagePlatform.PaymentType,Limited Promotion,Limited Promotion
-OA,TitleInstancePackagePlatform.PaymentType,OA,OA
-Opt Out Promotion,TitleInstancePackagePlatform.PaymentType,Opt Out Promotion,Opt Out Promotion
-Paid,TitleInstancePackagePlatform.PaymentType,Paid,Paid
-Uncharged,TitleInstancePackagePlatform.PaymentType,Uncharged,Uncharged
-Unknown,TitleInstancePackagePlatform.PaymentType,Unbekannt,Unknown
-Announcements,User.Settings.Dashboard.Tab,Ankündigungen,Announcements
-Changes,User.Settings.Dashboard.Tab,Änderungen,Changes
-Due Dates,User.Settings.Dashboard.Tab,Fällige Termine,Due Dates
-Tasks,User.Settings.Dashboard.Tab,Aufgaben,Tasks
-No,YN,Nein,No
-Yes,YN,Ja,Yes
-No,YNO,Nein,No
-Not applicable,YNO,Nicht zutreffend,Not applicable
-Other,YNO,Andere,Other
-Planed,YNO,Geplant,Planed
-Unknown,YNO,Unklar,Unknown
-Yes,YNO,Ja,Yes
-No,YNU,Nein,No
-Unknown,YNU,Unbekannt,Unknown
-Yes,YNU,Ja,Yes
+rdc,token,value_de,value_en
+Access choice remote,Academic,Wissenschaftler,Academic
+Access choice remote,all,alle,all
+Access choice remote,no Access,kein Zugang,no Access
+Access Method,ip4,IPv4,IPv4
+Access Method,ip6,IPv6,IPv6
+Access Method,oa,OpenAthens,Open Athens
+Access Method,proxy,Proxy,Proxy
+Access Method,ref,Referrer,Referrer
+Access Method,shibboleth,Shibboleth,Shibboleth
+Access Method,up,Benutzername/Passwort,Username/Password
+Access Point Type,ezproxy,EZproxy,EZproxy
+Access Point Type,ip,IP,IP
+Access Point Type,proxy,Proxy,Proxy
+Access Point Type,shibboleth,Shibboleth,Shibboleth
+Access Point Type,vpn,VPN,VPN
+AddressType,Billing address,Rechnungsanschrift,Billing address
+AddressType,Delivery address,Lieferanschrift,Delivery address
+AddressType,Legal patron address,Anschrift des rechtlichen Trägers,Legal patron address
+AddressType,Library address,Anschrift,Library address
+AddressType,Postal address,Postanschrift,Postal address
+Authority,Author,Autor,Author
+Authority,Author and Institution,Autor und Institution,Author and Institution
+Authority,Institution,Institution,Institution
+Authority,Research Funding Institution,Forschungsförderer,Research Funding Institution
+Category A-F,A,A,A
+Category A-F,B,B,B
+Category A-F,C,C,C
+Category A-F,D,D,D
+Category A-F,E,E,E
+Category A-F,F,F,F
+Combo Status,Active,Aktiv,Active
+Combo Status,Inactive,Inaktiv,Inactive
+ConcurrentAccess,No limit,Ohne Begrenzung,No limit
+ConcurrentAccess,Not Specified,Nicht festgelegt,Not Specified
+ConcurrentAccess,Other,Andere,Other
+ConcurrentAccess,Specified,Festgelegt,Specified
+Confidentiality,All,Alles,All
+Confidentiality,All but user terms,Alles außer Nutzungsbedingungen,All but user terms
+Confidentiality,Financial only,Nur Finanzangelegenheiten,Financial only
+Confidentiality,No,Nein,No
+Confidentiality,Unknown,Unklar,Unknown
+ContactContentType,E-Mail,E-Mail,E-Mail
+ContactContentType,Fax,Fax,Fax
+ContactContentType,Phone,Telefon,Phone
+ContactContentType,Url,Url,Url
+ContactType,Job-related,Geschäftlich,Job-related
+ContactType,Personal,Privat,Personal
+CoreStatus,Electronic,Elektronisch,Electronic
+CoreStatus,No,Nein,No
+CoreStatus,Print,Print,Print
+CoreStatus,Print+Electronic,Print & Elektronisch,Print+Electronic
+CoreStatus,Yes,Ja,Yes
+Cost configuration,negative,negativ,negative
+Cost configuration,neutral,neutral,neutral
+Cost configuration,positive,positiv,positive
+CostItem.Type,Actual,Konkrete Instanz,Actual
+CostItem.Type,Template,Vorlage,Template
+CostItemElement,additionalclaim: currency rate,Nachforderung aus Kursdifferenz,additionalclaim: currency rate
+CostItemElement,additionalclaim: other,Nachforderung: Sonstige,additionalclaim: other
+CostItemElement,discount: alliance licence discount,Rabatt für Allianzlizenz,discount: alliance licence discount
+CostItemElement,discount: consortial discount,Rabatt: Konsortialrabatt,discount: consortial discount
+CostItemElement,discount: early pay discount,Rabatt: Frühzahlerrabatt,discount: early pay discount
+CostItemElement,discount: multiyear discount,Rabatt für Mehrjahresvertrag,discount: multiyear discount
+CostItemElement,discount: other,Rabatt: Sonstige,discount: other
+CostItemElement,discount: quantity discount,Rabatt: Mengenrabatt,discount: quantity discount
+CostItemElement,discount: single payment discount,Rabatt für eine Rechnung via Konsortium,discount: single payment discount
+CostItemElement,fee: administration,Gebühr: Verwaltungsgebühr,fee: administration
+CostItemElement,fee: bank charge,Gebühr: Bankgebühr,fee: bank charge
+CostItemElement,fee: invoicing,Gebühr: Rechnungsstellungsgebühr,fee: invoicing
+CostItemElement,fee: other,Gebühr: Sonstige,fee: other
+CostItemElement,fee: setup,Gebühr: SetUp-Gebühr,fee: setup
+CostItemElement,fee: technical access,Gebühr: Plattformgebühr,fee: technical access
+CostItemElement,price: consortial price,Preis: Konsortialpreis,price: consortial price
+CostItemElement,price: final price,Preis: Endpreis,price: final price
+CostItemElement,price: list price,Preis: Listenpreis,price: list price
+CostItemElement,price: other,Preis: Sonstige,price: other
+CostItemElement,price: print share,Preis: Printanteil,price: print share
+CostItemElement,price: provider price,Preis: Anbieterpreis,price: provider price
+CostItemElement,price: short term loan,Preis: Short-Term-Loan,price: short term loan
+CostItemElement,refund: currency rate,Erstattung: Kursgutschrift,refund: currency rate
+CostItemElement,refund: OA,Erstattung: Open-Access-Gutschrift,refund: OA
+CostItemElement,refund: other,Erstattung: Sonstige,refund: other
+CostItemElement,refund: retransfer,Erstattung: Rücküberweisung,refund: retransfer
+CostItemElement,refund: system downtime,Erstattung: Ersatz für Ausfallzeiten,refund: system downtime
+CostItemElement,special funds: central funding,Sondermittel: Zentralmittel,special funds: central funding
+CostItemElement,tax: purchase tax 19,Steuer: Umsatzsteuer 19%,tax: purchase tax 19%
+CostItemElement,tax: purchase tax 7,Steuer: Umsatzsteuer 7%,tax: purchase tax 7%
+CostItemElement,tax: source tax,Steuer: Quellensteuer,tax:  source tax
+CostItemStatus,Actual,feststehend,Actual
+CostItemStatus,Calculated,kalkuliert,Calculated
+CostItemStatus,Commitment,zugesagt,Commitment
+CostItemStatus,Deleted,Gelöscht,Deleted
+CostItemStatus,Estimate,geschätzt,Estimate
+CostItemStatus,Other,Sonstige,Other
+Country,AD,Andorra,Andorra
+Country,AE,Vereinigte Arabische Emirate,United Arab Emirates
+Country,AF,Afghanistan,Afghanistan
+Country,AG,Antigua und Barbuda,Antigua and Barbuda
+Country,AI,Anguilla,Anguilla
+Country,AL,Albanien,Albania
+Country,AM,Armenien,Armenia
+Country,AO,Angola,Angola
+Country,AQ,Antarktis,Antarctica
+Country,AR,Argentinien,Argentina
+Country,AS,"Samoa, amerikanischer Teil",American Samoa
+Country,AT,Österreich,Austria
+Country,AU,Australien,Australia
+Country,AW,Aruba,Aruba
+Country,AX,Åland,Åland Islands
+Country,AZ,Aserbaidschan,Azerbaijan
+Country,BA,Bosnien-Herzegowina,Bosnia and Herzegovina
+Country,BB,Barbados,Barbados
+Country,BD,Bangladesh,Bangladesh
+Country,BE,Belgien,Belgium
+Country,BF,Burkina Faso,Burkina Faso
+Country,BG,Bulgarien,Bulgaria
+Country,BH,Bahrain,Bahrain
+Country,BI,Burundi,Burundi
+Country,BJ,Benin,Benin
+Country,BL,St. Barthélemy,Saint Barthélemy
+Country,BM,Bermuda,Bermuda
+Country,BN,Brunei,Brunei Darussalam
+Country,BO,Bolivien,"Bolivia, Plurinational State of"
+Country,BQ,Karibische Niederlande,"Bonaire, Sint Eustatius and Saba"
+Country,BR,Brasilien,Brazil
+Country,BS,Bahamas,Bahamas
+Country,BT,Bhutan,Bhutan
+Country,BV,Bouvet-Insel,Bouvet Island
+Country,BW,Botswana,Botswana
+Country,BY,Belarus,Belarus
+Country,BZ,Belize,Belize
+Country,CA,Kanada,Canada
+Country,CC,Kokos-Insel (Keeling),Cocos (Keeling) Islands
+Country,CD,"Kongo, demokratische Republik","Congo, the Democratic Republic of the"
+Country,CF,Zentralafrika,Central African Republic
+Country,CG,Kongo (Republik),Congo
+Country,CH,Schweiz,Switzerland
+Country,CI,Elfenbeinküste,Côte d'Ivoire
+Country,CK,Cook-Inseln,Cook Islands
+Country,CL,Chile,Chile
+Country,CM,Kamerun,Cameroon
+Country,CN,China (Volksrepublik),China
+Country,CO,Kolumbien,Colombia
+Country,CR,Costa Rica,Costa Rica
+Country,CU,Kuba,Cuba
+Country,CV,Kapverdische Inseln,Cape Verde
+Country,CW,Curaçao,Curaçao
+Country,CX,Weihnachtsinseln (indischer Ozean),Christmas Island
+Country,CY,Zypern,Cyprus
+Country,CZ,Tschechische Republik,Czech Republic
+Country,DE,Deutschland,Germany
+Country,DJ,Djibouti,Djibouti
+Country,DK,Dänemark,Denmark
+Country,DM,Dominica,Dominica
+Country,DO,Dominikanische Republik,Dominican Republic
+Country,DZ,Algerien,Algeria
+Country,EC,Ekuador,Ecuador
+Country,EE,Estland,Estonia
+Country,EG,Ägypten,Egypt
+Country,EH,Westsahara,Western Sahara
+Country,ER,Eritrea,Eritrea
+Country,ES,Spanien,Spain
+Country,ET,Äthiopien,Ethiopia
+Country,FI,Finnland,Finland
+Country,FJ,Fidschi,Fiji
+Country,FK,Falkland-Inseln,Falkland Islands (Malvinas)
+Country,FM,Mikronesien (Föderierte Staaten von),"Micronesia, Federated States of"
+Country,FO,Färöer-Inseln,Faroe Islands
+Country,FR,Frankreich,France
+Country,GA,Gabun,Gabon
+Country,GB,Grossbritannien und Nordirland,United Kingdom
+Country,GD,Grenada,Grenada
+Country,GE,Georgien,Georgia
+Country,GF,Französisch-Guyana,French Guiana
+Country,GG,Guernsey,Guernsey
+Country,GH,Ghana,Ghana
+Country,GI,Gibraltar,Gibraltar
+Country,GL,Grönland,Greenland
+Country,GM,Gambia,Gambia
+Country,GN,Guinea (Republik),Guinea
+Country,GP,Guadeloupe,Guadeloupe
+Country,GQ,Äquatorial-Guinea,Equatorial Guinea
+Country,GR,Griechenland,Greece
+Country,GS,Südgeorgien und die südlichen Sandwichinseln,South Georgia and the South Sandwich Islands
+Country,GT,Guatemala,Guatemala
+Country,GU,Guam,Guam
+Country,GW,Guinea-Bissau,Guinea-Bissau
+Country,GY,Guyana,Guyana
+Country,HK,Hongkong,Hong Kong
+Country,HM,Heard- und McDonald-Inseln,Heard Island and McDonald Islands
+Country,HN,Honduras,Honduras
+Country,HR,Kroatien,Croatia
+Country,HT,Haiti,Haiti
+Country,HU,Ungarn,Hungary
+Country,ID,Indonesien,Indonesia
+Country,IE,Irland,Ireland
+Country,IL,Israel,Israel
+Country,IM,"Man, Insel",Isle of Man
+Country,IN,Indien,India
+Country,IO,Britisches Territorium im indischen Ozean,British Indian Ocean Territory
+Country,IQ,Irak,Iraq
+Country,IR,Iran,"Iran, Islamic Republic of"
+Country,IS,Island,Iceland
+Country,IT,Italien,Italy
+Country,JE,Jersey,Jersey
+Country,JM,Jamaika,Jamaica
+Country,JO,Jordanien,Jordan
+Country,JP,Japan,Japan
+Country,KE,Kenia,Kenya
+Country,KG,Kirgisistan,Kyrgyzstan
+Country,KH,Kambodscha,Cambodia
+Country,KI,Kiribati,Kiribati
+Country,KM,Komoren,Comoros
+Country,KN,St. Christoph (St. Kitts) und Nevis,Saint Kitts and Nevis
+Country,KP,"Korea, demokratische Volksrepublik (Nordkorea)","Korea, Democratic People's Republic of"
+Country,KR,"Korea, Republik (Südkorea)","Korea, Republic of"
+Country,KW,Kuwait,Kuwait
+Country,KY,Cayman,Cayman Islands
+Country,KZ,Kasachstan,Kazakhstan
+Country,LA,Laos,Lao People's Democratic Republic
+Country,LB,Libanon,Lebanon
+Country,LC,St. Lucia,Saint Lucia
+Country,LI,Liechtenstein,Liechtenstein
+Country,LK,Sri Lanka,Sri Lanka
+Country,LR,Liberia,Liberia
+Country,LS,Lesotho,Lesotho
+Country,LT,Litauen,Lithuania
+Country,LU,Luxemburg,Luxembourg
+Country,LV,Lettland,Latvia
+Country,LY,Libyen,Libya
+Country,MA,Marokko,Morocco
+Country,MC,Monaco,Monaco
+Country,MD,Moldova,"Moldova, Republic of"
+Country,ME,"Montenegro, Republik",Montenegro
+Country,MF,St. Martin,Saint Martin (French part)
+Country,MG,Madagaskar,Madagascar
+Country,MH,Marshall-Inseln,Marshall Islands
+Country,MK,"Mazedonien, ehemalige jugoslawische Republik","Macedonia, the Former Yugoslav Republic of"
+Country,ML,Mali,Mali
+Country,MM,Myanmar (Union),Myanmar
+Country,MN,Mongolei,Mongolia
+Country,MO,Macao,Macao
+Country,MP,Marianen-Inseln,Northern Mariana Islands
+Country,MQ,Martinique,Martinique
+Country,MR,Mauretanien,Mauritania
+Country,MS,Montserrat,Montserrat
+Country,MT,Malta,Malta
+Country,MU,"Mauritius, Insel",Mauritius
+Country,MV,Malediven,Maldives
+Country,MW,Malawi,Malawi
+Country,MX,Mexiko,Mexico
+Country,MY,Malaysia,Malaysia
+Country,MZ,Mosambik,Mozambique
+Country,NA,Namibia,Namibia
+Country,NC,Neukaledonien,New Caledonia
+Country,NE,Niger,Niger
+Country,NF,Norfolk-Insel,Norfolk Island
+Country,NG,Nigeria,Nigeria
+Country,NI,Nicaragua,Nicaragua
+Country,NL,Niederlande,Netherlands
+Country,NO,Norwegen,Norway
+Country,NP,Nepal,Nepal
+Country,NR,Nauru,Nauru
+Country,NU,Niue,Niue
+Country,NZ,Neuseeland,New Zealand
+Country,OM,Oman,Oman
+Country,PA,Panama,Panama
+Country,PE,Peru,Peru
+Country,PF,Französisch-Polynesien,French Polynesia
+Country,PG,Papua-Neuguinea,Papua New Guinea
+Country,PH,Philippinen,Philippines
+Country,PK,Pakistan,Pakistan
+Country,PL,Polen,Poland
+Country,PM,St. Pierre und Miquelon,Saint Pierre and Miquelon
+Country,PN,Pitcairn,Pitcairn
+Country,PR,Puerto Rico,Puerto Rico
+Country,PS,Palästina,"Palestine, State of"
+Country,PT,Portugal,Portugal
+Country,PW,Palau,Palau
+Country,PY,Paraguay,Paraguay
+Country,QA,Qatar,Qatar
+Country,RE,Réunion,Réunion
+Country,RO,Rumänien,Romania
+Country,RS,"Serbien,  Republik",Serbia
+Country,RU,Russische Föderation,Russian Federation
+Country,RW,Rwanda,Rwanda
+Country,SA,Saudi-Arabien,Saudi Arabia
+Country,SB,Salomon-Inseln,Solomon Islands
+Country,SC,Seychellen,Seychelles
+Country,SD,Sudan,Sudan
+Country,SE,Schweden,Sweden
+Country,SG,Singapur,Singapore
+Country,SH,"St. Helena, Ascension und Tristan da Cunha","Saint Helena, Ascension and Tristan da Cunha"
+Country,SI,Slowenien,Slovenia
+Country,SJ,Svalbard und Insel Jan Mayen,Svalbard and Jan Mayen
+Country,SK,Slowakische Republik,Slovakia
+Country,SL,Sierra Leone,Sierra Leone
+Country,SM,San Marino,San Marino
+Country,SN,Senegal,Senegal
+Country,SO,Somalia,Somalia
+Country,SR,Suriname,Suriname
+Country,SS,Südsudan,South Sudan
+Country,ST,St. Thomas und Principe,Sao Tome and Principe
+Country,SV,El Salvador,El Salvador
+Country,SX,St. Maarten,Sint Maarten (Dutch part)
+Country,SY,Syrien,Syrian Arab Republic
+Country,SZ,Swasiland,Swaziland
+Country,TC,Turks und Caicos,Turks and Caicos Islands
+Country,TD,Tschad,Chad
+Country,TF,Französische Süd- und Antarktisgebiete,French Southern Territories
+Country,TG,Togo,Togo
+Country,TH,Thailand,Thailand
+Country,TJ,Tadschikistan,Tajikistan
+Country,TK,Tokelau,Tokelau
+Country,TL,Timor-Leste,Timor-Leste
+Country,TM,Turkmenistan,Turkmenistan
+Country,TN,Tunesien,Tunisia
+Country,TO,Tonga,Tonga
+Country,TR,Türkei,Turkey
+Country,TT,Trinidad und Tobago,Trinidad and Tobago
+Country,TV,Tuvalu,Tuvalu
+Country,TW,Taiwan (Chinesisches Taipei),"Taiwan, Province of China"
+Country,TZ,Tansania,"Tanzania, United Republic of"
+Country,UA,Ukraine,Ukraine
+Country,UG,Uganda,Uganda
+Country,UM,"Amerikanische Überseeinseln, kleinere",United States Minor Outlying Islands
+Country,US,Vereinigte Staaten von Amerika,United States
+Country,UY,Uruguay,Uruguay
+Country,UZ,Usbekistan,Uzbekistan
+Country,VA,Vatikan,Holy See (Vatican City State)
+Country,VC,St. Vincent und Grenadinen,Saint Vincent and the Grenadines
+Country,VE,Venezuela,"Venezuela, Bolivarian Republic of"
+Country,VG, britischer Teil (Tortola),"Virgin Islands, British,Virginische Inseln"
+Country,VI,Amerikanische Jungferninseln,"Virgin Islands, U.S."
+Country,VN,Vietnam,Viet Nam
+Country,VU,Vanuatu,Vanuatu
+Country,WF,Wallis und Futuna,Wallis and Futuna
+Country,WS,"Samoa, West",Samoa
+Country,YE,Jemen,Yemen
+Country,YT,Mayotte,Mayotte
+Country,ZA,Südafrika,South Africa
+Country,ZM,Sambia,Zambia
+Country,ZW,Zimbabwe,Zimbabwe
+CreatorType,Author,Autor,Author
+CreatorType,Editor,Herausgeber,Editor
+Currency,AED,AED - United Arab Emirates Dirham,AED - United Arab Emirates Dirham
+Currency,AFN,AFN - Afghanistan Afghani,AFN - Afghanistan Afghani
+Currency,ALL,ALL - Albania Lek,ALL - Albania Lek
+Currency,AMD,AMD - Armenia Dram,AMD - Armenia Dram
+Currency,ANG,ANG - Netherlands Antilles Guilder,ANG - Netherlands Antilles Guilder
+Currency,AOA,AOA - Angola Kwanza,AOA - Angola Kwanza
+Currency,ARS,ARS - Argentina Peso,ARS - Argentina Peso
+Currency,AUD,AUD - Australia Dollar,AUD - Australia Dollar
+Currency,AWG,AWG - Aruba Guilder,AWG - Aruba Guilder
+Currency,AZN,AZN - Azerbaijan New Manat,AZN - Azerbaijan New Manat
+Currency,BAM,BAM - Bosnia and Herzegovina Convertible Marka,BAM - Bosnia and Herzegovina Convertible Marka
+Currency,BBD,BBD - Barbados Dollar,BBD - Barbados Dollar
+Currency,BDT,BDT - Bangladesh Taka,BDT - Bangladesh Taka
+Currency,BGN,BGN - Bulgaria Lev,BGN - Bulgaria Lev
+Currency,BHD,BHD - Bahrain Dinar,BHD - Bahrain Dinar
+Currency,BIF,BIF - Burundi Franc,BIF - Burundi Franc
+Currency,BMD,BMD - Bermuda Dollar,BMD - Bermuda Dollar
+Currency,BND,BND - Brunei Darussalam Dollar,BND - Brunei Darussalam Dollar
+Currency,BOB,BOB - Bolivia Boliviano,BOB - Bolivia Boliviano
+Currency,BRL,BRL - Brazil Real,BRL - Brazil Real
+Currency,BSD,BSD - Bahamas Dollar,BSD - Bahamas Dollar
+Currency,BTN,BTN - Bhutan Ngultrum,BTN - Bhutan Ngultrum
+Currency,BWP,BWP - Botswana Pula,BWP - Botswana Pula
+Currency,BYR,BYR - Belarus Ruble,BYR - Belarus Ruble
+Currency,BZD,BZD - Belize Dollar,BZD - Belize Dollar
+Currency,CAD,CAD - Canada Dollar,CAD - Canada Dollar
+Currency,CDF,CDF - Congo/Kinshasa Franc,CDF - Congo/Kinshasa Franc
+Currency,CHF,CHF - Switzerland Franc,CHF - Switzerland Franc
+Currency,CLP,CLP - Chile Peso,CLP - Chile Peso
+Currency,CNY,CNY - China Yuan Renminbi,CNY - China Yuan Renminbi
+Currency,COP,COP - Colombia Peso,COP - Colombia Peso
+Currency,CRC,CRC - Costa Rica Colon,CRC - Costa Rica Colon
+Currency,CUC,CUC - Cuba Convertible Peso,CUC - Cuba Convertible Peso
+Currency,CUP,CUP - Cuba Peso,CUP - Cuba Peso
+Currency,CVE,CVE - Cape Verde Escudo,CVE - Cape Verde Escudo
+Currency,CZK,CZK - Czech Republic Koruna,CZK - Czech Republic Koruna
+Currency,DJF,DJF - Djibouti Franc,DJF - Djibouti Franc
+Currency,DKK,DKK - Denmark Krone,DKK - Denmark Krone
+Currency,DOP,DOP - Dominican Republic Peso,DOP - Dominican Republic Peso
+Currency,DZD,DZD - Algeria Dinar,DZD - Algeria Dinar
+Currency,EGP,EGP - Egypt Pound,EGP - Egypt Pound
+Currency,ERN,ERN - Eritrea Nakfa,ERN - Eritrea Nakfa
+Currency,ETB,ETB - Ethiopia Birr,ETB - Ethiopia Birr
+Currency,EUR,EUR - Euro Member Countries,EUR - Euro Member Countries
+Currency,FJD,FJD - Fiji Dollar,FJD - Fiji Dollar
+Currency,FKP,FKP - Falkland Islands (Malvinas) Pound,FKP - Falkland Islands (Malvinas) Pound
+Currency,GBP,GBP - United Kingdom Pound,GBP - United Kingdom Pound
+Currency,GEL,GEL - Georgia Lari,GEL - Georgia Lari
+Currency,GGP,GGP - Guernsey Pound,GGP - Guernsey Pound
+Currency,GHS,GHS - Ghana Cedi,GHS - Ghana Cedi
+Currency,GIP,GIP - Gibraltar Pound,GIP - Gibraltar Pound
+Currency,GMD,GMD - Gambia Dalasi,GMD - Gambia Dalasi
+Currency,GNF,GNF - Guinea Franc,GNF - Guinea Franc
+Currency,GTQ,GTQ - Guatemala Quetzal,GTQ - Guatemala Quetzal
+Currency,GYD,GYD - Guyana Dollar,GYD - Guyana Dollar
+Currency,HKD,HKD - Hong Kong Dollar,HKD - Hong Kong Dollar
+Currency,HNL,HNL - Honduras Lempira,HNL - Honduras Lempira
+Currency,HRK,HRK - Croatia Kuna,HRK - Croatia Kuna
+Currency,HTG,HTG - Haiti Gourde,HTG - Haiti Gourde
+Currency,HUF,HUF - Hungary Forint,HUF - Hungary Forint
+Currency,IDR,IDR - Indonesia Rupiah,IDR - Indonesia Rupiah
+Currency,ILS,ILS - Israel Shekel,ILS - Israel Shekel
+Currency,IMP,IMP - Isle of Man Pound,IMP - Isle of Man Pound
+Currency,INR,INR - India Rupee,INR - India Rupee
+Currency,IQD,IQD - Iraq Dinar,IQD - Iraq Dinar
+Currency,IRR,IRR - Iran Rial,IRR - Iran Rial
+Currency,ISK,ISK - Iceland Krona,ISK - Iceland Krona
+Currency,JEP,JEP - Jersey Pound,JEP - Jersey Pound
+Currency,JMD,JMD - Jamaica Dollar,JMD - Jamaica Dollar
+Currency,JOD,JOD - Jordan Dinar,JOD - Jordan Dinar
+Currency,JPY,JPY - Japan Yen,JPY - Japan Yen
+Currency,KES,KES - Kenya Shilling,KES - Kenya Shilling
+Currency,KGS,KGS - Kyrgyzstan Som,KGS - Kyrgyzstan Som
+Currency,KHR,KHR - Cambodia Riel,KHR - Cambodia Riel
+Currency,KMF,KMF - Comoros Franc,KMF - Comoros Franc
+Currency,KPW,KPW - Korea (North) Won,KPW - Korea (North) Won
+Currency,KRW,KRW - Korea (South) Won,KRW - Korea (South) Won
+Currency,KWD,KWD - Kuwait Dinar,KWD - Kuwait Dinar
+Currency,KYD,KYD - Cayman Islands Dollar,KYD - Cayman Islands Dollar
+Currency,KZT,KZT - Kazakhstan Tenge,KZT - Kazakhstan Tenge
+Currency,LAK,LAK - Laos Kip,LAK - Laos Kip
+Currency,LBP,LBP - Lebanon Pound,LBP - Lebanon Pound
+Currency,LKR,LKR - Sri Lanka Rupee,LKR - Sri Lanka Rupee
+Currency,LRD,LRD - Liberia Dollar,LRD - Liberia Dollar
+Currency,LSL,LSL - Lesotho Loti,LSL - Lesotho Loti
+Currency,LYD,LYD - Libya Dinar,LYD - Libya Dinar
+Currency,MAD,MAD - Morocco Dirham,MAD - Morocco Dirham
+Currency,MDL,MDL - Moldova Leu,MDL - Moldova Leu
+Currency,MGA,MGA - Madagascar Ariary,MGA - Madagascar Ariary
+Currency,MKD,MKD - Macedonia Denar,MKD - Macedonia Denar
+Currency,MMK,MMK - Myanmar (Burma) Kyat,MMK - Myanmar (Burma) Kyat
+Currency,MNT,MNT - Mongolia Tughrik,MNT - Mongolia Tughrik
+Currency,MOP,MOP - Macau Pataca,MOP - Macau Pataca
+Currency,MRO,MRO - Mauritania Ouguiya,MRO - Mauritania Ouguiya
+Currency,MUR,MUR - Mauritius Rupee,MUR - Mauritius Rupee
+Currency,MVR,MVR - Maldives (Maldive Islands) Rufiyaa,MVR - Maldives (Maldive Islands) Rufiyaa
+Currency,MWK,MWK - Malawi Kwacha,MWK - Malawi Kwacha
+Currency,MXN,MXN - Mexico Peso,MXN - Mexico Peso
+Currency,MYR,MYR - Malaysia Ringgit,MYR - Malaysia Ringgit
+Currency,MZN,MZN - Mozambique Metical,MZN - Mozambique Metical
+Currency,NAD,NAD - Namibia Dollar,NAD - Namibia Dollar
+Currency,NGN,NGN - Nigeria Naira,NGN - Nigeria Naira
+Currency,NIO,NIO - Nicaragua Cordoba,NIO - Nicaragua Cordoba
+Currency,NOK,NOK - Norway Krone,NOK - Norway Krone
+Currency,NPR,NPR - Nepal Rupee,NPR - Nepal Rupee
+Currency,NZD,NZD - New Zealand Dollar,NZD - New Zealand Dollar
+Currency,OMR,OMR - Oman Rial,OMR - Oman Rial
+Currency,PAB,PAB - Panama Balboa,PAB - Panama Balboa
+Currency,PEN,PEN - Peru Nuevo Sol,PEN - Peru Nuevo Sol
+Currency,PGK,PGK - Papua New Guinea Kina,PGK - Papua New Guinea Kina
+Currency,PHP,PHP - Philippines Peso,PHP - Philippines Peso
+Currency,PKR,PKR - Pakistan Rupee,PKR - Pakistan Rupee
+Currency,PLN,PLN - Poland Zloty,PLN - Poland Zloty
+Currency,PYG,PYG - Paraguay Guarani,PYG - Paraguay Guarani
+Currency,QAR,QAR - Qatar Riyal,QAR - Qatar Riyal
+Currency,RON,RON - Romania New Leu,RON - Romania New Leu
+Currency,RSD,RSD - Serbia Dinar,RSD - Serbia Dinar
+Currency,RUB,RUB - Russia Ruble,RUB - Russia Ruble
+Currency,RWF,RWF - Rwanda Franc,RWF - Rwanda Franc
+Currency,SAR,SAR - Saudi Arabia Riyal,SAR - Saudi Arabia Riyal
+Currency,SBD,SBD - Solomon Islands Dollar,SBD - Solomon Islands Dollar
+Currency,SCR,SCR - Seychelles Rupee,SCR - Seychelles Rupee
+Currency,SDG,SDG - Sudan Pound,SDG - Sudan Pound
+Currency,SEK,SEK - Sweden Krona,SEK - Sweden Krona
+Currency,SGD,SGD - Singapore Dollar,SGD - Singapore Dollar
+Currency,SHP,SHP - Saint Helena Pound,SHP - Saint Helena Pound
+Currency,SLL,SLL - Sierra Leone Leone,SLL - Sierra Leone Leone
+Currency,SOS,SOS - Somalia Shilling,SOS - Somalia Shilling
+Currency,SPL,SPL - Seborga Luigino,SPL - Seborga Luigino
+Currency,SRD,SRD - Suriname Dollar,SRD - Suriname Dollar
+Currency,STD,STD - São Tomé and Príncipe Dobra,STD - São Tomé and Príncipe Dobra
+Currency,SVC,SVC - El Salvador Colon,SVC - El Salvador Colon
+Currency,SYP,SYP - Syria Pound,SYP - Syria Pound
+Currency,SZL,SZL - Swaziland Lilangeni,SZL - Swaziland Lilangeni
+Currency,THB,THB - Thailand Baht,THB - Thailand Baht
+Currency,TJS,TJS - Tajikistan Somoni,TJS - Tajikistan Somoni
+Currency,TMT,TMT - Turkmenistan Manat,TMT - Turkmenistan Manat
+Currency,TND,TND - Tunisia Dinar,TND - Tunisia Dinar
+Currency,TOP,TOP - Tonga Pa'anga,TOP - Tonga Pa'anga
+Currency,TRY,TRY - Turkey Lira,TRY - Turkey Lira
+Currency,TTD,TTD - Trinidad and Tobago Dollar,TTD - Trinidad and Tobago Dollar
+Currency,TVD,TVD - Tuvalu Dollar,TVD - Tuvalu Dollar
+Currency,TWD,TWD - Taiwan New Dollar,TWD - Taiwan New Dollar
+Currency,TZS,TZS - Tanzania Shilling,TZS - Tanzania Shilling
+Currency,UAH,UAH - Ukraine Hryvnia,UAH - Ukraine Hryvnia
+Currency,UGX,UGX - Uganda Shilling,UGX - Uganda Shilling
+Currency,USD,USD - United States Dollar,USD - United States Dollar
+Currency,UYU,UYU - Uruguay Peso,UYU - Uruguay Peso
+Currency,UZS,UZS - Uzbekistan Som,UZS - Uzbekistan Som
+Currency,VEF,VEF - Venezuela Bolivar,VEF - Venezuela Bolivar
+Currency,VND,VND - Viet Nam Dong,VND - Viet Nam Dong
+Currency,VUV,VUV - Vanuatu Vatu,VUV - Vanuatu Vatu
+Currency,WST,WST - Samoa Tala,WST - Samoa Tala
+Currency,XAF,XAF - Communauté Financière Africaine (BEAC) CFA Franc BEAC,XAF - Communauté Financière Africaine (BEAC) CFA Franc BEAC
+Currency,XCD,XCD - East Caribbean Dollar,XCD - East Caribbean Dollar
+Currency,XDR,XDR - International Monetary Fund (IMF) Special Drawing Rights,XDR - International Monetary Fund (IMF) Special Drawing Rights
+Currency,XOF,XOF - Communauté Financière Africaine (BCEAO) Franc,XOF - Communauté Financière Africaine (BCEAO) Franc
+Currency,XPF,XPF - Comptoirs Français du Pacifique (CFP) Franc,XPF – Comptoirs Français du Pacifique (CFP) Franc
+Currency,YER,YER - Yemen Rial,YER - Yemen Rial
+Currency,ZAR,ZAR - South Africa Rand,ZAR - South Africa Rand
+Currency,ZMW,ZMW - Zambia Kwacha,ZMW - Zambia Kwacha
+Currency,ZWD,ZWD - Zimbabwe Dollar,ZWD - Zimbabwe Dollar
+CustomerIdentifier.Type,Default,Default,Default
+Document Context Status,Deleted,Gelöscht,Deleted
+Document Type,Addendum,Zusatz,Addendum
+Document Type,Announcement,Angekündigung,Announcement
+Document Type,Announcement,Ankündigung,Announcement
+Document Type,Costs,Preise,Costs
+Document Type,General,Allgemein,General
+Document Type,Invoice,Rechnung,Invoice
+Document Type,KBART,KBART,KBART
+Document Type,License,Vertrag,License
+Document Type,Metadata,Metadaten,Metadata
+Document Type,Note,Anmerkung,Note
+Document Type,Note,Anmerkung,Note
+Document Type,Offer,Angebot,Offer
+Document Type,ONIX-PL License,ONIX-PL Lizenz,ONIX-PL License
+Document Type,Order,Bestellung,Order
+Document Type,Renewal,Renewal,Renewal
+Document Type,Subscription,Lizenz,Subscription
+Document Type,Title List,Titelliste,Title List
+Document Type,Usage Statistics,Nutzungsstatistik,Usage Statistics
+Existence,Existent,Bestehend,Existent
+Existence,Nonexistend,Fehlend,Nonexistend
+FactMetric,ft_total,,ft_total
+FactMetric,record_view,,record_view
+FactMetric,result_click,,result_click
+FactMetric,search_fed,,search_fed
+FactMetric,search_reg,,search_reg
+FactType,BR1R4,,BR1R4
+FactType,BR2R4,,BR2R4
+FactType,DB1R4,,DB1R4
+FactType,JR1GOAR4,,JR1GOAR4
+FactType,JR1R4,,JR1R4
+Federal State,Baden-Wurttemberg,Baden-Württemberg,Baden-Wurttemberg
+Federal State,Bavaria,Bayern,Bavaria
+Federal State,Berlin,Berlin,Berlin
+Federal State,Brandenburg,Brandenburg,Brandenburg
+Federal State,Bremen,Bremen,Bremen
+Federal State,Hamburg,Hamburg,Hamburg
+Federal State,Hesse,Hessen,Hesse
+Federal State,Lower Saxony,Niedersachsen,Lower Saxony
+Federal State,Mecklenburg-West Pomerania,Mecklenburg-Vorpommern,Mecklenburg-West Pomerania
+Federal State,North Rhine-Westphalia,Nordrhein-Westfalen,North Rhine-Westphalia
+Federal State,Rhineland-Palatinate,Rheinland-Pfalz,Rhineland-Palatinate
+Federal State,Saarland,Saarland,Saarland
+Federal State,Saxony,Sachsen,Saxony
+Federal State,Saxony-Anhalt,Sachsen-Anhalt,Saxony-Anhalt
+Federal State,Schleswig-Holstein,Schleswig-Holstein,Schleswig-Holstein
+Federal State,Thuringia,Thüringen,Thuringia
+Funder Type,Catholic Church,Katholische Kirche,Catholic Church
+Funder Type,Commune,Gemeinde,Commune
+Funder Type,Corporate Body or Foundation under Private Law,Körperschaft oder Stiftung des privaten Rechts,Corporate Body or Foundation under Private Law
+Funder Type,Corporate Body or Foundation under Public Law,Körperschaft oder Stiftung des öffentlichen Rechts,Corporate Body or Foundation under Public Law
+Funder Type,County,Kreis,County
+Funder Type,Federal Republic of Germany,Bundesrepublik Deutschland,Federal Republic of Germany
+Funder Type,Federal State,Land,Federal State
+Funder Type,Foreign Funding Body,Ausländische Trägerschaft,Foreign Funding Body
+Funder Type,Other Public Sector Funder,Sonstige öffentliche Trägerschaft,Other Public Sector Funder
+Funder Type,Other Religious Communities,Sonstige Religionsgemeinschaften,Other Religious Communities
+Funder Type,Other Territorial Authority,Sonstige Gebietskörperschaft,Other Territorial Authority
+Funder Type,Private Funding Body (Natural Person),Private Trägerschaft (natürliche Personen),Private Funding Body (Natural Person)
+Funder Type,Protestant Church,Evangelische Kirche,Protestant Church
+Gender,Female,Weiblich,Female
+Gender,Male,Männlich,Male
+Gender,Third Gender,Inter/Divers,Third Gender
+IE Access Status,Current,Aktuell,Current
+IE Access Status,Current(*),Aktuell(*),Current(*)
+IE Access Status,ERROR - No Subscription Start and/or End Date,ERROR - No Subscription Start and/or End Date,ERROR - No Subscription Start and/or End Date
+IE Access Status,Expected,Erwartet,Expected
+IE Access Status,Expired,Abgelaufen,Expired
+IEMedium,Electronic,Elektronisch,Electronic
+IEMedium,Print,Print,Print
+IEMedium,Print and Electronic,Print und Elektronisch,Print and Electronic
+Ill code,a,a - Fernleihe (Ausleihe),a - Ill (loan only)
+Ill code,b,b - Fernleihe (Papierkopie an Endnutzer),b - Ill (copy only)
+Ill code,c,c - Fernleihe (Papierkopie und Ausleihe),c - Ill (loan and copy)
+Ill code,d,d - keine Fernleihe,d - Ill forbidden
+Ill code,e,e - Fernleihe (Elektronischer Versand an Endnutzer),e - Ill (electronic delivery)
+Indemnification,General,Generell,General
+Indemnification,Intellectual Property Only,Nur geistiges Eigentum,Intellectual Property Only
+Indemnification,Other,Andere,Other
+Indemnification,Unknown,Unklar,Unknown
+Invoicing,Consortium,Konsortium,Consortium
+Invoicing,Provider,Anbieter,Provider
+IPv4 Address Format,v4cidr,IPv4 (CIDR),IPv4 (CIDR)
+IPv4 Address Format,v4input,IPv4 (Eingabe),IPv4 (Input)
+IPv4 Address Format,v4ranges,IPv4 (Bereiche),IPv4 (Ranges)
+IPv6 Address Format,v6cidr,IPv6 (CIDR),IPv6 (CIDR)
+IPv6 Address Format,v6input,IPv6 (Eingabe),IPv6 (Input)
+IPv6 Address Format,v6ranges,IPv6 (Bereiche),IPv6 (Ranges)
+Library Network,BVB,BVB,BVB
+Library Network,GBV,GBV,GBV
+Library Network,hbz,hbz,hbz
+Library Network,HeBIS,HeBIS,HeBIS
+Library Network,KOBV,KOBV,KOBV
+Library Network,No Network,Keine Zugehörigkeit,No Network
+Library Network,SWB,SWB,SWB
+Library Type,Fachhochschule,Fachhochschule,University of applied science
+Library Type,Forschungseinrichtung,Forschungseinrichtung,Research institution
+Library Type,Institutsbibliothek,Institutsbibliothek,Department library
+Library Type,keine Angabe,keine Angabe,not specified
+Library Type,Kunst- und Musikhochschule,Kunst- und Musikhochschule,College of Art or Music
+Library Type,Öffentliche Bibliothek,Öffentliche Bibliothek,Public library
+Library Type,Sonstige,Sonstige,Other
+Library Type,Staats-/ Landes-/ Regionalbibliothek,Staats-/ Landes-/ Regionalbibliothek,National / state / regional library
+Library Type,Universität,Universität,University
+Library Type,Wissenschaftliche Spezialbibliothek,Wissenschaftliche Spezialbibliothek,Special scientific library
+License.Arc.ArchivalCopyContent,Data,Rohdaten,Data
+License.Arc.ArchivalCopyContent,DRM-free,Ohne DRM,DRM-free
+License.Arc.ArchivalCopyContent,With Metadata,Inkl. Metadaten,With Metadata
+License.Arc.ArchivalCopyContent,With Software,Inkl. Software,With Software
+License.Arc.ArchivalCopyCost,Free,Kostenlos,Free
+License.Arc.ArchivalCopyCost,Self-copied,Kopie selbst anzufertigen,Self-copied
+License.Arc.ArchivalCopyCost,With Charge,Gegen Gebühr,With Charge
+License.Arc.ArchivalCopyTime,Licence End Date,Mit Vertragsende,Licence End Date
+License.Arc.ArchivalCopyTime,Licence Start Date,Mit Vertragsbeginn,Licence Start Date
+License.Arc.ArchivalCopyTime,On Request,Auf Anfrage,On Request
+License.Arc.ArchivalCopyTime,Trigger Event,Mit Trigger Event,Trigger Event
+License.Arc.ArchivalCopyTransmissionFormat,CDROM,CDROM,CDROM
+License.Arc.ArchivalCopyTransmissionFormat,Remote,Remote,Remote
+License.Arc.ArchivalCopyTransmissionFormat,Tape,Band,Tape
+License.Arc.ArchivalCopyTransmissionFormat,Unspecified tangible format,Unspezifizierter Datenträger,Unspecified tangible format
+License.Arc.Authorized,Contractor,Vertragspartner,Contractor
+License.Arc.Authorized,Contractor With Publisher's Assent,Vertragspartner nach Genehmigung durch Anbieter,Contractor With Publisher's Assent
+License.Arc.Authorized,FID library,FID-Bibliothek,FID library
+License.Arc.Authorized,Former SSG library,Ehemals SSG-Bibliothek,Former SSG library
+License.Arc.Authorized,Licensee,Lizenznehmer,Licensee
+License.Arc.Authorized,SSG-Library,SSG-Bibliothek,SSG-Library
+License.Arc.HostingRestriction,Access Period,Zugriffsdauer,Access Period
+License.Arc.HostingRestriction,File Format,Dateiformat,File Format
+License.Arc.HostingRestriction,Use,Nutzung,Use
+License.Arc.HostingRestriction,Year,Jahrgang,Year
+License.Arc.HostingSolution,CLOCKSS,CLOCKSS,CLOCKSS
+License.Arc.HostingSolution,LOCKSS,LOCKSS,LOCKSS
+License.Arc.HostingSolution,NatHosting PLN,NatHosting PLN,NatHosting PLN
+License.Arc.HostingSolution,NatHosting Portico,NatHosting Portico,NatHosting Portico
+License.Arc.HostingSolution,Own Host,Eigener Host,Own Host
+License.Arc.HostingSolution,Portico,Portico,Portico
+License.Arc.HostingSolution,Publisher,Verlag,Publisher
+License.Arc.HostingSolution,Third Party Systems,Drittsysteme,Third Party Systems
+License.Arc.HostingTime,Always,Immer,Always
+License.Arc.HostingTime,Exclusive,Ohne Anbieter,Exclusive
+License.Arc.HostingTime,From Expiration On,Ab Vertragsende,From Expiration On
+License.Arc.HostingTime,Predefined time,Fester Zeitpunkt,Predefined time
+License.Arc.HostingTime,Trigger Event,Mit Trigger-Event,Trigger Event
+License.Arc.PaymentNote,Hosting fee,Hosting Fee zu zahlen,Hosting fee
+License.Arc.PaymentNote,No Hosting fee,Dauerhaft kostenfrei (keine Hosting Fee),No Hosting fee
+License.Arc.TitletransferRegulation,Existing Regulation,Regelung vorhanden,Existing Regulation
+License.Arc.TitletransferRegulation,No Regulation,Keine Regelung,No Regulation
+License.Arc.TitletransferRegulation,Transfer Code of Practice,Transfer Code of Practice,Transfer Code of Practice
+License.OA.CorrespondingAuthorIdentification,Email Domain,E-Mail-Domäne,Email Domain
+License.OA.CorrespondingAuthorIdentification,IP Range,Über IP-Bereich,IP Range
+License.OA.CorrespondingAuthorIdentification,ORCID,ORCID,ORCID
+License.OA.CorrespondingAuthorIdentification,Other,Anderes,Other
+License.OA.CorrespondingAuthorIdentification,Research Institute,Über Institut,Research Institute
+License.OA.eArcVersion,Accepted Author,Accepted Author,Accepted Author
+License.OA.eArcVersion,Manuscript (AAM),Manuscript (AAM),Manuscript (AAM)
+License.OA.eArcVersion,Postprint,Postprint,Postprint
+License.OA.eArcVersion,Preprint,Preprint,Preprint
+License.OA.eArcVersion,Preprint with ePrint URL,Preprint mit ePrint-URL,Preprint with ePrint URL
+License.OA.eArcVersion,Publisher-PDF,Verlags-PDF-Datei,Publisher-PDF
+License.OA.LicenseToPublish,CC-BY,CC-BY,CC-BY
+License.OA.LicenseToPublish,CC-BY-NC,CC-BY-NC,CC-BY-NC
+License.OA.LicenseToPublish,CC-BY-NC-ND,CC-BY-NC-ND,CC-BY-NC-ND
+License.OA.LicenseToPublish,CC-BY-NC-SA,CC-BY-NC-SA,CC-BY-NC-SA
+License.OA.LicenseToPublish,CC-BY-ND,CC-BY-ND,CC-BY-ND
+License.OA.LicenseToPublish,CC-BY-SA,CC-BY-SA,CC-BY-SA
+License.OA.ReceivingModalities,Automatic Delivery,Automatische Lieferung,Automatic Delivery
+License.OA.ReceivingModalities,By Author,Über Autor,By Author
+License.OA.ReceivingModalities,From Database,Aus Datenank,From Database
+License.OA.ReceivingModalities,Link by Publisher,Verlinkung durch Verlag,Link by Publisher
+License.OA.ReceivingModalities,On Demand,Auf Nachfrage,On Demand
+License.OA.Repository,Institutional,Institutionell,Institutional
+License.OA.Repository,Own Choice,Nach Wahl,Own Choice
+License.OA.Repository,Pre-print Server,Pre-print-Server,Pre-print Server
+License.OA.Repository,Publishers,Verlagseigen,Publishers
+License.OA.Repository,Social Media,Social Media,Social Media
+License.OA.Repository,Subject specific,Fachspezifisch,Subject specific
+License.OA.Repository,Website of Author,Webseite,Website of Author
+License.OA.Type,Blue Open Access,Blue Open-Access,Blue Open Access
+License.OA.Type,Gold Open Access,Gold Open-Access,Gold Open Access
+License.OA.Type,Green Open Access,Green Open-Access,Green Open Access
+License.OA.Type,Hybrid,Hybrid,Hybrid
+License.OA.Type,No Open Access,Kein Open-Access,No Open Access
+License.OA.Type,White Open Access,White Open-Access,White Open Access
+License.OA.Type,Yellow Open Access,Yellow Open-Access,Yellow Open Access
+License.Statistics.Delivery,Email,Email,Email
+License.Statistics.Delivery,Online,Online,Online
+License.Statistics.Delivery,Paper,Papier,Paper
+License.Statistics.Format,ASCII,ASCII,ASCII
+License.Statistics.Format,CSV,CSV,CSV
+License.Statistics.Format,Delimited,Begrenzt (z.B. durch Tab),Delimited
+License.Statistics.Format,Excel,Excel,Excel
+License.Statistics.Format,HTML,HTML,HTML
+License.Statistics.Format,Other,Sonstiges Format,Other
+License.Statistics.Format,PDF,PDF,PDF
+License.Statistics.Frequency,Bi-Annual,Halbjährlich,Bi-Annual
+License.Statistics.Frequency,Monthly,Monatlich,Monthly
+License.Statistics.Frequency,Quarterly,Quartalsweise,Quarterly
+License.Statistics.Frequency,User-selectable,Individuell,User-selectable
+License.Statistics.Standards,COUNTER version 4,COUNTER version 4,COUNTER version 4
+License.Statistics.Standards,COUNTER version 5,COUNTER version 5,COUNTER version 5
+License.Statistics.Standards,ICOLC 1998,ICOLC 1998,ICOLC 1998
+License.Statistics.UserCreds,None,Keins,None
+License.Statistics.UserCreds,Other,Anderes,Other
+License.Statistics.UserCreds,Same as Admin,Das gleiche wie Admin,Same as Admin
+LicenseCategory,Content,Content,Content
+LicenseCategory,Other,Andere,Other
+LicenseCategory,Software,Software,Software
+Lincense.RemoteAccess,All but Walk-ins,Alle außer Walk-In-User,All but Walk-ins
+Lincense.RemoteAccess,No,Nein,No
+Lincense.RemoteAccess,Yes,Ja,Yes
+MailTemplate Language,English,Englisch,English
+MailTemplate Language,German,Deutsch,German
+MailTemplate Type,IP Message,IP-Meldung,IP Message
+OrgRoleType,Agency,Lieferant,Agency
+OrgRoleType,Broker,Vermittler,Broker
+OrgRoleType,Consortium,Konsortium,Consortium
+OrgRoleType,Content Provider,Inhaltsanbieter,Content Provider
+OrgRoleType,Department,Institut,Department
+OrgRoleType,Imprint,Imprint,Imprint
+OrgRoleType,Institution,Einrichtung,Institution
+OrgRoleType,Issuing Body,Issuing Body,Issuing Body
+OrgRoleType,Library Service,Bibliotheksservice,Library Service
+OrgRoleType,Licensee,Lizenznehmer,Licensee
+OrgRoleType,Licensor,Lizenzgeber,Licensor
+OrgRoleType,Other,Andere,Other
+OrgRoleType,Platform Provider,Plattformanbieter,Platform Provider
+OrgRoleType,Provider,Anbieter,Provider
+OrgRoleType,Publisher,Verlag,Publisher
+OrgRoleType,Vendor,Verkäufer,Vendor
+OrgStatus,Current,Aktuell,Current
+OrgStatus,Deleted,Gelöscht,Deleted
+Package Status,Current,Aktuell,Current
+Package Status,Deleted,Gelöscht,Deleted
+Package Status,Retired,Abgelaufen,Retired
+Package.Type,Unkown,Unkown,Unkown
+PendingChangeStatus,Accepted,Angenommen,Accepted
+PendingChangeStatus,Pending,Ausstehend,Pending
+PendingChangeStatus,Rejected,Abgelehnt,Rejected
+Permissions,Not applicable,Nicht zutreffend,Not applicable
+Permissions,Permitted (explicit),Ausdrücklich erlaubt,Permitted (explicit)
+Permissions,Permitted (interpreted),Vermutlich erlaubt,Permitted (interpreted)
+Permissions,Prohibited (explicit),Ausdrücklich verboten,Prohibited (explicit)
+Permissions,Prohibited (interpreted),Vermutlich verboten,Prohibited (interpreted)
+Permissions,Silent,Stillschweigend,Silent
+Permissions,Unknown,Unklar,Unknown
+Person Contact Type,Functional Contact,Funktionskontakt,Functional Contact
+Person Contact Type,Personal Contact,Personenkontakt,Personal Contact
+Person Function,Functional Contact Billing Adress,Rechnungskontakt,Billing contact
+Person Function,Functional Contact Delivery Address,Lieferanschrift,Delivery address
+Person Function,Functional Contact Legal Patron Address,Anschrift des rechtlichen Trägers,Legal patron contact
+Person Function,Functional Contact Library Address,Bibliotheksanschrift,Library address
+Person Function,Functional Contact Postal Address,Postanschrift,Postal address
+Person Position,Account Manager,Account Manager,Account Manager
+Person Position,Bereichsbibliotheksleitung,Bereichsbibliotheksleitung,Bereichsbibliotheksleitung
+Person Position,Bestandsaufbau,Bestandsaufbau,Bestandsaufbau
+Person Position,Direktion,Direktion,Direktion
+Person Position,Direktionsassistenz,Direktionsassistenz,Direktionsassistenz
+Person Position,Erwerbungsabteilung,Erwerbungsabteilung,Erwerbungsabteilung
+Person Position,Erwerbungsleitung,Erwerbungsleitung,Erwerbungsleitung
+Person Position,Fachreferat,Fachreferat,Fachreferat
+Person Position,Head Access Services,Erwerbungsleiter,Head Access Services
+Person Position,Library Director,Bibliotheksdirektor,Library Director
+Person Position,Medienbearbeitung,Medienbearbeitung,Medienbearbeitung
+Person Position,Sales Director,Sales Director,Sales Director
+Person Position,Sales Support,Sales Support,Sales Support
+Person Position,Zeitschriftenabteilung,Zeitschriftenabteilung,Zeitschriftenabteilung
+Person Responsibility,Specific cluster editor,Gruppenkontakt,Specific cluster editor
+Person Responsibility,Specific license editor,Vertragsbearbeiter,Specific license editor
+Person Responsibility,Specific package editor,Paketbearbeiter,Specific package editor
+Person Responsibility,Specific subscription editor,Lizenzkontakt,Specific subscription editor
+Person Responsibility,Specific title editor,Titelbearbeiter,Specific title editor
+Platform Status,Deleted,Deleted,Deleted
+ReminderMethod,email,email,email
+ReminderTrigger,Subscription Manual Renewal Date,Subscription Manual Renewal Date,Subscription Manual Renewal Date
+ReminderUnit,Day,Tag,Day
+ReminderUnit,Month,Monat,Month
+ReminderUnit,Week,Woche,Week
+Semester,s19,Sommersemester 2019,summer semester 2019
+Semester,s20,Sommersemester 2020,summer semester 2020
+Semester,s21,Sommersemester 2021,summer semester 2021
+Semester,s22,Sommersemester 2022,summer semester 2022
+Semester,s23,Sommersemester 2023,summer semester 2023
+Semester,s24,Sommersemester 2024,summer semester 2024
+Semester,s25,Sommersemester 2025,summer semester 2025
+Semester,s26,Sommersemester 2026,summer semester 2026
+Semester,s27,Sommersemester 2027,summer semester 2027
+Semester,s28,Sommersemester 2028,summer semester 2028
+Semester,s29,Sommersemester 2029,summer semester 2029
+Semester,s30,Sommersemester 2030,summer semester 2030
+Semester,s31,Sommersemester 2031,summer semester 2031
+Semester,semester.not.applicable,Nicht anwendbar,Not applicable
+Semester,w18/19,Wintersemester 2018/19,winter semester 2018/19
+Semester,w19/20,Wintersemester 2019/20,winter semester 2019/20
+Semester,w20/21,Wintersemester 2020/21,winter semester 2020/21
+Semester,w21/22,Wintersemester 2021/22,winter semester 2021/22
+Semester,w22/23,Wintersemester 2022/23,winter semester 2022/23
+Semester,w23/24,Wintersemester 2023/24,winter semester 2023/24
+Semester,w24/25,Wintersemester 2024/25,winter semester 2024/25
+Semester,w25/26,Wintersemester 2025/26,winter semester 2025/26
+Semester,w26/27,Wintersemester 2026/27,winter semester 2026/27
+Semester,w27/28,Wintersemester 2027/28,winter semester 2027/28
+Semester,w28/29,Wintersemester 2028/29,winter semester 2028/29
+Semester,w29/30,Wintersemester 2029/30,winter semester 2029/30
+Semester,w30/31,Wintersemester 2030/31,winter semester 2030/31
+Sim-User Number,1,1,1
+Sim-User Number,2,2,2
+Sim-User Number,3,3,3
+Sim-User Number,4,4,4
+Sim-User Number,5,5,5
+Sim-User Number,6,6,6
+Sim-User Number,7,7,7
+Sim-User Number,8,8,8
+Sim-User Number,9,9,9
+Sim-User Number,10,10,10
+Sim-User Number,unlimited,unlimitiert,unlimited
+Subscription Form,desideratum,Desiderat,Desideratum
+Subscription Form,license,Lizenz,License
+Subscription Form,obligation,Pflichtlizenz,Obligation
+Subscription Form,offer,Angebot,Offer
+Subscription Form,purchaseOngoing,Kauf laufend,Ongoing Purchase
+Subscription Form,purchaseUpdate,Kauf mit Update Fee,Purchase with update fee
+Subscription Form,singlePurchase,Einmalkauf,Single Purchase
+Subscription Form,test,Test,Test
+Subscription Resource,avMedia,AV-Medien,AV-Media
+Subscription Resource,data,Daten,Data
+Subscription Resource,database,Datenbank,Database
+Subscription Resource,ebookPackage,E-Book Paket,E-Book Package
+Subscription Resource,ebookSingle,E-Book Einzeltitel,E-Book single title
+Subscription Resource,econferenceProceedings,E-Conference Proceedings,E-Conference Proceedings
+Subscription Resource,ejournalPackage,E-Journal Paket,E-Journal Package
+Subscription Resource,ejournalSingle,E-Journal Einzeltitel,E-Journal single title
+Subscription Resource,ereference,E-Reference,E-Reference
+Subscription Resource,mixed,Gemischtes Paket,Mixed Package
+Subscription Resource,other,Sonstige,Other
+Subscription Resource,software,Software,Software
+Subscription Status,Current,Aktiv,Current
+Subscription Status,Deferred,Zurückgestellt,Deferred
+Subscription Status,Expired,Abgelaufen,Expired
+Subscription Status,ExpiredPerennial,Abgelaufen (Mehrjahreslaufzeit),Expired (Perennial term)
+Subscription Status,Intended,Geplant,Intended
+Subscription Status,IntendedPerennial,Geplant (Mehrjahreslaufzeit),Intended (Perennial term)
+Subscription Status,No longer usable,Nicht mehr nutzbar,No longer usable
+Subscription Status,Ordered,Bestellt,Ordered
+Subscription Status,Publication discontinued,Erscheinen eingestellt,Publication discontinued
+Subscription Status,Rejected,Abgelehnt,Rejected
+Subscription Status,Status not defined,Status nicht festgelegt,Status not defined
+Subscription Status,Terminated,Abbestellt,Terminated
+Subscription Status,Test Access,Testzugriff,Test Access
+Subscription Status,Under Consideration,Entscheidung steht aus,Under Consideration
+Subscription Status,Under Consortial Examination,Wird konsortial geprüft,Under Consortial Examination
+Subscription Status,Under Institutional Examination,Wird institutionell geprüft,Under Institutional Examination
+Subscription Status,Under Negotiation,In Verhandlung,Under Negotiation
+Subscription Type,Administrative Subscription,Verwaltungslizenz,Administrative Subscription
+Subscription Type,Alliance Licence,Allianzlizenz,Alliance Subscription
+Subscription Type,Consortial Licence,Konsortiallizenz,Consortial Subscription
+Subscription Type,Local Licence,Lokale Lizenz,Local Subscription
+Subscription Type,National Licence,Nationallizenz,National Subscription
+Survey Status,Completed,Abgeschlossen,Completed
+Survey Status,In Evaluation,In Auswertung,In Evaluation
+Survey Status,In Processing,In Bearbeitung,In Processing
+Survey Status,Ready,Bereit,Ready
+Survey Status,Survey completed,Umfrage beendet,Survey completed
+Survey Status,Survey started,Umfrage gestartet,Survey started
+Survey Type,interest,Interessenumfrage,Interest Survey
+Survey Type,renewal,Verlängerungsumfrage,Renewal Survey
+Survey Type,selection,Titelauswahl-Umfrage,Title selection Survey
+Task Priority,Extreme,Extrem,Extreme
+Task Priority,High,Hoch,High
+Task Priority,Low,Niedrig,Low
+Task Priority,Normal,Mittel,Normal
+Task Priority,Trivial,Trivial,Trivial
+Task Status,Deferred,Zurückgestellt,Deferred
+Task Status,Done,Erledigt,Done
+Task Status,Open,Offen,Open
+TaxType,not applicable,nicht anwendbar,not applicable
+TaxType,not taxable,nicht steuerbar,not taxable
+TaxType,taxable,steuerbar,taxable
+TaxType,taxable tax-exempt,steuerbar steuerbefreit,taxable tax-exempt
+Termination Condition,At will,Nach Belieben,At will
+Termination Condition,Breach by Licensor/Licensee,Wegen Verstoß des Vertragspartners,Breach by Licensor/Licensee
+Termination Condition,Other,Andere Gründe,Other
+Termination Condition,Unknown,Unklar,Unknown
+Ticket.Category,Bug,Fehler,Bug
+Ticket.Category,Improvement,Verbesserungsvorschlag,Improvement
+Ticket.Status,Deferred,Zurückgestellt,Deferred
+Ticket.Status,Done,Erledigt,Done
+Ticket.Status,In Progress,In Bearbeitung,In Progress
+Ticket.Status,New,Neu,New
+Ticket.Status,Open,Angenommen,Open
+TIPP Access Status,Current,Aktuell,Current
+TIPP Access Status,Current(*),Aktuell(*),Current(*)
+TIPP Access Status,Expected,Erwartet,Expected
+TIPP Access Status,Expired,Abgelaufen,Expired
+Tipp.StatusReason,Transfer In,Transfer In,Transfer In
+Tipp.StatusReason,Transfer Out,Transfer Out,Transfer Out
+TitleInstancePackagePlatform.DelayedOA,No,Nein,No
+TitleInstancePackagePlatform.DelayedOA,Unknown,Unbekannt,Unknown
+TitleInstancePackagePlatform.DelayedOA,Yes,Ja,Yes
+TitleInstancePackagePlatform.HybridOA,No,Nein,No
+TitleInstancePackagePlatform.HybridOA,Unknown,Unbekannt,Unknown
+TitleInstancePackagePlatform.HybridOA,Yes,Ja,Yes
+TitleInstancePackagePlatform.PaymentType,Complimentary,Complimentary,Complimentary
+TitleInstancePackagePlatform.PaymentType,Limited Promotion,Limited Promotion,Limited Promotion
+TitleInstancePackagePlatform.PaymentType,OA,OA,OA
+TitleInstancePackagePlatform.PaymentType,Opt Out Promotion,Opt Out Promotion,Opt Out Promotion
+TitleInstancePackagePlatform.PaymentType,Paid,Paid,Paid
+TitleInstancePackagePlatform.PaymentType,Uncharged,Uncharged,Uncharged
+TitleInstancePackagePlatform.PaymentType,Unknown,Unbekannt,Unknown
+User.Settings.Dashboard.Tab,Announcements,Ankündigungen,Announcements
+User.Settings.Dashboard.Tab,Changes,Änderungen,Changes
+User.Settings.Dashboard.Tab,Due Dates,Fällige Termine,Due Dates
+User.Settings.Dashboard.Tab,Tasks,Aufgaben,Tasks
+User.Settings.Theme,accessibility,Barrierefrei,Accessibility
+User.Settings.Theme,semanticUI,Standard,Default
+YN,No,Nein,No
+YN,Yes,Ja,Yes
+YNO,No,Nein,No
+YNO,Not applicable,Nicht zutreffend,Not applicable
+YNO,Other,Andere,Other
+YNO,Planed,Geplant,Planed
+YNO,Unknown,Unklar,Unknown
+YNO,Yes,Ja,Yes
+YNU,No,Nein,No
+YNU,Unknown,Unbekannt,Unknown
+YNU,Yes,Ja,Yes

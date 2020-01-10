@@ -89,10 +89,10 @@ class UploadController extends AbstractDebugController {
       log.debug("Matched ${content_provider_org} using name ${upload.soProvider.value}");
       incrementStatsCounter(upload, message(code:'package.upload.provider_matched', default:'Content Provider Org Matched'));
     }
-    
-    def pkg_type = RefdataCategory.lookupOrCreate("${RefdataCategory.PKG_TYPE}",'Unknown');
-    def cp_role = RefdataValue.getByValueAndCategory('Content Provider', 'Organisational Role')
-    def tipp_current = RefdataCategory.lookupOrCreate("${RefdataCategory.TIPP_STATUS}",'Current');
+
+    RefdataValue pkg_type = RefdataValue.getByValueAndCategory('Unknown', "${RefdataCategory.PKG_TYPE}")
+    RefdataValue cp_role = RefdataValue.getByValueAndCategory('Content Provider', 'Organisational Role')
+    RefdataValue tipp_current = RefdataValue.getByValueAndCategory('Current', "${RefdataCategory.TIPP_STATUS}")
 
     def consortium = null;
 
@@ -191,7 +191,15 @@ class UploadController extends AbstractDebugController {
 
           def hybrid_oa_status_value = null;
           if ( tipp.hybrid_oa != null ) {
-            hybrid_oa_status_value = RefdataCategory.lookupOrCreate("TitleInstancePackagePlatform.HybridOA", tipp.hybrid_oa.capitalize())
+            // ERMS-2016: hybrid_oa_status_value = RefdataCategory.lookupOrCreate("TitleInstancePackagePlatform.HybridOA", tipp.hybrid_oa.capitalize())
+            // if value exists --> RefdataValue.getByValueAndCategory()
+
+            hybrid_oa_status_value = RefdataValue.construct([
+                    token   : "${tipp.hybrid_oa.capitalize()}",
+                    rdc     : "TitleInstancePackagePlatform.HybridOA",
+                    hardData: false,
+                    i10n    : [en: "${tipp.hybrid_oa.capitalize()}", de: "${tipp.hybrid_oa.capitalize()}"]
+            ])
           }
 
           dbtipp = new TitleInstancePackagePlatform(pkg:new_pkg,

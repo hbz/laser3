@@ -406,17 +406,17 @@ class BootStrap {
                             Map<String, Object> map = [
                                     token   : "${line[0].trim()}",
                                     hardData: BOOTSTRAP,
-                                    i10n    : [en: "${line[2].trim()}", de: "${line[1].trim()}"],
+                                    i10n    : [de: "${line[1].trim()}", en: "${line[2].trim()}"]
                             ]
                             result.add(map)
                         }
                         if (objType == 'RefdataValue') {
-                            // CSV: [token, rdc, value_de, value_en]
+                            // CSV: [rdc, token, value_de, value_en]
                             Map<String, Object> map = [
-                                    token   : "${line[0].trim()}",
-                                    rdc     : "${line[1].trim()}",
+                                    token   : "${line[1].trim()}",
+                                    rdc     : "${line[0].trim()}",
                                     hardData: BOOTSTRAP,
-                                    i10n    : [en: "${line[3].trim()}", de: "${line[2].trim()}"],
+                                    i10n    : [de: "${line[2].trim()}", en: "${line[3].trim()}"]
                             ]
                             result.add(map)
                         }
@@ -425,7 +425,7 @@ class BootStrap {
                             Map<String, Object> map = [
                                     token   : "${line[0].trim()}",
                                     hardData: true,
-                                    i10n    : [en: "${line[2].trim()}", de: "${line[1].trim()}"],
+                                    i10n    : [en: "${line[2].trim()}", de: "${line[1].trim()}"]
                             ]
                             result.add(map)
                         }*/
@@ -2058,23 +2058,6 @@ class BootStrap {
         RefdataValue.loc('filter.fake.values',   [key: 'subscription.status.no.status.set.but.null', en: 'No Status', de: 'Kein Status'], BOOTSTRAP)
         RefdataValue.loc('filter.fake.values',   [key: 'generic.null.value', en: 'Not set', de: 'Nicht gesetzt'], BOOTSTRAP)
 
-        RefdataValue.loc('Permissions',  [en: 'Permitted (explicit)', de: 'Ausdrücklich erlaubt'], BOOTSTRAP)
-        RefdataValue.loc('Permissions',  [en: 'Permitted (interpreted)', de: 'Vermutlich erlaubt'], BOOTSTRAP)
-        RefdataValue.loc('Permissions',  [en: 'Prohibited (explicit)', de: 'Ausdrücklich verboten'], BOOTSTRAP)
-        RefdataValue.loc('Permissions',  [en: 'Prohibited (interpreted)', de: 'Vermutlich verboten'], BOOTSTRAP)
-        RefdataValue.loc('Permissions',  [en: 'Silent', de: 'Stillschweigend'], BOOTSTRAP)
-        RefdataValue.loc('Permissions',  [en: 'Not applicable', de: 'Nicht zutreffend'], BOOTSTRAP)
-        RefdataValue.loc('Permissions',  [en: 'Unknown', de: 'Unklar'], BOOTSTRAP)
-
-        RefdataValue.loc('Existence',   [en: 'Existent', de: 'Bestehend'], BOOTSTRAP)
-        RefdataValue.loc('Existence',   [en: 'Nonexistend', de: 'Fehlend'], BOOTSTRAP)
-
-        RefdataValue.loc('Ill code',   [key: 'a', en: 'a - Ill (loan only)', de: 'a - Fernleihe (Ausleihe)'], BOOTSTRAP)
-        RefdataValue.loc('Ill code',   [key: 'b', en: 'b - Ill (copy only)', de: 'b - Fernleihe (Papierkopie an Endnutzer)'], BOOTSTRAP)
-        RefdataValue.loc('Ill code',   [key: 'c', en: 'c - Ill (loan and copy)', de: 'c - Fernleihe (Papierkopie und Ausleihe)'], BOOTSTRAP)
-        RefdataValue.loc('Ill code',   [key: 'd', en: 'd - Ill forbidden', de: 'd - keine Fernleihe'], BOOTSTRAP)
-        RefdataValue.loc('Ill code',   [key: 'e', en: 'e - Ill (electronic delivery)', de: 'e - Fernleihe (Elektronischer Versand an Endnutzer)'], BOOTSTRAP)
-
         RefdataValue.loc('ClusterType', [en: 'Undefined'], BOOTSTRAP)
 
         // RefdataValue.loc('Country',   [en: 'Germany', de: 'Deutschland'], BOOTSTRAP)
@@ -2088,40 +2071,9 @@ class BootStrap {
         // RefdataValue.loc('Country',   [en: 'Netherlands', de: 'Niederlande'], BOOTSTRAP)
         // RefdataValue.loc('Country',   [en: 'Italy', de: 'Italien'], BOOTSTRAP)
 
-        RefdataValue.loc('CustomerIdentifier.Type', [key: 'Default', en: 'Default', de: 'Default'], BOOTSTRAP)
-
-        RefdataValue.loc('FactType', [en: 'JR1R4'], BOOTSTRAP)
-        RefdataValue.loc('FactType', [en: 'JR1GOAR4'], BOOTSTRAP)
-        RefdataValue.loc('FactType', [en: 'DB1R4'], BOOTSTRAP)
-        RefdataValue.loc('FactType', [en: 'BR1R4'], BOOTSTRAP)
-        RefdataValue.loc('FactType', [en: 'BR2R4'], BOOTSTRAP)
-
-        RefdataValue.loc('FactMetric', [en: 'ft_total'], BOOTSTRAP)
-        RefdataValue.loc('FactMetric', [en: 'record_view'], BOOTSTRAP)
-        RefdataValue.loc('FactMetric', [en: 'result_click'], BOOTSTRAP)
-        RefdataValue.loc('FactMetric', [en: 'search_reg'], BOOTSTRAP)
-        RefdataValue.loc('FactMetric', [en: 'search_fed'], BOOTSTRAP)
-
-        RefdataValue.loc('Invoicing',   [key: 'Provider', en: 'Provider', de: 'Anbieter'], BOOTSTRAP)
-        RefdataValue.loc('Invoicing',   [key: 'Consortium', en: 'Consortium', de: 'Konsortium'], BOOTSTRAP)
-
-        RefdataValue.loc('Library Type',   [key: 'Fachhochschule', en: 'University of applied science', de: 'Fachhochschule'], BOOTSTRAP)
-        RefdataValue.loc('Library Type',   [key: 'Forschungseinrichtung', en: 'Research institution', de: 'Forschungseinrichtung'], BOOTSTRAP)
-        RefdataValue.loc('Library Type',   [key: 'Institutsbibliothek', en: 'Department library', de: 'Institutsbibliothek'], BOOTSTRAP)
-        RefdataValue.loc('Library Type',   [key: 'Kunst- und Musikhochschule', en: 'College of Art or Music', de: 'Kunst- und Musikhochschule'], BOOTSTRAP)
-        RefdataValue.loc('Library Type',   [key: 'Öffentliche Bibliothek', en: 'Public library', de: 'Öffentliche Bibliothek'], BOOTSTRAP)
-        RefdataValue.loc('Library Type',   [key: 'Universität', en: 'University', de: 'Universität'], BOOTSTRAP)
-        RefdataValue.loc('Library Type',   [key: 'Staats-/ Landes-/ Regionalbibliothek', en: 'National / state / regional library', de: 'Staats-/ Landes-/ Regionalbibliothek'], BOOTSTRAP)
-        RefdataValue.loc('Library Type',   [key: 'Wissenschaftliche Spezialbibliothek', en: 'Special scientific library', de: 'Wissenschaftliche Spezialbibliothek'], BOOTSTRAP)
-        RefdataValue.loc('Library Type',   [key: 'Sonstige', en: 'Other', de: 'Sonstige'], BOOTSTRAP)
-        RefdataValue.loc('Library Type',   [key: 'keine Angabe', en: 'not specified', de: 'keine Angabe'], BOOTSTRAP)
-
         RefdataValue.loc('Link Type', [key: 'follows',en:'... follows|... precedes',de: '... ist Nachfolger von|... ist Vorgänger von'], BOOTSTRAP)
         RefdataValue.loc('Link Type', [key: 'references',en: '... references|... is referenced by',de: '... referenziert|... wird referenziert durch'], BOOTSTRAP)
         RefdataValue.loc('Link Type', [key: 'is condition for',en: '... ist condition für|... ist conditioned by', de: '... ist Bedingung für|... ist bedingt durch'], BOOTSTRAP)
-
-        RefdataValue.loc('OrgStatus',      [en: 'Current', de: 'Aktuell'], BOOTSTRAP)
-        RefdataValue.loc('OrgStatus',      [en: 'Deleted', de: 'Gelöscht'], BOOTSTRAP)
 
         RefdataValue.loc('OrgSector',    [en: 'Higher Education', de: 'Akademisch'], BOOTSTRAP)
         RefdataValue.loc('OrgSector',    [key: 'Publisher', en: 'Commercial', de: 'Kommerziell'], BOOTSTRAP)
@@ -2142,160 +2094,16 @@ class BootStrap {
         // RefdataValue.loc('Person Function',     [en: 'Fachreferat', de: 'Fachreferat'], BOOTSTRAP) //Position
         // RefdataValue.loc('Person Function',     [en: 'Bereichsbibliotheksleitung', de: 'Bereichsbibliotheksleitung'], BOOTSTRAP) //Position
 
-        RefdataValue.loc('Person Function', [key: 'Functional Contact Postal Address', en: 'Postal address', de: 'Postanschrift'], BOOTSTRAP)
-        RefdataValue.loc('Person Function', [key: 'Functional Contact Billing Adress', en: 'Billing contact', de: 'Rechnungskontakt'], BOOTSTRAP)
-        RefdataValue.loc('Person Function', [key: 'Functional Contact Delivery Address', en: 'Delivery address', de: 'Lieferanschrift'], BOOTSTRAP)
-        RefdataValue.loc('Person Function', [key: 'Functional Contact Library Address', en: 'Library address', de: 'Bibliotheksanschrift'], BOOTSTRAP)
-        RefdataValue.loc('Person Function', [key: 'Functional Contact Legal Patron Address', en: 'Legal patron contact', de: 'Anschrift des rechtlichen Trägers'], BOOTSTRAP)
-
         RefdataValue.loc('Share Configuration', [en: 'only for creator',de:'nur für Uploader'], BOOTSTRAP)
         RefdataValue.loc('Share Configuration', [key: 'only for author organisation', en: 'only for my organisation',de:'nur für meine Organisation'], BOOTSTRAP)
         RefdataValue.loc('Share Configuration', [key: 'only for author and target organisation', en: 'only for my and target organisation',de:'nur für meine Organisation und die Bezugsorganisation'], BOOTSTRAP)
         //deactivated as March 21st, 2019 - the feature has been postponed into quartal II at least
         //RefdataValue.loc('Share Configuration', [key: 'only for consortia members',en:'only for my consortia members',de:'nur für meine Konsorten'], BOOTSTRAP)
         //RefdataValue.loc('Share Configuration', [en: 'everyone',de:'alle'], BOOTSTRAP)
-
-        RefdataValue.loc('Subscription Form',      [key: 'test', en: 'Test', de: 'Test'], BOOTSTRAP)
-        RefdataValue.loc('Subscription Form',      [key: 'offer', en: 'Offer', de: 'Angebot'], BOOTSTRAP)
-        RefdataValue.loc('Subscription Form',      [key: 'license', en: 'License', de: 'Lizenz'], BOOTSTRAP)
-        RefdataValue.loc('Subscription Form',      [key: 'singlePurchase', en: 'Single Purchase', de: 'Einmalkauf'], BOOTSTRAP)
-        RefdataValue.loc('Subscription Form',      [key: 'desideratum', en: 'Desideratum', de: 'Desiderat'], BOOTSTRAP)
-        RefdataValue.loc('Subscription Form',      [key: 'purchaseUpdate', en: 'Purchase with update fee', de: 'Kauf mit Update Fee'], BOOTSTRAP)
-        RefdataValue.loc('Subscription Form',      [key: 'purchaseOngoing', en: 'Ongoing Purchase', de: 'Kauf laufend'], BOOTSTRAP)
-        RefdataValue.loc('Subscription Form',      [key: 'obligation', en: 'Obligation', de: 'Pflichtlizenz'], BOOTSTRAP)
-
-        RefdataValue.loc('Subscription Resource', [key: 'avMedia', en: 'AV-Media', de: 'AV-Medien'], BOOTSTRAP)
-        RefdataValue.loc('Subscription Resource', [key: 'database', en: 'Database', de: 'Datenbank'], BOOTSTRAP)
-        RefdataValue.loc('Subscription Resource', [key: 'econferenceProceedings', en: 'E-Conference Proceedings', de: 'E-Conference Proceedings'], BOOTSTRAP)
-        RefdataValue.loc('Subscription Resource', [key: 'ejournalSingle', en: 'E-Journal single title', de: 'E-Journal Einzeltitel'], BOOTSTRAP)
-        RefdataValue.loc('Subscription Resource', [key: 'ebookSingle', en: 'E-Book single title', de: 'E-Book Einzeltitel'], BOOTSTRAP)
-        RefdataValue.loc('Subscription Resource', [key: 'data', en: 'Data', de: 'Daten'], BOOTSTRAP)
-        RefdataValue.loc('Subscription Resource', [key: 'software', en: 'Software', de: 'Software'], BOOTSTRAP)
-        RefdataValue.loc('Subscription Resource', [key: 'ejournalPackage', en: 'E-Journal Package', de: 'E-Journal Paket'], BOOTSTRAP)
-        RefdataValue.loc('Subscription Resource', [key: 'ebookPackage', en: 'E-Book Package', de: 'E-Book Paket'], BOOTSTRAP)
-        RefdataValue.loc('Subscription Resource', [key: 'mixed', en: 'Mixed Package', de: 'Gemischtes Paket'], BOOTSTRAP)
-        RefdataValue.loc('Subscription Resource', [key: 'ereference', en: 'E-Reference', de: 'E-Reference'], BOOTSTRAP)
-        RefdataValue.loc('Subscription Resource', [key: 'other', en: 'Other', de: 'Sonstige'], BOOTSTRAP)
-
-        RefdataValue.loc('Subscription Status',      [en: 'Current', de: 'Aktiv'], BOOTSTRAP)
-        //RefdataValue.loc('Subscription Status',      [en: 'Deleted', de: 'Gelöscht'], BOOTSTRAP)
-        RefdataValue.loc('Subscription Status',      [en: 'Expired', de: 'Abgelaufen'], BOOTSTRAP)
-        RefdataValue.loc('Subscription Status',      [en: 'Ordered', de: 'Bestellt'], BOOTSTRAP)
-        RefdataValue.loc('Subscription Status',      [en: 'Terminated', de: 'Abbestellt'], BOOTSTRAP)
-        RefdataValue.loc('Subscription Status',      [en: 'Under Negotiation', de: 'In Verhandlung'], BOOTSTRAP)
-        RefdataValue.loc('Subscription Status',      [en: 'Under Consideration', de: 'Entscheidung steht aus'], BOOTSTRAP)
-        RefdataValue.loc('Subscription Status',      [en: 'Under Consortial Examination', de: 'Wird konsortial geprüft'], BOOTSTRAP)
-        RefdataValue.loc('Subscription Status',      [en: 'Under Institutional Examination', de: 'Wird institutionell geprüft'], BOOTSTRAP)
-        RefdataValue.loc('Subscription Status',      [en: 'No longer usable', de: 'Nicht mehr nutzbar'], BOOTSTRAP)
-        RefdataValue.loc('Subscription Status',      [en: 'Publication discontinued', de: 'Erscheinen eingestellt'], BOOTSTRAP)
-        RefdataValue.loc('Subscription Status',      [en: 'Rejected', de: 'Abgelehnt'], BOOTSTRAP)
-        RefdataValue.loc('Subscription Status',      [en: 'Test Access', de: 'Testzugriff'], BOOTSTRAP)
-        RefdataValue.loc('Subscription Status',      [en: 'Intended', de: 'Geplant'], BOOTSTRAP)
-        RefdataValue.loc('Subscription Status',      [key: 'IntendedPerennial', en: 'Intended (Perennial term)', de: 'Geplant (Mehrjahreslaufzeit)'])
-        RefdataValue.loc('Subscription Status',      [key: 'ExpiredPerennial', en: 'Expired (Perennial term)', de: 'Abgelaufen (Mehrjahreslaufzeit)'])
-        RefdataValue.loc('Subscription Status',      [key: 'Deferred', en: 'Deferred', de: 'Zurückgestellt'])
-        RefdataValue.loc('Subscription Status',      [en: 'Status not defined', de: 'Status nicht festgelegt'], BOOTSTRAP)
-
-        RefdataValue.loc('Subscription Type',      [key: 'Alliance Licence', en: 'Alliance Subscription', de: 'Allianzlizenz'], BOOTSTRAP)
-        RefdataValue.loc('Subscription Type',      [key: 'National Licence', en: 'National Subscription', de: 'Nationallizenz'], BOOTSTRAP)
-		RefdataValue.loc('Subscription Type',      [key: 'Local Licence', en: 'Local Subscription', de: 'Lokale Lizenz'], BOOTSTRAP)
-		RefdataValue.loc('Subscription Type',      [key: 'Consortial Licence', en: 'Consortial Subscription', de: 'Konsortiallizenz'], BOOTSTRAP)
-        RefdataValue.loc('Subscription Type',      [key: 'Administrative Subscription', en: 'Administrative Subscription', de: 'Verwaltungslizenz'], BOOTSTRAP)
-        //RefdataValue.loc('Subscription Type',      [en: 'Collective Subscription', de: 'Kollektivlizenz'], BOOTSTRAP)
-
-        RefdataValue.loc('User.Settings.Theme',     [key:'semanticUI',    en: 'Default', de: 'Standard'], BOOTSTRAP)
-        RefdataValue.loc('User.Settings.Theme',     [key:'accessibility', en: 'Accessibility', de: 'Barrierefrei'], BOOTSTRAP)
-
-        RefdataValue.loc('Access Method',      [key: 'ip4', en: 'IPv4', de: 'IPv4'], BOOTSTRAP)
-        RefdataValue.loc('Access Method',      [key: 'ip6', en: 'IPv6', de: 'IPv6'], BOOTSTRAP)
-        RefdataValue.loc('Access Method',      [key: 'proxy', en: 'Proxy', de: 'Proxy'], BOOTSTRAP)
-        RefdataValue.loc('Access Method',      [key: 'shibboleth', en: 'Shibboleth', de: 'Shibboleth'], BOOTSTRAP)
-        RefdataValue.loc('Access Method',      [key: 'up', en: 'Username/Password', de: 'Benutzername/Passwort'], BOOTSTRAP)
-        RefdataValue.loc('Access Method',      [key: 'oa', en: 'Open Athens', de: 'OpenAthens'], BOOTSTRAP)
-        RefdataValue.loc('Access Method',      [key: 'ref', en: 'Referrer', de: 'Referrer'], BOOTSTRAP)
+         //RefdataValue.loc('Subscription Type',      [en: 'Collective Subscription', de: 'Kollektivlizenz'], BOOTSTRAP)
 
         RefdataValue.loc('Access Method IP',      [en: 'IPv4', de: 'IPv4'], BOOTSTRAP)
         RefdataValue.loc('Access Method IP',      [en: 'IPv6', de: 'IPv6'], BOOTSTRAP)
-        RefdataValue.loc('Access Point Type',      [key: 'ip', en: 'IP', de: 'IP'], BOOTSTRAP)
-        RefdataValue.loc('Access Point Type',      [key: 'ezproxy', en: 'EZproxy', de: 'EZproxy'], BOOTSTRAP)
-        RefdataValue.loc('Access Point Type',      [key: 'proxy', en: 'Proxy', de: 'Proxy'], BOOTSTRAP)
-        RefdataValue.loc('Access Point Type',      [key: 'vpn', en: 'VPN', de: 'VPN'], BOOTSTRAP)
-        RefdataValue.loc('Access Point Type',      [key: 'shibboleth', en: 'Shibboleth', de: 'Shibboleth'], BOOTSTRAP)
-
-        RefdataValue.loc('IPv4 Address Format',      [key: 'v4cidr',   en: 'IPv4 (CIDR)', de: 'IPv4 (CIDR)'], BOOTSTRAP)
-        RefdataValue.loc('IPv4 Address Format',      [key: 'v4ranges', en: 'IPv4 (Ranges)', de: 'IPv4 (Bereiche)'], BOOTSTRAP)
-        RefdataValue.loc('IPv4 Address Format',      [key: 'v4input', en: 'IPv4 (Input)', de: 'IPv4 (Eingabe)'], BOOTSTRAP)
-        RefdataValue.loc('IPv6 Address Format',      [key: 'v6cidr',   en: 'IPv6 (CIDR)', de: 'IPv6 (CIDR)'], BOOTSTRAP)
-        RefdataValue.loc('IPv6 Address Format',      [key: 'v6ranges', en: 'IPv6 (Ranges)', de: 'IPv6 (Bereiche)'], BOOTSTRAP)
-        RefdataValue.loc('IPv6 Address Format',      [key: 'v6input', en: 'IPv6 (Input)', de: 'IPv6 (Eingabe)'], BOOTSTRAP)
-
-        RefdataValue.loc('Semester',      [key: 'semester.not.applicable', en: 'Not applicable', de: 'Nicht anwendbar'], BOOTSTRAP)
-        RefdataValue.loc('Semester',      [key: 'w18/19', en: 'winter semester 2018/19', de: 'Wintersemester 2018/19'], BOOTSTRAP)
-        RefdataValue.loc('Semester',      [key: 's19', en: 'summer semester 2019', de: 'Sommersemester 2019'], BOOTSTRAP)
-        RefdataValue.loc('Semester',      [key: 'w19/20', en: 'winter semester 2019/20', de: 'Wintersemester 2019/20'], BOOTSTRAP)
-        RefdataValue.loc('Semester',      [key: 's20', en: 'summer semester 2020', de: 'Sommersemester 2020'], BOOTSTRAP)
-        RefdataValue.loc('Semester',      [key: 'w20/21', en: 'winter semester 2020/21', de: 'Wintersemester 2020/21'], BOOTSTRAP)
-        RefdataValue.loc('Semester',      [key: 's21', en: 'summer semester 2021', de: 'Sommersemester 2021'], BOOTSTRAP)
-        RefdataValue.loc('Semester',      [key: 'w21/22', en: 'winter semester 2021/22', de: 'Wintersemester 2021/22'], BOOTSTRAP)
-        RefdataValue.loc('Semester',      [key: 's22', en: 'summer semester 2022', de: 'Sommersemester 2022'], BOOTSTRAP)
-        RefdataValue.loc('Semester',      [key: 'w22/23', en: 'winter semester 2022/23', de: 'Wintersemester 2022/23'], BOOTSTRAP)
-        RefdataValue.loc('Semester',      [key: 's23', en: 'summer semester 2023', de: 'Sommersemester 2023'], BOOTSTRAP)
-        RefdataValue.loc('Semester',      [key: 'w23/24', en: 'winter semester 2023/24', de: 'Wintersemester 2023/24'], BOOTSTRAP)
-        RefdataValue.loc('Semester',      [key: 's24', en: 'summer semester 2024', de: 'Sommersemester 2024'], BOOTSTRAP)
-        RefdataValue.loc('Semester',      [key: 'w24/25', en: 'winter semester 2024/25', de: 'Wintersemester 2024/25'], BOOTSTRAP)
-        RefdataValue.loc('Semester',      [key: 's25', en: 'summer semester 2025', de: 'Sommersemester 2025'], BOOTSTRAP)
-        RefdataValue.loc('Semester',      [key: 'w25/26', en: 'winter semester 2025/26', de: 'Wintersemester 2025/26'], BOOTSTRAP)
-        RefdataValue.loc('Semester',      [key: 's26', en: 'summer semester 2026', de: 'Sommersemester 2026'], BOOTSTRAP)
-        RefdataValue.loc('Semester',      [key: 'w26/27', en: 'winter semester 2026/27', de: 'Wintersemester 2026/27'], BOOTSTRAP)
-        RefdataValue.loc('Semester',      [key: 's27', en: 'summer semester 2027', de: 'Sommersemester 2027'], BOOTSTRAP)
-        RefdataValue.loc('Semester',      [key: 'w27/28', en: 'winter semester 2027/28', de: 'Wintersemester 2027/28'], BOOTSTRAP)
-        RefdataValue.loc('Semester',      [key: 's28', en: 'summer semester 2028', de: 'Sommersemester 2028'], BOOTSTRAP)
-        RefdataValue.loc('Semester',      [key: 'w28/29', en: 'winter semester 2028/29', de: 'Wintersemester 2028/29'], BOOTSTRAP)
-        RefdataValue.loc('Semester',      [key: 's29', en: 'summer semester 2029', de: 'Sommersemester 2029'], BOOTSTRAP)
-        RefdataValue.loc('Semester',      [key: 'w29/30', en: 'winter semester 2029/30', de: 'Wintersemester 2029/30'], BOOTSTRAP)
-        RefdataValue.loc('Semester',      [key: 's30', en: 'summer semester 2030', de: 'Sommersemester 2030'], BOOTSTRAP)
-        RefdataValue.loc('Semester',      [key: 'w30/31', en: 'winter semester 2030/31', de: 'Wintersemester 2030/31'], BOOTSTRAP)
-        RefdataValue.loc('Semester',      [key: 's31', en: 'summer semester 2031', de: 'Sommersemester 2031'], BOOTSTRAP)
-
-        RefdataValue.loc('Survey Type',      [key: 'renewal', en: 'Renewal Survey', de: 'Verlängerungsumfrage'], BOOTSTRAP)
-        RefdataValue.loc('Survey Type',      [key: 'interest', en: 'Interest Survey', de: 'Interessenumfrage'], BOOTSTRAP)
-        RefdataValue.loc('Survey Type',      [key: 'selection', en: 'Title selection Survey', de: 'Titelauswahl-Umfrage'], BOOTSTRAP)
-
-        RefdataValue.loc('Survey Status',      [en: 'Ready', de: 'Bereit'], BOOTSTRAP)
-        RefdataValue.loc('Survey Status',      [en: 'In Processing', de: 'In Bearbeitung'], BOOTSTRAP)
-        RefdataValue.loc('Survey Status',      [en: 'In Evaluation', de: 'In Auswertung'], BOOTSTRAP)
-        RefdataValue.loc('Survey Status',      [en: 'Completed', de: 'Abgeschlossen'], BOOTSTRAP)
-        RefdataValue.loc('Survey Status',      [en: 'Survey started', de: 'Umfrage gestartet'], BOOTSTRAP)
-        RefdataValue.loc('Survey Status',      [en: 'Survey completed', de: 'Umfrage beendet'], BOOTSTRAP)
-
-        RefdataValue.loc('MailTemplate Type',      [en: 'IP Message', de: 'IP-Meldung'], BOOTSTRAP)
-
-        RefdataValue.loc('MailTemplate Language',      [en: 'English', de: 'Englisch'], BOOTSTRAP)
-        RefdataValue.loc('MailTemplate Language',      [en: 'German', de: 'Deutsch'], BOOTSTRAP)
-
-
-        RefdataValue.loc('Sim-User Number',   [en: '1', de: '1'], BOOTSTRAP)
-        RefdataValue.loc('Sim-User Number',   [en: '2', de: '2'], BOOTSTRAP)
-        RefdataValue.loc('Sim-User Number',   [en: '3', de: '3'], BOOTSTRAP)
-        RefdataValue.loc('Sim-User Number',   [en: '4', de: '4'], BOOTSTRAP)
-        RefdataValue.loc('Sim-User Number',   [en: '5', de: '5'], BOOTSTRAP)
-        RefdataValue.loc('Sim-User Number',   [en: '6', de: '6'], BOOTSTRAP)
-        RefdataValue.loc('Sim-User Number',   [en: '7', de: '7'], BOOTSTRAP)
-        RefdataValue.loc('Sim-User Number',   [en: '8', de: '8'], BOOTSTRAP)
-        RefdataValue.loc('Sim-User Number',   [en: '9', de: '9'], BOOTSTRAP)
-        RefdataValue.loc('Sim-User Number',   [en: '10', de: '10'], BOOTSTRAP)
-        RefdataValue.loc('Sim-User Number',   [en: 'unlimited', de: 'unlimitiert'], BOOTSTRAP)
-
-        RefdataValue.loc('Access choice remote',   [en: 'all', de: 'alle'], BOOTSTRAP)
-        RefdataValue.loc('Access choice remote',   [en: 'Academic', de: 'Wissenschaftler'], BOOTSTRAP)
-        RefdataValue.loc('Access choice remote',   [en: 'no Access', de: 'kein Zugang'], BOOTSTRAP)
-
-        RefdataValue.loc('Category A-F',   [en: 'A', de: 'A'], BOOTSTRAP)
-        RefdataValue.loc('Category A-F',   [en: 'B', de: 'B'], BOOTSTRAP)
-        RefdataValue.loc('Category A-F',   [en: 'C', de: 'C'], BOOTSTRAP)
-        RefdataValue.loc('Category A-F',   [en: 'D', de: 'D'], BOOTSTRAP)
-        RefdataValue.loc('Category A-F',   [en: 'E', de: 'E'], BOOTSTRAP)
-        RefdataValue.loc('Category A-F',   [en: 'F', de: 'F'], BOOTSTRAP)
 
         createRefdataWithI10nExplanation()
     }
@@ -2354,65 +2162,6 @@ class BootStrap {
         //RefdataValue.loc('CostItemCategory', [en: 'Refund', de: 'Erstattung'], BOOTSTRAP)
         //RefdataValue.loc('CostItemCategory', [en: 'Other', de: 'Andere'], BOOTSTRAP)
 
-        RefdataValue.loc('CostItemElement', [key: 'price: list price', en: 'price: list price', de: 'Preis: Listenpreis'], BOOTSTRAP)
-        RefdataValue.loc('CostItemElement', [key: 'price: provider price', en: 'price: provider price', de: 'Preis: Anbieterpreis'], BOOTSTRAP)
-        RefdataValue.loc('CostItemElement', [key: 'price: consortial price', en: 'price: consortial price', de: 'Preis: Konsortialpreis'], BOOTSTRAP)
-        RefdataValue.loc('CostItemElement', [key: 'price: final price', en: 'price: final price', de: 'Preis: Endpreis'], BOOTSTRAP)
-        RefdataValue.loc('CostItemElement', [key: 'price: other', en: 'price: other', de: 'Preis: Sonstige'], BOOTSTRAP)
-        RefdataValue.loc('CostItemElement', [key: 'price: short term loan', en: 'price: short term loan', de: 'Preis: Short-Term-Loan'], BOOTSTRAP)
-        RefdataValue.loc('CostItemElement', [key: 'price: print share', en: 'price: print share', de: 'Preis: Printanteil'], BOOTSTRAP)
-
-        RefdataValue.loc('CostItemElement', [key: 'discount: consortial discount', en: 'discount: consortial discount', de: 'Rabatt: Konsortialrabatt'], BOOTSTRAP)
-        RefdataValue.loc('CostItemElement', [key: 'discount: alliance licence discount', en: 'discount: alliance licence discount', de: 'Rabatt für Allianzlizenz'], BOOTSTRAP)
-        RefdataValue.loc('CostItemElement', [key: 'discount: single payment discount', en: 'discount: single payment discount', de: 'Rabatt für eine Rechnung via Konsortium'], BOOTSTRAP)
-        RefdataValue.loc('CostItemElement', [key: 'discount: multiyear discount', en: 'discount: multiyear discount', de: 'Rabatt für Mehrjahresvertrag'], BOOTSTRAP)
-        RefdataValue.loc('CostItemElement', [key: 'discount: quantity discount', en: 'discount: quantity discount', de: 'Rabatt: Mengenrabatt'], BOOTSTRAP)
-        RefdataValue.loc('CostItemElement', [key: 'discount: early pay discount', en: 'discount: early pay discount', de: 'Rabatt: Frühzahlerrabatt'], BOOTSTRAP)
-        RefdataValue.loc('CostItemElement', [key: 'discount: other', en: 'discount: other', de: 'Rabatt: Sonstige'], BOOTSTRAP)
-
-        RefdataValue.loc('CostItemElement', [key: 'refund: currency rate', en: 'refund: currency rate', de: 'Erstattung: Kursgutschrift'], BOOTSTRAP)
-        RefdataValue.loc('CostItemElement', [key: 'refund: OA', en: 'refund: OA', de: 'Erstattung: Open-Access-Gutschrift'], BOOTSTRAP)
-        RefdataValue.loc('CostItemElement', [key: 'refund: retransfer', en: 'refund: retransfer', de: 'Erstattung: Rücküberweisung'], BOOTSTRAP)
-        RefdataValue.loc('CostItemElement', [key: 'refund: system downtime', en: 'refund: system downtime', de: 'Erstattung: Ersatz für Ausfallzeiten'], BOOTSTRAP)
-        RefdataValue.loc('CostItemElement', [key: 'refund: other', en: 'refund: other', de: 'Erstattung: Sonstige'], BOOTSTRAP)
-
-        RefdataValue.loc('CostItemElement', [key: 'additionalclaim: currency rate', en: 'additionalclaim: currency rate', de: 'Nachforderung aus Kursdifferenz'], BOOTSTRAP)
-        RefdataValue.loc('CostItemElement', [key: 'additionalclaim: other', en: 'additionalclaim: other', de: 'Nachforderung: Sonstige'], BOOTSTRAP)
-
-        RefdataValue.loc('CostItemElement', [key: 'fee: bank charge', en: 'fee: bank charge', de: 'Gebühr: Bankgebühr'], BOOTSTRAP)
-        RefdataValue.loc('CostItemElement', [key: 'fee: invoicing', en: 'fee: invoicing', de: 'Gebühr: Rechnungsstellungsgebühr'], BOOTSTRAP)
-        RefdataValue.loc('CostItemElement', [key: 'fee: administration', en: 'fee: administration', de: 'Gebühr: Verwaltungsgebühr'], BOOTSTRAP)
-        RefdataValue.loc('CostItemElement', [key: 'fee: technical access', en: 'fee: technical access', de: 'Gebühr: Plattformgebühr'], BOOTSTRAP)
-        RefdataValue.loc('CostItemElement', [key: 'fee: setup', en: 'fee: setup', de: 'Gebühr: SetUp-Gebühr'], BOOTSTRAP)
-        RefdataValue.loc('CostItemElement', [key: 'fee: other', en: 'fee: other', de: 'Gebühr: Sonstige'], BOOTSTRAP)
-
-        RefdataValue.loc('CostItemElement', [key: 'special funds: central funding', en: 'special funds: central funding', de: 'Sondermittel: Zentralmittel'], BOOTSTRAP)
-
-        RefdataValue.loc('CostItemElement', [key: 'tax: purchase tax 19', en: 'tax: purchase tax 19%', de: 'Steuer: Umsatzsteuer 19%'], BOOTSTRAP)
-        RefdataValue.loc('CostItemElement', [key: 'tax: purchase tax 7', en: 'tax: purchase tax 7%', de: 'Steuer: Umsatzsteuer 7%'], BOOTSTRAP)
-        RefdataValue.loc('CostItemElement', [key: 'tax: source tax', en: 'tax:  source tax', de: 'Steuer: Quellensteuer'], BOOTSTRAP)
-
-        RefdataValue.loc('Document Context Status', [en: 'Deleted', de: 'Gelöscht'], BOOTSTRAP)
-
-        RefdataValue.loc('Document Type', [en: 'Announcement', de: 'Angekündigung'], BOOTSTRAP)
-        RefdataValue.loc('Document Type', [en: 'Subscription', de: 'Lizenz'], BOOTSTRAP)
-        RefdataValue.loc('Document Type', [en: 'License', de: 'Vertrag'], BOOTSTRAP)
-        RefdataValue.loc('Document Type', [en: 'General', de: 'Allgemein'], BOOTSTRAP)
-        RefdataValue.loc('Document Type', [en: 'Addendum', de: 'Zusatz'], BOOTSTRAP)
-        RefdataValue.loc('Document Type', [en: 'Note', de: 'Anmerkung'], BOOTSTRAP)
-        RefdataValue.loc('Document Type', [en: 'ONIX-PL License', de: 'ONIX-PL Lizenz'], BOOTSTRAP)
-        RefdataValue.loc('Document Type', [key: 'Usage Statistics', en: 'Usage Statistics', de: 'Nutzungsstatistik'], BOOTSTRAP)
-        RefdataValue.loc('Document Type', [key: 'Offer', en: 'Offer', de: 'Angebot'], BOOTSTRAP)
-        RefdataValue.loc('Document Type', [key: 'Renewal', en: 'Renewal', de: 'Renewal'], BOOTSTRAP)
-        RefdataValue.loc('Document Type', [key: 'Order', en: 'Order', de: 'Bestellung'], BOOTSTRAP)
-        RefdataValue.loc('Document Type', [key: 'Invoice', en: 'Invoice', de: 'Rechnung'], BOOTSTRAP)
-        RefdataValue.loc('Document Type', [key: 'Announcement', en: 'Announcement', de: 'Ankündigung'], BOOTSTRAP)
-        RefdataValue.loc('Document Type', [key: 'Note', en: 'Note', de: 'Anmerkung'], BOOTSTRAP)
-        RefdataValue.loc('Document Type', [key: 'Costs', en: 'Costs', de: 'Preise'], BOOTSTRAP)
-        RefdataValue.loc('Document Type', [key: 'Metadata', en: 'Metadata', de: 'Metadaten'], BOOTSTRAP)
-        RefdataValue.loc('Document Type', [key: 'KBART', en: 'KBART', de: 'KBART'], BOOTSTRAP)
-        RefdataValue.loc('Document Type', [key: 'Title List', en: 'Title List', de: 'Titelliste'], BOOTSTRAP)
-
         /*
         RefdataCategory.loc('Entitlement Issue Status',
                 [en: 'Entitlement Issue Status', de: 'Entitlement Issue Status'], BOOTSTRAP)
@@ -2425,12 +2174,6 @@ class BootStrap {
         RefdataValue.loc(RefdataCategory.IE_ACCEPT_STATUS, [en: 'Fixed', de: 'Feststehend'], BOOTSTRAP)
         RefdataValue.loc(RefdataCategory.IE_ACCEPT_STATUS, [en: 'Under Negotiation', de: 'In Verhandlung'], BOOTSTRAP)
         RefdataValue.loc(RefdataCategory.IE_ACCEPT_STATUS, [en: 'Under Consideration', de: 'Entscheidung steht aus'], BOOTSTRAP)
-
-        RefdataValue.loc('IE Access Status', [en: 'ERROR - No Subscription Start and/or End Date', de: 'ERROR - No Subscription Start and/or End Date'], BOOTSTRAP)
-        RefdataValue.loc('IE Access Status', [en: 'Current', de: 'Aktuell'], BOOTSTRAP)
-        RefdataValue.loc('IE Access Status', [en: 'Current(*)', de: 'Aktuell(*)'], BOOTSTRAP)
-        RefdataValue.loc('IE Access Status', [en: 'Expected', de: 'Erwartet'], BOOTSTRAP)
-        RefdataValue.loc('IE Access Status', [en: 'Expired', de: 'Abgelaufen'], BOOTSTRAP)
 
         RefdataValue.loc(RefdataCategory.LIC_TYPE, [en: 'Actual', de: 'Konkrete Instanz'], BOOTSTRAP)
         RefdataValue.loc(RefdataCategory.LIC_TYPE, [en: 'Template', de: 'Vorlage'], BOOTSTRAP)
@@ -2477,11 +2220,6 @@ class BootStrap {
         RefdataValue.loc(RefdataCategory.TIPP_STATUS, [en: 'Transferred', de: 'Transferred'], BOOTSTRAP)
         RefdataValue.loc(RefdataCategory.TIPP_STATUS, [en: 'Unknown', de: 'Unbekannt'], BOOTSTRAP)
         RefdataValue.loc(RefdataCategory.TIPP_STATUS, [en: 'Retired', de: 'im Ruhestand'], BOOTSTRAP)
-
-        RefdataValue.loc('TIPP Access Status', [en: 'Current(*)', de: 'Aktuell(*)'], BOOTSTRAP)
-        RefdataValue.loc('TIPP Access Status', [en: 'Expected', de: 'Erwartet'], BOOTSTRAP)
-        RefdataValue.loc('TIPP Access Status', [en: 'Expired', de: 'Abgelaufen'], BOOTSTRAP)
-        RefdataValue.loc('TIPP Access Status', [en: 'Current', de: 'Aktuell'], BOOTSTRAP)
 
         // Controlled values from the <UsageType> element.
 
