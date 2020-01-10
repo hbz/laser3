@@ -54,7 +54,7 @@ public class PackageIngestService {
       incrementStatsCounter(upload,'Content Provider Org Matched');
     }
 
-    RefdataValue pkg_type = RefdataCategory.lookupOrCreate(RefdataCategory.PKG_TYPE,'Unknown');
+    RefdataValue pkg_type = RefdataValue.getByValueAndCategory('Unknown', RefdataCategory.PKG_TYPE)
     RefdataValue cp_role = RefdataValue.getByValueAndCategory('Content Provider', 'Organisational Role')
     RefdataValue tipp_current = RefdataValue.getByValueAndCategory('Current', RefdataCategory.TIPP_STATUS)
     

@@ -74,6 +74,7 @@ Package.Breakable,Package.Breakable,Package.Breakable
 Package.Consistent,Package.Consistent,Package.Consistent
 Package.Fixed,Package.Fixed,Package.Fixed
 Package.ListStatus,Package.ListStatus,Package.ListStatus
+Package.Type,Package.Type,Package.Type
 PendingChangeStatus,PendingChangeStatus,PendingChangeStatus
 Permissions,Berechtigungen,Permissions
 Person Contact Type,Kontaktart,Person: Contact Type
@@ -112,3 +113,4 @@ User.Settings.Theme,Theme,Theme
 YN,Ja/Nein,Yes/No
 YNO,Ja/Nein/Anderes,Yes/No/Others
 YNU,Ja/Nein/Unbekannt,Yes/No/Unknown
+Platform Status,Platform Status,Platform Status

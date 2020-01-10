@@ -624,6 +624,7 @@ Vendor,OrgRoleType,Verkäufer,Vendor
 Current,Package Status,Aktuell,Current
 Deleted,Package Status,Gelöscht,Deleted
 Retired,Package Status,Abgelaufen,Retired
+Unkown,Package.Type,Unkown,Unkown
 Accepted,PendingChangeStatus,Angenommen,Accepted
 Pending,PendingChangeStatus,Ausstehend,Pending
 Rejected,PendingChangeStatus,Abgelehnt,Rejected
@@ -648,6 +649,8 @@ Specific license editor,Person Responsibility,Vertragsbearbeiter,Specific licens
 Specific package editor,Person Responsibility,Paketbearbeiter,Specific package editor
 Specific subscription editor,Person Responsibility,Lizenzkontakt,Specific subscription editor
 Specific title editor,Person Responsibility,Titelbearbeiter,Specific title editor
+email,ReminderMethod,email,email
+Subscription Manual Renewal Date,ReminderTrigger,Subscription Manual Renewal Date,Subscription Manual Renewal Date
 Day,ReminderUnit,Tag,Day
 Month,ReminderUnit,Monat,Month
 Week,ReminderUnit,Woche,Week
@@ -704,5 +707,4 @@ Yes,YNO,Ja,Yes
 No,YNU,Nein,No
 Unknown,YNU,Unbekannt,Unknown
 Yes,YNU,Ja,Yes
-email,ReminderMethod,email,email
-Subscription Manual Renewal Date,ReminderTrigger,Subscription Manual Renewal Date,Subscription Manual Renewal Date
+Deleted,Platform Status,Deleted,Deleted
