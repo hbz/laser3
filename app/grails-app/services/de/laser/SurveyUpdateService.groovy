@@ -123,9 +123,6 @@ class SurveyUpdateService extends AbstractLockableService {
                 } else if (surveyEntries == null || surveyEntries.isEmpty()) {
                     log.debug("The user has no surveys, so no email will be sent (" + user.username + "/"+ org.name + ")");
                 } else {
-                    if (user.id == 6){
-                        print "User: "+user.displayName
-                    }
                     boolean isNotificationCCbyEmail = user.getSetting(UserSettings.KEYS.IS_NOTIFICATION_BY_EMAIL, YN_NO)?.rdValue == YN_YES
                     String ccAddress = null
                     if (isNotificationCCbyEmail){
