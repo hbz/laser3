@@ -2,6 +2,10 @@
 
 **Ticket    Date    Branch      Author  Feature/Bug     Description/Keywords**
 
+2037    10.01.2020  rc1.2       Anja    Bug         Text korrigiert
+
+1993    10.01.2020  rc1.2       Anja    Bug         Emails auch an CC für Surveys
+
 --      09.01.2020  rc1.2       Moe     Bug         Verlängerung Konsortial: Mehrjahres Flag setzen, Merkmale kopieren
 
 2029    09.01.2020  rc1.2       David   Feature     Refactoring: Shared Caches für User, bzw Organisationen
