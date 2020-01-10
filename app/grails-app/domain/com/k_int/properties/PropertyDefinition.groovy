@@ -167,8 +167,8 @@ class PropertyDefinition extends AbstractI10nTranslatable implements Serializabl
     }
 
     @NotYetImplemented
-    static Identifier construct(Map<String, Object> map) {
-
+    static PropertyDefinition construct(Map<String, Object> map) {
+        println "WARNING: NotYetImplemented"
     }
 
     private static def typeIsValid(key) {
