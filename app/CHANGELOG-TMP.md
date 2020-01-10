@@ -4,6 +4,10 @@
 
 2016    10.01.2020  hbz-dev     David   Feature     Refactoring: Deprecated RefdataCategory.lookupOrCreate()
 
+1743    09.01.2020  hbz-dev     Anja    Feature     Turm-Icon kennzeichnet Single- und Kollektivnutzer
+
+--      09.01.2020  hbz-dev     Anja    Feature     PerformanceImprovements an verschiedenen Stellen
+
 --      09.01.2020  rc1.2       Moe     Bug         Verlängerung Konsortial: Mehrjahres Flag setzen, Merkmale kopieren
 
 2029    09.01.2020  rc1.2       David   Feature     Refactoring: Shared Caches für User, bzw Organisationen

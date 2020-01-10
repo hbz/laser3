@@ -1,4 +1,4 @@
-<%@ page import="com.k_int.kbplus.auth.User; com.k_int.kbplus.auth.Role; grails.plugin.springsecurity.SpringSecurityUtils; com.k_int.kbplus.ReaderNumber; de.laser.SubscriptionsQueryService; de.laser.helper.RDStore; com.k_int.kbplus.Subscription; java.text.SimpleDateFormat; com.k_int.kbplus.PersonRole; com.k_int.kbplus.ReaderNumber; com.k_int.kbplus.License; com.k_int.kbplus.Contact; com.k_int.kbplus.Org; com.k_int.kbplus.OrgRole; com.k_int.kbplus.RefdataValue" %>
+<%@ page import="com.k_int.kbplus.auth.User; com.k_int.kbplus.auth.Role; grails.plugin.springsecurity.SpringSecurityUtils; com.k_int.kbplus.ReaderNumber; de.laser.SubscriptionsQueryService; de.laser.helper.RDStore; com.k_int.kbplus.Subscription; java.text.SimpleDateFormat; com.k_int.kbplus.PersonRole; com.k_int.kbplus.ReaderNumber; com.k_int.kbplus.License; com.k_int.kbplus.Contact; com.k_int.kbplus.Org; com.k_int.kbplus.OrgRole; com.k_int.kbplus.RefdataValue; com.k_int.kbplus.OrgSettings" %>
 <laser:serviceInjection/>
 
 <table id="${tableID ?: ''}" class="ui sortable celled la-table table">
@@ -213,18 +213,25 @@
                 </g:if>
                 <g:else>
                     <g:link controller="organisation"  action="show" id="${org.id}">
-                        ${fieldValue(bean: org, field: "name")} <br>
+                        ${fieldValue(bean: org, field: "name")}
                         <g:if test="${org.shortname && !tmplConfigItem.equalsIgnoreCase('shortname')}">
+                            <br>
                             (${fieldValue(bean: org, field: "shortname")})
                         </g:if>
                     </g:link>
                 </g:else>
+                <g:if test="${org.getCustomerType() in ['ORG_INST', 'ORG_INST_COLLECTIVE']}">
+                    <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="bottom center"
+                          data-content="${org.getCustomerTypeI10n()}">
+                        <i class="chess rook grey icon"></i>
+                    </span>
+                </g:if>
             </td>
         </g:if>
 
         <g:if test="${tmplConfigItem.equalsIgnoreCase('mainContact')}">
             <td>
-                <g:each in="${PersonRole.findAllByFunctionTypeAndOrg(RefdataValue.getByValueAndCategory('General contact person', 'Person Function'), org)}"
+                <g:each in="${PersonRole.findAllByFunctionTypeAndOrg(RDStore.PRS_FUNC_GENERAL_CONTACT_PRS, org)}"
                         var="personRole">
                     <g:if test="${personRole.prs.isPublic || (! personRole.prs.isPublic && personRole?.prs?.tenant?.id == contextService.getOrg()?.id)}">
                         <div class="item">
@@ -242,7 +249,7 @@
 
                             <g:each in="${Contact.findAllByPrsAndContentType(
                                     personRole.getPrs(),
-                                    RefdataValue.getByValueAndCategory('E-Mail', 'ContactContentType')
+                                    RDStore.CCT_EMAIL
                             )}" var="email">
                                 <i class="ui icon envelope outline"></i>
                                 <span data-position="right center"
@@ -252,7 +259,7 @@
                             </g:each>
                             <g:each in="${Contact.findAllByPrsAndContentType(
                                     personRole.getPrs(),
-                                    RefdataValue.getByValueAndCategory('Phone', 'ContactContentType')
+                                    RDStore.CCT_PHONE
                             )}" var="telNr">
                                 <i class="ui icon phone"></i>
                                 <span data-position="right center">
@@ -403,9 +410,7 @@
                     <div class="la-flexbox">
 
                         <g:set var="participantSurveys"
-                               value="${com.k_int.kbplus.SurveyResult.findAllByOwnerAndParticipant(contextService.org, org).findAll {
-                                   it.endDate >= new Date(System.currentTimeMillis())
-                               }}"/>
+                               value="${com.k_int.kbplus.SurveyResult.findAllByOwnerAndParticipantAndEndDateGreaterThanEquals(contextService.org, org, new Date(System.currentTimeMillis()))}"/>
                         <g:set var="numberOfSurveys"
                                value="${participantSurveys.groupBy { it.surveyConfig.id }.size()}"/>
                         <%

@@ -273,6 +273,16 @@ class Org
         }
         result
     }
+    String getCustomerTypeI10n() {
+        String result
+
+        def oss = OrgSettings.get(this, OrgSettings.KEYS.CUSTOMER_TYPE)
+
+        if (oss != OrgSettings.SETTING_NOT_FOUND) {
+            result = oss.roleValue?.getI10n('authority')
+        }
+        result
+    }
 
     /*
 	    gets OrgSettings
