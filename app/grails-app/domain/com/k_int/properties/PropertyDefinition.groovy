@@ -1,6 +1,7 @@
 package com.k_int.properties
 
 import com.k_int.kbplus.GenericOIDService
+import com.k_int.kbplus.Identifier
 import com.k_int.kbplus.Org
 import com.k_int.kbplus.RefdataCategory
 import com.k_int.kbplus.RefdataValue
@@ -11,6 +12,7 @@ import de.laser.domain.AbstractI10nTranslatable
 import de.laser.domain.I10nTranslation
 import de.laser.helper.SwissKnife
 import grails.util.Holders
+import groovy.transform.NotYetImplemented
 import groovy.util.logging.Log4j
 import org.codehaus.groovy.grails.orm.hibernate.cfg.GrailsHibernateUtil
 
@@ -162,6 +164,11 @@ class PropertyDefinition extends AbstractI10nTranslatable implements Serializabl
         isUsedForLogic      (nullable: false, blank: false)
         lastUpdated (nullable: true, blank: false)
         dateCreated (nullable: true, blank: false)
+    }
+
+    @NotYetImplemented
+    static PropertyDefinition construct(Map<String, Object> map) {
+        println "WARNING: NotYetImplemented"
     }
 
     private static def typeIsValid(key) {

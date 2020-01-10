@@ -2,11 +2,16 @@ package com.k_int.kbplus
 
 import de.laser.domain.AbstractI10nTranslatable
 import de.laser.domain.I10nTranslation
+import groovy.transform.NotYetImplemented
+import org.apache.commons.logging.Log
+import org.apache.commons.logging.LogFactory
 import org.springframework.context.i18n.LocaleContextHolder
 
 import javax.persistence.Transient
 
 class RefdataCategory extends AbstractI10nTranslatable {
+
+    static Log static_logger = LogFactory.getLog(RefdataCategory)
 
     @Transient
     public static final ORG_STATUS = 'OrgStatus'
@@ -66,34 +71,25 @@ class RefdataCategory extends AbstractI10nTranslatable {
         dateCreated (nullable: true, blank: false)
     }
 
-    /**
-     * Create RefdataCategory and matching I10nTranslation.
-     *
-     * Call this from bootstrap
-     *
-     * @param category_name
-     * @param i10n
-     * @param hardData = only true if called from bootstrap
-     * @return
-     */
-    static RefdataCategory loc(String category_name, Map i10n, def hardData) {
+    static RefdataCategory construct(Map<String, Object> map) {
 
-        RefdataCategory result = RefdataCategory.findByDescIlike(category_name)
-        if (! result) {
-            result = new RefdataCategory(desc:category_name)
+        String token     = map.get('token')
+        boolean hardData = map.get('hardData')
+        Map i10n         = map.get('i10n')
+
+        RefdataCategory rdc = RefdataCategory.findByDescIlike(token) // todo: case sensitive token
+
+        if (! rdc) {
+            static_logger.debug("INFO: no match found; creating new refdata category for ( ${token}, ${i10n} )")
+            rdc = new RefdataCategory(desc:token) // todo: token
         }
-        result.isHardData = hardData
-        result.save(flush: true)
 
-        I10nTranslation.createOrUpdateI10n(result, 'desc', i10n)
+        rdc.isHardData = hardData
+        rdc.save(flush: true)
 
-        result
-    }
+        I10nTranslation.createOrUpdateI10n(rdc, 'desc', i10n) // todo: token
 
-    // Call this from code
-    static RefdataCategory loc(String category_name, Map i10n) {
-        boolean hardData = false
-        loc(category_name, i10n, hardData)
+        rdc
     }
 
     @Deprecated
