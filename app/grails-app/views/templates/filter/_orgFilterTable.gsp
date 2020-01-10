@@ -231,7 +231,7 @@
 
         <g:if test="${tmplConfigItem.equalsIgnoreCase('mainContact')}">
             <td>
-                <g:each in="${PersonRole.findAllByFunctionTypeAndOrg(RefdataValue.getByValueAndCategory('General contact person', 'Person Function'), org)}"
+                <g:each in="${PersonRole.findAllByFunctionTypeAndOrg(RDStore.PRS_FUNC_GENERAL_CONTACT_PRS, org)}"
                         var="personRole">
                     <g:if test="${personRole.prs.isPublic || (! personRole.prs.isPublic && personRole?.prs?.tenant?.id == contextService.getOrg()?.id)}">
                         <div class="item">
@@ -249,7 +249,7 @@
 
                             <g:each in="${Contact.findAllByPrsAndContentType(
                                     personRole.getPrs(),
-                                    RefdataValue.getByValueAndCategory('E-Mail', 'ContactContentType')
+                                    RDStore.CCT_EMAIL
                             )}" var="email">
                                 <i class="ui icon envelope outline"></i>
                                 <span data-position="right center"
@@ -259,7 +259,7 @@
                             </g:each>
                             <g:each in="${Contact.findAllByPrsAndContentType(
                                     personRole.getPrs(),
-                                    RefdataValue.getByValueAndCategory('Phone', 'ContactContentType')
+                                    RDStore.CCT_PHONE
                             )}" var="telNr">
                                 <i class="ui icon phone"></i>
                                 <span data-position="right center">
@@ -410,9 +410,7 @@
                     <div class="la-flexbox">
 
                         <g:set var="participantSurveys"
-                               value="${com.k_int.kbplus.SurveyResult.findAllByOwnerAndParticipant(contextService.org, org).findAll {
-                                   it.endDate >= new Date(System.currentTimeMillis())
-                               }}"/>
+                               value="${com.k_int.kbplus.SurveyResult.findAllByOwnerAndParticipantAndEndDateGreaterThanEquals(contextService.org, org, new Date(System.currentTimeMillis()))}"/>
                         <g:set var="numberOfSurveys"
                                value="${participantSurveys.groupBy { it.surveyConfig.id }.size()}"/>
                         <%
