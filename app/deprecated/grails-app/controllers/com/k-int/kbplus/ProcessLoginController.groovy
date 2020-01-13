@@ -1,5 +1,7 @@
 package com.k_int.kbplus
 
+import com.k_int.kbplus.auth.Role
+import com.k_int.kbplus.auth.UserOrg
 import grails.plugin.springsecurity.annotation.Secured
 import org.codehaus.groovy.grails.commons.GrailsApplication
 
@@ -144,7 +146,7 @@ class ProcessLoginController {
 
     if ( ( authInstitutionName ) && ( authInstitutionName.length() > 0 ) ) {
       def candidate = authInstitutionName.trim().replaceAll(" ","_")
-      def org = com.k_int.kbplus.Org.findByScope(shibbScope)
+      Org org = com.k_int.kbplus.Org.findByScope(shibbScope)
 
       // If we didn't match by scope, try matching by normalised name
       if ( ! org )
@@ -158,8 +160,8 @@ class ProcessLoginController {
         //if ( auto_approve_setting?.value == 'true' )
         //  auto_approve = true;
 
-        def userRole = com.k_int.kbplus.auth.Role.findByAuthority('INST_USER')
-        def user_org_link = new com.k_int.kbplus.auth.UserOrg(user:user, 
+        Role userRole = com.k_int.kbplus.auth.Role.findByAuthority('INST_USER')
+        UserOrg user_org_link = new com.k_int.kbplus.auth.UserOrg(user:user,
                                                               org:org, 
                                                               formalRole:userRole,
                                                               status: com.k_int.kbplus.auth.UserOrg.STATUS_PENDING,

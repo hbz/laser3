@@ -213,7 +213,7 @@ class PackageController extends AbstractDebugController {
         }
         def packageInstance = result.packageInstance
 
-        def type = RefdataCategory.lookupOrCreate('Combo Type', 'Consortium')
+        RefdataValue type = RefdataValue.getByValueAndCategory('Consortium', 'Combo Type')
 
         def institutions_in_consortia_hql = "select c.fromOrg from Combo as c where c.type = ? and c.toOrg in ( select org_role.org from Package as p join p.orgs as org_role where org_role.roleType.value = 'Package Consortia' and p = ?) order by c.fromOrg.name"
         def consortiaInstitutions = Combo.executeQuery(institutions_in_consortia_hql, [type, packageInstance])
@@ -249,7 +249,7 @@ class PackageController extends AbstractDebugController {
         params.each { p ->
             if (p.key.startsWith("_create.")) {
                 def orgID = p.key.substring(8)
-                def orgaisation = Org.get(orgID)
+                Org orgaisation = Org.get(orgID)
                 if (orgaisation)
                     log.debug("Create slave subscription for ${orgaisation.name}")
                 createNewSubscription(orgaisation, params.id, params.genSubName);
@@ -1010,7 +1010,7 @@ class PackageController extends AbstractDebugController {
                             tipp_to_bulk_edit.save();
                     } else {
                         log.debug("Bulk removal ${tipp_to_bulk_edit.id}");
-                        tipp_to_bulk_edit.status = RefdataCategory.lookupOrCreate(RefdataCategory.TIPP_STATUS, 'Deleted');
+                        tipp_to_bulk_edit.status = RefdataValue.getByValueAndCategory('Deleted', RefdataCategory.TIPP_STATUS)
                         tipp_to_bulk_edit.save();
                     }
                 }

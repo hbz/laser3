@@ -35,7 +35,7 @@ class DocWidgetController extends AbstractDebugController {
                 log.debug("Setting new context type to ${params.ownertp}..");
                 def doc_context = new DocContext("${params.ownertp}": instance,
                         owner: doc_content,
-                        doctype: RefdataCategory.lookupOrCreate('Document Type', params.doctype)).save(flush: true);
+                        doctype: RefdataValue.getByValueAndCategory(params.doctype, 'Document Type').save(flush: true))
             } else {
                 log.debug("no instance");
             }
@@ -78,7 +78,7 @@ class DocWidgetController extends AbstractDebugController {
                             filename: original_filename,
                             mimeType: request.getFile("upload_file")?.contentType,
                             title: params.upload_title ?: original_filename,
-                            type: RefdataCategory.lookupOrCreate('Document Type', params.doctype),
+                            type: RefdataValue.getByValueAndCategory(params.doctype, 'Document Type'),
                             creator: user,
                             owner: contextService.getOrg())
                     // erms-790
@@ -108,7 +108,7 @@ class DocWidgetController extends AbstractDebugController {
                     DocContext doc_context = new DocContext(
                             "${params.ownertp}": instance,
                             owner: doc_content,
-                            doctype: RefdataCategory.lookupOrCreate('Document Type', params.doctype)
+                            doctype: RefdataValue.getByValueAndCategory(params.doctype, 'Document Type')
                     )
                     doc_context.shareConf = genericOIDService.resolveOID(params.shareConf) ?: null
 

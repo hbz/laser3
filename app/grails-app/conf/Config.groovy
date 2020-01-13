@@ -14,6 +14,7 @@ documentStorageLocation = '/tmp/laser' // for uploaded documents
 deployBackupLocation = documentStorageLocation + '/laserDeployBackups' // for database backups in context of deploys
 
 featureSurvey = false
+//notificationsJobActive = true
 //activateTestJob = true
 
 /*globalDataSync = [
@@ -31,7 +32,7 @@ featureSurvey = false
 // @NotificationsJob
 // - enable notification
 // - enable reminder
-//hbzMaster = true
+
 isUpdateDashboardTableInDatabase = true
 isSendEmailsForDueDatesOfAllUsers = true
 
@@ -474,10 +475,10 @@ licenseTransforms = [
 
 
 // Log directory/created in current working dir if tomcat var not found.
-def logWatchFile
+File logWatchFile
 
 // First lets see if we have a log file present.
-def base = System.getProperty("catalina.base")
+String base = System.getProperty("catalina.base")
 if (base) {
     logWatchFile = new File ("${base}/logs/catalina.out")
 

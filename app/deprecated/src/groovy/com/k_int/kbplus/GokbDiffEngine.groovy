@@ -224,6 +224,7 @@ public class GokbDiffEngine {
                             }
                             catch (Exception e) {
                                 System.err.println("Error on executing updated TIPP closure! Please verify logs: ${e.getMessage()}")
+                                e.printStackTrace()
                             }
                         }
                     }
@@ -265,8 +266,24 @@ public class GokbDiffEngine {
             }
             if(equivalentCoverageEntry) {
                 TIPPCoverage.controlledProperties.each { cp ->
-                    if(covA[cp] != equivalentCoverageEntry[cp])
-                        isDifferent = true
+                    if(cp in ['startDate','endDate']) {
+                        Calendar calA = Calendar.getInstance()
+                        Calendar calB = Calendar.getInstance()
+                        if(covA[cp] && equivalentCoverageEntry[cp]) {
+                            calA.setTime(covA[cp])
+                            calB.setTime(equivalentCoverageEntry[cp])
+                            if(!(calA.get(Calendar.YEAR) == calB.get(Calendar.YEAR) && calA.get(Calendar.DAY_OF_YEAR) && calB.get(Calendar.DAY_OF_YEAR)))
+                                isDifferent = true
+                        }
+                        else if(!covA[cp] && equivalentCoverageEntry[cp])
+                            isDifferent = true
+                        else if(covA[cp] && !equivalentCoverageEntry[cp])
+                            isDifferent = true
+                    }
+                    else {
+                        if(covA[cp] != equivalentCoverageEntry[cp])
+                            isDifferent = true
+                    }
                 }
             }
             else {

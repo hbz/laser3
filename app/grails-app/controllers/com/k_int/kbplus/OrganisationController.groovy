@@ -340,10 +340,10 @@ class OrganisationController extends AbstractDebugController {
     })
     def createProvider() {
 
-        def orgSector = RefdataValue.getByValueAndCategory('Publisher','OrgSector')
-        def orgType = RefdataValue.getByValueAndCategory('Provider','OrgRoleType')
-        def orgType2 = RefdataValue.getByValueAndCategory('Agency','OrgRoleType')
-        def orgInstance = new Org(name: params.provider, sector: orgSector.id)
+        RefdataValue orgSector = RefdataValue.getByValueAndCategory('Publisher','OrgSector')
+        RefdataValue orgType = RefdataValue.getByValueAndCategory('Provider','OrgRoleType')
+        RefdataValue orgType2 = RefdataValue.getByValueAndCategory('Agency','OrgRoleType')
+        Org orgInstance = new Org(name: params.provider, sector: orgSector.id)
 
         if ( orgInstance.save(flush:true) ) {
 
@@ -713,7 +713,7 @@ class OrganisationController extends AbstractDebugController {
     def properties() {
         Map<String, Object> result = [:]
         result.user = User.get(springSecurityService.principal.id)
-        def orgInstance = Org.get(params.id)
+        Org orgInstance = Org.get(params.id)
 
         result.editable = accessService.checkMinUserOrgRole(result.user, orgInstance, 'INST_EDITOR') || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')
 
@@ -754,7 +754,7 @@ class OrganisationController extends AbstractDebugController {
     def users() {
         Map<String, Object> result = [:]
         result.user = User.get(springSecurityService.principal.id)
-        def orgInstance = Org.get(params.id)
+        Org orgInstance = Org.get(params.id)
 
         result.editable = SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN') || instAdmService.hasInstAdmPivileges(result.user, orgInstance, [COMBO_TYPE_DEPARTMENT, COMBO_TYPE_CONSORTIUM])
 
@@ -1015,7 +1015,7 @@ class OrganisationController extends AbstractDebugController {
     {
         Map<String, Object> result = [:]
         result.user = User.get(springSecurityService.principal.id)
-        def orgInstance = Org.get(params.org)
+        Org orgInstance = Org.get(params.org)
 
         if (!orgInstance) {
             flash.message = message(code: 'default.not.found.message', args: [message(code: 'org.label', default: 'Org'), params.id])
@@ -1042,7 +1042,7 @@ class OrganisationController extends AbstractDebugController {
     {
         Map<String, Object> result = [:]
         result.user = User.get(springSecurityService.principal.id)
-        def orgInstance = Org.get(params.org)
+        Org orgInstance = Org.get(params.org)
 
         if (!orgInstance) {
             flash.message = message(code: 'default.not.found.message', args: [message(code: 'org.label', default: 'Org'), params.id])

@@ -674,9 +674,9 @@ ${surveyInfo?.name}
 <script language="JavaScript">
     $('#propertiesToggler').click(function () {
         if ($(this).prop('checked')) {
-            $("tr[class!=disabled] input[name=selectedProperty]").prop('checked', true)
+            $("tr[class!=disabled] input[name=selectedSub]").prop('checked', true)
         } else {
-            $("tr[class!=disabled] input[name=selectedProperty]").prop('checked', false)
+            $("tr[class!=disabled] input[name=selectedSub]").prop('checked', false)
         }
     })
 </script>

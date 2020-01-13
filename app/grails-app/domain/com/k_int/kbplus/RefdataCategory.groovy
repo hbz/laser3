@@ -2,11 +2,16 @@ package com.k_int.kbplus
 
 import de.laser.domain.AbstractI10nTranslatable
 import de.laser.domain.I10nTranslation
+import groovy.transform.NotYetImplemented
+import org.apache.commons.logging.Log
+import org.apache.commons.logging.LogFactory
 import org.springframework.context.i18n.LocaleContextHolder
 
 import javax.persistence.Transient
 
 class RefdataCategory extends AbstractI10nTranslatable {
+
+    static Log static_logger = LogFactory.getLog(RefdataCategory)
 
     @Transient
     public static final ORG_STATUS = 'OrgStatus'
@@ -66,51 +71,25 @@ class RefdataCategory extends AbstractI10nTranslatable {
         dateCreated (nullable: true, blank: false)
     }
 
-    /**
-     * Create RefdataCategory and matching I10nTranslation.
-     *
-     * Call this from bootstrap
-     *
-     * @param category_name
-     * @param i10n
-     * @param hardData = only true if called from bootstrap
-     * @return
-     */
-    static RefdataCategory loc(String category_name, Map i10n, def hardData) {
+    static RefdataCategory construct(Map<String, Object> map) {
 
-        RefdataCategory result = RefdataCategory.findByDescIlike(category_name)
-        if (! result) {
-            result = new RefdataCategory(desc:category_name)
-        }
-        result.isHardData = hardData
-        result.save(flush: true)
+        String token     = map.get('token')
+        boolean hardData = map.get('hardData')
+        Map i10n         = map.get('i10n')
 
-        I10nTranslation.createOrUpdateI10n(result, 'desc', i10n)
+        RefdataCategory rdc = RefdataCategory.findByDescIlike(token) // todo: case sensitive token
 
-        result
-    }
-
-    // Call this from code
-    static RefdataCategory loc(String category_name, Map i10n) {
-        boolean hardData = false
-        loc(category_name, i10n, hardData)
-    }
-
-    @Deprecated
-    static RefdataValue lookupOrCreate(String category_name, String value) {
-        RefdataCategory cat = RefdataCategory.findByDescIlike(category_name);
-        if (! cat) {
-            cat = new RefdataCategory(desc:category_name).save(flush: true);
+        if (! rdc) {
+            static_logger.debug("INFO: no match found; creating new refdata category for ( ${token}, ${i10n} )")
+            rdc = new RefdataCategory(desc:token) // todo: token
         }
 
-        RefdataValue result = RefdataValue.findByOwnerAndValueIlike(cat, value)
+        rdc.isHardData = hardData
+        rdc.save(flush: true)
 
-        if (! result) {
-            new RefdataValue(owner:cat, value:value).save(flush:true);
-            result = RefdataValue.findByOwnerAndValue(cat, value);
-        }
+        I10nTranslation.createOrUpdateI10n(rdc, 'desc', i10n) // todo: token
 
-        result
+        rdc
     }
 
     static RefdataCategory getByI10nDesc(desc) {
@@ -125,7 +104,18 @@ class RefdataCategory extends AbstractI10nTranslatable {
 
     @Deprecated
     static RefdataValue lookupOrCreate(String category_name, String icon, String value) {
-        RefdataValue result = lookupOrCreate(category_name, value)
+        RefdataCategory cat = RefdataCategory.findByDescIlike(category_name);
+        if (! cat) {
+            cat = new RefdataCategory(desc:category_name).save(flush: true);
+        }
+
+        RefdataValue result = RefdataValue.findByOwnerAndValueIlike(cat, value)
+
+        if (! result) {
+            new RefdataValue(owner:cat, value:value).save(flush:true);
+            result = RefdataValue.findByOwnerAndValue(cat, value);
+        }
+
         result.icon = icon
         result
     }
@@ -164,7 +154,15 @@ class RefdataCategory extends AbstractI10nTranslatable {
               icon:  it.icon.toString()
               ]}
       */
-      RefdataValue.findAllByOwner( RefdataCategory.findByDesc(category_name)).sort{a,b -> a.getI10n('value').compareToIgnoreCase b.getI10n('value')}
+//      RefdataValue.findAllByOwner( RefdataCategory.findByDesc(category_name)).sort{a,b -> a.getI10n('value').compareToIgnoreCase b.getI10n('value')}
+      String i10value = LocaleContextHolder.getLocale().getLanguage() == Locale.GERMAN.getLanguage() ? 'valueDe' : 'valueEn'
+
+      RefdataValue.executeQuery("""select rdv from RefdataValue as rdv, RefdataCategory as rdc, I10nTranslation as i10n
+               where rdv.owner = rdc and rdc.desc = ? 
+               and i10n.referenceId = rdv.id 
+               and i10n.referenceClass = 'com.k_int.kbplus.RefdataValue' and i10n.referenceField = 'value'
+               order by i10n.${i10value}"""
+              , ["${category_name}"] )
   }
 
     static getAllRefdataValuesWithI10nExplanation(String category_name, Map sort) {

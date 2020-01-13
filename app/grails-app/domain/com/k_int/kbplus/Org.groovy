@@ -236,13 +236,11 @@ class Org
             shortcode = generateShortcode(name);
         }
 
-        try {
+        //ugliest HOTFIX ever #2
+        if(!Thread.currentThread().name.contains("Sync")) {
             if (contextService.getOrg()) {
                 createdBy = contextService.getOrg()
             }
-        }
-        catch(AssertionFailure e) {
-            log.warn("AssertionFailure occurred, if called from thread or job, then ignore, otherwise do checks why ContextService loading failed!")
         }
 
         super.beforeInsert()
@@ -267,6 +265,16 @@ class Org
 
         if (oss != OrgSettings.SETTING_NOT_FOUND) {
             result = oss.roleValue?.authority
+        }
+        result
+    }
+    String getCustomerTypeI10n() {
+        String result
+
+        def oss = OrgSettings.get(this, OrgSettings.KEYS.CUSTOMER_TYPE)
+
+        if (oss != OrgSettings.SETTING_NOT_FOUND) {
+            result = oss.roleValue?.getI10n('authority')
         }
         result
     }

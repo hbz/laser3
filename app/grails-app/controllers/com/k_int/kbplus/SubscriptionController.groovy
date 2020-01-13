@@ -32,6 +32,8 @@ import org.codehaus.groovy.runtime.InvokerHelper
 import org.springframework.web.multipart.commons.CommonsMultipartFile
 
 import javax.servlet.ServletOutputStream
+import java.nio.file.Files
+import java.nio.file.Path
 import java.text.NumberFormat
 import java.text.SimpleDateFormat
 import java.util.concurrent.Callable
@@ -3786,7 +3788,7 @@ class SubscriptionController extends AbstractDebugController {
 
         if (new_subscription.save()) {
             // assert an org-role
-            def org_link = new OrgRole(org: result.institution,
+            OrgRole org_link = new OrgRole(org: result.institution,
                     sub: new_subscription,
                     roleType: OR_SUBSCRIBER
             ).save();
@@ -3794,7 +3796,8 @@ class SubscriptionController extends AbstractDebugController {
             if(old_subOID) {
                 Links prevLink = new Links(source: new_subscription.id, destination: old_subOID, objectType: Subscription.class.name, linkType: LINKTYPE_FOLLOWS, owner: contextService.org)
                 prevLink.save()
-            } else { log.error("Problem linking new subscription, ${prevLink.errors}") }
+            }
+            else { log.error("Problem linking new subscription, ${prevLink.errors}") }
         } else {
             log.error("Problem saving new subscription, ${new_subscription.errors}");
         }
@@ -3809,9 +3812,8 @@ class SubscriptionController extends AbstractDebugController {
     }
 
 
-
-    @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
-    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
+    @Deprecated
+    @Secured(['ROLE_YODA'])
     def renewSubscriptionConsortia() {
 
         def result = setResultGenericsAndCheckAccess(accessService.CHECK_VIEW)
@@ -4004,15 +4006,28 @@ class SubscriptionController extends AbstractDebugController {
                         if (dctx.id in toCopyDocs) {
                             if (((dctx.owner?.contentType == 1) || (dctx.owner?.contentType == 3)) && (dctx.status?.value != 'Deleted')) {
 
-                                Doc newDoc = new Doc()
-                                InvokerHelper.setProperties(newDoc, dctx.owner.properties)
-                                newDoc.save(flush: true)
+                                try {
 
-                                DocContext newDocContext = new DocContext()
-                                InvokerHelper.setProperties(newDocContext, dctx.properties)
-                                newDocContext.subscription = newSub2
-                                newDocContext.owner = newDoc
-                                newDocContext.save(flush: true)
+                                    Doc newDoc = new Doc()
+                                    InvokerHelper.setProperties(newDoc, dctx.owner.properties)
+                                    newDoc.save(flush: true)
+
+                                    DocContext newDocContext = new DocContext()
+                                    InvokerHelper.setProperties(newDocContext, dctx.properties)
+                                    newDocContext.subscription = newSub2
+                                    newDocContext.owner = newDoc
+                                    newDocContext.save(flush: true)
+
+                                    String fPath = grailsApplication.config.documentStorageLocation ?: '/tmp/laser'
+
+                                    Path source = new File("${fPath}/${dctx.owner.uuid}").toPath()
+                                    Path target = new File("${fPath}/${newDoc.uuid}").toPath()
+                                    Files.copy(source, target)
+
+                                }
+                                catch (Exception e) {
+                                    log.error("Problem by Saving Doc in documentStorageLocation (Doc ID: ${dctx.owner.id} -> ${e})")
+                                }
                             }
                         }
                         //Copy Announcements
@@ -4758,7 +4773,7 @@ class SubscriptionController extends AbstractDebugController {
             isTargetSubChanged = true
         }
         if (params?.subscription?.takePackageIds && isBothSubscriptionsSet(baseSub, newSub)) {
-            List<Package> packagesToTake = params?.list('subscription.takePackageIds').collect{ genericOIDService.resolveOID(it)}
+            List<SubscriptionPackage> packagesToTake = params?.list('subscription.takePackageIds').collect{ genericOIDService.resolveOID(it)}
             subscriptionService.copyPackages(packagesToTake, newSub, flash)
             isTargetSubChanged = true
         }
@@ -5321,8 +5336,8 @@ class SubscriptionController extends AbstractDebugController {
         def titles = [
                 g.message(code: 'org.sortname.label'), 'Name', g.message(code: 'org.shortname.label')]
 
-        def orgSector = RefdataValue.getByValueAndCategory('Higher Education', 'OrgSector')
-        def orgType = RefdataValue.getByValueAndCategory('Provider', 'OrgRoleType')
+        RefdataValue orgSector = RefdataValue.getByValueAndCategory('Higher Education', 'OrgSector')
+        RefdataValue orgType = RefdataValue.getByValueAndCategory('Provider', 'OrgRoleType')
 
 
         if (addHigherEducationTitles) {

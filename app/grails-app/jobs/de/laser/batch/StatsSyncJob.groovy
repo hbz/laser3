@@ -24,7 +24,7 @@ class StatsSyncJob extends AbstractJob {
         //                  `- Second, 0-59
     }
 
-    static configFlags = ['hbzMaster', 'StatsSyncJobActiv']
+    static List<String> configFlags = ['StatsSyncJobActiv']
 
     boolean isAvailable() {
         !jobIsRunning && !statsSyncService.running
@@ -42,8 +42,8 @@ class StatsSyncJob extends AbstractJob {
         try {
             log.debug("Execute::statsSyncJob")
 
-            if ( grailsApplication.config.hbzMaster == true && grailsApplication.config.StatsSyncJobActiv == true ) {
-                log.debug("This server is marked as hbzMaster. Running Stats SYNC batch job");
+            if ( grailsApplication.config.StatsSyncJobActiv == true ) {
+                log.debug("Running Stats SYNC batch job")
                 SystemEvent.createEvent('STATS_SYNC_JOB_START')
 
                 statsSyncService.doSync()
@@ -52,9 +52,6 @@ class StatsSyncJob extends AbstractJob {
                 //}
 
                 SystemEvent.createEvent('STATS_SYNC_JOB_COMPLETE')
-            }
-            else {
-                log.debug("This server is NOT marked as hbzMaster. NOT Running Stats SYNC batch job");
             }
         }
         catch (Exception e) {

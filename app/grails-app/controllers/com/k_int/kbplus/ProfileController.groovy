@@ -429,9 +429,9 @@ class ProfileController {
         log.debug("Profile :: createReminder - ${params}")
         def result    = [:]
         def user      = User.load(springSecurityService.principal.id)
-        def trigger   = (params.int('trigger'))? RefdataValue.load(params.trigger) : RefdataCategory.lookupOrCreate("ReminderTrigger","Subscription Manual Renewal Date")
-        def remMethod = (params.int('method'))?  RefdataValue.load(params.method)  : RefdataCategory.lookupOrCreate("ReminderMethod","email")
-        def unit      = (params.int('unit'))?    RefdataValue.load(params.unit)    : RefdataCategory.lookupOrCreate("ReminderUnit","Day")
+        def trigger   = (params.int('trigger'))? RefdataValue.load(params.trigger) : RefdataValue.getByValueAndCategory("Subscription Manual Renewal Date", "ReminderTrigger")
+        def remMethod = (params.int('method'))?  RefdataValue.load(params.method)  : RefdataValue.getByValueAndCategory("email", "ReminderMethod")
+        def unit      = (params.int('unit'))?    RefdataValue.load(params.unit)    : RefdataValue.getByValueAndCategory("Day", "ReminderUnit")
 
 
         def reminder = new Reminder(trigger: trigger, unit: unit, reminderMethod: remMethod, amount: params.getInt('val')?:1, user: user, active: Boolean.TRUE)
@@ -487,7 +487,7 @@ class ProfileController {
     @Secured(['ROLE_USER'])
     def properties() {
 
-        EhcacheWrapper cache = cacheService.getTTL300Cache('ProfileController/properties/')
+        EhcacheWrapper cache = cacheService.getTTL300Cache('ProfileController/properties')
 
         def propDefs = [:]
 

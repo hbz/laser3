@@ -16,7 +16,7 @@ class DashboardDueDatesJob extends AbstractJob {
 //        cron name:'DashboardDueDatesTrigger', cronExpression: "0 /1 * * * ?" //ONLY FOR DEVELOPMENT AND TESTS: Fire every minute
     }
 
-    static configFlags = ['isUpdateDashboardTableInDatabase', 'isSendEmailsForDueDatesOfAllUsers']
+    static List<String> configFlags = ['isUpdateDashboardTableInDatabase', 'isSendEmailsForDueDatesOfAllUsers']
 
     boolean isAvailable() {
         !jobIsRunning && !dashboardDueDatesService.update_running

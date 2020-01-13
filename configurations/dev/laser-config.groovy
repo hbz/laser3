@@ -33,12 +33,12 @@ feature_finance = false
 feature.notifications = true
 
 // --- others ---
+//notificationsJobActive
 //globalDataSyncJobActiv
 //AdminReminderJobActiv
 onix_ghost_licence  = 'Jisc Collections Model Journals Licence 2015'
 publicationService.baseurl = 'http://knowplus.edina.ac.uk:2012/kbplus/api'
 docstore            = 'http://deprecated/deprecated'
-//hbzMaster        = true
 doDocstoreMigration = false
 showDebugInfo       = true
 

@@ -1732,10 +1732,10 @@ class SurveyController {
 
             params.list('selectedOrgs').each { soId ->
 
-                def org = Org.get(Long.parseLong(soId))
+                Org org = Org.get(Long.parseLong(soId))
 
                 if (!(SurveyOrg.findAllBySurveyConfigAndOrg(surveyConfig, org))) {
-                    def surveyOrg = new SurveyOrg(
+                    SurveyOrg surveyOrg = new SurveyOrg(
                             surveyConfig: surveyConfig,
                             org: org
                     )
@@ -2801,7 +2801,7 @@ class SurveyController {
             isTargetSubChanged = true
         }
         if (params?.subscription?.takePackageIds && isBothSubscriptionsSet(baseSub, newSub)) {
-            List<Package> packagesToTake = params?.list('subscription.takePackageIds').collect {
+            List<SubscriptionPackage> packagesToTake = params?.list('subscription.takePackageIds').collect {
                 genericOIDService.resolveOID(it)
             }
             subscriptionService.copyPackages(packagesToTake, newSub, flash)

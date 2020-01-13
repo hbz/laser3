@@ -13,6 +13,10 @@ import de.laser.exceptions.EntitlementCreationException
 import de.laser.helper.DebugAnnotation
 import org.springframework.web.multipart.commons.CommonsMultipartFile
 import de.laser.helper.RDStore
+
+import java.nio.file.Path
+import java.nio.file.Files
+
 import static de.laser.helper.RDStore.*
 import grails.plugin.springsecurity.annotation.Secured
 import grails.util.Holders
@@ -28,6 +32,7 @@ class SubscriptionService {
     def escapeService
     def refdataService
     Locale locale
+    def grailsApplication
 
     @javax.annotation.PostConstruct
     void init() {
@@ -345,6 +350,18 @@ class SubscriptionService {
 
         //alle zugeordneten Packages löschen
         if (packagesToDelete) {
+
+            packagesToDelete.each { subPkg ->
+                OrgAccessPointLink.executeUpdate("delete from OrgAccessPointLink oapl where oapl.subPkg=?", [subPkg])
+                CostItem.findAllBySubPkg(subPkg).each { costItem ->
+                    costItem.subPkg = null
+                    if(!costItem.sub){
+                        costItem.sub = subPkg.subscription
+                    }
+                    costItem.save(flush: true)
+                }
+            }
+
             SubscriptionPackage.executeUpdate(
                     "delete from SubscriptionPackage sp where sp in (:packagesToDelete) and sp.subscription = :sub ",
                     [packagesToDelete: packagesToDelete, sub: targetSub])
@@ -352,16 +369,17 @@ class SubscriptionService {
     }
 
 
-    boolean copyPackages(List<Package> packagesToTake, Subscription targetSub, def flash) {
-        packagesToTake?.each { pkg ->
-            if (targetSub.packages?.find { it.pkg?.id == pkg?.id }) {
-                Object[] args = [pkg.name]
+    boolean copyPackages(List<SubscriptionPackage> packagesToTake, Subscription targetSub, def flash) {
+        packagesToTake?.each { subscriptionPackage ->
+            if (targetSub.packages?.find { it.pkg?.id == subscriptionPackage.pkg?.id }) {
+                Object[] args = [subscriptionPackage.pkg.name]
                 flash.error += messageSource.getMessage('subscription.err.packageAlreadyExistsInTargetSub', args, locale)
             } else {
-                def pkgOapls = pkg.oapls
-                pkg.properties.oapls = null
+
+                List<OrgAccessPointLink> pkgOapls = OrgAccessPointLink.findAllByIdInList(subscriptionPackage.oapls.id)
+                subscriptionPackage.properties.oapls = null
                 SubscriptionPackage newSubscriptionPackage = new SubscriptionPackage()
-                InvokerHelper.setProperties(newSubscriptionPackage, pkg.properties)
+                InvokerHelper.setProperties(newSubscriptionPackage, subscriptionPackage.properties)
                 newSubscriptionPackage.subscription = targetSub
 
                 if(save(newSubscriptionPackage, flash)){
@@ -451,11 +469,12 @@ class SubscriptionService {
                             [result.subscriptionInstance, it.id])*/
 
                     def newSubscription = new Subscription(
+                            isMultiYear: subMember.isMultiYear,
                             type: subMember.type,
                             status: targetSub.status,
                             name: subMember.name,
-                            startDate: targetSub.startDate,
-                            endDate: targetSub.endDate,
+                            startDate: subMember.isMultiYear ? subMember.startDate : targetSub.startDate,
+                            endDate: subMember.isMultiYear ? subMember.endDate : targetSub.endDate,
                             manualRenewalDate: subMember.manualRenewalDate,
                             /* manualCancellationDate: result.subscriptionInstance.manualCancellationDate, */
                             identifier: java.util.UUID.randomUUID().toString(),
@@ -665,14 +684,27 @@ class SubscriptionService {
         sourceSub.documents?.each { dctx ->
             if (dctx.id in toCopyDocs) {
                 if (((dctx.owner?.contentType == Doc.CONTENT_TYPE_DOCSTORE) || (dctx.owner?.contentType == Doc.CONTENT_TYPE_BLOB)) && (dctx.status?.value != 'Deleted')) {
-                    Doc newDoc = new Doc()
-                    InvokerHelper.setProperties(newDoc, dctx.owner.properties)
-                    save(newDoc, flash)
-                    DocContext newDocContext = new DocContext()
-                    InvokerHelper.setProperties(newDocContext, dctx.properties)
-                    newDocContext.subscription = targetSub
-                    newDocContext.owner = newDoc
-                    save(newDocContext, flash)
+                    try {
+
+                        Doc newDoc = new Doc()
+                        InvokerHelper.setProperties(newDoc, dctx.owner.properties)
+                        save(newDoc, flash)
+                        DocContext newDocContext = new DocContext()
+                        InvokerHelper.setProperties(newDocContext, dctx.properties)
+                        newDocContext.subscription = targetSub
+                        newDocContext.owner = newDoc
+                        save(newDocContext, flash)
+
+                        String fPath = grailsApplication.config.documentStorageLocation ?: '/tmp/laser'
+
+                        Path source = new File("${fPath}/${dctx.owner.uuid}").toPath()
+                        Path target = new File("${fPath}/${newDoc.uuid}").toPath()
+                        Files.copy(source, target)
+
+                    }
+                    catch (Exception e) {
+                        log.error("Problem by Saving Doc in documentStorageLocation (Doc ID: ${dctx.owner.id} -> ${e})")
+                    }
                 }
             }
         }

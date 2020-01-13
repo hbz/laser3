@@ -37,7 +37,11 @@ class YodaService {
     }
 
     int getNumberOfActiveUsers() {
-        int count = 0
+        getActiveUsers( (1000 * 60 * 10) ).size() // 10 minutes
+    }
+
+    List getActiveUsers(long ms) {
+        List result = []
 
         sessionRegistry.getAllPrincipals().each { user ->
             List lastAccessTimes = []
@@ -48,11 +52,11 @@ class YodaService {
                 }
                 lastAccessTimes << userSession.getLastRequest().getTime()
             }
-            if (lastAccessTimes.max() > System.currentTimeMillis() - (1000 * 600)) { // 10 minutes
-                count++
+            if (lastAccessTimes.max() > System.currentTimeMillis() - ms) {
+                result.add(user)
             }
         }
-        count
+        result
     }
 
     Map<String,Object> processDeletedTIPPs() {

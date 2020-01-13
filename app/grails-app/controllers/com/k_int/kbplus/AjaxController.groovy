@@ -120,7 +120,7 @@ class AjaxController {
         Map<String, Object> result = [status:'failed']
 
         SessionCacheWrapper cache = contextService.getSessionCache()
-        DebugUtil debugUtil = (DebugUtil) cache.get('debugUtil')
+        DebugUtil debugUtil = (DebugUtil) cache.get(DebugUtil.SYSPROFILER_SESSION)
 
         if (debugUtil) {
             long delta = debugUtil.stopSimpleBench(params.uri)
@@ -312,10 +312,10 @@ class AjaxController {
             target.save();
             if (target instanceof SurveyResult) {
 
-                def org = contextService.getOrg()
+                Org org = contextService.getOrg()
                 //If Survey Owner set Value then set FinishDate
                 if (org?.id == target?.owner?.id && target?.finishDate == null) {
-                    def property = ""
+                    String property = ""
                     if (target?.type?.type == Integer.toString()) {
                         property = "intValue"
                     } else if (target?.type?.type == String.toString()) {
@@ -2279,10 +2279,10 @@ class AjaxController {
 
                 if (target_object instanceof SurveyResult) {
 
-                    def org = contextService.getOrg()
+                    Org org = contextService.getOrg()
                     //If Survey Owner set Value then set FinishDate
                     if (org?.id == target_object?.owner?.id && target_object?.finishDate == null) {
-                        def property = ""
+                        String property = ""
                         if (target_object?.type?.type == Integer.toString()) {
                             property = "intValue"
                         } else if (target_object?.type?.type == String.toString()) {

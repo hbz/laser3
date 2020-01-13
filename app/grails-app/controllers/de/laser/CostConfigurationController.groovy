@@ -11,7 +11,8 @@ class CostConfigurationController {
     def contextService
     def accessService
     def genericOIDService
-    private final def user_role        = Role.findByAuthority('INST_EDITOR')
+
+    private final def user_role = Role.findByAuthority('INST_EDITOR')
 
     @DebugAnnotation(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_EDITOR", specRole="ROLE_ADMIN")
     @Secured(closure = {
@@ -64,7 +65,7 @@ class CostConfigurationController {
         def result = [editable:true] //the user clicking here is already authenticated
         def costItemElements = RefdataValue.findAllByOwner(RefdataCategory.findByDesc('CostItemElement'))
         def elementsAlreadyTaken = []
-        def org = contextService.getOrg()
+        Org org = contextService.getOrg()
 
         costItemElements.each { cie ->
             def currentSetting = CostItemElementConfiguration.findByCostItemElementAndForOrganisation(RefdataValue.getByValueAndCategory(cie,'CostItemElement'),org)
@@ -101,7 +102,7 @@ class CostConfigurationController {
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_EDITOR") })
     def setAllCostItems() {
         def cie = genericOIDService.resolveOID(params.cie)
-        def org = contextService.org
+        Org org = contextService.org
         def concernedCostItems = CostItem.findAllByOwnerAndCostItemElementAndCostItemElementConfiguration(org,cie,null).collect {it.id}
         def ciec = CostItemElementConfiguration.findByCostItemElementAndForOrganisation(cie,org)
         if(concernedCostItems) {

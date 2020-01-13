@@ -54,10 +54,10 @@ public class PackageIngestService {
       log.debug("Matched ${content_provider_org} using name ${upload.soProvider.value}");
       incrementStatsCounter(upload,'Content Provider Org Matched');
     }
-    
-    def pkg_type = RefdataCategory.lookupOrCreate(RefdataCategory.PKG_TYPE,'Unknown');
-    def cp_role = RefdataValue.getByValueAndCategory('Content Provider', 'Organisational Role')
-    def tipp_current = RefdataCategory.lookupOrCreate(RefdataCategory.TIPP_STATUS,'Current');
+
+    RefdataValue pkg_type = RefdataValue.getByValueAndCategory('Unknown', RefdataCategory.PKG_TYPE)
+    RefdataValue cp_role = RefdataValue.getByValueAndCategory('Content Provider', 'Organisational Role')
+    RefdataValue tipp_current = RefdataValue.getByValueAndCategory('Current', RefdataCategory.TIPP_STATUS)
     
     def consortium = null;
     if ( upload.consortium != null )  {

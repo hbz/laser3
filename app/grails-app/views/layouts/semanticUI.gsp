@@ -413,6 +413,7 @@
                                     <g:link class="item" controller="yoda" action="settings">${message(code:'menu.yoda.systemSettings')}</g:link>
                                     <g:link class="item" controller="yoda" action="manageSystemMessage">${message(code: 'menu.admin.systemMessage')}</g:link>
                                     <g:link class="item" controller="yoda" action="appConfig">${message(code:'menu.yoda.appConfig')}</g:link>
+                                    <g:link class="item" controller="yoda" action="appThreads">${message(code:'menu.yoda.appThreads')}</g:link>
 
                                     <g:link class="item" controller="yoda" action="systemProfiler">${message(code:'menu.yoda.systemProfiler')}</g:link>
                                     <g:link class="item" controller="yoda" action="activityProfiler">${message(code:'menu.yoda.activityProfiler')}</g:link>
@@ -602,7 +603,7 @@
             <i class="share square icon"></i>
             ${message(code:'dse')}
         </a>
-        <a href="${resource(dir: 'resources', file: 'Verzeichnis_Verarbeitungstaetigkeiten_LAS.pdf')}" class="ui button" target="_blank"  onclick="$('#modalDsgvo').modal('hide')">
+        <a href="${resource(dir: 'resources', file: 'Verzeichnis_Verarbeitungstaetigkeiten_LASeR_V1.1o.pdf')}" class="ui button" target="_blank"  onclick="$('#modalDsgvo').modal('hide')">
             <i class="file pdf icon"></i>
             ${message(code:'vdv')}
         </a>

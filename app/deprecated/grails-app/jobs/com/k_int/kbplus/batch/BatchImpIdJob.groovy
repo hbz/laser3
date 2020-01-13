@@ -16,7 +16,7 @@ class BatchImpIdJob extends AbstractJob {
     }
     */
 
-    static configFlags = []
+    static List<String> configFlags = []
 
     boolean isAvailable() {
         !jobIsRunning // no service needed
@@ -33,12 +33,12 @@ class BatchImpIdJob extends AbstractJob {
         jobIsRunning = true
         SystemEvent.createEvent('BATCH_IMP_JOB_START')
 
-        log.debug("BatchImpIdJob::execute()");
+        log.debug("BatchImpIdJob::execute()")
 
 
-    def event = "BatchImpIdJob"
-    def startTime = printStart(event)
-    def counter = 0
+    String event = "BatchImpIdJob"
+    Date startTime = printStart(event)
+    int counter = 0
     def classList = [com.k_int.kbplus.Package,com.k_int.kbplus.Org,com.k_int.kbplus.License,com.k_int.kbplus.Subscription,com.k_int.kbplus.Platform,com.k_int.kbplus.TitleInstance] 
     classList.each{ currentClass ->
       def auditable_store = null
@@ -67,13 +67,14 @@ class BatchImpIdJob extends AbstractJob {
           log.error(e)
       }
       finally {
-        if(currentClass.hasProperty('auditable')) currentClass.auditable = auditable_store?:true ;
+        if(currentClass.hasProperty('auditable')) {
+            currentClass.auditable = auditable_store ?: true
+        }
       }
 
-    }
-    printDuration(startTime,event)
-
-        jobIsRunning = false
+      }
+      printDuration(startTime,event)
+      jobIsRunning = false
   }
 
     private def cleanUpGorm(session) {
@@ -87,13 +88,13 @@ class BatchImpIdJob extends AbstractJob {
     obj.save()
   }
 
-    private def printStart(event){
-       def starttime = new Date();
+    private Date printStart(String event){
+        Date starttime = new Date()
        log.debug("******* Start ${event}: ${starttime} *******")
        return starttime
    }
 
-    private def printDuration(starttime, event){
+    private void printDuration(Date starttime, String event){
       use(groovy.time.TimeCategory) {
       def duration = new Date() - starttime
       log.debug("******* End ${event}: ${new Date()} *******")

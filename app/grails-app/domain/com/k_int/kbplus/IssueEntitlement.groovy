@@ -158,13 +158,13 @@ class IssueEntitlement extends AbstractBaseDomain implements Comparable {
     def ie_access_start_date = getDerivedAccessStartDate()
     def ie_access_end_date = getDerivedAccessEndDate()
 
-    result = RefdataCategory.lookupOrCreate('IE Access Status','Current')
+    result = RefdataValue.getByValueAndCategory('Current', 'IE Access Status')
 
     if (ie_access_start_date && as_at < ie_access_start_date ) {
-      result = RefdataCategory.lookupOrCreate('IE Access Status','Expected');
+      result = RefdataValue.getByValueAndCategory('Expected', 'IE Access Status')
     }
     else if (ie_access_end_date && as_at > ie_access_end_date ) {
-      result = RefdataCategory.lookupOrCreate('IE Access Status','Expired');
+      result = RefdataValue.getByValueAndCategory('Expired', 'IE Access Status')
     }
 
 

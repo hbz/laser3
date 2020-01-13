@@ -1,6 +1,7 @@
 package com.k_int.properties
 
 import com.k_int.kbplus.GenericOIDService
+import com.k_int.kbplus.Identifier
 import com.k_int.kbplus.Org
 import com.k_int.kbplus.RefdataCategory
 import com.k_int.kbplus.RefdataValue
@@ -11,6 +12,7 @@ import de.laser.domain.AbstractI10nTranslatable
 import de.laser.domain.I10nTranslation
 import de.laser.helper.SwissKnife
 import grails.util.Holders
+import groovy.transform.NotYetImplemented
 import groovy.util.logging.Log4j
 import org.codehaus.groovy.grails.orm.hibernate.cfg.GrailsHibernateUtil
 
@@ -164,6 +166,11 @@ class PropertyDefinition extends AbstractI10nTranslatable implements Serializabl
         dateCreated (nullable: true, blank: false)
     }
 
+    @NotYetImplemented
+    static PropertyDefinition construct(Map<String, Object> map) {
+        println "WARNING: NotYetImplemented"
+    }
+
     private static def typeIsValid(key) {
         if (validTypes2.containsKey(key)) {
             return true;
@@ -264,11 +271,11 @@ class PropertyDefinition extends AbstractI10nTranslatable implements Serializabl
 
         if (! params.tenant) {
             CacheService cacheService = (CacheService) Holders.grailsApplication.mainContext.getBean('cacheService')
-            cache = cacheService.getTTL300Cache("PropertyDefinition/refdataFind/custom/${params.desc}/${LocaleContextHolder.getLocale()}/")
+            cache = cacheService.getTTL300Cache("PropertyDefinition/refdataFind/custom/${params.desc}/${LocaleContextHolder.getLocale()}")
         }
         else {
             ContextService contextService = (ContextService) Holders.grailsApplication.mainContext.getBean('contextService')
-            cache = contextService.getCache("PropertyDefinition/refdataFind/private/${params.desc}/${LocaleContextHolder.getLocale()}/", contextService.ORG_SCOPE)
+            cache = contextService.getCache("PropertyDefinition/refdataFind/private/${params.desc}/${LocaleContextHolder.getLocale()}", contextService.ORG_SCOPE)
         }
 
         if (! cache.get('propDefs')) {

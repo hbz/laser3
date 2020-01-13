@@ -1,4 +1,4 @@
-<%@ page import="com.k_int.kbplus.RefdataCategory; com.k_int.kbplus.Org; com.k_int.kbplus.Person; com.k_int.kbplus.PersonRole; com.k_int.kbplus.RefdataValue;" %>
+<%@ page import="de.laser.helper.RDStore; com.k_int.kbplus.RefdataCategory; com.k_int.kbplus.Org; com.k_int.kbplus.Person; com.k_int.kbplus.PersonRole; de.laser.helper.RDStore" %>
 <laser:serviceInjection />
 
 <semui:modal id="${tmplId}" message="${message}">
@@ -10,7 +10,7 @@
             <label for="newPrsRoleOrg">Einrichtung</label>
             <g:select class="ui dropdown search"
                       id="newPrsRoleOrg" name="newPrsRoleOrg"
-                          from="${Org.findAll().sort{ it.name ? it.name?.toLowerCase() : it.sortname?.toLowerCase() }}"
+                          from="${Org.findAll("from Org o order by lower(o.name)")}"
                           optionKey="id"
                           optionValue="${{ it.name ?: it.sortname ?: it.shortname }}"
                 value="${presetOrgId}"
@@ -24,7 +24,7 @@
                           from="${roleTypeValues}"
                           optionKey="id"
                           optionValue="value"
-                          value="${RefdataValue.getByValueAndCategory("General contact person", "Person Function")?.id}"
+                          value="${RDStore.PRS_FUNC_GENERAL_CONTACT_PRS?.id}"
                           />
 
             <input type="hidden" name="roleType" value="${roleType}" />

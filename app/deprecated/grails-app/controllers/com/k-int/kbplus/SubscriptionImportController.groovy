@@ -705,36 +705,36 @@ class SubscriptionImportController extends AbstractDebugController {
         }
 
         if ( dbtipp ) {
-          def live_issue_entitlement = RDStore.TIPP_STATUS_CURRENT
-          def is_core = false
+          RefdataValue live_issue_entitlement = RDStore.TIPP_STATUS_CURRENT
+          boolean is_core = false
 
-          def new_core_status = null;
-
+          RefdataValue new_core_status
+  
           switch ( entitlement.core_status?.toUpperCase() ) {
             case 'Y':
             case 'YES':
-              new_core_status = RefdataCategory.lookupOrCreate('CoreStatus','Yes');
+              new_core_status = RefdataValue.getByValueAndCategory('Yes', 'CoreStatus')
               is_core = true;
               break;
             case 'P':
             case 'PRINT':
-              new_core_status = RefdataCategory.lookupOrCreate('CoreStatus','Print');
+              new_core_status = RefdataValue.getByValueAndCategory('Print', 'CoreStatus')
               is_core = true;
               break;
             case 'E':
             case 'ELECTRONIC':
-              new_core_status = RefdataCategory.lookupOrCreate('CoreStatus','Electronic');
+              new_core_status = RefdataValue.getByValueAndCategory('Electronic', 'CoreStatus')
               is_core = true;
               break;
             case 'P+E':
             case 'E+P':
             case 'PRINT+ELECTRONIC':
             case 'ELECTRONIC+PRINT':
-              new_core_status = RefdataCategory.lookupOrCreate('CoreStatus','Print+Electronic');
+              new_core_status = RefdataValue.getByValueAndCategory('Print+Electronic', 'CoreStatus')
               is_core = true;
               break;
             default:
-              new_core_status = RefdataCategory.lookupOrCreate('CoreStatus','No');
+              new_core_status = RefdataValue.getByValueAndCategory('No', 'CoreStatus')
               break;
           }
 

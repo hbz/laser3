@@ -890,5 +890,6 @@ class DeletionService {
 
         DeleteRequest request = new DeleteRequest(es_index, id)
         DeleteResponse deleteResponse = esclient.delete(request, RequestOptions.DEFAULT);
+        esclient.close()
     }
 }

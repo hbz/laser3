@@ -20,6 +20,7 @@ class LaserInjectionTagLib {
 
         g.set( var:'springSecurityService', bean:'springSecurityService' )
         g.set( var:'contextService', bean:'contextService' )
+        g.set( var:'cacheService', bean:'cacheService' )
         g.set( var:'accessService', bean:'accessService' )
         g.set( var:'auditService', bean:'auditService' )
         g.set( var:'yodaService', bean:'yodaService' )
