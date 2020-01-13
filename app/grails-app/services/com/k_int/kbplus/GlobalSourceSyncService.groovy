@@ -53,12 +53,12 @@ class GlobalSourceSyncService extends AbstractLockableService {
             title_instance.gokbId = newtitle.gokbID
         }
 
-        title_instance.status = RefdataValue.loc(RefdataCategory.TI_STATUS, [en: 'Deleted', de: 'Gelöscht'])
+        title_instance.status = RefdataValue.getByValueAndCategory('Deleted', RefdataCategory.TI_STATUS)
 
         if (newtitle.status == 'Current') {
-            title_instance.status = RefdataValue.loc(RefdataCategory.TI_STATUS, [en: 'Current', de: 'Aktuell'])
+            title_instance.status = RefdataValue.getByValueAndCategory('Current', RefdataCategory.TI_STATUS)
         } else if (newtitle.status == 'Retired') {
-            title_instance.status = RefdataValue.loc(RefdataCategory.TI_STATUS, [en: 'Retired', de: 'im Ruhestand'])
+            title_instance.status = RefdataValue.getByValueAndCategory('Retired', RefdataCategory.TI_STATUS)
         }
 
         newtitle.identifiers.each {
@@ -263,20 +263,20 @@ class GlobalSourceSyncService extends AbstractLockableService {
 
         println "Reconciling new Package!"
 
-        RefdataValue scope = RefdataValue.loc(RefdataCategory.PKG_SCOPE, [en: (newpkg?.scope) ?: 'Unknown']);
-        RefdataValue listStatus = RefdataValue.loc(RefdataCategory.PKG_LIST_STAT, [en: (newpkg?.listStatus) ?: 'Unknown']);
-        RefdataValue breakable = RefdataValue.loc(RefdataCategory.PKG_BREAKABLE, [en: (newpkg?.breakable) ?: 'Unknown']);
-        RefdataValue consistent = RefdataValue.loc(RefdataCategory.PKG_CONSISTENT, [en: (newpkg?.consistent) ?: 'Unknown']);
-        RefdataValue fixed = RefdataValue.loc(RefdataCategory.PKG_FIXED, [en: (newpkg?.fixed) ?: 'Unknown']);
-        RefdataValue paymentType = RefdataValue.loc(RefdataCategory.PKG_PAYMENTTYPE, [en: (newpkg?.paymentType) ?: 'Unknown']);
-        RefdataValue global = RefdataValue.loc(RefdataCategory.PKG_GLOBAL, [en: (newpkg?.global) ?: 'Unknown']);
+        RefdataValue scope =        RefdataValue.getByValueAndCategory( ((newpkg?.scope) ?: 'Unknown'), RefdataCategory.PKG_SCOPE)
+        RefdataValue listStatus =   RefdataValue.getByValueAndCategory( ((newpkg?.listStatus) ?: 'Unknown'), RefdataCategory.PKG_LIST_STAT)
+        RefdataValue breakable =    RefdataValue.getByValueAndCategory( ((newpkg?.breakable) ?: 'Unknown'), RefdataCategory.PKG_BREAKABLE)
+        RefdataValue consistent =   RefdataValue.getByValueAndCategory( ((newpkg?.consistent) ?: 'Unknown'), RefdataCategory.PKG_CONSISTENT)
+        RefdataValue fixed =        RefdataValue.getByValueAndCategory( ((newpkg?.fixed) ?: 'Unknown'), RefdataCategory.PKG_FIXED)
+        RefdataValue paymentType =  RefdataValue.getByValueAndCategory( ((newpkg?.paymentType) ?: 'Unknown'), RefdataCategory.PKG_PAYMENTTYPE)
+        RefdataValue global =       RefdataValue.getByValueAndCategory( ((newpkg?.global) ?: 'Unknown'), RefdataCategory.PKG_GLOBAL)
         RefdataValue ref_pprovider = RefdataValue.getByValueAndCategory('Content Provider', 'Organisational Role')
 
         //we should now first setup the provider and then proceed to package
         Org provider
-        RefdataValue orgSector = RefdataValue.getByValueAndCategory('Publisher', 'OrgSector')
-        RefdataValue orgType = RefdataValue.getByValueAndCategory('Provider', 'OrgRoleType')
-        RefdataValue orgRole = RefdataValue.getByValueAndCategory('Content Provider', 'Organisational Role')
+        RefdataValue orgSector =    RefdataValue.getByValueAndCategory('Publisher', 'OrgSector')
+        RefdataValue orgType =      RefdataValue.getByValueAndCategory('Provider', 'OrgRoleType')
+        RefdataValue orgRole =      RefdataValue.getByValueAndCategory('Content Provider', 'Organisational Role')
         if(newpkg.packageProvider) {
             println "checking package provider ${newpkg.packageProvider}"
             provider = (Org) Org.lookupOrCreate2(newpkg.packageProvider, orgSector, null, [:], null, orgType, newpkg.packageProviderUuid ?: null)
@@ -795,10 +795,10 @@ class GlobalSourceSyncService extends AbstractLockableService {
               title_of_tipp_to_update.save()
             }*/
 
-            def tippStatus = RefdataValue.loc(RefdataCategory.TIPP_STATUS, [en: 'Deleted', de: 'Gelöscht'])
+            def tippStatus = RefdataValue.getByValueAndCategory('Deleted', RefdataCategory.TIPP_STATUS)
 
             if (tipp.status == 'Retired') {
-                tippStatus = RefdataValue.loc(RefdataCategory.TIPP_STATUS, [en: 'Retired', de: 'im Ruhestand'])
+                tippStatus = RefdataValue.getByValueAndCategory('Retired', RefdataCategory.TIPP_STATUS)
             }
 
             /*def db_tipp = null
@@ -1295,12 +1295,13 @@ class GlobalSourceSyncService extends AbstractLockableService {
                     out.close()
 
                     log.debug("Create new GlobalRecordInfo");
+                    log.debug("status @ ${cfg.name}")
 
-                    def status = RefdataValue.loc("${cfg.name} Status", [en: 'Deleted', de: 'Gelöscht'])
+                    def status = RefdataValue.getByValueAndCategory('Deleted',"${cfg.name} Status")
                     if (parsed_rec.parsed_rec.status == 'Current') {
-                        status = RefdataValue.loc("${cfg.name} Status", [en: 'Current', de: 'Aktuell'])
+                        status = RefdataValue.getByValueAndCategory('Current',"${cfg.name} Status")
                     } else if (parsed_rec.parsed_rec.status == 'Retired') {
-                        status = RefdataValue.loc("${cfg.name} Status", [en: 'Retired', de: 'im Ruhestand'])
+                        status = RefdataValue.getByValueAndCategory('Retired', "${cfg.name} Status")
                     }
 
                     // Because we don't know about this record, we can't possibly be already tracking it. Just create a local tracking record.

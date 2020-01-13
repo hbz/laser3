@@ -311,13 +311,13 @@ class TitleInstance extends AbstractBaseDomain /*implements AuditableTrait*/ {
             def ti_status = RDStore.TITLE_STATUS_CURRENT
 
             if (titletyp == 'BookInstance') {
-                result = new BookInstance(title:title, impId:imp_uuid ?: java.util.UUID.randomUUID().toString(), gokbId: imp_uuid ?: null, status:ti_status, type: RefdataValue.loc(RefdataCategory.TI_TYPE, [en: 'EBook', de: 'EBook']))
+                result = new BookInstance(title:title, impId:imp_uuid ?: java.util.UUID.randomUUID().toString(), gokbId: imp_uuid ?: null, status:ti_status, type: RefdataValue.getByValueAndCategory('EBook', RefdataCategory.TI_TYPE))
             }
             else if (titletyp == 'DatabaseInstance') {
-                result = new DatabaseInstance(title:title, impId:imp_uuid ?: java.util.UUID.randomUUID().toString(), gokbId: imp_uuid ?: null, status:ti_status, type: RefdataValue.loc(RefdataCategory.TI_TYPE, [en: 'Database', de: 'Database']))
+                result = new DatabaseInstance(title:title, impId:imp_uuid ?: java.util.UUID.randomUUID().toString(), gokbId: imp_uuid ?: null, status:ti_status, type: RefdataValue.getByValueAndCategory('Database', RefdataCategory.TI_TYPE))
             }
             else {
-                result = new JournalInstance(title:title, impId:imp_uuid ?: java.util.UUID.randomUUID().toString(), gokbId: imp_uuid ?: null, status:ti_status, type: RefdataValue.loc(RefdataCategory.TI_TYPE, [en: 'Journal', de: 'Journal']))
+                result = new JournalInstance(title:title, impId:imp_uuid ?: java.util.UUID.randomUUID().toString(), gokbId: imp_uuid ?: null, status:ti_status, type: RefdataValue.getByValueAndCategory('Journal', RefdataCategory.TI_TYPE))
             }
 
             result.save(failOnError: true)
@@ -614,13 +614,13 @@ class TitleInstance extends AbstractBaseDomain /*implements AuditableTrait*/ {
         // no matching title
         if (! result) {
             if (title.type == 'Serial') {
-                result = new JournalInstance(title:title, impId:java.util.UUID.randomUUID().toString(), type: RefdataValue.loc(RefdataCategory.TI_TYPE, [en: 'Journal', de: 'Journal']))
+                result = new JournalInstance(title:title, impId:java.util.UUID.randomUUID().toString(), type: RefdataValue.getByValueAndCategory('Journal', RefdataCategory.TI_TYPE))
             }
             else if (title.type == 'Database') {
-                result = new DatabaseInstance(title:title, impId:java.util.UUID.randomUUID().toString(), type: RefdataValue.loc(RefdataCategory.TI_TYPE, [en: 'Database', de: 'Database']))
+                result = new DatabaseInstance(title:title, impId:java.util.UUID.randomUUID().toString(), type: RefdataValue.getByValueAndCategory('Database', RefdataCategory.TI_TYPE))
             }
             else {
-                result = new BookInstance(title:title, impId:java.util.UUID.randomUUID().toString(), type: RefdataValue.loc(RefdataCategory.TI_TYPE, [en: 'Book', de: 'Book']))
+                result = new BookInstance(title:title, impId:java.util.UUID.randomUUID().toString(), type: RefdataValue.getByValueAndCategory('Book', RefdataCategory.TI_TYPE))
             }
             if (! result.save()) {
                 throw new RuntimeException("Problem creating title instance : ${result.errors?.toString()}")
