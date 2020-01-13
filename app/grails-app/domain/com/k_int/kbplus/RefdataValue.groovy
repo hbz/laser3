@@ -125,12 +125,6 @@ class RefdataValue extends AbstractI10nTranslatable implements Comparable<Refdat
         result
     }
 
-    // Call this from code
-    static RefdataValue loc(String category_name, Map i10n) {
-        boolean hardData = false
-        loc(category_name, i10n, hardData)
-    }
-
     static def refdataFind(params) {
         def result = []
         def matches = I10nTranslation.refdataFindHelper(
