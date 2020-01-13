@@ -290,27 +290,7 @@ class BootStrap {
         def edit_permission = Perm.findByCode('edit') ?: new Perm(code: 'edit').save(failOnError: true)
         def view_permission = Perm.findByCode('view') ?: new Perm(code: 'view').save(failOnError: true)
 
-        // Roles
-
-        def or_lc_role            = RefdataValue.loc('Organisational Role', [en: 'Licensing Consortium', de:'Konsortium'], BOOTSTRAP)
-        def or_licensee_role      = RefdataValue.loc('Organisational Role', [en: 'Licensee', de: 'Lizenznehmer'], BOOTSTRAP)
-        def or_licensee_cons_role = RefdataValue.loc('Organisational Role', [key: 'Licensee_Consortial', en: 'Consortial licensee', de: 'Konsortiallizenznehmer'], BOOTSTRAP)
-        def or_licensee_coll_role = RefdataValue.loc('Organisational Role', [key: 'Licensee_Collective', en: 'Collective licensee', de: 'Institut des Lizenznehmers'], BOOTSTRAP)
-
-        def or_sc_role            = RefdataValue.loc('Organisational Role', [en: 'Subscription Consortia', de:'Konsortium'], BOOTSTRAP)
-        def or_subscr_role        = RefdataValue.loc('Organisational Role', [en: 'Subscriber', de: 'Teilnehmer'], BOOTSTRAP)
-        def or_subscr_cons_role   = RefdataValue.loc('Organisational Role', [key: 'Subscriber_Consortial', en: 'Consortial subscriber', de: 'Konsortialteilnehmer'], BOOTSTRAP)
-        def or_subscr_cons_hidden = RefdataValue.loc('Organisational Role', [key: 'Subscriber_Consortial_Hidden', en: 'Consortial subscriber (hidden)', de: 'Konsortialteilnehmer (versteckt)'], BOOTSTRAP)
-        def or_scoll_role         = RefdataValue.loc('Organisational Role', [key: 'Subscription Collective',en: 'Subscription Collective', de:'Stammlizenzverwalter'], BOOTSTRAP)
-        def or_subscr_coll_role   = RefdataValue.loc('Organisational Role', [key: 'Subscriber_Collective', en: 'Collective subscriber', de: 'Kollektivteilnehmer'], BOOTSTRAP)
-
-        def cl_owner_role       = RefdataValue.loc('Cluster Role',   [en: 'Cluster Owner'], BOOTSTRAP)
-        def cl_member_role      = RefdataValue.loc('Cluster Role',   [en: 'Cluster Member'], BOOTSTRAP)
-
         // TODO: refactoring: partOf
-
-        def combo1 = RefdataValue.loc('Combo Type',     [en: 'Consortium', de: 'Konsortium'], BOOTSTRAP)
-        def combo2 = RefdataValue.loc('Combo Type',     [en: 'Department', de: 'Institut'], BOOTSTRAP)
 
         // Global System Roles
 
@@ -442,15 +422,6 @@ class BootStrap {
 
         // Transforms types and formats Refdata
         // !!! HAS TO BE BEFORE the script adding the Transformers as it is used by those tables !!!
-
-        RefdataValue.loc('Transform Format', [en: 'json'], BOOTSTRAP)
-        RefdataValue.loc('Transform Format', [en: 'xml'], BOOTSTRAP)
-        RefdataValue.loc('Transform Format', [en: 'url'], BOOTSTRAP)
-
-        RefdataValue.loc('Transform Type', [en: 'subscription'], BOOTSTRAP)
-        RefdataValue.loc('Transform Type', [en: 'license'], BOOTSTRAP)
-        RefdataValue.loc('Transform Type', [en: 'title'], BOOTSTRAP)
-        RefdataValue.loc('Transform Type', [en: 'package'], BOOTSTRAP)
 
         // Add Transformers and Transforms defined in local config (laser-config.groovy)
         grailsApplication.config.systransforms.each { tr ->
@@ -2055,11 +2026,6 @@ class BootStrap {
 
         // refdata values
 
-        RefdataValue.loc('filter.fake.values',   [key: 'subscription.status.no.status.set.but.null', en: 'No Status', de: 'Kein Status'], BOOTSTRAP)
-        RefdataValue.loc('filter.fake.values',   [key: 'generic.null.value', en: 'Not set', de: 'Nicht gesetzt'], BOOTSTRAP)
-
-        RefdataValue.loc('ClusterType', [en: 'Undefined'], BOOTSTRAP)
-
         // RefdataValue.loc('Country',   [en: 'Germany', de: 'Deutschland'], BOOTSTRAP)
         // RefdataValue.loc('Country',   [en: 'Switzerland', de: 'Schweiz'], BOOTSTRAP)
         // RefdataValue.loc('Country',   [en: 'Austria', de: 'Österreich'], BOOTSTRAP)
@@ -2071,19 +2037,6 @@ class BootStrap {
         // RefdataValue.loc('Country',   [en: 'Netherlands', de: 'Niederlande'], BOOTSTRAP)
         // RefdataValue.loc('Country',   [en: 'Italy', de: 'Italien'], BOOTSTRAP)
 
-        RefdataValue.loc('Link Type', [key: 'follows',en:'... follows|... precedes',de: '... ist Nachfolger von|... ist Vorgänger von'], BOOTSTRAP)
-        RefdataValue.loc('Link Type', [key: 'references',en: '... references|... is referenced by',de: '... referenziert|... wird referenziert durch'], BOOTSTRAP)
-        RefdataValue.loc('Link Type', [key: 'is condition for',en: '... ist condition für|... ist conditioned by', de: '... ist Bedingung für|... ist bedingt durch'], BOOTSTRAP)
-
-        RefdataValue.loc('OrgSector',    [en: 'Higher Education', de: 'Akademisch'], BOOTSTRAP)
-        RefdataValue.loc('OrgSector',    [key: 'Publisher', en: 'Commercial', de: 'Kommerziell'], BOOTSTRAP)
-
-        RefdataValue.loc('Person Function',     [en: 'General Contact Person', de: 'Hauptkontakt'], BOOTSTRAP)
-        RefdataValue.loc('Person Function',     [en: 'Responsible Admin', de: 'Verantwortlicher Admin'], BOOTSTRAP)
-        RefdataValue.loc('Person Function',     [en: 'GASCO-Contact', de: 'GASCO-Kontakt'], BOOTSTRAP)
-        RefdataValue.loc('Person Function',     [en: 'Statistical Support', de: 'Statistischer Support'], BOOTSTRAP) // neu
-        RefdataValue.loc('Person Function',     [en: 'Technichal Support', de: 'Technischer Support'], BOOTSTRAP) // Funktion
-        RefdataValue.loc('Person Function',     [en: 'Contact Person', de: 'Kontakt'], BOOTSTRAP) // Funktion
         // RefdataValue.loc('Person Function',     [en: 'Bestandsaufbau', de: 'Bestandsaufbau'], BOOTSTRAP) //Position
         // RefdataValue.loc('Person Function',     [en: 'Direktion', de: 'Direktion'], BOOTSTRAP) //Position
         // RefdataValue.loc('Person Function',     [en: 'Direktionsassistenz', de: 'Direktionsassistenz'], BOOTSTRAP) //Position
@@ -2094,16 +2047,10 @@ class BootStrap {
         // RefdataValue.loc('Person Function',     [en: 'Fachreferat', de: 'Fachreferat'], BOOTSTRAP) //Position
         // RefdataValue.loc('Person Function',     [en: 'Bereichsbibliotheksleitung', de: 'Bereichsbibliotheksleitung'], BOOTSTRAP) //Position
 
-        RefdataValue.loc('Share Configuration', [en: 'only for creator',de:'nur für Uploader'], BOOTSTRAP)
-        RefdataValue.loc('Share Configuration', [key: 'only for author organisation', en: 'only for my organisation',de:'nur für meine Organisation'], BOOTSTRAP)
-        RefdataValue.loc('Share Configuration', [key: 'only for author and target organisation', en: 'only for my and target organisation',de:'nur für meine Organisation und die Bezugsorganisation'], BOOTSTRAP)
         //deactivated as March 21st, 2019 - the feature has been postponed into quartal II at least
         //RefdataValue.loc('Share Configuration', [key: 'only for consortia members',en:'only for my consortia members',de:'nur für meine Konsorten'], BOOTSTRAP)
         //RefdataValue.loc('Share Configuration', [en: 'everyone',de:'alle'], BOOTSTRAP)
          //RefdataValue.loc('Subscription Type',      [en: 'Collective Subscription', de: 'Kollektivlizenz'], BOOTSTRAP)
-
-        RefdataValue.loc('Access Method IP',      [en: 'IPv4', de: 'IPv4'], BOOTSTRAP)
-        RefdataValue.loc('Access Method IP',      [en: 'IPv6', de: 'IPv6'], BOOTSTRAP)
 
         createRefdataWithI10nExplanation()
     }
@@ -2244,10 +2191,6 @@ class BootStrap {
     //                                                                                       rectype:0)
     // gokb_record_source.save(flush:true, stopOnError:true)
     // log.debug("new gokb record source: ${gokb_record_source}")
-
-        //Reminders for Cron
-        RefdataValue.loc("Language", [key: 'en', en: "English", de:"Englisch"], BOOTSTRAP)
-        RefdataValue.loc("Language", [key: 'de', en: "German", de:"Deutsch"], BOOTSTRAP)
     }
 
     def setupContentItems = {
