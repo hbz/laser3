@@ -552,14 +552,14 @@ class OrganisationService {
                         PropertyDefinition.findByName('Remote Access')]
                 ],
                 [group:new PropertyDefinitionGroup(name: 'Fremdsysteme', description: '', ownerType: Subscription.class.name, tenant: current, isVisible: true),
-                 items:[PropertyDefinition.findByName('DBIS-Link'),
+                 items:[PropertyDefinition.findByName('DBIS link'),
                         PropertyDefinition.findByName('EZB tagging (yellow)'),
-                        PropertyDefinition.findByName('SFX-Eintrag')]
+                        PropertyDefinition.findByName('SFX entry')]
                 ],
                 [group:new PropertyDefinitionGroup(name: 'Statistik', description: '', ownerType: Subscription.class.name, tenant: current, isVisible: true),
-                 items:[PropertyDefinition.findByName('Statistik'),
+                 items:[PropertyDefinition.findByName('Statistic'),
                         PropertyDefinition.findByName('Statistics Link'),
-                        PropertyDefinition.findByName('Statistikzugang')]
+                        PropertyDefinition.findByName('Statistic access')]
                 ]
         ]
         propertyDefinitionGroups.each { pdg ->
@@ -948,26 +948,26 @@ class OrganisationService {
                         PropertyDefinition.findByName('GASCO information link')]
                 ],
                 [group:new PropertyDefinitionGroup(name: 'meinKonsortium', description: 'alle für meine Konsortialstelle relevanten Merkmale', ownerType: Subscription.class.name, tenant: current, isVisible: true),
-                 items:[PropertyDefinition.findByName('Bundesweit offen'),
-                        PropertyDefinition.findByName('Eingeschränkter Benutzerkreis'),
-                        PropertyDefinition.findByName('Mehrjahreslaufzeit'),
-                        PropertyDefinition.findByName('Mehrjahreslaufzeit ausgewählt'),
-                        PropertyDefinition.findByName('Mengenrabatt Stichtag'),
-                        PropertyDefinition.findByName('Neueinsteigerrabatt'),
-                        PropertyDefinition.findByName('Preis gerundet'),
-                        PropertyDefinition.findByName('Preisvorteil durch weitere Produktteilnahme'),
-                        PropertyDefinition.findByName('Private Einrichtungen'),
-                        PropertyDefinition.findByName('Produktabhängigkeit'),
-                        PropertyDefinition.findByName('Rabatt'),
-                        PropertyDefinition.findByName('Rabattstaffel'),
-                        PropertyDefinition.findByName('Rabatt Zählung'),
-                        PropertyDefinition.findByName('Rechnungsstellung durch Anbieter'),
-                        PropertyDefinition.findByName('Rechnungszeitpunkt'),
+                 items:[PropertyDefinition.findByName('Open country-wide'),
+                        PropertyDefinition.findByName('Restricted user group'),
+                        PropertyDefinition.findByName('Perennial term'),
+                        PropertyDefinition.findByName('Perennial term checked'),
+                        PropertyDefinition.findByName('Due date for volume discount'),
+                        PropertyDefinition.findByName('Newcomer discount'),
+                        PropertyDefinition.findByName('Price increase'),
+                        PropertyDefinition.findByName('Pricing advantage by licensing of another product'),
+                        PropertyDefinition.findByName('Private institutions'),
+                        PropertyDefinition.findByName('Product dependency'),
+                        PropertyDefinition.findByName('Discount'),
+                        PropertyDefinition.findByName('Scale of discount'),
+                        PropertyDefinition.findByName('Calculation of discount'),
+                        PropertyDefinition.findByName('Billing done by provider'),
+                        PropertyDefinition.findByName('Time of billing'),
                         PropertyDefinition.findByName('reverse charge'),
-                        PropertyDefinition.findByName('Simuser Zahl'),
-                        PropertyDefinition.findByName('Teilzahlung'),
-                        PropertyDefinition.findByName('Testzeitraum'),
-                        PropertyDefinition.findByName('Unterjähriger Einstieg')]
+                        PropertyDefinition.findByName('Sim-User Number'),
+                        PropertyDefinition.findByName('Partial payment'),
+                        PropertyDefinition.findByName('Time span for testing'),
+                        PropertyDefinition.findByName('Joining during the period')]
                 ],
                 [group:new PropertyDefinitionGroup(name: 'Open Access', description: 'Open Access vereinbart', ownerType: License.class.name, tenant: current, isVisible: true),
                  items:[PropertyDefinition.findByName('OA Note'),
@@ -1335,13 +1335,13 @@ class OrganisationService {
                             sharedProperties:['name','form','resource'],
                             customProperties: [
                                     [type:PropertyDefinition.findByName('GASCO Entry').id,refValue:RDStore.YN_YES],
-                                    [type:PropertyDefinition.findByName('GASCO-Information-Link').id,urlValue:'https://www...',isShared:true],
-                                    [type:PropertyDefinition.findByName('Eingeschränkter Benutzerkreis').id,stringValue:'Universitäten'],
-                                    [type:PropertyDefinition.findByName('Neueinsteigerrabatt').id,refValue:RDStore.YN_YES,note:'25% auf den Jahrespreis'],
-                                    [type:PropertyDefinition.findByName('Preis gerundet').id,refValue:RDStore.YN_NO],
-                                    [type:PropertyDefinition.findByName('Rechnungsstellung durch Anbieter').id,refValue:RDStore.YN_NO],
-                                    [type:PropertyDefinition.findByName('Simuser Zahl').id,stringValue:'unlimitiert',isShared:true],
-                                    [type:PropertyDefinition.findByName('Testzeitraum').id,stringValue:'90']
+                                    [type:PropertyDefinition.findByName('GASCO information link').id,urlValue:'https://www...',isShared:true],
+                                    [type:PropertyDefinition.findByName('Restricted user group').id,stringValue:'Universitäten'],
+                                    [type:PropertyDefinition.findByName('Newcomer discount').id,refValue:RDStore.YN_YES,note:'25% auf den Jahrespreis'],
+                                    [type:PropertyDefinition.findByName('Price rounded').id,refValue:RDStore.YN_NO],
+                                    [type:PropertyDefinition.findByName('Billing done by provider').id,refValue:RDStore.YN_NO],
+                                    [type:PropertyDefinition.findByName('Sim-User Number').id,stringValue:'unlimitiert',isShared:true],
+                                    [type:PropertyDefinition.findByName('Time span for testing').id,stringValue:'90']
                             ],
                             subscriptionMembers: [[subMember:member1Aachen,
                                                    subOwner:consortialLicenses.get('Rahmenvertrag (Teilnehmervertrag)'),
@@ -1393,13 +1393,13 @@ class OrganisationService {
                             subscriptionDocuments:[[docstoreUUID:'cef94ff5-16b4-4470-8165-4e198865d232']],
                             customProperties: [
                                     [type:PropertyDefinition.findByName('GASCO Entry').id,refValue:RDStore.YN_YES],
-                                    [type:PropertyDefinition.findByName('GASCO-Information-Link').id,urlValue:'https://www...'],
-                                    [type:PropertyDefinition.findByName('Eingeschränkter Benutzerkreis').id,stringValue:'Universitäten'],
-                                    [type:PropertyDefinition.findByName('Neueinsteigerrabatt').id,refValue:RDStore.YN_YES,note:'25% auf den Jahrespreis'],
-                                    [type:PropertyDefinition.findByName('Preis gerundet').id,refValue:RDStore.YN_NO],
-                                    [type:PropertyDefinition.findByName('Rechnungsstellung durch Anbieter').id,refValue:RDStore.YN_NO],
-                                    [type:PropertyDefinition.findByName('Simuser Zahl').id,stringValue:'unlimitiert'],
-                                    [type:PropertyDefinition.findByName('Testzeitraum').id,stringValue:'90']
+                                    [type:PropertyDefinition.findByName('GASCO information link').id,urlValue:'https://www...'],
+                                    [type:PropertyDefinition.findByName('Restricted user group').id,stringValue:'Universitäten'],
+                                    [type:PropertyDefinition.findByName('Newcomer discount').id,refValue:RDStore.YN_YES,note:'25% auf den Jahrespreis'],
+                                    [type:PropertyDefinition.findByName('Price rounded').id,refValue:RDStore.YN_NO],
+                                    [type:PropertyDefinition.findByName('Billing done by provider').id,refValue:RDStore.YN_NO],
+                                    [type:PropertyDefinition.findByName('Sim-User Number').id,stringValue:'unlimitiert'],
+                                    [type:PropertyDefinition.findByName('Time span for testing').id,stringValue:'90']
                             ],
                             subscriptionMembers: [[subMember:member1Aachen,
                                                    subOwner:consortialLicenses.get('Rahmenvertrag (Teilnehmervertrag)'),
@@ -1519,11 +1519,11 @@ class OrganisationService {
                             sharedProperties:['name','form','resource'],
                             customProperties: [
                                     [type:PropertyDefinition.findByName('GASCO Entry').id,refValue:RDStore.YN_YES],
-                                    [type:PropertyDefinition.findByName('GASCO-Information-Link').id,urlValue:'https://www...',isShared:true],
-                                    [type:PropertyDefinition.findByName('Preis gerundet').id,refValue:RDStore.YN_NO],
-                                    [type:PropertyDefinition.findByName('Rabatt').id,stringValue:'22 %'],
-                                    [type:PropertyDefinition.findByName('Rabattstaffel').id,stringValue:null],
-                                    [type:PropertyDefinition.findByName('Rechnungsstellung durch Anbieter').id,refValue:RDStore.YN_NO,isShared:true]
+                                    [type:PropertyDefinition.findByName('GASCO information link').id,urlValue:'https://www...',isShared:true],
+                                    [type:PropertyDefinition.findByName('Price rounded').id,refValue:RDStore.YN_NO],
+                                    [type:PropertyDefinition.findByName('Discount').id,stringValue:'22 %'],
+                                    [type:PropertyDefinition.findByName('Scale of discount').id,stringValue:null],
+                                    [type:PropertyDefinition.findByName('Billing done by provider').id,refValue:RDStore.YN_NO,isShared:true]
                             ],
                             subscriptionMembers: [[subMember:member1Aachen,
                                                    subOwner:consortialLicenses.get('Rahmenvertrag (Teilnehmervertrag)'),
@@ -1630,13 +1630,13 @@ class OrganisationService {
                             subscriptionDocuments:[[docstoreUUID:'dc9a8b48-355e-4c47-8ffb-6bcbed527ba0',isShared:true]],
                             customProperties: [
                                     [type:PropertyDefinition.findByName('GASCO Entry').id,refValue:RDStore.YN_YES],
-                                    [type:PropertyDefinition.findByName('GASCO-Information-Link').id,urlValue:null,isShared:true],
+                                    [type:PropertyDefinition.findByName('GASCO information link').id,urlValue:null,isShared:true],
                                     [type:PropertyDefinition.findByName('GASCO negotiator name').id,stringValue:'Allianzlizenz Team'],
-                                    [type:PropertyDefinition.findByName('Mehrjahreslaufzeit').id,refValue:RDStore.YN_NO,note:'opt out Klausel vorhanden',isShared:true],
-                                    [type:PropertyDefinition.findByName('Mehrjahreslaufzeit ausgewählt').id,refValue:null,isShared:true],
-                                    [type:PropertyDefinition.findByName('Preis gerundet').id,refValue:RDStore.YN_YES],
-                                    [type:PropertyDefinition.findByName('Rechnungszeitpunkt').id,stringValue:'Vorauszahlung',isShared:true],
-                                    [type:PropertyDefinition.findByName('Simuser Zahl').id,stringValue:'unlimitiert',isShared:true]
+                                    [type:PropertyDefinition.findByName('Perennial term').id,refValue:RDStore.YN_NO,note:'opt out Klausel vorhanden',isShared:true],
+                                    [type:PropertyDefinition.findByName('Perennial term checked').id,refValue:null,isShared:true],
+                                    [type:PropertyDefinition.findByName('Price rounded').id,refValue:RDStore.YN_YES],
+                                    [type:PropertyDefinition.findByName('Time of billing').id,stringValue:'Vorauszahlung',isShared:true],
+                                    [type:PropertyDefinition.findByName('Sim-User Number').id,stringValue:'unlimitiert',isShared:true]
                             ],
                             subscriptionMembers: [[subMember:member1Aachen,
                                                    subOwner:consortialLicenses.get('Rahmenvertrag (Teilnehmervertrag)'),
@@ -1737,13 +1737,13 @@ class OrganisationService {
                             subscriptionDocuments:[[docstoreUUID:'1b28ccb2-9fd4-4652-8c6c-02f9df41f653',isShared:true]],
                             customProperties: [
                                     [type:PropertyDefinition.findByName('GASCO Entry').id,refValue:RDStore.YN_YES],
-                                    [type:PropertyDefinition.findByName('GASCO-Information-Link').id,urlValue:null,isShared:true],
+                                    [type:PropertyDefinition.findByName('GASCO information link').id,urlValue:null,isShared:true],
                                     [type:PropertyDefinition.findByName('GASCO negotiator name').id,stringValue:'Allianzlizenz Team'],
-                                    [type:PropertyDefinition.findByName('Mehrjahreslaufzeit').id,refValue:RDStore.YN_NO,note:'opt out Klausel vorhanden',isShared:true],
-                                    [type:PropertyDefinition.findByName('Mehrjahreslaufzeit ausgewählt').id,refValue:null],
-                                    [type:PropertyDefinition.findByName('Preis gerundet').id,refValue:RDStore.YN_YES],
-                                    [type:PropertyDefinition.findByName('Rechnungszeitpunkt').id,stringValue:'Vorauszahlung',isShared:true],
-                                    [type:PropertyDefinition.findByName('Simuser Zahl').id,stringValue:'unlimitiert',isShared:true]
+                                    [type:PropertyDefinition.findByName('Perennial term').id,refValue:RDStore.YN_NO,note:'opt out Klausel vorhanden',isShared:true],
+                                    [type:PropertyDefinition.findByName('Perennial term checked').id,refValue:null],
+                                    [type:PropertyDefinition.findByName('Price rounded').id,refValue:RDStore.YN_YES],
+                                    [type:PropertyDefinition.findByName('Time of billing').id,stringValue:'Vorauszahlung',isShared:true],
+                                    [type:PropertyDefinition.findByName('Sim-User Number').id,stringValue:'unlimitiert',isShared:true]
                             ],
                             subscriptionMembers: [[subMember:member1Aachen,
                                                    subOwner:consortialLicenses.get('Rahmenvertrag (Teilnehmervertrag)'),
@@ -1776,13 +1776,13 @@ class OrganisationService {
                             sharedProperties:['name','form','resource'],
                             customProperties: [
                                     [type:PropertyDefinition.findByName('GASCO Entry').id,refValue:RDStore.YN_YES],
-                                    [type:PropertyDefinition.findByName('GASCO-Information-Link').id,urlValue:'https://musterlink.de',isShared:true],
-                                    [type:PropertyDefinition.findByName('Bundesweit offen').id,refValue:RDStore.YN_NO,note:'regionales Konsortium'],
-                                    [type:PropertyDefinition.findByName('Mengenrabatt Stichtag').id,dateValue:generalData.sdf.parse('2020-11-30')],
-                                    [type:PropertyDefinition.findByName('Preis gerundet').id,refValue:RDStore.YN_YES],
-                                    [type:PropertyDefinition.findByName('Simuser Zahl').id,stringValue:'unlimitiert',isShared:true],
-                                    [type:PropertyDefinition.findByName('Testzeitraum').id,stringValue:'60'],
-                                    [type:PropertyDefinition.findByName('Unterjähriger Einstieg').id,refValue:RDStore.YN_YES]
+                                    [type:PropertyDefinition.findByName('GASCO information link').id,urlValue:'https://musterlink.de',isShared:true],
+                                    [type:PropertyDefinition.findByName('Open country-wide').id,refValue:RDStore.YN_NO,note:'regionales Konsortium'],
+                                    [type:PropertyDefinition.findByName('Due date for volume discount').id,dateValue:generalData.sdf.parse('2020-11-30')],
+                                    [type:PropertyDefinition.findByName('Price rounded').id,refValue:RDStore.YN_YES],
+                                    [type:PropertyDefinition.findByName('Sim-User Number').id,stringValue:'unlimitiert',isShared:true],
+                                    [type:PropertyDefinition.findByName('Time span for testing').id,stringValue:'60'],
+                                    [type:PropertyDefinition.findByName('Joining during the period').id,refValue:RDStore.YN_YES]
                             ],
                             privateProperties: [
                                     [type:PropertyDefinition.findByNameAndTenant('Quellensteuer-Befreiung',current).id,refValue:RefdataValue.getByValueAndCategory('Planed','YNO'),note:'der Anbieter hat dies beantragt']
@@ -1884,10 +1884,10 @@ class OrganisationService {
                             sharedProperties:['name','form','resource'],
                             customProperties: [
                                     [type:PropertyDefinition.findByName('GASCO Entry').id,refValue:RDStore.YN_YES],
-                                    [type:PropertyDefinition.findByName('GASCO-Information-Link').id,urlValue:'https://www.hallo.de',isShared:true],
-                                    [type:PropertyDefinition.findByName('Private Einrichtungen').id,refValue:RDStore.YN_YES],
-                                    [type:PropertyDefinition.findByName('Rabatt Zählung').id,refValue:RDStore.YN_YES,note:'die Gesamtzahl der Teilnehmer pro Modul wird für die Findung der erreichten Rabattstufe summiert'],
-                                    [type:PropertyDefinition.findByName('Simuser Zahl').id,stringValue:'unlimitiert',isShared:true]
+                                    [type:PropertyDefinition.findByName('GASCO information link').id,urlValue:'https://www.hallo.de',isShared:true],
+                                    [type:PropertyDefinition.findByName('Private institutions').id,refValue:RDStore.YN_YES],
+                                    [type:PropertyDefinition.findByName('Calculation of discount').id,refValue:RDStore.YN_YES,note:'die Gesamtzahl der Teilnehmer pro Modul wird für die Findung der erreichten Rabattstufe summiert'],
+                                    [type:PropertyDefinition.findByName('Sim-User Number').id,stringValue:'unlimitiert',isShared:true]
                             ],
                             privateProperties: [
                                     [type:PropertyDefinition.findByNameAndTenant('Quellensteuer-Befreiung',current).id,refValue:RefdataValue.getByValueAndCategory('Unclear','YNO'),note:'dringend klären']
