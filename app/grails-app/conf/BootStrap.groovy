@@ -2210,9 +2210,6 @@ class BootStrap {
         RefdataValue.loc(RefdataCategory.TI_STATUS, [en: 'In Progress', de:'In Bearbeitung'], BOOTSTRAP)
         RefdataValue.loc(RefdataCategory.TI_STATUS, [en: 'Unknown', de: 'Unbekannt'], BOOTSTRAP)
 
-        RefdataCategory.loc(RefdataCategory.TI_MEDIUM,
-                [en: RefdataCategory.TI_MEDIUM, de: RefdataCategory.TI_MEDIUM], BOOTSTRAP)
-
         RefdataValue.loc(RefdataCategory.TI_MEDIUM, [key: 'Journal', en: 'Journal', de: 'Journal'], BOOTSTRAP)
         RefdataValue.loc(RefdataCategory.TI_MEDIUM, [key: 'Book', en: 'EBook', de: 'EBook'], BOOTSTRAP)
         RefdataValue.loc(RefdataCategory.TI_MEDIUM, [key: 'Database', en: 'Database', de:'Datenbank'], BOOTSTRAP)
