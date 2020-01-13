@@ -1974,30 +1974,30 @@ class BootStrap {
     * This is done by providing 'linkType' (using instance class) to the '_orgLinksModal' template.
     */
     def setOrgRoleGroups() {
-        def lic = License.name
-        def sub = Subscription.name
-        def pkg = Package.name
+        String lic = License.name
+        String sub = Subscription.name
+        String pkg = Package.name
 
         def entries = [
-                [[en: 'Licensor', de: 'Lizenzgeber'], lic],
-                [[en: 'Licensee', de: 'Lizenznehmer'], lic],
-                [[en: 'Licensing Consortium', de: 'Lizenzkonsortium'], lic],
-                [[en: 'Negotiator'], lic],
-                [[en: 'Subscriber'], sub],
-                [[en: 'Provider', de: 'Anbieter'], sub],
-                [[en: 'Subscription Agent'], sub],
-                [[en: 'Subscription Consortia'], sub],
-                [[en: 'Content Provider', de: 'Anbieter'], pkg],
-                [[en: 'Package Consortia'], pkg],
-                [[en: 'Publisher', de: 'Verlag'], null],
-                [[en: 'Agency', de: 'Lieferant'], sub]
+                ['Licensor', lic],
+                ['Licensee', lic],
+                ['Licensing Consortium', lic],
+                ['Negotiator', lic],
+                ['Subscriber', sub],
+                ['Provider', sub],
+                ['Subscription Agent', sub],
+                ['Subscription Consortia', sub],
+                ['Content Provider', pkg],
+                ['Package Consortia', pkg],
+                ['Publisher', null],
+                ['Agency', sub]
         ]
 
         entries.each{ rdv ->
-            def i10n = rdv[0]
+            def token = rdv[0]
             def group = rdv[1]
 
-            def val = RefdataValue.loc("Organisational Role", i10n, BOOTSTRAP)
+            def val = RefdataValue.getByValueAndCategory(token, "Organisational Role")
             if (group) {
                 val.setGroup(group)
             }
@@ -2077,6 +2077,7 @@ class BootStrap {
                            "LicenseeResearcher", "LicenseeRetiredStaff", "LicenseeStaff", "LicenseeStudent", "LoansomeDocUser",
                            "OtherTeacherOfAuthorizedUsers", "RegulatoryAuthority", "ResearchSponsor", "ThirdParty", "ThirdPartyLibrary",
                            "ThirdPartyNonCommercialLibrary", "ThirdPartyOrganization", "ThirdPartyPerson", "WalkInUser" ],
+
                 "UsedResource" : ["AcademicPaper", "AcademicWork", "AcademicWorkIncludingLicensedContent",
                                   "AcknowledgmentOfSource", "AuthoredContent", "AuthoredContentPeerReviewedCopy", "AuthorizedUserOwnWork",
                                   "CatalogOrInformationSystem", "CombinedWorkIncludingLicensedContent", "CompleteArticle", "CompleteBook",
@@ -2094,7 +2095,15 @@ class BootStrap {
 
         refdatavalues.each { rdc, rdvList ->
             rdvList.each { rdv ->
-                RefdataValue.loc(rdc, [en: rdv], BOOTSTRAP)
+
+                Map<String, Object> map = [
+                        token   : "${rdv}",
+                        rdc     : "${rdc}",
+                        hardData: BOOTSTRAP,
+                        i10n    : [de: "${rdv}", en: "${rdv}"]
+                ]
+
+                RefdataValue.construct(map)
             }
         }
 
@@ -2117,56 +2126,6 @@ class BootStrap {
         RefdataValue.loc('Entitlement Issue Status', [en: 'Current', de: 'Current'], BOOTSTRAP)
         RefdataValue.loc('Entitlement Issue Status', [en: 'Deleted', de: 'Deleted'], BOOTSTRAP)
         */
-
-        RefdataValue.loc(RefdataCategory.IE_ACCEPT_STATUS, [en: 'Fixed', de: 'Feststehend'], BOOTSTRAP)
-        RefdataValue.loc(RefdataCategory.IE_ACCEPT_STATUS, [en: 'Under Negotiation', de: 'In Verhandlung'], BOOTSTRAP)
-        RefdataValue.loc(RefdataCategory.IE_ACCEPT_STATUS, [en: 'Under Consideration', de: 'Entscheidung steht aus'], BOOTSTRAP)
-
-        RefdataValue.loc(RefdataCategory.LIC_TYPE, [en: 'Actual', de: 'Konkrete Instanz'], BOOTSTRAP)
-        RefdataValue.loc(RefdataCategory.LIC_TYPE, [en: 'Template', de: 'Vorlage'], BOOTSTRAP)
-        RefdataValue.loc(RefdataCategory.LIC_TYPE, [en: 'Unknown', de: 'Unbekannt'], BOOTSTRAP)
-
-        RefdataValue.loc(RefdataCategory.LIC_STATUS, [en: 'Current', de: 'Aktiv'], BOOTSTRAP)
-        //RefdataValue.loc(RefdataCategory.LIC_STATUS, [en: 'Deleted', de: 'Gelöscht'], BOOTSTRAP)
-        RefdataValue.loc(RefdataCategory.LIC_STATUS, [en: 'In Progress', de:'In Bearbeitung'], BOOTSTRAP)
-        RefdataValue.loc(RefdataCategory.LIC_STATUS, [en: 'Retired', de: 'Abgelaufen'], BOOTSTRAP)
-        RefdataValue.loc(RefdataCategory.LIC_STATUS, [en: 'Unknown', de: 'Unbekannt'], BOOTSTRAP)
-        RefdataValue.loc(RefdataCategory.LIC_STATUS, [en: 'Status not defined', de: 'Status nicht festgelegt'], BOOTSTRAP)
-
-        RefdataValue.loc(RefdataCategory.PKG_LIST_STAT,  [en: 'Checked', de: 'Überprüft'], BOOTSTRAP)
-        RefdataValue.loc(RefdataCategory.PKG_LIST_STAT,  [en: 'In Progress', de: 'In Bearbeitung'], BOOTSTRAP)
-        RefdataValue.loc(RefdataCategory.PKG_LIST_STAT,  [en: 'Unknown', de: 'Unbekannt'], BOOTSTRAP)
-        RefdataValue.loc(RefdataCategory.PKG_BREAKABLE,  [en: 'No', de: 'Nein'], BOOTSTRAP)
-        RefdataValue.loc(RefdataCategory.PKG_BREAKABLE,  [en: 'Yes', de: 'Ja'], BOOTSTRAP)
-        RefdataValue.loc(RefdataCategory.PKG_BREAKABLE,  [en: 'Unknown', de: 'Unbekannt'], BOOTSTRAP)
-        RefdataValue.loc(RefdataCategory.PKG_CONSISTENT, [en: 'No', de: 'Nein'], BOOTSTRAP)
-        RefdataValue.loc(RefdataCategory.PKG_CONSISTENT, [en: 'Yes', de: 'Ja'], BOOTSTRAP)
-        RefdataValue.loc(RefdataCategory.PKG_CONSISTENT, [en: 'Unknown', de: 'Unbekannt'], BOOTSTRAP)
-        RefdataValue.loc(RefdataCategory.PKG_FIXED,      [en: 'No', de: 'Nein'], BOOTSTRAP)
-        RefdataValue.loc(RefdataCategory.PKG_FIXED,      [en: 'Yes', de: 'Ja'], BOOTSTRAP)
-        RefdataValue.loc(RefdataCategory.PKG_FIXED,      [en: 'Unknown', de: 'Unbekannt'], BOOTSTRAP)
-        RefdataValue.loc(RefdataCategory.PKG_SCOPE,      [en: 'Aggregator', de: 'Aggregator'], BOOTSTRAP)
-        RefdataValue.loc(RefdataCategory.PKG_SCOPE,      [en: 'Front File', de: 'Front File'], BOOTSTRAP)
-        RefdataValue.loc(RefdataCategory.PKG_SCOPE,      [en: 'Back File', de: 'Back File'], BOOTSTRAP)
-        RefdataValue.loc(RefdataCategory.PKG_SCOPE,      [en: 'Master File', de: 'Master File'], BOOTSTRAP)
-        RefdataValue.loc(RefdataCategory.PKG_SCOPE,      [en: 'Scope Undefined', de: 'Scope Undefined'], BOOTSTRAP)
-        RefdataValue.loc(RefdataCategory.PKG_SCOPE,      [en: 'Unknown', de: 'Unbekannt'], BOOTSTRAP)
-
-        RefdataValue.loc(RefdataCategory.TI_STATUS, [en: 'Current', de: 'Aktuell'], BOOTSTRAP)
-        RefdataValue.loc(RefdataCategory.TI_STATUS, [en: 'Deleted', de: 'Gelöscht'], BOOTSTRAP)
-        RefdataValue.loc(RefdataCategory.TI_STATUS, [en: 'In Progress', de:'In Bearbeitung'], BOOTSTRAP)
-        RefdataValue.loc(RefdataCategory.TI_STATUS, [en: 'Unknown', de: 'Unbekannt'], BOOTSTRAP)
-
-        RefdataValue.loc(RefdataCategory.TI_TYPE, [en: 'Journal', de: 'Journal'], BOOTSTRAP)
-        RefdataValue.loc(RefdataCategory.TI_TYPE, [en: 'EBook', de: 'EBook'], BOOTSTRAP)
-        RefdataValue.loc(RefdataCategory.TI_TYPE, [en: 'Database', de:'Datenbank'], BOOTSTRAP)
-
-        RefdataValue.loc(RefdataCategory.TIPP_STATUS, [en: 'Current', de: 'Aktuell'], BOOTSTRAP)
-        RefdataValue.loc(RefdataCategory.TIPP_STATUS, [en: 'Expected', de: 'Expected'], BOOTSTRAP)
-        RefdataValue.loc(RefdataCategory.TIPP_STATUS, [en: 'Deleted', de: 'Gelöscht'], BOOTSTRAP)
-        RefdataValue.loc(RefdataCategory.TIPP_STATUS, [en: 'Transferred', de: 'Transferred'], BOOTSTRAP)
-        RefdataValue.loc(RefdataCategory.TIPP_STATUS, [en: 'Unknown', de: 'Unbekannt'], BOOTSTRAP)
-        RefdataValue.loc(RefdataCategory.TIPP_STATUS, [en: 'Retired', de: 'im Ruhestand'], BOOTSTRAP)
 
         // Controlled values from the <UsageType> element.
 

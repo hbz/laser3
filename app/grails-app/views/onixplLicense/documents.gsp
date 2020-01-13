@@ -127,9 +127,9 @@
                     </dt>
                     <dd>
                         <select name="doctype">
-                            <option value="${com.k_int.kbplus.RefdataValue.loc('Document Type', [en:'License'])}"><g:message code="license" default="License"/></option>
-                            <option value="${com.k_int.kbplus.RefdataValue.loc('Document Type', [en:'General'])}"><g:message code="template.addDocument.type.general" default="General"/></option>
-                            <option value="${com.k_int.kbplus.RefdataValue.loc('Document Type', [en:'Addendum'])}"><g:message code="template.addDocument.type.addendum" default="Addendum"/></option>
+                            <option value="${com.k_int.kbplus.RefdataValue.getByValueAndCategory('License', 'Document Type')}"><g:message code="license" default="License"/></option>
+                            <option value="${com.k_int.kbplus.RefdataValue.getByValueAndCategory('General', 'Document Type')}"><g:message code="template.addDocument.type.general" default="General"/></option>
+                            <option value="${com.k_int.kbplus.RefdataValue.getByValueAndCategory('Addendum', 'Document Type')}"><g:message code="template.addDocument.type.addendum" default="Addendum"/></option>
                         </select>
                     </dd>
                 </dl>
