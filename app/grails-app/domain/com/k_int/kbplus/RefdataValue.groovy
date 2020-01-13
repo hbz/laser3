@@ -89,42 +89,6 @@ class RefdataValue extends AbstractI10nTranslatable implements Comparable<Refdat
         rdv
     }
 
-    /**
-     * Create RefdataValue and matching I10nTranslation.
-     * Create RefdataCategory, if needed.
-     *
-     * Call this from bootstrap
-     *
-     * @param category_name
-     * @param i10n
-     * @param hardData = only true if called from bootstrap
-     * @return
-     */
-    static RefdataValue loc(String category_name, Map i10n, def hardData) {
-
-        // avoid harddata reset @ RefdataCategory.loc
-        RefdataCategory cat = RefdataCategory.findByDescIlike(category_name)
-        if (! cat) {
-            cat = new RefdataCategory(desc:category_name)
-            cat.save(flush: true)
-
-            I10nTranslation.createOrUpdateI10n(cat, 'desc', [:])
-        }
-
-        String rdvValue = i10n['key'] ?: i10n['en']
-
-        RefdataValue result = findByOwnerAndValueIlike(cat, rdvValue)
-        if (! result) {
-            result = new RefdataValue(owner: cat, value: rdvValue)
-        }
-        result.isHardData = hardData
-        result.save(flush: true)
-
-        I10nTranslation.createOrUpdateI10n(result, 'value', i10n)
-
-        result
-    }
-
     static def refdataFind(params) {
         def result = []
         def matches = I10nTranslation.refdataFindHelper(
