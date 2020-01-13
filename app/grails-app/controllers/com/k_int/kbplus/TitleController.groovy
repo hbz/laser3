@@ -87,9 +87,9 @@ class TitleController extends AbstractDebugController {
   def createTitle() {
     log.debug("Create new title for ${params.title}");
     //def new_title = new TitleInstance(title:params.title, impId:java.util.UUID.randomUUID().toString()
-    def ti_status = RefdataValue.loc(RefdataCategory.TI_STATUS, [en: 'Current', de: 'Aktuell'])
-    def new_title =  ((params.typ=='Ebook') ? new BookInstance(title:params.title, impId:java.util.UUID.randomUUID().toString(), status: ti_status, type: RefdataValue.loc(RefdataCategory.TI_MEDIUM, [en: 'EBook', de: 'EBook'])) :
-              (params.typ=='Database' ? new DatabaseInstance(title:params.title, impId:java.util.UUID.randomUUID().toString(), status: ti_status, type: RefdataValue.loc(RefdataCategory.TI_MEDIUM, [en: 'Database', de: 'Database'])) : new JournalInstance(title:params.title, impId:java.util.UUID.randomUUID().toString(), status: ti_status, type: RefdataValue.loc(RefdataCategory.TI_MEDIUM, [en: 'Journal', de: 'Journal']))))
+    def ti_status = RefdataValue.getByValueAndCategory('Current', RefdataCategory.TI_STATUS)
+    def new_title =  ((params.typ=='Ebook') ? new BookInstance(title:params.title, impId:java.util.UUID.randomUUID().toString(), status: ti_status, type: RefdataValue.getByValueAndCategory('EBook', RefdataCategory.TI_MEDIUM)) :
+              (params.typ=='Database' ? new DatabaseInstance(title:params.title, impId:java.util.UUID.randomUUID().toString(), status: ti_status, type: RefdataValue.getByValueAndCategory('Database', RefdataCategory.TI_MEDIUM)) : new JournalInstance(title:params.title, impId:java.util.UUID.randomUUID().toString(), status: ti_status, type: RefdataValue.getByValueAndCategory('Journal', RefdataCategory.TI_MEDIUM))))
 
     if ( new_title.save(flush:true) ) {
         new_title.impId = new_title.globalUID
