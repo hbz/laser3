@@ -155,4 +155,6 @@ table tr td div.willBeReplacedStrong {
 .la-copyPack-item{
   flex-grow: 1;
 }
-
+.la-multi-sources:nth-child(n+2) {
+  margin-top: 30px;
+}

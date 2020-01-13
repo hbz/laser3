@@ -167,5 +167,8 @@ table tr td div.willBeReplacedStrong {
     text-decoration: line-through;
   }
 }
-//.la-multi-sources(nt)
+
+.la-multi-sources:nth-child(n+2) {
+  margin-top: 30px;
+}
 

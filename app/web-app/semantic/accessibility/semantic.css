@@ -32634,6 +32634,10 @@ table tr td div.willBeReplacedStrong {
   -ms-flex-positive: 1;
   flex-grow: 1;
 }
+
+.la-multi-sources:nth-child(n+2) {
+  margin-top: 30px;
+}
 /*!
  * # Semantic UI 2.3.1 - Dimmer
  * http://github.com/semantic-org/semantic-ui/

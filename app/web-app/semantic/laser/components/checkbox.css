@@ -777,3 +777,6 @@ table tr td div.willBeReplacedStrong {
   background-color: #EDC0BA;
   text-decoration: line-through;
 }
+.la-multi-sources:nth-child(n+2) {
+  margin-top: 30px;
+}
