@@ -71,9 +71,9 @@ class GlobalSourceSyncService extends AbstractLockableService {
             newtitle.publishers.each { pub ->
 //         def publisher_identifiers = pub.identifiers
                 def publisher_identifiers = []
-                RefdataValue orgSector = RefdataValue.loc('OrgSector', [en: 'Publisher', de: 'Veröffentlicher']);
+                RefdataValue orgSector = RefdataValue.getByValueAndCategory('Publisher', 'OrgSector')
                 Org publisher = Org.lookupOrCreate(pub.name, orgSector, null, publisher_identifiers, null, pub.uuid)
-                RefdataValue pub_role = RefdataValue.loc('Organisational Role', [en: 'Publisher', de: 'Veröffentlicher']);
+                RefdataValue pub_role = RefdataValue.getByValueAndCategory('Publisher', 'Organisational Role')
                 SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
                 def start_date
                 def end_date
@@ -270,13 +270,13 @@ class GlobalSourceSyncService extends AbstractLockableService {
         RefdataValue fixed = RefdataValue.loc(RefdataCategory.PKG_FIXED, [en: (newpkg?.fixed) ?: 'Unknown']);
         RefdataValue paymentType = RefdataValue.loc(RefdataCategory.PKG_PAYMENTTYPE, [en: (newpkg?.paymentType) ?: 'Unknown']);
         RefdataValue global = RefdataValue.loc(RefdataCategory.PKG_GLOBAL, [en: (newpkg?.global) ?: 'Unknown']);
-        RefdataValue ref_pprovider = RefdataValue.loc('Organisational Role', [en: 'Content Provider', de: 'Anbieter']);
+        RefdataValue ref_pprovider = RefdataValue.getByValueAndCategory('Content Provider', 'Organisational Role')
 
         //we should now first setup the provider and then proceed to package
         Org provider
         RefdataValue orgSector = RefdataValue.getByValueAndCategory('Publisher', 'OrgSector')
         RefdataValue orgType = RefdataValue.getByValueAndCategory('Provider', 'OrgRoleType')
-        RefdataValue orgRole = RefdataValue.loc('Organisational Role', [en: 'Content Provider', de: 'Anbieter'])
+        RefdataValue orgRole = RefdataValue.getByValueAndCategory('Content Provider', 'Organisational Role')
         if(newpkg.packageProvider) {
             println "checking package provider ${newpkg.packageProvider}"
             provider = (Org) Org.lookupOrCreate2(newpkg.packageProvider, orgSector, null, [:], null, orgType, newpkg.packageProviderUuid ?: null)
@@ -289,9 +289,9 @@ class GlobalSourceSyncService extends AbstractLockableService {
             pkg = (Package) genericOIDService.resolveOID(grt.localOid)
             log.debug("Package successfully found, processing LAS:eR id #${pkg.id}, with GOKb id ${pkg.gokbId}")
             if (pkg && newpkg.status != 'Current') {
-                def pkg_del_status = RefdataValue.loc('Package Status', [en: 'Deleted', de: 'Gelöscht'])
+                def pkg_del_status = RefdataValue.getByValueAndCategory('Deleted', 'Package Status')
                 if (newpkg.status == 'Retired') {
-                    pkg_del_status = RefdataValue.loc('Package Status', [en: 'Retired', de: 'im Ruhestand'])
+                    pkg_del_status = RefdataValue.getByValueAndCategory('Retired', 'Package Status')
                 }
 
                 pkg.packageStatus = pkg_del_status
@@ -331,12 +331,12 @@ class GlobalSourceSyncService extends AbstractLockableService {
             // create a new package
             log.debug("Creating new Package..")
 
-            def packageStatus = RefdataValue.loc('Package Status', [en: 'Deleted', de: 'Gelöscht'])
+            def packageStatus = RefdataValue.getByValueAndCategory('Deleted', 'Package Status')
 
             if (newpkg.status == 'Current') {
-                packageStatus = RefdataValue.loc('Package Status', [en: 'Current', de: 'Aktuell'])
+                packageStatus = RefdataValue.getByValueAndCategory('Current', 'Package Status')
             } else if (newpkg.status == 'Retired') {
-                packageStatus = RefdataValue.loc('Package Status', [en: 'Retired', de: 'im Ruhestand'])
+                packageStatus = RefdataValue.getByValueAndCategory('Retired', 'Package Status')
             }
 
             // Auto accept everything whilst we load the package initially
