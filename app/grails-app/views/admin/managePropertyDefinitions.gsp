@@ -38,10 +38,10 @@
                         <tr>
                             <th></th>
                             <th>${message(code:'propertyDefinition.key.label')}</th>
-                            <th>DE</th>
-                            <th>EN</th>
-                            <th>Erklärung</th>
-                            <th>Explanation</th>
+                            <th>${message(code:'propertyDefinition.name.de.label')}</th>
+                            <th>${message(code:'propertyDefinition.name.en.label')}</th>
+                            <th>${message(code:'propertyDefinition.expl.de.label')}</th>
+                            <th>${message(code:'propertyDefinition.expl.en.label')}</th>
                             <th></th>
                             <th class="la-action-info">${message(code:'default.actions')}</th>
                         </tr>

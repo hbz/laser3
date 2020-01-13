@@ -4034,25 +4034,26 @@ AND EXISTS (
     def managePrivateProperties() {
         def result = setResultGenerics()
 
-        result.editable = true // true, because action is protected
-        result.privatePropertyDefinitions = PropertyDefinition.findAllWhere([tenant: result.institution])
-
         if('add' == params.cmd) {
             flash.message = addPrivatePropertyDefinition(params)
-            result.privatePropertyDefinitions = PropertyDefinition.findAllWhere([tenant: result.institution])
         }
         else if('delete' == params.cmd) {
             flash.message = deletePrivatePropertyDefinition(params)
-            result.privatePropertyDefinitions = PropertyDefinition.findAllWhere([tenant: result.institution])
         }
 
-        RuleBasedCollator clt = SortUtil.getCollator()
-        result.privatePropertyDefinitions.sort{a, b -> clt.compare(
-                message(code: "propertyDefinition.${a.descr}.label", args:[]) + '|' + a.name,
-                message(code: "propertyDefinition.${b.descr}.label", args:[]) + '|' + b.name
-        )}
+        def propDefs = [:]
+        PropertyDefinition.AVAILABLE_PRIVATE_DESCR.each { it ->
+            def itResult = PropertyDefinition.findAllByDescrAndTenant(it, result.institution, [sort: 'name']) // ONLY private properties!
+            propDefs << ["${it}": itResult]
+        }
+        result.propertyDefinitions = propDefs
 
+        def (usedPdList, attrMap) = propertyService.getUsageDetails()
+        result.usedPdList = usedPdList
+        result.attrMap = attrMap
+        result.editable = true // true, because action is protected
         result.language = LocaleContextHolder.getLocale().toString()
+        result.propertyType = 'private'
         result
     }
 
@@ -4076,7 +4077,8 @@ AND EXISTS (
         result.usedPdList = usedPdList
 
         result.language = LocaleContextHolder.getLocale().toString()
-        result
+        result.propertyType = 'custom'
+        render view: 'managePropertyDefinitions', model: result
     }
 
     @Secured(['ROLE_USER'])
@@ -4146,7 +4148,7 @@ AND EXISTS (
     private deletePrivatePropertyDefinition(params) {
         log.debug("delete private property definition for institution: " + params)
 
-        def messages  = []
+        def messages  = ""
         def tenant    = contextService.getOrg()
         def deleteIds = params.list('deleteIds')
 
@@ -4172,7 +4174,7 @@ AND EXISTS (
                 }
 
                 privatePropDef.delete()
-                messages << message(code: 'default.deleted.message', args:[privatePropDef.descr, privatePropDef.name])
+                messages += message(code: 'default.deleted.message', args:[privatePropDef.descr, privatePropDef.name])
             }
         }
         messages
