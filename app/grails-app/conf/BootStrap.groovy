@@ -1591,12 +1591,12 @@ class BootStrap {
                 ],
                 [
                         name: [en: "Admin Access", de: "Adminzugang"],
-                        expl : [en: "", de: "Mit welchen Zugangsdaten gelangt in den Admin-Bereich auf der Anbieterplattform?"],
+                        expl : [en: "", de: "Mit welchen Zugangsdaten gelangt man in den Admin-Bereich auf der Anbieterplattform?"],
                         descr:allDescr, type: OT.String
                 ],
                 [
                         name: [en: "Admin Link", de: "Admin-Link"],
-                        expl : [en: "", de: "Über welchen Link gelangt in den Admin-Bereich auf der Anbieterplattform?"],
+                        expl : [en: "", de: "Über welchen Link gelangt in man den Admin-Bereich auf der Anbieterplattform?"],
                         descr:allDescr, type: OT.URL
                 ],
                 [
