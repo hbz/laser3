@@ -20,6 +20,7 @@ class DataManagerController extends AbstractDebugController {
     YodaService yodaService
     ExportService exportService
     DeletionService deletionService
+    GlobalSourceSyncService globalSourceSyncService
 
     @Secured(['ROLE_ADMIN'])
     def index() {
@@ -447,10 +448,10 @@ class DataManagerController extends AbstractDebugController {
         Map<String,Object> result = (Map<String,Object>) sessionCache.get("DataManagerController/listDeletedTIPPS/result")
         if(result) {
             //first: merge duplicate entries
-            result.mergingTIPPS.each { mergingTIPP ->
+            result.mergingTIPPs.each { mergingTIPP ->
                 IssueEntitlement.withTransaction { status ->
                     try {
-                        IssueEntitlement.executeUpdate('update IssueEntitlement ie set ie.tipp = :mergeTarget where ie.id in (:iesToMerge)',[mergeTarget:mergingTIPP.mergeTarget,iesToMerge:mergingTIPP.iesToMerge])
+                        IssueEntitlement.executeUpdate('update IssueEntitlement ie set ie.tipp.id = :mergeTarget where ie.id in (:iesToMerge)',[mergeTarget:mergingTIPP.mergeTarget,iesToMerge:mergingTIPP.iesToMerge])
                     }
                     catch (Exception e) {
                         log.error("failure on merging TIPPs ... rollback!")
@@ -458,9 +459,8 @@ class DataManagerController extends AbstractDebugController {
                     }
                 }
             }
+            globalSourceSyncService.cleanUpGorm()
             log.debug("remapping done, purge now duplicate entries ...")
-            Set<TitleInstancePackagePlatform> tippsToDelete = TitleInstancePackagePlatform.findAllByGokbIdInListAndIdNotInList(result.duplicateTIPPKeys,result.excludes)
-            deletionService.deleteTIPPsCascaded(tippsToDelete)
             List<String> colHeaders = ['Konsortium','Teilnehmer','Lizenz','Paket','Titel','Grund']
             List<List<String>> reportRows = []
             List<Map<TitleInstancePackagePlatform,String>> remappingTargets = []
@@ -481,17 +481,22 @@ class DataManagerController extends AbstractDebugController {
                     }
                 }
             }
-            result.deletedWithGOKbRecord.each { delTIPP ->
-                Set<TitleInstancePackagePlatform> tippsToUpdate = pendingChangeSetupMap[delTIPP.status]
-                if(!tippsToUpdate)
-                    tippsToUpdate = []
-                tippsToUpdate << delTIPP
-                pendingChangeSetupMap[delTIPP.status] = tippsToUpdate
+            result.deletedWithGOKbRecord.each { row ->
+                row.each { delTIPP, tippDetails ->
+                    Set<TitleInstancePackagePlatform> tippsToUpdate = pendingChangeSetupMap[tippDetails.status]
+                    if(!tippsToUpdate)
+                        tippsToUpdate = []
+                    tippsToUpdate << delTIPP
+                    pendingChangeSetupMap[tippDetails.status] = tippsToUpdate
+                }
             }
             pendingChangeSetupMap.each { RefdataValue status, Set<TitleInstancePackagePlatform> tippsToUpdate ->
                 TitleInstancePackagePlatform.executeUpdate('update TitleInstancePackagePlatform tipp set tipp.status = :status where tipp in :tippsToUpdate',[status:status,tippsToUpdate:tippsToUpdate])
                 //hook up pending changes
             }
+            //continue here: TIPP #54 must move into exclude - something got wrong there ...
+            Set<TitleInstancePackagePlatform> tippsToDelete = TitleInstancePackagePlatform.findAllByGokbIdInListAndIdNotInList(result.duplicateTIPPKeys,result.excludes)
+            deletionService.deleteTIPPsCascaded(tippsToDelete)
             log.debug("Cleanup finished!")
             withFormat {
                 html {
@@ -507,8 +512,9 @@ class DataManagerController extends AbstractDebugController {
                 }
             }
         }
-        else
+        else {
             log.error("data missing, rebuilding data")
+        }
         redirect(action:'listDeletedTIPPS')
     }
 

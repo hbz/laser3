@@ -8,7 +8,6 @@
 -- 2019-11-25 / 2019-11-28
 -- Delete deprecated package identifier (we use gokbId instead), move TitleInstance.type to TitleInstance.medium
 alter table package drop column pkg_identifier;
-ALTER TABLE title_instance RENAME ti_type_rv_fk  TO ti_medium_rv_fk;
 ALTER TABLE public.title_instance ALTER COLUMN ti_gokb_id TYPE character varying(255);
 
 -- 2019-12-06
