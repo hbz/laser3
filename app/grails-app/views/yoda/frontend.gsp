@@ -1,6 +1,5 @@
 <%@ page import="com.k_int.kbplus.UserSettings" %>
 <!doctype html>
-<r:require module="chartist" />
 <html>
 <head>
     <meta name="layout" content="semanticUI">
@@ -353,49 +352,9 @@ if (customerType) {
     $('#customerTypeModal select[name=customerType]').dropdown('clear')
 }</pre>
     </div>
-    <h2 class="ui dividing header">Charts<a class="anchor" id="icons"></a></h2>
-    <h4 class="ui header">Einbindung von Chartist als Javascript Library zum Rendern von Daten</h4>
-    <div class="html ui top attached segment example">
-        <div class="ui top attached label">Require-Tag für Chartist eingebauen</div>
-
-        <pre>
-            &ltr:require module="chartist" /&gt;
-        </pre>
-
-    </div>
-    <div class="html ui top attached segment example">
-        <div class="ui top attached label">Chartis-Objekt mit Javascript aufrufen innerhalb r:script</div>
-        <pre> &ltr:script /&gt;
-        </pre>
-        <pre>    new Chartist.Line('.ct-chart', data);
-        </pre>
-        <pre>&lt/r:script&gt;
-        </pre>
-    </div>
-    <div class="html ui top attached segment example">
-        <div class="ui top attached label">Beispiel</div>
-        <div class="ct-chart ct-perfect-fourth"></div>
-    </div>
 </section>
 
 
-
-<r:script>
-
-    var data = {
-        // A labels array that can contain any sort of values
-        labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri'],
-        // Our series array that contains series objects or in this case series data arrays
-        series: [
-            [5, 2, 4, 2, 0]
-        ]
-    };
-
-    // Create a new line chart object where as first parameter we pass in a selector
-    // that is resolving to our chart container element. The Second parameter
-    // is the actual data object.
-    new Chartist.Line('.ct-chart', data);
-</r:script>
 
 
 </body>

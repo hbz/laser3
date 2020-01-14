@@ -110,12 +110,16 @@
                 </tr>
             </tbody>
         </table>
-        <g:form name="triggerCleanup" controller="dataManager" action="executeTIPPCleanup" params="[format:'csv']" data-confirm-id="triggerCleanup">
-            <div class="ui icon negative button js-open-confirm-modal"
+
+        <g:form name="triggerCleanup" controller="dataManager" action="executeTIPPCleanup" params="[format:'csv']" data-confirm-id="clearUp_form">
+                <g:hiddenField name="id" value="clearUp" />
+
+                <div class="ui icon negative button js-open-confirm-modal"
                  data-confirm-tokenMsg="${message(code: "confirm.dialogtriggerCleanup")}"
-                 data-confirm-term-how="delete"
-                 data-confirm-id="triggerCleanup" >
-                Daten bereinigen (bitte mit EXTREMER VORSICHT betätigen!!!)
+                 data-confirm-term-how="clearUp"
+                 data-confirm-id="clearUp" >
+                    <i class="bath icon"></i>
+                Daten bereinigen
             </div>
         </g:form>
     </body>
