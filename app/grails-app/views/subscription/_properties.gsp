@@ -133,7 +133,7 @@
 <%-- private properties --%>
 
 <g:each in="${authorizedOrgs}" var="authOrg">
-    <g:if test="${authOrg.name == contextOrg?.name && accessService.checkPermAffiliationX('ORG_INST,ORG_CONSORTIUM','INST_EDITOR','ROLE_ADMIN')}">
+    <g:if test="${authOrg.name == contextOrg?.name && accessService.checkPermAffiliationX('ORG_INST,ORG_CONSORTIUM','INST_USER','ROLE_ADMIN')}">
         <!-- TODO div class="ui card la-dl-no-table la-js-hideable" -->
         <div class="ui card la-dl-no-table ">
             <div class="content">

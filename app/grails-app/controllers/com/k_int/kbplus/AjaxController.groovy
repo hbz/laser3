@@ -1670,7 +1670,7 @@ class AjaxController {
             AuditConfig.removeAllConfigs(property)
 
             property.getClass().findAllByInstanceOf(property).each{ prop ->
-                prop.delete()
+                prop.delete(flush: true) //see ERMS-2049. Here, it is unavoidable because it affects the loading of orphaned properties - Hibernate tries to set up a list and encounters implicitely a SessionMismatch
             }
 
 
