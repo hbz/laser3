@@ -19,6 +19,7 @@ var currLanguage = $('html').attr('lang');
         'confirm.dialog.inherit',
         'confirm.dialog.ok',
         'confirm.dialog.concludeBinding',
+        'confirm.dialog.clearUp',
         'loc.January', 'loc.February', 'loc.March', 'loc.April', 'loc.May', 'loc.June', 'loc.July', 'loc.August', 'loc.September', 'loc.October', 'loc.November', 'loc.December',
         'loc.weekday.short.Sunday','loc.weekday.short.Monday','loc.weekday.short.Tuesday','loc.weekday.short.Wednesday','loc.weekday.short.Thursday','loc.weekday.short.Friday','loc.weekday.short.Saturday'
     ]
@@ -618,6 +619,9 @@ r2d2 = {
                         break;
                     case "concludeBinding":
                         $('#js-confirmation-button').html(dict.get('confirm.dialog.concludeBinding',currLanguage) + '<i class="check icon"></i>');
+                        break;
+                    case "clearUp":
+                        $('#js-confirmation-button').html(dict.get('confirm.dialog.clearUp',currLanguage) + '<i class="bath icon"></i>');
                         break;
                     default:
                         $('').html('Entfernen<i class="x icon"></i>');
