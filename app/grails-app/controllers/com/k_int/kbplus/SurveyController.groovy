@@ -2422,7 +2422,7 @@ class SurveyController {
         }?.size()?:0) + (result.orgsWithTermination?.groupBy { it?.participant.id }?.size()?:0) + (result.orgsWithMultiYearTermSub?.size()?:0))
 
         if (sumParticipantWithSub < result.parentSubChilds?.size()?:0) {
-            def property = PropertyDefinition.findByName("Mehrjahreslaufzeit ausgewählt")
+            def property = PropertyDefinition.findByName("Perennial term checked")
 
             def removeSurveyResultOfOrg = []
             result.orgsWithoutResult?.each { surveyResult ->
@@ -4021,7 +4021,7 @@ class SurveyController {
                     def sub = surveyConfig?.subscription
                     if (sub) {
                         def subChild = sub?.getDerivedSubscriptionBySubscribers(org)
-                        def property = PropertyDefinition.findByName("Mehrjahreslaufzeit ausgewählt")
+                        def property = PropertyDefinition.findByName("Perennial term checked")
 
                         if (subChild?.isCurrentMultiYearSubscription()) {
                             existsMultiYearTerm = true
