@@ -95,6 +95,20 @@
     content: "\f2ed";
   }
 }
+/* INHERITY*/
+.ui.checkbox.la-toggle-radio.la-inherit {
+  label:before {
+    font-family: Icons;
+    content: "\f08d";
+  }
+}
+/* SHARE*/
+.ui.checkbox.la-toggle-radio.la-share {
+  label:before {
+    font-family: Icons;
+    content: "\f1e0";
+  }
+}
 /* COPY LICENCE WITH PACKAGES, TITELS ETC */
  table tr td div.willStay {
    background-color: #D4E096;
@@ -152,5 +166,9 @@ table tr td div.willBeReplacedStrong {
     background-color: #EDC0BA;
     text-decoration: line-through;
   }
+}
+
+.la-multi-sources:nth-child(n+2) {
+  margin-top: 30px;
 }
 

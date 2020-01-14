@@ -32527,6 +32527,20 @@ a.ui.card:hover,
   content: "\f061";
 }
 
+/* INHERITY*/
+
+.ui.checkbox.la-toggle-radio.la-inherit label:before {
+  font-family: Icons;
+  content: "\f08d";
+}
+
+/* SHARE*/
+
+.ui.checkbox.la-toggle-radio.la-share label:before {
+  font-family: Icons;
+  content: "\e907";
+}
+
 /* TRASH*/
 
 .ui.checkbox.la-toggle-radio.la-noChange label:before {
@@ -32619,6 +32633,10 @@ table tr td div.willBeReplacedStrong {
   -webkit-box-flex: 1;
   -ms-flex-positive: 1;
   flex-grow: 1;
+}
+
+.la-multi-sources:nth-child(n+2) {
+  margin-top: 30px;
 }
 /*!
  * # Semantic UI 2.3.1 - Dimmer
