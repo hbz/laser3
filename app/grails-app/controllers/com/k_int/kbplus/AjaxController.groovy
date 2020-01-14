@@ -1177,10 +1177,10 @@ class AjaxController {
         }
         else {
             Map<String, Object> map = [
-                    token   : "${params.refdata_value}",
-                    rdc     : "${rdc.desc}",
+                    token   : params.refdata_value,
+                    rdc     : rdc.desc,
                     hardData: false,
-                    i10n    : [de: "${params.refdata_value}", en: "${params.refdata_value}"]
+                    i10n    : [de: params.refdata_value, en: params.refdata_value]
             ]
 
             newRefdataValue = RefdataValue.construct(map)
@@ -1216,9 +1216,9 @@ class AjaxController {
         }
         else {
             Map<String, Object> map = [
-                    token   : "${params.refdata_category}",
+                    token   : params.refdata_category,
                     hardData: false,
-                    i10n    : [de: "${params.refdata_category}", en: "${params.refdata_category}"]
+                    i10n    : [de: params.refdata_category, en: params.refdata_category]
             ]
 
             newRefdataCategory = RefdataCategory.construct(map)
