@@ -1585,7 +1585,7 @@ class YodaController {
             def parentSubscription = surConfig?.subscription
             def parentSubChilds = subscriptionService.getCurrentValidSubChilds(parentSubscription)
             def parentSuccessorSubscription = surConfig?.subscription?.getCalculatedSuccessor()
-            def property = PropertyDefinition.findByName("Perennial term checked")
+            def property = PropertyDefinition.getByNameAndDescr("Perennial term checked", PropertyDefinition.SUB_PROP)
             parentSubChilds?.each { sub ->
                 if (sub?.getCalculatedSuccessor()) {
                     sub?.getAllSubscribers().each { org1 ->

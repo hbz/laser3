@@ -170,9 +170,55 @@ class PropertyDefinition extends AbstractI10nTranslatable implements Serializabl
         dateCreated         (nullable: true, blank: false)
     }
 
-    @NotYetImplemented
     static PropertyDefinition construct(Map<String, Object> map) {
-        println "WARNING: NotYetImplemented"
+
+        String token        = map.get('token')
+        String category     = map.get('category')
+        String type         = map.get('type')
+        String rdc          = map.get('rdc')
+        boolean hardData    = map.get('hardData')
+        boolean mandatory   = map.get('mandatory')
+        boolean multiple    = map.get('multiple')
+        boolean logic       = map.get('logic')
+        Org tenant          = map.get('tenant') ? Org.findByShortname(map.get('tenant')) : null
+        Map i10n            = map.get('i10n')
+        Map descr           = map.get('descr')
+        Map expl            = map.get('expl')
+
+        typeIsValid(type)
+
+        PropertyDefinition pd = findWhere(
+                name:   token,
+                descr:  category,
+                tenant: tenant
+        )
+
+        if (! pd) {
+            static_logger.debug("INFO: no match found; creating new property definition for (${token}, ${category}, ${type}) @ ${tenant}")
+
+            pd = new PropertyDefinition(
+                    name:               token,
+                    descr:              category,
+                    type:               type,
+                    refdataCategory:    rdc,
+                    multipleOccurrence: multiple,
+                    mandatory:          mandatory,
+                    isUsedForLogic:     logic,
+                    tenant:             tenant,
+                    expl:               expl,
+            )
+
+            // TODO .. which attributes can change for existing pds ?
+        }
+
+        pd.isHardData = hardData
+        pd.save(flush: true)
+
+        I10nTranslation.createOrUpdateI10n(pd, 'name', i10n)
+        I10nTranslation.createOrUpdateI10n(pd, 'descr', descr)
+        I10nTranslation.createOrUpdateI10n(pd, 'expl', expl)
+
+        pd
     }
 
     static PropertyDefinition getByNameAndDescr(String name, String descr) {
@@ -205,7 +251,7 @@ class PropertyDefinition extends AbstractI10nTranslatable implements Serializabl
         }
     }
 
-    private static def typeIsValid(key) {
+    private static def typeIsValid(String key) {
         if (validTypes2.containsKey(key)) {
             return true;
         } else {

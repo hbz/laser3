@@ -2214,7 +2214,7 @@ class SurveyController {
 
         }
 
-        def lateCommersProperty = PropertyDefinition.findByName("Späteinsteiger")
+        def lateCommersProperty = PropertyDefinition.getByNameAndDescr("Späteinsteiger", PropertyDefinition.SUB_PROP)
         def currentParticipantIDs = []
         result.orgsWithMultiYearTermSub = []
         result.orgsLateCommers = []
@@ -2422,7 +2422,7 @@ class SurveyController {
         }?.size()?:0) + (result.orgsWithTermination?.groupBy { it?.participant.id }?.size()?:0) + (result.orgsWithMultiYearTermSub?.size()?:0))
 
         if (sumParticipantWithSub < result.parentSubChilds?.size()?:0) {
-            def property = PropertyDefinition.findByName("Perennial term checked")
+            def property = PropertyDefinition.getByNameAndDescr("Perennial term checked", PropertyDefinition.SUB_PROP)
 
             def removeSurveyResultOfOrg = []
             result.orgsWithoutResult?.each { surveyResult ->
@@ -4021,7 +4021,7 @@ class SurveyController {
                     def sub = surveyConfig?.subscription
                     if (sub) {
                         def subChild = sub?.getDerivedSubscriptionBySubscribers(org)
-                        def property = PropertyDefinition.findByName("Perennial term checked")
+                        def property = PropertyDefinition.getByNameAndDescr("Perennial term checked", PropertyDefinition.SUB_PROP)
 
                         if (subChild?.isCurrentMultiYearSubscription()) {
                             existsMultiYearTerm = true

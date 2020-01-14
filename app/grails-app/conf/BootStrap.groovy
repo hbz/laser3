@@ -368,7 +368,7 @@ class BootStrap {
         List result = []
         File csvFile = grailsApplication.mainContext.getResource(filePath).file
 
-        if (! ['RefdataCategory', 'RefdataValue' /*, 'PropertyDefinition' */].contains(objType)) {
+        if (! ['RefdataCategory', 'RefdataValue', 'PropertyDefinition'].contains(objType)) {
             println "WARNING: invalid object type ${objType}!"
         }
         else if (! csvFile.exists()) {
@@ -400,15 +400,23 @@ class BootStrap {
                             ]
                             result.add(map)
                         }
-                        /*
                         if (objType == 'PropertyDefinition') {
                             Map<String, Object> map = [
-                                    token   : "${line[0].trim()}",
-                                    hardData: true,
-                                    i10n    : [en: "${line[2].trim()}", de: "${line[1].trim()}"]
+                                    token       : line[1].trim(),
+                                    category    : line[0].trim(),
+                                    type        : line[4].trim(),
+                                    rdc         : line[5].trim(),
+                                    mandatory   : new Boolean( line[6].trim() ),
+                                    multiple    : new Boolean( line[7].trim() ),
+                                    logic       : new Boolean( line[8].trim() ),
+                                    tenant      : line[11].trim(),
+                                    hardData    : BOOTSTRAP,
+                                    i10n        : [de: line[2].trim(), en: line[3].trim()],
+                                    descr       : [de: line[0].trim(), en: line[0].trim()],
+                                    expl        : [de: line[9].trim(), en: line[10].trim()],
                             ]
                             result.add(map)
-                        }*/
+                        }
                     }
                 }
             }
@@ -630,6 +638,7 @@ class BootStrap {
 
     def createOrgProperties() {
 
+        /*
         def allDescr = [en: PropertyDefinition.ORG_PROP, de: PropertyDefinition.ORG_PROP]
 
         def requiredOrgProps = [
@@ -651,6 +660,13 @@ class BootStrap {
 
         ]
         createPropertyDefinitionsWithI10nTranslations(requiredOrgProps)
+        */
+
+        List pdList = getParsedCsvData('setup/PropertyDefinition.csv', 'PropertyDefinition')
+
+        pdList.each { map ->
+            PropertyDefinition.construct(map)
+        }
     }
 
     def createLicenseProperties() {

@@ -77,7 +77,7 @@ class PublicController {
             query += "          ( select scp from s.customProperties as scp where "
             query += "               scp.type = :gasco and lower(scp.refValue.value) = 'yes'"
             query += "           )"
-            queryParams.put('gasco', PropertyDefinition.findByName('GASCO Entry'))
+            queryParams.put('gasco', PropertyDefinition.getByNameAndDescr('GASCO Entry', PropertyDefinition.SUB_PROP))
             query += "        ) "
 
             query += " and exists ( select ogr from OrgRole ogr where ogr.sub = s and ogr.org in (:validOrgs) )"
