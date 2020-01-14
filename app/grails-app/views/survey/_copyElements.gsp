@@ -13,6 +13,10 @@
                     <th class="six wide">
                         <g:if test="${sourceSubscription}"><g:link controller="subscription" action="show" id="${sourceSubscription?.id}">${sourceSubscription?.dropdownNamingConvention()}</g:link></g:if>
                     </th>
+                    %{--th SHARE--}%
+                    <th class="center aligned">
+                        <g:message code="subscription.details.copyElementsIntoSubscription.share"/>
+                    </th>
                     <th class="one wide center aligned"><input type="checkbox" name="checkAllCopyCheckboxes" data-action="copy" onClick="toggleAllCheckboxes(this)" checked />
                     <th class="six wide">
                         <g:if test="${targetSubscription}"><g:link controller="subscription" action="show" id="${targetSubscription?.id}">${targetSubscription?.dropdownNamingConvention()}</g:link></g:if>
@@ -34,7 +38,9 @@
                             ${sourceSubscription?.endDate ? (' - ' + formatDate(date: sourceSubscription?.endDate, format: message(code: 'default.date.format.notime'))) : ''}
                         </div>
                     </td>
-
+                    %{--SHARE--}%
+                    <td class="center aligned">
+                    </td>
                     %{--AKTIONEN:--}%
                     <td class="center aligned">
                         <g:if test="${sourceSubscription?.startDate || sourceSubscription?.endDate}">
@@ -73,7 +79,9 @@
                         </g:if>
                     </div>
                 </td>
-
+                %{--SHARE--}%
+                <td class="center aligned">
+                </td>
                 %{--AKTIONEN:--}%
                 <td class="center aligned">
                     <g:if test="${sourceSubscription?.owner}">
@@ -110,16 +118,11 @@
                         </g:if>
                         <g:each in="${source_visibleOrgRelations}" var="source_role">
                             <g:if test="${source_role.org}">
-                                <div value="${genericOIDService.getOID(source_role)}">
+                                <div value="${genericOIDService.getOID(source_role)}" class="la-multi-sources">
                                     <b><i class="university icon"></i>&nbsp${source_role?.roleType?.getI10n("value")}:</b>
                                     <g:link controller="organisation" action="show" target="_blank" id="${source_role.org.id}">
                                         ${source_role?.org?.name}
                                     </g:link>
-
-                                        <div class="right aligned wide column">
-                                            <g:message code="subscription.details.copyElementsIntoSubscription.share"/>:
-                                            <input class="ui checkbox" type="checkbox" name="toggleShareOrgRoles" value="${source_role.class.name}:${source_role.id}" ${source_role.isShared ? 'checked': ''} />
-                                        </div>
 
                                 <br>
                                 </div>
@@ -127,7 +130,21 @@
                         </g:each>
                     </div>
                 </td>
+                %{--SHARE--}%
+                <td class="center aligned">
+                    <g:each in="${source_visibleOrgRelations}" var="source_role">
+                        <g:if test="${source_role.org}">
+                            <div class="ui checkbox la-toggle-radio la-share">
+                                <input class="ui checkbox" type="checkbox" name="toggleShareOrgRoles" value="${source_role.class.name}:${source_role.id}" ${source_role.isShared ? 'checked': ''} />
+                            </div>
+                            <br>
+                        </g:if>
+                    </g:each>
 
+                </td>
+
+
+                </td>
                 %{--AKTIONEN:--}%
                 <td class="center aligned">
                     <g:each in="${source_visibleOrgRelations}" var="source_role">
