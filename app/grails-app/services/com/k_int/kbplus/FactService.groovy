@@ -42,10 +42,10 @@ class FactService {
           // if value exists --> RefdataValue.getByValueAndCategory()
 
           RefdataValue fact_type_refdata_value = RefdataValue.construct([
-                  token   : "${fact.type}",
+                  token   : fact.type,
                   rdc     : "FactType",
                   hardData: false,
-                  i10n    : [en: "${fact.type}", de: "${fact.type}"]
+                  i10n    : [en: fact.type, de: fact.type]
           ])
 
           // Are we updating an existing fact?

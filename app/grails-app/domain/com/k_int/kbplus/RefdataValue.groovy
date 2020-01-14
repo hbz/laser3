@@ -4,11 +4,15 @@ import com.k_int.ClassUtils
 import de.laser.domain.AbstractI10nTranslatable
 import de.laser.domain.I10nTranslation
 import groovy.transform.NotYetImplemented
+import org.apache.commons.logging.Log
+import org.apache.commons.logging.LogFactory
 import org.springframework.context.i18n.LocaleContextHolder
 
 import javax.persistence.Transient
 
 class RefdataValue extends AbstractI10nTranslatable implements Comparable<RefdataValue> {
+
+    static Log static_logger = LogFactory.getLog(RefdataValue)
 
     @Transient
     def grailsApplication
@@ -71,14 +75,15 @@ class RefdataValue extends AbstractI10nTranslatable implements Comparable<Refdat
         RefdataCategory cat = RefdataCategory.findByDescIlike(rdc)
         if (! cat) {
             cat = RefdataCategory.construct([
-                    token   : "${rdc}",
+                    token   : rdc,
                     hardData: false,
-                    i10n    : [en: "${rdc}", de: "${rdc}"],
+                    i10n    : [en: rdc, de: rdc],
             ])
         }
 
         RefdataValue rdv = findByOwnerAndValueIlike(cat, token)
         if (! rdv) {
+            static_logger.debug("INFO: no match found; creating new refdata value for ( ${token} @ ${rdc}, ${i10n} )")
             rdv = new RefdataValue(owner: cat, value: token)
         }
         rdv.isHardData = hardData

@@ -384,19 +384,19 @@ class BootStrap {
                         if (objType == 'RefdataCategory') {
                             // CSV: [token, value_de, value_en]
                             Map<String, Object> map = [
-                                    token   : "${line[0].trim()}",
+                                    token   : line[0].trim(),
                                     hardData: BOOTSTRAP,
-                                    i10n    : [de: "${line[1].trim()}", en: "${line[2].trim()}"]
+                                    i10n    : [de: line[1].trim(), en: line[2].trim()]
                             ]
                             result.add(map)
                         }
                         if (objType == 'RefdataValue') {
                             // CSV: [rdc, token, value_de, value_en]
                             Map<String, Object> map = [
-                                    token   : "${line[1].trim()}",
-                                    rdc     : "${line[0].trim()}",
+                                    token   : line[1].trim(),
+                                    rdc     : line[0].trim(),
                                     hardData: BOOTSTRAP,
-                                    i10n    : [de: "${line[2].trim()}", en: "${line[3].trim()}"]
+                                    i10n    : [de: line[2].trim(), en: line[3].trim()]
                             ]
                             result.add(map)
                         }
@@ -2099,10 +2099,10 @@ class BootStrap {
             rdvList.each { rdv ->
 
                 Map<String, Object> map = [
-                        token   : "${rdv}",
-                        rdc     : "${rdc}",
+                        token   : rdv,
+                        rdc     : rdc,
                         hardData: BOOTSTRAP,
-                        i10n    : [de: "${rdv}", en: "${rdv}"]
+                        i10n    : [de: rdv, en: rdv]
                 ]
 
                 RefdataValue.construct(map)

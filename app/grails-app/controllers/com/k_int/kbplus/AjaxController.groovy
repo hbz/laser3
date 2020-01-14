@@ -1176,8 +1176,14 @@ class AjaxController {
             log.debug(error)
         }
         else {
-            newRefdataValue = new RefdataValue(value: params.refdata_value, owner: rdc)
-            newRefdataValue.save(flush: true)
+            Map<String, Object> map = [
+                    token   : params.refdata_value,
+                    rdc     : rdc.desc,
+                    hardData: false,
+                    i10n    : [de: params.refdata_value, en: params.refdata_value]
+            ]
+
+            newRefdataValue = RefdataValue.construct(map)
 
             if (newRefdataValue?.hasErrors()) {
                 log.error(newRefdataValue.errors)
@@ -1209,8 +1215,13 @@ class AjaxController {
             log.debug(error)
         }
         else {
-            newRefdataCategory = new RefdataCategory(desc: params.refdata_category)
-            newRefdataCategory.save(flush: true)
+            Map<String, Object> map = [
+                    token   : params.refdata_category,
+                    hardData: false,
+                    i10n    : [de: params.refdata_category, en: params.refdata_category]
+            ]
+
+            newRefdataCategory = RefdataCategory.construct(map)
 
             if (newRefdataCategory?.hasErrors()) {
                 log.error(newRefdataCategory.errors)

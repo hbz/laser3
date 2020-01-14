@@ -195,10 +195,10 @@ class UploadController extends AbstractDebugController {
             // if value exists --> RefdataValue.getByValueAndCategory()
 
             hybrid_oa_status_value = RefdataValue.construct([
-                    token   : "${tipp.hybrid_oa.capitalize()}",
+                    token   : tipp.hybrid_oa.capitalize(),
                     rdc     : "TitleInstancePackagePlatform.HybridOA",
                     hardData: false,
-                    i10n    : [en: "${tipp.hybrid_oa.capitalize()}", de: "${tipp.hybrid_oa.capitalize()}"]
+                    i10n    : [en: tipp.hybrid_oa.capitalize(), de: tipp.hybrid_oa.capitalize()]
             ])
           }
 
