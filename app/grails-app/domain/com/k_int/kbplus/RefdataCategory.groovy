@@ -92,7 +92,7 @@ class RefdataCategory extends AbstractI10nTranslatable {
         rdc
     }
 
-    static RefdataCategory getByI10nDesc(desc) {
+    static RefdataCategory getByI10nDesc(String desc) {
 
         I10nTranslation i10n = I10nTranslation.findByReferenceClassAndReferenceFieldAndValueDeIlike(
                 RefdataCategory.class.name, 'desc', "${desc}"

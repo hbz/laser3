@@ -114,12 +114,12 @@ class RefdataValue extends AbstractI10nTranslatable implements Comparable<Refdat
         return null;
     }
 
-    static RefdataValue getByValueAndCategory(value, category) {
+    static RefdataValue getByValueAndCategory(String value, String category) {
 
         RefdataValue.findByValueAndOwner(value, RefdataCategory.findByDesc(category))
     }
 
-    static RefdataValue getByCategoryDescAndI10nValueDe(categoryName, value) {
+    static RefdataValue getByCategoryDescAndI10nValueDe(String categoryName, String value) {
 
         List<RefdataValue> data = RefdataValue.executeQuery("select rdv from RefdataValue as rdv, RefdataCategory as rdc, I10nTranslation as i10n "
                     + " where rdv.owner = rdc and rdc.desc = ? "

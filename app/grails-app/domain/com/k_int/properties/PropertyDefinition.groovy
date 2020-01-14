@@ -14,6 +14,8 @@ import de.laser.helper.SwissKnife
 import grails.util.Holders
 import groovy.transform.NotYetImplemented
 import groovy.util.logging.Log4j
+import org.apache.commons.logging.Log
+import org.apache.commons.logging.LogFactory
 import org.codehaus.groovy.grails.orm.hibernate.cfg.GrailsHibernateUtil
 
 //import org.grails.orm.hibernate.cfg.GrailsHibernateUtil
@@ -25,6 +27,8 @@ import javax.validation.UnexpectedTypeException
 
 @Log4j
 class PropertyDefinition extends AbstractI10nTranslatable implements Serializable , Comparable<PropertyDefinition> {
+
+    static Log static_logger = LogFactory.getLog(PropertyDefinition)
 
     @Transient
     final static TRUE  = true
@@ -160,15 +164,45 @@ class PropertyDefinition extends AbstractI10nTranslatable implements Serializabl
         tenant              (nullable: true,  blank: true)
         multipleOccurrence  (nullable: true,  blank: true)
         mandatory           (nullable: false, blank: false)
-        isHardData            (nullable: false, blank: false)
+        isHardData          (nullable: false, blank: false)
         isUsedForLogic      (nullable: false, blank: false)
-        lastUpdated (nullable: true, blank: false)
-        dateCreated (nullable: true, blank: false)
+        lastUpdated         (nullable: true, blank: false)
+        dateCreated         (nullable: true, blank: false)
     }
 
     @NotYetImplemented
     static PropertyDefinition construct(Map<String, Object> map) {
         println "WARNING: NotYetImplemented"
+    }
+
+    static PropertyDefinition getByNameAndDescr(String name, String descr) {
+
+        List result = PropertyDefinition.findAllByNameAndDescrAndTenantIsNull(name, descr)
+
+        if (result.size() == 0) {
+            return null
+        }
+        else if (result.size() == 1) {
+            return result[0]
+        }
+        else {
+            static_logger.debug("WARNING: multiple matches found ( ${name}, ${descr}, tenant is null )")
+        }
+    }
+
+    static PropertyDefinition getByNameAndDescrAndTenant(String name, String descr, Org tenant) {
+
+        List result = PropertyDefinition.findAllByNameAndDescrAndTenant(name, descr, tenant)
+
+        if (result.size() == 0) {
+            return null
+        }
+        else if (result.size() == 1) {
+            return result[0]
+        }
+        else {
+            static_logger.debug("WARNING: multiple matches found ( ${name}, ${descr}, ${tenant.id} )")
+        }
     }
 
     private static def typeIsValid(key) {
