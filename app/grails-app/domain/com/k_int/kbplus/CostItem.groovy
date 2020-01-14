@@ -253,10 +253,10 @@ class CostItem
                 // if value exists --> RefdataValue.getByValueAndCategory()
 
                 RefdataValue.construct([
-                        token   : "${it}",
+                        token   : it,
                         rdc     : "Currency",
                         hardData: false,
-                        i10n    : [en: "${it}", de: "${it}"]
+                        i10n    : [en: it, de: it]
                 ])
             }
             if (currencyPriorityList) {

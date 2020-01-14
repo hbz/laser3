@@ -384,19 +384,19 @@ class BootStrap {
                         if (objType == 'RefdataCategory') {
                             // CSV: [token, value_de, value_en]
                             Map<String, Object> map = [
-                                    token   : "${line[0].trim()}",
+                                    token   : line[0].trim(),
                                     hardData: BOOTSTRAP,
-                                    i10n    : [de: "${line[1].trim()}", en: "${line[2].trim()}"]
+                                    i10n    : [de: line[1].trim(), en: line[2].trim()]
                             ]
                             result.add(map)
                         }
                         if (objType == 'RefdataValue') {
                             // CSV: [rdc, token, value_de, value_en]
                             Map<String, Object> map = [
-                                    token   : "${line[1].trim()}",
-                                    rdc     : "${line[0].trim()}",
+                                    token   : line[1].trim(),
+                                    rdc     : line[0].trim(),
                                     hardData: BOOTSTRAP,
-                                    i10n    : [de: "${line[2].trim()}", en: "${line[3].trim()}"]
+                                    i10n    : [de: line[2].trim(), en: line[3].trim()]
                             ]
                             result.add(map)
                         }
@@ -1591,12 +1591,12 @@ class BootStrap {
                 ],
                 [
                         name: [en: "Admin Access", de: "Adminzugang"],
-                        expl : [en: "", de: "Mit welchen Zugangsdaten gelangt in den Admin-Bereich auf der Anbieterplattform?"],
+                        expl : [en: "", de: "Mit welchen Zugangsdaten gelangt man in den Admin-Bereich auf der Anbieterplattform?"],
                         descr:allDescr, type: OT.String
                 ],
                 [
                         name: [en: "Admin Link", de: "Admin-Link"],
-                        expl : [en: "", de: "Über welchen Link gelangt in den Admin-Bereich auf der Anbieterplattform?"],
+                        expl : [en: "", de: "Über welchen Link gelangt in man den Admin-Bereich auf der Anbieterplattform?"],
                         descr:allDescr, type: OT.URL
                 ],
                 [
@@ -2052,16 +2052,18 @@ class BootStrap {
         //RefdataValue.loc('Share Configuration', [en: 'everyone',de:'alle'], BOOTSTRAP)
          //RefdataValue.loc('Subscription Type',      [en: 'Collective Subscription', de: 'Kollektivlizenz'], BOOTSTRAP)
 
-        createRefdataWithI10nExplanation()
-    }
 
-    void createRefdataWithI10nExplanation() {
+        RefdataValue a = RefdataValue.getByValueAndCategory('Students', 'Number Type')
+        I10nTranslation.createOrUpdateI10n(a,'expl', [en:'Gesamtzahl aller immatrikulierten Studierenden', de:'Gesamtzahl aller immatrikulierten Studierenden'])
 
+        RefdataValue b = RefdataValue.getByValueAndCategory('Scientific staff', 'Number Type');
+        I10nTranslation.createOrUpdateI10n(b,'expl', [en:'zugehöriges wissenschaftliches Personal', de:'zugehöriges wissenschaftliches Personal'])
 
-        I10nTranslation.createOrUpdateI10n(RefdataValue.loc('Number Type',[en: 'Students', de: 'Studierende'], BOOTSTRAP),'expl',[en:'',de:'Gesamtzahl aller immatrikulierten Studierenden'])
-        I10nTranslation.createOrUpdateI10n(RefdataValue.loc('Number Type',[en: 'Scientific staff', de: 'wissenschaftliches Personal'], BOOTSTRAP),'expl',[en:'',de:'zugehöriges wissenschaftliches Personal'])
-        I10nTranslation.createOrUpdateI10n(RefdataValue.loc('Number Type',[en: 'User', de: 'Nutzer'], BOOTSTRAP),'expl',[en:'',de:'Nutzer der Einrichtung'])
-        I10nTranslation.createOrUpdateI10n(RefdataValue.loc('Number Type',[en: 'Population', de: 'Einwohner'], BOOTSTRAP),'expl',[en:'',de:'Einwohner der Stadt'])
+        RefdataValue c = RefdataValue.getByValueAndCategory('User', 'Number Type')
+        I10nTranslation.createOrUpdateI10n(c,'expl', [en:'Nutzer der Einrichtung', de:'Nutzer der Einrichtung'])
+
+        RefdataValue d = RefdataValue.getByValueAndCategory('Population', 'Number Type')
+        I10nTranslation.createOrUpdateI10n(d,'expl', [en:'Einwohner der Stadt', de:'Einwohner der Stadt'])
     }
 
     def setupOnixPlRefdata = {
@@ -2097,10 +2099,10 @@ class BootStrap {
             rdvList.each { rdv ->
 
                 Map<String, Object> map = [
-                        token   : "${rdv}",
-                        rdc     : "${rdc}",
+                        token   : rdv,
+                        rdc     : rdc,
                         hardData: BOOTSTRAP,
-                        i10n    : [de: "${rdv}", en: "${rdv}"]
+                        i10n    : [de: rdv, en: rdv]
                 ]
 
                 RefdataValue.construct(map)

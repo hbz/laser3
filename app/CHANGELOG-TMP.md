@@ -1,6 +1,17 @@
 ## temporary change log
 
 **Ticket    Date    Branch      Author  Feature/Bug     Description/Keywords**
+2050    13.01.2020  rc1.2       Andreas Bug         Namensausgabe und Sortierung von Kindlizenzen bei Kosten hinzufügen eingefügt
+
+2049    13.01.2020  rc1.2       Andreas Bug         Backend-Verarbeitungsfehler der Entknüpfung behoben
+
+2048    13.01.2020  rc1.2       Andreas Bug         Sicherung des Template-Fragments korrigiert
+
+2031    13.01.2020  rc1.2       Andreas Bug         Merkmalsschlüssel angepasst im Folge der Übersetzung (vgl. ERMS-1992)
+
+2037    10.01.2020  rc1.2       Anja    Bug         Text korrigiert
+
+1993    10.01.2020  rc1.2       Anja    Bug         Emails auch an CC für Surveys
 
 2016    10.01.2020  hbz-dev     David   Feature     Refactoring: Deprecated RefdataCategory.lookupOrCreate()
 

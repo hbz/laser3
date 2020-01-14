@@ -140,6 +140,7 @@
                 return confirm('Wollen Sie wirklich diese(s) Element(e) in der Ziellizenz löschen?')
             }
         }
+        // FOR ALL THE OTHER TABLES THEN PROPERTIES
         function toggleAllCheckboxes(source) {
             var action = $(source).attr("data-action")
             var checkboxes = document.querySelectorAll('input[data-action="'+action+'"]');
@@ -165,6 +166,7 @@
                 markAffectedTake($(this));
             })
         }
+
         function selectAllDelete(source) {
             var table = $(source).closest('table');
             var thisBulkcheck = $(table).find(deleteProperty);
@@ -182,35 +184,42 @@
         });
 
         markAffectedTake = function (that) {
-            var multiPropertyIndex = ($(that).closest ('.la-copyElements-flex-container').index()) ;
-
-            if ($(that).is(":checked") ||  $(that).parents('tr').find('input[name="subscription.deleteProperty"]').is(':checked')) {
-                $(that).parents('.la-replace').parents('.la-copyElements-flex-container').addClass('willStay');
-                // Mehrfach zu vergebende Merkmale bekommen keine Löschmarkierung, da sie nicht überschreiben sondern kopiert werden
-                if ($(that).attr('data-multipleOccurrence') != 'true') {
-                    $(that).parents('td').next('td').children('.la-copyElements-flex-container:nth-child(' + (multiPropertyIndex + 1) + ')').addClass('willBeReplaced');
+            var indexOfTakeCheckbox = ($(that).closest('.la-replace').index()) ;
+            var multiPropertyIndex = $(that).closest('tr').find('.la-copyElements-flex-container').index() ;
+            var sourceElem = $(that).closest('tr').find('.la-colorCode-source');
+            var targetElem = $(that).closest('tr').find('.la-colorCode-target');
+            // ADD GREEN BACKGROUND
+            if ($(that).is(":checked") ) {
+                // Properties with multipleOccurence do
+                // - not receive a deletion mark because they are not overwritten but copied
+                // - need to have the specific child of la-copyElements-flex-container
+                if ($(that).attr('data-multipleOccurrence') == 'true') {
+                    sourceElem = $(that).closest('tr').find('.la-colorCode-source:nth-child(' + (indexOfTakeCheckbox + 1) + ')').addClass('willStay');
+                    sourceElem.addClass('willStay');
+                } else {
+                    sourceElem.addClass('willStay');
+                    targetElem.addClass('willBeReplaced');
                 }
             }
+            // REMOVE GREEN BACKGROUND
             else {
-                $(that).parents('.la-replace').parents('.la-copyElements-flex-container').removeClass('willStay');
-                $(that).parents('td').next('td').children('.la-copyElements-flex-container:nth-child(' + (multiPropertyIndex + 1) + ')').removeClass('willBeReplaced');
-            }
-        }
-        markAffectedDelete = function (that) {
-            if ($(that).is(":checked") ||  $(that).parents('tr').find('input[name="subscription.takeProperty"]').is(':checked')) {
-                $(that).parents('.la-replace').parents('.la-copyElements-flex-container').removeClass('willStay');
-                $(that).parents('.la-noChange').parents('.la-copyElements-flex-container').addClass('willBeReplaced');
-            }
-            else {
-                $(that).parents('.la-noChange').parents('.la-copyElements-flex-container').removeClass('willBeReplaced');
+                if ($(that).attr('data-multipleOccurrence') == 'true') {
+                    sourceElem = $(that).closest('tr').find('.la-colorCode-source:nth-child(' + (indexOfTakeCheckbox + 1) + ')').addClass('willStay');
+                    sourceElem.removeClass('willStay');
+                }
+                else {
+                    sourceElem.removeClass('willStay');
+                    targetElem.removeClass('willBeReplaced');
+                }
             }
         }
 
-        // $(takeProperty).each(function( index, elem ) {
-        //     if (elem.checked){
-        //         markAffectedTake(elem)
-        //     }
-        // });
+
+        $(takeProperty).each(function( index, elem ) {
+            if (elem.checked){
+                markAffectedTake(elem)
+            }
+        });
 
     </r:script>
 </body>
