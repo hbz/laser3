@@ -463,21 +463,22 @@ class DataManagerController extends AbstractDebugController {
             log.debug("remapping done, purge now duplicate entries ...")
             List<String> colHeaders = ['Konsortium','Teilnehmer','Lizenz','Paket','Titel','Grund']
             List<List<String>> reportRows = []
-            List<Map<TitleInstancePackagePlatform,String>> remappingTargets = []
             Map<RefdataValue,Set<TitleInstancePackagePlatform>> pendingChangeSetupMap = [:]
-            result.deletedWithoutGOKbRecord.each { delTIPP ->
-                delTIPP.issueEntitlements.each { ieDetails ->
-                    IssueEntitlement ie = (IssueEntitlement) ieDetails.ie
-                    switch(ieDetails.action) {
-                        case "deleteCascade":
-                            log.debug("deletion cascade: deleting ${ie}, deleting ${ie.subscription}")
-                            deletionService.deleteIssueEntitlement(ie)
-                            deletionService.deleteSubscription(ie.subscription,false)
-                            break
-                        case "report": reportRows << [ieDetails.report.consortium,ieDetails.report.subscriber,ieDetails.report.subscription,ieDetails.report.package,ieDetails.report.title,ieDetails.report.cause]
-                            break
-                        case "remap": remappingTargets[delTIPP] = ieDetails.target
-                            break
+            result.deletedWithoutGOKbRecord.each { entry ->
+                entry.each { delTIPP,issueEntitlements ->
+                    issueEntitlements.each { ieDetails ->
+                        IssueEntitlement ie = (IssueEntitlement) ieDetails.ie
+                        switch(ieDetails.action) {
+                            case "deleteCascade":
+                                log.debug("deletion cascade: deleting ${ie}, deleting ${ie.subscription}")
+                                deletionService.deleteIssueEntitlement(ie)
+                                deletionService.deleteSubscription(ie.subscription,false)
+                                break
+                            case "report": reportRows << [ieDetails.report.consortium,ieDetails.report.subscriber,ieDetails.report.subscription,ieDetails.report.package,ieDetails.report.title,ieDetails.report.cause]
+                                break
+                            case "remap": deletionService.deleteTIPP(delTIPP,TitleInstancePackagePlatform.findByGokbId(ieDetails.target))
+                                break
+                        }
                     }
                 }
             }
@@ -493,10 +494,11 @@ class DataManagerController extends AbstractDebugController {
             pendingChangeSetupMap.each { RefdataValue status, Set<TitleInstancePackagePlatform> tippsToUpdate ->
                 TitleInstancePackagePlatform.executeUpdate('update TitleInstancePackagePlatform tipp set tipp.status = :status where tipp in :tippsToUpdate',[status:status,tippsToUpdate:tippsToUpdate])
                 //hook up pending changes
+                PendingChange pendingChange = new PendingChange()
             }
-            //continue here: TIPP #54 must move into exclude - something got wrong there ...
             Set<TitleInstancePackagePlatform> tippsToDelete = TitleInstancePackagePlatform.findAllByGokbIdInListAndIdNotInList(result.duplicateTIPPKeys,result.excludes)
-            deletionService.deleteTIPPsCascaded(tippsToDelete)
+            if(tippsToDelete)
+                deletionService.deleteTIPPsCascaded(tippsToDelete)
             log.debug("Cleanup finished!")
             withFormat {
                 html {
@@ -515,7 +517,6 @@ class DataManagerController extends AbstractDebugController {
         else {
             log.error("data missing, rebuilding data")
         }
-        redirect(action:'listDeletedTIPPS')
     }
 
   @Secured(['ROLE_ADMIN'])
