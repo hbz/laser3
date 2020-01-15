@@ -172,26 +172,29 @@ class PropertyDefinition extends AbstractI10nTranslatable implements Serializabl
 
     static PropertyDefinition construct(Map<String, Object> map) {
 
-        String token        = map.get('token')
-        String category     = map.get('category')
+        String token        = map.get('token') // name
+        String category     = map.get('category') // descr
         String type         = map.get('type')
-        String rdc          = map.get('rdc')
-        boolean hardData    = map.get('hardData')
-        boolean mandatory   = map.get('mandatory')
-        boolean multiple    = map.get('multiple')
-        boolean logic       = map.get('logic')
+        String rdc          = map.get('rdc') // refdataCategory
+        boolean hardData    = new Boolean( map.get('hardData') )
+        boolean mandatory   = new Boolean( map.get('mandatory') )
+        boolean multiple    = new Boolean( map.get('multiple') )
+        boolean logic       = new Boolean( map.get('logic') )
         Org tenant          = map.get('tenant') ? Org.findByShortname(map.get('tenant')) : null
         Map i10n            = map.get('i10n')
-        Map descr           = map.get('descr')
+        // Map descr           = map.get('descr') // TODO implement
         Map expl            = map.get('expl')
 
         typeIsValid(type)
 
-        PropertyDefinition pd = findWhere(
-                name:   token,
-                descr:  category,
-                tenant: tenant
-        )
+        PropertyDefinition pd
+
+        if (tenant) {
+            pd = PropertyDefinition.getByNameAndDescrAndTenant(token, category, tenant)
+        }
+        else {
+            pd = PropertyDefinition.getByNameAndDescr(token, category)
+        }
 
         if (! pd) {
             static_logger.debug("INFO: no match found; creating new property definition for (${token}, ${category}, ${type}) @ ${tenant}")
@@ -205,7 +208,7 @@ class PropertyDefinition extends AbstractI10nTranslatable implements Serializabl
                     mandatory:          mandatory,
                     isUsedForLogic:     logic,
                     tenant:             tenant,
-                    expl:               expl,
+                    expl:               expl['en'],
             )
 
             // TODO .. which attributes can change for existing pds ?
@@ -215,8 +218,10 @@ class PropertyDefinition extends AbstractI10nTranslatable implements Serializabl
         pd.save(flush: true)
 
         I10nTranslation.createOrUpdateI10n(pd, 'name', i10n)
-        I10nTranslation.createOrUpdateI10n(pd, 'descr', descr)
+        //I10nTranslation.createOrUpdateI10n(pd, 'descr', descr) // TODO implement
         I10nTranslation.createOrUpdateI10n(pd, 'expl', expl)
+
+        I10nTranslation.createOrUpdateI10n(pd, 'descr', [de: pd.descr, en: pd.descr]) // TODO remove
 
         pd
     }
@@ -233,6 +238,7 @@ class PropertyDefinition extends AbstractI10nTranslatable implements Serializabl
         }
         else {
             static_logger.debug("WARNING: multiple matches found ( ${name}, ${descr}, tenant is null )")
+            return result[0]
         }
     }
 
@@ -259,16 +265,6 @@ class PropertyDefinition extends AbstractI10nTranslatable implements Serializabl
             throw new UnexpectedTypeException()
         }
     }
-
-    /*
-    static def lookupOrCreateProp(id, owner){
-        if(id instanceof String){
-            id = id.toLong()
-        }
-        def type = get(id)
-        createCustomProperty(owner, type)
-    }
-    */
 
     /**
      * Called from AjaxController.addCustomPropertyValue()
@@ -303,6 +299,7 @@ class PropertyDefinition extends AbstractI10nTranslatable implements Serializabl
         GrailsHibernateUtil.unwrapIfProxy(newProp)
     }
 
+    @Deprecated
     static PropertyDefinition loc(String name, String descr, String typeClass, RefdataCategory rdc, String expl, multipleOccurence, mandatory, Org tenant) {
 
         typeIsValid(typeClass)
@@ -452,11 +449,13 @@ class PropertyDefinition extends AbstractI10nTranslatable implements Serializabl
         return 0
     }
 
+    /*
     def afterInsert() {
         I10nTranslation.createOrUpdateI10n(this, 'name',  [de: this.name, en: this.name])
         I10nTranslation.createOrUpdateI10n(this, 'descr', [de: this.descr, en: this.descr])
         I10nTranslation.createOrUpdateI10n(this, 'expl', [de: this.expl, en: this.expl])
     }
+    */
 
     def afterDelete() {
         String rc = this.getClass().getName()

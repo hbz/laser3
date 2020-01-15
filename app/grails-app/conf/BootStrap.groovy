@@ -412,7 +412,7 @@ class BootStrap {
                                     tenant      : line[11].trim(),
                                     hardData    : BOOTSTRAP,
                                     i10n        : [de: line[2].trim(), en: line[3].trim()],
-                                    descr       : [de: line[0].trim(), en: line[0].trim()],
+                                    // descr       : [de: line[0].trim(), en: line[0].trim()],
                                     expl        : [de: line[9].trim(), en: line[10].trim()],
                             ]
                             result.add(map)
@@ -1842,55 +1842,23 @@ class BootStrap {
     def createPropertyDefinitionsWithI10nTranslations(requiredProps) {
 
         requiredProps.each { default_prop ->
-            def prop   = null
-            def tenant = null
 
-            if (default_prop.tenant) {
-                tenant = Org.findByShortname(default_prop.tenant)
+            Org tenant = default_prop.tenant ? Org.findByShortname(default_prop.tenant) : null
 
-                if (tenant) {
-                    prop = PropertyDefinition.findByNameAndDescrAndTenant(default_prop.name['en'], default_prop.descr['en'], tenant)
-                } else {
-                    log.debug("unable to locate tenant: ${default_prop.tenant} .. skipped")
-                    return
-                }
-            } else {
-                prop = PropertyDefinition.findWhere(name: default_prop.name['en'], descr: default_prop.descr['en'], tenant: null)
-            }
+            Map<String, Object> map = [
+                    token       : default_prop.name['en'],
+                    category    : default_prop.descr['en'],
+                    type        : default_prop.type,
+                    hardData    : BOOTSTRAP,
+                    rdc         : default_prop.cat,
+                    multiple    : default_prop.multiple,
+                    logic       : default_prop.isUsedForLogic,
+                    tenant      : tenant,
+                    i10n        : default_prop.name,
+                    expl        : default_prop.expl
+            ]
 
-            if (! prop) {
-                if (tenant) {
-                    log.debug("unable to locate private property definition for ${default_prop.name['en']} / ${default_prop.descr['en']} for tenant: ${tenant} .. creating")
-                    prop = new PropertyDefinition(name: default_prop.name['en'], descr: default_prop.descr['en'], tenant: tenant)
-                } else {
-                    log.debug("unable to locate property definition for ${default_prop.name['en']} / ${default_prop.descr['en']} .. creating")
-                    prop = new PropertyDefinition(name: default_prop.name['en'], descr: default_prop.descr['en'])
-                }
-            }
-
-            if (default_prop.cat != null) {
-                prop.setRefdataCategory(default_prop.cat)
-            }
-
-            if (default_prop.multiple) {
-                prop.multipleOccurrence = default_prop.multiple
-            }
-
-            if (default_prop.isUsedForLogic) {
-                prop.isUsedForLogic = default_prop.isUsedForLogic
-            }
-
-            prop.type  = default_prop.type
-            //prop.softData = false
-            prop.isHardData = BOOTSTRAP
-            prop.save(failOnError: true)
-
-            I10nTranslation.createOrUpdateI10n(prop, 'name', default_prop.name)
-            I10nTranslation.createOrUpdateI10n(prop, 'descr', default_prop.descr)
-
-            if (default_prop.expl) {
-                I10nTranslation.createOrUpdateI10n(prop, 'expl', default_prop.expl)
-            }
+            PropertyDefinition.construct(map)
         }
     }
 

@@ -69,7 +69,7 @@ class RefdataValue extends AbstractI10nTranslatable implements Comparable<Refdat
 
         String token     = map.get('token')
         String rdc       = map.get('rdc')
-        boolean hardData = map.get('hardData')
+        boolean hardData = new Boolean( map.get('hardData') )
         Map i10n         = map.get('i10n')
 
         RefdataCategory cat = RefdataCategory.findByDescIlike(rdc)

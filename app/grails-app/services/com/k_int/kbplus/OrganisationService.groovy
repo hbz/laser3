@@ -905,13 +905,8 @@ class OrganisationService {
                 category    : "Subscription Property",
                 type        : "class com.k_int.kbplus.RefdataValue",
                 rdc         : "YNO",
-                mandatory   : false,
-                multiple    : false,
-                logic       : false,
                 tenant      : current,
-                hardData    : false,
                 i10n        : [de: "Quellensteuer-Befreiung", en: "Quellensteuer-Befreiung"],
-                descr       : [de: "Subscription Property", en: "Subscription Property"],
                 expl        : [de: "Hat der Anbieter für dieses Produkt eine Befreiung der Quellensteuer erwirkt?", en: "Hat der Anbieter für dieses Produkt eine Befreiung der Quellensteuer erwirkt?"],
         ]
 
@@ -920,31 +915,26 @@ class OrganisationService {
                 category    : "Organisation Property",
                 type        : "class com.k_int.kbplus.RefdataValue",
                 rdc         : "YN",
-                mandatory   : false,
-                multiple    : false,
-                logic       : false,
                 tenant      : current,
-                hardData    : false,
                 i10n        : [de: "BGA", en: "BGA"],
-                descr       : [de: "Organisation Property", en: "Organisation Property"],
                 expl        : [de: "Betrieb gewerblicher Art", en: "Betrieb gewerblicher Art"],
         ]
 
         Map<String, Object> map3 = [
                 token       : "EGP Nr.",
                 category    : "Organisation Property",
-                type        : "class com.k_int.kbplus.Integer",
-                rdc         : null,
-                mandatory   : false,
-                multiple    : false,
-                logic       : false,
+                type        : "class java.lang.Integer",
                 tenant      : current,
-                hardData    : false,
                 i10n        : [de: "EGP Nr.", en: "EGP Nr."],
-                descr       : [de: "Organisation Property", en: "Organisation Property"],
                 expl        : [de: "ID für das SAP System des rechtlichen Trägers", en: "ID für das SAP System des rechtlichen Trägers"],
         ]
 
+        Set<PropertyDefinition> privatePropertyDefMaps = [
+                PropertyDefinition.construct(map1),
+                PropertyDefinition.construct(map2),
+                PropertyDefinition.construct(map3)
+                ]
+        /*
         Set<PropertyDefinition> privatePropertyDefMaps = [
                 new PropertyDefinition(name:'Quellensteuer-Befreiung',
                         tenant:current,
@@ -964,6 +954,8 @@ class OrganisationService {
                         type:'class java.lang.Integer',
                         expl:'ID für das SAP System des rechtlichen Trägers')
         ]
+        */
+
         Map<String,PropertyDefinition> privateProperties = [:]
         privatePropertyDefMaps.each { propDef ->
             if(propDef.save()) {
