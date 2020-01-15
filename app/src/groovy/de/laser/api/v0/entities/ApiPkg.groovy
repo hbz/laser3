@@ -47,10 +47,11 @@ class ApiPkg {
     /**
      * @return JSON | FORBIDDEN
      */
-    static getPackage(Package pkg, Org context, boolean hasAccess) {
+    static getPackage(Package pkg, Org context) {
         Map<String, Object> result = [:]
 
 		// TODO check hasAccess
+		boolean hasAccess = true
         result = retrievePackageMap(pkg, context)
 
         return (hasAccess ? new JSON(result) : Constants.HTTP_FORBIDDEN)

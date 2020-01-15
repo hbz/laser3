@@ -314,10 +314,10 @@ where tipp.title = ? and orl.roleType.value=?''', [title, 'Content Provider']);
 
             if (apiLevel != OrgSettings.SETTING_NOT_FOUND) {
                 if ("GET" == request.method) {
-                    hasAccess = (apiLevel.getValue() in [ApiToolkit.API_LEVEL_READ, ApiToolkit.API_LEVEL_DATAMANAGER])
+                    hasAccess = (apiLevel.getValue() in [ApiToolkit.API_LEVEL_READ, ApiToolkit.API_LEVEL_INVOICETOOL, ApiToolkit.API_LEVEL_DATAMANAGER])
                 }
                 else if ("POST" == request.method) {
-                    hasAccess = (apiLevel.getValue() in [ApiToolkit.API_LEVEL_WRITE, ApiToolkit.API_LEVEL_DATAMANAGER])
+                    hasAccess = (apiLevel.getValue() in [ApiToolkit.API_LEVEL_WRITE, ApiToolkit.API_LEVEL_INVOICETOOL, ApiToolkit.API_LEVEL_DATAMANAGER])
                 }
             }
 
@@ -411,7 +411,12 @@ where tipp.title = ? and orl.roleType.value=?''', [title, 'Content Provider']);
         }
         response.setStatus(status)
 
-        log.debug("API Call [${apiOrg.id}] - (Code: ${status}, Time: ${responseTime}, Length: ${json.toString().length().toString()})")
+        if (json.target instanceof List) {
+            log.debug("API Call [${apiOrg.id}] - (Code: ${status}, Time: ${responseTime}, Items: ${json.target.size().toString()})")
+        }
+        else {
+            log.debug("API Call [${apiOrg.id}] - (Code: ${status}, Time: ${responseTime}, Length: ${json.toString().length().toString()})")
+        }
 
         render json.toString(true)
     }
