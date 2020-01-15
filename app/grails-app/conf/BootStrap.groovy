@@ -3120,6 +3120,7 @@ class BootStrap {
         RefdataValue.loc('TaxType', [en: 'not taxable', de: 'nicht steuerbar'], BOOTSTRAP)
         RefdataValue.loc('TaxType', [en: 'taxable tax-exempt', de: 'steuerbar steuerbefreit'], BOOTSTRAP)
         RefdataValue.loc('TaxType', [en: 'not applicable', de: 'nicht anwendbar'], BOOTSTRAP)
+        RefdataValue.loc('TaxType', [en: 'reverse charge', de: 'Reverse Charge'], BOOTSTRAP)
 
         RefdataCategory.loc(RefdataCategory.TI_STATUS,
                 [en: RefdataCategory.TI_STATUS, de: RefdataCategory.TI_STATUS], BOOTSTRAP)
