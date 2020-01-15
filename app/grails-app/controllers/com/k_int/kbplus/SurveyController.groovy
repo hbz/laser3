@@ -3154,6 +3154,9 @@ class SurveyController {
                     case RefdataValue.getByValueAndCategory("not applicable", "TaxType").id:
                         tax_key = CostItem.TAX_TYPES.TAX_NOT_APPLICABLE
                         break
+                    case RefdataValue.getByValueAndCategory("reverse charge", "TaxType").id:
+                        tax_key = CostItem.TAX_TYPES.TAX_REVERSE_CHARGE
+                        break
                 }
             }
             def cost_item_element_configuration = params.ciec ? genericOIDService.resolveOID(params.ciec) : null
