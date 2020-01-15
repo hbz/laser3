@@ -35,32 +35,32 @@ class ApiDoc {
     /**
      * @return Doc | FORBIDDEN
      */
-    static getDocument(Doc doc, Org context, boolean hasAccess){
+    static getDocument(Doc doc, Org context){
 
-        if (! hasAccess) {
-            DocContext.findAllByOwner(doc).each{ dc ->
-                if(dc.license) {
-                    dc.getLicense().getOrgLinks().each { orgRole ->
-                        // TODO check orgRole.roleType
-                        if(orgRole.getOrg().id == context?.id) {
-                            hasAccess = true
-                        }
+        boolean hasAccess = false
+
+        DocContext.findAllByOwner(doc).each{ dc ->
+            if(dc.license) {
+                dc.getLicense().getOrgLinks().each { orgRole ->
+                    // TODO check orgRole.roleType
+                    if(orgRole.getOrg().id == context?.id) {
+                        hasAccess = true
                     }
                 }
-                if(dc.pkg) {
-                    dc.getPkg().getOrgs().each { orgRole ->
-                        // TODO check orgRole.roleType
-                        if(orgRole.getOrg().id == context?.id) {
-                            hasAccess = true
-                        }
+            }
+            if(dc.pkg) {
+                dc.getPkg().getOrgs().each { orgRole ->
+                    // TODO check orgRole.roleType
+                    if(orgRole.getOrg().id == context?.id) {
+                        hasAccess = true
                     }
                 }
-                if(dc.subscription) {
-                    dc.getSubscription().getOrgRelations().each { orgRole ->
-                        // TODO check orgRole.roleType
-                        if(orgRole.getOrg().id == context?.id) {
-                            hasAccess = true
-                        }
+            }
+            if(dc.subscription) {
+                dc.getSubscription().getOrgRelations().each { orgRole ->
+                    // TODO check orgRole.roleType
+                    if(orgRole.getOrg().id == context?.id) {
+                        hasAccess = true
                     }
                 }
             }
@@ -72,25 +72,26 @@ class ApiDoc {
     /**
      * @return Doc | FORBIDDEN | null
      */
-    static getOnixPlDocument(License license, Org context, boolean hasAccess){
+    static getOnixPlDocument(License license, Org context){
         def doc = license.onixplLicense?.doc
         if (! doc) {
             return null // not found
         }
 
-        if (! hasAccess) {
-            DocContext.findAllByOwner(doc).each { dc ->
-                if (dc.license) {
-                    dc.getLicense().getOrgLinks().each { orgRole ->
-                        // TODO check orgRole.roleType
-                        if (orgRole.getOrg().id == context?.id) {
-                            hasAccess = true
-                            doc = dc.getOwner()
-                        }
+        boolean hasAccess = false
+
+        DocContext.findAllByOwner(doc).each { dc ->
+            if (dc.license) {
+                dc.getLicense().getOrgLinks().each { orgRole ->
+                    // TODO check orgRole.roleType
+                    if (orgRole.getOrg().id == context?.id) {
+                        hasAccess = true
+                        doc = dc.getOwner()
                     }
                 }
             }
         }
+
         return (hasAccess ? doc : Constants.HTTP_FORBIDDEN)
     }
 

@@ -44,25 +44,12 @@ class ApiOrg {
     }
 
     /**
-     * @return boolean
-     */
-    static boolean calculateAccess(Org org, Org context, boolean hasAccess) {
-
-        // TODO
-        if (! hasAccess) {
-            hasAccess = (org.id == context.id)
-        }
-
-        hasAccess
-    }
-
-    /**
      * @return JSON | FORBIDDEN
      */
-    static getOrganisation(Org org, Org context, boolean hasAccess) {
+    static getOrganisation(Org org, Org context, boolean isInvoiceTool) {
         Map<String, Object> result = [:]
-        hasAccess = calculateAccess(org, context, hasAccess)
 
+        boolean hasAccess = isInvoiceTool || (org.id == context.id)
         if (hasAccess) {
             result = retrieveOrganisationMap(org, context)
         }
