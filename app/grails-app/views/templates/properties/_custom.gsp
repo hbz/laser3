@@ -129,7 +129,7 @@
                                 </g:if>
                                 <g:else>
 
-                                    <laser:remoteLink class="ui icon button la-popup-tooltip la-delay js-open-confirm-modal"
+                                    <laser:remoteLink class="ui icon green button la-popup-tooltip la-delay js-open-confirm-modal"
                                                       controller="ajax" action="togglePropertyAuditConfig"
                                                       params='[propClass: prop.getClass(),
                                                                ownerId: "${ownobj.id}",

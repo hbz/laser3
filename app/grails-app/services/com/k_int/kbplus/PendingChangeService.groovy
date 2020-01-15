@@ -371,10 +371,10 @@ class PendingChangeService extends AbstractLockableService {
                                     // if value exists --> RefdataValue.getByValueAndCategory()
 
                                     newProp = RefdataValue.construct([
-                                            token   : "${changeDoc.newLabel}",
-                                            rdc     : "${propDef.refdataCategory}",
+                                            token   : changeDoc.newLabel,
+                                            rdc     : propDef.refdataCategory,
                                             hardData: false,
-                                            i10n    : [en: "${changeDoc.newLabel}", de: "${changeDoc.newLabel}"]
+                                            i10n    : [en: changeDoc.newLabel, de: changeDoc.newLabel]
                                     ])
                                 }
                             }

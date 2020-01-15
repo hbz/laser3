@@ -9,6 +9,8 @@ Access Method,proxy,Proxy,Proxy
 Access Method,ref,Referrer,Referrer
 Access Method,shibboleth,Shibboleth,Shibboleth
 Access Method,up,Benutzername/Passwort,Username/Password
+Access Method IP,IPv4,IPv4,IPv4
+Access Method IP,IPv6,IPv6,IPv6
 Access Point Type,ezproxy,EZproxy,EZproxy
 Access Point Type,ip,IP,IP
 Access Point Type,proxy,Proxy,Proxy
@@ -29,8 +31,13 @@ Category A-F,C,C,C
 Category A-F,D,D,D
 Category A-F,E,E,E
 Category A-F,F,F,F
+Cluster Role,Cluster Member,Cluster Member,Cluster Member
+Cluster Role,Cluster Owner,Cluster Owner,Cluster Owner
+ClusterType,Undefined,Undefined,Undefined
 Combo Status,Active,Aktiv,Active
 Combo Status,Inactive,Inaktiv,Inactive
+Combo Type,Consortium,Konsortium,Consortium
+Combo Type,Department,Institut,Department
 ConcurrentAccess,No limit,Ohne Begrenzung,No limit
 ConcurrentAccess,Not Specified,Nicht festgelegt,Not Specified
 ConcurrentAccess,Other,Andere,Other
@@ -554,6 +561,8 @@ Federal State,Saxony,Sachsen,Saxony
 Federal State,Saxony-Anhalt,Sachsen-Anhalt,Saxony-Anhalt
 Federal State,Schleswig-Holstein,Schleswig-Holstein,Schleswig-Holstein
 Federal State,Thuringia,Thüringen,Thuringia
+filter.fake.values,generic.null.value,Nicht gesetzt,Not set
+filter.fake.values,subscription.status.no.status.set.but.null,Kein Status,No Status
 Funder Type,Catholic Church,Katholische Kirche,Catholic Church
 Funder Type,Commune,Gemeinde,Commune
 Funder Type,Corporate Body or Foundation under Private Law,Körperschaft oder Stiftung des privaten Rechts,Corporate Body or Foundation under Private Law
@@ -570,6 +579,9 @@ Funder Type,Protestant Church,Evangelische Kirche,Protestant Church
 Gender,Female,Weiblich,Female
 Gender,Male,Männlich,Male
 Gender,Third Gender,Inter/Divers,Third Gender
+IE Accept Status,Fixed,Feststehend,Fixed
+IE Accept Status,Under Consideration,Entscheidung steht aus,Under Consideration
+IE Accept Status,Under Negotiation,In Verhandlung,Under Negotiation
 IE Access Status,Current,Aktuell,Current
 IE Access Status,Current(*),Aktuell(*),Current(*)
 IE Access Status,ERROR - No Subscription Start and/or End Date,ERROR - No Subscription Start and/or End Date,ERROR - No Subscription Start and/or End Date
@@ -595,6 +607,8 @@ IPv4 Address Format,v4ranges,IPv4 (Bereiche),IPv4 (Ranges)
 IPv6 Address Format,v6cidr,IPv6 (CIDR),IPv6 (CIDR)
 IPv6 Address Format,v6input,IPv6 (Eingabe),IPv6 (Input)
 IPv6 Address Format,v6ranges,IPv6 (Bereiche),IPv6 (Ranges)
+Language,de,Deutsch,German
+Language,en,Englisch,English
 Library Network,BVB,BVB,BVB
 Library Network,GBV,GBV,GBV
 Library Network,hbz,hbz,hbz
@@ -612,6 +626,14 @@ Library Type,Sonstige,Sonstige,Other
 Library Type,Staats-/ Landes-/ Regionalbibliothek,Staats-/ Landes-/ Regionalbibliothek,National / state / regional library
 Library Type,Universität,Universität,University
 Library Type,Wissenschaftliche Spezialbibliothek,Wissenschaftliche Spezialbibliothek,Special scientific library
+License Status,Current,Aktiv,Current
+License Status,In Progress,In Bearbeitung,In Progress
+License Status,Retired,Abgelaufen,Retired
+License Status,Status not defined,Status nicht festgelegt,Status not defined
+License Status,Unknown,Unbekannt,Unknown
+License Type,Actual,Konkrete Instanz,Actual
+License Type,Template,Vorlage,Template
+License Type,Unknown,Unbekannt,Unknown
 License.Arc.ArchivalCopyContent,Data,Rohdaten,Data
 License.Arc.ArchivalCopyContent,DRM-free,Ohne DRM,DRM-free
 License.Arc.ArchivalCopyContent,With Metadata,Inkl. Metadaten,With Metadata
@@ -717,9 +739,34 @@ LicenseCategory,Software,Software,Software
 Lincense.RemoteAccess,All but Walk-ins,Alle außer Walk-In-User,All but Walk-ins
 Lincense.RemoteAccess,No,Nein,No
 Lincense.RemoteAccess,Yes,Ja,Yes
+Link Type,follows,... ist Nachfolger von|... ist Vorgänger von,... follows|... precedes
+Link Type,is condition for,... ist Bedingung für|... ist bedingt durch,... ist condition für|... ist conditioned by
+Link Type,references,... referenziert|... wird referenziert durch,... references|... is referenced by
 MailTemplate Language,English,Englisch,English
 MailTemplate Language,German,Deutsch,German
 MailTemplate Type,IP Message,IP-Meldung,IP Message
+Number Type,Population,Einwohner,Population
+Number Type,Scientific staff,wissenschaftliches Personal,Scientific staff
+Number Type,Students,Studierende,Students
+Number Type,User,Nutzer,User
+Organisational Role,Agency,Lieferant,Agency
+Organisational Role,Content Provider,Anbieter,Content Provider
+Organisational Role,Licensee,Lizenznehmer,Licensee
+Organisational Role,Licensee_Collective,Institut des Lizenznehmers,Collective licensee
+Organisational Role,Licensee_Consortial,Konsortiallizenznehmer,Consortial licensee
+Organisational Role,Licensing Consortium,Lizenzkonsortium,Licensing Consortium
+Organisational Role,Licensor,Lizenzgeber,Licensor
+Organisational Role,Negotiator,Negotiator,Negotiator
+Organisational Role,Package Consortia,Package Consortia,Package Consortia
+Organisational Role,Provider,Anbieter,Provider
+Organisational Role,Publisher,Verlag,Publisher
+Organisational Role,Subscriber,Teilnehmer,Subscriber
+Organisational Role,Subscriber_Collective,Kollektivteilnehmer,Collective subscriber
+Organisational Role,Subscriber_Consortial,Konsortialteilnehmer,Consortial subscriber
+Organisational Role,Subscriber_Consortial_Hidden,Konsortialteilnehmer (versteckt),Consortial subscriber (hidden)
+Organisational Role,Subscription Agent,Subscription Agent,Subscription Agent
+Organisational Role,Subscription Collective,Stammlizenzverwalter,Subscription Collective
+Organisational Role,Subscription Consortia,Konsortium,Subscription Consortia
 OrgRoleType,Agency,Lieferant,Agency
 OrgRoleType,Broker,Vermittler,Broker
 OrgRoleType,Consortium,Konsortium,Consortium
@@ -736,11 +783,31 @@ OrgRoleType,Platform Provider,Plattformanbieter,Platform Provider
 OrgRoleType,Provider,Anbieter,Provider
 OrgRoleType,Publisher,Verlag,Publisher
 OrgRoleType,Vendor,Verkäufer,Vendor
+OrgSector,Higher Education,Akademisch,Higher Education
+OrgSector,Publisher,Kommerziell,Commercial
 OrgStatus,Current,Aktuell,Current
 OrgStatus,Deleted,Gelöscht,Deleted
 Package Status,Current,Aktuell,Current
 Package Status,Deleted,Gelöscht,Deleted
 Package Status,Retired,Abgelaufen,Retired
+Package.Breakable,No,Nein,No
+Package.Breakable,Unknown,Unbekannt,Unknown
+Package.Breakable,Yes,Ja,Yes
+Package.Consistent,No,Nein,No
+Package.Consistent,Unknown,Unbekannt,Unknown
+Package.Consistent,Yes,Ja,Yes
+Package.Fixed,No,Nein,No
+Package.Fixed,Unknown,Unbekannt,Unknown
+Package.Fixed,Yes,Ja,Yes
+Package.ListStatus,Checked,Überprüft,Checked
+Package.ListStatus,In Progress,In Bearbeitung,In Progress
+Package.ListStatus,Unknown,Unbekannt,Unknown
+Package.Scope,Aggregator,Aggregator,Aggregator
+Package.Scope,Back File,Back File,Back File
+Package.Scope,Front File,Front File,Front File
+Package.Scope,Master File,Master File,Master File
+Package.Scope,Scope Undefined,Scope Undefined,Scope Undefined
+Package.Scope,Unknown,Unbekannt,Unknown
 Package.Type,Unkown,Unkown,Unkown
 PendingChangeStatus,Accepted,Angenommen,Accepted
 PendingChangeStatus,Pending,Ausstehend,Pending
@@ -754,11 +821,17 @@ Permissions,Silent,Stillschweigend,Silent
 Permissions,Unknown,Unklar,Unknown
 Person Contact Type,Functional Contact,Funktionskontakt,Functional Contact
 Person Contact Type,Personal Contact,Personenkontakt,Personal Contact
+Person Function,Contact Person,Kontakt,Contact Person
 Person Function,Functional Contact Billing Adress,Rechnungskontakt,Billing contact
 Person Function,Functional Contact Delivery Address,Lieferanschrift,Delivery address
 Person Function,Functional Contact Legal Patron Address,Anschrift des rechtlichen Trägers,Legal patron contact
 Person Function,Functional Contact Library Address,Bibliotheksanschrift,Library address
 Person Function,Functional Contact Postal Address,Postanschrift,Postal address
+Person Function,GASCO-Contact,GASCO-Kontakt,GASCO-Contact
+Person Function,General Contact Person,Hauptkontakt,General Contact Person
+Person Function,Responsible Admin,Verantwortlicher Admin,Responsible Admin
+Person Function,Statistical Support,Statistischer Support,Statistical Support
+Person Function,Technichal Support,Technischer Support,Technichal Support
 Person Position,Account Manager,Account Manager,Account Manager
 Person Position,Bereichsbibliotheksleitung,Bereichsbibliotheksleitung,Bereichsbibliotheksleitung
 Person Position,Bestandsaufbau,Bestandsaufbau,Bestandsaufbau
@@ -811,6 +884,9 @@ Semester,w27/28,Wintersemester 2027/28,winter semester 2027/28
 Semester,w28/29,Wintersemester 2028/29,winter semester 2028/29
 Semester,w29/30,Wintersemester 2029/30,winter semester 2029/30
 Semester,w30/31,Wintersemester 2030/31,winter semester 2030/31
+Share Configuration,only for author and target organisation,nur für meine Organisation und die Bezugsorganisation,only for my and target organisation
+Share Configuration,only for author organisation,nur für meine Organisation,only for my organisation
+Share Configuration,only for creator,nur für Uploader,only for creator
 Sim-User Number,1,1,1
 Sim-User Number,2,2,2
 Sim-User Number,3,3,3
@@ -900,8 +976,17 @@ TIPP Access Status,Current,Aktuell,Current
 TIPP Access Status,Current(*),Aktuell(*),Current(*)
 TIPP Access Status,Expected,Erwartet,Expected
 TIPP Access Status,Expired,Abgelaufen,Expired
+TIPP Status,Current,Aktuell,Current
+TIPP Status,Deleted,Gelöscht,Deleted
+TIPP Status,Expected,Expected,Expected
+TIPP Status,Retired,im Ruhestand,Retired
+TIPP Status,Transferred,Transferred,Transferred
+TIPP Status,Unknown,Unbekannt,Unknown
 Tipp.StatusReason,Transfer In,Transfer In,Transfer In
 Tipp.StatusReason,Transfer Out,Transfer Out,Transfer Out
+Title Type,Database,Datenbank,Database
+Title Type,EBook,EBook,EBook
+Title Type,Journal,Journal,Journal
 TitleInstancePackagePlatform.DelayedOA,No,Nein,No
 TitleInstancePackagePlatform.DelayedOA,Unknown,Unbekannt,Unknown
 TitleInstancePackagePlatform.DelayedOA,Yes,Ja,Yes
@@ -915,6 +1000,18 @@ TitleInstancePackagePlatform.PaymentType,Opt Out Promotion,Opt Out Promotion,Opt
 TitleInstancePackagePlatform.PaymentType,Paid,Paid,Paid
 TitleInstancePackagePlatform.PaymentType,Uncharged,Uncharged,Uncharged
 TitleInstancePackagePlatform.PaymentType,Unknown,Unbekannt,Unknown
+TitleInstanceStatus,Current,Aktuell,Current
+TitleInstanceStatus,Deleted,Gelöscht,Deleted
+TitleInstanceStatus,In Progress,In Bearbeitung,In Progress
+TitleInstanceStatus,Retired,im Ruhestand,Retired
+TitleInstanceStatus,Unknown,Unbekannt,Unknown
+Transform Format,json,json,json
+Transform Format,url,url,url
+Transform Format,xml,xml,xml
+Transform Type,license,license,license
+Transform Type,package,package,package
+Transform Type,subscription,subscription,subscription
+Transform Type,title,title,title
 User.Settings.Dashboard.Tab,Announcements,Ankündigungen,Announcements
 User.Settings.Dashboard.Tab,Changes,Änderungen,Changes
 User.Settings.Dashboard.Tab,Due Dates,Fällige Termine,Due Dates

@@ -261,6 +261,7 @@
 
         markAffectedTake = function (that) {
             var multiPropertyIndex = ($(that).closest ('.la-copyElements-flex-container').index()) ;
+
             var sourceElem = $(that).parents('.la-replace').parents('.la-copyElements-flex-container');
             var targetElem = $(that).parents('td').next('td').children('.la-copyElements-flex-container:nth-child(' + (multiPropertyIndex + 1) + ')');
 

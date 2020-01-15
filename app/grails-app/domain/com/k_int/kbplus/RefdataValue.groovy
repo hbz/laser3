@@ -4,11 +4,15 @@ import com.k_int.ClassUtils
 import de.laser.domain.AbstractI10nTranslatable
 import de.laser.domain.I10nTranslation
 import groovy.transform.NotYetImplemented
+import org.apache.commons.logging.Log
+import org.apache.commons.logging.LogFactory
 import org.springframework.context.i18n.LocaleContextHolder
 
 import javax.persistence.Transient
 
 class RefdataValue extends AbstractI10nTranslatable implements Comparable<RefdataValue> {
+
+    static Log static_logger = LogFactory.getLog(RefdataValue)
 
     @Transient
     def grailsApplication
@@ -71,14 +75,15 @@ class RefdataValue extends AbstractI10nTranslatable implements Comparable<Refdat
         RefdataCategory cat = RefdataCategory.findByDescIlike(rdc)
         if (! cat) {
             cat = RefdataCategory.construct([
-                    token   : "${rdc}",
+                    token   : rdc,
                     hardData: false,
-                    i10n    : [en: "${rdc}", de: "${rdc}"],
+                    i10n    : [en: rdc, de: rdc],
             ])
         }
 
         RefdataValue rdv = findByOwnerAndValueIlike(cat, token)
         if (! rdv) {
+            static_logger.debug("INFO: no match found; creating new refdata value for ( ${token} @ ${rdc}, ${i10n} )")
             rdv = new RefdataValue(owner: cat, value: token)
         }
         rdv.isHardData = hardData
@@ -87,48 +92,6 @@ class RefdataValue extends AbstractI10nTranslatable implements Comparable<Refdat
         I10nTranslation.createOrUpdateI10n(rdv, 'value', i10n)
 
         rdv
-    }
-
-    /**
-     * Create RefdataValue and matching I10nTranslation.
-     * Create RefdataCategory, if needed.
-     *
-     * Call this from bootstrap
-     *
-     * @param category_name
-     * @param i10n
-     * @param hardData = only true if called from bootstrap
-     * @return
-     */
-    static RefdataValue loc(String category_name, Map i10n, def hardData) {
-
-        // avoid harddata reset @ RefdataCategory.loc
-        RefdataCategory cat = RefdataCategory.findByDescIlike(category_name)
-        if (! cat) {
-            cat = new RefdataCategory(desc:category_name)
-            cat.save(flush: true)
-
-            I10nTranslation.createOrUpdateI10n(cat, 'desc', [:])
-        }
-
-        String rdvValue = i10n['key'] ?: i10n['en']
-
-        RefdataValue result = findByOwnerAndValueIlike(cat, rdvValue)
-        if (! result) {
-            result = new RefdataValue(owner: cat, value: rdvValue)
-        }
-        result.isHardData = hardData
-        result.save(flush: true)
-
-        I10nTranslation.createOrUpdateI10n(result, 'value', i10n)
-
-        result
-    }
-
-    // Call this from code
-    static RefdataValue loc(String category_name, Map i10n) {
-        boolean hardData = false
-        loc(category_name, i10n, hardData)
     }
 
     static def refdataFind(params) {

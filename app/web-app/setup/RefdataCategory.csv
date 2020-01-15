@@ -1,8 +1,12 @@
 token,value_de,value_en
 Access choice remote,Zugangswahl Remote,Access choice remote
+Access Method,Access Method,Access Method
+Access Method IP,Access Method IP,Access Method IP
+Access Point Type,Access Point Type,Access Point Type
 AddressType,Art der Adresse,Address Type
 Authority,Autorität,Authority
 Category A-F,Kategorie A - F,Category A-F
+Cluster Role,Cluster Role,Cluster Role
 Cluster Type,Cluster Type,Cluster Type
 Combo Status,Combo Status,Combo Status
 Combo Type,Combo Type,Combo Type
@@ -23,6 +27,7 @@ CustomerIdentifier.Type,Kategorie der Kundennummer,Customer Identifier Type
 Document Context Status,Document Context Status,Document Context Status
 Document Type,Dokumenttyp,Document Type
 Existence,Vorliegen,Existence
+FactMetric,FactMetric,FactMetric
 FactType,FactType,FactType
 Federal State,Bundesland,Federal State
 filter.fake.values,filter.fake.values,filter.fake.values
@@ -34,6 +39,8 @@ IEMedium,IEMedium,IEMedium
 Ill code,Fernleihindikator,Ill code
 Indemnification,Entschädigung Auswahl,Indemnification Choice
 Invoicing,Rechnungsstellung,Invoicing
+IPv4 Address Format,IPv4 Address Format,IPv4 Address Format
+IPv6 Address Format,IPv6 Address Format,IPv6 Address Format
 Language,Sprache,Language
 Library Network,Verbundzugehörigkeit,Library Network
 Library Type,Bibliothekstyp,Library Type
@@ -62,6 +69,8 @@ License.Statistics.Frequency,Statistik Auslieferungsfrequenz,Statistics Frequenc
 License.Statistics.Standards,Statistikstandard,Statistics Standards
 License.Statistics.UserCreds,Statistik Nutzeridentifikation,Statistics User Credentials
 LicenseCategory,Lizenzkategorie,LicenseCategory
+Lincense.RemoteAccess,Lincense.RemoteAccess,Lincense.RemoteAccess
+Link Type,Link Type,Link Type
 MailTemplate Language,MailTemplate Sprache,MailTemplate Language
 MailTemplate Type,MailTemplate Typ,MailTemplate Type
 Number Type,Zahlen-Typ,Number Type
@@ -74,6 +83,7 @@ Package.Breakable,Package.Breakable,Package.Breakable
 Package.Consistent,Package.Consistent,Package.Consistent
 Package.Fixed,Package.Fixed,Package.Fixed
 Package.ListStatus,Package.ListStatus,Package.ListStatus
+Package.Scope,Package.Scope,Package.Scope
 Package.Type,Package.Type,Package.Type
 PendingChangeStatus,PendingChangeStatus,PendingChangeStatus
 Permissions,Berechtigungen,Permissions
@@ -81,14 +91,17 @@ Person Contact Type,Kontaktart,Person: Contact Type
 Person Function,Funktion,Person Function
 Person Position,Position,Person Position
 Person Responsibility,Verantwortlich,Person Responsibility
+Platform Status,Platform Status,Platform Status
 ReminderMethod,ReminderMethod,ReminderMethod
 ReminderTrigger,ReminderTrigger,ReminderTrigger
 ReminderUnit,ReminderUnit,ReminderUnit
 Semester,Semester,Semester
+Share Configuration,Share Configuration,Share Configuration
 Sim-User Number,Sim User Zahl,Sim-User Number
 Subscription Form,Lizenzform,Subscription Form
 Subscription Resource,Ressourcentyp,Resource type
 Subscription Status,Lizenzstatus,Subscription Status
+Subscription Type,Subscription Type,Subscription Type
 Survey Status,Umfrage-Status,Survey Status
 Survey Type,Umfrage-Typ,Survey Type
 Task Priority,Aufgabenpriorität,Task Priority
