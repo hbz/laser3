@@ -8,14 +8,14 @@ import java.text.SimpleDateFormat
 class EscapeService {
 
     private List<SimpleDateFormat> possibleDateFormats = [
+            new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'"),
+            new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.S"),
             new SimpleDateFormat('yyyy/MM/dd'),
             new SimpleDateFormat('dd.MM.yyyy'),
             new SimpleDateFormat('dd/MM/yyyy'),
             new SimpleDateFormat('dd/MM/yy'),
             new SimpleDateFormat('yyyy/MM'),
-            new SimpleDateFormat('yyyy'),
-            new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'"),
-            new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.S")
+            new SimpleDateFormat('yyyy')
     ]
 
     String escapeString(String input) {

@@ -131,7 +131,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
                             if(recordTimestamp.getTime() > maxTimestamp)
                                 maxTimestamp = recordTimestamp.getTime()
                         }
-                        if(listOAI.resumptionToken) {
+                        if(listOAI.resumptionToken.size() > 0) {
                             resumption = listOAI.resumptionToken
                             log.info("Continue with next iteration, token: ${resumption}")
                             cleanUpGorm()
@@ -141,12 +141,17 @@ class GlobalSourceSyncService extends AbstractLockableService {
                     }
                     log.info("Endloop")
                 }
-                source.haveUpTo = new Date(maxTimestamp)
-                source.save()
-                log.info("all OAI info fetched, local records updated, notifying dependent entitlements ...")
-                //if everything went well, we should have here the list of tipps to notify ... continue here!
-                tippsToNotify.each { toNotify ->
-                    log.debug(toNotify)
+                if(maxTimestamp > oldDate.time) {
+                    source.haveUpTo = new Date(maxTimestamp)
+                    source.save()
+                    log.info("all OAI info fetched, local records updated, notifying dependent entitlements ...")
+                    //if everything went well, we should have here the list of tipps to notify ... continue here!
+                    tippsToNotify.each { toNotify ->
+                        log.debug(toNotify)
+                    }
+                }
+                else {
+                    log.info("all OAI info fetched, no records to update. Leaving timestamp as is ...")
                 }
                 log.info("sync job finished")
                 SystemEvent.createEvent('GSSS_OAI_COMPLETE',['jobId',source.id])
@@ -711,9 +716,11 @@ class GlobalSourceSyncService extends AbstractLockableService {
         }
 
         // This is the boss enemy when refactoring coverage statements ... works so far, is going to be kept
-        Set<Map<String, Object>> coverageDiffs = getCoverageDiffs(tippa,(List<Map<String,Object>>) tippb.coverages)
-        if(!coverageDiffs.isEmpty())
-            result.add([field: 'coverage', covDiffs: coverageDiffs])
+        if(tippa.coverages.size() > 0 && tippb.coverages.size() > 0){
+            Set<Map<String, Object>> coverageDiffs = getCoverageDiffs(tippa,(List<Map<String,Object>>) tippb.coverages)
+            if(!coverageDiffs.isEmpty())
+                result.add([field: 'coverage', covDiffs: coverageDiffs])
+        }
 
         if (tippa.accessStartDate != tippb.accessStartDate) {
             result.add([field: 'accessStartDate', newValue: tippb.accessStartDate, oldValue: tippa.accessStartDate])
