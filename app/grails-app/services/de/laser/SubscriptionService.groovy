@@ -13,6 +13,7 @@ import de.laser.exceptions.EntitlementCreationException
 import de.laser.helper.DebugAnnotation
 import org.springframework.web.multipart.commons.CommonsMultipartFile
 import de.laser.helper.RDStore
+import com.k_int.kbplus.Identifier
 
 import java.nio.file.Path
 import java.nio.file.Files
@@ -672,6 +673,32 @@ class SubscriptionService {
         return save(targetSub, flash)
     }
 
+    void copyIdentifiers(Subscription baseSub, List<String> toCopyIdentifiers, Subscription newSub, def flash) {
+        toCopyIdentifiers.each{ identifierId ->
+            def ownerSub = newSub
+            Identifier sourceIdentifier = Identifier.get(identifierId)
+            IdentifierNamespace namespace = sourceIdentifier.ns
+            String value = sourceIdentifier.value
+
+            if (ownerSub && namespace && value) {
+                Identifier.construct([value: value, reference: ownerSub, namespace: namespace])
+            }
+        }
+    }
+
+    void deleteIdentifiers(List<String> toDeleteTasks, Subscription newSub, def flash) {
+        toDeleteTasks.each { identifierId ->
+            def ownerSub = newSub
+            def identifier = Identifier.get(identifierId)
+
+            if (owner && identifier) {
+                if (identifier."${Identifier.getAttributeName(ownerSub)}"?.id == ownerSub.id) {
+                    log.debug("Identifier deleted: ${identifierId}")
+                    identifier.delete()
+                }
+            }
+        }
+    }
 
     def deleteDocs(List<Long> toDeleteDocs, Subscription targetSub, def flash) {
         log.debug("toDeleteDocCtxIds: " + toDeleteDocs)

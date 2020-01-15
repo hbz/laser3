@@ -83,6 +83,7 @@ class SubscriptionController extends AbstractDebugController {
     def surveyService
 
     public static final String WORKFLOW_DATES_OWNER_RELATIONS = '1'
+    public static final String WORKFLOW_IDENTIFIERS = '7'
     public static final String WORKFLOW_PACKAGES_ENTITLEMENTS = '5'
     public static final String WORKFLOW_DOCS_ANNOUNCEMENT_TASKS = '2'
     public static final String WORKFLOW_SUBSCRIBER = '3'
@@ -4559,10 +4560,19 @@ class SubscriptionController extends AbstractDebugController {
             case WORKFLOW_DATES_OWNER_RELATIONS:
                 result << copySubElements_DatesOwnerRelations();
                 if (params.isRenewSub){
+                    params?.workFlowPart = WORKFLOW_IDENTIFIERS
+                    result << loadDataFor_Identifiers()
+                } else {
+                    result << loadDataFor_DatesOwnerRelations()
+                }
+                break;
+            case WORKFLOW_IDENTIFIERS:
+                result << copySubElements_Identifiers();
+                if (params.isRenewSub){
                     params?.workFlowPart = WORKFLOW_PACKAGES_ENTITLEMENTS
                     result << loadDataFor_PackagesEntitlements()
                 } else {
-                    result << loadDataFor_DatesOwnerRelations()
+                    result << loadDataFor_Identifiers()
                 }
                 break;
             case WORKFLOW_PACKAGES_ENTITLEMENTS:
@@ -4754,6 +4764,58 @@ class SubscriptionController extends AbstractDebugController {
 
         result.sourceSubscription = baseSub
         result.targetSubscription = newSub
+        result
+    }
+    private copySubElements_Identifiers() {
+        def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
+        Subscription baseSub = Subscription.get(params.sourceSubscriptionId ? Long.parseLong(params.sourceSubscriptionId): Long.parseLong(params.id))
+        Subscription newSub = null
+        if (params.targetSubscriptionId) {
+            newSub = Subscription.get(Long.parseLong(params.targetSubscriptionId))
+        }
+        boolean isTargetSubChanged = false
+
+        if (params?.subscription?.deleteIdentifierIds && isBothSubscriptionsSet(baseSub, newSub)) {
+            def toDeleteIdentifiers =  []
+            params.list('subscription.deleteIdentifierIds').each{ identifier -> toDeleteIdentifiers << Long.valueOf(identifier) }
+            subscriptionService.deleteIdentifiers(toDeleteTasks, newSub, flash)
+            isTargetSubChanged = true
+        }
+
+        if (params?.subscription?.takeIdentifierIds && isBothSubscriptionsSet(baseSub, newSub)) {
+            def toCopyIdentifiers =  []
+            params.list('subscription.takeIdentifierIds').each{ identifier -> toCopyIdentifiers << Long.valueOf(identifier) }
+            subscriptionService.copyIdentifiers(baseSub, toCopyIdentifiers, newSub, flash)
+            isTargetSubChanged = true
+        }
+
+        if (isTargetSubChanged) {
+            newSub = newSub.refresh()
+        }
+
+        result.sourceSubscription = baseSub
+        result.targetSubscription = newSub
+        result
+    }
+
+    private loadDataFor_Identifiers() {
+        def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
+        Subscription baseSub = Subscription.get(params.sourceSubscriptionId ? Long.parseLong(params.sourceSubscriptionId): Long.parseLong(params.id))
+        Subscription newSub = null
+        if (params.targetSubscriptionId) {
+            newSub = Subscription.get(Long.parseLong(params.targetSubscriptionId))
+        }
+
+        result.sourceSubscription = baseSub
+        result.targetSubscription = newSub
+        result.sourceIdentifiers = baseSub.ids?.sort { x, y ->
+            if (x.ns?.ns.toLowerCase() == y.ns?.ns.toLowerCase()){
+                x.value <=> y.value
+            } else {
+                x.ns?.ns.toLowerCase() <=> y.ns?.ns.toLowerCase()
+            }
+        }
+        result.targetIdentifiers = newSub.ids?.sort { it?.ns?.ns?.toLowerCase()+it.value }
         result
     }
 

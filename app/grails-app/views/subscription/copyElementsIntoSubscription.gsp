@@ -49,10 +49,24 @@
                     </div>
                 </div>
             </div>
+            <div class="${workFlowPart == WORKFLOW_IDENTIFIERS ? 'active' : ''} step">
+                <div class="content">
+                    <div class="title">
+                        %{--<g:link controller="subscription" action="copyElementsIntoSubscription" params="${params << [workFlowPart: WORKFLOW_PACKAGES_ENTITLEMENTS]}">--}%
+                        <g:link controller="subscription" action="copyElementsIntoSubscription" params="${params << [workFlowPart: WORKFLOW_DATES_OWNER_RELATIONS]}">
+                            ${message(code: 'default.identifiers.label')}
+                        </g:link>
+                    </div>
+                    <div class="description">
+                        <i class="barcode icon"></i>${message(code: 'default.identifiers.label')}
+                    </div>
+                </div>
+            </div>
             <div class="${workFlowPart == WORKFLOW_PACKAGES_ENTITLEMENTS ? 'active' : ''} step">
                 <div class="content" >
                     <div class="title">
-                        <g:link controller="subscription" action="copyElementsIntoSubscription" params="${params << [workFlowPart: WORKFLOW_DATES_OWNER_RELATIONS]}">
+                        %{--<g:link controller="subscription" action="copyElementsIntoSubscription" params="${params << [workFlowPart: WORKFLOW_DATES_OWNER_RELATIONS]}">--}%
+                        <g:link controller="subscription" action="copyElementsIntoSubscription" params="${params << [workFlowPart: WORKFLOW_IDENTIFIERS]}">
                             ${message(code: 'subscription.details.copyElementsIntoSubscription.inventory.label')}
                         </g:link>
                     </div>
@@ -118,6 +132,15 @@
                 </div>
             </semui:complexSubNavItem>
 
+            <semui:complexSubNavItem class="${workFlowPart == WORKFLOW_IDENTIFIERS ? 'active' : ''}" controller="subscription" action="copyElementsIntoSubscription" params="${params << [workFlowPart: WORKFLOW_IDENTIFIERS]}" >
+                <div class="content">
+                    <div class="title">${message(code: 'default.identifiers.label')}</div>
+                    <div class="description">
+                        <i class="barcode icon"></i>${message(code: 'default.identifiers.label')}
+                    </div>
+                </div>
+            </semui:complexSubNavItem>
+
             <semui:complexSubNavItem  class="${workFlowPart == WORKFLOW_PACKAGES_ENTITLEMENTS ? 'active' : ''}" controller="subscription" action="copyElementsIntoSubscription" params="${params << [workFlowPart: WORKFLOW_PACKAGES_ENTITLEMENTS]}" >
                 <div class="content" >
                     <div class="title">${message(code: 'subscription.details.copyElementsIntoSubscription.inventory.label')}</div>
@@ -169,9 +192,12 @@
         <span class="la-added">${message(code: 'subscription.renewSubscriptionConsortia.workFlowSteps.legend.willStay')}</span>
         <span class="la-removed">${message(code: 'subscription.renewSubscriptionConsortia.workFlowSteps.legend.willBeReplaced')}</span>
     </div>
-    <g:if test="${workFlowPart == WORKFLOW_DOCS_ANNOUNCEMENT_TASKS}">
-        <g:render template="copyDocsAndTasks" />
+    <g:if test="${workFlowPart == WORKFLOW_IDENTIFIERS}">
+        <g:render template="identifiers" />
     </g:if>
+    <g:elseif test="${workFlowPart == WORKFLOW_DOCS_ANNOUNCEMENT_TASKS}">
+        <g:render template="copyDocsAndTasks" />
+    </g:elseif>
     <g:elseif test="${workFlowPart == WORKFLOW_SUBSCRIBER && isSubscriberVisible && accessService.checkPermAffiliation("ORG_CONSORTIUM_SURVEY,ORG_CONSORTIUM,ORG_INST_COLLECTIVE", "INST_USER")}">
         <g:render template="copySubscriber" />
     </g:elseif>
