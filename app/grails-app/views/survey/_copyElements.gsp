@@ -31,7 +31,7 @@
             <tbody>
             <g:if test="${ ! isRenewSub}">
                 <tr>
-                    <td style="vertical-align: top" name="subscription.takeDates.source">
+                    <td  name="subscription.takeDates.source">
                         <div>
                             <b><i class="calendar alternate outline icon"></i>${message(code: 'subscription.periodOfValidity.label')}:</b>&nbsp
                             <g:formatDate date="${sourceSubscription?.startDate}" format="${message(code: 'default.date.format.notime')}"/>
@@ -50,7 +50,7 @@
                         </g:if>
                     </td>
 
-                    <td style="vertical-align: top" name="subscription.takeDates.target">
+                    <td  name="subscription.takeDates.target">
                         <div>
                             <b><i class="calendar alternate outline icon"></i>${message(code: 'subscription.periodOfValidity.label')}:</b>&nbsp
                             <g:formatDate date="${targetSubscription?.startDate}" format="${message(code: 'default.date.format.notime')}"/>
@@ -69,7 +69,7 @@
             </g:if>
 
             <tr>
-                <td style="vertical-align: top" name="subscription.takeOwner.source">
+                <td  name="subscription.takeOwner.source">
                     <div>
                         <b><i class="balance scale icon"></i>${message(code: 'license')}:</b>
                         <g:if test="${sourceSubscription?.owner}">
@@ -91,7 +91,7 @@
                     </g:if>
                 </td>
 
-                <td style="vertical-align: top" name="subscription.takeOwner.target">
+                <td  name="subscription.takeOwner.target">
                     <div>
                         <b><i class="balance scale icon"></i>${message(code: 'license')}:</b>
                         <g:if test="${targetSubscription?.owner}">
@@ -111,7 +111,7 @@
                 </td>
             </tr>
             <tr>
-                <td style="vertical-align: top" name="subscription.takeOrgRelations.source">
+                <td  name="subscription.takeOrgRelations.source">
                     <div>
                         <g:if test="${ ! source_visibleOrgRelations}">
                             <b><i class="university icon"></i>&nbsp${message(code: 'subscription.organisations.label')}:</b>
@@ -156,7 +156,7 @@
                     </g:each>
                 </td>
 
-                <td style="vertical-align: top" name="subscription.takeOrgRelations.target">
+                <td  name="subscription.takeOrgRelations.target">
                     <div>
                         <g:if test="${ ! target_visibleOrgRelations}">
                             <b><i class="university icon"></i>&nbsp${message(code: 'subscription.organisations.label')}:</b>
