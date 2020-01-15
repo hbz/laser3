@@ -1343,10 +1343,12 @@ class GlobalSourceSyncService extends AbstractLockableService {
 
                 cleanUpGorm()
             }
-            log.debug("Updating sync job max timestamp");
-            sync_job.haveUpTo = new Date(max_timestamp)
-            if(!sync_job.save())
-                log.error("Error on updating timestamp: ${sync_job.errors}")
+            if(max_timestamp > olddate.time) {
+                log.debug("Updating sync job max timestamp")
+                sync_job.haveUpTo = new Date(max_timestamp)
+                if(!sync_job.save())
+                    log.error("Error on updating timestamp: ${sync_job.errors}")
+            }
         }
         catch (Exception e) {
             log.error("Problem", e);
