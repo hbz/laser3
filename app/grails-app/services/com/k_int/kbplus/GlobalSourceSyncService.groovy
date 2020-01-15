@@ -1342,7 +1342,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
 
                 cleanUpGorm()
             }
-            if(max_timestamp > 0) {
+            if(max_timestamp > olddate.time) {
                 log.debug("Updating sync job max timestamp")
                 sync_job.haveUpTo = new Date(max_timestamp)
                 if(!sync_job.save())
