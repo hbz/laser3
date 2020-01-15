@@ -43,9 +43,10 @@ class ApiIssueEntitlement {
     /**
      * @return JSON | FORBIDDEN
      */
-    static getIssueEntitlements(SubscriptionPackage subPkg, Org context, boolean hasAccess){
+    static getIssueEntitlements(SubscriptionPackage subPkg, Org context){
         Collection<Object> result = []
 
+        boolean hasAccess = false
         if (! hasAccess) {
             def hasAccess2 = false
             // TODO
@@ -65,9 +66,7 @@ class ApiIssueEntitlement {
             result = ApiCollectionReader.retrieveIssueEntitlementCollection(subPkg, ApiReader.IGNORE_NONE, context) // TODO check orgRole.roleType
         }
 
-        // this is different to other Api<x>.get<x>-methods;
-        // result may be null here
-        return (hasAccess ? (result ? new JSON(result) : null) : Constants.HTTP_FORBIDDEN)
+        return (hasAccess ? new JSON(result) : Constants.HTTP_FORBIDDEN)
     }
 
     /**

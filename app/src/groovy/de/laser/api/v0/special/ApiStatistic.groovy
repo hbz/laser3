@@ -13,21 +13,14 @@ import groovy.util.logging.Log4j
 @Log4j
 class ApiStatistic {
 
-    static boolean calculateAccess(Package result, Org context, boolean hasAccess) {
+    static boolean calculateAccess(Package pkg) {
 
-        // context is ignored due hasAccess = accessDueDatamanager
-        // maybe changed later into a lesser accessRole like API_LEVEL_STATISTIC
-        if (! hasAccess) {
-
-            if (result in getAccessiblePackages()) {
-                hasAccess = true
-            }
-            else {
-                hasAccess = false
-            }
+        if (pkg in getAccessiblePackages()) {
+            return true
         }
-
-        hasAccess
+        else {
+            return false
+        }
     }
 
     static private List<Org> getAccessibleOrgs() {
@@ -63,31 +56,30 @@ class ApiStatistic {
     }
 
     /**
-     * @return JSON | FORBIDDEN
+     * Access checked via ApiManager.read()
+     * @return JSON
      */
-    static getAllPackages(boolean hasAccess) {
+    static JSON getAllPackages() {
         Collection<Object> result = []
 
-        if (hasAccess) {
-            getAccessiblePackages().each { p ->
-                result << ApiStubReader.retrievePackageStubMap(p, null) // ? null
-            }
+        getAccessiblePackages().each { p ->
+            result << ApiStubReader.retrievePackageStubMap(p, null) // ? null
         }
 
-        return (hasAccess ? new JSON(result) : Constants.HTTP_FORBIDDEN)
+        return new JSON(result)
     }
 
     /**
      * @return JSON | FORBIDDEN
      */
-    static getPackage(Package pkg, Org context, boolean hasAccess) {
+    static getPackage(Package pkg, Org context) {
         if (! pkg || pkg.packageStatus?.value == 'Deleted') {
             return null
         }
 
         Map<String, Object> result = [:]
-        hasAccess = calculateAccess(pkg, context, hasAccess)
 
+        boolean hasAccess = calculateAccess(pkg)
         if (hasAccess) {
 
             result.globalUID        = pkg.globalUID
@@ -136,7 +128,7 @@ class ApiStatistic {
         if (! lic || lic.status?.value == 'Deleted') {
             return null
         }
-        def result = ApiStubReader.requestLicenseStub(lic, null, true)
+        def result = ApiStubReader.requestLicenseStub(lic, null)
 
         return ApiToolkit.cleanUp(result, true, true)
     }
@@ -185,7 +177,7 @@ class ApiStatistic {
             if (subPkg.subscription.status?.value == 'Deleted') {
             }
             else {
-                sub = ApiStubReader.requestSubscriptionStub(subPkg.subscription, null, true)
+                sub = ApiStubReader.requestSubscriptionStub(subPkg.subscription, null)
             }
 
             List<Org> orgList = []

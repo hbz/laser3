@@ -47,19 +47,19 @@ class ApiSubscription {
     /**
      * @return boolean
      */
-    static boolean calculateAccess(Subscription sub, Org context, boolean hasAccess) {
+    static boolean calculateAccess(Subscription sub, Org context) {
 
-        if (! hasAccess) {
-            if (OrgRole.findBySubAndRoleTypeAndOrg(sub, RDStore.OR_SUBSCRIPTION_CONSORTIA, context)) {
-                hasAccess = true
-            }
-            else if (OrgRole.findBySubAndRoleTypeAndOrg(sub, RDStore.OR_SUBSCRIBER, context)) {
-                hasAccess = true
-            }
-            else if (OrgRole.findBySubAndRoleTypeAndOrg(sub, RDStore.OR_SUBSCRIBER_CONS, context)) {
-                hasAccess = true
-            }
-        }
+		boolean hasAccess = false
+
+		if (OrgRole.findBySubAndRoleTypeAndOrg(sub, RDStore.OR_SUBSCRIPTION_CONSORTIA, context)) {
+			hasAccess = true
+		}
+		else if (OrgRole.findBySubAndRoleTypeAndOrg(sub, RDStore.OR_SUBSCRIBER, context)) {
+			hasAccess = true
+		}
+		else if (OrgRole.findBySubAndRoleTypeAndOrg(sub, RDStore.OR_SUBSCRIBER_CONS, context)) {
+			hasAccess = true
+		}
 
         hasAccess
     }
@@ -67,10 +67,10 @@ class ApiSubscription {
     /**
      * @return JSON | FORBIDDEN
      */
-    static getSubscription(Subscription sub, Org context, boolean hasAccess){
+    static getSubscription(Subscription sub, Org context, boolean isInvoiceTool){
         Map<String, Object> result = [:]
-        hasAccess = calculateAccess(sub, context, hasAccess)
 
+		boolean hasAccess = isInvoiceTool || calculateAccess(sub, context)
         if (hasAccess) {
             result = retrieveSubscriptionMap(sub, ApiReader.IGNORE_NONE, context)
         }
@@ -81,7 +81,7 @@ class ApiSubscription {
     /**
      * @return JSON
      */
-    static JSON getSubscriptionList(Org owner, Org context, boolean hasAccess){
+    static JSON getSubscriptionList(Org owner, Org context){
         Collection<Object> result = []
 
         List<Subscription> available = Subscription.executeQuery(
@@ -100,7 +100,7 @@ class ApiSubscription {
             //}
         }
 
-        return (result ? new JSON(result) : null)
+		return (result ? new JSON(result) : null)
     }
 
 	/**
