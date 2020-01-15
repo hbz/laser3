@@ -227,7 +227,7 @@ class FinanceController extends AbstractDebugController {
                 titles.add(message(code:'default.provider.label'))
             titles.addAll([message(code: 'financials.forSubscription'), message(code:'subscription.startDate.label'), message(code: 'subscription.endDate.label'),
                            message(code: 'financials.costItemConfiguration'), message(code: 'package'), message(code: 'issueEntitlement.label'),
-                           message(code: 'financials.datePaid'), message(code: 'financials.dateFrom'), message(code: 'financials.dateTo'),
+                           message(code: 'financials.datePaid'), message(code: 'financials.dateFrom'), message(code: 'financials.dateTo'), message(code:'financials.financialYear'),
                            message(code: 'financials.costItemStatus'), message(code: 'financials.billingCurrency'), message(code: 'financials.costInBillingCurrency'),"EUR",
                            message(code: 'financials.costInLocalCurrency')])
             if(["own","cons"].indexOf(viewMode) > -1)
@@ -342,6 +342,9 @@ class FinanceController extends AbstractDebugController {
                                 //date to
                                 cellnum++
                                 row.add(end_date ?: '')
+                                //financial year
+                                cellnum++
+                                row.add(ci?.financialYear ? ci.financialYear.toString() : '')
                                 //for the sum title
                                 sumTitleCell = cellnum
                                 //cost item status
@@ -521,7 +524,7 @@ class FinanceController extends AbstractDebugController {
                 titles.add(message(code:'default.provider.label'))
             titles.addAll([message(code: 'financials.forSubscription'), message(code:'subscription.startDate.label'), message(code: 'subscription.endDate.label'),
                            message(code: 'financials.costItemConfiguration'), message(code: 'package'), message(code: 'issueEntitlement.label'),
-                           message(code: 'financials.datePaid'), message(code: 'financials.dateFrom'), message(code: 'financials.dateTo'),
+                           message(code: 'financials.datePaid'), message(code: 'financials.dateFrom'), message(code: 'financials.dateTo'), message(code:'financials.financialYear'),
                            message(code: 'financials.costItemStatus'), message(code: 'financials.billingCurrency'), message(code: 'financials.costInBillingCurrency'),"EUR",
                            message(code: 'financials.costInLocalCurrency')])
             if(["own","cons"].indexOf(viewMode) > -1)
@@ -627,10 +630,9 @@ class FinanceController extends AbstractDebugController {
                     //date to
                     cell = row.createCell(cellnum++)
                     cell.setCellValue(end_date ?: '')
-                    /*cost item category
+                    //financial year
                     cell = row.createCell(cellnum++)
-                    cell.setCellValue(ci?.costItemCategory ? ci.costItemCategory.value:'')
-                    */
+                    cell.setCellValue(ci?.financialYear ? ci.financialYear.toString():'')
                     //for the sum title
                     sumTitleCell = cellnum
                     //cost item status

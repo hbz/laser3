@@ -294,7 +294,8 @@ where tipp.title = ? and orl.roleType.value=?''', [title, 'Content Provider']);
      */
     @Secured(['permitAll']) // TODO
     def v0() {
-        log.debug("API Call: " + params)
+        Org apiOrg = (Org) request.getAttribute('authorizedApiOrg')
+        log.debug("API Call [${apiOrg.id}] - " + params)
 
         def result
         boolean hasAccess = false
@@ -307,7 +308,6 @@ where tipp.title = ? and orl.roleType.value=?''', [title, 'Content Provider']);
         String format
 
         Org contextOrg = null // TODO refactoring
-        Org apiOrg = (Org) request.getAttribute('authorizedApiOrg')
 
         if (apiOrg) {
             // checking role permission
@@ -315,10 +315,10 @@ where tipp.title = ? and orl.roleType.value=?''', [title, 'Content Provider']);
 
             if (apiLevel != OrgSettings.SETTING_NOT_FOUND) {
                 if ("GET" == request.method) {
-                    hasAccess = (apiLevel.getValue() in [ApiToolkit.API_LEVEL_READ, ApiToolkit.API_LEVEL_DATAMANAGER])
+                    hasAccess = (apiLevel.getValue() in [ApiToolkit.API_LEVEL_READ, ApiToolkit.API_LEVEL_INVOICETOOL, ApiToolkit.API_LEVEL_DATAMANAGER])
                 }
                 else if ("POST" == request.method) {
-                    hasAccess = (apiLevel.getValue() in [ApiToolkit.API_LEVEL_WRITE, ApiToolkit.API_LEVEL_DATAMANAGER])
+                    hasAccess = (apiLevel.getValue() in [ApiToolkit.API_LEVEL_WRITE, ApiToolkit.API_LEVEL_INVOICETOOL, ApiToolkit.API_LEVEL_DATAMANAGER])
                 }
             }
 
@@ -412,7 +412,12 @@ where tipp.title = ? and orl.roleType.value=?''', [title, 'Content Provider']);
         }
         response.setStatus(status)
 
-        log.debug("API Call (Response Code: ${status}, Response Time: ${responseTime})")
+        if (json.target instanceof List) {
+            log.debug("API Call [${apiOrg.id}] - (Code: ${status}, Time: ${responseTime}, Items: ${json.target.size().toString()})")
+        }
+        else {
+            log.debug("API Call [${apiOrg.id}] - (Code: ${status}, Time: ${responseTime}, Length: ${json.toString().length().toString()})")
+        }
 
         render json.toString(true)
     }

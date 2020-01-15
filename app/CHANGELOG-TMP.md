@@ -1,6 +1,20 @@
 ## temporary change log
 
 **Ticket    Date    Branch      Author  Feature/Bug     Description/Keywords**
+--      15.01.2020  rc1.2       Andreas Bug         Sync-Zeitstempel wird nicht mehr auf 0 gesetzt, wenn keine Änderungen vorliegen
+
+2059    14.01.2020  rc1.2       Andreas Bug         Feld Haushaltsjahr im Export nachgetragen
+
+2056    14.01.2020  rc1.2       Andreas Bug         Dropdown der auswählbaren Kostenkonfigurationen sortiert nach Namen
+
+2045    14.01.2020  rc1.2       Andreas Bug         Finanzsichten für lesende Nutzer freigegeben
+
+1978    14.01.2020  rc1.2       Andreas Feature     Summen werden in der Finanzübersicht sortiert ausgegeben
+
+2061    15.01.2020  rc1.2       David   Bug         API-Endpunkt absichern
+
+--      13.01.2020  rc1.2       Moe     Bug         Übersetzungsänderung
+
 2050    13.01.2020  rc1.2       Andreas Bug         Namensausgabe und Sortierung von Kindlizenzen bei Kosten hinzufügen eingefügt
 
 2049    13.01.2020  rc1.2       Andreas Bug         Backend-Verarbeitungsfehler der Entknüpfung behoben

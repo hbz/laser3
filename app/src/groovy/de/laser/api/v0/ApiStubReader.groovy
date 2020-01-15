@@ -49,20 +49,17 @@ class ApiStubReader {
         return ApiToolkit.cleanUp(result, true, true)
     }
 
+    /**
+     * @return MAP | Constants.HTTP_FORBIDDEN
+     */
     static requestLicenseStub(License lic, Org context) {
-        requestLicenseStub(lic, context, false)
-    }
-
-    static requestLicenseStub(License lic, Org context, boolean hasAccess) {
         Map<String, Object> result = [:]
 
         if (!lic) {
             return null
         }
 
-        if (! hasAccess) {
-            hasAccess = ApiLicense.calculateAccess(lic, context, hasAccess)
-        }
+        boolean hasAccess = ApiLicense.calculateAccess(lic, context)
 
         if (hasAccess) {
             result.globalUID    = lic.globalUID
@@ -143,19 +140,13 @@ class ApiStubReader {
      * @return MAP | Constants.HTTP_FORBIDDEN
      */
     static requestSubscriptionStub(Subscription sub, Org context) {
-        requestSubscriptionStub(sub, context, false)
-    }
-
-    static requestSubscriptionStub(Subscription sub, Org context, boolean hasAccess) {
         Map<String, Object> result = [:]
 
         if (!sub) {
             return null
         }
 
-        if (! hasAccess) {
-            hasAccess = ApiSubscription.calculateAccess(sub, context, hasAccess)
-        }
+        boolean hasAccess = ApiSubscription.calculateAccess(sub, context)
 
         if (hasAccess) {
             result.globalUID    = sub.globalUID

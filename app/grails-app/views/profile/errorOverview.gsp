@@ -27,7 +27,9 @@
         <table class="ui celled la-table table">
             <thead>
                 <tr>
-                    <th>Status</th>
+                    <sec:ifAnyGranted roles="ROLE_ADMIN">
+                        <th>Status</th>
+                    </sec:ifAnyGranted>
                     <th class="header"><g:message code="ticket.created.label" default="Created" /></th>
                     <th class="header"><g:message code="ticket.title.label" default="Title" /></th>
                     <th class="header"><g:message code="ticket.author.label" default="Author" /></th>
@@ -37,23 +39,25 @@
             <tbody>
                 <g:each in="${tickets}" var="ticket">
                     <tr class="ticket-row-${ticket.id}">
-                        <td>
-                            <g:if test="${ticket.status.value == 'New'}">
-                                <div class="ui label">${ticket.status.getI10n('value')}</div>
-                            </g:if>
-                            <g:if test="${ticket.status.value == 'Open'}">
-                                <div class="ui blue label">${ticket.status.getI10n('value')}</div>
-                            </g:if>
-                            <g:if test="${ticket.status.value == 'In Progress'}">
-                                <div class="ui yellow label">${ticket.status.getI10n('value')}</div>
-                            </g:if>
-                            <g:if test="${ticket.status.value == 'Done'}">
-                                <div class="ui olive label">${ticket.status.getI10n('value')}</div>
-                            </g:if>
-                            <g:if test="${ticket.status.value == 'Deferred'}">
-                                <div class="ui grey label">${ticket.status.getI10n('value')}</div>
-                            </g:if>
-                        </td>
+                        <sec:ifAnyGranted roles="ROLE_ADMIN">
+                            <td>
+                                <g:if test="${ticket.status.value == 'New'}">
+                                    <div class="ui label">${ticket.status.getI10n('value')}</div>
+                                </g:if>
+                                <g:if test="${ticket.status.value == 'Open'}">
+                                    <div class="ui blue label">${ticket.status.getI10n('value')}</div>
+                                </g:if>
+                                <g:if test="${ticket.status.value == 'In Progress'}">
+                                    <div class="ui yellow label">${ticket.status.getI10n('value')}</div>
+                                </g:if>
+                                <g:if test="${ticket.status.value == 'Done'}">
+                                    <div class="ui olive label">${ticket.status.getI10n('value')}</div>
+                                </g:if>
+                                <g:if test="${ticket.status.value == 'Deferred'}">
+                                    <div class="ui grey label">${ticket.status.getI10n('value')}</div>
+                                </g:if>
+                            </td>
+                        </sec:ifAnyGranted>
                         <td>
                             <g:formatDate date="${ticket.dateCreated}" format="${message(code: 'default.date.format.notime')}"/>
                         </td>
@@ -82,10 +86,12 @@
                             <h4 class="ui header">${ticket.title}</h4>
 
                             <div class="ui relaxed list">
-                                <div class="item">
-                                    <div class="header">Status</div>
-                                    <semui:xEditableRefData owner="${ticket}" field="status" config="Ticket.Status"/>
-                                </div>
+                                <sec:ifAnyGranted roles="ROLE_ADMIN">
+                                    <div class="item">
+                                        <div class="header">Status</div>
+                                        <semui:xEditableRefData owner="${ticket}" field="status" config="Ticket.Status"/>
+                                    </div>
+                                </sec:ifAnyGranted>
 
                                 <g:if test="${editable}">
                                     <div class="item">

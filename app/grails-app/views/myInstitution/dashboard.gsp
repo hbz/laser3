@@ -43,9 +43,7 @@
                         <%--<div class="item">
                             <g:link controller="myInstitution" action="announcements">${message(code: 'announcement.plural', default: 'Announcements')}</g:link>
                         </div>--%>
-                        <g:if test="${grailsApplication.config.feature_finance}">
-                            <semui:securedMainNavItem affiliation="INST_EDITOR" controller="myInstitution" action="finance" message="menu.institutions.finance" />
-                        </g:if>
+                        <semui:securedMainNavItem affiliation="INST_USER" controller="myInstitution" action="finance" message="menu.institutions.finance" />
                     </div>
                 </div>
 

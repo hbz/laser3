@@ -266,7 +266,7 @@
 
     get:
       tags:
-        - Datamanager
+        - Lists
       summary: Retrieving catalogue of combined refdatas
       description: >
         Retrieving an overview for RefdataCategories and RefdataValues
