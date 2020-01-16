@@ -961,6 +961,7 @@ TaxType,not applicable,nicht anwendbar,not applicable
 TaxType,not taxable,nicht steuerbar,not taxable
 TaxType,taxable,steuerbar,taxable
 TaxType,taxable tax-exempt,steuerbar steuerbefreit,taxable tax-exempt
+TaxType,reverse charge,Reverse Charge,reverse charge
 Termination Condition,At will,Nach Belieben,At will
 Termination Condition,Breach by Licensor/Licensee,Wegen Verstoß des Vertragspartners,Breach by Licensor/Licensee
 Termination Condition,Other,Andere Gründe,Other
