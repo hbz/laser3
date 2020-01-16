@@ -378,7 +378,7 @@ class ApiCollectionReader {
     static Map<String, Object> retrievePersonMap(Person prs, allowedContactTypes, allowedAddressTypes, Org context) {
         Map<String, Object> result = [:]
 
-        if(prs) {
+        if (prs) {
             result.globalUID       = prs.globalUID
             result.firstName       = prs.first_name
             result.middleName      = prs.middle_name
@@ -390,7 +390,6 @@ class ApiCollectionReader {
             result.gender          = prs.gender?.value
             result.isPublic        = prs.isPublic ? 'Yes' : 'No'
             result.contactType     = prs.contactType?.value
-            result.roleType        = prs.roleType?.value
 
             // References
             result.contacts     = retrieveContactCollection(prs.contacts, allowedContactTypes) // com.k_int.kbplus.Contact
@@ -489,15 +488,15 @@ class ApiCollectionReader {
     }
 
     static Collection<Object> retrievePrsLinkCollection(Collection<PersonRole> list, allowedAddressTypes, allowedContactTypes, Org context) {  // TODO check context
-        def result = []
-        def tmp = []
+        List result = []
+        List tmp = []
 
         list?.each { it ->
 
             // nested prs
             if(it.prs) {
-                def x = it.prs.id
-                def person = result.find {it.id == x}
+                String x = it.prs.globalUID
+                def person = tmp.find {it.globalUID == x}
 
                 if(!person) {
                     person = retrievePersonMap(it.prs, allowedAddressTypes, allowedContactTypes, context) // com.k_int.kbplus.Person
@@ -514,18 +513,18 @@ class ApiCollectionReader {
                     }
                 }
 
-                def role                    = [:] // com.k_int.kbplus.PersonRole
+                Map<String, Object> role    = [:] // com.k_int.kbplus.PersonRole
                 role.startDate              = it.start_date
                 role.endDate                = it.end_date
 
                 // RefdataValues
                 role.functionType           = it.functionType?.value
-                //role.responsibilityType     = it.responsibilityType?.value
+                role.positionType           = it.positionType?.value
 
-                if(!person.roles) {
+                if(! person.roles) {
                     person.roles = []
                 }
-                if (role.functionType) {
+                if (role.functionType || role.positionType) {
                     person.roles << ApiToolkit.cleanUp(role, true, false)
                 }
 
@@ -576,7 +575,7 @@ class ApiCollectionReader {
      */
     static Map<String, Object> retrieveTippMap(TitleInstancePackagePlatform tipp, def ignoreRelation, Org context) {
         Map<String, Object> result = [:]
-        if (!tipp) {
+        if (! tipp) {
             return null
         }
 

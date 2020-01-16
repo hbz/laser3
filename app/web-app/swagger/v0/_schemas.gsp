@@ -580,11 +580,6 @@
           description: Mapping RefdataCategory "Person Contact Type"
           enum:
             [${ com.k_int.kbplus.RefdataCategory.getAllRefdataValues('Person Contact Type').collect{ it.value }.join(', ') }]
-        roleType:
-          type: string
-          description: Mapping RefdataCategory "Person Position"
-          enum:
-            [${ com.k_int.kbplus.RefdataCategory.getAllRefdataValues('Person Position').collect{ it.value }.join(', ') }]
         properties: # mapping attr privateProperties
           type: array
           items:
@@ -592,10 +587,7 @@
         roles:
           type: array
           items:
-            type: string
-          description: Mapping RefdataCategory "Person Function"
-          enum:
-            [${ com.k_int.kbplus.RefdataCategory.getAllRefdataValues('Person Function').collect{ it.value }.join(', ') }]
+            $ref: "#/components/schemas/Role_in_Person"
         title:
           type: string
 
@@ -1046,6 +1038,21 @@
                   type: string
                 label_en:
                   type: string
+
+
+    Role_in_Person:
+      type: object
+      properties:
+        functionType:
+          type: string
+          description: Mapping RefdataCategory "Person Function"
+          enum:
+            [${ com.k_int.kbplus.RefdataCategory.getAllRefdataValues('Person Function').collect{ it.value }.join(', ') }]
+        positionType:
+          type: string
+          description: Mapping RefdataCategory "Person Position"
+          enum:
+            [${ com.k_int.kbplus.RefdataCategory.getAllRefdataValues('Person Position').collect{ it.value }.join(', ') }]
 
 
     Statistic_Virtual:
