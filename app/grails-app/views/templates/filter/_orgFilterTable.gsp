@@ -528,7 +528,7 @@
             <td>
                 <g:if test="${existSubforOrg}">
 
-                    <g:if test="${orgSub?.isCurrentMultiYearSubscription()}">
+                    <g:if test="${orgSub?.isCurrentMultiYearSubscriptionNew()}">
                             <g:message code="surveyOrg.perennialTerm.available"/>
                     </g:if>
                     <g:else>
@@ -544,7 +544,7 @@
         <g:if test="${tmplConfigItem.equalsIgnoreCase('surveySubInfoStartEndDate')}">
             <td>
                 <g:if test="${existSubforOrg}">
-                    <g:if test="${orgSub?.isCurrentMultiYearSubscription()}">
+                    <g:if test="${orgSub?.isCurrentMultiYearSubscriptionNew()}">
                         <g:message code="surveyOrg.perennialTerm.available"/>
                     </g:if>
                     <g:else>
@@ -562,7 +562,7 @@
         <g:if test="${tmplConfigItem.equalsIgnoreCase('surveySubInfoStatus')}">
             <td>
                 <g:if test="${existSubforOrg}">
-                        <g:if test="${orgSub?.isCurrentMultiYearSubscription()}">
+                        <g:if test="${orgSub?.isCurrentMultiYearSubscriptionNew()}">
                             <g:message code="surveyOrg.perennialTerm.available"/>
                         </g:if>
                         <g:else>
@@ -578,7 +578,7 @@
         <g:if test="${tmplConfigItem.equalsIgnoreCase('surveySubCostItem')}">
             <td class="center aligned x">
 
-            <g:if test="${orgSub?.isCurrentMultiYearSubscription()}">
+            <g:if test="${orgSub?.isCurrentMultiYearSubscriptionNew()}">
                 <g:message code="surveyOrg.perennialTerm.available"/>
             </g:if>
             <g:else>
@@ -605,7 +605,7 @@
         <g:if test="${tmplConfigShow?.contains('surveyCostItem')}">
             <td class="x">
 
-                <g:if test="${orgSub?.isCurrentMultiYearSubscription()}">
+                <g:if test="${orgSub?.isCurrentMultiYearSubscriptionNew()}">
                     <g:message code="surveyOrg.perennialTerm.available"/>
                 </g:if>
             <g:else>

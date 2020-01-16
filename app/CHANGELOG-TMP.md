@@ -2,6 +2,7 @@
 
 **Ticket    Date    Branch      Author  Feature/Bug     Description/Keywords**
 
+--      16.01.2020  rc1.2       Moe     Bug         Bugfix Survey Views, Audit by Properties, MultiYear Function
     
 2024    16.01.2020  rc1.2       Moe     Bug         Abgelaufen (Mehrjahreslizenz) nicht umgesprungen bei Jahreswechsel
 
