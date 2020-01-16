@@ -22,8 +22,9 @@ class Person extends AbstractBaseDomain {
     @RefdataAnnotation(cat = 'Person Contact Type')
     RefdataValue contactType
 
+    @Deprecated
     @RefdataAnnotation(cat = 'Person Position')
-    RefdataValue roleType
+    RefdataValue roleType // TODO remove !?
 
     Date dateCreated
     Date lastUpdated
