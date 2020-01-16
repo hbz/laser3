@@ -324,7 +324,7 @@ class ApiCollectionReader {
     */
 
     static Map<String, Object> retrieveOrderMap(Order order) {
-        def result = [:]
+        Map<String, Object> result = [:]
         if (!order) {
             return null
         }
@@ -376,9 +376,9 @@ class ApiCollectionReader {
     }
 
     static Map<String, Object> retrievePersonMap(Person prs, allowedContactTypes, allowedAddressTypes, Org context) {
-        def result = [:]
+        Map<String, Object> result = [:]
 
-        if(prs) {
+        if (prs) {
             result.globalUID       = prs.globalUID
             result.firstName       = prs.first_name
             result.middleName      = prs.middle_name
@@ -406,7 +406,7 @@ class ApiCollectionReader {
      * @return
      */
     static Map<String, Object> retrievePlatformMap(Platform pform) {
-        def result = [:]
+        Map<String, Object> result = [:]
 
         if (pform) {
             result.globalUID        = pform.globalUID
@@ -495,7 +495,7 @@ class ApiCollectionReader {
 
             // nested prs
             if(it.prs) {
-                def x = it.prs.globalUID
+                String x = it.prs.globalUID
                 def person = tmp.find {it.globalUID == x}
 
                 if(!person) {
@@ -513,7 +513,7 @@ class ApiCollectionReader {
                     }
                 }
 
-                Map role                    = [:] // com.k_int.kbplus.PersonRole
+                Map<String, Object> role    = [:] // com.k_int.kbplus.PersonRole
                 role.startDate              = it.start_date
                 role.endDate                = it.end_date
 
@@ -574,8 +574,8 @@ class ApiCollectionReader {
      * @return Map<String, Object>
      */
     static Map<String, Object> retrieveTippMap(TitleInstancePackagePlatform tipp, def ignoreRelation, Org context) {
-        def result = [:]
-        if (!tipp) {
+        Map<String, Object> result = [:]
+        if (! tipp) {
             return null
         }
 
