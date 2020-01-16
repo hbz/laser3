@@ -1,6 +1,8 @@
 ## temporary change log
 
 **Ticket    Date    Branch      Author  Feature/Bug     Description/Keywords**
+2036    15.01.2020  hbz-dev     Andreas Feature     Infotexte für Fehlermeldung eingefügt
+
 --      15.01.2020  rc1.2       Andreas Bug         Sync-Zeitstempel wird nicht mehr auf 0 gesetzt, wenn keine Änderungen vorliegen
 
 2059    14.01.2020  rc1.2       Andreas Bug         Feld Haushaltsjahr im Export nachgetragen
