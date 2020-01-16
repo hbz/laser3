@@ -40,7 +40,6 @@
                     %{--COPY:--}%
                     <td class="center aligned">
                         <g:each in="${sourceIdentifiers}" var="ident">
-                            <g:if test="${ident.ns?.isUnique}">unique</g:if>
                             <div data-id="${ident.id}" class="la-element">
                                 <div class="ui checkbox la-toggle-radio la-replace">
                                     <g:checkBox name="subscription.takeIdentifierIds" value="${ident.id}" data-action="copy"  />

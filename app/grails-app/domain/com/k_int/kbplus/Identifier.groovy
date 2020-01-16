@@ -1,7 +1,11 @@
 package com.k_int.kbplus
 
+import com.sun.xml.internal.ws.commons.xmlutil.Converter
+import grails.util.Holders
 import org.apache.commons.logging.Log
 import org.apache.commons.logging.LogFactory
+import org.codehaus.groovy.tools.shell.util.MessageSource
+
 import javax.persistence.Transient
 
 class Identifier {
@@ -70,12 +74,18 @@ class Identifier {
     }
 
     static Identifier construct(Map<String, Object> map) {
+        return construct(map, null)
+    }
+    static Identifier construct(Map<String, Object> map, def flash) {
+        def messageSource = Holders.grailsApplication.mainContext.getBean('messageSource')
+        Locale locale = org.springframework.context.i18n.LocaleContextHolder.getLocale()
+        boolean isAddFlash = messageSource && locale && flash
 
         String value        = map.get('value')
         Object reference    = map.get('reference')
         def namespace       = map.get('namespace')
 
-		IdentifierNamespace ns
+        com.k_int.kbplus.IdentifierNamespace ns
 		if (namespace instanceof IdentifierNamespace) {
 			ns = namespace
 		}
@@ -88,6 +98,7 @@ class Identifier {
 			}
 		}
 
+        Object[] args = [ns.ns, value]
         String attr = Identifier.getAttributeName(reference)
 
         def ident = Identifier.executeQuery(
@@ -95,6 +106,9 @@ class Identifier {
                 [val: value, ns: ns, ref: reference]
 
         )
+        if (isAddFlash && ident){
+            flash.error += messageSource.getMessage('identifier.create.err.already.exist', args, locale)
+        }
         if (! ident.isEmpty()) {
             if (ident.size() > 1) {
                 static_logger.debug("WARNING: multiple matches found for ( ${value}, ${ns}, ${reference} )")
@@ -105,12 +119,19 @@ class Identifier {
         if (! ident) {
 			if (ns.isUnique && Identifier.findByNsAndValue(ns, value)) {
                 static_logger.debug("NO IDENTIFIER CREATED: multiple occurrences found for unique namespace ( ${value}, ${ns} )")
-			}
-			else {
+                if (isAddFlash) {
+                    flash.error += messageSource.getMessage( 'identifier.create.err.unique.ns',  args, locale)
+                }
+			} else {
                 static_logger.debug("INFO: no match found; creating new identifier for ( ${value}, ${ns}, ${reference.class} )")
 				ident = new Identifier(ns: ns, value: value)
 				ident.setReference(reference)
-				ident.save()
+				boolean success = ident.save()
+                if (success){
+                    if (isAddFlash) flash.message += messageSource.getMessage('identifier.create.success', args, locale)
+                } else {
+                    if (isAddFlash) flash.error += messageSource.getMessage('identifier.create.err', args, locale)
+                }
 			}
         }
 

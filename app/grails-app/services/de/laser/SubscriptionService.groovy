@@ -11,6 +11,7 @@ import de.laser.domain.IssueEntitlementCoverage
 import de.laser.domain.PriceItem
 import de.laser.exceptions.EntitlementCreationException
 import de.laser.helper.DebugAnnotation
+import org.codehaus.groovy.tools.shell.util.MessageSource
 import org.springframework.web.multipart.commons.CommonsMultipartFile
 import de.laser.helper.RDStore
 import com.k_int.kbplus.Identifier
@@ -681,23 +682,16 @@ class SubscriptionService {
             String value = sourceIdentifier.value
 
             if (ownerSub && namespace && value) {
-                Identifier.construct([value: value, reference: ownerSub, namespace: namespace])
+                Identifier.construct([value: value, reference: ownerSub, namespace: namespace], flash)
             }
         }
     }
 
-    void deleteIdentifiers(List<String> toDeleteTasks, Subscription newSub, def flash) {
-        toDeleteTasks.each { identifierId ->
-            def ownerSub = newSub
-            def identifier = Identifier.get(identifierId)
-
-            if (owner && identifier) {
-                if (identifier."${Identifier.getAttributeName(ownerSub)}"?.id == ownerSub.id) {
-                    log.debug("Identifier deleted: ${identifierId}")
-                    identifier.delete()
-                }
-            }
-        }
+    void deleteIdentifiers(List<String> toDeleteIdentifiers, Subscription newSub, def flash) {
+        int countDeleted = Identifier.executeUpdate('delete from Identifier i where i.id in (:toDeleteIdentifiers) and i.sub = :sub',
+        [toDeleteIdentifiers: toDeleteIdentifiers, sub: newSub])
+        Object[] args = [countDeleted]
+        flash.message += messageSource.getMessage('identifier.delete.success', args, locale)
     }
 
     def deleteDocs(List<Long> toDeleteDocs, Subscription targetSub, def flash) {

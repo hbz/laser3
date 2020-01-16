@@ -4778,7 +4778,7 @@ class SubscriptionController extends AbstractDebugController {
         if (params?.subscription?.deleteIdentifierIds && isBothSubscriptionsSet(baseSub, newSub)) {
             def toDeleteIdentifiers =  []
             params.list('subscription.deleteIdentifierIds').each{ identifier -> toDeleteIdentifiers << Long.valueOf(identifier) }
-            subscriptionService.deleteIdentifiers(toDeleteTasks, newSub, flash)
+            subscriptionService.deleteIdentifiers(toDeleteIdentifiers, newSub, flash)
             isTargetSubChanged = true
         }
 
@@ -4793,6 +4793,7 @@ class SubscriptionController extends AbstractDebugController {
             newSub = newSub.refresh()
         }
 
+        result.flash = flash
         result.sourceSubscription = baseSub
         result.targetSubscription = newSub
         result
@@ -4809,13 +4810,19 @@ class SubscriptionController extends AbstractDebugController {
         result.sourceSubscription = baseSub
         result.targetSubscription = newSub
         result.sourceIdentifiers = baseSub.ids?.sort { x, y ->
-            if (x.ns?.ns.toLowerCase() == y.ns?.ns.toLowerCase()){
+            if (x.ns?.ns?.toLowerCase() == y.ns?.ns?.toLowerCase()){
                 x.value <=> y.value
             } else {
-                x.ns?.ns.toLowerCase() <=> y.ns?.ns.toLowerCase()
+                x.ns?.ns?.toLowerCase() <=> y.ns?.ns?.toLowerCase()
             }
         }
-        result.targetIdentifiers = newSub.ids?.sort { it?.ns?.ns?.toLowerCase()+it.value }
+        result.targetIdentifiers = newSub?.ids?.sort { x, y ->
+            if (x.ns?.ns?.toLowerCase() == y.ns?.ns?.toLowerCase()){
+                x.value <=> y.value
+            } else {
+                x.ns?.ns?.toLowerCase() <=> y.ns?.ns?.toLowerCase()
+            }
+        }
         result
     }
 
