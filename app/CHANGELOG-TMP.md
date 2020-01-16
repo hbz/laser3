@@ -2,6 +2,8 @@
 
 **Ticket    Date    Branch      Author  Feature/Bug     Description/Keywords**
 
+2020    16.01.2020  hbz-dev     David   Feature     Refactoring: Factory für PropertyDefinition
+
 --      13.01.2020  rc1.2       Moe     Bug         Übersetzungsänderung
 
 2050    13.01.2020  rc1.2       Andreas Bug         Namensausgabe und Sortierung von Kindlizenzen bei Kosten hinzufügen eingefügt
