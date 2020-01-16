@@ -2,6 +2,7 @@ package com.k_int.kbplus
 
 import com.k_int.kbplus.auth.User
 import com.k_int.properties.PropertyDefinition
+import de.laser.SubscriptionService
 import de.laser.domain.IssueEntitlementCoverage
 import de.laser.helper.RDStore
 import de.laser.interfaces.AbstractLockableService
@@ -16,10 +17,12 @@ class PendingChangeService extends AbstractLockableService {
     def genericOIDService
     def grailsApplication
     def springSecurityService
+    SubscriptionService subscriptionService
 
     final static EVENT_OBJECT_NEW = 'New Object'
     final static EVENT_OBJECT_UPDATE = 'Update Object'
 
+    final static EVENT_TIPP_ADD = 'TIPPAdd'
     final static EVENT_TIPP_EDIT = 'TIPPEdit'
     final static EVENT_TIPP_DELETE = 'TIPPDeleted'
 
@@ -80,7 +83,13 @@ class PendingChangeService extends AbstractLockableService {
                             }
 
                         }
-                        break;
+                        break
+                    case EVENT_TIPP_ADD :
+                        TitleInstancePackagePlatform underlyingTIPP = genericOIDService.resolveOID(payload.changeDoc.OID)
+                        Subscription subConcerned = pendingChange.subscription
+                        subscriptionService.addEntitlement(subConcerned,underlyingTIPP.gokbId,null,false,RDStore.IE_ACCEPT_STATUS_FIXED)
+                        saveWithoutError = true
+                        break
 
                     case EVENT_PROPERTY_CHANGE :  // Generic property change
                         if ( ( payload.changeTarget != null ) && ( payload.changeTarget.length() > 0 ) ) {
@@ -159,10 +168,13 @@ class PendingChangeService extends AbstractLockableService {
                                 payload.changeDoc?.accessEndDate = ((payload.changeDoc?.accessEndDate != null) && (payload.changeDoc?.accessEndDate.length() > 0)) ? sdf.parse(payload.changeDoc?.accessEndDate) : null
                             }
 
+
                             DataBindingUtils.bindObjectToInstance(new_instance, payload.changeDoc)
-                            if(new_instance.save())
-                            {
+                            if(new_instance.save()) {
                                 saveWithoutError = true
+                            }
+                            else {
+                                log.error(new_instance.errors)
                             }
                         }
                         break;
