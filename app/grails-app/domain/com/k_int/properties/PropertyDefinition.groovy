@@ -181,9 +181,9 @@ class PropertyDefinition extends AbstractI10nTranslatable implements Serializabl
         boolean multiple    = new Boolean( map.get('multiple') )
         boolean logic       = new Boolean( map.get('logic') )
         Org tenant          = map.get('tenant') ? Org.findByShortname(map.get('tenant')) : null
-        Map i10n            = map.get('i10n')
-        // Map descr           = map.get('descr') // TODO implement
-        Map expl            = map.get('expl')
+        Map i10n            = map.get('i10n')  ?: [de: token, en: token]
+        Map descr           = map.get('descr') ?: [de: category, en: category]
+        Map expl            = map.get('expl')  ?: [de: null, en: null]
 
         typeIsValid(type)
 
@@ -218,10 +218,8 @@ class PropertyDefinition extends AbstractI10nTranslatable implements Serializabl
         pd.save(flush: true)
 
         I10nTranslation.createOrUpdateI10n(pd, 'name', i10n)
-        //I10nTranslation.createOrUpdateI10n(pd, 'descr', descr) // TODO implement
+        I10nTranslation.createOrUpdateI10n(pd, 'descr', descr)
         I10nTranslation.createOrUpdateI10n(pd, 'expl', expl)
-
-        I10nTranslation.createOrUpdateI10n(pd, 'descr', [de: pd.descr, en: pd.descr]) // TODO remove
 
         pd
     }
