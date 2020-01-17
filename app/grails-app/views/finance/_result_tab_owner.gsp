@@ -1,5 +1,5 @@
 <!-- _result_tab_owner.gsp -->
-<%@page import="de.laser.helper.RDStore"%>
+<%@page import="de.laser.helper.RDStore;com.k_int.kbplus.CostItem"%>
 <laser:serviceInjection />
 
 <table id="costTable_${i}" data-queryMode="${i}" class="ui celled sortable table table-tworow la-table la-ignore-fixed">
@@ -109,12 +109,24 @@
                     <td>
                         <g:formatNumber number="${ci.costInBillingCurrency ?: 0.0}" type="currency" currencyCode="${ci.billingCurrency ?: 'EUR'}"/>
                         <br />
-                        <g:formatNumber number="${ci.costInBillingCurrencyAfterTax ?: 0.0}" type="currency" currencyCode="${ci.billingCurrency ?: 'EUR'}"/>  (${ci.taxKey ? "${ci.taxKey.taxRate}%" : message(code:'financials.taxRate.notSet')})
+                        <g:formatNumber number="${ci.costInBillingCurrencyAfterTax ?: 0.0}" type="currency" currencyCode="${ci.billingCurrency ?: 'EUR'}"/>
+                        <g:if test="${ci.taxKey && ci.taxKey.display}">
+                            (${ci.taxRate ?: 0}%)
+                        </g:if>
+                        <g:elseif test="${ci.taxKey == CostItem.TAX_TYPES.TAX_REVERSE_CHARGE}">
+                            (${RDStore.TAX_REVERSE_CHARGE.getI10n("value")})
+                        </g:elseif>
                     </td>
                     <td>
                         <g:formatNumber number="${ci.costInLocalCurrency}" type="currency" currencyCode="EUR" />
                         <br />
-                        <g:formatNumber number="${ci.costInLocalCurrencyAfterTax ?: 0.0}" type="currency" currencyCode="EUR" />  (${ci.taxKey ? "${ci.taxKey.taxRate}%" : message(code:'financials.taxRate.notSet')})
+                        <g:formatNumber number="${ci.costInLocalCurrencyAfterTax ?: 0.0}" type="currency" currencyCode="EUR" />
+                        <g:if test="${ci.taxKey && ci.taxKey.display}">
+                            (${ci.taxRate ?: 0}%)
+                        </g:if>
+                        <g:elseif test="${ci.taxKey == CostItem.TAX_TYPES.TAX_REVERSE_CHARGE}">
+                            (${RDStore.TAX_REVERSE_CHARGE.getI10n("value")})
+                        </g:elseif>
                     </td>
                     <td>
                         <semui:xEditableRefData config="CostItemStatus" emptytext="${message(code:'default.button.edit.label')}" owner="${ci}" field="costItemStatus" />
