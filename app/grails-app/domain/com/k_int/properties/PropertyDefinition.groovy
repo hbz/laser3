@@ -252,6 +252,7 @@ class PropertyDefinition extends AbstractI10nTranslatable implements Serializabl
         }
         else {
             static_logger.debug("WARNING: multiple matches found ( ${name}, ${descr}, ${tenant.id} )")
+            return result[0]
         }
     }
 

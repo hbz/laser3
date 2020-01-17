@@ -100,7 +100,7 @@ class PublicController {
                 query += "    )"
                 query += " ))"
 
-                queryParams.put('gascoAnzeigenname', PropertyDefinition.findByDescrAndName(PropertyDefinition.SUB_PROP, 'GASCO display name'))
+                queryParams.put('gascoAnzeigenname', PropertyDefinition.getByNameAndDescr('GASCO display name', PropertyDefinition.SUB_PROP))
                 queryParams.put('q', q)
             }
 
@@ -228,7 +228,7 @@ class PublicController {
             def pkg = sp?.pkg
             def scp = SubscriptionCustomProperty.findByOwnerAndTypeAndRefValue(
                     sub,
-                    PropertyDefinition.findByDescrAndName('Subscription Property', 'GASCO Entry'),
+                    PropertyDefinition.getByNameAndDescr('GASCO Entry', 'Subscription Property'),
                     RDStore.YN_YES
             )
 

@@ -1261,7 +1261,7 @@ class AjaxController {
                             category    : params.cust_prop_desc,
                             type        : params.cust_prop_type,
                             rdc         : RefdataCategory.get(params.refdatacategory)?.getDesc(),
-                            multiple    : params.cust_prop_multiple_occurence,
+                            multiple    : (params.cust_prop_multiple_occurence == 'on'),
                             i10n        : [de: params.cust_prop_name, en: params.cust_prop_name],
                             expl        : [de: params.cust_prop_expl, en: params.cust_prop_expl]
                     ]
@@ -1277,7 +1277,7 @@ class AjaxController {
                             token       : params.cust_prop_name,
                             category    : params.cust_prop_desc,
                             type        : params.cust_prop_type,
-                            multiple    : params.cust_prop_multiple_occurence,
+                            multiple    : (params.cust_prop_multiple_occurence == 'on'),
                             i10n        : [de: params.cust_prop_name, en: params.cust_prop_name],
                             expl        : [de: params.cust_prop_expl, en: params.cust_prop_expl]
                     ]
