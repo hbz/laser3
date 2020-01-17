@@ -6,6 +6,7 @@ import com.k_int.properties.PropertyDefinition
 import de.laser.CacheService
 import de.laser.api.v0.ApiReader
 import de.laser.api.v0.ApiToolkit
+import de.laser.helper.EhcacheWrapper
 import grails.converters.JSON
 import groovy.util.logging.Log4j
 
@@ -84,7 +85,7 @@ class ApiCatalogue {
     static Collection<Object> retrieveRefdataCollection(){
         CacheService cacheService = grails.util.Holders.applicationContext.getBean('cacheService') as CacheService
 
-        def cache = cacheService.getTTL1800Cache('ApiReader/exportRefdatas')
+        EhcacheWrapper cache = cacheService.getTTL1800Cache('ApiReader/exportRefdatas')
         def result = []
 
         if (cache.get('refdatas')) {

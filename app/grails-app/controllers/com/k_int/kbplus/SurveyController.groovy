@@ -2189,7 +2189,7 @@ class SurveyController {
         }
 
         result.parentSubscription = result.surveyConfig?.subscription
-        result.parentSubChilds = subscriptionService.getCurrentValidSubChilds(result.parentSubscription)
+        result.parentSubChilds = subscriptionService.getValidSubChilds(result.parentSubscription)
         result.parentSuccessorSubscription = result.surveyConfig?.subscription?.getCalculatedSuccessor()
         result.parentSuccessorSubChilds = result.parentSuccessorSubscription ? subscriptionService.getValidSubChilds(result.parentSuccessorSubscription) : null
 
@@ -2221,7 +2221,7 @@ class SurveyController {
         def orgsWithMultiYearTermOrgsID = []
         def orgsLateCommersOrgsID = []
         result.parentSubChilds?.each { sub ->
-            if (sub?.isCurrentMultiYearSubscription())
+            if (sub?.isCurrentMultiYearSubscriptionNew())
             {
                 result.orgsWithMultiYearTermSub << sub
                 sub?.getAllSubscribers()?.each { org ->
@@ -3154,6 +3154,9 @@ class SurveyController {
                     case RefdataValue.getByValueAndCategory("not applicable", "TaxType").id:
                         tax_key = CostItem.TAX_TYPES.TAX_NOT_APPLICABLE
                         break
+                    case RefdataValue.getByValueAndCategory("reverse charge", "TaxType").id:
+                        tax_key = CostItem.TAX_TYPES.TAX_REVERSE_CHARGE
+                        break
                 }
             }
             def cost_item_element_configuration = params.ciec ? genericOIDService.resolveOID(params.ciec) : null
@@ -3293,7 +3296,7 @@ class SurveyController {
         }
 
         result.parentSubscription = result.surveyConfig?.subscription
-        result.parentSubChilds = subscriptionService.getCurrentValidSubChilds(result.parentSubscription)
+        result.parentSubChilds = subscriptionService.getValidSubChilds(result.parentSubscription)
         result.parentSuccessorSubscription = result.surveyConfig?.subscription?.getCalculatedSuccessor()
         result.parentSuccessorSubChilds = result.parentSuccessorSubscription ? subscriptionService.getValidSubChilds(result.parentSuccessorSubscription) : null
 
@@ -3649,7 +3652,7 @@ class SurveyController {
         }
 
         result.parentSubscription = result.surveyConfig?.subscription
-        result.parentSubChilds = subscriptionService.getCurrentValidSubChilds(result.parentSubscription)
+        result.parentSubChilds = subscriptionService.getValidSubChilds(result.parentSubscription)
         result.parentSuccessorSubscription = result.surveyConfig?.subscription?.getCalculatedSuccessor()
         result.parentSuccessorSubChilds = result.parentSuccessorSubscription ? subscriptionService.getValidSubChilds(result.parentSuccessorSubscription) : null
 
@@ -4023,7 +4026,7 @@ class SurveyController {
                         def subChild = sub?.getDerivedSubscriptionBySubscribers(org)
                         def property = PropertyDefinition.findByName("Perennial term checked")
 
-                        if (subChild?.isCurrentMultiYearSubscription()) {
+                        if (subChild?.isCurrentMultiYearSubscriptionNew()) {
                             existsMultiYearTerm = true
                         }
 
