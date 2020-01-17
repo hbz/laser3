@@ -318,6 +318,10 @@
     $(document).ready(function () {
         $('#finishProcess').progress();
     });
+
+    $(document).ready(function () {
+        $('#finishProcess2').progress();
+    });
 </r:script>
 
 </body>
