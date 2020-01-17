@@ -748,7 +748,7 @@ class OrganisationService {
                              resource: RefdataValue.getByValueAndCategory('ejournalPackage','Subscription Resource')],
                 addParams: [packages:[[pkg: Package.findByGlobalUID('package:b108178b-f27c-455d-9061-c8837905dc65')]], //check
                             provider:generalData.exampleOrgs.get('Musteranbieter E-Journals'),
-                            customProperties:[[type:PropertyDefinition.getByNameAndDescr('DBIS-Link', PropertyDefinition.SUB_PROP).id,urlValue:'https://dbis..de']]
+                            customProperties:[[type:PropertyDefinition.getByNameAndDescr('DBIS link', PropertyDefinition.SUB_PROP).id,urlValue:'https://dbis..de']]
                 ]
         ]
         Map currentJournalPaketParams = [
@@ -808,8 +808,8 @@ class OrganisationService {
                                      costItemElementConfiguration: RDStore.CIEC_POSITIVE]
                             ],
                             customProperties: [
-                                    [type:PropertyDefinition.getByNameAndDescr('DBIS-Link', PropertyDefinition.SUB_PROP).id,urlValue:'http://dbis.uni-regensburg.de/...'],
-                                    [type:PropertyDefinition.getByNameAndDescr('Statistik', PropertyDefinition.SUB_PROP).id,stringValue:'Counter 4'],
+                                    [type:PropertyDefinition.getByNameAndDescr('DBIS link', PropertyDefinition.SUB_PROP).id,urlValue:'http://dbis.uni-regensburg.de/...'],
+                                    [type:PropertyDefinition.getByNameAndDescr('Statistic', PropertyDefinition.SUB_PROP).id,stringValue:'Counter 4'],
                                     [type:PropertyDefinition.getByNameAndDescr('Statistics Link', PropertyDefinition.SUB_PROP).id,urlValue:'http://www.123.de']
                             ]
                 ]

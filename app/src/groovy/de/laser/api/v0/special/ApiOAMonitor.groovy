@@ -4,6 +4,7 @@ import com.k_int.kbplus.Org
 import com.k_int.kbplus.OrgRole
 import com.k_int.kbplus.OrgSettings
 import com.k_int.kbplus.RefdataValue
+import com.k_int.kbplus.Subscription
 import de.laser.api.v0.ApiCollectionReader
 import de.laser.api.v0.ApiReader
 import de.laser.api.v0.ApiToolkit
@@ -17,23 +18,15 @@ import org.codehaus.groovy.grails.orm.hibernate.cfg.GrailsHibernateUtil
 @Log4j
 class ApiOAMonitor {
 
-    static boolean calculateAccess(Org result, Org context, boolean hasAccess) {
+    static boolean calculateAccess(Org org) {
 
-        // context is ignored due hasAccess = accessDueDatamanager
-        // maybe changed later into a lesser accessRole like API_LEVEL_OA2020
-
-        if (! hasAccess) {
-            def resultSetting = OrgSettings.get(result, OrgSettings.KEYS.OAMONITOR_SERVER_ACCESS)
-
-            if (resultSetting != OrgSettings.SETTING_NOT_FOUND && resultSetting.getValue()?.value == 'Yes') {
-                hasAccess = true
-            }
-            else {
-                hasAccess = false
-            }
+        def resultSetting = OrgSettings.get(org, OrgSettings.KEYS.OAMONITOR_SERVER_ACCESS)
+        if (resultSetting != OrgSettings.SETTING_NOT_FOUND && resultSetting.getValue()?.value == 'Yes') {
+            return true
         }
-
-        hasAccess
+        else {
+            return false
+        }
     }
 
     static private List<Org> getAccessibleOrgs() {
@@ -50,29 +43,27 @@ class ApiOAMonitor {
     }
 
     /**
-     * @return JSON | FORBIDDEN
+     * Access checked via ApiManager.read()
+     * @return JSON
      */
-    static getAllOrgs(boolean hasAccess) {
+    static JSON getAllOrgs() {
         Collection<Object> result = []
 
-        if (hasAccess) {
-            List<Org> orgs = getAccessibleOrgs()
-
-            orgs.each { o ->
-                result << ApiStubReader.retrieveOrganisationStubMap(o, o)
-            }
+        List<Org> orgs = getAccessibleOrgs()
+        orgs.each { o ->
+            result << ApiStubReader.retrieveOrganisationStubMap(o, o)
         }
 
-        return (hasAccess ? new JSON(result) : Constants.HTTP_FORBIDDEN)
+        return new JSON(result)
     }
 
     /**
      * @return JSON | FORBIDDEN
      */
-    static getOrganisation(Org org, Org context, boolean hasAccess) {
+    static getOrganisation(Org org, Org context) {
         Map<String, Object> result = [:]
-        hasAccess = calculateAccess(org, context, hasAccess)
 
+        boolean hasAccess = calculateAccess(org)
         if (hasAccess) {
 
             org = GrailsHibernateUtil.unwrapIfProxy(org)
@@ -128,11 +119,14 @@ class ApiOAMonitor {
 
         Collection<Object> result = []
 
-        OrgRole.executeQuery(
+        List<Subscription> tmp = OrgRole.executeQuery(
                 'select distinct(oo.sub) from OrgRole oo where oo.roleType in (:roleTypes)',
                 [roleTypes: [RDStore.OR_SUBSCRIPTION_CONSORTIA, RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER]]
-        ).each { sub ->
-            result.add(ApiStubReader.requestSubscriptionStub(sub, org, true))
+        )
+        log.debug ("found ${tmp.size()} subscriptions .. processing")
+
+        tmp.each { sub ->
+            result.add(ApiStubReader.requestSubscriptionStub(sub, org))
         }
 
         result = ApiToolkit.cleanUp(result, true, true)
