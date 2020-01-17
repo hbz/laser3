@@ -1951,7 +1951,7 @@ class SubscriptionController extends AbstractDebugController {
 
         if(params.tab == 'providerAgency') {
 
-            result.modalPrsLinkRole = RefdataValue.findByValue('Specific subscription editor')
+            result.modalPrsLinkRole = RefdataValue.getByValueAndCategory('Specific subscription editor', 'Person Responsibility')
             result.modalVisiblePersons = addressbookService.getPrivatePersonsByTenant(contextService.getOrg())
             result.visibleOrgRelations = []
             result.parentSub.orgRelations?.each { or ->
@@ -3669,7 +3669,7 @@ class SubscriptionController extends AbstractDebugController {
 
             // -- private properties
 
-            result.modalPrsLinkRole = RefdataValue.findByValue('Specific subscription editor')
+            result.modalPrsLinkRole = RefdataValue.getByValueAndCategory('Specific subscription editor', 'Person Responsibility')
             result.modalVisiblePersons = addressbookService.getPrivatePersonsByTenant(contextService.getOrg())
 
             result.visiblePrsLinks = []
@@ -4332,7 +4332,7 @@ class SubscriptionController extends AbstractDebugController {
             result.visibleOrgRelations.sort { it.org.sortname }
             result.visibleOrgRelations =  subscriptionService.getVisibleOrgRelations(result.subscriptionInstance)
 
-            result.modalPrsLinkRole = RefdataValue.findByValue('Specific subscription editor')
+            result.modalPrsLinkRole = RefdataValue.getByValueAndCategory('Specific subscription editor', 'Person Responsibility')
             result.modalVisiblePersons = addressbookService.getPrivatePersonsByTenant(contextService.getOrg())
 
             result.visiblePrsLinks = []
@@ -4961,7 +4961,7 @@ class SubscriptionController extends AbstractDebugController {
 
         // -- private properties
 
-        result.modalPrsLinkRole = RefdataValue.findByValue('Specific subscription editor')
+        result.modalPrsLinkRole = RefdataValue.getByValueAndCategory('Specific subscription editor', 'Person Responsibility')
         result.modalVisiblePersons = addressbookService.getPrivatePersonsByTenant(contextService.getOrg())
 
         result.visiblePrsLinks = []

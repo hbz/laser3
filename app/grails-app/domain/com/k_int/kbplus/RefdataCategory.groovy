@@ -146,15 +146,10 @@ class RefdataCategory extends AbstractI10nOverride {
    * @return ArrayList
    */
   static List<RefdataValue> getAllRefdataValues(category_name) {
-      //println("RefdataCategory.getAllRefdataValues(" + category_name + ")")
-//      RefdataValue.findAllByOwner( RefdataCategory.findByDesc(category_name)).sort{a,b -> a.getI10n('value').compareToIgnoreCase b.getI10n('value')}
-      String i10value = LocaleContextHolder.getLocale().getLanguage() == Locale.GERMAN.getLanguage() ? 'valueDe' : 'valueEn'
+      String i10value = LocaleContextHolder.getLocale().getLanguage() == Locale.GERMAN.getLanguage() ? 'value_de' : 'value_en'
 
-      RefdataValue.executeQuery("""select rdv from RefdataValue as rdv, RefdataCategory as rdc, I10nTranslation as i10n
-               where rdv.owner = rdc and rdc.desc = ? 
-               and i10n.referenceId = rdv.id 
-               and i10n.referenceClass = 'com.k_int.kbplus.RefdataValue' and i10n.referenceField = 'value'
-               order by i10n.${i10value}"""
+      RefdataValue.executeQuery(
+              "select rdv from RefdataValue as rdv, RefdataCategory as rdc where rdv.owner = rdc and rdc.desc = ? order by rdv.${i10value}"
               , ["${category_name}"] )
   }
 

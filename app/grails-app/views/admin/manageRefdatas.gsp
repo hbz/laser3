@@ -108,7 +108,7 @@ ${usedRdvList.join(", ")}
                                     </td>
                                     <td>
                                         <g:if test="${!rdv.isHardData && SpringSecurityUtils.ifAnyGranted('ROLE_YODA')}">
-                                            <semui:xEditable owner="${I10nTranslation.createI10nOnTheFly(rdv, 'value')}" field="valueDe" />
+                                            <semui:xEditable owner="${rdv}" field="value_de" />
                                         </g:if>
                                         <g:else>
                                             ${rdv.getI10n('value', 'de')}
@@ -116,7 +116,7 @@ ${usedRdvList.join(", ")}
                                     </td>
                                     <td>
                                         <g:if test="${!rdv.isHardData && SpringSecurityUtils.ifAnyGranted('ROLE_YODA')}">
-                                            <semui:xEditable owner="${I10nTranslation.createI10nOnTheFly(rdv, 'value')}" field="valueEn" />
+                                            <semui:xEditable owner="${rdv}" field="value_en" />
                                         </g:if>
                                         <g:else>
                                             ${rdv.getI10n('value', 'en')}

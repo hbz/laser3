@@ -6,6 +6,7 @@ import com.k_int.properties.PropertyDefinition
 import com.k_int.properties.PropertyDefinitionGroup
 import com.k_int.properties.PropertyDefinitionGroupBinding
 import de.laser.AuditConfig
+import de.laser.domain.AbstractI10nOverride
 import de.laser.domain.AbstractI10nTranslatable
 import de.laser.domain.SystemProfiler
 import de.laser.helper.DebugAnnotation
@@ -594,6 +595,9 @@ class AjaxController {
             if ( it instanceof AbstractI10nTranslatable) {
                 result.add([value:"${rowobj.class.name}:${rowobj.id}", text:"${it.getI10n(config.cols[0])}"])
             }
+            else if ( it instanceof AbstractI10nOverride) {
+                result.add([value:"${rowobj.class.name}:${rowobj.id}", text:"${it.getI10n(config.cols[0])}"])
+            }
             else {
                 def objTest = rowobj[config.cols[0]]
                 if (objTest) {
@@ -739,6 +743,9 @@ class AjaxController {
           // default ..
           else {
               if (it instanceof AbstractI10nTranslatable) {
+                  result.add([value: "${rowobj.class.name}:${rowobj.id}", text: "${it.getI10n(config.cols[0])}"])
+              }
+              else if (it instanceof AbstractI10nOverride) {
                   result.add([value: "${rowobj.class.name}:${rowobj.id}", text: "${it.getI10n(config.cols[0])}"])
               }
               else {
