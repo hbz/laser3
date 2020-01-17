@@ -1,8 +1,15 @@
 ## temporary change log
 
 **Ticket    Date    Branch      Author  Feature/Bug     Description/Keywords**
+--      16.01.2020  rc1.2       Andreas Bug         Neue TIPPs erzeugen nun auch Pending Changes
 
---      16.02.2020  rc1.2       David   Bug         Bugfix: Übersicht aktueller Cronjobs
+--      16.01.2020  rc1.2       Moe     Bug         Bugfix Survey Views, Audit by Properties, MultiYear Function
+    
+2024    16.01.2020  rc1.2       Moe     Bug         Abgelaufen (Mehrjahreslizenz) nicht umgesprungen bei Jahreswechsel
+
+--      16.01.2020  rc1.2       David   Bug         Bugfix: Übersicht aktueller Cronjobs
+
+--      16.01.2020  rc1.2       David   Bug         Bugfix: Übersicht aktueller Cronjobs
 
 2064    15.01.2020  rc1.2       Andreas Feature     Neuer Steuertyp Reverse Charge eingefügt und an Stellen eingebunden
 
