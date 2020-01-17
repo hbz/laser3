@@ -43,7 +43,7 @@
 							<dt><g:message code="address.additionSecond.label" default="additionSecond" /></dt>
 							<dd><semui:xEditable owner="${addressInstance}" field="additionSecond" /></dd>
 
-                            <dt>${RefdataCategory.findByDesc('AddressType').getI10n('desc')}</dt>
+                            <dt>${RefdataCategory.getByDesc('AddressType').getI10n('desc')}</dt>
                             <dd><semui:xEditableRefData owner="${addressInstance}" field="type" config="AddressType" /></dd>
 
                             <g:if test="${addressInstance?.prs}">

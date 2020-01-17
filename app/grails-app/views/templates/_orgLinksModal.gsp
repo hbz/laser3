@@ -25,14 +25,14 @@
             <g:if test="${linkType}">
                 <g:select name="orm_orgRole"
                       noSelection="${['':varSelectOne]}"
-                      from="${com.k_int.kbplus.RefdataValue.findAllByOwnerAndGroup(com.k_int.kbplus.RefdataCategory.findByDesc('Organisational Role'),linkType)}"
+                      from="${com.k_int.kbplus.RefdataValue.findAllByOwnerAndGroup(com.k_int.kbplus.RefdataCategory.getByDesc('Organisational Role'),linkType)}"
                       optionKey="id"
                       optionValue="${{it.getI10n('value')}}"/>
             </g:if>
             <g:else>
                 <g:select name="orm_orgRole"
                       noSelection="${['':varSelectOne]}"
-                      from="${com.k_int.kbplus.RefdataValue.findAllByOwner(com.k_int.kbplus.RefdataCategory.findByDesc('Organisational Role'))}"
+                      from="${com.k_int.kbplus.RefdataValue.findAllByOwner(com.k_int.kbplus.RefdataCategory.getByDesc('Organisational Role'))}"
                       optionKey="id"
                       optionValue="${{it.getI10n('value')}}"/>
             </g:else>

@@ -1588,7 +1588,7 @@ class AdminController extends AbstractDebugController {
 
                     List<String> pParts = params.xcgRdvGlobalTo.split(':')
                     if (pParts.size() == 2) {
-                        RefdataCategory rdvToCat = RefdataCategory.findByDesc(pParts[0].trim())
+                        RefdataCategory rdvToCat = RefdataCategory.getByDesc(pParts[0].trim())
                         RefdataValue rdvToRdv = RefdataValue.getByValueAndCategory(pParts[1].trim(), pParts[0].trim())
 
                         if (rdvToRdv && rdvToRdv.owner == rdvToCat ) {

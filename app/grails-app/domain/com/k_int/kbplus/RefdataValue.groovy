@@ -133,9 +133,14 @@ class RefdataValue extends AbstractI10nOverride implements Comparable<RefdataVal
         return null;
     }
 
+    static RefdataValue getByValue(String value) {
+
+        RefdataValue.findByValueIlike(value)
+    }
+
     static RefdataValue getByValueAndCategory(String value, String category) {
 
-        RefdataValue.findByValueAndOwner(value, RefdataCategory.findByDesc(category))
+        RefdataValue.findByValueIlikeAndOwner(value, RefdataCategory.findByDescIlike(category))
     }
 
     static RefdataValue getByCategoryDescAndI10nValueDe(String categoryName, String value) {

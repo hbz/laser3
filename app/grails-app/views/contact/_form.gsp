@@ -27,7 +27,7 @@
 
 <div class="field fieldcontain ${hasErrors(bean: contactInstance, field: 'type', 'error')} ">
 	<label for="type">
-		${com.k_int.kbplus.RefdataCategory.findByDesc('ContactType').getI10n('desc')}
+		${com.k_int.kbplus.RefdataCategory.getByDesc('ContactType').getI10n('desc')}
 		
 	</label>
 	<laser:select class="ui dropdown" id="type" name="type.id"

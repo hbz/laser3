@@ -62,7 +62,7 @@
             <tr>
                 <th>${message(code: 'default.status.label')}</th>
                 <td>
-                <g:set value="${com.k_int.kbplus.RefdataCategory.findByDesc('Subscription Status')}"
+                <g:set value="${com.k_int.kbplus.RefdataCategory.getByDesc('Subscription Status')}"
                        var="rdcSubStatus"/>
                 <g:select from="${com.k_int.kbplus.RefdataValue.findAllByOwner(rdcSubStatus)}" class="ui dropdown"
                           optionKey="id"

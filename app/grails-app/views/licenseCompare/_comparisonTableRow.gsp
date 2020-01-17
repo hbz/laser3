@@ -36,8 +36,8 @@
                                     case "class ${RefdataValue.class.name}":
                                         String spanOpen = '<span data-content="'+propValue.refValue.getI10n("value")+'">'
                                         switch(propValue.refValue.owner) {
-                                            case RefdataCategory.findByDesc("YN"):
-                                            case RefdataCategory.findByDesc("YNO"):
+                                            case RefdataCategory.getByDesc("YN"):
+                                            case RefdataCategory.getByDesc("YNO"):
                                                 switch(propValue.refValue) {
                                                     case RDStore.YN_YES:
                                                     case RDStore.YNO_YES: value = raw(spanOpen+'<i class="green thumbs up icon huge"></i></span>')
@@ -49,7 +49,7 @@
                                                         break
                                                 }
                                                 break
-                                            case RefdataCategory.findByDesc("Permissions"):
+                                            case RefdataCategory.getByDesc("Permissions"):
                                                 switch(propValue.refValue){
                                                     case RDStore.PERM_PERM_EXPL: value = raw(spanOpen+'<i class="green check circle icon huge"></i></span>')
                                                         break

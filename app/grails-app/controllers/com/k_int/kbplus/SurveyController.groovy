@@ -2005,7 +2005,7 @@ class SurveyController {
         def costItemElementConfigurations = []
         def orgConfigurations = []
 
-        def ciecs = RefdataValue.findAllByOwner(RefdataCategory.findByDesc('Cost configuration'))
+        def ciecs = RefdataValue.findAllByOwner(RefdataCategory.getByDesc('Cost configuration'))
         ciecs.each { ciec ->
             costItemElementConfigurations.add([id: ciec.class.name + ":" + ciec.id, value: ciec.getI10n('value')])
         }
@@ -2036,7 +2036,7 @@ class SurveyController {
         def costItemElementConfigurations = []
         def orgConfigurations = []
 
-        def ciecs = RefdataValue.findAllByOwner(RefdataCategory.findByDesc('Cost configuration'))
+        def ciecs = RefdataValue.findAllByOwner(RefdataCategory.getByDesc('Cost configuration'))
         ciecs.each { ciec ->
             costItemElementConfigurations.add([id: ciec.class.name + ":" + ciec.id, value: ciec.getI10n('value')])
         }
@@ -3535,7 +3535,7 @@ class SurveyController {
                             surveyProperty.name,
                             'Subscription Property',
                             surveyProperty.type,
-                            (surveyProperty.type == RefdataValue.toString()) ? RefdataCategory.findByDesc(surveyProperty.refdataCategory) : null,
+                            (surveyProperty.type == RefdataValue.toString()) ? RefdataCategory.getByDesc(surveyProperty.refdataCategory) : null,
                             surveyProperty.expl,
                             null,
                             PropertyDefinition.FALSE,

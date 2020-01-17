@@ -108,7 +108,7 @@ class RefdataCategory extends AbstractI10nOverride {
 
         if (! result) {
             new RefdataValue(owner:cat, value:value).save(flush:true);
-            result = RefdataValue.findByOwnerAndValue(cat, value);
+            result = RefdataValue.findByOwnerAndValueIlike(cat, value);
         }
 
         result.icon = icon
@@ -139,6 +139,11 @@ class RefdataCategory extends AbstractI10nOverride {
       result
   }
 
+    static RefdataCategory getByDesc(String desc) {
+
+        RefdataCategory.findByDescIlike(desc)
+    }
+
   /**
    * Returns a list containing category depending refdata_values.
    * 
@@ -154,7 +159,7 @@ class RefdataCategory extends AbstractI10nOverride {
   }
 
     static getAllRefdataValuesWithI10nExplanation(String category_name, Map sort) {
-        List<RefdataValue> refdatas = RefdataValue.findAllByOwner(RefdataCategory.findByDesc(category_name),sort)
+        List<RefdataValue> refdatas = RefdataValue.findAllByOwner(RefdataCategory.findByDescIlike(category_name),sort)
         return fetchData(refdatas)
     }
 

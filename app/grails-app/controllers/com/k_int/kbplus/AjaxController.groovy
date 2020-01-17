@@ -1216,7 +1216,7 @@ class AjaxController {
         def error
         def msg
 
-        def rdc = RefdataCategory.findByDesc(params.refdata_category)
+        def rdc = RefdataCategory.getByDesc(params.refdata_category)
         if (rdc) {
             error = message(code: 'refdataCategory.create_new.unique')
             log.debug(error)
