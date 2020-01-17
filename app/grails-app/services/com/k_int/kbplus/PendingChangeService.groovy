@@ -240,10 +240,10 @@ class PendingChangeService extends AbstractLockableService {
                         Map changeAttrs = payload.changeDoc
                         if(target) {
                             if(changeAttrs.prop in ['startDate','endDate']) {
-                                target[changeAttrs.prop] = sdf.parse(changeAttrs.new)
+                                target[changeAttrs.prop] = sdf.parse(changeAttrs.newValue)
                             }
                             else {
-                                target[changeAttrs.prop] = changeAttrs.new
+                                target[changeAttrs.prop] = changeAttrs.newValue
                             }
                             if(target.save()) {
                                 saveWithoutError = true

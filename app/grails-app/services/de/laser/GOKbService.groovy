@@ -176,6 +176,7 @@ class GOKbService {
 
     Map queryElasticsearch(String url){
         log.info("querying: " + url)
+        Map result = [:]
         def http = new HTTPBuilder(url)
 //         http.auth.basic user, pwd
         http.request(Method.GET) { req ->
@@ -185,17 +186,19 @@ class GOKbService {
                 log.debug("server:          ${resp.headers.'Server'}")
                 log.debug("content length:  ${resp.headers.'Content-Length'}")
                 if(resp.status < 400){
-                    return ['warning':html]
+                    result = ['warning':html]
                 }
                 else {
-                    return ['info':html]
+                    result = ['info':html]
                 }
             }
             response.failure = { resp ->
                 log.error("server response: ${resp.statusLine}")
-                return ['error':resp.statusLine]
+                result = ['error':resp.statusLine]
             }
         }
+        http.shutdown()
+        result
     }
 
     private String buildUri(final String stub, final String query, final String type, final String role, final Integer max) {

@@ -3179,24 +3179,31 @@ class SubscriptionController extends AbstractDebugController {
             GPathResult packageRecord = globalSourceSyncService.fetchRecord(source.uri,'packages',[verb:'GetRecord',metadataPrefix:'gokb',identifier:params.addUUID])
             executorService.submit({
                 Thread.currentThread().setName("PackageSync_"+result.subscriptionInstance?.id)
-                List<Map<String,Object>> tippsToNotify = globalSourceSyncService.createOrUpdatePackage(packageRecord.record.metadata.gokb.package)
-                globalSourceSyncService.cleanUpGorm()
-                Package pkgToLink = Package.findByGokbId(pkgUUID)
-                Set<Subscription> subInstances = Subscription.executeQuery("select s from Subscription as s where s.instanceOf = ? ", [result.subscriptionInstance])
-                println "Add package ${addType} entitlements to subscription ${result.subscriptionInstance}"
+                try {
+                    globalSourceSyncService.updateNonPackageData(packageRecord.record.metadata.gokb.package)
+                    List<Map<String,Object>> tippsToNotify = globalSourceSyncService.createOrUpdatePackage(packageRecord.record.metadata.gokb.package)
+                    globalSourceSyncService.notifyDependencies([tippsToNotify])
+                    globalSourceSyncService.cleanUpGorm()
+                    Package pkgToLink = Package.findByGokbId(pkgUUID)
+                    Set<Subscription> subInstances = Subscription.executeQuery("select s from Subscription as s where s.instanceOf = ? ", [result.subscriptionInstance])
+                    println "Add package ${addType} entitlements to subscription ${result.subscriptionInstance}"
+                    if (addType == 'With') {
+                        pkgToLink.addToSubscription(result.subscriptionInstance, true)
 
-                if (addType == 'With') {
-                    pkgToLink.addToSubscription(result.subscriptionInstance, true)
+                        subInstances.each {
+                            pkgToLink.addToSubscription(it, true)
+                        }
+                    } else if (addType == 'Without') {
+                        pkgToLink.addToSubscription(result.subscriptionInstance, false)
 
-                    subInstances.each {
-                        pkgToLink.addToSubscription(it, true)
+                        subInstances.each {
+                            pkgToLink.addToSubscription(it, false)
+                        }
                     }
-                } else if (addType == 'Without') {
-                    pkgToLink.addToSubscription(result.subscriptionInstance, false)
-
-                    subInstances.each {
-                        pkgToLink.addToSubscription(it, false)
-                    }
+                }
+                catch (Exception e) {
+                    log.error("sync job has failed, please consult stacktrace as follows: ")
+                    e.printStackTrace()
                 }
             } as Callable)
             switch(params.addType) {

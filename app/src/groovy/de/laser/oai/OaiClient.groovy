@@ -6,6 +6,7 @@ import groovyx.net.http.HTTPBuilder
 import static groovyx.net.http.ContentType.XML
 import static groovyx.net.http.Method.GET
 
+@Deprecated
 public class OaiClient {
 
   String host

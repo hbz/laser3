@@ -552,7 +552,7 @@ class YodaController {
         globalSourceSyncService.startSync()
         log.debug("done global sync ..")
 
-        redirect controller: 'home'
+        redirect controller: 'package'
     }
 
     @Secured(['ROLE_YODA'])

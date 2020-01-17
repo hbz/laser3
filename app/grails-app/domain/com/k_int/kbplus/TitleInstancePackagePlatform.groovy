@@ -229,6 +229,7 @@ class TitleInstancePackagePlatform extends AbstractBaseDomain /*implements Audit
   }
     */
 
+  /*
   void raisePendingChange(oldMap,newMap,cp) {
       def domain_class = grailsApplication.getArtefact('Domain','com.k_int.kbplus.TitleInstancePackagePlatform')
       def prop_info = domain_class.getPersistentProperty(cp)
@@ -253,6 +254,7 @@ class TitleInstancePackagePlatform extends AbstractBaseDomain /*implements Audit
               newLabel:newLabel
       ])
   }
+    */
 
     private String stringify(obj) {
       String result

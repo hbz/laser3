@@ -111,6 +111,7 @@ class YodaService {
                         return "package ${delTIPP.pkg.gokbId} inexistent"
                     else return record.'GetRecord'.record.metadata.gokb.package
                 }
+                http.shutdown()
                 if(packageRecord instanceof GString) {
                     /*
                         case: there is a TIPP in LAS:eR with an invalid GOKb package UUID, thus no record.

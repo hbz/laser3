@@ -1,5 +1,8 @@
 package de.laser.domain
 
+import org.springframework.context.MessageSource
+import org.springframework.context.i18n.LocaleContextHolder
+
 import javax.persistence.Transient
 
 abstract class AbstractCoverage {
@@ -82,4 +85,15 @@ abstract class AbstractCoverage {
         diffs
     }
 
+    AbstractCoverage findEquivalent(Collection<AbstractCoverage> list) {
+        AbstractCoverage equivalent
+        for (String k : controlledProperties) {
+            equivalent = list.find { it[k] == this[k] }
+            if (equivalent) {
+                println "Coverage statement ${equivalent.id} considered as equivalent to ${this.id}"
+                break
+            }
+        }
+        equivalent
+    }
 }

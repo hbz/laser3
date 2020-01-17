@@ -142,6 +142,7 @@ class DocstoreService {
         log.error("Error response from docstore(${docstore_uri}) ${resp}");
       }
     }
+    http.shutdown()
 
     result
   }

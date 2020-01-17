@@ -2,6 +2,7 @@ package com.k_int.kbplus
 
 import de.laser.EscapeService
 import de.laser.SystemEvent
+import de.laser.domain.IssueEntitlementCoverage
 import de.laser.domain.TIPPCoverage
 import de.laser.exceptions.SyncException
 import de.laser.helper.RDStore
@@ -12,9 +13,12 @@ import groovy.util.slurpersupport.NodeChildren
 import groovyx.net.http.HTTPBuilder
 import groovyx.net.http.HttpResponseException
 import org.codehaus.groovy.grails.plugins.DomainClassGrailsPlugin
+import org.codehaus.groovy.grails.web.mapping.LinkGenerator
 import org.codehaus.groovy.runtime.typehandling.GroovyCastException
 import org.hibernate.SessionFactory
 import org.hibernate.classic.Session
+import org.springframework.context.MessageSource
+import org.springframework.context.i18n.LocaleContextHolder
 
 import java.text.SimpleDateFormat
 import java.util.concurrent.Callable
@@ -28,6 +32,9 @@ class GlobalSourceSyncService extends AbstractLockableService {
     SessionFactory sessionFactory
     ExecutorService executorService
     EscapeService escapeService
+    ChangeNotificationService changeNotificationService
+    LinkGenerator grailsLinkGenerator
+    MessageSource messageSource
     def propertyInstanceMap = DomainClassGrailsPlugin.PROPERTY_INSTANCE_MAP
     GlobalRecordSource source
 
@@ -88,37 +95,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
                     }
                     GPathResult listOAI = fetchRecord(source.uri,'packages',queryParams)
                     if(listOAI) {
-                        List titleNodes = listOAI.'**'.findAll { node ->
-                            node.name() == "title"
-                        }
-                        Set<String> titlesToUpdate = []
-                        titleNodes.each { title ->
-                            titlesToUpdate << title.'@uuid'.text()
-                        }
-                        List platformNodes = listOAI.'**'.findAll { node ->
-                            node.name() in ["nominalPlatform","platform"]
-                        }
-                        Set<Map<String,String>> platformsToUpdate = []
-                        platformNodes.each { platform ->
-                            if(!platformsToUpdate.find { plat -> plat.platformUUID == platform.'@uuid'.text()})
-                                platformsToUpdate << [gokbId: platform.'@uuid'.text(),name: platform.name.text(),primaryUrl: platform.primaryUrl.text()]
-                        }
-                        List providerNodes = listOAI.'**'.findAll { node ->
-                            node.name() == "nominalProvider"
-                        }
-                        Set<String> providersToUpdate = []
-                        providerNodes.each { provider ->
-                            providersToUpdate << provider.'@uuid'.text()
-                        }
-                        titlesToUpdate.each { titleUUID ->
-                            createOrUpdateTitle(titleUUID)
-                        }
-                        platformsToUpdate.each { Map<String,String> platformParams ->
-                            createOrUpdatePlatform(platformParams)
-                        }
-                        providersToUpdate.each { providerUUID ->
-                            createOrUpdateProvider(providerUUID)
-                        }
+                        updateNonPackageData(listOAI)
                         listOAI.record.each { NodeChild r ->
                             //continue processing here, original code jumps back to GlobalSourceSyncService
                             log.info("got OAI record ${r.header.identifier} datestamp: ${r.header.datestamp} job: ${source.id} url: ${source.uri}")
@@ -145,10 +122,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
                     source.haveUpTo = new Date(maxTimestamp)
                     source.save()
                     log.info("all OAI info fetched, local records updated, notifying dependent entitlements ...")
-                    //if everything went well, we should have here the list of tipps to notify ... continue here!
-                    tippsToNotify.each { toNotify ->
-                        log.debug(toNotify)
-                    }
+                    notifyDependencies(tippsToNotify)
                 }
                 else {
                     log.info("all OAI info fetched, no records to update. Leaving timestamp as is ...")
@@ -163,6 +137,40 @@ class GlobalSourceSyncService extends AbstractLockableService {
             }
         }
         running = false
+    }
+
+    void updateNonPackageData(GPathResult oaiBranch) throws SyncException {
+        List titleNodes = oaiBranch.'**'.findAll { node ->
+            node.name() == "title"
+        }
+        Set<String> titlesToUpdate = []
+        titleNodes.each { title ->
+            titlesToUpdate << title.'@uuid'.text()
+        }
+        List platformNodes = oaiBranch.'**'.findAll { node ->
+            node.name() in ["nominalPlatform","platform"]
+        }
+        Set<Map<String,String>> platformsToUpdate = []
+        platformNodes.each { platform ->
+            if (!platformsToUpdate.find { plat -> plat.platformUUID == platform.'@uuid'.text() })
+                platformsToUpdate << [gokbId: platform.'@uuid'.text(), name: platform.name.text(), primaryUrl: platform.primaryUrl.text()]
+        }
+        List providerNodes = oaiBranch.'**'.findAll { node ->
+            node.name() == "nominalProvider"
+        }
+        Set<String> providersToUpdate = []
+        providerNodes.each { provider ->
+            providersToUpdate << provider.'@uuid'.text()
+        }
+        titlesToUpdate.each { titleUUID ->
+            createOrUpdateTitle(titleUUID)
+        }
+        platformsToUpdate.each { Map<String,String> platformParams ->
+            createOrUpdatePlatform(platformParams)
+        }
+        providersToUpdate.each { providerUUID ->
+            createOrUpdateProvider(providerUUID)
+        }
     }
 
     /**
@@ -273,7 +281,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
                                                             if(!covDiff.target.save())
                                                                 throw new SyncException("Error on adding coverage statement for TIPP ${tippA.gokbId}: ${covDiff.target.errors}")
                                                             break
-                                                        case 'deleted': covDiff.target.delete()
+                                                        case 'deleted': tippA.coverages.remove(covDiff.target)
                                                             break
                                                         case 'updated': covDiff.target[covDiff.field] = covDiff.newValue
                                                             if(!covDiff.target.save())
@@ -316,6 +324,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
                             else {
                                 //ex newTippClosure
                                 addNewTIPP(result,tippB)
+                                tippsToNotify << [event:'add',target:tippB]
                             }
                         }
                     }
@@ -435,13 +444,13 @@ class GlobalSourceSyncService extends AbstractLockableService {
                     switch(titleRecord.type.text()) {
                         case 'BookInstance': titleInstance = titleInstance ? (BookInstance) titleInstance : BookInstance.construct([gokbId:titleUUID])
                             titleInstance.editionNumber = titleRecord.editionNumber.text() ? Integer.parseInt(titleRecord.editionNumber.text()) : null
-                            titleInstance.editionDifferentiator = titleRecord.editionDifferentiator.text()
-                            titleInstance.editionStatement = titleRecord.editionStatement.text()
-                            titleInstance.volume = titleRecord.volumeNumber.text()
+                            titleInstance.editionDifferentiator = titleRecord.editionDifferentiator.text() ?: null
+                            titleInstance.editionStatement = titleRecord.editionStatement.text() ?: null
+                            titleInstance.volume = titleRecord.volumeNumber.text() ?: null
                             titleInstance.dateFirstInPrint = titleRecord.dateFirstInPrint ? escapeService.parseDate(titleRecord.dateFirstInPrint.text()) : null
                             titleInstance.dateFirstOnline = titleRecord.dateFirstOnline ? escapeService.parseDate(titleRecord.dateFirstOnline.text()) : null
-                            titleInstance.firstAuthor = titleRecord.firstAuthor.text()
-                            titleInstance.firstEditor = titleRecord.firstEditor.text()
+                            titleInstance.firstAuthor = titleRecord.firstAuthor.text() ?: null
+                            titleInstance.firstEditor = titleRecord.firstEditor.text() ?: null
                             break
                         case 'DatabaseInstance': titleInstance = titleInstance ? (DatabaseInstance) titleInstance : DatabaseInstance.construct([gokbId:titleUUID])
                             break
@@ -670,6 +679,12 @@ class GlobalSourceSyncService extends AbstractLockableService {
         }
     }
 
+    /**
+     * Updates a {@link Platform} with the given parameters. If it does not exist, it will be created.
+     *
+     * @param platformParams - the platform parameters
+     * @throws SyncException
+     */
     void createOrUpdatePlatform(Map<String,String> platformParams) throws SyncException {
         Platform platform = Platform.findByGokbId(platformParams.gokbId)
         if(platform) {
@@ -769,9 +784,11 @@ class GlobalSourceSyncService extends AbstractLockableService {
         else if(covListA.size() < covListB.size()) {
             //coverage statements have been added
             covListB.eachWithIndex { covB, int i ->
-                Map<String,Object> covDiff = covListA[i].compareWith(covB)
-                if(covDiff)
-                    covDiffs << covDiff
+                if(covListA[i]) {
+                    Map<String,Object> covDiff = covListA[i].compareWith(covB)
+                    if(covDiff)
+                        covDiffs << covDiff
+                }
                 else {
                     TIPPCoverage newStatement = new TIPPCoverage(
                             startDate: (Date) covB.startDate,
@@ -790,6 +807,88 @@ class GlobalSourceSyncService extends AbstractLockableService {
             }
         }
         covDiffs
+    }
+
+    void notifyDependencies(List<List<Map<String,Object>>> tippsToNotify) {
+        //if everything went well, we should have here the list of tipps to notify ...
+        Locale locale = LocaleContextHolder.locale
+        String defaultAcceptChange = messageSource.getMessage('default.accept.change.ie',null,locale)
+        tippsToNotify.each { entry ->
+            entry.each { notify ->
+                //continue here: check if pending changes are being attached properly
+                log.debug(notify)
+                TitleInstancePackagePlatform target = (TitleInstancePackagePlatform) notify.target
+                String titleLink = grailsLinkGenerator.link(controller: 'title', action: 'show', id: target.title.id)
+                String pkgLink = grailsLinkGenerator.link(controller: 'package', action: 'show', id: target.pkg.id)
+                String platformLink = grailsLinkGenerator.link(controller: 'platform', action: 'show', id: target.platform.id)
+                if(notify.event == 'add') {
+                    Set<IssueEntitlement> ieConcerned = IssueEntitlement.executeQuery('select ie from IssueEntitlement ie where ie.tipp.pkg = :pkg',[pkg:target.pkg])
+                    ieConcerned.each { ie ->
+                        Object[] args = [pkgLink,target.pkg.name,titleLink,target.title.title,platformLink,target.platform.name,defaultAcceptChange]
+                        String changeDesc = messageSource.getMessage('pendingChange.message_TP01',args,locale)
+                        Map<String,Object> changeMap = [changeType:PendingChangeService.EVENT_TIPP_ADD,changeDoc:target]
+                        changeNotificationService.registerPendingChange(PendingChange.PROP_SUBSCRIPTION,ie.subscription,ie.subscription.getSubscriber(),changeMap,null,null,changeDesc)
+                    }
+                }
+                else {
+                    Set<IssueEntitlement> ieConcerned = IssueEntitlement.executeQuery('select ie from IssueEntitlement ie where ie.tipp = :tipp',[tipp:target])
+                    ieConcerned.each { ie ->
+                        String changeDesc = ""
+                        Map<String,Object> changeMap = [:]
+                        switch(notify.event) {
+                            case 'update': notify.diffs.each { diff ->
+                                if(diff.field == 'coverage') {
+                                    diff.covDiffs.each { covDiff ->
+                                        TIPPCoverage tippCov = (TIPPCoverage) covDiff.target
+                                        switch(covDiff.event) {
+                                            case 'updated':
+                                                IssueEntitlementCoverage ieCov = (IssueEntitlementCoverage) tippCov.findEquivalent(ie.coverages)
+                                                String propLabel = messageSource.getMessage("tipp.${covDiff.field}",null, locale)
+                                                Object[] args = [titleLink,tippCov.tipp.title.title,pkgLink,tippCov.tipp.pkg.name,propLabel,covDiff.oldValue,covDiff.newValue]
+                                                changeDesc = messageSource.getMessage('pendingChange.message_TC01',args,locale)
+                                                changeMap.changeTarget = "${ieCov.class.name}:${ieCov.id}"
+                                                changeMap.changeType = PendingChangeService.EVENT_COVERAGE_UPDATE
+                                                changeMap.changeDoc = covDiff
+                                                break
+                                            case 'added':
+                                                Object[] args = [titleLink,tippCov.tipp.title.title,pkgLink,tippCov.tipp.pkg.name,tippCov.startDate,tippCov.startVolume,tippCov.startIssue,tippCov.endDate,tippCov.endVolume,tippCov.endIssue,tippCov.coverageDepth,tippCov.coverageNote,tippCov.embargo]
+                                                changeDesc = messageSource.getMessage('pendingChange.message_TC02',args,locale)
+                                                changeMap.changeTarget = "${ie.class.name}:${ie.id}"
+                                                changeMap.changeType = PendingChangeService.EVENT_COVERAGE_ADD
+                                                changeMap.changeDoc = tippCov
+                                                break
+                                            case 'deleted':
+                                                IssueEntitlementCoverage ieCov = (IssueEntitlementCoverage) tippCov.findEquivalent(ie.coverages)
+                                                Object[] args = [titleLink,tippCov.tipp.title.title,pkgLink,tippCov.tipp.pkg.name,ieCov.startDate?.format(messageSource.getMessage('default.date.format.notime',null,locale)),ieCov.startVolume,ieCov.startIssue,ieCov.endDate?.format(messageSource.getMessage('default.date.format.notime',null,locale)),ieCov.endVolume,ieCov.endIssue]
+                                                changeDesc = messageSource.getMessage('pendingChange.message_TC03',args,locale)
+                                                changeMap.changeTarget = "${ieCov.class.name}:${ieCov.id}"
+                                                changeMap.changeType = PendingChangeService.EVENT_COVERAGE_DELETE
+                                                changeMap.changeDoc = covDiff
+                                                break
+                                        }
+                                    }
+                                }
+                                else {
+                                    Object[] args = [titleLink,target.title.title,pkgLink,target.pkg.name,messageSource.getMessage("tipp.${diff.field}",null,locale),diff.oldValue,diff.newValue,defaultAcceptChange]
+                                    changeDesc = messageSource.getMessage('pendingChange.message_TP02',args,locale)
+                                    changeMap.changeTarget = "${ie.class.name}:${ie.id}"
+                                    changeMap.changeType = PendingChangeService.EVENT_PROPERTY_CHANGE
+                                    changeMap.changeDoc = diff
+                                }
+                            }
+                                break
+                            case 'delete': Object[] args = [target.title.title]
+                                changeDesc = messageSource.getMessage('pendingChange.message_TP03',args,locale)
+                                changeMap.changeType = PendingChangeService.EVENT_TIPP_DELETE
+                                changeMap.tippId = "${target.class.name}:${target.id}"
+                                changeMap.subId = ie.subscription.id
+                                break
+                        }
+                        changeNotificationService.registerPendingChange(PendingChange.PROP_SUBSCRIPTION,ie.subscription,ie.subscription.getSubscriber(),changeMap,null,null,changeDesc)
+                    }
+                }
+            }
+        }
     }
 
     /**
@@ -814,6 +913,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
                     null
                 }
             }
+            http.shutdown()
             record
         }
         catch(HttpResponseException e) {
