@@ -14,6 +14,8 @@ import de.laser.helper.SwissKnife
 import grails.util.Holders
 import groovy.transform.NotYetImplemented
 import groovy.util.logging.Log4j
+import org.apache.commons.logging.Log
+import org.apache.commons.logging.LogFactory
 import org.codehaus.groovy.grails.orm.hibernate.cfg.GrailsHibernateUtil
 
 //import org.grails.orm.hibernate.cfg.GrailsHibernateUtil
@@ -25,6 +27,8 @@ import javax.validation.UnexpectedTypeException
 
 @Log4j
 class PropertyDefinition extends AbstractI10nTranslatable implements Serializable , Comparable<PropertyDefinition> {
+
+    static Log static_logger = LogFactory.getLog(PropertyDefinition)
 
     @Transient
     final static TRUE  = true
@@ -160,18 +164,99 @@ class PropertyDefinition extends AbstractI10nTranslatable implements Serializabl
         tenant              (nullable: true,  blank: true)
         multipleOccurrence  (nullable: true,  blank: true)
         mandatory           (nullable: false, blank: false)
-        isHardData            (nullable: false, blank: false)
+        isHardData          (nullable: false, blank: false)
         isUsedForLogic      (nullable: false, blank: false)
-        lastUpdated (nullable: true, blank: false)
-        dateCreated (nullable: true, blank: false)
+        lastUpdated         (nullable: true, blank: false)
+        dateCreated         (nullable: true, blank: false)
     }
 
-    @NotYetImplemented
     static PropertyDefinition construct(Map<String, Object> map) {
-        println "WARNING: NotYetImplemented"
+
+        String token        = map.get('token') // name
+        String category     = map.get('category') // descr
+        String type         = map.get('type')
+        String rdc          = map.get('rdc') // refdataCategory
+        boolean hardData    = new Boolean( map.get('hardData') )
+        boolean mandatory   = new Boolean( map.get('mandatory') )
+        boolean multiple    = new Boolean( map.get('multiple') )
+        boolean logic       = new Boolean( map.get('logic') )
+        Org tenant          = map.get('tenant') ? Org.findByShortname(map.get('tenant')) : null
+        Map i10n            = map.get('i10n')  ?: [de: token, en: token]
+        Map descr           = map.get('descr') ?: [de: category, en: category]
+        Map expl            = map.get('expl')  ?: [de: null, en: null]
+
+        typeIsValid(type)
+
+        PropertyDefinition pd
+
+        if (tenant) {
+            pd = PropertyDefinition.getByNameAndDescrAndTenant(token, category, tenant)
+        }
+        else {
+            pd = PropertyDefinition.getByNameAndDescr(token, category)
+        }
+
+        if (! pd) {
+            static_logger.debug("INFO: no match found; creating new property definition for (${token}, ${category}, ${type}) @ ${tenant}")
+
+            pd = new PropertyDefinition(
+                    name:               token,
+                    descr:              category,
+                    type:               type,
+                    refdataCategory:    rdc,
+                    multipleOccurrence: multiple,
+                    mandatory:          mandatory,
+                    isUsedForLogic:     logic,
+                    tenant:             tenant,
+                    expl:               expl['en'],
+            )
+
+            // TODO .. which attributes can change for existing pds ?
+        }
+
+        pd.isHardData = hardData
+        pd.save(flush: true)
+
+        I10nTranslation.createOrUpdateI10n(pd, 'name', i10n)
+        I10nTranslation.createOrUpdateI10n(pd, 'descr', descr)
+        I10nTranslation.createOrUpdateI10n(pd, 'expl', expl)
+
+        pd
     }
 
-    private static def typeIsValid(key) {
+    static PropertyDefinition getByNameAndDescr(String name, String descr) {
+
+        List result = PropertyDefinition.findAllByNameAndDescrAndTenantIsNull(name, descr)
+
+        if (result.size() == 0) {
+            return null
+        }
+        else if (result.size() == 1) {
+            return result[0]
+        }
+        else {
+            static_logger.debug("WARNING: multiple matches found ( ${name}, ${descr}, tenant is null )")
+            return result[0]
+        }
+    }
+
+    static PropertyDefinition getByNameAndDescrAndTenant(String name, String descr, Org tenant) {
+
+        List result = PropertyDefinition.findAllByNameAndDescrAndTenant(name, descr, tenant)
+
+        if (result.size() == 0) {
+            return null
+        }
+        else if (result.size() == 1) {
+            return result[0]
+        }
+        else {
+            static_logger.debug("WARNING: multiple matches found ( ${name}, ${descr}, ${tenant.id} )")
+            return result[0]
+        }
+    }
+
+    private static def typeIsValid(String key) {
         if (validTypes2.containsKey(key)) {
             return true;
         } else {
@@ -179,16 +264,6 @@ class PropertyDefinition extends AbstractI10nTranslatable implements Serializabl
             throw new UnexpectedTypeException()
         }
     }
-
-    /*
-    static def lookupOrCreateProp(id, owner){
-        if(id instanceof String){
-            id = id.toLong()
-        }
-        def type = get(id)
-        createCustomProperty(owner, type)
-    }
-    */
 
     /**
      * Called from AjaxController.addCustomPropertyValue()
@@ -223,6 +298,7 @@ class PropertyDefinition extends AbstractI10nTranslatable implements Serializabl
         GrailsHibernateUtil.unwrapIfProxy(newProp)
     }
 
+    @Deprecated
     static PropertyDefinition loc(String name, String descr, String typeClass, RefdataCategory rdc, String expl, multipleOccurence, mandatory, Org tenant) {
 
         typeIsValid(typeClass)
@@ -372,11 +448,13 @@ class PropertyDefinition extends AbstractI10nTranslatable implements Serializabl
         return 0
     }
 
+    /*
     def afterInsert() {
         I10nTranslation.createOrUpdateI10n(this, 'name',  [de: this.name, en: this.name])
         I10nTranslation.createOrUpdateI10n(this, 'descr', [de: this.descr, en: this.descr])
         I10nTranslation.createOrUpdateI10n(this, 'expl', [de: this.expl, en: this.expl])
     }
+    */
 
     def afterDelete() {
         String rc = this.getClass().getName()

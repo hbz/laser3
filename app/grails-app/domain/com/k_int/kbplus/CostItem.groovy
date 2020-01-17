@@ -18,7 +18,8 @@ class CostItem
         TAXABLE_19         (RefdataValue.getByValueAndCategory('taxable','TaxType'),19),
         TAX_EXEMPT         (RefdataValue.getByValueAndCategory('taxable tax-exempt','TaxType'),0),
         TAX_NOT_TAXABLE    (RefdataValue.getByValueAndCategory('not taxable','TaxType'),0),
-        TAX_NOT_APPLICABLE (RefdataValue.getByValueAndCategory('not applicable','TaxType'),0)
+        TAX_NOT_APPLICABLE (RefdataValue.getByValueAndCategory('not applicable','TaxType'),0),
+        TAX_REVERSE_CHARGE (RefdataValue.getByValueAndCategory('reverse charge','TaxType'),0)
 
         TAX_TYPES(taxType, taxRate) {
             this.taxType = taxType

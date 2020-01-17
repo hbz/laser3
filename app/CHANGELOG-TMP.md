@@ -1,6 +1,33 @@
 ## temporary change log
 
 **Ticket    Date    Branch      Author  Feature/Bug     Description/Keywords**
+--      16.01.2020  rc1.2       Andreas Bug         Neue TIPPs erzeugen nun auch Pending Changes
+
+--      16.01.2020  rc1.2       Moe     Bug         Bugfix Survey Views, Audit by Properties, MultiYear Function
+    
+2024    16.01.2020  rc1.2       Moe     Bug         Abgelaufen (Mehrjahreslizenz) nicht umgesprungen bei Jahreswechsel
+
+2020    16.01.2020  hbz-dev     David   Feature     Refactoring: Factory für PropertyDefinition
+
+--      16.01.2020  rc1.2       David   Bug         Bugfix: Übersicht aktueller Cronjobs
+
+2064    15.01.2020  rc1.2       Andreas Feature     Neuer Steuertyp Reverse Charge eingefügt und an Stellen eingebunden
+
+2031    15.01.2020  rc1.2       Andreas Bug         PropertyDefinition-Mismatch bei Anlegen von Musterdaten behoben
+
+2036    15.01.2020  hbz-dev     Andreas Feature     Infotexte für Fehlermeldung eingefügt
+
+--      15.01.2020  rc1.2       Andreas Bug         Sync-Zeitstempel wird nicht mehr auf 0 gesetzt, wenn keine Änderungen vorliegen
+
+2059    14.01.2020  rc1.2       Andreas Bug         Feld Haushaltsjahr im Export nachgetragen
+
+2056    14.01.2020  rc1.2       Andreas Bug         Dropdown der auswählbaren Kostenkonfigurationen sortiert nach Namen
+
+2045    14.01.2020  rc1.2       Andreas Bug         Finanzsichten für lesende Nutzer freigegeben
+
+1978    14.01.2020  rc1.2       Andreas Feature     Summen werden in der Finanzübersicht sortiert ausgegeben
+
+2061    15.01.2020  rc1.2       David   Bug         API-Endpunkt absichern
 
 --      13.01.2020  rc1.2       Moe     Bug         Übersetzungsänderung
 

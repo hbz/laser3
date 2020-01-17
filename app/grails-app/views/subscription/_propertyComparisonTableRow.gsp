@@ -92,7 +92,7 @@
                             <g:if test="${propValues.get(sourceSubscription)?.size() > 1}"><br></g:if>
                         </div>
                         <g:if test="${isRenewSub && accessService.checkPermAffiliation("ORG_CONSORTIUM_SURVEY,ORG_CONSORTIUM", "INST_USER")}">
-                            <g:if test="${propValue instanceof SubscriptionCustomProperty}">
+                            <g:if test="${propValue instanceof com.k_int.kbplus.SubscriptionCustomProperty}">
                                 <div class="la-copyElements-flex-item right aligned wide column">
                                     <g:message code="subscription.details.copyElementsIntoSubscription.audit"/>:&nbsp;
                                     <input type="checkbox" name="auditProperties" value="${propValue.id}" ${!AuditConfig.getConfig(propValue) ? '' : 'checked' }/>
@@ -162,7 +162,7 @@
                             <g:if test="${propValues.get(targetSubscription)?.size() > 1}"><br></g:if>
                         </div>
                         <g:if test="${isRenewSub && accessService.checkPermAffiliation("ORG_CONSORTIUM_SURVEY,ORG_CONSORTIUM", "INST_USER")}">
-                            <g:if test="${propValue instanceof SubscriptionCustomProperty}">
+                            <g:if test="${propValue instanceof com.k_int.kbplus.SubscriptionCustomProperty}">
                                 <div class="la-copyElements-flex-item">
                                     <g:if test="${! AuditConfig.getConfig(propValue)}">
                                         <i class="icon la-thumbtack slash la-js-editmode-icon"></i>

@@ -1255,33 +1255,34 @@ class AjaxController {
         else {
             if (params.cust_prop_type.equals(RefdataValue.toString())) {
                 if (params.refdatacategory) {
-                    newProp = PropertyDefinition.loc(
-                            params.cust_prop_name,
-                            params.cust_prop_desc,
-                            params.cust_prop_type,
-                            RefdataCategory.get(params.refdatacategory),
-                            params.cust_prop_expl,
-                            params.cust_prop_multiple_occurence,
-                            PropertyDefinition.FALSE,
-                            null
-                    )
-                    newProp.save(flush: true)
+
+                    Map<String, Object> map = [
+                            token       : params.cust_prop_name,
+                            category    : params.cust_prop_desc,
+                            type        : params.cust_prop_type,
+                            rdc         : RefdataCategory.get(params.refdatacategory)?.getDesc(),
+                            multiple    : (params.cust_prop_multiple_occurence == 'on'),
+                            i10n        : [de: params.cust_prop_name, en: params.cust_prop_name],
+                            expl        : [de: params.cust_prop_expl, en: params.cust_prop_expl]
+                    ]
+
+                    newProp = PropertyDefinition.construct(map)
                 }
                 else {
                     error = message(code: 'ajax.addCustPropertyType.error', default: 'Type creation failed. Please select a ref data type.')
                 }
             }
             else {
-                newProp = PropertyDefinition.loc(
-                        params.cust_prop_name,
-                        params.cust_prop_desc,
-                        params.cust_prop_type,
-                        null,
-                        params.cust_prop_expl,
-                        params.cust_prop_multiple_occurence,
-                        PropertyDefinition.FALSE,
-                        null
-                )
+                    Map<String, Object> map = [
+                            token       : params.cust_prop_name,
+                            category    : params.cust_prop_desc,
+                            type        : params.cust_prop_type,
+                            multiple    : (params.cust_prop_multiple_occurence == 'on'),
+                            i10n        : [de: params.cust_prop_name, en: params.cust_prop_name],
+                            expl        : [de: params.cust_prop_expl, en: params.cust_prop_expl]
+                    ]
+
+                    newProp = PropertyDefinition.construct(map)
             }
 
             if (newProp?.hasErrors()) {

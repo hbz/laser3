@@ -25,5 +25,14 @@ class RefdataReorderService {
         RefdataValue.executeUpdate('update RefdataValue rdv set rdv.order = 10 where rdv.value = :value',[value:'Scientific staff'])
         RefdataValue.executeUpdate('update RefdataValue rdv set rdv.order = 20 where rdv.value = :value',[value:'User'])
         RefdataValue.executeUpdate('update RefdataValue rdv set rdv.order = 30 where rdv.value = :value',[value:'Population'])
+        //currencies: defined by external
+        List currencies = RefdataValue.findAllByOwnerAndValueNotEqual(RefdataCategory.findByDesc('Currency'),'EUR',[sort:'value',order:'asc'])
+        RefdataValue.executeUpdate('update RefdataValue rdv set rdv.order = 0 where rdv.value = :value',[value:'EUR'])
+        order = 10
+        currencies.each { c ->
+            c.order = order
+            c.save()
+            order += 10
+        }
     }
 }

@@ -28,19 +28,14 @@
     <semui:msg class="negative" text="Ihr Fehlerbericht konnte leider nicht übertragen werden. Beachten Sie bitte die Pflichtfelder." />
 </g:if>
 
-<div class="ui warning message">
-    <div class="header">Informieren Sie uns, wenn Sie einen Fehler entdeckt haben.</div>
+<div class="ui icon info message">
+    <i class="icon info"></i>
+    <g:message code="profile.errorReport.infobox"/>
+</div>
 
-    <p>
-        <br />
-        Formulieren Sie bitte kurz ...
-    </p>
-    <ul class="ui list">
-        <li>das beobachtete Verhalten</li>
-        <li>das erwartete Verhalten</li>
-        <li>den genauen Kontext</li>
-    </ul>
-    <p>Vielen Dank!</p>
+<div class="ui warning message">
+    <div class="header"><g:message code="profile.errorReport.errorHeader"/></div>
+    <g:message code="profile.errorReport.errorBody"/>
 </div>
 
 <semui:form>
@@ -48,25 +43,25 @@
         <div class="ui form">
 
             <div class="required field">
-                <label for="title">Titel</label>
+                <label for="title"><g:message code="profile.errorReport.title"/></label>
                 <input  id="title" name="title" type="text" value="${title}"/>
             </div>
 
             <div class="field">
-                <label>Beobachtetes Verhalten</label>
+                <label><g:message code="profile.errorReport.observed"/></label>
                 <textarea name="described">${described}</textarea>
             </div>
             <div class="field">
-                <label>Erwartetes Verhalten</label>
+                <label><g:message code="profile.errorReport.expected"/></label>
                 <textarea name="expected">${expected}</textarea>
             </div>
             <div class="field">
-                <label>Kontext, z. B. die betroffene URL in der Adressleiste des Browses</label>
+                <label><g:message code="profile.errorReport.context"/></label>
                 <textarea name="info">${info}</textarea>
             </div>
 
             <div class="field">
-                <input type="submit" name="sendErrorReport" class="ui button" value="Absenden">
+                <input type="submit" name="sendErrorReport" class="ui button" value="<g:message code="profile.errorReport.submit"/>">
             </div>
 
         </div>

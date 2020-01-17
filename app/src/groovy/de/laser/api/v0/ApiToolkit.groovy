@@ -13,9 +13,10 @@ class ApiToolkit {
     static final API_LEVEL_READ         = 'API_LEVEL_READ'
     static final API_LEVEL_WRITE        = 'API_LEVEL_WRITE'
     static final API_LEVEL_DATAMANAGER  = 'API_LEVEL_DATAMANAGER'
+    static final API_LEVEL_INVOICETOOL  = 'API_LEVEL_INVOICETOOL'
 
     static List getAllApiLevels() {
-        [API_LEVEL_READ, API_LEVEL_WRITE, API_LEVEL_DATAMANAGER]
+        [API_LEVEL_READ, API_LEVEL_WRITE, API_LEVEL_DATAMANAGER, API_LEVEL_INVOICETOOL]
     }
 
     static void setApiLevel(Org org, String apiLevel) {
@@ -48,6 +49,15 @@ class ApiToolkit {
 
         if (apiLevel != OrgSettings.SETTING_NOT_FOUND) {
             return ApiToolkit.API_LEVEL_DATAMANAGER == apiLevel.getValue()
+        }
+        return false
+    }
+
+    static boolean isInvoiceTool(Org org) {
+        def apiLevel = OrgSettings.get(org, OrgSettings.KEYS.API_LEVEL)
+
+        if (apiLevel != OrgSettings.SETTING_NOT_FOUND) {
+            return ApiToolkit.API_LEVEL_INVOICETOOL == apiLevel.getValue()
         }
         return false
     }
