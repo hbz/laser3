@@ -74,7 +74,7 @@ class RefdataCategory extends AbstractI10nTranslatable {
     static RefdataCategory construct(Map<String, Object> map) {
 
         String token     = map.get('token')
-        boolean hardData = map.get('hardData')
+        boolean hardData = new Boolean( map.get('hardData') )
         Map i10n         = map.get('i10n')
 
         RefdataCategory rdc = RefdataCategory.findByDescIlike(token) // todo: case sensitive token
@@ -92,7 +92,7 @@ class RefdataCategory extends AbstractI10nTranslatable {
         rdc
     }
 
-    static RefdataCategory getByI10nDesc(desc) {
+    static RefdataCategory getByI10nDesc(String desc) {
 
         I10nTranslation i10n = I10nTranslation.findByReferenceClassAndReferenceFieldAndValueDeIlike(
                 RefdataCategory.class.name, 'desc', "${desc}"

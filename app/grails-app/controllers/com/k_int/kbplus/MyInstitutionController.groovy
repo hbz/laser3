@@ -4116,16 +4116,20 @@ AND EXISTS (
             if (params.refdatacategory) {
                 rdc = RefdataCategory.findById( Long.parseLong(params.refdatacategory) )
             }
-            privatePropDef = PropertyDefinition.loc(
-                    params.pd_name,
-                    params.pd_descr,
-                    params.pd_type,
-                    rdc,
-                    params.pd_expl,
-                    (params.pd_multiple_occurrence ? true : false),
-                    (params.pd_mandatory ? true : false),
-                    tenant
-            )
+
+            Map<String, Object> map = [
+                    token       : params.pd_name,
+                    category    : params.pd_descr,
+                    type        : params.pd_type,
+                    rdc         : rdc?.getDesc(),
+                    multiple    : (params.pd_multiple_occurrence ? true : false),
+                    mandatory   : (params.pd_mandatory ? true : false),
+                    i10n        : [de: params.pd_name, en: params.pd_name],
+                    expl        : [de: params.pd_expl, en: params.pd_expl],
+                    tenant      : tenant?.getShortname()
+            ]
+
+            privatePropDef = PropertyDefinition.construct(map)
 
             if (privatePropDef.save(flush: true)) {
                 return message(code: 'default.created.message', args:[privatePropDef.descr, privatePropDef.name])

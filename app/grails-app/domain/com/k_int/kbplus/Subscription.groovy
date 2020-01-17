@@ -918,4 +918,19 @@ select distinct oap from OrgAccessPoint oap
         result
     }
 
+    def getAllocationTerm() {
+        def result = [:]
+
+        if(isMultiYear) {
+            result.startDate = startDate
+            result.endDate = (endDate == instanceOf.endDate) ? endDate : instanceOf.endDate
+        }
+        else {
+            result.startDate = startDate
+            result.endDate = endDate
+        }
+
+        result
+    }
+
 }

@@ -45,9 +45,9 @@ class SurveyOrg {
         Subscription sub = surveyConfig.subscription
         if (sub) {
             def subChild = sub?.getDerivedSubscriptionBySubscribers(org)
-            PropertyDefinition property = PropertyDefinition.findByName("Perennial term checked")
+            PropertyDefinition property = PropertyDefinition.getByNameAndDescr("Perennial term checked", PropertyDefinition.SUB_PROP)
 
-            if (subChild?.isCurrentMultiYearSubscription()) {
+            if (subChild?.isCurrentMultiYearSubscriptionNew()) {
                 existsMultiYearTerm = true
                 return existsMultiYearTerm
             }

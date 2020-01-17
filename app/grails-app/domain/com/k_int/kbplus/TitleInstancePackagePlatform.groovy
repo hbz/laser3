@@ -379,6 +379,24 @@ class TitleInstancePackagePlatform extends AbstractBaseDomain /*implements Audit
         }
       }
     }
+    else if(changeDocument.event.contains('TitleInstancePackagePlatform.added')) {
+        List<Subscription> dep_subs = Subscription.executeQuery('select sp.subscription from SubscriptionPackage sp where sp.pkg = :pkg',[pkg:this.pkg])
+        dep_subs.each { Subscription sub ->
+            def titleLink = grailsLinkGenerator.link(controller: 'title', action: 'show', id: this.title.id, absolute: true)
+            def pkgLink =  grailsLinkGenerator.link(controller: 'package', action: 'show', id: this.pkg.id, absolute: true)
+            changeNotificationService.registerPendingChange(
+                    PendingChange.PROP_SUBSCRIPTION,
+                    sub,
+                    // pendingChange.message_GS01
+                    "Eine neue Verknüpfung (TIPP) für den Titel <a href='${titleLink}'>${this.title.title}</a> mit der Plattform <a href='${pkgLink}'>${this.platform.name}</a>",
+                    sub.subscriber,
+                    [
+                            newObjectClass: "com.k_int.kbplus.TitleInstancePackagePlatform",
+                            changeType    : PendingChangeService.EVENT_TIPP_ADD,
+                            changeDoc     : changeDocument
+                    ])
+        }
+    }
     else if(changeDocument.event.contains('TitleInstancePackagePlatform.coverage')) {
         String coverageEvent = changeDocument.event.split('.coverage.')[1]
         String titleLink = grailsLinkGenerator.link(controller: 'title', action: 'show', id: this.title.id,absolute:true)
