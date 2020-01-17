@@ -58,11 +58,11 @@
             </g:if>
         </td>
         <g:set var="propValues" value="${prop.getValue()}" />
-
+        <% Set propValuesForSourceSub = propValues.get(sourceSubscription) %>
+        <% Set propValuesForTargetSub = propValues.get(targetSubscription) %>
         %{--SOURCE-SUBSCRIPTION--}%
         <td class="center aligned">
             <g:if test="${propValues.containsKey(sourceSubscription)}">
-                <% Set propValuesForSourceSub = propValues.get(sourceSubscription) %>
                 <g:each var="propValue" in="${propValuesForSourceSub}">
                     <div class="la-copyElements-flex-container la-multi-sources la-colorCode-source">
                         <div class="la-copyElements-flex-item">
@@ -110,7 +110,7 @@
         %{--HEREDITY--}%
         <td class="center aligned">
             <g:if test="${propValues.containsKey(sourceSubscription)}">
-                <% Set propValuesForSourceSub = propValues.get(sourceSubscription) %>
+
                 <g:each var="propValue" in="${propValuesForSourceSub}">
                     <g:if test="${propValue instanceof com.k_int.kbplus.SubscriptionCustomProperty}">
                         <div class="ui checkbox la-toggle-radio la-inherit">
@@ -124,7 +124,6 @@
         %{--ACTION--}%
         <td class="center aligned">
             <g:if test="${propValues.containsKey(sourceSubscription)}">
-                <% Set propValuesForSourceSub = propValues.get(sourceSubscription) %>
                 <g:each var="propValue" in="${propValuesForSourceSub}">
                     %{--COPY:--}%
                     <g:if test="${propValues.containsKey(sourceSubscription)}">
@@ -140,7 +139,6 @@
             <g:if test="${ ! targetSubscription}">
             </g:if>
             <g:elseif test="${propValues.containsKey(targetSubscription)}">
-                <% Set propValuesForTargetSub = propValues.get(targetSubscription) %>
                 <g:each var="propValue" in="${propValuesForTargetSub}">
                     <div class="la-copyElements-flex-container la-colorCode-target la-multi-sources">
                         <div  class="la-copyElements-flex-item">
@@ -198,16 +196,13 @@
         </td>
         %{--DELETE:--}%
         <td>
-            <g:if test="${ ! targetSubscription}">
-            </g:if>
-            <g:else test="${propValues.containsKey(targetSubscription)}">
-                <% Set propValuesForTargetSub = propValues.get(targetSubscription) %>
+            <g:if test="${ targetSubscription && propValues.containsKey(targetSubscription)}">
                 <g:each var="propValue" in="${propValuesForTargetSub}">
                     <div class="ui checkbox la-toggle-radio la-noChange">
                         <g:checkBox class="bulkcheck"  name="subscription.deleteProperty" data-multipleOccurrence="${propKey.multipleOccurrence}" value="${genericOIDService.getOID(propValue)}" data-action="delete" checked="${false}"/>
                     </div>
                 </g:each>
-            </g:else>
+            </g:if>
         </td>
     </tr>
 </g:each>
