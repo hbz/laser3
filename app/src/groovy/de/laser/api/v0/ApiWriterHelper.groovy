@@ -229,7 +229,7 @@ class ApiWriterHelper {
                 }
 
                 if (property) {
-                    def propertyDefinition = PropertyDefinition.findByDescrAndNameAndTenant(data.description, data.name, contextOrg)
+                    def propertyDefinition = PropertyDefinition.getByNameAndDescrAndTenant(data.name, data.description, contextOrg)
                     property.type = propertyDefinition
                     property.setValue(it.value, propertyDefinition.type, propertyDefinition.refdataCategory)
 
@@ -257,7 +257,7 @@ class ApiWriterHelper {
                 }
 
                 if (property) {
-                    def propertyDefinition = PropertyDefinition.findByDescrAndNameAndTenant(data.description, data.name, null)
+                    def propertyDefinition = PropertyDefinition.getByNameAndDescr(data.name, data.description)
                     property.type = propertyDefinition
                     property.setValue(it.value, propertyDefinition.type, propertyDefinition.refdataCategory)
 

@@ -74,7 +74,7 @@ class IssueEntitlementController extends AbstractDebugController {
            org != null &&
            supplier_id != null ) {
           def platform = PlatformCustomProperty.findByOwnerAndType(Platform.get(supplier_id),
-              PropertyDefinition.findByName('NatStat Supplier ID'))
+              PropertyDefinition.getByNameAndDescr('NatStat Supplier ID', PropertyDefinition.PLA_PROP))
           result.natStatSupplierId = platform?.stringValue ?: null
           def fsresult = factService.generateUsageData(org.id, supplier_id, result.issueEntitlementInstance.subscription, title_id)
           def fsLicenseResult = factService.generateUsageDataForSubscriptionPeriod(org.id, supplier_id, result.issueEntitlementInstance.subscription, title_id)

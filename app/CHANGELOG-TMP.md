@@ -7,7 +7,7 @@
     
 2024    16.01.2020  rc1.2       Moe     Bug         Abgelaufen (Mehrjahreslizenz) nicht umgesprungen bei Jahreswechsel
 
---      16.01.2020  rc1.2       David   Bug         Bugfix: Übersicht aktueller Cronjobs
+2020    16.01.2020  hbz-dev     David   Feature     Refactoring: Factory für PropertyDefinition
 
 --      16.01.2020  rc1.2       David   Bug         Bugfix: Übersicht aktueller Cronjobs
 

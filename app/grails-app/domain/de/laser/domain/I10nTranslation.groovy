@@ -95,13 +95,13 @@ class I10nTranslation {
         values.each { k, v ->
             switch(k.toString().toLowerCase()){
                 case 'de':
-                    i10n.valueDe = v.toString()
+                    i10n.valueDe = v ? v.toString() : null
                     break
                 case 'en':
-                    i10n.valueEn = v.toString()
+                    i10n.valueEn = v ? v.toString() : null
                     break
                 case 'fr':
-                    i10n.valueFr = v.toString()
+                    i10n.valueFr = v ? v.toString() : null
                     break
             }
         }
@@ -117,6 +117,7 @@ class I10nTranslation {
 
         Map<String, Object> values = [:] // no effect in set()
         I10nTranslation existing = get(reference, referenceField)
+
         if (! existing) { // set default values
             values = [
                     'en': reference."${referenceField}",
