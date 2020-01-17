@@ -2214,7 +2214,7 @@ class SurveyController {
 
         }
 
-        def lateCommersProperty = PropertyDefinition.findByName("Späteinsteiger")
+        def lateCommersProperty = PropertyDefinition.getByNameAndDescr("Späteinsteiger", PropertyDefinition.SUB_PROP)
         def currentParticipantIDs = []
         result.orgsWithMultiYearTermSub = []
         result.orgsLateCommers = []
@@ -2422,7 +2422,7 @@ class SurveyController {
         }?.size()?:0) + (result.orgsWithTermination?.groupBy { it?.participant.id }?.size()?:0) + (result.orgsWithMultiYearTermSub?.size()?:0))
 
         if (sumParticipantWithSub < result.parentSubChilds?.size()?:0) {
-            def property = PropertyDefinition.findByName("Perennial term checked")
+            def property = PropertyDefinition.getByNameAndDescr("Perennial term checked", PropertyDefinition.SUB_PROP)
 
             def removeSurveyResultOfOrg = []
             result.orgsWithoutResult?.each { surveyResult ->
@@ -3472,7 +3472,7 @@ class SurveyController {
                 if (params.tab == 'surveyProperties') {
                     def surProp = SurveyProperty.get(result.selectedProperty)
                     newMap.surveyProperty = SurveyResult.findBySurveyConfigAndTypeAndParticipant(result.surveyConfig, surProp, org)
-                    def propDef = surProp ? PropertyDefinition.findByNameAndDescrAndTenant(surProp.name, 'Subscription Property', null) : null
+                    def propDef = surProp ? PropertyDefinition.getByNameAndDescr(surProp.name, 'Subscription Property') : null
 
                     newMap.newCustomProperty = (sub && propDef) ? sub.customProperties.find {
                         it.type.id == propDef.id
@@ -3529,7 +3529,7 @@ class SurveyController {
 
                 surveyProperty = params.copyProperty ? SurveyProperty.get(Long.parseLong(params.copyProperty)) : null
 
-                propDef = surveyProperty ? PropertyDefinition.findByNameAndDescrAndTenant(surveyProperty.name, 'Subscription Property', null) : null
+                propDef = surveyProperty ? PropertyDefinition.getByNameAndDescr(surveyProperty.name, 'Subscription Property') : null
                 if (!propDef && surveyProperty) {
                     propDef = PropertyDefinition.loc(
                             surveyProperty.name,
@@ -4024,7 +4024,7 @@ class SurveyController {
                     def sub = surveyConfig?.subscription
                     if (sub) {
                         def subChild = sub?.getDerivedSubscriptionBySubscribers(org)
-                        def property = PropertyDefinition.findByName("Perennial term checked")
+                        def property = PropertyDefinition.getByNameAndDescr("Perennial term checked", PropertyDefinition.SUB_PROP)
 
                         if (subChild?.isCurrentMultiYearSubscription()) {
                             existsMultiYearTerm = true

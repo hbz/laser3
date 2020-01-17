@@ -532,34 +532,34 @@ class OrganisationService {
         log.info("creating property definition groups ...")
         List propertyDefinitionGroups = [
                 [group:new PropertyDefinitionGroup(name: 'Fernleihe', description: 'Fernleihbedingungen', ownerType: License.class.name, tenant: current, isVisible: true),
-                 items:[PropertyDefinition.findByName('ILL record keeping required'),
-                        PropertyDefinition.findByName('ILL electronic'),
-                        PropertyDefinition.findByName('ILL print or fax'),
-                        PropertyDefinition.findByName('ILL secure electronic transmission'),
-                        PropertyDefinition.findByName('ILL term note')]
+                 items:[PropertyDefinition.getByNameAndDescr('ILL record keeping required', PropertyDefinition.LIC_PROP),
+                        PropertyDefinition.getByNameAndDescr('ILL electronic', PropertyDefinition.LIC_PROP),
+                        PropertyDefinition.getByNameAndDescr('ILL print or fax', PropertyDefinition.LIC_PROP),
+                        PropertyDefinition.getByNameAndDescr('ILL secure electronic transmission', PropertyDefinition.LIC_PROP),
+                        PropertyDefinition.getByNameAndDescr('ILL term note', PropertyDefinition.LIC_PROP)]
                 ],
                 [group:new PropertyDefinitionGroup(name: 'Archivrecht', description: 'Welches Archivrecht ist gegeben?', ownerType: License.class.name, tenant: current, isVisible: true),
-                 items:[PropertyDefinition.findByName('Archival Copy Content'),
-                        PropertyDefinition.findByName('Archival Copy: Cost'),
-                        PropertyDefinition.findByName('Archival Copy: Permission'),
-                        PropertyDefinition.findByName('Archival Copy: Time'),
-                        PropertyDefinition.findByName('Archiving rights')]
+                 items:[PropertyDefinition.getByNameAndDescr('Archival Copy Content', PropertyDefinition.LIC_PROP),
+                        PropertyDefinition.getByNameAndDescr('Archival Copy: Cost', PropertyDefinition.LIC_PROP),
+                        PropertyDefinition.getByNameAndDescr('Archival Copy: Permission', PropertyDefinition.LIC_PROP),
+                        PropertyDefinition.getByNameAndDescr('Archival Copy: Time', PropertyDefinition.LIC_PROP),
+                        PropertyDefinition.getByNameAndDescr('Archiving rights', PropertyDefinition.LIC_PROP)]
                 ],
                 [group:new PropertyDefinitionGroup(name: 'Zugriffsbedingungen', description: 'Welche Zugriffsmöglichkeiten sind erlaubt?', ownerType: License.class.name, tenant: current, isVisible: true),
-                 items:[PropertyDefinition.findByName('Walk-in Access'),
-                        PropertyDefinition.findByName('Walk-in User Term Note'),
-                        PropertyDefinition.findByName('Wifi Access'),
-                        PropertyDefinition.findByName('Remote Access')]
+                 items:[PropertyDefinition.getByNameAndDescr('Walk-in Access', PropertyDefinition.LIC_PROP),
+                        PropertyDefinition.getByNameAndDescr('Walk-in User Term Note', PropertyDefinition.LIC_PROP),
+                        PropertyDefinition.getByNameAndDescr('Wifi Access', PropertyDefinition.LIC_PROP),
+                        PropertyDefinition.getByNameAndDescr('Remote Access', PropertyDefinition.LIC_PROP)]
                 ],
                 [group:new PropertyDefinitionGroup(name: 'Fremdsysteme', description: '', ownerType: Subscription.class.name, tenant: current, isVisible: true),
-                 items:[PropertyDefinition.findByName('DBIS link'),
-                        PropertyDefinition.findByName('EZB tagging (yellow)'),
-                        PropertyDefinition.findByName('SFX entry')]
+                 items:[PropertyDefinition.getByNameAndDescr('DBIS link', PropertyDefinition.SUB_PROP),
+                        PropertyDefinition.getByNameAndDescr('EZB tagging (yellow)', PropertyDefinition.SUB_PROP),
+                        PropertyDefinition.getByNameAndDescr('SFX entry', PropertyDefinition.SUB_PROP)]
                 ],
                 [group:new PropertyDefinitionGroup(name: 'Statistik', description: '', ownerType: Subscription.class.name, tenant: current, isVisible: true),
-                 items:[PropertyDefinition.findByName('Statistic'),
-                        PropertyDefinition.findByName('Statistics Link'),
-                        PropertyDefinition.findByName('Statistic access')]
+                 items:[PropertyDefinition.getByNameAndDescr('Statistic', PropertyDefinition.SUB_PROP),
+                        PropertyDefinition.getByNameAndDescr('Statistics Link', PropertyDefinition.SUB_PROP),
+                        PropertyDefinition.getByNameAndDescr('Statistic access', PropertyDefinition.SUB_PROP)]
                 ]
         ]
         propertyDefinitionGroups.each { pdg ->
@@ -748,7 +748,7 @@ class OrganisationService {
                              resource: RefdataValue.getByValueAndCategory('ejournalPackage','Subscription Resource')],
                 addParams: [packages:[[pkg: Package.findByGlobalUID('package:b108178b-f27c-455d-9061-c8837905dc65')]], //check
                             provider:generalData.exampleOrgs.get('Musteranbieter E-Journals'),
-                            customProperties:[[type:PropertyDefinition.findByName('DBIS link').id,urlValue:'https://dbis..de']]
+                            customProperties:[[type:PropertyDefinition.getByNameAndDescr('DBIS link', PropertyDefinition.SUB_PROP).id,urlValue:'https://dbis..de']]
                 ]
         ]
         Map currentJournalPaketParams = [
@@ -808,9 +808,9 @@ class OrganisationService {
                                      costItemElementConfiguration: RDStore.CIEC_POSITIVE]
                             ],
                             customProperties: [
-                                    [type:PropertyDefinition.findByName('DBIS link').id,urlValue:'http://dbis.uni-regensburg.de/...'],
-                                    [type:PropertyDefinition.findByName('Statistic').id,stringValue:'Counter 4'],
-                                    [type:PropertyDefinition.findByName('Statistics Link').id,urlValue:'http://www.123.de']
+                                    [type:PropertyDefinition.getByNameAndDescr('DBIS link', PropertyDefinition.SUB_PROP).id,urlValue:'http://dbis.uni-regensburg.de/...'],
+                                    [type:PropertyDefinition.getByNameAndDescr('Statistic', PropertyDefinition.SUB_PROP).id,stringValue:'Counter 4'],
+                                    [type:PropertyDefinition.getByNameAndDescr('Statistics Link', PropertyDefinition.SUB_PROP).id,urlValue:'http://www.123.de']
                             ]
                 ]
         ]
@@ -850,11 +850,11 @@ class OrganisationService {
                                     [generalData.exampleOrgs.get('Musteranbieter E-Journals')]
                             ],
                             customProperties: [
-                                    [type:PropertyDefinition.findByName('ILL electronic').id,refValue:RDStore.PERM_PERM_EXPL,paragraph:'ist alles erlaubt'],
-                                    [type:PropertyDefinition.findByName('Archival Copy Content').id,refValue:RefdataValue.getByValueAndCategory('Data','License.Arc.ArchivalCopyContent')],
-                                    [type:PropertyDefinition.findByName('Archiving rights').id,refValue:RDStore.YN_YES],
-                                    [type:PropertyDefinition.findByName('Walk-in Access').id,refValue: RDStore.PERM_PERM_EXPL],
-                                    [type:PropertyDefinition.findByName('Wifi Access').id,refValue:RDStore.YN_YES]
+                                    [type:PropertyDefinition.getByNameAndDescr('ILL electronic', PropertyDefinition.LIC_PROP).id,refValue:RDStore.PERM_PERM_EXPL,paragraph:'ist alles erlaubt'],
+                                    [type:PropertyDefinition.getByNameAndDescr('Archival Copy Content', PropertyDefinition.LIC_PROP).id,refValue:RefdataValue.getByValueAndCategory('Data','License.Arc.ArchivalCopyContent')],
+                                    [type:PropertyDefinition.getByNameAndDescr('Archiving rights', PropertyDefinition.LIC_PROP).id,refValue:RDStore.YN_YES],
+                                    [type:PropertyDefinition.getByNameAndDescr('Walk-in Access', PropertyDefinition.LIC_PROP).id,refValue: RDStore.PERM_PERM_EXPL],
+                                    [type:PropertyDefinition.getByNameAndDescr('Wifi Access', PropertyDefinition.LIC_PROP).id,refValue:RDStore.YN_YES]
                             ],
                             licenseDocuments: [[docstoreUUID:'ce60e58d-1009-4c1b-bd0c-1bbb8f6910d3']]
                 ]
@@ -869,10 +869,10 @@ class OrganisationService {
                                     [generalData.exampleOrgs.get('Musteranbieter A')]
                             ],
                             customProperties: [
-                                    [type:PropertyDefinition.findByName('ILL electronic').id,refValue:RDStore.PERM_PERM_EXPL],
-                                    [type:PropertyDefinition.findByName('Archiving rights').id,refValue:RDStore.YN_YES],
-                                    [type:PropertyDefinition.findByName('Walk-in Access').id,refValue: RDStore.PERM_SILENT,note:'per Mail geregelt – s. Dokument'],
-                                    [type:PropertyDefinition.findByName('Wifi Access').id,refValue:RDStore.YN_YES]
+                                    [type:PropertyDefinition.getByNameAndDescr('ILL electronic', PropertyDefinition.LIC_PROP).id,refValue:RDStore.PERM_PERM_EXPL],
+                                    [type:PropertyDefinition.getByNameAndDescr('Archiving rights', PropertyDefinition.LIC_PROP).id,refValue:RDStore.YN_YES],
+                                    [type:PropertyDefinition.getByNameAndDescr('Walk-in Access', PropertyDefinition.LIC_PROP).id,refValue: RDStore.PERM_SILENT,note:'per Mail geregelt – s. Dokument'],
+                                    [type:PropertyDefinition.getByNameAndDescr('Wifi Access', PropertyDefinition.LIC_PROP).id,refValue:RDStore.YN_YES]
                             ],
                             tasks: [
                                     [title: 'Mehrjahresvariante verhandeln',
@@ -899,6 +899,42 @@ class OrganisationService {
 
     boolean setupTestDataForCons(Map generalData,Org current) {
         log.info("creating private properties ...")
+
+        Map<String, Object> map1 = [
+                token       : "Quellensteuer-Befreiung",
+                category    : "Subscription Property",
+                type        : "class com.k_int.kbplus.RefdataValue",
+                rdc         : "YNO",
+                tenant      : current,
+                i10n        : [de: "Quellensteuer-Befreiung", en: "Quellensteuer-Befreiung"],
+                expl        : [de: "Hat der Anbieter für dieses Produkt eine Befreiung der Quellensteuer erwirkt?", en: "Hat der Anbieter für dieses Produkt eine Befreiung der Quellensteuer erwirkt?"],
+        ]
+
+        Map<String, Object> map2 = [
+                token       : "BGA",
+                category    : "Organisation Property",
+                type        : "class com.k_int.kbplus.RefdataValue",
+                rdc         : "YN",
+                tenant      : current,
+                i10n        : [de: "BGA", en: "BGA"],
+                expl        : [de: "Betrieb gewerblicher Art", en: "Betrieb gewerblicher Art"],
+        ]
+
+        Map<String, Object> map3 = [
+                token       : "EGP Nr.",
+                category    : "Organisation Property",
+                type        : "class java.lang.Integer",
+                tenant      : current,
+                i10n        : [de: "EGP Nr.", en: "EGP Nr."],
+                expl        : [de: "ID für das SAP System des rechtlichen Trägers", en: "ID für das SAP System des rechtlichen Trägers"],
+        ]
+
+        Set<PropertyDefinition> privatePropertyDefMaps = [
+                PropertyDefinition.construct(map1),
+                PropertyDefinition.construct(map2),
+                PropertyDefinition.construct(map3)
+                ]
+        /*
         Set<PropertyDefinition> privatePropertyDefMaps = [
                 new PropertyDefinition(name:'Quellensteuer-Befreiung',
                         tenant:current,
@@ -918,6 +954,8 @@ class OrganisationService {
                         type:'class java.lang.Integer',
                         expl:'ID für das SAP System des rechtlichen Trägers')
         ]
+        */
+
         Map<String,PropertyDefinition> privateProperties = [:]
         privatePropertyDefMaps.each { propDef ->
             if(propDef.save()) {
@@ -931,50 +969,50 @@ class OrganisationService {
         log.info("creating property definition groups ...")
         List propertyDefinitionGroups = [
                 [group:new PropertyDefinitionGroup(name: 'ausgeübtes Recht', description: 'Welches Recht wird angewandt?', ownerType: License.class.name, tenant: current, isVisible: true),
-                 items:[PropertyDefinition.findByName('Governing law'),
-                        PropertyDefinition.findByName('Governing jurisdiction')]
+                 items:[PropertyDefinition.getByNameAndDescr('Governing law', PropertyDefinition.LIC_PROP),
+                        PropertyDefinition.getByNameAndDescr('Governing jurisdiction', PropertyDefinition.LIC_PROP)]
                 ],
                 [group:new PropertyDefinitionGroup(name: 'Fernleihe', description: 'ist eine Fernleihe erlaubt?', ownerType: License.class.name, tenant: current, isVisible: true),
-                 items:[PropertyDefinition.findByName('ILL record keeping required'),
-                        PropertyDefinition.findByName('ILL electronic'),
-                        PropertyDefinition.findByName('ILL print or fax'),
-                        PropertyDefinition.findByName('ILL secure electronic transmission'),
-                        PropertyDefinition.findByName('ILL term note')]
+                 items:[PropertyDefinition.getByNameAndDescr('ILL record keeping required', PropertyDefinition.LIC_PROP),
+                        PropertyDefinition.getByNameAndDescr('ILL electronic', PropertyDefinition.LIC_PROP),
+                        PropertyDefinition.getByNameAndDescr('ILL print or fax', PropertyDefinition.LIC_PROP),
+                        PropertyDefinition.getByNameAndDescr('ILL secure electronic transmission', PropertyDefinition.LIC_PROP),
+                        PropertyDefinition.getByNameAndDescr('ILL term note', PropertyDefinition.LIC_PROP)]
                 ],
                 [group:new PropertyDefinitionGroup(name: 'GASCO', description: 'Merkmale, die den GASCO-Monitor steuern', ownerType: Subscription.class.name, tenant: current, isVisible: true),
-                 items:[PropertyDefinition.findByName('GASCO Entry'),
-                        PropertyDefinition.findByName('GASCO display name'),
-                        PropertyDefinition.findByName('GASCO negotiator name'),
-                        PropertyDefinition.findByName('GASCO information link')]
+                 items:[PropertyDefinition.getByNameAndDescr('GASCO Entry', PropertyDefinition.SUB_PROP),
+                        PropertyDefinition.getByNameAndDescr('GASCO display name', PropertyDefinition.SUB_PROP),
+                        PropertyDefinition.getByNameAndDescr('GASCO negotiator name', PropertyDefinition.SUB_PROP),
+                        PropertyDefinition.getByNameAndDescr('GASCO information link', PropertyDefinition.SUB_PROP)]
                 ],
                 [group:new PropertyDefinitionGroup(name: 'meinKonsortium', description: 'alle für meine Konsortialstelle relevanten Merkmale', ownerType: Subscription.class.name, tenant: current, isVisible: true),
-                 items:[PropertyDefinition.findByName('Open country-wide'),
-                        PropertyDefinition.findByName('Restricted user group'),
-                        PropertyDefinition.findByName('Perennial term'),
-                        PropertyDefinition.findByName('Perennial term checked'),
-                        PropertyDefinition.findByName('Due date for volume discount'),
-                        PropertyDefinition.findByName('Newcomer discount'),
-                        PropertyDefinition.findByName('Price increase'),
-                        PropertyDefinition.findByName('Pricing advantage by licensing of another product'),
-                        PropertyDefinition.findByName('Private institutions'),
-                        PropertyDefinition.findByName('Product dependency'),
-                        PropertyDefinition.findByName('Discount'),
-                        PropertyDefinition.findByName('Scale of discount'),
-                        PropertyDefinition.findByName('Calculation of discount'),
-                        PropertyDefinition.findByName('Billing done by provider'),
-                        PropertyDefinition.findByName('Time of billing'),
-                        PropertyDefinition.findByName('reverse charge'),
-                        PropertyDefinition.findByName('Sim-User Number'),
-                        PropertyDefinition.findByName('Partial payment'),
-                        PropertyDefinition.findByName('Time span for testing'),
-                        PropertyDefinition.findByName('Joining during the period')]
+                 items:[PropertyDefinition.getByNameAndDescr('Open country-wide', PropertyDefinition.SUB_PROP),
+                        PropertyDefinition.getByNameAndDescr('Restricted user group', PropertyDefinition.SUB_PROP),
+                        PropertyDefinition.getByNameAndDescr('Perennial term', PropertyDefinition.SUB_PROP),
+                        PropertyDefinition.getByNameAndDescr('Perennial term checked', PropertyDefinition.SUB_PROP),
+                        PropertyDefinition.getByNameAndDescr('Due date for volume discount', PropertyDefinition.SUB_PROP),
+                        PropertyDefinition.getByNameAndDescr('Newcomer discount', PropertyDefinition.SUB_PROP),
+                        PropertyDefinition.getByNameAndDescr('Price increase', PropertyDefinition.SUB_PROP),
+                        PropertyDefinition.getByNameAndDescr('Pricing advantage by licensing of another product', PropertyDefinition.SUB_PROP),
+                        PropertyDefinition.getByNameAndDescr('Private institutions', PropertyDefinition.SUB_PROP),
+                        PropertyDefinition.getByNameAndDescr('Product dependency', PropertyDefinition.SUB_PROP),
+                        PropertyDefinition.getByNameAndDescr('Discount', PropertyDefinition.SUB_PROP),
+                        PropertyDefinition.getByNameAndDescr('Scale of discount', PropertyDefinition.SUB_PROP),
+                        PropertyDefinition.getByNameAndDescr('Calculation of discount', PropertyDefinition.SUB_PROP),
+                        PropertyDefinition.getByNameAndDescr('Billing done by provider', PropertyDefinition.SUB_PROP),
+                        PropertyDefinition.getByNameAndDescr('Time of billing', PropertyDefinition.SUB_PROP),
+                        PropertyDefinition.getByNameAndDescr('reverse charge', PropertyDefinition.SUB_PROP),
+                        PropertyDefinition.getByNameAndDescr('Sim-User Number', PropertyDefinition.SUB_PROP),
+                        PropertyDefinition.getByNameAndDescr('Partial payment', PropertyDefinition.SUB_PROP),
+                        PropertyDefinition.getByNameAndDescr('Time span for testing', PropertyDefinition.SUB_PROP),
+                        PropertyDefinition.getByNameAndDescr('Joining during the period', PropertyDefinition.SUB_PROP)]
                 ],
                 [group:new PropertyDefinitionGroup(name: 'Open Access', description: 'Open Access vereinbart', ownerType: License.class.name, tenant: current, isVisible: true),
-                 items:[PropertyDefinition.findByName('OA Note'),
-                        PropertyDefinition.findByName('OA Last Date'),
-                        PropertyDefinition.findByName('OA First Date'),
-                        PropertyDefinition.findByName('Offsetting'),
-                        PropertyDefinition.findByName('Open Access')]
+                 items:[PropertyDefinition.getByNameAndDescr('OA Note', PropertyDefinition.LIC_PROP),
+                        PropertyDefinition.getByNameAndDescr('OA Last Date', PropertyDefinition.LIC_PROP),
+                        PropertyDefinition.getByNameAndDescr('OA First Date', PropertyDefinition.LIC_PROP),
+                        PropertyDefinition.getByNameAndDescr('Offsetting', PropertyDefinition.LIC_PROP),
+                        PropertyDefinition.getByNameAndDescr('Open Access', PropertyDefinition.LIC_PROP)]
                 ]
         ]
         propertyDefinitionGroups.each { pdg ->
@@ -1272,10 +1310,10 @@ class OrganisationService {
                         [generalData.exampleOrgs.get('Musteranbieter A')]
                 ],
                             customProperties: [
-                                    [type:PropertyDefinition.findByName('ILL electronic').id,refValue:RDStore.PERM_PERM_EXPL,isShared:true],
-                                    [type:PropertyDefinition.findByName('Governing jurisdiction').id,stringValue:'Berlin',isShared:true],
-                                    [type:PropertyDefinition.findByName('Open Access').id,refValue:RefdataValue.getByValueAndCategory('No Open Access','License.OA.Type'),isShared:true],
-                                    [type:PropertyDefinition.findByName('Invoicing').id,dateValue: null,paragraph: 'Immer im Laufzeitjahr...']
+                                    [type:PropertyDefinition.getByNameAndDescr('ILL electronic', PropertyDefinition.LIC_PROP).id,refValue:RDStore.PERM_PERM_EXPL,isShared:true],
+                                    [type:PropertyDefinition.getByNameAndDescr('Governing jurisdiction', PropertyDefinition.LIC_PROP).id,stringValue:'Berlin',isShared:true],
+                                    [type:PropertyDefinition.getByNameAndDescr('Open Access', PropertyDefinition.LIC_PROP).id,refValue:RefdataValue.getByValueAndCategory('No Open Access','License.OA.Type'),isShared:true],
+                                    [type:PropertyDefinition.getByNameAndDescr('Invoicing', PropertyDefinition.LIC_PROP).id,dateValue: null,paragraph: 'Immer im Laufzeitjahr...']
                             ],
                             createMemberLicense: true,
                             licenseDocuments: [[docstoreUUID:'c39aef73-5dae-48ab-9656-08d8a2d4dea3',isShared:true],[docstoreUUID:'3d08595f-2069-44e6-ae27-ad31b499e365']]
@@ -1290,10 +1328,10 @@ class OrganisationService {
                         [generalData.exampleOrgs.get('Musteranbieter E-Books')]
                 ],
                             customProperties: [
-                                    [type:PropertyDefinition.findByName('ILL secure electronic transmission').id,refValue:RDStore.PERM_PROH_EXPL,isShared:true],
-                                    [type:PropertyDefinition.findByName('Governing law').id,stringValue:'deutsches Recht',isShared:true],
-                                    [type:PropertyDefinition.findByName('Open Access').id,refValue:RefdataValue.getByValueAndCategory('No Open Access','License.OA.Type'),isShared:true],
-                                    [type:PropertyDefinition.findByName('Metadata delivery').id,stringValue: null]
+                                    [type:PropertyDefinition.getByNameAndDescr('ILL secure electronic transmission', PropertyDefinition.LIC_PROP).id,refValue:RDStore.PERM_PROH_EXPL,isShared:true],
+                                    [type:PropertyDefinition.getByNameAndDescr('Governing law', PropertyDefinition.LIC_PROP).id,stringValue:'deutsches Recht',isShared:true],
+                                    [type:PropertyDefinition.getByNameAndDescr('Open Access', PropertyDefinition.LIC_PROP).id,refValue:RefdataValue.getByValueAndCategory('No Open Access','License.OA.Type'),isShared:true],
+                                    [type:PropertyDefinition.getByNameAndDescr('Metadata delivery', PropertyDefinition.LIC_PROP).id,stringValue: null]
                             ],
                             createMemberLicense: true,
                             licenseDocuments: [[docstoreUUID:'7a3384ac-a5f4-4e06-a2af-dbb63062ef02',isShared:true],[docstoreUUID:'ac0de3a6-a726-4da1-b17a-782fc225a3fc']]
@@ -1334,14 +1372,14 @@ class OrganisationService {
                             provider: generalData.exampleOrgs.get('Musteranbieter A'),
                             sharedProperties:['name','form','resource'],
                             customProperties: [
-                                    [type:PropertyDefinition.findByName('GASCO Entry').id,refValue:RDStore.YN_YES],
-                                    [type:PropertyDefinition.findByName('GASCO information link').id,urlValue:'https://www...',isShared:true],
-                                    [type:PropertyDefinition.findByName('Restricted user group').id,stringValue:'Universitäten'],
-                                    [type:PropertyDefinition.findByName('Newcomer discount').id,refValue:RDStore.YN_YES,note:'25% auf den Jahrespreis'],
-                                    [type:PropertyDefinition.findByName('Price rounded').id,refValue:RDStore.YN_NO],
-                                    [type:PropertyDefinition.findByName('Billing done by provider').id,refValue:RDStore.YN_NO],
-                                    [type:PropertyDefinition.findByName('Sim-User Number').id,stringValue:'unlimitiert',isShared:true],
-                                    [type:PropertyDefinition.findByName('Time span for testing').id,stringValue:'90']
+                                    [type:PropertyDefinition.getByNameAndDescr('GASCO Entry', PropertyDefinition.SUB_PROP).id,refValue:RDStore.YN_YES],
+                                    [type:PropertyDefinition.getByNameAndDescr('GASCO information link', PropertyDefinition.SUB_PROP).id,urlValue:'https://www...',isShared:true],
+                                    [type:PropertyDefinition.getByNameAndDescr('Restricted user group', PropertyDefinition.SUB_PROP).id,stringValue:'Universitäten'],
+                                    [type:PropertyDefinition.getByNameAndDescr('Newcomer discount', PropertyDefinition.SUB_PROP).id,refValue:RDStore.YN_YES,note:'25% auf den Jahrespreis'],
+                                    [type:PropertyDefinition.getByNameAndDescr('Price rounded', PropertyDefinition.SUB_PROP).id,refValue:RDStore.YN_NO],
+                                    [type:PropertyDefinition.getByNameAndDescr('Billing done by provider', PropertyDefinition.SUB_PROP).id,refValue:RDStore.YN_NO],
+                                    [type:PropertyDefinition.getByNameAndDescr('Sim-User Number', PropertyDefinition.SUB_PROP).id,stringValue:'unlimitiert',isShared:true],
+                                    [type:PropertyDefinition.getByNameAndDescr('Time span for testing', PropertyDefinition.SUB_PROP).id,stringValue:'90']
                             ],
                             subscriptionMembers: [[subMember:member1Aachen,
                                                    subOwner:consortialLicenses.get('Rahmenvertrag (Teilnehmervertrag)'),
@@ -1392,14 +1430,14 @@ class OrganisationService {
                             sharedProperties:['name','form','resource'],
                             subscriptionDocuments:[[docstoreUUID:'cef94ff5-16b4-4470-8165-4e198865d232']],
                             customProperties: [
-                                    [type:PropertyDefinition.findByName('GASCO Entry').id,refValue:RDStore.YN_YES],
-                                    [type:PropertyDefinition.findByName('GASCO information link').id,urlValue:'https://www...'],
-                                    [type:PropertyDefinition.findByName('Restricted user group').id,stringValue:'Universitäten'],
-                                    [type:PropertyDefinition.findByName('Newcomer discount').id,refValue:RDStore.YN_YES,note:'25% auf den Jahrespreis'],
-                                    [type:PropertyDefinition.findByName('Price rounded').id,refValue:RDStore.YN_NO],
-                                    [type:PropertyDefinition.findByName('Billing done by provider').id,refValue:RDStore.YN_NO],
-                                    [type:PropertyDefinition.findByName('Sim-User Number').id,stringValue:'unlimitiert'],
-                                    [type:PropertyDefinition.findByName('Time span for testing').id,stringValue:'90']
+                                    [type:PropertyDefinition.getByNameAndDescr('GASCO Entry', PropertyDefinition.SUB_PROP).id,refValue:RDStore.YN_YES],
+                                    [type:PropertyDefinition.getByNameAndDescr('GASCO information link', PropertyDefinition.SUB_PROP).id,urlValue:'https://www...'],
+                                    [type:PropertyDefinition.getByNameAndDescr('Restricted user group', PropertyDefinition.SUB_PROP).id,stringValue:'Universitäten'],
+                                    [type:PropertyDefinition.getByNameAndDescr('Newcomer discount', PropertyDefinition.SUB_PROP).id,refValue:RDStore.YN_YES,note:'25% auf den Jahrespreis'],
+                                    [type:PropertyDefinition.getByNameAndDescr('Price rounded', PropertyDefinition.SUB_PROP).id,refValue:RDStore.YN_NO],
+                                    [type:PropertyDefinition.getByNameAndDescr('Billing done by provider', PropertyDefinition.SUB_PROP).id,refValue:RDStore.YN_NO],
+                                    [type:PropertyDefinition.getByNameAndDescr('Sim-User Number', PropertyDefinition.SUB_PROP).id,stringValue:'unlimitiert'],
+                                    [type:PropertyDefinition.getByNameAndDescr('Time span for testing', PropertyDefinition.SUB_PROP).id,stringValue:'90']
                             ],
                             subscriptionMembers: [[subMember:member1Aachen,
                                                    subOwner:consortialLicenses.get('Rahmenvertrag (Teilnehmervertrag)'),
@@ -1518,12 +1556,12 @@ class OrganisationService {
                             provider: generalData.exampleOrgs.get('Musteranbieter B'),
                             sharedProperties:['name','form','resource'],
                             customProperties: [
-                                    [type:PropertyDefinition.findByName('GASCO Entry').id,refValue:RDStore.YN_YES],
-                                    [type:PropertyDefinition.findByName('GASCO information link').id,urlValue:'https://www...',isShared:true],
-                                    [type:PropertyDefinition.findByName('Price rounded').id,refValue:RDStore.YN_NO],
-                                    [type:PropertyDefinition.findByName('Discount').id,stringValue:'22 %'],
-                                    [type:PropertyDefinition.findByName('Scale of discount').id,stringValue:null],
-                                    [type:PropertyDefinition.findByName('Billing done by provider').id,refValue:RDStore.YN_NO,isShared:true]
+                                    [type:PropertyDefinition.getByNameAndDescr('GASCO Entry', PropertyDefinition.SUB_PROP).id,refValue:RDStore.YN_YES],
+                                    [type:PropertyDefinition.getByNameAndDescr('GASCO information link', PropertyDefinition.SUB_PROP).id,urlValue:'https://www...',isShared:true],
+                                    [type:PropertyDefinition.getByNameAndDescr('Price rounded', PropertyDefinition.SUB_PROP).id,refValue:RDStore.YN_NO],
+                                    [type:PropertyDefinition.getByNameAndDescr('Discount', PropertyDefinition.SUB_PROP).id,stringValue:'22 %'],
+                                    [type:PropertyDefinition.getByNameAndDescr('Scale of discount', PropertyDefinition.SUB_PROP).id,stringValue:null],
+                                    [type:PropertyDefinition.getByNameAndDescr('Billing done by provider', PropertyDefinition.SUB_PROP).id,refValue:RDStore.YN_NO,isShared:true]
                             ],
                             subscriptionMembers: [[subMember:member1Aachen,
                                                    subOwner:consortialLicenses.get('Rahmenvertrag (Teilnehmervertrag)'),
@@ -1629,14 +1667,14 @@ class OrganisationService {
                             sharedProperties:['name','form','resource'],
                             subscriptionDocuments:[[docstoreUUID:'dc9a8b48-355e-4c47-8ffb-6bcbed527ba0',isShared:true]],
                             customProperties: [
-                                    [type:PropertyDefinition.findByName('GASCO Entry').id,refValue:RDStore.YN_YES],
-                                    [type:PropertyDefinition.findByName('GASCO information link').id,urlValue:null,isShared:true],
-                                    [type:PropertyDefinition.findByName('GASCO negotiator name').id,stringValue:'Allianzlizenz Team'],
-                                    [type:PropertyDefinition.findByName('Perennial term').id,refValue:RDStore.YN_NO,note:'opt out Klausel vorhanden',isShared:true],
-                                    [type:PropertyDefinition.findByName('Perennial term checked').id,refValue:null,isShared:true],
-                                    [type:PropertyDefinition.findByName('Price rounded').id,refValue:RDStore.YN_YES],
-                                    [type:PropertyDefinition.findByName('Time of billing').id,stringValue:'Vorauszahlung',isShared:true],
-                                    [type:PropertyDefinition.findByName('Sim-User Number').id,stringValue:'unlimitiert',isShared:true]
+                                    [type:PropertyDefinition.getByNameAndDescr('GASCO Entry', PropertyDefinition.SUB_PROP).id,refValue:RDStore.YN_YES],
+                                    [type:PropertyDefinition.getByNameAndDescr('GASCO information link', PropertyDefinition.SUB_PROP).id,urlValue:null,isShared:true],
+                                    [type:PropertyDefinition.getByNameAndDescr('GASCO negotiator name', PropertyDefinition.SUB_PROP).id,stringValue:'Allianzlizenz Team'],
+                                    [type:PropertyDefinition.getByNameAndDescr('Perennial term', PropertyDefinition.SUB_PROP).id,refValue:RDStore.YN_NO,note:'opt out Klausel vorhanden',isShared:true],
+                                    [type:PropertyDefinition.getByNameAndDescr('Perennial term checked', PropertyDefinition.SUB_PROP).id,refValue:null,isShared:true],
+                                    [type:PropertyDefinition.getByNameAndDescr('Price rounded', PropertyDefinition.SUB_PROP).id,refValue:RDStore.YN_YES],
+                                    [type:PropertyDefinition.getByNameAndDescr('Time of billing', PropertyDefinition.SUB_PROP).id,stringValue:'Vorauszahlung',isShared:true],
+                                    [type:PropertyDefinition.getByNameAndDescr('Sim-User Number', PropertyDefinition.SUB_PROP).id,stringValue:'unlimitiert',isShared:true]
                             ],
                             subscriptionMembers: [[subMember:member1Aachen,
                                                    subOwner:consortialLicenses.get('Rahmenvertrag (Teilnehmervertrag)'),
@@ -1736,14 +1774,14 @@ class OrganisationService {
                             sharedProperties:['name','form','resource'],
                             subscriptionDocuments:[[docstoreUUID:'1b28ccb2-9fd4-4652-8c6c-02f9df41f653',isShared:true]],
                             customProperties: [
-                                    [type:PropertyDefinition.findByName('GASCO Entry').id,refValue:RDStore.YN_YES],
-                                    [type:PropertyDefinition.findByName('GASCO information link').id,urlValue:null,isShared:true],
-                                    [type:PropertyDefinition.findByName('GASCO negotiator name').id,stringValue:'Allianzlizenz Team'],
-                                    [type:PropertyDefinition.findByName('Perennial term').id,refValue:RDStore.YN_NO,note:'opt out Klausel vorhanden',isShared:true],
-                                    [type:PropertyDefinition.findByName('Perennial term checked').id,refValue:null],
-                                    [type:PropertyDefinition.findByName('Price rounded').id,refValue:RDStore.YN_YES],
-                                    [type:PropertyDefinition.findByName('Time of billing').id,stringValue:'Vorauszahlung',isShared:true],
-                                    [type:PropertyDefinition.findByName('Sim-User Number').id,stringValue:'unlimitiert',isShared:true]
+                                    [type:PropertyDefinition.getByNameAndDescr('GASCO Entry', PropertyDefinition.SUB_PROP).id,refValue:RDStore.YN_YES],
+                                    [type:PropertyDefinition.getByNameAndDescr('GASCO information link', PropertyDefinition.SUB_PROP).id,urlValue:null,isShared:true],
+                                    [type:PropertyDefinition.getByNameAndDescr('GASCO negotiator name', PropertyDefinition.SUB_PROP).id,stringValue:'Allianzlizenz Team'],
+                                    [type:PropertyDefinition.getByNameAndDescr('Perennial term', PropertyDefinition.SUB_PROP).id,refValue:RDStore.YN_NO,note:'opt out Klausel vorhanden',isShared:true],
+                                    [type:PropertyDefinition.getByNameAndDescr('Perennial term checked', PropertyDefinition.SUB_PROP).id,refValue:null],
+                                    [type:PropertyDefinition.getByNameAndDescr('Price rounded', PropertyDefinition.SUB_PROP).id,refValue:RDStore.YN_YES],
+                                    [type:PropertyDefinition.getByNameAndDescr('Time of billing', PropertyDefinition.SUB_PROP).id,stringValue:'Vorauszahlung',isShared:true],
+                                    [type:PropertyDefinition.getByNameAndDescr('Sim-User Number', PropertyDefinition.SUB_PROP).id,stringValue:'unlimitiert',isShared:true]
                             ],
                             subscriptionMembers: [[subMember:member1Aachen,
                                                    subOwner:consortialLicenses.get('Rahmenvertrag (Teilnehmervertrag)'),
@@ -1775,14 +1813,14 @@ class OrganisationService {
                             provider: generalData.exampleOrgs.get('Musteranbieter E-Books'),
                             sharedProperties:['name','form','resource'],
                             customProperties: [
-                                    [type:PropertyDefinition.findByName('GASCO Entry').id,refValue:RDStore.YN_YES],
-                                    [type:PropertyDefinition.findByName('GASCO information link').id,urlValue:'https://musterlink.de',isShared:true],
-                                    [type:PropertyDefinition.findByName('Open country-wide').id,refValue:RDStore.YN_NO,note:'regionales Konsortium'],
-                                    [type:PropertyDefinition.findByName('Due date for volume discount').id,dateValue:generalData.sdf.parse('2020-11-30')],
-                                    [type:PropertyDefinition.findByName('Price rounded').id,refValue:RDStore.YN_YES],
-                                    [type:PropertyDefinition.findByName('Sim-User Number').id,stringValue:'unlimitiert',isShared:true],
-                                    [type:PropertyDefinition.findByName('Time span for testing').id,stringValue:'60'],
-                                    [type:PropertyDefinition.findByName('Joining during the period').id,refValue:RDStore.YN_YES]
+                                    [type:PropertyDefinition.getByNameAndDescr('GASCO Entry', PropertyDefinition.SUB_PROP).id,refValue:RDStore.YN_YES],
+                                    [type:PropertyDefinition.getByNameAndDescr('GASCO information link', PropertyDefinition.SUB_PROP).id,urlValue:'https://musterlink.de',isShared:true],
+                                    [type:PropertyDefinition.getByNameAndDescr('Open country-wide', PropertyDefinition.SUB_PROP).id,refValue:RDStore.YN_NO,note:'regionales Konsortium'],
+                                    [type:PropertyDefinition.getByNameAndDescr('Due date for volume discount', PropertyDefinition.SUB_PROP).id,dateValue:generalData.sdf.parse('2020-11-30')],
+                                    [type:PropertyDefinition.getByNameAndDescr('Price rounded', PropertyDefinition.SUB_PROP).id,refValue:RDStore.YN_YES],
+                                    [type:PropertyDefinition.getByNameAndDescr('Sim-User Number', PropertyDefinition.SUB_PROP).id,stringValue:'unlimitiert',isShared:true],
+                                    [type:PropertyDefinition.getByNameAndDescr('Time span for testing', PropertyDefinition.SUB_PROP).id,stringValue:'60'],
+                                    [type:PropertyDefinition.getByNameAndDescr('Joining during the period', PropertyDefinition.SUB_PROP).id,refValue:RDStore.YN_YES]
                             ],
                             privateProperties: [
                                     [type:PropertyDefinition.findByNameAndTenant('Quellensteuer-Befreiung',current).id,refValue:RefdataValue.getByValueAndCategory('Planed','YNO'),note:'der Anbieter hat dies beantragt']
@@ -1883,11 +1921,11 @@ class OrganisationService {
                             provider: generalData.exampleOrgs.get('Musteranbieter E-Journals'),
                             sharedProperties:['name','form','resource'],
                             customProperties: [
-                                    [type:PropertyDefinition.findByName('GASCO Entry').id,refValue:RDStore.YN_YES],
-                                    [type:PropertyDefinition.findByName('GASCO information link').id,urlValue:'https://www.hallo.de',isShared:true],
-                                    [type:PropertyDefinition.findByName('Private institutions').id,refValue:RDStore.YN_YES],
-                                    [type:PropertyDefinition.findByName('Calculation of discount').id,refValue:RDStore.YN_YES,note:'die Gesamtzahl der Teilnehmer pro Modul wird für die Findung der erreichten Rabattstufe summiert'],
-                                    [type:PropertyDefinition.findByName('Sim-User Number').id,stringValue:'unlimitiert',isShared:true]
+                                    [type:PropertyDefinition.getByNameAndDescr('GASCO Entry', PropertyDefinition.SUB_PROP).id,refValue:RDStore.YN_YES],
+                                    [type:PropertyDefinition.getByNameAndDescr('GASCO information link', PropertyDefinition.SUB_PROP).id,urlValue:'https://www.hallo.de',isShared:true],
+                                    [type:PropertyDefinition.getByNameAndDescr('Private institutions', PropertyDefinition.SUB_PROP).id,refValue:RDStore.YN_YES],
+                                    [type:PropertyDefinition.getByNameAndDescr('Calculation of discount', PropertyDefinition.SUB_PROP).id,refValue:RDStore.YN_YES,note:'die Gesamtzahl der Teilnehmer pro Modul wird für die Findung der erreichten Rabattstufe summiert'],
+                                    [type:PropertyDefinition.getByNameAndDescr('Sim-User Number', PropertyDefinition.SUB_PROP).id,stringValue:'unlimitiert',isShared:true]
                             ],
                             privateProperties: [
                                     [type:PropertyDefinition.findByNameAndTenant('Quellensteuer-Befreiung',current).id,refValue:RefdataValue.getByValueAndCategory('Unclear','YNO'),note:'dringend klären']
