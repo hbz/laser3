@@ -37,6 +37,12 @@
                 </div>
             </div>
         </th>
+        %{--th DELETE:--}%
+        <th>
+            <g:if test="${targetSubscription}">
+                <input type="checkbox" data-action="delete" class="select-all" onclick="selectAllDelete(this);" />
+            </g:if>
+        </th>
     </tr>
 </thead>
 <tbody>
@@ -52,13 +58,13 @@
             </g:if>
         </td>
         <g:set var="propValues" value="${prop.getValue()}" />
-
+        <% Set propValuesForSourceSub = propValues.get(sourceSubscription) %>
+        <% Set propValuesForTargetSub = propValues.get(targetSubscription) %>
         %{--SOURCE-SUBSCRIPTION--}%
         <td class="center aligned">
             <g:if test="${propValues.containsKey(sourceSubscription)}">
-                <% Set propValuesForSourceSub = propValues.get(sourceSubscription) %>
                 <g:each var="propValue" in="${propValuesForSourceSub}">
-                    <div class="la-copyElements-flex-container la-colorCode-source">
+                    <div class="la-copyElements-flex-container la-multi-sources la-colorCode-source">
                         <div class="la-copyElements-flex-item">
                             <g:if test="${propValue.type.type == Integer.toString()}">
                                 <semui:xEditable owner="${propValue}" type="text" field="intValue" overwriteEditable="${overwriteEditable}" />
@@ -104,14 +110,12 @@
         %{--HEREDITY--}%
         <td class="center aligned">
             <g:if test="${propValues.containsKey(sourceSubscription)}">
-                <% Set propValuesForSourceSub = propValues.get(sourceSubscription) %>
                 <g:each var="propValue" in="${propValuesForSourceSub}">
                     <g:if test="${propValue instanceof com.k_int.kbplus.SubscriptionCustomProperty}">
-                        <div class="la-copyElements-flex-item right aligned wide column">
-                            <div class="ui checkbox la-toggle-radio la-inherit">
-                                <input type="checkbox" name="auditProperties" value="${propValue.id}" ${!AuditConfig.getConfig(propValue) ? '' : 'checked' }/>
-                            </div>
+                        <div class="ui checkbox la-toggle-radio la-inherit">
+                            <input type="checkbox" name="auditProperties" value="${propValue.id}" ${!AuditConfig.getConfig(propValue) ? '' : 'checked' }/>
                         </div>
+                        <br>
                     </g:if>
                 </g:each>
             </g:if>
@@ -119,30 +123,21 @@
         %{--ACTION--}%
         <td class="center aligned">
             <g:if test="${propValues.containsKey(sourceSubscription)}">
-                <% Set propValuesForSourceSub = propValues.get(sourceSubscription) %>
                 <g:each var="propValue" in="${propValuesForSourceSub}">
-
                     %{--COPY:--}%
                     <g:if test="${propValues.containsKey(sourceSubscription)}">
                         <div class="ui checkbox la-toggle-radio la-replace">
                             <g:checkBox name="subscription.takeProperty" class="bulkcheck" data-action="copy" data-multipleOccurrence="${propKey.multipleOccurrence}" value="${genericOIDService.getOID(propValue)}" checked="${true}" />
                         </div>
                     </g:if>
-
                 </g:each>
             </g:if>
         </td>
-
-
-
         %{--TARGET-SUBSCRIPTION--}%
         <td>
-            <g:if test="${ ! targetSubscription}">
-            </g:if>
-            <g:elseif test="${propValues.containsKey(targetSubscription)}">
-                <% Set propValuesForTargetSub = propValues.get(targetSubscription) %>
+            <g:if test="${ targetSubscription && propValues.containsKey(targetSubscription)}">
                 <g:each var="propValue" in="${propValuesForTargetSub}">
-                    <div class="la-copyElements-flex-container la-colorCode-target">
+                    <div class="la-copyElements-flex-container la-colorCode-target la-multi-sources">
                         <div  class="la-copyElements-flex-item">
                             <g:if test="${propValue.type.type == Integer.toString()}">
                                 <semui:xEditable owner="${propValue}" type="text" field="intValue" overwriteEditable="${overwriteEditable}" />
@@ -189,12 +184,22 @@
                         <g:if test="${propValues.get(targetSubscription)?.size() > 1}"><br></g:if>
                     </div>
                 </g:each>
-            </g:elseif>
+            </g:if>
             <g:else>
                 <div class="la-copyElements-flex-item">
                     <a class="ui circular label la-popup-tooltip la-delay" data-content="<g:message code="default.compare.propertyNotSet"/>"><strong>–</strong></a>
                 </div>
             </g:else>
+        </td>
+        %{--DELETE:--}%
+        <td>
+            <g:if test="${ targetSubscription && propValues.containsKey(targetSubscription)}">
+                <g:each var="propValue" in="${propValuesForTargetSub}">
+                    <div class="ui checkbox la-toggle-radio la-noChange">
+                        <g:checkBox class="bulkcheck"  name="subscription.deleteProperty" data-multipleOccurrence="${propKey.multipleOccurrence}" value="${genericOIDService.getOID(propValue)}" data-action="delete" checked="${false}"/>
+                    </div>
+                </g:each>
+            </g:if>
         </td>
     </tr>
 </g:each>
