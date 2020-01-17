@@ -11,6 +11,7 @@ import de.laser.domain.IssueEntitlementCoverage
 import de.laser.domain.PriceItem
 import de.laser.exceptions.EntitlementCreationException
 import de.laser.helper.DebugAnnotation
+import de.laser.helper.FactoryResult
 import org.codehaus.groovy.tools.shell.util.MessageSource
 import org.springframework.web.multipart.commons.CommonsMultipartFile
 import de.laser.helper.RDStore
@@ -682,7 +683,29 @@ class SubscriptionService {
             String value = sourceIdentifier.value
 
             if (ownerSub && namespace && value) {
-                Identifier.construct([value: value, reference: ownerSub, namespace: namespace], flash)
+                FactoryResult factoryResult = Identifier.constructWithFactoryResult([value: value, reference: ownerSub, namespace: namespace])
+                Object[] args = [factoryResult.result.ns.ns, factoryResult.result.value]
+                factoryResult.status.each {
+                    switch (it){
+                        case FactoryResult.STATUS_OK:
+                            flash.message += messageSource.getMessage('identifier.create.success', args, locale)
+                            break;
+                        case FactoryResult.STATUS_ERR:
+                            flash.error += messageSource.getMessage('identifier.create.err', args, locale)
+                            break;
+                        case FactoryResult.STATUS_ERR_UNIQUE_BUT_ALREADY_EXISTS_IN_REFERENCE_OBJ:
+                            flash.error += messageSource.getMessage('identifier.create.err.alreadyExist', args, locale)
+                            break;
+                        case FactoryResult.STATUS_ERR_UNIQUE_BUT_ALREADY_SEVERAL_EXIST_IN_REFERENCE_OBJ:
+                            flash.error += messageSource.getMessage('identifier.create.warn.alreadyExistSeveralTimes', args, locale)
+                            break;
+                        case FactoryResult.STATUS_ERR_UNIQUE_BUT_ALREADY_EXISTS_IN_SYSTEM:
+                            flash.error += messageSource.getMessage('identifier.create.err.uniqueNs', args, locale)
+                            break;
+                        default:
+                            flash.error += factoryResult.status
+                    }
+                }
             }
         }
     }

@@ -1,10 +1,10 @@
 package com.k_int.kbplus
 
 import com.sun.xml.internal.ws.commons.xmlutil.Converter
+import de.laser.helper.FactoryResult
 import grails.util.Holders
 import org.apache.commons.logging.Log
 import org.apache.commons.logging.LogFactory
-import org.codehaus.groovy.tools.shell.util.MessageSource
 
 import javax.persistence.Transient
 
@@ -74,12 +74,11 @@ class Identifier {
     }
 
     static Identifier construct(Map<String, Object> map) {
-        return construct(map, null)
+        return constructWithFactoryResult(map).result
     }
-    static Identifier construct(Map<String, Object> map, def flash) {
-        def messageSource = Holders.grailsApplication.mainContext.getBean('messageSource')
-        Locale locale = org.springframework.context.i18n.LocaleContextHolder.getLocale()
-        boolean isAddFlash = messageSource && locale && flash
+
+    static FactoryResult constructWithFactoryResult(Map<String, Object> map) {
+        FactoryResult factoryResult = new FactoryResult()
 
         String value        = map.get('value')
         Object reference    = map.get('reference')
@@ -98,7 +97,6 @@ class Identifier {
 			}
 		}
 
-        Object[] args = [ns.ns, value]
         String attr = Identifier.getAttributeName(reference)
 
         def ident = Identifier.executeQuery(
@@ -106,36 +104,39 @@ class Identifier {
                 [val: value, ns: ns, ref: reference]
 
         )
-        if (isAddFlash && ident){
-            flash.error += messageSource.getMessage('identifier.create.err.already.exist', args, locale)
+        if (ident){
+            factoryResult.status += FactoryResult.STATUS_ERR_UNIQUE_BUT_ALREADY_EXISTS_IN_REFERENCE_OBJ
         }
         if (! ident.isEmpty()) {
             if (ident.size() > 1) {
+                factoryResult.status += FactoryResult.STATUS_ERR_UNIQUE_BUT_ALREADY_SEVERAL_EXIST_IN_REFERENCE_OBJ
                 static_logger.debug("WARNING: multiple matches found for ( ${value}, ${ns}, ${reference} )")
             }
             ident = ident.first()
         }
 
         if (! ident) {
-			if (ns.isUnique && Identifier.findByNsAndValue(ns, value)) {
+            Identifier identifierInDB = Identifier.findByNsAndValue(ns, value)
+			if (ns.isUnique && identifierInDB) {
                 static_logger.debug("NO IDENTIFIER CREATED: multiple occurrences found for unique namespace ( ${value}, ${ns} )")
-                if (isAddFlash) {
-                    flash.error += messageSource.getMessage( 'identifier.create.err.unique.ns',  args, locale)
-                }
+                factoryResult.status += FactoryResult.STATUS_ERR_UNIQUE_BUT_ALREADY_SEVERAL_EXIST_IN_REFERENCE_OBJ
+//                factoryResult.result = identifierInDB
+                ident = identifierInDB
 			} else {
                 static_logger.debug("INFO: no match found; creating new identifier for ( ${value}, ${ns}, ${reference.class} )")
 				ident = new Identifier(ns: ns, value: value)
 				ident.setReference(reference)
 				boolean success = ident.save()
                 if (success){
-                    if (isAddFlash) flash.message += messageSource.getMessage('identifier.create.success', args, locale)
+                    factoryResult.status += FactoryResult.STATUS_OK
                 } else {
-                    if (isAddFlash) flash.error += messageSource.getMessage('identifier.create.err', args, locale)
+                    factoryResult.status += FactoryResult.STATUS_ERR
                 }
 			}
         }
 
-        ident
+        factoryResult.result = ident
+        factoryResult
     }
 
     void setReference(def owner) {

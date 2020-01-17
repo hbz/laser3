@@ -187,6 +187,40 @@
                     </g:each>
                 </td>
             </tr>
+            <tr>
+                <td name="subscription.takeIdentifier.source">
+                    <b><i class="barcode icon"></i>&nbsp${message(code: 'default.identifiers.label')}:</b><br />
+                    <g:each in="${sourceIdentifiers}" var="ident">
+                        <b>${ident.ns.ns}:</b>&nbsp${ident.value}<br />
+                    </g:each>
+                </td>
+                %{--COPY:--}%
+                <td class="center aligned">
+                    <g:each in="${sourceIdentifiers}" var="ident">
+                        <div data-id="${ident.id}" class="la-element">
+                            <div class="ui checkbox la-toggle-radio la-replace">
+                                <g:checkBox name="subscription.takeIdentifierIds" value="${ident.id}" data-action="copy"  />
+                            </div>
+                        </div>
+                    </g:each>
+                </td>
+                <td name="subscription.takeIdentifier.target">
+                    <b><i class="barcode icon"></i>&nbsp${message(code: 'default.identifiers.label')}:</b><br />
+                    <g:each in="${targetIdentifiers}" var="ident">
+                        <b>${ident.ns.ns}:</b>&nbsp${ident.value}<br />
+                    </g:each>
+                </td>
+                %{--DELETE:--}%
+                <td>
+                    <g:each in="${targetIdentifiers}" var="ident">
+                        <div data-id="${ident.id}" class="la-element">
+                            <div class="ui checkbox la-toggle-radio la-noChange">
+                                <g:checkBox name="subscription.deleteIdentifierIds" value="${ident.id}" data-action="delete" checked="${false}" />
+                            </div>
+                        </div>
+                    </g:each>
+                </td>
+            </tr>
             </tbody>
         </table>
         <g:set var="submitButtonText" value="${isRenewSub?

@@ -83,7 +83,6 @@ class SubscriptionController extends AbstractDebugController {
     def surveyService
 
     public static final String WORKFLOW_DATES_OWNER_RELATIONS = '1'
-    public static final String WORKFLOW_IDENTIFIERS = '7'
     public static final String WORKFLOW_PACKAGES_ENTITLEMENTS = '5'
     public static final String WORKFLOW_DOCS_ANNOUNCEMENT_TASKS = '2'
     public static final String WORKFLOW_SUBSCRIBER = '3'
@@ -4560,21 +4559,21 @@ class SubscriptionController extends AbstractDebugController {
             case WORKFLOW_DATES_OWNER_RELATIONS:
                 result << copySubElements_DatesOwnerRelations();
                 if (params.isRenewSub){
-                    params?.workFlowPart = WORKFLOW_IDENTIFIERS
-                    result << loadDataFor_Identifiers()
+                    params?.workFlowPart = WORKFLOW_PACKAGES_ENTITLEMENTS
+                    result << loadDataFor_PackagesEntitlements()
                 } else {
                     result << loadDataFor_DatesOwnerRelations()
                 }
                 break;
-            case WORKFLOW_IDENTIFIERS:
-                result << copySubElements_Identifiers();
-                if (params.isRenewSub){
-                    params?.workFlowPart = WORKFLOW_PACKAGES_ENTITLEMENTS
-                    result << loadDataFor_PackagesEntitlements()
-                } else {
-                    result << loadDataFor_Identifiers()
-                }
-                break;
+//            case WORKFLOW_IDENTIFIERS:
+//                result << copySubElements_Identifiers();
+//                if (params.isRenewSub){
+//                    params?.workFlowPart = WORKFLOW_PACKAGES_ENTITLEMENTS
+//                    result << loadDataFor_PackagesEntitlements()
+//                } else {
+//                    result << loadDataFor_Identifiers()
+//                }
+//                break;
             case WORKFLOW_PACKAGES_ENTITLEMENTS:
                 result << copySubElements_PackagesEntitlements();
                 if (params.isRenewSub){
@@ -4689,6 +4688,20 @@ class SubscriptionController extends AbstractDebugController {
             }
         }
 
+        if (params?.subscription?.deleteIdentifierIds && isBothSubscriptionsSet(baseSub, newSub)) {
+            def toDeleteIdentifiers =  []
+            params.list('subscription.deleteIdentifierIds').each{ identifier -> toDeleteIdentifiers << Long.valueOf(identifier) }
+            subscriptionService.deleteIdentifiers(toDeleteIdentifiers, newSub, flash)
+            isTargetSubChanged = true
+        }
+
+        if (params?.subscription?.takeIdentifierIds && isBothSubscriptionsSet(baseSub, newSub)) {
+            def toCopyIdentifiers =  []
+            params.list('subscription.takeIdentifierIds').each{ identifier -> toCopyIdentifiers << Long.valueOf(identifier) }
+            subscriptionService.copyIdentifiers(baseSub, toCopyIdentifiers, newSub, flash)
+            isTargetSubChanged = true
+        }
+
         if (isTargetSubChanged) {
             newSub = newSub.refresh()
         }
@@ -4701,6 +4714,21 @@ class SubscriptionController extends AbstractDebugController {
         def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
         Subscription baseSub = Subscription.get(params.sourceSubscriptionId ?: params.id)
         Subscription newSub = params.targetSubscriptionId ? Subscription.get(params.targetSubscriptionId) : null
+
+        result.sourceIdentifiers = baseSub.ids?.sort { x, y ->
+            if (x.ns?.ns?.toLowerCase() == y.ns?.ns?.toLowerCase()){
+                x.value <=> y.value
+            } else {
+                x.ns?.ns?.toLowerCase() <=> y.ns?.ns?.toLowerCase()
+            }
+        }
+        result.targetIdentifiers = newSub?.ids?.sort { x, y ->
+            if (x.ns?.ns?.toLowerCase() == y.ns?.ns?.toLowerCase()){
+                x.value <=> y.value
+            } else {
+                x.ns?.ns?.toLowerCase() <=> y.ns?.ns?.toLowerCase()
+            }
+        }
 
         // restrict visible for templates/links/orgLinksAsList
         result.source_visibleOrgRelations = subscriptionService.getVisibleOrgRelations(baseSub)
@@ -4796,33 +4824,6 @@ class SubscriptionController extends AbstractDebugController {
         result.flash = flash
         result.sourceSubscription = baseSub
         result.targetSubscription = newSub
-        result
-    }
-
-    private loadDataFor_Identifiers() {
-        def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
-        Subscription baseSub = Subscription.get(params.sourceSubscriptionId ? Long.parseLong(params.sourceSubscriptionId): Long.parseLong(params.id))
-        Subscription newSub = null
-        if (params.targetSubscriptionId) {
-            newSub = Subscription.get(Long.parseLong(params.targetSubscriptionId))
-        }
-
-        result.sourceSubscription = baseSub
-        result.targetSubscription = newSub
-        result.sourceIdentifiers = baseSub.ids?.sort { x, y ->
-            if (x.ns?.ns?.toLowerCase() == y.ns?.ns?.toLowerCase()){
-                x.value <=> y.value
-            } else {
-                x.ns?.ns?.toLowerCase() <=> y.ns?.ns?.toLowerCase()
-            }
-        }
-        result.targetIdentifiers = newSub?.ids?.sort { x, y ->
-            if (x.ns?.ns?.toLowerCase() == y.ns?.ns?.toLowerCase()){
-                x.value <=> y.value
-            } else {
-                x.ns?.ns?.toLowerCase() <=> y.ns?.ns?.toLowerCase()
-            }
-        }
         result
     }
 
