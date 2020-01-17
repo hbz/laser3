@@ -45,7 +45,6 @@ ${usedRdvList.join(", ")}
 
         <div class="ui styled fluid accordion">
             <g:each in="${rdCategories}" var="rdc">
-                <g:set var="rdcI10n" value="${I10nTranslation.createI10nOnTheFly(rdc, 'desc')}" />
 
                 <div class="title">
                     <i class="dropdown icon"></i>
@@ -71,18 +70,18 @@ ${usedRdvList.join(", ")}
                                 <td></td>
                                 <td>
                                     <g:if test="${!rdc.isHardData && SpringSecurityUtils.ifAnyGranted('ROLE_YODA')}">
-                                        <strong><semui:xEditable owner="${rdcI10n}" field="valueDe" /></strong>
+                                        <strong><semui:xEditable owner="${rdc}" field="desc_de" /></strong>
                                     </g:if>
                                     <g:else>
-                                        <strong>${rdcI10n.valueDe}</strong>
+                                        <strong>${rdc.getI10n('desc', 'de')}</strong>
                                     </g:else>
                                 </td>
                                 <td>
                                     <g:if test="${!rdc.isHardData && SpringSecurityUtils.ifAnyGranted('ROLE_YODA')}">
-                                        <strong><semui:xEditable owner="${rdcI10n}" field="valueEn" /></strong>
+                                        <strong><semui:xEditable owner="${rdc}" field="desc_en" /></strong>
                                     </g:if>
                                     <g:else>
-                                        <strong>${rdcI10n.valueEn}</strong>
+                                        <strong>${rdc.getI10n('desc', 'en')}</strong>
                                     </g:else>
                                 </td>
                                 <td>

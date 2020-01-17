@@ -55,3 +55,17 @@
 -- update property_definition set pd_name = 'Perpetual access' where pd_name = 'Archivzugriff' and pd_description ='Subscription Property';
 -- update property_definition set pd_name = 'Restricted user group' where pd_name = 'Eingeschränkter Benutzerkreis' and pd_description ='Subscription Property';
 -- update property_definition set pd_name = 'SFX entry' where pd_name = 'SFX-Eintrag' and pd_description ='Subscription Property';
+
+-- 2020-01-17
+-- ERMS-2038: migrate refdata translations
+
+alter table refdata_category add column rdc_description_de varchar(255);
+alter table refdata_category add column rdc_description_en varchar(255);
+
+update refdata_category
+set rdc_description_de = i10n_value_de, rdc_description_en = i10n_value_en
+from i10n_translation
+where rdc_id = i10n_reference_id and i10n_reference_class = 'com.k_int.kbplus.RefdataCategory' and i10n_reference_field = 'desc';
+
+delete from i10n_translation
+where i10n_reference_class like 'com.k_int.kbplus.RefdataCategory%' and i10n_reference_field = 'desc';

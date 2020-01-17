@@ -14,7 +14,7 @@
     <g:form id="link_subs_${tmplModalID}" class="ui form" url="[controller: 'ajax', action: 'linkSubscriptions']" method="post">
         <input type="hidden" name="context" value="${context}"/>
         <%
-            List<RefdataValue> refdataValues = RefdataValue.findAllByOwner(RefdataCategory.getByI10nDesc('Link type'))
+            List<RefdataValue> refdataValues = RefdataValue.findAllByOwner(RefdataCategory.findByDesc('Link Type'))
             LinkedHashMap linkTypes = [:]
             refdataValues.each { rv ->
                 String[] linkArray = rv.getI10n("value").split("\\|")
