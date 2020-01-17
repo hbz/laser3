@@ -367,8 +367,11 @@ class FinanceController extends AbstractDebugController {
                                     //tax rate
                                     cellnum++
                                     String taxString
-                                    if(ci.taxKey) {
+                                    if(ci.taxKey && ci.taxKey.display) {
                                         taxString = "${ci.taxKey.taxType.getI10n('value')} (${ci.taxKey.taxRate} %)"
+                                    }
+                                    else if(ci.taxKey == CostItem.TAX_TYPES.TAX_REVERSE_CHARGE) {
+                                        taxString = "${ci.taxKey.taxType.getI10n('value')}"
                                     }
                                     else taxString = message(code:'financials.taxRate.notSet')
                                     row.add(taxString)
@@ -674,8 +677,11 @@ class FinanceController extends AbstractDebugController {
                         //tax rate
                         cell = row.createCell(cellnum++)
                         String taxString
-                        if(ci.taxKey) {
+                        if(ci.taxKey && ci.taxKey.display) {
                             taxString = "${ci.taxKey.taxType.getI10n('value')} (${ci.taxKey.taxRate} %)"
+                        }
+                        else if(ci.taxKey == CostItem.TAX_TYPES.TAX_REVERSE_CHARGE) {
+                            taxString = "${ci.taxKey.taxType.getI10n('value')}"
                         }
                         else taxString = message(code:'financials.taxRate.notSet')
                         cell.setCellValue(taxString)

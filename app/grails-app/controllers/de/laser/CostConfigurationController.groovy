@@ -75,7 +75,7 @@ class CostConfigurationController {
 
         result.formUrl = g.createLink([controller:'costConfiguration',action:'index'])
         result.costItemElements = costItemElements
-        result.elementSigns = RefdataCategory.getAllRefdataValues('CostItemElement')
+        result.elementSigns = RefdataCategory.getAllRefdataValues('Cost configuration')
         result.institution = org
 
         render template: '/templates/newCostItemElementConfiguration', model: result

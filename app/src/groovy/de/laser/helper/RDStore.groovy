@@ -115,6 +115,8 @@ class RDStore {
     static final TITLE_STATUS_RETIRED       = getRefdataValue('Retired','TitleInstanceStatus')
     static final TITLE_STATUS_DELETED       = getRefdataValue('Deleted','TitleInstanceStatus')
 
+    static final TAX_REVERSE_CHARGE         = getRefdataValue('reverse charge','TaxType')
+
     static final COMBO_TYPE_CONSORTIUM      = getRefdataValue('Consortium','Combo Type')
     static final COMBO_TYPE_DEPARTMENT      = getRefdataValue('Department','Combo Type')
 
