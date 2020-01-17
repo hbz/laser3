@@ -58,6 +58,7 @@
 
 -- 2020-01-17
 -- ERMS-2038: migrate refdata translations
+-- changesets in changelog-2020-01-17.groovy
 
 alter table refdata_category add column rdc_description_de varchar(255);
 alter table refdata_category add column rdc_description_en varchar(255);
