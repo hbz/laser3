@@ -110,7 +110,6 @@
         %{--HEREDITY--}%
         <td class="center aligned">
             <g:if test="${propValues.containsKey(sourceSubscription)}">
-
                 <g:each var="propValue" in="${propValuesForSourceSub}">
                     <g:if test="${propValue instanceof com.k_int.kbplus.SubscriptionCustomProperty}">
                         <div class="ui checkbox la-toggle-radio la-inherit">
@@ -136,9 +135,7 @@
         </td>
         %{--TARGET-SUBSCRIPTION--}%
         <td>
-            <g:if test="${ ! targetSubscription}">
-            </g:if>
-            <g:elseif test="${propValues.containsKey(targetSubscription)}">
+            <g:if test="${ targetSubscription && propValues.containsKey(targetSubscription)}">
                 <g:each var="propValue" in="${propValuesForTargetSub}">
                     <div class="la-copyElements-flex-container la-colorCode-target la-multi-sources">
                         <div  class="la-copyElements-flex-item">
@@ -187,7 +184,7 @@
                         <g:if test="${propValues.get(targetSubscription)?.size() > 1}"><br></g:if>
                     </div>
                 </g:each>
-            </g:elseif>
+            </g:if>
             <g:else>
                 <div class="la-copyElements-flex-item">
                     <a class="ui circular label la-popup-tooltip la-delay" data-content="<g:message code="default.compare.propertyNotSet"/>"><strong>–</strong></a>
