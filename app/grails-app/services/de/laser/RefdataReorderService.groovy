@@ -12,7 +12,7 @@ class RefdataReorderService {
      */
     void reorderRefdata() {
         //semesters: take the order of insertion and make then the ID ascending
-        List semesters = RefdataValue.findAllByOwnerAndValueNotEqual(RefdataCategory.findByDesc('Semester'),'semester.not.applicable',[sort:'id',order:'asc'])
+        List semesters = RefdataValue.findAllByOwnerAndValueNotEqual(RefdataCategory.getByDesc('Semester'),'semester.not.applicable',[sort:'id',order:'asc'])
         RefdataValue.executeUpdate('update RefdataValue rdv set rdv.order = 0 where rdv.value = :value',[value:'semester.not.applicable'])
         int order = 10
         semesters.each { s ->
@@ -26,7 +26,7 @@ class RefdataReorderService {
         RefdataValue.executeUpdate('update RefdataValue rdv set rdv.order = 20 where rdv.value = :value',[value:'User'])
         RefdataValue.executeUpdate('update RefdataValue rdv set rdv.order = 30 where rdv.value = :value',[value:'Population'])
         //currencies: defined by external
-        List currencies = RefdataValue.findAllByOwnerAndValueNotEqual(RefdataCategory.findByDesc('Currency'),'EUR',[sort:'value',order:'asc'])
+        List currencies = RefdataValue.findAllByOwnerAndValueNotEqual(RefdataCategory.getByDesc('Currency'),'EUR',[sort:'value',order:'asc'])
         RefdataValue.executeUpdate('update RefdataValue rdv set rdv.order = 0 where rdv.value = :value',[value:'EUR'])
         order = 10
         currencies.each { c ->

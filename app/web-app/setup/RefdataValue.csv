@@ -828,7 +828,7 @@ Person Function,Functional Contact Legal Patron Address,Anschrift des rechtliche
 Person Function,Functional Contact Library Address,Bibliotheksanschrift,Library address
 Person Function,Functional Contact Postal Address,Postanschrift,Postal address
 Person Function,GASCO-Contact,GASCO-Kontakt,GASCO-Contact
-Person Function,General Contact Person,Hauptkontakt,General Contact Person
+Person Function,General contact person,Hauptkontakt,General Contact Person
 Person Function,Responsible Admin,Verantwortlicher Admin,Responsible Admin
 Person Function,Statistical Support,Statistischer Support,Statistical Support
 Person Function,Technichal Support,Technischer Support,Technichal Support

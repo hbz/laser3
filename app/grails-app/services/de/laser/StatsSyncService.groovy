@@ -196,7 +196,7 @@ class StatsSyncService {
     }
 
     def getRelevantReportList(queryParams) {
-        def reports = RefdataValue.findAllByOwner(RefdataCategory.findByDesc('FactType'))
+        def reports = RefdataValue.findAllByOwner(RefdataCategory.getByDesc('FactType'))
         def availableReports = getAvailableReportsForPlatform(queryParams)
         reports.removeAll {
             if (it.value.startsWith('STATS') || (it.value.startsWith('JUSP'))){

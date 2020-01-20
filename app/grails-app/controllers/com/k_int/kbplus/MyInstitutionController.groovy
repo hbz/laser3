@@ -1344,7 +1344,7 @@ from License as l where (
                         def postfix = cm.get(0).shortname ?: cm.get(0).name
 
                         def cons_sub = new Subscription(
-                                            // type: RefdataValue.findByValue("Subscription Taken"),
+                                            // type: RefdataValue.getByValue("Subscription Taken"),
                                           type: subType,
                                           name: params.newEmptySubName,
                                           // name: params.newEmptySubName + " (${postfix})",
@@ -3489,7 +3489,7 @@ AND EXISTS (
         result.filterSubTypes = RefdataCategory.getAllRefdataValues('Subscription Type').minus(
                 RDStore.SUBSCRIPTION_TYPE_LOCAL
         )
-        result.filterPropList = PropertDefinition.findAllPublicAndPrivateProp([PropertyDefinition.SUB_PROP], contextService.getOrg())
+        result.filterPropList = PropertyDefinition.findAllPublicAndPrivateProp([PropertyDefinition.SUB_PROP], contextService.getOrg())
 
         /*
         String query = "select ci, subT, roleT.org from CostItem ci join ci.owner orgK join ci.sub subT join subT.instanceOf subK " +

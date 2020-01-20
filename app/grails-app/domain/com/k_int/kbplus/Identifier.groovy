@@ -1,7 +1,11 @@
 package com.k_int.kbplus
 
+import com.sun.xml.internal.ws.commons.xmlutil.Converter
+import de.laser.helper.FactoryResult
+import grails.util.Holders
 import org.apache.commons.logging.Log
 import org.apache.commons.logging.LogFactory
+
 import javax.persistence.Transient
 
 class Identifier {
@@ -70,51 +74,69 @@ class Identifier {
     }
 
     static Identifier construct(Map<String, Object> map) {
+        return constructWithFactoryResult(map).result
+    }
+
+    static FactoryResult constructWithFactoryResult(Map<String, Object> map) {
+        FactoryResult factoryResult = new FactoryResult()
 
         String value        = map.get('value')
         Object reference    = map.get('reference')
         def namespace       = map.get('namespace')
 
-		IdentifierNamespace ns
+        IdentifierNamespace ns
 		if (namespace instanceof IdentifierNamespace) {
 			ns = namespace
 		}
         else {
 			ns = IdentifierNamespace.findByNsIlike(namespace?.trim())
+
+			if(! ns) {
+				ns = new IdentifierNamespace(ns: namespace, isUnique: true, isHidden: false)
+				ns.save(flush:true)
+			}
 		}
 
-        if(! ns) {
-            ns = new IdentifierNamespace(ns:namespace, isUnique: true, isHidden: false)
-            ns.save()
-            static_logger.debug("INFO: no match found for namespace; creating new identifier with namespace for ( ${value}, ${ns}, ${reference.class} )")
-            Identifier ident = new Identifier(ns: ns, value: value)
-            ident.setReference(reference)
-            ident.save()
-        }
-        else {
-            String attr = getAttributeName(reference)
+        String attr = Identifier.getAttributeName(reference)
 
-            def ident = executeQuery('select ident from Identifier ident where ident.value = :val and ident.ns = :ns and ident.' + attr + ' = :ref order by ident.id', [val: value, ns: ns, ref: reference])
-            if (! ident.isEmpty()) {
-                if (ident.size() > 1) {
-                    static_logger.debug("WARNING: multiple matches found for ( ${value}, ${ns}, ${reference} )")
-                }
-                ident = ident.first()
-            }
+        def ident = Identifier.executeQuery(
+                'select ident from Identifier ident where ident.value = :val and ident.ns = :ns and ident.' + attr + ' = :ref order by ident.id',
+                [val: value, ns: ns, ref: reference]
 
-            if (! ident) {
-                if (ns.isUnique && findByNsAndValue(ns, value)) {
-                    static_logger.debug("NO IDENTIFIER CREATED: multiple occurrences found for unique namespace ( ${value}, ${ns} )")
-                }
-                else {
-                    static_logger.debug("INFO: no match found; creating new identifier for ( ${value}, ${ns}, ${reference.class} )")
-                    ident = new Identifier(ns: ns, value: value)
-                    ident.setReference(reference)
-                    ident.save()
-                }
-            }
-            ident
+        )
+        if (ident){
+            factoryResult.status += FactoryResult.STATUS_ERR_UNIQUE_BUT_ALREADY_EXISTS_IN_REFERENCE_OBJ
         }
+        if (! ident.isEmpty()) {
+            if (ident.size() > 1) {
+                factoryResult.status += FactoryResult.STATUS_ERR_UNIQUE_BUT_ALREADY_SEVERAL_EXIST_IN_REFERENCE_OBJ
+                static_logger.debug("WARNING: multiple matches found for ( ${value}, ${ns}, ${reference} )")
+            }
+            ident = ident.first()
+        }
+
+        if (! ident) {
+            Identifier identifierInDB = Identifier.findByNsAndValue(ns, value)
+			if (ns.isUnique && identifierInDB) {
+                static_logger.debug("NO IDENTIFIER CREATED: multiple occurrences found for unique namespace ( ${value}, ${ns} )")
+                factoryResult.status += FactoryResult.STATUS_ERR_UNIQUE_BUT_ALREADY_SEVERAL_EXIST_IN_REFERENCE_OBJ
+//                factoryResult.result = identifierInDB
+                ident = identifierInDB
+			} else {
+                static_logger.debug("INFO: no match found; creating new identifier for ( ${value}, ${ns}, ${reference.class} )")
+				ident = new Identifier(ns: ns, value: value)
+				ident.setReference(reference)
+				boolean success = ident.save()
+                if (success){
+                    factoryResult.status += FactoryResult.STATUS_OK
+                } else {
+                    factoryResult.status += FactoryResult.STATUS_ERR
+                }
+			}
+        }
+
+        factoryResult.result = ident
+        factoryResult
     }
 
     void setReference(def owner) {

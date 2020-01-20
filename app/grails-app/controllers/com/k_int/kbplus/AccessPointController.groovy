@@ -112,7 +112,7 @@ class AccessPointController extends AbstractDebugController {
                 localizedAccessPointNameSuggestions[message(code : key, locale : locale)] = key
             }
         }
-        def existingOapIpInstances = OrgAccessPoint.findAllByOrgAndAccessMethod(organisation, RefdataValue.findByValue('ip'))
+        def existingOapIpInstances = OrgAccessPoint.findAllByOrgAndAccessMethod(organisation, RefdataValue.getByValue('ip'))
 
         if (existingOapIpInstances) {
             existingOapIpInstances.each { it ->
@@ -144,13 +144,13 @@ class AccessPointController extends AbstractDebugController {
         params.availableIpOptions = availableIPOptions()
 
         if (params.template) {
-            def accessMethod = RefdataValue.findByValue(params.template)
+            def accessMethod = RefdataValue.getByValue(params.template)
             return render(template: 'create_' + accessMethod, model: [accessMethod: accessMethod, availableIpOptions : params.availableIpOptions])
         } else {
             if (!params.accessMethod) {
-                params.accessMethod = RefdataValue.findByValue('ip');
+                params.accessMethod = RefdataValue.getByValueAndCategory('ip', 'Access Point Type')
             }
-            params.accessMethod = RefdataValue.findByValue(params.accessMethod);
+            params.accessMethod = RefdataValue.getByValue(params.accessMethod);
 
             return params
         }

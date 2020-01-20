@@ -2,7 +2,7 @@
 
 <div class="field fieldcontain ${hasErrors(bean: addressInstance, field: 'type', 'error')} ">
 	<label for="type">
-		${com.k_int.kbplus.RefdataCategory.findByDesc('AddressType').getI10n('desc')}
+		${com.k_int.kbplus.RefdataCategory.getByDesc('AddressType').getI10n('desc')}
 
 	</label>
 	<laser:select class="ui dropdown" id="type" name="type.id"
@@ -69,7 +69,7 @@
 		<g:message code="address.state.label" default="State" />
 	</label>
 	<laser:select class="ui dropdown" id="state" name="state.id"
-				  from="${com.k_int.kbplus.RefdataValue.findAllByOwner(com.k_int.kbplus.RefdataCategory.findByDesc('Federal State'))}"
+				  from="${com.k_int.kbplus.RefdataValue.findAllByOwner(com.k_int.kbplus.RefdataCategory.getByDesc('Federal State'))}"
 				  optionKey="id"
 				  optionValue="value"
 				  value="${addressInstance?.state?.id}"
@@ -81,7 +81,7 @@
 		<g:message code="address.country.label" default="Country" />
 	</label>
 	<laser:select class="ui dropdown" id="country" name="country.id"
-				  from="${com.k_int.kbplus.RefdataValue.findAllByOwner(com.k_int.kbplus.RefdataCategory.findByDesc('Country'))}"
+				  from="${com.k_int.kbplus.RefdataValue.findAllByOwner(com.k_int.kbplus.RefdataCategory.getByDesc('Country'))}"
 				  optionKey="id"
 				  optionValue="value"
 				  value="${addressInstance?.country?.id}"

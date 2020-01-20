@@ -494,7 +494,6 @@ class DataManagerController extends AbstractDebugController {
             pendingChangeSetupMap.each { RefdataValue status, Set<TitleInstancePackagePlatform> tippsToUpdate ->
                 TitleInstancePackagePlatform.executeUpdate('update TitleInstancePackagePlatform tipp set tipp.status = :status where tipp in :tippsToUpdate',[status:status,tippsToUpdate:tippsToUpdate])
                 //hook up pending changes
-                PendingChange pendingChange = new PendingChange()
             }
             Set<TitleInstancePackagePlatform> tippsToDelete = TitleInstancePackagePlatform.findAllByGokbIdInListAndIdNotInList(result.duplicateTIPPKeys,result.excludes)
             if(tippsToDelete)

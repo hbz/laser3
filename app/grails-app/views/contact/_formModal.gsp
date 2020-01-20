@@ -22,7 +22,7 @@
 
                 <div class="field eight wide required">
                     <label for="type">
-                        ${com.k_int.kbplus.RefdataCategory.findByDesc('ContactType').getI10n('desc')}
+                        ${com.k_int.kbplus.RefdataCategory.getByDesc('ContactType').getI10n('desc')}
                     </label>
                     <laser:select class="ui dropdown" id="type" name="type.id"
                                   from="${com.k_int.kbplus.Contact.getAllRefdataValues('ContactType')}"

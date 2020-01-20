@@ -11,8 +11,11 @@ import de.laser.domain.IssueEntitlementCoverage
 import de.laser.domain.PriceItem
 import de.laser.exceptions.EntitlementCreationException
 import de.laser.helper.DebugAnnotation
+import de.laser.helper.FactoryResult
+import org.codehaus.groovy.tools.shell.util.MessageSource
 import org.springframework.web.multipart.commons.CommonsMultipartFile
 import de.laser.helper.RDStore
+import com.k_int.kbplus.Identifier
 
 import java.nio.file.Path
 import java.nio.file.Files
@@ -671,6 +674,47 @@ class SubscriptionService {
         return save(targetSub, flash)
     }
 
+    void copyIdentifiers(Subscription baseSub, List<String> toCopyIdentifiers, Subscription newSub, def flash) {
+        toCopyIdentifiers.each{ identifierId ->
+            def ownerSub = newSub
+            Identifier sourceIdentifier = Identifier.get(identifierId)
+            IdentifierNamespace namespace = sourceIdentifier.ns
+            String value = sourceIdentifier.value
+
+            if (ownerSub && namespace && value) {
+                FactoryResult factoryResult = Identifier.constructWithFactoryResult([value: value, reference: ownerSub, namespace: namespace])
+                Object[] args = [factoryResult.result.ns.ns, factoryResult.result.value]
+                factoryResult.status.each {
+                    switch (it){
+                        case FactoryResult.STATUS_OK:
+                            flash.message += messageSource.getMessage('identifier.create.success', args, locale)
+                            break;
+                        case FactoryResult.STATUS_ERR:
+                            flash.error += messageSource.getMessage('identifier.create.err', args, locale)
+                            break;
+                        case FactoryResult.STATUS_ERR_UNIQUE_BUT_ALREADY_EXISTS_IN_REFERENCE_OBJ:
+                            flash.error += messageSource.getMessage('identifier.create.err.alreadyExist', args, locale)
+                            break;
+                        case FactoryResult.STATUS_ERR_UNIQUE_BUT_ALREADY_SEVERAL_EXIST_IN_REFERENCE_OBJ:
+                            flash.error += messageSource.getMessage('identifier.create.warn.alreadyExistSeveralTimes', args, locale)
+                            break;
+                        case FactoryResult.STATUS_ERR_UNIQUE_BUT_ALREADY_EXISTS_IN_SYSTEM:
+                            flash.error += messageSource.getMessage('identifier.create.err.uniqueNs', args, locale)
+                            break;
+                        default:
+                            flash.error += factoryResult.status
+                    }
+                }
+            }
+        }
+    }
+
+    void deleteIdentifiers(List<String> toDeleteIdentifiers, Subscription newSub, def flash) {
+        int countDeleted = Identifier.executeUpdate('delete from Identifier i where i.id in (:toDeleteIdentifiers) and i.sub = :sub',
+        [toDeleteIdentifiers: toDeleteIdentifiers, sub: newSub])
+        Object[] args = [countDeleted]
+        flash.message += messageSource.getMessage('identifier.delete.success', args, locale)
+    }
 
     def deleteDocs(List<Long> toDeleteDocs, Subscription targetSub, def flash) {
         log.debug("toDeleteDocCtxIds: " + toDeleteDocs)

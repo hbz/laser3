@@ -658,8 +658,8 @@ class SubscriptionImportController extends AbstractDebugController {
                                    // startDate: db_sub.startDate,
                                    // endDate: db_sub.endDate,
                                    // instanceOf: db_sub,
-                                   type: RefdataValue.findByValue('Subscription Taken') )
-
+                                   type: RefdataValue.getByValue('Subscription Taken') )
+  
       def packages_referenced = []
       Date earliest_start_date =  null
       Date latest_end_date = null

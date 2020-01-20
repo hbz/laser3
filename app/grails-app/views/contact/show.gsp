@@ -34,7 +34,7 @@
 							<semui:xEditable owner="${contactInstance}" field="content" id="js-mailContent"/>
 						</dd>
 
-                        <dt>${com.k_int.kbplus.RefdataCategory.findByDesc('ContactType').getI10n('desc')}</dt>
+                        <dt>${com.k_int.kbplus.RefdataCategory.getByDesc('ContactType').getI10n('desc')}</dt>
                         <dd><semui:xEditableRefData owner="${contactInstance}" field="type" config="ContactType" /></dd>
 
                         <g:if test="${contactInstance?.prs}">

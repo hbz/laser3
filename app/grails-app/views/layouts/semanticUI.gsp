@@ -490,7 +490,7 @@
                                     <g:link class="item" controller="yoda" action="cleanUpSurveys">Clean Up Surveys with Multi Term</g:link>
                                     <g:link class="item" controller="yoda" action="insertEditUris">Insert Edit URIs for GOKB Sources</g:link>
 
-                                    <%--<g:link class="item" controller="yoda" action="subscriptionCheck">${message(code:'menu.admin.subscriptionsCheck')}</g:link>--%>
+                                    <g:link class="item" controller="yoda" action="subscriptionCheck">${message(code:'menu.admin.subscriptionsCheck')}</g:link>
                                     <%--<g:link class="item" controller="yoda" action="updateLinks">${message(code:'menu.admin.updateLinks')}</g:link>--%>
                                     <%--<g:link class="item" controller="yoda" action="startDateCheck">${message(code:'menu.admin.startDatesCheck')}</g:link>--%>
                                     <%--<g:link class="item" controller="yoda" action="updateTaxRates">${message(code:'menu.admin.taxTypeCheck')}</g:link>--%>

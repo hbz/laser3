@@ -238,7 +238,7 @@ static hasMany = [  tipps:     TitleInstancePackagePlatform,
                                    startDate:startdate,
                                    endDate:enddate,
                                    isPublic: false,
-                                   type: RefdataValue.findByValue(subtype),
+                                   type: RefdataValue.getByValue(subtype),
                                    isSlaved: (slaved == "Yes" || slaved == true))
 
     if ( result.save(flush:true) ) {

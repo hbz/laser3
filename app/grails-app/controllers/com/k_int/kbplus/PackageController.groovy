@@ -505,7 +505,7 @@ class PackageController extends AbstractDebugController {
 
         result.contextOrg = contextOrg
 
-        result.modalPrsLinkRole = RefdataValue.findByValue('Specific package editor')
+        result.modalPrsLinkRole = RefdataValue.getByValueAndCategory('Specific package editor', 'Person Responsibility')
         result.modalVisiblePersons = addressbookService.getPrivatePersonsByTenant(contextService.getOrg())
 
         // restrict visible for templates/links/orgLinksAsList

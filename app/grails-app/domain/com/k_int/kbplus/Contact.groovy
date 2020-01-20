@@ -88,7 +88,7 @@ class Contact implements Comparable<Contact>{
         }
 
         if(person && organisation){
-            type = RefdataValue.findByValue("Job-related")
+            type = RefdataValue.getByValue("Job-related")
         }
         
         Contact check = Contact.lookup(content, contentType, type, person, organisation)

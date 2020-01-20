@@ -12,7 +12,7 @@
 
                 <div class="field fieldcontain ${hasErrors(bean: personInstance, field: 'contactType', 'error')} ">
                     <label for="contactType">
-                        ${com.k_int.kbplus.RefdataCategory.findByDesc('Person Contact Type')?.getI10n('desc')}
+                        ${com.k_int.kbplus.RefdataCategory.getByDesc('Person Contact Type')?.getI10n('desc')}
                     </label>
                     <laser:select class="ui dropdown" id="contactType" name="contactType"
                                   from="${com.k_int.kbplus.Person.getAllRefdataValues('Person Contact Type')}"
@@ -136,7 +136,7 @@
 
                     <div class="field three fieldcontain">
                         <label for="contact1_type" for="contact2_type" for="contact3_type">
-                            ${com.k_int.kbplus.RefdataCategory.findByDesc('ContactType').getI10n('desc')}
+                            ${com.k_int.kbplus.RefdataCategory.getByDesc('ContactType').getI10n('desc')}
                         </label>
 
                         <laser:select class="ui dropdown" name="contact1_type"

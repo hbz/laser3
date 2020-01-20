@@ -20,7 +20,7 @@
                     iconWhich = "shield alternate"
                     optionKey="${{
                         it.refdataCategory ?
-                                "com.k_int.properties.PropertyDefinition:${it.id}\" data-rdc=\"com.k_int.kbplus.RefdataCategory:${RefdataCategory.findByDesc(it.refdataCategory)?.id}"
+                                "com.k_int.properties.PropertyDefinition:${it.id}\" data-rdc=\"com.k_int.kbplus.RefdataCategory:${RefdataCategory.getByDesc(it.refdataCategory)?.id}"
                                 : "com.k_int.properties.PropertyDefinition:${it.id}"
                     }}"
                     optionValue="${{ it.getI10n('name') }}"

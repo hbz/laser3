@@ -148,7 +148,7 @@ class Address {
         String info = "saving new address: ${type}"
 
         if (person && organisation) {
-            type = RefdataValue.findByValue("Job-related")
+            type = RefdataValue.getByValue("Job-related")
         }
 
         Address check = Address.lookup(name, street1, street2, zipcode, city, state, country, postbox, pobZipcode, pobCity, type, person, organisation)
