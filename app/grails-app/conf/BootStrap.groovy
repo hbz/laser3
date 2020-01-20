@@ -184,7 +184,7 @@ class BootStrap {
                     username: 'anonymous',
                     password: "laser@514@2019",
                     display: 'Anonymous User',
-                    email: 'laser_support@hbz-nrw.de',
+                    email: 'laser@hbz-nrw.de',
                     enabled: false
             ).save(failOnError: true)
 
