@@ -4565,15 +4565,6 @@ class SubscriptionController extends AbstractDebugController {
                     result << loadDataFor_DatesOwnerRelations()
                 }
                 break;
-//            case WORKFLOW_IDENTIFIERS:
-//                result << copySubElements_Identifiers();
-//                if (params.isRenewSub){
-//                    params?.workFlowPart = WORKFLOW_PACKAGES_ENTITLEMENTS
-//                    result << loadDataFor_PackagesEntitlements()
-//                } else {
-//                    result << loadDataFor_Identifiers()
-//                }
-//                break;
             case WORKFLOW_PACKAGES_ENTITLEMENTS:
                 result << copySubElements_PackagesEntitlements();
                 if (params.isRenewSub){
