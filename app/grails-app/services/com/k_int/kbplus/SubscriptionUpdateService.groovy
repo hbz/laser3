@@ -33,7 +33,7 @@ class SubscriptionUpdateService extends AbstractLockableService {
                 status == RDStore.SUBSCRIPTION_INTENDED && startDate < currentDate && (endDate != null && endDate >= currentDate) && isMultiYear == false
             }.collect{ it.id }
 
-            log.info("Intended subscriptions reached start date and are now running: " + intendedSubsIds1)
+            log.info("Intended subscriptions reached start date and are now running (${currentDate}): " + intendedSubsIds1)
 
             if (intendedSubsIds1) {
                 updatedObjs << ['intendedToCurrent' : intendedSubsIds1]
@@ -54,7 +54,7 @@ class SubscriptionUpdateService extends AbstractLockableService {
                 status == RDStore.SUBSCRIPTION_INTENDED_PERENNIAL && startDate < currentDate && (endDate != null && (instanceOf.endDate >= currentDate || endDate >= currentDate)) && isMultiYear == true
             }.collect{ it.id }
 
-            log.info("Intended perennial subscriptions reached start date and are now running: " + intendedSubsIds2)
+            log.info("Intended perennial subscriptions reached start date and are now running (${currentDate}): " + intendedSubsIds2)
 
             if (intendedSubsIds2) {
                 updatedObjs << ['intendedPerennialToCurrent' : intendedSubsIds2]
@@ -75,7 +75,7 @@ class SubscriptionUpdateService extends AbstractLockableService {
                 status == RDStore.SUBSCRIPTION_INTENDED && startDate < currentDate && (endDate != null && endDate < currentDate) && isMultiYear == false
             }.collect{ it.id }
 
-            log.info("Intended subscriptions reached start date and end date are now expired: " + intendedSubsIds3)
+            log.info("Intended subscriptions reached start date and end date are now expired (${currentDate}): " + intendedSubsIds3)
 
             if (intendedSubsIds3) {
                 updatedObjs << ['intendedToExpired' : intendedSubsIds3]
@@ -96,7 +96,7 @@ class SubscriptionUpdateService extends AbstractLockableService {
                 status == RDStore.SUBSCRIPTION_INTENDED_PERENNIAL && startDate < currentDate && (endDate != null && endDate < currentDate) && isMultiYear == true
             }.collect{ it.id }
 
-            log.info("Intended subscriptions reached start date and end date are now expired pernennial: " + intendedSubsIds4)
+            log.info("Intended subscriptions reached start date and end date are now expired pernennial (${currentDate}): " + intendedSubsIds4)
 
             if (intendedSubsIds4) {
                 updatedObjs << ['intendedPerennialToExpiredPerennial' : intendedSubsIds4]
@@ -117,7 +117,7 @@ class SubscriptionUpdateService extends AbstractLockableService {
                 status == RDStore.SUBSCRIPTION_CURRENT && startDate < currentDate && (endDate != null && endDate < currentDate) && isMultiYear == false
             }.collect{ it.id }
 
-            log.info("Current subscriptions reached end date and are now expired: " + currentSubsIds)
+            log.info("Current subscriptions reached end date and are now expired (${currentDate}): " + currentSubsIds)
 
             if (currentSubsIds) {
                 updatedObjs << ['currentToExpired' : currentSubsIds]
@@ -138,7 +138,7 @@ class SubscriptionUpdateService extends AbstractLockableService {
                 status == RDStore.SUBSCRIPTION_CURRENT && startDate < currentDate && (endDate != null && (instanceOf.endDate < currentDate || endDate < currentDate)) && isMultiYear == true
             }.collect{ it.id }
 
-            log.info("Current subscriptions reached end date and are now expired pernennial: " + currentSubsIds2)
+            log.info("Current subscriptions reached end date and are now expired pernennial (${currentDate}): " + currentSubsIds2)
 
             if (currentSubsIds2) {
                 updatedObjs << ['currentPerennialToExpiredPerennial' : currentSubsIds2]
