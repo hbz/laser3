@@ -1,5 +1,5 @@
 <!-- _result_tab_cons.gsp -->
-<%@ page import="org.springframework.context.i18n.LocaleContextHolder; de.laser.helper.RDStore; com.k_int.kbplus.CostItemElementConfiguration;com.k_int.kbplus.OrgRole;com.k_int.kbplus.RefdataCategory;com.k_int.kbplus.RefdataValue;com.k_int.properties.PropertyDefinition;com.k_int.kbplus.FinanceController" %>
+<%@ page import="org.springframework.context.i18n.LocaleContextHolder; de.laser.helper.RDStore; com.k_int.kbplus.CostItemElementConfiguration;com.k_int.kbplus.OrgRole;com.k_int.kbplus.RefdataCategory;com.k_int.kbplus.RefdataValue;com.k_int.properties.PropertyDefinition;com.k_int.kbplus.FinanceController;com.k_int.kbplus.CostItem" %>
 
 <laser:serviceInjection />
 
@@ -157,7 +157,15 @@
                         <g:formatNumber number="${ci.costInBillingCurrency ?: 0.0}" type="currency" currencySymbol="" />
                     </td>
                     <td>
-                        ${ci.taxKey ? ci.taxKey.taxRate+'%' : message(code:'financials.taxRate.notSet')}
+                        <g:if test="${ci.taxKey && ci.taxKey.display}">
+                            ${ci.taxKey.taxRate+'%'}
+                        </g:if>
+                        <g:elseif test="${ci.taxKey == CostItem.TAX_TYPES.TAX_REVERSE_CHARGE}">
+                            ${RDStore.TAX_REVERSE_CHARGE.getI10n("value")}
+                        </g:elseif>
+                        <g:elseif test="${!ci.taxKey}">
+                            <g:message code="financials.taxRate.notSet"/>
+                        </g:elseif>
                     </td>
                     <td>
                         <g:formatNumber number="${ci.costInBillingCurrencyAfterTax ?: 0.0}" type="currency" currencySymbol="" />
