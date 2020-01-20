@@ -235,7 +235,10 @@
                     <%
                         List taxTypesList = [[key:'null',value:"${RDStore.GENERIC_NULL_VALUE.getI10n('value')}"]]
                         CostItem.TAX_TYPES.every { taxType ->
-                            taxTypesList.add([key:taxType,value:taxType.taxType.getI10n("value")+" ("+taxType.taxRate+"%)"])
+                            if(taxType == CostItem.TAX_TYPES.TAX_REVERSE_CHARGE)
+                                taxTypesList.add([key:taxType,value:taxType.taxType.getI10n("value")])
+                            else
+                                taxTypesList.add([key:taxType,value:taxType.taxType.getI10n("value")+" ("+taxType.taxRate+"%)"])
                         }
                     %>
                     <g:select id="filterCITaxType" class="ui dropdown selection search"
@@ -276,10 +279,14 @@
         else {
             subStatus = "FETCH_ALL";
         }
+        var fixedSubscriptionString = "";
+        <g:if test="fixedSubscription">
+            fixedSubscriptionString = "&ctx=${fixedSubscription.class.name}:${fixedSubscription.id}"
+        </g:if>
         var links = {
             "filterSubProviders": "${createLink([controller:"ajax",action:"lookupProviders"])}?query={query}&forFinanceView=true",
             "filterCISub": "${createLink([controller:"ajax",action:"lookupSubscriptions"])}?status="+subStatus+"&query={query}",
-            "filterCISPkg": "${createLink([controller:"ajax",action:"lookupSubscriptionPackages"])}?status="+subStatus+"&query={query}${fixedSubscription ? '&ctx='+fixedSubscription.class.name+':'+fixedSubscription.id : ''}",
+            "filterCISPkg": "${createLink([controller:"ajax",action:"lookupSubscriptionPackages"])}?status="+subStatus+fixedSubscriptionString+"&query={query}",
             "filterCIBudgetCode": "${createLink([controller:"ajax",action:"lookupBudgetCodes"])}?query={query}",
             "filterCIInvoiceNumber": "${createLink([controller:"ajax",action:"lookupInvoiceNumbers"])}?query={query}",
             "filterCIOrderNumber": "${createLink([controller:"ajax",action:"lookupOrderNumbers"])}?query={query}",

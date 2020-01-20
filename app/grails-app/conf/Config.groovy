@@ -680,10 +680,10 @@ grails.mail.disabled = false //System wide
 grails.mail.poolSize = 20 //default 5 emails at a time, then que based system (prereq = async true)
 //grails.mail.overrideAddress="ryan@k-int.com" //Test env only, overrides to and from address
 //grails.mail.port = 30//TODO: Diese Zeile fürs Deploy entfernen!!!
-notifications.email.from = 'laser_support@hbz-nrw.de'
-notifications.email.replyTo = 'laser_support@hbz-nrw.de'
+notifications.email.from = 'laser@hbz-nrw.de'
+notifications.email.replyTo = 'laser@hbz-nrw.de'
 notifications.email.genericTemplate = true //If enabled, no customisation in email i.e. Reminder inst info, User info... Else, Customised template will be sent to user
-systemEmail = 'laser_support@hbz-nrw.de'
+systemEmail = 'laser@hbz-nrw.de'
 
 //Finance
 grails.plugins.remotepagination.enableBootstrap = true

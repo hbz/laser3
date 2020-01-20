@@ -268,7 +268,7 @@
                         <g:select class="ui dropdown calc" name="newTaxRate" title="TaxRate"
                               from="${CostItem.TAX_TYPES}"
                               optionKey="${{it.taxType.class.name+":"+it.taxType.id+"§"+it.taxRate}}"
-                              optionValue="${{it.taxType.getI10n("value")+" ("+it.taxRate+"%)"}}"
+                              optionValue="${{it.display ? it.taxType.getI10n("value")+" ("+it.taxRate+"%)" : it.taxType.getI10n("value")}}"
                               value="${taxKey?.taxType?.class?.name}:${taxKey?.taxType?.id}§${taxKey?.taxRate}"
                               noSelection="${['null§0':'']}"/>
 
@@ -592,7 +592,7 @@
                 $("#costButton1").click();
             });
 
-            $("[name='newSubscription'][name='newLicenseeTarget']").change(function(){
+            $("[name='newSubscription']").change(function(){
                 onSubscriptionUpdate();
                 ajaxPostFunc();
             });
