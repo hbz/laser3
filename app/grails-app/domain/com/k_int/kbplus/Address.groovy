@@ -20,7 +20,7 @@ class Address {
     Date dateCreated
     Date lastUpdated
 
-    @RefdataAnnotation(cat = 'Federal State')
+    @RefdataAnnotation(cat = RDConstants.FEDERAL_STATE)
     RefdataValue state
 
     @RefdataAnnotation(cat = RDConstants.COUNTRY)

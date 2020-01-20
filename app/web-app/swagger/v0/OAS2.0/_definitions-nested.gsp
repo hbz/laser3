@@ -89,9 +89,9 @@
           Exclusive with cluster, license, package, subscription and title
       roleType:
         type: string
-        description: Mapping RefdataCategory "Organisational Role"
+        description: Mapping RefdataCategory "${de.laser.helper.RDConstants.ORGANISATIONAL_ROLE}"
         enum:
-          [${ com.k_int.kbplus.RefdataCategory.getAllRefdataValues('Organisational Role').collect{ it.value }.join(', ') }]
+          [${ com.k_int.kbplus.RefdataCategory.getAllRefdataValues(de.laser.helper.RDConstants.ORGANISATIONAL_ROLE).collect{ it.value }.join(', ') }]
       startDate:
         type: string
         format: date

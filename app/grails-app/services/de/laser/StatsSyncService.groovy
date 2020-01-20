@@ -2,6 +2,7 @@ package de.laser
 
 import com.k_int.kbplus.*
 import de.laser.domain.StatsTripleCursor
+import de.laser.helper.RDConstants
 import de.laser.usage.StatsSyncServiceOptions
 import de.laser.usage.SushiClient
 import groovy.json.JsonOutput
@@ -196,7 +197,7 @@ class StatsSyncService {
     }
 
     def getRelevantReportList(queryParams) {
-        def reports = RefdataValue.findAllByOwner(RefdataCategory.getByDesc('FactType'))
+        def reports = RefdataValue.findAllByOwner(RefdataCategory.getByDesc(RDConstants.FACT_TYPE))
         def availableReports = getAvailableReportsForPlatform(queryParams)
         reports.removeAll {
             if (it.value.startsWith('STATS') || (it.value.startsWith('JUSP'))){
@@ -326,7 +327,7 @@ class StatsSyncService {
                         fact.type = csr.factType.value
                         fact.value = count
                         fact.uid = "${options.statsTitleIdentifier}:${options.platform}:${options.customer}:${key}:${metric}:${csr.factType.value}"
-                        fact.metric = RefdataValue.getByValueAndCategory(metric, 'FactMetric')
+                        fact.metric = RefdataValue.getByValueAndCategory(metric, RDConstants.FACT_METRIC)
                         fact.title = options.title_inst
                         fact.supplier = options.supplier_inst
                         fact.inst = options.org_inst

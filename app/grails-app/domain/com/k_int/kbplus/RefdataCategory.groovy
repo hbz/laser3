@@ -2,6 +2,7 @@ package com.k_int.kbplus
 
 import de.laser.domain.AbstractI10nOverride
 import de.laser.domain.I10nTranslation
+import de.laser.helper.RDConstants
 import org.apache.commons.logging.Log
 import org.apache.commons.logging.LogFactory
 import org.springframework.context.i18n.LocaleContextHolder
@@ -13,7 +14,7 @@ class RefdataCategory extends AbstractI10nOverride {
     static Log static_logger = LogFactory.getLog(RefdataCategory)
 
     @Transient
-    public static final ORG_STATUS = 'OrgStatus'
+    public static final ORG_STATUS = RDConstants.ORG_STATUS
     @Transient
     public static final PKG_SCOPE = "Package.Scope"
     @Transient
@@ -29,9 +30,9 @@ class RefdataCategory extends AbstractI10nOverride {
     @Transient
     public static final TI_STATUS = 'TitleInstanceStatus'
     @Transient
-    public static final LIC_STATUS = 'License Status'
+    public static final LIC_STATUS = RDConstants.LICENSE_STATUS
     @Transient
-    public static final LIC_TYPE = 'License Type'
+    public static final LIC_TYPE = RDConstants.LICENSE_TYPE
     @Transient
     public static final TIPP_STATUS = 'TIPP Status'
     @Transient
@@ -41,7 +42,7 @@ class RefdataCategory extends AbstractI10nOverride {
     @Transient
     public static final PKG_GLOBAL = 'Package Global'
      @Transient
-    public static final IE_ACCEPT_STATUS = 'IE Accept Status'
+    public static final IE_ACCEPT_STATUS = RDConstants.IE_ACCEPT_STATUS
 
     String desc
     String desc_de

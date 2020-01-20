@@ -85,7 +85,7 @@ where i10n_reference_class like 'com.k_int.kbplus.RefdataValue%' and i10n_refere
 
 -- 2020-01-20
 -- ERMS-2072: migrate refdata translations
--- changesets in changelog-2020-01-20.groovy
+-- changesets in changelog-2020-01-17.groovy
 
 update refdata_category set rdc_description = 'access.choice.remote' where rdc_description = 'Access choice remote';
 update refdata_category set rdc_description = 'access.method' where rdc_description = 'Access Method';
@@ -114,6 +114,61 @@ update refdata_category set rdc_description = 'customer.identifier.type' where r
 update refdata_category set rdc_description = 'document.context.status' where rdc_description = 'Document Context Status';
 update refdata_category set rdc_description = 'document.type' where rdc_description = 'Document Type';
 update refdata_category set rdc_description = 'existence' where rdc_description = 'Existence';
+
+update refdata_category set rdc_description = 'fact.metric' where rdc_description = 'FactMetric';
+update refdata_category set rdc_description = 'fact.type' where rdc_description = 'FactType';
+update refdata_category set rdc_description = 'federal.state' where rdc_description = 'Federal State';
+update refdata_category set rdc_description = 'funder.type' where rdc_description = 'Funder Type';
+update refdata_category set rdc_description = 'gender' where rdc_description = 'Gender';
+update refdata_category set rdc_description = 'ie.accept.status' where rdc_description = 'IE Accept Status';
+update refdata_category set rdc_description = 'ie.access.status' where rdc_description = 'IE Access Status';
+update refdata_category set rdc_description = 'ie.medium' where rdc_description = 'IEMedium';
+update refdata_category set rdc_description = 'ill.code' where rdc_description = 'Ill code';
+update refdata_category set rdc_description = 'indemnification' where rdc_description = 'Indemnification';
+update refdata_category set rdc_description = 'invoicing' where rdc_description = 'Invoicing';
+update refdata_category set rdc_description = 'ipv4.address.format' where rdc_description = 'IPv4 Address Format';
+update refdata_category set rdc_description = 'ipv6.address.format' where rdc_description = 'IPv6 Address Format';
+update refdata_category set rdc_description = 'language' where rdc_description = 'Language';
+update refdata_category set rdc_description = 'library.network' where rdc_description = 'Library Network';
+update refdata_category set rdc_description = 'license.category' where rdc_description = 'LicenseCategory';
+update refdata_category set rdc_description = 'license.remote.access' where rdc_description = 'Lincense.RemoteAccess';
+update refdata_category set rdc_description = 'library.type' where rdc_description = 'Library Type';
+update refdata_category set rdc_description = 'license.status' where rdc_description = 'License Status';
+update refdata_category set rdc_description = 'license.type' where rdc_description = 'License Type';
+
+update refdata_category set rdc_description = 'license.arc.archival.copy.content' where rdc_description = 'License.Arc.ArchivalCopyContent';
+update refdata_category set rdc_description = 'license.arc.archival.copy.cost' where rdc_description = 'License.Arc.ArchivalCopyCost';
+update refdata_category set rdc_description = 'license.arc.archival.copy.time' where rdc_description = 'License.Arc.ArchivalCopyTime';
+update refdata_category set rdc_description = 'license.arc.archival.copy.transmission.format' where rdc_description = 'License.Arc.ArchivalCopyTransmissionFormat';
+update refdata_category set rdc_description = 'license.arc.authorized' where rdc_description = 'License.Arc.Authorized';
+update refdata_category set rdc_description = 'license.arc.hosting.restriction' where rdc_description = 'License.Arc.HostingRestriction';
+update refdata_category set rdc_description = 'license.arc.hosting.solution' where rdc_description = 'License.Arc.HostingSolution';
+update refdata_category set rdc_description = 'license.arc.hosting.time' where rdc_description = 'License.Arc.HostingTime';
+update refdata_category set rdc_description = 'license.arc.payment.note' where rdc_description = 'License.Arc.PaymentNote';
+update refdata_category set rdc_description = 'license.arc.title.transfer.regulation' where rdc_description = 'License.Arc.TitletransferRegulation';
+update refdata_category set rdc_description = 'license.oa.corresponding.author.identification' where rdc_description = 'License.OA.CorrespondingAuthorIdentification';
+update refdata_category set rdc_description = 'license.oa.earc.version' where rdc_description = 'License.OA.eArcVersion';
+update refdata_category set rdc_description = 'license.oa.license.to.publish' where rdc_description = 'License.OA.LicenseToPublish';
+update refdata_category set rdc_description = 'license.oa.receiving.modalities' where rdc_description = 'License.OA.ReceivingModalities';
+update refdata_category set rdc_description = 'license.oa.repository' where rdc_description = 'License.OA.Repository';
+update refdata_category set rdc_description = 'license.oa.type' where rdc_description = 'License.OA.Type';
+update refdata_category set rdc_description = 'license.remote.access2' where rdc_description = 'License.RemoteAccess';
+update refdata_category set rdc_description = 'license.statistics.delivery' where rdc_description = 'License.Statistics.Delivery';
+update refdata_category set rdc_description = 'license.statistics.format' where rdc_description = 'License.Statistics.Format';
+update refdata_category set rdc_description = 'license.statistics.frequency' where rdc_description = 'License.Statistics.Frequency';
+update refdata_category set rdc_description = 'license.statistics.standards' where rdc_description = 'License.Statistics.Standards';
+update refdata_category set rdc_description = 'license.statistics.user.creds' where rdc_description = 'License.Statistics.UserCreds';
+update refdata_category set rdc_description = 'link.type' where rdc_description = 'Link Type';
+update refdata_category set rdc_description = 'mail.template.language' where rdc_description = 'MailTemplate Language';
+update refdata_category set rdc_description = 'mail.template.type' where rdc_description = 'MailTemplate Type';
+update refdata_category set rdc_description = 'number.type' where rdc_description = 'Number Type';
+update refdata_category set rdc_description = 'organisational.role' where rdc_description = 'Organisational Role';
+
+update refdata_category set rdc_description = 'org.sector' where rdc_description = 'OrgSector';
+update refdata_category set rdc_description = 'org.status' where rdc_description = 'OrgStatus';
+update refdata_category set rdc_description = 'org.type' where rdc_description = 'OrgRoleType';
+
+
 
 
 

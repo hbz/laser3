@@ -1,6 +1,7 @@
 package com.k_int.kbplus
 
 import de.laser.domain.AbstractBaseDomain
+import de.laser.helper.RDConstants
 import de.laser.helper.RDStore
 import de.laser.helper.RefdataAnnotation
 import groovy.util.logging.Log4j
@@ -14,7 +15,7 @@ class Person extends AbstractBaseDomain {
     String       last_name
     Org          tenant
 
-    @RefdataAnnotation(cat = 'Gender')
+    @RefdataAnnotation(cat = RDConstants.GENDER)
     RefdataValue gender
 
     boolean isPublic

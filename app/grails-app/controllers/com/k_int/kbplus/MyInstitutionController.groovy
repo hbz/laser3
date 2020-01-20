@@ -1615,7 +1615,7 @@ from License as l where (
             def subs_using_this_license = Subscription.findAllByOwnerAndStatus(license, current_subscription_status)
 
             if (subs_using_this_license.size() == 0) {
-                license.status = RefdataValue.getByValueAndCategory('Deleted', 'License Status')
+                license.status = RefdataValue.getByValueAndCategory('Deleted', RDConstants.LICENSE_STATUS)
                 license.save(flush: true);
             } else {
                 flash.error = message(code:'myinst.deleteLicense.error', default:'Unable to delete - The selected license has attached subscriptions marked as Current')

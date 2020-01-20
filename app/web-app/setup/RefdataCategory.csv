@@ -27,57 +27,57 @@ customer.identifier.type,Kategorie der Kundennummer,Customer Identifier Type
 document.context.status,Document Context Status,Document Context Status
 document.type,Dokumenttyp,Document Type
 existence,Vorliegen,Existence
-FactMetric,FactMetric,FactMetric
-FactType,FactType,FactType
-Federal State,Bundesland,Federal State
+fact.metric,FactMetric,FactMetric
+fact.type,FactType,FactType
+federal.state,Bundesland,Federal State
 filter.fake.values,filter.fake.values,filter.fake.values
-Funder Type,Trägerschaft,Funder Type
-Gender,Geschlecht,Gender
-IE Accept Status,IE Accept Status,IE Accept Status
-IE Access Status,IE Access Status,IE Access Status
-IEMedium,IEMedium,IEMedium
-Ill code,Fernleihindikator,Ill code
-Indemnification,Entschädigung Auswahl,Indemnification Choice
-Invoicing,Rechnungsstellung,Invoicing
-IPv4 Address Format,IPv4 Address Format,IPv4 Address Format
-IPv6 Address Format,IPv6 Address Format,IPv6 Address Format
-Language,Sprache,Language
-Library Network,Verbundzugehörigkeit,Library Network
-Library Type,Bibliothekstyp,Library Type
-License Status,Lizenzstatus,License Status
-License Type,Lizenztyp,License Type
-License.Arc.ArchivalCopyContent,Archivkopie Form,Archival Copy Content
-License.Arc.ArchivalCopyCost,Archivkopie Kosten,Archival Copy Cost
-License.Arc.ArchivalCopyTime,Archivkopie Zeitpunkt,Archival Copy Time
-License.Arc.ArchivalCopyTransmissionFormat,Archivkopie Übermittlungsformat,Archival Copy Transmission Format
-License.Arc.Authorized,Hostingrecht Berechtigte,Hosting Authorized
-License.Arc.HostingRestriction,Hostingrecht Einschränkung,Hosting Restriction
-License.Arc.HostingSolution,Hostingrecht Lösung,Hosting Solution
-License.Arc.HostingTime,Hostingrecht Zeitpunkt,Hosting Time
-License.Arc.PaymentNote,Zugriffsrechte Kosten,Archive Payment Note
-License.Arc.TitletransferRegulation,Titeltransfer Regeln,Titletransfer Regulation
-License.OA.CorrespondingAuthorIdentification,Autorenindentifikation,Corresponding Author Identification
-License.OA.eArcVersion,License.OA.eArcVersion,License.OA.eArcVersion
-License.OA.LicenseToPublish,Publikationslizenz,License to Publish
-License.OA.ReceivingModalities,Bezugsmodalitäten,Receiving Modalities
-License.OA.Repository,Repositorium,Repository
-License.OA.Type,Open-Acces Typ,Open Acces Type
-License.RemoteAccess,Remote-Zugriff,Remote Access
-License.Statistics.Delivery,Statistik Liefermethode,Statistics Delivery
-License.Statistics.Format,Statistik Auslieferungsformat,Statistics Format
-License.Statistics.Frequency,Statistik Auslieferungsfrequenz,Statistics Frequency
-License.Statistics.Standards,Statistikstandard,Statistics Standards
-License.Statistics.UserCreds,Statistik Nutzeridentifikation,Statistics User Credentials
-LicenseCategory,Lizenzkategorie,LicenseCategory
-Lincense.RemoteAccess,Lincense.RemoteAccess,Lincense.RemoteAccess
-Link Type,Link Type,Link Type
-MailTemplate Language,MailTemplate Sprache,MailTemplate Language
-MailTemplate Type,MailTemplate Typ,MailTemplate Type
-Number Type,Zahlen-Typ,Number Type
-Organisational Role,Organisational Role,Organisational Role
-OrgRoleType,Organisationstyp,Organisation Type
-OrgSector,Bereich,OrgSector
-OrgStatus,Status,Status
+funder.type,Trägerschaft,Funder Type
+gender,Geschlecht,Gender
+ie.accept.status,IE Accept Status,IE Accept Status
+ie.access.status,IE Access Status,IE Access Status
+ie.medium,IEMedium,IEMedium
+ill.code,Fernleihindikator,Ill code
+indemnification,Entschädigung Auswahl,Indemnification Choice
+invoicing,Rechnungsstellung,Invoicing
+ipv4.address.format,IPv4 Address Format,IPv4 Address Format
+ipv6.address.format,IPv6 Address Format,IPv6 Address Format
+language,Sprache,Language
+library.network,Verbundzugehörigkeit,Library Network
+library.type,Bibliothekstyp,Library Type
+license.status,Lizenzstatus,License Status
+license.type,Lizenztyp,License Type
+license.arc.archival.copy.content,Archivkopie Form,Archival Copy Content
+license.arc.archival.copy.cost,Archivkopie Kosten,Archival Copy Cost
+license.arc.archival.copy.time,Archivkopie Zeitpunkt,Archival Copy Time
+license.arc.archival.copy.transmission.format,Archivkopie Übermittlungsformat,Archival Copy Transmission Format
+license.arc.authorized,Hostingrecht Berechtigte,Hosting Authorized
+license.arc.hosting.restriction,Hostingrecht Einschränkung,Hosting Restriction
+license.arc.hosting.solution,Hostingrecht Lösung,Hosting Solution
+license.arc.hosting.time,Hostingrecht Zeitpunkt,Hosting Time
+license.arc.payment.note,Zugriffsrechte Kosten,Archive Payment Note
+license.arc.title.transfer.regulation,Titeltransfer Regeln,Titletransfer Regulation
+license.oa.corresponding.author.identification,Autorenindentifikation,Corresponding Author Identification
+license.oa.earc.version,License.OA.eArcVersion,License.OA.eArcVersion
+license.oa.license.to.publish,Publikationslizenz,License to Publish
+license.oa.receiving.modalities,Bezugsmodalitäten,Receiving Modalities
+license.oa.repository,Repositorium,Repository
+license.oa.type,Open-Acces Typ,Open Acces Type
+license.remote.access2,Remote-Zugriff,Remote Access
+license.statistics.delivery,Statistik Liefermethode,Statistics Delivery
+license.statistics.format,Statistik Auslieferungsformat,Statistics Format
+license.statistics.frequency,Statistik Auslieferungsfrequenz,Statistics Frequency
+license.statistics.standards,Statistikstandard,Statistics Standards
+license.statistics.user.creds,Statistik Nutzeridentifikation,Statistics User Credentials
+license.category,Lizenzkategorie,LicenseCategory
+license.remote.access,Lincense.RemoteAccess,Lincense.RemoteAccess
+link.type,Link Type,Link Type
+mail.template.language,MailTemplate Sprache,MailTemplate Language
+mail.template.type,MailTemplate Typ,MailTemplate Type
+number.type,Zahlen-Typ,Number Type
+organisational.role,Organisational Role,Organisational Role
+org.type,Organisationstyp,Organisation Type
+org.sector,Bereich,OrgSector
+org.status,Status,Status
 Package Status,Paketstatus,Package Status
 Package.Breakable,Package.Breakable,Package.Breakable
 Package.Consistent,Package.Consistent,Package.Consistent

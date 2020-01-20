@@ -1,5 +1,6 @@
 package com.k_int.kbplus
 
+import de.laser.helper.RDConstants
 import de.laser.helper.RefdataAnnotation
 import de.laser.traits.ShareableTrait
 import org.hibernate.event.PostUpdateEvent
@@ -16,7 +17,7 @@ class OrgRole implements ShareableTrait {
         /* sharedFrom: OrgRole */ // self-referential GORM problem
     ]
 
-    @RefdataAnnotation(cat = 'Organisational Role')
+    @RefdataAnnotation(cat = RDConstants.ORGANISATIONAL_ROLE)
     RefdataValue roleType
 
     Package       pkg

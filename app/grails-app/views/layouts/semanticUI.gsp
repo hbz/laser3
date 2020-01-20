@@ -8,7 +8,7 @@
     String currentTheme = 'semanticUI'
 
     if (currentUser) {
-        RefdataValue rdvLocale = currentUser?.getSetting(UserSettings.KEYS.LANGUAGE, RefdataValue.getByValueAndCategory('de', 'Language'))?.getValue()
+        RefdataValue rdvLocale = currentUser?.getSetting(UserSettings.KEYS.LANGUAGE, RefdataValue.getByValueAndCategory('de', de.laser.helper.RDConstants.LANGUAGE))?.getValue()
 
         if (rdvLocale) {
             currentLang = rdvLocale.value

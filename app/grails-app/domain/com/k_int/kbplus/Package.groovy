@@ -2,6 +2,7 @@ package com.k_int.kbplus
 
 import de.laser.domain.AbstractBaseDomain
 import de.laser.domain.IssueEntitlementCoverage
+import de.laser.helper.RDConstants
 import de.laser.helper.RDStore
 import de.laser.helper.RefdataAnnotation
 import de.laser.interfaces.ShareSupport
@@ -239,7 +240,7 @@ static hasMany = [  tipps:     TitleInstancePackagePlatform,
 
     if ( result.save(flush:true) ) {
       if ( consortium_org ) {
-        def sc_role = RefdataValue.getByValueAndCategory(org_role,'Organisational Role')
+        def sc_role = RefdataValue.getByValueAndCategory(org_role, RDConstants.ORGANISATIONAL_ROLE)
         def or = new OrgRole(org: consortium_org, sub:result, roleType:sc_role).save();
         log.debug("Create Org role ${or}")
       }

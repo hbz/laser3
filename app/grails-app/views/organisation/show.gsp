@@ -215,7 +215,7 @@
                             <dl>
                                 <dt><g:message code="org.sector.label" default="Sector"/></dt>
                                 <dd>
-                                    <semui:xEditableRefData owner="${orgInstance}" field="sector" config='OrgSector' overwriteEditable="${SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN,ROLE_ORG_EDITOR')}"/>
+                                    <semui:xEditableRefData owner="${orgInstance}" field="sector" config="${de.laser.helper.RDConstants.ORG_SECTOR}" overwriteEditable="${SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN,ROLE_ORG_EDITOR')}"/>
                                 </dd>
                             </dl>
                         </g:if>
@@ -232,7 +232,7 @@
 
                         <dd>
                             <g:if test="${SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN,ROLE_ORG_EDITOR')}">
-                                <semui:xEditableRefData owner="${orgInstance}" field="status" config='OrgStatus'/>
+                                <semui:xEditableRefData owner="${orgInstance}" field="status" config="${de.laser.helper.RDConstants.ORG_STATUS}"/>
                             </g:if>
                             <g:else>
                                 ${orgInstance.status?.getI10n('value')}
@@ -252,7 +252,7 @@
                             <dd>
                                 <%
                                     // hotfix:
-                                    def orgType_types = RefdataCategory.getAllRefdataValues('OrgRoleType')
+                                    def orgType_types = RefdataCategory.getAllRefdataValues(de.laser.helper.RDConstants.ORG_TYPE)
                                     def orgType_editable = SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')
 
                                     if (!orgType_editable) {
@@ -286,7 +286,7 @@
                                 </dt>
                                 <dd>
                                     <semui:xEditableRefData owner="${orgInstance}" field="libraryType"
-                                                            config='Library Type'/>
+                                                            config="${de.laser.helper.RDConstants.LIBRARY_TYPE}"/>
                                 </dd>
                             </dl>
                             <dl>
@@ -299,7 +299,7 @@
                                 </dt>
                                 <dd>
                                     <semui:xEditableRefData owner="${orgInstance}" field="libraryNetwork"
-                                                            config='Library Network'/>
+                                                            config="${de.laser.helper.RDConstants.LIBRARY_NETWORK}"/>
                                 </dd>
                             </dl>
                             <dl>
@@ -311,7 +311,7 @@
                                     </span>
                                 </dt>
                                 <dd>
-                                    <semui:xEditableRefData owner="${orgInstance}" field="funderType" config='Funder Type'/>
+                                    <semui:xEditableRefData owner="${orgInstance}" field="funderType" config="${de.laser.helper.RDConstants.FUNDER_TYPE}"/>
                                 </dd>
                             </dl>
                             <dl>
@@ -324,7 +324,7 @@
                                 </dt>
                                 <dd>
                                     <semui:xEditableRefData owner="${orgInstance}" field="federalState"
-                                                            config='Federal State'/>
+                                                            config="${de.laser.helper.RDConstants.FEDERAL_STATE}"/>
                                 </dd>
                             </dl>
                             <dl>

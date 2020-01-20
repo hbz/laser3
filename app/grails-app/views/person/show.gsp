@@ -70,7 +70,7 @@ ${personInstance}
                             <dd><semui:xEditable owner="${personInstance}" field="middle_name"/></dd></dl>
 
                         <dl><dt><g:message code="person.gender.label" default="Gender"/></dt>
-                            <dd><semui:xEditableRefData owner="${personInstance}" field="gender" config="Gender"/></dd>
+                            <dd><semui:xEditableRefData owner="${personInstance}" field="gender" config="${de.laser.helper.RDConstants.GENDER}"/></dd>
                         </dl>
 
                         <%--

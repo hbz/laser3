@@ -2,6 +2,7 @@ package com.k_int.kbplus
 
 import com.k_int.properties.PropertyDefinition
 import de.laser.AuditConfig
+import de.laser.helper.RDConstants
 import de.laser.helper.RDStore
 
 class InstitutionsService {
@@ -20,8 +21,8 @@ class InstitutionsService {
         def org = params.consortium ?: contextService.getOrg()
 
         def lic_name = params.lic_name ?: "Kopie von ${base.reference}"
-        RefdataValue license_type = RefdataValue.getByValueAndCategory('Actual', 'License Type')
-        RefdataValue license_status = RefdataValue.getByValueAndCategory('Current', 'License Status')
+        RefdataValue license_type = RefdataValue.getByValueAndCategory('Actual', RDConstants.LICENSE_TYPE)
+        RefdataValue license_status = RefdataValue.getByValueAndCategory('Current', RDConstants.LICENSE_STATUS)
 
         boolean slavedBool = false // ERMS-1562
         if (params.isSlaved) {
@@ -147,7 +148,7 @@ class InstitutionsService {
             }
             else if (base.licensor) {
                 // legacy
-                def licensor_role = RefdataValue.getByValueAndCategory('Licensor','Organisational Role')
+                def licensor_role = RefdataValue.getByValueAndCategory('Licensor', RDConstants.ORGANISATIONAL_ROLE)
                 new OrgRole(lic: licenseInstance, org: base.licensor, roleType: licensor_role).save(flush: true)
             }
 
@@ -160,8 +161,8 @@ class InstitutionsService {
         def baseLicense = params.baselicense ? License.get(params.baselicense) : null;
         Org org = contextService.getOrg()
 
-        RefdataValue license_type = RefdataValue.getByValueAndCategory('Actual','License Type')
-        RefdataValue license_status = RefdataValue.getByValueAndCategory('Current', 'License Status')
+        RefdataValue license_type = RefdataValue.getByValueAndCategory('Actual', RDConstants.LICENSE_TYPE)
+        RefdataValue license_status = RefdataValue.getByValueAndCategory('Current', RDConstants.LICENSE_STATUS)
         def lic_name = params.lic_name ?: "Kopie von ${baseLicense?.reference}"
 
         boolean slavedBool = false // ERMS-1562
@@ -206,7 +207,7 @@ class InstitutionsService {
 
             log.debug("adding org link to new license");
 
-            def rdvConsortiumOrgRole = RefdataValue.getByValueAndCategory('Consortium', 'OrgRoleType')?.id.toString()
+            def rdvConsortiumOrgRole = RefdataValue.getByValueAndCategory('Consortium', RDConstants.ORG_TYPE)?.id.toString()
 
             if (params.asOrgType && rdvConsortiumOrgRole in params.asOrgType) {
                 org.links.add(new OrgRole(lic: licenseInstance, org: org, roleType: lic_cons_role))
@@ -215,7 +216,7 @@ class InstitutionsService {
             }
 
             if (baseLicense?.licensor) {
-                def licensor_role = RefdataValue.getByValueAndCategory('Licensor', 'Organisational Role')
+                def licensor_role = RefdataValue.getByValueAndCategory('Licensor', RDConstants.ORGANISATIONAL_ROLE)
                 org.links.add(new OrgRole(lic: licenseInstance, org: baseLicense.licensor, roleType: licensor_role));
             }
 

@@ -93,8 +93,8 @@
 
                 <%
                     def fakeList = []
-                    fakeList.addAll(RefdataCategory.getAllRefdataValues('License Status'))
-                    fakeList.remove(RefdataValue.getByValueAndCategory('Deleted', 'License Status'))
+                    fakeList.addAll(RefdataCategory.getAllRefdataValues(de.laser.helper.RDConstants.LICENSE_STATUS))
+                    fakeList.remove(RefdataValue.getByValueAndCategory('Deleted', de.laser.helper.RDConstants.LICENSE_STATUS))
                 %>
 
                 <div class="field">

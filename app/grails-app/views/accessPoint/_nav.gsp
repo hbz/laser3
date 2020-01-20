@@ -6,7 +6,7 @@
         <semui:subNavItem controller="organisation" action="show" params="${[id: orgInstance?.id]}"
                           message="org.nav.details"/>
 
-        <g:if test="${orgInstance.sector != com.k_int.kbplus.RefdataValue.getByValueAndCategory('Publisher', 'OrgSector')}">
+        <g:if test="${orgInstance.sector != com.k_int.kbplus.RefdataValue.getByValueAndCategory('Publisher', de.laser.helper.RDConstants.ORG_SECTOR)}">
 
             <g:if test="${accessService.checkForeignOrgComboPermAffiliationX([
                     org             : orgInstance,
@@ -23,7 +23,7 @@
             </g:else>
         </g:if>
 
-        <g:if test="${orgInstance.sector != com.k_int.kbplus.RefdataValue.getByValueAndCategory('Publisher', 'OrgSector')}">
+        <g:if test="${orgInstance.sector != com.k_int.kbplus.RefdataValue.getByValueAndCategory('Publisher', de.laser.helper.RDConstants.ORG_SECTOR)}">
             <g:if test="${instAdmService.hasInstAdmPivileges(contextService.getUser(), orgInstance)}">
                 <semui:subNavItem controller="organisation" action="users" params="${[id: orgInstance?.id]}"
                                   message="org.nav.users" affiliation="INST_USER" affiliationOrg="${orgInstance}"/>
@@ -49,7 +49,7 @@
                                  affiliation="INST_USER" orgPerm="ORG_INST,ORG_CONSORTIUM"
                                  message="menu.institutions.myAddressbook"/>
 
-        <g:if test="${orgInstance.sector != com.k_int.kbplus.RefdataValue.getByValueAndCategory('Publisher', 'OrgSector')}">
+        <g:if test="${orgInstance.sector != com.k_int.kbplus.RefdataValue.getByValueAndCategory('Publisher', de.laser.helper.RDConstants.ORG_SECTOR)}">
 
             <g:if test="${accessService.checkForeignOrgComboPermAffiliationX([
                     org             : orgInstance,

@@ -339,14 +339,14 @@
                 </div>
                 <div class="field">
                     <label>${message(code: 'profile.language')}</label>
-                    <g:set var="US_LANGUAGE" value="${user.getSetting(UserSettings.KEYS.LANGUAGE, RefdataValue.getByValueAndCategory('de','Language'))}" />
+                    <g:set var="US_LANGUAGE" value="${user.getSetting(UserSettings.KEYS.LANGUAGE, RefdataValue.getByValueAndCategory('de', de.laser.helper.RDConstants.LANGUAGE))}" />
                     <semui:xEditableRefData owner="${US_LANGUAGE}" field="rdValue" config="${US_LANGUAGE.key.rdc}" />
                     &nbsp;
                     <g:link controller="profile" action="index" class="ui button icon" style="float:right"><i class="icon sync"></i></g:link>
                 </div>
                 <div class="field">
                     <label>${message(code: 'profile.emailLanguage')}</label>
-                    <g:set var="US_EMAIL_LANGUAGE" value="${user.getSetting(UserSettings.KEYS.LANGUAGE_OF_EMAILS, RefdataValue.getByValueAndCategory('de','Language'))}" />
+                    <g:set var="US_EMAIL_LANGUAGE" value="${user.getSetting(UserSettings.KEYS.LANGUAGE_OF_EMAILS, RefdataValue.getByValueAndCategory('de', de.laser.helper.RDConstants.LANGUAGE))}" />
                     <semui:xEditableRefData owner="${US_EMAIL_LANGUAGE}" field="rdValue" config="${US_EMAIL_LANGUAGE.key.rdc}" />
                 </div>
 

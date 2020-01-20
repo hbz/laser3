@@ -1,6 +1,7 @@
 package de.laser.usage
 
 import com.k_int.kbplus.*
+import de.laser.helper.RDConstants
 import groovy.util.logging.Log4j
 
 @Log4j
@@ -72,7 +73,7 @@ class StatsSyncServiceOptions {
         // if value exists --> RefdataValue.getByValueAndCategory()
         factType = RefdataValue.construct([
                 token   : report.toString(),
-                rdc     : "FactType",
+                rdc     : RDConstants.FACT_TYPE,
                 hardData: false,
                 i10n    : [en: report.toString(), de: report.toString()]
         ])

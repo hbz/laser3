@@ -64,7 +64,7 @@
             ${message(code:'myinst.tip.usageRecord', default:'Usage Record')} : <input type="text" name="usageValue"/><br/>
             ${message(code:'myinst.tip.usageType', default:'Usage Type')} :
             <g:select name='factType'
-    from='${com.k_int.kbplus.RefdataValue.executeQuery('select o from RefdataValue as o where o.owner.desc=?',['FactType'])}'
+    from='${com.k_int.kbplus.RefdataValue.executeQuery('select o from RefdataValue as o where o.owner.desc=?',[de.laser.helper.RDConstants.FACT_TYPE])}'
     optionKey="id" optionValue="${{it.getI10n('value')}}"></g:select><br/>
 
             <button type="submit">${message(code:'default.add.label', args:[message(code:'default.usage.label', default:'Usage')], default:'Add Usage')}</button>

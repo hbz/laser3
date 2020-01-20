@@ -208,9 +208,9 @@
             format: date
     #      licenseCategory:
     #        type: string
-    #        description: Mapping RefdataCategory "LicenseCategory"
+    #        description: Mapping RefdataCategory "${de.laser.helper.RDConstants.LICENSE_CATEGORY}"
     #        enum:
-    #          [${ com.k_int.kbplus.RefdataCategory.getAllRefdataValues('LicenseCategory').collect{ it.value }.join(', ') }]
+    #          [${ com.k_int.kbplus.RefdataCategory.getAllRefdataValues(de.laser.helper.RDConstants.LICENSE_CATEGORY).collect{ it.value }.join(', ') }]
     #      licenseUrl:
     #        type: string
     #      licensorRef:
@@ -246,18 +246,18 @@
             format: date
           status:
             type: string
-            description: Mapping RefdataCategory "License Status"
+            description: Mapping RefdataCategory "${de.laser.helper.RDConstants.LICENSE_STATUS}"
             enum:
-              [${ com.k_int.kbplus.RefdataCategory.getAllRefdataValues('License Status').collect{ it.value }.join(', ') }]
+              [${ com.k_int.kbplus.RefdataCategory.getAllRefdataValues(de.laser.helper.RDConstants.LICENSE_STATUS).collect{ it.value }.join(', ') }]
           subscriptions:
             type: array
             items:
               $ref: "#/definitions/SubscriptionStub"
     #      type:
     #        type: string
-    #        description: Mapping RefdataCategory "License Type"
+    #        description: Mapping RefdataCategory "${de.laser.helper.RDConstants.LICENSE_TYPE}"
     #        enum:
-    #          [${ com.k_int.kbplus.RefdataCategory.getAllRefdataValues('License Type').collect{ it.value }.join(', ') }]
+    #          [${ com.k_int.kbplus.RefdataCategory.getAllRefdataValues(de.laser.helper.RDConstants.LICENSE_TYPE).collect{ it.value }.join(', ') }]
 
   OnixplLicense:
     type: object
@@ -312,9 +312,9 @@
           #  items:
           #    $ref: "#/definitions/OrgRoleType"
           #
-          #  description: Mapping RefdataCategory "OrgRoleType"
+          #  description: Mapping RefdataCategory "${de.laser.helper.RDConstants.ORG_TYPE}"
           #  enum:
-          #    [${ com.k_int.kbplus.RefdataCategory.getAllRefdataValues('OrgRoleType').collect{ it.value }.join(', ') }]
+          #    [${ com.k_int.kbplus.RefdataCategory.getAllRefdataValues(de.laser.helper.RDConstants.ORG_TYPE).collect{ it.value }.join(', ') }]
           scope:
             type: string
           sector:
@@ -360,7 +360,7 @@
 #          Exclusive with cluster, license, organisation, subscription and title
 #      roleType:
 #        type: string
-#        description: Mapping RefdataCategory "Organisational Role"
+#        description: Mapping RefdataCategory "${de.laser.helper.RDConstants.ORGANISATIONAL_ROLE}"
 #        enum:
 #          [""]
 #      startDate:

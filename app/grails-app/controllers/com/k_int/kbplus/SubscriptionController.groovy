@@ -3105,7 +3105,7 @@ class SubscriptionController extends AbstractDebugController {
             RefdataValue licensee_role = OR_LICENSEE
             RefdataValue licensee_cons_role = OR_LICENSING_CONSORTIUM
 
-            RefdataValue template_license_type = RefdataValue.getByValueAndCategory('Template', 'License Type')
+            RefdataValue template_license_type = RefdataValue.getByValueAndCategory('Template', RDConstants.LICENSE_TYPE)
 
             Org org
             if(subscription.instanceOf) {
@@ -5432,8 +5432,8 @@ class SubscriptionController extends AbstractDebugController {
         def titles = [
                 g.message(code: 'org.sortname.label'), 'Name', g.message(code: 'org.shortname.label')]
 
-        RefdataValue orgSector = RefdataValue.getByValueAndCategory('Higher Education', 'OrgSector')
-        RefdataValue orgType = RefdataValue.getByValueAndCategory('Provider', 'OrgRoleType')
+        RefdataValue orgSector = RefdataValue.getByValueAndCategory('Higher Education', RDConstants.ORG_SECTOR)
+        RefdataValue orgType = RefdataValue.getByValueAndCategory('Provider', RDConstants.ORG_TYPE)
 
 
         if (addHigherEducationTitles) {

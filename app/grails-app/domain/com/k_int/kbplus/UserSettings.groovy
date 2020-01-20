@@ -1,6 +1,7 @@
 package com.k_int.kbplus
 
 import com.k_int.kbplus.auth.User
+import de.laser.helper.RDConstants
 import de.laser.helper.RefdataAnnotation
 
 import javax.persistence.Transient
@@ -19,8 +20,8 @@ class UserSettings {
         THEME                                       (RefdataValue, 'User.Settings.Theme'),
         DASHBOARD_TAB                               (RefdataValue, 'User.Settings.Dashboard.Tab'),
         DASHBOARD_ITEMS_TIME_WINDOW                 (Integer),
-        LANGUAGE                                    (RefdataValue, 'Language'),
-        LANGUAGE_OF_EMAILS                          (RefdataValue, 'Language'),
+        LANGUAGE                                    (RefdataValue, RDConstants.LANGUAGE),
+        LANGUAGE_OF_EMAILS                          (RefdataValue, RDConstants.LANGUAGE),
         SHOW_SIMPLE_VIEWS                           (RefdataValue, 'YN'),
         SHOW_EXTENDED_FILTER                        (RefdataValue, 'YN'),
         SHOW_INFO_ICON                              (RefdataValue, 'YN'),

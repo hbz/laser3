@@ -10,6 +10,7 @@ import de.laser.api.v0.ApiReader
 import de.laser.api.v0.ApiToolkit
 import de.laser.api.v0.ApiStubReader
 import de.laser.helper.Constants
+import de.laser.helper.RDConstants
 import de.laser.helper.RDStore
 import grails.converters.JSON
 import groovy.util.logging.Log4j
@@ -36,7 +37,7 @@ class ApiOAMonitor {
                         "and (o.status is null or o.status != :deleted)", [
                 key    : OrgSettings.KEYS.OAMONITOR_SERVER_ACCESS,
                 rdValue: RefdataValue.getByValueAndCategory('Yes', 'YN'),
-                deleted: RefdataValue.getByValueAndCategory('Deleted', 'OrgStatus')
+                deleted: RefdataValue.getByValueAndCategory('Deleted', RDConstants.ORG_STATUS)
         ])
 
         orgs

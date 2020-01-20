@@ -41,9 +41,9 @@
           type: string
         state:
           type: string
-          description: Mapping RefdataCategory "Federal State"
+          description: Mapping RefdataCategory "${de.laser.helper.RDConstants.FEDERAL_STATE}"
           enum:
-            [${ com.k_int.kbplus.RefdataCategory.getAllRefdataValues('Federal State').collect{ it.value }.join(', ') }]
+            [${ com.k_int.kbplus.RefdataCategory.getAllRefdataValues(de.laser.helper.RDConstants.FEDERAL_STATE).collect{ it.value }.join(', ') }]
         country:
           type: string
           description: Mapping RefdataCategory "${de.laser.helper.RDConstants.COUNTRY}"
@@ -330,9 +330,9 @@
           format: date-time
         status:
           type: string
-          description: Mapping RefdataCategory "License Status"
+          description: Mapping RefdataCategory "${de.laser.helper.RDConstants.LICENSE_STATUS}"
           enum:
-            [${ com.k_int.kbplus.RefdataCategory.getAllRefdataValues('License Status').collect{ it.value }.join(', ') }]
+            [${ com.k_int.kbplus.RefdataCategory.getAllRefdataValues(de.laser.helper.RDConstants.LICENSE_STATUS).collect{ it.value }.join(', ') }]
         subscriptions:
           type: array
           items:
@@ -416,17 +416,17 @@
           type: array
           items:
             type: string
-          description: Mapping RefdataCategory "OrgRoleType"
+          description: Mapping RefdataCategory "${de.laser.helper.RDConstants.ORG_TYPE}"
           enum:
-            [${ com.k_int.kbplus.RefdataCategory.getAllRefdataValues('OrgRoleType').collect{ it.value }.join(', ') }]
+            [${ com.k_int.kbplus.RefdataCategory.getAllRefdataValues(de.laser.helper.RDConstants.ORG_TYPE).collect{ it.value }.join(', ') }]
         scope:
           type: string
         sector:
           #deprecated: true
           type: string
-          description: Mapping RefdataCategory "OrgSector"
+          description: Mapping RefdataCategory "${de.laser.helper.RDConstants.ORG_SECTOR}"
           enum:
-            [${ com.k_int.kbplus.RefdataCategory.getAllRefdataValues('OrgSector').collect{ it.value }.join(', ') }]
+            [${ com.k_int.kbplus.RefdataCategory.getAllRefdataValues(de.laser.helper.RDConstants.ORG_SECTOR).collect{ it.value }.join(', ') }]
         shortname:
           type: string
         sortname:
@@ -560,9 +560,9 @@
           type: string
         gender:
           type: string
-          description: Mapping RefdataCategory "Gender"
+          description: Mapping RefdataCategory "${de.laser.helper.RDConstants.GENDER}"
           enum:
-            [${ com.k_int.kbplus.RefdataCategory.getAllRefdataValues('Gender').collect{ it.value }.join(', ') }]
+            [${ com.k_int.kbplus.RefdataCategory.getAllRefdataValues(de.laser.helper.RDConstants.GENDER).collect{ it.value }.join(', ') }]
         isPublic:
           type: string
           description: Mapping RefdataCategory "YN". If set *No*, it's an hidden entry to/from an addressbook (depending on the given organisation context)
@@ -947,9 +947,9 @@
             Exclusive with cluster, license, package, subscription and title
         roleType:
           type: string
-          description: Mapping RefdataCategory "Organisational Role"
+          description: Mapping RefdataCategory "${de.laser.helper.RDConstants.ORGANISATIONAL_ROLE}"
           enum:
-            [${ com.k_int.kbplus.RefdataCategory.getAllRefdataValues('Organisational Role').collect{ it.value }.join(', ') }]
+            [${ com.k_int.kbplus.RefdataCategory.getAllRefdataValues(de.laser.helper.RDConstants.ORGANISATIONAL_ROLE).collect{ it.value }.join(', ') }]
         startDate:
           type: string
           format: date-time

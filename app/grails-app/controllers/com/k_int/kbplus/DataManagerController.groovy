@@ -3,6 +3,7 @@ package com.k_int.kbplus
 import com.k_int.kbplus.auth.User
 import de.laser.controller.AbstractDebugController
 import de.laser.domain.MailTemplate
+import de.laser.helper.RDConstants
 import grails.plugin.springsecurity.SpringSecurityUtils
 import grails.plugin.springsecurity.annotation.Secured
 import org.codehaus.groovy.grails.plugins.orm.auditable.AuditLogEvent
@@ -342,7 +343,7 @@ class DataManagerController extends AbstractDebugController {
         def paginate_after = params.paginate_after ?: ( (2*result.max)-1);
         result.offset = params.offset ? Integer.parseInt(params.offset) : 0;
 
-        def delStatus =  RefdataValue.getByValueAndCategory('Deleted', 'OrgStatus')
+        def delStatus =  RefdataValue.getByValueAndCategory('Deleted', RDConstants.ORG_STATUS)
 
         def qry_params = [delStatus]
         def query = " from Org as o where ( o.status = ? )"
