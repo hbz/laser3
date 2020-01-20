@@ -100,7 +100,8 @@ class YodaService {
         GlobalRecordSource grs = GlobalRecordSource.findAll().get(0)
         HTTPBuilder http = new HTTPBuilder(grs.uri)
         Map<String, NodeChildren> oaiRecords = [:]
-        List<Map<TitleInstancePackagePlatform,Map<String,Object>>> deletedWithoutGOKbRecord = [], deletedWithGOKbRecord = []
+        List<Map<TitleInstancePackagePlatform,Map<String,Object>>> deletedWithoutGOKbRecord = []
+        List<Map<String,Map<String,Object>>> deletedWithGOKbRecord = []
         deletedTIPPs.each { delTIPP ->
             log.debug("now processing entry #${delTIPP.id} ${delTIPP.gokbId} of package ${delTIPP.pkg} with uuid ${delTIPP.pkg.gokbId}")
             NodeChildren oaiRecord = oaiRecords.get(delTIPP.pkg.gokbId)
@@ -223,10 +224,11 @@ class YodaService {
                         set TIPP and IssueEntitlement (by pending change) to that status
                         otherwise do nothing
                      */
-                    Map<TitleInstancePackagePlatform,Map<String,Object>> result = [:]
+                    Map<String,Map<String,Object>> result = [:]
                     RefdataValue currTippStatus = refdatas[gokbTIPP.status.text()]
                     Map<String,Object> tippDetails = [issueEntitlements: tippIEMap.get(delTIPP.id), action: 'updateStatus', status: currTippStatus]
-                    result[delTIPP] = tippDetails
+                    //storing key is needed in order to prevent LazyInitializationException when executing cleanup
+                    result[delTIPP.class.name+':'+delTIPP.id] = tippDetails
                     deletedWithGOKbRecord << result
                 }
             }

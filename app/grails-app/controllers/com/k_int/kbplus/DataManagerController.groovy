@@ -9,6 +9,9 @@ import de.laser.helper.SessionCacheWrapper
 import grails.plugin.springsecurity.SpringSecurityUtils
 import grails.plugin.springsecurity.annotation.Secured
 import org.codehaus.groovy.grails.plugins.orm.auditable.AuditLogEvent
+import org.codehaus.groovy.grails.web.mapping.LinkGenerator
+import org.springframework.context.MessageSource
+import org.springframework.context.i18n.LocaleContextHolder
 
 @Secured(['IS_AUTHENTICATED_FULLY'])
 class DataManagerController extends AbstractDebugController {
@@ -21,6 +24,9 @@ class DataManagerController extends AbstractDebugController {
     ExportService exportService
     DeletionService deletionService
     GlobalSourceSyncService globalSourceSyncService
+    ChangeNotificationService changeNotificationService
+    MessageSource messageSource
+    LinkGenerator grailsLinkGenerator
 
     @Secured(['ROLE_ADMIN'])
     def index() {
@@ -459,7 +465,6 @@ class DataManagerController extends AbstractDebugController {
                     }
                 }
             }
-            globalSourceSyncService.cleanUpGorm()
             log.debug("remapping done, purge now duplicate entries ...")
             List<String> colHeaders = ['Konsortium','Teilnehmer','Lizenz','Paket','Titel','Grund']
             List<List<String>> reportRows = []
@@ -491,13 +496,34 @@ class DataManagerController extends AbstractDebugController {
                     pendingChangeSetupMap[tippDetails.status] = tippsToUpdate
                 }
             }
-            pendingChangeSetupMap.each { RefdataValue status, Set<TitleInstancePackagePlatform> tippsToUpdate ->
-                TitleInstancePackagePlatform.executeUpdate('update TitleInstancePackagePlatform tipp set tipp.status = :status where tipp in :tippsToUpdate',[status:status,tippsToUpdate:tippsToUpdate])
+            pendingChangeSetupMap.each { RefdataValue status, Set<String> tippsToUpdate ->
+                log.debug("updating ${tippsToUpdate} to status ${status}")
+                TitleInstancePackagePlatform.executeUpdate('update TitleInstancePackagePlatform tipp set tipp.status = :status where tipp.globalUID in :tippsToUpdate',[status:status,tippsToUpdate:tippsToUpdate])
                 //hook up pending changes
+                Locale locale = LocaleContextHolder.locale
+                String defaultAcceptChange = messageSource.getMessage('default.accept.change.ie',null,locale)
+                tippsToUpdate.each { tippKey ->
+                    TitleInstancePackagePlatform tipp = genericOIDService.resolveOID(tippKey)
+                    String titleLink = grailsLinkGenerator.link(controller: 'title', action: 'show', id: tipp.title.id)
+                    String pkgLink = grailsLinkGenerator.link(controller: 'package', action: 'show', id: tipp.pkg.id)
+                    List<IssueEntitlement> iesToNotify = IssueEntitlement.findAllByTipp(tipp)
+                    iesToNotify.each { IssueEntitlement ie ->
+                        log.debug("notifying subscription ${ie.subscription}")
+                        String changeDesc = ""
+                        Map<String, Object> changeMap = [:]
+                        Object[] args = [titleLink,tipp.title.title,pkgLink,tipp.pkg.name,messageSource.getMessage("tipp.status",null,locale),ie.status,status,defaultAcceptChange]
+                        changeDesc = messageSource.getMessage('pendingChange.message_TP02',args,locale)
+                        changeMap.changeTarget = "${ie.class.name}:${ie.id}"
+                        changeMap.changeType = PendingChangeService.EVENT_PROPERTY_CHANGE
+                        changeMap.changeDoc = [field: 'status', fieldType: RefdataValue.class.name, refdataCategory: RefdataCategory.TIPP_STATUS, newValue: status, oldValue: ie.status]
+                        changeNotificationService.registerPendingChange(PendingChange.PROP_SUBSCRIPTION,ie.subscription,ie.subscription.getSubscriber(),changeMap,null,null,changeDesc)
+                    }
+                }
             }
             Set<TitleInstancePackagePlatform> tippsToDelete = TitleInstancePackagePlatform.findAllByGokbIdInListAndIdNotInList(result.duplicateTIPPKeys,result.excludes)
             if(tippsToDelete)
                 deletionService.deleteTIPPsCascaded(tippsToDelete)
+            sessionCache.remove("DataManagerController/listDeletedTIPPS/result")
             log.debug("Cleanup finished!")
             withFormat {
                 html {

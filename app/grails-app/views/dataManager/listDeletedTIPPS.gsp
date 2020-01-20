@@ -79,7 +79,7 @@
                             <%
                                 String outputWithGOKb
                                 tipp.each { k, v ->
-                                    outputWithGOKb = "${k.gokbId}: "
+                                    outputWithGOKb = "${k}: "
                                     if (v.issueEntitlements) {
                                         List<String> subscriptionHolders = []
                                         v.issueEntitlements.each { ie ->
