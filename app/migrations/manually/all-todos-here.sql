@@ -71,8 +71,8 @@ where rdc_id = i10n_reference_id and i10n_reference_class = 'com.k_int.kbplus.Re
 delete from i10n_translation
 where i10n_reference_class like 'com.k_int.kbplus.RefdataCategory%' and i10n_reference_field = 'desc';
 
-alter table refdata_value add column rdc_description_de varchar(255);
-alter table refdata_value add column rdc_description_en varchar(255);
+alter table refdata_value add column rdv_value_de varchar(255);
+alter table refdata_value add column rdv_value_en varchar(255);
 
 update refdata_value
 set rdv_value_de = i10n_value_de, rdv_value_en = i10n_value_en
