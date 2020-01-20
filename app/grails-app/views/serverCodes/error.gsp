@@ -10,7 +10,7 @@
 
     String nl = "%0D%0A"
 
-    String mailString   = "mailto:laser_support@hbz-nrw.de?subject=Fehlerbericht - ${grailsApplication.config.laserSystemId}" +
+    String mailString   = "mailto:laser@hbz-nrw.de?subject=Fehlerbericht - ${grailsApplication.config.laserSystemId}" +
                         "&body=Ihre Fehlerbeschreibung (bitte angeben): " + nl + nl +
                         "URI: ${request.forwardURI} " + nl +
                         "Zeitpunkt: ${new Date()} " + nl +
@@ -47,7 +47,7 @@
                 <p>${exception.message}</p>
                 <br/>
                 <p>
-                    <a href="mailto:laser_support@hbz-nrw.de?${mailString}">
+                    <a href="mailto:laser@hbz-nrw.de?${mailString}">
                         <g:message code="serverCode.error.sendSupportMail"/>
                     </a>
                 </p>
