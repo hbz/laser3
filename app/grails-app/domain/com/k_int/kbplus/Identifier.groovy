@@ -84,7 +84,7 @@ class Identifier {
         Object reference    = map.get('reference')
         def namespace       = map.get('namespace')
 
-        com.k_int.kbplus.IdentifierNamespace ns
+        IdentifierNamespace ns
 		if (namespace instanceof IdentifierNamespace) {
 			ns = namespace
 		}
