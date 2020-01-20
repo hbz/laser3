@@ -5,6 +5,7 @@ import com.k_int.kbplus.auth.User
 import com.k_int.kbplus.auth.UserOrg
 import com.k_int.kbplus.auth.UserRole
 import com.k_int.properties.PropertyDefinition
+import de.laser.helper.RDConstants
 import de.laser.helper.RDStore
 import groovy.util.logging.Log4j
 import groovy.util.slurpersupport.GPathResult
@@ -169,11 +170,11 @@ class ApiService {
                     normString("${inst.zip}"),
                     normString("${inst.city}"),
                     RefdataValue.getByCategoryDescAndI10nValueDe('Federal State', inst.county?.text()),
-                    RefdataValue.getByCategoryDescAndI10nValueDe('Country', inst.country?.text()),
+                    RefdataValue.getByCategoryDescAndI10nValueDe(RDConstants.COUNTRY, inst.country?.text()),
                     normString("${inst.pob}"),
                     normString("${inst.pobZipcode}"),
                     normString("${inst.pobCity}"),
-                    RefdataValue.getByValueAndCategory('Postal address', 'AddressType'),
+                    RefdataValue.getByValueAndCategory('Postal address', RDConstants.ADDRESS_TYPE),
                     null,
                     org
             )
@@ -195,7 +196,7 @@ class ApiService {
                         billing_address.pob ? normString("${billing_address.pob}") : null,
                         billing_address.pobZipcode ? normString("${billing_address.pobZipcode}") : null,
                         billing_address.pobCity ? normString("${billing_address.pobCity}") : null,
-                        RefdataValue.getByValueAndCategory('Billing address', 'AddressType'),
+                        RefdataValue.getByValueAndCategory('Billing address', RDConstants.ADDRESS_TYPE),
                         null,
                         org
                 )
@@ -226,7 +227,7 @@ class ApiService {
                         null,
                         null,
                         null,
-                        RefdataValue.getByValueAndCategory('Legal patron address', 'AddressType'),
+                        RefdataValue.getByValueAndCategory('Legal patron address', RDConstants.ADDRESS_TYPE),
                         null,
                         org
                 )
@@ -291,7 +292,7 @@ class ApiService {
             // persons
 
             def rdvContactPerson = RefdataValue.getByValueAndCategory('General contact person', 'Person Function')
-            def rdvJobRelated    = RefdataValue.getByValueAndCategory('Job-related','ContactType')
+            def rdvJobRelated    = RefdataValue.getByValueAndCategory('Job-related', RDConstants.CONTACT_TYPE)
 
             inst.person?.children().each { p ->
 
@@ -352,7 +353,7 @@ class ApiService {
                         if (p.email) {
                             Contact.lookupOrCreate(
                                     normString("${p.email}"),
-                                    RefdataValue.getByValueAndCategory('E-Mail','ContactContentType'),
+                                    RefdataValue.getByValueAndCategory('E-Mail', RDConstants.CONTACT_CONTENT_TYPE),
                                     rdvJobRelated,
                                     person,
                                     null
@@ -361,7 +362,7 @@ class ApiService {
                         if (p.fax) {
                             Contact.lookupOrCreate(
                                     normString("${p.fax}"),
-                                    RefdataValue.getByValueAndCategory('Fax','ContactContentType'),
+                                    RefdataValue.getByValueAndCategory('Fax', RDConstants.CONTACT_CONTENT_TYPE),
                                     rdvJobRelated,
                                     person,
                                     null
@@ -370,7 +371,7 @@ class ApiService {
                         if (p.telephone) {
                             Contact.lookupOrCreate(
                                     normString("${p.telephone}"),
-                                    RefdataValue.getByValueAndCategory('Phone','ContactContentType'),
+                                    RefdataValue.getByValueAndCategory('Phone', RDConstants.CONTACT_CONTENT_TYPE),
                                     rdvJobRelated,
                                     person,
                                     null

@@ -4,6 +4,7 @@ import com.k_int.kbplus.auth.User
 import de.laser.SystemEvent
 import de.laser.domain.TIPPCoverage
 import de.laser.helper.EhcacheWrapper
+import de.laser.helper.RDConstants
 import de.laser.helper.RDStore
 import de.laser.interfaces.AbstractLockableService
 import de.laser.oai.OaiClient
@@ -622,7 +623,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
                     }
 
                     if (changeTitle) {
-                        def announcement_type = RefdataValue.getByValueAndCategory('Announcement', 'Document Type')
+                        def announcement_type = RefdataValue.getByValueAndCategory('Announcement', RDConstants.DOCUMENT_TYPE)
                         def newAnnouncement = new Doc(title: 'Automated Announcement',
                                 type: announcement_type,
                                 content: announcement_content_changeTitle + "</ul></p>",
@@ -870,7 +871,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
             if (auto_accept) {
                 ctx.save()
 
-                def announcement_type = RefdataValue.getByValueAndCategory('Announcement', 'Document Type')
+                def announcement_type = RefdataValue.getByValueAndCategory('Announcement', RDConstants.DOCUMENT_TYPE)
                 def newAnnouncement = new Doc(title: 'Automated Announcement',
                         type: announcement_type,
                         content: announcement_content,

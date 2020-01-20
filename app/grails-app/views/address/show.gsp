@@ -1,4 +1,4 @@
-<%@ page import="de.laser.helper.RDStore; com.k_int.kbplus.Address; com.k_int.kbplus.RefdataCategory; com.k_int.kbplus.RefdataValue; static de.laser.helper.RDStore.*" %>
+<%@ page import="de.laser.helper.RDStore; com.k_int.kbplus.Address; com.k_int.kbplus.RefdataCategory; com.k_int.kbplus.RefdataValue; de.laser.helper.RDConstants; static de.laser.helper.RDStore.*" %>
 <!doctype html>
 <html>
 	<head>
@@ -43,8 +43,8 @@
 							<dt><g:message code="address.additionSecond.label" default="additionSecond" /></dt>
 							<dd><semui:xEditable owner="${addressInstance}" field="additionSecond" /></dd>
 
-                            <dt>${RefdataCategory.getByDesc('AddressType').getI10n('desc')}</dt>
-                            <dd><semui:xEditableRefData owner="${addressInstance}" field="type" config="AddressType" /></dd>
+                            <dt>${RefdataCategory.getByDesc(RDConstants.ADDRESS_TYPE).getI10n('desc')}</dt>
+                            <dd><semui:xEditableRefData owner="${addressInstance}" field="type" config="${RDConstants.ADDRESS_TYPE}" /></dd>
 
                             <g:if test="${addressInstance?.prs}">
                                 <dt><g:message code="address.prs.label" default="Prs" /></dt>
@@ -85,7 +85,7 @@
 							<dd><semui:xEditableRefData owner="${addressInstance}" field="state" config="Federal State" /></dd>
 
 							<dt><g:message code="address.country.label" default="Country" /></dt>
-							<dd><semui:xEditableRefData owner="${addressInstance}" field="country" config="Country" /></dd>
+							<dd><semui:xEditableRefData owner="${addressInstance}" field="country" config="${RDConstants.COUNTRY}" /></dd>
 
                             <hr />
 

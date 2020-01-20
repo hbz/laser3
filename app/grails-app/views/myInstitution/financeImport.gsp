@@ -1,4 +1,4 @@
-<%@ page import="com.k_int.kbplus.RefdataCategory" %>
+<%@ page import="de.laser.helper.RDConstants; com.k_int.kbplus.RefdataCategory" %>
 <!doctype html>
 <html>
   <head>
@@ -42,11 +42,11 @@
                 <%
                     List args = []
                     switch(mpg) {
-                        case 'status': args.addAll(RefdataCategory.getAllRefdataValues('CostItemStatus').collect { it -> it.getI10n('value') })
+                        case 'status': args.addAll(RefdataCategory.getAllRefdataValues(RDConstants.COST_ITEM_STATUS).collect { it -> it.getI10n('value') })
                             break
-                        case 'element': args.addAll(RefdataCategory.getAllRefdataValues('CostItemElement').collect { it -> it.getI10n('value') })
+                        case 'element': args.addAll(RefdataCategory.getAllRefdataValues(RDConstants.COST_ITEM_ELEMENT).collect { it -> it.getI10n('value') })
                             break
-                        case 'elementSign': args.addAll(RefdataCategory.getAllRefdataValues('Cost configuration').collect { it -> it.getI10n('value') })
+                        case 'elementSign': args.addAll(RefdataCategory.getAllRefdataValues(RDConstants.COST_CONFIGURATION).collect { it -> it.getI10n('value') })
                             break
                         case 'taxType': args.addAll(RefdataCategory.getAllRefdataValues('TaxType').collect { it -> it.getI10n('value') })
                             break

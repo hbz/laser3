@@ -2,6 +2,7 @@ package com.k_int.kbplus
 
 import com.k_int.kbplus.auth.User
 import de.laser.controller.AbstractDebugController
+import de.laser.helper.RDConstants
 import de.laser.helper.RDStore
 import grails.plugin.springsecurity.annotation.Secured
 import org.apache.poi.hssf.usermodel.*
@@ -710,28 +711,28 @@ class SubscriptionImportController extends AbstractDebugController {
           switch ( entitlement.core_status?.toUpperCase() ) {
             case 'Y':
             case 'YES':
-              new_core_status = RefdataValue.getByValueAndCategory('Yes', 'CoreStatus')
+              new_core_status = RefdataValue.getByValueAndCategory('Yes', RDConstants.CORE_STATUS)
               is_core = true;
               break;
             case 'P':
             case 'PRINT':
-              new_core_status = RefdataValue.getByValueAndCategory('Print', 'CoreStatus')
+              new_core_status = RefdataValue.getByValueAndCategory('Print', RDConstants.CORE_STATUS)
               is_core = true;
               break;
             case 'E':
             case 'ELECTRONIC':
-              new_core_status = RefdataValue.getByValueAndCategory('Electronic', 'CoreStatus')
+              new_core_status = RefdataValue.getByValueAndCategory('Electronic', RDConstants.CORE_STATUS)
               is_core = true;
               break;
             case 'P+E':
             case 'E+P':
             case 'PRINT+ELECTRONIC':
             case 'ELECTRONIC+PRINT':
-              new_core_status = RefdataValue.getByValueAndCategory('Print+Electronic', 'CoreStatus')
+              new_core_status = RefdataValue.getByValueAndCategory('Print+Electronic', RDConstants.CORE_STATUS)
               is_core = true;
               break;
             default:
-              new_core_status = RefdataValue.getByValueAndCategory('No', 'CoreStatus')
+              new_core_status = RefdataValue.getByValueAndCategory('No', RDConstants.CORE_STATUS)
               break;
           }
   

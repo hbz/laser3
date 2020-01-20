@@ -1,4 +1,4 @@
-<%@ page import="com.k_int.kbplus.RefdataValue; de.laser.helper.RDStore; com.k_int.kbplus.RefdataCategory; com.k_int.kbplus.Org; com.k_int.kbplus.Person; com.k_int.kbplus.PersonRole" %>
+<%@ page import="com.k_int.kbplus.RefdataValue; de.laser.helper.RDStore; de.laser.helper.RDConstants; com.k_int.kbplus.RefdataCategory; com.k_int.kbplus.Org; com.k_int.kbplus.Person; com.k_int.kbplus.PersonRole" %>
 <laser:serviceInjection/>
 
 
@@ -120,37 +120,37 @@
                             &nbsp;<%--<g:message code="contact.contentType.label" default="ContentType" />--%>
                         </label>
 
-                        <input type="text" readonly value="${RefdataValue.getByValueAndCategory('E-Mail','ContactContentType')?.getI10n('value')}" />
-                        <input type="text" readonly value="${RefdataValue.getByValueAndCategory('Phone','ContactContentType')?.getI10n('value')}" />
-                        <input type="text" readonly value="${RefdataValue.getByValueAndCategory('Fax','ContactContentType')?.getI10n('value')}" />
+                        <input type="text" readonly value="${RefdataValue.getByValueAndCategory('E-Mail', RDConstants.CONTACT_CONTENT_TYPE)?.getI10n('value')}" />
+                        <input type="text" readonly value="${RefdataValue.getByValueAndCategory('Phone', RDConstants.CONTACT_CONTENT_TYPE)?.getI10n('value')}" />
+                        <input type="text" readonly value="${RefdataValue.getByValueAndCategory('Fax', RDConstants.CONTACT_CONTENT_TYPE)?.getI10n('value')}" />
 
                         <input type="hidden" id="contact1_contentType" name="contact1_contentType"
-                               value="${RefdataValue.getByValueAndCategory('E-Mail','ContactContentType')?.id}" />
+                               value="${RefdataValue.getByValueAndCategory('E-Mail', RDConstants.CONTACT_CONTENT_TYPE)?.id}" />
 
                         <input type="hidden" id="contact2_contentType" name="contact2_contentType"
-                               value="${RefdataValue.getByValueAndCategory('Phone','ContactContentType')?.id}" />
+                               value="${RefdataValue.getByValueAndCategory('Phone', RDConstants.CONTACT_CONTENT_TYPE)?.id}" />
 
                         <input type="hidden" id="contact3_contentType" name="contact3_contentType"
-                               value="${RefdataValue.getByValueAndCategory('Fax','ContactContentType')?.id}" />
+                               value="${RefdataValue.getByValueAndCategory('Fax', RDConstants.CONTACT_CONTENT_TYPE)?.id}" />
                     </div>
 
                     <div class="field three fieldcontain">
                         <label for="contact1_type" for="contact2_type" for="contact3_type">
-                            ${com.k_int.kbplus.RefdataCategory.getByDesc('ContactType').getI10n('desc')}
+                            ${com.k_int.kbplus.RefdataCategory.getByDesc(RDConstants.CONTACT_TYPE).getI10n('desc')}
                         </label>
 
                         <laser:select class="ui dropdown" name="contact1_type"
-                                      from="${com.k_int.kbplus.Contact.getAllRefdataValues('ContactType')}"
+                                      from="${com.k_int.kbplus.Contact.getAllRefdataValues(RDConstants.CONTACT_TYPE)}"
                                       optionKey="id"
                                       optionValue="value" />
 
                         <laser:select class="ui dropdown" name="contact2_type"
-                                      from="${com.k_int.kbplus.Contact.getAllRefdataValues('ContactType')}"
+                                      from="${com.k_int.kbplus.Contact.getAllRefdataValues(RDConstants.CONTACT_TYPE)}"
                                       optionKey="id"
                                       optionValue="value" />
 
                         <laser:select class="ui dropdown" name="contact3_type"
-                                      from="${com.k_int.kbplus.Contact.getAllRefdataValues('ContactType')}"
+                                      from="${com.k_int.kbplus.Contact.getAllRefdataValues(RDConstants.CONTACT_TYPE)}"
                                       optionKey="id"
                                       optionValue="value" />
                     </div>

@@ -22,7 +22,7 @@
 
 <div class="field fieldcontain ${hasErrors(bean: clusterInstance, field: 'type', 'error')} required">
 	<label for="type">
-		${com.k_int.kbplus.RefdataCategory.getByDesc('Cluster Type').getI10n('desc')}
+		${com.k_int.kbplus.RefdataCategory.getByDesc(de.laser.helper.RDConstants.CLUSTER_TYPE).getI10n('desc')}
 		<span class="required-indicator">*</span>
 	</label>
 	<laser:select id="type" name="type.id"

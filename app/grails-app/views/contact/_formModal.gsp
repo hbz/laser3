@@ -1,4 +1,4 @@
-<%@ page import="com.k_int.kbplus.Contact" %>
+<%@ page import="com.k_int.kbplus.Contact;de.laser.helper.RDConstants" %>
 
 <semui:modal id="${modalId ?: 'contactFormModal'}"
              text="${message(code: 'default.add.label', args: [message(code: 'contact.label')])}">
@@ -14,7 +14,7 @@
                         <g:message code="contact.contentType.label" default="ContentType" />
                     </label>
                     <laser:select class="ui dropdown" id="contentType" name="contentType.id"
-                        from="${com.k_int.kbplus.Contact.getAllRefdataValues('ContactContentType')}"
+                        from="${com.k_int.kbplus.Contact.getAllRefdataValues(RDConstants.CONTACT_CONTENT_TYPE)}"
                         optionKey="id"
                         optionValue="value"
                         value="${contactInstance?.contentType?.id}"/>
@@ -22,7 +22,7 @@
 
                 <div class="field eight wide required">
                     <label for="type">
-                        ${com.k_int.kbplus.RefdataCategory.getByDesc('ContactType').getI10n('desc')}
+                        ${com.k_int.kbplus.RefdataCategory.getByDesc(RDConstants.CONTACT_TYPE).getI10n('desc')}
                     </label>
                     <laser:select class="ui dropdown" id="type" name="type.id"
                                   from="${com.k_int.kbplus.Contact.getAllRefdataValues('ContactType')}"

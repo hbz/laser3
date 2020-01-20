@@ -1,9 +1,9 @@
-<%@page import="com.k_int.kbplus.RefdataValue; com.k_int.kbplus.RefdataCategory" %>
+<%@page import="com.k_int.kbplus.RefdataValue; com.k_int.kbplus.RefdataCategory; de.laser.helper.RDConstants" %>
 <%
-    List notAvailable = [RefdataValue.getByValueAndCategory('ONIX-PL License','Document Type'),
-                         RefdataValue.getByValueAndCategory('Note','Document Type'),
-                         RefdataValue.getByValueAndCategory('Announcement','Document Type')]
-    List documentTypes = RefdataCategory.getAllRefdataValues("Document Type")-notAvailable
+    List notAvailable = [RefdataValue.getByValueAndCategory('ONIX-PL License', RDConstants.DOCUMENT_TYPE),
+                         RefdataValue.getByValueAndCategory('Note', RDConstants.DOCUMENT_TYPE),
+                         RefdataValue.getByValueAndCategory('Announcement', RDConstants.DOCUMENT_TYPE)]
+    List documentTypes = RefdataCategory.getAllRefdataValues(RDConstants.DOCUMENT_TYPE)-notAvailable
 %>
 <semui:filter>
     <g:form id="documentFilter" class="ui form" controller="${controllerName}" action="documents">

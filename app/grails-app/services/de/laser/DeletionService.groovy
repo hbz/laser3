@@ -388,7 +388,7 @@ class DeletionService {
                     // ----- keep foreign object, change state
 
                     costs.each{ tmp ->
-                        tmp.costItemStatus = RefdataValue.getByValueAndCategory('Deleted','CostItemStatus')
+                        tmp.costItemStatus = RefdataValue.getByValueAndCategory('Deleted',de.laser.helper.RDConstants.COST_ITEM_STATUS)
                         tmp.sub = null
                         tmp.subPkg = null
                         tmp.issueEntitlement = null

@@ -1,4 +1,4 @@
-<%@ page import="com.k_int.kbplus.Address;com.k_int.kbplus.RefdataValue;com.k_int.kbplus.RefdataCategory" %>
+<%@ page import="com.k_int.kbplus.Address;com.k_int.kbplus.RefdataValue;com.k_int.kbplus.RefdataCategory;de.laser.helper.RDConstants" %>
 
 <semui:modal id="${modalId ?: 'addressFormModal'}"
              text="${message(code: 'default.add.label', args: [message(code: 'person.address.label')])}">
@@ -78,7 +78,7 @@
                         <g:message code="address.country.label" default="Country"/>
                     </label>
                     <laser:select class="ui dropdown" id="country" name="country.id"
-                                  from="${RefdataCategory.getAllRefdataValues('Country')}"
+                                  from="${RefdataCategory.getAllRefdataValues(de.laser.helper.RDConstants.COUNTRY)}"
                                   optionKey="id"
                                   optionValue="value"
                                   value="${addressInstance?.country?.id}"
@@ -120,22 +120,22 @@
         <g:if test="${modalId && hideType}">
 
             <g:if test="${modalId == 'addressFormModalPostalAddress'}">
-                <input id="type" name="type.id" type="hidden" value="${com.k_int.kbplus.RefdataValue.getByValueAndCategory('Postal address', 'AddressType')?.id}"/>
+                <input id="type" name="type.id" type="hidden" value="${com.k_int.kbplus.RefdataValue.getByValueAndCategory('Postal address', RDConstants.ADDRESS_TYPE)?.id}"/>
             </g:if>
 
             <g:if test="${modalId == 'addressFormModalBillingAddress'}">
-                <input id="type" name="type.id" type="hidden" value="${com.k_int.kbplus.RefdataValue.getByValueAndCategory('Billing address', 'AddressType')?.id}"/>
+                <input id="type" name="type.id" type="hidden" value="${com.k_int.kbplus.RefdataValue.getByValueAndCategory('Billing address', RDConstants.ADDRESS_TYPE)?.id}"/>
             </g:if>
 
             <g:if test="${modalId == 'addressFormModalLegalPatronAddress'}">
-                <input id="type" name="type.id" type="hidden" value="${com.k_int.kbplus.RefdataValue.getByValueAndCategory('Legal patron address', 'AddressType')?.id}"/>
+                <input id="type" name="type.id" type="hidden" value="${com.k_int.kbplus.RefdataValue.getByValueAndCategory('Legal patron address', RDConstants.ADDRESS_TYPE)?.id}"/>
             </g:if>
 
         </g:if>
         <g:else>
             <div class="field fieldcontain ${hasErrors(bean: addressInstance, field: 'type', 'error')} ">
                 <label for="type">
-                    ${com.k_int.kbplus.RefdataCategory.getByDesc('AddressType').getI10n('desc')}
+                    ${com.k_int.kbplus.RefdataCategory.getByDesc(RDConstants.ADDRESS_TYPE).getI10n('desc')}
                 </label>
                 <laser:select class="ui dropdown" id="type" name="type.id"
                               from="${com.k_int.kbplus.Address.getAllRefdataValues()}"

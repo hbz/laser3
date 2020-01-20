@@ -64,7 +64,7 @@
             <g:formatNumber number="${ci.costInLocalCurrencyAfterTax ?: 0.0}" type="currency" currencyCode="EUR" />  (${ci.taxRate ?: 0}%)
         </td>
         <td>
-            <semui:xEditableRefData config="CostItemStatus" emptytext="${message(code:'default.button.edit.label')}" owner="${ci}" field="costItemStatus" />
+            <semui:xEditableRefData config="${de.laser.helper.RDConstants.COST_ITEM_STATUS}" emptytext="${message(code:'default.button.edit.label')}" owner="${ci}" field="costItemStatus" />
         </td>
         <td>
             <semui:xEditable owner="${ci}" type="date" field="startDate" />

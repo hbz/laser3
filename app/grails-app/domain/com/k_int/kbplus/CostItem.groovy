@@ -1,7 +1,7 @@
 package com.k_int.kbplus
 
 import de.laser.domain.AbstractBaseDomain
-
+import de.laser.helper.RDConstants
 import de.laser.helper.RefdataAnnotation
 import de.laser.interfaces.DeleteFlag
 import de.laser.interfaces.TemplateSupport
@@ -40,19 +40,19 @@ class CostItem
 
     Boolean isVisibleForSubscriber
 
-    @RefdataAnnotation(cat = 'CostItem.Type')
+    @RefdataAnnotation(cat = de.laser.helper.RDConstants.COST_ITEM_TYPE)
     RefdataValue type
 
-    @RefdataAnnotation(cat = 'CostItemStatus')
+    @RefdataAnnotation(cat = de.laser.helper.RDConstants.COST_ITEM_STATUS)
     RefdataValue costItemStatus
 
-    @RefdataAnnotation(cat = 'CostItemCategory')
+    @RefdataAnnotation(cat = de.laser.helper.RDConstants.COST_ITEM_CATEGORY)
     RefdataValue costItemCategory
 
-    @RefdataAnnotation(cat = 'CostItemElement')
+    @RefdataAnnotation(cat = de.laser.helper.RDConstants.COST_ITEM_ELEMENT)
     RefdataValue costItemElement
 
-    @RefdataAnnotation(cat = 'Cost configuration')
+    @RefdataAnnotation(cat = de.laser.helper.RDConstants.COST_CONFIGURATION)
     RefdataValue costItemElementConfiguration
 
     @RefdataAnnotation(cat = 'TaxType')

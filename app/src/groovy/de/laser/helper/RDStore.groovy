@@ -6,7 +6,7 @@ import com.k_int.kbplus.SurveyProperty
 import groovy.transform.CompileStatic
 import org.codehaus.groovy.grails.orm.hibernate.cfg.GrailsHibernateUtil
 
-@CompileStatic
+//@CompileStatic
 class RDStore {
 
     static final GENERIC_NULL_VALUE         = getRefdataValue('generic.null.value','filter.fake.values')
@@ -43,9 +43,9 @@ class RDStore {
     static final O_STATUS_CURRENT           = getRefdataValue('Current','OrgStatus')
     static final O_STATUS_DELETED           = getRefdataValue('Deleted','OrgStatus')
 
-    static final DOC_TYPE_ANNOUNCEMENT      = getRefdataValue('Announcement', 'Document Type')
+    static final DOC_TYPE_ANNOUNCEMENT      = getRefdataValue('Announcement', RDConstants.DOCUMENT_TYPE)
 
-    static final DOC_DELETED                = getRefdataValue('Deleted', 'Document Context Status')
+    static final DOC_DELETED                = getRefdataValue('Deleted', RDConstants.DOCUMENT_CONTEXT_STATUS)
     @Deprecated
     static final IE_DELETED                 = TIPP_DELETED
     static final ORG_DELETED                = getRefdataValue('Deleted', 'OrgStatus')
@@ -77,8 +77,8 @@ class RDStore {
 
     static final LICENSE_CURRENT            = getRefdataValue('Current','License Status')
 
-    static final COST_ITEM_ACTUAL           = getRefdataValue('Actual','CostItemStatus')
-    static final COST_ITEM_DELETED          = getRefdataValue('Deleted','CostItemStatus')
+    static final COST_ITEM_ACTUAL           = getRefdataValue('Actual', RDConstants.COST_ITEM_STATUS)
+    static final COST_ITEM_DELETED          = getRefdataValue('Deleted', RDConstants.COST_ITEM_STATUS)
 
     static final SUBSCRIPTION_TYPE_LOCAL            = getRefdataValue('Local Licence', 'Subscription Type')
     static final SUBSCRIPTION_TYPE_CONSORTIAL       = getRefdataValue('Consortial Licence', 'Subscription Type')
@@ -100,9 +100,9 @@ class RDStore {
     static final YNO_NO                     = getRefdataValue('No','YNO')
     static final YNO_OTHER                  = getRefdataValue('Other','YNO')
 
-    static final CIEC_POSITIVE              = getRefdataValue('positive','Cost configuration')
-    static final CIEC_NEGATIVE              = getRefdataValue('negative','Cost configuration')
-    static final CIEC_NEUTRAL               = getRefdataValue('neutral','Cost configuration')
+    static final CIEC_POSITIVE              = getRefdataValue('positive', RDConstants.COST_CONFIGURATION)
+    static final CIEC_NEGATIVE              = getRefdataValue('negative', RDConstants.COST_CONFIGURATION)
+    static final CIEC_NEUTRAL               = getRefdataValue('neutral', RDConstants.COST_CONFIGURATION)
 
     static final CURRENCY_EUR               = getRefdataValue('EUR','Currency')
 
@@ -125,8 +125,8 @@ class RDStore {
     static final COMBO_TYPE_CONSORTIUM      = getRefdataValue('Consortium','Combo Type')
     static final COMBO_TYPE_DEPARTMENT      = getRefdataValue('Department','Combo Type')
 
-    static final COMBO_STATUS_ACTIVE        = getRefdataValue('Active','Combo Status')
-    static final COMBO_STATUS_INACTIVE      = getRefdataValue('Inactive','Combo Status')
+    static final COMBO_STATUS_ACTIVE        = getRefdataValue('Active', RDConstants.COMBO_STATUS)
+    static final COMBO_STATUS_INACTIVE      = getRefdataValue('Inactive', RDConstants.COMBO_STATUS)
 
     static final CONTACT_TYPE_PERSONAL      = getRefdataValue('Personal Contact','Person Contact Type')
     static final CONTACT_TYPE_FUNCTIONAL    = getRefdataValue('Functional Contact','Person Contact Type')
@@ -152,9 +152,9 @@ class RDStore {
 
     static final PRS_FUNC_GENERAL_CONTACT_PRS   = getRefdataValue('General contact person', 'Person Function')
     static final PRS_FUNC_GASCO_CONTACT         = getRefdataValue('GASCO-Contact', 'Person Function')
-    static final CCT_EMAIL                      = getRefdataValue('E-Mail','ContactContentType')
-    static final CCT_PHONE                      = getRefdataValue('Phone','ContactContentType')
-    static final CCT_URL                        = getRefdataValue('Url','ContactContentType')
+    static final CCT_EMAIL                      = getRefdataValue('E-Mail', RDConstants.CONTACT_CONTENT_TYPE)
+    static final CCT_PHONE                      = getRefdataValue('Phone', RDConstants.CONTACT_CONTENT_TYPE)
+    static final CCT_URL                        = getRefdataValue('Url', RDConstants.CONTACT_CONTENT_TYPE)
     static final PRS_RESP_SPEC_SUB_EDITOR       = getRefdataValue('Specific subscription editor', 'Person Responsibility')
     static final PRS_RESP_SPEC_LIC_EDITOR       = getRefdataValue('Specific license editor', 'Person Responsibility')
 

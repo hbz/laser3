@@ -3,6 +3,7 @@ package com.k_int.kbplus
 import de.laser.domain.AbstractBaseDomain
 import de.laser.domain.IssueEntitlementCoverage
 import de.laser.domain.PriceItem
+import de.laser.helper.RDConstants
 import de.laser.helper.RefdataAnnotation
 
 import javax.persistence.Transient
@@ -33,7 +34,7 @@ class IssueEntitlement extends AbstractBaseDomain implements Comparable {
   @RefdataAnnotation(cat = 'TIPP Status')
   RefdataValue status
 
-  @RefdataAnnotation(cat = 'CoreStatus')
+  @RefdataAnnotation(cat = RDConstants.CORE_STATUS)
   RefdataValue coreStatus // core Status is really core Medium.. dont ask
 
   @RefdataAnnotation(cat = '?')

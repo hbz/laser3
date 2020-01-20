@@ -2,6 +2,7 @@ package com.k_int.kbplus
 
 
 import de.laser.domain.AbstractBaseDomain
+import de.laser.helper.RDConstants
 import de.laser.helper.RDStore
 import de.laser.helper.RefdataAnnotation
 import de.uni_freiburg.ub.IpRange
@@ -19,7 +20,7 @@ class OrgAccessPoint extends AbstractBaseDomain {
 
     def orgTypeService
 
-    @RefdataAnnotation(cat = 'Access Point Type')
+    @RefdataAnnotation(cat = RDConstants.ACCESS_POINT_TYPE)
     RefdataValue accessMethod
 
     static belongsTo = [

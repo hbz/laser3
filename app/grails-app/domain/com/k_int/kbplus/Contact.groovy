@@ -1,5 +1,6 @@
 package com.k_int.kbplus
 
+import de.laser.helper.RDConstants
 import de.laser.helper.RefdataAnnotation
 import groovy.util.logging.Log4j
 import org.apache.commons.logging.LogFactory
@@ -19,10 +20,10 @@ class Contact implements Comparable<Contact>{
     Date dateCreated
     Date lastUpdated
 
-    @RefdataAnnotation(cat = 'ContactContentType')
+    @RefdataAnnotation(cat = RDConstants.CONTACT_CONTENT_TYPE)
     RefdataValue contentType
 
-    @RefdataAnnotation(cat = 'ContactType')
+    @RefdataAnnotation(cat = RDConstants.CONTACT_TYPE)
     RefdataValue type
     
     static mapping = {

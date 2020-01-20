@@ -1,5 +1,6 @@
 package com.k_int.kbplus
 
+import de.laser.helper.RDConstants
 import de.laser.helper.RefdataAnnotation
 import groovy.util.logging.Log4j
 import org.apache.commons.logging.LogFactory
@@ -22,10 +23,10 @@ class Address {
     @RefdataAnnotation(cat = 'Federal State')
     RefdataValue state
 
-    @RefdataAnnotation(cat = 'Country')
+    @RefdataAnnotation(cat = RDConstants.COUNTRY)
     RefdataValue country
 
-    @RefdataAnnotation(cat = 'AddressType')
+    @RefdataAnnotation(cat = RDConstants.ADDRESS_TYPE)
     RefdataValue type
 
     String name
@@ -83,7 +84,7 @@ class Address {
     }
     
     static List<RefdataValue> getAllRefdataValues() {
-        RefdataCategory.getAllRefdataValues('AddressType')
+        RefdataCategory.getAllRefdataValues(RDConstants.ADDRESS_TYPE)
     }
     
     @Override

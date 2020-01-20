@@ -2,6 +2,7 @@ package com.k_int.kbplus
 
 import com.k_int.kbplus.auth.User
 import de.laser.controller.AbstractDebugController
+import de.laser.helper.RDConstants
 import de.laser.helper.RDStore
 import de.uni_freiburg.ub.IpRange
 import grails.plugin.springsecurity.annotation.Secured
@@ -148,7 +149,7 @@ class AccessPointController extends AbstractDebugController {
             return render(template: 'create_' + accessMethod, model: [accessMethod: accessMethod, availableIpOptions : params.availableIpOptions])
         } else {
             if (!params.accessMethod) {
-                params.accessMethod = RefdataValue.getByValueAndCategory('ip', 'Access Point Type')
+                params.accessMethod = RefdataValue.getByValueAndCategory('ip', RDConstants.ACCESS_POINT_TYPE)
             }
             params.accessMethod = RefdataValue.getByValue(params.accessMethod);
 
@@ -178,7 +179,7 @@ class AccessPointController extends AbstractDebugController {
             def accessPoint = new OrgAccessPoint();
             accessPoint.org = orgInstance
             accessPoint.name = params.name
-            accessPoint.accessMethod = RefdataValue.getByValueAndCategory(params.accessMethod, 'Access Point Type')
+            accessPoint.accessMethod = RefdataValue.getByValueAndCategory(params.accessMethod, RDConstants.ACCESS_POINT_TYPE)
             accessPoint.save(flush: true)
 
             flash.message = message(code: 'accessPoint.create.message', args: [accessPoint.name])
@@ -207,7 +208,7 @@ class AccessPointController extends AbstractDebugController {
             def accessPoint = new OrgAccessPoint();
             accessPoint.org = orgInstance
             accessPoint.name = params.name
-            accessPoint.accessMethod = RefdataValue.getByValueAndCategory(params.accessMethod, 'Access Point Type')
+            accessPoint.accessMethod = RefdataValue.getByValueAndCategory(params.accessMethod, RDConstants.ACCESS_POINT_TYPE)
             accessPoint.save(flush: true)
 
             flash.message = message(code: 'accessPoint.create.message', args: [accessPoint.name])
@@ -236,7 +237,7 @@ class AccessPointController extends AbstractDebugController {
             def accessPoint = new OrgAccessPoint();
             accessPoint.org = orgInstance
             accessPoint.name = params.name
-            accessPoint.accessMethod = RefdataValue.getByValueAndCategory(params.accessMethod, 'Access Point Type')
+            accessPoint.accessMethod = RefdataValue.getByValueAndCategory(params.accessMethod, RDConstants.ACCESS_POINT_TYPE)
             accessPoint.save(flush: true)
 
             flash.message = message(code: 'accessPoint.create.message', args: [accessPoint.name])
@@ -272,7 +273,7 @@ class AccessPointController extends AbstractDebugController {
             accessPoint.org = orgInstance
             accessPoint.name = params.name
             accessPoint.url = params.url
-            accessPoint.accessMethod = RefdataValue.getByValueAndCategory(params.accessMethod, 'Access Point Type')
+            accessPoint.accessMethod = RefdataValue.getByValueAndCategory(params.accessMethod, RDConstants.ACCESS_POINT_TYPE)
             accessPoint.save(flush: true)
 
             flash.message = message(code: 'accessPoint.create.message', args: [accessPoint.name])
@@ -308,7 +309,7 @@ class AccessPointController extends AbstractDebugController {
             accessPoint.org = orgInstance
             accessPoint.name = params.name
             accessPoint.entityId = params.entityId
-            accessPoint.accessMethod = RefdataValue.getByValueAndCategory(params.accessMethod, 'Access Point Type')
+            accessPoint.accessMethod = RefdataValue.getByValueAndCategory(params.accessMethod, RDConstants.ACCESS_POINT_TYPE)
             accessPoint.save(flush: true)
 
             flash.message = message(code: 'accessPoint.create.message', args: [accessPoint.name])

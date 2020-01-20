@@ -959,11 +959,6 @@ class BootStrap {
         // ONIX-PL Additions
         // -------------------------------------------------------------------
 
-        //RefdataValue.loc('CostItemCategory', [en: 'Price', de: 'Preis'], BOOTSTRAP)
-        //RefdataValue.loc('CostItemCategory', [en: 'Bank Charge', de: 'Bank Charge'], BOOTSTRAP)
-        //RefdataValue.loc('CostItemCategory', [en: 'Refund', de: 'Erstattung'], BOOTSTRAP)
-        //RefdataValue.loc('CostItemCategory', [en: 'Other', de: 'Andere'], BOOTSTRAP)
-
         /*
         RefdataCategory.loc('Entitlement Issue Status',
                 [en: 'Entitlement Issue Status', de: 'Entitlement Issue Status'], BOOTSTRAP)
