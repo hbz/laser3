@@ -1,4 +1,4 @@
-<%@ page import="com.k_int.kbplus.Contact" %>
+<%@ page import="com.k_int.kbplus.Contact;de.laser.helper.RDConstants" %>
 
 
 
@@ -8,7 +8,7 @@
 		
 	</label>
 	<laser:select class="ui dropdown" id="contentType" name="contentType.id"
-		from="${com.k_int.kbplus.Contact.getAllRefdataValues('ContactContentType')}"
+		from="${com.k_int.kbplus.Contact.getAllRefdataValues(RDConstants.CONTACT_CONTENT_TYPE)}"
     	optionKey="id"
     	optionValue="value"
     	value="${contactInstance?.contentType?.id}"
@@ -27,11 +27,11 @@
 
 <div class="field fieldcontain ${hasErrors(bean: contactInstance, field: 'type', 'error')} ">
 	<label for="type">
-		${com.k_int.kbplus.RefdataCategory.getByDesc('ContactType').getI10n('desc')}
+		${com.k_int.kbplus.RefdataCategory.getByDesc(RDConstants.CONTACT_TYPE).getI10n('desc')}
 		
 	</label>
 	<laser:select class="ui dropdown" id="type" name="type.id"
-		from="${com.k_int.kbplus.Contact.getAllRefdataValues('ContactType')}"
+		from="${com.k_int.kbplus.Contact.getAllRefdataValues(RDConstants.CONTACT_TYPE)}"
     	optionKey="id"
     	optionValue="value"
     	value="${contactInstance?.type?.id}"

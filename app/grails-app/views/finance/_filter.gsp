@@ -166,7 +166,7 @@
                     <label for="filterCIElement">${message(code:'financials.costItemElement')}</label>
                     <laser:select id="filterCIElement" class="ui dropdown selection search"
                                   name="filterCIElement"
-                                  from="${RefdataCategory.getAllRefdataValues('CostItemElement')}"
+                                  from="${RefdataCategory.getAllRefdataValues(de.laser.helper.RDConstants.COST_ITEM_ELEMENT)}"
                                   optionKey="${{it.class.getName() + ":" + it.id}}"
                                   optionValue="value"
                                   value="${params.filterCIElement}"
@@ -177,7 +177,7 @@
                     <label for="filterCIStatus">${message(code:'financials.costItemStatus')}</label>
                     <laser:select id="filterCIStatus" class="ui dropdown selection search"
                                   name="filterCIStatus"
-                                  from="${RefdataCategory.getAllRefdataValues("CostItemStatus")}"
+                                  from="${RefdataCategory.getAllRefdataValues(de.laser.helper.RDConstants.COST_ITEM_STATUS)}"
                                   optionKey="${{it.class.getName() + ":" + it.id}}"
                                   optionValue="value"
                                   value="${params.filterCIStatus}"

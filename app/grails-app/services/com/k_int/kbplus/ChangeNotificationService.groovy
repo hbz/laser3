@@ -3,6 +3,7 @@ package com.k_int.kbplus
 
 import com.k_int.kbplus.auth.User
 import de.laser.helper.EhcacheWrapper
+import de.laser.helper.RDConstants
 import de.laser.interfaces.AbstractLockableService
 import grails.converters.JSON
 import org.codehaus.groovy.grails.web.json.JSONElement
@@ -167,7 +168,7 @@ class ChangeNotificationService extends AbstractLockableService {
               switch ( ne.service ) {
 
                 case 'announcements':
-                  def announcement_type = RefdataValue.getByValueAndCategory('Announcement','Document Type')
+                  def announcement_type = RefdataValue.getByValueAndCategory('Announcement', RDConstants.DOCUMENT_TYPE)
                   // result.recentAnnouncements = Doc.findAllByType(announcement_type,[max:10,sort:'dateCreated',order:'desc'])
                   def newAnnouncement = new Doc(title:'Automated Announcement',
                                                 type:announcement_type,

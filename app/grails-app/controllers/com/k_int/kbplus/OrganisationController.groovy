@@ -8,6 +8,7 @@ import de.laser.DeletionService
 import de.laser.controller.AbstractDebugController
 import de.laser.helper.DebugAnnotation
 import de.laser.helper.DebugUtil
+import de.laser.helper.RDConstants
 import de.laser.helper.RDStore
 import org.apache.poi.xssf.streaming.SXSSFWorkbook
 import grails.plugin.springsecurity.annotation.Secured
@@ -91,7 +92,7 @@ class OrganisationController extends AbstractDebugController {
                         note: params.addCINote?.trim(),
                         owner: contextService.getOrg(),
                         isPublic: true,
-                        type: RefdataValue.getByValueAndCategory('Default', 'CustomerIdentifier.Type')
+                        type: RefdataValue.getByValueAndCategory('Default', RDConstants.CUSTOMER_IDENTIFIER_TYPE)
                 )
                 ci.save()
             }

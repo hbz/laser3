@@ -1,6 +1,7 @@
 package com.k_int.kbplus
 
 import com.k_int.kbplus.auth.User
+import de.laser.helper.RDConstants
 import de.laser.helper.RefdataAnnotation
 import org.hibernate.Session
 
@@ -24,7 +25,7 @@ class Doc {
     @RefdataAnnotation(cat = 'Document Status')
     RefdataValue status
 
-    @RefdataAnnotation(cat = 'Document Type')
+    @RefdataAnnotation(cat = RDConstants.DOCUMENT_TYPE)
     RefdataValue type
 
   String title

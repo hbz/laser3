@@ -1,5 +1,6 @@
 package com.k_int.kbplus
 
+import de.laser.helper.RDConstants
 import grails.transaction.Transactional
 import org.springframework.context.i18n.LocaleContextHolder
 import org.springframework.web.multipart.commons.CommonsMultipartFile
@@ -1047,9 +1048,9 @@ class FinanceService {
             if(colMap.status != null) {
                 String statusKey = cols[colMap.status]
                 if(statusKey) {
-                    RefdataValue status = RefdataValue.getByValueAndCategory(statusKey,'CostItemStatus')
+                    RefdataValue status = RefdataValue.getByValueAndCategory(statusKey, de.laser.helper.RDConstants.COST_ITEM_STATUS)
                     if(!status)
-                        status = RefdataValue.getByCategoryDescAndI10nValueDe('CostItemStatus',statusKey)
+                        status = RefdataValue.getByCategoryDescAndI10nValueDe(de.laser.helper.RDConstants.COST_ITEM_STATUS, statusKey)
                     if(!status)
                         mappingErrorBag.noValidStatus = statusKey
                     costItem.costItemStatus = status
@@ -1059,9 +1060,9 @@ class FinanceService {
             if(colMap.element != null) {
                 String elementKey = cols[colMap.element]
                 if(elementKey) {
-                    RefdataValue element = RefdataValue.getByValueAndCategory(elementKey, 'CostItemElement')
+                    RefdataValue element = RefdataValue.getByValueAndCategory(elementKey, RDConstants.COST_ITEM_ELEMENT)
                     if(!element)
-                        element = RefdataValue.getByCategoryDescAndI10nValueDe('CostItemElement',elementKey)
+                        element = RefdataValue.getByCategoryDescAndI10nValueDe(RDConstants.COST_ITEM_ELEMENT,elementKey)
                     if(!element)
                         mappingErrorBag.noValidElement = elementKey
                     costItem.costItemElement = element
@@ -1071,9 +1072,9 @@ class FinanceService {
             if(colMap.costItemSign != null) {
                 String elementSign = cols[colMap.costItemSign]
                 if(elementSign) {
-                    RefdataValue ciec = RefdataValue.getByValueAndCategory(elementSign, 'Cost configuration')
+                    RefdataValue ciec = RefdataValue.getByValueAndCategory(elementSign, RDConstants.COST_CONFIGURATION)
                     if(!ciec)
-                        ciec = RefdataValue.getByCategoryDescAndI10nValueDe('Cost configuration',elementSign)
+                        ciec = RefdataValue.getByCategoryDescAndI10nValueDe(RDConstants.COST_CONFIGURATION, elementSign)
                     if(!ciec)
                         mappingErrorBag.noValidSign = elementSign
                     costItem.costItemElementConfiguration = ciec

@@ -1,10 +1,11 @@
 package com.k_int.kbplus
 
+import de.laser.helper.RDConstants
 import de.laser.helper.RefdataAnnotation
 
 class Combo {
 
-    @RefdataAnnotation(cat = 'Combo Status')
+    @RefdataAnnotation(cat = RDConstants.COMBO_STATUS)
     RefdataValue status
 
     @RefdataAnnotation(cat = 'Combo Type')

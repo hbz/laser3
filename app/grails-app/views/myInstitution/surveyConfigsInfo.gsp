@@ -378,7 +378,7 @@ ${message(code: 'survey.label')} -
                             // ERMS-1521 HOTFIX
                             if (! costItemsSub) {
                                 costItemsSub = subscriptionInstance?.costItems.findAll{
-                                    it.costItemElement?.id == RefdataValue.getByValueAndCategory('price: consortial price', 'CostItemElement')?.id
+                                    it.costItemElement?.id == RefdataValue.getByValueAndCategory('price: consortial price', de.laser.helper.RDConstants.COST_ITEM_ELEMENT)?.id
                                 }
                             }
                         %>

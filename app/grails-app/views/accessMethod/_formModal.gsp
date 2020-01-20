@@ -1,4 +1,4 @@
-<%@ page import="com.k_int.kbplus.Address" %>
+<%@ page import="com.k_int.kbplus.Address;de.laser.helper.RDConstants" %>
 
 <semui:modal id="accessMethodFormModal" text="${message(code: 'default.add.label', args: [message(code: 'accessMethod.label', default: 'Address')])}">
     <g:form class="ui form" url="[controller: 'accessMethod', action: 'create']" method="POST">
@@ -10,7 +10,7 @@
                     </label>
                     <laser:select class="values"
                                      id="accessMethod" name="accessMethod"
-                                     from="${com.k_int.kbplus.PlatformAccessMethod.getAllRefdataValues('Access Method')}"
+                                     from="${com.k_int.kbplus.PlatformAccessMethod.getAllRefdataValues(RDConstants.ACCESS_METHOD)}"
                                      optionKey="id"
                                      optionValue="value" />
                 </div>

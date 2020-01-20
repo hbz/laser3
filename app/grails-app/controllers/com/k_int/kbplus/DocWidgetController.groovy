@@ -3,6 +3,7 @@ package com.k_int.kbplus
 import com.k_int.kbplus.auth.User
 import de.laser.controller.AbstractDebugController
 import de.laser.helper.DebugAnnotation
+import de.laser.helper.RDConstants
 import grails.plugin.springsecurity.annotation.Secured
 
 @Secured(['IS_AUTHENTICATED_FULLY'])
@@ -27,7 +28,7 @@ class DocWidgetController extends AbstractDebugController {
                 def doc_content = new Doc(contentType: Doc.CONTENT_TYPE_STRING,
                         title: params.licenseNoteTitle,
                         content: params.licenseNote,
-                        type: RefdataValue.getByValueAndCategory('Note', 'Document Type'),
+                        type: RefdataValue.getByValueAndCategory('Note', RDConstants.DOCUMENT_TYPE),
                         owner: contextService.org,
                         user: user).save()
 
@@ -35,7 +36,7 @@ class DocWidgetController extends AbstractDebugController {
                 log.debug("Setting new context type to ${params.ownertp}..");
                 def doc_context = new DocContext("${params.ownertp}": instance,
                         owner: doc_content,
-                        doctype: RefdataValue.getByValueAndCategory(params.doctype, 'Document Type').save(flush: true))
+                        doctype: RefdataValue.getByValueAndCategory(params.doctype, RDConstants.DOCUMENT_TYPE).save(flush: true))
             } else {
                 log.debug("no instance");
             }
@@ -78,7 +79,7 @@ class DocWidgetController extends AbstractDebugController {
                             filename: original_filename,
                             mimeType: request.getFile("upload_file")?.contentType,
                             title: params.upload_title ?: original_filename,
-                            type: RefdataValue.getByValueAndCategory(params.doctype, 'Document Type'),
+                            type: RefdataValue.getByValueAndCategory(params.doctype, RDConstants.DOCUMENT_TYPE),
                             creator: user,
                             owner: contextService.getOrg())
                     // erms-790
@@ -108,7 +109,7 @@ class DocWidgetController extends AbstractDebugController {
                     DocContext doc_context = new DocContext(
                             "${params.ownertp}": instance,
                             owner: doc_content,
-                            doctype: RefdataValue.getByValueAndCategory(params.doctype, 'Document Type')
+                            doctype: RefdataValue.getByValueAndCategory(params.doctype, RDConstants.DOCUMENT_TYPE)
                     )
                     doc_context.shareConf = genericOIDService.resolveOID(params.shareConf) ?: null
 
@@ -192,10 +193,10 @@ class DocWidgetController extends AbstractDebugController {
                 DocContext doc_context = DocContext.get(params.docctx)
                 Doc doc_content = doc_context.owner
                 doc_content.title = params.upload_title ?: doc_content.filename
-                doc_content.type = RefdataValue.getByValueAndCategory(params.doctype, 'Document Type')
+                doc_content.type = RefdataValue.getByValueAndCategory(params.doctype, RDConstants.DOCUMENT_TYPE)
                 doc_content.owner = contextService.org
                 doc_content.save()
-                doc_context.doctype = RefdataValue.getByValueAndCategory(params.doctype, 'Document Type')
+                doc_context.doctype = RefdataValue.getByValueAndCategory(params.doctype, RDConstants.DOCUMENT_TYPE)
                 if(params.targetOrg)
                     doc_context.targetOrg = Org.get(params.targetOrg)
                 doc_context.shareConf = genericOIDService.resolveOID(params.shareConf)

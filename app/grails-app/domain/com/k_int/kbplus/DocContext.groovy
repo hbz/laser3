@@ -1,5 +1,6 @@
 package com.k_int.kbplus
 
+import de.laser.helper.RDConstants
 import de.laser.helper.RefdataAnnotation
 import de.laser.traits.ShareableTrait
 import org.hibernate.event.PostUpdateEvent
@@ -25,9 +26,9 @@ class DocContext implements ShareableTrait {
         surveyConfig:   SurveyConfig
   ]
 
-    @RefdataAnnotation(cat = 'Document Context Status')
+    @RefdataAnnotation(cat = RDConstants.DOCUMENT_CONTEXT_STATUS)
     RefdataValue status
-    @RefdataAnnotation(cat = 'Document Type')
+    @RefdataAnnotation(cat = RDConstants.DOCUMENT_TYPE)
     RefdataValue doctype
     @RefdataAnnotation(cat = 'Share Configuration')
     RefdataValue shareConf

@@ -14,6 +14,7 @@ import de.laser.helper.DateUtil
 import de.laser.helper.DebugAnnotation
 import de.laser.helper.DebugUtil
 import de.laser.helper.EhcacheWrapper
+import de.laser.helper.RDConstants
 import de.laser.helper.RDStore
 import de.laser.interfaces.*
 import de.laser.oai.OaiClientLaser
@@ -978,11 +979,11 @@ class SubscriptionController extends AbstractDebugController {
                                     switch(colName) {
                                         case "listPriceCol": ieCandidate.listPrice = escapeService.parseFinancialValue(cellEntry)
                                             break
-                                        case "listCurrencyCol": ieCandidate.listCurrency = RefdataValue.getByValueAndCategory(cellEntry,"Currency")?.value
+                                        case "listCurrencyCol": ieCandidate.listCurrency = RefdataValue.getByValueAndCategory(cellEntry, RDConstants.CURRENCY)?.value
                                             break
                                         case "localPriceCol": ieCandidate.localPrice = escapeService.parseFinancialValue(cellEntry)
                                             break
-                                        case "localCurrencyCol": ieCandidate.localCurrency = RefdataValue.getByValueAndCategory(cellEntry,"Currency")?.value
+                                        case "localCurrencyCol": ieCandidate.localCurrency = RefdataValue.getByValueAndCategory(cellEntry,RDConstants.CURRENCY)?.value
                                             break
                                         case "priceDateCol": ieCandidate.priceDate = cellEntry
                                             break
@@ -5360,9 +5361,9 @@ class SubscriptionController extends AbstractDebugController {
                         }
                     }
                     if(entry.notes) {
-                        Doc docContent = new Doc(contentType: Doc.CONTENT_TYPE_STRING, content: entry.notes, title: message(code:'myinst.subscriptionImport.notes.title',args:[sdf.format(new Date())]), type: RefdataValue.getByValueAndCategory('Note','Document Type'), owner: contextOrg, user: contextService.user)
+                        Doc docContent = new Doc(contentType: Doc.CONTENT_TYPE_STRING, content: entry.notes, title: message(code:'myinst.subscriptionImport.notes.title',args:[sdf.format(new Date())]), type: RefdataValue.getByValueAndCategory('Note', RDConstants.DOCUMENT_TYPE), owner: contextOrg, user: contextService.user)
                         if(docContent.save()) {
-                            DocContext dc = new DocContext(subscription: sub, owner: docContent, doctype: RefdataValue.getByValueAndCategory('Note','Document Type'))
+                            DocContext dc = new DocContext(subscription: sub, owner: docContent, doctype: RefdataValue.getByValueAndCategory('Note', RDConstants.DOCUMENT_TYPE))
                             dc.save()
                         }
                     }

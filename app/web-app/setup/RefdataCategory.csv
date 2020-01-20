@@ -1,32 +1,32 @@
 token,value_de,value_en
-Access choice remote,Zugangswahl Remote,Access choice remote
-Access Method,Access Method,Access Method
-Access Method IP,Access Method IP,Access Method IP
-Access Point Type,Access Point Type,Access Point Type
-AddressType,Art der Adresse,Address Type
-Authority,Autorität,Authority
-Category A-F,Kategorie A - F,Category A-F
-Cluster Role,Cluster Role,Cluster Role
-Cluster Type,Cluster Type,Cluster Type
-Combo Status,Combo Status,Combo Status
-Combo Type,Combo Type,Combo Type
-ConcurrentAccess,SimUser,Concurrent Access
-Confidentiality,Vertraulichkeit Auswahl,Confidentiality Choice
-ContactContentType,Kontakttyp,Type of Contact
-ContactType,Art des Kontaktes,Contact Type
-CoreStatus,Kerntitel-Status,Core Status
-Cost configuration,Kostenkonfiguration,Cost configuration
-CostItem.Type,Typ,Type
-CostItemCategory,CostItemCategory,CostItemCategory
-CostItemElement,CostItemElement,CostItemElement
-CostItemStatus,CostItemStatus,CostItemStatus
-Country,Land,Country
-CreatorType,Creator Type,Creator Type
-Currency,Währung,Currency
-CustomerIdentifier.Type,Kategorie der Kundennummer,Customer Identifier Type
-Document Context Status,Document Context Status,Document Context Status
-Document Type,Dokumenttyp,Document Type
-Existence,Vorliegen,Existence
+access.choice.remote,Zugangswahl Remote,Access choice remote
+access.method,Access Method,Access Method
+access.method.ip,Access Method IP,Access Method IP
+access.point.type,Access Point Type,Access Point Type
+address.type,Art der Adresse,Address Type
+authority,Autorität,Authority
+category.a.f,Kategorie A - F,Category A-F
+cluster.role,Cluster Role,Cluster Role
+cluster.type,Cluster Type,Cluster Type
+combo.status,Combo Status,Combo Status
+combo.type,Combo Type,Combo Type
+concurrent.access,SimUser,Concurrent Access
+confidentiality,Vertraulichkeit Auswahl,Confidentiality Choice
+contact.content.type,Kontakttyp,Type of Contact
+contact.type,Art des Kontaktes,Contact Type
+core.status,Kerntitel-Status,Core Status
+cost.configuration,Kostenkonfiguration,Cost configuration
+cost.item.type,Typ,Type
+cost.item.category,CostItemCategory,CostItemCategory
+cost.item.element,CostItemElement,CostItemElement
+cost.item.status,CostItemStatus,CostItemStatus
+country,Land,Country
+creator.type,Creator Type,Creator Type
+currency,Währung,Currency
+customer.identifier.type,Kategorie der Kundennummer,Customer Identifier Type
+document.context.status,Document Context Status,Document Context Status
+document.type,Dokumenttyp,Document Type
+existence,Vorliegen,Existence
 FactMetric,FactMetric,FactMetric
 FactType,FactType,FactType
 Federal State,Bundesland,Federal State

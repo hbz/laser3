@@ -1,4 +1,4 @@
-<%@ page import="com.k_int.kbplus.Platform" %>
+<%@ page import="com.k_int.kbplus.Platform;de.laser.helper.RDConstants" %>
 <!doctype html>
 <html>
     <head>
@@ -85,7 +85,7 @@
                         <td>
                             <laser:select class="ui dropdown values" id="accessMethod"
                                           name="accessMethod"
-                                          from="${com.k_int.kbplus.PlatformAccessMethod.getAllRefdataValues('Access Method')}"
+                                          from="${com.k_int.kbplus.PlatformAccessMethod.getAllRefdataValues(RDConstants.ACCESS_METHOD)}"
                                           optionKey="id"
                                           optionValue="value"
                             />

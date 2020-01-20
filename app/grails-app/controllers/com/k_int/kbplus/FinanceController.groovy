@@ -19,6 +19,7 @@ import org.apache.poi.xssf.usermodel.XSSFCellStyle
 import org.apache.poi.xssf.usermodel.XSSFColor
 import org.apache.poi.xssf.usermodel.XSSFWorkbook
 import org.springframework.context.i18n.LocaleContextHolder
+import de.laser.helper.RDConstants
 
 import javax.servlet.ServletOutputStream
 import java.awt.*
@@ -42,7 +43,7 @@ class FinanceController extends AbstractDebugController {
     def escapeService
     def exportService
 
-    private final RefdataValue defaultCurrency = RefdataValue.getByValueAndCategory('EUR', 'Currency')
+    private final RefdataValue defaultCurrency = RefdataValue.getByValueAndCategory('EUR', RDConstants.CURRENCY)
 
     private final static MODE_OWNER          = 'MODE_OWNER'
     private final static MODE_CONS           = 'MODE_CONS'
@@ -800,7 +801,7 @@ class FinanceController extends AbstractDebugController {
         }
         result.costItem = CostItem.findById(params.id)
         //format for dropdown: (o)id:value
-        def ciecs = RefdataValue.findAllByOwner(RefdataCategory.getByDesc('Cost configuration'))
+        def ciecs = RefdataValue.findAllByOwner(RefdataCategory.getByDesc(RDConstants.COST_CONFIGURATION))
         ciecs.each { ciec ->
             costItemElementConfigurations.add([id:ciec.class.name+":"+ciec.id,value:ciec.getI10n('value')])
         }
@@ -833,7 +834,7 @@ class FinanceController extends AbstractDebugController {
         List costItemElementConfigurations = []
         List orgConfigurations = []
         //format for dropdown: (o)id:value
-        def ciecs = RefdataValue.findAllByOwner(RefdataCategory.getByDesc('Cost configuration'))
+        def ciecs = RefdataValue.findAllByOwner(RefdataCategory.getByDesc(RDConstants.COST_CONFIGURATION))
         ciecs.each { ciec ->
             costItemElementConfigurations.add([id:ciec.class.name+":"+ciec.id,value:ciec.getI10n('value')])
         }

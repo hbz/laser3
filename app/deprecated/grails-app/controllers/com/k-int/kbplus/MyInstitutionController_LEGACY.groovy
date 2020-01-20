@@ -1,3 +1,5 @@
+import de.laser.helper.RDConstants
+
 //following code ex MyInstitutionController.groovy, was as-is also in SubscriptionImportController which has been deleted including respective views
 
     @DebugAnnotation(test='hasAffiliation("INST_USER")')
@@ -1058,28 +1060,28 @@
                 switch (entitlement.core_status?.toUpperCase()) {
                     case 'Y':
                     case 'YES':
-                        new_core_status = RefdataCategory.lookupOrCreate('CoreStatus', 'Yes');
+                        new_core_status = RefdataCategory.lookupOrCreate(RDConstants.CORE_STATUS, 'Yes');
                         is_core = true;
                         break;
                     case 'P':
                     case 'PRINT':
-                        new_core_status = RefdataCategory.lookupOrCreate('CoreStatus', 'Print');
+                        new_core_status = RefdataCategory.lookupOrCreate(RDConstants.CORE_STATUS, 'Print');
                         is_core = true;
                         break;
                     case 'E':
                     case 'ELECTRONIC':
-                        new_core_status = RefdataCategory.lookupOrCreate('CoreStatus', 'Electronic');
+                        new_core_status = RefdataCategory.lookupOrCreate(RDConstants.CORE_STATUS, 'Electronic');
                         is_core = true;
                         break;
                     case 'P+E':
                     case 'E+P':
                     case 'PRINT+ELECTRONIC':
                     case 'ELECTRONIC+PRINT':
-                        new_core_status = RefdataCategory.lookupOrCreate('CoreStatus', 'Print+Electronic');
+                        new_core_status = RefdataCategory.lookupOrCreate(RDConstants.CORE_STATUS, 'Print+Electronic');
                         is_core = true;
                         break;
                     default:
-                        new_core_status = RefdataCategory.lookupOrCreate('CoreStatus', 'No');
+                        new_core_status = RefdataCategory.lookupOrCreate(RDConstants.CORE_STATUS, 'No');
                         break;
                 }
 

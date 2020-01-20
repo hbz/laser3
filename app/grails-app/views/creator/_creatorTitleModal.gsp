@@ -8,7 +8,7 @@
             <span class="required-indicator">*</span>
         </label>
         <laser:select id="role" name="role.id"
-                      from="${com.k_int.kbplus.RefdataCategory.getAllRefdataValues('CreatorType')}"
+                      from="${com.k_int.kbplus.RefdataCategory.getAllRefdataValues(de.laser.helper.RDConstants.CREATOR_TYPE)}"
                       optionKey="id" required="" optionValue="value" value="${creatorTitleInstance?.role?.id}"
                       class="many-to-one"/>
 
