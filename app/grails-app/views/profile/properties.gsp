@@ -88,7 +88,6 @@
 
 <div class="ui styled fluid accordion">
     <g:each in="${rdCategories}" var="rdc">
-        <g:set var="rdcI10n" value="${I10nTranslation.createI10nOnTheFly(rdc, 'desc')}" />
 
         <div class="title">
             <i class="dropdown icon"></i>
@@ -107,10 +106,10 @@
                 <tbody>
                 <tr>
                     <td>
-                        <strong>${rdcI10n.valueDe}</strong>
+                        <strong>${rdc.getI10n('desc', 'de')}</strong>
                     </td>
                     <td>
-                        <strong>${rdcI10n.valueEn}</strong>
+                        <strong>${rdc.getI10n('desc', 'en')}</strong>
                     </td>
                     <td>
                     </td>
@@ -119,10 +118,10 @@
                 <g:each in="${RefdataValue.findAllByOwner(rdc).toSorted()}" var="rdv">
                     <tr>
                         <td>
-                            ${I10nTranslation.createI10nOnTheFly(rdv, 'value').valueDe}
+                            ${rdv.getI10n('value', 'de')}
                         </td>
                         <td>
-                            ${I10nTranslation.createI10nOnTheFly(rdv, 'value').valueEn}
+                            ${rdv.getI10n('value', 'en')}
                         </td>
                         <td>
                             <g:if test="${usedRdvList?.contains(rdv.id)}">

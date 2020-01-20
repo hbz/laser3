@@ -26,7 +26,7 @@
 						
 						<g:sortableColumn property="content" title="${message(code: 'contact.content.label', default: 'Content')}" />
 						
-						<th>${com.k_int.kbplus.RefdataCategory.findByDesc('ContactType').getI10n('desc')}</th>
+						<th>${com.k_int.kbplus.RefdataCategory.getByDesc('ContactType').getI10n('desc')}</th>
 					
 						<th><g:message code="contact.prs.label" default="Prs" /></th>
 					

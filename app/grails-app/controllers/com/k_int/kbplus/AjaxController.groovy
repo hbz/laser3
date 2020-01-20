@@ -6,6 +6,7 @@ import com.k_int.properties.PropertyDefinition
 import com.k_int.properties.PropertyDefinitionGroup
 import com.k_int.properties.PropertyDefinitionGroupBinding
 import de.laser.AuditConfig
+import de.laser.domain.AbstractI10nOverride
 import de.laser.domain.AbstractI10nTranslatable
 import de.laser.domain.SystemProfiler
 import de.laser.helper.DebugAnnotation
@@ -594,6 +595,9 @@ class AjaxController {
             if ( it instanceof AbstractI10nTranslatable) {
                 result.add([value:"${rowobj.class.name}:${rowobj.id}", text:"${it.getI10n(config.cols[0])}"])
             }
+            else if ( it instanceof AbstractI10nOverride) {
+                result.add([value:"${rowobj.class.name}:${rowobj.id}", text:"${it.getI10n(config.cols[0])}"])
+            }
             else {
                 def objTest = rowobj[config.cols[0]]
                 if (objTest) {
@@ -739,6 +743,9 @@ class AjaxController {
           // default ..
           else {
               if (it instanceof AbstractI10nTranslatable) {
+                  result.add([value: "${rowobj.class.name}:${rowobj.id}", text: "${it.getI10n(config.cols[0])}"])
+              }
+              else if (it instanceof AbstractI10nOverride) {
                   result.add([value: "${rowobj.class.name}:${rowobj.id}", text: "${it.getI10n(config.cols[0])}"])
               }
               else {
@@ -1209,7 +1216,7 @@ class AjaxController {
         def error
         def msg
 
-        def rdc = RefdataCategory.findByDesc(params.refdata_category)
+        def rdc = RefdataCategory.getByDesc(params.refdata_category)
         if (rdc) {
             error = message(code: 'refdataCategory.create_new.unique')
             log.debug(error)
@@ -1255,33 +1262,34 @@ class AjaxController {
         else {
             if (params.cust_prop_type.equals(RefdataValue.toString())) {
                 if (params.refdatacategory) {
-                    newProp = PropertyDefinition.loc(
-                            params.cust_prop_name,
-                            params.cust_prop_desc,
-                            params.cust_prop_type,
-                            RefdataCategory.get(params.refdatacategory),
-                            params.cust_prop_expl,
-                            params.cust_prop_multiple_occurence,
-                            PropertyDefinition.FALSE,
-                            null
-                    )
-                    newProp.save(flush: true)
+
+                    Map<String, Object> map = [
+                            token       : params.cust_prop_name,
+                            category    : params.cust_prop_desc,
+                            type        : params.cust_prop_type,
+                            rdc         : RefdataCategory.get(params.refdatacategory)?.getDesc(),
+                            multiple    : (params.cust_prop_multiple_occurence == 'on'),
+                            i10n        : [de: params.cust_prop_name, en: params.cust_prop_name],
+                            expl        : [de: params.cust_prop_expl, en: params.cust_prop_expl]
+                    ]
+
+                    newProp = PropertyDefinition.construct(map)
                 }
                 else {
                     error = message(code: 'ajax.addCustPropertyType.error', default: 'Type creation failed. Please select a ref data type.')
                 }
             }
             else {
-                newProp = PropertyDefinition.loc(
-                        params.cust_prop_name,
-                        params.cust_prop_desc,
-                        params.cust_prop_type,
-                        null,
-                        params.cust_prop_expl,
-                        params.cust_prop_multiple_occurence,
-                        PropertyDefinition.FALSE,
-                        null
-                )
+                    Map<String, Object> map = [
+                            token       : params.cust_prop_name,
+                            category    : params.cust_prop_desc,
+                            type        : params.cust_prop_type,
+                            multiple    : (params.cust_prop_multiple_occurence == 'on'),
+                            i10n        : [de: params.cust_prop_name, en: params.cust_prop_name],
+                            expl        : [de: params.cust_prop_expl, en: params.cust_prop_expl]
+                    ]
+
+                    newProp = PropertyDefinition.construct(map)
             }
 
             if (newProp?.hasErrors()) {

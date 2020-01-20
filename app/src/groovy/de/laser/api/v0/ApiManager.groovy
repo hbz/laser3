@@ -16,7 +16,7 @@ import javax.servlet.http.HttpServletRequest
 @Log4j
 class ApiManager {
 
-    static final VERSION = '0.74'
+    static final VERSION = '0.76'
     static final NOT_SUPPORTED = false
 
     /**
@@ -29,8 +29,9 @@ class ApiManager {
     static read(String obj, String query, String value, Org contextOrg, String format) {
         def result
 
-        def failureCodes  = [Constants.HTTP_BAD_REQUEST, Constants.HTTP_PRECONDITION_FAILED]
-        boolean accessDueDatamanager = ApiToolkit.isDataManager(contextOrg)
+        List failureCodes  = [Constants.HTTP_BAD_REQUEST, Constants.HTTP_PRECONDITION_FAILED]
+        boolean isDatamanager = ApiToolkit.isDataManager(contextOrg)
+        boolean isInvoiceTool = ApiToolkit.isInvoiceTool(contextOrg)
 
         log.debug("API-READ (" + VERSION + "): ${obj} (${format}) -> ${query}:${value}")
 
@@ -44,12 +45,13 @@ class ApiManager {
             return Constants.VALID_REQUEST
         }
 
+
         if (resolve('costItem', ApiReader.SUPPORTED_FORMATS.costItem) == Constants.VALID_REQUEST) {
 
-            def costItem = ApiCostItem.findCostItemBy(query, value)
+            result = ApiCostItem.findCostItemBy(query, value)
 
-            if (costItem && !(costItem in failureCodes)) {
-                result = ApiCostItem.getCostItem((CostItem) costItem, contextOrg, accessDueDatamanager)
+            if (result && !(result in failureCodes)) {
+                result = ApiCostItem.getCostItem((CostItem) result, contextOrg, isInvoiceTool)
             }
         }
         else if (resolve('costItemList', ApiReader.SUPPORTED_FORMATS.costItem) == Constants.VALID_REQUEST) {
@@ -59,16 +61,14 @@ class ApiManager {
             if (identifierAndTimestamp == Constants.HTTP_BAD_REQUEST) {
                 return Constants.HTTP_BAD_REQUEST
             }
-
             result = ApiOrg.findOrganisationBy(identifierAndTimestamp[0].key, identifierAndTimestamp[0].value) // use of http status code
 
             if (result && !(result in failureCodes)) {
-
                 if(identifierAndTimestamp[1].key == 'timestamp'){
-                    result = ApiCostItem.getCostItemListWithTimeStamp(result, contextOrg, accessDueDatamanager, identifierAndTimestamp[1].value)
+                    result = ApiCostItem.getCostItemListWithTimeStamp(result, contextOrg, isInvoiceTool, identifierAndTimestamp[1].value)
                 }
                 else {
-                    result = ApiCostItem.getCostItemList(result, contextOrg, accessDueDatamanager)
+                    result = ApiCostItem.getCostItemList(result, contextOrg, isInvoiceTool)
                 }
             }
         }
@@ -77,28 +77,28 @@ class ApiManager {
             result = ApiDoc.findDocumentBy(query, value)
 
             if (result && !(result in failureCodes)) {
-                result = ApiDoc.getDocument((Doc) result, contextOrg, accessDueDatamanager)
+                result = ApiDoc.getDocument((Doc) result, contextOrg)
             }
         }
-        else if (NOT_SUPPORTED && 'issueEntitlements'.equalsIgnoreCase(obj)) {
+        /* else if (NOT_SUPPORTED && 'issueEntitlements'.equalsIgnoreCase(obj)) {
 
             def subPkg = ApiIssueEntitlement.findSubscriptionPackageBy(query, value)
 
             if (subPkg && !(subPkg in failureCodes) ) {
-                result = ApiIssueEntitlement.getIssueEntitlements(subPkg, contextOrg, accessDueDatamanager)
+                result = ApiIssueEntitlement.getIssueEntitlements(subPkg, contextOrg)
 
                 if (result && format == Constants.MIME_TEXT_PLAIN) {
                     def kbart = ApiKbartConverter.convertIssueEntitlements(result)
                     result = ApiKbartConverter.getAsDocument(kbart)
                 }
             }
-        }
+        } */
         else if (resolve('license', ApiReader.SUPPORTED_FORMATS.license) == Constants.VALID_REQUEST) {
 
             result = ApiLicense.findLicenseBy(query, value)
 
             if (result && !(result in failureCodes)) {
-                result = ApiLicense.getLicense((License) result, contextOrg, accessDueDatamanager)
+                result = ApiLicense.getLicense((License) result, contextOrg)
             }
         }
         else if (resolve('licenseList', ApiReader.SUPPORTED_FORMATS.license) == Constants.VALID_REQUEST) {
@@ -106,38 +106,42 @@ class ApiManager {
             result = ApiOrg.findOrganisationBy(query, value)
 
             if (result && !(result in failureCodes)) {
-                result = ApiLicense.getLicenseList(result, contextOrg, accessDueDatamanager)
+                result = ApiLicense.getLicenseList(result, contextOrg)
             }
         }
         else if (resolve('oaMonitor', ApiReader.SUPPORTED_FORMATS.oaMonitor) == Constants.VALID_REQUEST) {
 
-            if (! accessDueDatamanager) {
+            if (! isDatamanager) {
                 return Constants.HTTP_FORBIDDEN
             }
             result = ApiOrg.findOrganisationBy(query, value)
 
             if (result && !(result in failureCodes)) {
-                result = ApiOAMonitor.getOrganisation(result, contextOrg, accessDueDatamanager)
+                result = ApiOAMonitor.getOrganisation(result, contextOrg)
             }
         }
         else if (resolve('oaMonitorList', ApiReader.SUPPORTED_FORMATS.oaMonitorList) == Constants.VALID_REQUEST) {
 
-            result = ApiOAMonitor.getAllOrgs(accessDueDatamanager)
+            if (! isDatamanager) {
+                return Constants.HTTP_FORBIDDEN
+            }
+
+            result = ApiOAMonitor.getAllOrgs()
         }
-        else if (NOT_SUPPORTED && 'onixpl'.equalsIgnoreCase(obj)) {
+        /* else if (NOT_SUPPORTED && 'onixpl'.equalsIgnoreCase(obj)) {
 
             def lic = ApiLicense.findLicenseBy(query, value)
 
             if (lic && !(lic in failureCodes)) {
-                result = ApiDoc.getOnixPlDocument((License) lic, contextOrg, accessDueDatamanager)
+                result = ApiDoc.getOnixPlDocument((License) lic, contextOrg)
             }
-        }
+        } */
         else if (resolve('organisation', ApiReader.SUPPORTED_FORMATS.organisation) == Constants.VALID_REQUEST) {
 
             result = ApiOrg.findOrganisationBy(query, value)
 
             if (result && !(result in failureCodes)) {
-                result = ApiOrg.getOrganisation((Org) result, contextOrg, accessDueDatamanager)
+                result = ApiOrg.getOrganisation((Org) result, contextOrg, isInvoiceTool)
             }
         }
         else if (resolve('package', ApiReader.SUPPORTED_FORMATS.package) == Constants.VALID_REQUEST) {
@@ -145,7 +149,7 @@ class ApiManager {
             result = ApiPkg.findPackageBy(query, value)
 
             if (result && !(result in failureCodes)) {
-                result = ApiPkg.getPackage((Package) result, contextOrg, accessDueDatamanager)
+                result = ApiPkg.getPackage((Package) result, contextOrg)
             }
         }
         else if (resolve('propertyList', ApiReader.SUPPORTED_FORMATS.propertyList) == Constants.VALID_REQUEST) {
@@ -158,25 +162,29 @@ class ApiManager {
         }
         else if (resolve('statistic', ApiReader.SUPPORTED_FORMATS.statistic) == Constants.VALID_REQUEST) {
 
-            if (! accessDueDatamanager) {
+            if (! isDatamanager) {
                 return Constants.HTTP_FORBIDDEN
             }
             result = ApiPkg.findPackageBy(query, value)
 
             if (result && !(result in failureCodes)) {
-                result = ApiStatistic.getPackage(result, contextOrg, accessDueDatamanager)
+                result = ApiStatistic.getPackage(result, contextOrg)
             }
         }
         else if (resolve('statisticList', ApiReader.SUPPORTED_FORMATS.statistic) == Constants.VALID_REQUEST) {
 
-            result = ApiStatistic.getAllPackages(accessDueDatamanager)
+            if (! isDatamanager) {
+                return Constants.HTTP_FORBIDDEN
+            }
+
+            result = ApiStatistic.getAllPackages()
         }
         else if (resolve('subscription', ApiReader.SUPPORTED_FORMATS.subscription) == Constants.VALID_REQUEST) {
 
             result = ApiSubscription.findSubscriptionBy(query, value)
 
             if (result && !(result in failureCodes)) {
-                result = ApiSubscription.getSubscription((Subscription) result, contextOrg, accessDueDatamanager)
+                result = ApiSubscription.getSubscription((Subscription) result, contextOrg, isInvoiceTool)
             }
         }
         else if (resolve('subscriptionList', ApiReader.SUPPORTED_FORMATS.subscription) == Constants.VALID_REQUEST) {
@@ -184,7 +192,7 @@ class ApiManager {
             result = ApiOrg.findOrganisationBy(query, value)
 
             if (result && !(result in failureCodes)) {
-                result = ApiSubscription.getSubscriptionList(result, contextOrg, accessDueDatamanager)
+                result = ApiSubscription.getSubscriptionList(result, contextOrg)
             }
         }
         else {
@@ -334,8 +342,7 @@ class ApiManager {
                                             "status": HttpStatus.PRECONDITION_FAILED.value()]))
             response.status = HttpStatus.PRECONDITION_FAILED.value()
         }
-
-        if (! result) {
+        else if (! result) {
             response.json = new JSON( trimJson(["message": "result not found",
                                             "obj": obj, "q": query, "v": value, "context": context,
                                             "status": HttpStatus.NOT_FOUND.value()]))

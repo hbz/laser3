@@ -116,7 +116,11 @@
     </g:if>
 
     <br>
-
+    <div class="la-legend">
+        <span class="la-key"><strong>${message(code: 'subscription.renewSubscriptionConsortia.workFlowSteps.legend.key')}: </strong></span>
+        <span class="la-added">${message(code: 'subscription.renewSubscriptionConsortia.workFlowSteps.legend.willStay')}</span>
+        <span class="la-removed">${message(code: 'subscription.renewSubscriptionConsortia.workFlowSteps.legend.willBeReplaced')}</span>
+    </div>
     <g:if test="${workFlowPart == WORKFLOW_DOCS_ANNOUNCEMENT_TASKS}">
         <g:render template="copyDocsAndTasks" />
     </g:if>
@@ -185,10 +189,13 @@
 
         markAffectedTake = function (that) {
             var indexOfTakeCheckbox = ($(that).closest('.la-replace').index()) ;
+            var numberOfCheckedTakeCheckbox = $(that).closest('td').find("[type='checkbox']:checked").length;
             var multiPropertyIndex = $(that).closest('tr').find('.la-copyElements-flex-container').index() ;
             var sourceElem = $(that).closest('tr').find('.la-colorCode-source');
             var targetElem = $(that).closest('tr').find('.la-colorCode-target');
-            // ADD GREEN BACKGROUND
+            //  _
+            // |x|
+            //
             if ($(that).is(":checked") ) {
                 // Properties with multipleOccurence do
                 // - not receive a deletion mark because they are not overwritten but copied
@@ -196,19 +203,61 @@
                 if ($(that).attr('data-multipleOccurrence') == 'true') {
                     sourceElem = $(that).closest('tr').find('.la-colorCode-source:nth-child(' + (indexOfTakeCheckbox + 1) + ')').addClass('willStay');
                     sourceElem.addClass('willStay');
-                } else {
+                    targetElem.addClass('willStay'); // mark all the target elemnts green because they will not be deleted
+                }
+                else {
                     sourceElem.addClass('willStay');
                     targetElem.addClass('willBeReplaced');
                 }
             }
-            // REMOVE GREEN BACKGROUND
+            //  _
+            // |_|
+            //
             else {
                 if ($(that).attr('data-multipleOccurrence') == 'true') {
+                    if (numberOfCheckedTakeCheckbox == 0 ) {
+                        targetElem.removeClass('willStay');
+                    }
                     sourceElem = $(that).closest('tr').find('.la-colorCode-source:nth-child(' + (indexOfTakeCheckbox + 1) + ')').addClass('willStay');
                     sourceElem.removeClass('willStay');
                 }
                 else {
                     sourceElem.removeClass('willStay');
+                    if ( (that).parents('tr').find('input[name="subscription.deleteProperty"]').is(':checked')){
+                    } else {
+                        targetElem.removeClass('willBeReplaced');
+                    }
+                }
+            }
+        }
+        markAffectedDelete = function (that) {
+            var indexOfDeleteCheckbox = ($(that).closest('.la-noChange').index()) ;
+            var targetElem = $(that).closest('tr').find('.la-colorCode-target');
+            //  _
+            // |x|
+            //
+            if ($(that).is(":checked")) {
+                if ($(that).attr('data-multipleOccurrence') == 'true') {
+                    targetElem = $(that).closest('tr').find('.la-colorCode-target:nth-child(' + (indexOfDeleteCheckbox + 1) + ')').addClass('willBeReplaced');
+                    targetElem.addClass('willBeReplaced')
+                }
+                else {
+                    targetElem.addClass('willBeReplaced')
+                }
+            }
+            //  _
+            // |_|
+            //
+            else {
+                if ($(that).parents('tr').find('input[name="subscription.takeProperty"]').is(':checked')) {
+                    if ($(that).attr('data-multipleOccurrence') == 'true') {
+                        targetElem = $(that).closest('tr').find('.la-colorCode-target:nth-child(' + (indexOfDeleteCheckbox + 1) + ')').addClass('willBeReplaced');
+                        targetElem.removeClass('willBeReplaced');
+                    }
+                    else {
+                    }
+                }
+                else {
                     targetElem.removeClass('willBeReplaced');
                 }
             }

@@ -1951,7 +1951,7 @@ class SubscriptionController extends AbstractDebugController {
 
         if(params.tab == 'providerAgency') {
 
-            result.modalPrsLinkRole = RefdataValue.findByValue('Specific subscription editor')
+            result.modalPrsLinkRole = RefdataValue.getByValueAndCategory('Specific subscription editor', 'Person Responsibility')
             result.modalVisiblePersons = addressbookService.getPrivatePersonsByTenant(contextService.getOrg())
             result.visibleOrgRelations = []
             result.parentSub.orgRelations?.each { or ->
@@ -3669,7 +3669,7 @@ class SubscriptionController extends AbstractDebugController {
 
             // -- private properties
 
-            result.modalPrsLinkRole = RefdataValue.findByValue('Specific subscription editor')
+            result.modalPrsLinkRole = RefdataValue.getByValueAndCategory('Specific subscription editor', 'Person Responsibility')
             result.modalVisiblePersons = addressbookService.getPrivatePersonsByTenant(contextService.getOrg())
 
             result.visiblePrsLinks = []
@@ -3703,7 +3703,7 @@ class SubscriptionController extends AbstractDebugController {
                     log.debug('Found different content platforms for this subscription, cannot show usage')
                 } else {
                     def supplier_id = suppliers[0]
-                    def platform = PlatformCustomProperty.findByOwnerAndType(Platform.get(supplier_id), PropertyDefinition.findByName('NatStat Supplier ID'))
+                    def platform = PlatformCustomProperty.findByOwnerAndType(Platform.get(supplier_id), PropertyDefinition.getByNameAndDescr('NatStat Supplier ID', PropertyDefinition.PLA_PROP))
                     result.natStatSupplierId = platform?.stringValue ?: null
                     result.institutional_usage_identifier = OrgSettings.get(result.institution, OrgSettings.KEYS.NATSTAT_SERVER_REQUESTOR_ID)
                     if (result.institutional_usage_identifier) {
@@ -4332,7 +4332,7 @@ class SubscriptionController extends AbstractDebugController {
             result.visibleOrgRelations.sort { it.org.sortname }
             result.visibleOrgRelations =  subscriptionService.getVisibleOrgRelations(result.subscriptionInstance)
 
-            result.modalPrsLinkRole = RefdataValue.findByValue('Specific subscription editor')
+            result.modalPrsLinkRole = RefdataValue.getByValueAndCategory('Specific subscription editor', 'Person Responsibility')
             result.modalVisiblePersons = addressbookService.getPrivatePersonsByTenant(contextService.getOrg())
 
             result.visiblePrsLinks = []
@@ -5031,7 +5031,7 @@ class SubscriptionController extends AbstractDebugController {
 
         // -- private properties
 
-        result.modalPrsLinkRole = RefdataValue.findByValue('Specific subscription editor')
+        result.modalPrsLinkRole = RefdataValue.getByValueAndCategory('Specific subscription editor', 'Person Responsibility')
         result.modalVisiblePersons = addressbookService.getPrivatePersonsByTenant(contextService.getOrg())
 
         result.visiblePrsLinks = []

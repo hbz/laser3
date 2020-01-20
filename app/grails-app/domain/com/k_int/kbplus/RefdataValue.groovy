@@ -1,6 +1,7 @@
 package com.k_int.kbplus
 
 import com.k_int.ClassUtils
+import de.laser.domain.AbstractI10nOverride
 import de.laser.domain.AbstractI10nTranslatable
 import de.laser.domain.I10nTranslation
 import groovy.transform.NotYetImplemented
@@ -10,7 +11,7 @@ import org.springframework.context.i18n.LocaleContextHolder
 
 import javax.persistence.Transient
 
-class RefdataValue extends AbstractI10nTranslatable implements Comparable<RefdataValue> {
+class RefdataValue extends AbstractI10nOverride implements Comparable<RefdataValue> {
 
     static Log static_logger = LogFactory.getLog(RefdataValue)
 
@@ -18,6 +19,8 @@ class RefdataValue extends AbstractI10nTranslatable implements Comparable<Refdat
     def grailsApplication
 
     String value
+    String value_de
+    String value_en
 
     // N.B. This used to be ICON but in the 2.x series this was changed to be a css class which denotes an icon
     // Please stick with the change to store css classes in here and not explicit icons
@@ -44,6 +47,8 @@ class RefdataValue extends AbstractI10nTranslatable implements Comparable<Refdat
                version column: 'rdv_version'
                  owner column: 'rdv_owner', index: 'rdv_owner_value_idx'
                  value column: 'rdv_value', index: 'rdv_owner_value_idx'
+              value_de column: 'rdv_value_de', index:'rdv_value_de_idx'
+              value_en column: 'rdv_value_en', index:'rdv_value_en_idx'
                   icon column: 'rdv_icon'
                  group column: 'rdv_group'
               isHardData column: 'rdv_is_hard_data'
@@ -59,6 +64,8 @@ class RefdataValue extends AbstractI10nTranslatable implements Comparable<Refdat
         group    (nullable:true,  blank:false)
         isHardData (nullable:false, blank:false)
         order    (nullable:true,  blank: false)
+        value_de (nullable: true, blank: false)
+        value_en (nullable: true, blank: false)
 
         // Nullable is true, because values are already in the database
         lastUpdated (nullable: true, blank: false)
@@ -69,7 +76,7 @@ class RefdataValue extends AbstractI10nTranslatable implements Comparable<Refdat
 
         String token     = map.get('token')
         String rdc       = map.get('rdc')
-        boolean hardData = map.get('hardData')
+        boolean hardData = new Boolean( map.get('hardData') )
         Map i10n         = map.get('i10n')
 
         RefdataCategory cat = RefdataCategory.findByDescIlike(rdc)
@@ -86,25 +93,37 @@ class RefdataValue extends AbstractI10nTranslatable implements Comparable<Refdat
             static_logger.debug("INFO: no match found; creating new refdata value for ( ${token} @ ${rdc}, ${i10n} )")
             rdv = new RefdataValue(owner: cat, value: token)
         }
+
+        rdv.value_de = i10n.get('de') ?: null
+        rdv.value_en = i10n.get('en') ?: null
+
         rdv.isHardData = hardData
         rdv.save(flush: true)
-
-        I10nTranslation.createOrUpdateI10n(rdv, 'value', i10n)
 
         rdv
     }
 
     static def refdataFind(params) {
         def result = []
-        def matches = I10nTranslation.refdataFindHelper(
-                params.baseClass,
-                'value',
-                params.q,
-                LocaleContextHolder.getLocale()
-        )
+        List<RefdataValue> matches = []
+
+        if(! params.q) {
+            matches = RefdataValue.findAll()
+        }
+        else {
+            switch (I10nTranslation.decodeLocale(LocaleContextHolder.getLocale().toString())) {
+                case 'en':
+                    matches = RefdataValue.findAllByValue_enIlike("%${params.q}%")
+                    break
+                case 'de':
+                    matches = RefdataValue.findAllByValue_deIlike("%${params.q}%")
+                    break
+            }
+        }
         matches.each { it ->
             result.add([id: "${it.class.name}:${it.id}", text: "${it.getI10n('value')}"])
         }
+
         matches
     }
 
@@ -114,17 +133,21 @@ class RefdataValue extends AbstractI10nTranslatable implements Comparable<Refdat
         return null;
     }
 
-    static RefdataValue getByValueAndCategory(value, category) {
+    static RefdataValue getByValue(String value) {
 
-        RefdataValue.findByValueAndOwner(value, RefdataCategory.findByDesc(category))
+        RefdataValue.findByValueIlike(value)
     }
 
-    static RefdataValue getByCategoryDescAndI10nValueDe(categoryName, value) {
+    static RefdataValue getByValueAndCategory(String value, String category) {
 
-        List<RefdataValue> data = RefdataValue.executeQuery("select rdv from RefdataValue as rdv, RefdataCategory as rdc, I10nTranslation as i10n "
-                    + " where rdv.owner = rdc and rdc.desc = ? "
-                    + " and i10n.referenceId = rdv.id and i10n.valueDe = ?"
-                    + " and i10n.referenceClass = 'com.k_int.kbplus.RefdataValue' and i10n.referenceField = 'value'"
+        RefdataValue.findByValueIlikeAndOwner(value, RefdataCategory.findByDescIlike(category))
+    }
+
+    static RefdataValue getByCategoryDescAndI10nValueDe(String categoryName, String value) {
+
+        List<RefdataValue> data = RefdataValue.executeQuery(
+                "select rdv from RefdataValue as rdv, RefdataCategory as rdc "
+                    + " where rdv.owner = rdc and rdc.desc = ? and rdv.value_de = ?"
                     , ["${categoryName}", "${value}"] )
 
         if (data.size() > 0) {
@@ -171,15 +194,5 @@ class RefdataValue extends AbstractI10nTranslatable implements Comparable<Refdat
             }
         }
         return false
-    }
-
-    def afterInsert() {
-        I10nTranslation.createOrUpdateI10n(this, 'value', [de: this.value, en: this.value])
-    }
-
-    def afterDelete() {
-        String rc = this.getClass().getName()
-        def id = this.getId()
-        I10nTranslation.where{referenceClass == rc && referenceId == id}.deleteAll()
     }
 }

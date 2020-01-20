@@ -63,7 +63,7 @@ class CostConfigurationController {
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_EDITOR") })
     def createNewConfiguration() {
         def result = [editable:true] //the user clicking here is already authenticated
-        def costItemElements = RefdataValue.findAllByOwner(RefdataCategory.findByDesc('CostItemElement'))
+        def costItemElements = RefdataCategory.getAllRefdataValues('CostItemElement')
         def elementsAlreadyTaken = []
         Org org = contextService.getOrg()
 
@@ -77,7 +77,7 @@ class CostConfigurationController {
 
         result.formUrl = g.createLink([controller:'costConfiguration',action:'index'])
         result.costItemElements = costItemElements
-        result.elementSigns = RefdataValue.findAllByOwner(RefdataCategory.findByDesc('Cost configuration'))
+        result.elementSigns = RefdataCategory.getAllRefdataValues('CostItemElement')
         result.institution = org
 
         render template: '/templates/newCostItemElementConfiguration', model: result

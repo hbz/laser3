@@ -72,7 +72,7 @@
                                         <td>
                                             <g:set var="pdRdc" value="${pd.type?.split('\\.').last()}"/>
                                             <g:if test="${'RefdataValue'.equals(pdRdc)}">
-                                                <g:set var="refDataCat" value="${RefdataCategory.findByDesc(pd.refdataCategory)}" />
+                                                <g:set var="refDataCat" value="${RefdataCategory.getByDesc(pd.refdataCategory)}" />
                                                 <span data-position="top right"  class="la-popup-tooltip la-delay" data-content="${refDataCat?.getI10n('desc')}">
                                                     <small>${PropertyDefinition.getLocalizedValue(pd.type)}</small>
                                                 </span>

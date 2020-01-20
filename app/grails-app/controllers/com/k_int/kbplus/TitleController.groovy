@@ -301,7 +301,7 @@ class TitleController extends AbstractDebugController {
     result.max = params.max ? Integer.parseInt(params.max) : user.getDefaultPageSizeTMP()
     result.offset = params.offset ? Integer.parseInt(params.offset) : 0;
     
-    def ti_cat = RefdataCategory.findByDesc(RefdataCategory.TI_STATUS)
+    def ti_cat = RefdataCategory.getByDesc(RefdataCategory.TI_STATUS)
     result.availableStatuses = RefdataValue.findAllByOwner(ti_cat)
     def ti_status = null
     

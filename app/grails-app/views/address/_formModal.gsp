@@ -135,7 +135,7 @@
         <g:else>
             <div class="field fieldcontain ${hasErrors(bean: addressInstance, field: 'type', 'error')} ">
                 <label for="type">
-                    ${com.k_int.kbplus.RefdataCategory.findByDesc('AddressType').getI10n('desc')}
+                    ${com.k_int.kbplus.RefdataCategory.getByDesc('AddressType').getI10n('desc')}
                 </label>
                 <laser:select class="ui dropdown" id="type" name="type.id"
                               from="${com.k_int.kbplus.Address.getAllRefdataValues()}"

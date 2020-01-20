@@ -31,7 +31,7 @@ ${personInstance}
         <div class="la-inline-lists">
             <div class="ui card">
                 <div class="content">
-                    <dl><dt>${RefdataCategory.findByDesc('Person Contact Type').getI10n('desc')}</dt>
+                    <dl><dt>${RefdataCategory.getByDesc('Person Contact Type').getI10n('desc')}</dt>
                         <dd>
                             <semui:xEditableRefData owner="${personInstance}" field="contactType" config="Person Contact Type"/>
 
@@ -74,7 +74,7 @@ ${personInstance}
                         </dl>
 
                         <%--
-                        <dl><dt>${com.k_int.kbplus.RefdataCategory.findByDesc('Person Position').getI10n('desc')}</dt>
+                        <dl><dt>${com.k_int.kbplus.RefdataCategory.getByDesc('Person Position').getI10n('desc')}</dt>
                             <dd><semui:xEditableRefData owner="${personInstance}" field="roleType"
                                                         config="Person Position"/></dd></dl>--%>
                     </g:if>

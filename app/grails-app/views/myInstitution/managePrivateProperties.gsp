@@ -168,7 +168,7 @@
                                     <%
                                         List catList =  cat.value?.take(3)
                                         catList = catList.collect { entry ->
-                                            '&nbsp; - ' + (RefdataCategory.findByDesc(entry[0]))?.getI10n('desc')
+                                            '&nbsp; - ' + (RefdataCategory.getByDesc(entry[0]))?.getI10n('desc')
                                         }
                                         println catList.join('<br />')
                                     %>

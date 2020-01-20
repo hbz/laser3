@@ -125,7 +125,7 @@ abstract class AbstractProperty implements Serializable {
             dateValue = parseValue(value, type)
         }
         else if (type == RefdataValue.toString()) {
-            refValue = RefdataValue.findByOwnerAndValue(RefdataCategory.findByDesc(rdc), value.toString())
+            refValue = RefdataValue.findByOwnerAndValue(RefdataCategory.getByDesc(rdc), value.toString())
         }
         else if (type == URL.toString()) {
             urlValue = parseValue(value, type)

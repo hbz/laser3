@@ -48,18 +48,18 @@ class ApiLicense {
     /**
      * @return boolean
      */
-    static boolean calculateAccess(License lic, Org context, boolean hasAccess) {
+    static boolean calculateAccess(License lic, Org context) {
 
-        if (! hasAccess) {
-            if (OrgRole.findByLicAndRoleTypeAndOrg(lic, RDStore.OR_LICENSING_CONSORTIUM, context)) {
-                hasAccess = true
-            }
-            else if (OrgRole.findByLicAndRoleTypeAndOrg(lic, RDStore.OR_LICENSEE, context)) {
-                hasAccess = true
-            }
-            else if (OrgRole.findByLicAndRoleTypeAndOrg(lic, RDStore.OR_LICENSEE_CONS, context)) {
-                hasAccess = true
-            }
+        boolean hasAccess = false
+
+        if (OrgRole.findByLicAndRoleTypeAndOrg(lic, RDStore.OR_LICENSING_CONSORTIUM, context)) {
+            hasAccess = true
+        }
+        else if (OrgRole.findByLicAndRoleTypeAndOrg(lic, RDStore.OR_LICENSEE, context)) {
+            hasAccess = true
+        }
+        else if (OrgRole.findByLicAndRoleTypeAndOrg(lic, RDStore.OR_LICENSEE_CONS, context)) {
+            hasAccess = true
         }
 
         hasAccess
@@ -68,10 +68,10 @@ class ApiLicense {
     /**
      * @return JSON | FORBIDDEN
      */
-    static getLicense(License lic, Org context, boolean hasAccess){
+    static getLicense(License lic, Org context){
         Map<String, Object> result = [:]
-        hasAccess = calculateAccess(lic, context, hasAccess)
 
+        boolean hasAccess = calculateAccess(lic, context)
         if (hasAccess) {
             result = retrieveLicenseMap(lic, ApiReader.IGNORE_NONE, context)
         }
@@ -82,7 +82,7 @@ class ApiLicense {
     /**
      * @return JSON
      */
-    static JSON getLicenseList(Org owner, Org context, boolean hasAccess){
+    static JSON getLicenseList(Org owner, Org context){
         Collection<Object> result = []
 
         List<License> available = License.executeQuery(
@@ -96,7 +96,7 @@ class ApiLicense {
         available.each { lic ->
             //if (calculateAccess(lic, context, hasAccess)) {
                 //println lic.id + ' ' + lic.reference
-                result.add(ApiStubReader.requestLicenseStub(lic, context, true))
+                result.add(ApiStubReader.requestLicenseStub(lic, context))
                 //result.add([globalUID: lic.globalUID])
             //}
         }

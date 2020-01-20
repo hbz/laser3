@@ -48,7 +48,7 @@
 <%--
 <div class="field fieldcontain ${hasErrors(bean: personInstance, field: 'roleType', 'error')} ">
     <label for="roleType">
-		${com.k_int.kbplus.RefdataCategory.findByDesc('Person Position').getI10n('desc')}
+		${com.k_int.kbplus.RefdataCategory.getByDesc('Person Position').getI10n('desc')}
 
     </label>
     <laser:select class="ui dropdown" id="roleType" name="roleType"
@@ -61,7 +61,7 @@
 --%>
 <div class="field fieldcontain ${hasErrors(bean: personInstance, field: 'contactType', 'error')} ">
     <label for="contactType">
-		${com.k_int.kbplus.RefdataCategory.findByDesc('Person Contact Type').getI10n('desc')}
+		${com.k_int.kbplus.RefdataCategory.getByDesc('Person Contact Type').getI10n('desc')}
 
     </label>
     <laser:select class="ui dropdown" id="contactType" name="contactType"
