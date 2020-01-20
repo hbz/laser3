@@ -1345,7 +1345,7 @@ from License as l where (
                         def postfix = cm.get(0).shortname ?: cm.get(0).name
 
                         def cons_sub = new Subscription(
-                                            // type: RefdataValue.findByValue("Subscription Taken"),
+                                            // type: RefdataValue.getByValue("Subscription Taken"),
                                           type: subType,
                                           name: params.newEmptySubName,
                                           // name: params.newEmptySubName + " (${postfix})",

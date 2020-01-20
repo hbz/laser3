@@ -23,7 +23,7 @@ class ApiWriterHelper {
     @Deprecated
     static getRefdataValue(def value, String category) {
         if (value && category) {
-            def rdCategory = RefdataCategory.findByDesc(category)
+            def rdCategory = RefdataCategory.getByDesc(category)
             def rdValue = RefdataValue.findByOwnerAndValue(rdCategory, value.toString())
             return rdValue
         }

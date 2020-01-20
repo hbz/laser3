@@ -5,7 +5,7 @@ class InplaceTagLib {
   def refdataValue = { attrs, body ->
     log.debug("refdataValue ${attrs}");
     if ( attrs.cat ) {
-      def category = RefdataCategory.findByDesc(attrs.cat)
+      def category = RefdataCategory.getByDesc(attrs.cat)
       if ( category ) {
         def value = RefdataValue.findByOwnerAndValue(category, attrs.val)
 

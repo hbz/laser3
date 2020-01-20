@@ -287,12 +287,12 @@ class PersonController extends AbstractDebugController {
             
             if(person){
                 if('func' == roleType){
-                    def rdc = RefdataCategory.findByDesc('Person Function')
+                    def rdc = RefdataCategory.getByDesc('Person Function')
                     def hqlPart = "from PersonRole as PR where PR.prs = ${person?.id} and PR.functionType.owner = ${rdc.id}"  
                     existingPrsLinks = PersonRole.findAll(hqlPart) 
                 }
                 else if('resp' == roleType){
-                    def rdc = RefdataCategory.findByDesc('Person Responsibility')
+                    def rdc = RefdataCategory.getByDesc('Person Responsibility')
                     def hqlPart = "from PersonRole as PR where PR.prs = ${person?.id} and PR.responsibilityType.owner = ${rdc.id}"  
                     existingPrsLinks = PersonRole.findAll(hqlPart)
                 }

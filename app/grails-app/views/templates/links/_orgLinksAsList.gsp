@@ -86,7 +86,7 @@
                                         </span>
                                         <div class="content">
                                             <g:link controller="person" action="show" id="${func.id}">${func}</g:link>
-                                            (${(RefdataValue.findByValue('General contact person')).getI10n('value')})
+                                            (${(RefdataValue.getByValueAndCategory('General contact person', 'Person Function')).getI10n('value')})
                                         </div>
                                     </div>
                                 </g:each>
@@ -97,7 +97,7 @@
                                         </span>
                                         <div class="content">
                                             <g:link controller="person" action="show" id="${resp.id}">${resp}</g:link>
-                                            (${(RefdataValue.findByValue(roleRespValue)).getI10n('value')})
+                                            (${(RefdataValue.getByValue(roleRespValue)).getI10n('value')})
 
                                             <g:if test="${editmode}">
                                                 <g:set var="prsRole" value="${com.k_int.kbplus.PersonRole.getByPersonAndOrgAndRespValue(resp, role.org, roleRespValue)}" />
@@ -126,7 +126,7 @@
                                         </span>
                                         <div class="content">
                                             <g:link controller="person" action="show" id="${func.id}">${func}</g:link>
-                                            (${(RefdataValue.findByValue('General contact person')).getI10n('value')})
+                                            (${(RefdataValue.getByValueAndCategory('General contact person', 'Person Function')).getI10n('value')})
                                         </div>
                                     </div>
                                 </g:each>
@@ -137,7 +137,7 @@
                                         </span>
                                         <div class="content">
                                             <g:link controller="person" action="show" id="${resp.id}">${resp}</g:link>
-                                            (${(RefdataValue.findByValue(roleRespValue)).getI10n('value')})
+                                            (${(RefdataValue.getByValue(roleRespValue)).getI10n('value')})
 
                                             <g:if test="${editmode}">
                                                 <g:set var="prsRole" value="${com.k_int.kbplus.PersonRole.getByPersonAndOrgAndRespValue(resp, role.org, roleRespValue)}" />

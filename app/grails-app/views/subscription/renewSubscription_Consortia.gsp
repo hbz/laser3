@@ -78,7 +78,7 @@
             <tr>
                 <th>${message(code: 'subscription.details.status')}</th>
                 <td>
-                    <g:set var="rdcSubStatus" value="${com.k_int.kbplus.RefdataCategory.findByDesc('Subscription Status')}"/>
+                    <g:set var="rdcSubStatus" value="${com.k_int.kbplus.RefdataCategory.getByDesc('Subscription Status')}"/>
                     <g:select from="${com.k_int.kbplus.RefdataValue.findAllByOwner(rdcSubStatus)}" class="ui dropdown"
                               optionKey="id"
                               optionValue="${{ it.getI10n('value') }}"
@@ -95,7 +95,7 @@
             <tr>
                 <th>${message(code: 'subscription.details.type')}</th>
                 <td>
-                    <g:set var="rdcSubType" value="${com.k_int.kbplus.RefdataCategory.findByDesc('Subscription Type')}"/>
+                    <g:set var="rdcSubType" value="${com.k_int.kbplus.RefdataCategory.getByDesc('Subscription Type')}"/>
                     <g:select from="${com.k_int.kbplus.RefdataValue.findAllByOwner(rdcSubType)}" class="ui dropdown"
                               optionKey="id"
                               optionValue="${{ it.getI10n('value') }}"
@@ -112,7 +112,7 @@
             <tr>
                 <th>${message(code: 'subscription.form.label')}</th>
                 <td>
-                    <g:set var="rdcSubForm" value="${com.k_int.kbplus.RefdataCategory.findByDesc('Subscription Form')}"/>
+                    <g:set var="rdcSubForm" value="${com.k_int.kbplus.RefdataCategory.getByDesc('Subscription Form')}"/>
                     <g:select from="${com.k_int.kbplus.RefdataValue.findAllByOwner(rdcSubForm)}" class="ui dropdown"
                               optionKey="id"
                               optionValue="${{ it.getI10n('value') }}"
@@ -129,7 +129,7 @@
             <tr>
                 <th>${message(code: 'subscription.resource.label')}</th>
                 <td>
-                    <g:set var="rdcSubResource" value="${com.k_int.kbplus.RefdataCategory.findByDesc('Subscription Resource')}"/>
+                    <g:set var="rdcSubResource" value="${com.k_int.kbplus.RefdataCategory.getByDesc('Subscription Resource')}"/>
                     <g:select from="${com.k_int.kbplus.RefdataValue.findAllByOwner(rdcSubResource)}" class="ui dropdown"
                               optionKey="id"
                               optionValue="${{ it.getI10n('value') }}"

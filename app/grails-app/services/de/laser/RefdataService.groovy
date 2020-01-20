@@ -117,14 +117,14 @@ class RefdataService {
                                 Map fieldCheck = [:]
 
                                 fieldCats.each { it2 ->
-                                    if (it2[1].id == RefdataCategory.findByDesc(anno.cat())?.id) {
+                                    if (it2[1].id == RefdataCategory.getByDesc(anno.cat())?.id) {
                                         fieldCheck << ["${it2[0]}": true]
                                     }
                                     else {
                                         fieldCheck << ["${it2[0]}": it2[1]]
                                     }
                                 }
-                                return [field: it.name, cat: anno.cat(), rdc: RefdataCategory.findByDesc(anno.cat()), check: fieldCheck]
+                                return [field: it.name, cat: anno.cat(), rdc: RefdataCategory.getByDesc(anno.cat()), check: fieldCheck]
                             }
                             else {
                                 return [field: it.name, cat: anno?.cat(), rdc: null, check: [:]]

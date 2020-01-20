@@ -270,9 +270,9 @@ ${message(code: 'subscription.details.renewalsConsortium.label')}: ${subscriptio
                                                     id="${subscr.id}">${subscr}</g:link>
 
                                             <g:set var="rdvGcp"
-                                                   value="${RefdataValue.findByValue('General contact person')}"/>
+                                                   value="${RefdataValue.getByValue('General contact person')}"/>
                                             <g:set var="rdvSse"
-                                                   value="${RefdataValue.findByValue('Specific subscription editor')}"/>
+                                                   value="${RefdataValue.getByValue('Specific subscription editor')}"/>
 
                                             <div class="ui list">
 

@@ -66,7 +66,7 @@
                         <label for="generateSlavedSubs">${message(code: 'myinst.separate_subs', default: 'Generate seperate Subscriptions for all Consortia Members')}</label>
                     </div>--}%
 
-                    <g:set value="${RefdataCategory.findByDesc('Subscription Status')}"
+                    <g:set value="${RefdataCategory.getByDesc('Subscription Status')}"
                            var="rdcSubStatus"/>
 
                     <br/>

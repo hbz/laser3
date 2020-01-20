@@ -227,7 +227,7 @@ String period
                                                     ${message(code: "facet.so.${facet.key}.${v.display.toLowerCase()}")} (${v.count})
                                                 </g:if>
                                                 <g:elseif test="${facet.key == 'status'}">
-                                                    ${RefdataValue.findByValue(v.display) ? RefdataValue.findByValue(v.display).getI10n('value') : v.display} (${v.count})
+                                                    ${RefdataValue.getByValue(v.display) ? RefdataValue.getByValue(v.display).getI10n('value') : v.display} (${v.count})
                                                 </g:elseif>
                                                 <g:else>
                                                     ${v.display} (${v.count})
@@ -240,7 +240,7 @@ String period
                                                         ${message(code: "facet.so.${facet.key}.${v.display.toLowerCase()}")}
                                                     </g:if>
                                                     <g:elseif test="${facet.key == 'status'}">
-                                                        ${RefdataValue.findByValue(v.display) ? RefdataValue.findByValue(v.display).getI10n('value') : v.display}
+                                                        ${RefdataValue.getByValue(v.display) ? RefdataValue.getByValue(v.display).getI10n('value') : v.display}
                                                     </g:elseif>
                                                     <g:else>
                                                         ${v.display}
@@ -267,7 +267,7 @@ String period
                                     ${message(code: "facet.so.${facet}.${fv.toLowerCase()}")}
                                 </g:if>
                                 <g:elseif test="${facet == 'status'}">
-                                    ${RefdataValue.findByValue(fv) ? RefdataValue.findByValue(fv).getI10n('value') : fv}
+                                    ${RefdataValue.getByValue(fv) ? RefdataValue.getByValue(fv).getI10n('value') : fv}
                                 </g:elseif>
                                 <g:else>
                                     ${fv}
