@@ -54,12 +54,12 @@ class GlobalSourceSyncService extends AbstractLockableService {
             title_instance.gokbId = newtitle.gokbID
         }
 
-        title_instance.status = RefdataValue.getByValueAndCategory('Deleted', RefdataCategory.TI_STATUS)
+        title_instance.status = RefdataValue.getByValueAndCategory('Deleted', RDConstants.TITLE_STATUS)
 
         if (newtitle.status == 'Current') {
-            title_instance.status = RefdataValue.getByValueAndCategory('Current', RefdataCategory.TI_STATUS)
+            title_instance.status = RefdataValue.getByValueAndCategory('Current', RDConstants.TITLE_STATUS)
         } else if (newtitle.status == 'Retired') {
-            title_instance.status = RefdataValue.getByValueAndCategory('Retired', RefdataCategory.TI_STATUS)
+            title_instance.status = RefdataValue.getByValueAndCategory('Retired', RDConstants.TITLE_STATUS)
         }
 
         newtitle.identifiers.each {
@@ -264,11 +264,11 @@ class GlobalSourceSyncService extends AbstractLockableService {
 
         println "Reconciling new Package!"
 
-        RefdataValue scope =        RefdataValue.getByValueAndCategory( ((newpkg?.scope) ?: 'Unknown'), RefdataCategory.PKG_SCOPE)
-        RefdataValue listStatus =   RefdataValue.getByValueAndCategory( ((newpkg?.listStatus) ?: 'Unknown'), RefdataCategory.PKG_LIST_STAT)
-        RefdataValue breakable =    RefdataValue.getByValueAndCategory( ((newpkg?.breakable) ?: 'Unknown'), RefdataCategory.PKG_BREAKABLE)
-        RefdataValue consistent =   RefdataValue.getByValueAndCategory( ((newpkg?.consistent) ?: 'Unknown'), RefdataCategory.PKG_CONSISTENT)
-        RefdataValue fixed =        RefdataValue.getByValueAndCategory( ((newpkg?.fixed) ?: 'Unknown'), RefdataCategory.PKG_FIXED)
+        RefdataValue scope =        RefdataValue.getByValueAndCategory( ((newpkg?.scope) ?: 'Unknown'), RDConstants.PACKAGE_SCOPE)
+        RefdataValue listStatus =   RefdataValue.getByValueAndCategory( ((newpkg?.listStatus) ?: 'Unknown'), RDConstants.PACKAGE_LIST_STATUS)
+        RefdataValue breakable =    RefdataValue.getByValueAndCategory( ((newpkg?.breakable) ?: 'Unknown'), RDConstants.PACKAGE_BREAKABLE)
+        RefdataValue consistent =   RefdataValue.getByValueAndCategory( ((newpkg?.consistent) ?: 'Unknown'), RDConstants.PACKAGE_CONSISTENT)
+        RefdataValue fixed =        RefdataValue.getByValueAndCategory( ((newpkg?.fixed) ?: 'Unknown'), RDConstants.PACKAGE_FIXED)
         RefdataValue paymentType =  RefdataValue.getByValueAndCategory( ((newpkg?.paymentType) ?: 'Unknown'), RefdataCategory.PKG_PAYMENTTYPE)
         RefdataValue global =       RefdataValue.getByValueAndCategory( ((newpkg?.global) ?: 'Unknown'), RefdataCategory.PKG_GLOBAL)
         RefdataValue ref_pprovider = RefdataValue.getByValueAndCategory('Content Provider', RDConstants.ORGANISATIONAL_ROLE)
@@ -413,7 +413,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
 
             def plat_instance = Platform.lookupOrCreatePlatform([name: tipp.platform, gokbId: tipp.platformUuid]);
             def tipp_status_str = tipp.status ? tipp.status.capitalize() : 'Current'
-            RefdataValue tipp_status = RefdataValue.getByValueAndCategory(tipp_status_str,RefdataCategory.TIPP_STATUS)
+            RefdataValue tipp_status = RefdataValue.getByValueAndCategory(tipp_status_str, RDConstants.TIPP_STATUS)
 
             if (auto_accept) {
                 TitleInstancePackagePlatform new_tipp = new TitleInstancePackagePlatform()
@@ -796,10 +796,10 @@ class GlobalSourceSyncService extends AbstractLockableService {
               title_of_tipp_to_update.save()
             }*/
 
-            def tippStatus = RefdataValue.getByValueAndCategory('Deleted', RefdataCategory.TIPP_STATUS)
+            def tippStatus = RefdataValue.getByValueAndCategory('Deleted', RDConstants.TIPP_STATUS)
 
             if (tipp.status == 'Retired') {
-                tippStatus = RefdataValue.getByValueAndCategory('Retired', RefdataCategory.TIPP_STATUS)
+                tippStatus = RefdataValue.getByValueAndCategory('Retired', RDConstants.TIPP_STATUS)
             }
 
             /*def db_tipp = null

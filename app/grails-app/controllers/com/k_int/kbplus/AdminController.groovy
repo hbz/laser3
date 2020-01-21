@@ -13,6 +13,7 @@ import de.laser.SystemEvent
 import de.laser.api.v0.ApiToolkit
 import de.laser.controller.AbstractDebugController
 import de.laser.helper.DebugAnnotation
+import de.laser.helper.RDConstants
 import de.laser.helper.RDStore
 import grails.converters.JSON
 import grails.plugin.springsecurity.SpringSecurityUtils
@@ -624,7 +625,7 @@ class AdminController extends AbstractDebugController {
         redirect(action:'titleMerge',params:[titleIdToDeprecate:params.titleIdToDeprecate, correctTitleId:params.correctTitleId])
       }
 
-      result.title_to_deprecate.status = RefdataValue.getByValueAndCategory('Deleted', RefdataCategory.TI_STATUS)
+      result.title_to_deprecate.status = RefdataValue.getByValueAndCategory('Deleted', RDConstants.TITLE_STATUS)
       result.title_to_deprecate.save(flush:true);
     }
     result

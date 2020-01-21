@@ -103,13 +103,13 @@
                             <dl>
                                 <dt>${message(code: 'package.list_status')}</dt>
                                 <dd>
-                                    <semui:xEditableRefData owner="${packageInstance}" field="packageListStatus" config="${RefdataCategory.PKG_LIST_STAT}"/>
+                                    <semui:xEditableRefData owner="${packageInstance}" field="packageListStatus" config="${RDConstants.PACKAGE_LIST_STATUS}"/>
                                 </dd>
                             </dl>
                             <dl>
                                 <dt>${message(code: 'package.scope')}</dt>
                                 <dd>
-                                    <semui:xEditableRefData owner="${packageInstance}" field="packageScope" config="${RefdataCategory.PKG_SCOPE}"/>
+                                    <semui:xEditableRefData owner="${packageInstance}" field="packageScope" config="${RDConstants.PACKAGE_SCOPE}"/>
                                 </dd>
                             </dl>
                         </div>
@@ -176,19 +176,19 @@
                         <dl>
                             <dt>${message(code: 'package.breakable')}</dt>
                             <dd>
-                                <semui:xEditableRefData owner="${packageInstance}" field="breakable" config="${RefdataCategory.PKG_BREAKABLE}"/>
+                                <semui:xEditableRefData owner="${packageInstance}" field="breakable" config="${RDConstants.PACKAGE_BREAKABLE}"/>
                             </dd>
                         </dl>
                         <dl>
                             <dt>${message(code: 'package.consistent')}</dt>
                             <dd>
-                                <semui:xEditableRefData owner="${packageInstance}" field="consistent" config="${RefdataCategory.PKG_CONSISTENT}"/>
+                                <semui:xEditableRefData owner="${packageInstance}" field="consistent" config="${RDConstants.PACKAGE_CONSISTENT}"/>
                             </dd>
                         </dl>
                         <dl>
                             <dt>${message(code: 'package.fixed')}</dt>
                             <dd>
-                                <semui:xEditableRefData owner="${packageInstance}" field="fixed" config="${RefdataCategory.PKG_FIXED}"/>
+                                <semui:xEditableRefData owner="${packageInstance}" field="fixed" config="${RDConstants.PACKAGE_FIXED}"/>
                             </dd>
                         </dl>
 

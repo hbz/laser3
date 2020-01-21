@@ -10,7 +10,7 @@ class PackageService{
    */
   private RefdataValue getMasterScope() {
     // The Scope.
-    RefdataValue.getByValueAndCategory("Master File", RefdataCategory.PKG_SCOPE)
+    RefdataValue.getByValueAndCategory("Master File", RDConstants.PACKAGE_SCOPE)
    }
 
    private RefdataValue getCPRole(){
