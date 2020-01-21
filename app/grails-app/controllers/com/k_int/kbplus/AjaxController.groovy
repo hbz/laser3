@@ -12,6 +12,7 @@ import de.laser.domain.SystemProfiler
 import de.laser.helper.DebugAnnotation
 import de.laser.helper.DebugUtil
 import de.laser.helper.EhcacheWrapper
+import de.laser.helper.RDConstants
 import de.laser.helper.RDStore
 import de.laser.helper.SessionCacheWrapper
 import de.laser.interfaces.ShareSupport
@@ -68,8 +69,8 @@ class AjaxController {
     ],
     'Currency' : [
       domain:'RefdataValue',
-      countQry:"select count(rdv) from RefdataValue as rdv where rdv.owner.desc='Currency'",
-      rowQry:"select rdv from RefdataValue as rdv where rdv.owner.desc='Currency'",
+      countQry:"select count(rdv) from RefdataValue as rdv where rdv.owner.desc='${RDConstants.CURRENCY}'",
+      rowQry:"select rdv from RefdataValue as rdv where rdv.owner.desc='${RDConstants.CURRENCY}'",
       qryParams:[
                    [
                       param:'iDisplayLength',
@@ -1044,7 +1045,7 @@ class AjaxController {
           }
         }
         else if(!linkComment && commentContent.length() > 0) {
-          RefdataValue typeNote = RefdataValue.getByValueAndCategory('Note','Document Type')
+          RefdataValue typeNote = RefdataValue.getByValueAndCategory('Note', RDConstants.DOCUMENT_TYPE)
           linkComment = new Doc([content:commentContent,type:typeNote])
           if(linkComment.save(true)) {
             DocContext commentContext = new DocContext([doctype:typeNote,link:link,owner:linkComment])

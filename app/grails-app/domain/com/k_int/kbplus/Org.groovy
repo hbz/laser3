@@ -8,6 +8,7 @@ import com.k_int.kbplus.auth.UserOrg
 import com.k_int.properties.PropertyDefinitionGroup
 import com.k_int.properties.PropertyDefinitionGroupBinding
 import de.laser.domain.AbstractBaseDomain
+import de.laser.helper.RDConstants
 import de.laser.helper.RDStore
 import de.laser.helper.RefdataAnnotation
 import de.laser.interfaces.DeleteFlag
@@ -69,7 +70,7 @@ class Org
     @RefdataAnnotation(cat = '?')
     RefdataValue membership
 
-    @RefdataAnnotation(cat = 'Country')
+    @RefdataAnnotation(cat = RDConstants.COUNTRY)
     RefdataValue country
 
     @RefdataAnnotation(cat = 'Federal State')
@@ -84,7 +85,7 @@ class Org
     @RefdataAnnotation(cat = 'Library Type')
     RefdataValue libraryType
 
-    @RefdataAnnotation(cat = 'Cost configuration')
+    @RefdataAnnotation(cat = RDConstants.COST_CONFIGURATION)
     RefdataValue costConfigurationPreset
 
     Set ids = []

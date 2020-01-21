@@ -86,12 +86,12 @@
                </h4>
 
                <div class="ui inverted link list">
-%{--                   <div class="item">
+                   <div class="item">
                        <i class="universal access icon"></i>
-                       <g:link controller="public" action="wcagStatement" class="content">
+                       <a target="_blank" class="content" href="https://www.hbz-nrw.de/barrierefreiheit">
                             ${message(code: 'landingpage.footer.4.link1')}
-                        </g:link>
-                   </div>--}%
+                       </a>
+                   </div>
                 <g:if test="${grailsApplication.config?.laserSystemId == 'LAS:eR-Productive' || grailsApplication.config?.laserSystemId == 'local'}">
                    <div class="item">
                         <i class="universal access icon"></i>

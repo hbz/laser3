@@ -46,14 +46,14 @@
             [${ com.k_int.kbplus.RefdataCategory.getAllRefdataValues('Federal State').collect{ it.value }.join(', ') }]
         country:
           type: string
-          description: Mapping RefdataCategory "Country"
+          description: Mapping RefdataCategory "${de.laser.helper.RDConstants.COUNTRY}"
           enum:
-            [${ com.k_int.kbplus.RefdataCategory.getAllRefdataValues('Country').collect{ it.value }.join(', ') }]
+            [${ com.k_int.kbplus.RefdataCategory.getAllRefdataValues(de.laser.helper.RDConstants.COUNTRY).collect{ it.value }.join(', ') }]
         type:
           type: string
-          description: Mapping RefdataCategory "AddressType"
+          description: Mapping RefdataCategory "${de.laser.helper.RDConstants.ADDRESS_TYPE}"
           enum:
-            [${ com.k_int.kbplus.RefdataCategory.getAllRefdataValues('AddressType').collect{ it.value }.join(', ') }]
+            [${ com.k_int.kbplus.RefdataCategory.getAllRefdataValues(de.laser.helper.RDConstants.ADDRESS_TYPE).collect{ it.value }.join(', ') }]
         lastUpdated:
           type: string
           format: date-time
@@ -64,9 +64,9 @@
       properties:
         category: # mapping attr contentType
           type: string
-          description: Mapping RefdataCategory "ContactContentType"
+          description: Mapping RefdataCategory "${de.laser.helper.RDConstants.CONTACT_CONTENT_TYPE}"
           enum:
-            [${ com.k_int.kbplus.RefdataCategory.getAllRefdataValues('ContactContentType').collect{ it.value }.join(', ') }]
+            [${ com.k_int.kbplus.RefdataCategory.getAllRefdataValues(de.laser.helper.RDConstants.CONTACT_CONTENT_TYPE).collect{ it.value }.join(', ') }]
         content:
           type: string
         lastUpdated:
@@ -74,9 +74,9 @@
           format: date-time
         type:
           type: string
-          description: Mapping RefdataCategory "ContactType"
+          description: Mapping RefdataCategory "${de.laser.helper.RDConstants.CONTACT_TYPE}"
           enum:
-            [${ com.k_int.kbplus.RefdataCategory.getAllRefdataValues('ContactType').collect{ it.value }.join(', ') }]
+            [${ com.k_int.kbplus.RefdataCategory.getAllRefdataValues(de.laser.helper.RDConstants.CONTACT_TYPE).collect{ it.value }.join(', ') }]
 
 
     CostItem:
@@ -105,14 +105,14 @@
           type: string
         costItemElement:
           type: string
-          description: Mapping RefdataCategory "CostItemElement"
+          description: Mapping RefdataCategory "${de.laser.helper.RDConstants.COST_ITEM_ELEMENT}"
           enum:
-            [${ com.k_int.kbplus.RefdataCategory.getAllRefdataValues('CostItemElement').collect{ it.value }.join(', ') }]
+            [${ com.k_int.kbplus.RefdataCategory.getAllRefdataValues(de.laser.helper.RDConstants.COST_ITEM_ELEMENT).collect{ it.value }.join(', ') }]
         costItemStatus:
           type: string
-          description: Mapping RefdataCategory "CostItemStatus"
+          description: Mapping RefdataCategory "${de.laser.helper.RDConstants.COST_ITEM_STATUS}"
           enum:
-            [${ com.k_int.kbplus.RefdataCategory.getAllRefdataValues('CostItemStatus').collect{ it.value }.join(', ') }]
+            [${ com.k_int.kbplus.RefdataCategory.getAllRefdataValues(de.laser.helper.RDConstants.COST_ITEM_STATUS).collect{ it.value }.join(', ') }]
 <%--    costItemCategory:
           type: string
           description: Mapping RefdataCategory "CostItemCategory"
@@ -183,9 +183,9 @@
           type: string
         type:
           type: string
-          description: Mapping RefdataCategory "Document Type"
+          description: Mapping RefdataCategory "${de.laser.helper.RDConstants.DOCUMENT_TYPE}"
           enum:
-            [${ com.k_int.kbplus.RefdataCategory.getAllRefdataValues('Document Type').collect{ it.value }.join(', ') }]
+            [${ com.k_int.kbplus.RefdataCategory.getAllRefdataValues(de.laser.helper..RDConstants.DOCUMENT_TYPE).collect{ it.value }.join(', ') }]
         uuid:
           type: string
           example: "70d4ef8a-71b9-4b39-b339-9f3773c29b26"
@@ -381,9 +381,9 @@
             $ref: "#/components/schemas/Contact"
         country:
           type: string
-          description: Mapping RefdataCategory "Country"
+          description: Mapping RefdataCategory "${de.laser.helper.RDConstants.COUNTRY}"
           enum:
-            [${ com.k_int.kbplus.RefdataCategory.getAllRefdataValues('Country').collect{ it.value }.join(', ') }]
+            [${ com.k_int.kbplus.RefdataCategory.getAllRefdataValues(de.laser.helper.RDConstants.COUNTRY).collect{ it.value }.join(', ') }]
         federalState:
           type: string
           description: Mapping RefdataCategory "FederalState"
@@ -781,24 +781,24 @@
             type: string
           costItemElement:
             type: string
-            description: Mapping RefdataCategory "CostItemElement"
+            description: Mapping RefdataCategory "${de.laser.helper.RDConstants.COST_ITEM_ELEMENT}"
             enum:
-              [${ com.k_int.kbplus.RefdataCategory.getAllRefdataValues('CostItemElement').collect{ it.value }.join(', ') }]
+              [${ com.k_int.kbplus.RefdataCategory.getAllRefdataValues(de.laser.helper.RDConstants.COST_ITEM_ELEMENT).collect{ it.value }.join(', ') }]
           costItemElementConfiguration:
             type: string
-            description: Mapping RefdataCategory "Cost configuration"
+            description: Mapping RefdataCategory "${de.laser.helper.RDConstants.COST_CONFIGURATION}"
             enum:
-              [${ com.k_int.kbplus.RefdataCategory.getAllRefdataValues('Cost configuration').collect{ it.value }.join(', ') }]
+              [${ com.k_int.kbplus.RefdataCategory.getAllRefdataValues(de.laser.helper.RDConstants.COST_CONFIGURATION).collect{ it.value }.join(', ') }]
           costItemStatus:
             type: string
-            description: Mapping RefdataCategory "CostItemStatus"
+            description: Mapping RefdataCategory "${de.laser.helper.RDConstants.COST_ITEM_STATUS}"
             enum:
-              [${ com.k_int.kbplus.RefdataCategory.getAllRefdataValues('CostItemStatus').collect{ it.value }.join(', ') }]
+              [${ com.k_int.kbplus.RefdataCategory.getAllRefdataValues(de.laser.helper.RDConstants.COST_ITEM_STATUS).collect{ it.value }.join(', ') }]
           costItemCategory:
             type: string
-            description: Mapping RefdataCategory "CostItemCategory"
+            description: Mapping RefdataCategory "${de.laser.helper.RDConstants.COST_ITEM_CATEGORY}"
             enum:
-              [${ com.k_int.kbplus.RefdataCategory.getAllRefdataValues('CostItemCategory').collect{ it.value }.join(', ') }]
+              [${ com.k_int.kbplus.RefdataCategory.getAllRefdataValues(de.laser.helper.RDConstants.COST_ITEM_CATEGORY).collect{ it.value }.join(', ') }]
           costTitle:
             type: string
           costDescription:

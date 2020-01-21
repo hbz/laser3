@@ -1,7 +1,7 @@
 package com.k_int.kbplus
 
 import de.laser.domain.AbstractBaseDomain
-
+import de.laser.helper.RDConstants
 import de.laser.helper.RefdataAnnotation
 import de.laser.interfaces.DeleteFlag
 import de.laser.interfaces.TemplateSupport
@@ -14,20 +14,22 @@ class CostItem
         implements DeleteFlag, TemplateSupport  {
 
     static enum TAX_TYPES {
-        TAXABLE_7          (RefdataValue.getByValueAndCategory('taxable','TaxType'),7),
-        TAXABLE_19         (RefdataValue.getByValueAndCategory('taxable','TaxType'),19),
-        TAX_EXEMPT         (RefdataValue.getByValueAndCategory('taxable tax-exempt','TaxType'),0),
-        TAX_NOT_TAXABLE    (RefdataValue.getByValueAndCategory('not taxable','TaxType'),0),
-        TAX_NOT_APPLICABLE (RefdataValue.getByValueAndCategory('not applicable','TaxType'),0),
-        TAX_REVERSE_CHARGE (RefdataValue.getByValueAndCategory('reverse charge','TaxType'),0)
+        TAXABLE_7          (RefdataValue.getByValueAndCategory('taxable','TaxType'),7,true),
+        TAXABLE_19         (RefdataValue.getByValueAndCategory('taxable','TaxType'),19,true),
+        TAX_EXEMPT         (RefdataValue.getByValueAndCategory('taxable tax-exempt','TaxType'),0,true),
+        TAX_NOT_TAXABLE    (RefdataValue.getByValueAndCategory('not taxable','TaxType'),0,true),
+        TAX_NOT_APPLICABLE (RefdataValue.getByValueAndCategory('not applicable','TaxType'),0,true),
+        TAX_REVERSE_CHARGE (RefdataValue.getByValueAndCategory('reverse charge','TaxType'),0,false)
 
-        TAX_TYPES(taxType, taxRate) {
+        TAX_TYPES(RefdataValue taxType, int taxRate, display) {
             this.taxType = taxType
             this.taxRate = taxRate
+            this.display = display
         }
 
         public RefdataValue taxType
         public int taxRate
+        public boolean display
     }
 
     Org owner
@@ -40,19 +42,19 @@ class CostItem
 
     Boolean isVisibleForSubscriber
 
-    @RefdataAnnotation(cat = 'CostItem.Type')
+    @RefdataAnnotation(cat = de.laser.helper.RDConstants.COST_ITEM_TYPE)
     RefdataValue type
 
-    @RefdataAnnotation(cat = 'CostItemStatus')
+    @RefdataAnnotation(cat = de.laser.helper.RDConstants.COST_ITEM_STATUS)
     RefdataValue costItemStatus
 
-    @RefdataAnnotation(cat = 'CostItemCategory')
+    @RefdataAnnotation(cat = de.laser.helper.RDConstants.COST_ITEM_CATEGORY)
     RefdataValue costItemCategory
 
-    @RefdataAnnotation(cat = 'CostItemElement')
+    @RefdataAnnotation(cat = de.laser.helper.RDConstants.COST_ITEM_ELEMENT)
     RefdataValue costItemElement
 
-    @RefdataAnnotation(cat = 'Cost configuration')
+    @RefdataAnnotation(cat = de.laser.helper.RDConstants.COST_CONFIGURATION)
     RefdataValue costItemElementConfiguration
 
     @RefdataAnnotation(cat = 'TaxType')

@@ -8,6 +8,7 @@ import de.laser.AuditConfig
 import de.laser.domain.I10nTranslation
 import de.laser.helper.DateUtil
 import de.laser.helper.DebugAnnotation
+import de.laser.helper.RDConstants
 import de.laser.helper.RDStore
 import de.laser.interfaces.ShareSupport
 import de.laser.interfaces.TemplateSupport
@@ -672,7 +673,7 @@ class SurveyController {
         result.selectedParticipants = getfilteredSurveyOrgs(surveyOrgs.orgsWithoutSubIDs, fsq.query, fsq.queryParams, params)
         result.selectedSubParticipants = getfilteredSurveyOrgs(surveyOrgs.orgsWithSubIDs, fsq.query, fsq.queryParams, params)
 
-        result.selectedCostItemElement = params.selectedCostItemElement ?: RefdataValue.getByValueAndCategory('price: consortial price', 'CostItemElement').id.toString()
+        result.selectedCostItemElement = params.selectedCostItemElement ?: RefdataValue.getByValueAndCategory('price: consortial price', de.laser.helper.RDConstants.COST_ITEM_ELEMENT).id.toString()
 
         if (params.selectedCostItemElement) {
             params.remove('selectedCostItemElement')
@@ -2005,7 +2006,7 @@ class SurveyController {
         def costItemElementConfigurations = []
         def orgConfigurations = []
 
-        def ciecs = RefdataValue.findAllByOwner(RefdataCategory.getByDesc('Cost configuration'))
+        def ciecs = RefdataValue.findAllByOwner(RefdataCategory.getByDesc(RDConstants.COST_CONFIGURATION))
         ciecs.each { ciec ->
             costItemElementConfigurations.add([id: ciec.class.name + ":" + ciec.id, value: ciec.getI10n('value')])
         }
@@ -2036,7 +2037,7 @@ class SurveyController {
         def costItemElementConfigurations = []
         def orgConfigurations = []
 
-        def ciecs = RefdataValue.findAllByOwner(RefdataCategory.getByDesc('Cost configuration'))
+        def ciecs = RefdataValue.findAllByOwner(RefdataCategory.getByDesc(RDConstants.COST_CONFIGURATION))
         ciecs.each { ciec ->
             costItemElementConfigurations.add([id: ciec.class.name + ":" + ciec.id, value: ciec.getI10n('value')])
         }
@@ -3393,7 +3394,7 @@ class SurveyController {
         result.parentSuccessorSubscription = result.surveyConfig?.subscription?.getCalculatedSuccessor()
 
         def countNewCostItems = 0
-        def costElement = RefdataValue.getByValueAndCategory('price: consortial price', 'CostItemElement')
+        def costElement = RefdataValue.getByValueAndCategory('price: consortial price', RDConstants.COST_ITEM_ELEMENT)
         params.list('selectedSurveyCostItem').each { costItemId ->
 
             def costItem = CostItem.get(costItemId)

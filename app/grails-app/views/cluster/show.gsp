@@ -39,7 +39,7 @@
 					</g:if>
 
 					<g:if test="${clusterInstance?.type}">
-						<dt>${com.k_int.kbplus.RefdataCategory.getByDesc('Cluster Type').getI10n('desc')}</dt>
+						<dt>${com.k_int.kbplus.RefdataCategory.getByDesc(de.laser.helper.RDConstants.CLUSTER_TYPE).getI10n('desc')}</dt>
 						<dd>${clusterInstance?.type}</dd>
 					</g:if>
 				

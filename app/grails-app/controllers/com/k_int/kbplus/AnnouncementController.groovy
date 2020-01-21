@@ -2,6 +2,7 @@ package com.k_int.kbplus
 
 import com.k_int.kbplus.auth.User
 import de.laser.controller.AbstractDebugController
+import de.laser.helper.RDConstants
 import grails.plugin.springsecurity.annotation.Secured
 
 @Secured(['IS_AUTHENTICATED_FULLY'])
@@ -15,7 +16,7 @@ class AnnouncementController extends AbstractDebugController {
     def index() {
         Map<String, Object> result = [:]
         result.user = User.get(springSecurityService.principal.id)
-        def announcement_type = RefdataValue.getByValueAndCategory('Announcement','Document Type')
+        def announcement_type = RefdataValue.getByValueAndCategory('Announcement', RDConstants.DOCUMENT_TYPE)
         result.recentAnnouncements = Doc.findAllByType(announcement_type, [max: 10, sort: 'dateCreated', order: 'desc'])
 
         result
@@ -27,7 +28,7 @@ class AnnouncementController extends AbstractDebugController {
         if (params.annTxt) {
             result.user = User.get(springSecurityService.principal.id)
             flash.message = message(code: 'announcement.created', default: "Announcement Created")
-            def announcement_type = RefdataValue.getByValueAndCategory('Announcement','Document Type')
+            def announcement_type = RefdataValue.getByValueAndCategory('Announcement', RDConstants.DOCUMENT_TYPE)
 
             def new_announcement = new Doc(title: params.subjectTxt,
                     content: params.annTxt,

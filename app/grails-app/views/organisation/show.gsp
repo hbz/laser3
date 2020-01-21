@@ -339,7 +339,7 @@
                                     </span>
                                 </dt>
                                 <dd>
-                                    <semui:xEditableRefData owner="${orgInstance}" field="country" config='Country'/>
+                                    <semui:xEditableRefData owner="${orgInstance}" field="country" config="${de.laser.helper.RDConstants.COUNTRY}"/>
                                 </dd>
                             </dl>
                         </div>

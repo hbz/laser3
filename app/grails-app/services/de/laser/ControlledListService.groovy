@@ -147,8 +147,8 @@ class ControlledListService {
                 return [results:[]]
             }
         }
-        if(params.query) {
-            filter += 'and genfunc_filter_matcher(ie.tipp.title.title,:query) = true'
+        if(params.query && params.query.length() > 0) {
+            filter += ' and genfunc_filter_matcher(ie.tipp.title.title,:query) = true '
             filterParams.put('query',params.query)
         }
         List result = IssueEntitlement.executeQuery('select ie from IssueEntitlement as ie where ie.subscription '+filter+' order by ie.tipp.title.title asc, ie.subscription asc, ie.subscription.startDate asc, ie.subscription.endDate asc',filterParams)
@@ -207,7 +207,14 @@ class ControlledListService {
         if(params.ctx) {
             Subscription ctx = genericOIDService.resolveOID(params.ctx)
             filter.ctx = ctx
-            queryString += " and s = :ctx"
+            if(org.hasPerm("ORG_CONSORTIUM"))
+                queryString += " and (s = :ctx or s.instanceOf = :ctx)"
+            else
+                queryString += " and s = :ctx"
+        }
+        else if(params.sub) {
+            filter.sub = genericOIDService.resolveOID(params.sub)
+            queryString += " and s = :sub"
         }
         if(params.status) {
             if(params.status != 'FETCH_ALL') { //FETCH_ALL may be sent from finances/_filter.gsp

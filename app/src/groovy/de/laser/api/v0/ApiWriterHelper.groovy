@@ -4,6 +4,7 @@ import com.k_int.kbplus.*
 import com.k_int.properties.PropertyDefinition
 import de.laser.api.v0.entities.ApiOrg
 import de.laser.helper.Constants
+import de.laser.helper.RDConstants
 import groovy.util.logging.Log4j
 
 @Log4j
@@ -48,7 +49,7 @@ class ApiWriterHelper {
             )
 
             // RefdataValues
-            address.type = getRefdataValue(it.type?.value, "AddressType")
+            address.type = getRefdataValue(it.type?.value, RDConstants.ADDRESS_TYPE)
 
             // References
             address.org = ownerOrg
@@ -69,8 +70,8 @@ class ApiWriterHelper {
             )
 
             // RefdataValues
-            contact.type        = getRefdataValue(it.type?.value, "ContactType")
-            contact.contentType = getRefdataValue(it.category?.value, "ContactContentType")
+            contact.type        = getRefdataValue(it.type?.value, RDConstants.CONTACT_TYPE)
+            contact.contentType = getRefdataValue(it.category?.value, RDConstants.CONTACT_CONTENT_TYPE)
 
             // References
             contact.org = ownerOrg

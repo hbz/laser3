@@ -1,6 +1,12 @@
 ## temporary change log
 
 **Ticket    Date    Branch      Author  Feature/Bug     Description/Keywords**
+--      17.01.2020  rc1.2       Andreas Bug         Kostenfilter für Pakete arbeitete nicht richtig
+
+--      17.01.2020  rc1.2       Andreas Bug         Paket- / Einzeltiteldropdowns im Kosten-Hinzufügen-Modal korrigiert
+
+2070    17.01.2020  rc1.2       Andreas Bug         Währungen mit ausschließlich negativen Kostenposten werden auch ausgegeben
+
 --      16.01.2020  rc1.2       Andreas Bug         Neue TIPPs erzeugen nun auch Pending Changes
 
 --      16.01.2020  rc1.2       Moe     Bug         Bugfix Survey Views, Audit by Properties, MultiYear Function

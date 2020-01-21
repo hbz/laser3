@@ -82,7 +82,7 @@
 
                 <g:if test="${issueEntitlementInstance?.coreStatus}">
                     <dt><g:message code="subscription.details.core_medium"/></dt>
-                    <dd><semui:xEditableRefData owner="${issueEntitlementInstance}" field="coreStatus" config='CoreStatus'/> </dd>
+                    <dd><semui:xEditableRefData owner="${issueEntitlementInstance}" field="coreStatus" config='${de.laser.helper.RDConstants.CORE_STATUS}'/> </dd>
                 </g:if>
               <g:set var="iecorestatus" value="${issueEntitlementInstance.getTIP()?.coreStatus(null)}"/>
 <%--<dt>${message(code:'subscription.details.core_status', default:'Core Status')}</dt>

@@ -175,7 +175,7 @@ class BootStrap {
                     username: 'anonymous',
                     password: "laser@514@2019",
                     display: 'Anonymous User',
-                    email: 'laser_support@hbz-nrw.de',
+                    email: 'laser@hbz-nrw.de',
                     enabled: false
             ).save(failOnError: true)
 
@@ -958,11 +958,6 @@ class BootStrap {
         // -------------------------------------------------------------------
         // ONIX-PL Additions
         // -------------------------------------------------------------------
-
-        //RefdataValue.loc('CostItemCategory', [en: 'Price', de: 'Preis'], BOOTSTRAP)
-        //RefdataValue.loc('CostItemCategory', [en: 'Bank Charge', de: 'Bank Charge'], BOOTSTRAP)
-        //RefdataValue.loc('CostItemCategory', [en: 'Refund', de: 'Erstattung'], BOOTSTRAP)
-        //RefdataValue.loc('CostItemCategory', [en: 'Other', de: 'Andere'], BOOTSTRAP)
 
         /*
         RefdataCategory.loc('Entitlement Issue Status',

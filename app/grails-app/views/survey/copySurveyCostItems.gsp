@@ -278,7 +278,7 @@ ${surveyInfo?.name}
             <tbody>
             <g:each in="${participantsList}" var="participant" status="i">
                 <g:set var="costElement"
-                       value="${RefdataValue.getByValueAndCategory('price: consortial price', 'CostItemElement')}"/>
+                       value="${RefdataValue.getByValueAndCategory('price: consortial price', de.laser.helper.RDConstants.COST_ITEM_ELEMENT)}"/>
 
                 <tr class="">
                     <td>

@@ -518,7 +518,7 @@ r2d2 = {
         // dropdowns escape
         $(ctxSel + ' .la-filter .ui.dropdown').on('keydown', function(e) {
             if(['Escape','Backspace','Delete'].includes(event.key)) {
-                e.preventDefault();
+                //e.preventDefault();
                 $(this).dropdown('clear').dropdown('hide').removeClass("la-filter-dropdown-selected");
             }
         });

@@ -3,6 +3,7 @@ package com.k_int.kbplus
 import com.k_int.kbplus.auth.User
 import de.laser.controller.AbstractDebugController
 import de.laser.helper.DebugAnnotation
+import de.laser.helper.RDConstants
 import grails.plugin.springsecurity.annotation.Secured
 import org.springframework.dao.DataIntegrityViolationException
 
@@ -147,7 +148,7 @@ class ClusterController extends AbstractDebugController {
     def private ajaxList() {
         Cluster clusterInstance = Cluster.get(params.id)
         List<Org> orgs  = Org.getAll()
-        List<RefdataValue> roles = RefdataValue.findAllByOwner(com.k_int.kbplus.RefdataCategory.getByDesc('Cluster Role'))
+        List<RefdataValue> roles = RefdataValue.findAllByOwner(com.k_int.kbplus.RefdataCategory.getByDesc(RDConstants.CLUSTER_ROLE))
         
         render view: 'ajax/orgRoleList', model: [
             clusterInstance: clusterInstance, 

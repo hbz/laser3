@@ -4,6 +4,7 @@ import com.k_int.kbplus.*
 import com.k_int.kbplus.auth.Role
 import com.k_int.kbplus.auth.User
 import de.laser.helper.DebugAnnotation
+import de.laser.helper.RDConstants
 import grails.plugin.springsecurity.annotation.Secured
 
 class CostConfigurationController {
@@ -42,10 +43,10 @@ class CostConfigurationController {
         Org org = contextService.getOrg()
         User user = contextService.getUser()
         def costItemElementConfigurations = []
-        def costItemElements = RefdataCategory.getAllRefdataValues('CostItemElement')
+        def costItemElements = RefdataCategory.getAllRefdataValues(RDConstants.COST_ITEM_ELEMENT)
 
         costItemElements.each { cie ->
-            def currentSetting = CostItemElementConfiguration.findByCostItemElementAndForOrganisation(RefdataValue.getByValueAndCategory(cie,'CostItemElement'),org)
+            def currentSetting = CostItemElementConfiguration.findByCostItemElementAndForOrganisation(RefdataValue.getByValueAndCategory(cie.value, RDConstants.COST_ITEM_ELEMENT),org)
             if(currentSetting) {
                 costItemElementConfigurations.add(currentSetting)
             }
@@ -63,12 +64,12 @@ class CostConfigurationController {
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_EDITOR") })
     def createNewConfiguration() {
         def result = [editable:true] //the user clicking here is already authenticated
-        def costItemElements = RefdataCategory.getAllRefdataValues('CostItemElement')
+        def costItemElements = RefdataCategory.getAllRefdataValues(RDConstants.COST_ITEM_ELEMENT)
         def elementsAlreadyTaken = []
         Org org = contextService.getOrg()
 
         costItemElements.each { cie ->
-            def currentSetting = CostItemElementConfiguration.findByCostItemElementAndForOrganisation(RefdataValue.getByValueAndCategory(cie,'CostItemElement'),org)
+            def currentSetting = CostItemElementConfiguration.findByCostItemElementAndForOrganisation(RefdataValue.getByValueAndCategory(cie.value, RDConstants.COST_ITEM_ELEMENT),org)
             if(currentSetting) {
                 elementsAlreadyTaken.add(cie)
             }
@@ -77,7 +78,7 @@ class CostConfigurationController {
 
         result.formUrl = g.createLink([controller:'costConfiguration',action:'index'])
         result.costItemElements = costItemElements
-        result.elementSigns = RefdataCategory.getAllRefdataValues('CostItemElement')
+        result.elementSigns = RefdataCategory.getAllRefdataValues(RDConstants.COST_CONFIGURATION)
         result.institution = org
 
         render template: '/templates/newCostItemElementConfiguration', model: result

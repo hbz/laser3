@@ -118,7 +118,7 @@
                 <div class="field">
                     <label for="country">${message(code: 'org.country.label')}</label>
                     <laser:select class="ui dropdown" id="country" name="country"
-                                  from="${RefdataCategory.getAllRefdataValues('Country')}"
+                                  from="${RefdataCategory.getAllRefdataValues(de.laser.helper.RDConstants.COUNTRY)}"
                                   optionKey="id"
                                   optionValue="value"
                                   value="${params.country}"

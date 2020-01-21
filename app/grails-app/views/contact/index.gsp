@@ -1,5 +1,5 @@
 
-<%@ page import="com.k_int.kbplus.Contact" %>
+<%@ page import="com.k_int.kbplus.Contact;de.laser.helper.RDConstants" %>
 <!DOCTYPE html>
 <html>
 	<head>
@@ -26,7 +26,7 @@
 						
 						<g:sortableColumn property="content" title="${message(code: 'contact.content.label', default: 'Content')}" />
 						
-						<th>${com.k_int.kbplus.RefdataCategory.getByDesc('ContactType').getI10n('desc')}</th>
+						<th>${com.k_int.kbplus.RefdataCategory.getByDesc(RDConstants.CONTACT_TYPE).getI10n('desc')}</th>
 					
 						<th><g:message code="contact.prs.label" default="Prs" /></th>
 					

@@ -1,540 +1,544 @@
 rdc,token,value_de,value_en
-Access choice remote,Academic,Wissenschaftler,Academic
-Access choice remote,all,alle,all
-Access choice remote,no Access,kein Zugang,no Access
-Access Method,ip4,IPv4,IPv4
-Access Method,ip6,IPv6,IPv6
-Access Method,oa,OpenAthens,Open Athens
-Access Method,proxy,Proxy,Proxy
-Access Method,ref,Referrer,Referrer
-Access Method,shibboleth,Shibboleth,Shibboleth
-Access Method,up,Benutzername/Passwort,Username/Password
-Access Method IP,IPv4,IPv4,IPv4
-Access Method IP,IPv6,IPv6,IPv6
-Access Point Type,ezproxy,EZproxy,EZproxy
-Access Point Type,ip,IP,IP
-Access Point Type,proxy,Proxy,Proxy
-Access Point Type,shibboleth,Shibboleth,Shibboleth
-Access Point Type,vpn,VPN,VPN
-AddressType,Billing address,Rechnungsanschrift,Billing address
-AddressType,Delivery address,Lieferanschrift,Delivery address
-AddressType,Legal patron address,Anschrift des rechtlichen Trägers,Legal patron address
-AddressType,Library address,Anschrift,Library address
-AddressType,Postal address,Postanschrift,Postal address
-Authority,Author,Autor,Author
-Authority,Author and Institution,Autor und Institution,Author and Institution
-Authority,Institution,Institution,Institution
-Authority,Research Funding Institution,Forschungsförderer,Research Funding Institution
-Category A-F,A,A,A
-Category A-F,B,B,B
-Category A-F,C,C,C
-Category A-F,D,D,D
-Category A-F,E,E,E
-Category A-F,F,F,F
-Cluster Role,Cluster Member,Cluster Member,Cluster Member
-Cluster Role,Cluster Owner,Cluster Owner,Cluster Owner
-ClusterType,Undefined,Undefined,Undefined
-Combo Status,Active,Aktiv,Active
-Combo Status,Inactive,Inaktiv,Inactive
-Combo Type,Consortium,Konsortium,Consortium
-Combo Type,Department,Institut,Department
-ConcurrentAccess,No limit,Ohne Begrenzung,No limit
-ConcurrentAccess,Not Specified,Nicht festgelegt,Not Specified
-ConcurrentAccess,Other,Andere,Other
-ConcurrentAccess,Specified,Festgelegt,Specified
-Confidentiality,All,Alles,All
-Confidentiality,All but user terms,Alles außer Nutzungsbedingungen,All but user terms
-Confidentiality,Financial only,Nur Finanzangelegenheiten,Financial only
-Confidentiality,No,Nein,No
-Confidentiality,Unknown,Unklar,Unknown
-ContactContentType,E-Mail,E-Mail,E-Mail
-ContactContentType,Fax,Fax,Fax
-ContactContentType,Phone,Telefon,Phone
-ContactContentType,Url,Url,Url
-ContactType,Job-related,Geschäftlich,Job-related
-ContactType,Personal,Privat,Personal
-CoreStatus,Electronic,Elektronisch,Electronic
-CoreStatus,No,Nein,No
-CoreStatus,Print,Print,Print
-CoreStatus,Print+Electronic,Print & Elektronisch,Print+Electronic
-CoreStatus,Yes,Ja,Yes
-Cost configuration,negative,negativ,negative
-Cost configuration,neutral,neutral,neutral
-Cost configuration,positive,positiv,positive
-CostItem.Type,Actual,Konkrete Instanz,Actual
-CostItem.Type,Template,Vorlage,Template
-CostItemElement,additionalclaim: currency rate,Nachforderung aus Kursdifferenz,additionalclaim: currency rate
-CostItemElement,additionalclaim: other,Nachforderung: Sonstige,additionalclaim: other
-CostItemElement,discount: alliance licence discount,Rabatt für Allianzlizenz,discount: alliance licence discount
-CostItemElement,discount: consortial discount,Rabatt: Konsortialrabatt,discount: consortial discount
-CostItemElement,discount: early pay discount,Rabatt: Frühzahlerrabatt,discount: early pay discount
-CostItemElement,discount: multiyear discount,Rabatt für Mehrjahresvertrag,discount: multiyear discount
-CostItemElement,discount: other,Rabatt: Sonstige,discount: other
-CostItemElement,discount: quantity discount,Rabatt: Mengenrabatt,discount: quantity discount
-CostItemElement,discount: single payment discount,Rabatt für eine Rechnung via Konsortium,discount: single payment discount
-CostItemElement,fee: administration,Gebühr: Verwaltungsgebühr,fee: administration
-CostItemElement,fee: bank charge,Gebühr: Bankgebühr,fee: bank charge
-CostItemElement,fee: invoicing,Gebühr: Rechnungsstellungsgebühr,fee: invoicing
-CostItemElement,fee: other,Gebühr: Sonstige,fee: other
-CostItemElement,fee: setup,Gebühr: SetUp-Gebühr,fee: setup
-CostItemElement,fee: technical access,Gebühr: Plattformgebühr,fee: technical access
-CostItemElement,price: consortial price,Preis: Konsortialpreis,price: consortial price
-CostItemElement,price: final price,Preis: Endpreis,price: final price
-CostItemElement,price: list price,Preis: Listenpreis,price: list price
-CostItemElement,price: other,Preis: Sonstige,price: other
-CostItemElement,price: print share,Preis: Printanteil,price: print share
-CostItemElement,price: provider price,Preis: Anbieterpreis,price: provider price
-CostItemElement,price: short term loan,Preis: Short-Term-Loan,price: short term loan
-CostItemElement,refund: currency rate,Erstattung: Kursgutschrift,refund: currency rate
-CostItemElement,refund: OA,Erstattung: Open-Access-Gutschrift,refund: OA
-CostItemElement,refund: other,Erstattung: Sonstige,refund: other
-CostItemElement,refund: retransfer,Erstattung: Rücküberweisung,refund: retransfer
-CostItemElement,refund: system downtime,Erstattung: Ersatz für Ausfallzeiten,refund: system downtime
-CostItemElement,special funds: central funding,Sondermittel: Zentralmittel,special funds: central funding
-CostItemElement,tax: purchase tax 19,Steuer: Umsatzsteuer 19%,tax: purchase tax 19%
-CostItemElement,tax: purchase tax 7,Steuer: Umsatzsteuer 7%,tax: purchase tax 7%
-CostItemElement,tax: source tax,Steuer: Quellensteuer,tax:  source tax
-CostItemStatus,Actual,feststehend,Actual
-CostItemStatus,Calculated,kalkuliert,Calculated
-CostItemStatus,Commitment,zugesagt,Commitment
-CostItemStatus,Deleted,Gelöscht,Deleted
-CostItemStatus,Estimate,geschätzt,Estimate
-CostItemStatus,Other,Sonstige,Other
-Country,AD,Andorra,Andorra
-Country,AE,Vereinigte Arabische Emirate,United Arab Emirates
-Country,AF,Afghanistan,Afghanistan
-Country,AG,Antigua und Barbuda,Antigua and Barbuda
-Country,AI,Anguilla,Anguilla
-Country,AL,Albanien,Albania
-Country,AM,Armenien,Armenia
-Country,AO,Angola,Angola
-Country,AQ,Antarktis,Antarctica
-Country,AR,Argentinien,Argentina
-Country,AS,"Samoa, amerikanischer Teil",American Samoa
-Country,AT,Österreich,Austria
-Country,AU,Australien,Australia
-Country,AW,Aruba,Aruba
-Country,AX,Åland,Åland Islands
-Country,AZ,Aserbaidschan,Azerbaijan
-Country,BA,Bosnien-Herzegowina,Bosnia and Herzegovina
-Country,BB,Barbados,Barbados
-Country,BD,Bangladesh,Bangladesh
-Country,BE,Belgien,Belgium
-Country,BF,Burkina Faso,Burkina Faso
-Country,BG,Bulgarien,Bulgaria
-Country,BH,Bahrain,Bahrain
-Country,BI,Burundi,Burundi
-Country,BJ,Benin,Benin
-Country,BL,St. Barthélemy,Saint Barthélemy
-Country,BM,Bermuda,Bermuda
-Country,BN,Brunei,Brunei Darussalam
-Country,BO,Bolivien,"Bolivia, Plurinational State of"
-Country,BQ,Karibische Niederlande,"Bonaire, Sint Eustatius and Saba"
-Country,BR,Brasilien,Brazil
-Country,BS,Bahamas,Bahamas
-Country,BT,Bhutan,Bhutan
-Country,BV,Bouvet-Insel,Bouvet Island
-Country,BW,Botswana,Botswana
-Country,BY,Belarus,Belarus
-Country,BZ,Belize,Belize
-Country,CA,Kanada,Canada
-Country,CC,Kokos-Insel (Keeling),Cocos (Keeling) Islands
-Country,CD,"Kongo, demokratische Republik","Congo, the Democratic Republic of the"
-Country,CF,Zentralafrika,Central African Republic
-Country,CG,Kongo (Republik),Congo
-Country,CH,Schweiz,Switzerland
-Country,CI,Elfenbeinküste,Côte d'Ivoire
-Country,CK,Cook-Inseln,Cook Islands
-Country,CL,Chile,Chile
-Country,CM,Kamerun,Cameroon
-Country,CN,China (Volksrepublik),China
-Country,CO,Kolumbien,Colombia
-Country,CR,Costa Rica,Costa Rica
-Country,CU,Kuba,Cuba
-Country,CV,Kapverdische Inseln,Cape Verde
-Country,CW,Curaçao,Curaçao
-Country,CX,Weihnachtsinseln (indischer Ozean),Christmas Island
-Country,CY,Zypern,Cyprus
-Country,CZ,Tschechische Republik,Czech Republic
-Country,DE,Deutschland,Germany
-Country,DJ,Djibouti,Djibouti
-Country,DK,Dänemark,Denmark
-Country,DM,Dominica,Dominica
-Country,DO,Dominikanische Republik,Dominican Republic
-Country,DZ,Algerien,Algeria
-Country,EC,Ekuador,Ecuador
-Country,EE,Estland,Estonia
-Country,EG,Ägypten,Egypt
-Country,EH,Westsahara,Western Sahara
-Country,ER,Eritrea,Eritrea
-Country,ES,Spanien,Spain
-Country,ET,Äthiopien,Ethiopia
-Country,FI,Finnland,Finland
-Country,FJ,Fidschi,Fiji
-Country,FK,Falkland-Inseln,Falkland Islands (Malvinas)
-Country,FM,Mikronesien (Föderierte Staaten von),"Micronesia, Federated States of"
-Country,FO,Färöer-Inseln,Faroe Islands
-Country,FR,Frankreich,France
-Country,GA,Gabun,Gabon
-Country,GB,Grossbritannien und Nordirland,United Kingdom
-Country,GD,Grenada,Grenada
-Country,GE,Georgien,Georgia
-Country,GF,Französisch-Guyana,French Guiana
-Country,GG,Guernsey,Guernsey
-Country,GH,Ghana,Ghana
-Country,GI,Gibraltar,Gibraltar
-Country,GL,Grönland,Greenland
-Country,GM,Gambia,Gambia
-Country,GN,Guinea (Republik),Guinea
-Country,GP,Guadeloupe,Guadeloupe
-Country,GQ,Äquatorial-Guinea,Equatorial Guinea
-Country,GR,Griechenland,Greece
-Country,GS,Südgeorgien und die südlichen Sandwichinseln,South Georgia and the South Sandwich Islands
-Country,GT,Guatemala,Guatemala
-Country,GU,Guam,Guam
-Country,GW,Guinea-Bissau,Guinea-Bissau
-Country,GY,Guyana,Guyana
-Country,HK,Hongkong,Hong Kong
-Country,HM,Heard- und McDonald-Inseln,Heard Island and McDonald Islands
-Country,HN,Honduras,Honduras
-Country,HR,Kroatien,Croatia
-Country,HT,Haiti,Haiti
-Country,HU,Ungarn,Hungary
-Country,ID,Indonesien,Indonesia
-Country,IE,Irland,Ireland
-Country,IL,Israel,Israel
-Country,IM,"Man, Insel",Isle of Man
-Country,IN,Indien,India
-Country,IO,Britisches Territorium im indischen Ozean,British Indian Ocean Territory
-Country,IQ,Irak,Iraq
-Country,IR,Iran,"Iran, Islamic Republic of"
-Country,IS,Island,Iceland
-Country,IT,Italien,Italy
-Country,JE,Jersey,Jersey
-Country,JM,Jamaika,Jamaica
-Country,JO,Jordanien,Jordan
-Country,JP,Japan,Japan
-Country,KE,Kenia,Kenya
-Country,KG,Kirgisistan,Kyrgyzstan
-Country,KH,Kambodscha,Cambodia
-Country,KI,Kiribati,Kiribati
-Country,KM,Komoren,Comoros
-Country,KN,St. Christoph (St. Kitts) und Nevis,Saint Kitts and Nevis
-Country,KP,"Korea, demokratische Volksrepublik (Nordkorea)","Korea, Democratic People's Republic of"
-Country,KR,"Korea, Republik (Südkorea)","Korea, Republic of"
-Country,KW,Kuwait,Kuwait
-Country,KY,Cayman,Cayman Islands
-Country,KZ,Kasachstan,Kazakhstan
-Country,LA,Laos,Lao People's Democratic Republic
-Country,LB,Libanon,Lebanon
-Country,LC,St. Lucia,Saint Lucia
-Country,LI,Liechtenstein,Liechtenstein
-Country,LK,Sri Lanka,Sri Lanka
-Country,LR,Liberia,Liberia
-Country,LS,Lesotho,Lesotho
-Country,LT,Litauen,Lithuania
-Country,LU,Luxemburg,Luxembourg
-Country,LV,Lettland,Latvia
-Country,LY,Libyen,Libya
-Country,MA,Marokko,Morocco
-Country,MC,Monaco,Monaco
-Country,MD,Moldova,"Moldova, Republic of"
-Country,ME,"Montenegro, Republik",Montenegro
-Country,MF,St. Martin,Saint Martin (French part)
-Country,MG,Madagaskar,Madagascar
-Country,MH,Marshall-Inseln,Marshall Islands
-Country,MK,"Mazedonien, ehemalige jugoslawische Republik","Macedonia, the Former Yugoslav Republic of"
-Country,ML,Mali,Mali
-Country,MM,Myanmar (Union),Myanmar
-Country,MN,Mongolei,Mongolia
-Country,MO,Macao,Macao
-Country,MP,Marianen-Inseln,Northern Mariana Islands
-Country,MQ,Martinique,Martinique
-Country,MR,Mauretanien,Mauritania
-Country,MS,Montserrat,Montserrat
-Country,MT,Malta,Malta
-Country,MU,"Mauritius, Insel",Mauritius
-Country,MV,Malediven,Maldives
-Country,MW,Malawi,Malawi
-Country,MX,Mexiko,Mexico
-Country,MY,Malaysia,Malaysia
-Country,MZ,Mosambik,Mozambique
-Country,NA,Namibia,Namibia
-Country,NC,Neukaledonien,New Caledonia
-Country,NE,Niger,Niger
-Country,NF,Norfolk-Insel,Norfolk Island
-Country,NG,Nigeria,Nigeria
-Country,NI,Nicaragua,Nicaragua
-Country,NL,Niederlande,Netherlands
-Country,NO,Norwegen,Norway
-Country,NP,Nepal,Nepal
-Country,NR,Nauru,Nauru
-Country,NU,Niue,Niue
-Country,NZ,Neuseeland,New Zealand
-Country,OM,Oman,Oman
-Country,PA,Panama,Panama
-Country,PE,Peru,Peru
-Country,PF,Französisch-Polynesien,French Polynesia
-Country,PG,Papua-Neuguinea,Papua New Guinea
-Country,PH,Philippinen,Philippines
-Country,PK,Pakistan,Pakistan
-Country,PL,Polen,Poland
-Country,PM,St. Pierre und Miquelon,Saint Pierre and Miquelon
-Country,PN,Pitcairn,Pitcairn
-Country,PR,Puerto Rico,Puerto Rico
-Country,PS,Palästina,"Palestine, State of"
-Country,PT,Portugal,Portugal
-Country,PW,Palau,Palau
-Country,PY,Paraguay,Paraguay
-Country,QA,Qatar,Qatar
-Country,RE,Réunion,Réunion
-Country,RO,Rumänien,Romania
-Country,RS,"Serbien,  Republik",Serbia
-Country,RU,Russische Föderation,Russian Federation
-Country,RW,Rwanda,Rwanda
-Country,SA,Saudi-Arabien,Saudi Arabia
-Country,SB,Salomon-Inseln,Solomon Islands
-Country,SC,Seychellen,Seychelles
-Country,SD,Sudan,Sudan
-Country,SE,Schweden,Sweden
-Country,SG,Singapur,Singapore
-Country,SH,"St. Helena, Ascension und Tristan da Cunha","Saint Helena, Ascension and Tristan da Cunha"
-Country,SI,Slowenien,Slovenia
-Country,SJ,Svalbard und Insel Jan Mayen,Svalbard and Jan Mayen
-Country,SK,Slowakische Republik,Slovakia
-Country,SL,Sierra Leone,Sierra Leone
-Country,SM,San Marino,San Marino
-Country,SN,Senegal,Senegal
-Country,SO,Somalia,Somalia
-Country,SR,Suriname,Suriname
-Country,SS,Südsudan,South Sudan
-Country,ST,St. Thomas und Principe,Sao Tome and Principe
-Country,SV,El Salvador,El Salvador
-Country,SX,St. Maarten,Sint Maarten (Dutch part)
-Country,SY,Syrien,Syrian Arab Republic
-Country,SZ,Swasiland,Swaziland
-Country,TC,Turks und Caicos,Turks and Caicos Islands
-Country,TD,Tschad,Chad
-Country,TF,Französische Süd- und Antarktisgebiete,French Southern Territories
-Country,TG,Togo,Togo
-Country,TH,Thailand,Thailand
-Country,TJ,Tadschikistan,Tajikistan
-Country,TK,Tokelau,Tokelau
-Country,TL,Timor-Leste,Timor-Leste
-Country,TM,Turkmenistan,Turkmenistan
-Country,TN,Tunesien,Tunisia
-Country,TO,Tonga,Tonga
-Country,TR,Türkei,Turkey
-Country,TT,Trinidad und Tobago,Trinidad and Tobago
-Country,TV,Tuvalu,Tuvalu
-Country,TW,Taiwan (Chinesisches Taipei),"Taiwan, Province of China"
-Country,TZ,Tansania,"Tanzania, United Republic of"
-Country,UA,Ukraine,Ukraine
-Country,UG,Uganda,Uganda
-Country,UM,"Amerikanische Überseeinseln, kleinere",United States Minor Outlying Islands
-Country,US,Vereinigte Staaten von Amerika,United States
-Country,UY,Uruguay,Uruguay
-Country,UZ,Usbekistan,Uzbekistan
-Country,VA,Vatikan,Holy See (Vatican City State)
-Country,VC,St. Vincent und Grenadinen,Saint Vincent and the Grenadines
-Country,VE,Venezuela,"Venezuela, Bolivarian Republic of"
-Country,VG, britischer Teil (Tortola),"Virgin Islands, British,Virginische Inseln"
-Country,VI,Amerikanische Jungferninseln,"Virgin Islands, U.S."
-Country,VN,Vietnam,Viet Nam
-Country,VU,Vanuatu,Vanuatu
-Country,WF,Wallis und Futuna,Wallis and Futuna
-Country,WS,"Samoa, West",Samoa
-Country,YE,Jemen,Yemen
-Country,YT,Mayotte,Mayotte
-Country,ZA,Südafrika,South Africa
-Country,ZM,Sambia,Zambia
-Country,ZW,Zimbabwe,Zimbabwe
-CreatorType,Author,Autor,Author
-CreatorType,Editor,Herausgeber,Editor
-Currency,AED,AED - United Arab Emirates Dirham,AED - United Arab Emirates Dirham
-Currency,AFN,AFN - Afghanistan Afghani,AFN - Afghanistan Afghani
-Currency,ALL,ALL - Albania Lek,ALL - Albania Lek
-Currency,AMD,AMD - Armenia Dram,AMD - Armenia Dram
-Currency,ANG,ANG - Netherlands Antilles Guilder,ANG - Netherlands Antilles Guilder
-Currency,AOA,AOA - Angola Kwanza,AOA - Angola Kwanza
-Currency,ARS,ARS - Argentina Peso,ARS - Argentina Peso
-Currency,AUD,AUD - Australia Dollar,AUD - Australia Dollar
-Currency,AWG,AWG - Aruba Guilder,AWG - Aruba Guilder
-Currency,AZN,AZN - Azerbaijan New Manat,AZN - Azerbaijan New Manat
-Currency,BAM,BAM - Bosnia and Herzegovina Convertible Marka,BAM - Bosnia and Herzegovina Convertible Marka
-Currency,BBD,BBD - Barbados Dollar,BBD - Barbados Dollar
-Currency,BDT,BDT - Bangladesh Taka,BDT - Bangladesh Taka
-Currency,BGN,BGN - Bulgaria Lev,BGN - Bulgaria Lev
-Currency,BHD,BHD - Bahrain Dinar,BHD - Bahrain Dinar
-Currency,BIF,BIF - Burundi Franc,BIF - Burundi Franc
-Currency,BMD,BMD - Bermuda Dollar,BMD - Bermuda Dollar
-Currency,BND,BND - Brunei Darussalam Dollar,BND - Brunei Darussalam Dollar
-Currency,BOB,BOB - Bolivia Boliviano,BOB - Bolivia Boliviano
-Currency,BRL,BRL - Brazil Real,BRL - Brazil Real
-Currency,BSD,BSD - Bahamas Dollar,BSD - Bahamas Dollar
-Currency,BTN,BTN - Bhutan Ngultrum,BTN - Bhutan Ngultrum
-Currency,BWP,BWP - Botswana Pula,BWP - Botswana Pula
-Currency,BYR,BYR - Belarus Ruble,BYR - Belarus Ruble
-Currency,BZD,BZD - Belize Dollar,BZD - Belize Dollar
-Currency,CAD,CAD - Canada Dollar,CAD - Canada Dollar
-Currency,CDF,CDF - Congo/Kinshasa Franc,CDF - Congo/Kinshasa Franc
-Currency,CHF,CHF - Switzerland Franc,CHF - Switzerland Franc
-Currency,CLP,CLP - Chile Peso,CLP - Chile Peso
-Currency,CNY,CNY - China Yuan Renminbi,CNY - China Yuan Renminbi
-Currency,COP,COP - Colombia Peso,COP - Colombia Peso
-Currency,CRC,CRC - Costa Rica Colon,CRC - Costa Rica Colon
-Currency,CUC,CUC - Cuba Convertible Peso,CUC - Cuba Convertible Peso
-Currency,CUP,CUP - Cuba Peso,CUP - Cuba Peso
-Currency,CVE,CVE - Cape Verde Escudo,CVE - Cape Verde Escudo
-Currency,CZK,CZK - Czech Republic Koruna,CZK - Czech Republic Koruna
-Currency,DJF,DJF - Djibouti Franc,DJF - Djibouti Franc
-Currency,DKK,DKK - Denmark Krone,DKK - Denmark Krone
-Currency,DOP,DOP - Dominican Republic Peso,DOP - Dominican Republic Peso
-Currency,DZD,DZD - Algeria Dinar,DZD - Algeria Dinar
-Currency,EGP,EGP - Egypt Pound,EGP - Egypt Pound
-Currency,ERN,ERN - Eritrea Nakfa,ERN - Eritrea Nakfa
-Currency,ETB,ETB - Ethiopia Birr,ETB - Ethiopia Birr
-Currency,EUR,EUR - Euro Member Countries,EUR - Euro Member Countries
-Currency,FJD,FJD - Fiji Dollar,FJD - Fiji Dollar
-Currency,FKP,FKP - Falkland Islands (Malvinas) Pound,FKP - Falkland Islands (Malvinas) Pound
-Currency,GBP,GBP - United Kingdom Pound,GBP - United Kingdom Pound
-Currency,GEL,GEL - Georgia Lari,GEL - Georgia Lari
-Currency,GGP,GGP - Guernsey Pound,GGP - Guernsey Pound
-Currency,GHS,GHS - Ghana Cedi,GHS - Ghana Cedi
-Currency,GIP,GIP - Gibraltar Pound,GIP - Gibraltar Pound
-Currency,GMD,GMD - Gambia Dalasi,GMD - Gambia Dalasi
-Currency,GNF,GNF - Guinea Franc,GNF - Guinea Franc
-Currency,GTQ,GTQ - Guatemala Quetzal,GTQ - Guatemala Quetzal
-Currency,GYD,GYD - Guyana Dollar,GYD - Guyana Dollar
-Currency,HKD,HKD - Hong Kong Dollar,HKD - Hong Kong Dollar
-Currency,HNL,HNL - Honduras Lempira,HNL - Honduras Lempira
-Currency,HRK,HRK - Croatia Kuna,HRK - Croatia Kuna
-Currency,HTG,HTG - Haiti Gourde,HTG - Haiti Gourde
-Currency,HUF,HUF - Hungary Forint,HUF - Hungary Forint
-Currency,IDR,IDR - Indonesia Rupiah,IDR - Indonesia Rupiah
-Currency,ILS,ILS - Israel Shekel,ILS - Israel Shekel
-Currency,IMP,IMP - Isle of Man Pound,IMP - Isle of Man Pound
-Currency,INR,INR - India Rupee,INR - India Rupee
-Currency,IQD,IQD - Iraq Dinar,IQD - Iraq Dinar
-Currency,IRR,IRR - Iran Rial,IRR - Iran Rial
-Currency,ISK,ISK - Iceland Krona,ISK - Iceland Krona
-Currency,JEP,JEP - Jersey Pound,JEP - Jersey Pound
-Currency,JMD,JMD - Jamaica Dollar,JMD - Jamaica Dollar
-Currency,JOD,JOD - Jordan Dinar,JOD - Jordan Dinar
-Currency,JPY,JPY - Japan Yen,JPY - Japan Yen
-Currency,KES,KES - Kenya Shilling,KES - Kenya Shilling
-Currency,KGS,KGS - Kyrgyzstan Som,KGS - Kyrgyzstan Som
-Currency,KHR,KHR - Cambodia Riel,KHR - Cambodia Riel
-Currency,KMF,KMF - Comoros Franc,KMF - Comoros Franc
-Currency,KPW,KPW - Korea (North) Won,KPW - Korea (North) Won
-Currency,KRW,KRW - Korea (South) Won,KRW - Korea (South) Won
-Currency,KWD,KWD - Kuwait Dinar,KWD - Kuwait Dinar
-Currency,KYD,KYD - Cayman Islands Dollar,KYD - Cayman Islands Dollar
-Currency,KZT,KZT - Kazakhstan Tenge,KZT - Kazakhstan Tenge
-Currency,LAK,LAK - Laos Kip,LAK - Laos Kip
-Currency,LBP,LBP - Lebanon Pound,LBP - Lebanon Pound
-Currency,LKR,LKR - Sri Lanka Rupee,LKR - Sri Lanka Rupee
-Currency,LRD,LRD - Liberia Dollar,LRD - Liberia Dollar
-Currency,LSL,LSL - Lesotho Loti,LSL - Lesotho Loti
-Currency,LYD,LYD - Libya Dinar,LYD - Libya Dinar
-Currency,MAD,MAD - Morocco Dirham,MAD - Morocco Dirham
-Currency,MDL,MDL - Moldova Leu,MDL - Moldova Leu
-Currency,MGA,MGA - Madagascar Ariary,MGA - Madagascar Ariary
-Currency,MKD,MKD - Macedonia Denar,MKD - Macedonia Denar
-Currency,MMK,MMK - Myanmar (Burma) Kyat,MMK - Myanmar (Burma) Kyat
-Currency,MNT,MNT - Mongolia Tughrik,MNT - Mongolia Tughrik
-Currency,MOP,MOP - Macau Pataca,MOP - Macau Pataca
-Currency,MRO,MRO - Mauritania Ouguiya,MRO - Mauritania Ouguiya
-Currency,MUR,MUR - Mauritius Rupee,MUR - Mauritius Rupee
-Currency,MVR,MVR - Maldives (Maldive Islands) Rufiyaa,MVR - Maldives (Maldive Islands) Rufiyaa
-Currency,MWK,MWK - Malawi Kwacha,MWK - Malawi Kwacha
-Currency,MXN,MXN - Mexico Peso,MXN - Mexico Peso
-Currency,MYR,MYR - Malaysia Ringgit,MYR - Malaysia Ringgit
-Currency,MZN,MZN - Mozambique Metical,MZN - Mozambique Metical
-Currency,NAD,NAD - Namibia Dollar,NAD - Namibia Dollar
-Currency,NGN,NGN - Nigeria Naira,NGN - Nigeria Naira
-Currency,NIO,NIO - Nicaragua Cordoba,NIO - Nicaragua Cordoba
-Currency,NOK,NOK - Norway Krone,NOK - Norway Krone
-Currency,NPR,NPR - Nepal Rupee,NPR - Nepal Rupee
-Currency,NZD,NZD - New Zealand Dollar,NZD - New Zealand Dollar
-Currency,OMR,OMR - Oman Rial,OMR - Oman Rial
-Currency,PAB,PAB - Panama Balboa,PAB - Panama Balboa
-Currency,PEN,PEN - Peru Nuevo Sol,PEN - Peru Nuevo Sol
-Currency,PGK,PGK - Papua New Guinea Kina,PGK - Papua New Guinea Kina
-Currency,PHP,PHP - Philippines Peso,PHP - Philippines Peso
-Currency,PKR,PKR - Pakistan Rupee,PKR - Pakistan Rupee
-Currency,PLN,PLN - Poland Zloty,PLN - Poland Zloty
-Currency,PYG,PYG - Paraguay Guarani,PYG - Paraguay Guarani
-Currency,QAR,QAR - Qatar Riyal,QAR - Qatar Riyal
-Currency,RON,RON - Romania New Leu,RON - Romania New Leu
-Currency,RSD,RSD - Serbia Dinar,RSD - Serbia Dinar
-Currency,RUB,RUB - Russia Ruble,RUB - Russia Ruble
-Currency,RWF,RWF - Rwanda Franc,RWF - Rwanda Franc
-Currency,SAR,SAR - Saudi Arabia Riyal,SAR - Saudi Arabia Riyal
-Currency,SBD,SBD - Solomon Islands Dollar,SBD - Solomon Islands Dollar
-Currency,SCR,SCR - Seychelles Rupee,SCR - Seychelles Rupee
-Currency,SDG,SDG - Sudan Pound,SDG - Sudan Pound
-Currency,SEK,SEK - Sweden Krona,SEK - Sweden Krona
-Currency,SGD,SGD - Singapore Dollar,SGD - Singapore Dollar
-Currency,SHP,SHP - Saint Helena Pound,SHP - Saint Helena Pound
-Currency,SLL,SLL - Sierra Leone Leone,SLL - Sierra Leone Leone
-Currency,SOS,SOS - Somalia Shilling,SOS - Somalia Shilling
-Currency,SPL,SPL - Seborga Luigino,SPL - Seborga Luigino
-Currency,SRD,SRD - Suriname Dollar,SRD - Suriname Dollar
-Currency,STD,STD - São Tomé and Príncipe Dobra,STD - São Tomé and Príncipe Dobra
-Currency,SVC,SVC - El Salvador Colon,SVC - El Salvador Colon
-Currency,SYP,SYP - Syria Pound,SYP - Syria Pound
-Currency,SZL,SZL - Swaziland Lilangeni,SZL - Swaziland Lilangeni
-Currency,THB,THB - Thailand Baht,THB - Thailand Baht
-Currency,TJS,TJS - Tajikistan Somoni,TJS - Tajikistan Somoni
-Currency,TMT,TMT - Turkmenistan Manat,TMT - Turkmenistan Manat
-Currency,TND,TND - Tunisia Dinar,TND - Tunisia Dinar
-Currency,TOP,TOP - Tonga Pa'anga,TOP - Tonga Pa'anga
-Currency,TRY,TRY - Turkey Lira,TRY - Turkey Lira
-Currency,TTD,TTD - Trinidad and Tobago Dollar,TTD - Trinidad and Tobago Dollar
-Currency,TVD,TVD - Tuvalu Dollar,TVD - Tuvalu Dollar
-Currency,TWD,TWD - Taiwan New Dollar,TWD - Taiwan New Dollar
-Currency,TZS,TZS - Tanzania Shilling,TZS - Tanzania Shilling
-Currency,UAH,UAH - Ukraine Hryvnia,UAH - Ukraine Hryvnia
-Currency,UGX,UGX - Uganda Shilling,UGX - Uganda Shilling
-Currency,USD,USD - United States Dollar,USD - United States Dollar
-Currency,UYU,UYU - Uruguay Peso,UYU - Uruguay Peso
-Currency,UZS,UZS - Uzbekistan Som,UZS - Uzbekistan Som
-Currency,VEF,VEF - Venezuela Bolivar,VEF - Venezuela Bolivar
-Currency,VND,VND - Viet Nam Dong,VND - Viet Nam Dong
-Currency,VUV,VUV - Vanuatu Vatu,VUV - Vanuatu Vatu
-Currency,WST,WST - Samoa Tala,WST - Samoa Tala
-Currency,XAF,XAF - Communauté Financière Africaine (BEAC) CFA Franc BEAC,XAF - Communauté Financière Africaine (BEAC) CFA Franc BEAC
-Currency,XCD,XCD - East Caribbean Dollar,XCD - East Caribbean Dollar
-Currency,XDR,XDR - International Monetary Fund (IMF) Special Drawing Rights,XDR - International Monetary Fund (IMF) Special Drawing Rights
-Currency,XOF,XOF - Communauté Financière Africaine (BCEAO) Franc,XOF - Communauté Financière Africaine (BCEAO) Franc
-Currency,XPF,XPF - Comptoirs Français du Pacifique (CFP) Franc,XPF – Comptoirs Français du Pacifique (CFP) Franc
-Currency,YER,YER - Yemen Rial,YER - Yemen Rial
-Currency,ZAR,ZAR - South Africa Rand,ZAR - South Africa Rand
-Currency,ZMW,ZMW - Zambia Kwacha,ZMW - Zambia Kwacha
-Currency,ZWD,ZWD - Zimbabwe Dollar,ZWD - Zimbabwe Dollar
-CustomerIdentifier.Type,Default,Default,Default
-Document Context Status,Deleted,Gelöscht,Deleted
-Document Type,Addendum,Zusatz,Addendum
-Document Type,Announcement,Angekündigung,Announcement
-Document Type,Announcement,Ankündigung,Announcement
-Document Type,Costs,Preise,Costs
-Document Type,General,Allgemein,General
-Document Type,Invoice,Rechnung,Invoice
-Document Type,KBART,KBART,KBART
-Document Type,License,Vertrag,License
-Document Type,Metadata,Metadaten,Metadata
-Document Type,Note,Anmerkung,Note
-Document Type,Note,Anmerkung,Note
-Document Type,Offer,Angebot,Offer
-Document Type,ONIX-PL License,ONIX-PL Lizenz,ONIX-PL License
-Document Type,Order,Bestellung,Order
-Document Type,Renewal,Renewal,Renewal
-Document Type,Subscription,Lizenz,Subscription
-Document Type,Title List,Titelliste,Title List
-Document Type,Usage Statistics,Nutzungsstatistik,Usage Statistics
-Existence,Existent,Bestehend,Existent
-Existence,Nonexistend,Fehlend,Nonexistend
+access.choice.remote,Academic,Wissenschaftler,Academic
+access.choice.remote,all,alle,all
+access.choice.remote,no Access,kein Zugang,no Access
+access.method,ip4,IPv4,IPv4
+access.method,ip6,IPv6,IPv6
+access.method,oa,OpenAthens,Open Athens
+access.method,proxy,Proxy,Proxy
+access.method,ref,Referrer,Referrer
+access.method,shibboleth,Shibboleth,Shibboleth
+access.method,up,Benutzername/Passwort,Username/Password
+access.method.ip,IPv4,IPv4,IPv4
+access.method.ip,IPv6,IPv6,IPv6
+access.point.type,ezproxy,EZproxy,EZproxy
+access.point.type,ip,IP,IP
+access.point.type,proxy,Proxy,Proxy
+access.point.type,shibboleth,Shibboleth,Shibboleth
+access.point.type,vpn,VPN,VPN
+address.type,Billing address,Rechnungsanschrift,Billing address
+address.type,Delivery address,Lieferanschrift,Delivery address
+address.type,Legal patron address,Anschrift des rechtlichen Trägers,Legal patron address
+address.type,Library address,Anschrift,Library address
+address.type,Postal address,Postanschrift,Postal address
+authority,Author,Autor,Author
+authority,Author and Institution,Autor und Institution,Author and Institution
+authority,Institution,Institution,Institution
+authority,Research Funding Institution,Forschungsförderer,Research Funding Institution
+category.a.f,A,A,A
+category.a.f,B,B,B
+category.a.f,C,C,C
+category.a.f,D,D,D
+category.a.f,E,E,E
+category.a.f,F,F,F
+cluster.role,Cluster Member,Cluster Member,Cluster Member
+cluster.role,Cluster Owner,Cluster Owner,Cluster Owner
+cluster.type,Undefined,Undefined,Undefined
+combo.status,Active,Aktiv,Active
+combo.status,Inactive,Inaktiv,Inactive
+combo.type,Consortium,Konsortium,Consortium
+combo.type,Department,Institut,Department
+concurrent.access,No limit,Ohne Begrenzung,No limit
+concurrent.access,Not Specified,Nicht festgelegt,Not Specified
+concurrent.access,Other,Andere,Other
+concurrent.access,Specified,Festgelegt,Specified
+confidentiality,All,Alles,All
+confidentiality,All but user terms,Alles außer Nutzungsbedingungen,All but user terms
+confidentiality,Financial only,Nur Finanzangelegenheiten,Financial only
+confidentiality,No,Nein,No
+confidentiality,Unknown,Unklar,Unknown
+contact.content.type,E-Mail,E-Mail,E-Mail
+contact.content.type,Fax,Fax,Fax
+contact.content.type,Phone,Telefon,Phone
+contact.content.type,Url,Url,Url
+contact.type,Job-related,Geschäftlich,Job-related
+contact.type,Personal,Privat,Personal
+core.status,Electronic,Elektronisch,Electronic
+core.status,No,Nein,No
+core.status,Print,Print,Print
+core.status,Print+Electronic,Print & Elektronisch,Print+Electronic
+core.status,Yes,Ja,Yes
+cost.configuration,negative,negativ,negative
+cost.configuration,neutral,neutral,neutral
+cost.configuration,positive,positiv,positive
+cost.item.type,Actual,Konkrete Instanz,Actual
+cost.item.type,Template,Vorlage,Template
+cost.item.category,Price,Preis,Price
+cost.item.category,Bank Charge,Bank Charge,Bank Charge
+cost.item.category,Refund,Erstattung,Refund
+cost.item.category,Other,Andere,Other
+cost.item.element,additionalclaim: currency rate,Nachforderung aus Kursdifferenz,additionalclaim: currency rate
+cost.item.element,additionalclaim: other,Nachforderung: Sonstige,additionalclaim: other
+cost.item.element,discount: alliance licence discount,Rabatt für Allianzlizenz,discount: alliance licence discount
+cost.item.element,discount: consortial discount,Rabatt: Konsortialrabatt,discount: consortial discount
+cost.item.element,discount: early pay discount,Rabatt: Frühzahlerrabatt,discount: early pay discount
+cost.item.element,discount: multiyear discount,Rabatt für Mehrjahresvertrag,discount: multiyear discount
+cost.item.element,discount: other,Rabatt: Sonstige,discount: other
+cost.item.element,discount: quantity discount,Rabatt: Mengenrabatt,discount: quantity discount
+cost.item.element,discount: single payment discount,Rabatt für eine Rechnung via Konsortium,discount: single payment discount
+cost.item.element,fee: administration,Gebühr: Verwaltungsgebühr,fee: administration
+cost.item.element,fee: bank charge,Gebühr: Bankgebühr,fee: bank charge
+cost.item.element,fee: invoicing,Gebühr: Rechnungsstellungsgebühr,fee: invoicing
+cost.item.element,fee: other,Gebühr: Sonstige,fee: other
+cost.item.element,fee: setup,Gebühr: SetUp-Gebühr,fee: setup
+cost.item.element,fee: technical access,Gebühr: Plattformgebühr,fee: technical access
+cost.item.element,price: consortial price,Preis: Konsortialpreis,price: consortial price
+cost.item.element,price: final price,Preis: Endpreis,price: final price
+cost.item.element,price: list price,Preis: Listenpreis,price: list price
+cost.item.element,price: other,Preis: Sonstige,price: other
+cost.item.element,price: print share,Preis: Printanteil,price: print share
+cost.item.element,price: provider price,Preis: Anbieterpreis,price: provider price
+cost.item.element,price: short term loan,Preis: Short-Term-Loan,price: short term loan
+cost.item.element,refund: currency rate,Erstattung: Kursgutschrift,refund: currency rate
+cost.item.element,refund: OA,Erstattung: Open-Access-Gutschrift,refund: OA
+cost.item.element,refund: other,Erstattung: Sonstige,refund: other
+cost.item.element,refund: retransfer,Erstattung: Rücküberweisung,refund: retransfer
+cost.item.element,refund: system downtime,Erstattung: Ersatz für Ausfallzeiten,refund: system downtime
+cost.item.element,special funds: central funding,Sondermittel: Zentralmittel,special funds: central funding
+cost.item.element,tax: purchase tax 19,Steuer: Umsatzsteuer 19%,tax: purchase tax 19%
+cost.item.element,tax: purchase tax 7,Steuer: Umsatzsteuer 7%,tax: purchase tax 7%
+cost.item.element,tax: source tax,Steuer: Quellensteuer,tax:  source tax
+cost.item.status,Actual,feststehend,Actual
+cost.item.status,Calculated,kalkuliert,Calculated
+cost.item.status,Commitment,zugesagt,Commitment
+cost.item.status,Deleted,Gelöscht,Deleted
+cost.item.status,Estimate,geschätzt,Estimate
+cost.item.status,Other,Sonstige,Other
+country,AD,Andorra,Andorra
+country,AE,Vereinigte Arabische Emirate,United Arab Emirates
+country,AF,Afghanistan,Afghanistan
+country,AG,Antigua und Barbuda,Antigua and Barbuda
+country,AI,Anguilla,Anguilla
+country,AL,Albanien,Albania
+country,AM,Armenien,Armenia
+country,AO,Angola,Angola
+country,AQ,Antarktis,Antarctica
+country,AR,Argentinien,Argentina
+country,AS,"Samoa, amerikanischer Teil",American Samoa
+country,AT,Österreich,Austria
+country,AU,Australien,Australia
+country,AW,Aruba,Aruba
+country,AX,Åland,Åland Islands
+country,AZ,Aserbaidschan,Azerbaijan
+country,BA,Bosnien-Herzegowina,Bosnia and Herzegovina
+country,BB,Barbados,Barbados
+country,BD,Bangladesh,Bangladesh
+country,BE,Belgien,Belgium
+country,BF,Burkina Faso,Burkina Faso
+country,BG,Bulgarien,Bulgaria
+country,BH,Bahrain,Bahrain
+country,BI,Burundi,Burundi
+country,BJ,Benin,Benin
+country,BL,St. Barthélemy,Saint Barthélemy
+country,BM,Bermuda,Bermuda
+country,BN,Brunei,Brunei Darussalam
+country,BO,Bolivien,"Bolivia, Plurinational State of"
+country,BQ,Karibische Niederlande,"Bonaire, Sint Eustatius and Saba"
+country,BR,Brasilien,Brazil
+country,BS,Bahamas,Bahamas
+country,BT,Bhutan,Bhutan
+country,BV,Bouvet-Insel,Bouvet Island
+country,BW,Botswana,Botswana
+country,BY,Belarus,Belarus
+country,BZ,Belize,Belize
+country,CA,Kanada,Canada
+country,CC,Kokos-Insel (Keeling),Cocos (Keeling) Islands
+country,CD,"Kongo, demokratische Republik","Congo, the Democratic Republic of the"
+country,CF,Zentralafrika,Central African Republic
+country,CG,Kongo (Republik),Congo
+country,CH,Schweiz,Switzerland
+country,CI,Elfenbeinküste,Côte d'Ivoire
+country,CK,Cook-Inseln,Cook Islands
+country,CL,Chile,Chile
+country,CM,Kamerun,Cameroon
+country,CN,China (Volksrepublik),China
+country,CO,Kolumbien,Colombia
+country,CR,Costa Rica,Costa Rica
+country,CU,Kuba,Cuba
+country,CV,Kapverdische Inseln,Cape Verde
+country,CW,Curaçao,Curaçao
+country,CX,Weihnachtsinseln (indischer Ozean),Christmas Island
+country,CY,Zypern,Cyprus
+country,CZ,Tschechische Republik,Czech Republic
+country,DE,Deutschland,Germany
+country,DJ,Djibouti,Djibouti
+country,DK,Dänemark,Denmark
+country,DM,Dominica,Dominica
+country,DO,Dominikanische Republik,Dominican Republic
+country,DZ,Algerien,Algeria
+country,EC,Ekuador,Ecuador
+country,EE,Estland,Estonia
+country,EG,Ägypten,Egypt
+country,EH,Westsahara,Western Sahara
+country,ER,Eritrea,Eritrea
+country,ES,Spanien,Spain
+country,ET,Äthiopien,Ethiopia
+country,FI,Finnland,Finland
+country,FJ,Fidschi,Fiji
+country,FK,Falkland-Inseln,Falkland Islands (Malvinas)
+country,FM,Mikronesien (Föderierte Staaten von),"Micronesia, Federated States of"
+country,FO,Färöer-Inseln,Faroe Islands
+country,FR,Frankreich,France
+country,GA,Gabun,Gabon
+country,GB,Grossbritannien und Nordirland,United Kingdom
+country,GD,Grenada,Grenada
+country,GE,Georgien,Georgia
+country,GF,Französisch-Guyana,French Guiana
+country,GG,Guernsey,Guernsey
+country,GH,Ghana,Ghana
+country,GI,Gibraltar,Gibraltar
+country,GL,Grönland,Greenland
+country,GM,Gambia,Gambia
+country,GN,Guinea (Republik),Guinea
+country,GP,Guadeloupe,Guadeloupe
+country,GQ,Äquatorial-Guinea,Equatorial Guinea
+country,GR,Griechenland,Greece
+country,GS,Südgeorgien und die südlichen Sandwichinseln,South Georgia and the South Sandwich Islands
+country,GT,Guatemala,Guatemala
+country,GU,Guam,Guam
+country,GW,Guinea-Bissau,Guinea-Bissau
+country,GY,Guyana,Guyana
+country,HK,Hongkong,Hong Kong
+country,HM,Heard- und McDonald-Inseln,Heard Island and McDonald Islands
+country,HN,Honduras,Honduras
+country,HR,Kroatien,Croatia
+country,HT,Haiti,Haiti
+country,HU,Ungarn,Hungary
+country,ID,Indonesien,Indonesia
+country,IE,Irland,Ireland
+country,IL,Israel,Israel
+country,IM,"Man, Insel",Isle of Man
+country,IN,Indien,India
+country,IO,Britisches Territorium im indischen Ozean,British Indian Ocean Territory
+country,IQ,Irak,Iraq
+country,IR,Iran,"Iran, Islamic Republic of"
+country,IS,Island,Iceland
+country,IT,Italien,Italy
+country,JE,Jersey,Jersey
+country,JM,Jamaika,Jamaica
+country,JO,Jordanien,Jordan
+country,JP,Japan,Japan
+country,KE,Kenia,Kenya
+country,KG,Kirgisistan,Kyrgyzstan
+country,KH,Kambodscha,Cambodia
+country,KI,Kiribati,Kiribati
+country,KM,Komoren,Comoros
+country,KN,St. Christoph (St. Kitts) und Nevis,Saint Kitts and Nevis
+country,KP,"Korea, demokratische Volksrepublik (Nordkorea)","Korea, Democratic People's Republic of"
+country,KR,"Korea, Republik (Südkorea)","Korea, Republic of"
+country,KW,Kuwait,Kuwait
+country,KY,Cayman,Cayman Islands
+country,KZ,Kasachstan,Kazakhstan
+country,LA,Laos,Lao People's Democratic Republic
+country,LB,Libanon,Lebanon
+country,LC,St. Lucia,Saint Lucia
+country,LI,Liechtenstein,Liechtenstein
+country,LK,Sri Lanka,Sri Lanka
+country,LR,Liberia,Liberia
+country,LS,Lesotho,Lesotho
+country,LT,Litauen,Lithuania
+country,LU,Luxemburg,Luxembourg
+country,LV,Lettland,Latvia
+country,LY,Libyen,Libya
+country,MA,Marokko,Morocco
+country,MC,Monaco,Monaco
+country,MD,Moldova,"Moldova, Republic of"
+country,ME,"Montenegro, Republik",Montenegro
+country,MF,St. Martin,Saint Martin (French part)
+country,MG,Madagaskar,Madagascar
+country,MH,Marshall-Inseln,Marshall Islands
+country,MK,"Mazedonien, ehemalige jugoslawische Republik","Macedonia, the Former Yugoslav Republic of"
+country,ML,Mali,Mali
+country,MM,Myanmar (Union),Myanmar
+country,MN,Mongolei,Mongolia
+country,MO,Macao,Macao
+country,MP,Marianen-Inseln,Northern Mariana Islands
+country,MQ,Martinique,Martinique
+country,MR,Mauretanien,Mauritania
+country,MS,Montserrat,Montserrat
+country,MT,Malta,Malta
+country,MU,"Mauritius, Insel",Mauritius
+country,MV,Malediven,Maldives
+country,MW,Malawi,Malawi
+country,MX,Mexiko,Mexico
+country,MY,Malaysia,Malaysia
+country,MZ,Mosambik,Mozambique
+country,NA,Namibia,Namibia
+country,NC,Neukaledonien,New Caledonia
+country,NE,Niger,Niger
+country,NF,Norfolk-Insel,Norfolk Island
+country,NG,Nigeria,Nigeria
+country,NI,Nicaragua,Nicaragua
+country,NL,Niederlande,Netherlands
+country,NO,Norwegen,Norway
+country,NP,Nepal,Nepal
+country,NR,Nauru,Nauru
+country,NU,Niue,Niue
+country,NZ,Neuseeland,New Zealand
+country,OM,Oman,Oman
+country,PA,Panama,Panama
+country,PE,Peru,Peru
+country,PF,Französisch-Polynesien,French Polynesia
+country,PG,Papua-Neuguinea,Papua New Guinea
+country,PH,Philippinen,Philippines
+country,PK,Pakistan,Pakistan
+country,PL,Polen,Poland
+country,PM,St. Pierre und Miquelon,Saint Pierre and Miquelon
+country,PN,Pitcairn,Pitcairn
+country,PR,Puerto Rico,Puerto Rico
+country,PS,Palästina,"Palestine, State of"
+country,PT,Portugal,Portugal
+country,PW,Palau,Palau
+country,PY,Paraguay,Paraguay
+country,QA,Qatar,Qatar
+country,RE,Réunion,Réunion
+country,RO,Rumänien,Romania
+country,RS,"Serbien,  Republik",Serbia
+country,RU,Russische Föderation,Russian Federation
+country,RW,Rwanda,Rwanda
+country,SA,Saudi-Arabien,Saudi Arabia
+country,SB,Salomon-Inseln,Solomon Islands
+country,SC,Seychellen,Seychelles
+country,SD,Sudan,Sudan
+country,SE,Schweden,Sweden
+country,SG,Singapur,Singapore
+country,SH,"St. Helena, Ascension und Tristan da Cunha","Saint Helena, Ascension and Tristan da Cunha"
+country,SI,Slowenien,Slovenia
+country,SJ,Svalbard und Insel Jan Mayen,Svalbard and Jan Mayen
+country,SK,Slowakische Republik,Slovakia
+country,SL,Sierra Leone,Sierra Leone
+country,SM,San Marino,San Marino
+country,SN,Senegal,Senegal
+country,SO,Somalia,Somalia
+country,SR,Suriname,Suriname
+country,SS,Südsudan,South Sudan
+country,ST,St. Thomas und Principe,Sao Tome and Principe
+country,SV,El Salvador,El Salvador
+country,SX,St. Maarten,Sint Maarten (Dutch part)
+country,SY,Syrien,Syrian Arab Republic
+country,SZ,Swasiland,Swaziland
+country,TC,Turks und Caicos,Turks and Caicos Islands
+country,TD,Tschad,Chad
+country,TF,Französische Süd- und Antarktisgebiete,French Southern Territories
+country,TG,Togo,Togo
+country,TH,Thailand,Thailand
+country,TJ,Tadschikistan,Tajikistan
+country,TK,Tokelau,Tokelau
+country,TL,Timor-Leste,Timor-Leste
+country,TM,Turkmenistan,Turkmenistan
+country,TN,Tunesien,Tunisia
+country,TO,Tonga,Tonga
+country,TR,Türkei,Turkey
+country,TT,Trinidad und Tobago,Trinidad and Tobago
+country,TV,Tuvalu,Tuvalu
+country,TW,Taiwan (Chinesisches Taipei),"Taiwan, Province of China"
+country,TZ,Tansania,"Tanzania, United Republic of"
+country,UA,Ukraine,Ukraine
+country,UG,Uganda,Uganda
+country,UM,"Amerikanische Überseeinseln, kleinere",United States Minor Outlying Islands
+country,US,Vereinigte Staaten von Amerika,United States
+country,UY,Uruguay,Uruguay
+country,UZ,Usbekistan,Uzbekistan
+country,VA,Vatikan,Holy See (Vatican City State)
+country,VC,St. Vincent und Grenadinen,Saint Vincent and the Grenadines
+country,VE,Venezuela,"Venezuela, Bolivarian Republic of"
+country,VG, britischer Teil (Tortola),"Virgin Islands, British,Virginische Inseln"
+country,VI,Amerikanische Jungferninseln,"Virgin Islands, U.S."
+country,VN,Vietnam,Viet Nam
+country,VU,Vanuatu,Vanuatu
+country,WF,Wallis und Futuna,Wallis and Futuna
+country,WS,"Samoa, West",Samoa
+country,YE,Jemen,Yemen
+country,YT,Mayotte,Mayotte
+country,ZA,Südafrika,South Africa
+country,ZM,Sambia,Zambia
+country,ZW,Zimbabwe,Zimbabwe
+creator.type,Author,Autor,Author
+creator.type,Editor,Herausgeber,Editor
+currency,AED,AED - United Arab Emirates Dirham,AED - United Arab Emirates Dirham
+currency,AFN,AFN - Afghanistan Afghani,AFN - Afghanistan Afghani
+currency,ALL,ALL - Albania Lek,ALL - Albania Lek
+currency,AMD,AMD - Armenia Dram,AMD - Armenia Dram
+currency,ANG,ANG - Netherlands Antilles Guilder,ANG - Netherlands Antilles Guilder
+currency,AOA,AOA - Angola Kwanza,AOA - Angola Kwanza
+currency,ARS,ARS - Argentina Peso,ARS - Argentina Peso
+currency,AUD,AUD - Australia Dollar,AUD - Australia Dollar
+currency,AWG,AWG - Aruba Guilder,AWG - Aruba Guilder
+currency,AZN,AZN - Azerbaijan New Manat,AZN - Azerbaijan New Manat
+currency,BAM,BAM - Bosnia and Herzegovina Convertible Marka,BAM - Bosnia and Herzegovina Convertible Marka
+currency,BBD,BBD - Barbados Dollar,BBD - Barbados Dollar
+currency,BDT,BDT - Bangladesh Taka,BDT - Bangladesh Taka
+currency,BGN,BGN - Bulgaria Lev,BGN - Bulgaria Lev
+currency,BHD,BHD - Bahrain Dinar,BHD - Bahrain Dinar
+currency,BIF,BIF - Burundi Franc,BIF - Burundi Franc
+currency,BMD,BMD - Bermuda Dollar,BMD - Bermuda Dollar
+currency,BND,BND - Brunei Darussalam Dollar,BND - Brunei Darussalam Dollar
+currency,BOB,BOB - Bolivia Boliviano,BOB - Bolivia Boliviano
+currency,BRL,BRL - Brazil Real,BRL - Brazil Real
+currency,BSD,BSD - Bahamas Dollar,BSD - Bahamas Dollar
+currency,BTN,BTN - Bhutan Ngultrum,BTN - Bhutan Ngultrum
+currency,BWP,BWP - Botswana Pula,BWP - Botswana Pula
+currency,BYR,BYR - Belarus Ruble,BYR - Belarus Ruble
+currency,BZD,BZD - Belize Dollar,BZD - Belize Dollar
+currency,CAD,CAD - Canada Dollar,CAD - Canada Dollar
+currency,CDF,CDF - Congo/Kinshasa Franc,CDF - Congo/Kinshasa Franc
+currency,CHF,CHF - Switzerland Franc,CHF - Switzerland Franc
+currency,CLP,CLP - Chile Peso,CLP - Chile Peso
+currency,CNY,CNY - China Yuan Renminbi,CNY - China Yuan Renminbi
+currency,COP,COP - Colombia Peso,COP - Colombia Peso
+currency,CRC,CRC - Costa Rica Colon,CRC - Costa Rica Colon
+currency,CUC,CUC - Cuba Convertible Peso,CUC - Cuba Convertible Peso
+currency,CUP,CUP - Cuba Peso,CUP - Cuba Peso
+currency,CVE,CVE - Cape Verde Escudo,CVE - Cape Verde Escudo
+currency,CZK,CZK - Czech Republic Koruna,CZK - Czech Republic Koruna
+currency,DJF,DJF - Djibouti Franc,DJF - Djibouti Franc
+currency,DKK,DKK - Denmark Krone,DKK - Denmark Krone
+currency,DOP,DOP - Dominican Republic Peso,DOP - Dominican Republic Peso
+currency,DZD,DZD - Algeria Dinar,DZD - Algeria Dinar
+currency,EGP,EGP - Egypt Pound,EGP - Egypt Pound
+currency,ERN,ERN - Eritrea Nakfa,ERN - Eritrea Nakfa
+currency,ETB,ETB - Ethiopia Birr,ETB - Ethiopia Birr
+currency,EUR,EUR - Euro Member Countries,EUR - Euro Member Countries
+currency,FJD,FJD - Fiji Dollar,FJD - Fiji Dollar
+currency,FKP,FKP - Falkland Islands (Malvinas) Pound,FKP - Falkland Islands (Malvinas) Pound
+currency,GBP,GBP - United Kingdom Pound,GBP - United Kingdom Pound
+currency,GEL,GEL - Georgia Lari,GEL - Georgia Lari
+currency,GGP,GGP - Guernsey Pound,GGP - Guernsey Pound
+currency,GHS,GHS - Ghana Cedi,GHS - Ghana Cedi
+currency,GIP,GIP - Gibraltar Pound,GIP - Gibraltar Pound
+currency,GMD,GMD - Gambia Dalasi,GMD - Gambia Dalasi
+currency,GNF,GNF - Guinea Franc,GNF - Guinea Franc
+currency,GTQ,GTQ - Guatemala Quetzal,GTQ - Guatemala Quetzal
+currency,GYD,GYD - Guyana Dollar,GYD - Guyana Dollar
+currency,HKD,HKD - Hong Kong Dollar,HKD - Hong Kong Dollar
+currency,HNL,HNL - Honduras Lempira,HNL - Honduras Lempira
+currency,HRK,HRK - Croatia Kuna,HRK - Croatia Kuna
+currency,HTG,HTG - Haiti Gourde,HTG - Haiti Gourde
+currency,HUF,HUF - Hungary Forint,HUF - Hungary Forint
+currency,IDR,IDR - Indonesia Rupiah,IDR - Indonesia Rupiah
+currency,ILS,ILS - Israel Shekel,ILS - Israel Shekel
+currency,IMP,IMP - Isle of Man Pound,IMP - Isle of Man Pound
+currency,INR,INR - India Rupee,INR - India Rupee
+currency,IQD,IQD - Iraq Dinar,IQD - Iraq Dinar
+currency,IRR,IRR - Iran Rial,IRR - Iran Rial
+currency,ISK,ISK - Iceland Krona,ISK - Iceland Krona
+currency,JEP,JEP - Jersey Pound,JEP - Jersey Pound
+currency,JMD,JMD - Jamaica Dollar,JMD - Jamaica Dollar
+currency,JOD,JOD - Jordan Dinar,JOD - Jordan Dinar
+currency,JPY,JPY - Japan Yen,JPY - Japan Yen
+currency,KES,KES - Kenya Shilling,KES - Kenya Shilling
+currency,KGS,KGS - Kyrgyzstan Som,KGS - Kyrgyzstan Som
+currency,KHR,KHR - Cambodia Riel,KHR - Cambodia Riel
+currency,KMF,KMF - Comoros Franc,KMF - Comoros Franc
+currency,KPW,KPW - Korea (North) Won,KPW - Korea (North) Won
+currency,KRW,KRW - Korea (South) Won,KRW - Korea (South) Won
+currency,KWD,KWD - Kuwait Dinar,KWD - Kuwait Dinar
+currency,KYD,KYD - Cayman Islands Dollar,KYD - Cayman Islands Dollar
+currency,KZT,KZT - Kazakhstan Tenge,KZT - Kazakhstan Tenge
+currency,LAK,LAK - Laos Kip,LAK - Laos Kip
+currency,LBP,LBP - Lebanon Pound,LBP - Lebanon Pound
+currency,LKR,LKR - Sri Lanka Rupee,LKR - Sri Lanka Rupee
+currency,LRD,LRD - Liberia Dollar,LRD - Liberia Dollar
+currency,LSL,LSL - Lesotho Loti,LSL - Lesotho Loti
+currency,LYD,LYD - Libya Dinar,LYD - Libya Dinar
+currency,MAD,MAD - Morocco Dirham,MAD - Morocco Dirham
+currency,MDL,MDL - Moldova Leu,MDL - Moldova Leu
+currency,MGA,MGA - Madagascar Ariary,MGA - Madagascar Ariary
+currency,MKD,MKD - Macedonia Denar,MKD - Macedonia Denar
+currency,MMK,MMK - Myanmar (Burma) Kyat,MMK - Myanmar (Burma) Kyat
+currency,MNT,MNT - Mongolia Tughrik,MNT - Mongolia Tughrik
+currency,MOP,MOP - Macau Pataca,MOP - Macau Pataca
+currency,MRO,MRO - Mauritania Ouguiya,MRO - Mauritania Ouguiya
+currency,MUR,MUR - Mauritius Rupee,MUR - Mauritius Rupee
+currency,MVR,MVR - Maldives (Maldive Islands) Rufiyaa,MVR - Maldives (Maldive Islands) Rufiyaa
+currency,MWK,MWK - Malawi Kwacha,MWK - Malawi Kwacha
+currency,MXN,MXN - Mexico Peso,MXN - Mexico Peso
+currency,MYR,MYR - Malaysia Ringgit,MYR - Malaysia Ringgit
+currency,MZN,MZN - Mozambique Metical,MZN - Mozambique Metical
+currency,NAD,NAD - Namibia Dollar,NAD - Namibia Dollar
+currency,NGN,NGN - Nigeria Naira,NGN - Nigeria Naira
+currency,NIO,NIO - Nicaragua Cordoba,NIO - Nicaragua Cordoba
+currency,NOK,NOK - Norway Krone,NOK - Norway Krone
+currency,NPR,NPR - Nepal Rupee,NPR - Nepal Rupee
+currency,NZD,NZD - New Zealand Dollar,NZD - New Zealand Dollar
+currency,OMR,OMR - Oman Rial,OMR - Oman Rial
+currency,PAB,PAB - Panama Balboa,PAB - Panama Balboa
+currency,PEN,PEN - Peru Nuevo Sol,PEN - Peru Nuevo Sol
+currency,PGK,PGK - Papua New Guinea Kina,PGK - Papua New Guinea Kina
+currency,PHP,PHP - Philippines Peso,PHP - Philippines Peso
+currency,PKR,PKR - Pakistan Rupee,PKR - Pakistan Rupee
+currency,PLN,PLN - Poland Zloty,PLN - Poland Zloty
+currency,PYG,PYG - Paraguay Guarani,PYG - Paraguay Guarani
+currency,QAR,QAR - Qatar Riyal,QAR - Qatar Riyal
+currency,RON,RON - Romania New Leu,RON - Romania New Leu
+currency,RSD,RSD - Serbia Dinar,RSD - Serbia Dinar
+currency,RUB,RUB - Russia Ruble,RUB - Russia Ruble
+currency,RWF,RWF - Rwanda Franc,RWF - Rwanda Franc
+currency,SAR,SAR - Saudi Arabia Riyal,SAR - Saudi Arabia Riyal
+currency,SBD,SBD - Solomon Islands Dollar,SBD - Solomon Islands Dollar
+currency,SCR,SCR - Seychelles Rupee,SCR - Seychelles Rupee
+currency,SDG,SDG - Sudan Pound,SDG - Sudan Pound
+currency,SEK,SEK - Sweden Krona,SEK - Sweden Krona
+currency,SGD,SGD - Singapore Dollar,SGD - Singapore Dollar
+currency,SHP,SHP - Saint Helena Pound,SHP - Saint Helena Pound
+currency,SLL,SLL - Sierra Leone Leone,SLL - Sierra Leone Leone
+currency,SOS,SOS - Somalia Shilling,SOS - Somalia Shilling
+currency,SPL,SPL - Seborga Luigino,SPL - Seborga Luigino
+currency,SRD,SRD - Suriname Dollar,SRD - Suriname Dollar
+currency,STD,STD - São Tomé and Príncipe Dobra,STD - São Tomé and Príncipe Dobra
+currency,SVC,SVC - El Salvador Colon,SVC - El Salvador Colon
+currency,SYP,SYP - Syria Pound,SYP - Syria Pound
+currency,SZL,SZL - Swaziland Lilangeni,SZL - Swaziland Lilangeni
+currency,THB,THB - Thailand Baht,THB - Thailand Baht
+currency,TJS,TJS - Tajikistan Somoni,TJS - Tajikistan Somoni
+currency,TMT,TMT - Turkmenistan Manat,TMT - Turkmenistan Manat
+currency,TND,TND - Tunisia Dinar,TND - Tunisia Dinar
+currency,TOP,TOP - Tonga Pa'anga,TOP - Tonga Pa'anga
+currency,TRY,TRY - Turkey Lira,TRY - Turkey Lira
+currency,TTD,TTD - Trinidad and Tobago Dollar,TTD - Trinidad and Tobago Dollar
+currency,TVD,TVD - Tuvalu Dollar,TVD - Tuvalu Dollar
+currency,TWD,TWD - Taiwan New Dollar,TWD - Taiwan New Dollar
+currency,TZS,TZS - Tanzania Shilling,TZS - Tanzania Shilling
+currency,UAH,UAH - Ukraine Hryvnia,UAH - Ukraine Hryvnia
+currency,UGX,UGX - Uganda Shilling,UGX - Uganda Shilling
+currency,USD,USD - United States Dollar,USD - United States Dollar
+currency,UYU,UYU - Uruguay Peso,UYU - Uruguay Peso
+currency,UZS,UZS - Uzbekistan Som,UZS - Uzbekistan Som
+currency,VEF,VEF - Venezuela Bolivar,VEF - Venezuela Bolivar
+currency,VND,VND - Viet Nam Dong,VND - Viet Nam Dong
+currency,VUV,VUV - Vanuatu Vatu,VUV - Vanuatu Vatu
+currency,WST,WST - Samoa Tala,WST - Samoa Tala
+currency,XAF,XAF - Communauté Financière Africaine (BEAC) CFA Franc BEAC,XAF - Communauté Financière Africaine (BEAC) CFA Franc BEAC
+currency,XCD,XCD - East Caribbean Dollar,XCD - East Caribbean Dollar
+currency,XDR,XDR - International Monetary Fund (IMF) Special Drawing Rights,XDR - International Monetary Fund (IMF) Special Drawing Rights
+currency,XOF,XOF - Communauté Financière Africaine (BCEAO) Franc,XOF - Communauté Financière Africaine (BCEAO) Franc
+currency,XPF,XPF - Comptoirs Français du Pacifique (CFP) Franc,XPF – Comptoirs Français du Pacifique (CFP) Franc
+currency,YER,YER - Yemen Rial,YER - Yemen Rial
+currency,ZAR,ZAR - South Africa Rand,ZAR - South Africa Rand
+currency,ZMW,ZMW - Zambia Kwacha,ZMW - Zambia Kwacha
+currency,ZWD,ZWD - Zimbabwe Dollar,ZWD - Zimbabwe Dollar
+customer.identifier.type,Default,Default,Default
+document.context.status,Deleted,Gelöscht,Deleted
+document.type,Addendum,Zusatz,Addendum
+document.type,Announcement,Angekündigung,Announcement
+document.type,Announcement,Ankündigung,Announcement
+document.type,Costs,Preise,Costs
+document.type,General,Allgemein,General
+document.type,Invoice,Rechnung,Invoice
+document.type,KBART,KBART,KBART
+document.type,License,Vertrag,License
+document.type,Metadata,Metadaten,Metadata
+document.type,Note,Anmerkung,Note
+document.type,Note,Anmerkung,Note
+document.type,Offer,Angebot,Offer
+document.type,ONIX-PL License,ONIX-PL Lizenz,ONIX-PL License
+document.type,Order,Bestellung,Order
+document.type,Renewal,Renewal,Renewal
+document.type,Subscription,Lizenz,Subscription
+document.type,Title List,Titelliste,Title List
+document.type,Usage Statistics,Nutzungsstatistik,Usage Statistics
+existence,Existent,Bestehend,Existent
+existence,Nonexistend,Fehlend,Nonexistend
 FactMetric,ft_total,,ft_total
 FactMetric,record_view,,record_view
 FactMetric,result_click,,result_click

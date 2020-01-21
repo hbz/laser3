@@ -11,6 +11,7 @@ import de.laser.AuditConfig
 import de.laser.ContextService
 import de.laser.domain.IssueEntitlementCoverage
 import de.laser.exceptions.CreationException
+import de.laser.helper.RDConstants
 import de.laser.helper.RDStore
 import de.laser.interfaces.ShareSupport
 import grails.transaction.Transactional
@@ -431,11 +432,11 @@ class OrganisationService {
                     localRDStoreSubscriptionResource.put(rdv.value,rdv)
                 }
                 Map<String,RefdataValue> localRDStoreCostItemStatus = [:]
-                RefdataCategory.getAllRefdataValues('CostItemStatus').each { rdv ->
+                RefdataCategory.getAllRefdataValues(RDConstants.COST_ITEM_STATUS).each { rdv ->
                     localRDStoreCostItemStatus.put(rdv.value,rdv)
                 }
                 Map<String,RefdataValue> localRDStoreCostItemElement = [:]
-                RefdataCategory.getAllRefdataValues('CostItemElement').each { rdv ->
+                RefdataCategory.getAllRefdataValues(RDConstants.COST_ITEM_ELEMENT).each { rdv ->
                     localRDStoreCostItemElement.put(rdv.value,rdv)
                 }
                 Map<String,RefdataValue> localRDStoreCurrency = [
@@ -449,8 +450,8 @@ class OrganisationService {
                         'Third Gender': RefdataValue.getByValueAndCategory('Third Gender','Gender')
                 ]
                 Map<String,RefdataValue> localRDStoreContactType = [
-                        'Personal': RefdataValue.getByValueAndCategory('Personal','ContactType'),
-                        'Job-related': RefdataValue.getByValueAndCategory('Job-related','ContactType')
+                        'Personal': RefdataValue.getByValueAndCategory('Personal', RDConstants.CONTACT_TYPE),
+                        'Job-related': RefdataValue.getByValueAndCategory('Job-related', RDConstants.CONTACT_TYPE)
                 ]
                 Map<String,Org> exampleOrgs = [
                         'Musteranbieter A': Org.findByGlobalUID('org:c188b5ab-9867-4c6c-ba22-3a134a9aaee8'), //check
@@ -1044,16 +1045,16 @@ class OrganisationService {
             errors.add(opp.errors.toString())
             return false
         }
-        Map legalPatronAddressMap = [type:RefdataValue.getByValueAndCategory('Legal patron address','AddressType'),
+        Map legalPatronAddressMap = [type:RefdataValue.getByValueAndCategory('Legal patron address', RDConstants.ADDRESS_TYPE),
                                      name:'Rechtlicher Träger',
                                      street_1:'Universitätsstraße',
                                      street_2:'1',
                                      zipcode:'55555',
                                      city:'Musterhausen',
                                      state:RefdataValue.getByValueAndCategory('North Rhine-Westphalia','Federal State'),
-                                     country:RefdataValue.getByValueAndCategory('DE','Country'),
+                                     country:RefdataValue.getByValueAndCategory('DE', RDConstants.COUNTRY),
                                      org:modelMember]
-        Map postalAddressMap = [type:RefdataValue.getByValueAndCategory('Postal address','AddressType'),
+        Map postalAddressMap = [type:RefdataValue.getByValueAndCategory('Postal address', RDConstants.ADDRESS_TYPE),
                                 name:'Bibliothek',
                                 additionFirst:'Erwerbungsabteilung',
                                 street_1:'Musterstraße',
@@ -1061,7 +1062,7 @@ class OrganisationService {
                                 zipcode:'55555',
                                 city:'Musterhausen',
                                 state:RefdataValue.getByValueAndCategory('North Rhine-Westphalia','Federal State'),
-                                country:RefdataValue.getByValueAndCategory('DE','Country'),
+                                country:RefdataValue.getByValueAndCategory('DE', RDConstants.COUNTRY),
                                 org:modelMember]
         Set<Map> addresses = [legalPatronAddressMap,postalAddressMap]
         addresses.each { addressData ->
@@ -1207,14 +1208,14 @@ class OrganisationService {
                 isPublic: false
         ],
                                 addParams: [
-                                        address: [[type:RefdataValue.getByValueAndCategory('Postal address','AddressType'),
+                                        address: [[type:RefdataValue.getByValueAndCategory('Postal address', RDConstants.ADDRESS_TYPE),
                                                    additionFirst:'Erwerbungsabteilung',
                                                    street_1:'Musterhaus',
                                                    street_2:'1',
                                                    zipcode:'11111',
                                                    city:'Bremen',
                                                    state:RefdataValue.getByValueAndCategory('Bremen','Federal State'),
-                                                   country:RefdataValue.getByValueAndCategory('DE','Country')]],
+                                                   country:RefdataValue.getByValueAndCategory('DE', RDConstants.COUNTRY)]],
                                         personRoles: [[org:member5Bremen,
                                                        functionType: RefdataValue.getByValueAndCategory('Functional Contact Postal Address','Person Function')]]]
         ]
