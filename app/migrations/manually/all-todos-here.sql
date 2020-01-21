@@ -247,7 +247,7 @@ update property_definition set pd_rdc = 'org.sector' where pd_rdc = 'OrgSector';
 update property_definition set pd_rdc = 'org.status' where pd_rdc = 'OrgStatus';
 update property_definition set pd_rdc = 'org.type' where pd_rdc = 'OrgRoleType';
 
-------
+---
 
 update refdata_category set rdc_description = 'package.status' where rdc_description = 'Package Status';
 update refdata_category set rdc_description = 'package.breakable' where rdc_description = 'Package.Breakable';
@@ -303,6 +303,7 @@ update property_definition set pd_rdc = 'subscription.type' where pd_rdc = 'Subs
 update property_definition set pd_rdc = 'survey.status' where pd_rdc = 'Survey Status';
 update property_definition set pd_rdc = 'survey.type' where pd_rdc = 'Survey Type';
 
+---
 
 
 
