@@ -1,6 +1,8 @@
 ## temporary change log
 
 **Ticket    Date    Branch      Author  Feature/Bug     Description/Keywords**
+--      21.01.2020  rc1.2       Andreas Bug         Kostenfilter stürzte wegen falscher Überprüfung ab
+
 --      17.01.2020  rc1.2       Andreas Bug         Kostenfilter für Pakete arbeitete nicht richtig
 
 --      17.01.2020  rc1.2       Andreas Bug         Paket- / Einzeltiteldropdowns im Kosten-Hinzufügen-Modal korrigiert
