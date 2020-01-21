@@ -6,6 +6,7 @@ import com.k_int.properties.PropertyDefinition
 import de.laser.domain.ActivityProfiler
 import de.laser.domain.SystemProfiler
 import de.laser.helper.DebugAnnotation
+import de.laser.helper.RDConstants
 import de.laser.helper.RDStore
 import grails.converters.JSON
 import grails.plugin.springsecurity.annotation.Secured
@@ -958,8 +959,8 @@ class YodaController {
 
     @Secured(['ROLE_YODA'])
     def updateCustomerType(){
-        RefdataValue cons = RefdataValue.getByValueAndCategory('Consortium', 'OrgRoleType')
-        RefdataValue inst = RefdataValue.getByValueAndCategory('Institution', 'OrgRoleType')
+        RefdataValue cons = RefdataValue.getByValueAndCategory('Consortium', RDConstants.ORG_TYPE)
+        RefdataValue inst = RefdataValue.getByValueAndCategory('Institution', RDConstants.ORG_TYPE)
 
         List<Org> consOrgs = Org.executeQuery("SELECT o from Org o join o.orgType ot where ot = :cons", [cons: cons])
         List<Org> instOrgs = Org.executeQuery("SELECT o from Org o join o.orgType ot where ot = :inst", [inst: inst])

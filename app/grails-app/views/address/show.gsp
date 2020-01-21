@@ -82,7 +82,7 @@
 							<dd><semui:xEditable owner="${addressInstance}" field="city" /></dd>
 
 							<dt><g:message code="address.state.label" default="State" /></dt>
-							<dd><semui:xEditableRefData owner="${addressInstance}" field="state" config="Federal State" /></dd>
+							<dd><semui:xEditableRefData owner="${addressInstance}" field="state" config="${RDConstants.FEDERAL_STATE}" /></dd>
 
 							<dt><g:message code="address.country.label" default="Country" /></dt>
 							<dd><semui:xEditableRefData owner="${addressInstance}" field="country" config="${RDConstants.COUNTRY}" /></dd>

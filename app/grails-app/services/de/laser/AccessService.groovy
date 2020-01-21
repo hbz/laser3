@@ -5,6 +5,7 @@ import com.k_int.kbplus.Org
 import com.k_int.kbplus.OrgSettings
 import com.k_int.kbplus.RefdataValue
 import com.k_int.kbplus.auth.*
+import de.laser.helper.RDConstants
 
 class AccessService {
 
@@ -155,7 +156,7 @@ class AccessService {
 
         if (orgTypes) {
             orgTypes.each { ot ->
-                RefdataValue type = RefdataValue.getByValueAndCategory(ot?.trim(), 'OrgRoleType')
+                RefdataValue type = RefdataValue.getByValueAndCategory(ot?.trim(), RDConstants.ORG_TYPE)
                 check2 = check2 || contextService.getOrg()?.getallOrgTypeIds()?.contains(type?.id)
             }
         } else {

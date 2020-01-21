@@ -6,6 +6,7 @@ import com.k_int.properties.PropertyDefinition
 import de.laser.ContextService
 import de.laser.SystemEvent
 import de.laser.domain.I10nTranslation
+import de.laser.helper.RDConstants
 import grails.converters.JSON
 import grails.plugin.springsecurity.SecurityFilterPosition
 import grails.plugin.springsecurity.SpringSecurityUtils
@@ -832,7 +833,7 @@ class BootStrap {
             def token = rdv[0]
             def group = rdv[1]
 
-            def val = RefdataValue.getByValueAndCategory(token, "Organisational Role")
+            def val = RefdataValue.getByValueAndCategory(token, RDConstants.ORGANISATIONAL_ROLE)
             if (group) {
                 val.setGroup(group)
             }
@@ -888,16 +889,16 @@ class BootStrap {
          //RefdataValue.loc('Subscription Type',      [en: 'Collective Subscription', de: 'Kollektivlizenz'], BOOTSTRAP)
 
 
-        RefdataValue a = RefdataValue.getByValueAndCategory('Students', 'Number Type')
+        RefdataValue a = RefdataValue.getByValueAndCategory('Students', RDConstants.NUMBER_TYPE)
         I10nTranslation.createOrUpdateI10n(a,'expl', [en:'Gesamtzahl aller immatrikulierten Studierenden', de:'Gesamtzahl aller immatrikulierten Studierenden'])
 
-        RefdataValue b = RefdataValue.getByValueAndCategory('Scientific staff', 'Number Type');
+        RefdataValue b = RefdataValue.getByValueAndCategory('Scientific staff', RDConstants.NUMBER_TYPE);
         I10nTranslation.createOrUpdateI10n(b,'expl', [en:'zugehöriges wissenschaftliches Personal', de:'zugehöriges wissenschaftliches Personal'])
 
-        RefdataValue c = RefdataValue.getByValueAndCategory('User', 'Number Type')
+        RefdataValue c = RefdataValue.getByValueAndCategory('User', RDConstants.NUMBER_TYPE)
         I10nTranslation.createOrUpdateI10n(c,'expl', [en:'Nutzer der Einrichtung', de:'Nutzer der Einrichtung'])
 
-        RefdataValue d = RefdataValue.getByValueAndCategory('Population', 'Number Type')
+        RefdataValue d = RefdataValue.getByValueAndCategory('Population', RDConstants.NUMBER_TYPE)
         I10nTranslation.createOrUpdateI10n(d,'expl', [en:'Einwohner der Stadt', de:'Einwohner der Stadt'])
     }
 

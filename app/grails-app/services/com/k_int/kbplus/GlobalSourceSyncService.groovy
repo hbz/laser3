@@ -72,9 +72,9 @@ class GlobalSourceSyncService extends AbstractLockableService {
             newtitle.publishers.each { pub ->
 //         def publisher_identifiers = pub.identifiers
                 def publisher_identifiers = []
-                RefdataValue orgSector = RefdataValue.getByValueAndCategory('Publisher', 'OrgSector')
+                RefdataValue orgSector = RefdataValue.getByValueAndCategory('Publisher', RDConstants.ORG_SECTOR)
                 Org publisher = Org.lookupOrCreate(pub.name, orgSector, null, publisher_identifiers, null, pub.uuid)
-                RefdataValue pub_role = RefdataValue.getByValueAndCategory('Publisher', 'Organisational Role')
+                RefdataValue pub_role = RefdataValue.getByValueAndCategory('Publisher', RDConstants.ORGANISATIONAL_ROLE)
                 SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
                 def start_date
                 def end_date
@@ -271,13 +271,13 @@ class GlobalSourceSyncService extends AbstractLockableService {
         RefdataValue fixed =        RefdataValue.getByValueAndCategory( ((newpkg?.fixed) ?: 'Unknown'), RefdataCategory.PKG_FIXED)
         RefdataValue paymentType =  RefdataValue.getByValueAndCategory( ((newpkg?.paymentType) ?: 'Unknown'), RefdataCategory.PKG_PAYMENTTYPE)
         RefdataValue global =       RefdataValue.getByValueAndCategory( ((newpkg?.global) ?: 'Unknown'), RefdataCategory.PKG_GLOBAL)
-        RefdataValue ref_pprovider = RefdataValue.getByValueAndCategory('Content Provider', 'Organisational Role')
+        RefdataValue ref_pprovider = RefdataValue.getByValueAndCategory('Content Provider', RDConstants.ORGANISATIONAL_ROLE)
 
         //we should now first setup the provider and then proceed to package
         Org provider
-        RefdataValue orgSector =    RefdataValue.getByValueAndCategory('Publisher', 'OrgSector')
-        RefdataValue orgType =      RefdataValue.getByValueAndCategory('Provider', 'OrgRoleType')
-        RefdataValue orgRole =      RefdataValue.getByValueAndCategory('Content Provider', 'Organisational Role')
+        RefdataValue orgSector =    RefdataValue.getByValueAndCategory('Publisher', RDConstants.ORG_SECTOR)
+        RefdataValue orgType =      RefdataValue.getByValueAndCategory('Provider',  RDConstants.ORG_TYPE)
+        RefdataValue orgRole =      RefdataValue.getByValueAndCategory('Content Provider', RDConstants.ORGANISATIONAL_ROLE)
         if(newpkg.packageProvider) {
             println "checking package provider ${newpkg.packageProvider}"
             provider = (Org) Org.lookupOrCreate2(newpkg.packageProvider, orgSector, null, [:], null, orgType, newpkg.packageProviderUuid ?: null)

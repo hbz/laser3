@@ -73,8 +73,8 @@ class OrganisationService {
      */
     def exportOrg(List orgs, message, boolean addHigherEducationTitles, String format) {
         def titles = [messageSource.getMessage('org.sortname.label',null,LocaleContextHolder.getLocale()),messageSource.getMessage('org.shortname.label',null, LocaleContextHolder.getLocale()),'Name']
-        RefdataValue orgSector = RefdataValue.getByValueAndCategory('Higher Education','OrgSector')
-        RefdataValue orgType = RefdataValue.getByValueAndCategory('Provider','OrgRoleType')
+        RefdataValue orgSector = RefdataValue.getByValueAndCategory('Higher Education', RDConstants.ORG_SECTOR)
+        RefdataValue orgType = RefdataValue.getByValueAndCategory('Provider', RDConstants.ORG_TYPE)
         if(addHigherEducationTitles) {
             titles.add(messageSource.getMessage('org.libraryType.label',null,LocaleContextHolder.getLocale()))
             titles.add(messageSource.getMessage('org.libraryNetwork.label',null,LocaleContextHolder.getLocale()))
@@ -445,9 +445,9 @@ class OrganisationService {
                         'EUR': RefdataValue.getByValueAndCategory('EUR','Currency')
                 ]
                 Map<String,RefdataValue> localRDStoreGender = [
-                        'Female': RefdataValue.getByValueAndCategory('Female','Gender'),
-                        'Male': RefdataValue.getByValueAndCategory('Male','Gender'),
-                        'Third Gender': RefdataValue.getByValueAndCategory('Third Gender','Gender')
+                        'Female': RefdataValue.getByValueAndCategory('Female', RDConstants.GENDER),
+                        'Male': RefdataValue.getByValueAndCategory('Male', RDConstants.GENDER),
+                        'Third Gender': RefdataValue.getByValueAndCategory('Third Gender', RDConstants.GENDER)
                 ]
                 Map<String,RefdataValue> localRDStoreContactType = [
                         'Personal': RefdataValue.getByValueAndCategory('Personal', RDConstants.CONTACT_TYPE),
@@ -467,7 +467,7 @@ class OrganisationService {
                         'American Chemical Society: American Chemical Society Journals': Package.findByGlobalUID('package:b108178b-f27c-455d-9061-c8837905dc65'), //check
                         'EBSCO: SportDiscus': Package.findByGlobalUID('package:348a270f-715d-4ee1-b3b2-e28db9e8c0a3') //check
                 ]
-                RefdataValue licenseType = RefdataValue.getByValueAndCategory('Actual','License Type')
+                RefdataValue licenseType = RefdataValue.getByValueAndCategory('Actual', RDConstants.LICENSE_TYPE)
                 Map generalData = [dates:dates,
                                    sdf:sdf,
                                    licenseType: licenseType,
@@ -852,7 +852,7 @@ class OrganisationService {
                             ],
                             customProperties: [
                                     [type:PropertyDefinition.getByNameAndDescr('ILL electronic', PropertyDefinition.LIC_PROP).id,refValue:RDStore.PERM_PERM_EXPL,paragraph:'ist alles erlaubt'],
-                                    [type:PropertyDefinition.getByNameAndDescr('Archival Copy Content', PropertyDefinition.LIC_PROP).id,refValue:RefdataValue.getByValueAndCategory('Data','License.Arc.ArchivalCopyContent')],
+                                    [type:PropertyDefinition.getByNameAndDescr('Archival Copy Content', PropertyDefinition.LIC_PROP).id,refValue:RefdataValue.getByValueAndCategory('Data', RDConstants.LICENSE_ARC_ARCHIVAL_COPY_CONTENT)],
                                     [type:PropertyDefinition.getByNameAndDescr('Archiving rights', PropertyDefinition.LIC_PROP).id,refValue:RDStore.YN_YES],
                                     [type:PropertyDefinition.getByNameAndDescr('Walk-in Access', PropertyDefinition.LIC_PROP).id,refValue: RDStore.PERM_PERM_EXPL],
                                     [type:PropertyDefinition.getByNameAndDescr('Wifi Access', PropertyDefinition.LIC_PROP).id,refValue:RDStore.YN_YES]
@@ -1037,11 +1037,11 @@ class OrganisationService {
         Org modelMember = new Org(name: messageSource.getMessage('org.setup.modelOrgName',argv0,LocaleContextHolder.getLocale()),
                 sortname: messageSource.getMessage('org.setup.modelOrgSortname',argv1,LocaleContextHolder.getLocale()),
                 url: 'www.mustereinichtung.de', urlGov: 'www.muster_uni.de', status: RDStore.O_STATUS_CURRENT,
-                libraryType: RefdataValue.getByValueAndCategory('Universität','Library Type'),
-                libraryNetwork: RefdataValue.getByValueAndCategory('No Network','Library Network'),
+                libraryType: RefdataValue.getByValueAndCategory('Universität', RDConstants.LIBRARY_TYPE),
+                libraryNetwork: RefdataValue.getByValueAndCategory('No Network', RDConstants.LIBRARY_NETWORK),
                 federalState: current.federalState ,country: current.country,
                 orgType: [RDStore.OT_INSTITUTION],
-                sector: RefdataValue.getByValueAndCategory('Higher Education','OrgSector'))
+                sector: RefdataValue.getByValueAndCategory('Higher Education', RDConstants.ORG_SECTOR))
         if(!modelMember.save()) {
             errors.add(modelMember.errors.toString())
             return false
@@ -1058,7 +1058,7 @@ class OrganisationService {
                                      street_2:'1',
                                      zipcode:'55555',
                                      city:'Musterhausen',
-                                     state:RefdataValue.getByValueAndCategory('North Rhine-Westphalia','Federal State'),
+                                     state:RefdataValue.getByValueAndCategory('North Rhine-Westphalia',RDConstants.FEDERAL_STATE),
                                      country:RefdataValue.getByValueAndCategory('DE', RDConstants.COUNTRY),
                                      org:modelMember]
         Map postalAddressMap = [type:RefdataValue.getByValueAndCategory('Postal address', RDConstants.ADDRESS_TYPE),
@@ -1068,7 +1068,7 @@ class OrganisationService {
                                 street_2:'1',
                                 zipcode:'55555',
                                 city:'Musterhausen',
-                                state:RefdataValue.getByValueAndCategory('North Rhine-Westphalia','Federal State'),
+                                state:RefdataValue.getByValueAndCategory('North Rhine-Westphalia',RDConstants.FEDERAL_STATE),
                                 country:RefdataValue.getByValueAndCategory('DE', RDConstants.COUNTRY),
                                 org:modelMember]
         Set<Map> addresses = [legalPatronAddressMap,postalAddressMap]
@@ -1221,7 +1221,7 @@ class OrganisationService {
                                                    street_2:'1',
                                                    zipcode:'11111',
                                                    city:'Bremen',
-                                                   state:RefdataValue.getByValueAndCategory('Bremen','Federal State'),
+                                                   state:RefdataValue.getByValueAndCategory('Bremen',RDConstants.FEDERAL_STATE),
                                                    country:RefdataValue.getByValueAndCategory('DE', RDConstants.COUNTRY)]],
                                         personRoles: [[org:member5Bremen,
                                                        functionType: RefdataValue.getByValueAndCategory('Functional Contact Postal Address','Person Function')]]]
@@ -1313,7 +1313,7 @@ class OrganisationService {
                             customProperties: [
                                     [type:PropertyDefinition.getByNameAndDescr('ILL electronic', PropertyDefinition.LIC_PROP).id,refValue:RDStore.PERM_PERM_EXPL,isShared:true],
                                     [type:PropertyDefinition.getByNameAndDescr('Governing jurisdiction', PropertyDefinition.LIC_PROP).id,stringValue:'Berlin',isShared:true],
-                                    [type:PropertyDefinition.getByNameAndDescr('Open Access', PropertyDefinition.LIC_PROP).id,refValue:RefdataValue.getByValueAndCategory('No Open Access','License.OA.Type'),isShared:true],
+                                    [type:PropertyDefinition.getByNameAndDescr('Open Access', PropertyDefinition.LIC_PROP).id,refValue:RefdataValue.getByValueAndCategory('No Open Access', RDConstants.LICENSE_OA_TYPE),isShared:true],
                                     [type:PropertyDefinition.getByNameAndDescr('Invoicing', PropertyDefinition.LIC_PROP).id,dateValue: null,paragraph: 'Immer im Laufzeitjahr...']
                             ],
                             createMemberLicense: true,
@@ -1331,7 +1331,8 @@ class OrganisationService {
                             customProperties: [
                                     [type:PropertyDefinition.getByNameAndDescr('ILL secure electronic transmission', PropertyDefinition.LIC_PROP).id,refValue:RDStore.PERM_PROH_EXPL,isShared:true],
                                     [type:PropertyDefinition.getByNameAndDescr('Governing law', PropertyDefinition.LIC_PROP).id,stringValue:'deutsches Recht',isShared:true],
-                                    [type:PropertyDefinition.getByNameAndDescr('Open Access', PropertyDefinition.LIC_PROP).id,refValue:RefdataValue.getByValueAndCategory('No Open Access','License.OA.Type'),isShared:true],
+                                    [type:PropertyDefinition.getByNameAndDescr('Open Access', PropertyDefinition.LIC_PROP).id,
+                                        refValue:RefdataValue.getByValueAndCategory('No Open Access', RDConstants.LICENSE_OA_TYPE), isShared:true],
                                     [type:PropertyDefinition.getByNameAndDescr('Metadata delivery', PropertyDefinition.LIC_PROP).id,stringValue: null]
                             ],
                             createMemberLicense: true,
@@ -2022,7 +2023,7 @@ class OrganisationService {
             createObject('Person',contact,current,null)
         }
         log.info("create subscription linkings ...")
-        setupLinking([owner:current,source:Subscription.findByIdentifier(currentDatenAIdentifier).id,destination:Subscription.findByIdentifier(currentDatenbank2Identifier).id,objectType:Subscription.class.name,linkType:RefdataValue.getByValueAndCategory('is condition for','Link Type')])
+        setupLinking([owner:current,source:Subscription.findByIdentifier(currentDatenAIdentifier).id,destination:Subscription.findByIdentifier(currentDatenbank2Identifier).id,objectType:Subscription.class.name,linkType:RefdataValue.getByValueAndCategory('is condition for',RDConstants.LINK_TYPE)])
         Set<Map> subIdentifiersWithChildrenToLink = [
                 [source:currentDatenAIdentifier,destination:expiredDatenAIdentifier],
                 [source:intendedDatenbank2Identifier,destination:currentDatenbank2Identifier]
@@ -2532,9 +2533,9 @@ class OrganisationService {
                                           singlenutzer:Role.findByAuthority('ORG_INST'),
                                           kollektivnutzer:Role.findByAuthority('ORG_INST_COLLECTIVE'),
                                           konsortium:Role.findByAuthority('ORG_CONSORTIUM')]
-        RefdataValue institution = RefdataValue.getByValueAndCategory('Institution','OrgRoleType')
-        RefdataValue consortium = RefdataValue.getByValueAndCategory('Consortium','OrgRoleType')
-        RefdataValue department = RefdataValue.getByValueAndCategory('Department','OrgRoleType')
+        RefdataValue institution = RefdataValue.getByValueAndCategory('Institution', RDConstants.ORG_TYPE)
+        RefdataValue consortium = RefdataValue.getByValueAndCategory('Consortium', RDConstants.ORG_TYPE)
+        RefdataValue department = RefdataValue.getByValueAndCategory('Department', RDConstants.ORG_TYPE)
         //create home org
         Org hbz = Org.findByName('hbz Konsortialstelle Digitale Inhalte')
         if(!hbz) {

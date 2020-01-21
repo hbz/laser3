@@ -11,44 +11,44 @@ class RDStore {
 
     static final GENERIC_NULL_VALUE         = getRefdataValue('generic.null.value','filter.fake.values')
 
-    static final OR_LICENSING_CONSORTIUM    = getRefdataValue('Licensing Consortium', 'Organisational Role')
-    static final OR_LICENSEE                = getRefdataValue('Licensee','Organisational Role')
-    static final OR_LICENSEE_CONS           = getRefdataValue('Licensee_Consortial','Organisational Role')
-    static final OR_LICENSEE_COLL           = getRefdataValue('Licensee_Collective','Organisational Role')
+    static final OR_LICENSING_CONSORTIUM    = getRefdataValue('Licensing Consortium', RDConstants.ORGANISATIONAL_ROLE)
+    static final OR_LICENSEE                = getRefdataValue('Licensee',RDConstants.ORGANISATIONAL_ROLE)
+    static final OR_LICENSEE_CONS           = getRefdataValue('Licensee_Consortial',RDConstants.ORGANISATIONAL_ROLE)
+    static final OR_LICENSEE_COLL           = getRefdataValue('Licensee_Collective',RDConstants.ORGANISATIONAL_ROLE)
 
-    static final OR_SUBSCRIPTION_CONSORTIA  = getRefdataValue('Subscription Consortia','Organisational Role')
-    static final OR_SUBSCRIBER              = getRefdataValue('Subscriber','Organisational Role')
-    static final OR_SUBSCRIBER_CONS         = getRefdataValue('Subscriber_Consortial','Organisational Role')
-    static final OR_SUBSCRIBER_CONS_HIDDEN  = getRefdataValue('Subscriber_Consortial_Hidden','Organisational Role')
-    static final OR_SUBSCRIPTION_COLLECTIVE = getRefdataValue('Subscription Collective','Organisational Role')
-    static final OR_SUBSCRIBER_COLLECTIVE   = getRefdataValue('Subscriber_Collective','Organisational Role')
+    static final OR_SUBSCRIPTION_CONSORTIA  = getRefdataValue('Subscription Consortia',RDConstants.ORGANISATIONAL_ROLE)
+    static final OR_SUBSCRIBER              = getRefdataValue('Subscriber',RDConstants.ORGANISATIONAL_ROLE)
+    static final OR_SUBSCRIBER_CONS         = getRefdataValue('Subscriber_Consortial',RDConstants.ORGANISATIONAL_ROLE)
+    static final OR_SUBSCRIBER_CONS_HIDDEN  = getRefdataValue('Subscriber_Consortial_Hidden',RDConstants.ORGANISATIONAL_ROLE)
+    static final OR_SUBSCRIPTION_COLLECTIVE = getRefdataValue('Subscription Collective',RDConstants.ORGANISATIONAL_ROLE)
+    static final OR_SUBSCRIBER_COLLECTIVE   = getRefdataValue('Subscriber_Collective',RDConstants.ORGANISATIONAL_ROLE)
 
-    static final OR_AGENCY                  = getRefdataValue('Agency', 'Organisational Role')
-    static final OR_LICENSOR                = getRefdataValue('Licensor','Organisational Role')
-    static final OR_PROVIDER                = getRefdataValue('Provider', 'Organisational Role')
-    static final OR_PUBLISHER               = getRefdataValue('Publisher', 'Organisational Role')
-    static final OR_CONTENT_PROVIDER        = getRefdataValue('Content Provider', 'Organisational Role')
-    static final OR_PACKAGE_CONSORTIA       = getRefdataValue('Package Consortiar', 'Organisational Role')
+    static final OR_AGENCY                  = getRefdataValue('Agency', RDConstants.ORGANISATIONAL_ROLE)
+    static final OR_LICENSOR                = getRefdataValue('Licensor',RDConstants.ORGANISATIONAL_ROLE)
+    static final OR_PROVIDER                = getRefdataValue('Provider', RDConstants.ORGANISATIONAL_ROLE)
+    static final OR_PUBLISHER               = getRefdataValue('Publisher', RDConstants.ORGANISATIONAL_ROLE)
+    static final OR_CONTENT_PROVIDER        = getRefdataValue('Content Provider', RDConstants.ORGANISATIONAL_ROLE)
+    static final OR_PACKAGE_CONSORTIA       = getRefdataValue('Package Consortiar', RDConstants.ORGANISATIONAL_ROLE)
 
-    static final OT_CONSORTIUM              = getRefdataValue('Consortium', 'OrgRoleType')
-    static final OT_INSTITUTION             = getRefdataValue('Institution', 'OrgRoleType')
-    static final OT_AGENCY                  = getRefdataValue('Agency', 'OrgRoleType')
-    static final OT_LICENSOR                = getRefdataValue('Licensor', 'OrgRoleType')
-    static final OT_PROVIDER                = getRefdataValue('Provider', 'OrgRoleType')
-    static final OT_DEPARTMENT              = getRefdataValue('Department','OrgRoleType')
+    static final OT_CONSORTIUM              = getRefdataValue('Consortium', RDConstants.ORG_TYPE)
+    static final OT_INSTITUTION             = getRefdataValue('Institution', RDConstants.ORG_TYPE)
+    static final OT_AGENCY                  = getRefdataValue('Agency', RDConstants.ORG_TYPE)
+    static final OT_LICENSOR                = getRefdataValue('Licensor', RDConstants.ORG_TYPE)
+    static final OT_PROVIDER                = getRefdataValue('Provider', RDConstants.ORG_TYPE)
+    static final OT_DEPARTMENT              = getRefdataValue('Department', RDConstants.ORG_TYPE)
 
-    static final O_SECTOR_HIGHER_EDU        = getRefdataValue('Higher Education', 'OrgSector')
-    static final O_SECTOR_PUBLISHER         = getRefdataValue('Publisher', 'OrgSector')
+    static final O_SECTOR_HIGHER_EDU        = getRefdataValue('Higher Education', RDConstants.ORG_SECTOR)
+    static final O_SECTOR_PUBLISHER         = getRefdataValue('Publisher', RDConstants.ORG_SECTOR)
 
-    static final O_STATUS_CURRENT           = getRefdataValue('Current','OrgStatus')
-    static final O_STATUS_DELETED           = getRefdataValue('Deleted','OrgStatus')
+    static final O_STATUS_CURRENT           = getRefdataValue('Current', RDConstants.ORG_STATUS)
+    static final O_STATUS_DELETED           = getRefdataValue('Deleted', RDConstants.ORG_STATUS)
 
     static final DOC_TYPE_ANNOUNCEMENT      = getRefdataValue('Announcement', RDConstants.DOCUMENT_TYPE)
 
     static final DOC_DELETED                = getRefdataValue('Deleted', RDConstants.DOCUMENT_CONTEXT_STATUS)
     @Deprecated
     static final IE_DELETED                 = TIPP_DELETED
-    static final ORG_DELETED                = getRefdataValue('Deleted', 'OrgStatus')
+    static final ORG_DELETED                = getRefdataValue('Deleted', RDConstants.ORG_STATUS)
     static final PACKAGE_DELETED            = getRefdataValue('Deleted', 'Package Status')
     static final PLATFORM_DELETED           = getRefdataValue('Deleted', 'Platform Status')
     static final TIPP_DELETED               = getRefdataValue('Deleted', 'TIPP Status')
@@ -75,7 +75,7 @@ class RDStore {
     static final SURVEY_TYPE_INTEREST       = getRefdataValue('interest', 'Survey Type')
     static final SURVEY_TYPE_TITLE_SELECTION= getRefdataValue('selection', 'Survey Type')
 
-    static final LICENSE_CURRENT            = getRefdataValue('Current','License Status')
+    static final LICENSE_CURRENT            = getRefdataValue('Current', RDConstants.LICENSE_STATUS)
 
     static final COST_ITEM_ACTUAL           = getRefdataValue('Actual', RDConstants.COST_ITEM_STATUS)
     static final COST_ITEM_DELETED          = getRefdataValue('Deleted', RDConstants.COST_ITEM_STATUS)
@@ -87,12 +87,12 @@ class RDStore {
     static final SUBSCRIPTION_TYPE_NATIONAL   		= getRefdataValue('National Licence','Subscription Type')
     //static final SUBSCRIPTION_TYPE_COLLECTIVE   	= getRefdataValue('Collective Subscription','Subscription Type')
 
-    static final LICENSE_TYPE_TEMPLATE      = getRefdataValue('Template', 'License Type')
-    static final LICENSE_TYPE_ACTUAL        = getRefdataValue('Actual', 'License Type')
-    static final LICENSE_TYPE_CURRENT       = getRefdataValue('Current', 'License Type')
-    static final LICENSE_NO_STATUS          = getRefdataValue('Status not defined', 'License Status')
+    static final LICENSE_TYPE_TEMPLATE      = getRefdataValue('Template', RDConstants.LICENSE_TYPE)
+    static final LICENSE_TYPE_ACTUAL        = getRefdataValue('Actual', RDConstants.LICENSE_TYPE)
+    static final LICENSE_TYPE_CURRENT       = getRefdataValue('Current', RDConstants.LICENSE_TYPE)
+    static final LICENSE_NO_STATUS          = getRefdataValue('Status not defined', RDConstants.LICENSE_STATUS)
 
-    static final LINKTYPE_FOLLOWS           = getRefdataValue('follows','Link Type')
+    static final LINKTYPE_FOLLOWS           = getRefdataValue('follows', RDConstants.LINK_TYPE)
 
     static final YN_YES                     = getRefdataValue('Yes','YN')
     static final YNO_YES                    = getRefdataValue('Yes','YNO')
@@ -148,9 +148,9 @@ class RDStore {
     static final TIPP_STATUS_UNKNOWN            = getRefdataValue('Unknown', 'TIPP Status')
     //TIPP_STATUS_DELETED is defined above as TIPP_DELETED
     
-    static final IE_ACCEPT_STATUS_FIXED            = getRefdataValue('Fixed', 'IE Accept Status')
-    static final IE_ACCEPT_STATUS_UNDER_NEGOTIATION= getRefdataValue('Under Negotiation', 'IE Accept Status')
-    static final IE_ACCEPT_STATUS_UNDER_CONSIDERATION= getRefdataValue('Under Consideration','IE Accept Status')
+    static final IE_ACCEPT_STATUS_FIXED            = getRefdataValue('Fixed', RDConstants.IE_ACCEPT_STATUS)
+    static final IE_ACCEPT_STATUS_UNDER_NEGOTIATION = getRefdataValue('Under Negotiation', RDConstants.IE_ACCEPT_STATUS)
+    static final IE_ACCEPT_STATUS_UNDER_CONSIDERATION = getRefdataValue('Under Consideration',RDConstants.IE_ACCEPT_STATUS)
 
     static final PRS_FUNC_GENERAL_CONTACT_PRS   = getRefdataValue('General contact person', 'Person Function')
     static final PRS_FUNC_GASCO_CONTACT         = getRefdataValue('GASCO-Contact', 'Person Function')

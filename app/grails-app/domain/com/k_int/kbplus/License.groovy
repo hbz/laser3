@@ -6,6 +6,7 @@ import com.k_int.properties.PropertyDefinition
 import com.k_int.properties.PropertyDefinitionGroup
 import com.k_int.properties.PropertyDefinitionGroupBinding
 import de.laser.domain.AbstractBaseDomain
+import de.laser.helper.RDConstants
 import de.laser.helper.RDStore
 import de.laser.helper.RefdataAnnotation
 import de.laser.interfaces.Permissions
@@ -53,13 +54,13 @@ class License
     boolean isSlaved
     boolean isPublic
 
-    @RefdataAnnotation(cat = 'License Status')
+    @RefdataAnnotation(cat = RDConstants.LICENSE_STATUS)
     RefdataValue status
 
-    @RefdataAnnotation(cat = 'License Type')
+    @RefdataAnnotation(cat = RDConstants.LICENSE_TYPE)
     RefdataValue type
 
-    @RefdataAnnotation(cat = 'LicenseCategory')
+    @RefdataAnnotation(cat = RDConstants.LICENSE_CATEGORY)
     RefdataValue licenseCategory
 
     String reference

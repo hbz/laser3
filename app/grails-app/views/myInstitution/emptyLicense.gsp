@@ -50,8 +50,8 @@
                 <label>${message(code:'myinst.emptyLicense.status')}</label>
                 <%
                     def fakeList = []
-                    fakeList.addAll(RefdataCategory.getAllRefdataValues('License Status'))
-                    fakeList.remove(RefdataValue.getByValueAndCategory('Deleted', 'License Status'))
+                    fakeList.addAll(RefdataCategory.getAllRefdataValues(de.laser.helper.RDConstants.LICENSE_STATUS))
+                    fakeList.remove(RefdataValue.getByValueAndCategory('Deleted', de.laser.helper.RDConstants.LICENSE_STATUS))
                 %>
                 <laser:select name="status" from="${fakeList}" optionKey="id" optionValue="value"
                               noSelection="${['' : '']}"
@@ -63,7 +63,7 @@
                     <label>${message(code:'myinst.emptySubscription.create_as', default:'Create with the role of')}</label>
 
                     <select id="asOrgType" name="asOrgType" class="ui dropdown">
-                        <g:each in="${com.k_int.kbplus.RefdataValue.executeQuery('select rdv from RefdataValue as rdv where rdv.value in (:wl) and rdv.owner.desc = :ot', [wl:['Consortium', 'Institution'], ot:'OrgRoleType'])}" var="opt">
+                        <g:each in="${com.k_int.kbplus.RefdataValue.executeQuery('select rdv from RefdataValue as rdv where rdv.value in (:wl) and rdv.owner.desc = :ot', [wl:['Consortium', 'Institution'], ot: de.laser.helper.RDConstants.ORG_TYPE])}" var="opt">
                             <option value="${opt.id}" data-value="${opt.value}">${opt.getI10n('value')}</option>
                         </g:each>
                     </select>

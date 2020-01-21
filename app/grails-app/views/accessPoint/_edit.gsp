@@ -67,7 +67,7 @@
                         <div class="field">
                             <laser:select class="ui fluid icon  dropdown"  id="ipv4Format"
                                           name="ipv4Format"
-                                          from="${com.k_int.kbplus.OrgAccessPoint.getAllRefdataValues('IPv4 Address Format')}"
+                                          from="${com.k_int.kbplus.OrgAccessPoint.getAllRefdataValues(de.laser.helper.RDConstants.IPV4_ADDRESS_FORMAT)}"
                                           value="${ipv4Format}"
                                           optionKey="value"
                                           optionValue="value"
@@ -82,7 +82,7 @@
                         <div class="field">
                             <laser:select class="ui fluid icon  dropdown"  id="ipv6Format"
                                           name="ipv6Format"
-                                          from="${com.k_int.kbplus.OrgAccessPoint.getAllRefdataValues('IPv6 Address Format')}"
+                                          from="${com.k_int.kbplus.OrgAccessPoint.getAllRefdataValues(de.laser.helper.RDConstants.IPV6_ADDRESS_FORMAT)}"
                                           value="${ipv6Format}"
                                           optionKey="value"
                                           optionValue="value"

@@ -382,7 +382,7 @@ class AccessPointController extends AbstractDebugController {
 
         def accessPointDataList = AccessPointData.findAllByOrgAccessPoint(orgAccessPoint);
 
-        orgAccessPoint.getAllRefdataValues('IPv6 Address Formats')
+        orgAccessPoint.getAllRefdataValues(de.laser.helper.RDConstants.IPV6_ADDRESS_FORMAT)
 
         def ipv4Ranges = orgAccessPoint.getIpRangeStrings('ipv4', ipv4Format.substring(2))
         def ipv6Ranges = orgAccessPoint.getIpRangeStrings('ipv6', ipv6Format.substring(2))

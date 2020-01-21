@@ -341,9 +341,9 @@ class OrganisationController extends AbstractDebugController {
     })
     def createProvider() {
 
-        RefdataValue orgSector = RefdataValue.getByValueAndCategory('Publisher','OrgSector')
-        RefdataValue orgType = RefdataValue.getByValueAndCategory('Provider','OrgRoleType')
-        RefdataValue orgType2 = RefdataValue.getByValueAndCategory('Agency','OrgRoleType')
+        RefdataValue orgSector = RefdataValue.getByValueAndCategory('Publisher', RDConstants.ORG_SECTOR)
+        RefdataValue orgType = RefdataValue.getByValueAndCategory('Provider', RDConstants.ORG_TYPE)
+        RefdataValue orgType2 = RefdataValue.getByValueAndCategory('Agency', RDConstants.ORG_TYPE)
         Org orgInstance = new Org(name: params.provider, sector: orgSector.id)
 
         if ( orgInstance.save(flush:true) ) {
@@ -396,7 +396,7 @@ class OrganisationController extends AbstractDebugController {
                     newMember.save()
 
                     orgInstance.setDefaultCustomerType()
-                    orgInstance.addToOrgType(RefdataValue.getByValueAndCategory('Institution','OrgRoleType')) //RDStore adding causes a DuplicateKeyException
+                    orgInstance.addToOrgType(RefdataValue.getByValueAndCategory('Institution', RDConstants.ORG_TYPE)) //RDStore adding causes a DuplicateKeyException
                 }
 
                 flash.message = message(code: 'default.created.message', args: [message(code: 'org.institution.label'), orgInstance.name])
@@ -425,7 +425,7 @@ class OrganisationController extends AbstractDebugController {
                     newMember.save()
 
                     deptInstance.setDefaultCustomerType()
-                    deptInstance.addToOrgType(RefdataValue.getByValueAndCategory('Department','OrgRoleType'))
+                    deptInstance.addToOrgType(RefdataValue.getByValueAndCategory('Department', RDConstants.ORG_TYPE))
                 }
 
                 flash.message = message(code: 'default.created.message', args: [message(code: 'org.department.label'), deptInstance.name])
@@ -496,7 +496,7 @@ class OrganisationController extends AbstractDebugController {
         //this is a flag to check whether the page has been called directly after creation
         result.fromCreate = params.fromCreate ? true : false
 
-        //def link_vals = RefdataCategory.getAllRefdataValues("Organisational Role")
+        //def link_vals = RefdataCategory.getAllRefdataValues(RDConstants.ORGANISATIONAL_ROLE)
         //def sorted_links = [:]
         //def offsets = [:]
 
@@ -906,7 +906,7 @@ class OrganisationController extends AbstractDebugController {
 
     @Secured(['ROLE_USER'])
     def addOrgCombo(Org fromOrg, Org toOrg) {
-      //def comboType = RefdataCategory.lookupOrCreate('Organisational Role', 'Package Consortia')
+      //def comboType = RefdataCategory.lookupOrCreate(RDConstants.ORGANISATIONAL_ROLE, 'Package Consortia')
       def comboType = RefdataValue.get(params.comboTypeTo)
       log.debug("Processing combo creation between ${fromOrg} AND ${toOrg} with type ${comboType}")
       def dupe = Combo.executeQuery("from Combo as c where c.fromOrg = ? and c.toOrg = ?", [fromOrg, toOrg])

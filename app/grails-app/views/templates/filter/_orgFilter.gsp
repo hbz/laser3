@@ -40,7 +40,7 @@
                 <div class="field">
                     <label for="orgType">${message(code: 'org.orgType.label')}</label>
                     <g:if test="${orgTypes == null || orgTypes.isEmpty()}">
-                        <g:set var="orgTypes" value="${RefdataCategory.getAllRefdataValues('OrgRoleType')}"/>
+                        <g:set var="orgTypes" value="${RefdataCategory.getAllRefdataValues(de.laser.helper.RDConstants.ORG_TYPE)}"/>
                     </g:if>
                     <laser:select class="ui dropdown" id="orgType" name="orgType"
                                   from="${orgTypes}"
@@ -55,7 +55,7 @@
                 <div class="field">
                     <label for="orgRole">${message(code: 'org.orgRole.label')}</label>
                     <g:if test="${orgRoles == null || orgRoles.isEmpty()}">
-                        <g:set var="orgRoles" value="${RefdataCategory.getAllRefdataValues('Organisational Role')}"/>
+                        <g:set var="orgRoles" value="${RefdataCategory.getAllRefdataValues(de.laser.helper.RDConstants.ORGANISATIONAL_ROLE)}"/>
                     </g:if>
                     <laser:select class="ui dropdown" id="orgRole" name="orgRole"
                                   from="${orgRoles}"
@@ -70,7 +70,7 @@
                 <div class="field">
                     <label for="orgSector">${message(code: 'org.sector.label')}</label>
                     <laser:select class="ui dropdown" id="orgSector" name="orgSector"
-                                  from="${RefdataCategory.getAllRefdataValues('OrgSector')}"
+                                  from="${RefdataCategory.getAllRefdataValues(de.laser.helper.RDConstants.ORG_SECTOR)}"
                                   optionKey="id"
                                   optionValue="value"
                                   value="${params.orgSector}"
@@ -82,7 +82,7 @@
                 <div class="field">
                     <label for="federalState">${message(code: 'org.federalState.label')}</label>
                     <laser:select class="ui dropdown" id="federalState" name="federalState"
-                                  from="${RefdataCategory.getAllRefdataValues('Federal State')}"
+                                  from="${RefdataCategory.getAllRefdataValues(de.laser.helper.RDConstants.FEDERAL_STATE)}"
                                   optionKey="id"
                                   optionValue="value"
                                   value="${params.federalState}"
@@ -94,7 +94,7 @@
                 <div class="field">
                     <label for="libraryNetwork">${message(code: 'org.libraryNetwork.label')}</label>
                     <laser:select class="ui dropdown" id="libraryNetwork" name="libraryNetwork"
-                                  from="${RefdataCategory.getAllRefdataValues('Library Network')}"
+                                  from="${RefdataCategory.getAllRefdataValues(de.laser.helper.RDConstants.LIBRARY_NETWORK)}"
                                   optionKey="id"
                                   optionValue="value"
                                   value="${params.libraryNetwork}"
@@ -106,7 +106,7 @@
                 <div class="field">
                     <label for="libraryType">${message(code: 'org.libraryType.label')}</label>
                     <laser:select class="ui dropdown" id="libraryType" name="libraryType"
-                                  from="${RefdataCategory.getAllRefdataValues('Library Type')}"
+                                  from="${RefdataCategory.getAllRefdataValues(de.laser.helper.RDConstants.LIBRARY_TYPE)}"
                                   optionKey="id"
                                   optionValue="value"
                                   value="${params.libraryType}"

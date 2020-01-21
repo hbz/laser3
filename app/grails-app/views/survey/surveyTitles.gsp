@@ -141,7 +141,7 @@
                     </td>
 
                     <td>
-                        <semui:xEditableRefData owner="${ie}" field="medium" config='IEMedium'
+                        <semui:xEditableRefData owner="${ie}" field="medium" config="${de.laser.helper.RDConstants.IE_MEDIUM}"
                                                 overwriteEditable="${false}"/>
                     </td>
                     <td class="coverageStatements la-tableCard" data-entitlement="${ie.id}">

@@ -110,7 +110,7 @@
             <label for="mailTemplateLanguage">${message(code:'mailTemplate.language.label')}:</label>
             <g:select id="mailTemplateLanguageEdit"
                       name="language"
-                      from="${com.k_int.kbplus.RefdataCategory.getAllRefdataValues('MailTemplate Language')}"
+                      from="${com.k_int.kbplus.RefdataCategory.getAllRefdataValues(de.laser.helper.RDConstants.MAIL_TEMPLATE_LANGUAGE)}"
                       optionKey="id"
                       optionValue="${{it.getI10n('value')}}"
                       class="ui dropdown search many-to-one"
@@ -121,7 +121,7 @@
             <label for="mailTemplateType">${message(code:'mailTemplate.type.label')}:</label>
             <g:select id="mailTemplateTypeEdit"
                       name="type"
-                      from="${com.k_int.kbplus.RefdataCategory.getAllRefdataValues('MailTemplate Type')}"
+                      from="${com.k_int.kbplus.RefdataCategory.getAllRefdataValues(de.laser.helper.RDConstants.MAIL_TEMPLATE_TYPE)}"
                       optionKey="id"
                       optionValue="${{it.getI10n('value')}}"
                       class="ui dropdown search many-to-one"
@@ -168,7 +168,7 @@
         <label for="mailTemplateLanguage">${message(code:'mailTemplate.language.label')}:</label>
         <g:select id="mailTemplateLanguage"
                   name="language"
-                  from="${com.k_int.kbplus.RefdataCategory.getAllRefdataValues('MailTemplate Language')}"
+                  from="${com.k_int.kbplus.RefdataCategory.getAllRefdataValues(de.laser.helper.RDConstants.MAIL_TEMPLATE_LANGUAGE)}"
                   optionKey="id"
                   optionValue="${{it.getI10n('value')}}"
                   class="ui dropdown search many-to-one"
@@ -179,7 +179,7 @@
             <label for="mailTemplateType">${message(code:'mailTemplate.type.label')}:</label>
             <g:select id="mailTemplateType"
                       name="type"
-                      from="${com.k_int.kbplus.RefdataCategory.getAllRefdataValues('MailTemplate Type')}"
+                      from="${com.k_int.kbplus.RefdataCategory.getAllRefdataValues(de.laser.helper.RDConstants.MAIL_TEMPLATE_TYPE)}"
                       optionKey="id"
                       optionValue="${{it.getI10n('value')}}"
                       class="ui dropdown search many-to-one"

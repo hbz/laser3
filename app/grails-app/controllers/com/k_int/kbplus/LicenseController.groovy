@@ -563,7 +563,7 @@ from Subscription as s where
                     OrgRole.executeUpdate("delete from OrgRole where lic = :l and org IN (:orgs)", [l: delLicense, orgs: delInstitutions])
                 }
 
-                delLicense.status = RefdataValue.getByValueAndCategory('Deleted', 'License Status')
+                delLicense.status = RefdataValue.getByValueAndCategory('Deleted', RDConstants.LICENSE_STATUS)
                 delLicense.save(flush: true)
             } else {
                 flash.error = message(code: 'myinst.actionCurrentLicense.error', default: 'Unable to delete - The selected license has attached licenses')

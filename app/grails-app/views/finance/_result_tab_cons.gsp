@@ -8,7 +8,7 @@
     def jsonSource = []
 
     cost_items.each{ ci ->
-        def or = OrgRole.findBySubAndRoleType(ci.sub, RefdataValue.getByValueAndCategory('Subscriber_Consortial', 'Organisational Role'))
+        def or = OrgRole.findBySubAndRoleType(ci.sub, RefdataValue.getByValueAndCategory('Subscriber_Consortial', RDConstants.ORGANISATIONAL_ROLE))
 
         jsonSource << [
                 "name": "${or.org.sortname}",

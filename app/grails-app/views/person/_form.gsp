@@ -39,7 +39,7 @@
 
     </label>
     <laser:select class="ui dropdown" id="gender" name="gender"
-                  from="${com.k_int.kbplus.Person.getAllRefdataValues('Gender')}"
+                  from="${com.k_int.kbplus.Person.getAllRefdataValues(de.laser.helper.RDConstants.GENDER)}"
                   optionKey="id"
                   optionValue="value"
                   value="${personInstance?.gender?.id}"

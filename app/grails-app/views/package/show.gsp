@@ -159,7 +159,7 @@
                                         parent: packageInstance.class.name+':'+packageInstance.id,
                                         property: 'orgs',
                                         recip_prop: 'pkg',
-                                        tmplRole: com.k_int.kbplus.RefdataValue.getByValueAndCategory('Content Provider', 'Organisational Role'),
+                                        tmplRole: com.k_int.kbplus.RefdataValue.getByValueAndCategory('Content Provider', de.laser.helper.RDConstants.ORGANISATIONAL_ROLE),
                                         tmplText:'Anbieter hinzufügen',
                                         tmplID:'ContentProvider',
                                         tmplButtonText: 'Anbieter hinzufügen',

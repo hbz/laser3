@@ -2,6 +2,7 @@ package de.laser.domain
 
 import com.k_int.kbplus.IdentifierNamespace
 import com.k_int.kbplus.RefdataValue
+import de.laser.helper.RDConstants
 import de.laser.helper.RefdataAnnotation
 
 class StatsTripleCursor {
@@ -15,7 +16,7 @@ class StatsTripleCursor {
     Date availTo
     Integer numFacts
 
-    @RefdataAnnotation(cat = 'FactType')
+    @RefdataAnnotation(cat = RDConstants.FACT_TYPE)
     RefdataValue factType
 
     static mapping = {

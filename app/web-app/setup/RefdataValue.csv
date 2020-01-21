@@ -539,258 +539,261 @@ document.type,Title List,Titelliste,Title List
 document.type,Usage Statistics,Nutzungsstatistik,Usage Statistics
 existence,Existent,Bestehend,Existent
 existence,Nonexistend,Fehlend,Nonexistend
-FactMetric,ft_total,,ft_total
-FactMetric,record_view,,record_view
-FactMetric,result_click,,result_click
-FactMetric,search_fed,,search_fed
-FactMetric,search_reg,,search_reg
-FactType,BR1R4,,BR1R4
-FactType,BR2R4,,BR2R4
-FactType,DB1R4,,DB1R4
-FactType,JR1GOAR4,,JR1GOAR4
-FactType,JR1R4,,JR1R4
-Federal State,Baden-Wurttemberg,Baden-Württemberg,Baden-Wurttemberg
-Federal State,Bavaria,Bayern,Bavaria
-Federal State,Berlin,Berlin,Berlin
-Federal State,Brandenburg,Brandenburg,Brandenburg
-Federal State,Bremen,Bremen,Bremen
-Federal State,Hamburg,Hamburg,Hamburg
-Federal State,Hesse,Hessen,Hesse
-Federal State,Lower Saxony,Niedersachsen,Lower Saxony
-Federal State,Mecklenburg-West Pomerania,Mecklenburg-Vorpommern,Mecklenburg-West Pomerania
-Federal State,North Rhine-Westphalia,Nordrhein-Westfalen,North Rhine-Westphalia
-Federal State,Rhineland-Palatinate,Rheinland-Pfalz,Rhineland-Palatinate
-Federal State,Saarland,Saarland,Saarland
-Federal State,Saxony,Sachsen,Saxony
-Federal State,Saxony-Anhalt,Sachsen-Anhalt,Saxony-Anhalt
-Federal State,Schleswig-Holstein,Schleswig-Holstein,Schleswig-Holstein
-Federal State,Thuringia,Thüringen,Thuringia
+fact.metric,ft_total,,ft_total
+fact.metric,record_view,,record_view
+fact.metric,result_click,,result_click
+fact.metric,search_fed,,search_fed
+fact.metric,search_reg,,search_reg
+fact.type,BR1R4,,BR1R4
+fact.type,BR2R4,,BR2R4
+fact.type,DB1R4,,DB1R4
+fact.type,JR1GOAR4,,JR1GOAR4
+fact.type,JR1R4,,JR1R4
+federal.state,Baden-Wurttemberg,Baden-Württemberg,Baden-Wurttemberg
+federal.state,Bavaria,Bayern,Bavaria
+federal.state,Berlin,Berlin,Berlin
+federal.state,Brandenburg,Brandenburg,Brandenburg
+federal.state,Bremen,Bremen,Bremen
+federal.state,Hamburg,Hamburg,Hamburg
+federal.state,Hesse,Hessen,Hesse
+federal.state,Lower Saxony,Niedersachsen,Lower Saxony
+federal.state,Mecklenburg-West Pomerania,Mecklenburg-Vorpommern,Mecklenburg-West Pomerania
+federal.state,North Rhine-Westphalia,Nordrhein-Westfalen,North Rhine-Westphalia
+federal.state,Rhineland-Palatinate,Rheinland-Pfalz,Rhineland-Palatinate
+federal.state,Saarland,Saarland,Saarland
+federal.state,Saxony,Sachsen,Saxony
+federal.state,Saxony-Anhalt,Sachsen-Anhalt,Saxony-Anhalt
+federal.state,Schleswig-Holstein,Schleswig-Holstein,Schleswig-Holstein
+federal.state,Thuringia,Thüringen,Thuringia
 filter.fake.values,generic.null.value,Nicht gesetzt,Not set
 filter.fake.values,subscription.status.no.status.set.but.null,Kein Status,No Status
-Funder Type,Catholic Church,Katholische Kirche,Catholic Church
-Funder Type,Commune,Gemeinde,Commune
-Funder Type,Corporate Body or Foundation under Private Law,Körperschaft oder Stiftung des privaten Rechts,Corporate Body or Foundation under Private Law
-Funder Type,Corporate Body or Foundation under Public Law,Körperschaft oder Stiftung des öffentlichen Rechts,Corporate Body or Foundation under Public Law
-Funder Type,County,Kreis,County
-Funder Type,Federal Republic of Germany,Bundesrepublik Deutschland,Federal Republic of Germany
-Funder Type,Federal State,Land,Federal State
-Funder Type,Foreign Funding Body,Ausländische Trägerschaft,Foreign Funding Body
-Funder Type,Other Public Sector Funder,Sonstige öffentliche Trägerschaft,Other Public Sector Funder
-Funder Type,Other Religious Communities,Sonstige Religionsgemeinschaften,Other Religious Communities
-Funder Type,Other Territorial Authority,Sonstige Gebietskörperschaft,Other Territorial Authority
-Funder Type,Private Funding Body (Natural Person),Private Trägerschaft (natürliche Personen),Private Funding Body (Natural Person)
-Funder Type,Protestant Church,Evangelische Kirche,Protestant Church
-Gender,Female,Weiblich,Female
-Gender,Male,Männlich,Male
-Gender,Third Gender,Inter/Divers,Third Gender
-IE Accept Status,Fixed,Feststehend,Fixed
-IE Accept Status,Under Consideration,Entscheidung steht aus,Under Consideration
-IE Accept Status,Under Negotiation,In Verhandlung,Under Negotiation
-IE Access Status,Current,Aktuell,Current
-IE Access Status,Current(*),Aktuell(*),Current(*)
-IE Access Status,ERROR - No Subscription Start and/or End Date,ERROR - No Subscription Start and/or End Date,ERROR - No Subscription Start and/or End Date
-IE Access Status,Expected,Erwartet,Expected
-IE Access Status,Expired,Abgelaufen,Expired
-IEMedium,Electronic,Elektronisch,Electronic
-IEMedium,Print,Print,Print
-IEMedium,Print and Electronic,Print und Elektronisch,Print and Electronic
-Ill code,a,a - Fernleihe (Ausleihe),a - Ill (loan only)
-Ill code,b,b - Fernleihe (Papierkopie an Endnutzer),b - Ill (copy only)
-Ill code,c,c - Fernleihe (Papierkopie und Ausleihe),c - Ill (loan and copy)
-Ill code,d,d - keine Fernleihe,d - Ill forbidden
-Ill code,e,e - Fernleihe (Elektronischer Versand an Endnutzer),e - Ill (electronic delivery)
-Indemnification,General,Generell,General
-Indemnification,Intellectual Property Only,Nur geistiges Eigentum,Intellectual Property Only
-Indemnification,Other,Andere,Other
-Indemnification,Unknown,Unklar,Unknown
-Invoicing,Consortium,Konsortium,Consortium
-Invoicing,Provider,Anbieter,Provider
-IPv4 Address Format,v4cidr,IPv4 (CIDR),IPv4 (CIDR)
-IPv4 Address Format,v4input,IPv4 (Eingabe),IPv4 (Input)
-IPv4 Address Format,v4ranges,IPv4 (Bereiche),IPv4 (Ranges)
-IPv6 Address Format,v6cidr,IPv6 (CIDR),IPv6 (CIDR)
-IPv6 Address Format,v6input,IPv6 (Eingabe),IPv6 (Input)
-IPv6 Address Format,v6ranges,IPv6 (Bereiche),IPv6 (Ranges)
-Language,de,Deutsch,German
-Language,en,Englisch,English
-Library Network,BVB,BVB,BVB
-Library Network,GBV,GBV,GBV
-Library Network,hbz,hbz,hbz
-Library Network,HeBIS,HeBIS,HeBIS
-Library Network,KOBV,KOBV,KOBV
-Library Network,No Network,Keine Zugehörigkeit,No Network
-Library Network,SWB,SWB,SWB
-Library Type,Fachhochschule,Fachhochschule,University of applied science
-Library Type,Forschungseinrichtung,Forschungseinrichtung,Research institution
-Library Type,Institutsbibliothek,Institutsbibliothek,Department library
-Library Type,keine Angabe,keine Angabe,not specified
-Library Type,Kunst- und Musikhochschule,Kunst- und Musikhochschule,College of Art or Music
-Library Type,Öffentliche Bibliothek,Öffentliche Bibliothek,Public library
-Library Type,Sonstige,Sonstige,Other
-Library Type,Staats-/ Landes-/ Regionalbibliothek,Staats-/ Landes-/ Regionalbibliothek,National / state / regional library
-Library Type,Universität,Universität,University
-Library Type,Wissenschaftliche Spezialbibliothek,Wissenschaftliche Spezialbibliothek,Special scientific library
-License Status,Current,Aktiv,Current
-License Status,In Progress,In Bearbeitung,In Progress
-License Status,Retired,Abgelaufen,Retired
-License Status,Status not defined,Status nicht festgelegt,Status not defined
-License Status,Unknown,Unbekannt,Unknown
-License Type,Actual,Konkrete Instanz,Actual
-License Type,Template,Vorlage,Template
-License Type,Unknown,Unbekannt,Unknown
-License.Arc.ArchivalCopyContent,Data,Rohdaten,Data
-License.Arc.ArchivalCopyContent,DRM-free,Ohne DRM,DRM-free
-License.Arc.ArchivalCopyContent,With Metadata,Inkl. Metadaten,With Metadata
-License.Arc.ArchivalCopyContent,With Software,Inkl. Software,With Software
-License.Arc.ArchivalCopyCost,Free,Kostenlos,Free
-License.Arc.ArchivalCopyCost,Self-copied,Kopie selbst anzufertigen,Self-copied
-License.Arc.ArchivalCopyCost,With Charge,Gegen Gebühr,With Charge
-License.Arc.ArchivalCopyTime,Licence End Date,Mit Vertragsende,Licence End Date
-License.Arc.ArchivalCopyTime,Licence Start Date,Mit Vertragsbeginn,Licence Start Date
-License.Arc.ArchivalCopyTime,On Request,Auf Anfrage,On Request
-License.Arc.ArchivalCopyTime,Trigger Event,Mit Trigger Event,Trigger Event
-License.Arc.ArchivalCopyTransmissionFormat,CDROM,CDROM,CDROM
-License.Arc.ArchivalCopyTransmissionFormat,Remote,Remote,Remote
-License.Arc.ArchivalCopyTransmissionFormat,Tape,Band,Tape
-License.Arc.ArchivalCopyTransmissionFormat,Unspecified tangible format,Unspezifizierter Datenträger,Unspecified tangible format
-License.Arc.Authorized,Contractor,Vertragspartner,Contractor
-License.Arc.Authorized,Contractor With Publisher's Assent,Vertragspartner nach Genehmigung durch Anbieter,Contractor With Publisher's Assent
-License.Arc.Authorized,FID library,FID-Bibliothek,FID library
-License.Arc.Authorized,Former SSG library,Ehemals SSG-Bibliothek,Former SSG library
-License.Arc.Authorized,Licensee,Lizenznehmer,Licensee
-License.Arc.Authorized,SSG-Library,SSG-Bibliothek,SSG-Library
-License.Arc.HostingRestriction,Access Period,Zugriffsdauer,Access Period
-License.Arc.HostingRestriction,File Format,Dateiformat,File Format
-License.Arc.HostingRestriction,Use,Nutzung,Use
-License.Arc.HostingRestriction,Year,Jahrgang,Year
-License.Arc.HostingSolution,CLOCKSS,CLOCKSS,CLOCKSS
-License.Arc.HostingSolution,LOCKSS,LOCKSS,LOCKSS
-License.Arc.HostingSolution,NatHosting PLN,NatHosting PLN,NatHosting PLN
-License.Arc.HostingSolution,NatHosting Portico,NatHosting Portico,NatHosting Portico
-License.Arc.HostingSolution,Own Host,Eigener Host,Own Host
-License.Arc.HostingSolution,Portico,Portico,Portico
-License.Arc.HostingSolution,Publisher,Verlag,Publisher
-License.Arc.HostingSolution,Third Party Systems,Drittsysteme,Third Party Systems
-License.Arc.HostingTime,Always,Immer,Always
-License.Arc.HostingTime,Exclusive,Ohne Anbieter,Exclusive
-License.Arc.HostingTime,From Expiration On,Ab Vertragsende,From Expiration On
-License.Arc.HostingTime,Predefined time,Fester Zeitpunkt,Predefined time
-License.Arc.HostingTime,Trigger Event,Mit Trigger-Event,Trigger Event
-License.Arc.PaymentNote,Hosting fee,Hosting Fee zu zahlen,Hosting fee
-License.Arc.PaymentNote,No Hosting fee,Dauerhaft kostenfrei (keine Hosting Fee),No Hosting fee
-License.Arc.TitletransferRegulation,Existing Regulation,Regelung vorhanden,Existing Regulation
-License.Arc.TitletransferRegulation,No Regulation,Keine Regelung,No Regulation
-License.Arc.TitletransferRegulation,Transfer Code of Practice,Transfer Code of Practice,Transfer Code of Practice
-License.OA.CorrespondingAuthorIdentification,Email Domain,E-Mail-Domäne,Email Domain
-License.OA.CorrespondingAuthorIdentification,IP Range,Über IP-Bereich,IP Range
-License.OA.CorrespondingAuthorIdentification,ORCID,ORCID,ORCID
-License.OA.CorrespondingAuthorIdentification,Other,Anderes,Other
-License.OA.CorrespondingAuthorIdentification,Research Institute,Über Institut,Research Institute
-License.OA.eArcVersion,Accepted Author,Accepted Author,Accepted Author
-License.OA.eArcVersion,Manuscript (AAM),Manuscript (AAM),Manuscript (AAM)
-License.OA.eArcVersion,Postprint,Postprint,Postprint
-License.OA.eArcVersion,Preprint,Preprint,Preprint
-License.OA.eArcVersion,Preprint with ePrint URL,Preprint mit ePrint-URL,Preprint with ePrint URL
-License.OA.eArcVersion,Publisher-PDF,Verlags-PDF-Datei,Publisher-PDF
-License.OA.LicenseToPublish,CC-BY,CC-BY,CC-BY
-License.OA.LicenseToPublish,CC-BY-NC,CC-BY-NC,CC-BY-NC
-License.OA.LicenseToPublish,CC-BY-NC-ND,CC-BY-NC-ND,CC-BY-NC-ND
-License.OA.LicenseToPublish,CC-BY-NC-SA,CC-BY-NC-SA,CC-BY-NC-SA
-License.OA.LicenseToPublish,CC-BY-ND,CC-BY-ND,CC-BY-ND
-License.OA.LicenseToPublish,CC-BY-SA,CC-BY-SA,CC-BY-SA
-License.OA.ReceivingModalities,Automatic Delivery,Automatische Lieferung,Automatic Delivery
-License.OA.ReceivingModalities,By Author,Über Autor,By Author
-License.OA.ReceivingModalities,From Database,Aus Datenank,From Database
-License.OA.ReceivingModalities,Link by Publisher,Verlinkung durch Verlag,Link by Publisher
-License.OA.ReceivingModalities,On Demand,Auf Nachfrage,On Demand
-License.OA.Repository,Institutional,Institutionell,Institutional
-License.OA.Repository,Own Choice,Nach Wahl,Own Choice
-License.OA.Repository,Pre-print Server,Pre-print-Server,Pre-print Server
-License.OA.Repository,Publishers,Verlagseigen,Publishers
-License.OA.Repository,Social Media,Social Media,Social Media
-License.OA.Repository,Subject specific,Fachspezifisch,Subject specific
-License.OA.Repository,Website of Author,Webseite,Website of Author
-License.OA.Type,Blue Open Access,Blue Open-Access,Blue Open Access
-License.OA.Type,Gold Open Access,Gold Open-Access,Gold Open Access
-License.OA.Type,Green Open Access,Green Open-Access,Green Open Access
-License.OA.Type,Hybrid,Hybrid,Hybrid
-License.OA.Type,No Open Access,Kein Open-Access,No Open Access
-License.OA.Type,White Open Access,White Open-Access,White Open Access
-License.OA.Type,Yellow Open Access,Yellow Open-Access,Yellow Open Access
-License.Statistics.Delivery,Email,Email,Email
-License.Statistics.Delivery,Online,Online,Online
-License.Statistics.Delivery,Paper,Papier,Paper
-License.Statistics.Format,ASCII,ASCII,ASCII
-License.Statistics.Format,CSV,CSV,CSV
-License.Statistics.Format,Delimited,Begrenzt (z.B. durch Tab),Delimited
-License.Statistics.Format,Excel,Excel,Excel
-License.Statistics.Format,HTML,HTML,HTML
-License.Statistics.Format,Other,Sonstiges Format,Other
-License.Statistics.Format,PDF,PDF,PDF
-License.Statistics.Frequency,Bi-Annual,Halbjährlich,Bi-Annual
-License.Statistics.Frequency,Monthly,Monatlich,Monthly
-License.Statistics.Frequency,Quarterly,Quartalsweise,Quarterly
-License.Statistics.Frequency,User-selectable,Individuell,User-selectable
-License.Statistics.Standards,COUNTER version 4,COUNTER version 4,COUNTER version 4
-License.Statistics.Standards,COUNTER version 5,COUNTER version 5,COUNTER version 5
-License.Statistics.Standards,ICOLC 1998,ICOLC 1998,ICOLC 1998
-License.Statistics.UserCreds,None,Keins,None
-License.Statistics.UserCreds,Other,Anderes,Other
-License.Statistics.UserCreds,Same as Admin,Das gleiche wie Admin,Same as Admin
-LicenseCategory,Content,Content,Content
-LicenseCategory,Other,Andere,Other
-LicenseCategory,Software,Software,Software
-Lincense.RemoteAccess,All but Walk-ins,Alle außer Walk-In-User,All but Walk-ins
-Lincense.RemoteAccess,No,Nein,No
-Lincense.RemoteAccess,Yes,Ja,Yes
-Link Type,follows,... ist Nachfolger von|... ist Vorgänger von,... follows|... precedes
-Link Type,is condition for,... ist Bedingung für|... ist bedingt durch,... ist condition für|... ist conditioned by
-Link Type,references,... referenziert|... wird referenziert durch,... references|... is referenced by
-MailTemplate Language,English,Englisch,English
-MailTemplate Language,German,Deutsch,German
-MailTemplate Type,IP Message,IP-Meldung,IP Message
-Number Type,Population,Einwohner,Population
-Number Type,Scientific staff,wissenschaftliches Personal,Scientific staff
-Number Type,Students,Studierende,Students
-Number Type,User,Nutzer,User
-Organisational Role,Agency,Lieferant,Agency
-Organisational Role,Content Provider,Anbieter,Content Provider
-Organisational Role,Licensee,Lizenznehmer,Licensee
-Organisational Role,Licensee_Collective,Institut des Lizenznehmers,Collective licensee
-Organisational Role,Licensee_Consortial,Konsortiallizenznehmer,Consortial licensee
-Organisational Role,Licensing Consortium,Lizenzkonsortium,Licensing Consortium
-Organisational Role,Licensor,Lizenzgeber,Licensor
-Organisational Role,Negotiator,Negotiator,Negotiator
-Organisational Role,Package Consortia,Package Consortia,Package Consortia
-Organisational Role,Provider,Anbieter,Provider
-Organisational Role,Publisher,Verlag,Publisher
-Organisational Role,Subscriber,Teilnehmer,Subscriber
-Organisational Role,Subscriber_Collective,Kollektivteilnehmer,Collective subscriber
-Organisational Role,Subscriber_Consortial,Konsortialteilnehmer,Consortial subscriber
-Organisational Role,Subscriber_Consortial_Hidden,Konsortialteilnehmer (versteckt),Consortial subscriber (hidden)
-Organisational Role,Subscription Agent,Subscription Agent,Subscription Agent
-Organisational Role,Subscription Collective,Stammlizenzverwalter,Subscription Collective
-Organisational Role,Subscription Consortia,Konsortium,Subscription Consortia
-OrgRoleType,Agency,Lieferant,Agency
-OrgRoleType,Broker,Vermittler,Broker
-OrgRoleType,Consortium,Konsortium,Consortium
-OrgRoleType,Content Provider,Inhaltsanbieter,Content Provider
-OrgRoleType,Department,Institut,Department
-OrgRoleType,Imprint,Imprint,Imprint
-OrgRoleType,Institution,Einrichtung,Institution
-OrgRoleType,Issuing Body,Issuing Body,Issuing Body
-OrgRoleType,Library Service,Bibliotheksservice,Library Service
-OrgRoleType,Licensee,Lizenznehmer,Licensee
-OrgRoleType,Licensor,Lizenzgeber,Licensor
-OrgRoleType,Other,Andere,Other
-OrgRoleType,Platform Provider,Plattformanbieter,Platform Provider
-OrgRoleType,Provider,Anbieter,Provider
-OrgRoleType,Publisher,Verlag,Publisher
-OrgRoleType,Vendor,Verkäufer,Vendor
-OrgSector,Higher Education,Akademisch,Higher Education
-OrgSector,Publisher,Kommerziell,Commercial
-OrgStatus,Current,Aktuell,Current
-OrgStatus,Deleted,Gelöscht,Deleted
+funder.type,Catholic Church,Katholische Kirche,Catholic Church
+funder.type,Commune,Gemeinde,Commune
+funder.type,Corporate Body or Foundation under Private Law,Körperschaft oder Stiftung des privaten Rechts,Corporate Body or Foundation under Private Law
+funder.type,Corporate Body or Foundation under Public Law,Körperschaft oder Stiftung des öffentlichen Rechts,Corporate Body or Foundation under Public Law
+funder.type,County,Kreis,County
+funder.type,Federal Republic of Germany,Bundesrepublik Deutschland,Federal Republic of Germany
+funder.type,Federal State,Land,Federal State
+funder.type,Foreign Funding Body,Ausländische Trägerschaft,Foreign Funding Body
+funder.type,Other Public Sector Funder,Sonstige öffentliche Trägerschaft,Other Public Sector Funder
+funder.type,Other Religious Communities,Sonstige Religionsgemeinschaften,Other Religious Communities
+funder.type,Other Territorial Authority,Sonstige Gebietskörperschaft,Other Territorial Authority
+funder.type,Private Funding Body (Natural Person),Private Trägerschaft (natürliche Personen),Private Funding Body (Natural Person)
+funder.type,Protestant Church,Evangelische Kirche,Protestant Church
+gender,Female,Weiblich,Female
+gender,Male,Männlich,Male
+gender,Third Gender,Inter/Divers,Third Gender
+ie.accept.status,Fixed,Feststehend,Fixed
+ie.accept.status,Under Consideration,Entscheidung steht aus,Under Consideration
+ie.accept.status,Under Negotiation,In Verhandlung,Under Negotiation
+ie.accept.status,Current,Aktuell,Current
+ie.accept.status,Current(*),Aktuell(*),Current(*)
+ie.accept.status,ERROR - No Subscription Start and/or End Date,ERROR - No Subscription Start and/or End Date,ERROR - No Subscription Start and/or End Date
+ie.accept.status,Expected,Erwartet,Expected
+ie.accept.status,Expired,Abgelaufen,Expired
+ie.access.status,Current,Current,Current
+ie.access.status,Expected,Expected,Expected
+ie.access.status,Expired,Expired,Expired
+ie.medium,Electronic,Elektronisch,Electronic
+ie.medium,Print,Print,Print
+ie.medium,Print and Electronic,Print und Elektronisch,Print and Electronic
+ill.code,a,a - Fernleihe (Ausleihe),a - Ill (loan only)
+ill.code,b,b - Fernleihe (Papierkopie an Endnutzer),b - Ill (copy only)
+ill.code,c,c - Fernleihe (Papierkopie und Ausleihe),c - Ill (loan and copy)
+ill.code,d,d - keine Fernleihe,d - Ill forbidden
+ill.code,e,e - Fernleihe (Elektronischer Versand an Endnutzer),e - Ill (electronic delivery)
+indemnification,General,Generell,General
+indemnification,Intellectual Property Only,Nur geistiges Eigentum,Intellectual Property Only
+indemnification,Other,Andere,Other
+indemnification,Unknown,Unklar,Unknown
+invoicing,Consortium,Konsortium,Consortium
+invoicing,Provider,Anbieter,Provider
+ipv4.address.format,v4cidr,IPv4 (CIDR),IPv4 (CIDR)
+ipv4.address.format,v4input,IPv4 (Eingabe),IPv4 (Input)
+ipv4.address.format,v4ranges,IPv4 (Bereiche),IPv4 (Ranges)
+ipv6.address.format,v6cidr,IPv6 (CIDR),IPv6 (CIDR)
+ipv6.address.format,v6input,IPv6 (Eingabe),IPv6 (Input)
+ipv6.address.format,v6ranges,IPv6 (Bereiche),IPv6 (Ranges)
+language,de,Deutsch,German
+language,en,Englisch,English
+library.network,BVB,BVB,BVB
+library.network,GBV,GBV,GBV
+library.network,hbz,hbz,hbz
+library.network,HeBIS,HeBIS,HeBIS
+library.network,KOBV,KOBV,KOBV
+library.network,No Network,Keine Zugehörigkeit,No Network
+library.network,SWB,SWB,SWB
+library.type,Fachhochschule,Fachhochschule,University of applied science
+library.type,Forschungseinrichtung,Forschungseinrichtung,Research institution
+library.type,Institutsbibliothek,Institutsbibliothek,Department library
+library.type,keine Angabe,keine Angabe,not specified
+library.type,Kunst- und Musikhochschule,Kunst- und Musikhochschule,College of Art or Music
+library.type,Öffentliche Bibliothek,Öffentliche Bibliothek,Public library
+library.type,Sonstige,Sonstige,Other
+library.type,Staats-/ Landes-/ Regionalbibliothek,Staats-/ Landes-/ Regionalbibliothek,National / state / regional library
+library.type,Universität,Universität,University
+library.type,Wissenschaftliche Spezialbibliothek,Wissenschaftliche Spezialbibliothek,Special scientific library
+license.status,Current,Aktiv,Current
+license.status,In Progress,In Bearbeitung,In Progress
+license.status,Retired,Abgelaufen,Retired
+license.status,Status not defined,Status nicht festgelegt,Status not defined
+license.status,Unknown,Unbekannt,Unknown
+license.type,Actual,Konkrete Instanz,Actual
+license.type,Template,Vorlage,Template
+license.type,Unknown,Unbekannt,Unknown
+license.arc.archival.copy.content,Data,Rohdaten,Data
+license.arc.archival.copy.content,DRM-free,Ohne DRM,DRM-free
+license.arc.archival.copy.content,With Metadata,Inkl. Metadaten,With Metadata
+license.arc.archival.copy.content,With Software,Inkl. Software,With Software
+license.arc.archival.copy.cost,Free,Kostenlos,Free
+license.arc.archival.copy.cost,Self-copied,Kopie selbst anzufertigen,Self-copied
+license.arc.archival.copy.cost,With Charge,Gegen Gebühr,With Charge
+license.arc.archival.copy.time,Licence End Date,Mit Vertragsende,Licence End Date
+license.arc.archival.copy.time,Licence Start Date,Mit Vertragsbeginn,Licence Start Date
+license.arc.archival.copy.time,On Request,Auf Anfrage,On Request
+license.arc.archival.copy.time,Trigger Event,Mit Trigger Event,Trigger Event
+license.arc.archival.copy.transmission.format,CDROM,CDROM,CDROM
+license.arc.archival.copy.transmission.format,Remote,Remote,Remote
+license.arc.archival.copy.transmission.format,Tape,Band,Tape
+license.arc.archival.copy.transmission.format,Unspecified tangible format,Unspezifizierter Datenträger,Unspecified tangible format
+license.arc.authorized,Contractor,Vertragspartner,Contractor
+license.arc.authorized,Contractor With Publisher's Assent,Vertragspartner nach Genehmigung durch Anbieter,Contractor With Publisher's Assent
+license.arc.authorized,FID library,FID-Bibliothek,FID library
+license.arc.authorized,Former SSG library,Ehemals SSG-Bibliothek,Former SSG library
+license.arc.authorized,Licensee,Lizenznehmer,Licensee
+license.arc.authorized,SSG-Library,SSG-Bibliothek,SSG-Library
+license.arc.hosting.restriction,Access Period,Zugriffsdauer,Access Period
+license.arc.hosting.restriction,File Format,Dateiformat,File Format
+license.arc.hosting.restriction,Use,Nutzung,Use
+license.arc.hosting.restriction,Year,Jahrgang,Year
+license.arc.hosting.solution,CLOCKSS,CLOCKSS,CLOCKSS
+license.arc.hosting.solution,LOCKSS,LOCKSS,LOCKSS
+license.arc.hosting.solution,NatHosting PLN,NatHosting PLN,NatHosting PLN
+license.arc.hosting.solution,NatHosting Portico,NatHosting Portico,NatHosting Portico
+license.arc.hosting.solution,Own Host,Eigener Host,Own Host
+license.arc.hosting.solution,Portico,Portico,Portico
+license.arc.hosting.solution,Publisher,Verlag,Publisher
+license.arc.hosting.solution,Third Party Systems,Drittsysteme,Third Party Systems
+license.arc.hosting.time,Always,Immer,Always
+license.arc.hosting.time,Exclusive,Ohne Anbieter,Exclusive
+license.arc.hosting.time,From Expiration On,Ab Vertragsende,From Expiration On
+license.arc.hosting.time,Predefined time,Fester Zeitpunkt,Predefined time
+license.arc.hosting.time,Trigger Event,Mit Trigger-Event,Trigger Event
+license.arc.payment.note,Hosting fee,Hosting Fee zu zahlen,Hosting fee
+license.arc.payment.note,No Hosting fee,Dauerhaft kostenfrei (keine Hosting Fee),No Hosting fee
+license.arc.title.transfer.regulation,Existing Regulation,Regelung vorhanden,Existing Regulation
+license.arc.title.transfer.regulation,No Regulation,Keine Regelung,No Regulation
+license.arc.title.transfer.regulation,Transfer Code of Practice,Transfer Code of Practice,Transfer Code of Practice
+license.oa.corresponding.author.identification,Email Domain,E-Mail-Domäne,Email Domain
+license.oa.corresponding.author.identification,IP Range,Über IP-Bereich,IP Range
+license.oa.corresponding.author.identification,ORCID,ORCID,ORCID
+license.oa.corresponding.author.identification,Other,Anderes,Other
+license.oa.corresponding.author.identification,Research Institute,Über Institut,Research Institute
+license.oa.earc.version,Accepted Author,Accepted Author,Accepted Author
+license.oa.earc.version,Manuscript (AAM),Manuscript (AAM),Manuscript (AAM)
+license.oa.earc.version,Postprint,Postprint,Postprint
+license.oa.earc.version,Preprint,Preprint,Preprint
+license.oa.earc.version,Preprint with ePrint URL,Preprint mit ePrint-URL,Preprint with ePrint URL
+license.oa.earc.version,Publisher-PDF,Verlags-PDF-Datei,Publisher-PDF
+license.oa.license.to.publish,CC-BY,CC-BY,CC-BY
+license.oa.license.to.publish,CC-BY-NC,CC-BY-NC,CC-BY-NC
+license.oa.license.to.publish,CC-BY-NC-ND,CC-BY-NC-ND,CC-BY-NC-ND
+license.oa.license.to.publish,CC-BY-NC-SA,CC-BY-NC-SA,CC-BY-NC-SA
+license.oa.license.to.publish,CC-BY-ND,CC-BY-ND,CC-BY-ND
+license.oa.license.to.publish,CC-BY-SA,CC-BY-SA,CC-BY-SA
+license.oa.receiving.modalities,Automatic Delivery,Automatische Lieferung,Automatic Delivery
+license.oa.receiving.modalities,By Author,Über Autor,By Author
+license.oa.receiving.modalities,From Database,Aus Datenank,From Database
+license.oa.receiving.modalities,Link by Publisher,Verlinkung durch Verlag,Link by Publisher
+license.oa.receiving.modalities,On Demand,Auf Nachfrage,On Demand
+license.oa.repository,Institutional,Institutionell,Institutional
+license.oa.repository,Own Choice,Nach Wahl,Own Choice
+license.oa.repository,Pre-print Server,Pre-print-Server,Pre-print Server
+license.oa.repository,Publishers,Verlagseigen,Publishers
+license.oa.repository,Social Media,Social Media,Social Media
+license.oa.repository,Subject specific,Fachspezifisch,Subject specific
+license.oa.repository,Website of Author,Webseite,Website of Author
+license.oa.type,Blue Open Access,Blue Open-Access,Blue Open Access
+license.oa.type,Gold Open Access,Gold Open-Access,Gold Open Access
+license.oa.type,Green Open Access,Green Open-Access,Green Open Access
+license.oa.type,Hybrid,Hybrid,Hybrid
+license.oa.type,No Open Access,Kein Open-Access,No Open Access
+license.oa.type,White Open Access,White Open-Access,White Open Access
+license.oa.type,Yellow Open Access,Yellow Open-Access,Yellow Open Access
+license.statistics.delivery,Email,Email,Email
+license.statistics.delivery,Online,Online,Online
+license.statistics.delivery,Paper,Papier,Paper
+license.statistics.format,ASCII,ASCII,ASCII
+license.statistics.format,CSV,CSV,CSV
+license.statistics.format,Delimited,Begrenzt (z.B. durch Tab),Delimited
+license.statistics.format,Excel,Excel,Excel
+license.statistics.format,HTML,HTML,HTML
+license.statistics.format,Other,Sonstiges Format,Other
+license.statistics.format,PDF,PDF,PDF
+license.statistics.frequency,Bi-Annual,Halbjährlich,Bi-Annual
+license.statistics.frequency,Monthly,Monatlich,Monthly
+license.statistics.frequency,Quarterly,Quartalsweise,Quarterly
+license.statistics.frequency,User-selectable,Individuell,User-selectable
+license.statistics.standards,COUNTER version 4,COUNTER version 4,COUNTER version 4
+license.statistics.standards,COUNTER version 5,COUNTER version 5,COUNTER version 5
+license.statistics.standards,ICOLC 1998,ICOLC 1998,ICOLC 1998
+license.statistics.user.creds,None,Keins,None
+license.statistics.user.creds,Other,Anderes,Other
+license.statistics.user.creds,Same as Admin,Das gleiche wie Admin,Same as Admin
+license.category,Content,Content,Content
+license.category,Other,Andere,Other
+license.category,Software,Software,Software
+license.remote.access,All but Walk-ins,Alle außer Walk-In-User,All but Walk-ins
+license.remote.access,No,Nein,No
+license.remote.access,Yes,Ja,Yes
+link.type,follows,... ist Nachfolger von|... ist Vorgänger von,... follows|... precedes
+link.type,is condition for,... ist Bedingung für|... ist bedingt durch,... ist condition für|... ist conditioned by
+link.type,references,... referenziert|... wird referenziert durch,... references|... is referenced by
+mail.template.language,English,Englisch,English
+mail.template.language,German,Deutsch,German
+mail.template.type,IP Message,IP-Meldung,IP Message
+number.type,Population,Einwohner,Population
+number.type,Scientific staff,wissenschaftliches Personal,Scientific staff
+number.type,Students,Studierende,Students
+number.type,User,Nutzer,User
+organisational.role,Agency,Lieferant,Agency
+organisational.role,Content Provider,Anbieter,Content Provider
+organisational.role,Licensee,Lizenznehmer,Licensee
+organisational.role,Licensee_Collective,Institut des Lizenznehmers,Collective licensee
+organisational.role,Licensee_Consortial,Konsortiallizenznehmer,Consortial licensee
+organisational.role,Licensing Consortium,Lizenzkonsortium,Licensing Consortium
+organisational.role,Licensor,Lizenzgeber,Licensor
+organisational.role,Negotiator,Negotiator,Negotiator
+organisational.role,Package Consortia,Package Consortia,Package Consortia
+organisational.role,Provider,Anbieter,Provider
+organisational.role,Publisher,Verlag,Publisher
+organisational.role,Subscriber,Teilnehmer,Subscriber
+organisational.role,Subscriber_Collective,Kollektivteilnehmer,Collective subscriber
+organisational.role,Subscriber_Consortial,Konsortialteilnehmer,Consortial subscriber
+organisational.role,Subscriber_Consortial_Hidden,Konsortialteilnehmer (versteckt),Consortial subscriber (hidden)
+organisational.role,Subscription Agent,Subscription Agent,Subscription Agent
+organisational.role,Subscription Collective,Stammlizenzverwalter,Subscription Collective
+organisational.role,Subscription Consortia,Konsortium,Subscription Consortia
+org.type,Agency,Lieferant,Agency
+org.type,Broker,Vermittler,Broker
+org.type,Consortium,Konsortium,Consortium
+org.type,Content Provider,Inhaltsanbieter,Content Provider
+org.type,Department,Institut,Department
+org.type,Imprint,Imprint,Imprint
+org.type,Institution,Einrichtung,Institution
+org.type,Issuing Body,Issuing Body,Issuing Body
+org.type,Library Service,Bibliotheksservice,Library Service
+org.type,Licensee,Lizenznehmer,Licensee
+org.type,Licensor,Lizenzgeber,Licensor
+org.type,Other,Andere,Other
+org.type,Platform Provider,Plattformanbieter,Platform Provider
+org.type,Provider,Anbieter,Provider
+org.type,Publisher,Verlag,Publisher
+org.type,Vendor,Verkäufer,Vendor
+org.sector,Higher Education,Akademisch,Higher Education
+org.sector,Publisher,Kommerziell,Commercial
+org.status,Current,Aktuell,Current
+org.status,Deleted,Gelöscht,Deleted
 Package Status,Current,Aktuell,Current
 Package Status,Deleted,Gelöscht,Deleted
 Package Status,Retired,Abgelaufen,Retired

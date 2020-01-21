@@ -70,7 +70,7 @@
                         <g:message code="person.gender.label" default="Gender"/>
                     </label>
                     <laser:select class="ui dropdown" id="gender" name="gender"
-                                  from="${com.k_int.kbplus.Person.getAllRefdataValues('Gender').sort { a, b -> a.value.compareTo(b.value) }}"
+                                  from="${com.k_int.kbplus.Person.getAllRefdataValues(de.laser.helper.RDConstants.GENDER).sort { a, b -> a.value.compareTo(b.value) }}"
                                   optionKey="id"
                                   optionValue="value"
                                   value="${personInstance?.gender?.id}"

@@ -1,6 +1,7 @@
 package com.k_int.kbplus
 
 import de.laser.domain.StatsTripleCursor
+import de.laser.helper.RDConstants
 import org.hibernate.criterion.CriteriaSpecification
 
 class FactService {
@@ -43,7 +44,7 @@ class FactService {
 
           RefdataValue fact_type_refdata_value = RefdataValue.construct([
                   token   : fact.type,
-                  rdc     : "FactType",
+                  rdc     : RDConstants.FACT_TYPE,
                   hardData: false,
                   i10n    : [en: fact.type, de: fact.type]
           ])
