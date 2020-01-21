@@ -78,32 +78,32 @@ organisational.role,Organisational Role,Organisational Role
 org.type,Organisationstyp,Organisation Type
 org.sector,Bereich,OrgSector
 org.status,Status,Status
-Package Status,Paketstatus,Package Status
-Package.Breakable,Package.Breakable,Package.Breakable
-Package.Consistent,Package.Consistent,Package.Consistent
-Package.Fixed,Package.Fixed,Package.Fixed
-Package.ListStatus,Package.ListStatus,Package.ListStatus
-Package.Scope,Package.Scope,Package.Scope
-Package.Type,Package.Type,Package.Type
-PendingChangeStatus,PendingChangeStatus,PendingChangeStatus
-Permissions,Berechtigungen,Permissions
-Person Contact Type,Kontaktart,Person: Contact Type
-Person Function,Funktion,Person Function
-Person Position,Position,Person Position
-Person Responsibility,Verantwortlich,Person Responsibility
-Platform Status,Platform Status,Platform Status
-ReminderMethod,ReminderMethod,ReminderMethod
-ReminderTrigger,ReminderTrigger,ReminderTrigger
-ReminderUnit,ReminderUnit,ReminderUnit
-Semester,Semester,Semester
-Share Configuration,Share Configuration,Share Configuration
-Sim-User Number,Sim User Zahl,Sim-User Number
-Subscription Form,Lizenzform,Subscription Form
-Subscription Resource,Ressourcentyp,Resource type
-Subscription Status,Lizenzstatus,Subscription Status
-Subscription Type,Subscription Type,Subscription Type
-Survey Status,Umfrage-Status,Survey Status
-Survey Type,Umfrage-Typ,Survey Type
+package.status,Paketstatus,Package Status
+package.breakable,Package.Breakable,Package.Breakable
+package.consistent,Package.Consistent,Package.Consistent
+package.fixed,Package.Fixed,Package.Fixed
+package.list.status,Package.ListStatus,Package.ListStatus
+package.scope,Package.Scope,Package.Scope
+package.type,Package.Type,Package.Type
+pending.change.status,PendingChangeStatus,PendingChangeStatus
+permissions,Berechtigungen,Permissions
+person.contact.type,Kontaktart,Person: Contact Type
+person.function,Funktion,Person Function
+person.position,Position,Person Position
+person.responsibility,Verantwortlich,Person Responsibility
+platform.status,Platform Status,Platform Status
+reminder.method,ReminderMethod,ReminderMethod
+reminder.trigger,ReminderTrigger,ReminderTrigger
+reminder.unit,ReminderUnit,ReminderUnit
+semester,Semester,Semester
+share.configuration,Share Configuration,Share Configuration
+sim.user.number,Sim User Zahl,Sim-User Number
+subscription.form,Lizenzform,Subscription Form
+subscription.resource,Ressourcentyp,Resource type
+subscription.status,Lizenzstatus,Subscription Status
+subscription.type,Subscription Type,Subscription Type
+survey.status,Umfrage-Status,Survey Status
+survey.type,Umfrage-Typ,Survey Type
 Task Priority,Aufgabenpriorität,Task Priority
 Task Status,Aufgabenstatus,Task Status
 TaxType,TaxType,TaxType
@@ -126,4 +126,3 @@ User.Settings.Theme,Theme,Theme
 YN,Ja/Nein,Yes/No
 YNO,Ja/Nein/Anderes,Yes/No/Others
 YNU,Ja/Nein/Unbekannt,Yes/No/Unknown
-Platform Status,Platform Status,Platform Status

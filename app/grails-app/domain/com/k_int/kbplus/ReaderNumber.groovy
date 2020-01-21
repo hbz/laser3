@@ -1,5 +1,6 @@
 package com.k_int.kbplus
 
+import de.laser.helper.RDConstants
 import de.laser.helper.RefdataAnnotation
 
 class ReaderNumber {
@@ -9,7 +10,7 @@ class ReaderNumber {
     String referenceGroup
 
     Integer value
-    @RefdataAnnotation(cat = 'Semester')
+    @RefdataAnnotation(cat = RDConstants.SEMESTER)
     RefdataValue semester
     Date dueDate
 

@@ -41,8 +41,8 @@
                     <label>${message(code:'myinst.emptySubscription.status')}</label>
                     <%
                         def fakeList = []
-                        fakeList.addAll(RefdataCategory.getAllRefdataValues('Subscription Status'))
-                        fakeList.remove(RefdataValue.getByValueAndCategory('Deleted', 'Subscription Status'))
+                        fakeList.addAll(RefdataCategory.getAllRefdataValues(de.laser.helper.RDConstants.SUBSCRIPTION_STATUS))
+                        fakeList.remove(RefdataValue.getByValueAndCategory('Deleted', de.laser.helper.RDConstants.SUBSCRIPTION_STATUS))
                     %>
                     <laser:select name="status" from="${fakeList}" optionKey="id" optionValue="value"
                                   noSelection="${['' : '']}"
@@ -52,7 +52,7 @@
 
                 <g:if test="${accessService.checkPerm('ORG_CONSORTIUM')}">
                     <%
-                        List subscriptionTypes = RefdataCategory.getAllRefdataValues('Subscription Type')
+                        List subscriptionTypes = RefdataCategory.getAllRefdataValues(de.laser.helper.RDConstants.SUBSCRIPTION_TYPE)
                         subscriptionTypes-=RDStore.SUBSCRIPTION_TYPE_LOCAL
                     %>
                     <div class="field">

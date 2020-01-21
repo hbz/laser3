@@ -19,7 +19,7 @@ class DataManagerController extends AbstractDebugController {
   @Secured(['ROLE_ADMIN'])
   def index() { 
     def result =[:]
-    def pending_change_pending_status = RefdataValue.getByValueAndCategory('Pending','PendingChangeStatus')
+    def pending_change_pending_status = RefdataValue.getByValueAndCategory('Pending', RDConstants.PENDING_CHANGE_STATUS)
 
     result.pendingChanges = PendingChange.executeQuery("select pc from PendingChange as pc where pc.pkg is not null and ( pc.status is null or pc.status = ? ) order by ts desc", [pending_change_pending_status]);
 

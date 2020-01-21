@@ -446,7 +446,7 @@ class SurveyController {
                 name: params.name,
                 startDate: params.startDate ? sdf.parse(params.startDate) : null,
                 endDate: params.endDate ? sdf.parse(params.endDate) : null,
-                type: RefdataValue.getByValueAndCategory('selection','Survey Type'),
+                type: RefdataValue.getByValueAndCategory('selection', RDConstants.SURVEY_TYPE),
                 owner: contextService.getOrg(),
                 status: RDStore.SURVEY_IN_PROCESSING,
                 comment: params.comment ?: null,

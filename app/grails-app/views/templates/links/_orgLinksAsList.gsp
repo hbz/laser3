@@ -86,7 +86,7 @@
                                         </span>
                                         <div class="content">
                                             <g:link controller="person" action="show" id="${func.id}">${func}</g:link>
-                                            (${(RefdataValue.getByValueAndCategory('General contact person', 'Person Function')).getI10n('value')})
+                                            (${(RefdataValue.getByValueAndCategory('General contact person', de.laser.helper.RDConstants.PERSON_FUNCTION)).getI10n('value')})
                                         </div>
                                     </div>
                                 </g:each>
@@ -126,7 +126,7 @@
                                         </span>
                                         <div class="content">
                                             <g:link controller="person" action="show" id="${func.id}">${func}</g:link>
-                                            (${(RefdataValue.getByValueAndCategory('General contact person', 'Person Function')).getI10n('value')})
+                                            (${(RefdataValue.getByValueAndCategory('General contact person', de.laser.helper.RDConstants.PERSON_FUNCTION)).getI10n('value')})
                                         </div>
                                     </div>
                                 </g:each>

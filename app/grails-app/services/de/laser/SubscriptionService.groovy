@@ -12,6 +12,7 @@ import de.laser.domain.PriceItem
 import de.laser.exceptions.EntitlementCreationException
 import de.laser.helper.DebugAnnotation
 import de.laser.helper.FactoryResult
+import de.laser.helper.RDConstants
 import org.codehaus.groovy.tools.shell.util.MessageSource
 import org.springframework.web.multipart.commons.CommonsMultipartFile
 import de.laser.helper.RDStore
@@ -1127,7 +1128,7 @@ class SubscriptionService {
             if(colMap.status != null) {
                 String statusKey = cols[colMap.status].trim()
                 if(statusKey) {
-                    String status = refdataService.retrieveRefdataValueOID(statusKey,'Subscription Status')
+                    String status = refdataService.retrieveRefdataValueOID(statusKey, RDConstants.SUBSCRIPTION_STATUS)
                     if(status) {
                         candidate.status = status
                     }
@@ -1177,7 +1178,7 @@ class SubscriptionService {
             if(colMap.type != null) {
                 String typeKey = cols[colMap.type].trim()
                 if(typeKey) {
-                    String type = refdataService.retrieveRefdataValueOID(typeKey,'Subscription Type')
+                    String type = refdataService.retrieveRefdataValueOID(typeKey, RDConstants.SUBSCRIPTION_TYPE)
                     if(type) {
                         candidate.type = type
                     }
@@ -1190,7 +1191,7 @@ class SubscriptionService {
             if(colMap.form != null) {
                 String formKey = cols[colMap.form].trim()
                 if(formKey) {
-                    String form = refdataService.retrieveRefdataValueOID(formKey,'Subscription Form')
+                    String form = refdataService.retrieveRefdataValueOID(formKey, RDConstants.SUBSCRIPTION_FORM)
                     if(form) {
                         candidate.form = form
                     }
@@ -1203,7 +1204,7 @@ class SubscriptionService {
             if(colMap.resource != null) {
                 String resourceKey = cols[colMap.resource].trim()
                 if(resourceKey) {
-                    String resource = refdataService.retrieveRefdataValueOID(resourceKey,'Subscription Resource')
+                    String resource = refdataService.retrieveRefdataValueOID(resourceKey,RDConstants.SUBSCRIPTION_RESOURCE)
                     if(resource) {
                         candidate.resource = resource
                     }

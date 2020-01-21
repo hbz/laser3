@@ -16,17 +16,17 @@ class RefdataCategory extends AbstractI10nOverride {
     @Transient
     public static final ORG_STATUS = RDConstants.ORG_STATUS
     @Transient
-    public static final PKG_SCOPE = "Package.Scope"
+    public static final PKG_SCOPE = RDConstants.PACKAGE_SCOPE
     @Transient
-    public static final PKG_LIST_STAT = "Package.ListStatus"
+    public static final PKG_LIST_STAT = RDConstants.PACKAGE_LIST_STATUS
     @Transient
-    public static final PKG_FIXED = "Package.Fixed"
+    public static final PKG_FIXED = RDConstants.PACKAGE_FIXED
     @Transient
-    public static final PKG_BREAKABLE = "Package.Breakable"
+    public static final PKG_BREAKABLE = RDConstants.PACKAGE_BREAKABLE
     @Transient
-    public static final PKG_CONSISTENT = 'Package.Consistent'
+    public static final PKG_CONSISTENT = RDConstants.PACKAGE_CONSISTENT
     @Transient
-    public static final PKG_TYPE = 'Package.Type'
+    public static final PKG_TYPE = RDConstants.PACKAGE_TYPE
     @Transient
     public static final TI_STATUS = 'TitleInstanceStatus'
     @Transient

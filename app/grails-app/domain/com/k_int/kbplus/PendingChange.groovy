@@ -1,6 +1,7 @@
 package com.k_int.kbplus
 
 import com.k_int.kbplus.auth.User
+import de.laser.helper.RDConstants
 import de.laser.helper.RefdataAnnotation
 import grails.converters.JSON
 import org.codehaus.groovy.grails.web.json.JSONElement
@@ -49,7 +50,7 @@ class PendingChange {
     @Deprecated
     String desc
 
-    @RefdataAnnotation(cat = 'PendingChangeStatus')
+    @RefdataAnnotation(cat = RDConstants.PENDING_CHANGE_STATUS)
     RefdataValue status
 
     Date actionDate

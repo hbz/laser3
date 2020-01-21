@@ -160,7 +160,7 @@ class ApiWriter {
                 // RefdataValues
                 sub.isSlaved  =  data.isSlaved in ['Yes','yes']
                 //sub.isPublic  = ApiWriterHelper.getRefdataValue(data.isPublic, "YN") // legacy
-                //sub.status    = ApiWriterHelper.getRefdataValue(data.isSlaved, "Subscription Status")
+                //sub.status    = ApiWriterHelper.getRefdataValue(data.isSlaved, RDConstants.SUBSCRIPTION_STATUS)
                 //sub.type      = ApiWriterHelper.getRefdataValue(data.isSlaved, "Organisational Role")
 
                 // References

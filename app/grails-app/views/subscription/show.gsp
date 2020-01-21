@@ -98,7 +98,7 @@
                         <div class="content">
                             <dl>
                                 <dt class="control-label">${message(code: 'subscription.details.status')}</dt>
-                                <dd><semui:xEditableRefData owner="${subscriptionInstance}" field="status" config='Subscription Status' constraint="removeValue_deleted" /></dd>
+                                <dd><semui:xEditableRefData owner="${subscriptionInstance}" field="status" config="${de.laser.helper.RDConstants.SUBSCRIPTION_STATUS}" constraint="removeValue_deleted" /></dd>
                                 <dd class="la-js-editmode-container"><semui:auditButton auditable="[subscriptionInstance, 'status']"/></dd>
                             </dl>
                             <dl>
@@ -117,7 +117,7 @@
                                     </g:if>
                                     <g:else>
                                         <semui:xEditableRefData owner="${subscriptionInstance}" field="type"
-                                                                config='Subscription Type'
+                                                                config="${de.laser.helper.RDConstants.SUBSCRIPTION_TYPE}"
                                                                 constraint="removeValue_administrativeSubscription,removeValue_localSubscription"
                                         />
                                     </g:else>
@@ -126,12 +126,12 @@
                             </dl>
                             <dl>
                                 <dt class="control-label">${message(code: 'subscription.form.label')}</dt>
-                                <dd><semui:xEditableRefData owner="${subscriptionInstance}" field="form" config='Subscription Form'/></dd>
+                                <dd><semui:xEditableRefData owner="${subscriptionInstance}" field="form" config="${de.laser.helper.RDConstants.SUBSCRIPTION_FORM}"/></dd>
                                 <dd class="la-js-editmode-container"><semui:auditButton auditable="[subscriptionInstance, 'form']"/></dd>
                             </dl>
                             <dl>
                                 <dt class="control-label">${message(code: 'subscription.resource.label')}</dt>
-                                <dd><semui:xEditableRefData owner="${subscriptionInstance}" field="resource" config='Subscription Resource'/></dd>
+                                <dd><semui:xEditableRefData owner="${subscriptionInstance}" field="resource" config="${de.laser.helper.RDConstants.SUBSCRIPTION_RESOURCE}"/></dd>
                                 <dd class="la-js-editmode-container"><semui:auditButton auditable="[subscriptionInstance, 'resource']"/></dd>
                             </dl>
                             <g:if test="${!params.orgBasicMemberView && subscriptionInstance.instanceOf && (contextOrg?.id in [subscriptionInstance.getConsortia()?.id,subscriptionInstance.getCollective()?.id])}">
@@ -345,7 +345,7 @@
 
                     <% /*g:if test="${params.mode=='advanced'}">
                  <dl><dt><label class="control-label" for="licenseeRef">${message(code:'default.status.label', default:'Status')}</label></dt><dd>
-                      <semui:xEditableRefData owner="${subscriptionInstance}" field="status" config='Subscription Status'/>
+                      <semui:xEditableRefData owner="${subscriptionInstance}" field="status" config="${de.laser.helper.RDConstants.SUBSCRIPTION_STATUS}" />
                      </dd>
                </dl>
                </g:if */ %>

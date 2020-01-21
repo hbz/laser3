@@ -49,7 +49,7 @@
                                                         break
                                                 }
                                                 break
-                                            case RefdataCategory.getByDesc("Permissions"):
+                                            case RefdataCategory.getByDesc(de.laser.helper.RDConstants.PERMISSIONS):
                                                 switch(propValue.refValue){
                                                     case RDStore.PERM_PERM_EXPL: value = raw(spanOpen+'<i class="green check circle icon huge"></i></span>')
                                                         break

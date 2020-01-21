@@ -8,8 +8,8 @@
 
     <g:set var="rdvEmail"               value="${RDStore.CCT_EMAIL}"/>
     <g:set var="rdvGeneralContactPrs"   value="${RDStore.PRS_FUNC_GENERAL_CONTACT_PRS}"/>
-    <g:set var="rdvAllPersonFunctions"  value="${PersonRole.getAllRefdataValues('Person Function')}"/>
-    <g:set var="rdvAllPersonPositions"  value="${PersonRole.getAllRefdataValues('Person Position')}"/>
+    <g:set var="rdvAllPersonFunctions"  value="${PersonRole.getAllRefdataValues(de.laser.helper.RDConstants.PERSON_FUNCTION)}"/>
+    <g:set var="rdvAllPersonPositions"  value="${PersonRole.getAllRefdataValues(de.laser.helper.RDConstants.PERSON_POSITION)}"/>
 
     <div class="field">
         <label><g:message code="person.function.label" default="Function"/></label>&nbsp

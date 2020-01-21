@@ -48,11 +48,11 @@
 <%--
 <div class="field fieldcontain ${hasErrors(bean: personInstance, field: 'roleType', 'error')} ">
     <label for="roleType">
-		${com.k_int.kbplus.RefdataCategory.getByDesc('Person Position').getI10n('desc')}
+		${com.k_int.kbplus.RefdataCategory.getByDesc(de.laser.helper.RDConstants.PERSON_POSITION).getI10n('desc')}
 
     </label>
     <laser:select class="ui dropdown" id="roleType" name="roleType"
-                  from="${com.k_int.kbplus.Person.getAllRefdataValues('Person Position')}"
+                  from="${com.k_int.kbplus.Person.getAllRefdataValues(de.laser.helper.RDConstants.PERSON_POSITION)}"
                   optionKey="id"
                   optionValue="value"
                   value="${personInstance?.roleType?.id}"
@@ -61,11 +61,11 @@
 --%>
 <div class="field fieldcontain ${hasErrors(bean: personInstance, field: 'contactType', 'error')} ">
     <label for="contactType">
-		${com.k_int.kbplus.RefdataCategory.getByDesc('Person Contact Type').getI10n('desc')}
+		${com.k_int.kbplus.RefdataCategory.getByDesc(de.laser.helper.RDConstants.PERSON_CONTACT_TYPE).getI10n('desc')}
 
     </label>
     <laser:select class="ui dropdown" id="contactType" name="contactType"
-                  from="${com.k_int.kbplus.Person.getAllRefdataValues('Person Contact Type')}"
+                  from="${com.k_int.kbplus.Person.getAllRefdataValues(de.laser.helper.RDConstants.PERSON_CONTACT_TYPE)}"
                   optionKey="id"
                   optionValue="value"
                   value="${personInstance?.contactType?.id}"
@@ -139,7 +139,7 @@
 				<div class="field wide ten">
 					<laser:select class="ui dropdown"
 								  name="ignore-functionType-selector"
-								  from="${PersonRole.getAllRefdataValues('Person Function')}"
+								  from="${PersonRole.getAllRefdataValues(de.laser.helper.RDConstants.PERSON_FUNCTION)}"
 								  optionKey="id"
 								  optionValue="value" />
 				</div>
@@ -171,7 +171,7 @@
 				<div class="field wide ten">
 					<laser:select class="ui dropdown"
 								  name="ignore-responsibilityType-selector"
-								  from="${PersonRole.getAllRefdataValues('Person Responsibility')}"
+								  from="${PersonRole.getAllRefdataValues(de.laser.helper.RDConstants.PERSON_RESPONSIBILITY)}"
 								  optionKey="id"
 								  optionValue="value" />
 				</div>

@@ -503,9 +503,9 @@
               $ref: "#/components/schemas/OrganisationRole_Virtual"
           packageListStatus:
             type: string
-            description: Mapping RefdataCategory "Package.ListStatus"
+            description: Mapping RefdataCategory "${de.laser.helper.RDConstants.PACKAGE_LIST_STATUS}"
             enum:
-              [${ com.k_int.kbplus.RefdataCategory.getAllRefdataValues('Package.ListStatus').collect{ it.value }.join(', ') }]
+              [${ com.k_int.kbplus.RefdataCategory.getAllRefdataValues(de.laser.helper.RDConstants.PACKAGE_LIST_STATUS).collect{ it.value }.join(', ') }]
           packageScope:
             type: string
             description: Mapping RefdataCategory
@@ -513,9 +513,9 @@
               [""]
           packageStatus:
             type: string
-            description: Mapping RefdataCategory "Package Status"
+            description: Mapping RefdataCategory "${de.laser.helper.RDConstants.PACKAGE_STATUS}"
             enum:
-              [${ com.k_int.kbplus.RefdataCategory.getAllRefdataValues('Package Status').collect{ it.value }.join(', ') }]
+              [${ com.k_int.kbplus.RefdataCategory.getAllRefdataValues(de.laser.helper.RDConstants.PACKAGE_STATUS).collect{ it.value }.join(', ') }]
           packageType:
             type: string
             description: Mapping RefdataCategory
@@ -577,9 +577,9 @@
           format: date-time
         contactType:
           type: string
-          description: Mapping RefdataCategory "Person Contact Type"
+          description: Mapping RefdataCategory "${de.laser.helper.RDConstants.PERSON_CONTACT_TYPE}"
           enum:
-            [${ com.k_int.kbplus.RefdataCategory.getAllRefdataValues('Person Contact Type').collect{ it.value }.join(', ') }]
+            [${ com.k_int.kbplus.RefdataCategory.getAllRefdataValues(de.laser.helper.RDConstants.PERSON_CONTACT_TYPE).collect{ it.value }.join(', ') }]
         properties: # mapping attr privateProperties
           type: array
           items:
@@ -619,9 +619,9 @@
                 [""]
             status:
               type: stringRefdataCategory
-              description: Mapping RefdataCategory "Platform Status"
+              description: Mapping RefdataCategory "${de.laser.helper.RDConstants.PLATFORM_STATUS}"
               enum:
-                [${ com.k_int.kbplus.RefdataCategory.getAllRefdataValues('Platform Status').collect{ it.value }.join(', ') }]
+                [${ com.k_int.kbplus.RefdataCategory.getAllRefdataValues(de.laser.helper.RDConstants.PLATFORM_STATUS).collect{ it.value }.join(', ') }]
             type:
               type: string
               description: Mapping RefdataCategory
@@ -671,9 +671,9 @@
           format: date-time
         form:
           type: string
-          description: Mapping RefdataCategory "Subscription Form"
+          description: Mapping RefdataCategory "${de.laser.helper.RDConstants.SUBSCRIPTION_FORM}"
           enum:
-            [${ com.k_int.kbplus.RefdataCategory.getAllRefdataValues('Subscription Form').collect{ it.value }.join(', ') }]
+            [${ com.k_int.kbplus.RefdataCategory.getAllRefdataValues(de.laser.helper.RDConstants.SUBSCRIPTION_FORM).collect{ it.value }.join(', ') }]
         instanceOf:
           $ref: "#/components/schemas/SubscriptionStub"
         isSlaved:
@@ -715,24 +715,24 @@
             $ref: "#/components/schemas/Property"
         resource:
           type: string
-          description: Mapping RefdataCategory "Subscription Resource"
+          description: Mapping RefdataCategory "${de.laser.helper.RDConstants.SUBSCRIPTION_RESOURCE}"
           enum:
-            [${ com.k_int.kbplus.RefdataCategory.getAllRefdataValues('Subscription Resource').collect{ it.value }.join(', ') }]
+            [${ com.k_int.kbplus.RefdataCategory.getAllRefdataValues(de.laser.helper.RDConstants.SUBSCRIPTION_RESOURCE).collect{ it.value }.join(', ') }]
         startDate:
           type: string
           format: date-time
         status:
           type: string
-          description: Mapping RefdataCategory "Subscription Status"
+          description: Mapping RefdataCategory "${de.laser.helper.RDConstants.SUBSCRIPTION_STATUS}"
           enum:
-            [${ com.k_int.kbplus.RefdataCategory.getAllRefdataValues('Subscription Status').collect{ it.value }.join(', ') }]
+            [${ com.k_int.kbplus.RefdataCategory.getAllRefdataValues(de.laser.helper.RDConstants.SUBSCRIPTION_STATUS).collect{ it.value }.join(', ') }]
         successor:
           $ref: "#/components/schemas/SubscriptionStub"
         type:
           type: string
-          description: Mapping RefdataCategory "Subscription Type"
+          description: Mapping RefdataCategory "${de.laser.helper.RDConstants.SUBSCRIPTION_TYPE}"
           enum:
-            [${ com.k_int.kbplus.RefdataCategory.getAllRefdataValues('Subscription Type').collect{ it.value }.join(', ') }]
+            [${ com.k_int.kbplus.RefdataCategory.getAllRefdataValues(de.laser.helper.RDConstants.SUBSCRIPTION_TYPE).collect{ it.value }.join(', ') }]
 
 
     TitleInstancePackagePlatform:
@@ -1045,14 +1045,14 @@
       properties:
         functionType:
           type: string
-          description: Mapping RefdataCategory "Person Function"
+          description: Mapping RefdataCategory "${de.laser.helper.RDConstants.PERSON_FUNCTION}"
           enum:
-            [${ com.k_int.kbplus.RefdataCategory.getAllRefdataValues('Person Function').collect{ it.value }.join(', ') }]
+            [${ com.k_int.kbplus.RefdataCategory.getAllRefdataValues(de.laser.helper.RDConstants.PERSON_FUNCTION).collect{ it.value }.join(', ') }]
         positionType:
           type: string
-          description: Mapping RefdataCategory "Person Position"
+          description: Mapping RefdataCategory "${de.laser.helper.RDConstants.PERSON_POSITION}"
           enum:
-            [${ com.k_int.kbplus.RefdataCategory.getAllRefdataValues('Person Position').collect{ it.value }.join(', ') }]
+            [${ com.k_int.kbplus.RefdataCategory.getAllRefdataValues(de.laser.helper.RDConstants.PERSON_POSITION).collect{ it.value }.join(', ') }]
 
 
     Statistic_Virtual:

@@ -4,6 +4,7 @@ import com.k_int.ClassUtils
 import com.k_int.properties.PropertyDefinitionGroup
 import com.k_int.properties.PropertyDefinitionGroupBinding
 import de.laser.domain.AbstractBaseDomain
+import de.laser.helper.RDConstants
 import de.laser.helper.RDStore
 import de.laser.helper.RefdataAnnotation
 import grails.util.Holders
@@ -36,7 +37,7 @@ class Platform extends AbstractBaseDomain {
   @RefdataAnnotation(cat = '?')
   RefdataValue type
 
-  @RefdataAnnotation(cat = 'Platform Status')
+  @RefdataAnnotation(cat = RDConstants.PLATFORM_STATUS)
   RefdataValue status // TODO: not in Bootstrap
 
   @RefdataAnnotation(cat = '?')

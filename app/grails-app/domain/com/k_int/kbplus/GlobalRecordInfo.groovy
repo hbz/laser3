@@ -21,7 +21,7 @@ class GlobalRecordInfo {
     RefdataValue kbplusCompliant
 
     @RefdataAnnotation(cat = '?')
-    RefdataValue globalRecordInfoStatus // RefdataCategory unkown, 'Package Status' ?
+    RefdataValue globalRecordInfoStatus // RefdataCategory unkown, RDConstants.PACKAGE_STATUS ?
 
   static hasMany = [ trackers : GlobalRecordTracker ]
   static mappedBy = [ trackers : 'owner']

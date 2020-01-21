@@ -1,5 +1,6 @@
 package com.k_int.kbplus
 
+import de.laser.helper.RDConstants
 import de.laser.helper.RefdataAnnotation
 
 
@@ -10,13 +11,13 @@ class PersonRole implements Comparable<PersonRole>{
     static TYPE_POSITION        = 'positionType'
     static TYPE_RESPONSIBILITY  = 'responsibilityType'
 
-    @RefdataAnnotation(cat = 'Person Position')
+    @RefdataAnnotation(cat = RDConstants.PERSON_POSITION)
     RefdataValue    positionType  //  exclusive with other types
 
-    @RefdataAnnotation(cat = 'Person Function')
+    @RefdataAnnotation(cat = RDConstants.PERSON_FUNCTION)
     RefdataValue    functionType   // exclusive with other types
 
-    @RefdataAnnotation(cat = 'Person Responsibility')
+    @RefdataAnnotation(cat = RDConstants.PERSON_RESPONSIBILITY)
     RefdataValue    responsibilityType  // exclusive other types
 
     License         lic
@@ -130,7 +131,7 @@ class PersonRole implements Comparable<PersonRole>{
         List<PersonRole> result = PersonRole.findAllWhere(
             prs: prs,
             org: org,
-            responsibilityType: RefdataValue.getByValueAndCategory(resp, 'Person Responsibility')
+            responsibilityType: RefdataValue.getByValueAndCategory(resp, RDConstants.PERSON_RESPONSIBILITY)
         )
 
         result.first()

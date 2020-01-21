@@ -48,7 +48,7 @@ class ApiStatistic {
                             "join sp.pkg pkg join sp.subscription s join s.orgRelations ogr join ogr.org o " +
                             "where o in (:orgs) and (pkg.packageStatus is null or pkg.packageStatus != :deleted)", [
                     orgs: orgs,
-                    deleted: RefdataValue.getByValueAndCategory('Deleted', 'Package Status')
+                    deleted: RefdataValue.getByValueAndCategory('Deleted', RDConstants.PACKAGE_STATUS)
                 ]
             )
         }

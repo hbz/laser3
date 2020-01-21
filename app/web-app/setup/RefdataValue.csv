@@ -794,168 +794,168 @@ org.sector,Higher Education,Akademisch,Higher Education
 org.sector,Publisher,Kommerziell,Commercial
 org.status,Current,Aktuell,Current
 org.status,Deleted,Gelöscht,Deleted
-Package Status,Current,Aktuell,Current
-Package Status,Deleted,Gelöscht,Deleted
-Package Status,Retired,Abgelaufen,Retired
-Package.Breakable,No,Nein,No
-Package.Breakable,Unknown,Unbekannt,Unknown
-Package.Breakable,Yes,Ja,Yes
-Package.Consistent,No,Nein,No
-Package.Consistent,Unknown,Unbekannt,Unknown
-Package.Consistent,Yes,Ja,Yes
-Package.Fixed,No,Nein,No
-Package.Fixed,Unknown,Unbekannt,Unknown
-Package.Fixed,Yes,Ja,Yes
-Package.ListStatus,Checked,Überprüft,Checked
-Package.ListStatus,In Progress,In Bearbeitung,In Progress
-Package.ListStatus,Unknown,Unbekannt,Unknown
-Package.Scope,Aggregator,Aggregator,Aggregator
-Package.Scope,Back File,Back File,Back File
-Package.Scope,Front File,Front File,Front File
-Package.Scope,Master File,Master File,Master File
-Package.Scope,Scope Undefined,Scope Undefined,Scope Undefined
-Package.Scope,Unknown,Unbekannt,Unknown
-Package.Type,Unkown,Unkown,Unkown
-PendingChangeStatus,Accepted,Angenommen,Accepted
-PendingChangeStatus,Pending,Ausstehend,Pending
-PendingChangeStatus,Rejected,Abgelehnt,Rejected
-Permissions,Not applicable,Nicht zutreffend,Not applicable
-Permissions,Permitted (explicit),Ausdrücklich erlaubt,Permitted (explicit)
-Permissions,Permitted (interpreted),Vermutlich erlaubt,Permitted (interpreted)
-Permissions,Prohibited (explicit),Ausdrücklich verboten,Prohibited (explicit)
-Permissions,Prohibited (interpreted),Vermutlich verboten,Prohibited (interpreted)
-Permissions,Silent,Stillschweigend,Silent
-Permissions,Unknown,Unklar,Unknown
-Person Contact Type,Functional Contact,Funktionskontakt,Functional Contact
-Person Contact Type,Personal Contact,Personenkontakt,Personal Contact
-Person Function,Contact Person,Kontakt,Contact Person
-Person Function,Functional Contact Billing Adress,Rechnungskontakt,Billing contact
-Person Function,Functional Contact Delivery Address,Lieferanschrift,Delivery address
-Person Function,Functional Contact Legal Patron Address,Anschrift des rechtlichen Trägers,Legal patron contact
-Person Function,Functional Contact Library Address,Bibliotheksanschrift,Library address
-Person Function,Functional Contact Postal Address,Postanschrift,Postal address
-Person Function,GASCO-Contact,GASCO-Kontakt,GASCO-Contact
-Person Function,General contact person,Hauptkontakt,General Contact Person
-Person Function,Responsible Admin,Verantwortlicher Admin,Responsible Admin
-Person Function,Statistical Support,Statistischer Support,Statistical Support
-Person Function,Technichal Support,Technischer Support,Technichal Support
-Person Position,Account Manager,Account Manager,Account Manager
-Person Position,Bereichsbibliotheksleitung,Bereichsbibliotheksleitung,Bereichsbibliotheksleitung
-Person Position,Bestandsaufbau,Bestandsaufbau,Bestandsaufbau
-Person Position,Direktion,Direktion,Direktion
-Person Position,Direktionsassistenz,Direktionsassistenz,Direktionsassistenz
-Person Position,Erwerbungsabteilung,Erwerbungsabteilung,Erwerbungsabteilung
-Person Position,Erwerbungsleitung,Erwerbungsleitung,Erwerbungsleitung
-Person Position,Fachreferat,Fachreferat,Fachreferat
-Person Position,Head Access Services,Erwerbungsleiter,Head Access Services
-Person Position,Library Director,Bibliotheksdirektor,Library Director
-Person Position,Medienbearbeitung,Medienbearbeitung,Medienbearbeitung
-Person Position,Sales Director,Sales Director,Sales Director
-Person Position,Sales Support,Sales Support,Sales Support
-Person Position,Zeitschriftenabteilung,Zeitschriftenabteilung,Zeitschriftenabteilung
-Person Responsibility,Specific cluster editor,Gruppenkontakt,Specific cluster editor
-Person Responsibility,Specific license editor,Vertragsbearbeiter,Specific license editor
-Person Responsibility,Specific package editor,Paketbearbeiter,Specific package editor
-Person Responsibility,Specific subscription editor,Lizenzkontakt,Specific subscription editor
-Person Responsibility,Specific title editor,Titelbearbeiter,Specific title editor
-Platform Status,Deleted,Deleted,Deleted
-ReminderMethod,email,email,email
-ReminderTrigger,Subscription Manual Renewal Date,Subscription Manual Renewal Date,Subscription Manual Renewal Date
-ReminderUnit,Day,Tag,Day
-ReminderUnit,Month,Monat,Month
-ReminderUnit,Week,Woche,Week
-Semester,s19,Sommersemester 2019,summer semester 2019
-Semester,s20,Sommersemester 2020,summer semester 2020
-Semester,s21,Sommersemester 2021,summer semester 2021
-Semester,s22,Sommersemester 2022,summer semester 2022
-Semester,s23,Sommersemester 2023,summer semester 2023
-Semester,s24,Sommersemester 2024,summer semester 2024
-Semester,s25,Sommersemester 2025,summer semester 2025
-Semester,s26,Sommersemester 2026,summer semester 2026
-Semester,s27,Sommersemester 2027,summer semester 2027
-Semester,s28,Sommersemester 2028,summer semester 2028
-Semester,s29,Sommersemester 2029,summer semester 2029
-Semester,s30,Sommersemester 2030,summer semester 2030
-Semester,s31,Sommersemester 2031,summer semester 2031
-Semester,semester.not.applicable,Nicht anwendbar,Not applicable
-Semester,w18/19,Wintersemester 2018/19,winter semester 2018/19
-Semester,w19/20,Wintersemester 2019/20,winter semester 2019/20
-Semester,w20/21,Wintersemester 2020/21,winter semester 2020/21
-Semester,w21/22,Wintersemester 2021/22,winter semester 2021/22
-Semester,w22/23,Wintersemester 2022/23,winter semester 2022/23
-Semester,w23/24,Wintersemester 2023/24,winter semester 2023/24
-Semester,w24/25,Wintersemester 2024/25,winter semester 2024/25
-Semester,w25/26,Wintersemester 2025/26,winter semester 2025/26
-Semester,w26/27,Wintersemester 2026/27,winter semester 2026/27
-Semester,w27/28,Wintersemester 2027/28,winter semester 2027/28
-Semester,w28/29,Wintersemester 2028/29,winter semester 2028/29
-Semester,w29/30,Wintersemester 2029/30,winter semester 2029/30
-Semester,w30/31,Wintersemester 2030/31,winter semester 2030/31
-Share Configuration,only for author and target organisation,nur für meine Organisation und die Bezugsorganisation,only for my and target organisation
-Share Configuration,only for author organisation,nur für meine Organisation,only for my organisation
-Share Configuration,only for creator,nur für Uploader,only for creator
-Sim-User Number,1,1,1
-Sim-User Number,2,2,2
-Sim-User Number,3,3,3
-Sim-User Number,4,4,4
-Sim-User Number,5,5,5
-Sim-User Number,6,6,6
-Sim-User Number,7,7,7
-Sim-User Number,8,8,8
-Sim-User Number,9,9,9
-Sim-User Number,10,10,10
-Sim-User Number,unlimited,unlimitiert,unlimited
-Subscription Form,desideratum,Desiderat,Desideratum
-Subscription Form,license,Lizenz,License
-Subscription Form,obligation,Pflichtlizenz,Obligation
-Subscription Form,offer,Angebot,Offer
-Subscription Form,purchaseOngoing,Kauf laufend,Ongoing Purchase
-Subscription Form,purchaseUpdate,Kauf mit Update Fee,Purchase with update fee
-Subscription Form,singlePurchase,Einmalkauf,Single Purchase
-Subscription Form,test,Test,Test
-Subscription Resource,avMedia,AV-Medien,AV-Media
-Subscription Resource,data,Daten,Data
-Subscription Resource,database,Datenbank,Database
-Subscription Resource,ebookPackage,E-Book Paket,E-Book Package
-Subscription Resource,ebookSingle,E-Book Einzeltitel,E-Book single title
-Subscription Resource,econferenceProceedings,E-Conference Proceedings,E-Conference Proceedings
-Subscription Resource,ejournalPackage,E-Journal Paket,E-Journal Package
-Subscription Resource,ejournalSingle,E-Journal Einzeltitel,E-Journal single title
-Subscription Resource,ereference,E-Reference,E-Reference
-Subscription Resource,mixed,Gemischtes Paket,Mixed Package
-Subscription Resource,other,Sonstige,Other
-Subscription Resource,software,Software,Software
-Subscription Status,Current,Aktiv,Current
-Subscription Status,Deferred,Zurückgestellt,Deferred
-Subscription Status,Expired,Abgelaufen,Expired
-Subscription Status,ExpiredPerennial,Abgelaufen (Mehrjahreslaufzeit),Expired (Perennial term)
-Subscription Status,Intended,Geplant,Intended
-Subscription Status,IntendedPerennial,Geplant (Mehrjahreslaufzeit),Intended (Perennial term)
-Subscription Status,No longer usable,Nicht mehr nutzbar,No longer usable
-Subscription Status,Ordered,Bestellt,Ordered
-Subscription Status,Publication discontinued,Erscheinen eingestellt,Publication discontinued
-Subscription Status,Rejected,Abgelehnt,Rejected
-Subscription Status,Status not defined,Status nicht festgelegt,Status not defined
-Subscription Status,Terminated,Abbestellt,Terminated
-Subscription Status,Test Access,Testzugriff,Test Access
-Subscription Status,Under Consideration,Entscheidung steht aus,Under Consideration
-Subscription Status,Under Consortial Examination,Wird konsortial geprüft,Under Consortial Examination
-Subscription Status,Under Institutional Examination,Wird institutionell geprüft,Under Institutional Examination
-Subscription Status,Under Negotiation,In Verhandlung,Under Negotiation
-Subscription Type,Administrative Subscription,Verwaltungslizenz,Administrative Subscription
-Subscription Type,Alliance Licence,Allianzlizenz,Alliance Subscription
-Subscription Type,Consortial Licence,Konsortiallizenz,Consortial Subscription
-Subscription Type,Local Licence,Lokale Lizenz,Local Subscription
-Subscription Type,National Licence,Nationallizenz,National Subscription
-Survey Status,Completed,Abgeschlossen,Completed
-Survey Status,In Evaluation,In Auswertung,In Evaluation
-Survey Status,In Processing,In Bearbeitung,In Processing
-Survey Status,Ready,Bereit,Ready
-Survey Status,Survey completed,Umfrage beendet,Survey completed
-Survey Status,Survey started,Umfrage gestartet,Survey started
-Survey Type,interest,Interessenumfrage,Interest Survey
-Survey Type,renewal,Verlängerungsumfrage,Renewal Survey
-Survey Type,selection,Titelauswahl-Umfrage,Title selection Survey
+package.status,Current,Aktuell,Current
+package.status,Deleted,Gelöscht,Deleted
+package.status,Retired,Abgelaufen,Retired
+package.breakable,No,Nein,No
+package.breakable,Unknown,Unbekannt,Unknown
+package.breakable,Yes,Ja,Yes
+package.consistent,No,Nein,No
+package.consistent,Unknown,Unbekannt,Unknown
+package.consistent,Yes,Ja,Yes
+package.fixed,No,Nein,No
+package.fixed,Unknown,Unbekannt,Unknown
+package.fixed,Yes,Ja,Yes
+package.list.status,Checked,Überprüft,Checked
+package.list.status,In Progress,In Bearbeitung,In Progress
+package.list.status,Unknown,Unbekannt,Unknown
+package.scope,Aggregator,Aggregator,Aggregator
+package.scope,Back File,Back File,Back File
+package.scope,Front File,Front File,Front File
+package.scope,Master File,Master File,Master File
+package.scope,Scope Undefined,Scope Undefined,Scope Undefined
+package.scope,Unknown,Unbekannt,Unknown
+package.type,Unkown,Unkown,Unkown
+pending.change.status,Accepted,Angenommen,Accepted
+pending.change.status,Pending,Ausstehend,Pending
+pending.change.status,Rejected,Abgelehnt,Rejected
+permissions,Not applicable,Nicht zutreffend,Not applicable
+permissions,Permitted (explicit),Ausdrücklich erlaubt,Permitted (explicit)
+permissions,Permitted (interpreted),Vermutlich erlaubt,Permitted (interpreted)
+permissions,Prohibited (explicit),Ausdrücklich verboten,Prohibited (explicit)
+permissions,Prohibited (interpreted),Vermutlich verboten,Prohibited (interpreted)
+permissions,Silent,Stillschweigend,Silent
+permissions,Unknown,Unklar,Unknown
+person.contact.type,Functional Contact,Funktionskontakt,Functional Contact
+person.contact.type,Personal Contact,Personenkontakt,Personal Contact
+person.function,Contact Person,Kontakt,Contact Person
+person.function,Functional Contact Billing Adress,Rechnungskontakt,Billing contact
+person.function,Functional Contact Delivery Address,Lieferanschrift,Delivery address
+person.function,Functional Contact Legal Patron Address,Anschrift des rechtlichen Trägers,Legal patron contact
+person.function,Functional Contact Library Address,Bibliotheksanschrift,Library address
+person.function,Functional Contact Postal Address,Postanschrift,Postal address
+person.function,GASCO-Contact,GASCO-Kontakt,GASCO-Contact
+person.function,General contact person,Hauptkontakt,General Contact Person
+person.function,Responsible Admin,Verantwortlicher Admin,Responsible Admin
+person.function,Statistical Support,Statistischer Support,Statistical Support
+person.function,Technichal Support,Technischer Support,Technichal Support
+person.position,Account Manager,Account Manager,Account Manager
+person.position,Bereichsbibliotheksleitung,Bereichsbibliotheksleitung,Bereichsbibliotheksleitung
+person.position,Bestandsaufbau,Bestandsaufbau,Bestandsaufbau
+person.position,Direktion,Direktion,Direktion
+person.position,Direktionsassistenz,Direktionsassistenz,Direktionsassistenz
+person.position,Erwerbungsabteilung,Erwerbungsabteilung,Erwerbungsabteilung
+person.position,Erwerbungsleitung,Erwerbungsleitung,Erwerbungsleitung
+person.position,Fachreferat,Fachreferat,Fachreferat
+person.position,Head Access Services,Erwerbungsleiter,Head Access Services
+person.position,Library Director,Bibliotheksdirektor,Library Director
+person.position,Medienbearbeitung,Medienbearbeitung,Medienbearbeitung
+person.position,Sales Director,Sales Director,Sales Director
+person.position,Sales Support,Sales Support,Sales Support
+person.position,Zeitschriftenabteilung,Zeitschriftenabteilung,Zeitschriftenabteilung
+person.responsibility,Specific cluster editor,Gruppenkontakt,Specific cluster editor
+person.responsibility,Specific license editor,Vertragsbearbeiter,Specific license editor
+person.responsibility,Specific package editor,Paketbearbeiter,Specific package editor
+person.responsibility,Specific subscription editor,Lizenzkontakt,Specific subscription editor
+person.responsibility,Specific title editor,Titelbearbeiter,Specific title editor
+platform.status,Deleted,Deleted,Deleted
+reminder.method,email,email,email
+reminder.trigger,Subscription Manual Renewal Date,Subscription Manual Renewal Date,Subscription Manual Renewal Date
+reminder.unit,Day,Tag,Day
+reminder.unit,Month,Monat,Month
+reminder.unit,Week,Woche,Week
+semester,s19,Sommersemester 2019,summer semester 2019
+semester,s20,Sommersemester 2020,summer semester 2020
+semester,s21,Sommersemester 2021,summer semester 2021
+semester,s22,Sommersemester 2022,summer semester 2022
+semester,s23,Sommersemester 2023,summer semester 2023
+semester,s24,Sommersemester 2024,summer semester 2024
+semester,s25,Sommersemester 2025,summer semester 2025
+semester,s26,Sommersemester 2026,summer semester 2026
+semester,s27,Sommersemester 2027,summer semester 2027
+semester,s28,Sommersemester 2028,summer semester 2028
+semester,s29,Sommersemester 2029,summer semester 2029
+semester,s30,Sommersemester 2030,summer semester 2030
+semester,s31,Sommersemester 2031,summer semester 2031
+semester,semester.not.applicable,Nicht anwendbar,Not applicable
+semester,w18/19,Wintersemester 2018/19,winter semester 2018/19
+semester,w19/20,Wintersemester 2019/20,winter semester 2019/20
+semester,w20/21,Wintersemester 2020/21,winter semester 2020/21
+semester,w21/22,Wintersemester 2021/22,winter semester 2021/22
+semester,w22/23,Wintersemester 2022/23,winter semester 2022/23
+semester,w23/24,Wintersemester 2023/24,winter semester 2023/24
+semester,w24/25,Wintersemester 2024/25,winter semester 2024/25
+semester,w25/26,Wintersemester 2025/26,winter semester 2025/26
+semester,w26/27,Wintersemester 2026/27,winter semester 2026/27
+semester,w27/28,Wintersemester 2027/28,winter semester 2027/28
+semester,w28/29,Wintersemester 2028/29,winter semester 2028/29
+semester,w29/30,Wintersemester 2029/30,winter semester 2029/30
+semester,w30/31,Wintersemester 2030/31,winter semester 2030/31
+share.configuration,only for author and target organisation,nur für meine Organisation und die Bezugsorganisation,only for my and target organisation
+share.configuration,only for author organisation,nur für meine Organisation,only for my organisation
+share.configuration,only for creator,nur für Uploader,only for creator
+sim.user.number,1,1,1
+sim.user.number,2,2,2
+sim.user.number,3,3,3
+sim.user.number,4,4,4
+sim.user.number,5,5,5
+sim.user.number,6,6,6
+sim.user.number,7,7,7
+sim.user.number,8,8,8
+sim.user.number,9,9,9
+sim.user.number,10,10,10
+sim.user.number,unlimited,unlimitiert,unlimited
+subscription.form,desideratum,Desiderat,Desideratum
+subscription.form,license,Lizenz,License
+subscription.form,obligation,Pflichtlizenz,Obligation
+subscription.form,offer,Angebot,Offer
+subscription.form,purchaseOngoing,Kauf laufend,Ongoing Purchase
+subscription.form,purchaseUpdate,Kauf mit Update Fee,Purchase with update fee
+subscription.form,singlePurchase,Einmalkauf,Single Purchase
+subscription.form,test,Test,Test
+subscription.resource,avMedia,AV-Medien,AV-Media
+subscription.resource,data,Daten,Data
+subscription.resource,database,Datenbank,Database
+subscription.resource,ebookPackage,E-Book Paket,E-Book Package
+subscription.resource,ebookSingle,E-Book Einzeltitel,E-Book single title
+subscription.resource,econferenceProceedings,E-Conference Proceedings,E-Conference Proceedings
+subscription.resource,ejournalPackage,E-Journal Paket,E-Journal Package
+subscription.resource,ejournalSingle,E-Journal Einzeltitel,E-Journal single title
+subscription.resource,ereference,E-Reference,E-Reference
+subscription.resource,mixed,Gemischtes Paket,Mixed Package
+subscription.resource,other,Sonstige,Other
+subscription.resource,software,Software,Software
+subscription.status,Current,Aktiv,Current
+subscription.status,Deferred,Zurückgestellt,Deferred
+subscription.status,Expired,Abgelaufen,Expired
+subscription.status,ExpiredPerennial,Abgelaufen (Mehrjahreslaufzeit),Expired (Perennial term)
+subscription.status,Intended,Geplant,Intended
+subscription.status,IntendedPerennial,Geplant (Mehrjahreslaufzeit),Intended (Perennial term)
+subscription.status,No longer usable,Nicht mehr nutzbar,No longer usable
+subscription.status,Ordered,Bestellt,Ordered
+subscription.status,Publication discontinued,Erscheinen eingestellt,Publication discontinued
+subscription.status,Rejected,Abgelehnt,Rejected
+subscription.status,Status not defined,Status nicht festgelegt,Status not defined
+subscription.status,Terminated,Abbestellt,Terminated
+subscription.status,Test Access,Testzugriff,Test Access
+subscription.status,Under Consideration,Entscheidung steht aus,Under Consideration
+subscription.status,Under Consortial Examination,Wird konsortial geprüft,Under Consortial Examination
+subscription.status,Under Institutional Examination,Wird institutionell geprüft,Under Institutional Examination
+subscription.status,Under Negotiation,In Verhandlung,Under Negotiation
+subscription.type,Administrative Subscription,Verwaltungslizenz,Administrative Subscription
+subscription.type,Alliance Licence,Allianzlizenz,Alliance Subscription
+subscription.type,Consortial Licence,Konsortiallizenz,Consortial Subscription
+subscription.type,Local Licence,Lokale Lizenz,Local Subscription
+subscription.type,National Licence,Nationallizenz,National Subscription
+survey.status,Completed,Abgeschlossen,Completed
+survey.status,In Evaluation,In Auswertung,In Evaluation
+survey.status,In Processing,In Bearbeitung,In Processing
+survey.status,Ready,Bereit,Ready
+survey.status,Survey completed,Umfrage beendet,Survey completed
+survey.status,Survey started,Umfrage gestartet,Survey started
+survey.type,interest,Interessenumfrage,Interest Survey
+survey.type,renewal,Verlängerungsumfrage,Renewal Survey
+survey.type,selection,Titelauswahl-Umfrage,Title selection Survey
 Task Priority,Extreme,Extrem,Extreme
 Task Priority,High,Hoch,High
 Task Priority,Low,Niedrig,Low

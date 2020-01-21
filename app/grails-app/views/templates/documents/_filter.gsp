@@ -38,7 +38,7 @@
             <%--<div class="field">
               <label for="docShareConf">${message(code:'template.addDocument.shareConf')}</label>
               <laser:select name="docShareConf" class="ui dropdown fluid" value="${params.docShareConf}" noSelection="${['' : message(code:'default.select.choose.label')]}"
-                            from="${RefdataValue.executeQuery("select rdv from RefdataValue rdv where rdv.owner.desc = 'Share Configuration' order by rdv.order asc")}" optionKey="id" optionValue="value"/>
+                            from="${RefdataValue.executeQuery("select rdv from RefdataValue rdv where rdv.owner.desc = '"+RDConstants.SHARE_CONFIGURATION+"' order by rdv.order asc")}" optionKey="id" optionValue="value"/>
             </div>
         </div>
         --%>

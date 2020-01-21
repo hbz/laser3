@@ -511,7 +511,7 @@
                                                       model="[tenant                           : contextOrg,
                                                               org                              : orgInstance,
                                                               isPublic                         : true,
-                                                              presetFunctionType               : RefdataValue.getByValueAndCategory('General contact person', 'Person Function'),
+                                                              presetFunctionType               : RefdataValue.getByValueAndCategory('General contact person', RDConstants.PERSON_FUNCTION),
                                                               modalId                          : 'personFormModalGeneralContactPerson',
                                                               tmplHideFunctions: true]"/>
 
@@ -524,7 +524,7 @@
                                                       model="[tenant                           : contextOrg,
                                                               org                              : orgInstance,
                                                               isPublic                         : true,
-                                                              presetFunctionType               : RefdataValue.getByValueAndCategory('Responsible Admin', 'Person Function'),
+                                                              presetFunctionType               : RefdataValue.getByValueAndCategory('Responsible Admin', RDConstants.PERSON_FUNCTION),
                                                               modalId                          : 'personFormModalResponsibleContact',
                                                               tmplHideFunctions: true]"/>
 
@@ -541,7 +541,7 @@
                                                       model="[tenant                           : contextOrg,
                                                               org                              : orgInstance,
                                                               isPublic                         : true,
-                                                              presetFunctionType               : RefdataValue.getByValueAndCategory('Functional Contact Billing Adress', 'Person Function'),
+                                                              presetFunctionType               : RefdataValue.getByValueAndCategory('Functional Contact Billing Adress', RDConstants.PERSON_FUNCTION),
                                                               modalId                          : 'personFormModalBillingContact',
                                                               tmplHideFunctions: true]"/>
 
@@ -554,7 +554,7 @@
                                                       model="[tenant                           : contextOrg,
                                                               org                              : orgInstance,
                                                               isPublic                         : true,
-                                                              presetFunctionType               : RefdataValue.getByValueAndCategory('Technichal Support', 'Person Function'),
+                                                              presetFunctionType               : RefdataValue.getByValueAndCategory('Technichal Support', RDConstants.PERSON_FUNCTION),
                                                               modalId                          : 'personFormModalTechnichalSupport',
                                                               tmplHideFunctions: true]"/>
 
@@ -567,7 +567,7 @@
                                                       model="['tenant'            : contextOrg,
                                                               'org'               : orgInstance,
                                                               'isPublic'          : true,
-                                                              'presetFunctionType': RefdataValue.getByValueAndCategory('General contact person', 'Person Function')]"/>--}%
+                                                              'presetFunctionType': RefdataValue.getByValueAndCategory('General contact person', RDConstants.PERSON_FUNCTION)]"/>--}%
 
                                         </div>
                                     </div>

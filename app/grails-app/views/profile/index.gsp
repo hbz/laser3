@@ -540,7 +540,7 @@
                             <div class="field">
                                 <label>${message(code: 'profile.reminder.new.notify', default:'Notify for')}</label>
                                 <g:select name="trigger"
-                                          from="${com.k_int.kbplus.RefdataValue.executeQuery('select rdv from RefdataValue as rdv where rdv.owner.desc=?','ReminderTrigger')}"
+                                          from="${com.k_int.kbplus.RefdataValue.executeQuery('select rdv from RefdataValue as rdv where rdv.owner.desc=?', de.laser.helper.RDConstants.REMINDER_TRIGGER)}"
                                           optionKey="id"
                                           optionValue="${{it.getI10n('value')}}"
                                           class="input-medium"/>
@@ -548,7 +548,7 @@
                             <div class="field">
                                 <label>${message(code: 'profile.reminder.new.method', default:'Method')}</label>
                                 <g:select name="method"
-                                          from="${com.k_int.kbplus.RefdataValue.executeQuery('select rdv from RefdataValue as rdv where rdv.owner.desc=?','ReminderMethod')}"
+                                          from="${com.k_int.kbplus.RefdataValue.executeQuery('select rdv from RefdataValue as rdv where rdv.owner.desc=?', de.laser.helper.RDConstants.REMINDER_METHOD)}"
                                           optionKey="id"
                                           optionValue="${{it.getI10n('value')}}"
                                           class="input-medium"/>
@@ -556,7 +556,7 @@
                             <div class="field">
                                 <label>${message(code: 'profile.reminder.new.period', default:'Period')}</label>
                                 <g:select name="unit"
-                                          from="${com.k_int.kbplus.RefdataValue.executeQuery('select rdv from RefdataValue as rdv where rdv.owner.desc=?','ReminderUnit')}"
+                                          from="${com.k_int.kbplus.RefdataValue.executeQuery('select rdv from RefdataValue as rdv where rdv.owner.desc=?', de.laser.helper.RDConstants.REMINDER_UNIT)}"
                                           optionKey="id"
                                           optionValue="${{it.getI10n('value')}}"
                                           class="input-medium"/>

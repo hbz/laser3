@@ -118,14 +118,14 @@ class ApiWriterHelper {
                     )
 
                     // RefdataValues
-                    personRole.functionType = getRefdataValue(it2.functionType?.value, "Person Function")
+                    personRole.functionType = getRefdataValue(it2.functionType?.value, RDConstants.PERSON_FUNCTION)
                     if (personRole.functionType) {
                         result['persons'] << person
                         result['personRoles'] << personRole
                     }
 
                     // TODO: responsibilityType
-                    //def rdvResponsibilityType = getRefdataValue(it2.functionType?.value,"Person Responsibility")
+                    //def rdvResponsibilityType = getRefdataValue(it2.functionType?.value, RDConstants.PERSON_RESPONSIBILITY)
                 }
             }
         }
