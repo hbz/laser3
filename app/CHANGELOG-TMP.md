@@ -2,7 +2,11 @@
 
 **Ticket    Date    Branch      Author  Feature/Bug     Description/Keywords**
 
+
 2088    21.01.2020  rc1.2       Moe     Bug         Keine Alert Mail mehr, wenn Umfrage abgeschlossen ist
+
+--      21.01.2020  rc1.2       Andreas Bug         Kostenfilter stürzte wegen falscher Überprüfung ab
+
 
 --      17.01.2020  rc1.2       Andreas Bug         Kostenfilter für Pakete arbeitete nicht richtig
 
