@@ -52,8 +52,8 @@ class ProfileController {
                     described:  params.described?.trim(),
                     expected:   params.expected?.trim(),
                     info:       params.info?.trim(),
-                    status:     RefdataValue.getByValueAndCategory('New', 'Ticket.Status'),
-                    category:   RefdataValue.getByValueAndCategory('Bug', 'Ticket.Category')
+                    status:     RefdataValue.getByValueAndCategory('New', RDConstants.TICKET_STATUS),
+                    category:   RefdataValue.getByValueAndCategory('Bug', RDConstants.TICKET_CATEGORY)
             ]
             result.sendingStatus = (errorReportService.writeReportIntoDB(data) ? 'ok' : 'fail')
         }
@@ -319,7 +319,7 @@ class ProfileController {
                 return
             }
         }
-        if (userSetting.key.type == RefdataValue && userSetting.key.rdc == 'YN') {
+        if (userSetting.key.type == RefdataValue && userSetting.key.rdc == RDConstants.Y_N) {
             if (newValue == 'Y') {
                 newValue = YN_YES
             } else {

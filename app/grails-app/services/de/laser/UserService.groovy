@@ -6,6 +6,7 @@ import com.k_int.kbplus.auth.Role
 import com.k_int.kbplus.auth.User
 import com.k_int.kbplus.auth.UserOrg
 import com.k_int.kbplus.auth.UserRole
+import de.laser.helper.RDConstants
 import de.laser.helper.RDStore
 import org.codehaus.groovy.grails.commons.GrailsApplication
 import com.k_int.kbplus.UserSettings
@@ -126,7 +127,7 @@ class UserService {
                 }
 
                 user.getSetting(UserSettings.KEYS.DASHBOARD, org)
-                user.getSetting(UserSettings.KEYS.DASHBOARD_TAB, RefdataValue.getByValueAndCategory('Due Dates', 'User.Settings.Dashboard.Tab'))
+                user.getSetting(UserSettings.KEYS.DASHBOARD_TAB, RefdataValue.getByValueAndCategory('Due Dates', RDConstants.USER_SETTING_DASHBOARD_TAB))
             }
         }
 

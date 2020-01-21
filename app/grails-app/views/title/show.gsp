@@ -420,7 +420,7 @@
                       <div class="item">
                           <i class="grey clipboard check clip icon la-popup-tooltip la-delay" data-content="${message(code: 'default.status.label')}"></i>
                           <div class="content">
-                              <semui:xEditableRefData owner="${t}" field="status" config="TIPP Status"/>
+                              <semui:xEditableRefData owner="${t}" field="status" config="${de.laser.helper.RDConstants.TIPP_STATUS}"/>
                           </div>
                       </div>
 

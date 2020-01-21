@@ -109,7 +109,7 @@
                                 <dl>
                                     <dt><label class="control-label" for="isPublic">${message(code:'license.isPublic', default:'Public?')}</label></dt>
                                     <dd>
-                                        <semui:xEditableRefData owner="${license}" field="isPublic" config='YN'/>
+                                        <semui:xEditableRefData owner="${license}" field="isPublic" config="${de.laser.helper.RDConstants.Y_N}" />
                                     </dd>
                                 </dl>
                                 --%>

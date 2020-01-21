@@ -123,4 +123,29 @@ class RDConstants {
     static final SURVEY_STATUS          = 'survey.status'
     static final SURVEY_TYPE            = 'survey.type'
 
+    static final TASK_PRIORITY          = 'task.priority'
+    static final TASK_STATUS            = 'task.status'
+    static final TAX_TYPE               = 'tax.type'
+    static final TERMINATION_CONDITION  = 'termination.condition'
+    static final TICKET_CATEGORY        = 'ticket.category'
+    static final TICKET_STATUS          = 'ticket.status'
+    static final TIPP_ACCESS_STATUS     = 'tipp.access.status'
+    static final TIPP_STATUS            = 'tipp.status'
+    static final TIPP_STATUS_REASON     = 'tipp.status.reason'
+    static final TITLE_TYPE             = 'title.type'
+
+    static final TIPP_DELAYED_OA        = 'tipp.delayed.oa'
+    static final TIPP_HYBRID_OA         = 'tipp.hybrid.oa'
+    static final TIPP_PAYMENT_TYPE      = 'tipp.payment.type'
+    static final TITLE_STATUS           = 'title.status'
+    static final TRANSFORM_FORMAT       = 'transform.format'
+    static final TRANSFORM_TYPE         = 'transform.type'
+
+    static final USAGE_STATUS               = 'usage.status'
+    static final USER_SETTING_DASHBOARD_TAB = 'user.setting.dashboard.tab'
+    static final USER_SETTING_THEME         = 'user.setting.theme'
+
+    static final Y_N                    = 'y.n'
+    static final Y_N_O                  = 'y.n.o'
+    static final Y_N_U                  = 'y.n.u'
 }

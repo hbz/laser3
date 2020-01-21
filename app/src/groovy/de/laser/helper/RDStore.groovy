@@ -51,7 +51,7 @@ class RDStore {
     static final ORG_DELETED                = getRefdataValue('Deleted', RDConstants.ORG_STATUS)
     static final PACKAGE_DELETED            = getRefdataValue('Deleted', RDConstants.PACKAGE_STATUS)
     static final PLATFORM_DELETED           = getRefdataValue('Deleted', RDConstants.PLATFORM_STATUS)
-    static final TIPP_DELETED               = getRefdataValue('Deleted', 'TIPP Status')
+    static final TIPP_DELETED               = getRefdataValue('Deleted',  RDConstants.TIPP_STATUS)
 
 //DO NOT USE THIS STATUS. Subs have no longer a deleted flag. They ARE deleted!
     @Deprecated
@@ -94,11 +94,11 @@ class RDStore {
 
     static final LINKTYPE_FOLLOWS           = getRefdataValue('follows', RDConstants.LINK_TYPE)
 
-    static final YN_YES                     = getRefdataValue('Yes','YN')
-    static final YNO_YES                    = getRefdataValue('Yes','YNO')
-    static final YN_NO                      = getRefdataValue('No','YN')
-    static final YNO_NO                     = getRefdataValue('No','YNO')
-    static final YNO_OTHER                  = getRefdataValue('Other','YNO')
+    static final YN_YES                     = getRefdataValue('Yes', RDConstants.Y_N)
+    static final YN_NO                      = getRefdataValue('No', RDConstants.Y_N)
+    static final YNO_YES                    = getRefdataValue('Yes', RDConstants.Y_N_O)
+    static final YNO_NO                     = getRefdataValue('No', RDConstants.Y_N_O)
+    static final YNO_OTHER                  = getRefdataValue('Other', RDConstants.Y_N_O)
 
     static final CIEC_POSITIVE              = getRefdataValue('positive', RDConstants.COST_CONFIGURATION)
     static final CIEC_NEGATIVE              = getRefdataValue('negative', RDConstants.COST_CONFIGURATION)
@@ -114,15 +114,15 @@ class RDStore {
     static final PERM_NOT_APPLICABLE        = getRefdataValue('Not applicable', RDConstants.PERMISSIONS)
     static final PERM_UNKNOWN               = getRefdataValue('Unknown', RDConstants.PERMISSIONS)
 
-    static final TITLE_TYPE_EBOOK           = getRefdataValue('EBook','Title Type')
-    static final TITLE_TYPE_JOURNAL         = getRefdataValue('Journal','Title Type')
-    static final TITLE_TYPE_DATABASE        = getRefdataValue('Database','Title Type')
+    static final TITLE_TYPE_EBOOK           = getRefdataValue('EBook', RDConstants.TITLE_TYPE)
+    static final TITLE_TYPE_JOURNAL         = getRefdataValue('Journal', RDConstants.TITLE_TYPE)
+    static final TITLE_TYPE_DATABASE        = getRefdataValue('Database', RDConstants.TITLE_TYPE)
 
-    static final TITLE_STATUS_CURRENT       = getRefdataValue('Current','TitleInstanceStatus')
-    static final TITLE_STATUS_RETIRED       = getRefdataValue('Retired','TitleInstanceStatus')
-    static final TITLE_STATUS_DELETED       = getRefdataValue('Deleted','TitleInstanceStatus')
+    static final TITLE_STATUS_CURRENT       = getRefdataValue('Current', RDConstants.TITLE_STATUS)
+    static final TITLE_STATUS_RETIRED       = getRefdataValue('Retired', RDConstants.TITLE_STATUS)
+    static final TITLE_STATUS_DELETED       = getRefdataValue('Deleted', RDConstants.TITLE_STATUS)
 
-    static final TAX_REVERSE_CHARGE         = getRefdataValue('reverse charge','TaxType')
+    static final TAX_REVERSE_CHARGE         = getRefdataValue('reverse charge', RDConstants.TAX_TYPE)
 
     static final COMBO_TYPE_CONSORTIUM      = getRefdataValue('Consortium', RDConstants.COMBO_TYPE)
     static final COMBO_TYPE_DEPARTMENT      = getRefdataValue('Department', RDConstants.COMBO_TYPE)
@@ -133,19 +133,19 @@ class RDStore {
     static final CONTACT_TYPE_PERSONAL      = getRefdataValue('Personal Contact', RDConstants.PERSON_CONTACT_TYPE)
     static final CONTACT_TYPE_FUNCTIONAL    = getRefdataValue('Functional Contact', RDConstants.PERSON_CONTACT_TYPE)
 
-    static final TIPP_PAYMENT_COMPLIMENTARY     = getRefdataValue('Complimentary','TitleInstancePackagePlatform.PaymentType')
-    static final TIPP_PAYMENT_LIMITED_PROMOTION = getRefdataValue('Limited Promotion','TitleInstancePackagePlatform.PaymentType')
-    static final TIPP_PAYMENT_PAID              = getRefdataValue('Paid','TitleInstancePackagePlatform.PaymentType')
-    static final TIPP_PAYMENT_OA                = getRefdataValue('OA','TitleInstancePackagePlatform.PaymentType')
-    static final TIPP_PAYMENT_OPT_OUT_PROMOTION = getRefdataValue('Opt Out Promotion','TitleInstancePackagePlatform.PaymentType')
-    static final TIPP_PAYMENT_UNCHARGED         = getRefdataValue('Uncharged','TitleInstancePackagePlatform.PaymentType')
-    static final TIPP_PAYMENT_UNKNOWN           = getRefdataValue('Unknown','TitleInstancePackagePlatform.PaymentType')
+    static final TIPP_PAYMENT_COMPLIMENTARY     = getRefdataValue('Complimentary', RDConstants.TIPP_PAYMENT_TYPE)
+    static final TIPP_PAYMENT_LIMITED_PROMOTION = getRefdataValue('Limited Promotion', RDConstants.TIPP_PAYMENT_TYPE)
+    static final TIPP_PAYMENT_PAID              = getRefdataValue('Paid', RDConstants.TIPP_PAYMENT_TYPE)
+    static final TIPP_PAYMENT_OA                = getRefdataValue('OA', RDConstants.TIPP_PAYMENT_TYPE)
+    static final TIPP_PAYMENT_OPT_OUT_PROMOTION = getRefdataValue('Opt Out Promotion', RDConstants.TIPP_PAYMENT_TYPE)
+    static final TIPP_PAYMENT_UNCHARGED         = getRefdataValue('Uncharged', RDConstants.TIPP_PAYMENT_TYPE)
+    static final TIPP_PAYMENT_UNKNOWN           = getRefdataValue('Unknown', RDConstants.TIPP_PAYMENT_TYPE)
 
-    static final TIPP_STATUS_CURRENT            = getRefdataValue('Current', 'TIPP Status')
-    static final TIPP_STATUS_RETIRED            = getRefdataValue('Retired', 'TIPP Status')
-    static final TIPP_STATUS_EXPECTED           = getRefdataValue('Expected','TIPP Status')
-    static final TIPP_STATUS_TRANSFERRED        = getRefdataValue('Transferred', 'TIPP Status')
-    static final TIPP_STATUS_UNKNOWN            = getRefdataValue('Unknown', 'TIPP Status')
+    static final TIPP_STATUS_CURRENT            = getRefdataValue('Current', RDConstants.TIPP_STATUS)
+    static final TIPP_STATUS_RETIRED            = getRefdataValue('Retired', RDConstants.TIPP_STATUS)
+    static final TIPP_STATUS_EXPECTED           = getRefdataValue('Expected', RDConstants.TIPP_STATUS)
+    static final TIPP_STATUS_TRANSFERRED        = getRefdataValue('Transferred', RDConstants.TIPP_STATUS)
+    static final TIPP_STATUS_UNKNOWN            = getRefdataValue('Unknown', RDConstants.TIPP_STATUS)
     //TIPP_STATUS_DELETED is defined above as TIPP_DELETED
     
     static final IE_ACCEPT_STATUS_FIXED            = getRefdataValue('Fixed', RDConstants.IE_ACCEPT_STATUS)
@@ -162,8 +162,8 @@ class RDStore {
 
     static final PENDING_CHANGE_STATUS          = getRefdataValue('Pending', RDConstants.PENDING_CHANGE_STATUS)
 
-    static final TASK_STATUS_OPEN               = getRefdataValue('Open', 'Task Status')
-    static final TASK_STATUS_DONE               = getRefdataValue('Done', 'Task Status')
+    static final TASK_STATUS_OPEN               = getRefdataValue('Open', RDConstants.TASK_STATUS)
+    static final TASK_STATUS_DONE               = getRefdataValue('Done', RDConstants.TASK_STATUS)
 
     static final SHARE_CONF_ALL                 = getRefdataValue('everyone', RDConstants.SHARE_CONFIGURATION)
     static final SHARE_CONF_CREATOR             = getRefdataValue('only for creator', RDConstants.SHARE_CONFIGURATION)

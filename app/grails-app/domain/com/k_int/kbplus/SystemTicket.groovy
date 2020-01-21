@@ -1,6 +1,7 @@
 package com.k_int.kbplus
 
 import com.k_int.kbplus.auth.User
+import de.laser.helper.RDConstants
 import de.laser.helper.RefdataAnnotation
 
 class SystemTicket {
@@ -13,10 +14,10 @@ class SystemTicket {
     String info
     String meta
 
-    @RefdataAnnotation(cat = 'Ticket.Status')
+    @RefdataAnnotation(cat = RDConstants.TICKET_STATUS)
     RefdataValue status
 
-    @RefdataAnnotation(cat = '?')
+    @RefdataAnnotation(cat = RDConstants.TICKET_CATEGORY)
     RefdataValue category
 
     Date dateCreated
@@ -55,6 +56,6 @@ class SystemTicket {
     }
 
     static List<SystemTicket> getNew() {
-        SystemTicket.where{ status == RefdataValue.getByValueAndCategory('New', 'Ticket.Status') }.list(sort:'dateCreated', order:'desc')
+        SystemTicket.where{ status == RefdataValue.getByValueAndCategory('New', RDConstants.TICKET_STATUS) }.list(sort:'dateCreated', order:'desc')
     }
 }

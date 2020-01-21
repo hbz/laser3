@@ -4,6 +4,7 @@ import com.k_int.ClassUtils
 import de.laser.domain.AbstractBaseDomain
 import de.laser.domain.IssueEntitlementCoverage
 import de.laser.domain.TIPPCoverage
+import de.laser.helper.RDConstants
 import de.laser.helper.RDStore
 import de.laser.helper.RefdataAnnotation
 import de.laser.traits.AuditableTrait
@@ -54,7 +55,7 @@ class TitleInstancePackagePlatform extends AbstractBaseDomain /*implements Audit
     String gokbId
     //URL originEditUrl
 
-    @RefdataAnnotation(cat = 'TIPP Status')
+    @RefdataAnnotation(cat = RDConstants.TIPP_STATUS)
     RefdataValue status
 
     @RefdataAnnotation(cat = '?')
@@ -461,18 +462,18 @@ class TitleInstancePackagePlatform extends AbstractBaseDomain /*implements Audit
       Date tipp_access_end_date = getDerivedAccessEndDate()
 	  
 	  if ( tipp_access_end_date == null ) {
-		result = RefdataValue.getByValueAndCategory("Current(*)", "TIPP Access Status").getI10n("value")
+		result = RefdataValue.getByValueAndCategory("Current(*)", RDConstants.TIPP_ACCESS_STATUS).getI10n("value")
 	  }
 	  else if ( as_at < tipp_access_start_date ) {
 		// expected
-		result = RefdataValue.getByValueAndCategory("Expected", "TIPP Access Status").getI10n("value")
+		result = RefdataValue.getByValueAndCategory("Expected", RDConstants.TIPP_ACCESS_STATUS).getI10n("value")
 	  }
 	  else if ( as_at > tipp_access_end_date ) {
 		// expired
-		result = RefdataValue.getByValueAndCategory("Expired", "TIPP Access Status").getI10n("value")
+		result = RefdataValue.getByValueAndCategory("Expired", RDConstants.TIPP_ACCESS_STATUS).getI10n("value")
 	  }
 	  else {
-		result = RefdataValue.getByValueAndCategory("Current", "TIPP Access Status").getI10n("value")
+		result = RefdataValue.getByValueAndCategory("Current", RDConstants.TIPP_ACCESS_STATUS).getI10n("value")
 	  }
 	  result
   }
@@ -488,18 +489,18 @@ class TitleInstancePackagePlatform extends AbstractBaseDomain /*implements Audit
 
     // if ( ( accessEndDate == null ) && ( as_at > tipp_access_end_date ) ) {
     if ( tipp_access_end_date == null ) {
-      result = RefdataValue.getByValueAndCategory('Current(*)', 'TIPP Access Status')
+      result = RefdataValue.getByValueAndCategory('Current(*)', RDConstants.TIPP_ACCESS_STATUS)
     }
     else if ( as_at < tipp_access_start_date ) {
       // expected
-      result = RefdataValue.getByValueAndCategory('Expected', 'TIPP Access Status')
+      result = RefdataValue.getByValueAndCategory('Expected', RDConstants.TIPP_ACCESS_STATUS)
     }
     else if ( as_at > tipp_access_end_date ) {
       // expired
-      result = RefdataValue.getByValueAndCategory('Expired', 'TIPP Access Status')
+      result = RefdataValue.getByValueAndCategory('Expired', RDConstants.TIPP_ACCESS_STATUS)
     }
     else {
-      result = RefdataValue.getByValueAndCategory('Current', 'TIPP Access Status')
+      result = RefdataValue.getByValueAndCategory('Current', RDConstants.TIPP_ACCESS_STATUS)
     }
     result
   }

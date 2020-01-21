@@ -36,8 +36,8 @@
                                     case "class ${RefdataValue.class.name}":
                                         String spanOpen = '<span data-content="'+propValue.refValue.getI10n("value")+'">'
                                         switch(propValue.refValue.owner) {
-                                            case RefdataCategory.getByDesc("YN"):
-                                            case RefdataCategory.getByDesc("YNO"):
+                                            case RefdataCategory.getByDesc(de.laser.helper.RDConstants.Y_N):
+                                            case RefdataCategory.getByDesc(de.laser.helper.RDConstants.Y_N_O):
                                                 switch(propValue.refValue) {
                                                     case RDStore.YN_YES:
                                                     case RDStore.YNO_YES: value = raw(spanOpen+'<i class="green thumbs up icon huge"></i></span>')

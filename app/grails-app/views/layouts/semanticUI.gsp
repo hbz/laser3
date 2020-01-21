@@ -16,7 +16,7 @@
             localeResolver.setLocale(request, response, new Locale(currentLang, currentLang.toUpperCase()))
         }
 
-        RefdataValue rdvTheme = currentUser?.getSetting(UserSettings.KEYS.THEME, RefdataValue.getByValueAndCategory('semanticUI', 'User.Settings.Theme'))?.getValue()
+        RefdataValue rdvTheme = currentUser?.getSetting(UserSettings.KEYS.THEME, RefdataValue.getByValueAndCategory('semanticUI', de.laser.helper.RDConstants.USER_SETTING_THEME))?.getValue()
 
         if (rdvTheme) {
             currentTheme = rdvTheme.value
@@ -617,7 +617,7 @@
 
                         <g:if test="${(controllerName=='yoda' && actionName=='frontend' ) || (controllerName=='subscription'|| controllerName=='license') && actionName=='show' && editable}">
                             <div class="item">
-                                <g:if test="${user?.getSettingsValue(UserSettings.KEYS.SHOW_EDIT_MODE, RefdataValue.getByValueAndCategory('Yes','YN'))?.value=='Yes'}">
+                                <g:if test="${user?.getSettingsValue(UserSettings.KEYS.SHOW_EDIT_MODE, RefdataValue.getByValueAndCategory('Yes', de.laser.helper.RDConstants.Y_N))?.value=='Yes'}">
                                     <button class="ui icon toggle active  button la-toggle-controls la-popup-tooltip la-delay" data-content="${message(code:'statusbar.showButtons.tooltip')}" data-position="bottom right">
                                         <i class="pencil alternate icon"></i>
                                     </button>
@@ -635,7 +635,7 @@
                             <r:script>
                                 $(function(){
                                     <g:if test="${editable} || ${overwriteEditable}">
-                                        <g:if test="${user?.getSettingsValue(UserSettings.KEYS.SHOW_EDIT_MODE, RefdataValue.getByValueAndCategory('Yes', 'YN'))?.value == 'Yes'}">
+                                        <g:if test="${user?.getSettingsValue(UserSettings.KEYS.SHOW_EDIT_MODE, RefdataValue.getByValueAndCategory('Yes', de.laser.helper.RDConstants.Y_N))?.value == 'Yes'}">
                                             deckSaver.configs.editMode  = true;
                                         </g:if>
                                         <g:else>

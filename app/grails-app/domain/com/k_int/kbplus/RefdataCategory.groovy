@@ -28,15 +28,15 @@ class RefdataCategory extends AbstractI10nOverride {
     @Transient
     public static final PKG_TYPE = RDConstants.PACKAGE_TYPE
     @Transient
-    public static final TI_STATUS = 'TitleInstanceStatus'
+    public static final TI_STATUS = RDConstants.TITLE_STATUS
     @Transient
     public static final LIC_STATUS = RDConstants.LICENSE_STATUS
     @Transient
     public static final LIC_TYPE = RDConstants.LICENSE_TYPE
     @Transient
-    public static final TIPP_STATUS = 'TIPP Status'
+    public static final TIPP_STATUS = RDConstants.TIPP_STATUS
     @Transient
-    public static final TI_TYPE = 'Title Type'
+    public static final TI_TYPE = RDConstants.TITLE_TYPE
     @Transient
     public static final PKG_PAYMENTTYPE = 'Package Payment Type'
     @Transient

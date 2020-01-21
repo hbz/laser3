@@ -221,7 +221,7 @@
             <div class="field">
                 <label for="gascoEntry">${message(code:'org.gascoEntry.label')}</label>
                 <laser:select id="gascoEntry" name="gascoEntry"
-                              from="${RefdataCategory.getAllRefdataValues('YN')}"
+                              from="${RefdataCategory.getAllRefdataValues(de.laser.helper.RDConstants.Y_N)}"
                               optionKey="${{'com.k_int.kbplus.RefdataValue:' + it.id}}"
                               optionValue="value"
                               class="ui dropdown"

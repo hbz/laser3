@@ -197,9 +197,9 @@
             $ref: "#/definitions/LicenseStub"
           isPublic:
             type: string
-            description: Mapping RefdataCategory "YN"
+            description: Mapping RefdataCategory "${de.laser.helper.RDConstants.Y_N}"
             enum:
-              [${ com.k_int.kbplus.RefdataCategory.getAllRefdataValues('YN').collect{ it.value }.join(', ') }]
+              [${ com.k_int.kbplus.RefdataCategory.getAllRefdataValues(de.laser.helper.RDConstants.Y_N).collect{ it.value }.join(', ') }]
     #      lastmod:
     #        type: string
     #        format: date
@@ -526,9 +526,9 @@
           [${ com.k_int.kbplus.RefdataCategory.getAllRefdataValues('Gender').collect{ it.value }.join(', ') }]
       isPublic:
         type: string
-        description: Mapping RefdataCategory "YN". If set *No*, it's an hidRefdataCategoryden entry to/from an addressbook (depending on the given organisation context)
+        description: Mapping RefdataCategory "${de.laser.helper.RDConstants.Y_N}". If set *No*, it's an hidRefdataCategoryden entry to/from an addressbook (depending on the given organisation context)
         enum:
-          [${ com.k_int.kbplus.RefdataCategory.getAllRefdataValues('YN').collect{ it.value }.join(', ') }]
+          [${ com.k_int.kbplus.RefdataCategory.getAllRefdataValues(de.laser.helper.RDConstants.Y_N).collect{ it.value }.join(', ') }]
       lastName:
         type: string
       middleName:
@@ -572,9 +572,9 @@
   #      description: If set, this property is *private*
       isPublic: # derived to substitute tentant
         type: string
-        description: Mapping RefdataCategory "YN". If set *No*, it's an hidden entry to/from the given organisation context
+        description: Mapping RefdataCategory "${de.laser.helper.RDConstants.Y_N}". If set *No*, it's an hidden entry to/from the given organisation context
         enum:
-          [${ com.k_int.kbplus.RefdataCategory.getAllRefdataValues('YN').collect{ it.value }.join(', ') }]
+          [${ com.k_int.kbplus.RefdataCategory.getAllRefdataValues(de.laser.helper.RDConstants.Y_N).collect{ it.value }.join(', ') }]
       value: # mapping attr stringValue, intValue, decValue, refValue, urlValue, dateValue
         type: string
 
@@ -608,18 +608,18 @@
             $ref: "#/definitions/SubscriptionStub"
     #      isPublic:
     #        type: string
-    #        description: Mapping RefdataCategory "YN"
+    #        description: Mapping RefdataCategory "${de.laser.helper.RDConstants.Y_N}"
     #        enum:
-    #          [${ com.k_int.kbplus.RefdataCategory.getAllRefdataValues('YN').collect{ it.value }.join(', ') }]
+    #          [${ com.k_int.kbplus.RefdataCategory.getAllRefdataValues(de.laser.helper.RDConstants.Y_N).collect{ it.value }.join(', ') }]
     #      issueEntitlements:
     #        type: array
     #        items:
     #          $ref: "#/definitions/IssueEntitlement"
           isSlaved:
             type: string
-            description: Mapping RefdataCategory "YN"
+            description: Mapping RefdataCategory "${de.laser.helper.RDConstants.Y_N}"
             enum:
-              [${ com.k_int.kbplus.RefdataCategory.getAllRefdataValues('YN').collect{ it.value }.join(', ') }]
+              [${ com.k_int.kbplus.RefdataCategory.getAllRefdataValues(de.laser.helper.RDConstants.Y_N).collect{ it.value }.join(', ') }]
           lastUpdated:
             type: string
             format: date

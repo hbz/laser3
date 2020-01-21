@@ -654,7 +654,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
                     TitleInstance titleInstance = (TitleInstance) title_of_tipp_to_update
                     println("Result of lookup or create for ${tipp.title.name} with identifiers ${tipp.title.identifiers} is ${titleInstance}");
                     currTIPP.title = titleInstance
-                    currTIPP.status = tipp.status ? RefdataValue.getByValueAndCategory(tipp.status.capitalize(),'TIPP Status') : RDStore.TIPP_STATUS_CURRENT
+                    currTIPP.status = tipp.status ? RefdataValue.getByValueAndCategory(tipp.status.capitalize(), RDConstants.TIPP_STATUS) : RDStore.TIPP_STATUS_CURRENT
                     currTIPP.impId = tipp.tippUuid ?: tipp.tippId
                     currTIPP.gokbId = tipp.tippUuid ?: null
                     currTIPP.platform = tipp.platformUuid != null ? Platform.findByGokbId(tipp.platformUuid) : currTIPP.platform
@@ -1283,7 +1283,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
                     // Evaluate the incoming record to see if it meets KB+ stringent data quality standards
                     log.debug("Calling compliance check, cfg name is ${cfg.name}");
                     def kbplus_compliant = cfg.complianceCheck.call(parsed_rec.parsed_rec)
-                    // RefdataCategory.lookupOrCreate("YNO","No")
+                    // RefdataCategory.lookupOrCreate(RDConstants.Y_N_O,"No")
                     log.debug("Result of compliance [new] check: ${kbplus_compliant}");
 
                     def baos = new ByteArrayOutputStream()

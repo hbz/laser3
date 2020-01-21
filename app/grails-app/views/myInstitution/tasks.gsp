@@ -41,7 +41,7 @@
                         <laser:select class="ui fluid dropdown"
                                   name="taskStatus"
                                   value="${params.taskStatus}"
-                                  from="${RefdataCategory.getAllRefdataValues('Task Status')}"
+                                  from="${RefdataCategory.getAllRefdataValues(de.laser.helper.RDConstants.TASK_STATUS)}"
                                   noSelection="${['' : message(code:'accessMethod.all')]}"
                                   optionKey="id"
                                   optionValue="value" />

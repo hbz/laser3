@@ -324,17 +324,17 @@
                 <%-- TODO: check this
                 <div class="field">
                     <label>${message(code: 'profile.info_icon', default:'Show Info Icon')}</label>
-                    <semui:xEditableRefData owner="${user}" field="showInfoIcon" config="YN" />
+                    <semui:xEditableRefData owner="${user}" field="showInfoIcon" config="${de.laser.helper.RDConstants.Y_N}" />
                 </div>
                 --%>
                 <div class="field">
                     <label>${message(code: 'profile.theme', default:'Theme')}</label>
-                    <g:set var="US_THEME" value="${user.getSetting(UserSettings.KEYS.THEME, RefdataValue.getByValueAndCategory('default', 'User.Settings.Theme'))}" />
+                    <g:set var="US_THEME" value="${user.getSetting(UserSettings.KEYS.THEME, RefdataValue.getByValueAndCategory('default', de.laser.helper.RDConstants.USER_SETTING_THEME))}" />
                     <semui:xEditableRefData owner="${US_THEME}" field="rdValue" config="${US_THEME.key.rdc}" />
                 </div>
                 <div class="field">
                     <label>${message(code: 'profile.dashboardTab')}</label>
-                    <g:set var="US_DASHBOARD_TAB" value="${user.getSetting(UserSettings.KEYS.DASHBOARD_TAB, RefdataValue.getByValueAndCategory('Due Dates', 'User.Settings.Dashboard.Tab'))}" />
+                    <g:set var="US_DASHBOARD_TAB" value="${user.getSetting(UserSettings.KEYS.DASHBOARD_TAB, RefdataValue.getByValueAndCategory('Due Dates', de.laser.helper.RDConstants.USER_SETTING_DASHBOARD_TAB))}" />
                     <semui:xEditableRefData owner="${US_DASHBOARD_TAB}" field="rdValue" config="${US_DASHBOARD_TAB.key.rdc}" />
                 </div>
                 <div class="field">

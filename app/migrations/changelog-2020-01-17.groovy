@@ -292,7 +292,7 @@ update property_definition set pd_rdc = 'org.type' where pd_rdc = 'OrgRoleType';
 		}
 	}
 
-	changeSet(author: "kloberd (modified)", id: "1579264687321-16") {
+	changeSet(author: "kloberd (modified)", id: "1579264687321-17") {
 		grailsChange {
 			change {
 				sql.execute("""
@@ -328,7 +328,7 @@ update refdata_category set rdc_description = 'survey.type' where rdc_descriptio
 		}
 	}
 
-	changeSet(author: "kloberd (modified)", id: "1579264687321-17") {
+	changeSet(author: "kloberd (modified)", id: "1579264687321-18") {
 		grailsChange {
 			change {
 				sql.execute("""
@@ -358,6 +358,71 @@ update property_definition set pd_rdc = 'subscription.status' where pd_rdc = 'Su
 update property_definition set pd_rdc = 'subscription.type' where pd_rdc = 'Subscription Type';
 update property_definition set pd_rdc = 'survey.status' where pd_rdc = 'Survey Status';
 update property_definition set pd_rdc = 'survey.type' where pd_rdc = 'Survey Type';
+""")
+			}
+			rollback {}
+		}
+	}
+
+	changeSet(author: "kloberd (modified)", id: "1579264687321-19") {
+		grailsChange {
+			change {
+				sql.execute("""
+update refdata_category set rdc_description = 'task.priority' where rdc_description = 'Task Priority';
+update refdata_category set rdc_description = 'task.status' where rdc_description = 'Task Status';
+update refdata_category set rdc_description = 'tax.type' where rdc_description = 'TaxType';
+update refdata_category set rdc_description = 'termination.condition' where rdc_description = 'Termination Condition';
+update refdata_category set rdc_description = 'ticket.category' where rdc_description = 'Ticket.Category';
+update refdata_category set rdc_description = 'ticket.status' where rdc_description = 'Ticket.Status';
+update refdata_category set rdc_description = 'tipp.access.status' where rdc_description = 'TIPP Access Status';
+update refdata_category set rdc_description = 'tipp.status' where rdc_description = 'TIPP Status';
+update refdata_category set rdc_description = 'tipp.status.reason' where rdc_description = 'Tipp.StatusReason';
+update refdata_category set rdc_description = 'title.type' where rdc_description = 'Title Type';
+update refdata_category set rdc_description = 'tipp.delayed.oa' where rdc_description = 'TitleInstancePackagePlatform.DelayedOA';
+update refdata_category set rdc_description = 'tipp.hybrid.oa' where rdc_description = 'TitleInstancePackagePlatform.HybridOA';
+update refdata_category set rdc_description = 'tipp.payment.type' where rdc_description = 'TitleInstancePackagePlatform.PaymentType';
+update refdata_category set rdc_description = 'title.status' where rdc_description = 'TitleInstanceStatus';
+update refdata_category set rdc_description = 'transform.format' where rdc_description = 'Transform Format';
+update refdata_category set rdc_description = 'transform.type' where rdc_description = 'Transform Type';
+update refdata_category set rdc_description = 'usage.status' where rdc_description = 'UsageStatus';
+update refdata_category set rdc_description = 'user.setting.dashboard.tab' where rdc_description = 'User.Settings.Dashboard.Tab';
+update refdata_category set rdc_description = 'user.setting.theme' where rdc_description = 'User.Settings.Theme';
+update refdata_category set rdc_description = 'y.n' where rdc_description = 'YN';
+update refdata_category set rdc_description = 'y.n.o' where rdc_description = 'YNO';
+update refdata_category set rdc_description = 'y.n.u' where rdc_description = 'YNU';
+""")
+			}
+			rollback {}
+		}
+	}
+
+
+	changeSet(author: "kloberd (modified)", id: "1579264687321-20") {
+		grailsChange {
+			change {
+				sql.execute("""
+update property_definition set pd_rdc = 'task.priority' where pd_rdc = 'Task Priority';
+update property_definition set pd_rdc = 'task.status' where pd_rdc = 'Task Status';
+update property_definition set pd_rdc = 'tax.type' where pd_rdc = 'TaxType';
+update property_definition set pd_rdc = 'termination.condition' where pd_rdc = 'Termination Condition';
+update property_definition set pd_rdc = 'ticket.category' where pd_rdc = 'Ticket.Category';
+update property_definition set pd_rdc = 'ticket.status' where pd_rdc = 'Ticket.Status';
+update property_definition set pd_rdc = 'tipp.access.status' where pd_rdc = 'TIPP Access Status';
+update property_definition set pd_rdc = 'tipp.status' where pd_rdc = 'TIPP Status';
+update property_definition set pd_rdc = 'tipp.status.reason' where pd_rdc = 'Tipp.StatusReason';
+update property_definition set pd_rdc = 'title.type' where pd_rdc = 'Title Type';
+update property_definition set pd_rdc = 'tipp.delayed.oa' where pd_rdc = 'TitleInstancePackagePlatform.DelayedOA';
+update property_definition set pd_rdc = 'tipp.hybrid.oa' where pd_rdc = 'TitleInstancePackagePlatform.HybridOA';
+update property_definition set pd_rdc = 'tipp.payment.type' where pd_rdc = 'TitleInstancePackagePlatform.PaymentType';
+update property_definition set pd_rdc = 'title.status' where pd_rdc = 'TitleInstanceStatus';
+update property_definition set pd_rdc = 'transform.format' where pd_rdc = 'Transform Format';
+update property_definition set pd_rdc = 'transform.type' where pd_rdc = 'Transform Type';
+update property_definition set pd_rdc = 'usage.status' where pd_rdc = 'UsageStatus';
+update property_definition set pd_rdc = 'user.setting.dashboard.tab' where pd_rdc = 'User.Settings.Dashboard.Tab';
+update property_definition set pd_rdc = 'user.setting.theme' where pd_rdc = 'User.Settings.Theme';
+update property_definition set pd_rdc = 'y.n' where pd_rdc = 'YN';
+update property_definition set pd_rdc = 'y.n.o' where pd_rdc = 'YNO';
+update property_definition set pd_rdc = 'y.n.u' where pd_rdc = 'YNU';
 """)
 			}
 			rollback {}

@@ -115,7 +115,7 @@
         <g:message code="person.isPublic.label" default="IsPublic" />
     </label>
     <laser:select class="ui dropdown" id="isPublic" name="isPublic"
-                  from="${com.k_int.kbplus.Person.getAllRefdataValues('YN')}"
+                  from="${com.k_int.kbplus.Person.getAllRefdataValues(de.laser.helper.RDConstants.Y_N)}"
                   optionKey="id"
                   optionValue="value"
                   value="${personInstance?.isPublic?.id}" /><%-- todo: ERMS-1562 --%>

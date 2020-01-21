@@ -160,9 +160,9 @@
          $ref: "#/components/schemas/PackageStub" --%>
         taxCode:
           type: string
-          description: Mapping RefdataCategory "TaxType"
+          description: Mapping RefdataCategory "${de.laser.helper.RDConstants.TAX_TYPE}"
           enum:
-            [${ com.k_int.kbplus.RefdataCategory.getAllRefdataValues('TaxType').collect{ it.value }.join(', ') }]
+            [${ com.k_int.kbplus.RefdataCategory.getAllRefdataValues(de.laser.helper.RDConstants.TAX_TYPE).collect{ it.value }.join(', ') }]
         taxRate:
           type: string
 
@@ -307,9 +307,9 @@
           $ref: "#/components/schemas/LicenseStub"
         isPublic:
           type: string #mapped to boolean
-          description: Mapping RefdataCategory "YN"
+          description: Mapping RefdataCategory "${de.laser.helper.RDConstants.Y_N}"
           enum:
-            [${ com.k_int.kbplus.RefdataCategory.getAllRefdataValues('YN').collect{ it.value }.join(', ') }]
+            [${ com.k_int.kbplus.RefdataCategory.getAllRefdataValues(de.laser.helper.RDConstants.Y_N).collect{ it.value }.join(', ') }]
         lastUpdated:
           type: string
           format: date-time
@@ -450,21 +450,21 @@
         properties:
           autoAccept:
             type: string #mapped to boolean
-            description: Mapping RefdataCategory "YN"
+            description: Mapping RefdataCategory "${de.laser.helper.RDConstants.Y_N}"
             enum:
-              [${ com.k_int.kbplus.RefdataCategory.getAllRefdataValues('YN').collect{ it.value }.join(', ') }]
+              [${ com.k_int.kbplus.RefdataCategory.getAllRefdataValues(de.laser.helper.RDConstants.Y_N).collect{ it.value }.join(', ') }]
           breakable:
             type: string
-            description: Mapping RefdataCategory "YN"
+            description: Mapping RefdataCategory "${de.laser.helper.RDConstants.Y_N}"
             enum:
-              [${ com.k_int.kbplus.RefdataCategory.getAllRefdataValues('YN').collect{ it.value }.join(', ') }]
+              [${ com.k_int.kbplus.RefdataCategory.getAllRefdataValues(de.laser.helper.RDConstants.Y_N).collect{ it.value }.join(', ') }]
           cancellationAllowances:
             type: string
           consistent:
             type: string
-            description: Mapping RefdataCategory "YN"
+            description: Mapping RefdataCategory "${de.laser.helper.RDConstants.Y_N}"
             enum:
-              [${ com.k_int.kbplus.RefdataCategory.getAllRefdataValues('YN').collect{ it.value }.join(', ') }]
+              [${ com.k_int.kbplus.RefdataCategory.getAllRefdataValues(de.laser.helper.RDConstants.Y_N).collect{ it.value }.join(', ') }]
           dateCreated:
             type: string
             format: date
@@ -480,16 +480,16 @@
             format: date
           fixed:
             type: string
-            description: Mapping RefdataCategory "YN"
+            description: Mapping RefdataCategory "${de.laser.helper.RDConstants.Y_N}"
             enum:
-              [${ com.k_int.kbplus.RefdataCategory.getAllRefdataValues('YN').collect{ it.value }.join(', ') }]
+              [${ com.k_int.kbplus.RefdataCategory.getAllRefdataValues(de.laser.helper.RDConstants.Y_N).collect{ it.value }.join(', ') }]
 <%--          forumId:
             type: string --%>
           isPublic:
             type: string #mapped to boolean
-            description: Mapping RefdataCategory "YN"
+            description: Mapping RefdataCategory "${de.laser.helper.RDConstants.Y_N}"
             enum:
-              [${ com.k_int.kbplus.RefdataCategory.getAllRefdataValues('YN').collect{ it.value }.join(', ') }]
+              [${ com.k_int.kbplus.RefdataCategory.getAllRefdataValues(de.laser.helper.RDConstants.Y_N).collect{ it.value }.join(', ') }]
           lastUpdated:
             type: string
             format: date-time
@@ -565,9 +565,9 @@
             [${ com.k_int.kbplus.RefdataCategory.getAllRefdataValues(de.laser.helper.RDConstants.GENDER).collect{ it.value }.join(', ') }]
         isPublic:
           type: string
-          description: Mapping RefdataCategory "YN". If set *No*, it's an hidden entry to/from an addressbook (depending on the given organisation context)
+          description: Mapping RefdataCategory "${de.laser.helper.RDConstants.Y_N}". If set *No*, it's an hidden entry to/from an addressbook (depending on the given organisation context)
           enum:
-            [${ com.k_int.kbplus.RefdataCategory.getAllRefdataValues('YN').collect{ it.value }.join(', ') }]
+            [${ com.k_int.kbplus.RefdataCategory.getAllRefdataValues(de.laser.helper.RDConstants.Y_N).collect{ it.value }.join(', ') }]
         lastName:
           type: string
         middleName:
@@ -644,9 +644,9 @@
           type: string
         isPublic: # derived to substitute tentant
           type: string
-          description: Mapping RefdataCategory "YN". If set *No*, it's an hidden entry to/from the given organisation context
+          description: Mapping RefdataCategory "${de.laser.helper.RDConstants.Y_N}". If set *No*, it's an hidden entry to/from the given organisation context
           enum:
-            [${ com.k_int.kbplus.RefdataCategory.getAllRefdataValues('YN').collect{ it.value }.join(', ') }]
+            [${ com.k_int.kbplus.RefdataCategory.getAllRefdataValues(de.laser.helper.RDConstants.Y_N).collect{ it.value }.join(', ') }]
         value: # mapping attr stringValue, intValue, decValue, refValue, urlValue, dateValue
           type: string
 
@@ -678,14 +678,14 @@
           $ref: "#/components/schemas/SubscriptionStub"
         isSlaved:
           type: string #mapped to boolean
-          description: Mapping RefdataCategory "YN"
+          description: Mapping RefdataCategory "${de.laser.helper.RDConstants.Y_N}"
           enum:
-            [${ com.k_int.kbplus.RefdataCategory.getAllRefdataValues('YN').collect{ it.value }.join(', ') }]
+            [${ com.k_int.kbplus.RefdataCategory.getAllRefdataValues(de.laser.helper.RDConstants.Y_N).collect{ it.value }.join(', ') }]
         isMultiYear:
           type: string #mapped to boolean
-          description: Mapping RefdataCategory "YN"
+          description: Mapping RefdataCategory "${de.laser.helper.RDConstants.Y_N}"
           enum:
-            [${ com.k_int.kbplus.RefdataCategory.getAllRefdataValues('YN').collect{ it.value }.join(', ') }]
+            [${ com.k_int.kbplus.RefdataCategory.getAllRefdataValues(de.laser.helper.RDConstants.Y_N).collect{ it.value }.join(', ') }]
         lastUpdated:
           type: string
           format: date-time
@@ -849,9 +849,9 @@
             $ref: "#/components/schemas/PackageStub" --%>
           taxCode:
             type: string
-            description: Mapping RefdataCategory "TaxType"
+            description: Mapping RefdataCategory "${de.laser.helper.RDConstants.TAX_TYPE}"
             enum:
-              [${ com.k_int.kbplus.RefdataCategory.getAllRefdataValues('TaxType').collect{ it.value }.join(', ') }]
+              [${ com.k_int.kbplus.RefdataCategory.getAllRefdataValues(de.laser.helper.RDConstants.TAX_TYPE).collect{ it.value }.join(', ') }]
           taxRate:
             type: string
             enum:
@@ -999,19 +999,19 @@
             type: string
           multiple:
             type: string #mapped to boolean
-            description: Mapping RefdataCategory "YN"
+            description: Mapping RefdataCategory "${de.laser.helper.RDConstants.Y_N}"
             enum:
-              [${ com.k_int.kbplus.RefdataCategory.getAllRefdataValues('YN').collect{ it.value }.join(', ') }]
+              [${ com.k_int.kbplus.RefdataCategory.getAllRefdataValues(de.laser.helper.RDConstants.Y_N).collect{ it.value }.join(', ') }]
           usedForLogic:
             type: string #mapped to boolean
-            description: Mapping RefdataCategory "YN"
+            description: Mapping RefdataCategory "${de.laser.helper.RDConstants.Y_N}"
             enum:
-              [${ com.k_int.kbplus.RefdataCategory.getAllRefdataValues('YN').collect{ it.value }.join(', ') }]
+              [${ com.k_int.kbplus.RefdataCategory.getAllRefdataValues(de.laser.helper.RDConstants.Y_N).collect{ it.value }.join(', ') }]
           isPublic:
             type: string #mapped to boolean
-            description: Mapping RefdataCategory "YN". If set *No*, it's an hidden entry to/from the given organisation context
+            description: Mapping RefdataCategory "${de.laser.helper.RDConstants.Y_N}". If set *No*, it's an hidden entry to/from the given organisation context
             enum:
-              [${ com.k_int.kbplus.RefdataCategory.getAllRefdataValues('YN').collect{ it.value }.join(', ') }]
+              [${ com.k_int.kbplus.RefdataCategory.getAllRefdataValues(de.laser.helper.RDConstants.Y_N).collect{ it.value }.join(', ') }]
           refdataCategory:
             type: string
 

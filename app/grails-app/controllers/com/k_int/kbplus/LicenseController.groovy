@@ -487,9 +487,9 @@ from Subscription as s where
         def queryParams = [ it, result.license]
         def hasLicense = License.executeQuery(findOrgLicenses, queryParams)
         if (hasLicense){
-          result.consortiaInstsWithStatus.put(it, RefdataValue.getByValueAndCategory("Yes", "YNO") )
+          result.consortiaInstsWithStatus.put(it, RefdataValue.getByValueAndCategory("Yes", RDConstants.Y_N_O) )
         }else{
-          result.consortiaInstsWithStatus.put(it, RefdataValue.getByValueAndCategory("No", "YNO") )
+          result.consortiaInstsWithStatus.put(it, RefdataValue.getByValueAndCategory("No", RDConstants.Y_N_O) )
         }
       }
     }else{

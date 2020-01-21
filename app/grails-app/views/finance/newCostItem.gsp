@@ -69,12 +69,12 @@
                             noSelection="${['':'No Element']}"/>
 
                   <g:select name="newCostCurrency"
-                            from="${com.k_int.kbplus.RefdataValue.executeQuery('select rdv from RefdataValue as rdv where rdv.owner.desc=?','Currency')}"
+                            from="${com.k_int.kbplus.RefdataValue.executeQuery('select rdv from RefdataValue as rdv where rdv.owner.desc=?', de.laser.helper.RDConstants.CURRENCY)}"
                             optionKey="id"
                             noSelection="${['':'No Currency']}"/>
 
                   <g:select name="newCostTaxType"
-                            from="${com.k_int.kbplus.RefdataValue.executeQuery('select rdv from RefdataValue as rdv where rdv.owner.desc=?','TaxType')}"
+                            from="${com.k_int.kbplus.RefdataValue.executeQuery('select rdv from RefdataValue as rdv where rdv.owner.desc=?', de.laser.helper.RDConstants.TAX_TYPE)}"
                             optionKey="id"
                             noSelection="${['':'No Tax Type']}"/>
               </td>

@@ -66,9 +66,9 @@
     <%
         def US_DASHBOARD_TAB
         switch(params.view) {
-            case "announcementsView": US_DASHBOARD_TAB = RefdataValue.getByValueAndCategory('Announcements','User.Settings.Dashboard.Tab')
+            case "announcementsView": US_DASHBOARD_TAB = RefdataValue.getByValueAndCategory('Announcements', de.laser.helper.RDConstants.USER_SETTING_DASHBOARD_TAB)
             break
-            default: US_DASHBOARD_TAB = user.getSetting(UserSettings.KEYS.DASHBOARD_TAB, RefdataValue.getByValueAndCategory('Due Dates', 'User.Settings.Dashboard.Tab'))
+            default: US_DASHBOARD_TAB = user.getSetting(UserSettings.KEYS.DASHBOARD_TAB, RefdataValue.getByValueAndCategory('Due Dates', de.laser.helper.RDConstants.USER_SETTING_DASHBOARD_TAB))
             break
         }
     %>
@@ -285,7 +285,7 @@
                             <div class="right floated author">
                                 Status:
                                 <span>
-                                <semui:xEditableRefData config="Task Status" owner="${tsk}" field="status" />
+                                <semui:xEditableRefData config="${de.laser.helper.RDConstants.TASK_STATUS}" owner="${tsk}" field="status" />
                                 </span>
                             </div>
                         </div>

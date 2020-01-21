@@ -42,7 +42,7 @@ class OrganisationService {
 
         if (OrgSettings.get(org, OrgSettings.KEYS.NATSTAT_SERVER_ACCESS) == OrgSettings.SETTING_NOT_FOUND) {
             OrgSettings.add(org, OrgSettings.KEYS.NATSTAT_SERVER_ACCESS,
-                    RefdataValue.getByValueAndCategory('No', 'YN')
+                    RefdataValue.getByValueAndCategory('No', RDConstants.Y_N)
             )
         }
         if (OrgSettings.get(org, OrgSettings.KEYS.NATSTAT_SERVER_API_KEY) == OrgSettings.SETTING_NOT_FOUND) {
@@ -53,7 +53,7 @@ class OrganisationService {
         }
         if (OrgSettings.get(org, OrgSettings.KEYS.OAMONITOR_SERVER_ACCESS) == OrgSettings.SETTING_NOT_FOUND) {
             OrgSettings.add(org, OrgSettings.KEYS.OAMONITOR_SERVER_ACCESS,
-                    RefdataValue.getByValueAndCategory('No', 'YN')
+                    RefdataValue.getByValueAndCategory('No', RDConstants.Y_N)
             )
         }
 
@@ -877,7 +877,7 @@ class OrganisationService {
                             ],
                             tasks: [
                                     [title: 'Mehrjahresvariante verhandeln',
-                                     status: RefdataValue.getByValueAndCategory('Open','Task Status'),
+                                     status: RefdataValue.getByValueAndCategory('Open', RDConstants.TASK_STATUS),
                                      endDate: generalData.sdf.parse('2021-01-01'),
                                      responsibleOrg: current,
                                      description:'Es sollte mit der nächsten Lizenzverlängerung auch eine Mehrjahresvariante geben, die vertraglich festgehalten wird.']
@@ -905,7 +905,7 @@ class OrganisationService {
                 token       : "Quellensteuer-Befreiung",
                 category    : "Subscription Property",
                 type        : "class com.k_int.kbplus.RefdataValue",
-                rdc         : "YNO",
+                rdc         : RDConstants.Y_N_O,
                 tenant      : current,
                 i10n        : [de: "Quellensteuer-Befreiung", en: "Quellensteuer-Befreiung"],
                 expl        : [de: "Hat der Anbieter für dieses Produkt eine Befreiung der Quellensteuer erwirkt?", en: "Hat der Anbieter für dieses Produkt eine Befreiung der Quellensteuer erwirkt?"],
@@ -915,7 +915,7 @@ class OrganisationService {
                 token       : "BGA",
                 category    : "Organisation Property",
                 type        : "class com.k_int.kbplus.RefdataValue",
-                rdc         : "YN",
+                rdc         : RDConstants.Y_N,
                 tenant      : current,
                 i10n        : [de: "BGA", en: "BGA"],
                 expl        : [de: "Betrieb gewerblicher Art", en: "Betrieb gewerblicher Art"],
@@ -939,13 +939,13 @@ class OrganisationService {
         Set<PropertyDefinition> privatePropertyDefMaps = [
                 new PropertyDefinition(name:'Quellensteuer-Befreiung',
                         tenant:current,
-                        refdataCategory:'YNO',
+                        refdataCategory:RDConstants.Y_N_O,
                         descr:'Subscription Property',
                         type:'class com.k_int.kbplus.RefdataValue',
                         expl:'Hat der Anbieter für dieses Produkt eine Befreiung der Quellensteuer erwirkt?'),
                 new PropertyDefinition(name:'BGA',
                         tenant:current,
-                        refdataCategory:'YN',
+                        refdataCategory:RDConstants.Y_N,
                         descr:'Organisation Property',
                         type:'class com.k_int.kbplus.RefdataValue',
                         expl:'Betrieb gewerblicher Art'),
@@ -1825,7 +1825,7 @@ class OrganisationService {
                                     [type:PropertyDefinition.getByNameAndDescr('Joining during the period', PropertyDefinition.SUB_PROP).id,refValue:RDStore.YN_YES]
                             ],
                             privateProperties: [
-                                    [type:PropertyDefinition.findByNameAndTenant('Quellensteuer-Befreiung',current).id,refValue:RefdataValue.getByValueAndCategory('Planed','YNO'),note:'der Anbieter hat dies beantragt']
+                                    [type:PropertyDefinition.findByNameAndTenant('Quellensteuer-Befreiung',current).id,refValue:RefdataValue.getByValueAndCategory('Planed',RDConstants.Y_N_O),note:'der Anbieter hat dies beantragt']
                             ],
                             subscriptionMembers: [[subMember:member1Aachen,
                                                    subOwner:consortialLicenses.get('Rahmenvertrag eBook (Teilnehmervertrag)'),
@@ -1930,11 +1930,11 @@ class OrganisationService {
                                     [type:PropertyDefinition.getByNameAndDescr('Sim-User Number', PropertyDefinition.SUB_PROP).id,stringValue:'unlimitiert',isShared:true]
                             ],
                             privateProperties: [
-                                    [type:PropertyDefinition.findByNameAndTenant('Quellensteuer-Befreiung',current).id,refValue:RefdataValue.getByValueAndCategory('Unclear','YNO'),note:'dringend klären']
+                                    [type:PropertyDefinition.findByNameAndTenant('Quellensteuer-Befreiung',current).id,refValue:RefdataValue.getByValueAndCategory('Unclear', RDConstants.Y_N_O),note:'dringend klären']
                             ],
                             tasks: [
                                     [title: 'Statistiken Counter5 & Sushi',
-                                     status: RefdataValue.getByValueAndCategory('Open','Task Status'),
+                                     status: RefdataValue.getByValueAndCategory('Open', RDConstants.TASK_STATUS),
                                      endDate: generalData.sdf.parse('2020-06-30'),
                                      responsibleOrg: current,
                                      description:'dringend mit dem Anbieter die Lieferung von Counter 5 via Sushi besprechen']
