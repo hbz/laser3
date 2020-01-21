@@ -1,5 +1,5 @@
 <%@ page import="com.k_int.kbplus.RefdataCategory; com.k_int.kbplus.RefdataValue; com.k_int.kbplus.auth.Role; com.k_int.kbplus.auth.UserOrg; com.k_int.kbplus.UserSettings" %>
-<%@ page import="static de.laser.helper.RDStore.*" %>
+<%@ page import="static de.laser.helper.RDStore.*;de.laser.helper.RDConstants" %>
 <%@ page import="static com.k_int.kbplus.UserSettings.KEYS.*" %>
 <!doctype html>
 <html>
@@ -324,29 +324,29 @@
                 <%-- TODO: check this
                 <div class="field">
                     <label>${message(code: 'profile.info_icon', default:'Show Info Icon')}</label>
-                    <semui:xEditableRefData owner="${user}" field="showInfoIcon" config="YN" />
+                    <semui:xEditableRefData owner="${user}" field="showInfoIcon" config="${RDConstants.Y_N}" />
                 </div>
                 --%>
                 <div class="field">
                     <label>${message(code: 'profile.theme', default:'Theme')}</label>
-                    <g:set var="US_THEME" value="${user.getSetting(UserSettings.KEYS.THEME, RefdataValue.getByValueAndCategory('default', 'User.Settings.Theme'))}" />
+                    <g:set var="US_THEME" value="${user.getSetting(UserSettings.KEYS.THEME, RefdataValue.getByValueAndCategory('default', RDConstants.USER_SETTING_THEME))}" />
                     <semui:xEditableRefData owner="${US_THEME}" field="rdValue" config="${US_THEME.key.rdc}" />
                 </div>
                 <div class="field">
                     <label>${message(code: 'profile.dashboardTab')}</label>
-                    <g:set var="US_DASHBOARD_TAB" value="${user.getSetting(UserSettings.KEYS.DASHBOARD_TAB, RefdataValue.getByValueAndCategory('Due Dates', 'User.Settings.Dashboard.Tab'))}" />
+                    <g:set var="US_DASHBOARD_TAB" value="${user.getSetting(UserSettings.KEYS.DASHBOARD_TAB, RefdataValue.getByValueAndCategory('Due Dates', RDConstants.USER_SETTING_DASHBOARD_TAB))}" />
                     <semui:xEditableRefData owner="${US_DASHBOARD_TAB}" field="rdValue" config="${US_DASHBOARD_TAB.key.rdc}" />
                 </div>
                 <div class="field">
                     <label>${message(code: 'profile.language')}</label>
-                    <g:set var="US_LANGUAGE" value="${user.getSetting(UserSettings.KEYS.LANGUAGE, RefdataValue.getByValueAndCategory('de', de.laser.helper.RDConstants.LANGUAGE))}" />
+                    <g:set var="US_LANGUAGE" value="${user.getSetting(UserSettings.KEYS.LANGUAGE, RefdataValue.getByValueAndCategory('de', RDConstants.LANGUAGE))}" />
                     <semui:xEditableRefData owner="${US_LANGUAGE}" field="rdValue" config="${US_LANGUAGE.key.rdc}" />
                     &nbsp;
                     <g:link controller="profile" action="index" class="ui button icon" style="float:right"><i class="icon sync"></i></g:link>
                 </div>
                 <div class="field">
                     <label>${message(code: 'profile.emailLanguage')}</label>
-                    <g:set var="US_EMAIL_LANGUAGE" value="${user.getSetting(UserSettings.KEYS.LANGUAGE_OF_EMAILS, RefdataValue.getByValueAndCategory('de', de.laser.helper.RDConstants.LANGUAGE))}" />
+                    <g:set var="US_EMAIL_LANGUAGE" value="${user.getSetting(UserSettings.KEYS.LANGUAGE_OF_EMAILS, RefdataValue.getByValueAndCategory('de', RDConstants.LANGUAGE))}" />
                     <semui:xEditableRefData owner="${US_EMAIL_LANGUAGE}" field="rdValue" config="${US_EMAIL_LANGUAGE.key.rdc}" />
                 </div>
 
@@ -540,7 +540,7 @@
                             <div class="field">
                                 <label>${message(code: 'profile.reminder.new.notify', default:'Notify for')}</label>
                                 <g:select name="trigger"
-                                          from="${com.k_int.kbplus.RefdataValue.executeQuery('select rdv from RefdataValue as rdv where rdv.owner.desc=?', de.laser.helper.RDConstants.REMINDER_TRIGGER)}"
+                                          from="${com.k_int.kbplus.RefdataValue.executeQuery('select rdv from RefdataValue as rdv where rdv.owner.desc=?', RDConstants.REMINDER_TRIGGER)}"
                                           optionKey="id"
                                           optionValue="${{it.getI10n('value')}}"
                                           class="input-medium"/>
@@ -548,7 +548,7 @@
                             <div class="field">
                                 <label>${message(code: 'profile.reminder.new.method', default:'Method')}</label>
                                 <g:select name="method"
-                                          from="${com.k_int.kbplus.RefdataValue.executeQuery('select rdv from RefdataValue as rdv where rdv.owner.desc=?', de.laser.helper.RDConstants.REMINDER_METHOD)}"
+                                          from="${com.k_int.kbplus.RefdataValue.executeQuery('select rdv from RefdataValue as rdv where rdv.owner.desc=?', RDConstants.REMINDER_METHOD)}"
                                           optionKey="id"
                                           optionValue="${{it.getI10n('value')}}"
                                           class="input-medium"/>
@@ -556,7 +556,7 @@
                             <div class="field">
                                 <label>${message(code: 'profile.reminder.new.period', default:'Period')}</label>
                                 <g:select name="unit"
-                                          from="${com.k_int.kbplus.RefdataValue.executeQuery('select rdv from RefdataValue as rdv where rdv.owner.desc=?', de.laser.helper.RDConstants.REMINDER_UNIT)}"
+                                          from="${com.k_int.kbplus.RefdataValue.executeQuery('select rdv from RefdataValue as rdv where rdv.owner.desc=?', RDConstants.REMINDER_UNIT)}"
                                           optionKey="id"
                                           optionValue="${{it.getI10n('value')}}"
                                           class="input-medium"/>

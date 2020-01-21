@@ -41,7 +41,7 @@
     <g:each in="${consortiaInstsWithStatus}" var="pair">
         <tr>
             <td>${pair.getKey().name}</td>
-            <td><g:refdataValue cat="YNO" val="${pair.getValue()}" /></td>
+            <td><g:refdataValue cat="${de.laser.helper.RDConstants.Y_N_O}" val="${pair.getValue()}" /></td>
             <td><g:if test="${editable}"><input type="checkbox" name="_create.${pair.getKey().id}" value="true"/>
                     </g:if></td>
         </tr>

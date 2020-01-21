@@ -245,7 +245,7 @@ ${message(code: 'subscription.details.availableTitles', default: 'Available Titl
 
             <div class="item">
                 <b>${message(code: 'default.status.label', default: 'Status')}:</b>
-                <%--<semui:xEditableRefData owner="${tipp}" field="status" config="TIPP Status"/>--%>
+                <%--<semui:xEditableRefData owner="${tipp}" field="status" config="${de.laser.helper.RDConstants.TIPP_STATUS}"/>--%>
                 ${tipp.status.getI10n('value')}
             </div>
 

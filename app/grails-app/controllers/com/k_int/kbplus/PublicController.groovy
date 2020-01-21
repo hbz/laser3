@@ -167,7 +167,7 @@ class PublicController {
 //            def scp = SubscriptionCustomProperty.findByOwnerAndTypeAndRefValue(
 //                    sub,
 //                    PropertyDefinition.findByDescrAndName('Subscription Property', 'GASCO Entry'),
-//                    RefdataValue.getByValueAndCategory('Yes', 'YN')
+//                    RefdataValue.getByValueAndCategory('Yes', RDConstants.Y_N)
 //            )
 //
 //            if (scp) {

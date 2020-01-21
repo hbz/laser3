@@ -232,9 +232,9 @@ class PackageController extends AbstractDebugController {
             def queryParams = [org, packageInstance]
             def hasPackage = OrgRole.executeQuery(hql, queryParams)
             if (hasPackage) {
-                consortiaInstsWithStatus.put(org, RefdataValue.getByValueAndCategory("Yes", "YNO"))
+                consortiaInstsWithStatus.put(org, RefdataValue.getByValueAndCategory("Yes", RDConstants.Y_N_O))
             } else {
-                consortiaInstsWithStatus.put(org, RefdataValue.getByValueAndCategory("No", "YNO"))
+                consortiaInstsWithStatus.put(org, RefdataValue.getByValueAndCategory("No", RDConstants.Y_N_O))
             }
         }
         result.consortia = consortia

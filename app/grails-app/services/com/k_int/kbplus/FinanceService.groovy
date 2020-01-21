@@ -1009,15 +1009,15 @@ class FinanceService {
                     else if(taxRate == 19)
                         taxKey = CostItem.TAX_TYPES.TAXABLE_19
                     else if(taxRate == 0) {
-                        RefdataValue taxType = RefdataValue.getByValueAndCategory(taxTypeKey,'TaxType')
+                        RefdataValue taxType = RefdataValue.getByValueAndCategory(taxTypeKey, RDConstants.TAX_TYPE)
                         if(!taxType)
-                            taxType = RefdataValue.getByCategoryDescAndI10nValueDe('TaxType',taxTypeKey)
+                            taxType = RefdataValue.getByCategoryDescAndI10nValueDe(RDConstants.TAX_TYPE, taxTypeKey)
                         switch(taxType) {
-                            case RefdataValue.getByValueAndCategory('not taxable','TaxType'): taxKey = CostItem.TAX_TYPES.TAX_NOT_TAXABLE
+                            case RefdataValue.getByValueAndCategory('not taxable', RDConstants.TAX_TYPE): taxKey = CostItem.TAX_TYPES.TAX_NOT_TAXABLE
                                 break
-                            case RefdataValue.getByValueAndCategory('not applicable','TaxType'): taxKey = CostItem.TAX_TYPES.TAX_NOT_APPLICABLE
+                            case RefdataValue.getByValueAndCategory('not applicable', RDConstants.TAX_TYPE): taxKey = CostItem.TAX_TYPES.TAX_NOT_APPLICABLE
                                 break
-                            case RefdataValue.getByValueAndCategory('taxable tax-exempt','TaxType'): taxKey = CostItem.TAX_TYPES.TAX_EXEMPT
+                            case RefdataValue.getByValueAndCategory('taxable tax-exempt', RDConstants.TAX_TYPE): taxKey = CostItem.TAX_TYPES.TAX_EXEMPT
                                 break
                             default: mappingErrorBag.invalidTaxType = true
                                 break

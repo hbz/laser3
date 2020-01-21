@@ -1,4 +1,4 @@
-<%@ page import="com.k_int.kbplus.Person; de.laser.helper.RDStore; com.k_int.properties.PropertyDefinition; com.k_int.kbplus.RefdataValue; de.laser.AuditConfig; com.k_int.kbplus.RefdataCategory" %>
+<%@ page import="com.k_int.kbplus.Person; de.laser.helper.RDStore; de.laser.helper.RDConstants; com.k_int.properties.PropertyDefinition; com.k_int.kbplus.RefdataValue; de.laser.AuditConfig; com.k_int.kbplus.RefdataCategory" %>
 <laser:serviceInjection/>
 
 <!doctype html>
@@ -102,8 +102,8 @@
                             <label>${message(code: 'subscription.details.status')}</label>
                             <%
                                 def fakeList = []
-                                fakeList.addAll(RefdataCategory.getAllRefdataValues(de.laser.helper.RDConstants.SUBSCRIPTION_STATUS))
-                                fakeList.remove(com.k_int.kbplus.RefdataValue.getByValueAndCategory('Deleted', de.laser.helper.RDConstants.SUBSCRIPTION_STATUS))
+                                fakeList.addAll(RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_STATUS))
+                                fakeList.remove(com.k_int.kbplus.RefdataValue.getByValueAndCategory('Deleted', RDConstants.SUBSCRIPTION_STATUS))
                             %>
                             <laser:select name="status" from="${fakeList}" optionKey="id" optionValue="value"
                                           noSelection="${['': '']}"
@@ -112,7 +112,7 @@
 
                         <div class="field">
                             <label>${message(code: 'subscription.form.label')}</label>
-                            <laser:select name="form" from="${RefdataCategory.getAllRefdataValues(de.laser.helper.RDConstants.SUBSCRIPTION_FORM)}"
+                            <laser:select name="form" from="${RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_FORM)}"
                                           optionKey="id" optionValue="value" noSelection="${['': '']}"
                                           value="${['': '']}"/>
                         </div>
@@ -120,7 +120,7 @@
                         <div class="field">
                             <label>${message(code: 'subscription.resource.label')}</label>
                             <laser:select name="resource"
-                                          from="${RefdataCategory.getAllRefdataValues(de.laser.helper.RDConstants.SUBSCRIPTION_RESOURCE)}"
+                                          from="${RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_RESOURCE)}"
                                           optionKey="id" optionValue="value" noSelection="${['': '']}"
                                           value="${['': '']}"/>
                         </div>
@@ -249,18 +249,18 @@
                             <semui:auditButton auditable="[sub, 'endDate']"/>
                             </td>
                             <td>
-                                <semui:xEditableRefData owner="${sub}" field="status" config="${de.laser.helper.RDConstants.SUBSCRIPTION_STATUS}"
+                                <semui:xEditableRefData owner="${sub}" field="status" config="${RDConstants.SUBSCRIPTION_STATUS}"
                                                         constraint="removeValue_deleted"
                                                         overwriteEditable="${editableOld}"/>
                                 <semui:auditButton auditable="[sub, 'status']"/>
                             </td>
                             <td>
-                                <semui:xEditableRefData owner="${sub}" field="form" config="${de.laser.helper.RDConstants.SUBSCRIPTION_FORM}"
+                                <semui:xEditableRefData owner="${sub}" field="form" config="${RDConstants.SUBSCRIPTION_FORM}"
                                                         overwriteEditable="${editableOld}"/>
                                 <semui:auditButton auditable="[sub, 'form']"/>
                             </td>
                             <td>
-                                <semui:xEditableRefData owner="${sub}" field="resource" config="${de.laser.helper.RDConstants.SUBSCRIPTION_RESOURCE}"
+                                <semui:xEditableRefData owner="${sub}" field="resource" config="${RDConstants.SUBSCRIPTION_RESOURCE}"
                                                         overwriteEditable="${editableOld}"/>
                                 <semui:auditButton auditable="[sub, 'resource']"/>
                             </td>
@@ -578,7 +578,7 @@
                             <semui:auditButton auditable="[sub, 'endDate']"/>
                             </td>
                             <td>
-                                <semui:xEditableRefData owner="${sub}" field="status" config="${de.laser.helper.RDConstants.SUBSCRIPTION_STATUS}"
+                                <semui:xEditableRefData owner="${sub}" field="status" config="${RDConstants.SUBSCRIPTION_STATUS}"
                                                         constraint="removeValue_deleted" />
                                 <semui:auditButton auditable="[sub, 'status']"/>
                             </td>

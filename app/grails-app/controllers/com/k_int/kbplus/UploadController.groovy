@@ -192,12 +192,12 @@ class UploadController extends AbstractDebugController {
 
           def hybrid_oa_status_value = null;
           if ( tipp.hybrid_oa != null ) {
-            // ERMS-2016: hybrid_oa_status_value = RefdataCategory.lookupOrCreate("TitleInstancePackagePlatform.HybridOA", tipp.hybrid_oa.capitalize())
+            // ERMS-2016: hybrid_oa_status_value = RefdataCategory.lookupOrCreate(de.laser.helper.RDConstants.TIPP_HYBRID_OA, tipp.hybrid_oa.capitalize())
             // if value exists --> RefdataValue.getByValueAndCategory()
 
             hybrid_oa_status_value = RefdataValue.construct([
                     token   : tipp.hybrid_oa.capitalize(),
-                    rdc     : "TitleInstancePackagePlatform.HybridOA",
+                    rdc     : RDConstants.TIPP_HYBRID_OA,
                     hardData: false,
                     i10n    : [en: tipp.hybrid_oa.capitalize(), de: tipp.hybrid_oa.capitalize()]
             ])

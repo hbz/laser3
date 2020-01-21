@@ -89,7 +89,7 @@
                                 <sec:ifAnyGranted roles="ROLE_ADMIN">
                                     <div class="item">
                                         <div class="header">Status</div>
-                                        <semui:xEditableRefData owner="${ticket}" field="status" config="Ticket.Status"/>
+                                        <semui:xEditableRefData owner="${ticket}" field="status" config="${de.laser.helper.RDConstants.TICKET_STATUS}"/>
                                     </div>
                                 </sec:ifAnyGranted>
 

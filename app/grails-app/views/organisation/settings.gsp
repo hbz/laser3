@@ -93,7 +93,7 @@
 
                                             <g:if test="${(inContextOrg || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN,ROLE_ORG_EDITOR')) && os.key in OrgSettings.getEditableSettings()}">
                                             <%-- Refdata YN --%>
-                                                <g:if test="${os?.key?.rdc=='YN'}">
+                                                <g:if test="${os?.key?.rdc==de.laser.helper.RDConstants.Y_N}">
                                                 <%-- Validation through user is necessary --%>
                                                     <g:if test="${'OAMONITOR_SERVER_ACCESS'.equals(os.key.toString())}">
                                                         <semui:xEditableRefData owner="${os}" field="rdValue" id="oamonitor_server_access" config="${os.key.rdc}" />

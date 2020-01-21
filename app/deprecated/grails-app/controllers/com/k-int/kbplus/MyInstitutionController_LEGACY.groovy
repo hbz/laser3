@@ -998,7 +998,7 @@ import de.laser.helper.RDConstants
                 endDate: sub_endDate,
                 //previousSubscription: old_subOID ?: null, previousSubscription oberhauled by Links table entry as of ERMS-800 (ERMS-892) et al.
                 type: Subscription.get(old_subOID)?.type ?: null,
-                isPublic: RefdataValue.getByValueAndCategory('No','YN'),
+                isPublic: RefdataValue.getByValueAndCategory('No', RDConstants.Y_N),
                 owner: params.subscription.copyLicense ? (Subscription.get(old_subOID)?.owner) : null,
                 resource: Subscription.get(old_subOID)?.resource ?: null,
                 form: Subscription.get(old_subOID)?.form ?: null

@@ -1,4 +1,4 @@
-<%@ page import="de.laser.helper.RDStore; com.k_int.kbplus.CostItemElementConfiguration;com.k_int.kbplus.RefdataValue;com.k_int.kbplus.CostItem" %>
+<%@ page import="de.laser.helper.RDStore;de.laser.helper.RDConstants;com.k_int.kbplus.CostItemElementConfiguration;com.k_int.kbplus.RefdataValue;com.k_int.kbplus.CostItem" %>
 <laser:serviceInjection />
 
 <g:each in="${cost_items}" var="ci" status="jj">
@@ -76,7 +76,7 @@
             </g:elseif>
         </td>
         <td>
-            <semui:xEditableRefData config="${de.laser.helper.RDConstants.COST_ITEM_STATUS}" emptytext="${message(code:'default.button.edit.label')}" owner="${ci}" field="costItemStatus" />
+            <semui:xEditableRefData config="${RDConstants.COST_ITEM_STATUS}" emptytext="${message(code:'default.button.edit.label')}" owner="${ci}" field="costItemStatus" />
         </td>
         <td>
             <semui:xEditable owner="${ci}" type="date" field="startDate" />

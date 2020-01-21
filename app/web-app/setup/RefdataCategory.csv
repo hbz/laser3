@@ -16,10 +16,10 @@ contact.content.type,Kontakttyp,Type of Contact
 contact.type,Art des Kontaktes,Contact Type
 core.status,Kerntitel-Status,Core Status
 cost.configuration,Kostenkonfiguration,Cost configuration
-cost.item.type,Typ,Type
 cost.item.category,CostItemCategory,CostItemCategory
 cost.item.element,CostItemElement,CostItemElement
 cost.item.status,CostItemStatus,CostItemStatus
+cost.item.type,Typ,Type
 country,Land,Country
 creator.type,Creator Type,Creator Type
 currency,Währung,Currency
@@ -44,8 +44,6 @@ ipv6.address.format,IPv6 Address Format,IPv6 Address Format
 language,Sprache,Language
 library.network,Verbundzugehörigkeit,Library Network
 library.type,Bibliothekstyp,Library Type
-license.status,Lizenzstatus,License Status
-license.type,Lizenztyp,License Type
 license.arc.archival.copy.content,Archivkopie Form,Archival Copy Content
 license.arc.archival.copy.cost,Archivkopie Kosten,Archival Copy Cost
 license.arc.archival.copy.time,Archivkopie Zeitpunkt,Archival Copy Time
@@ -56,34 +54,36 @@ license.arc.hosting.solution,Hostingrecht Lösung,Hosting Solution
 license.arc.hosting.time,Hostingrecht Zeitpunkt,Hosting Time
 license.arc.payment.note,Zugriffsrechte Kosten,Archive Payment Note
 license.arc.title.transfer.regulation,Titeltransfer Regeln,Titletransfer Regulation
+license.category,Lizenzkategorie,LicenseCategory
 license.oa.corresponding.author.identification,Autorenindentifikation,Corresponding Author Identification
 license.oa.earc.version,License.OA.eArcVersion,License.OA.eArcVersion
 license.oa.license.to.publish,Publikationslizenz,License to Publish
 license.oa.receiving.modalities,Bezugsmodalitäten,Receiving Modalities
 license.oa.repository,Repositorium,Repository
 license.oa.type,Open-Acces Typ,Open Acces Type
+license.remote.access,Lincense.RemoteAccess,Lincense.RemoteAccess
 license.remote.access2,Remote-Zugriff,Remote Access
 license.statistics.delivery,Statistik Liefermethode,Statistics Delivery
 license.statistics.format,Statistik Auslieferungsformat,Statistics Format
 license.statistics.frequency,Statistik Auslieferungsfrequenz,Statistics Frequency
 license.statistics.standards,Statistikstandard,Statistics Standards
 license.statistics.user.creds,Statistik Nutzeridentifikation,Statistics User Credentials
-license.category,Lizenzkategorie,LicenseCategory
-license.remote.access,Lincense.RemoteAccess,Lincense.RemoteAccess
+license.status,Lizenzstatus,License Status
+license.type,Lizenztyp,License Type
 link.type,Link Type,Link Type
 mail.template.language,MailTemplate Sprache,MailTemplate Language
 mail.template.type,MailTemplate Typ,MailTemplate Type
 number.type,Zahlen-Typ,Number Type
-organisational.role,Organisational Role,Organisational Role
-org.type,Organisationstyp,Organisation Type
 org.sector,Bereich,OrgSector
 org.status,Status,Status
-package.status,Paketstatus,Package Status
+org.type,Organisationstyp,Organisation Type
+organisational.role,Organisational Role,Organisational Role
 package.breakable,Package.Breakable,Package.Breakable
 package.consistent,Package.Consistent,Package.Consistent
 package.fixed,Package.Fixed,Package.Fixed
 package.list.status,Package.ListStatus,Package.ListStatus
 package.scope,Package.Scope,Package.Scope
+package.status,Paketstatus,Package Status
 package.type,Package.Type,Package.Type
 pending.change.status,PendingChangeStatus,PendingChangeStatus
 permissions,Berechtigungen,Permissions
@@ -104,25 +104,25 @@ subscription.status,Lizenzstatus,Subscription Status
 subscription.type,Subscription Type,Subscription Type
 survey.status,Umfrage-Status,Survey Status
 survey.type,Umfrage-Typ,Survey Type
-Task Priority,Aufgabenpriorität,Task Priority
-Task Status,Aufgabenstatus,Task Status
-TaxType,TaxType,TaxType
-Termination Condition,Kündigung Voraussetzung,Termination Condition
-Ticket.Category,Kategorie,Ticket Category
-Ticket.Status,Ticketstatus,Ticket Status
-TIPP Access Status,TIPP Access Status,TIPP Access Status
-TIPP Status,TIPP Status,TIPP Status
-Tipp.StatusReason,Tipp.StatusReason,Tipp.StatusReason
-Title Type,Title Type,Title Type
-TitleInstancePackagePlatform.DelayedOA,TitleInstancePackagePlatform.DelayedOA,TitleInstancePackagePlatform.DelayedOA
-TitleInstancePackagePlatform.HybridOA,TitleInstancePackagePlatform.HybridOA,TitleInstancePackagePlatform.HybridOA
-TitleInstancePackagePlatform.PaymentType,TitleInstancePackagePlatform.PaymentType,TitleInstancePackagePlatform.PaymentType
-TitleInstanceStatus,TitleInstanceStatus,TitleInstanceStatus
-Transform Format,Transform Format,Transform Format
-Transform Type,Transform Type,Transform Type
-UsageStatus,UsageStatus,UsageStatus
-User.Settings.Dashboard.Tab,Dashbord Tab,Dashboard Tab
-User.Settings.Theme,Theme,Theme
-YN,Ja/Nein,Yes/No
-YNO,Ja/Nein/Anderes,Yes/No/Others
-YNU,Ja/Nein/Unbekannt,Yes/No/Unknown
+task.priority,Aufgabenpriorität,Task Priority
+task.status,Aufgabenstatus,Task Status
+tax.type,TaxType,TaxType
+termination.condition,Kündigung Voraussetzung,Termination Condition
+ticket.category,Kategorie,Ticket Category
+ticket.status,Ticketstatus,Ticket Status
+tipp.access.status,TIPP Access Status,TIPP Access Status
+tipp.delayed.oa,TitleInstancePackagePlatform.DelayedOA,TitleInstancePackagePlatform.DelayedOA
+tipp.hybrid.oa,TitleInstancePackagePlatform.HybridOA,TitleInstancePackagePlatform.HybridOA
+tipp.payment.type,TitleInstancePackagePlatform.PaymentType,TitleInstancePackagePlatform.PaymentType
+tipp.status,TIPP Status,TIPP Status
+tipp.status.reason,Tipp.StatusReason,Tipp.StatusReason
+title.status,TitleInstanceStatus,TitleInstanceStatus
+title.type,Title Type,Title Type
+transform.format,Transform Format,Transform Format
+transform.type,Transform Type,Transform Type
+usage.status,UsageStatus,UsageStatus
+user.setting.dashboard.tab,Dashbord Tab,Dashboard Tab
+user.setting.theme,Theme,Theme
+y.n,Ja/Nein,Yes/No
+y.n.o,Ja/Nein/Anderes,Yes/No/Others
+y.n.u,Ja/Nein/Unbekannt,Yes/No/Unknown

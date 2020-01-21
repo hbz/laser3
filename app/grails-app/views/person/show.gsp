@@ -1,4 +1,4 @@
-<%@ page import="com.k_int.kbplus.RefdataCategory; com.k_int.kbplus.Org; com.k_int.kbplus.Person; com.k_int.kbplus.PersonRole; com.k_int.kbplus.RefdataValue; de.laser.helper.RDStore" %>
+<%@ page import="com.k_int.kbplus.RefdataCategory; com.k_int.kbplus.Org; com.k_int.kbplus.Person; com.k_int.kbplus.PersonRole; com.k_int.kbplus.RefdataValue; de.laser.helper.RDStore; de.laser.helper.RDConstants" %>
 <!doctype html>
 <html>
 <head>
@@ -31,9 +31,9 @@ ${personInstance}
         <div class="la-inline-lists">
             <div class="ui card">
                 <div class="content">
-                    <dl><dt>${RefdataCategory.getByDesc(de.laser.helper.RDConstants.PERSON_CONTACT_TYPE).getI10n('desc')}</dt>
+                    <dl><dt>${RefdataCategory.getByDesc(RDConstants.PERSON_CONTACT_TYPE).getI10n('desc')}</dt>
                         <dd>
-                            <semui:xEditableRefData owner="${personInstance}" field="contactType" config="${de.laser.helper.RDConstants.PERSON_CONTACT_TYPE}"/>
+                            <semui:xEditableRefData owner="${personInstance}" field="contactType" config="${RDConstants.PERSON_CONTACT_TYPE}"/>
 
                             <r:script>
                                 $('a[data-name=contactType]').on('save', function(e, params) {
@@ -70,13 +70,13 @@ ${personInstance}
                             <dd><semui:xEditable owner="${personInstance}" field="middle_name"/></dd></dl>
 
                         <dl><dt><g:message code="person.gender.label" default="Gender"/></dt>
-                            <dd><semui:xEditableRefData owner="${personInstance}" field="gender" config="${de.laser.helper.RDConstants.GENDER}"/></dd>
+                            <dd><semui:xEditableRefData owner="${personInstance}" field="gender" config="${RDConstants.GENDER}"/></dd>
                         </dl>
 
                         <%--
-                        <dl><dt>${com.k_int.kbplus.RefdataCategory.getByDesc(de.laser.helper.RDConstants.PERSON_POSITION).getI10n('desc')}</dt>
+                        <dl><dt>${com.k_int.kbplus.RefdataCategory.getByDesc(RDConstants.PERSON_POSITION).getI10n('desc')}</dt>
                             <dd><semui:xEditableRefData owner="${personInstance}" field="roleType"
-                                                        config="${de.laser.helper.RDConstants.PERSON_POSITION}"/></dd></dl>--%>
+                                                        config="${RDConstants.PERSON_POSITION}"/></dd></dl>--%>
                     </g:if>
                 </div>
             </div><!-- .card -->
@@ -411,7 +411,7 @@ ${personInstance}
         tmplId: 'prFunctionModal',
         tmplRoleType: 'Funktion',
         roleType: PersonRole.TYPE_FUNCTION,
-        roleTypeValues: PersonRole.getAllRefdataValues(de.laser.helper.RDConstants.PERSON_FUNCTION),
+        roleTypeValues: PersonRole.getAllRefdataValues(RDConstants.PERSON_FUNCTION),
         message:'person.function_new.label',
         presetOrgId: presetOrg?.id]" />
 
@@ -419,7 +419,7 @@ ${personInstance}
         tmplId: 'prPositionModal',
         tmplRoleType: 'Position',
         roleType: PersonRole.TYPE_POSITION,
-        roleTypeValues: PersonRole.getAllRefdataValues(de.laser.helper.RDConstants.PERSON_POSITION),
+        roleTypeValues: PersonRole.getAllRefdataValues(RDConstants.PERSON_POSITION),
         message:'person.position_new.label',
         presetOrgId: presetOrg?.id]" />
 

@@ -1,4 +1,4 @@
-<%@ page import="com.k_int.kbplus.Person;com.k_int.kbplus.RefdataValue" %>
+<%@ page import="com.k_int.kbplus.Person;com.k_int.kbplus.RefdataValue;de.laser.helper.RDConstants" %>
 <laser:serviceInjection />
 
 <table class="ui three column table">
@@ -86,7 +86,7 @@
                                         </span>
                                         <div class="content">
                                             <g:link controller="person" action="show" id="${func.id}">${func}</g:link>
-                                            (${(RefdataValue.getByValueAndCategory('General contact person', de.laser.helper.RDConstants.PERSON_FUNCTION)).getI10n('value')})
+                                            (${(RefdataValue.getByValueAndCategory('General contact person', RDConstants.PERSON_FUNCTION)).getI10n('value')})
                                         </div>
                                     </div>
                                 </g:each>
@@ -126,7 +126,7 @@
                                         </span>
                                         <div class="content">
                                             <g:link controller="person" action="show" id="${func.id}">${func}</g:link>
-                                            (${(RefdataValue.getByValueAndCategory('General contact person', de.laser.helper.RDConstants.PERSON_FUNCTION)).getI10n('value')})
+                                            (${(RefdataValue.getByValueAndCategory('General contact person', RDConstants.PERSON_FUNCTION)).getI10n('value')})
                                         </div>
                                     </div>
                                 </g:each>

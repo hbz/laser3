@@ -8,6 +8,7 @@ import com.k_int.kbplus.SurveyResult
 import com.k_int.kbplus.UserSettings
 import com.k_int.kbplus.abstract_domain.PrivateProperty
 import com.k_int.kbplus.auth.User
+import de.laser.helper.RDConstants
 import de.laser.helper.RDStore
 import de.laser.helper.SessionCacheWrapper
 import de.laser.helper.SwissKnife
@@ -576,7 +577,7 @@ class SemanticUiTagLib {
 				// default profile setting
                 else {
                     User currentUser = contextService.getUser()
-                    String settingValue = currentUser.getSettingsValue(UserSettings.KEYS.SHOW_EXTENDED_FILTER, RefdataValue.getByValueAndCategory('Yes', 'YN')).value
+                    String settingValue = currentUser.getSettingsValue(UserSettings.KEYS.SHOW_EXTENDED_FILTER, RefdataValue.getByValueAndCategory('Yes', RDConstants.Y_N)).value
 
                     if (settingValue.toLowerCase() == 'yes') {
                         extended = true

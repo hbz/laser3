@@ -1,4 +1,4 @@
-<%@ page import="com.k_int.kbplus.Org; com.k_int.kbplus.Person; com.k_int.kbplus.PersonRole" %>
+<%@ page import="com.k_int.kbplus.Org;com.k_int.kbplus.Person;com.k_int.kbplus.PersonRole;de.laser.helper.RDConstants" %>
 
 <div class="field fieldcontain ${hasErrors(bean: personInstance, field: 'title', 'error')}">
 	<label for="title">
@@ -39,7 +39,7 @@
 
     </label>
     <laser:select class="ui dropdown" id="gender" name="gender"
-                  from="${com.k_int.kbplus.Person.getAllRefdataValues(de.laser.helper.RDConstants.GENDER)}"
+                  from="${com.k_int.kbplus.Person.getAllRefdataValues(RDConstants.GENDER)}"
                   optionKey="id"
                   optionValue="value"
                   value="${personInstance?.gender?.id}"
@@ -48,11 +48,11 @@
 <%--
 <div class="field fieldcontain ${hasErrors(bean: personInstance, field: 'roleType', 'error')} ">
     <label for="roleType">
-		${com.k_int.kbplus.RefdataCategory.getByDesc(de.laser.helper.RDConstants.PERSON_POSITION).getI10n('desc')}
+		${com.k_int.kbplus.RefdataCategory.getByDesc(RDConstants.PERSON_POSITION).getI10n('desc')}
 
     </label>
     <laser:select class="ui dropdown" id="roleType" name="roleType"
-                  from="${com.k_int.kbplus.Person.getAllRefdataValues(de.laser.helper.RDConstants.PERSON_POSITION)}"
+                  from="${com.k_int.kbplus.Person.getAllRefdataValues(RDConstants.PERSON_POSITION)}"
                   optionKey="id"
                   optionValue="value"
                   value="${personInstance?.roleType?.id}"
@@ -61,11 +61,11 @@
 --%>
 <div class="field fieldcontain ${hasErrors(bean: personInstance, field: 'contactType', 'error')} ">
     <label for="contactType">
-		${com.k_int.kbplus.RefdataCategory.getByDesc(de.laser.helper.RDConstants.PERSON_CONTACT_TYPE).getI10n('desc')}
+		${com.k_int.kbplus.RefdataCategory.getByDesc(RDConstants.PERSON_CONTACT_TYPE).getI10n('desc')}
 
     </label>
     <laser:select class="ui dropdown" id="contactType" name="contactType"
-                  from="${com.k_int.kbplus.Person.getAllRefdataValues(de.laser.helper.RDConstants.PERSON_CONTACT_TYPE)}"
+                  from="${com.k_int.kbplus.Person.getAllRefdataValues(RDConstants.PERSON_CONTACT_TYPE)}"
                   optionKey="id"
                   optionValue="value"
                   value="${personInstance?.contactType?.id}"
@@ -115,7 +115,7 @@
         <g:message code="person.isPublic.label" default="IsPublic" />
     </label>
     <laser:select class="ui dropdown" id="isPublic" name="isPublic"
-                  from="${com.k_int.kbplus.Person.getAllRefdataValues('YN')}"
+                  from="${com.k_int.kbplus.Person.getAllRefdataValues(RDConstants.Y_N)}"
                   optionKey="id"
                   optionValue="value"
                   value="${personInstance?.isPublic?.id}" /><%-- todo: ERMS-1562 --%>
@@ -139,7 +139,7 @@
 				<div class="field wide ten">
 					<laser:select class="ui dropdown"
 								  name="ignore-functionType-selector"
-								  from="${PersonRole.getAllRefdataValues(de.laser.helper.RDConstants.PERSON_FUNCTION)}"
+								  from="${PersonRole.getAllRefdataValues(RDConstants.PERSON_FUNCTION)}"
 								  optionKey="id"
 								  optionValue="value" />
 				</div>
@@ -171,7 +171,7 @@
 				<div class="field wide ten">
 					<laser:select class="ui dropdown"
 								  name="ignore-responsibilityType-selector"
-								  from="${PersonRole.getAllRefdataValues(de.laser.helper.RDConstants.PERSON_RESPONSIBILITY)}"
+								  from="${PersonRole.getAllRefdataValues(RDConstants.PERSON_RESPONSIBILITY)}"
 								  optionKey="id"
 								  optionValue="value" />
 				</div>

@@ -61,12 +61,10 @@ core.status,Yes,Ja,Yes
 cost.configuration,negative,negativ,negative
 cost.configuration,neutral,neutral,neutral
 cost.configuration,positive,positiv,positive
-cost.item.type,Actual,Konkrete Instanz,Actual
-cost.item.type,Template,Vorlage,Template
-cost.item.category,Price,Preis,Price
 cost.item.category,Bank Charge,Bank Charge,Bank Charge
-cost.item.category,Refund,Erstattung,Refund
 cost.item.category,Other,Andere,Other
+cost.item.category,Price,Preis,Price
+cost.item.category,Refund,Erstattung,Refund
 cost.item.element,additionalclaim: currency rate,Nachforderung aus Kursdifferenz,additionalclaim: currency rate
 cost.item.element,additionalclaim: other,Nachforderung: Sonstige,additionalclaim: other
 cost.item.element,discount: alliance licence discount,Rabatt für Allianzlizenz,discount: alliance licence discount
@@ -104,6 +102,8 @@ cost.item.status,Commitment,zugesagt,Commitment
 cost.item.status,Deleted,Gelöscht,Deleted
 cost.item.status,Estimate,geschätzt,Estimate
 cost.item.status,Other,Sonstige,Other
+cost.item.type,Actual,Konkrete Instanz,Actual
+cost.item.type,Template,Vorlage,Template
 country,AD,Andorra,Andorra
 country,AE,Vereinigte Arabische Emirate,United Arab Emirates
 country,AF,Afghanistan,Afghanistan
@@ -583,14 +583,14 @@ funder.type,Protestant Church,Evangelische Kirche,Protestant Church
 gender,Female,Weiblich,Female
 gender,Male,Männlich,Male
 gender,Third Gender,Inter/Divers,Third Gender
-ie.accept.status,Fixed,Feststehend,Fixed
-ie.accept.status,Under Consideration,Entscheidung steht aus,Under Consideration
-ie.accept.status,Under Negotiation,In Verhandlung,Under Negotiation
 ie.accept.status,Current,Aktuell,Current
 ie.accept.status,Current(*),Aktuell(*),Current(*)
 ie.accept.status,ERROR - No Subscription Start and/or End Date,ERROR - No Subscription Start and/or End Date,ERROR - No Subscription Start and/or End Date
 ie.accept.status,Expected,Erwartet,Expected
 ie.accept.status,Expired,Abgelaufen,Expired
+ie.accept.status,Fixed,Feststehend,Fixed
+ie.accept.status,Under Consideration,Entscheidung steht aus,Under Consideration
+ie.accept.status,Under Negotiation,In Verhandlung,Under Negotiation
 ie.access.status,Current,Current,Current
 ie.access.status,Expected,Expected,Expected
 ie.access.status,Expired,Expired,Expired
@@ -633,14 +633,6 @@ library.type,Sonstige,Sonstige,Other
 library.type,Staats-/ Landes-/ Regionalbibliothek,Staats-/ Landes-/ Regionalbibliothek,National / state / regional library
 library.type,Universität,Universität,University
 library.type,Wissenschaftliche Spezialbibliothek,Wissenschaftliche Spezialbibliothek,Special scientific library
-license.status,Current,Aktiv,Current
-license.status,In Progress,In Bearbeitung,In Progress
-license.status,Retired,Abgelaufen,Retired
-license.status,Status not defined,Status nicht festgelegt,Status not defined
-license.status,Unknown,Unbekannt,Unknown
-license.type,Actual,Konkrete Instanz,Actual
-license.type,Template,Vorlage,Template
-license.type,Unknown,Unbekannt,Unknown
 license.arc.archival.copy.content,Data,Rohdaten,Data
 license.arc.archival.copy.content,DRM-free,Ohne DRM,DRM-free
 license.arc.archival.copy.content,With Metadata,Inkl. Metadaten,With Metadata
@@ -684,6 +676,9 @@ license.arc.payment.note,No Hosting fee,Dauerhaft kostenfrei (keine Hosting Fee)
 license.arc.title.transfer.regulation,Existing Regulation,Regelung vorhanden,Existing Regulation
 license.arc.title.transfer.regulation,No Regulation,Keine Regelung,No Regulation
 license.arc.title.transfer.regulation,Transfer Code of Practice,Transfer Code of Practice,Transfer Code of Practice
+license.category,Content,Content,Content
+license.category,Other,Andere,Other
+license.category,Software,Software,Software
 license.oa.corresponding.author.identification,Email Domain,E-Mail-Domäne,Email Domain
 license.oa.corresponding.author.identification,IP Range,Über IP-Bereich,IP Range
 license.oa.corresponding.author.identification,ORCID,ORCID,ORCID
@@ -720,6 +715,9 @@ license.oa.type,Hybrid,Hybrid,Hybrid
 license.oa.type,No Open Access,Kein Open-Access,No Open Access
 license.oa.type,White Open Access,White Open-Access,White Open Access
 license.oa.type,Yellow Open Access,Yellow Open-Access,Yellow Open Access
+license.remote.access,All but Walk-ins,Alle außer Walk-In-User,All but Walk-ins
+license.remote.access,No,Nein,No
+license.remote.access,Yes,Ja,Yes
 license.statistics.delivery,Email,Email,Email
 license.statistics.delivery,Online,Online,Online
 license.statistics.delivery,Paper,Papier,Paper
@@ -740,12 +738,14 @@ license.statistics.standards,ICOLC 1998,ICOLC 1998,ICOLC 1998
 license.statistics.user.creds,None,Keins,None
 license.statistics.user.creds,Other,Anderes,Other
 license.statistics.user.creds,Same as Admin,Das gleiche wie Admin,Same as Admin
-license.category,Content,Content,Content
-license.category,Other,Andere,Other
-license.category,Software,Software,Software
-license.remote.access,All but Walk-ins,Alle außer Walk-In-User,All but Walk-ins
-license.remote.access,No,Nein,No
-license.remote.access,Yes,Ja,Yes
+license.status,Current,Aktiv,Current
+license.status,In Progress,In Bearbeitung,In Progress
+license.status,Retired,Abgelaufen,Retired
+license.status,Status not defined,Status nicht festgelegt,Status not defined
+license.status,Unknown,Unbekannt,Unknown
+license.type,Actual,Konkrete Instanz,Actual
+license.type,Template,Vorlage,Template
+license.type,Unknown,Unbekannt,Unknown
 link.type,follows,... ist Nachfolger von|... ist Vorgänger von,... follows|... precedes
 link.type,is condition for,... ist Bedingung für|... ist bedingt durch,... ist condition für|... ist conditioned by
 link.type,references,... referenziert|... wird referenziert durch,... references|... is referenced by
@@ -756,6 +756,26 @@ number.type,Population,Einwohner,Population
 number.type,Scientific staff,wissenschaftliches Personal,Scientific staff
 number.type,Students,Studierende,Students
 number.type,User,Nutzer,User
+org.sector,Higher Education,Akademisch,Higher Education
+org.sector,Publisher,Kommerziell,Commercial
+org.status,Current,Aktuell,Current
+org.status,Deleted,Gelöscht,Deleted
+org.type,Agency,Lieferant,Agency
+org.type,Broker,Vermittler,Broker
+org.type,Consortium,Konsortium,Consortium
+org.type,Content Provider,Inhaltsanbieter,Content Provider
+org.type,Department,Institut,Department
+org.type,Imprint,Imprint,Imprint
+org.type,Institution,Einrichtung,Institution
+org.type,Issuing Body,Issuing Body,Issuing Body
+org.type,Library Service,Bibliotheksservice,Library Service
+org.type,Licensee,Lizenznehmer,Licensee
+org.type,Licensor,Lizenzgeber,Licensor
+org.type,Other,Andere,Other
+org.type,Platform Provider,Plattformanbieter,Platform Provider
+org.type,Provider,Anbieter,Provider
+org.type,Publisher,Verlag,Publisher
+org.type,Vendor,Verkäufer,Vendor
 organisational.role,Agency,Lieferant,Agency
 organisational.role,Content Provider,Anbieter,Content Provider
 organisational.role,Licensee,Lizenznehmer,Licensee
@@ -774,29 +794,6 @@ organisational.role,Subscriber_Consortial_Hidden,Konsortialteilnehmer (versteckt
 organisational.role,Subscription Agent,Subscription Agent,Subscription Agent
 organisational.role,Subscription Collective,Stammlizenzverwalter,Subscription Collective
 organisational.role,Subscription Consortia,Konsortium,Subscription Consortia
-org.type,Agency,Lieferant,Agency
-org.type,Broker,Vermittler,Broker
-org.type,Consortium,Konsortium,Consortium
-org.type,Content Provider,Inhaltsanbieter,Content Provider
-org.type,Department,Institut,Department
-org.type,Imprint,Imprint,Imprint
-org.type,Institution,Einrichtung,Institution
-org.type,Issuing Body,Issuing Body,Issuing Body
-org.type,Library Service,Bibliotheksservice,Library Service
-org.type,Licensee,Lizenznehmer,Licensee
-org.type,Licensor,Lizenzgeber,Licensor
-org.type,Other,Andere,Other
-org.type,Platform Provider,Plattformanbieter,Platform Provider
-org.type,Provider,Anbieter,Provider
-org.type,Publisher,Verlag,Publisher
-org.type,Vendor,Verkäufer,Vendor
-org.sector,Higher Education,Akademisch,Higher Education
-org.sector,Publisher,Kommerziell,Commercial
-org.status,Current,Aktuell,Current
-org.status,Deleted,Gelöscht,Deleted
-package.status,Current,Aktuell,Current
-package.status,Deleted,Gelöscht,Deleted
-package.status,Retired,Abgelaufen,Retired
 package.breakable,No,Nein,No
 package.breakable,Unknown,Unbekannt,Unknown
 package.breakable,Yes,Ja,Yes
@@ -815,6 +812,9 @@ package.scope,Front File,Front File,Front File
 package.scope,Master File,Master File,Master File
 package.scope,Scope Undefined,Scope Undefined,Scope Undefined
 package.scope,Unknown,Unbekannt,Unknown
+package.status,Current,Aktuell,Current
+package.status,Deleted,Gelöscht,Deleted
+package.status,Retired,Abgelaufen,Retired
 package.type,Unkown,Unkown,Unkown
 pending.change.status,Accepted,Angenommen,Accepted
 pending.change.status,Pending,Ausstehend,Pending
@@ -956,84 +956,84 @@ survey.status,Survey started,Umfrage gestartet,Survey started
 survey.type,interest,Interessenumfrage,Interest Survey
 survey.type,renewal,Verlängerungsumfrage,Renewal Survey
 survey.type,selection,Titelauswahl-Umfrage,Title selection Survey
-Task Priority,Extreme,Extrem,Extreme
-Task Priority,High,Hoch,High
-Task Priority,Low,Niedrig,Low
-Task Priority,Normal,Mittel,Normal
-Task Priority,Trivial,Trivial,Trivial
-Task Status,Deferred,Zurückgestellt,Deferred
-Task Status,Done,Erledigt,Done
-Task Status,Open,Offen,Open
-TaxType,not applicable,nicht anwendbar,not applicable
-TaxType,not taxable,nicht steuerbar,not taxable
-TaxType,taxable,steuerbar,taxable
-TaxType,taxable tax-exempt,steuerbar steuerbefreit,taxable tax-exempt
-TaxType,reverse charge,Reverse Charge,reverse charge
-Termination Condition,At will,Nach Belieben,At will
-Termination Condition,Breach by Licensor/Licensee,Wegen Verstoß des Vertragspartners,Breach by Licensor/Licensee
-Termination Condition,Other,Andere Gründe,Other
-Termination Condition,Unknown,Unklar,Unknown
-Ticket.Category,Bug,Fehler,Bug
-Ticket.Category,Improvement,Verbesserungsvorschlag,Improvement
-Ticket.Status,Deferred,Zurückgestellt,Deferred
-Ticket.Status,Done,Erledigt,Done
-Ticket.Status,In Progress,In Bearbeitung,In Progress
-Ticket.Status,New,Neu,New
-Ticket.Status,Open,Angenommen,Open
-TIPP Access Status,Current,Aktuell,Current
-TIPP Access Status,Current(*),Aktuell(*),Current(*)
-TIPP Access Status,Expected,Erwartet,Expected
-TIPP Access Status,Expired,Abgelaufen,Expired
-TIPP Status,Current,Aktuell,Current
-TIPP Status,Deleted,Gelöscht,Deleted
-TIPP Status,Expected,Expected,Expected
-TIPP Status,Retired,im Ruhestand,Retired
-TIPP Status,Transferred,Transferred,Transferred
-TIPP Status,Unknown,Unbekannt,Unknown
-Tipp.StatusReason,Transfer In,Transfer In,Transfer In
-Tipp.StatusReason,Transfer Out,Transfer Out,Transfer Out
-Title Type,Database,Datenbank,Database
-Title Type,EBook,EBook,EBook
-Title Type,Journal,Journal,Journal
-TitleInstancePackagePlatform.DelayedOA,No,Nein,No
-TitleInstancePackagePlatform.DelayedOA,Unknown,Unbekannt,Unknown
-TitleInstancePackagePlatform.DelayedOA,Yes,Ja,Yes
-TitleInstancePackagePlatform.HybridOA,No,Nein,No
-TitleInstancePackagePlatform.HybridOA,Unknown,Unbekannt,Unknown
-TitleInstancePackagePlatform.HybridOA,Yes,Ja,Yes
-TitleInstancePackagePlatform.PaymentType,Complimentary,Complimentary,Complimentary
-TitleInstancePackagePlatform.PaymentType,Limited Promotion,Limited Promotion,Limited Promotion
-TitleInstancePackagePlatform.PaymentType,OA,OA,OA
-TitleInstancePackagePlatform.PaymentType,Opt Out Promotion,Opt Out Promotion,Opt Out Promotion
-TitleInstancePackagePlatform.PaymentType,Paid,Paid,Paid
-TitleInstancePackagePlatform.PaymentType,Uncharged,Uncharged,Uncharged
-TitleInstancePackagePlatform.PaymentType,Unknown,Unbekannt,Unknown
-TitleInstanceStatus,Current,Aktuell,Current
-TitleInstanceStatus,Deleted,Gelöscht,Deleted
-TitleInstanceStatus,In Progress,In Bearbeitung,In Progress
-TitleInstanceStatus,Retired,im Ruhestand,Retired
-TitleInstanceStatus,Unknown,Unbekannt,Unknown
-Transform Format,json,json,json
-Transform Format,url,url,url
-Transform Format,xml,xml,xml
-Transform Type,license,license,license
-Transform Type,package,package,package
-Transform Type,subscription,subscription,subscription
-Transform Type,title,title,title
-User.Settings.Dashboard.Tab,Announcements,Ankündigungen,Announcements
-User.Settings.Dashboard.Tab,Changes,Änderungen,Changes
-User.Settings.Dashboard.Tab,Due Dates,Fällige Termine,Due Dates
-User.Settings.Dashboard.Tab,Tasks,Aufgaben,Tasks
-User.Settings.Theme,accessibility,Barrierefrei,Accessibility
-User.Settings.Theme,semanticUI,Standard,Default
-YN,No,Nein,No
-YN,Yes,Ja,Yes
-YNO,No,Nein,No
-YNO,Not applicable,Nicht zutreffend,Not applicable
-YNO,Other,Andere,Other
-YNO,Planed,Geplant,Planed
-YNO,Unknown,Unklar,Unknown
-YNO,Yes,Ja,Yes
-YNU,No,Nein,No
-YNU,Unknown,Unbekannt,Unknown
-YNU,Yes,Ja,Yes
+task.priority,Extreme,Extrem,Extreme
+task.priority,High,Hoch,High
+task.priority,Low,Niedrig,Low
+task.priority,Normal,Mittel,Normal
+task.priority,Trivial,Trivial,Trivial
+task.status,Deferred,Zurückgestellt,Deferred
+task.status,Done,Erledigt,Done
+task.status,Open,Offen,Open
+tax.type,not applicable,nicht anwendbar,not applicable
+tax.type,not taxable,nicht steuerbar,not taxable
+tax.type,reverse charge,Reverse Charge,reverse charge
+tax.type,taxable,steuerbar,taxable
+tax.type,taxable tax-exempt,steuerbar steuerbefreit,taxable tax-exempt
+termination.condition,At will,Nach Belieben,At will
+termination.condition,Breach by Licensor/Licensee,Wegen Verstoß des Vertragspartners,Breach by Licensor/Licensee
+termination.condition,Other,Andere Gründe,Other
+termination.condition,Unknown,Unklar,Unknown
+ticket.category,Bug,Fehler,Bug
+ticket.category,Improvement,Verbesserungsvorschlag,Improvement
+ticket.status,Deferred,Zurückgestellt,Deferred
+ticket.status,Done,Erledigt,Done
+ticket.status,In Progress,In Bearbeitung,In Progress
+ticket.status,New,Neu,New
+ticket.status,Open,Angenommen,Open
+tipp.access.status,Current,Aktuell,Current
+tipp.access.status,Current(*),Aktuell(*),Current(*)
+tipp.access.status,Expected,Erwartet,Expected
+tipp.access.status,Expired,Abgelaufen,Expired
+tipp.delayed.oa,No,Nein,No
+tipp.delayed.oa,Unknown,Unbekannt,Unknown
+tipp.delayed.oa,Yes,Ja,Yes
+tipp.hybrid.oa,No,Nein,No
+tipp.hybrid.oa,Unknown,Unbekannt,Unknown
+tipp.hybrid.oa,Yes,Ja,Yes
+tipp.payment.type,Complimentary,Complimentary,Complimentary
+tipp.payment.type,Limited Promotion,Limited Promotion,Limited Promotion
+tipp.payment.type,OA,OA,OA
+tipp.payment.type,Opt Out Promotion,Opt Out Promotion,Opt Out Promotion
+tipp.payment.type,Paid,Paid,Paid
+tipp.payment.type,Uncharged,Uncharged,Uncharged
+tipp.payment.type,Unknown,Unbekannt,Unknown
+tipp.status,Current,Aktuell,Current
+tipp.status,Deleted,Gelöscht,Deleted
+tipp.status,Expected,Expected,Expected
+tipp.status,Retired,im Ruhestand,Retired
+tipp.status,Transferred,Transferred,Transferred
+tipp.status,Unknown,Unbekannt,Unknown
+tipp.status.reason,Transfer In,Transfer In,Transfer In
+tipp.status.reason,Transfer Out,Transfer Out,Transfer Out
+title.status,Current,Aktuell,Current
+title.status,Deleted,Gelöscht,Deleted
+title.status,In Progress,In Bearbeitung,In Progress
+title.status,Retired,im Ruhestand,Retired
+title.status,Unknown,Unbekannt,Unknown
+title.type,Database,Datenbank,Database
+title.type,EBook,EBook,EBook
+title.type,Journal,Journal,Journal
+transform.format,json,json,json
+transform.format,url,url,url
+transform.format,xml,xml,xml
+transform.type,license,license,license
+transform.type,package,package,package
+transform.type,subscription,subscription,subscription
+transform.type,title,title,title
+user.setting.dashboard.tab,Announcements,Ankündigungen,Announcements
+user.setting.dashboard.tab,Changes,Änderungen,Changes
+user.setting.dashboard.tab,Due Dates,Fällige Termine,Due Dates
+user.setting.dashboard.tab,Tasks,Aufgaben,Tasks
+user.setting.theme,accessibility,Barrierefrei,Accessibility
+user.setting.theme,semanticUI,Standard,Default
+y.n,No,Nein,No
+y.n,Yes,Ja,Yes
+y.n.o,No,Nein,No
+y.n.o,Not applicable,Nicht zutreffend,Not applicable
+y.n.o,Other,Andere,Other
+y.n.o,Planed,Geplant,Planed
+y.n.o,Unknown,Unklar,Unknown
+y.n.o,Yes,Ja,Yes
+y.n.u,No,Nein,No
+y.n.u,Unknown,Unbekannt,Unknown
+y.n.u,Yes,Ja,Yes

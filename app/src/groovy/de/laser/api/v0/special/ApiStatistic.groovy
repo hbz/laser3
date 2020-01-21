@@ -30,7 +30,7 @@ class ApiStatistic {
                 "select o from OrgSettings os join os.org o where os.key = :key and os.rdValue = :rdValue " +
                         "and (o.status is null or o.status != :deleted)", [
                             key    : OrgSettings.KEYS.NATSTAT_SERVER_ACCESS,
-                            rdValue: RefdataValue.getByValueAndCategory('Yes', 'YN'),
+                            rdValue: RefdataValue.getByValueAndCategory('Yes', RDConstants.Y_N),
                             deleted: RefdataValue.getByValueAndCategory('Deleted', RDConstants.ORG_STATUS)
                     ])
 

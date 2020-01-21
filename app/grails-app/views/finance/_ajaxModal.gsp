@@ -89,10 +89,10 @@
                         </div><!-- .field -->
                         <div class="field">
                             <label>${message(code:'financials.isVisibleForSubscriber')}</label>
-                            <g:set var="newIsVisibleForSubscriberValue" value="${costItem?.isVisibleForSubscriber ? RefdataValue.getByValueAndCategory('Yes', 'YN').id : RefdataValue.getByValueAndCategory('No', 'YN').id}" />
+                            <g:set var="newIsVisibleForSubscriberValue" value="${costItem?.isVisibleForSubscriber ? RefdataValue.getByValueAndCategory('Yes', de.laser.helper.RDConstants.Y_N).id : RefdataValue.getByValueAndCategory('No', de.laser.helper.RDConstants.Y_N).id}" />
                             <laser:select name="newIsVisibleForSubscriber" class="ui dropdown"
                                       id="newIsVisibleForSubscriber"
-                                      from="${RefdataCategory.getAllRefdataValues('YN')}"
+                                      from="${RefdataCategory.getAllRefdataValues(de.laser.helper.RDConstants.Y_N)}"
                                       optionKey="id"
                                       optionValue="value"
                                       noSelection="${['':'']}"

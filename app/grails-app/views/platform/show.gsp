@@ -1,4 +1,4 @@
-<%@ page import="com.k_int.kbplus.ApiSource; com.k_int.kbplus.Platform" %>
+<%@ page import="de.laser.helper.RDConstants; com.k_int.kbplus.ApiSource; com.k_int.kbplus.Platform" %>
 <!doctype html>
 <html>
 <head>
@@ -85,21 +85,21 @@
                 </dl>
                 <dl>
                   <dt>${message(code: 'platform.serviceProvider', default: 'Service Provider')}</dt>
-                  <dd><semui:xEditableRefData owner="${platformInstance}" field="serviceProvider" config="YN"/></dd>
+                  <dd><semui:xEditableRefData owner="${platformInstance}" field="serviceProvider" config="${RDConstants.Y_N}"/></dd>
                 </dl>
                 <dl>
                   <dt>${message(code: 'platform.softwareProvider', default: 'Software Provider')}</dt>
-                  <dd><semui:xEditableRefData owner="${platformInstance}" field="softwareProvider" config="YN"/></dd>
+                  <dd><semui:xEditableRefData owner="${platformInstance}" field="softwareProvider" config="${RDConstants.Y_N}"/></dd>
                 </dl>
                 <g:if test="${params.mode == 'advanced'}">
                   <dl>
                     <dt>${message(code: 'platform.type', default: 'Type')}</dt>
-                    <dd><semui:xEditableRefData owner="${platformInstance}" field="type" config="YNO"/></dd>
+                    <dd><semui:xEditableRefData owner="${platformInstance}" field="type" config="${RDConstants.Y_N_O}"/></dd>
                   </dl>
                   <dl>
                     <dt>${message(code: 'platform.status', default: 'Status')}</dt>
                     <dd><semui:xEditableRefData owner="${platformInstance}" field="status"
-                                                config="UsageStatus"/></dd>
+                                                config="${RDConstants.USAGE_STATUS}"/></dd>
                   </dl>
                   <dl>
                     <dt><g:message code="platform.globalUID.label" default="Global UID"/></dt>

@@ -1,4 +1,4 @@
-<%@ page import="de.laser.AccessService; de.laser.helper.SqlDateUtils; com.k_int.kbplus.*; com.k_int.kbplus.RefdataValue; com.k_int.kbplus.abstract_domain.AbstractProperty; com.k_int.kbplus.UserSettings; de.laser.DashboardDueDate" %>
+<%@ page import="de.laser.AccessService; de.laser.helper.SqlDateUtils; de.laser.helper.RDConstants; com.k_int.kbplus.*; com.k_int.kbplus.RefdataValue; com.k_int.kbplus.abstract_domain.AbstractProperty; com.k_int.kbplus.UserSettings; de.laser.DashboardDueDate" %>
 <g:set var="simpleDateFormat" value="${new java.text.SimpleDateFormat("yyyyMMdd")}"/>
 <!doctype html>
 <html>
@@ -66,9 +66,9 @@
     <%
         def US_DASHBOARD_TAB
         switch(params.view) {
-            case "announcementsView": US_DASHBOARD_TAB = RefdataValue.getByValueAndCategory('Announcements','User.Settings.Dashboard.Tab')
+            case "announcementsView": US_DASHBOARD_TAB = RefdataValue.getByValueAndCategory('Announcements', RDConstants.USER_SETTING_DASHBOARD_TAB)
             break
-            default: US_DASHBOARD_TAB = user.getSetting(UserSettings.KEYS.DASHBOARD_TAB, RefdataValue.getByValueAndCategory('Due Dates', 'User.Settings.Dashboard.Tab'))
+            default: US_DASHBOARD_TAB = user.getSetting(UserSettings.KEYS.DASHBOARD_TAB, RefdataValue.getByValueAndCategory('Due Dates', RDConstants.USER_SETTING_DASHBOARD_TAB))
             break
         }
     %>
@@ -285,7 +285,7 @@
                             <div class="right floated author">
                                 Status:
                                 <span>
-                                <semui:xEditableRefData config="Task Status" owner="${tsk}" field="status" />
+                                <semui:xEditableRefData config="${RDConstants.TASK_STATUS}" owner="${tsk}" field="status" />
                                 </span>
                             </div>
                         </div>

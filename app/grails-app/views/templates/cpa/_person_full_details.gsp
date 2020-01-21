@@ -1,4 +1,4 @@
-<%@ page import="com.k_int.kbplus.Person; com.k_int.kbplus.PersonRole" %>
+<%@ page import="com.k_int.kbplus.Person;com.k_int.kbplus.PersonRole;de.laser.helper.RDConstants" %>
 
 <g:if test="${person && personContext}">
     <div class="ui divided middle aligned selection list la-flex-list la-list-border-around">
@@ -28,7 +28,7 @@
                                                                           tmplId: 'prsRoleFormModal' + person.id + '_F',
                                                                           tmplRoleType: 'Funktion',
                                                                           roleType: PersonRole.TYPE_FUNCTION,
-                                                                          roleTypeValues: PersonRole.getAllRefdataValues(de.laser.helper.RDConstants.PERSON_FUNCTION),
+                                                                          roleTypeValues: PersonRole.getAllRefdataValues(RDConstants.PERSON_FUNCTION),
                                                                           message:'person.function_new.label',
                                                                           presetOrgId: personContext.id ]"/>
 
@@ -39,7 +39,7 @@
                                                                           tmplId: 'prsRoleFormModal' + person.id + '_P',
                                                                           tmplRoleType: 'Funktion',
                                                                           roleType: PersonRole.TYPE_POSITION,
-                                                                          roleTypeValues: PersonRole.getAllRefdataValues(de.laser.helper.RDConstants.PERSON_POSITION),
+                                                                          roleTypeValues: PersonRole.getAllRefdataValues(RDConstants.PERSON_POSITION),
                                                                           message:'person.position_new.label',
                                                                           presetOrgId: personContext.id ]"/>
                     </g:if>

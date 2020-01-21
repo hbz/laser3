@@ -4148,7 +4148,7 @@ class SubscriptionController extends AbstractDebugController {
 
                         def task = Task.findBySubscriptionAndId(baseSub, Long.valueOf(tsk))
                         if (task) {
-                            if (task.status != RefdataValue.getByValueAndCategory('Done', 'Task Status')) {
+                            if (task.status != RefdataValue.getByValueAndCategory('Done', RDConstants.TASK_STATUS)) {
                                 Task newTask = new Task()
                                 InvokerHelper.setProperties(newTask, task.properties)
                                 newTask.systemCreateDate = new Date()
