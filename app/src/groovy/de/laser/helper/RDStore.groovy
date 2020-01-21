@@ -147,8 +147,8 @@ class RDStore {
     //TIPP_STATUS_DELETED is defined above as TIPP_DELETED
     
     static final IE_ACCEPT_STATUS_FIXED            = getRefdataValue('Fixed', RDConstants.IE_ACCEPT_STATUS)
-    static final IE_ACCEPT_STATUS_UNDER_NEGOTIATION= getRefdataValue('Under Negotiation', RDConstants.IE_ACCEPT_STATUS)
-    static final IE_ACCEPT_STATUS_UNDER_CONSIDERATION= getRefdataValue('Under Consideration','RDConstants.IE_ACCEPT_STATUS)
+    static final IE_ACCEPT_STATUS_UNDER_NEGOTIATION = getRefdataValue('Under Negotiation', RDConstants.IE_ACCEPT_STATUS)
+    static final IE_ACCEPT_STATUS_UNDER_CONSIDERATION = getRefdataValue('Under Consideration',RDConstants.IE_ACCEPT_STATUS)
 
     static final PRS_FUNC_GENERAL_CONTACT_PRS   = getRefdataValue('General contact person', 'Person Function')
     static final PRS_FUNC_GASCO_CONTACT         = getRefdataValue('GASCO-Contact', 'Person Function')

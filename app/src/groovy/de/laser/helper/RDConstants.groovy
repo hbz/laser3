@@ -6,7 +6,6 @@ import groovy.transform.CompileStatic
 class RDConstants {
 
     static final ACCESS_CHOICE_REMOTE   = 'access.choice.remote'
-
     static final ACCESS_METHOD          = 'access.method'
     static final ACCESS_METHOD_IP       = 'access.method.ip'
     static final ACCESS_POINT_TYPE      = 'access.point.type'
@@ -28,7 +27,6 @@ class RDConstants {
     static final COST_ITEM_CATEGORY     = 'cost.item.category'
     static final COST_ITEM_ELEMENT      = 'cost.item.element'
     static final COST_ITEM_STATUS       = 'cost.item.status'
-
     static final COUNTRY                = 'country'
     static final CREATOR_TYPE           = 'creator.type'
     static final CURRENCY               = 'currency'
@@ -91,10 +89,8 @@ class RDConstants {
     static final MAIL_TEMPLATE_LANGUAGE = 'mail.template.language'
     static final MAIL_TEMPLATE_TYPE     = 'mail.template.type'
     static final NUMBER_TYPE            = 'number.type'
+
     static final ORGANISATIONAL_ROLE    = 'organisational.role'
-
-    // TODO -- ORG_ROLE_TYPE
-
     static final ORG_SECTOR             = 'org.sector'
     static final ORG_STATUS             = 'org.status'
     static final ORG_TYPE               = 'org.type'
