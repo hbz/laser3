@@ -31,9 +31,9 @@ ${personInstance}
         <div class="la-inline-lists">
             <div class="ui card">
                 <div class="content">
-                    <dl><dt>${RefdataCategory.getByDesc('Person Contact Type').getI10n('desc')}</dt>
+                    <dl><dt>${RefdataCategory.getByDesc(de.laser.helper.RDConstants.PERSON_CONTACT_TYPE).getI10n('desc')}</dt>
                         <dd>
-                            <semui:xEditableRefData owner="${personInstance}" field="contactType" config="Person Contact Type"/>
+                            <semui:xEditableRefData owner="${personInstance}" field="contactType" config="${de.laser.helper.RDConstants.PERSON_CONTACT_TYPE}"/>
 
                             <r:script>
                                 $('a[data-name=contactType]').on('save', function(e, params) {
@@ -74,9 +74,9 @@ ${personInstance}
                         </dl>
 
                         <%--
-                        <dl><dt>${com.k_int.kbplus.RefdataCategory.getByDesc('Person Position').getI10n('desc')}</dt>
+                        <dl><dt>${com.k_int.kbplus.RefdataCategory.getByDesc(de.laser.helper.RDConstants.PERSON_POSITION).getI10n('desc')}</dt>
                             <dd><semui:xEditableRefData owner="${personInstance}" field="roleType"
-                                                        config="Person Position"/></dd></dl>--%>
+                                                        config="${de.laser.helper.RDConstants.PERSON_POSITION}"/></dd></dl>--%>
                     </g:if>
                 </div>
             </div><!-- .card -->
@@ -411,7 +411,7 @@ ${personInstance}
         tmplId: 'prFunctionModal',
         tmplRoleType: 'Funktion',
         roleType: PersonRole.TYPE_FUNCTION,
-        roleTypeValues: PersonRole.getAllRefdataValues('Person Function'),
+        roleTypeValues: PersonRole.getAllRefdataValues(de.laser.helper.RDConstants.PERSON_FUNCTION),
         message:'person.function_new.label',
         presetOrgId: presetOrg?.id]" />
 
@@ -419,7 +419,7 @@ ${personInstance}
         tmplId: 'prPositionModal',
         tmplRoleType: 'Position',
         roleType: PersonRole.TYPE_POSITION,
-        roleTypeValues: PersonRole.getAllRefdataValues('Person Position'),
+        roleTypeValues: PersonRole.getAllRefdataValues(de.laser.helper.RDConstants.PERSON_POSITION),
         message:'person.position_new.label',
         presetOrgId: presetOrg?.id]" />
 

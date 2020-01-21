@@ -45,7 +45,7 @@
                     <div class="field">
                         <%
                             List fakeList = []
-                            RefdataCategory.getAllRefdataValues('Subscription Status').each { rdv ->
+                            RefdataCategory.getAllRefdataValues(de.laser.helper.RDConstants.SUBSCRIPTION_STATUS).each { rdv ->
                                 if(!rdv.equals(RDStore.SUBSCRIPTION_DELETED))
                                     fakeList.add(rdv)
                             }

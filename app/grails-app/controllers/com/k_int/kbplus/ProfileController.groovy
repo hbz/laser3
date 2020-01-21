@@ -5,6 +5,7 @@ import com.k_int.kbplus.auth.User
 import com.k_int.kbplus.auth.UserOrg
 import com.k_int.properties.PropertyDefinition
 import de.laser.helper.EhcacheWrapper
+import de.laser.helper.RDConstants
 import de.laser.helper.RDStore
 import grails.converters.JSON
 import grails.plugin.springsecurity.SpringSecurityUtils
@@ -429,9 +430,9 @@ class ProfileController {
         log.debug("Profile :: createReminder - ${params}")
         def result    = [:]
         def user      = User.load(springSecurityService.principal.id)
-        def trigger   = (params.int('trigger'))? RefdataValue.load(params.trigger) : RefdataValue.getByValueAndCategory("Subscription Manual Renewal Date", "ReminderTrigger")
-        def remMethod = (params.int('method'))?  RefdataValue.load(params.method)  : RefdataValue.getByValueAndCategory("email", "ReminderMethod")
-        def unit      = (params.int('unit'))?    RefdataValue.load(params.unit)    : RefdataValue.getByValueAndCategory("Day", "ReminderUnit")
+        def trigger   = (params.int('trigger'))? RefdataValue.load(params.trigger) : RefdataValue.getByValueAndCategory("Subscription Manual Renewal Date", RDConstants.REMINDER_TRIGGER)
+        def remMethod = (params.int('method'))?  RefdataValue.load(params.method)  : RefdataValue.getByValueAndCategory("email", RDConstants.REMINDER_METHOD)
+        def unit      = (params.int('unit'))?    RefdataValue.load(params.unit)    : RefdataValue.getByValueAndCategory("Day", RDConstants.REMINDER_UNIT)
 
 
         def reminder = new Reminder(trigger: trigger, unit: unit, reminderMethod: remMethod, amount: params.getInt('val')?:1, user: user, active: Boolean.TRUE)

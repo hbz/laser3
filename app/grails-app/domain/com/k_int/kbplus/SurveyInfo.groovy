@@ -1,6 +1,7 @@
 package com.k_int.kbplus
 
 import com.k_int.kbplus.auth.Role
+import de.laser.helper.RDConstants
 import de.laser.helper.RDStore
 import de.laser.helper.RefdataAnnotation
 
@@ -20,10 +21,10 @@ class SurveyInfo {
 
     Org owner
 
-    @RefdataAnnotation(cat = 'Survey Type')
+    @RefdataAnnotation(cat = RDConstants.SURVEY_TYPE)
     RefdataValue type
 
-    @RefdataAnnotation(cat = 'Survey Status')
+    @RefdataAnnotation(cat = RDConstants.SURVEY_STATUS)
     RefdataValue status
 
     Date dateCreated

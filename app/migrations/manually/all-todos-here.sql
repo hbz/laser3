@@ -247,6 +247,62 @@ update property_definition set pd_rdc = 'org.sector' where pd_rdc = 'OrgSector';
 update property_definition set pd_rdc = 'org.status' where pd_rdc = 'OrgStatus';
 update property_definition set pd_rdc = 'org.type' where pd_rdc = 'OrgRoleType';
 
+------
+
+update refdata_category set rdc_description = 'package.status' where rdc_description = 'Package Status';
+update refdata_category set rdc_description = 'package.breakable' where rdc_description = 'Package.Breakable';
+update refdata_category set rdc_description = 'package.consistent' where rdc_description = 'Package.Consistent';
+update refdata_category set rdc_description = 'package.fixed' where rdc_description = 'Package.Fixed';
+update refdata_category set rdc_description = 'package.list.status' where rdc_description = 'Package.ListStatus';
+update refdata_category set rdc_description = 'package.scope' where rdc_description = 'Package.Scope';
+update refdata_category set rdc_description = 'package.type' where rdc_description = 'Package.Type';
+update refdata_category set rdc_description = 'pending.change.status' where rdc_description = 'PendingChangeStatus';
+update refdata_category set rdc_description = 'permissions' where rdc_description = 'Permissions';
+update refdata_category set rdc_description = 'person.contact.type' where rdc_description = 'Person Contact Type';
+update refdata_category set rdc_description = 'person.function' where rdc_description = 'Person Function';
+update refdata_category set rdc_description = 'person.position' where rdc_description = 'Person Position';
+update refdata_category set rdc_description = 'person.responsibility' where rdc_description = 'Person Responsibility';
+update refdata_category set rdc_description = 'platform.status' where rdc_description = 'Platform Status';
+update refdata_category set rdc_description = 'reminder.method' where rdc_description = 'ReminderMethod';
+update refdata_category set rdc_description = 'reminder.trigger' where rdc_description = 'ReminderTrigger';
+update refdata_category set rdc_description = 'reminder.unit' where rdc_description = 'ReminderUnit';
+update refdata_category set rdc_description = 'semester' where rdc_description = 'Semester';
+update refdata_category set rdc_description = 'share.configuration' where rdc_description = 'Share Configuration';
+update refdata_category set rdc_description = 'sim.user.number' where rdc_description = 'Sim-User Number';
+update refdata_category set rdc_description = 'subscription.form' where rdc_description = 'Subscription Form';
+update refdata_category set rdc_description = 'subscription.resource' where rdc_description = 'Subscription Resource';
+update refdata_category set rdc_description = 'subscription.status' where rdc_description = 'Subscription Status';
+update refdata_category set rdc_description = 'subscription.type' where rdc_description = 'Subscription Type';
+update refdata_category set rdc_description = 'survey.status' where rdc_description = 'Survey Status';
+update refdata_category set rdc_description = 'survey.type' where rdc_description = 'Survey Type';
+
+update property_definition set pd_rdc = 'package.status' where pd_rdc = 'Package Status';
+update property_definition set pd_rdc = 'package.breakable' where pd_rdc = 'Package.Breakable';
+update property_definition set pd_rdc = 'package.consistent' where pd_rdc = 'Package.Consistent';
+update property_definition set pd_rdc = 'package.fixed' where pd_rdc = 'Package.Fixed';
+update property_definition set pd_rdc = 'package.list.status' where pd_rdc = 'Package.ListStatus';
+update property_definition set pd_rdc = 'package.scope' where pd_rdc = 'Package.Scope';
+update property_definition set pd_rdc = 'package.type' where pd_rdc = 'Package.Type';
+update property_definition set pd_rdc = 'pending.change.status' where pd_rdc = 'PendingChangeStatus';
+update property_definition set pd_rdc = 'permissions' where pd_rdc = 'Permissions';
+update property_definition set pd_rdc = 'person.contact.type' where pd_rdc = 'Person Contact Type';
+update property_definition set pd_rdc = 'person.function' where pd_rdc = 'Person Function';
+update property_definition set pd_rdc = 'person.position' where pd_rdc = 'Person Position';
+update property_definition set pd_rdc = 'person.responsibility' where pd_rdc = 'Person Responsibility';
+update property_definition set pd_rdc = 'platform.status' where pd_rdc = 'Platform Status';
+update property_definition set pd_rdc = 'reminder.method' where pd_rdc = 'ReminderMethod';
+update property_definition set pd_rdc = 'reminder.trigger' where pd_rdc = 'ReminderTrigger';
+update property_definition set pd_rdc = 'reminder.unit' where pd_rdc = 'ReminderUnit';
+update property_definition set pd_rdc = 'semester' where pd_rdc = 'Semester';
+update property_definition set pd_rdc = 'share.configuration' where pd_rdc = 'Share Configuration';
+update property_definition set pd_rdc = 'sim.user.number' where pd_rdc = 'Sim-User Number';
+update property_definition set pd_rdc = 'subscription.form' where pd_rdc = 'Subscription Form';
+update property_definition set pd_rdc = 'subscription.resource' where pd_rdc = 'Subscription Resource';
+update property_definition set pd_rdc = 'subscription.status' where pd_rdc = 'Subscription Status';
+update property_definition set pd_rdc = 'subscription.type' where pd_rdc = 'Subscription Type';
+update property_definition set pd_rdc = 'survey.status' where pd_rdc = 'Survey Status';
+update property_definition set pd_rdc = 'survey.type' where pd_rdc = 'Survey Type';
+
 
 
 

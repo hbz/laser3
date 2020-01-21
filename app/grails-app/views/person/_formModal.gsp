@@ -12,10 +12,10 @@
 
                 <div class="field fieldcontain ${hasErrors(bean: personInstance, field: 'contactType', 'error')} ">
                     <label for="contactType">
-                        ${com.k_int.kbplus.RefdataCategory.getByDesc('Person Contact Type')?.getI10n('desc')}
+                        ${com.k_int.kbplus.RefdataCategory.getByDesc(de.laser.helper.RDConstants.PERSON_CONTACT_TYPE)?.getI10n('desc')}
                     </label>
                     <laser:select class="ui dropdown" id="contactType" name="contactType"
-                                  from="${com.k_int.kbplus.Person.getAllRefdataValues('Person Contact Type')}"
+                                  from="${com.k_int.kbplus.Person.getAllRefdataValues(de.laser.helper.RDConstants.PERSON_CONTACT_TYPE)}"
                                   optionKey="id"
                                   optionValue="value"
                                   value="${personInstance?.contactType?.id ?: RDStore.CONTACT_TYPE_PERSONAL.id}"
@@ -186,7 +186,7 @@
                                     </label>
                                     <laser:select class="ui dropdown values"
                                                   name="functionType"
-                                                  from="${PersonRole.getAllRefdataValues('Person Function')}"
+                                                  from="${PersonRole.getAllRefdataValues(de.laser.helper.RDConstants.PERSON_FUNCTION)}"
                                                   optionKey="id"
                                                   value="${presetFunctionType?.id}"
                                                   optionValue="value"/>
@@ -227,7 +227,7 @@
                                 </label>
                                 <laser:select class="ui dropdown values"
                                               name="positionType"
-                                              from="${PersonRole.getAllRefdataValues('Person Position')}"
+                                              from="${PersonRole.getAllRefdataValues(de.laser.helper.RDConstants.PERSON_POSITION)}"
                                               optionKey="id"
                                               value="${presetPositionType?.id}"
                                               optionValue="value"

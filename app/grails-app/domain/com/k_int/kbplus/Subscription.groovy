@@ -7,6 +7,7 @@ import com.k_int.kbplus.OrgRole
 import com.k_int.properties.PropertyDefinitionGroup
 import com.k_int.properties.PropertyDefinitionGroupBinding
 import de.laser.domain.AbstractBaseDomain
+import de.laser.helper.RDConstants
 import de.laser.helper.RDStore
 import de.laser.helper.RefdataAnnotation
 import de.laser.interfaces.*
@@ -48,16 +49,16 @@ class Subscription
     @Transient
     def deletionService
 
-    @RefdataAnnotation(cat = 'Subscription Status')
+    @RefdataAnnotation(cat = RDConstants.SUBSCRIPTION_STATUS)
     RefdataValue status
 
-    @RefdataAnnotation(cat = 'Subscription Type')
+    @RefdataAnnotation(cat = RDConstants.SUBSCRIPTION_TYPE)
     RefdataValue type
 
-    @RefdataAnnotation(cat = 'Subscription Form')
+    @RefdataAnnotation(cat = RDConstants.SUBSCRIPTION_FORM)
     RefdataValue form
 
-    @RefdataAnnotation(cat = 'Subscription Resource')
+    @RefdataAnnotation(cat = RDConstants.SUBSCRIPTION_RESOURCE)
     RefdataValue resource
 
     // If a subscription is slaved then any changes to instanceOf will automatically be applied to this subscription

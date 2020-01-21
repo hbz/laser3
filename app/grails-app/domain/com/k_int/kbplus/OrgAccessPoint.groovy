@@ -110,7 +110,7 @@ class OrgAccessPoint extends AbstractBaseDomain {
     {
         def notAllowedSubscriptionStatusList  = ['Deleted', 'Expired', 'Terminated', 'No longer usable', 'Rejected', 'ExpiredPerennial']
         def statusList = []
-        notAllowedSubscriptionStatusList.each { statusList += RDStore.getRefdataValue(it, 'Subscription Status')}
+        notAllowedSubscriptionStatusList.each { statusList += RDStore.getRefdataValue(it, RDConstants.SUBSCRIPTION_STATUS)}
         // Get not active subscriptions for the access point org
         def hql = "select sub from Subscription sub join sub.orgRelations as orgrel where orgrel.org.id = ${org.id} and sub.status not in (:status) and not exists (select 1 from OrgAccessPointLink oapl where oapl.subscription = sub and oapl.active = true) order by sub.name asc"
         return Subscription.executeQuery(hql, [status: statusList])

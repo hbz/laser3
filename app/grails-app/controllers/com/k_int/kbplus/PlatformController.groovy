@@ -4,6 +4,7 @@ import com.k_int.kbplus.auth.User
 import de.laser.AccessService
 import de.laser.controller.AbstractDebugController
 import de.laser.helper.DebugAnnotation
+import de.laser.helper.RDConstants
 import de.laser.helper.RDStore
 import grails.plugin.springsecurity.SpringSecurityUtils
 import grails.plugin.springsecurity.annotation.Secured
@@ -34,7 +35,7 @@ class PlatformController extends AbstractDebugController {
 
         result.offset = params.offset ?: 0
 
-        def deleted_platform_status = RefdataValue.getByValueAndCategory( 'Deleted', 'Platform Status')
+        def deleted_platform_status = RefdataValue.getByValueAndCategory( 'Deleted', RDConstants.PLATFORM_STATUS)
         def qry_params = [delStatus: deleted_platform_status]
 
         def base_qry = " from Platform as p left join p.org o where ((p.status is null) OR (p.status = :delStatus)) "

@@ -1610,7 +1610,7 @@ from License as l where (
 
 
         if (license?.hasPerm("edit", result.user)) {
-            def current_subscription_status = RefdataValue.getByValueAndCategory('Current', 'Subscription Status')
+            def current_subscription_status = RefdataValue.getByValueAndCategory('Current', RDConstants.SUBSCRIPTION_STATUS)
 
             def subs_using_this_license = Subscription.findAllByOwnerAndStatus(license, current_subscription_status)
 
@@ -2425,7 +2425,7 @@ AND EXISTS (
                 " or (startDate <= :startDate and endDate is null) " +
                 " or (startDate is null and endDate is null))",
                 [contextOrg: contextService.org,
-                 status:  RefdataValue.getByValueAndCategory('In Processing', 'Survey Status'),
+                 status:  RefdataValue.getByValueAndCategory('In Processing', RDConstants.SURVEY_STATUS),
                  startDate: new Date(System.currentTimeMillis()),
                  endDate: new Date(System.currentTimeMillis())])*/
 
@@ -3488,7 +3488,7 @@ AND EXISTS (
         if(params.filterSet)
             result.filterSet = params.filterSet
 
-        result.filterSubTypes = RefdataCategory.getAllRefdataValues('Subscription Type').minus(
+        result.filterSubTypes = RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_TYPE).minus(
                 RDStore.SUBSCRIPTION_TYPE_LOCAL
         )
         result.filterPropList = PropertyDefinition.findAllPublicAndPrivateProp([PropertyDefinition.SUB_PROP], contextService.getOrg())

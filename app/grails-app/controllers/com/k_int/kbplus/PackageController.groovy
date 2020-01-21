@@ -6,6 +6,7 @@ import com.k_int.properties.PropertyDefinition
 import de.laser.DeletionService
 import de.laser.controller.AbstractDebugController
 import de.laser.helper.DebugAnnotation
+import de.laser.helper.RDConstants
 import de.laser.helper.RDStore
 import grails.converters.JSON
 import grails.plugin.springsecurity.SpringSecurityUtils
@@ -113,7 +114,7 @@ class PackageController extends AbstractDebugController {
         def paginate_after = params.paginate_after ?: ((2 * result.max) - 1)
         result.offset = params.offset ? Integer.parseInt(params.offset) : 0;
 
-        def deleted_package_status = RefdataValue.getByValueAndCategory('Deleted', 'Package Status')
+        def deleted_package_status = RefdataValue.getByValueAndCategory('Deleted', RDConstants.PACKAGE_STATUS)
         //def qry_params = [deleted_package_status]
         def qry_params = []
 
@@ -488,7 +489,7 @@ class PackageController extends AbstractDebugController {
             return
         }
 
-        def pending_change_pending_status = RefdataValue.getByValueAndCategory('Pending', 'PendingChangeStatus')
+        def pending_change_pending_status = RefdataValue.getByValueAndCategory('Pending', RDConstants.PENDING_CHANGE_STATUS)
 
         result.pendingChanges = PendingChange.executeQuery("select pc from PendingChange as pc where pc.pkg=? and ( pc.status is null or pc.status = ? ) order by ts, payload", [packageInstance, pending_change_pending_status]);
 
@@ -504,7 +505,7 @@ class PackageController extends AbstractDebugController {
 
         result.contextOrg = contextOrg
 
-        result.modalPrsLinkRole = RefdataValue.getByValueAndCategory('Specific package editor', 'Person Responsibility')
+        result.modalPrsLinkRole = RefdataValue.getByValueAndCategory('Specific package editor', RDConstants.PERSON_RESPONSIBILITY)
         result.modalVisiblePersons = addressbookService.getPrivatePersonsByTenant(contextService.getOrg())
 
         // restrict visible for templates/links/orgLinksAsList
@@ -623,7 +624,7 @@ class PackageController extends AbstractDebugController {
             result.processingpc = true
         }
 
-        def pending_change_pending_status = RefdataValue.getByValueAndCategory('Pending', 'PendingChangeStatus')
+        def pending_change_pending_status = RefdataValue.getByValueAndCategory('Pending', RDConstants.PENDING_CHANGE_STATUS)
 
         result.pendingChanges = PendingChange.executeQuery("select pc from PendingChange as pc where pc.pkg=? and ( pc.status is null or pc.status = ? ) order by ts, payload", [packageInstance, pending_change_pending_status]);
 

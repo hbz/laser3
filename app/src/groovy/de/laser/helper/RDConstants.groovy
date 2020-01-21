@@ -60,6 +60,7 @@ class RDConstants {
     static final LICENSE_REMOTE_ACCESS  = 'license.remote.access'
     static final LICENSE_STATUS         = 'license.status'
     static final LICENSE_TYPE           = 'license.type'
+    static final LINK_TYPE              = 'link.type'
 
     static final LICENSE_ARC_ARCHIVAL_COPY_CONTENT  = "license.arc.archival.copy.content"
     static final LICENSE_ARC_ARCHIVAL_COPY_COST     = "license.arc.archival.copy.cost"
@@ -84,8 +85,6 @@ class RDConstants {
     static final LICENSE_STATISTICS_STANDARDS       = "license.statistics.standards"
     static final LICENSE_STATISTICS_USER_CREDS      = "license.statistics.user.creds"
 
-    static final LINK_TYPE              = 'link.type'
-
     static final MAIL_TEMPLATE_LANGUAGE = 'mail.template.language'
     static final MAIL_TEMPLATE_TYPE     = 'mail.template.type'
     static final NUMBER_TYPE            = 'number.type'
@@ -95,6 +94,33 @@ class RDConstants {
     static final ORG_STATUS             = 'org.status'
     static final ORG_TYPE               = 'org.type'
 
+    static final PACKAGE_STATUS         = 'package.status'
+    static final PACKAGE_BREAKABLE      = 'package.breakable'
+    static final PACKAGE_CONSISTENT     = 'package.consistent'
+    static final PACKAGE_FIXED          = 'package.fixed'
+    static final PACKAGE_LIST_STATUS    = 'package.list.status'
+    static final PACKAGE_SCOPE          = 'package.scope'
+    static final PACKAGE_TYPE           = 'package.type'
+    static final PENDING_CHANGE_STATUS  = 'pending.change.status'
+    static final PERMISSIONS            = 'permissions'
+    static final PERSON_CONTACT_TYPE    = 'person.contact.type'
+    static final PERSON_FUNCTION        = 'person.function'
+    static final PERSON_POSITION        = 'person.position'
+    static final PERSON_RESPONSIBILITY  = 'person.responsibility'
+    static final PLATFORM_STATUS        = 'platform.status'
 
+    static final REMINDER_METHOD        = 'reminder.method'
+    static final REMINDER_TRIGGER       = 'reminder.trigger'
+    static final REMINDER_UNIT          = 'reminder.unit'
+
+    static final SEMESTER               = 'semester'
+    static final SHARE_CONFIGURATION    = 'share.configuration'
+    static final SIM_USER_NUMBER        = 'sim.user.number'
+    static final SUBSCRIPTION_FORM      = 'subscription.form'
+    static final SUBSCRIPTION_RESOURCE  = 'subscription.resource'
+    static final SUBSCRIPTION_STATUS    = 'subscription.status'
+    static final SUBSCRIPTION_TYPE      = 'subscription.type'
+    static final SURVEY_STATUS          = 'survey.status'
+    static final SURVEY_TYPE            = 'survey.type'
 
 }

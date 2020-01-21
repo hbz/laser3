@@ -7,8 +7,8 @@
 
 <semui:modal id="${modalID ?: 'copyEmailaddresses_ajaxModal'}" text="${message(code:'menu.institutions.copy_emailaddresses', args:[orgList?.size()?:0])}" hideSubmitButton="true">
 
-    <g:set var="rdvAllPersonFunctions"  value="${PersonRole.getAllRefdataValues('Person Function')}" scope="request"/>
-    <g:set var="rdvAllPersonPositions"  value="${PersonRole.getAllRefdataValues('Person Position')}" scope="request"/>
+    <g:set var="rdvAllPersonFunctions"  value="${PersonRole.getAllRefdataValues(de.laser.helper.RDConstants.PERSON_FUNCTION)}" scope="request"/>
+    <g:set var="rdvAllPersonPositions"  value="${PersonRole.getAllRefdataValues(de.laser.helper.RDConstants.PERSON_POSITION)}" scope="request"/>
 
     <div>
     <label><g:message code="person.function.label" default="Function"/></label>&nbsp

@@ -4,6 +4,7 @@ import com.k_int.kbplus.auth.User
 import com.k_int.properties.PropertyDefinition
 import de.laser.controller.AbstractDebugController
 import de.laser.helper.DebugAnnotation
+import de.laser.helper.RDConstants
 import de.laser.helper.RDStore
 import grails.converters.JSON
 import grails.plugin.springsecurity.SpringSecurityUtils
@@ -91,11 +92,11 @@ class PersonController extends AbstractDebugController {
 
         List<PersonRole> gcp = PersonRole.where {
             prs == personInstance &&
-            functionType == RefdataValue.getByValueAndCategory('General contact person', 'Person Function')
+            functionType == RefdataValue.getByValueAndCategory('General contact person', RDConstants.PERSON_FUNCTION)
         }.findAll()
         List<PersonRole> fcba = PersonRole.where {
             prs == personInstance &&
-            functionType == RefdataValue.getByValueAndCategory('Functional Contact Billing Adress', 'Person Function')
+            functionType == RefdataValue.getByValueAndCategory('Functional Contact Billing Adress', RDConstants.PERSON_FUNCTION)
         }.findAll()
         
 
@@ -287,12 +288,12 @@ class PersonController extends AbstractDebugController {
             
             if(person){
                 if('func' == roleType){
-                    def rdc = RefdataCategory.getByDesc('Person Function')
+                    def rdc = RefdataCategory.getByDesc(RDConstants.PERSON_FUNCTION)
                     def hqlPart = "from PersonRole as PR where PR.prs = ${person?.id} and PR.functionType.owner = ${rdc.id}"  
                     existingPrsLinks = PersonRole.findAll(hqlPart) 
                 }
                 else if('resp' == roleType){
-                    def rdc = RefdataCategory.getByDesc('Person Responsibility')
+                    def rdc = RefdataCategory.getByDesc(RDConstants.PERSON_RESPONSIBILITY)
                     def hqlPart = "from PersonRole as PR where PR.prs = ${person?.id} and PR.responsibilityType.owner = ${rdc.id}"  
                     existingPrsLinks = PersonRole.findAll(hqlPart)
                 }
@@ -438,7 +439,7 @@ class PersonController extends AbstractDebugController {
         if (params.functionType) {
             def result
 
-            def functionRdv = RefdataValue.get(params.functionType) ?: RefdataValue.getByValueAndCategory('General contact person', 'Person Function')
+            def functionRdv = RefdataValue.get(params.functionType) ?: RefdataValue.getByValueAndCategory('General contact person', RDConstants.PERSON_FUNCTION)
             def functionOrg = Org.get(params.functionOrg)
 
             if (functionRdv && functionOrg) {

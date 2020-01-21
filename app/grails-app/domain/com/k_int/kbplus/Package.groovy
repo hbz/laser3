@@ -43,10 +43,10 @@ class Package
     @RefdataAnnotation(cat = '?')
     RefdataValue packageType
 
-    @RefdataAnnotation(cat = 'Package Status')
+    @RefdataAnnotation(cat = RDConstants.PACKAGE_STATUS)
     RefdataValue packageStatus
 
-    @RefdataAnnotation(cat = 'Package.ListStatus')
+    @RefdataAnnotation(cat = RDConstants.PACKAGE_LIST_STATUS)
     RefdataValue packageListStatus
 
     @RefdataAnnotation(cat = '?')
@@ -229,7 +229,7 @@ static hasMany = [  tipps:     TitleInstancePackagePlatform,
     // Create the header
     log.debug("Package: createSubscription called")
     def result = new Subscription( name:subname,
-                                   status:RefdataValue.getByValueAndCategory('Current','Subscription Status'),
+                                   status:RefdataValue.getByValueAndCategory('Current', RDConstants.SUBSCRIPTION_STATUS),
                                    identifier:subidentifier,
                                    impId:java.util.UUID.randomUUID().toString(),
                                    startDate:startdate,

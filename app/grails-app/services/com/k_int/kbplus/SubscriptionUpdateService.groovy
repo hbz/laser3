@@ -2,6 +2,7 @@ package com.k_int.kbplus
 
 import com.k_int.ClassUtils
 import de.laser.SystemEvent
+import de.laser.helper.RDConstants
 import de.laser.helper.RDStore
 import de.laser.interfaces.AbstractLockableService
 import de.laser.interfaces.TemplateSupport
@@ -218,7 +219,7 @@ class SubscriptionUpdateService extends AbstractLockableService {
     void retriggerPendingChanges() {
         Org contextOrg = contextService.org
         Map<Subscription,Set<JSONElement>> currentPendingChanges = [:]
-        List<PendingChange> list = PendingChange.findAllBySubscriptionIsNotNullAndStatus(RefdataValue.getByValueAndCategory('Pending','PendingChangeStatus'))
+        List<PendingChange> list = PendingChange.findAllBySubscriptionIsNotNullAndStatus(RefdataValue.getByValueAndCategory('Pending', RDConstants.PENDING_CHANGE_STATUS))
         list.each { pc ->
             Subscription subscription = ClassUtils.deproxy(pc.subscription)
             if(subscription.status != RDStore.SUBSCRIPTION_EXPIRED) {

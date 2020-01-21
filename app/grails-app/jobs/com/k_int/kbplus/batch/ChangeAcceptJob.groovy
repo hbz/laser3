@@ -4,6 +4,7 @@ import com.k_int.kbplus.PendingChange
 import com.k_int.kbplus.RefdataValue
 import com.k_int.kbplus.auth.User
 import de.laser.SystemEvent
+import de.laser.helper.RDConstants
 import de.laser.quartz.AbstractJob
 
 class ChangeAcceptJob extends AbstractJob {
@@ -45,8 +46,8 @@ class ChangeAcceptJob extends AbstractJob {
         SystemEvent.createEvent('CAJ_JOB_START')
 
         try {
-            RefdataValue pending_change_pending_status = RefdataValue.getByValueAndCategory("Pending", "PendingChangeStatus")
-            //def pending_change_pending_status = RefdataCategory.lookupOrCreate("PendingChangeStatus", "Pending")
+            RefdataValue pending_change_pending_status = RefdataValue.getByValueAndCategory("Pending", RDConstants.PENDING_CHANGE_STATUS)
+            //def pending_change_pending_status = RefdataCategory.lookupOrCreate(RDConstants.PENDING_CHANGE_STATUS, "Pending")
             User user = User.findByDisplay("Admin")
 
             // Get all changes associated with slaved subscriptions

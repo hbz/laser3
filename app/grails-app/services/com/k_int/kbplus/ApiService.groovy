@@ -291,7 +291,7 @@ class ApiService {
 
             // persons
 
-            def rdvContactPerson = RefdataValue.getByValueAndCategory('General contact person', 'Person Function')
+            def rdvContactPerson = RefdataValue.getByValueAndCategory('General contact person', RDConstants.PERSON_FUNCTION)
             def rdvJobRelated    = RefdataValue.getByValueAndCategory('Job-related', RDConstants.CONTACT_TYPE)
 
             inst.person?.children().each { p ->
@@ -337,7 +337,7 @@ class ApiService {
                         pr.save()
 
                         p.function.children().each { func ->
-                            def rdv = RefdataValue.getByCategoryDescAndI10nValueDe('Person Function', func.text())
+                            def rdv = RefdataValue.getByCategoryDescAndI10nValueDe(RDConstants.PERSON_FUNCTION, func.text())
                             if (rdv) {
                                 def pf = new PersonRole(
                                         prs: person,
@@ -398,7 +398,7 @@ class ApiService {
 
         xml.subscription.each { sub ->
             def strName = sub.name.text()
-            def rdvType = RefdataValue.getByValueAndCategory(type.name.text(), 'Subscription Type')
+            def rdvType = RefdataValue.getByValueAndCategory(type.name.text(), RDConstants.SUBSCRIPTION_TYPE)
 
             log.debug("processing ${strName} / ${rdvType.getI10n('value')}")
         }

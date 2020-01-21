@@ -38,7 +38,7 @@ import="de.laser.helper.RDStore; com.k_int.kbplus.Org; com.k_int.kbplus.Person; 
 
         <g:render template="/person/formModal" model="['org': institution,
                                                        'isPublic': RDStore.YN_YES,
-                                                       'presetFunctionType': RefdataValue.getByValueAndCategory('General contact person', 'Person Function')
+                                                       'presetFunctionType': RefdataValue.getByValueAndCategory('General contact person', RDConstants.PERSON_FUNCTION)
         ]"/>
 
         <g:if test="${visiblePersons}">

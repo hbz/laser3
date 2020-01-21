@@ -20,11 +20,11 @@ class Person extends AbstractBaseDomain {
 
     boolean isPublic
 
-    @RefdataAnnotation(cat = 'Person Contact Type')
+    @RefdataAnnotation(cat = RDConstants.PERSON_CONTACT_TYPE)
     RefdataValue contactType
 
     @Deprecated
-    @RefdataAnnotation(cat = 'Person Position')
+    @RefdataAnnotation(cat = RDConstants.PERSON_POSITION)
     RefdataValue roleType // TODO remove !?
 
     Date dateCreated

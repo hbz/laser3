@@ -290,9 +290,9 @@ class GlobalSourceSyncService extends AbstractLockableService {
             pkg = (Package) genericOIDService.resolveOID(grt.localOid)
             log.debug("Package successfully found, processing LAS:eR id #${pkg.id}, with GOKb id ${pkg.gokbId}")
             if (pkg && newpkg.status != 'Current') {
-                def pkg_del_status = RefdataValue.getByValueAndCategory('Deleted', 'Package Status')
+                def pkg_del_status = RefdataValue.getByValueAndCategory('Deleted', RDConstants.PACKAGE_STATUS)
                 if (newpkg.status == 'Retired') {
-                    pkg_del_status = RefdataValue.getByValueAndCategory('Retired', 'Package Status')
+                    pkg_del_status = RefdataValue.getByValueAndCategory('Retired', RDConstants.PACKAGE_STATUS)
                 }
 
                 pkg.packageStatus = pkg_del_status
@@ -332,12 +332,12 @@ class GlobalSourceSyncService extends AbstractLockableService {
             // create a new package
             log.debug("Creating new Package..")
 
-            def packageStatus = RefdataValue.getByValueAndCategory('Deleted', 'Package Status')
+            def packageStatus = RefdataValue.getByValueAndCategory('Deleted', RDConstants.PACKAGE_STATUS)
 
             if (newpkg.status == 'Current') {
-                packageStatus = RefdataValue.getByValueAndCategory('Current', 'Package Status')
+                packageStatus = RefdataValue.getByValueAndCategory('Current', RDConstants.PACKAGE_STATUS)
             } else if (newpkg.status == 'Retired') {
-                packageStatus = RefdataValue.getByValueAndCategory('Retired', 'Package Status')
+                packageStatus = RefdataValue.getByValueAndCategory('Retired', RDConstants.PACKAGE_STATUS)
             }
 
             // Auto accept everything whilst we load the package initially

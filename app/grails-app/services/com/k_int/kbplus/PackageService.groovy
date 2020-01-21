@@ -232,7 +232,7 @@ class PackageService{
     def c =  Package.createCriteria() 
 
     // Query for a list of packages and return the providers.
-    def del_stat = RefdataValue.getByValueAndCategory('Deleted', 'Package Status')
+    def del_stat = RefdataValue.getByValueAndCategory('Deleted', RDConstants.PACKAGE_STATUS)
 
     def providers = Package.findAllByPackageStatusIsNull().each {
     

@@ -934,7 +934,7 @@ class FinanceController extends AbstractDebugController {
                   // iterate over members
                   subsToDo = Subscription.findAllByInstanceOfAndStatusNotEqual(
                           genericOIDService.resolveOID(params.newSubscription),
-                          RefdataValue.getByValueAndCategory('Deleted', 'Subscription Status')
+                          RefdataValue.getByValueAndCategory('Deleted', RDConstants.SUBSCRIPTION_STATUS)
                   )
                   break
               default:

@@ -44,7 +44,7 @@
             </g:if><g:else>
             %{--Erstmal erst nur Verlängerungsumfragen --}%
             <laser:select class="ui dropdown" name="type"
-                          from="${com.k_int.kbplus.RefdataValue.getByValueAndCategory('renewal','Survey Type')}"
+                          from="${com.k_int.kbplus.RefdataValue.getByValueAndCategory('renewal', de.laser.helper.RDConstants.SURVEY_TYPE)}"
                           optionKey="id"
                           optionValue="value"
                           value="${surveyInfo?.type?.id}"
