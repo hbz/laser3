@@ -3,6 +3,7 @@ package com.k_int.kbplus
 
 import com.k_int.kbplus.auth.Role
 import com.k_int.kbplus.auth.User
+import com.k_int.kbplus.OrgRole
 import com.k_int.properties.PropertyDefinitionGroup
 import com.k_int.properties.PropertyDefinitionGroupBinding
 import de.laser.domain.AbstractBaseDomain
@@ -446,17 +447,8 @@ class Subscription
     }
 
     List<Org> getDerivedSubscribers() {
-        List<Org> result = []
-
-        Subscription.findAllByInstanceOf(this).each { s ->
-            List<OrgRole> ors = OrgRole.findAllWhere( sub: s )
-            ors.each { or ->
-                if (or.roleType?.value in ['Subscriber', 'Subscriber_Consortial']) {
-                    result << or.org
-                }
-            }
-        }
-        result = result.sort {it.name}
+        List<Subscription> subs = Subscription.findAllByInstanceOf(this)
+        OrgRole.findAllBySubInListAndRoleTypeInList(subs, [RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIBER_CONS], [sort: 'org.name']).collect{it.org}
     }
 
     Subscription getCalculatedPrevious() {
@@ -705,7 +697,7 @@ class Subscription
   static {
     grails.converters.JSON.registerObjectMarshaller(User) {
       // you can filter here the key-value pairs to output:
-      return it.properties.findAll {k,v -> k != 'passwd'}
+      return it?.properties.findAll {k,v -> k != 'passwd'}
     }
   }
 

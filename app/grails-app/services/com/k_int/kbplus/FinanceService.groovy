@@ -409,7 +409,7 @@ class FinanceService {
         }
         //subscription package
         if(params.filterCISPkg) {
-            filterQuery += " and sub in (select subscription from SubscriptionPackage where pkg in (:filterCISPkg)) "
+            filterQuery += " and ci.subPkg in (:filterCISPkg) "
             List<SubscriptionPackage> filterSubPackages = []
             String[] subscriptionPackages = params."filterCISPkg".split(',')
             subscriptionPackages.each { subPkg ->
@@ -561,6 +561,7 @@ class FinanceService {
         Map localSumsPositive = CostItem.executeQuery("select NEW map(sum(ci.costInLocalCurrency) as localSum,sum(ci.costInLocalCurrency * (((case when ci.taxKey = :tax7 then 7 when ci.taxKey = :tax19 then 19 else 0 end) / 100.0) + 1)) as localSumAfterTax) from CostItem ci where ci in :costItems and ci.costItemElementConfiguration.value = 'positive'",[costItems:costItems,tax7:CostItem.TAX_TYPES.TAXABLE_7,tax19:CostItem.TAX_TYPES.TAXABLE_19]).get(0)
         Map localSumsNegative = CostItem.executeQuery("select NEW map(sum(ci.costInLocalCurrency) as localSum,sum(ci.costInLocalCurrency * (((case when ci.taxKey = :tax7 then 7 when ci.taxKey = :tax19 then 19 else 0 end) / 100.0) + 1)) as localSumAfterTax) from CostItem ci where ci in :costItems and ci.costItemElementConfiguration.value = 'negative'",[costItems:costItems,tax7:CostItem.TAX_TYPES.TAXABLE_7,tax19:CostItem.TAX_TYPES.TAXABLE_19]).get(0)
         List<Map> billingSums = []
+        Set<String> positiveCurrencies = []
         Map localSums = [:]
         double billingSum = 0.0
         double billingSumAfterTax = 0.0
@@ -582,12 +583,14 @@ class FinanceService {
                     billingSum = posEntry.billingSum
                     billingSumAfterTax = posEntry.billingSumAfterTax
                 }
+                positiveCurrencies << posEntry.currency
                 billingSums.add([currency: posEntry.currency, billingSum: billingSum, billingSumAfterTax: billingSumAfterTax])
             }
         }
-        else if(billingSumsNegative.size() > 0) {
+        if(billingSumsNegative.size() > 0) {
             billingSumsNegative.each { negEntry ->
-                billingSums.add([currency: negEntry.currency, billingSum: negEntry.billingSum * (-1), billingSumAfterTax: negEntry.billingSumAfterTax * (-1)])
+                if(!positiveCurrencies.contains(negEntry.currency))
+                    billingSums.add([currency: negEntry.currency, billingSum: negEntry.billingSum * (-1), billingSumAfterTax: negEntry.billingSumAfterTax * (-1)])
             }
         }
         if(localSumsPositive.localSum && localSumsPositive.localSumAfterTax) {

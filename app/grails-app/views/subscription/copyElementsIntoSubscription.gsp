@@ -45,6 +45,7 @@
                             <i class="calendar alternate outline icon"></i>${message(code: 'subscription.periodOfValidity.label')}
                             <i class="balance scale icon"></i>${message(code: 'license')}
                             <i class="university icon"></i>${message(code: 'subscription.organisations.label')}
+                            <i class="barcode icon"></i>${message(code: 'default.identifiers.label')}
                         </div>
                     </div>
                 </div>
@@ -53,6 +54,7 @@
                 <div class="content" >
                     <div class="title">
                         <g:link controller="subscription" action="copyElementsIntoSubscription" params="${params << [workFlowPart: WORKFLOW_DATES_OWNER_RELATIONS]}">
+                        %{--<g:link controller="subscription" action="copyElementsIntoSubscription" params="${params << [workFlowPart: WORKFLOW_IDENTIFIERS]}">--}%
                             ${message(code: 'subscription.details.copyElementsIntoSubscription.inventory.label')}
                         </g:link>
                     </div>
@@ -114,6 +116,7 @@
                         <i class="calendar alternate outline icon"></i>${message(code: 'subscription.periodOfValidity.label')}
                         <i class="balance scale icon"></i>${message(code: 'license')}
                         <i class="university icon"></i>${message(code: 'subscription.organisations.label')}
+                        <i class="barcode icon"></i>${message(code: 'default.identifiers.label')}
                     </div>
                 </div>
             </semui:complexSubNavItem>

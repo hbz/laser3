@@ -3491,7 +3491,7 @@ AND EXISTS (
         result.filterSubTypes = RefdataCategory.getAllRefdataValues('Subscription Type').minus(
                 RDStore.SUBSCRIPTION_TYPE_LOCAL
         )
-        result.filterPropList = PropertDefinition.findAllPublicAndPrivateProp([PropertyDefinition.SUB_PROP], contextService.getOrg())
+        result.filterPropList = PropertyDefinition.findAllPublicAndPrivateProp([PropertyDefinition.SUB_PROP], contextService.getOrg())
 
         /*
         String query = "select ci, subT, roleT.org from CostItem ci join ci.owner orgK join ci.sub subT join subT.instanceOf subK " +

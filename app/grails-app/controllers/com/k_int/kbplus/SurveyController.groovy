@@ -4010,9 +4010,7 @@ class SurveyController {
         def currentMembersSubs = subscriptionService.getCurrentValidSubChilds(surveyConfig.subscription)
 
         currentMembersSubs.each{ sub ->
-            sub?.getAllSubscribers()?.each { org ->
-                orgs << org
-            }
+            orgs.addAll(sub?.getAllSubscribers())
         }
 
         if (orgs) {

@@ -6,7 +6,10 @@
 <html>
 <head>
     <meta name="layout" content="semanticUI">
-    <g:if test="${RDStore.OT_PROVIDER.id in orgInstance.getallOrgTypeIds()}">
+    <g:set var="allOrgTypeIds" value="${orgInstance.getallOrgTypeIds()}" />
+    <g:set var="isGrantedOrgRoleAdminOrOrgEditor" value="${SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN,ROLE_ORG_EDITOR')}" />
+
+    <g:if test="${RDStore.OT_PROVIDER.id in allOrgTypeIds}">
         <g:set var="entityName" value="${message(code: 'default.provider.label')}"/>
     </g:if>
     <g:elseif test="${institutionalView}">
@@ -71,7 +74,7 @@
                             </g:if>
                         </dd>
                     </dl>
-                    <g:if test="${!inContextOrg || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN,ROLE_ORG_EDITOR')}">
+                    <g:if test="${!inContextOrg || isGrantedOrgRoleAdminOrOrgEditor}">
                         <g:if test="${departmentalView == false}">
                             <dl>
                                 <dt><g:message code="org.shortname.label" default="Shortname"/></dt>
@@ -80,7 +83,7 @@
                                 </dd>
                             </dl>
                         </g:if>
-                        <g:if test="${!(RDStore.OT_PROVIDER.id in orgInstance.getallOrgTypeIds())}">
+                        <g:if test="${!(RDStore.OT_PROVIDER.id in allOrgTypeIds)}">
                             <dl>
                                 <dt>
                                     <g:message code="org.sortname.label" default="Sortname"/>
@@ -124,7 +127,7 @@
                 </div>
             </div><!-- .card -->
 
-            <%-- orgInstance.hasPerm("ORG_INST,ORG_CONSORTIUM") && ((!fromCreate) || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN,ROLE_ORG_EDITOR')) --%>
+            <%-- orgInstance.hasPerm("ORG_INST,ORG_CONSORTIUM") && ((!fromCreate) || isGrantedOrgRoleAdminOrOrgEditor) --%>
             <g:if test="${departmentalView == false}">
                 <div class="ui card">
                     <div class="content">
@@ -208,14 +211,14 @@
             </div><!-- .card -->
         </g:if>
 
-            <g:if test="${SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN,ROLE_ORG_EDITOR')}">
+            <g:if test="${isGrantedOrgRoleAdminOrOrgEditor}">
                 <div class="ui card">
                     <div class="content">
-                        <g:if test="${orgInstance.hasPerm("ORG_INST") || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN,ROLE_ORG_EDITOR')}">
+                        <g:if test="${orgInstance.hasPerm("ORG_INST") || isGrantedOrgRoleAdminOrOrgEditor}">
                             <dl>
                                 <dt><g:message code="org.sector.label" default="Sector"/></dt>
                                 <dd>
-                                    <semui:xEditableRefData owner="${orgInstance}" field="sector" config="${de.laser.helper.RDConstants.ORG_SECTOR}" overwriteEditable="${SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN,ROLE_ORG_EDITOR')}"/>
+                                    <semui:xEditableRefData owner="${orgInstance}" field="sector" config="${de.laser.helper.RDConstants.ORG_SECTOR}" overwriteEditable="${isGrantedOrgRoleAdminOrOrgEditor}"/>
                                 </dd>
                             </dl>
                         </g:if>
@@ -231,7 +234,7 @@
                             <dt>${message(code: 'subscription.details.status', default: 'Status')}</dt>
 
                         <dd>
-                            <g:if test="${SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN,ROLE_ORG_EDITOR')}">
+                            <g:if test="${isGrantedOrgRoleAdminOrOrgEditor}">
                                 <semui:xEditableRefData owner="${orgInstance}" field="status" config="${de.laser.helper.RDConstants.ORG_STATUS}"/>
                             </g:if>
                             <g:else>
@@ -243,7 +246,7 @@
             </div><!-- .card -->
         </g:if>
 
-            <g:if test="${SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN,ROLE_ORG_EDITOR')}">
+            <g:if test="${isGrantedOrgRoleAdminOrOrgEditor}">
                 <div class="ui card">
                     <div class="content">
                         <%-- ROLE_ADMIN: all , ROLE_ORG_EDITOR: all minus Consortium --%>
@@ -273,7 +276,7 @@
                 </div>
             </g:if>
 
-            <g:if test="${departmentalView == false && !(RDStore.OT_PROVIDER.id in orgInstance.getallOrgTypeIds())}">
+            <g:if test="${departmentalView == false && !(RDStore.OT_PROVIDER.id in allOrgTypeIds)}">
                 <div class="ui card">
                     <div class="content">
                             <dl>
@@ -344,7 +347,7 @@
             </g:if>
 
 
-            <g:if test="${(RDStore.OT_PROVIDER.id in orgInstance.getallOrgTypeIds())}">
+            <g:if test="${(RDStore.OT_PROVIDER.id in allOrgTypeIds)}">
                 <div class="ui card">
                     <div class="content">
                         <dl>
@@ -368,7 +371,7 @@
                 </div>
             </g:if>
 
-            <g:if test="${(!fromCreate) || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN,ROLE_ORG_EDITOR')}">
+            <g:if test="${(!fromCreate) || isGrantedOrgRoleAdminOrOrgEditor}">
                 <div class="ui card">
                     <div class="content">
                         <dl>

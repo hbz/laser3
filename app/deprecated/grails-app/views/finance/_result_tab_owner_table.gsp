@@ -1,4 +1,4 @@
-<%@ page import="de.laser.helper.RDStore; com.k_int.kbplus.CostItemElementConfiguration;com.k_int.kbplus.RefdataValue" %>
+<%@ page import="de.laser.helper.RDStore; com.k_int.kbplus.CostItemElementConfiguration;com.k_int.kbplus.RefdataValue;com.k_int.kbplus.CostItem" %>
 <laser:serviceInjection />
 
 <g:each in="${cost_items}" var="ci" status="jj">
@@ -55,13 +55,25 @@
             >
                 <g:formatNumber number="${ci.costInBillingCurrency ?: 0.0}" type="currency" currencyCode="${ci.billingCurrency ?: 'EUR'}"/>
                 <br />
-                <g:formatNumber number="${ci.costInBillingCurrencyAfterTax ?: 0.0}" type="currency" currencyCode="${ci.billingCurrency ?: 'EUR'}"/>  (${ci.taxRate ?: 0}%)
+                <g:formatNumber number="${ci.costInBillingCurrencyAfterTax ?: 0.0}" type="currency" currencyCode="${ci.billingCurrency ?: 'EUR'}"/>
+                <g:if test="${ci.taxKey && ci.taxKey.display}">
+                    (${ci.taxRate ?: 0}%)
+                </g:if>
+                <g:elseif test="${ci.taxKey == CostItem.TAX_TYPES.TAX_REVERSE_CHARGE}">
+                    (${RDStore.TAX_REVERSE_CHARGE.getI10n("value")})
+                </g:elseif>
             </span>
         </td>
         <td>
             <g:formatNumber number="${ci.costInLocalCurrency}" type="currency" currencyCode="EUR" />
             <br />
-            <g:formatNumber number="${ci.costInLocalCurrencyAfterTax ?: 0.0}" type="currency" currencyCode="EUR" />  (${ci.taxRate ?: 0}%)
+            <g:formatNumber number="${ci.costInLocalCurrencyAfterTax ?: 0.0}" type="currency" currencyCode="EUR" />
+            <g:if test="${ci.taxKey && ci.taxKey.display}">
+                (${ci.taxRate ?: 0}%)
+            </g:if>
+            <g:elseif test="${ci.taxKey == CostItem.TAX_TYPES.TAX_REVERSE_CHARGE}">
+                (${RDStore.TAX_REVERSE_CHARGE.getI10n("value")})
+            </g:elseif>
         </td>
         <td>
             <semui:xEditableRefData config="${de.laser.helper.RDConstants.COST_ITEM_STATUS}" emptytext="${message(code:'default.button.edit.label')}" owner="${ci}" field="costItemStatus" />
