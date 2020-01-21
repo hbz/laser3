@@ -51,7 +51,7 @@ class QueryService {
             def surveys = SurveyInfo.executeQuery("SELECT sr.surveyConfig.surveyInfo FROM SurveyResult sr LEFT JOIN sr.surveyConfig surConfig LEFT JOIN surConfig.surveyInfo surInfo WHERE sr.participant = :org AND surInfo.endDate <= :endDate AND sr.finishDate is NULL AND surInfo.status = :status ",
                     [org: contextOrg,
                      endDate: computeInfoDate(contextUser, REMIND_PERIOD_FOR_SURVEYS_ENDDATE),
-                     stauts: RDStore.SURVEY_SURVEY_STARTED])
+                     status: RDStore.SURVEY_SURVEY_STARTED])
 
             surveys = surveys?.unique { a, b -> a?.id <=> b?.id }
 
