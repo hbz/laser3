@@ -1,4 +1,4 @@
-<%@ page import="com.k_int.kbplus.Package;com.k_int.kbplus.RefdataCategory;org.springframework.web.servlet.support.RequestContextUtils" %>
+<%@ page import="de.laser.helper.RDConstants;com.k_int.kbplus.Package;com.k_int.kbplus.RefdataCategory;org.springframework.web.servlet.support.RequestContextUtils" %>
 <laser:serviceInjection/>
 <!doctype html>
 <r:require module="datatables" />
@@ -124,7 +124,7 @@
                             <% /*
                             <dt>${message(code: 'license.is_public')}</dt>
                             <dd>
-                                <semui:xEditableRefData owner="${packageInstance}" field="isPublic" config="${de.laser.helper.RDConstants.Y_N}" />
+                                <semui:xEditableRefData owner="${packageInstance}" field="isPublic" config="${RDConstants.Y_N}" />
                             </dd>
 
 
@@ -159,7 +159,7 @@
                                         parent: packageInstance.class.name+':'+packageInstance.id,
                                         property: 'orgs',
                                         recip_prop: 'pkg',
-                                        tmplRole: com.k_int.kbplus.RefdataValue.getByValueAndCategory('Content Provider', de.laser.helper.RDConstants.ORGANISATIONAL_ROLE),
+                                        tmplRole: com.k_int.kbplus.RefdataValue.getByValueAndCategory('Content Provider', RDConstants.ORGANISATIONAL_ROLE),
                                         tmplText:'Anbieter hinzufügen',
                                         tmplID:'ContentProvider',
                                         tmplButtonText: 'Anbieter hinzufügen',
@@ -448,7 +448,7 @@
                             <div class="field">
                                 <label>${message(code:'tipp.delayedOA', default:'Delayed OA')}</label>
                                 <div>
-                                    <g:simpleHiddenRefdata id="bulk_delayedOA" name="bulk_delayedOA" refdataCategory="${de.laser.helper.RDConstants.TIPP_DELAYED_OA}"/>
+                                    <g:simpleHiddenRefdata id="bulk_delayedOA" name="bulk_delayedOA" refdataCategory="${RDConstants.TIPP_DELAYED_OA}"/>
 
                                     <i>${message(code:'default.or', default:'or')}</i>
                                     <input type="checkbox" name="clear_delayedOA"/>
@@ -460,7 +460,7 @@
                             <div class="field">
                                 <label>${message(code:'tipp.hybridOA', default:'Hybrid OA')}</label>
                                 <div>
-                                    <g:simpleHiddenRefdata id="bulk_hybridOA" name="bulk_hybridOA" refdataCategory="${de.laser.helper.RDConstants.TIPP_HYBRID_OA}"/>
+                                    <g:simpleHiddenRefdata id="bulk_hybridOA" name="bulk_hybridOA" refdataCategory="${RDConstants.TIPP_HYBRID_OA}"/>
 
                                     <i>${message(code:'default.or', default:'or')}</i>
                                     <input type="checkbox" name="clear_hybridOA"/>
@@ -472,7 +472,7 @@
                             <div class="field">
                                 <label>${message(code:'tipp.paymentType', default:'Payment')}</label>
                                 <div>
-                                    <g:simpleHiddenRefdata id="bulk_payment" name="bulk_payment" refdataCategory="${de.laser.helper.RDConstants.TIPP_PAYMENT_TYPE}"/>
+                                    <g:simpleHiddenRefdata id="bulk_payment" name="bulk_payment" refdataCategory="${RDConstants.TIPP_PAYMENT_TYPE}"/>
 
                                     <i>${message(code:'default.or', default:'or')}</i>
                                     <input type="checkbox" name="clear_payment"/>
@@ -549,7 +549,7 @@
                    </g:else>
                 </td>
                 <td style="white-space: nowrap;vertical-align:top;">
-                   <semui:xEditableRefData owner="${t}" field="hybridOA" config="${de.laser.helper.RDConstants.TIPP_HYBRID_OA}"/>
+                   <semui:xEditableRefData owner="${t}" field="hybridOA" config="${RDConstants.TIPP_HYBRID_OA}"/>
                 </td>
                 <td style="white-space: nowrap;vertical-align:top;">
                   <g:each in="${t.title.ids}" var="id">
@@ -583,9 +583,9 @@
                   <td colspan="8">coverageNote: ${t.coverageNote}
                   <g:if test="${params.mode=='advanced'}">
                     <br/> ${message(code:'tipp.hostPlatformURL', default:'Host Platform URL')}: <semui:xEditable owner="${t}" field="hostPlatformURL" />
-                    <br/> ${message(code:'tipp.delayedOA', default:'Delayed OA')}: <semui:xEditableRefData owner="${t}" field="delayedOA" config="${de.laser.helper.RDConstants.TIPP_DELAYED_OA}" /> &nbsp;
-                    ${message(code:'tipp.hybridOA', default:'Hybrid OA')}: <semui:xEditableRefData owner="${t}" field="hybridOA" config="${de.laser.helper.RDConstants.TIPP_HYBRID_OA}" /> &nbsp;
-                    ${message(code:'tipp.paymentType', default:'Payment')}: <semui:xEditableRefData owner="${t}" field="payment" config="${de.laser.helper.RDConstants.TIPP_PAYMENT_TYPE}" /> &nbsp;
+                    <br/> ${message(code:'tipp.delayedOA', default:'Delayed OA')}: <semui:xEditableRefData owner="${t}" field="delayedOA" config="${RDConstants.TIPP_DELAYED_OA}" /> &nbsp;
+                    ${message(code:'tipp.hybridOA', default:'Hybrid OA')}: <semui:xEditableRefData owner="${t}" field="hybridOA" config="${RDConstants.TIPP_HYBRID_OA}" /> &nbsp;
+                    ${message(code:'tipp.paymentType', default:'Payment')}: <semui:xEditableRefData owner="${t}" field="payment" config="${RDConstants.TIPP_PAYMENT_TYPE}" /> &nbsp;
                   </g:if>
                   </td>
                 </tr>

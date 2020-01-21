@@ -1,4 +1,4 @@
-<%@page import="com.k_int.properties.PropertyDefinition; de.laser.helper.RDStore;com.k_int.kbplus.*" %>
+<%@page import="com.k_int.properties.PropertyDefinition;de.laser.helper.RDStore;de.laser.helper.RDConstants;com.k_int.kbplus.*" %>
 <%
     String unknownString = g.message(code:"default.compare.propertyNotSet")
 %>
@@ -36,8 +36,8 @@
                                     case "class ${RefdataValue.class.name}":
                                         String spanOpen = '<span data-content="'+propValue.refValue.getI10n("value")+'">'
                                         switch(propValue.refValue.owner) {
-                                            case RefdataCategory.getByDesc(de.laser.helper.RDConstants.Y_N):
-                                            case RefdataCategory.getByDesc(de.laser.helper.RDConstants.Y_N_O):
+                                            case RefdataCategory.getByDesc(RDConstants.Y_N):
+                                            case RefdataCategory.getByDesc(RDConstants.Y_N_O):
                                                 switch(propValue.refValue) {
                                                     case RDStore.YN_YES:
                                                     case RDStore.YNO_YES: value = raw(spanOpen+'<i class="green thumbs up icon huge"></i></span>')
@@ -49,7 +49,7 @@
                                                         break
                                                 }
                                                 break
-                                            case RefdataCategory.getByDesc(de.laser.helper.RDConstants.PERMISSIONS):
+                                            case RefdataCategory.getByDesc(RDConstants.PERMISSIONS):
                                                 switch(propValue.refValue){
                                                     case RDStore.PERM_PERM_EXPL: value = raw(spanOpen+'<i class="green check circle icon huge"></i></span>')
                                                         break
