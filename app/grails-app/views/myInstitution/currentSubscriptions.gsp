@@ -1,4 +1,4 @@
-<%@ page import="de.laser.helper.RDStore; com.k_int.kbplus.OrgRole;com.k_int.kbplus.RefdataCategory;com.k_int.kbplus.RefdataValue;com.k_int.properties.PropertyDefinition;com.k_int.kbplus.Subscription;com.k_int.kbplus.CostItem" %>
+<%@ page import="de.laser.helper.RDStore; de.laser.helper.RDConstants; com.k_int.kbplus.OrgRole;com.k_int.kbplus.RefdataCategory;com.k_int.kbplus.RefdataValue;com.k_int.properties.PropertyDefinition;com.k_int.kbplus.Subscription;com.k_int.kbplus.CostItem" %>
 <laser:serviceInjection />
 <!doctype html>
 
@@ -111,9 +111,9 @@
             <!-- TMP -->
             <%
                 def fakeList = []
-                fakeList.addAll(RefdataCategory.getAllRefdataValues('Subscription Status'))
+                fakeList.addAll(RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_STATUS))
                 //fakeList.add(RefdataValue.getByValueAndCategory('subscription.status.no.status.set.but.null', 'filter.fake.values'))
-                fakeList.remove(RefdataValue.getByValueAndCategory('Deleted', 'Subscription Status'))
+                fakeList.remove(RefdataValue.getByValueAndCategory('Deleted', RDConstants.SUBSCRIPTION_STATUS))
             %>
 
             <div class="field fieldcontain">
@@ -136,7 +136,7 @@
             <div class="field disabled fieldcontain">
                 <label>${message(code: 'myinst.currentSubscriptions.filter.consortium.label')}</label>
                 <laser:select name="status" class="ui dropdown"
-                              from="${RefdataCategory.getAllRefdataValues('Subscription Status')}"
+                              from="${RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_STATUS)}"
                               optionKey="id"
                               optionValue="value"
                               value="${params.consortium}"
@@ -147,7 +147,7 @@
             <div class="field disabled fieldcontain">
                 <label>${message(code: 'myinst.currentSubscriptions.filter.status.label')}</label>
                 <laser:select name="status" class="ui dropdown"
-                              from="${RefdataCategory.getAllRefdataValues('Subscription Status')}"
+                              from="${RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_STATUS)}"
                               optionKey="id"
                               optionValue="value"
                               value="${params.status}"
@@ -159,7 +159,7 @@
             <div class="field">
                 <label>${message(code:'subscription.form.label')}</label>
                 <laser:select class="ui fluid dropdown" name="form"
-                              from="${RefdataCategory.getAllRefdataValues('Subscription Form')}"
+                              from="${RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_FORM)}"
                               optionKey="id"
                               optionValue="value"
                               value="${params.form}"
@@ -169,7 +169,7 @@
             <div class="field">
                 <label>${message(code:'subscription.resource.label')}</label>
                 <laser:select class="ui fluid dropdown" name="resource"
-                              from="${RefdataCategory.getAllRefdataValues('Subscription Resource')}"
+                              from="${RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_RESOURCE)}"
                               optionKey="id"
                               optionValue="value"
                               value="${params.resource}"
@@ -183,7 +183,7 @@
                     <legend >${message(code: 'myinst.currentSubscriptions.subscription_type')}</legend>
                     <div class="inline fields la-filter-inline">
                         <%
-                            List subTypes = RefdataCategory.getAllRefdataValues('Subscription Type')
+                            List subTypes = RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_TYPE)
 
                             if(accessService.checkPermAffiliation("ORG_CONSORTIUM","INST_USER")) {
                                 subTypes -= RDStore.SUBSCRIPTION_TYPE_LOCAL
@@ -286,7 +286,7 @@
             </th>
             <% /*
             <th>
-                ${message(code: 'myinst.currentSubscriptions.subscription_type', default: 'Subscription Type')}
+                ${message(code: 'myinst.currentSubscriptions.subscription_type', default: RDConstants.SUBSCRIPTION_TYPE)}
             </th>
             */ %>
 
@@ -499,7 +499,7 @@
                         <%-- ERMS-1348 removing delete buttons
                         <g:if test="${editable && accessService.checkPermAffiliationX("ORG_INST,ORG_CONSORTIUM","INST_EDITOR","ROLE_ADMIN")}">
 
-                            <g:if test="${CostItem.findBySub(s) || CostItem.findAllBySubInListAndOwner(Subscription.findAllByInstanceOfAndStatusNotEqual(s, RefdataValue.getByValueAndCategory('Deleted', 'Subscription Status')), institution)}">
+                            <g:if test="${CostItem.findBySub(s) || CostItem.findAllBySubInListAndOwner(Subscription.findAllByInstanceOfAndStatusNotEqual(s, RefdataValue.getByValueAndCategory('Deleted', RDConstants.SUBSCRIPTION_STATUS)), institution)}">
                                 <span data-position="top right" data-content="${message(code:'subscription.delete.existingCostItems')}">
                                     <button class="ui icon button negative" disabled="disabled">
                                         <i class="trash alternate icon"></i>

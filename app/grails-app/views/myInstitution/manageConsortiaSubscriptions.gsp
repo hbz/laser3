@@ -1,4 +1,4 @@
-<%@ page import="de.laser.helper.RDStore; com.k_int.kbplus.OrgRole;com.k_int.kbplus.RefdataCategory;com.k_int.kbplus.RefdataValue;com.k_int.properties.PropertyDefinition;com.k_int.kbplus.Subscription;com.k_int.kbplus.CostItem" %>
+<%@ page import="de.laser.helper.RDStore;de.laser.helper.RDConstants;com.k_int.kbplus.OrgRole;com.k_int.kbplus.RefdataCategory;com.k_int.kbplus.RefdataValue;com.k_int.properties.PropertyDefinition;com.k_int.kbplus.Subscription;com.k_int.kbplus.CostItem" %>
 <laser:serviceInjection />
 
 <!doctype html>
@@ -103,9 +103,9 @@
                 <label>${message(code: 'myinst.currentSubscriptions.filter.status.label')}</label>
                 <%
                     def fakeList = []
-                    fakeList.addAll(RefdataCategory.getAllRefdataValues('Subscription Status'))
+                    fakeList.addAll(RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_STATUS))
                     fakeList.add(RefdataValue.getByValueAndCategory('subscription.status.no.status.set.but.null', 'filter.fake.values'))
-                    fakeList.remove(RefdataValue.getByValueAndCategory('Deleted', 'Subscription Status'))
+                    fakeList.remove(RefdataValue.getByValueAndCategory('Deleted', RDConstants.SUBSCRIPTION_STATUS))
                 %>
                 <laser:select class="ui dropdown" name="status"
                               from="${ fakeList }"
@@ -122,7 +122,7 @@
             <div class="field">
                 <label>${message(code:'subscription.form.label')}</label>
                 <laser:select class="ui dropdown" name="form"
-                              from="${RefdataCategory.getAllRefdataValues('Subscription Form')}"
+                              from="${RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_FORM)}"
                               optionKey="id"
                               optionValue="value"
                               value="${params.form}"
@@ -132,7 +132,7 @@
             <div class="field">
                 <label>${message(code:'subscription.resource.label')}</label>
                 <laser:select class="ui dropdown" name="resource"
-                              from="${RefdataCategory.getAllRefdataValues('Subscription Resource')}"
+                              from="${RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_RESOURCE)}"
                               optionKey="id"
                               optionValue="value"
                               value="${params.resource}"

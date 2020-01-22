@@ -61,10 +61,10 @@ class Org
     Org legallyObligedBy
     String categoryId
 
-    @RefdataAnnotation(cat = 'OrgSector')
+    @RefdataAnnotation(cat = RDConstants.ORG_SECTOR)
     RefdataValue sector
 
-    @RefdataAnnotation(cat = 'OrgStatus')
+    @RefdataAnnotation(cat = RDConstants.ORG_STATUS)
     RefdataValue status
 
     @RefdataAnnotation(cat = '?')
@@ -73,16 +73,16 @@ class Org
     @RefdataAnnotation(cat = RDConstants.COUNTRY)
     RefdataValue country
 
-    @RefdataAnnotation(cat = 'Federal State')
+    @RefdataAnnotation(cat = RDConstants.FEDERAL_STATE)
     RefdataValue federalState
 
-    @RefdataAnnotation(cat = 'Library Network')
+    @RefdataAnnotation(cat = RDConstants.LIBRARY_NETWORK)
     RefdataValue libraryNetwork
 
-    @RefdataAnnotation(cat = 'Funder Type')
+    @RefdataAnnotation(cat = RDConstants.FUNDER_TYPE)
     RefdataValue funderType
 
-    @RefdataAnnotation(cat = 'Library Type')
+    @RefdataAnnotation(cat = RDConstants.LIBRARY_TYPE)
     RefdataValue libraryType
 
     @RefdataAnnotation(cat = RDConstants.COST_CONFIGURATION)
@@ -484,11 +484,11 @@ class Org
         if ( result == null ) {
           println "Create new entry for ${name}";
           if (sector instanceof String){
-            sector = RefdataValue.getByValueAndCategory(sector,'OrgSector')
+            sector = RefdataValue.getByValueAndCategory(sector,RDConstants.ORG_SECTOR)
           }
 
           if (orgRoleTyp instanceof String) {
-             orgRoleTyp = RefdataValue.getByValueAndCategory(orgRoleTyp, 'OrgRoleType')
+             orgRoleTyp = RefdataValue.getByValueAndCategory(orgRoleTyp, RDConstants.ORG_TYPE)
           }
             println "creating new org"
           result = new Org(

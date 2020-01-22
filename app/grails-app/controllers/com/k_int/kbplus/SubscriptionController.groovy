@@ -146,7 +146,7 @@ class SubscriptionController extends AbstractDebugController {
 
         log.debug("max = ${result.max}");
 
-        def pending_change_pending_status = RefdataValue.getByValueAndCategory('Pending', 'PendingChangeStatus')
+        def pending_change_pending_status = RefdataValue.getByValueAndCategory('Pending', RDConstants.PENDING_CHANGE_STATUS)
         List<PendingChange> pendingChanges = PendingChange.executeQuery("select pc.id from PendingChange as pc where subscription=? and ( pc.status is null or pc.status = ? ) order by ts desc", [result.subscriptionInstance, pending_change_pending_status]);
 
         if (result.subscriptionInstance?.isSlaved && pendingChanges) {
@@ -1951,7 +1951,7 @@ class SubscriptionController extends AbstractDebugController {
 
         if(params.tab == 'providerAgency') {
 
-            result.modalPrsLinkRole = RefdataValue.getByValueAndCategory('Specific subscription editor', 'Person Responsibility')
+            result.modalPrsLinkRole = RefdataValue.getByValueAndCategory('Specific subscription editor', RDConstants.PERSON_RESPONSIBILITY)
             result.modalVisiblePersons = addressbookService.getPrivatePersonsByTenant(contextService.getOrg())
             result.visibleOrgRelations = []
             result.parentSub.orgRelations?.each { or ->
@@ -2497,7 +2497,7 @@ class SubscriptionController extends AbstractDebugController {
         def delSubscription = genericOIDService.resolveOID(params.target)
         def delInstitution = delSubscription?.getSubscriber()
 
-        def deletedStatus = RefdataValue.getByValueAndCategory('Deleted', 'Subscription Status')
+        def deletedStatus = RefdataValue.getByValueAndCategory('Deleted', RDConstants.SUBSCRIPTION_STATUS)
 
         if (delSubscription?.hasPerm("edit", result.user)) {
             def derived_subs = Subscription.findByInstanceOfAndStatusNot(delSubscription, deletedStatus)
@@ -2556,7 +2556,7 @@ class SubscriptionController extends AbstractDebugController {
                 log.debug("PendingChange processing in progress")
                 result.processingpc = true
             } else {
-                def pending_change_pending_status = RefdataValue.getByValueAndCategory('Pending', 'PendingChangeStatus')
+                def pending_change_pending_status = RefdataValue.getByValueAndCategory('Pending', RDConstants.PENDING_CHANGE_STATUS)
                 def pendingChanges = PendingChange.executeQuery("select pc.id from PendingChange as pc where subscription.id=? and ( pc.status is null or pc.status = ? ) order by pc.ts desc", [member.id, pending_change_pending_status])
 
                 result.pendingChanges << ["${member.id}": pendingChanges.collect { PendingChange.get(it) }]
@@ -3101,7 +3101,7 @@ class SubscriptionController extends AbstractDebugController {
             RefdataValue licensee_role = OR_LICENSEE
             RefdataValue licensee_cons_role = OR_LICENSING_CONSORTIUM
 
-            RefdataValue template_license_type = RefdataValue.getByValueAndCategory('Template', 'License Type')
+            RefdataValue template_license_type = RefdataValue.getByValueAndCategory('Template', RDConstants.LICENSE_TYPE)
 
             Org org
             if(subscription.instanceOf) {
@@ -3510,8 +3510,8 @@ class SubscriptionController extends AbstractDebugController {
             result.processingpc = true
         } else {
 
-            def pending_change_pending_status = RefdataValue.getByValueAndCategory('Pending', 'PendingChangeStatus')
-            List<PendingChange> pendingChanges = PendingChange.executeQuery("select pc from PendingChange as pc where subscription=? and ( pc.status is null or pc.status = ? ) order by pc.ts desc", [result.subscription, pending_change_pending_status])
+            def pending_change_pending_status = RefdataValue.getByValueAndCategory('Pending', RDConstants.PENDING_CHANGE_STATUS)
+            List<PendingChange> pendingChanges = PendingChange.executeQuery("select pc.id from PendingChange as pc where subscription=? and ( pc.status is null or pc.status = ? ) order by pc.ts desc", [result.subscription, pending_change_pending_status])
 
             log.debug("pc result is ${result.pendingChanges}")
 
@@ -3584,7 +3584,7 @@ class SubscriptionController extends AbstractDebugController {
 
             // -- private properties
 
-            result.modalPrsLinkRole = RefdataValue.getByValueAndCategory('Specific subscription editor', 'Person Responsibility')
+            result.modalPrsLinkRole = RefdataValue.getByValueAndCategory('Specific subscription editor', RDConstants.PERSON_RESPONSIBILITY)
             result.modalVisiblePersons = addressbookService.getPrivatePersonsByTenant(contextService.getOrg())
 
             result.visiblePrsLinks = []
@@ -4060,7 +4060,7 @@ class SubscriptionController extends AbstractDebugController {
 
                         def task = Task.findBySubscriptionAndId(baseSub, Long.valueOf(tsk))
                         if (task) {
-                            if (task.status != RefdataValue.getByValueAndCategory('Done', 'Task Status')) {
+                            if (task.status != RefdataValue.getByValueAndCategory('Done', RDConstants.TASK_STATUS)) {
                                 Task newTask = new Task()
                                 InvokerHelper.setProperties(newTask, task.properties)
                                 newTask.systemCreateDate = new Date()
@@ -4105,7 +4105,7 @@ class SubscriptionController extends AbstractDebugController {
                                 isPublic: baseSub.isPublic,
                                 isSlaved: baseSub.isSlaved,
                                 type: baseSub.type,
-                                status: RefdataValue.getByValueAndCategory('Intended', 'Subscription Status'),
+                                status: RefdataValue.getByValueAndCategory('Intended', RDConstants.SUBSCRIPTION_STATUS),
                                 resource: baseSub.resource ?: null,
                                 form: baseSub.form ?: null
                         )
@@ -4245,7 +4245,7 @@ class SubscriptionController extends AbstractDebugController {
             result.visibleOrgRelations.sort { it.org.sortname }
             result.visibleOrgRelations =  subscriptionService.getVisibleOrgRelations(result.subscriptionInstance)
 
-            result.modalPrsLinkRole = RefdataValue.getByValueAndCategory('Specific subscription editor', 'Person Responsibility')
+            result.modalPrsLinkRole = RefdataValue.getByValueAndCategory('Specific subscription editor', RDConstants.PERSON_RESPONSIBILITY)
             result.modalVisiblePersons = addressbookService.getPrivatePersonsByTenant(contextService.getOrg())
 
             result.visiblePrsLinks = []
@@ -4935,7 +4935,7 @@ class SubscriptionController extends AbstractDebugController {
 
         // -- private properties
 
-        result.modalPrsLinkRole = RefdataValue.getByValueAndCategory('Specific subscription editor', 'Person Responsibility')
+        result.modalPrsLinkRole = RefdataValue.getByValueAndCategory('Specific subscription editor', RDConstants.PERSON_RESPONSIBILITY)
         result.modalVisiblePersons = addressbookService.getPrivatePersonsByTenant(contextService.getOrg())
 
         result.visiblePrsLinks = []
@@ -5405,8 +5405,8 @@ class SubscriptionController extends AbstractDebugController {
         def titles = [
                 g.message(code: 'org.sortname.label'), 'Name', g.message(code: 'org.shortname.label')]
 
-        RefdataValue orgSector = RefdataValue.getByValueAndCategory('Higher Education', 'OrgSector')
-        RefdataValue orgType = RefdataValue.getByValueAndCategory('Provider', 'OrgRoleType')
+        RefdataValue orgSector = RefdataValue.getByValueAndCategory('Higher Education', RDConstants.ORG_SECTOR)
+        RefdataValue orgType = RefdataValue.getByValueAndCategory('Provider', RDConstants.ORG_TYPE)
 
 
         if (addHigherEducationTitles) {
@@ -5420,8 +5420,8 @@ class SubscriptionController extends AbstractDebugController {
         titles.add(g.message(code: 'subscription.details.startDate'))
         titles.add(g.message(code: 'subscription.details.endDate'))
         titles.add(g.message(code: 'subscription.details.status'))
-        titles.add(RefdataValue.getByValueAndCategory('General contact person','Person Function').getI10n('value'))
-        //titles.add(RefdataValue.getByValueAndCategory('Functional contact','Person Contact Type').getI10n('value'))
+        titles.add(RefdataValue.getByValueAndCategory('General contact person', RDConstants.PERSON_FUNCTION).getI10n('value'))
+        //titles.add(RefdataValue.getByValueAndCategory('Functional contact', RDConstants.PERSON_CONTACT_TYPE).getI10n('value'))
 
         def propList = PropertyDefinition.findAllPublicAndPrivateOrgProp(contextService.getOrg())
 

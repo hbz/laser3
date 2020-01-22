@@ -13,7 +13,7 @@
 		<g:message code="platform.serviceProvider" default="Service Provider" />
 		
 	</label>
-	<g:select name="serviceProvider" from="${com.k_int.kbplus.RefdataCategory.allRefdataValues('YNO')}" multiple="multiple" optionKey="id" size="5" optionValue="${{it.getI10n('value')}}"/>
+	<g:select name="serviceProvider" from="${com.k_int.kbplus.RefdataCategory.allRefdataValues(de.laser.helper.RDConstants.Y_N_O)}" multiple="multiple" optionKey="id" size="5" optionValue="${{it.getI10n('value')}}"/>
 </div>
 
 <div class="field fieldcontain ${hasErrors(bean: platformInstance, field: 'tipps', 'error')} ">

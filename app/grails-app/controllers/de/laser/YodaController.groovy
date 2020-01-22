@@ -7,6 +7,7 @@ import de.laser.SystemEvent
 import de.laser.domain.ActivityProfiler
 import de.laser.domain.SystemProfiler
 import de.laser.helper.DebugAnnotation
+import de.laser.helper.RDConstants
 import de.laser.helper.RDStore
 import grails.converters.JSON
 import grails.plugin.springsecurity.annotation.Secured
@@ -105,7 +106,7 @@ class YodaController {
                 token       : "Quellensteuer-Befreiung",
                 category    : "Subscription Property",
                 type        : "class com.k_int.kbplus.RefdataValue",
-                rdc         : "YNO",
+                rdc         : RDConstants.Y_N_O,
                 tenant      : contextService.getOrg(),
                 i10n        : [de: "Quellensteuer-Befreiung", en: "Quellensteuer-Befreiung"],
                 expl        : [de: "Hat der Anbieter für dieses Produkt eine Befreiung der Quellensteuer erwirkt?", en: "Hat der Anbieter für dieses Produkt eine Befreiung der Quellensteuer erwirkt?"],
@@ -115,7 +116,7 @@ class YodaController {
                 token       : "BGA",
                 category    : "Organisation Property",
                 type        : "class com.k_int.kbplus.RefdataValue",
-                rdc         : "YN",
+                rdc         : RDConstants.Y_N,
                 tenant      : contextService.getOrg(),
                 i10n        : [de: "BGA", en: "BGA"],
                 expl        : [de: "Betrieb gewerblicher Art", en: "Betrieb gewerblicher Art"],
@@ -959,8 +960,8 @@ class YodaController {
 
     @Secured(['ROLE_YODA'])
     def updateCustomerType(){
-        RefdataValue cons = RefdataValue.getByValueAndCategory('Consortium', 'OrgRoleType')
-        RefdataValue inst = RefdataValue.getByValueAndCategory('Institution', 'OrgRoleType')
+        RefdataValue cons = RefdataValue.getByValueAndCategory('Consortium', RDConstants.ORG_TYPE)
+        RefdataValue inst = RefdataValue.getByValueAndCategory('Institution', RDConstants.ORG_TYPE)
 
         List<Org> consOrgs = Org.executeQuery("SELECT o from Org o join o.orgType ot where ot = :cons", [cons: cons])
         List<Org> instOrgs = Org.executeQuery("SELECT o from Org o join o.orgType ot where ot = :inst", [inst: inst])

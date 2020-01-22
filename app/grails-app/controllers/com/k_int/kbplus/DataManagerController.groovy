@@ -5,6 +5,7 @@ import de.laser.DeletionService
 import de.laser.YodaService
 import de.laser.controller.AbstractDebugController
 import de.laser.domain.MailTemplate
+import de.laser.helper.RDConstants
 import de.laser.helper.SessionCacheWrapper
 import grails.plugin.springsecurity.SpringSecurityUtils
 import grails.plugin.springsecurity.annotation.Secured
@@ -28,10 +29,10 @@ class DataManagerController extends AbstractDebugController {
     MessageSource messageSource
     LinkGenerator grailsLinkGenerator
 
-    @Secured(['ROLE_ADMIN'])
-    def index() {
-        def result =[:]
-        def pending_change_pending_status = RefdataValue.getByValueAndCategory('Pending','PendingChangeStatus')
+  @Secured(['ROLE_ADMIN'])
+  def index() { 
+    def result =[:]
+    def pending_change_pending_status = RefdataValue.getByValueAndCategory('Pending', RDConstants.PENDING_CHANGE_STATUS)
 
         result.pendingChanges = PendingChange.executeQuery("select pc from PendingChange as pc where pc.pkg is not null and ( pc.status is null or pc.status = ? ) order by ts desc", [pending_change_pending_status]);
 
@@ -355,7 +356,7 @@ class DataManagerController extends AbstractDebugController {
         def paginate_after = params.paginate_after ?: ( (2*result.max)-1);
         result.offset = params.offset ? Integer.parseInt(params.offset) : 0;
 
-        def delStatus =  RefdataValue.getByValueAndCategory('Deleted', 'OrgStatus')
+        def delStatus =  RefdataValue.getByValueAndCategory('Deleted', RDConstants.ORG_STATUS)
 
         def qry_params = [delStatus]
         def query = " from Org as o where ( o.status = ? )"

@@ -48,7 +48,7 @@
                             break
                         case 'elementSign': args.addAll(RefdataCategory.getAllRefdataValues(RDConstants.COST_CONFIGURATION).collect { it -> it.getI10n('value') })
                             break
-                        case 'taxType': args.addAll(RefdataCategory.getAllRefdataValues('TaxType').collect { it -> it.getI10n('value') })
+                        case 'taxType': args.addAll(RefdataCategory.getAllRefdataValues(RDConstants.TAX_TYPE).collect { it -> it.getI10n('value') })
                             break
                         case 'taxRate': args.addAll([0,7,19])
                             break

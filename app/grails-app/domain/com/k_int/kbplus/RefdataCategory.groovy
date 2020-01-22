@@ -2,6 +2,7 @@ package com.k_int.kbplus
 
 import de.laser.domain.AbstractI10nOverride
 import de.laser.domain.I10nTranslation
+import de.laser.helper.RDConstants
 import org.apache.commons.logging.Log
 import org.apache.commons.logging.LogFactory
 import org.springframework.context.i18n.LocaleContextHolder
@@ -13,35 +14,35 @@ class RefdataCategory extends AbstractI10nOverride {
     static Log static_logger = LogFactory.getLog(RefdataCategory)
 
     @Transient
-    public static final ORG_STATUS = 'OrgStatus'
+    public static final ORG_STATUS = RDConstants.ORG_STATUS
     @Transient
-    public static final PKG_SCOPE = "Package.Scope"
+    public static final PKG_SCOPE = RDConstants.PACKAGE_SCOPE
     @Transient
-    public static final PKG_LIST_STAT = "Package.ListStatus"
+    public static final PKG_LIST_STAT = RDConstants.PACKAGE_LIST_STATUS
     @Transient
-    public static final PKG_FIXED = "Package.Fixed"
+    public static final PKG_FIXED = RDConstants.PACKAGE_FIXED
     @Transient
-    public static final PKG_BREAKABLE = "Package.Breakable"
+    public static final PKG_BREAKABLE = RDConstants.PACKAGE_BREAKABLE
     @Transient
-    public static final PKG_CONSISTENT = 'Package.Consistent'
+    public static final PKG_CONSISTENT = RDConstants.PACKAGE_CONSISTENT
     @Transient
-    public static final PKG_TYPE = 'Package.Type'
+    public static final PKG_TYPE = RDConstants.PACKAGE_TYPE
     @Transient
-    public static final TI_STATUS = 'TitleInstanceStatus'
+    public static final TI_STATUS = RDConstants.TITLE_STATUS
     @Transient
-    public static final LIC_STATUS = 'License Status'
+    public static final LIC_STATUS = RDConstants.LICENSE_STATUS
     @Transient
-    public static final LIC_TYPE = 'License Type'
+    public static final LIC_TYPE = RDConstants.LICENSE_TYPE
     @Transient
-    public static final TIPP_STATUS = 'TIPP Status'
+    public static final TIPP_STATUS = RDConstants.TIPP_STATUS
     @Transient
-    public static final TI_MEDIUM = 'Title Medium'
+    public static final TI_MEDIUM = RDConstants.TITLE_MEDIUM
     @Transient
     public static final PKG_PAYMENTTYPE = 'Package Payment Type'
     @Transient
     public static final PKG_GLOBAL = 'Package Global'
      @Transient
-    public static final IE_ACCEPT_STATUS = 'IE Accept Status'
+    public static final IE_ACCEPT_STATUS = RDConstants.IE_ACCEPT_STATUS
 
     String desc
     String desc_de

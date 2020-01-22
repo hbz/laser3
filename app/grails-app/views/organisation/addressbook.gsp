@@ -37,7 +37,7 @@
         <g:render template="/person/formModal" model="['tenant': contextOrg,
                                                        'org': orgInstance,
                                                        'isPublic': false,
-                                                       'presetFunctionType': RefdataValue.getByValueAndCategory('General contact person', 'Person Function')]"/>
+                                                       'presetFunctionType': RefdataValue.getByValueAndCategory('General contact person', RDConstants.PERSON_FUNCTION)]"/>
 
 		<g:if test="${visiblePersons}">
 			<g:render template="/templates/cpa/person_table" model="${[persons: visiblePersons, restrictToOrg: orgInstance]}" />

@@ -1,4 +1,4 @@
-<%@ page import="de.laser.helper.RDStore; com.k_int.kbplus.PersonRole; com.k_int.kbplus.Org; com.k_int.kbplus.RefdataValue; com.k_int.kbplus.RefdataCategory; com.k_int.properties.PropertyDefinition; com.k_int.properties.PropertyDefinitionGroup; com.k_int.kbplus.OrgSettings" %>
+<%@ page import="de.laser.helper.RDStore; de.laser.helper.RDConstants; com.k_int.kbplus.PersonRole; com.k_int.kbplus.Org; com.k_int.kbplus.RefdataValue; com.k_int.kbplus.RefdataCategory; com.k_int.properties.PropertyDefinition; com.k_int.properties.PropertyDefinitionGroup; com.k_int.kbplus.OrgSettings" %>
 <%@ page import="com.k_int.kbplus.Combo;grails.plugin.springsecurity.SpringSecurityUtils" %>
 <laser:serviceInjection/>
 
@@ -218,7 +218,7 @@
                             <dl>
                                 <dt><g:message code="org.sector.label" default="Sector"/></dt>
                                 <dd>
-                                    <semui:xEditableRefData owner="${orgInstance}" field="sector" config='OrgSector' overwriteEditable="${isGrantedOrgRoleAdminOrOrgEditor}"/>
+                                    <semui:xEditableRefData owner="${orgInstance}" field="sector" config="${RDConstants.ORG_SECTOR}" overwriteEditable="${isGrantedOrgRoleAdminOrOrgEditor}"/>
                                 </dd>
                             </dl>
                         </g:if>
@@ -235,7 +235,7 @@
 
                         <dd>
                             <g:if test="${isGrantedOrgRoleAdminOrOrgEditor}">
-                                <semui:xEditableRefData owner="${orgInstance}" field="status" config='OrgStatus'/>
+                                <semui:xEditableRefData owner="${orgInstance}" field="status" config="${RDConstants.ORG_STATUS}"/>
                             </g:if>
                             <g:else>
                                 ${orgInstance.status?.getI10n('value')}
@@ -255,7 +255,7 @@
                             <dd>
                                 <%
                                     // hotfix:
-                                    def orgType_types = RefdataCategory.getAllRefdataValues('OrgRoleType')
+                                    def orgType_types = RefdataCategory.getAllRefdataValues(RDConstants.ORG_TYPE)
                                     def orgType_editable = SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')
 
                                     if (!orgType_editable) {
@@ -289,7 +289,7 @@
                                 </dt>
                                 <dd>
                                     <semui:xEditableRefData owner="${orgInstance}" field="libraryType"
-                                                            config='Library Type'/>
+                                                            config="${RDConstants.LIBRARY_TYPE}"/>
                                 </dd>
                             </dl>
                             <dl>
@@ -302,7 +302,7 @@
                                 </dt>
                                 <dd>
                                     <semui:xEditableRefData owner="${orgInstance}" field="libraryNetwork"
-                                                            config='Library Network'/>
+                                                            config="${RDConstants.LIBRARY_NETWORK}"/>
                                 </dd>
                             </dl>
                             <dl>
@@ -314,7 +314,7 @@
                                     </span>
                                 </dt>
                                 <dd>
-                                    <semui:xEditableRefData owner="${orgInstance}" field="funderType" config='Funder Type'/>
+                                    <semui:xEditableRefData owner="${orgInstance}" field="funderType" config="${RDConstants.FUNDER_TYPE}"/>
                                 </dd>
                             </dl>
                             <dl>
@@ -327,7 +327,7 @@
                                 </dt>
                                 <dd>
                                     <semui:xEditableRefData owner="${orgInstance}" field="federalState"
-                                                            config='Federal State'/>
+                                                            config="${RDConstants.FEDERAL_STATE}"/>
                                 </dd>
                             </dl>
                             <dl>
@@ -339,7 +339,7 @@
                                     </span>
                                 </dt>
                                 <dd>
-                                    <semui:xEditableRefData owner="${orgInstance}" field="country" config="${de.laser.helper.RDConstants.COUNTRY}"/>
+                                    <semui:xEditableRefData owner="${orgInstance}" field="country" config="${RDConstants.COUNTRY}"/>
                                 </dd>
                             </dl>
                         </div>
@@ -511,7 +511,7 @@
                                                       model="[tenant                           : contextOrg,
                                                               org                              : orgInstance,
                                                               isPublic                         : true,
-                                                              presetFunctionType               : RefdataValue.getByValueAndCategory('General contact person', 'Person Function'),
+                                                              presetFunctionType               : RefdataValue.getByValueAndCategory('General contact person', RDConstants.PERSON_FUNCTION),
                                                               modalId                          : 'personFormModalGeneralContactPerson',
                                                               tmplHideFunctions: true]"/>
 
@@ -524,7 +524,7 @@
                                                       model="[tenant                           : contextOrg,
                                                               org                              : orgInstance,
                                                               isPublic                         : true,
-                                                              presetFunctionType               : RefdataValue.getByValueAndCategory('Responsible Admin', 'Person Function'),
+                                                              presetFunctionType               : RefdataValue.getByValueAndCategory('Responsible Admin', RDConstants.PERSON_FUNCTION),
                                                               modalId                          : 'personFormModalResponsibleContact',
                                                               tmplHideFunctions: true]"/>
 
@@ -541,7 +541,7 @@
                                                       model="[tenant                           : contextOrg,
                                                               org                              : orgInstance,
                                                               isPublic                         : true,
-                                                              presetFunctionType               : RefdataValue.getByValueAndCategory('Functional Contact Billing Adress', 'Person Function'),
+                                                              presetFunctionType               : RefdataValue.getByValueAndCategory('Functional Contact Billing Adress', RDConstants.PERSON_FUNCTION),
                                                               modalId                          : 'personFormModalBillingContact',
                                                               tmplHideFunctions: true]"/>
 
@@ -554,7 +554,7 @@
                                                       model="[tenant                           : contextOrg,
                                                               org                              : orgInstance,
                                                               isPublic                         : true,
-                                                              presetFunctionType               : RefdataValue.getByValueAndCategory('Technichal Support', 'Person Function'),
+                                                              presetFunctionType               : RefdataValue.getByValueAndCategory('Technichal Support', RDConstants.PERSON_FUNCTION),
                                                               modalId                          : 'personFormModalTechnichalSupport',
                                                               tmplHideFunctions: true]"/>
 
@@ -567,7 +567,7 @@
                                                       model="['tenant'            : contextOrg,
                                                               'org'               : orgInstance,
                                                               'isPublic'          : true,
-                                                              'presetFunctionType': RefdataValue.getByValueAndCategory('General contact person', 'Person Function')]"/>--}%
+                                                              'presetFunctionType': RefdataValue.getByValueAndCategory('General contact person', RDConstants.PERSON_FUNCTION)]"/>--}%
 
                                         </div>
                                     </div>

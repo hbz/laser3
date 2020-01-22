@@ -30,7 +30,7 @@ class DocContext implements ShareableTrait {
     RefdataValue status
     @RefdataAnnotation(cat = RDConstants.DOCUMENT_TYPE)
     RefdataValue doctype
-    @RefdataAnnotation(cat = 'Share Configuration')
+    @RefdataAnnotation(cat = RDConstants.SHARE_CONFIGURATION)
     RefdataValue shareConf
     Org targetOrg
 

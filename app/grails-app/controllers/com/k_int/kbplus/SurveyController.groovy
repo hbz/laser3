@@ -446,7 +446,7 @@ class SurveyController {
                 name: params.name,
                 startDate: params.startDate ? sdf.parse(params.startDate) : null,
                 endDate: params.endDate ? sdf.parse(params.endDate) : null,
-                type: RefdataValue.getByValueAndCategory('selection','Survey Type'),
+                type: RefdataValue.getByValueAndCategory('selection', RDConstants.SURVEY_TYPE),
                 owner: contextService.getOrg(),
                 status: RDStore.SURVEY_IN_PROCESSING,
                 comment: params.comment ?: null,
@@ -3138,7 +3138,7 @@ class SurveyController {
                 RefdataValue taxType = genericOIDService.resolveOID(newTaxRate[0])
                 int taxRate = Integer.parseInt(newTaxRate[1])
                 switch (taxType.id) {
-                    case RefdataValue.getByValueAndCategory("taxable", "TaxType").id:
+                    case RefdataValue.getByValueAndCategory("taxable", RDConstants.TAX_TYPE).id:
                         switch (taxRate) {
                             case 7: tax_key = CostItem.TAX_TYPES.TAXABLE_7
                                 break
@@ -3146,16 +3146,16 @@ class SurveyController {
                                 break
                         }
                         break
-                    case RefdataValue.getByValueAndCategory("taxable tax-exempt", "TaxType").id:
+                    case RefdataValue.getByValueAndCategory("taxable tax-exempt", RDConstants.TAX_TYPE).id:
                         tax_key = CostItem.TAX_TYPES.TAX_EXEMPT
                         break
-                    case RefdataValue.getByValueAndCategory("not taxable", "TaxType").id:
+                    case RefdataValue.getByValueAndCategory("not taxable", RDConstants.TAX_TYPE).id:
                         tax_key = CostItem.TAX_TYPES.TAX_NOT_TAXABLE
                         break
-                    case RefdataValue.getByValueAndCategory("not applicable", "TaxType").id:
+                    case RefdataValue.getByValueAndCategory("not applicable", RDConstants.TAX_TYPE).id:
                         tax_key = CostItem.TAX_TYPES.TAX_NOT_APPLICABLE
                         break
-                    case RefdataValue.getByValueAndCategory("reverse charge", "TaxType").id:
+                    case RefdataValue.getByValueAndCategory("reverse charge", RDConstants.TAX_TYPE).id:
                         tax_key = CostItem.TAX_TYPES.TAX_REVERSE_CHARGE
                         break
                 }

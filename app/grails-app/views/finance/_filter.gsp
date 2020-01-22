@@ -1,5 +1,5 @@
 <!-- _filter.gsp -->
-<%@ page import="java.text.SimpleDateFormat; de.laser.helper.RDStore;com.k_int.properties.PropertyDefinition;com.k_int.kbplus.OrgRole;com.k_int.kbplus.RefdataCategory;com.k_int.kbplus.RefdataValue;com.k_int.kbplus.FinanceController;com.k_int.kbplus.CostItem" %>
+<%@ page import="java.text.SimpleDateFormat;de.laser.helper.RDStore;de.laser.helper.RDConstants;com.k_int.properties.PropertyDefinition;com.k_int.kbplus.OrgRole;com.k_int.kbplus.RefdataCategory;com.k_int.kbplus.RefdataValue;com.k_int.kbplus.FinanceController;com.k_int.kbplus.CostItem" %>
 <laser:serviceInjection />
 
 
@@ -45,7 +45,7 @@
                     <div class="field">
                         <%
                             List fakeList = []
-                            RefdataCategory.getAllRefdataValues('Subscription Status').each { rdv ->
+                            RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_STATUS).each { rdv ->
                                 if(!rdv.equals(RDStore.SUBSCRIPTION_DELETED))
                                     fakeList.add(rdv)
                             }
@@ -166,7 +166,7 @@
                     <label for="filterCIElement">${message(code:'financials.costItemElement')}</label>
                     <laser:select id="filterCIElement" class="ui dropdown selection search"
                                   name="filterCIElement"
-                                  from="${RefdataCategory.getAllRefdataValues(de.laser.helper.RDConstants.COST_ITEM_ELEMENT)}"
+                                  from="${RefdataCategory.getAllRefdataValues(RDConstants.COST_ITEM_ELEMENT)}"
                                   optionKey="${{it.class.getName() + ":" + it.id}}"
                                   optionValue="value"
                                   value="${params.filterCIElement}"
@@ -177,7 +177,7 @@
                     <label for="filterCIStatus">${message(code:'financials.costItemStatus')}</label>
                     <laser:select id="filterCIStatus" class="ui dropdown selection search"
                                   name="filterCIStatus"
-                                  from="${RefdataCategory.getAllRefdataValues(de.laser.helper.RDConstants.COST_ITEM_STATUS)}"
+                                  from="${RefdataCategory.getAllRefdataValues(RDConstants.COST_ITEM_STATUS)}"
                                   optionKey="${{it.class.getName() + ":" + it.id}}"
                                   optionValue="value"
                                   value="${params.filterCIStatus}"
@@ -280,7 +280,7 @@
             subStatus = "FETCH_ALL";
         }
         var fixedSubscriptionString = "";
-        <g:if test="fixedSubscription">
+        <g:if test="${fixedSubscription}">
             fixedSubscriptionString = "&ctx=${fixedSubscription.class.name}:${fixedSubscription.id}"
         </g:if>
         var links = {

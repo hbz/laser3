@@ -1,6 +1,6 @@
 <laser:serviceInjection />
 
-<%@ page import="de.laser.helper.RDStore; com.k_int.kbplus.Combo;com.k_int.kbplus.RefdataCategory;com.k_int.kbplus.RefdataValue" %>
+<%@ page import="de.laser.helper.RDStore;de.laser.helper.RDConstants;com.k_int.kbplus.Combo;com.k_int.kbplus.RefdataCategory;com.k_int.kbplus.RefdataValue" %>
 <!doctype html>
 <html>
     <head>
@@ -41,8 +41,8 @@
                     <label>${message(code:'myinst.emptySubscription.status')}</label>
                     <%
                         def fakeList = []
-                        fakeList.addAll(RefdataCategory.getAllRefdataValues('Subscription Status'))
-                        fakeList.remove(RefdataValue.getByValueAndCategory('Deleted', 'Subscription Status'))
+                        fakeList.addAll(RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_STATUS))
+                        fakeList.remove(RefdataValue.getByValueAndCategory('Deleted', RDConstants.SUBSCRIPTION_STATUS))
                     %>
                     <laser:select name="status" from="${fakeList}" optionKey="id" optionValue="value"
                                   noSelection="${['' : '']}"
@@ -52,7 +52,7 @@
 
                 <g:if test="${accessService.checkPerm('ORG_CONSORTIUM')}">
                     <%
-                        List subscriptionTypes = RefdataCategory.getAllRefdataValues('Subscription Type')
+                        List subscriptionTypes = RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_TYPE)
                         subscriptionTypes-=RDStore.SUBSCRIPTION_TYPE_LOCAL
                     %>
                     <div class="field">

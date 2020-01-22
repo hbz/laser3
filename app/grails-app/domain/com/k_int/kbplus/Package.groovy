@@ -2,6 +2,7 @@ package com.k_int.kbplus
 
 import de.laser.domain.AbstractBaseDomain
 import de.laser.domain.IssueEntitlementCoverage
+import de.laser.helper.RDConstants
 import de.laser.helper.RDStore
 import de.laser.helper.RefdataAnnotation
 import de.laser.interfaces.ShareSupport
@@ -45,10 +46,10 @@ class Package
     @RefdataAnnotation(cat = '?')
     RefdataValue packageType
 
-    @RefdataAnnotation(cat = 'Package Status')
+    @RefdataAnnotation(cat = RDConstants.PACKAGE_STATUS)
     RefdataValue packageStatus
 
-    @RefdataAnnotation(cat = 'Package.ListStatus')
+    @RefdataAnnotation(cat = RDConstants.PACKAGE_LIST_STATUS)
     RefdataValue packageListStatus
 
     @RefdataAnnotation(cat = '?')
@@ -233,7 +234,7 @@ static hasMany = [  tipps:     TitleInstancePackagePlatform,
     // Create the header
     log.debug("Package: createSubscription called")
     def result = new Subscription( name:subname,
-                                   status:RefdataValue.getByValueAndCategory('Current','Subscription Status'),
+                                   status:RefdataValue.getByValueAndCategory('Current', RDConstants.SUBSCRIPTION_STATUS),
                                    identifier:subidentifier,
                                    startDate:startdate,
                                    endDate:enddate,
@@ -243,7 +244,7 @@ static hasMany = [  tipps:     TitleInstancePackagePlatform,
 
     if ( result.save(flush:true) ) {
       if ( consortium_org ) {
-        def sc_role = RefdataValue.getByValueAndCategory(org_role,'Organisational Role')
+        def sc_role = RefdataValue.getByValueAndCategory(org_role, RDConstants.ORGANISATIONAL_ROLE)
         def or = new OrgRole(org: consortium_org, sub:result, roleType:sc_role).save();
         log.debug("Create Org role ${or}")
       }

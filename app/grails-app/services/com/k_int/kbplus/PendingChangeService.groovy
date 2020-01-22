@@ -4,6 +4,7 @@ import com.k_int.kbplus.auth.User
 import com.k_int.properties.PropertyDefinition
 import de.laser.SubscriptionService
 import de.laser.domain.IssueEntitlementCoverage
+import de.laser.helper.RDConstants
 import de.laser.helper.RDStore
 import de.laser.interfaces.AbstractLockableService
 import grails.converters.JSON
@@ -284,7 +285,7 @@ class PendingChangeService extends AbstractLockableService {
                     pendingChange.license?.save();
                     if(pendingChange.subscription?.pendingChanges) pendingChange.subscription?.pendingChanges?.remove(pendingChange)
                     pendingChange.subscription?.save();*/
-                    pendingChange.status = RefdataValue.getByValueAndCategory("Accepted", "PendingChangeStatus")
+                    pendingChange.status = RefdataValue.getByValueAndCategory("Accepted", RDConstants.PENDING_CHANGE_STATUS)
                     pendingChange.actionDate = new Date()
                     pendingChange.user = user
                     pendingChange.save()
@@ -310,7 +311,7 @@ class PendingChangeService extends AbstractLockableService {
                 change.subscription?.save()
                 change.actionDate = new Date()
                 change.user = user
-                change.status = RefdataValue.getByValueAndCategory("Rejected","PendingChangeStatus")
+                change.status = RefdataValue.getByValueAndCategory("Rejected",RDConstants.PENDING_CHANGE_STATUS)
                 change.save()
             }
         }

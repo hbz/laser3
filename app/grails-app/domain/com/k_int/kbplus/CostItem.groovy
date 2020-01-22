@@ -14,12 +14,12 @@ class CostItem
         implements DeleteFlag, TemplateSupport  {
 
     static enum TAX_TYPES {
-        TAXABLE_7          (RefdataValue.getByValueAndCategory('taxable','TaxType'),7,true),
-        TAXABLE_19         (RefdataValue.getByValueAndCategory('taxable','TaxType'),19,true),
-        TAX_EXEMPT         (RefdataValue.getByValueAndCategory('taxable tax-exempt','TaxType'),0,true),
-        TAX_NOT_TAXABLE    (RefdataValue.getByValueAndCategory('not taxable','TaxType'),0,true),
-        TAX_NOT_APPLICABLE (RefdataValue.getByValueAndCategory('not applicable','TaxType'),0,true),
-        TAX_REVERSE_CHARGE (RefdataValue.getByValueAndCategory('reverse charge','TaxType'),0,false)
+        TAXABLE_7          (RefdataValue.getByValueAndCategory('taxable', RDConstants.TAX_TYPE),7,true),
+        TAXABLE_19         (RefdataValue.getByValueAndCategory('taxable', RDConstants.TAX_TYPE),19,true),
+        TAX_EXEMPT         (RefdataValue.getByValueAndCategory('taxable tax-exempt', RDConstants.TAX_TYPE),0,true),
+        TAX_NOT_TAXABLE    (RefdataValue.getByValueAndCategory('not taxable', RDConstants.TAX_TYPE),0,true),
+        TAX_NOT_APPLICABLE (RefdataValue.getByValueAndCategory('not applicable', RDConstants.TAX_TYPE),0,true),
+        TAX_REVERSE_CHARGE (RefdataValue.getByValueAndCategory('reverse charge', RDConstants.TAX_TYPE),0,false)
 
         TAX_TYPES(RefdataValue taxType, int taxRate, display) {
             this.taxType = taxType
@@ -42,22 +42,22 @@ class CostItem
 
     Boolean isVisibleForSubscriber
 
-    @RefdataAnnotation(cat = de.laser.helper.RDConstants.COST_ITEM_TYPE)
+    @RefdataAnnotation(cat = RDConstants.COST_ITEM_TYPE)
     RefdataValue type
 
-    @RefdataAnnotation(cat = de.laser.helper.RDConstants.COST_ITEM_STATUS)
+    @RefdataAnnotation(cat = RDConstants.COST_ITEM_STATUS)
     RefdataValue costItemStatus
 
-    @RefdataAnnotation(cat = de.laser.helper.RDConstants.COST_ITEM_CATEGORY)
+    @RefdataAnnotation(cat = RDConstants.COST_ITEM_CATEGORY)
     RefdataValue costItemCategory
 
-    @RefdataAnnotation(cat = de.laser.helper.RDConstants.COST_ITEM_ELEMENT)
+    @RefdataAnnotation(cat = RDConstants.COST_ITEM_ELEMENT)
     RefdataValue costItemElement
 
-    @RefdataAnnotation(cat = de.laser.helper.RDConstants.COST_CONFIGURATION)
+    @RefdataAnnotation(cat = RDConstants.COST_CONFIGURATION)
     RefdataValue costItemElementConfiguration
 
-    @RefdataAnnotation(cat = 'TaxType')
+    @RefdataAnnotation(cat = RDConstants.TAX_TYPE)
     RefdataValue taxCode          //to be deleted, will be replaced by TAX_TYPES
 
     @RefdataAnnotation(cat = 'Currency')

@@ -1,6 +1,7 @@
 package com.k_int.kbplus
 
 import com.k_int.kbplus.auth.User
+import de.laser.helper.RDConstants
 import de.laser.helper.RefdataAnnotation
 
 import javax.persistence.Transient
@@ -16,37 +17,37 @@ class UserSettings {
     static enum KEYS {
         PAGE_SIZE                                   (Long),
         DASHBOARD                                   (Org),
-        THEME                                       (RefdataValue, 'User.Settings.Theme'),
-        DASHBOARD_TAB                               (RefdataValue, 'User.Settings.Dashboard.Tab'),
+        THEME                                       (RefdataValue, RDConstants.USER_SETTING_THEME),
+        DASHBOARD_TAB                               (RefdataValue, RDConstants.USER_SETTING_DASHBOARD_TAB),
         DASHBOARD_ITEMS_TIME_WINDOW                 (Integer),
-        LANGUAGE                                    (RefdataValue, 'Language'),
-        LANGUAGE_OF_EMAILS                          (RefdataValue, 'Language'),
-        SHOW_SIMPLE_VIEWS                           (RefdataValue, 'YN'),
-        SHOW_EXTENDED_FILTER                        (RefdataValue, 'YN'),
-        SHOW_INFO_ICON                              (RefdataValue, 'YN'),
-        SHOW_EDIT_MODE                              (RefdataValue, 'YN'),
+        LANGUAGE                                    (RefdataValue, RDConstants.LANGUAGE),
+        LANGUAGE_OF_EMAILS                          (RefdataValue, RDConstants.LANGUAGE),
+        SHOW_SIMPLE_VIEWS                           (RefdataValue, RDConstants.Y_N),
+        SHOW_EXTENDED_FILTER                        (RefdataValue, RDConstants.Y_N),
+        SHOW_INFO_ICON                              (RefdataValue, RDConstants.Y_N),
+        SHOW_EDIT_MODE                              (RefdataValue, RDConstants.Y_N),
 
         REMIND_CC_EMAILADDRESS                      (String),
         NOTIFICATION_CC_EMAILADDRESS                (String),
 
-        IS_NOTIFICATION_BY_EMAIL                    (RefdataValue, 'YN'),
-        IS_NOTIFICATION_CC_BY_EMAIL                 (RefdataValue, 'YN'),
-        IS_NOTIFICATION_FOR_SURVEYS_START           (RefdataValue, 'YN'),
-        IS_NOTIFICATION_FOR_SYSTEM_MESSAGES         (RefdataValue, 'YN'),
+        IS_NOTIFICATION_BY_EMAIL                    (RefdataValue, RDConstants.Y_N),
+        IS_NOTIFICATION_CC_BY_EMAIL                 (RefdataValue, RDConstants.Y_N),
+        IS_NOTIFICATION_FOR_SURVEYS_START           (RefdataValue, RDConstants.Y_N),
+        IS_NOTIFICATION_FOR_SYSTEM_MESSAGES         (RefdataValue, RDConstants.Y_N),
 
-        IS_REMIND_BY_EMAIL                          (RefdataValue, 'YN'),
-        IS_REMIND_CC_BY_EMAIL                       (RefdataValue, 'YN'),
-        IS_REMIND_FOR_SUBSCRIPTIONS_NOTICEPERIOD    (RefdataValue, 'YN'),
-        IS_REMIND_FOR_SUBSCRIPTIONS_ENDDATE         (RefdataValue, 'YN'),
-        IS_REMIND_FOR_SUBSCRIPTIONS_CUSTOM_PROP     (RefdataValue, 'YN'),
-        IS_REMIND_FOR_SUBSCRIPTIONS_PRIVATE_PROP    (RefdataValue, 'YN'),
-        IS_REMIND_FOR_LICENSE_CUSTOM_PROP           (RefdataValue, 'YN'),
-        IS_REMIND_FOR_LIZENSE_PRIVATE_PROP          (RefdataValue, 'YN'),
-        IS_REMIND_FOR_ORG_CUSTOM_PROP               (RefdataValue, 'YN'),
-        IS_REMIND_FOR_ORG_PRIVATE_PROP              (RefdataValue, 'YN'),
-        IS_REMIND_FOR_PERSON_PRIVATE_PROP           (RefdataValue, 'YN'),
-        IS_REMIND_FOR_TASKS                         (RefdataValue, 'YN'),
-        IS_REMIND_FOR_SURVEYS_ENDDATE               (RefdataValue, 'YN'),
+        IS_REMIND_BY_EMAIL                          (RefdataValue, RDConstants.Y_N),
+        IS_REMIND_CC_BY_EMAIL                       (RefdataValue, RDConstants.Y_N),
+        IS_REMIND_FOR_SUBSCRIPTIONS_NOTICEPERIOD    (RefdataValue, RDConstants.Y_N),
+        IS_REMIND_FOR_SUBSCRIPTIONS_ENDDATE         (RefdataValue, RDConstants.Y_N),
+        IS_REMIND_FOR_SUBSCRIPTIONS_CUSTOM_PROP     (RefdataValue, RDConstants.Y_N),
+        IS_REMIND_FOR_SUBSCRIPTIONS_PRIVATE_PROP    (RefdataValue, RDConstants.Y_N),
+        IS_REMIND_FOR_LICENSE_CUSTOM_PROP           (RefdataValue, RDConstants.Y_N),
+        IS_REMIND_FOR_LIZENSE_PRIVATE_PROP          (RefdataValue, RDConstants.Y_N),
+        IS_REMIND_FOR_ORG_CUSTOM_PROP               (RefdataValue, RDConstants.Y_N),
+        IS_REMIND_FOR_ORG_PRIVATE_PROP              (RefdataValue, RDConstants.Y_N),
+        IS_REMIND_FOR_PERSON_PRIVATE_PROP           (RefdataValue, RDConstants.Y_N),
+        IS_REMIND_FOR_TASKS                         (RefdataValue, RDConstants.Y_N),
+        IS_REMIND_FOR_SURVEYS_ENDDATE               (RefdataValue, RDConstants.Y_N),
 
         REMIND_PERIOD_FOR_SUBSCRIPTIONS_NOTICEPERIOD  (Integer),
         REMIND_PERIOD_FOR_SUBSCRIPTIONS_ENDDATE       (Integer),

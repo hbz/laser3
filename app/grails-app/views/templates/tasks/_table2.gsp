@@ -33,7 +33,7 @@
                     <td><g:formatDate format="${message(code:'default.date.format.notime', default:'yyyy-MM-dd')}" date="${taskInstance?.endDate}"/></td>
 
                     <td>
-                        <semui:xEditableRefData config="Task Status" owner="${taskInstance}" field="status" overwriteEditable="${overwriteEditable}" />
+                        <semui:xEditableRefData config="${de.laser.helper.RDConstants.TASK_STATUS}" owner="${taskInstance}" field="status" overwriteEditable="${overwriteEditable}" />
                     </td>
 
                     <g:if test="${controllerName == 'myInstitution'}">

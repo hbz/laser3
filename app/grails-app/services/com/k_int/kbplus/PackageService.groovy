@@ -1,4 +1,6 @@
 package com.k_int.kbplus
+
+import de.laser.helper.RDConstants
 import org.hibernate.Session
 
 class PackageService{
@@ -12,7 +14,7 @@ class PackageService{
    }
 
    private RefdataValue getCPRole(){
-     RefdataValue.getByValueAndCategory('Content Provider', 'Organisational Role')
+     RefdataValue.getByValueAndCategory('Content Provider', RDConstants.ORGANISATIONAL_ROLE)
    }
   /**
    * Method to update all Master list type packages.
@@ -28,7 +30,7 @@ class PackageService{
   }
 
   def setProvider(org_to_link,pkg_to_link){
-  	def rel = RefdataValue.getByValueAndCategory('Content Provider', 'Organisational Role')
+  	def rel = RefdataValue.getByValueAndCategory('Content Provider', RDConstants.ORGANISATIONAL_ROLE)
 
   	def newLink = new OrgRole(org:org_to_link,roleType:rel)
   	newLink.package = pkg_to_link
@@ -230,7 +232,7 @@ class PackageService{
     def c =  Package.createCriteria() 
 
     // Query for a list of packages and return the providers.
-    def del_stat = RefdataValue.getByValueAndCategory('Deleted', 'Package Status')
+    def del_stat = RefdataValue.getByValueAndCategory('Deleted', RDConstants.PACKAGE_STATUS)
 
     def providers = Package.findAllByPackageStatusIsNull().each {
     

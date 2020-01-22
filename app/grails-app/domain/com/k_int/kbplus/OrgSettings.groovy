@@ -1,6 +1,7 @@
 package com.k_int.kbplus
 
 import com.k_int.kbplus.auth.Role
+import de.laser.helper.RDConstants
 import de.laser.helper.RefdataAnnotation
 
 import javax.persistence.Transient
@@ -17,9 +18,9 @@ class OrgSettings {
         API_KEY         (String),
         API_PASSWORD    (String),
         CUSTOMER_TYPE   (Role),
-        GASCO_ENTRY                     (RefdataValue, 'YN'),
-        OAMONITOR_SERVER_ACCESS         (RefdataValue, 'YN'),
-        NATSTAT_SERVER_ACCESS           (RefdataValue, 'YN'),
+        GASCO_ENTRY                     (RefdataValue, RDConstants.Y_N),
+        OAMONITOR_SERVER_ACCESS         (RefdataValue, RDConstants.Y_N),
+        NATSTAT_SERVER_ACCESS           (RefdataValue, RDConstants.Y_N),
         NATSTAT_SERVER_API_KEY          (String),
         NATSTAT_SERVER_REQUESTOR_ID     (String)
 

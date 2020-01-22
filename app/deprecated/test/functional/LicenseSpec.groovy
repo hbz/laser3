@@ -1,3 +1,4 @@
+import de.laser.helper.RDConstants
 import de.laser.helper.RDStore
 import geb.spock.GebReportingSpec
 import org.elasticsearch.common.joda.time.LocalDate
@@ -26,7 +27,7 @@ class LicenseSpec extends GebReportingSpec {
                 user:userAdm,
                 formalRole:formal_role).save()
 
-        def licensee_role_ref = RefdataValue.getByValueAndCategory('Licensee', 'Organisational Role')
+        def licensee_role_ref = RefdataValue.getByValueAndCategory('Licensee', RDConstants.ORGANISATIONAL_ROLE)
         def license  = new com.k_int.kbplus.License(reference:"Test License").save()
         def licensee_role  = new com.k_int.kbplus.OrgRole(roleType:licensee_role_ref,lic:license,org:org).save()
 
@@ -74,10 +75,10 @@ class LicenseSpec extends GebReportingSpec {
     def "add items to list and submit to compare a license (license properties)"() {
         setup: "Going to license comparison page..."
           def org = Org.findByNameAndImpId(Data.Org_name,Data.Org_impId)
-          def licensee_role_ref = RefdataValue.getByValueAndCategory('Licensee','Organisational Role')
+          def licensee_role_ref = RefdataValue.getByValueAndCategory('Licensee',RDConstants.ORGANISATIONAL_ROLE)
           def ed       = new LocalDate().now().plusMonths(6).toDate()
           def sd       = new LocalDate().now().minusMonths(6).toDate()
-          def l_status = RefdataValue.getByValueAndCategory('Current', 'License Status')
+          def l_status = RefdataValue.getByValueAndCategory('Current', RDConstants.LICENSE_STATUS)
           def license2 = new com.k_int.kbplus.License(reference:"Test License 2", startDate: sd, endDate: ed, status: l_status).save()
           def license3 = new com.k_int.kbplus.License(reference:"Test License 3", startDate: sd, endDate: ed, status: l_status).save()
           def licensee_role2 = new com.k_int.kbplus.OrgRole(roleType:licensee_role_ref,lic:license2,org:org).save()

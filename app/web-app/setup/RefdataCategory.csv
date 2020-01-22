@@ -16,10 +16,10 @@ contact.content.type,Kontakttyp,Type of Contact
 contact.type,Art des Kontaktes,Contact Type
 core.status,Kerntitel-Status,Core Status
 cost.configuration,Kostenkonfiguration,Cost configuration
-cost.item.type,Typ,Type
 cost.item.category,CostItemCategory,CostItemCategory
 cost.item.element,CostItemElement,CostItemElement
 cost.item.status,CostItemStatus,CostItemStatus
+cost.item.type,Typ,Type
 country,Land,Country
 creator.type,Creator Type,Creator Type
 currency,Währung,Currency
@@ -27,103 +27,102 @@ customer.identifier.type,Kategorie der Kundennummer,Customer Identifier Type
 document.context.status,Document Context Status,Document Context Status
 document.type,Dokumenttyp,Document Type
 existence,Vorliegen,Existence
-FactMetric,FactMetric,FactMetric
-FactType,FactType,FactType
-Federal State,Bundesland,Federal State
+fact.metric,FactMetric,FactMetric
+fact.type,FactType,FactType
+federal.state,Bundesland,Federal State
 filter.fake.values,filter.fake.values,filter.fake.values
-Funder Type,Trägerschaft,Funder Type
-Gender,Geschlecht,Gender
-IE Accept Status,IE Accept Status,IE Accept Status
-IE Access Status,IE Access Status,IE Access Status
-IEMedium,IEMedium,IEMedium
-Ill code,Fernleihindikator,Ill code
-Indemnification,Entschädigung Auswahl,Indemnification Choice
-Invoicing,Rechnungsstellung,Invoicing
-IPv4 Address Format,IPv4 Address Format,IPv4 Address Format
-IPv6 Address Format,IPv6 Address Format,IPv6 Address Format
-Language,Sprache,Language
-Library Network,Verbundzugehörigkeit,Library Network
-Library Type,Bibliothekstyp,Library Type
-License Status,Lizenzstatus,License Status
-License Type,Lizenztyp,License Type
-License.Arc.ArchivalCopyContent,Archivkopie Form,Archival Copy Content
-License.Arc.ArchivalCopyCost,Archivkopie Kosten,Archival Copy Cost
-License.Arc.ArchivalCopyTime,Archivkopie Zeitpunkt,Archival Copy Time
-License.Arc.ArchivalCopyTransmissionFormat,Archivkopie Übermittlungsformat,Archival Copy Transmission Format
-License.Arc.Authorized,Hostingrecht Berechtigte,Hosting Authorized
-License.Arc.HostingRestriction,Hostingrecht Einschränkung,Hosting Restriction
-License.Arc.HostingSolution,Hostingrecht Lösung,Hosting Solution
-License.Arc.HostingTime,Hostingrecht Zeitpunkt,Hosting Time
-License.Arc.PaymentNote,Zugriffsrechte Kosten,Archive Payment Note
-License.Arc.TitletransferRegulation,Titeltransfer Regeln,Titletransfer Regulation
-License.OA.CorrespondingAuthorIdentification,Autorenindentifikation,Corresponding Author Identification
-License.OA.eArcVersion,License.OA.eArcVersion,License.OA.eArcVersion
-License.OA.LicenseToPublish,Publikationslizenz,License to Publish
-License.OA.ReceivingModalities,Bezugsmodalitäten,Receiving Modalities
-License.OA.Repository,Repositorium,Repository
-License.OA.Type,Open-Acces Typ,Open Acces Type
-License.RemoteAccess,Remote-Zugriff,Remote Access
-License.Statistics.Delivery,Statistik Liefermethode,Statistics Delivery
-License.Statistics.Format,Statistik Auslieferungsformat,Statistics Format
-License.Statistics.Frequency,Statistik Auslieferungsfrequenz,Statistics Frequency
-License.Statistics.Standards,Statistikstandard,Statistics Standards
-License.Statistics.UserCreds,Statistik Nutzeridentifikation,Statistics User Credentials
-LicenseCategory,Lizenzkategorie,LicenseCategory
-Lincense.RemoteAccess,Lincense.RemoteAccess,Lincense.RemoteAccess
-Link Type,Link Type,Link Type
-MailTemplate Language,MailTemplate Sprache,MailTemplate Language
-MailTemplate Type,MailTemplate Typ,MailTemplate Type
-Number Type,Zahlen-Typ,Number Type
-Organisational Role,Organisational Role,Organisational Role
-OrgRoleType,Organisationstyp,Organisation Type
-OrgSector,Bereich,OrgSector
-OrgStatus,Status,Status
-Package Status,Paketstatus,Package Status
-Package.Breakable,Package.Breakable,Package.Breakable
-Package.Consistent,Package.Consistent,Package.Consistent
-Package.Fixed,Package.Fixed,Package.Fixed
-Package.ListStatus,Package.ListStatus,Package.ListStatus
-Package.Scope,Package.Scope,Package.Scope
-Package.Type,Package.Type,Package.Type
-PendingChangeStatus,PendingChangeStatus,PendingChangeStatus
-Permissions,Berechtigungen,Permissions
-Person Contact Type,Kontaktart,Person: Contact Type
-Person Function,Funktion,Person Function
-Person Position,Position,Person Position
-Person Responsibility,Verantwortlich,Person Responsibility
-Platform Status,Platform Status,Platform Status
-ReminderMethod,ReminderMethod,ReminderMethod
-ReminderTrigger,ReminderTrigger,ReminderTrigger
-ReminderUnit,ReminderUnit,ReminderUnit
-Semester,Semester,Semester
-Share Configuration,Share Configuration,Share Configuration
-Sim-User Number,Sim User Zahl,Sim-User Number
-Subscription Form,Lizenzform,Subscription Form
-Subscription Resource,Ressourcentyp,Resource type
-Subscription Status,Lizenzstatus,Subscription Status
-Subscription Type,Subscription Type,Subscription Type
-Survey Status,Umfrage-Status,Survey Status
-Survey Type,Umfrage-Typ,Survey Type
-Task Priority,Aufgabenpriorität,Task Priority
-Task Status,Aufgabenstatus,Task Status
-TaxType,TaxType,TaxType
-Termination Condition,Kündigung Voraussetzung,Termination Condition
-Ticket.Category,Kategorie,Ticket Category
-Ticket.Status,Ticketstatus,Ticket Status
-TIPP Access Status,TIPP Access Status,TIPP Access Status
-TIPP Status,TIPP Status,TIPP Status
-Tipp.StatusReason,Tipp.StatusReason,Tipp.StatusReason
-Title Type,Title Type,Title Type
-TitleInstancePackagePlatform.DelayedOA,TitleInstancePackagePlatform.DelayedOA,TitleInstancePackagePlatform.DelayedOA
-TitleInstancePackagePlatform.HybridOA,TitleInstancePackagePlatform.HybridOA,TitleInstancePackagePlatform.HybridOA
-TitleInstancePackagePlatform.PaymentType,TitleInstancePackagePlatform.PaymentType,TitleInstancePackagePlatform.PaymentType
-TitleInstanceStatus,TitleInstanceStatus,TitleInstanceStatus
-Transform Format,Transform Format,Transform Format
-Transform Type,Transform Type,Transform Type
-UsageStatus,UsageStatus,UsageStatus
-User.Settings.Dashboard.Tab,Dashbord Tab,Dashboard Tab
-User.Settings.Theme,Theme,Theme
-YN,Ja/Nein,Yes/No
-YNO,Ja/Nein/Anderes,Yes/No/Others
-YNU,Ja/Nein/Unbekannt,Yes/No/Unknown
-Platform Status,Platform Status,Platform Status
+funder.type,Trägerschaft,Funder Type
+gender,Geschlecht,Gender
+ie.accept.status,IE Accept Status,IE Accept Status
+ie.access.status,IE Access Status,IE Access Status
+ie.medium,IEMedium,IEMedium
+ill.code,Fernleihindikator,Ill code
+indemnification,Entschädigung Auswahl,Indemnification Choice
+invoicing,Rechnungsstellung,Invoicing
+ipv4.address.format,IPv4 Address Format,IPv4 Address Format
+ipv6.address.format,IPv6 Address Format,IPv6 Address Format
+language,Sprache,Language
+library.network,Verbundzugehörigkeit,Library Network
+library.type,Bibliothekstyp,Library Type
+license.arc.archival.copy.content,Archivkopie Form,Archival Copy Content
+license.arc.archival.copy.cost,Archivkopie Kosten,Archival Copy Cost
+license.arc.archival.copy.time,Archivkopie Zeitpunkt,Archival Copy Time
+license.arc.archival.copy.transmission.format,Archivkopie Übermittlungsformat,Archival Copy Transmission Format
+license.arc.authorized,Hostingrecht Berechtigte,Hosting Authorized
+license.arc.hosting.restriction,Hostingrecht Einschränkung,Hosting Restriction
+license.arc.hosting.solution,Hostingrecht Lösung,Hosting Solution
+license.arc.hosting.time,Hostingrecht Zeitpunkt,Hosting Time
+license.arc.payment.note,Zugriffsrechte Kosten,Archive Payment Note
+license.arc.title.transfer.regulation,Titeltransfer Regeln,Titletransfer Regulation
+license.category,Lizenzkategorie,LicenseCategory
+license.oa.corresponding.author.identification,Autorenindentifikation,Corresponding Author Identification
+license.oa.earc.version,License.OA.eArcVersion,License.OA.eArcVersion
+license.oa.license.to.publish,Publikationslizenz,License to Publish
+license.oa.receiving.modalities,Bezugsmodalitäten,Receiving Modalities
+license.oa.repository,Repositorium,Repository
+license.oa.type,Open-Acces Typ,Open Acces Type
+license.remote.access,Lincense.RemoteAccess,Lincense.RemoteAccess
+license.remote.access2,Remote-Zugriff,Remote Access
+license.statistics.delivery,Statistik Liefermethode,Statistics Delivery
+license.statistics.format,Statistik Auslieferungsformat,Statistics Format
+license.statistics.frequency,Statistik Auslieferungsfrequenz,Statistics Frequency
+license.statistics.standards,Statistikstandard,Statistics Standards
+license.statistics.user.creds,Statistik Nutzeridentifikation,Statistics User Credentials
+license.status,Lizenzstatus,License Status
+license.type,Lizenztyp,License Type
+link.type,Link Type,Link Type
+mail.template.language,MailTemplate Sprache,MailTemplate Language
+mail.template.type,MailTemplate Typ,MailTemplate Type
+number.type,Zahlen-Typ,Number Type
+org.sector,Bereich,OrgSector
+org.status,Status,Status
+org.type,Organisationstyp,Organisation Type
+organisational.role,Organisational Role,Organisational Role
+package.breakable,Package.Breakable,Package.Breakable
+package.consistent,Package.Consistent,Package.Consistent
+package.fixed,Package.Fixed,Package.Fixed
+package.list.status,Package.ListStatus,Package.ListStatus
+package.scope,Package.Scope,Package.Scope
+package.status,Paketstatus,Package Status
+package.type,Package.Type,Package.Type
+pending.change.status,PendingChangeStatus,PendingChangeStatus
+permissions,Berechtigungen,Permissions
+person.contact.type,Kontaktart,Person: Contact Type
+person.function,Funktion,Person Function
+person.position,Position,Person Position
+person.responsibility,Verantwortlich,Person Responsibility
+platform.status,Platform Status,Platform Status
+reminder.method,ReminderMethod,ReminderMethod
+reminder.trigger,ReminderTrigger,ReminderTrigger
+reminder.unit,ReminderUnit,ReminderUnit
+semester,Semester,Semester
+share.configuration,Share Configuration,Share Configuration
+sim.user.number,Sim User Zahl,Sim-User Number
+subscription.form,Lizenzform,Subscription Form
+subscription.resource,Ressourcentyp,Resource type
+subscription.status,Lizenzstatus,Subscription Status
+subscription.type,Subscription Type,Subscription Type
+survey.status,Umfrage-Status,Survey Status
+survey.type,Umfrage-Typ,Survey Type
+task.priority,Aufgabenpriorität,Task Priority
+task.status,Aufgabenstatus,Task Status
+tax.type,TaxType,TaxType
+termination.condition,Kündigung Voraussetzung,Termination Condition
+ticket.category,Kategorie,Ticket Category
+ticket.status,Ticketstatus,Ticket Status
+tipp.access.status,TIPP Access Status,TIPP Access Status
+tipp.delayed.oa,TitleInstancePackagePlatform.DelayedOA,TitleInstancePackagePlatform.DelayedOA
+tipp.hybrid.oa,TitleInstancePackagePlatform.HybridOA,TitleInstancePackagePlatform.HybridOA
+tipp.payment.type,TitleInstancePackagePlatform.PaymentType,TitleInstancePackagePlatform.PaymentType
+tipp.status,TIPP Status,TIPP Status
+tipp.status.reason,Tipp.StatusReason,Tipp.StatusReason
+title.status,TitleInstanceStatus,TitleInstanceStatus
+title.type,Title Type,Title Type
+transform.format,Transform Format,Transform Format
+transform.type,Transform Type,Transform Type
+usage.status,UsageStatus,UsageStatus
+user.setting.dashboard.tab,Dashbord Tab,Dashboard Tab
+user.setting.theme,Theme,Theme
+y.n,Ja/Nein,Yes/No
+y.n.o,Ja/Nein/Anderes,Yes/No/Others
+y.n.u,Ja/Nein/Unbekannt,Yes/No/Unknown

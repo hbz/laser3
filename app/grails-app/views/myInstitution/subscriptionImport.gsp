@@ -1,4 +1,4 @@
-<%@ page import="com.k_int.kbplus.RefdataCategory;static de.laser.helper.RDStore.*" %>
+<%@ page import="de.laser.helper.RDConstants; com.k_int.kbplus.RefdataCategory;static de.laser.helper.RDStore.*" %>
 <laser:serviceInjection/>
 <!doctype html>
 <html>
@@ -34,7 +34,7 @@
                 <%
                     List args = []
                     switch(mpg) {
-                        case 'status': args.addAll(RefdataCategory.getAllRefdataValues('Subscription Status').collect { it -> it.getI10n('value') })
+                        case 'status': args.addAll(RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_STATUS).collect { it -> it.getI10n('value') })
                             break
                         case 'instanceOf':
                             List<String> parentSubscriptionType = []
@@ -44,11 +44,11 @@
                                 parentSubscriptionType << SUBSCRIPTION_TYPE_LOCAL.getI10n('value')
                             args.addAll(parentSubscriptionType)
                             break
-                        case 'type': args.addAll(RefdataCategory.getAllRefdataValues('Subscription Type').collect { it -> it.getI10n('value') })
+                        case 'type': args.addAll(RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_TYPE).collect { it -> it.getI10n('value') })
                             break
-                        case 'form': args.addAll(RefdataCategory.getAllRefdataValues('Subscription Form').collect { it -> it.getI10n('value') })
+                        case 'form': args.addAll(RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_FORM).collect { it -> it.getI10n('value') })
                             break
-                        case 'resource': args.addAll(RefdataCategory.getAllRefdataValues('Subscription Resource').collect { it -> it.getI10n('value') })
+                        case 'resource': args.addAll(RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_RESOURCE).collect { it -> it.getI10n('value') })
                             break
                     }
                 %>

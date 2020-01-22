@@ -102,7 +102,7 @@ class ApiService {
             def org = Org.lookup(inst.name?.text(), identifiers)
             if (! org) {
                 org = Org.lookupOrCreate(inst.name?.text(), null, null, identifiers, null)
-                org.sector = RefdataValue.getByValueAndCategory('Higher Education','OrgSector')
+                org.sector = RefdataValue.getByValueAndCategory('Higher Education', RDConstants.ORG_SECTOR)
 
                 log.debug("#${(count--)} -- creating new org: " + inst.name?.text() + " / " + identifiers)
             }
@@ -140,9 +140,9 @@ class ApiService {
 
             // refdatas
 
-            org.libraryType     = RefdataValue.getByCategoryDescAndI10nValueDe('Library Type', inst.library_type?.text()) ?: org.libraryType
-            org.libraryNetwork  = RefdataValue.getByCategoryDescAndI10nValueDe('Library Network', inst.library_network?.text()) ?: org.libraryNetwork
-            org.funderType      = RefdataValue.getByCategoryDescAndI10nValueDe('Funder Type', inst.funder_type?.text()) ?: org.funderType
+            org.libraryType     = RefdataValue.getByCategoryDescAndI10nValueDe(RDConstants.LIBRARY_TYPE, inst.library_type?.text()) ?: org.libraryType
+            org.libraryNetwork  = RefdataValue.getByCategoryDescAndI10nValueDe(RDConstants.LIBRARY_NETWORK, inst.library_network?.text()) ?: org.libraryNetwork
+            org.funderType      = RefdataValue.getByCategoryDescAndI10nValueDe(RDConstants.FUNDER_TYPE, inst.funder_type?.text()) ?: org.funderType
 
             org.save(flush: true)
 
@@ -170,7 +170,7 @@ class ApiService {
                     normString("${tmp1.street2}"),
                     normString("${inst.zip}"),
                     normString("${inst.city}"),
-                    RefdataValue.getByCategoryDescAndI10nValueDe('Federal State', inst.county?.text()),
+                    RefdataValue.getByCategoryDescAndI10nValueDe(RDConstants.FEDERAL_STATE, inst.county?.text()),
                     RefdataValue.getByCategoryDescAndI10nValueDe(RDConstants.COUNTRY, inst.country?.text()),
                     normString("${inst.pob}"),
                     normString("${inst.pobZipcode}"),
@@ -292,7 +292,7 @@ class ApiService {
 
             // persons
 
-            def rdvContactPerson = RefdataValue.getByValueAndCategory('General contact person', 'Person Function')
+            def rdvContactPerson = RefdataValue.getByValueAndCategory('General contact person', RDConstants.PERSON_FUNCTION)
             def rdvJobRelated    = RefdataValue.getByValueAndCategory('Job-related', RDConstants.CONTACT_TYPE)
 
             inst.person?.children().each { p ->
@@ -322,7 +322,7 @@ class ApiService {
                             tenant: tenant,
                             isPublic: isPublic,
                             contactType: rdvContactType,
-                            gender: RefdataValue.getByCategoryDescAndI10nValueDe('Gender', p.gender?.text())
+                            gender: RefdataValue.getByCategoryDescAndI10nValueDe(RDConstants.GENDER, p.gender?.text())
                     )
 
                     if (person.save()) {
@@ -338,7 +338,7 @@ class ApiService {
                         pr.save()
 
                         p.function.children().each { func ->
-                            def rdv = RefdataValue.getByCategoryDescAndI10nValueDe('Person Function', func.text())
+                            def rdv = RefdataValue.getByCategoryDescAndI10nValueDe(RDConstants.PERSON_FUNCTION, func.text())
                             if (rdv) {
                                 def pf = new PersonRole(
                                         prs: person,
@@ -399,7 +399,7 @@ class ApiService {
 
         xml.subscription.each { sub ->
             def strName = sub.name.text()
-            def rdvType = RefdataValue.getByValueAndCategory(type.name.text(), 'Subscription Type')
+            def rdvType = RefdataValue.getByValueAndCategory(type.name.text(), RDConstants.SUBSCRIPTION_TYPE)
 
             log.debug("processing ${strName} / ${rdvType.getI10n('value')}")
         }

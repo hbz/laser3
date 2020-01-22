@@ -30,7 +30,7 @@
             <td>${fieldValue(bean: orgInstance, field: "sortname")}</td>
             <td>${fieldValue(bean: orgInstance, field: "name")}</td>
             <td>
-                <semui:xEditableRefData owner="${orgInstance}" field="status" config='OrgStatus'/>
+                <semui:xEditableRefData owner="${orgInstance}" field="status" config="${de.laser.helper.RDConstants.ORG_STATUS}"/>
             </td>
           </tr>
         </g:each>

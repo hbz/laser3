@@ -1,14 +1,14 @@
 <!-- _copyEmailAddresses.gsp -->
 <%@ page import="com.k_int.kbplus.PersonRole; com.k_int.kbplus.Contact" %>
-<%@ page import="static de.laser.helper.RDStore.*" %>
+<%@ page import="static de.laser.helper.RDStore.*;de.laser.helper.RDConstants" %>
 <laser:serviceInjection />
 
 <g:set var="modalID" value="${modalID ?: 'copyEmailaddresses_ajaxModal'}"/>
 
 <semui:modal id="${modalID ?: 'copyEmailaddresses_ajaxModal'}" text="${message(code:'menu.institutions.copy_emailaddresses', args:[orgList?.size()?:0])}" hideSubmitButton="true">
 
-    <g:set var="rdvAllPersonFunctions"  value="${PersonRole.getAllRefdataValues('Person Function')}" scope="request"/>
-    <g:set var="rdvAllPersonPositions"  value="${PersonRole.getAllRefdataValues('Person Position')}" scope="request"/>
+    <g:set var="rdvAllPersonFunctions"  value="${PersonRole.getAllRefdataValues(RDConstants.PERSON_FUNCTION)}" scope="request"/>
+    <g:set var="rdvAllPersonPositions"  value="${PersonRole.getAllRefdataValues(RDConstants.PERSON_POSITION)}" scope="request"/>
 
     <div>
     <label><g:message code="person.function.label" default="Function"/></label>&nbsp

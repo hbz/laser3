@@ -3,6 +3,7 @@ package com.k_int.kbplus
 import au.com.bytecode.opencsv.CSVReader
 import com.k_int.kbplus.auth.User
 import de.laser.controller.AbstractDebugController
+import de.laser.helper.RDConstants
 import grails.plugin.springsecurity.annotation.Secured
 import org.apache.commons.io.input.BOMInputStream
 import org.mozilla.universalchardet.UniversalDetector
@@ -91,7 +92,7 @@ class UploadController extends AbstractDebugController {
     }
 
     RefdataValue pkg_type = RefdataValue.getByValueAndCategory('Unknown', "${RefdataCategory.PKG_TYPE}")
-    RefdataValue cp_role = RefdataValue.getByValueAndCategory('Content Provider', 'Organisational Role')
+    RefdataValue cp_role = RefdataValue.getByValueAndCategory('Content Provider', RDConstants.ORGANISATIONAL_ROLE)
     RefdataValue tipp_current = RefdataValue.getByValueAndCategory('Current', "${RefdataCategory.TIPP_STATUS}")
 
     def consortium = null;
@@ -122,7 +123,7 @@ class UploadController extends AbstractDebugController {
         log.debug("Package [${new_pkg.id}] with identifier ${new_pkg.identifier} created......");
 
         if ( upload.consortiumOrg ) {
-          def sc_role = RefdataValue.getByValueAndCategory('Package Consortia', 'Organisational Role')
+          def sc_role = RefdataValue.getByValueAndCategory('Package Consortia', RDConstants.ORGANISATIONAL_ROLE)
           def or = new OrgRole(org: consortium, pkg:new_pkg, roleType:sc_role).save();
         }
 
@@ -191,12 +192,12 @@ class UploadController extends AbstractDebugController {
 
           def hybrid_oa_status_value = null;
           if ( tipp.hybrid_oa != null ) {
-            // ERMS-2016: hybrid_oa_status_value = RefdataCategory.lookupOrCreate("TitleInstancePackagePlatform.HybridOA", tipp.hybrid_oa.capitalize())
+            // ERMS-2016: hybrid_oa_status_value = RefdataCategory.lookupOrCreate(de.laser.helper.RDConstants.TIPP_HYBRID_OA, tipp.hybrid_oa.capitalize())
             // if value exists --> RefdataValue.getByValueAndCategory()
 
             hybrid_oa_status_value = RefdataValue.construct([
                     token   : tipp.hybrid_oa.capitalize(),
-                    rdc     : "TitleInstancePackagePlatform.HybridOA",
+                    rdc     : RDConstants.TIPP_HYBRID_OA,
                     hardData: false,
                     i10n    : [en: tipp.hybrid_oa.capitalize(), de: tipp.hybrid_oa.capitalize()]
             ])
@@ -275,7 +276,7 @@ class UploadController extends AbstractDebugController {
       //TODO: Wegen Überarbeitung von Titel Konzept muss dies hier nochmal überarbeitet werden by Moe
       result = TitleInstance.lookupOrCreateViaIdMap(identifiers, title);
       if ( !result.getPublisher() ) {
-        def pub_role = RefdataValue.getByValueAndCategory('Publisher', 'Organisational Role')
+        def pub_role = RefdataValue.getByValueAndCategory('Publisher', RDConstants.ORGANISATIONAL_ROLE)
         OrgRole.assertOrgTitleLink(publisher, result, pub_role, null, null);
         result.save();
       }

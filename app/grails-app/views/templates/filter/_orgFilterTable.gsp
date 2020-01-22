@@ -370,7 +370,7 @@
         </g:if>
         <g:if test="${tmplConfigItem.equalsIgnoreCase('currentFTEs')}">
             <td>
-                <g:each in="${ReaderNumber.findAllByOrgAndReferenceGroup(org, RefdataValue.getByValueAndCategory('Students', 'Number Type').getI10n('value'))?.sort {
+                <g:each in="${ReaderNumber.findAllByOrgAndReferenceGroup(org, RefdataValue.getByValueAndCategory('Students', de.laser.helper.RDConstants.NUMBER_TYPE).getI10n('value'))?.sort {
                     it.type?.getI10n("value")
                 }}" var="fte">
                     <g:if test="${fte.startDate <= sqlDateToday && fte.endDate >= sqlDateToday}">

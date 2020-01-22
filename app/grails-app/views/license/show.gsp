@@ -92,7 +92,7 @@
                                 <dl>
                                     <dt class="control-label">${message(code: 'license.status')}</dt>
                                     <dd>
-                                        <semui:xEditableRefData owner="${license}" field="status" config='License Status'/>
+                                        <semui:xEditableRefData owner="${license}" field="status" config="${de.laser.helper.RDConstants.LICENSE_STATUS}"/>
                                     </dd>
                                     <dd class="la-js-editmode-container"><semui:auditButton auditable="[license, 'status']" /></dd>
                                 </dl>
@@ -101,7 +101,7 @@
 
                                     <dt><label class="control-label" for="licenseCategory">${message(code:'license.licenseCategory', default:'License Category')}</label></dt>
                                     <dd>
-                                        <semui:xEditableRefData owner="${license}" field="licenseCategory" config='LicenseCategory'/>
+                                        <semui:xEditableRefData owner="${license}" field="licenseCategory" config="${de.laser.helper.RDConstants.LICENSE_CATEGORY}"/>
                                     </dd>
                                 </dl>
                                 -->
@@ -109,7 +109,7 @@
                                 <dl>
                                     <dt><label class="control-label" for="isPublic">${message(code:'license.isPublic', default:'Public?')}</label></dt>
                                     <dd>
-                                        <semui:xEditableRefData owner="${license}" field="isPublic" config='YN'/>
+                                        <semui:xEditableRefData owner="${license}" field="isPublic" config="${de.laser.helper.RDConstants.Y_N}" />
                                     </dd>
                                 </dl>
                                 --%>

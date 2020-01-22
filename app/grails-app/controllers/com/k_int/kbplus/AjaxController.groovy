@@ -464,7 +464,7 @@ class AjaxController {
 
         if (config.domain == 'Org') {
             // new added param for org queries in this->refdata_config
-            query_params.add(RefdataValue.getByValueAndCategory('Deleted', 'OrgStatus'))
+            query_params.add(RefdataValue.getByValueAndCategory('Deleted', RDConstants.ORG_STATUS))
         }
 
         //log.debug("Row qry: ${config.rowQry}");
@@ -1938,7 +1938,7 @@ class AjaxController {
       fuzzyString+params.sSearch.trim().toLowerCase()+'%'
     }
     query_params.add(fuzzyString)
-    query_params.add(RefdataValue.getByValueAndCategory('Deleted', 'OrgStatus'))
+    query_params.add(RefdataValue.getByValueAndCategory('Deleted', RDConstants.ORG_STATUS))
     String countQry = "select count(o) from Org as o where exists (select roletype from o.orgType as roletype where roletype.value = 'Provider' ) and lower(o.name) like ? and (o.status is null or o.status != ?)"
     String rowQry = "select o from Org as o where exists (select roletype from o.orgType as roletype where roletype.value = 'Provider' ) and lower(o.name) like ? and (o.status is null or o.status != ?) order by o.name asc"
     def cq = Org.executeQuery(countQry,query_params);
@@ -2021,13 +2021,13 @@ class AjaxController {
         def show = params.showEditMode
 
         if (show) {
-            def setting = user.getSetting(UserSettings.KEYS.SHOW_EDIT_MODE, RefdataValue.getByValueAndCategory('Yes', 'YN'))
+            def setting = user.getSetting(UserSettings.KEYS.SHOW_EDIT_MODE, RefdataValue.getByValueAndCategory('Yes', RDConstants.Y_N))
 
             if (show == 'true') {
-                setting.setValue(RefdataValue.getByValueAndCategory('Yes', 'YN'))
+                setting.setValue(RefdataValue.getByValueAndCategory('Yes', RDConstants.Y_N))
             }
             else if (show == 'false') {
-                setting.setValue(RefdataValue.getByValueAndCategory('No', 'YN'))
+                setting.setValue(RefdataValue.getByValueAndCategory('No', RDConstants.Y_N))
             }
         }
         render show

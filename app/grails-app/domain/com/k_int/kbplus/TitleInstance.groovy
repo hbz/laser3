@@ -1,6 +1,7 @@
 package com.k_int.kbplus
 
 import de.laser.domain.AbstractBaseDomain
+import de.laser.helper.RDConstants
 import de.laser.helper.RDStore
 import de.laser.helper.RefdataAnnotation
 import de.laser.traits.AuditableTrait
@@ -36,7 +37,7 @@ class TitleInstance extends AbstractBaseDomain /*implements AuditableTrait*/ {
   String gokbId
   //URL originEditUrl
 
-  @RefdataAnnotation(cat = 'TitleInstanceStatus')
+  @RefdataAnnotation(cat = RDConstants.TITLE_STATUS)
   RefdataValue status
 
   //@RefdataAnnotation(cat = 'Title Type')

@@ -58,7 +58,7 @@
             <div class="field">
                 <label>${message(code: 'surveyInfo.type.label')}</label>
                 <laser:select class="ui dropdown" name="type"
-                              from="${RefdataCategory.getAllRefdataValues('Survey Type')}"
+                              from="${RefdataCategory.getAllRefdataValues(de.laser.helper.RDConstants.SURVEY_TYPE)}"
                               optionKey="id"
                               optionValue="value"
                               value="${params.type}"

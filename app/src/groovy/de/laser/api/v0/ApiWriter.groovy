@@ -5,6 +5,7 @@ import com.k_int.kbplus.Org
 import com.k_int.kbplus.Person
 import com.k_int.kbplus.Subscription
 import de.laser.helper.Constants
+import de.laser.helper.RDConstants
 import groovy.util.logging.Log4j
 import org.codehaus.groovy.grails.web.json.JSONObject
 import org.springframework.transaction.TransactionStatus
@@ -44,9 +45,9 @@ class ApiWriter {
                 ['Yes','yes']
                 // RefdataValues
                 license.isPublic         = data.isPublic in ['Yes','yes']
-                license.licenseCategory  = ApiWriterHelper.getRefdataValue(data.licenseCategory, "LicenseCategory")
-                license.status           = ApiWriterHelper.getRefdataValue(data.status, "License Status")
-                license.type             = ApiWriterHelper.getRefdataValue(data.type, "License Type")
+                license.licenseCategory  = ApiWriterHelper.getRefdataValue(data.licenseCategory, RDConstants.LICENSE_CATEGORY)
+                license.status           = ApiWriterHelper.getRefdataValue(data.status, RDConstants.LICENSE_STATUS)
+                license.type             = ApiWriterHelper.getRefdataValue(data.type, RDConstants.LICENSE_TYPE)
                 license.ids              = ApiWriterHelper.getIdentifiers(data.identifiers, license) // implicit creation of identifier and namespace
 
                 // References
@@ -98,8 +99,8 @@ class ApiWriter {
                 )
 
                 // RefdataValues
-                org.sector  = ApiWriterHelper.getRefdataValue(data.sector, "OrgSector")
-                org.status  = ApiWriterHelper.getRefdataValue(data.status, "OrgStatus") // TODO unknown catagory !!!
+                org.sector  = ApiWriterHelper.getRefdataValue(data.sector, RDConstants.ORG_SECTOR)
+                org.status  = ApiWriterHelper.getRefdataValue(data.status, RDConstants.ORG_STATUS)
                 //org.orgType = ApiWriterHelper.getRefdataValue(data.type, "OrgType")
 
                 // References
@@ -158,8 +159,8 @@ class ApiWriter {
 
                 // RefdataValues
                 sub.isSlaved  =  data.isSlaved in ['Yes','yes']
-                //sub.isPublic  = ApiWriterHelper.getRefdataValue(data.isPublic, "YN") // legacy
-                //sub.status    = ApiWriterHelper.getRefdataValue(data.isSlaved, "Subscription Status")
+                //sub.isPublic  = ApiWriterHelper.getRefdataValue(data.isPublic, RDConstants.Y_N) // legacy
+                //sub.status    = ApiWriterHelper.getRefdataValue(data.isSlaved, RDConstants.SUBSCRIPTION_STATUS)
                 //sub.type      = ApiWriterHelper.getRefdataValue(data.isSlaved, "Organisational Role")
 
                 // References

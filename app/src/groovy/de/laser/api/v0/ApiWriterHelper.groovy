@@ -97,7 +97,7 @@ class ApiWriterHelper {
             )
 
             // RefdataValues
-            person.gender   = getRefdataValue(it.gender?.value, "Gender")
+            person.gender   = getRefdataValue(it.gender?.value, RDConstants.GENDER)
             person.isPublic = it.isPublic in ['Yes', 'yes']
 
             // References
@@ -118,14 +118,14 @@ class ApiWriterHelper {
                     )
 
                     // RefdataValues
-                    personRole.functionType = getRefdataValue(it2.functionType?.value, "Person Function")
+                    personRole.functionType = getRefdataValue(it2.functionType?.value, RDConstants.PERSON_FUNCTION)
                     if (personRole.functionType) {
                         result['persons'] << person
                         result['personRoles'] << personRole
                     }
 
                     // TODO: responsibilityType
-                    //def rdvResponsibilityType = getRefdataValue(it2.functionType?.value,"Person Responsibility")
+                    //def rdvResponsibilityType = getRefdataValue(it2.functionType?.value, RDConstants.PERSON_RESPONSIBILITY)
                 }
             }
         }
@@ -171,7 +171,7 @@ class ApiWriterHelper {
                         org:        org,
                         endDate:    getValidDateFormat(it.endDate),
                         startDate:  getValidDateFormat(it.startDate),
-                        roleType:   getRefdataValue(it.roleType, "Organisational Role")
+                        roleType:   getRefdataValue(it.roleType, de.laser.helper.RDConstants.ORGANISATIONAL_ROLE)
                 )
                 orgRole.setReference(owner)
 

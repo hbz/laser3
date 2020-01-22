@@ -6,6 +6,7 @@ import de.laser.api.v0.ApiReader
 import de.laser.api.v0.ApiStubReader
 import de.laser.api.v0.ApiToolkit
 import de.laser.helper.Constants
+import de.laser.helper.RDConstants
 import de.laser.helper.RDStore
 import grails.converters.JSON
 import groovy.util.logging.Log4j
@@ -29,8 +30,8 @@ class ApiStatistic {
                 "select o from OrgSettings os join os.org o where os.key = :key and os.rdValue = :rdValue " +
                         "and (o.status is null or o.status != :deleted)", [
                             key    : OrgSettings.KEYS.NATSTAT_SERVER_ACCESS,
-                            rdValue: RefdataValue.getByValueAndCategory('Yes', 'YN'),
-                            deleted: RefdataValue.getByValueAndCategory('Deleted', 'OrgStatus')
+                            rdValue: RefdataValue.getByValueAndCategory('Yes', RDConstants.Y_N),
+                            deleted: RefdataValue.getByValueAndCategory('Deleted', RDConstants.ORG_STATUS)
                     ])
 
         orgs
@@ -47,7 +48,7 @@ class ApiStatistic {
                             "join sp.pkg pkg join sp.subscription s join s.orgRelations ogr join ogr.org o " +
                             "where o in (:orgs) and (pkg.packageStatus is null or pkg.packageStatus != :deleted)", [
                     orgs: orgs,
-                    deleted: RefdataValue.getByValueAndCategory('Deleted', 'Package Status')
+                    deleted: RefdataValue.getByValueAndCategory('Deleted', RDConstants.PACKAGE_STATUS)
                 ]
             )
         }

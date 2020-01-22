@@ -42,7 +42,7 @@ class OrganisationService {
 
         if (OrgSettings.get(org, OrgSettings.KEYS.NATSTAT_SERVER_ACCESS) == OrgSettings.SETTING_NOT_FOUND) {
             OrgSettings.add(org, OrgSettings.KEYS.NATSTAT_SERVER_ACCESS,
-                    RefdataValue.getByValueAndCategory('No', 'YN')
+                    RefdataValue.getByValueAndCategory('No', RDConstants.Y_N)
             )
         }
         if (OrgSettings.get(org, OrgSettings.KEYS.NATSTAT_SERVER_API_KEY) == OrgSettings.SETTING_NOT_FOUND) {
@@ -53,7 +53,7 @@ class OrganisationService {
         }
         if (OrgSettings.get(org, OrgSettings.KEYS.OAMONITOR_SERVER_ACCESS) == OrgSettings.SETTING_NOT_FOUND) {
             OrgSettings.add(org, OrgSettings.KEYS.OAMONITOR_SERVER_ACCESS,
-                    RefdataValue.getByValueAndCategory('No', 'YN')
+                    RefdataValue.getByValueAndCategory('No', RDConstants.Y_N)
             )
         }
 
@@ -73,8 +73,8 @@ class OrganisationService {
      */
     def exportOrg(List orgs, message, boolean addHigherEducationTitles, String format) {
         def titles = [messageSource.getMessage('org.sortname.label',null,LocaleContextHolder.getLocale()),messageSource.getMessage('org.shortname.label',null, LocaleContextHolder.getLocale()),'Name']
-        RefdataValue orgSector = RefdataValue.getByValueAndCategory('Higher Education','OrgSector')
-        RefdataValue orgType = RefdataValue.getByValueAndCategory('Provider','OrgRoleType')
+        RefdataValue orgSector = RefdataValue.getByValueAndCategory('Higher Education', RDConstants.ORG_SECTOR)
+        RefdataValue orgType = RefdataValue.getByValueAndCategory('Provider', RDConstants.ORG_TYPE)
         if(addHigherEducationTitles) {
             titles.add(messageSource.getMessage('org.libraryType.label',null,LocaleContextHolder.getLocale()))
             titles.add(messageSource.getMessage('org.libraryNetwork.label',null,LocaleContextHolder.getLocale()))
@@ -83,8 +83,8 @@ class OrganisationService {
             titles.add(messageSource.getMessage('org.country.label',null,LocaleContextHolder.getLocale()))
         }
         RefdataValue generalContact = RDStore.PRS_FUNC_GENERAL_CONTACT_PRS
-        RefdataValue responsibleAdmin = RefdataValue.getByValueAndCategory('Responsible Admin','Person Function')
-        RefdataValue billingContact = RefdataValue.getByValueAndCategory('Functional Contact Billing Adress','Person Function')
+        RefdataValue responsibleAdmin = RefdataValue.getByValueAndCategory('Responsible Admin', RDConstants.PERSON_FUNCTION)
+        RefdataValue billingContact = RefdataValue.getByValueAndCategory('Functional Contact Billing Adress', RDConstants.PERSON_FUNCTION)
         titles.addAll(['ISIL','WIB-ID','EZB-ID',generalContact.getI10n('value'),responsibleAdmin.getI10n('value'),billingContact.getI10n('value')])
         def propList = PropertyDefinition.findAllPublicAndPrivateOrgProp(contextService.getOrg())
         propList.sort { a, b -> a.name.compareToIgnoreCase b.name}
@@ -424,11 +424,11 @@ class OrganisationService {
                 cal.add(Calendar.YEAR, 2)
                 dates.nextYearRingEnd = cal.getTime()
                 Map<String,RefdataValue> localRDStoreSubscriptionForm = [:]
-                RefdataCategory.getAllRefdataValues('Subscription Form').each { rdv ->
+                RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_FORM).each { rdv ->
                     localRDStoreSubscriptionForm.put(rdv.value,rdv)
                 }
                 Map<String,RefdataValue> localRDStoreSubscriptionResource = [:]
-                RefdataCategory.getAllRefdataValues('Subscription Resource').each { rdv ->
+                RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_RESOURCE).each { rdv ->
                     localRDStoreSubscriptionResource.put(rdv.value,rdv)
                 }
                 Map<String,RefdataValue> localRDStoreCostItemStatus = [:]
@@ -445,9 +445,9 @@ class OrganisationService {
                         'EUR': RefdataValue.getByValueAndCategory('EUR','Currency')
                 ]
                 Map<String,RefdataValue> localRDStoreGender = [
-                        'Female': RefdataValue.getByValueAndCategory('Female','Gender'),
-                        'Male': RefdataValue.getByValueAndCategory('Male','Gender'),
-                        'Third Gender': RefdataValue.getByValueAndCategory('Third Gender','Gender')
+                        'Female': RefdataValue.getByValueAndCategory('Female', RDConstants.GENDER),
+                        'Male': RefdataValue.getByValueAndCategory('Male', RDConstants.GENDER),
+                        'Third Gender': RefdataValue.getByValueAndCategory('Third Gender', RDConstants.GENDER)
                 ]
                 Map<String,RefdataValue> localRDStoreContactType = [
                         'Personal': RefdataValue.getByValueAndCategory('Personal', RDConstants.CONTACT_TYPE),
@@ -467,7 +467,7 @@ class OrganisationService {
                         'American Chemical Society: American Chemical Society Journals': Package.findByGlobalUID('package:b108178b-f27c-455d-9061-c8837905dc65'), //check
                         'EBSCO: SportDiscus': Package.findByGlobalUID('package:348a270f-715d-4ee1-b3b2-e28db9e8c0a3') //check
                 ]
-                RefdataValue licenseType = RefdataValue.getByValueAndCategory('Actual','License Type')
+                RefdataValue licenseType = RefdataValue.getByValueAndCategory('Actual', RDConstants.LICENSE_TYPE)
                 Map generalData = [dates:dates,
                                    sdf:sdf,
                                    licenseType: licenseType,
@@ -613,7 +613,7 @@ class OrganisationService {
                                    personRoles: [[org:generalData.exampleOrgs.get('Musteranbieter A'),
                                                   functionType: RDStore.PRS_FUNC_GENERAL_CONTACT_PRS],
                                                  [org:generalData.exampleOrgs.get('Musteranbieter A'),
-                                                  positionType: RefdataValue.getByValueAndCategory('Sales Director','Person Position')]
+                                                  positionType: RefdataValue.getByValueAndCategory('Sales Director', RDConstants.PERSON_POSITION)]
                                    ]
                            ]
         ]
@@ -629,7 +629,7 @@ class OrganisationService {
                                          content: 'tech@support.com'
                                         ]],
                                personRoles: [[org:generalData.exampleOrgs.get('Musteranbieter A'),
-                                              functionType: RefdataValue.getByValueAndCategory('Technical Support','Person Function')]]]
+                                              functionType: RefdataValue.getByValueAndCategory('Technical Support', RDConstants.PERSON_FUNCTION)]]]
         ]
         Set<Map> personalContacts = [franzEric,nameVorname,technik]
         personalContacts.each { contact ->
@@ -648,7 +648,7 @@ class OrganisationService {
                              name: "Daten A (Test)",
                              startDate: generalData.dates.startDateExpired,
                              endDate: generalData.dates.endDateExpired,
-                             status: RefdataValue.getByValueAndCategory('Test Access','Subscription Status'),
+                             status: RefdataValue.getByValueAndCategory('Test Access', RDConstants.SUBSCRIPTION_STATUS),
                              identifier: testDatenAChildIdentifier,
                              isPublic: false,
                              instanceOf: underConsiderationDatenAParent,
@@ -741,8 +741,8 @@ class OrganisationService {
                              status: RDStore.SUBSCRIPTION_EXPIRED,
                              identifier: expiredJournalPaketIdentifier,
                              isPublic: false,
-                             form: RefdataValue.getByValueAndCategory('purchaseOngoing','Subscription Form'),
-                             resource: RefdataValue.getByValueAndCategory('ejournalPackage','Subscription Resource')],
+                             form: RefdataValue.getByValueAndCategory('purchaseOngoing',RDConstants.SUBSCRIPTION_FORM),
+                             resource: RefdataValue.getByValueAndCategory('ejournalPackage', RDConstants.SUBSCRIPTION_RESOURCE)],
                 addParams: [packages:[[pkg: Package.findByGlobalUID('package:b108178b-f27c-455d-9061-c8837905dc65')]], //check
                             provider:generalData.exampleOrgs.get('Musteranbieter E-Journals'),
                             customProperties:[[type:PropertyDefinition.getByNameAndDescr('DBIS link', PropertyDefinition.SUB_PROP).id,urlValue:'https://dbis..de']]
@@ -756,8 +756,8 @@ class OrganisationService {
                              status: RDStore.SUBSCRIPTION_CURRENT,
                              identifier: currentJournalPaketIdentifier,
                              isPublic: false,
-                             form: RefdataValue.getByValueAndCategory('purchaseOngoing','Subscription Form'),
-                             resource: RefdataValue.getByValueAndCategory('ejournalPackage','Subscription Resource')],
+                             form: RefdataValue.getByValueAndCategory('purchaseOngoing', RDConstants.SUBSCRIPTION_FORM),
+                             resource: RefdataValue.getByValueAndCategory('ejournalPackage',RDConstants.SUBSCRIPTION_RESOURCE)],
                 addParams: [packages:[[pkg: generalData.examplePackages.get('American Chemical Society: American Chemical Society Journals')]],
                             provider:generalData.exampleOrgs.get('Musteranbieter E-Journals')]
         ]
@@ -769,8 +769,8 @@ class OrganisationService {
                              status: RDStore.SUBSCRIPTION_CURRENT,
                              identifier: journalPaketExtremChildIdentifier,
                              isPublic: false,
-                             form: RefdataValue.getByValueAndCategory('purchaseOngoing','Subscription Form'),
-                             resource: RefdataValue.getByValueAndCategory('ejournalPackage','Subscription Resource'),
+                             form: RefdataValue.getByValueAndCategory('purchaseOngoing', RDConstants.SUBSCRIPTION_FORM),
+                             resource: RefdataValue.getByValueAndCategory('ejournalPackage', RDConstants.SUBSCRIPTION_RESOURCE),
                              instanceOf: journalPaketExtremParent],
                 addParams: [:]/*provider:generalData.exampleOrgs.get('Musteranbieter E-Journals')*/
         ]
@@ -845,7 +845,7 @@ class OrganisationService {
                             ],
                             customProperties: [
                                     [type:PropertyDefinition.getByNameAndDescr('ILL electronic', PropertyDefinition.LIC_PROP).id,refValue:RDStore.PERM_PERM_EXPL,paragraph:'ist alles erlaubt'],
-                                    [type:PropertyDefinition.getByNameAndDescr('Archival Copy Content', PropertyDefinition.LIC_PROP).id,refValue:RefdataValue.getByValueAndCategory('Data','License.Arc.ArchivalCopyContent')],
+                                    [type:PropertyDefinition.getByNameAndDescr('Archival Copy Content', PropertyDefinition.LIC_PROP).id,refValue:RefdataValue.getByValueAndCategory('Data', RDConstants.LICENSE_ARC_ARCHIVAL_COPY_CONTENT)],
                                     [type:PropertyDefinition.getByNameAndDescr('Archiving rights', PropertyDefinition.LIC_PROP).id,refValue:RDStore.YN_YES],
                                     [type:PropertyDefinition.getByNameAndDescr('Walk-in Access', PropertyDefinition.LIC_PROP).id,refValue: RDStore.PERM_PERM_EXPL],
                                     [type:PropertyDefinition.getByNameAndDescr('Wifi Access', PropertyDefinition.LIC_PROP).id,refValue:RDStore.YN_YES]
@@ -870,7 +870,7 @@ class OrganisationService {
                             ],
                             tasks: [
                                     [title: 'Mehrjahresvariante verhandeln',
-                                     status: RefdataValue.getByValueAndCategory('Open','Task Status'),
+                                     status: RefdataValue.getByValueAndCategory('Open', RDConstants.TASK_STATUS),
                                      endDate: generalData.sdf.parse('2021-01-01'),
                                      responsibleOrg: current,
                                      description:'Es sollte mit der nächsten Lizenzverlängerung auch eine Mehrjahresvariante geben, die vertraglich festgehalten wird.']
@@ -898,7 +898,7 @@ class OrganisationService {
                 token       : "Quellensteuer-Befreiung",
                 category    : "Subscription Property",
                 type        : "class com.k_int.kbplus.RefdataValue",
-                rdc         : "YNO",
+                rdc         : RDConstants.Y_N_O,
                 tenant      : current,
                 i10n        : [de: "Quellensteuer-Befreiung", en: "Quellensteuer-Befreiung"],
                 expl        : [de: "Hat der Anbieter für dieses Produkt eine Befreiung der Quellensteuer erwirkt?", en: "Hat der Anbieter für dieses Produkt eine Befreiung der Quellensteuer erwirkt?"],
@@ -908,7 +908,7 @@ class OrganisationService {
                 token       : "BGA",
                 category    : "Organisation Property",
                 type        : "class com.k_int.kbplus.RefdataValue",
-                rdc         : "YN",
+                rdc         : RDConstants.Y_N,
                 tenant      : current,
                 i10n        : [de: "BGA", en: "BGA"],
                 expl        : [de: "Betrieb gewerblicher Art", en: "Betrieb gewerblicher Art"],
@@ -932,13 +932,13 @@ class OrganisationService {
         Set<PropertyDefinition> privatePropertyDefMaps = [
                 new PropertyDefinition(name:'Quellensteuer-Befreiung',
                         tenant:current,
-                        refdataCategory:'YNO',
+                        refdataCategory:RDConstants.Y_N_O,
                         descr:'Subscription Property',
                         type:'class com.k_int.kbplus.RefdataValue',
                         expl:'Hat der Anbieter für dieses Produkt eine Befreiung der Quellensteuer erwirkt?'),
                 new PropertyDefinition(name:'BGA',
                         tenant:current,
-                        refdataCategory:'YN',
+                        refdataCategory:RDConstants.Y_N,
                         descr:'Organisation Property',
                         type:'class com.k_int.kbplus.RefdataValue',
                         expl:'Betrieb gewerblicher Art'),
@@ -1030,11 +1030,11 @@ class OrganisationService {
         Org modelMember = new Org(name: messageSource.getMessage('org.setup.modelOrgName',argv0,LocaleContextHolder.getLocale()),
                 sortname: messageSource.getMessage('org.setup.modelOrgSortname',argv1,LocaleContextHolder.getLocale()),
                 url: 'www.mustereinichtung.de', urlGov: 'www.muster_uni.de', status: RDStore.O_STATUS_CURRENT,
-                libraryType: RefdataValue.getByValueAndCategory('Universität','Library Type'),
-                libraryNetwork: RefdataValue.getByValueAndCategory('No Network','Library Network'),
+                libraryType: RefdataValue.getByValueAndCategory('Universität', RDConstants.LIBRARY_TYPE),
+                libraryNetwork: RefdataValue.getByValueAndCategory('No Network', RDConstants.LIBRARY_NETWORK),
                 federalState: current.federalState ,country: current.country,
                 orgType: [RDStore.OT_INSTITUTION],
-                sector: RefdataValue.getByValueAndCategory('Higher Education','OrgSector'))
+                sector: RefdataValue.getByValueAndCategory('Higher Education', RDConstants.ORG_SECTOR))
         if(!modelMember.save()) {
             errors.add(modelMember.errors.toString())
             return false
@@ -1051,7 +1051,7 @@ class OrganisationService {
                                      street_2:'1',
                                      zipcode:'55555',
                                      city:'Musterhausen',
-                                     state:RefdataValue.getByValueAndCategory('North Rhine-Westphalia','Federal State'),
+                                     state:RefdataValue.getByValueAndCategory('North Rhine-Westphalia',RDConstants.FEDERAL_STATE),
                                      country:RefdataValue.getByValueAndCategory('DE', RDConstants.COUNTRY),
                                      org:modelMember]
         Map postalAddressMap = [type:RefdataValue.getByValueAndCategory('Postal address', RDConstants.ADDRESS_TYPE),
@@ -1061,7 +1061,7 @@ class OrganisationService {
                                 street_2:'1',
                                 zipcode:'55555',
                                 city:'Musterhausen',
-                                state:RefdataValue.getByValueAndCategory('North Rhine-Westphalia','Federal State'),
+                                state:RefdataValue.getByValueAndCategory('North Rhine-Westphalia',RDConstants.FEDERAL_STATE),
                                 country:RefdataValue.getByValueAndCategory('DE', RDConstants.COUNTRY),
                                 org:modelMember]
         Set<Map> addresses = [legalPatronAddressMap,postalAddressMap]
@@ -1214,10 +1214,10 @@ class OrganisationService {
                                                    street_2:'1',
                                                    zipcode:'11111',
                                                    city:'Bremen',
-                                                   state:RefdataValue.getByValueAndCategory('Bremen','Federal State'),
+                                                   state:RefdataValue.getByValueAndCategory('Bremen',RDConstants.FEDERAL_STATE),
                                                    country:RefdataValue.getByValueAndCategory('DE', RDConstants.COUNTRY)]],
                                         personRoles: [[org:member5Bremen,
-                                                       functionType: RefdataValue.getByValueAndCategory('Functional Contact Postal Address','Person Function')]]]
+                                                       functionType: RefdataValue.getByValueAndCategory('Functional Contact Postal Address',RDConstants.PERSON_FUNCTION)]]]
         ]
         Map technischerSupport = [mainParams: [
                 last_name: 'Technischer Support',
@@ -1230,7 +1230,7 @@ class OrganisationService {
                                                     type: generalData.contactTypes.get('Job-related'),
                                                     content: 'it_support@wef.com']],
                                           personRoles: [[org:generalData.exampleOrgs.get('Musteranbieter E-Books'),
-                                                         functionType: RefdataValue.getByValueAndCategory('Technical Support','Person Function')]]]
+                                                         functionType: RefdataValue.getByValueAndCategory('Technical Support',RDConstants.PERSON_FUNCTION)]]]
         ]
         Map franzEmil = [mainParams: [
                 first_name:'franz',
@@ -1245,7 +1245,7 @@ class OrganisationService {
                                             type: generalData.contactTypes.get('Job-related'),
                                             content: 'stats@eugf.com']],
                                  personRoles: [[org:generalData.exampleOrgs.get('Musteranbieter E-Books'),
-                                                functionType: RefdataValue.getByValueAndCategory('Statistical Support','Person Function')]]]
+                                                functionType: RefdataValue.getByValueAndCategory('Statistical Support',RDConstants.PERSON_FUNCTION)]]]
         ]
         Map annaMueller = [mainParams:[
                 first_name: 'anna',
@@ -1288,7 +1288,7 @@ class OrganisationService {
                            type: generalData.contactTypes.get('Job-related'),
                            content: 'rechnungen@ewewf.com']],
                 personRoles: [[org:generalData.exampleOrgs.get('Musteranbieter E-Journals'),
-                               functionType: RefdataValue.getByValueAndCategory('Functional Contact Billing Adress','Person Function')]]]
+                               functionType: RefdataValue.getByValueAndCategory('Functional Contact Billing Adress',RDConstants.PERSON_FUNCTION)]]]
         ]
         Set<Map> personalContacts = [erwerbung,jamesFrank,peterKlein,miaMeyer,peterMiller,rechnungsadresse,technischerSupport,franzEmil,annaMueller,salesTeam,samSmith]
         personalContacts.each { contact ->
@@ -1306,7 +1306,7 @@ class OrganisationService {
                             customProperties: [
                                     [type:PropertyDefinition.getByNameAndDescr('ILL electronic', PropertyDefinition.LIC_PROP).id,refValue:RDStore.PERM_PERM_EXPL,isShared:true],
                                     [type:PropertyDefinition.getByNameAndDescr('Governing jurisdiction', PropertyDefinition.LIC_PROP).id,stringValue:'Berlin',isShared:true],
-                                    [type:PropertyDefinition.getByNameAndDescr('Open Access', PropertyDefinition.LIC_PROP).id,refValue:RefdataValue.getByValueAndCategory('No Open Access','License.OA.Type'),isShared:true],
+                                    [type:PropertyDefinition.getByNameAndDescr('Open Access', PropertyDefinition.LIC_PROP).id,refValue:RefdataValue.getByValueAndCategory('No Open Access', RDConstants.LICENSE_OA_TYPE),isShared:true],
                                     [type:PropertyDefinition.getByNameAndDescr('Invoicing', PropertyDefinition.LIC_PROP).id,dateValue: null,paragraph: 'Immer im Laufzeitjahr...']
                             ],
                             createMemberLicense: true,
@@ -1324,7 +1324,8 @@ class OrganisationService {
                             customProperties: [
                                     [type:PropertyDefinition.getByNameAndDescr('ILL secure electronic transmission', PropertyDefinition.LIC_PROP).id,refValue:RDStore.PERM_PROH_EXPL,isShared:true],
                                     [type:PropertyDefinition.getByNameAndDescr('Governing law', PropertyDefinition.LIC_PROP).id,stringValue:'deutsches Recht',isShared:true],
-                                    [type:PropertyDefinition.getByNameAndDescr('Open Access', PropertyDefinition.LIC_PROP).id,refValue:RefdataValue.getByValueAndCategory('No Open Access','License.OA.Type'),isShared:true],
+                                    [type:PropertyDefinition.getByNameAndDescr('Open Access', PropertyDefinition.LIC_PROP).id,
+                                        refValue:RefdataValue.getByValueAndCategory('No Open Access', RDConstants.LICENSE_OA_TYPE), isShared:true],
                                     [type:PropertyDefinition.getByNameAndDescr('Metadata delivery', PropertyDefinition.LIC_PROP).id,stringValue: null]
                             ],
                             createMemberLicense: true,
@@ -1514,7 +1515,7 @@ class OrganisationService {
         Map testDatenAParams = [
                 mainParams: [type: RDStore.SUBSCRIPTION_TYPE_CONSORTIAL,
                              name: 'Daten A (Test)',
-                             status: RefdataValue.getByValueAndCategory('Test Access','Subscription Status'),
+                             status: RefdataValue.getByValueAndCategory('Test Access', RDConstants.SUBSCRIPTION_STATUS),
                              identifier: testDatenAIdentifier,
                              isPublic: false,
                              form: generalData.subscriptionForms.get('test')],
@@ -1816,7 +1817,7 @@ class OrganisationService {
                                     [type:PropertyDefinition.getByNameAndDescr('Joining during the period', PropertyDefinition.SUB_PROP).id,refValue:RDStore.YN_YES]
                             ],
                             privateProperties: [
-                                    [type:PropertyDefinition.findByNameAndTenant('Quellensteuer-Befreiung',current).id,refValue:RefdataValue.getByValueAndCategory('Planed','YNO'),note:'der Anbieter hat dies beantragt']
+                                    [type:PropertyDefinition.findByNameAndTenant('Quellensteuer-Befreiung',current).id,refValue:RefdataValue.getByValueAndCategory('Planed',RDConstants.Y_N_O),note:'der Anbieter hat dies beantragt']
                             ],
                             subscriptionMembers: [[subMember:member1Aachen,
                                                    subOwner:consortialLicenses.get('Rahmenvertrag eBook (Teilnehmervertrag)'),
@@ -1921,11 +1922,11 @@ class OrganisationService {
                                     [type:PropertyDefinition.getByNameAndDescr('Sim-User Number', PropertyDefinition.SUB_PROP).id,stringValue:'unlimitiert',isShared:true]
                             ],
                             privateProperties: [
-                                    [type:PropertyDefinition.findByNameAndTenant('Quellensteuer-Befreiung',current).id,refValue:RefdataValue.getByValueAndCategory('Unclear','YNO'),note:'dringend klären']
+                                    [type:PropertyDefinition.findByNameAndTenant('Quellensteuer-Befreiung',current).id,refValue:RefdataValue.getByValueAndCategory('Unclear', RDConstants.Y_N_O),note:'dringend klären']
                             ],
                             tasks: [
                                     [title: 'Statistiken Counter5 & Sushi',
-                                     status: RefdataValue.getByValueAndCategory('Open','Task Status'),
+                                     status: RefdataValue.getByValueAndCategory('Open', RDConstants.TASK_STATUS),
                                      endDate: generalData.sdf.parse('2020-06-30'),
                                      responsibleOrg: current,
                                      description:'dringend mit dem Anbieter die Lieferung von Counter 5 via Sushi besprechen']
@@ -2002,9 +2003,9 @@ class OrganisationService {
                                              type: generalData.contactTypes.get('Job-related'),
                                              content: '123 456 789']],
                                   personRoles: [[org:generalData.exampleOrgs.get('Musteranbieter A'),
-                                                 functionType: RefdataValue.getByValueAndCategory('Contact Person','Person Function')],
+                                                 functionType: RefdataValue.getByValueAndCategory('Contact Person', RDConstants.PERSON_FUNCTION)],
                                                 [org:generalData.exampleOrgs.get('Musteranbieter A'),
-                                                 responsibilityType: RefdataValue.getByValueAndCategory('Specific subscription editor','Person Responsibility'),
+                                                 responsibilityType: RefdataValue.getByValueAndCategory('Specific subscription editor', RDConstants.PERSON_RESPONSIBILITY),
                                                  sub:Subscription.findByIdentifier(currentDatenbank2Identifier)]]
                           ]
         ]
@@ -2014,7 +2015,7 @@ class OrganisationService {
             createObject('Person',contact,current,null)
         }
         log.info("create subscription linkings ...")
-        setupLinking([owner:current,source:Subscription.findByIdentifier(currentDatenAIdentifier).id,destination:Subscription.findByIdentifier(currentDatenbank2Identifier).id,objectType:Subscription.class.name,linkType:RefdataValue.getByValueAndCategory('is condition for','Link Type')])
+        setupLinking([owner:current,source:Subscription.findByIdentifier(currentDatenAIdentifier).id,destination:Subscription.findByIdentifier(currentDatenbank2Identifier).id,objectType:Subscription.class.name,linkType:RefdataValue.getByValueAndCategory('is condition for',RDConstants.LINK_TYPE)])
         Set<Map> subIdentifiersWithChildrenToLink = [
                 [source:currentDatenAIdentifier,destination:expiredDatenAIdentifier],
                 [source:intendedDatenbank2Identifier,destination:currentDatenbank2Identifier]
@@ -2523,9 +2524,9 @@ class OrganisationService {
                                           singlenutzer:Role.findByAuthority('ORG_INST'),
                                           kollektivnutzer:Role.findByAuthority('ORG_INST_COLLECTIVE'),
                                           konsortium:Role.findByAuthority('ORG_CONSORTIUM')]
-        RefdataValue institution = RefdataValue.getByValueAndCategory('Institution','OrgRoleType')
-        RefdataValue consortium = RefdataValue.getByValueAndCategory('Consortium','OrgRoleType')
-        RefdataValue department = RefdataValue.getByValueAndCategory('Department','OrgRoleType')
+        RefdataValue institution = RefdataValue.getByValueAndCategory('Institution', RDConstants.ORG_TYPE)
+        RefdataValue consortium = RefdataValue.getByValueAndCategory('Consortium', RDConstants.ORG_TYPE)
+        RefdataValue department = RefdataValue.getByValueAndCategory('Department', RDConstants.ORG_TYPE)
         //create home org
         Org hbz = Org.findByName('hbz Konsortialstelle Digitale Inhalte')
         if(!hbz) {

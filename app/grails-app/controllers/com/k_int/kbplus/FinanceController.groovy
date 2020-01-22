@@ -934,7 +934,7 @@ class FinanceController extends AbstractDebugController {
                   // iterate over members
                   subsToDo = Subscription.findAllByInstanceOfAndStatusNotEqual(
                           genericOIDService.resolveOID(params.newSubscription),
-                          RefdataValue.getByValueAndCategory('Deleted', 'Subscription Status')
+                          RefdataValue.getByValueAndCategory('Deleted', RDConstants.SUBSCRIPTION_STATUS)
                   )
                   break
               default:
@@ -1013,7 +1013,7 @@ class FinanceController extends AbstractDebugController {
               RefdataValue taxType = genericOIDService.resolveOID(newTaxRate[0])
               int taxRate = Integer.parseInt(newTaxRate[1])
               switch(taxType.id) {
-                  case RefdataValue.getByValueAndCategory("taxable","TaxType").id:
+                  case RefdataValue.getByValueAndCategory("taxable", RDConstants.TAX_TYPE).id:
                       switch(taxRate) {
                           case 7: tax_key = CostItem.TAX_TYPES.TAXABLE_7
                               break
@@ -1021,16 +1021,16 @@ class FinanceController extends AbstractDebugController {
                               break
                       }
                       break
-                  case RefdataValue.getByValueAndCategory("taxable tax-exempt","TaxType").id:
+                  case RefdataValue.getByValueAndCategory("taxable tax-exempt",RDConstants.TAX_TYPE).id:
                       tax_key = CostItem.TAX_TYPES.TAX_EXEMPT
                       break
-                  case RefdataValue.getByValueAndCategory("not taxable","TaxType").id:
+                  case RefdataValue.getByValueAndCategory("not taxable",RDConstants.TAX_TYPE).id:
                       tax_key = CostItem.TAX_TYPES.TAX_NOT_TAXABLE
                       break
-                  case RefdataValue.getByValueAndCategory("not applicable","TaxType").id:
+                  case RefdataValue.getByValueAndCategory("not applicable",RDConstants.TAX_TYPE).id:
                       tax_key = CostItem.TAX_TYPES.TAX_NOT_APPLICABLE
                       break
-                  case RefdataValue.getByValueAndCategory("reverse charge","TaxType").id:
+                  case RefdataValue.getByValueAndCategory("reverse charge",RDConstants.TAX_TYPE).id:
                       tax_key = CostItem.TAX_TYPES.TAX_REVERSE_CHARGE
                       break
               }

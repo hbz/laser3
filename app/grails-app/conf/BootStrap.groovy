@@ -6,6 +6,7 @@ import com.k_int.properties.PropertyDefinition
 import de.laser.ContextService
 import de.laser.SystemEvent
 import de.laser.domain.I10nTranslation
+import de.laser.helper.RDConstants
 import grails.converters.JSON
 import grails.plugin.springsecurity.SecurityFilterPosition
 import grails.plugin.springsecurity.SpringSecurityUtils
@@ -444,8 +445,8 @@ class BootStrap {
             }
 
             log.debug("create transform ${transformName} ..")
-            def types = RefdataValue.findAllByOwner(RefdataCategory.getByDesc('Transform Type'))
-            def formats = RefdataValue.findAllByOwner(RefdataCategory.getByDesc('Transform Format'))
+            def types = RefdataValue.findAllByOwner(RefdataCategory.getByDesc(RDConstants.TRANSFORM_TYPE))
+            def formats = RefdataValue.findAllByOwner(RefdataCategory.getByDesc(RDConstants.TRANSFORM_FORMAT))
 
             if (transforms) {
 
@@ -633,7 +634,7 @@ class BootStrap {
                 [
                         name: [en: "Participation", de: "Teilnahme"],
                         expl: [en: "Do you still want to license the license?", de: "Wollen Sie weiterhin an der Lizenz teilnehmen?"],
-                        type: OT.Rdv, cat:'YN'
+                        type: OT.Rdv, cat: RDConstants.Y_N
                 ],
                 [
                         name: [en: "Access choice remote", de: "Zugangswahl Remote"],
@@ -648,17 +649,17 @@ class BootStrap {
                 [
                         name: [en: "Multi-year term 2 years", de: "Mehrjahreslaufzeit 2 Jahre"],
                         expl: [en: "Please indicate here, if you wish a licensing directly for two years.", de: "Bitte geben Sie hier an, ob Sie eine Lizenzierung direkt für zwei Jahre wünschen."],
-                        type: OT.Rdv, cat:'YN'
+                        type: OT.Rdv, cat: RDConstants.Y_N
                 ],
                 [
                         name: [en: "Multi-year term 3 years", de: "Mehrjahreslaufzeit 3 Jahre"],
                         expl: [en: "Please indicate here, if you wish a licensing directly for three years.", de: "Bitte geben Sie hier an, ob Sie eine Lizenzierung direkt für drei Jahre wünschen."],
-                        type: OT.Rdv, cat:'YN'
+                        type: OT.Rdv, cat: RDConstants.Y_N
                 ],
                 [
                         name: [en: "Sim-User Number", de: "Sim-User Zahl"],
                         expl: [en: "Please indicate which number of Sim users should be licensed.", de: "Bitte geben sie an, welche Anzahl an Sim-Usern lizenziert werden soll."],
-                        type: OT.Rdv, cat:'Sim-User Number'
+                        type: OT.Rdv, cat: RDConstants.SIM_USER_NUMBER
                 ],
 
         ]
@@ -673,11 +674,11 @@ class BootStrap {
         // TODO - remove HOTFIX: hardcoded hbz properties
         def requiredOrgProps = [
                 [name: [en: "Note", de: "Anmerkung"], tenant: 'hbz', descr: allOrgDescr, type: OT.String],
-                [name: [en: "promotionsrecht", de: "Promotionsrecht"], tenant: 'hbz', descr: allOrgDescr, type: OT.Rdv, cat:'YNO'],
-                [name: [en: "privatrechtlich", de: "Privatrechtlich"], tenant: 'hbz', descr: allOrgDescr, type: OT.Rdv, cat:'YN'],
-                [name: [en: "ezb teilnehmer", de: "EZB-Teilnehmer"], tenant: 'hbz', descr: allOrgDescr, type: OT.Rdv, cat:'YN'],
-                [name: [en: "nationallizenz teilnehmer", de: "Nationallizenz-Teilnehmer"], tenant: 'hbz', descr: allOrgDescr, type: OT.Rdv, cat:'YN'],
-                [name: [en: "discovery system", de: "Discovery-System"], tenant: 'hbz', descr: allOrgDescr, type: OT.Rdv, cat:'YN'],
+                [name: [en: "promotionsrecht", de: "Promotionsrecht"], tenant: 'hbz', descr: allOrgDescr, type: OT.Rdv, cat: RDConstants.Y_N_O],
+                [name: [en: "privatrechtlich", de: "Privatrechtlich"], tenant: 'hbz', descr: allOrgDescr, type: OT.Rdv, cat: RDConstants.Y_N],
+                [name: [en: "ezb teilnehmer", de: "EZB-Teilnehmer"], tenant: 'hbz', descr: allOrgDescr, type: OT.Rdv, cat: RDConstants.Y_N],
+                [name: [en: "nationallizenz teilnehmer", de: "Nationallizenz-Teilnehmer"], tenant: 'hbz', descr: allOrgDescr, type: OT.Rdv, cat: RDConstants.Y_N],
+                [name: [en: "discovery system", de: "Discovery-System"], tenant: 'hbz', descr: allOrgDescr, type: OT.Rdv, cat: RDConstants.Y_N],
                 [name: [en: "verwendete discovery systeme", de: "Verwendete Discovery-Systeme"], tenant: 'hbz', descr: allOrgDescr, type: OT.String]
         ]
         createPropertyDefinitionsWithI10nTranslations(requiredOrgProps)
@@ -832,7 +833,7 @@ class BootStrap {
             def token = rdv[0]
             def group = rdv[1]
 
-            def val = RefdataValue.getByValueAndCategory(token, "Organisational Role")
+            def val = RefdataValue.getByValueAndCategory(token, RDConstants.ORGANISATIONAL_ROLE)
             if (group) {
                 val.setGroup(group)
             }
@@ -888,16 +889,16 @@ class BootStrap {
          //RefdataValue.loc('Subscription Type',      [en: 'Collective Subscription', de: 'Kollektivlizenz'], BOOTSTRAP)
 
 
-        RefdataValue a = RefdataValue.getByValueAndCategory('Students', 'Number Type')
+        RefdataValue a = RefdataValue.getByValueAndCategory('Students', RDConstants.NUMBER_TYPE)
         I10nTranslation.createOrUpdateI10n(a,'expl', [en:'Gesamtzahl aller immatrikulierten Studierenden', de:'Gesamtzahl aller immatrikulierten Studierenden'])
 
-        RefdataValue b = RefdataValue.getByValueAndCategory('Scientific staff', 'Number Type');
+        RefdataValue b = RefdataValue.getByValueAndCategory('Scientific staff', RDConstants.NUMBER_TYPE);
         I10nTranslation.createOrUpdateI10n(b,'expl', [en:'zugehöriges wissenschaftliches Personal', de:'zugehöriges wissenschaftliches Personal'])
 
-        RefdataValue c = RefdataValue.getByValueAndCategory('User', 'Number Type')
+        RefdataValue c = RefdataValue.getByValueAndCategory('User', RDConstants.NUMBER_TYPE)
         I10nTranslation.createOrUpdateI10n(c,'expl', [en:'Nutzer der Einrichtung', de:'Nutzer der Einrichtung'])
 
-        RefdataValue d = RefdataValue.getByValueAndCategory('Population', 'Number Type')
+        RefdataValue d = RefdataValue.getByValueAndCategory('Population', RDConstants.NUMBER_TYPE)
         I10nTranslation.createOrUpdateI10n(d,'expl', [en:'Einwohner der Stadt', de:'Einwohner der Stadt'])
     }
 
@@ -970,13 +971,13 @@ class BootStrap {
 
         // Controlled values from the <UsageType> element.
 
-        RefdataCategory.lookupOrCreate('UsageStatus', 'greenTick',      'UseForDataMining')
-        RefdataCategory.lookupOrCreate('UsageStatus', 'greenTick',      'InterpretedAsPermitted')
-        RefdataCategory.lookupOrCreate('UsageStatus', 'redCross',       'InterpretedAsProhibited')
-        RefdataCategory.lookupOrCreate('UsageStatus', 'greenTick',      'Permitted')
-        RefdataCategory.lookupOrCreate('UsageStatus', 'redCross',       'Prohibited')
-        RefdataCategory.lookupOrCreate('UsageStatus', 'purpleQuestion', 'SilentUninterpreted')
-        RefdataCategory.lookupOrCreate('UsageStatus', 'purpleQuestion', 'NotApplicable')
+        RefdataCategory.lookupOrCreate(RDConstants.USAGE_STATUS, 'greenTick',      'UseForDataMining')
+        RefdataCategory.lookupOrCreate(RDConstants.USAGE_STATUS, 'greenTick',      'InterpretedAsPermitted')
+        RefdataCategory.lookupOrCreate(RDConstants.USAGE_STATUS, 'redCross',       'InterpretedAsProhibited')
+        RefdataCategory.lookupOrCreate(RDConstants.USAGE_STATUS, 'greenTick',      'Permitted')
+        RefdataCategory.lookupOrCreate(RDConstants.USAGE_STATUS, 'redCross',       'Prohibited')
+        RefdataCategory.lookupOrCreate(RDConstants.USAGE_STATUS, 'purpleQuestion', 'SilentUninterpreted')
+        RefdataCategory.lookupOrCreate(RDConstants.USAGE_STATUS, 'purpleQuestion', 'NotApplicable')
 
         // def gokb_record_source = GlobalRecordSource.findByIdentifier('gokbPackages') ?: new GlobalRecordSource(
     //                                                                                       identifier:'gokbPackages',
