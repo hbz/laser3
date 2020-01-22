@@ -171,7 +171,7 @@ class ApiWriterHelper {
                         org:        org,
                         endDate:    getValidDateFormat(it.endDate),
                         startDate:  getValidDateFormat(it.startDate),
-                        roleType:   getRefdataValue(it.roleType, de.laser.helper.RDConstants.ORGANISATIONAL_ROLE)
+                        roleType:   getRefdataValue(it.roleType, RDConstants.ORGANISATIONAL_ROLE)
                 )
                 orgRole.setReference(owner)
 

@@ -131,7 +131,7 @@
                             if(docctx) {
                                 value = "${RefdataValue.class.name}:${docctx.shareConf?.id}"
                             }
-                            List allConfigs = RefdataValue.executeQuery("select rdv from RefdataValue rdv where rdv.owner.desc = '${de.laser.helper.RDConstants.SHARE_CONFIGURATION}' and rdv.isHardData = true order by rdv.order asc")
+                            List allConfigs = RefdataValue.executeQuery("select rdv from RefdataValue rdv where rdv.owner.desc = '${RDConstants.SHARE_CONFIGURATION}' and rdv.isHardData = true order by rdv.order asc")
                             List availableConfigs = []
                             if(!accessService.checkPerm("ORG_CONSORTIUM")){
                                 availableConfigs = allConfigs-RDStore.SHARE_CONF_CONSORTIUM

@@ -41,7 +41,7 @@ class TitleInstance extends AbstractBaseDomain /*implements AuditableTrait*/ {
   @RefdataAnnotation(cat = RDConstants.TITLE_STATUS)
   RefdataValue status
 
-  @RefdataAnnotation(cat = '?')
+  @RefdataAnnotation(cat = RDConstants.TITLE_TYPE)
   RefdataValue type
 
   Date dateCreated

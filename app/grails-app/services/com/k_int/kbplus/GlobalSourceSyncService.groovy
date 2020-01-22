@@ -269,8 +269,8 @@ class GlobalSourceSyncService extends AbstractLockableService {
         RefdataValue breakable =    RefdataValue.getByValueAndCategory( ((newpkg?.breakable) ?: 'Unknown'), RDConstants.PACKAGE_BREAKABLE)
         RefdataValue consistent =   RefdataValue.getByValueAndCategory( ((newpkg?.consistent) ?: 'Unknown'), RDConstants.PACKAGE_CONSISTENT)
         RefdataValue fixed =        RefdataValue.getByValueAndCategory( ((newpkg?.fixed) ?: 'Unknown'), RDConstants.PACKAGE_FIXED)
-        RefdataValue paymentType =  RefdataValue.getByValueAndCategory( ((newpkg?.paymentType) ?: 'Unknown'), RefdataCategory.PKG_PAYMENTTYPE)
-        RefdataValue global =       RefdataValue.getByValueAndCategory( ((newpkg?.global) ?: 'Unknown'), RefdataCategory.PKG_GLOBAL)
+        //RefdataValue paymentType =  RefdataValue.getByValueAndCategory( ((newpkg?.paymentType) ?: 'Unknown'), RefdataCategory.PKG_PAYMENTTYPE)
+        //RefdataValue global =       RefdataValue.getByValueAndCategory( ((newpkg?.global) ?: 'Unknown'), RefdataCategory.PKG_GLOBAL)
         RefdataValue ref_pprovider = RefdataValue.getByValueAndCategory('Content Provider', RDConstants.ORGANISATIONAL_ROLE)
 
         //we should now first setup the provider and then proceed to package

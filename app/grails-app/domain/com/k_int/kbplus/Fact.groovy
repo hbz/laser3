@@ -1,5 +1,6 @@
 package com.k_int.kbplus
 
+import de.laser.helper.RDConstants
 import de.laser.helper.RefdataAnnotation
 
 class Fact {
@@ -10,9 +11,9 @@ class Fact {
   String factUid
   Long reportingYear
   Long reportingMonth
-    @RefdataAnnotation(cat = '?')
+    @RefdataAnnotation(cat = RDConstants.FACT_TYPE)
   RefdataValue factType
-    @RefdataAnnotation(cat = '?')
+    @RefdataAnnotation(cat = RDConstants.FACT_METRIC)
   RefdataValue factMetric
 
   TitleInstance relatedTitle

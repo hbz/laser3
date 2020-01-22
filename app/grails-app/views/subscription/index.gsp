@@ -1,4 +1,4 @@
-<%@ page import="com.k_int.kbplus.Subscription" %>
+<%@ page import="com.k_int.kbplus.Subscription;de.laser.helper.RDConstants" %>
 <%@ page import="com.k_int.kbplus.Package; com.k_int.kbplus.RefdataCategory; com.k_int.kbplus.ApiSource;" %>
 
 <%-- r:require module="annotations" --%>
@@ -177,7 +177,7 @@
                                 -->
                             </th>
                             <th>
-                                <g:simpleHiddenRefdata id="bulk_medium" name="bulk_medium" refdataCategory="${de.laser.helper.RDConstants.IE_MEDIUM}"/>
+                                <g:simpleHiddenRefdata id="bulk_medium" name="bulk_medium" refdataCategory="${RDConstants.IE_MEDIUM}"/>
                             </th>
                             <th>
                                 <%--<semui:datepicker hideLabel="true"
@@ -251,7 +251,7 @@
                                 </td>
 
                                 <td>
-                                    <semui:xEditableRefData owner="${ie}" field="medium" config="${de.laser.helper.RDConstants.IE_MEDIUM}"/>
+                                    <semui:xEditableRefData owner="${ie}" field="medium" config="${RDConstants.IE_MEDIUM}"/>
                                 </td>
                                 <td class="coverageStatements la-tableCard" data-entitlement="${ie.id}">
                                     <g:if test="${ie?.tipp?.title instanceof com.k_int.kbplus.BookInstance}">

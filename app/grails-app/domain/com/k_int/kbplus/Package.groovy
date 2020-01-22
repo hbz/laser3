@@ -40,7 +40,7 @@ class Package
 
   Date listVerifiedDate
 
-    @RefdataAnnotation(cat = '?')
+    @RefdataAnnotation(cat = RDConstants.PACKAGE_TYPE)
     RefdataValue packageType
 
     @RefdataAnnotation(cat = RDConstants.PACKAGE_STATUS)
@@ -49,18 +49,18 @@ class Package
     @RefdataAnnotation(cat = RDConstants.PACKAGE_LIST_STATUS)
     RefdataValue packageListStatus
 
-    @RefdataAnnotation(cat = '?')
+    @RefdataAnnotation(cat = RDConstants.PACKAGE_BREAKABLE)
     RefdataValue breakable
 
-    @RefdataAnnotation(cat = '?')
+    @RefdataAnnotation(cat = RDConstants.PACKAGE_CONSISTENT)
     RefdataValue consistent
 
-    @RefdataAnnotation(cat = '?')
+    @RefdataAnnotation(cat = RDConstants.PACKAGE_FIXED)
     RefdataValue fixed
 
     boolean isPublic
 
-    @RefdataAnnotation(cat = '?')
+    @RefdataAnnotation(cat = RDConstants.PACKAGE_SCOPE)
     RefdataValue packageScope
 
     Platform nominalPlatform

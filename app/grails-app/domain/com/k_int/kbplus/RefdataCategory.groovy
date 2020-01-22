@@ -37,10 +37,10 @@ class RefdataCategory extends AbstractI10nOverride {
     //public static final TIPP_STATUS = RDConstants.TIPP_STATUS
     //@Transient
     //public static final TI_TYPE = RDConstants.TITLE_TYPE
-    @Transient
-    public static final PKG_PAYMENTTYPE = 'Package Payment Type'
-    @Transient
-    public static final PKG_GLOBAL = 'Package Global'
+    //@Transient
+    //public static final PKG_PAYMENTTYPE = 'Package Payment Type'
+    //@Transient
+    //public static final PKG_GLOBAL = 'Package Global'
     //@Transient
     //public static final IE_ACCEPT_STATUS = RDConstants.IE_ACCEPT_STATUS
 

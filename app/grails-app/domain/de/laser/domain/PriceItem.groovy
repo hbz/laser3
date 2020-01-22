@@ -2,15 +2,16 @@ package de.laser.domain
 
 import com.k_int.kbplus.IssueEntitlement
 import com.k_int.kbplus.RefdataValue
+import de.laser.helper.RDConstants
 import de.laser.helper.RefdataAnnotation
 import de.laser.domain.AbstractBaseDomain
 
 class PriceItem extends AbstractBaseDomain {
 
-    @RefdataAnnotation(cat = 'Currency')
+    @RefdataAnnotation(cat = RDConstants.CURRENCY)
     RefdataValue listCurrency
 
-    @RefdataAnnotation(cat = 'Currency')
+    @RefdataAnnotation(cat = RDConstants.CURRENCY)
     RefdataValue localCurrency
 
     BigDecimal listPrice

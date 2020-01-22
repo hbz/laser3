@@ -1,4 +1,4 @@
-<%@ page import="com.k_int.kbplus.RefdataCategory;com.k_int.kbplus.RefdataValue; com.k_int.kbplus.Org; de.laser.domain.I10nTranslation; java.text.SimpleDateFormat;" %>
+<%@ page import="com.k_int.kbplus.RefdataCategory;com.k_int.kbplus.RefdataValue;de.laser.helper.RDConstants;com.k_int.kbplus.Org;de.laser.domain.I10nTranslation; java.text.SimpleDateFormat;" %>
 <laser:serviceInjection />
 <%
     SimpleDateFormat sdf = new SimpleDateFormat(message(code:'default.date.format.notime'))
@@ -22,7 +22,7 @@
                         <g:message code="readerNumber.referenceGroup.label" />
                     </label>
                     <%
-                        List refdatasWithI10n = RefdataCategory.getAllRefdataValuesWithI10nExplanation(de.laser.helper.RDConstants.NUMBER_TYPE, [sort:'order',order:'asc'])
+                        List refdatasWithI10n = RefdataCategory.getAllRefdataValuesWithI10nExplanation(RDConstants.NUMBER_TYPE, [sort:'order',order:'asc'])
                     %>
                     <semui:dropdownWithI18nExplanations name="referenceGroup" class="referenceGroup search"
                                                         from="${refdatasWithI10n}"
@@ -41,7 +41,7 @@
                     <div class="field fieldcontain">
                         <label for="semester"><g:message code="readerNumber.semester.label"/></label>
                         <laser:select class="ui selection dropdown la-full-width" label="readerNumber.semester.label" id="semester" name="semester"
-                                      from="${RefdataValue.findAllByOwner(RefdataCategory.findAllByDesc(de.laser.helper.RDConstants.SEMESTER),[sort:'order',order:'asc'])}"
+                                      from="${RefdataValue.findAllByOwner(RefdataCategory.findAllByDesc(RDConstants.SEMESTER),[sort:'order',order:'asc'])}"
                                       optionKey="id" optionValue="value"
                                       value="${numbersInstance?.semester?.id}"/>
                     </div>
