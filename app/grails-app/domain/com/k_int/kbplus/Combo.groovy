@@ -8,7 +8,7 @@ class Combo {
     @RefdataAnnotation(cat = RDConstants.COMBO_STATUS)
     RefdataValue status
 
-    @RefdataAnnotation(cat = 'Combo Type')
+    @RefdataAnnotation(cat = RDConstants.COMBO_TYPE)
     RefdataValue type
 
     Org fromOrg

@@ -37,10 +37,10 @@ class IssueEntitlement extends AbstractBaseDomain implements Comparable {
   @RefdataAnnotation(cat = RDConstants.CORE_STATUS)
   RefdataValue coreStatus // core Status is really core Medium.. dont ask
 
-  @RefdataAnnotation(cat = '?')
+  @RefdataAnnotation(cat = RDConstants.IE_MEDIUM)
   RefdataValue medium
     
-  @RefdataAnnotation(cat = 'IE ACCEPT STATUS')
+  @RefdataAnnotation(cat = RDConstants.IE_ACCEPT_STATUS)
   RefdataValue acceptStatus
 
   Date dateCreated

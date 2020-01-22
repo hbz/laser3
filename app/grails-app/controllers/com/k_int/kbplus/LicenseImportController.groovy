@@ -2,6 +2,7 @@ package com.k_int.kbplus
 
 import com.k_int.kbplus.auth.User
 import de.laser.controller.AbstractDebugController
+import de.laser.helper.RDConstants
 import grails.plugin.springsecurity.annotation.Secured
 import org.xml.sax.SAXException
 
@@ -10,7 +11,6 @@ class LicenseImportController extends AbstractDebugController {
 
   def CAT_TYPE = "UsageType",
       CAT_STATUS = "UsageStatus",
-      CAT_DOCTYPE = 'Document Type',
       DOCTYPE = 'ONIX-PL License',
       DEFAULT_DOC_TITLE = 'ONIX-PL License document',
       CAT_USER = "User",
@@ -229,8 +229,8 @@ class LicenseImportController extends AbstractDebugController {
 
     log.debug("replaceOplRecord: ${replaceOplRecord} createNewDocument: ${createNewDocument} createNewLicense: ${createNewLicense} upload.replace_opl: ${upload.replace_opl} license: ${upload.license!=null}")
     importResult.replace = replaceOplRecord
-    RefdataValue currentStatus = RefdataValue.getByValueAndCategory('Current', RefdataCategory.LIC_STATUS)
-    RefdataValue templateType  = RefdataValue.getByValueAndCategory('Template', RefdataCategory.LIC_TYPE)
+    RefdataValue currentStatus = RefdataValue.getByValueAndCategory('Current', RDConstants.LICENSE_STATUS)
+    RefdataValue templateType  = RefdataValue.getByValueAndCategory('Template', RDConstants.LICENSE_TYPE)
     // Create a new license
 
     if (createNewLicense) {
@@ -252,7 +252,7 @@ class LicenseImportController extends AbstractDebugController {
       log.debug("Created template KB+ license ${license}")
     }
 
-    RefdataValue doctype = RefdataValue.getByValueAndCategory(DOCTYPE, CAT_DOCTYPE)
+    RefdataValue doctype = RefdataValue.getByValueAndCategory(DOCTYPE, RDConstants.DOCUMENT_TYPE)
     def doc_content, doc_context
 
     // If we are creating a new document for the upload

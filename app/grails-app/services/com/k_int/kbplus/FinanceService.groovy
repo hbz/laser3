@@ -1051,9 +1051,9 @@ class FinanceService {
             if(colMap.status != null) {
                 String statusKey = cols[colMap.status]
                 if(statusKey) {
-                    RefdataValue status = RefdataValue.getByValueAndCategory(statusKey, de.laser.helper.RDConstants.COST_ITEM_STATUS)
+                    RefdataValue status = RefdataValue.getByValueAndCategory(statusKey, RDConstants.COST_ITEM_STATUS)
                     if(!status)
-                        status = RefdataValue.getByCategoryDescAndI10nValueDe(de.laser.helper.RDConstants.COST_ITEM_STATUS, statusKey)
+                        status = RefdataValue.getByCategoryDescAndI10nValueDe(RDConstants.COST_ITEM_STATUS, statusKey)
                     if(!status)
                         mappingErrorBag.noValidStatus = statusKey
                     costItem.costItemStatus = status

@@ -1,5 +1,6 @@
 package com.k_int.kbplus
 
+import de.laser.helper.RDConstants
 import de.laser.helper.RefdataAnnotation
 
 class Cluster {
@@ -10,7 +11,7 @@ class Cluster {
     Date dateCreated
     Date lastUpdated
 
-    @RefdataAnnotation(cat = 'ClusterType')
+    @RefdataAnnotation(cat = RDConstants.CLUSTER_TYPE)
     RefdataValue type
     
     static hasMany = [

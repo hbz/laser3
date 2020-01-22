@@ -1,5 +1,4 @@
-
-<%@ page import="com.k_int.kbplus.Cluster" %>
+<%@ page import="com.k_int.kbplus.Cluster;de.laser.helper.RDConstants" %>
 <!DOCTYPE html>
 <html>
 	<head>
@@ -26,7 +25,7 @@
 					
 						<g:sortableColumn property="name" title="${message(code: 'cluster.name.label', default: 'Name')}" />
 					
-						<th>${com.k_int.kbplus.RefdataCategory.getByDesc(de.laser.helper.RDConstants.CLUSTER_TYPE).getI10n('desc')}</th>
+						<th>${com.k_int.kbplus.RefdataCategory.getByDesc(RDConstants.CLUSTER_TYPE).getI10n('desc')}</th>
 					
 					</tr>
 				</thead>

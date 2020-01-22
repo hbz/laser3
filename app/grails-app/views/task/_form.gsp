@@ -1,4 +1,4 @@
-<%@ page import="com.k_int.kbplus.Task" %>
+<%@ page import="com.k_int.kbplus.Task;de.laser.helper.RDConstants" %>
 
 <div class="field fieldcontain ${hasErrors(bean: taskInstance, field: 'license', 'error')} ">
 	<label for="license">
@@ -47,8 +47,8 @@
 	<label for="status">
 		<g:message code="task.status.label" default="Status" />
 	</label>
-	<g:select id="status" name="status.id" from="${com.k_int.kbplus.RefdataCategory.getAllRefdataValues(de.laser.helper.RDConstants.TASK_STATUS)}"
-			  optionKey="id" required="" value="${taskInstance?.status?.id ?: com.k_int.kbplus.RefdataValue.findByValueAndOwner("Open", com.k_int.kbplus.RefdataCategory.getByDesc(de.laser.helper.RDConstants.TASK_STATUS)).id}" class="many-to-one"/>
+	<g:select id="status" name="status.id" from="${com.k_int.kbplus.RefdataCategory.getAllRefdataValues(RDConstants.TASK_STATUS)}"
+			  optionKey="id" required="" value="${taskInstance?.status?.id ?: com.k_int.kbplus.RefdataValue.findByValueAndOwner("Open", com.k_int.kbplus.RefdataCategory.getByDesc(RDConstants.TASK_STATUS)).id}" class="many-to-one"/>
 </div>
 
 <div class="field fieldcontain ${hasErrors(bean: taskInstance, field: 'creator', 'error')} required">

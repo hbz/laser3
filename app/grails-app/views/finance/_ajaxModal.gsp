@@ -1,5 +1,5 @@
 <!-- _ajaxModal.gsp -->
-<%@ page import="de.laser.helper.RDStore; com.k_int.kbplus.*;org.springframework.context.i18n.LocaleContextHolder; de.laser.interfaces.TemplateSupport" %>
+<%@ page import="de.laser.helper.RDStore; de.laser.helper.RDConstants; com.k_int.kbplus.*;org.springframework.context.i18n.LocaleContextHolder; de.laser.interfaces.TemplateSupport" %>
 <laser:serviceInjection />
 
 <g:render template="vars" model="[org:contextService.getOrg()]"/><%-- setting vars --%>
@@ -89,10 +89,10 @@
                         </div><!-- .field -->
                         <div class="field">
                             <label>${message(code:'financials.isVisibleForSubscriber')}</label>
-                            <g:set var="newIsVisibleForSubscriberValue" value="${costItem?.isVisibleForSubscriber ? RefdataValue.getByValueAndCategory('Yes', de.laser.helper.RDConstants.Y_N).id : RefdataValue.getByValueAndCategory('No', de.laser.helper.RDConstants.Y_N).id}" />
+                            <g:set var="newIsVisibleForSubscriberValue" value="${costItem?.isVisibleForSubscriber ? RefdataValue.getByValueAndCategory('Yes', RDConstants.Y_N).id : RefdataValue.getByValueAndCategory('No', RDConstants.Y_N).id}" />
                             <laser:select name="newIsVisibleForSubscriber" class="ui dropdown"
                                       id="newIsVisibleForSubscriber"
-                                      from="${RefdataCategory.getAllRefdataValues(de.laser.helper.RDConstants.Y_N)}"
+                                      from="${RefdataCategory.getAllRefdataValues(RDConstants.Y_N)}"
                                       optionKey="id"
                                       optionValue="value"
                                       noSelection="${['':'']}"

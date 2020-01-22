@@ -13,36 +13,36 @@ class RefdataCategory extends AbstractI10nOverride {
 
     static Log static_logger = LogFactory.getLog(RefdataCategory)
 
-    @Transient
-    public static final ORG_STATUS = RDConstants.ORG_STATUS
-    @Transient
-    public static final PKG_SCOPE = RDConstants.PACKAGE_SCOPE
-    @Transient
-    public static final PKG_LIST_STAT = RDConstants.PACKAGE_LIST_STATUS
-    @Transient
-    public static final PKG_FIXED = RDConstants.PACKAGE_FIXED
-    @Transient
-    public static final PKG_BREAKABLE = RDConstants.PACKAGE_BREAKABLE
-    @Transient
-    public static final PKG_CONSISTENT = RDConstants.PACKAGE_CONSISTENT
-    @Transient
-    public static final PKG_TYPE = RDConstants.PACKAGE_TYPE
-    @Transient
-    public static final TI_STATUS = RDConstants.TITLE_STATUS
-    @Transient
-    public static final LIC_STATUS = RDConstants.LICENSE_STATUS
-    @Transient
-    public static final LIC_TYPE = RDConstants.LICENSE_TYPE
-    @Transient
-    public static final TIPP_STATUS = RDConstants.TIPP_STATUS
-    @Transient
-    public static final TI_TYPE = RDConstants.TITLE_TYPE
-    @Transient
-    public static final PKG_PAYMENTTYPE = 'Package Payment Type'
-    @Transient
-    public static final PKG_GLOBAL = 'Package Global'
-     @Transient
-    public static final IE_ACCEPT_STATUS = RDConstants.IE_ACCEPT_STATUS
+    //@Transient
+    //public static final ORG_STATUS = RDConstants.ORG_STATUS
+    //@Transient
+    //public static final PKG_SCOPE = RDConstants.PACKAGE_SCOPE
+    //@Transient
+    //public static final PKG_LIST_STAT = RDConstants.PACKAGE_LIST_STATUS
+    //@Transient
+    //public static final PKG_FIXED = RDConstants.PACKAGE_FIXED
+    //@Transient
+    //public static final PKG_BREAKABLE = RDConstants.PACKAGE_BREAKABLE
+    //@Transient
+    //public static final PKG_CONSISTENT = RDConstants.PACKAGE_CONSISTENT
+    //@Transient
+    //public static final PKG_TYPE = RDConstants.PACKAGE_TYPE
+    //@Transient
+    //public static final TI_STATUS = RDConstants.TITLE_STATUS
+    //@Transient
+    //public static final LIC_STATUS = RDConstants.LICENSE_STATUS
+    //@Transient
+    //public static final LIC_TYPE = RDConstants.LICENSE_TYPE
+    //@Transient
+    //public static final TIPP_STATUS = RDConstants.TIPP_STATUS
+    //@Transient
+    //public static final TI_TYPE = RDConstants.TITLE_TYPE
+    //@Transient
+    //public static final PKG_PAYMENTTYPE = 'Package Payment Type'
+    //@Transient
+    //public static final PKG_GLOBAL = 'Package Global'
+    //@Transient
+    //public static final IE_ACCEPT_STATUS = RDConstants.IE_ACCEPT_STATUS
 
     String desc
     String desc_de
