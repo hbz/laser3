@@ -3,7 +3,15 @@
 <semui:form>
     <g:set var="isInstAdm" value="${contextService.getUser().hasAffiliation("INST_ADM")}"/>
 
-    <g:form action="copyElementsIntoRenewalSubscription" controller="survey" id="${params.id ?: params.sourceSubscriptionId}"
+    <g:if test="${controllerName != 'survey'}">
+        <g:render template="selectSourceAndTargetSubscription" model="[
+                sourceSubscription: sourceSubscription,
+                targetSubscription: targetSubscription,
+                allSubscriptions_readRights: allSubscriptions_readRights,
+                allSubscriptions_writeRights: allSubscriptions_writeRights]"/>
+    </g:if>
+
+    <g:form action="${actionName}" controller="${controllerName}" id="${params.id ?: params.sourceSubscriptionId}"
             params="[workFlowPart: workFlowPart, sourceSubscriptionId: sourceSubscriptionId, targetSubscriptionId: targetSubscriptionId, isRenewSub: isRenewSub]"
             method="post" class="ui form newLicence">
         <table class="ui celled table table-tworow la-table">
@@ -48,23 +56,28 @@
                                             </g:else>
                                         </g:link>(${docctx.owner.type.getI10n("value")})
                                     </label>
-                                    <div class="right aligned wide column">
-                                        <g:message code="subscription.details.copyElementsIntoSubscription.share"/>:
+                                    <g:if test="${isConsortialSubs}">
+                                        <div class="right aligned wide column">
+                                            <g:if test="${docctx.isShared}">
+                                                <span data-position="top left"  class="la-popup-tooltip la-delay" data-content="${message(code:'property.share.tooltip.on')}">
+                                                <i class="la-share icon la-js-editmode-icon"></i>
+                                                </span>
+                                            </g:if>
+                                            <g:else>
+                                                <span data-position="top left"  class="la-popup-tooltip la-delay" data-content="${message(code:'property.share.tooltip.off')}">
+                                                <i class="la-share slash icon la-js-editmode-icon"></i>
+                                                </span>
+                                            </g:else>
 
-                                        <g:if test="${docctx.isShared}">
-                                            <i class="la-share icon la-js-editmode-icon"></i>
-                                        </g:if>
-                                        <g:else>
-                                            <i class="la-share slash icon la-js-editmode-icon"></i>
-                                        </g:else>
-
-                                    </div>
+                                        </div>
+                                    </g:if>
                                 </div>
                             </g:if>
                         </g:each>
                     </td>
                     %{--COPY:--}%
                     <td class="center aligned">
+                        <br />
                         <g:each in="${sourceSubscription.documents.sort { it.owner?.title }}" var="docctx">
                             <g:if test="${(((docctx.owner?.contentType == Doc.CONTENT_TYPE_DOCSTORE) || (docctx.owner?.contentType == Doc.CONTENT_TYPE_BLOB)) && (docctx.status?.value != 'Deleted'))}">
                                 %{--<div class="ui checkbox">--}%
@@ -96,17 +109,21 @@
                                                 </g:else>
                                             </g:link>(${docctx.owner.type.getI10n("value")})
                                         </div>
-                                        <div class="right aligned wide column">
-                                            <g:message code="subscription.details.copyElementsIntoSubscription.share"/>:
+                                        <g:if test="${isConsortialSubs}">
+                                            <div class="right aligned wide column">
+                                                <g:if test="${docctx.isShared}">
+                                                    <span data-position="top left"  class="la-popup-tooltip la-delay" data-content="${message(code:'property.share.tooltip.on')}">
+                                                        <i class="la-share icon la-js-editmode-icon"></i>
+                                                    </span>
+                                                </g:if>
+                                                <g:else>
+                                                    <span data-position="top left"  class="la-popup-tooltip la-delay" data-content="${message(code:'property.share.tooltip.off')}">
+                                                        <i class="la-share slash icon la-js-editmode-icon"></i>
+                                                    </span>
+                                                </g:else>
 
-                                            <g:if test="${docctx.isShared}">
-                                                <i class="la-share icon la-js-editmode-icon"></i>
-                                            </g:if>
-                                            <g:else>
-                                                <i class="la-share slash icon la-js-editmode-icon"></i>
-                                            </g:else>
-
-                                        </div>
+                                            </div>
+                                        </g:if>
                                     </g:if>
                                 </g:each>
                             </g:if>
@@ -114,6 +131,7 @@
                     </td>
                     %{--DELETE:--}%
                     <td>
+                        <br />
                         <g:each in="${targetSubscription?.documents?.sort { it.owner?.title }}" var="docctx">
                             <g:if test="${(((docctx.owner?.contentType == Doc.CONTENT_TYPE_DOCSTORE) || (docctx.owner?.contentType == Doc.CONTENT_TYPE_BLOB)) && (docctx.status?.value != 'Deleted'))}">
                                 %{--<div class="ui checkbox">--}%
@@ -145,23 +163,29 @@
                                                 format="${message(code: 'default.date.format.notime')}"
                                                 date="${docctx.owner.dateCreated}"/>)
                                     </label>
-                                    <div class="right aligned wide column">
-                                        <g:message code="subscription.details.copyElementsIntoSubscription.share"/>:
 
-                                        <g:if test="${docctx.isShared}">
-                                            <i class="la-share icon la-js-editmode-icon"></i>
-                                        </g:if>
-                                        <g:else>
-                                            <i class="la-share slash icon la-js-editmode-icon"></i>
-                                        </g:else>
+                                    <g:if test="${isConsortialSubs}">
+                                        <div class="right aligned wide column">
+                                            <g:if test="${docctx.isShared}">
+                                                <span data-position="top left"  class="la-popup-tooltip la-delay" data-content="${message(code:'property.share.tooltip.on')}">
+                                                    <i class="la-share icon la-js-editmode-icon"></i>
+                                                </span>
+                                            </g:if>
+                                            <g:else>
+                                                <span data-position="top left"  class="la-popup-tooltip la-delay" data-content="${message(code:'property.share.tooltip.off')}">
+                                                    <i class="la-share slash icon la-js-editmode-icon"></i>
+                                                </span>
+                                            </g:else>
 
-                                    </div>
+                                        </div>
+                                    </g:if>
                                 </div>
                             </g:if>
                         </g:each>
                     </td>
                     %{--COPY:--}%
                     <td class="center aligned">
+                    <br />
                         <g:each in="${sourceSubscription.documents.sort { it.owner?.title }}" var="docctx">
                             <g:if test="${((docctx.owner?.contentType == Doc.CONTENT_TYPE_STRING) && !(docctx.domain) && (docctx.status?.value != 'Deleted'))}">
                                 %{--<div data-id="${docctx.id} " class="la-element">--}%
@@ -192,17 +216,21 @@
                                                     format="${message(code: 'default.date.format.notime')}"
                                                     date="${docctx.owner.dateCreated}"/>)
                                         </div>
-                                        <div class="right aligned wide column">
-                                            <g:message code="subscription.details.copyElementsIntoSubscription.share"/>:
+                                        <g:if test="${isConsortialSubs}">
+                                            <div class="right aligned wide column">
+                                                <g:if test="${docctx.isShared}">
+                                                    <span data-position="top left"  class="la-popup-tooltip la-delay" data-content="${message(code:'property.share.tooltip.on')}">
+                                                        <i class="la-share icon la-js-editmode-icon"></i>
+                                                    </span>
+                                                </g:if>
+                                                <g:else>
+                                                    <span data-position="top left"  class="la-popup-tooltip la-delay" data-content="${message(code:'property.share.tooltip.off')}">
+                                                        <i class="la-share slash icon la-js-editmode-icon"></i>
+                                                    </span>
+                                                </g:else>
 
-                                            <g:if test="${docctx.isShared}">
-                                                <i class="la-share icon la-js-editmode-icon"></i>
-                                            </g:if>
-                                            <g:else>
-                                                <i class="la-share slash icon la-js-editmode-icon"></i>
-                                            </g:else>
-
-                                        </div>
+                                            </div>
+                                        </g:if>
                                     </g:if>
                                 </g:each>
                             </g:if>
@@ -210,6 +238,7 @@
                     </td>
                     %{--DELETE:--}%
                     <td>
+                    <br />
                         <div>
                             <g:if test="${targetSubscription}">
                                 <g:each in="${targetSubscription?.documents.sort { it.owner?.title }}" var="docctx">
@@ -241,6 +270,7 @@
                     </td>
                     %{--COPY:--}%
                     <td class="center aligned">
+                        <br />
                         <g:each in="${sourceTasks}" var="tsk">
                             <div data-id="${tsk?.id}" class="la-element">
                                 %{--<div class="ui checkbox">--}%
@@ -262,6 +292,7 @@
                     </td>
                     %{--DELETE:--}%
                     <td>
+                        <br />
                         <g:each in="${targetTasks}" var="tsk">
                             <g:if test="${tsk.creator.id == userId || isInstAdm}">
                                 %{--<div class="ui checkbox">--}%
@@ -279,18 +310,27 @@
         <g:set var="submitButtonText" value="${isRenewSub?
                 message(code: 'subscription.renewSubscriptionConsortia.workFlowSteps.nextStep') :
                 message(code: 'subscription.details.copyElementsIntoSubscription.copyDocsAndTasks.button')}" />
-        <div class="two fields">
-            <div class="eight wide field" style="text-align: left;">
-                <g:set var="surveyConfig" value="${com.k_int.kbplus.SurveyConfig.findBySubscriptionAndIsSubscriptionSurveyFix(Subscription.get(sourceSubscriptionId), true)}" />
-                <g:link action="renewalWithSurvey" id="${surveyConfig?.surveyInfo?.id}" params="[surveyConfigID: surveyConfig?.id]" class="ui button js-click-control">
-                    <g:message code="renewalWithSurvey.back"/>
-                </g:link>
-            </div>
-            <div class="eight wide field" style="text-align: right;">
+
+        <g:if test="${controllerName != 'survey'}">
+            <div class="sixteen wide field" style="text-align: right;">
                 <g:set var="submitDisabled" value="${(sourceSubscription && targetSubscription)? '' : 'disabled'}"/>
                 <input type="submit" class="ui button js-click-control" value="${submitButtonText}" onclick="return jsConfirmation()"  ${submitDisabled}/>
             </div>
-        </div>
+        </g:if>
+        <g:else>
+            <div class="two fields">
+                <div class="eight wide field" style="text-align: left;">
+                    <g:set var="surveyConfig" value="${com.k_int.kbplus.SurveyConfig.findBySubscriptionAndIsSubscriptionSurveyFix(Subscription.get(sourceSubscriptionId), true)}" />
+                    <g:link action="renewalWithSurvey" id="${surveyConfig?.surveyInfo?.id}" params="[surveyConfigID: surveyConfig?.id]" class="ui button js-click-control">
+                        <g:message code="renewalWithSurvey.back"/>
+                    </g:link>
+                </div>
+                <div class="eight wide field" style="text-align: right;">
+                    <g:set var="submitDisabled" value="${(sourceSubscription && targetSubscription)? '' : 'disabled'}"/>
+                    <input type="submit" class="ui button js-click-control" value="${submitButtonText}" onclick="return jsConfirmation()"  ${submitDisabled}/>
+                </div>
+            </div>
+        </g:else>
     </g:form>
 </semui:form>
 <r:script>

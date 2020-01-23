@@ -2,13 +2,16 @@
 <laser:serviceInjection />
 
 <semui:form>
-    <g:render template="selectSourceAndTargetSubscription" model="[
-            sourceSubscription: sourceSubscription,
-            targetSubscription: targetSubscription,
-            allSubscriptions_readRights: allSubscriptions_readRights,
-            allSubscriptions_writeRights: allSubscriptions_writeRights]"/>
 
-    <g:form action="copyElementsIntoSubscription" controller="subscription" id="${params.id}"
+    <g:if test="${controllerName != 'survey' && !isRenewSub}">
+        <g:render template="selectSourceAndTargetSubscription" model="[
+                sourceSubscription: sourceSubscription,
+                targetSubscription: targetSubscription,
+                allSubscriptions_readRights: allSubscriptions_readRights,
+                allSubscriptions_writeRights: allSubscriptions_writeRights]"/>
+    </g:if>
+
+    <g:form controller="${controllerName}" action="${actionName}"  id="${params.id}"
             params="[workFlowPart: workFlowPart, sourceSubscriptionId: sourceSubscriptionId, targetSubscriptionId: targetSubscription?.id, isRenewSub: isRenewSub]"
             method="post" class="ui form newLicence">
         <table class="ui celled table table-tworow la-table">
@@ -132,10 +135,27 @@
         <g:set var="submitButtonText" value="${isRenewSub?
                 message(code: 'subscription.renewSubscriptionConsortia.workFlowSteps.nextStep') :
                 message(code: 'subscription.details.copyElementsIntoSubscription.copyPackagesAndIEs.button')}" />
-        <div class="sixteen wide field" style="text-align: right;">
-            <g:set var="submitDisabled" value="${(sourceSubscription && targetSubscription)? '' : 'disabled'}"/>
-            <input type="submit" class="ui button js-click-control" value="${submitButtonText}" onclick="return jsConfirmation()" ${submitDisabled}/>
+
+        <g:if test="${controllerName == 'survey'}">
+        <div class="two fields">
+            <div class="eight wide field" style="text-align: left;">
+                <g:set var="surveyConfig" value="${com.k_int.kbplus.SurveyConfig.findBySubscriptionAndIsSubscriptionSurveyFix(Subscription.get(sourceSubscriptionId), true)}" />
+                <g:link action="renewalWithSurvey" id="${surveyConfig?.surveyInfo?.id}" params="[surveyConfigID: surveyConfig?.id]" class="ui button js-click-control">
+                    <g:message code="renewalWithSurvey.back"/>
+                </g:link>
+            </div>
+            <div class="eight wide field" style="text-align: right;">
+                <g:set var="submitDisabled" value="${(sourceSubscription && targetSubscription)? '' : 'disabled'}"/>
+                <input type="submit" class="ui button js-click-control" value="${submitButtonText}" onclick="return jsConfirmation()"  ${submitDisabled}/>
+            </div>
         </div>
+        </g:if>
+        <g:else>
+            <div class="sixteen wide field" style="text-align: right;">
+                <g:set var="submitDisabled" value="${(sourceSubscription && targetSubscription)? '' : 'disabled'}"/>
+                <input type="submit" class="ui button js-click-control" value="${submitButtonText}" onclick="return jsConfirmation()" ${submitDisabled}/>
+            </div>
+        </g:else>
     </g:form>
 </semui:form>
 
