@@ -2,7 +2,7 @@
 	<label class="control-label" for="country">${message(code:'org.country.label', default:'Country')}</label>
 	<div class="controls">
 		<g:set value="${com.k_int.kbplus.RefdataCategory.getByDesc(de.laser.helper.RDConstants.COUNTRY)}" var="countrycat"/>
-		<g:set value="${com.k_int.kbplus.RefdataValue.findAllByOwner(countrycat)}" var="refvalues"/>
+		<g:set value="${com.k_int.kbplus.RefdataCategory.getAllRefdataValues(de.laser.helper.RDConstants.COUNTRY)}" var="refvalues"/>
 		<g:select from="${refvalues}" optionKey="id" optionValue="${{it.getI10n('value')}}" name="country" />
 	</div>
 </div>

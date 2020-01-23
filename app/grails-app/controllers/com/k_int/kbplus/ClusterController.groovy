@@ -148,7 +148,7 @@ class ClusterController extends AbstractDebugController {
     def private ajaxList() {
         Cluster clusterInstance = Cluster.get(params.id)
         List<Org> orgs  = Org.getAll()
-        List<RefdataValue> roles = RefdataValue.findAllByOwner(com.k_int.kbplus.RefdataCategory.getByDesc(RDConstants.CLUSTER_ROLE))
+        List<RefdataValue> roles = RefdataCategory.getAllRefdataValues(RDConstants.CLUSTER_ROLE)
         
         render view: 'ajax/orgRoleList', model: [
             clusterInstance: clusterInstance, 

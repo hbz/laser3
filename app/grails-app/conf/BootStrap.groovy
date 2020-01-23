@@ -445,8 +445,8 @@ class BootStrap {
             }
 
             log.debug("create transform ${transformName} ..")
-            def types = RefdataValue.findAllByOwner(RefdataCategory.getByDesc(RDConstants.TRANSFORM_TYPE))
-            def formats = RefdataValue.findAllByOwner(RefdataCategory.getByDesc(RDConstants.TRANSFORM_FORMAT))
+            List<RefdataValue> types = RefdataCategory.getAllRefdataValues(RDConstants.TRANSFORM_TYPE)
+            List<RefdataValue> formats = RefdataCategory.getAllRefdataValues(RDConstants.TRANSFORM_FORMAT)
 
             if (transforms) {
 

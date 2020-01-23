@@ -1,6 +1,9 @@
 ## temporary change log
 
 **Ticket    Date    Branch      Author  Feature/Bug     Description/Keywords**
+
+--      23.01.202   hbz-dev     David   Feature     Importing Refdata and PropertyDefinitions via CSV
+
 --      17.01.2020  rc1.2       Andreas Bug         Kostenfilter für Pakete arbeitete nicht richtig
 
 --      17.01.2020  rc1.2       Andreas Bug         Paket- / Einzeltiteldropdowns im Kosten-Hinzufügen-Modal korrigiert

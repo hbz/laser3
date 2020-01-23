@@ -1179,7 +1179,7 @@ class AjaxController {
 
         def rdc = RefdataCategory.findById(params.refdata_category_id)
 
-        if (RefdataValue.findByOwnerAndValue(rdc, params.refdata_value)) {
+        if (RefdataValue.getByValueAndCategory(params.refdata_value, rdc.desc)) {
             error = message(code: "refdataValue.create_new.unique")
             log.debug(error)
         }

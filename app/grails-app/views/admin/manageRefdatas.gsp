@@ -32,31 +32,20 @@
                 </div>
             </div>
 
-<%--<pre>
-${usedRdvList.join(", ")}
-
-<g:each in="${attrMap}" var="objs">
-    ${objs.key}
-    <g:each in="${objs.value}" var="attrs">    ${attrs}
-    </g:each>
-</g:each>
-</pre>--%>
-
-
         <div class="ui styled fluid accordion">
             <g:each in="${rdCategories}" var="rdc">
 
                 <div class="title">
                     <i class="dropdown icon"></i>
-                    ${fieldValue(bean: rdc, field: "desc")}
+                    ${rdc.getI10n('desc')}
                 </div>
                 <div class="content">
 
                     <table class="ui celled la-table la-table-small table">
                         <thead>
                         <tr>
-                            <th>Category (Key)</th>
-                            <th>Value (Key)</th>
+                            <th>Kategorie (Schlüssel)</th>
+                            <th>Wert (Schlüssel)</th>
                             <th>DE</th>
                             <th>EN</th>
                             <th class="la-action-info">${message(code:'default.actions')}</th>
@@ -88,7 +77,7 @@ ${usedRdvList.join(", ")}
                                 </td>
                             </tr>
 
-                            <g:each in="${RefdataValue.findAllByOwner(rdc).toSorted()}" var="rdv">
+                            <g:each in="${RefdataCategory.getAllRefdataValues(rdc.desc)}" var="rdv">
                                 <tr>
                                     <td>
                                         <g:if test="${rdv.isHardData}">
@@ -225,7 +214,7 @@ ${usedRdvList.join(", ")}
                     <label class="property-label">Kategorie</label>
                     <g:select
                         from="${rdCategories}"
-                        optionKey="id" optionValue="desc"
+                        optionKey="id" optionValue="${{it.getI10n('desc')}}"
                         name="refdata_category_id"
                         id="refdata_modal_select" class="ui search selection dropdown" />
                 </div>

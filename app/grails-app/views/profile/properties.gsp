@@ -115,7 +115,7 @@
                     </td>
                 </tr>
 
-                <g:each in="${RefdataValue.findAllByOwner(rdc).toSorted()}" var="rdv">
+                <g:each in="${RefdataCategory.getAllRefdataValues(rdc.desc)}" var="rdv">
                     <tr>
                         <td>
                             ${rdv.getI10n('value', 'de')}

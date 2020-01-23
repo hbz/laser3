@@ -41,7 +41,7 @@
                     <div class="field fieldcontain">
                         <label for="semester"><g:message code="readerNumber.semester.label"/></label>
                         <laser:select class="ui selection dropdown la-full-width" label="readerNumber.semester.label" id="semester" name="semester"
-                                      from="${RefdataValue.findAllByOwner(RefdataCategory.findAllByDesc(RDConstants.SEMESTER),[sort:'order',order:'asc'])}"
+                                      from="${RefdataCategory.getAllRefdataValues(RDConstants.SEMESTER)}"
                                       optionKey="id" optionValue="value"
                                       value="${numbersInstance?.semester?.id}"/>
                     </div>

@@ -35,7 +35,7 @@ class SemanticUiRefdataTagLib {
 
         def name = 'rdv-selector' + (attrs.name ? '-' + attrs.name  :'')
         def rdCat = RefdataCategory.findById((attrs.category) as Long)
-        def rdValues = rdCat ? RefdataValue.findAllByOwner(rdCat) : []
+        List<RefdataValue> rdValues = rdCat ? RefdataCategory.getAllRefdataValues(rdCat.desc) : []
 
         out << g.select( id: name, name: name,
                 class: "ui dropdown search selection",
@@ -52,12 +52,12 @@ class SemanticUiRefdataTagLib {
         def nameRdc = 'rdc-combo-selector' + (attrs.name ? '-' + attrs.name  :'')
         def nameRdv = 'rdv-combo-selector' + (attrs.name ? '-' + attrs.name  :'')
         def rdCats = RefdataCategory.where{}.sort('desc')
-        def rdValues
+        List<RefdataValue> rdValues
 
         def rdcPreset
         if (attrs.category) {
             rdcPreset = RefdataCategory.findById((attrs.category) as Long)
-            rdValues  = RefdataValue.findAllByOwner(rdcPreset)
+            rdValues  = RefdataCategory.getAllRefdataValues(rdcPreset.desc)
         }
         out << g.select( id: nameRdc, name: nameRdc,
                 class: "ui dropdown search selection",

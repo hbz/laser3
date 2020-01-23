@@ -3,6 +3,7 @@ package de.laser.api.v0
 import com.k_int.kbplus.License
 import com.k_int.kbplus.Org
 import com.k_int.kbplus.Person
+import com.k_int.kbplus.RefdataValue
 import com.k_int.kbplus.Subscription
 import de.laser.helper.Constants
 import de.laser.helper.RDConstants
@@ -45,9 +46,9 @@ class ApiWriter {
                 ['Yes','yes']
                 // RefdataValues
                 license.isPublic         = data.isPublic in ['Yes','yes']
-                license.licenseCategory  = ApiWriterHelper.getRefdataValue(data.licenseCategory, RDConstants.LICENSE_CATEGORY)
-                license.status           = ApiWriterHelper.getRefdataValue(data.status, RDConstants.LICENSE_STATUS)
-                license.type             = ApiWriterHelper.getRefdataValue(data.type, RDConstants.LICENSE_TYPE)
+                license.licenseCategory  = RefdataValue.getByValueAndCategory(data.licenseCategory, RDConstants.LICENSE_CATEGORY)
+                license.status           = RefdataValue.getByValueAndCategory(data.status, RDConstants.LICENSE_STATUS)
+                license.type             = RefdataValue.getByValueAndCategory(data.type, RDConstants.LICENSE_TYPE)
                 license.ids              = ApiWriterHelper.getIdentifiers(data.identifiers, license) // implicit creation of identifier and namespace
 
                 // References
@@ -99,8 +100,8 @@ class ApiWriter {
                 )
 
                 // RefdataValues
-                org.sector  = ApiWriterHelper.getRefdataValue(data.sector, RDConstants.ORG_SECTOR)
-                org.status  = ApiWriterHelper.getRefdataValue(data.status, RDConstants.ORG_STATUS)
+                org.sector  = RefdataValue.getByValueAndCategory(data.sector, RDConstants.ORG_SECTOR)
+                org.status  = RefdataValue.getByValueAndCategory(data.status, RDConstants.ORG_STATUS)
                 //org.orgType = ApiWriterHelper.getRefdataValue(data.type, "OrgType")
 
                 // References
