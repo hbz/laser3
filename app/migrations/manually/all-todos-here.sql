@@ -84,7 +84,7 @@ where i10n_reference_class like 'com.k_int.kbplus.RefdataValue%' and i10n_refere
 
 
 -- 2020-01-20
--- ERMS-2072: migrate refdata translations
+-- ERMS-2072: migrate refdata keys
 -- changesets in changelog-2020-01-17.groovy
 
 update refdata_category set rdc_description = 'access.choice.remote' where rdc_description = 'Access choice remote';
@@ -352,7 +352,34 @@ update property_definition set pd_rdc = 'y.n' where pd_rdc = 'YN';
 update property_definition set pd_rdc = 'y.n.o' where pd_rdc = 'YNO';
 update property_definition set pd_rdc = 'y.n.u' where pd_rdc = 'YNU';
 
+-- 2020-01-23
+-- ERMS-2102: migrate property translations
+-- changesets in changelog-2020-01-17.groovy
 
+alter table property_definition add column pd_name_de varchar(255);
+alter table property_definition add column pd_name_en varchar(255);
+
+update property_definition
+set pd_name_de = i10n_value_de, pd_name_en = i10n_value_en
+from i10n_translation
+where pd_id = i10n_reference_id and i10n_reference_class = 'com.k_int.properties.PropertyDefinition' and i10n_reference_field = 'name';
+
+alter table property_definition add column pd_explanation_de text;
+alter table property_definition add column pd_explanation_en text;
+
+update property_definition set pd_explanation_de = pd_explanation where pd_explanation is not null;
+update property_definition set pd_explanation_en = pd_explanation where pd_explanation is not null;
+
+update property_definition
+set pd_explanation_de = i10n_value_de, pd_explanation_en = i10n_value_en
+from i10n_translation
+where pd_id = i10n_reference_id and i10n_reference_class = 'com.k_int.properties.PropertyDefinition' and i10n_reference_field = 'expl';
+
+delete from i10n_translation
+where i10n_reference_class like 'com.k_int.properties.PropertyDefinition%' and i10n_reference_field = 'name';
+
+delete from i10n_translation
+where i10n_reference_class like 'com.k_int.properties.PropertyDefinition%' and i10n_reference_field = 'expl';
 
 
 
