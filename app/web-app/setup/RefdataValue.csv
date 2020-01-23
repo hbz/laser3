@@ -891,8 +891,10 @@ semester,w27/28,Wintersemester 2027/28,winter semester 2027/28
 semester,w28/29,Wintersemester 2028/29,winter semester 2028/29
 semester,w29/30,Wintersemester 2029/30,winter semester 2029/30
 semester,w30/31,Wintersemester 2030/31,winter semester 2030/31
+share.configuration,everyone,everyone,everyone
 share.configuration,only for author and target organisation,nur für meine Organisation und die Bezugsorganisation,only for my and target organisation
 share.configuration,only for author organisation,nur für meine Organisation,only for my organisation
+share.configuration,only for consortia members,only for consortia members,only for consortia members
 share.configuration,only for creator,nur für Uploader,only for creator
 sim.user.number,1,1,1
 sim.user.number,2,2,2

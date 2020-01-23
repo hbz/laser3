@@ -20,8 +20,7 @@ class NavigationGenerationService {
             previous.each { it ->
                 def obj = domainClass.getClazz().get(it.destination)
                 if(obj instanceof Subscription) {
-                    if(!obj.status.equals(RDStore.SUBSCRIPTION_DELETED))
-                        prevLink.add(obj)
+                    prevLink.add(obj)
                 }
             }
         }
@@ -30,8 +29,7 @@ class NavigationGenerationService {
             next.each { it ->
                 def obj = domainClass.getClazz().get(it.source)
                 if(obj instanceof Subscription) {
-                    if(!obj.status.equals(RDStore.SUBSCRIPTION_DELETED))
-                        nextLink.add(obj)
+                    nextLink.add(obj)
                 }
             }
         }

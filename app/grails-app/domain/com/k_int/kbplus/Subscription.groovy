@@ -225,7 +225,7 @@ class Subscription
 
         if (sharedObject instanceof DocContext) {
             if (sharedObject.isShared) {
-                List<Subscription> newTargets = Subscription.findAllByInstanceOfAndStatusNotEqual(this, RDStore.SUBSCRIPTION_DELETED)
+                List<Subscription> newTargets = Subscription.findAllByInstanceOf(this)
                 log.debug('found targets: ' + newTargets)
 
                 newTargets.each{ sub ->
@@ -239,7 +239,7 @@ class Subscription
         }
         if (sharedObject instanceof OrgRole) {
             if (sharedObject.isShared) {
-                List<Subscription> newTargets = Subscription.findAllByInstanceOfAndStatusNotEqual(this, RDStore.SUBSCRIPTION_DELETED)
+                List<Subscription> newTargets = Subscription.findAllByInstanceOf(this)
                 log.debug('found targets: ' + newTargets)
 
                 newTargets.each{ sub ->

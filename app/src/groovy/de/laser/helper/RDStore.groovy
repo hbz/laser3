@@ -89,7 +89,7 @@ class RDStore {
 
     static final LICENSE_TYPE_TEMPLATE      = getRefdataValue('Template', RDConstants.LICENSE_TYPE)
     static final LICENSE_TYPE_ACTUAL        = getRefdataValue('Actual', RDConstants.LICENSE_TYPE)
-    static final LICENSE_TYPE_CURRENT       = getRefdataValue('Current', RDConstants.LICENSE_TYPE)
+    static final LICENSE_STATUS_CURRENT     = getRefdataValue('Current', RDConstants.LICENSE_STATUS)
     static final LICENSE_NO_STATUS          = getRefdataValue('Status not defined', RDConstants.LICENSE_STATUS)
 
     static final LINKTYPE_FOLLOWS           = getRefdataValue('follows', RDConstants.LINK_TYPE)

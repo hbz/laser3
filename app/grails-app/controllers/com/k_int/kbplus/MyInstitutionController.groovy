@@ -1938,7 +1938,6 @@ from License as l where (
 
                     def out = response.outputStream
                     exportService.StreamOutTitlesCSV(out, result.titles)
-                    RefdataValue del_sub = RDStore.SUBSCRIPTION_DELETED
                     out.close()
                 }
                 /*json {
@@ -2282,6 +2281,8 @@ AND EXISTS (
         result
     }
 
+    // RDStore.SUBSCRIPTION_DELETED is removed
+    @Deprecated
     @DebugAnnotation(test='hasAffiliation("INST_USER")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
     def actionCurrentSubscriptions() {
