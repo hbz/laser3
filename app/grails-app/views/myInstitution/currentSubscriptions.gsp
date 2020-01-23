@@ -206,7 +206,12 @@
                 </fieldset>
         </div>
 
-        <div class="four fields">
+        <g:if test="${accessService.checkPerm("ORG_INST")}">
+            <div class="four fields">
+        </g:if>
+        <g:else>
+            <div class="three fields">
+        </g:else>
             <div class="field">
                 <g:if test="${accessService.checkPerm("ORG_CONSORTIUM")}">
                 <%--
