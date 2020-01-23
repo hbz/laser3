@@ -4910,10 +4910,10 @@ class SubscriptionController extends AbstractDebugController {
             result.newSub = newSub.refresh()
         }
         subsToCompare.each{ sub ->
-            TreeMap customProperties = result.customProperties
+            Map customProperties = result.customProperties
             customProperties = comparisonService.buildComparisonTree(customProperties,sub,sub.customProperties)
             result.customProperties = customProperties
-            TreeMap privateProperties = result.privateProperties
+            Map privateProperties = result.privateProperties
             privateProperties = comparisonService.buildComparisonTree(privateProperties,sub,sub.privateProperties)
             result.privateProperties = privateProperties
         }

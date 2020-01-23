@@ -30,13 +30,13 @@
 
                     <g:if test="${customProperties?.size() > 0}">
                         <table class="ui celled table la-table">
-                            <g:render template="/templates/subscription/propertyComparisonTableRow" model="[group:customProperties,key:message(code:'license.properties'),subscriptions:subscriptions]" />
+                            <g:render template="/templates/subscription/propertyComparisonTableRow" model="[group:customProperties,key:message(code:'subscription.properties'),subscriptions:subscriptions]" />
                         </table>
                     </g:if>
 
                     <g:if test="${privateProperties?.size() > 0}">
                         <table class="ui celled table la-table">
-                            <g:render template="/templates/subscription/propertyComparisonTableRow" model="[group:privateProperties,key:message(code:'license.properties.private')+' '+contextService.getOrg().name,subscriptions:subscriptions]" />
+                            <g:render template="/templates/subscription/propertyComparisonTableRow" model="[group:privateProperties,key:message(code:'subscription.properties.private')+' '+contextService.getOrg().name,subscriptions:subscriptions]" />
                         </table>
                     </g:if>
             <g:set var="submitDisabled" value="${(sourceSubscription && targetSubscription)? '' : 'disabled'}"/>

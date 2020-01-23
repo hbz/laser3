@@ -2769,11 +2769,11 @@ class SurveyController {
             result.newSub = newSub.refresh()
         }
         subsToCompare.each { sub ->
-            TreeMap customProperties = result.customProperties
+            Map customProperties = result.customProperties
             sub = GrailsHibernateUtil.unwrapIfProxy(sub)
             customProperties = comparisonService.buildComparisonTree(customProperties, sub, sub.customProperties)
             result.customProperties = customProperties
-            TreeMap privateProperties = result.privateProperties
+            Map privateProperties = result.privateProperties
             privateProperties = comparisonService.buildComparisonTree(privateProperties, sub, sub.privateProperties)
             result.privateProperties = privateProperties
         }
