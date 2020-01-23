@@ -2005,7 +2005,7 @@ class SurveyController {
         def costItemElementConfigurations = []
         def orgConfigurations = []
 
-        def ciecs = RefdataValue.findAllByOwner(RefdataCategory.getByDesc(RDConstants.COST_CONFIGURATION))
+        List<RefdataValue> ciecs = RefdataCategory.getAllRefdataValues(RDConstants.COST_CONFIGURATION)
         ciecs.each { ciec ->
             costItemElementConfigurations.add([id: ciec.class.name + ":" + ciec.id, value: ciec.getI10n('value')])
         }
@@ -2036,7 +2036,7 @@ class SurveyController {
         def costItemElementConfigurations = []
         def orgConfigurations = []
 
-        def ciecs = RefdataValue.findAllByOwner(RefdataCategory.getByDesc(RDConstants.COST_CONFIGURATION))
+        List<RefdataValue> ciecs = RefdataCategory.getAllRefdataValues(RDConstants.COST_CONFIGURATION)
         ciecs.each { ciec ->
             costItemElementConfigurations.add([id: ciec.class.name + ":" + ciec.id, value: ciec.getI10n('value')])
         }
