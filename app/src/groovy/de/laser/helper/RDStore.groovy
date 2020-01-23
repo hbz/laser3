@@ -28,7 +28,7 @@ class RDStore {
     static final OR_PROVIDER                = getRefdataValue('Provider', RDConstants.ORGANISATIONAL_ROLE)
     static final OR_PUBLISHER               = getRefdataValue('Publisher', RDConstants.ORGANISATIONAL_ROLE)
     static final OR_CONTENT_PROVIDER        = getRefdataValue('Content Provider', RDConstants.ORGANISATIONAL_ROLE)
-    static final OR_PACKAGE_CONSORTIA       = getRefdataValue('Package Consortiar', RDConstants.ORGANISATIONAL_ROLE)
+    static final OR_PACKAGE_CONSORTIA       = getRefdataValue('Package Consortia', RDConstants.ORGANISATIONAL_ROLE)
 
     static final OT_CONSORTIUM              = getRefdataValue('Consortium', RDConstants.ORG_TYPE)
     static final OT_INSTITUTION             = getRefdataValue('Institution', RDConstants.ORG_TYPE)
