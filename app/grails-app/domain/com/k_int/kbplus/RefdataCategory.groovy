@@ -155,8 +155,8 @@ class RefdataCategory extends AbstractI10nOverride {
       String i10value = LocaleContextHolder.getLocale().getLanguage() == Locale.GERMAN.getLanguage() ? 'value_de' : 'value_en'
 
       RefdataValue.executeQuery(
-              "select rdv from RefdataValue as rdv, RefdataCategory as rdc where rdv.owner = rdc and rdc.desc = ? order by rdv.${i10value}"
-              , ["${category_name}"] )
+              "select rdv from RefdataValue as rdv, RefdataCategory as rdc where rdv.owner = rdc and lower(rdc.desc) = ? order by rdv.${i10value}"
+              , ["${category_name}".toLowerCase()] )
   }
 
     static getAllRefdataValuesWithI10nExplanation(String category_name, Map sort) {

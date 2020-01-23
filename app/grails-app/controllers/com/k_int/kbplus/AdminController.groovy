@@ -12,6 +12,7 @@ import de.laser.ContextService
 import de.laser.SystemEvent
 import de.laser.api.v0.ApiToolkit
 import de.laser.controller.AbstractDebugController
+import de.laser.domain.I10nTranslation
 import de.laser.helper.DebugAnnotation
 import de.laser.helper.RDConstants
 import de.laser.helper.RDStore
@@ -23,6 +24,7 @@ import groovy.sql.Sql
 import groovy.util.slurpersupport.FilteredNodeChildren
 import groovy.util.slurpersupport.GPathResult
 import groovy.xml.MarkupBuilder
+import org.springframework.context.i18n.LocaleContextHolder
 
 import java.text.SimpleDateFormat
 
@@ -1623,7 +1625,7 @@ class AdminController extends AbstractDebugController {
 
         render view: 'manageRefdatas', model: [
                 editable    : true,
-                rdCategories: RefdataCategory.where{}.sort('desc'),
+                rdCategories: RefdataCategory.where{}.sort('desc_' + I10nTranslation.decodeLocale(LocaleContextHolder.getLocale().toString())),
                 attrMap     : attrMap,
                 usedRdvList : usedRdvList,
                 integrityCheckResult : integrityCheckResult

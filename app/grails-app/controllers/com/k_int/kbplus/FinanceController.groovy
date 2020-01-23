@@ -807,7 +807,7 @@ class FinanceController extends AbstractDebugController {
         }
         result.costItem = CostItem.findById(params.id)
         //format for dropdown: (o)id:value
-        def ciecs = RefdataValue.findAllByOwner(RefdataCategory.getByDesc(RDConstants.COST_CONFIGURATION))
+        List<RefdataValue> ciecs = RefdataCategory.getAllRefdataValues(RDConstants.COST_CONFIGURATION)
         ciecs.each { ciec ->
             costItemElementConfigurations.add([id:ciec.class.name+":"+ciec.id,value:ciec.getI10n('value')])
         }
@@ -840,7 +840,7 @@ class FinanceController extends AbstractDebugController {
         List costItemElementConfigurations = []
         List orgConfigurations = []
         //format for dropdown: (o)id:value
-        def ciecs = RefdataValue.findAllByOwner(RefdataCategory.getByDesc(RDConstants.COST_CONFIGURATION))
+        List<RefdataValue> ciecs = RefdataCategory.getAllRefdataValues(RDConstants.COST_CONFIGURATION)
         ciecs.each { ciec ->
             costItemElementConfigurations.add([id:ciec.class.name+":"+ciec.id,value:ciec.getI10n('value')])
         }

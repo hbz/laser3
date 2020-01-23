@@ -32,7 +32,7 @@
             <g:else>
                 <g:select name="orm_orgRole"
                       noSelection="${['':varSelectOne]}"
-                      from="${com.k_int.kbplus.RefdataValue.findAllByOwner(com.k_int.kbplus.RefdataCategory.getByDesc(de.laser.helper.RDConstants.ORGANISATIONAL_ROLE))}"
+                      from="${com.k_int.kbplus.RefdataCategory.getAllRefdataValues(de.laser.helper.RDConstants.ORGANISATIONAL_ROLE)}"
                       optionKey="id"
                       optionValue="${{it.getI10n('value')}}"/>
             </g:else>

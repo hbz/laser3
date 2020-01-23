@@ -69,7 +69,7 @@
 		<g:message code="address.state.label" default="State" />
 	</label>
 	<laser:select class="ui dropdown" id="state" name="state.id"
-				  from="${RefdataValue.findAllByOwner(RefdataCategory.getByDesc(RDConstants.FEDERAL_STATE))}"
+				  from="${RefdataCategory.getAllRefdataValues(RDConstants.FEDERAL_STATE)}"
 				  optionKey="id"
 				  optionValue="value"
 				  value="${addressInstance?.state?.id}"
@@ -81,7 +81,7 @@
 		<g:message code="address.country.label" default="Country" />
 	</label>
 	<laser:select class="ui dropdown" id="country" name="country.id"
-				  from="${RefdataValue.findAllByOwner(RefdataCategory.getByDesc(RDConstants.COUNTRY))}"
+				  from="${RefdataCategory.getAllRefdataValues(RDConstants.COUNTRY)}"
 				  optionKey="id"
 				  optionValue="value"
 				  value="${addressInstance?.country?.id}"
