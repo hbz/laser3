@@ -52,6 +52,7 @@ class SurveyController {
     public static final String WORKFLOW_DATES_OWNER_RELATIONS = '1'
     public static final String WORKFLOW_PACKAGES_ENTITLEMENTS = '5'
     public static final String WORKFLOW_DOCS_ANNOUNCEMENT_TASKS = '2'
+    public static final String WORKFLOW_SUBSCRIBER = '3'
     public static final String WORKFLOW_PROPERTIES = '4'
     public static final String WORKFLOW_END = '6'
 
@@ -2661,6 +2662,15 @@ class SurveyController {
                         result << loadDataFor_Properties()
                 } else {
                     result << loadDataFor_DocsAnnouncementsTasks()
+                }
+                break;
+            case WORKFLOW_SUBSCRIBER:
+                result << copySubElements_Subscriber();
+                if (params.isRenewSub) {
+                    params?.workFlowPart = WORKFLOW_PROPERTIES
+                    result << loadDataFor_Properties()
+                } else {
+                    result << loadDataFor_Subscriber()
                 }
                 break;
             case WORKFLOW_PROPERTIES:
