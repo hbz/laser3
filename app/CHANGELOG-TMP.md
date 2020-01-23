@@ -2,6 +2,7 @@
 
 **Ticket    Date    Branch      Author  Feature/Bug     Description/Keywords**
 
+2069    23.01.202   hbz-dev     Moe     Bug         Umfrage-Lizenz-Verlängerung: Fehler beim Kopieren von mehrfach vergebenen Merkmalen
     
 2066    23.01.202   hbz-dev     Moe     Feature     Merkmale kopieren bzw. verlängern
 

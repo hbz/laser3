@@ -2749,7 +2749,7 @@ class SurveyController {
         }
 
         if (newSub) {
-            result.newSub = newSub.refresh()
+            result.newSub = Subscription.get(newSub.id)
         }
         result
     }

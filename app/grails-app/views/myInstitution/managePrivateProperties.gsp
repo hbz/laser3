@@ -45,6 +45,7 @@
                         <table class="ui celled la-table la-table-small table">
                             <thead>
                                 <tr>
+                                    <th></th>
                                     <th>${message(code:'propertyDefinition.key.label')}</th>
                                     <th>${message(code:'propertyDefinition.name.label')}</th>
                                     <th>${message(code:'propertyDefinition.expl.label')}</th>
@@ -57,6 +58,24 @@
                                 <g:each in="${entry.value}" var="pd">
                                     <g:set var="pdI10nName" value="${I10nTranslation.createI10nOnTheFly(pd, 'name')}" />
                                     <g:set var="pdI10nExpl" value="${I10nTranslation.createI10nOnTheFly(pd, 'expl')}" />
+                                        <td>
+                                            <g:if test="${pd.isHardData}">
+                                                <span data-position="top left"  class="la-popup-tooltip la-delay" data-content="${message(code:'default.hardData.tooltip')}">
+                                                    <i class="check circle icon green"></i>
+                                                </span>
+                                            </g:if>
+                                            <g:if test="${pd.multipleOccurrence}">
+                                                <span data-position="top right"  class="la-popup-tooltip la-delay" data-content="${message(code:'default.multipleOccurrence.tooltip')}">
+                                                    <i class="redo icon orange"></i>
+                                                </span>
+                                            </g:if>
+
+                                            <g:if test="${pd.isUsedForLogic}">
+                                                <span data-position="top left"  class="la-popup-tooltip la-delay" data-content="${message(code:'default.isUsedForLogic.tooltip')}">
+                                                    <i class="ui icon orange cube"></i>
+                                                </span>
+                                            </g:if>
+                                        </td>
                                         <td>
                                             <g:if test="${pd.isUsedForLogic}">
                                                 <span style="color:orange">${fieldValue(bean: pd, field: "name")}</span>
