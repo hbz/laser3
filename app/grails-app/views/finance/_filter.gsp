@@ -280,7 +280,7 @@
             subStatus = "FETCH_ALL";
         }
         var fixedSubscriptionString = "";
-        <g:if test="fixedSubscription">
+        <g:if test="${fixedSubscription}">
             fixedSubscriptionString = "&ctx=${fixedSubscription.class.name}:${fixedSubscription.id}"
         </g:if>
         var links = {
