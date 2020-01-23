@@ -173,20 +173,20 @@
         <span class="la-removed">${message(code: 'subscription.renewSubscriptionConsortia.workFlowSteps.legend.willBeReplaced')}</span>
     </div>
     <g:if test="${workFlowPart == WORKFLOW_DOCS_ANNOUNCEMENT_TASKS}">
-        <g:render template="copyDocsAndTasks" />
+        <g:render template="/templates/subscription/copyDocsAndTasks" />
     </g:if>
     <g:elseif test="${workFlowPart == WORKFLOW_SUBSCRIBER && isSubscriberVisible && accessService.checkPermAffiliation("ORG_CONSORTIUM_SURVEY,ORG_CONSORTIUM,ORG_INST_COLLECTIVE", "INST_USER")}">
-        <g:render template="copySubscriber" />
+        <g:render template="/templates/subscription/copySubscriber" />
     </g:elseif>
     <g:elseif test="${workFlowPart == WORKFLOW_PROPERTIES}">
-        <g:render template="copyPropertiesCompare" />
+        <g:render template="/templates/subscription/copyPropertiesCompare" />
     </g:elseif>
     <g:elseif test="${workFlowPart == WORKFLOW_PACKAGES_ENTITLEMENTS}">
-        <g:render template="copyPackagesAndIEs" />
+        <g:render template="/templates/subscription/copyPackagesAndIEs" />
     </g:elseif>
     %{--<g:elseif test="${workFlowPart == WORKFLOW_DATES_OWNER_RELATIONS}">--}%
     <g:else>
-        <g:render template="copyElements" />
+        <g:render template="/templates/subscription/copyElements" />
     </g:else>
 
     <r:script>
