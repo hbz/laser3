@@ -2631,7 +2631,7 @@ class SurveyController {
             result.isRenewSub = params?.isRenewSub
         }
 
-        result.isConsortialSubs = (result.sourceSubscription.getCalculatedType() == TemplateSupport.CALCULATED_TYPE_CONSORTIAL && result.targetSubscription.getCalculatedType() == TemplateSupport.CALCULATED_TYPE_CONSORTIAL) ?: false
+        result.isConsortialSubs = (result.sourceSubscription?.getCalculatedType() == TemplateSupport.CALCULATED_TYPE_CONSORTIAL && result.targetSubscription?.getCalculatedType() == TemplateSupport.CALCULATED_TYPE_CONSORTIAL) ?: false
 
         result.allSubscriptions_readRights = subscriptionService.getMySubscriptions_readRights()
         result.allSubscriptions_writeRights = subscriptionService.getMySubscriptions_writeRights()
