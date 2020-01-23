@@ -48,7 +48,7 @@
 		<g:message code="task.status.label" default="Status" />
 	</label>
 	<g:select id="status" name="status.id" from="${com.k_int.kbplus.RefdataCategory.getAllRefdataValues(RDConstants.TASK_STATUS)}"
-			  optionKey="id" required="" value="${taskInstance?.status?.id ?: com.k_int.kbplus.RefdataValue.findByValueAndOwner("Open", com.k_int.kbplus.RefdataCategory.getByDesc(RDConstants.TASK_STATUS)).id}" class="many-to-one"/>
+			  optionKey="id" required="" value="${taskInstance?.status?.id ?: com.k_int.kbplus.RefdataValue.getByValueAndCategory("Open", RDConstants.TASK_STATUS).id}" class="many-to-one"/>
 </div>
 
 <div class="field fieldcontain ${hasErrors(bean: taskInstance, field: 'creator', 'error')} required">

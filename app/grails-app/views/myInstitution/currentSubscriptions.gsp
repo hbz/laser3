@@ -179,7 +179,7 @@
         </div>
 
         <div class="field">
-                <fieldset id="subscritionType">
+            <fieldset id="subscritionType">
                     <legend >${message(code: 'myinst.currentSubscriptions.subscription_type')}</legend>
                     <div class="inline fields la-filter-inline">
                         <%
@@ -206,7 +206,12 @@
                 </fieldset>
         </div>
 
-        <div class="three fields">
+        <g:if test="${accessService.checkPerm("ORG_INST")}">
+            <div class="four fields">
+        </g:if>
+        <g:else>
+            <div class="three fields">
+        </g:else>
             <div class="field">
                 <g:if test="${accessService.checkPerm("ORG_CONSORTIUM")}">
                 <%--
@@ -261,6 +266,20 @@
                     </div>
                 </div>
             </div>
+            <g:if test="${accessService.checkPerm("ORG_INST")}">
+            <div class="field">
+                <fieldset>
+                    <legend id="la-legend-searchDropdown">${message(code: 'gasco.filter.consortialAuthority')}</legend>
+
+                    <g:select from="${allConsortia}" id="consortial" class="ui fluid search selection dropdown"
+                              optionKey="${{ "com.k_int.kbplus.Org:" + it.id }}"
+                              optionValue="${{ it.getName() }}"
+                              name="consortia"
+                              noSelection="${['' : message(code:'default.select.choose.label')]}"
+                              value="${params.consortia}"/>
+                </fieldset>
+            </div>
+            </g:if>
             <div class="field la-field-right-aligned">
                 <a href="${request.forwardURI}" class="ui reset primary button">${message(code:'default.button.reset.label')}</a>
                 <input type="submit" class="ui secondary button" value="${message(code:'default.button.filter.label', default:'Filter')}">

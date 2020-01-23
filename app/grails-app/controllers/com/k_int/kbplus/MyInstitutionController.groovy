@@ -796,6 +796,14 @@ from License as l where (
 
         result.availableConsortia = Combo.executeQuery("select c.toOrg from Combo as c where c.fromOrg = ?", [result.institution])
 
+        def consRoles = Role.findAll { authority == 'ORG_CONSORTIUM_SURVEY' || authority == 'ORG_CONSORTIUM' }
+        result.allConsortia = Org.executeQuery(
+                """select o from Org o, OrgSettings os_ct where 
+                        os_ct.org = o and os_ct.key = 'CUSTOMER_TYPE' and os_ct.roleValue in (:roles) 
+                        order by lower(o.name)""",
+                [roles: consRoles]
+        )
+
         def viableOrgs = []
 
         if ( result.availableConsortia ){
@@ -841,10 +849,12 @@ from License as l where (
             result.usageMode = accessService.checkPerm("ORG_CONSORTIUM") ? 'package' : 'institution'
         }
 
+        result.subscriptions = subscriptions.drop((int) result.offset).take((int) result.max)
+
         if(params.sort && params.sort.indexOf("§") >= 0) {
             switch(params.sort) {
                 case "orgRole§provider":
-                    subscriptions.sort { x,y ->
+                    result.subscriptions.sort { x,y ->
                         String a = x.getProviders().size() > 0 ? x.getProviders().first().name : ''
                         String b = y.getProviders().size() > 0 ? y.getProviders().first().name : ''
 
@@ -858,7 +868,6 @@ from License as l where (
             }
         }
 
-        result.subscriptions = subscriptions.drop((int) result.offset).take((int) result.max)
 
         // Write the output to a file
         sdf = new SimpleDateFormat(g.message(code: 'default.date.format.notimenopoint'))
@@ -1938,7 +1947,6 @@ from License as l where (
 
                     def out = response.outputStream
                     exportService.StreamOutTitlesCSV(out, result.titles)
-                    RefdataValue del_sub = RDStore.SUBSCRIPTION_DELETED
                     out.close()
                 }
                 /*json {
@@ -2282,6 +2290,8 @@ AND EXISTS (
         result
     }
 
+    // RDStore.SUBSCRIPTION_DELETED is removed
+    @Deprecated
     @DebugAnnotation(test='hasAffiliation("INST_USER")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
     def actionCurrentSubscriptions() {

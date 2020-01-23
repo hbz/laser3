@@ -92,7 +92,7 @@ ${surveyInfo?.name}
                 <th>${message(code: 'subscription.details.status')}</th>
                 <td>
                 <g:set var="rdcSubStatus" value="${com.k_int.kbplus.RefdataCategory.getByDesc(RDConstants.SUBSCRIPTION_STATUS)}"/>
-                <g:select from="${com.k_int.kbplus.RefdataValue.findAllByOwner(rdcSubStatus)}" class="ui dropdown"
+                <g:select from="${com.k_int.kbplus.RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_STATUS)}" class="ui dropdown"
                           optionKey="id"
                           optionValue="${{ it.getI10n('value') }}"
                           name="subStatus"
@@ -109,7 +109,7 @@ ${surveyInfo?.name}
                 <th>${message(code: 'subscription.details.type')}</th>
                 <td>
                     <g:set var="rdcSubType" value="${com.k_int.kbplus.RefdataCategory.getByDesc(RDConstants.SUBSCRIPTION_TYPE)}"/>
-                    <g:select from="${com.k_int.kbplus.RefdataValue.findAllByOwner(rdcSubType)}" class="ui dropdown"
+                    <g:select from="${com.k_int.kbplus.RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_TYPE)}" class="ui dropdown"
                               optionKey="id"
                               optionValue="${{ it.getI10n('value') }}"
                               name="subType"
@@ -126,7 +126,7 @@ ${surveyInfo?.name}
                 <th>${message(code: 'subscription.form.label')}</th>
                 <td>
                     <g:set var="rdcSubForm" value="${com.k_int.kbplus.RefdataCategory.getByDesc(RDConstants.SUBSCRIPTION_FORM)}"/>
-                    <g:select from="${com.k_int.kbplus.RefdataValue.findAllByOwner(rdcSubForm)}" class="ui dropdown"
+                    <g:select from="${com.k_int.kbplus.RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_FORM)}" class="ui dropdown"
                               optionKey="id"
                               optionValue="${{ it.getI10n('value') }}"
                               name="subForm"
@@ -143,7 +143,7 @@ ${surveyInfo?.name}
                 <th>${message(code: 'subscription.resource.label')}</th>
                 <td>
                     <g:set var="rdcSubResource" value="${com.k_int.kbplus.RefdataCategory.getByDesc(RDConstants.SUBSCRIPTION_RESOURCE)}"/>
-                    <g:select from="${com.k_int.kbplus.RefdataValue.findAllByOwner(rdcSubResource)}" class="ui dropdown"
+                    <g:select from="${com.k_int.kbplus.RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_RESOURCE)}" class="ui dropdown"
                               optionKey="id"
                               optionValue="${{ it.getI10n('value') }}"
                               name="subResource"

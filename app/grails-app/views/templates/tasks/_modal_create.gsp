@@ -146,7 +146,7 @@ double t8 = 0L
                     <laser:select id="status" name="status.id"
                                   from="${com.k_int.kbplus.RefdataCategory.getAllRefdataValues(RDConstants.TASK_STATUS)}"
                                   optionValue="value" optionKey="id" required=""
-                                  value="${taskInstance?.status?.id ?: com.k_int.kbplus.RefdataValue.findByValueAndOwner("Open", com.k_int.kbplus.RefdataCategory.getByDesc(RDConstants.TASK_STATUS)).id}"
+                                  value="${taskInstance?.status?.id ?: com.k_int.kbplus.RefdataValue.getByValueAndCategory("Open", RDConstants.TASK_STATUS).id}"
                                   class="ui dropdown search many-to-one"
                                   noSelection="${['' : message(code:'default.select.choose.label')]}"
                     />
