@@ -2,7 +2,7 @@ package de.laser.helper
 
 import groovy.transform.CompileStatic
 
-@CompileStatic
+//@CompileStatic
 class RDConstants {
 
     static final String ACCESS_CHOICE_REMOTE   = 'access.choice.remote'
