@@ -113,6 +113,7 @@ class I10nTranslation {
     // -- initializations --
 
     // used in gsp to create translations for on-the-fly-created refdatas and property definitions
+    @Deprecated
     static I10nTranslation createI10nOnTheFly(Object reference, String referenceField) {
 
         Map<String, Object> values = [:] // no effect in set()
@@ -195,21 +196,5 @@ class I10nTranslation {
         }
 
         return result
-    }
-    static copyI10n(Object from, String referenceField, Object to) {
-        from = GrailsHibernateUtil.unwrapIfProxy(from)
-        to = GrailsHibernateUtil.unwrapIfProxy(to)
-
-        I10nTranslation i10n = findByReferenceClassAndReferenceIdAndReferenceField(from.getClass().getCanonicalName(), from.getId(), referenceField)
-        Map<String, Object> values = [:]
-        if(i10n)
-        {
-            values = [
-                    'en': i10n.valueEn?: null,
-                    'de': i10n.valueDe?: null,
-                    'fr': i10n.valueFr?: null,
-            ]
-            return set(to, referenceField, values)
-        }
     }
 }

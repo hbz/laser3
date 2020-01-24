@@ -69,7 +69,41 @@ where pd_id = i10n_reference_id and i10n_reference_class = 'com.k_int.properties
 		}
 	}
 
-	//changeSet(author: "kloberd (generated)", id: "1579869872860-8") {
+	changeSet(author: "kloberd (generated)", id: "1579869872860-8") {
+		addColumn(schemaName: "public", tableName: "refdata_value") {
+			column(name: "rdv_explanation_de", type: "text")
+		}
+	}
+
+	changeSet(author: "kloberd (generated)", id: "1579869872860-9") {
+		addColumn(schemaName: "public", tableName: "refdata_value") {
+			column(name: "rdv_explanation_en", type: "text")
+		}
+	}
+
+	changeSet(author: "kloberd (modified)", id: "1579869872860-10") {
+		grailsChange {
+			change {
+				sql.execute("""
+update refdata_value set rdv_explanation_de = i10n_value_de, rdv_explanation_en = i10n_value_en
+from i10n_translation
+where rdv_id = i10n_reference_id and i10n_reference_class = 'com.k_int.kbplus.RefdataValue' and i10n_reference_field = 'expl';
+""")
+			}
+			rollback {}
+		}
+	}
+
+	changeSet(author: "kloberd (modified)", id: "1579869872860-11") {
+		grailsChange {
+			change {
+				sql.execute("delete from i10n_translation where i10n_reference_class like 'com.k_int.kbplus.RefdataValue%' and i10n_reference_field = 'expl';")
+			}
+			rollback {}
+		}
+	}
+
+	//changeSet(author: "kloberd (generated)", id: "1579869872860-12") {
 	//	dropColumn(columnName: "pd_explanation", tableName: "property_definition")
 	//}
 }
