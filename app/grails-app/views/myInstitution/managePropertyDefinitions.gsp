@@ -45,12 +45,12 @@
                             <th>${message(code:'propertyDefinition.key.label')}</th>
 
                             <g:if test="${language?.toLowerCase() in ['de_de', 'de']}">
-                                <g:set var="value_SUBSTITUTE" value="valueDe" />
+                                <g:set var="SUBSTITUTE" value="de" />
                                 <th>${message(code:'propertyDefinition.name.label')}</th>
                                 <th>${message(code:'propertyDefinition.expl.label')}</th>
                             </g:if>
                             <g:else>
-                                <g:set var="value_SUBSTITUTE" value="valueEn" />
+                                <g:set var="SUBSTITUTE" value="en" />
                                 <th>${message(code:'propertyDefinition.name.label')}</th>
                                 <th>${message(code:'propertyDefinition.expl.label')}</th>
                             </g:else>
@@ -60,8 +60,6 @@
                         </thead>
                         <tbody>
                             <g:each in="${entry.value}" var="pd">
-                                <g:set var="pdI10nName"  value="${I10nTranslation.createI10nOnTheFly(pd, 'name')}" />
-                                <g:set var="pdI10nExpl" value="${I10nTranslation.createI10nOnTheFly(pd, 'expl')}" />
                                 <tr>
                                     <td>
                                         <g:if test="${pd.isUsedForLogic}">
@@ -73,28 +71,26 @@
                                     </td>
                                     <td>
                                         <g:if test="${!pd.isHardData && SpringSecurityUtils.ifAnyGranted('ROLE_YODA')}">
-                                            <semui:xEditable owner="${pdI10nName}" field="${value_SUBSTITUTE}" />
+                                            <semui:xEditable owner="${pd}" field="name_${SUBSTITUTE}" />
                                         </g:if>
                                         <g:else>
-                                            ${pdI10nName?."${value_SUBSTITUTE}"}
+                                            ${pd.getI10n('name')}
                                         </g:else>
                                     </td>
                                     <td>
                                         <g:if test="${!pd.isHardData && SpringSecurityUtils.ifAnyGranted('ROLE_YODA')}">
-                                            <semui:xEditable owner="${pdI10nExpl}" field="${value_SUBSTITUTE}" type="textarea" />
+                                            <semui:xEditable owner="${pd}" field="expl_${SUBSTITUTE}" type="textarea" />
                                         </g:if>
                                         <g:else>
-                                            ${pdI10nExpl?."${value_SUBSTITUTE}"}
+                                            ${pd.getI10n('expl')}
                                         </g:else>
                                     </td>
                                     <td>
                                         ${PropertyDefinition.getLocalizedValue(pd?.type)}
                                         <g:if test="${pd?.type == 'class com.k_int.kbplus.RefdataValue'}">
                                             <g:set var="refdataValues" value="${[]}"/>
-                                            <g:each in="${com.k_int.kbplus.RefdataCategory.getAllRefdataValues(pd.refdataCategory)}"
-                                                    var="refdataValue">
-                                                <g:set var="refdataValues"
-                                                       value="${refdataValues + refdataValue?.getI10n('value')}"/>
+                                            <g:each in="${com.k_int.kbplus.RefdataCategory.getAllRefdataValues(pd.refdataCategory)}" var="refdataValue">
+                                                <g:set var="refdataValues" value="${refdataValues + refdataValue?.getI10n('value')}"/>
                                             </g:each>
                                             <br>
                                             (${refdataValues.join('/')})
