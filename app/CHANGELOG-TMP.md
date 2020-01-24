@@ -2,19 +2,28 @@
 
 **Ticket    Date    Branch      Author  Feature/Bug     Description/Keywords**
 
-2005    23.01.202   hbz-dev     Moe     Feature     "Mehrjahreslaufzeit" auch für lokale Lizenzen?
 
-2102    24.01.2020   hbz-dev    David   Feature     Refactoring: Übersetzungen für PropertyDefinitions
+2102    24.01.2020  hbz-dev     David   Feature     Refactoring: Übersetzungen für PropertyDefinitions
 
 1961    24.01.2020  hbz-dev     Anja    Feature     Verknüpfungsauswahl bei Vertrag: Jetzt werden auch Subscriptons vom Status intended zur Auswahl angezeigt. 
 
 2102    24.01.2020  hbz-dev     David   Feature     Refactoring: Übersetzungen für PropertyDefinitions
 
-2069    23.01.202   hbz-dev     Moe     Bug         Umfrage-Lizenz-Verlängerung: Fehler beim Kopieren von mehrfach vergebenen Merkmalen
-    
-2066    23.01.202   hbz-dev     Moe     Feature     Merkmale kopieren bzw. verlängern
+2005    23.01.2020  hbz-dev     Moe     Feature     "Mehrjahreslaufzeit" auch für lokale Lizenzen?
 
---      23.01.202   hbz-dev     David   Feature     Importing Refdata and PropertyDefinitions via CSV
+2069    23.01.2020  hbz-dev     Moe     Bug         Umfrage-Lizenz-Verlängerung: Fehler beim Kopieren von mehrfach vergebenen Merkmalen
+    
+2066    23.01.2020  hbz-dev     Moe     Feature     Merkmale kopieren bzw. verlängern
+
+--      23.01.2020  hbz-dev     David   Feature     Importing Refdata and PropertyDefinitions via CSV
+
+2012    23.01.2020  hbz-dev     Anja    Feature     PerformanceImprovement (GASCO-Monitor, currentProviders, createSubscriptionSurvey, createIssueEntitlementsSurvey)
+
+1947    23.01.2020  hbz-dev     Anja    Feature     Meine Lizenzen: neuer Filter für Konsortialstelle sichtbar für Einrichtungen
+
+--      23.01.2020  hbz-dev     David   Feature     Importing Refdata and PropertyDefinitions via CSV
+
+1943    22.01.2020  hbz-dev     Anja    Feature     Subskription-Elemente kopieren: Identifikator lassen sich nun auch kopieren
 
 2088    21.01.2020  rc1.2       Moe     Bug         Keine Alert Mail mehr, wenn Umfrage abgeschlossen ist
 

@@ -63,8 +63,6 @@ class BootStrap {
         log.debug("updatePsqlRoutines ..")
         updatePsqlRoutines()
 
-        // --
-
         log.debug("setupRefdata ..")
         setupRefdata()
 
@@ -136,9 +134,6 @@ class BootStrap {
                 organisationService.createOrgsFromScratch()
             }
         }
-
-        //log.debug("initializeDefaultSettings ..")
-        //initializeDefaultSettings()
 
 //        log.debug("setESGOKB ..")
 //        setESGOKB()
@@ -388,7 +383,8 @@ class BootStrap {
                                     token   : line[1].trim(),
                                     rdc     : line[0].trim(),
                                     hardData: BOOTSTRAP,
-                                    i10n    : [de: line[2].trim(), en: line[3].trim()]
+                                    i10n    : [de: line[2].trim(), en: line[3].trim()],
+                                    expl    : [de: line[4].trim(), en: line[5].trim()]
                             ]
                             result.add(map)
                         }
@@ -552,23 +548,6 @@ class BootStrap {
 
         Sql sql = new Sql(dataSource)
         sql.rows("SELECT * FROM grants_for_maintenance()")
-    }
-
-    @Deprecated
-    def initializeDefaultSettings(){
-        /*
-        def admObj = SystemAdmin.list()
-        if (! admObj) {
-            log.debug("no SystemAdmin object found, creating new")
-            admObj = new SystemAdmin(name:"demo").save()
-        } else {
-            admObj = admObj.first()
-        }
-        //Will not overwrite any existing database properties.
-        createDefaultSysProps(admObj)
-        admObj.refresh()
-        log.debug("finished updating config from SystemAdmin")
-        */
     }
 
     @Deprecated
@@ -843,11 +822,6 @@ class BootStrap {
 
     def setupRefdata = {
 
-        // RefdataCategory.locCategory( category_name, EN, DE )     => RefdataCategory(desc:category_name            & I10nTranslation(EN, DE)
-        // RefdataCategory.locRefdataValue( category_name, EN, DE ) => RefdataValue(value:EN, owner:@category_name)  & I10nTranslation(EN, DE)
-
-        // because legacy logic is hardcoded against RefdataCategory.desc & RefdataValue.value
-
         List rdcList = getParsedCsvData('setup/RefdataCategory.csv', 'RefdataCategory')
 
         rdcList.each { map ->
@@ -860,46 +834,10 @@ class BootStrap {
             RefdataValue.construct(map)
         }
 
-        // refdata values
-
-        // RefdataValue.loc('Country',   [en: 'Germany', de: 'Deutschland'], BOOTSTRAP)
-        // RefdataValue.loc('Country',   [en: 'Switzerland', de: 'Schweiz'], BOOTSTRAP)
-        // RefdataValue.loc('Country',   [en: 'Austria', de: 'Österreich'], BOOTSTRAP)
-        // RefdataValue.loc('Country',   [en: 'France', de: 'Frankreich'], BOOTSTRAP)
-        // RefdataValue.loc('Country',   [en: 'Great Britain', de: 'Großbritannien'], BOOTSTRAP)
-        // RefdataValue.loc('Country',   [en: 'United States of America', de: 'Vereinigte Staaten von Amerika'], BOOTSTRAP)
-        // RefdataValue.loc('Country',   [en: 'Belgium', de: 'Belgien'], BOOTSTRAP)
-        // RefdataValue.loc('Country',   [en: 'Italy', de: 'Italien'], BOOTSTRAP)
-        // RefdataValue.loc('Country',   [en: 'Netherlands', de: 'Niederlande'], BOOTSTRAP)
-        // RefdataValue.loc('Country',   [en: 'Italy', de: 'Italien'], BOOTSTRAP)
-
-        // RefdataValue.loc('Person Function',     [en: 'Bestandsaufbau', de: 'Bestandsaufbau'], BOOTSTRAP) //Position
-        // RefdataValue.loc('Person Function',     [en: 'Direktion', de: 'Direktion'], BOOTSTRAP) //Position
-        // RefdataValue.loc('Person Function',     [en: 'Direktionsassistenz', de: 'Direktionsassistenz'], BOOTSTRAP) //Position
-        // RefdataValue.loc('Person Function',     [en: 'Erwerbungsabteilung', de: 'Erwerbungsabteilung'], BOOTSTRAP) //Position
-        // RefdataValue.loc('Person Function',     [en: 'Erwerbungsleitung', de: 'Erwerbungsleitung'], BOOTSTRAP) //Position
-        // RefdataValue.loc('Person Function',     [en: 'Medienbearbeitung', de: 'Medienbearbeitung'], BOOTSTRAP) //Position
-        // RefdataValue.loc('Person Function',     [en: 'Zeitschriftenabteilung', de: 'Zeitschriftenabteilung'], BOOTSTRAP) //Position
-        // RefdataValue.loc('Person Function',     [en: 'Fachreferat', de: 'Fachreferat'], BOOTSTRAP) //Position
-        // RefdataValue.loc('Person Function',     [en: 'Bereichsbibliotheksleitung', de: 'Bereichsbibliotheksleitung'], BOOTSTRAP) //Position
-
         //deactivated as March 21st, 2019 - the feature has been postponed into quartal II at least
         //RefdataValue.loc('Share Configuration', [key: 'only for consortia members',en:'only for my consortia members',de:'nur für meine Konsorten'], BOOTSTRAP)
         //RefdataValue.loc('Share Configuration', [en: 'everyone',de:'alle'], BOOTSTRAP)
          //RefdataValue.loc('Subscription Type',      [en: 'Collective Subscription', de: 'Kollektivlizenz'], BOOTSTRAP)
-
-
-        RefdataValue a = RefdataValue.getByValueAndCategory('Students', RDConstants.NUMBER_TYPE)
-        I10nTranslation.createOrUpdateI10n(a,'expl', [en:'Gesamtzahl aller immatrikulierten Studierenden', de:'Gesamtzahl aller immatrikulierten Studierenden'])
-
-        RefdataValue b = RefdataValue.getByValueAndCategory('Scientific staff', RDConstants.NUMBER_TYPE);
-        I10nTranslation.createOrUpdateI10n(b,'expl', [en:'zugehöriges wissenschaftliches Personal', de:'zugehöriges wissenschaftliches Personal'])
-
-        RefdataValue c = RefdataValue.getByValueAndCategory('User', RDConstants.NUMBER_TYPE)
-        I10nTranslation.createOrUpdateI10n(c,'expl', [en:'Nutzer der Einrichtung', de:'Nutzer der Einrichtung'])
-
-        RefdataValue d = RefdataValue.getByValueAndCategory('Population', RDConstants.NUMBER_TYPE)
-        I10nTranslation.createOrUpdateI10n(d,'expl', [en:'Einwohner der Stadt', de:'Einwohner der Stadt'])
     }
 
     def setupPropertyDefinitions = {
