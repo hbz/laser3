@@ -2,6 +2,8 @@
 
 **Ticket    Date    Branch      Author  Feature/Bug     Description/Keywords**
 
+1961    24.01.2020  hbz-dev     Anja    Feature     Verknüpfungsauswahl bei Vertrag: Jetzt werden auch Subscriptons vom Status intended zur Auswahl angezeigt. 
+
 --      23.01.202   hbz-dev     David   Feature     Importing Refdata and PropertyDefinitions via CSV
 
 2088    21.01.2020  rc1.2       Moe     Bug         Keine Alert Mail mehr, wenn Umfrage abgeschlossen ist

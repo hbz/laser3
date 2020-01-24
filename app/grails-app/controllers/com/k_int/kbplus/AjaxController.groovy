@@ -790,6 +790,12 @@ class AjaxController {
   }
 
   @Secured(['ROLE_USER'])
+  def lookupSubscriptions_IndendedAndCurrent() {
+      params.status = [RDStore.SUBSCRIPTION_INTENDED, RDStore.SUBSCRIPTION_CURRENT]
+      render controlledListService.getSubscriptions(params) as JSON
+  }
+
+  @Secured(['ROLE_USER'])
   def lookupSubscriptionPackages() {
       render controlledListService.getSubscriptionPackages(params) as JSON
   }
