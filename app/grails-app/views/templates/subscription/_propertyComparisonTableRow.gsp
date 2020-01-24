@@ -17,10 +17,12 @@
                 </div>
             </div>
         </th>
-        %{--th HEREDITY--}%
-        <th class="center aligned">
-            <g:message code="subscription.details.copyElementsIntoSubscription.audit"/>
-        </th>
+        <g:if test="${isConsortialSubs}">
+            %{--th HEREDITY--}%
+            <th class="center aligned">
+                <g:message code="subscription.details.copyElementsIntoSubscription.audit"/>
+            </th>
+        </g:if>
         %{--th ACTION--}%
         <th class="center aligned">
             <input type="checkbox" class="select-all"  onclick="selectAllTake(this);" checked="${true}" />
@@ -107,19 +109,21 @@
                 </div>
             </g:else>
         </td>
+        <g:if test="${isConsortialSubs}">
         %{--HEREDITY--}%
-        <td class="center aligned">
-            <g:if test="${propValues.containsKey(sourceSubscription)}">
-                <g:each var="propValue" in="${propValuesForSourceSub}">
-                    <g:if test="${propValue instanceof com.k_int.kbplus.SubscriptionCustomProperty}">
-                        <div class="ui checkbox la-toggle-radio la-inherit">
-                            <input type="checkbox" name="auditProperties" value="${propValue.id}" ${!AuditConfig.getConfig(propValue) ? '' : 'checked' }/>
-                        </div>
-                        <br>
-                    </g:if>
-                </g:each>
-            </g:if>
-        </td>
+            <td class="center aligned">
+                <g:if test="${propValues.containsKey(sourceSubscription)}">
+                    <g:each var="propValue" in="${propValuesForSourceSub}">
+                        <g:if test="${propValue instanceof com.k_int.kbplus.SubscriptionCustomProperty}">
+                            <div class="ui checkbox la-toggle-radio la-inherit">
+                                <input type="checkbox" name="auditProperties" value="${propValue.id}" ${!AuditConfig.getConfig(propValue) ? '' : 'checked' }/>
+                            </div>
+                            <br>
+                        </g:if>
+                    </g:each>
+                </g:if>
+            </td>
+        </g:if>
         %{--ACTION--}%
         <td class="center aligned">
             <g:if test="${propValues.containsKey(sourceSubscription)}">
@@ -171,15 +175,22 @@
                             </g:if>
                             <g:if test="${propValues.get(targetSubscription)?.size() > 1}"><br></g:if>
                         </div>
-                        <g:if test="${propValue instanceof com.k_int.kbplus.SubscriptionCustomProperty}">
-                            <div class="la-copyElements-flex-item">
-                                <g:if test="${! AuditConfig.getConfig(propValue)}">
-                                    <i class="icon la-thumbtack slash la-js-editmode-icon"></i>
-                                </g:if>
-                                <g:else>
-                                    <i class="thumbtack icon la-js-editmode-icon"></i>
-                                </g:else>
-                            </div>
+
+                        <g:if test="${isConsortialSubs}">
+                            <g:if test="${propValue instanceof com.k_int.kbplus.SubscriptionCustomProperty}">
+                                <div class="la-copyElements-flex-item">
+                                    <g:if test="${! AuditConfig.getConfig(propValue)}">
+                                        <span data-position="top left"  class="la-popup-tooltip la-delay" data-content="${message(code:'property.audit.on.tooltip')}">
+                                            <i class="icon la-thumbtack slash la-js-editmode-icon"></i>
+                                        </span>
+                                    </g:if>
+                                    <g:else>
+                                        <span data-position="top left"  class="la-popup-tooltip la-delay" data-content="${message(code:'property.audit.off.tooltip')}">
+                                            <i class="thumbtack icon la-js-editmode-icon"></i>
+                                        </span>
+                                    </g:else>
+                                </div>
+                            </g:if>
                         </g:if>
                         <g:if test="${propValues.get(targetSubscription)?.size() > 1}"><br></g:if>
                     </div>

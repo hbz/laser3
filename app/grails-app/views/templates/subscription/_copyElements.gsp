@@ -4,7 +4,15 @@
 
 <semui:form>
 
-    <g:form action="copyElementsIntoRenewalSubscription" controller="survey" id="${params.id}"
+    <g:if test="${controllerName != 'survey' && !isRenewSub}">
+        <g:render template="selectSourceAndTargetSubscription" model="[
+                sourceSubscription: sourceSubscription,
+                targetSubscription: targetSubscription,
+                allSubscriptions_readRights: allSubscriptions_readRights,
+                allSubscriptions_writeRights: allSubscriptions_writeRights]"/>
+    </g:if>
+
+    <g:form action="${actionName}" controller="${controllerName}" id="${params.id}"
             params="[workFlowPart: workFlowPart, sourceSubscriptionId: sourceSubscriptionId, targetSubscriptionId: targetSubscription?.id, isRenewSub: isRenewSub]"
             method="post" class="ui form newLicence">
         <table class="ui celled table table-tworow la-table">
@@ -13,10 +21,12 @@
                     <th class="six wide">
                         <g:if test="${sourceSubscription}"><g:link controller="subscription" action="show" id="${sourceSubscription?.id}">${sourceSubscription?.dropdownNamingConvention()}</g:link></g:if>
                     </th>
-                    %{--th SHARE--}%
-                    <th class="center aligned">
-                        <g:message code="subscription.details.copyElementsIntoSubscription.share"/>
-                    </th>
+                    <g:if test="${isConsortialSubs}">
+                                %{--th SHARE--}%
+                                <th class="center aligned">
+                                    <g:message code="subscription.details.copyElementsIntoSubscription.share"/>
+                                </th>
+                    </g:if>
                     <th class="one wide center aligned"><input type="checkbox" name="checkAllCopyCheckboxes" data-action="copy" onClick="toggleAllCheckboxes(this)" checked />
                     <th class="six wide">
                         <g:if test="${targetSubscription}"><g:link controller="subscription" action="show" id="${targetSubscription?.id}">${targetSubscription?.dropdownNamingConvention()}</g:link></g:if>
@@ -38,9 +48,11 @@
                             ${sourceSubscription?.endDate ? (' - ' + formatDate(date: sourceSubscription?.endDate, format: message(code: 'default.date.format.notime'))) : ''}
                         </div>
                     </td>
-                    %{--SHARE--}%
-                    <td class="center aligned">
-                    </td>
+                    <g:if test="${isConsortialSubs}">
+                        %{--SHARE--}%
+                        <td class="center aligned">
+                        </td>
+                    </g:if>
                     %{--AKTIONEN:--}%
                     <td class="center aligned">
                         <g:if test="${sourceSubscription?.startDate || sourceSubscription?.endDate}">
@@ -79,9 +91,11 @@
                         </g:if>
                     </div>
                 </td>
-                %{--SHARE--}%
-                <td class="center aligned">
-                </td>
+                <g:if test="${isConsortialSubs}">
+                        %{--SHARE--}%
+                        <td class="center aligned">
+                        </td>
+                </g:if>
                 %{--AKTIONEN:--}%
                 <td class="center aligned">
                     <g:if test="${sourceSubscription?.owner}">
@@ -130,19 +144,20 @@
                         </g:each>
                     </div>
                 </td>
-                %{--SHARE--}%
-                <td class="center aligned">
-                    <g:each in="${source_visibleOrgRelations}" var="source_role">
-                        <g:if test="${source_role.org}">
-                            <div class="ui checkbox la-toggle-radio la-share">
-                                <input class="ui checkbox" type="checkbox" name="toggleShareOrgRoles" value="${source_role.class.name}:${source_role.id}" ${source_role.isShared ? 'checked': ''} />
-                            </div>
-                            <br>
-                        </g:if>
-                    </g:each>
+                <g:if test="${isConsortialSubs}">
+                        %{--SHARE--}%
+                        <td class="center aligned">
+                            <g:each in="${source_visibleOrgRelations}" var="source_role">
+                                <g:if test="${source_role.org}">
+                                    <div class="ui checkbox la-toggle-radio la-share">
+                                        <input class="ui checkbox" type="checkbox" name="toggleShareOrgRoles" value="${source_role.class.name}:${source_role.id}" ${source_role.isShared ? 'checked': ''} />
+                                    </div>
+                                    <br>
+                                </g:if>
+                            </g:each>
 
-                </td>
-
+                        </td>
+                </g:if>
 
                 </td>
                 %{--AKTIONEN:--}%
@@ -168,19 +183,22 @@
                                     <g:link controller="organisation" action="show" target="_blank" id="${target_role.org.id}">
                                         ${target_role?.org?.name}
                                     </g:link>
+                                    <g:if test="${isConsortialSubs}">
+                                            <div class="right aligned wide column">
+                                                <g:if test="${target_role.isShared}">
+                                                    <span data-position="top left"  class="la-popup-tooltip la-delay" data-content="${message(code:'property.share.tooltip.on')}">
+                                                        <i class="la-share icon la-js-editmode-icon"></i>
+                                                    </span>
 
-                                        <div class="right aligned wide column">
-                                            <g:message code="subscription.details.copyElementsIntoSubscription.share"/>:
+                                                </g:if>
+                                                <g:else>
+                                                    <span data-position="top left"  class="la-popup-tooltip la-delay" data-content="${message(code:'property.share.tooltip.off')}">
+                                                        <i class="la-share slash icon la-js-editmode-icon"></i>
+                                                    </span>
+                                                </g:else>
 
-                                            <g:if test="${target_role.isShared}">
-                                                <i class="la-share icon la-js-editmode-icon"></i>
-                                            </g:if>
-                                            <g:else>
-                                                <i class="la-share slash icon la-js-editmode-icon"></i>
-                                            </g:else>
-
-                                        </div>
-
+                                            </div>
+                                    </g:if>
                                     <br>
                                 </div>
                             </g:if>
@@ -198,23 +216,72 @@
                     </g:each>
                 </td>
             </tr>
+            <tr>
+                <td name="subscription.takeIdentifier.source">
+                    <b><i class="barcode icon"></i>&nbsp${message(code: 'default.identifiers.label')}:</b><br />
+                    <g:each in="${sourceIdentifiers}" var="ident">
+                        <b>${ident.ns.ns}:</b>&nbsp${ident.value}<br />
+                    </g:each>
+                </td>
+                <g:if test="${isConsortialSubs}">
+                %{--SHARE--}%
+                    <td class="center aligned">
+                    </td>
+                </g:if>
+
+                %{--COPY:--}%
+                <td class="center aligned">
+                    <g:each in="${sourceIdentifiers}" var="ident">
+                        <div data-id="${ident.id}" class="la-element">
+                            <div class="ui checkbox la-toggle-radio la-replace">
+                                <g:checkBox name="subscription.takeIdentifierIds" value="${ident.id}" data-action="copy"  />
+                            </div>
+                        </div>
+                    </g:each>
+                </td>
+                <td name="subscription.takeIdentifier.target">
+                    <b><i class="barcode icon"></i>&nbsp${message(code: 'default.identifiers.label')}:</b><br />
+                    <g:each in="${targetIdentifiers}" var="ident">
+                        <b>${ident.ns.ns}:</b>&nbsp${ident.value}<br />
+                    </g:each>
+                </td>
+                %{--DELETE:--}%
+                <td>
+                    <g:each in="${targetIdentifiers}" var="ident">
+                        <div data-id="${ident.id}" class="la-element">
+                            <div class="ui checkbox la-toggle-radio la-noChange">
+                                <g:checkBox name="subscription.deleteIdentifierIds" value="${ident.id}" data-action="delete" checked="${false}" />
+                            </div>
+                        </div>
+                    </g:each>
+                </td>
+            </tr>
             </tbody>
         </table>
         <g:set var="submitButtonText" value="${isRenewSub?
                 message(code: 'subscription.renewSubscriptionConsortia.workFlowSteps.nextStep') :
                 message(code: 'subscription.details.copyElementsIntoSubscription.copyDeleteElements.button') }" />
-        <div class="two fields">
-            <div class="eight wide field" style="text-align: left;">
-                <g:set var="surveyConfig" value="${com.k_int.kbplus.SurveyConfig.findBySubscriptionAndIsSubscriptionSurveyFix(Subscription.get(sourceSubscriptionId), true)}" />
-                <g:link action="renewalWithSurvey" id="${surveyConfig?.surveyInfo?.id}" params="[surveyConfigID: surveyConfig?.id]" class="ui button js-click-control">
-                    <g:message code="renewalWithSurvey.back"/>
-                </g:link>
+
+        <g:if test="${controllerName == 'survey'}">
+            <div class="two fields">
+                <div class="eight wide field" style="text-align: left;">
+                    <g:set var="surveyConfig" value="${com.k_int.kbplus.SurveyConfig.findBySubscriptionAndIsSubscriptionSurveyFix(Subscription.get(sourceSubscriptionId), true)}" />
+                    <g:link action="renewalWithSurvey" id="${surveyConfig?.surveyInfo?.id}" params="[surveyConfigID: surveyConfig?.id]" class="ui button js-click-control">
+                        <g:message code="renewalWithSurvey.back"/>
+                    </g:link>
+                </div>
+                <div class="eight wide field" style="text-align: right;">
+                    <g:set var="submitDisabled" value="${(sourceSubscription && targetSubscription)? '' : 'disabled'}"/>
+                    <input type="submit" class="ui button js-click-control" value="${submitButtonText}" onclick="return jsConfirmation()"  ${submitDisabled}/>
+                </div>
             </div>
-            <div class="eight wide field" style="text-align: right;">
+        </g:if>
+        <g:else>
+            <div class="sixteen wide field" style="text-align: right;">
                 <g:set var="submitDisabled" value="${(sourceSubscription && targetSubscription)? '' : 'disabled'}"/>
-                <input type="submit" class="ui button js-click-control" value="${submitButtonText}" onclick="return jsConfirmation()"  ${submitDisabled}/>
+                <input type="submit" class="ui button js-click-control" value="${submitButtonText}" onclick="return jsConfirmation()" ${submitDisabled}/>
             </div>
-        </div>
+        </g:else>
     </g:form>
 </semui:form>
 
