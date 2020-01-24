@@ -4,7 +4,11 @@
 
 2012    23.01.2020  hbz-dev     Anja    Feature     PerformanceImprovement (GASCO-Monitor, currentProviders, createSubscriptionSurvey, createIssueEntitlementsSurvey)
 
---      23.01.2020   hbz-dev    David   Feature     Importing Refdata and PropertyDefinitions via CSV
+1947    23.01.2020  hbz-dev     Anja    Feature     Meine Lizenzen: neuer Filter für Konsortialstelle sichtbar für Einrichtungen
+
+--      23.01.2020  hbz-dev     David   Feature     Importing Refdata and PropertyDefinitions via CSV
+
+1943    22.01.2020  hbz-dev     Anja    Feature     Subskription-Elemente kopieren: Identifikator lassen sich nun auch kopieren
 
 2088    21.01.2020  rc1.2       Moe     Bug         Keine Alert Mail mehr, wenn Umfrage abgeschlossen ist
 
