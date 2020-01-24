@@ -711,11 +711,7 @@ from License as l where (
             log.debug('orgIds from cache')
         }
         else {
-            List<Org> providers = orgTypeService.getCurrentProviders( contextService.getOrg())
-            List<Org> agencies   = orgTypeService.getCurrentAgencies( contextService.getOrg())
-            providers.addAll(agencies)
-            orgIds = providers.collect{ it.id }.unique()
-
+            orgIds = orgTypeService.getCurrentOrgIdsOfProvidersAndAgencies( contextService.getOrg() )
             cache.put('orgIds', orgIds)
         }
 
