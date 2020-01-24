@@ -849,7 +849,7 @@ from Subscription as s where
     if ( params.reference && ( ! params.reference.trim().equals('') ) ) {
 
       def template_license_type = RDStore.LICENSE_TYPE_TEMPLATE
-      def license_status_current = RDStore.LICENSE_STATUS_CURRENT
+      def license_status_current = RDStore.LICENSE_CURRENT
       
       def new_template_license = new License(reference:params.reference,
                                              type:template_license_type,

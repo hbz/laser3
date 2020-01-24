@@ -458,4 +458,141 @@ update property_definition set pd_rdc = 'y.n.u' where pd_rdc = 'YNU';
 		}
 	}
 
+	changeSet(author: "kloberd (modified)", id: "1579264687321-22") {
+		grailsChange {
+			change {
+				sql.execute("""
+update survey_property set surpro_refdata_category = 'access.choice.remote' where surpro_refdata_category = 'Access choice remote';
+update survey_property set surpro_refdata_category = 'access.method' where surpro_refdata_category = 'Access Method';
+update survey_property set surpro_refdata_category = 'access.method.ip' where surpro_refdata_category = 'Access Method IP';
+update survey_property set surpro_refdata_category = 'access.point.type' where surpro_refdata_category = 'Access Point Type';
+update survey_property set surpro_refdata_category = 'address.type' where surpro_refdata_category = 'AddressType';
+update survey_property set surpro_refdata_category = 'authority' where surpro_refdata_category = 'Authority';
+update survey_property set surpro_refdata_category = 'category.a.f' where surpro_refdata_category = 'Category A-F';
+update survey_property set surpro_refdata_category = 'cluster.role' where surpro_refdata_category = 'Cluster Role';
+update survey_property set surpro_refdata_category = 'cluster.type' where surpro_refdata_category = 'ClusterType';
+update survey_property set surpro_refdata_category = 'combo.status' where surpro_refdata_category = 'Combo Status';
+update survey_property set surpro_refdata_category = 'combo.type' where surpro_refdata_category = 'Combo Type';
+update survey_property set surpro_refdata_category = 'concurrent.access' where surpro_refdata_category = 'ConcurrentAccess';
+update survey_property set surpro_refdata_category = 'confidentiality' where surpro_refdata_category = 'Confidentiality';
+update survey_property set surpro_refdata_category = 'contact.content.type' where surpro_refdata_category = 'ContactContentType';
+update survey_property set surpro_refdata_category = 'contact.type' where surpro_refdata_category = 'ContactType';
+update survey_property set surpro_refdata_category = 'core.status' where surpro_refdata_category = 'CoreStatus';
+update survey_property set surpro_refdata_category = 'cost.configuration' where surpro_refdata_category = 'Cost configuration';
+update survey_property set surpro_refdata_category = 'cost.item.type' where surpro_refdata_category = 'CostItem.Type';
+update survey_property set surpro_refdata_category = 'cost.item.category' where surpro_refdata_category = 'CostItemCategory';
+update survey_property set surpro_refdata_category = 'cost.item.element' where surpro_refdata_category = 'CostItemElement';
+update survey_property set surpro_refdata_category = 'cost.item.status' where surpro_refdata_category = 'CostItemStatus';
+update survey_property set surpro_refdata_category = 'country' where surpro_refdata_category = 'Country';
+update survey_property set surpro_refdata_category = 'creator.type' where surpro_refdata_category = 'CreatorType';
+update survey_property set surpro_refdata_category = 'currency' where surpro_refdata_category = 'Currency';
+update survey_property set surpro_refdata_category = 'customer.identifier.type' where surpro_refdata_category = 'CustomerIdentifier.Type';
+update survey_property set surpro_refdata_category = 'document.context.status' where surpro_refdata_category = 'Document Context Status';
+update survey_property set surpro_refdata_category = 'document.type' where surpro_refdata_category = 'Document Type';
+update survey_property set surpro_refdata_category = 'existence' where surpro_refdata_category = 'Existence';
+update survey_property set surpro_refdata_category = 'fact.metric' where surpro_refdata_category = 'FactMetric';
+update survey_property set surpro_refdata_category = 'fact.type' where surpro_refdata_category = 'FactType';
+update survey_property set surpro_refdata_category = 'federal.state' where surpro_refdata_category = 'Federal State';
+update survey_property set surpro_refdata_category = 'funder.type' where surpro_refdata_category = 'Funder Type';
+update survey_property set surpro_refdata_category = 'gender' where surpro_refdata_category = 'Gender';
+update survey_property set surpro_refdata_category = 'ie.accept.status' where surpro_refdata_category = 'IE Accept Status';
+update survey_property set surpro_refdata_category = 'ie.access.status' where surpro_refdata_category = 'IE Access Status';
+update survey_property set surpro_refdata_category = 'ie.medium' where surpro_refdata_category = 'IEMedium';
+update survey_property set surpro_refdata_category = 'ill.code' where surpro_refdata_category = 'Ill code';
+update survey_property set surpro_refdata_category = 'indemnification' where surpro_refdata_category = 'Indemnification';
+update survey_property set surpro_refdata_category = 'invoicing' where surpro_refdata_category = 'Invoicing';
+update survey_property set surpro_refdata_category = 'ipv4.address.format' where surpro_refdata_category = 'IPv4 Address Format';
+update survey_property set surpro_refdata_category = 'ipv6.address.format' where surpro_refdata_category = 'IPv6 Address Format';
+update survey_property set surpro_refdata_category = 'language' where surpro_refdata_category = 'Language';
+update survey_property set surpro_refdata_category = 'library.network' where surpro_refdata_category = 'Library Network';
+update survey_property set surpro_refdata_category = 'license.category' where surpro_refdata_category = 'LicenseCategory';
+update survey_property set surpro_refdata_category = 'license.remote.access' where surpro_refdata_category = 'Lincense.RemoteAccess';
+update survey_property set surpro_refdata_category = 'library.type' where surpro_refdata_category = 'Library Type';
+update survey_property set surpro_refdata_category = 'license.status' where surpro_refdata_category = 'License Status';
+update survey_property set surpro_refdata_category = 'license.type' where surpro_refdata_category = 'License Type';
+update survey_property set surpro_refdata_category = 'license.arc.archival.copy.content' where surpro_refdata_category = 'License.Arc.ArchivalCopyContent';
+update survey_property set surpro_refdata_category = 'license.arc.archival.copy.cost' where surpro_refdata_category = 'License.Arc.ArchivalCopyCost';
+update survey_property set surpro_refdata_category = 'license.arc.archival.copy.time' where surpro_refdata_category = 'License.Arc.ArchivalCopyTime';
+update survey_property set surpro_refdata_category = 'license.arc.archival.copy.transmission.format' where surpro_refdata_category = 'License.Arc.ArchivalCopyTransmissionFormat';
+update survey_property set surpro_refdata_category = 'license.arc.authorized' where surpro_refdata_category = 'License.Arc.Authorized';
+update survey_property set surpro_refdata_category = 'license.arc.hosting.restriction' where surpro_refdata_category = 'License.Arc.HostingRestriction';
+update survey_property set surpro_refdata_category = 'license.arc.hosting.solution' where surpro_refdata_category = 'License.Arc.HostingSolution';
+update survey_property set surpro_refdata_category = 'license.arc.hosting.time' where surpro_refdata_category = 'License.Arc.HostingTime';
+update survey_property set surpro_refdata_category = 'license.arc.payment.note' where surpro_refdata_category = 'License.Arc.PaymentNote';
+update survey_property set surpro_refdata_category = 'license.arc.title.transfer.regulation' where surpro_refdata_category = 'License.Arc.TitletransferRegulation';
+update survey_property set surpro_refdata_category = 'license.arc.title.transfer.regulation' where surpro_refdata_category = 'License.Arc.TitleTransferRegulation';
+update survey_property set surpro_refdata_category = 'license.oa.corresponding.author.identification' where surpro_refdata_category = 'License.OA.CorrespondingAuthorIdentification';
+update survey_property set surpro_refdata_category = 'license.oa.earc.version' where surpro_refdata_category = 'License.OA.eArcVersion';
+update survey_property set surpro_refdata_category = 'license.oa.license.to.publish' where surpro_refdata_category = 'License.OA.LicenseToPublish';
+update survey_property set surpro_refdata_category = 'license.oa.receiving.modalities' where surpro_refdata_category = 'License.OA.ReceivingModalities';
+update survey_property set surpro_refdata_category = 'license.oa.repository' where surpro_refdata_category = 'License.OA.Repository';
+update survey_property set surpro_refdata_category = 'license.oa.type' where surpro_refdata_category = 'License.OA.Type';
+update survey_property set surpro_refdata_category = 'license.remote.access2' where surpro_refdata_category = 'License.RemoteAccess';
+update survey_property set surpro_refdata_category = 'license.statistics.delivery' where surpro_refdata_category = 'License.Statistics.Delivery';
+update survey_property set surpro_refdata_category = 'license.statistics.format' where surpro_refdata_category = 'License.Statistics.Format';
+update survey_property set surpro_refdata_category = 'license.statistics.frequency' where surpro_refdata_category = 'License.Statistics.Frequency';
+update survey_property set surpro_refdata_category = 'license.statistics.standards' where surpro_refdata_category = 'License.Statistics.Standards';
+update survey_property set surpro_refdata_category = 'license.statistics.user.creds' where surpro_refdata_category = 'License.Statistics.UserCreds';
+update survey_property set surpro_refdata_category = 'link.type' where surpro_refdata_category = 'Link Type';
+update survey_property set surpro_refdata_category = 'mail.template.language' where surpro_refdata_category = 'MailTemplate Language';
+update survey_property set surpro_refdata_category = 'mail.template.type' where surpro_refdata_category = 'MailTemplate Type';
+update survey_property set surpro_refdata_category = 'number.type' where surpro_refdata_category = 'Number Type';
+update survey_property set surpro_refdata_category = 'organisational.role' where surpro_refdata_category = 'Organisational Role';
+update survey_property set surpro_refdata_category = 'org.sector' where surpro_refdata_category = 'OrgSector';
+update survey_property set surpro_refdata_category = 'org.status' where surpro_refdata_category = 'OrgStatus';
+update survey_property set surpro_refdata_category = 'org.type' where surpro_refdata_category = 'OrgRoleType';
+update survey_property set surpro_refdata_category = 'package.status' where surpro_refdata_category = 'Package Status';
+update survey_property set surpro_refdata_category = 'package.breakable' where surpro_refdata_category = 'Package.Breakable';
+update survey_property set surpro_refdata_category = 'package.consistent' where surpro_refdata_category = 'Package.Consistent';
+update survey_property set surpro_refdata_category = 'package.fixed' where surpro_refdata_category = 'Package.Fixed';
+update survey_property set surpro_refdata_category = 'package.list.status' where surpro_refdata_category = 'Package.ListStatus';
+update survey_property set surpro_refdata_category = 'package.scope' where surpro_refdata_category = 'Package.Scope';
+update survey_property set surpro_refdata_category = 'package.type' where surpro_refdata_category = 'Package.Type';
+update survey_property set surpro_refdata_category = 'pending.change.status' where surpro_refdata_category = 'PendingChangeStatus';
+update survey_property set surpro_refdata_category = 'permissions' where surpro_refdata_category = 'Permissions';
+update survey_property set surpro_refdata_category = 'person.contact.type' where surpro_refdata_category = 'Person Contact Type';
+update survey_property set surpro_refdata_category = 'person.function' where surpro_refdata_category = 'Person Function';
+update survey_property set surpro_refdata_category = 'person.position' where surpro_refdata_category = 'Person Position';
+update survey_property set surpro_refdata_category = 'person.responsibility' where surpro_refdata_category = 'Person Responsibility';
+update survey_property set surpro_refdata_category = 'platform.status' where surpro_refdata_category = 'Platform Status';
+update survey_property set surpro_refdata_category = 'reminder.method' where surpro_refdata_category = 'ReminderMethod';
+update survey_property set surpro_refdata_category = 'reminder.trigger' where surpro_refdata_category = 'ReminderTrigger';
+update survey_property set surpro_refdata_category = 'reminder.unit' where surpro_refdata_category = 'ReminderUnit';
+update survey_property set surpro_refdata_category = 'semester' where surpro_refdata_category = 'Semester';
+update survey_property set surpro_refdata_category = 'share.configuration' where surpro_refdata_category = 'Share Configuration';
+update survey_property set surpro_refdata_category = 'sim.user.number' where surpro_refdata_category = 'Sim-User Number';
+update survey_property set surpro_refdata_category = 'subscription.form' where surpro_refdata_category = 'Subscription Form';
+update survey_property set surpro_refdata_category = 'subscription.resource' where surpro_refdata_category = 'Subscription Resource';
+update survey_property set surpro_refdata_category = 'subscription.status' where surpro_refdata_category = 'Subscription Status';
+update survey_property set surpro_refdata_category = 'subscription.type' where surpro_refdata_category = 'Subscription Type';
+update survey_property set surpro_refdata_category = 'survey.status' where surpro_refdata_category = 'Survey Status';
+update survey_property set surpro_refdata_category = 'survey.type' where surpro_refdata_category = 'Survey Type';
+update survey_property set surpro_refdata_category = 'task.priority' where surpro_refdata_category = 'Task Priority';
+update survey_property set surpro_refdata_category = 'task.status' where surpro_refdata_category = 'Task Status';
+update survey_property set surpro_refdata_category = 'tax.type' where surpro_refdata_category = 'TaxType';
+update survey_property set surpro_refdata_category = 'termination.condition' where surpro_refdata_category = 'Termination Condition';
+update survey_property set surpro_refdata_category = 'ticket.category' where surpro_refdata_category = 'Ticket.Category';
+update survey_property set surpro_refdata_category = 'ticket.status' where surpro_refdata_category = 'Ticket.Status';
+update survey_property set surpro_refdata_category = 'tipp.access.status' where surpro_refdata_category = 'TIPP Access Status';
+update survey_property set surpro_refdata_category = 'tipp.status' where surpro_refdata_category = 'TIPP Status';
+update survey_property set surpro_refdata_category = 'tipp.status.reason' where surpro_refdata_category = 'Tipp.StatusReason';
+update survey_property set surpro_refdata_category = 'title.type' where surpro_refdata_category = 'Title Type';
+update survey_property set surpro_refdata_category = 'tipp.delayed.oa' where surpro_refdata_category = 'TitleInstancePackagePlatform.DelayedOA';
+update survey_property set surpro_refdata_category = 'tipp.hybrid.oa' where surpro_refdata_category = 'TitleInstancePackagePlatform.HybridOA';
+update survey_property set surpro_refdata_category = 'tipp.payment.type' where surpro_refdata_category = 'TitleInstancePackagePlatform.PaymentType';
+update survey_property set surpro_refdata_category = 'title.status' where surpro_refdata_category = 'TitleInstanceStatus';
+update survey_property set surpro_refdata_category = 'transform.format' where surpro_refdata_category = 'Transform Format';
+update survey_property set surpro_refdata_category = 'transform.type' where surpro_refdata_category = 'Transform Type';
+update survey_property set surpro_refdata_category = 'usage.status' where surpro_refdata_category = 'UsageStatus';
+update survey_property set surpro_refdata_category = 'user.setting.dashboard.tab' where surpro_refdata_category = 'User.Settings.Dashboard.Tab';
+update survey_property set surpro_refdata_category = 'user.setting.theme' where surpro_refdata_category = 'User.Settings.Theme';
+update survey_property set surpro_refdata_category = 'y.n' where surpro_refdata_category = 'YN';
+update survey_property set surpro_refdata_category = 'y.n.o' where surpro_refdata_category = 'YNO';
+update survey_property set surpro_refdata_category = 'y.n.u' where surpro_refdata_category = 'YNU';
+""")
+			}
+			rollback {}
+		}
+	}
+
 }

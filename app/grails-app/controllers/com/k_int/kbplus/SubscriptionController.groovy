@@ -3105,8 +3105,6 @@ class SubscriptionController extends AbstractDebugController {
             RefdataValue licensee_role = OR_LICENSEE
             RefdataValue licensee_cons_role = OR_LICENSING_CONSORTIUM
 
-            RefdataValue template_license_type = RefdataValue.getByValueAndCategory('Template', RDConstants.LICENSE_TYPE)
-
             Org org
             if(subscription.instanceOf) {
                 if(subscription.getConsortia())

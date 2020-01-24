@@ -28,10 +28,10 @@
             ${message(code:'propertyDefinition.private.info')}
         </div>
         <g:if test="${language?.toLowerCase() in ['de_de', 'de']}">
-            <g:set var="value_SUBSTITUTE" value="valueDe" />
+            <g:set var="SUBSTITUTE" value="de" />
         </g:if>
         <g:else>
-            <g:set var="value_SUBSTITUTE" value="valueEn" />
+            <g:set var="SUBSTITUTE" value="en" />
         </g:else>
 
         <div class="ui styled fluid accordion">
@@ -56,8 +56,7 @@
                             </thead>
                             <tbody>
                                 <g:each in="${entry.value}" var="pd">
-                                    <g:set var="pdI10nName" value="${I10nTranslation.createI10nOnTheFly(pd, 'name')}" />
-                                    <g:set var="pdI10nExpl" value="${I10nTranslation.createI10nOnTheFly(pd, 'expl')}" />
+                                    <tr>
                                         <td>
                                             <g:if test="${pd.isHardData}">
                                                 <span data-position="top left"  class="la-popup-tooltip la-delay" data-content="${message(code:'default.hardData.tooltip')}">
@@ -85,10 +84,10 @@
                                             </g:else>
                                         </td>
                                         <td>
-                                            <semui:xEditable owner="${pdI10nName}" field="${value_SUBSTITUTE}" />
+                                            <semui:xEditable owner="${pd}" field="name_${SUBSTITUTE}" />
                                         </td>
                                         <td>
-                                            <semui:xEditable owner="${pdI10nExpl}" field="${value_SUBSTITUTE}" type="textarea" />
+                                            <semui:xEditable owner="${pd}" field="expl_${SUBSTITUTE}" type="textarea" />
                                         </td>
                                         <td>
                                             ${PropertyDefinition.getLocalizedValue(pd?.type)}

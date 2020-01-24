@@ -3534,23 +3534,16 @@ class SurveyController {
 
                 propDef = surveyProperty ? PropertyDefinition.getByNameAndDescr(surveyProperty.name, 'Subscription Property') : null
                 if (!propDef && surveyProperty) {
-                    propDef = PropertyDefinition.loc(
-                            surveyProperty.name,
-                            'Subscription Property',
-                            surveyProperty.type,
-                            (surveyProperty.type == RefdataValue.toString()) ? RefdataCategory.getByDesc(surveyProperty.refdataCategory) : null,
-                            surveyProperty.expl,
-                            null,
-                            PropertyDefinition.FALSE,
-                            null)
 
-                    if (propDef?.hasErrors()) {
-                        log.error(propDef.errors)
-                    } else {
-                        propDef.save(flush: true)
-                        I10nTranslation.copyI10n(surveyProperty, 'name', propDef)
-                        I10nTranslation.copyI10n(surveyProperty, 'expl', propDef)
-                    }
+                    Map<String, Object> map = [
+                            token       : surveyProperty.name,
+                            category    : 'Subscription Property',
+                            type        : surveyProperty.type,
+                            rdc         : (surveyProperty.type == RefdataValue.toString()) ? surveyProperty.refdataCategory : null,
+                            i10n        : [de: surveyProperty.getI10n('name', 'de'), en: surveyProperty.getI10n('name', 'en')],
+                            expl        : [de: surveyProperty.getI10n('expl', 'de'), en: surveyProperty.getI10n('expl', 'en')]
+                    ]
+                    propDef = PropertyDefinition.construct(map)
                 }
 
             } else {
