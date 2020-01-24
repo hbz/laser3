@@ -238,7 +238,7 @@ class PropertyDefinition extends AbstractI10nOverride implements Serializable , 
         pd.isHardData = hardData
         pd.save(flush: true)
 
-        I10nTranslation.createOrUpdateI10n(pd, 'descr', descr)
+        // I10nTranslation.createOrUpdateI10n(pd, 'descr', descr)
 
         pd
     }
