@@ -84,10 +84,7 @@ class SurveyController {
 
         params.tab = params.tab ?: 'created'
 
-        List<Org> providers = orgTypeService.getCurrentProviders( contextService.getOrg())
-        List<Org> agencies   = orgTypeService.getCurrentAgencies( contextService.getOrg())
-        providers.addAll(agencies)
-        result.providers = providers.unique { a, b -> a?.id <=> b?.id }
+        result.providers = orgTypeService.getCurrentOrgsOfProvidersAndAgencies( contextService.org )
 
         DateFormat sdFormat = new DateUtil().getSimpleDateFormat_NoTime()
         def fsq = filterService.getSurveyConfigQueryConsortia(params, sdFormat, result.institution)
@@ -195,11 +192,7 @@ class SurveyController {
             }
         }
 
-        List<Org> providers = orgTypeService.getCurrentProviders(contextService.getOrg())
-        List<Org> agencies = orgTypeService.getCurrentAgencies(contextService.getOrg())
-
-        providers.addAll(agencies)
-        List orgIds = providers.unique().collect { it.id }
+        List orgIds = orgTypeService.getCurrentOrgIdsOfProvidersAndAgencies( contextService.org )
 
         result.providers = Org.findAllByIdInList(orgIds).sort { it?.name }
 
@@ -268,11 +261,7 @@ class SurveyController {
             }
         }
 
-        List<Org> providers = orgTypeService.getCurrentProviders(contextService.getOrg())
-        List<Org> agencies = orgTypeService.getCurrentAgencies(contextService.getOrg())
-
-        providers.addAll(agencies)
-        List orgIds = providers.unique().collect { it.id }
+        List orgIds = orgTypeService.getCurrentOrgIdsOfProvidersAndAgencies( contextService.org )
 
         result.providers = Org.findAllByIdInList(orgIds).sort { it?.name }
 

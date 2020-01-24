@@ -69,23 +69,6 @@ class OrgTypeService {
     }
 
     /**
-     * @return List<Org> with OrgRole relations (type 'Agency') depending on current (my) subscriptions
-     */
-    List<Org> getCurrentAgencies(Org context) {
-        List<Org> result = []
-        List<Subscription> current = getCurrentSubscriptions(context)
-
-        if (current) {
-            result = OrgRole.findAll("from OrgRole where sub in (:subscriptions) and roleType = :agency",
-                    [subscriptions: current,
-                     agency       : RDStore.OR_AGENCY]
-            ).collect { it.org }
-        }
-
-        result.unique()
-    }
-
-    /**
      * @return List<Org> with OrgRole relations (type 'Licensor') depending on current (my) subscriptions
      */
     List<Org> getCurrentLicensors(Org context) {
@@ -103,8 +86,31 @@ class OrgTypeService {
     }
 
     /**
+     * @Deprecated If possible, use getCurrentOrgsOfProvidersAndAgencies or getCurrentOrgIdsOfProvidersAndAgencies instead,
+     * because these new methods are significantly faster.
+     * @return List<Org> with OrgRole relations (type 'Agency') depending on current (my) subscriptions
+     */
+    @Deprecated
+    List<Org> getCurrentAgencies(Org context) {
+        List<Org> result = []
+        List<Subscription> current = getCurrentSubscriptions(context)
+
+        if (current) {
+            result = OrgRole.findAll("from OrgRole where sub in (:subscriptions) and roleType = :agency",
+                    [subscriptions: current,
+                     agency       : RDStore.OR_AGENCY]
+            ).collect { it.org }
+        }
+
+        result.unique()
+    }
+
+    /**
+     * @Deprecated If possible, use getCurrentOrgsOfProvidersAndAgencies or getCurrentOrgIdsOfProvidersAndAgencies instead
+     * because these new methods are significantly faster.
      * @return List<Org> with OrgRole relations (type 'Provider') depending on current (my) subscriptions
      */
+    @Deprecated
     List<Org> getCurrentProviders(Org context) {
         List<Org> result = []
         List<Subscription> current = getCurrentSubscriptions(context)
@@ -118,4 +124,39 @@ class OrgTypeService {
 
         result.unique()
     }
+
+    List<Org> getCurrentOrgsOfProvidersAndAgencies(Org context) {
+        List<Org> result = []
+        List<Subscription> current = getCurrentSubscriptions(context)
+
+        if (current) {
+            result = OrgRole.findAll(
+                    "from OrgRole where sub in (:subscriptions) and roleType in (:provider, :agency)",
+                    [subscriptions: current,
+                     provider     : RDStore.OR_PROVIDER,
+                     agency       : RDStore.OR_AGENCY]
+            ).collect { it.org }
+        }
+
+        result.unique()
+    }
+
+    List<Long> getCurrentOrgIdsOfProvidersAndAgencies(Org context) {
+        List<Long> result = []
+        List<Subscription> current = getCurrentSubscriptions(context)
+
+        if (current) {
+            result = OrgRole.executeQuery(""" 
+                     select distinct(o.id) from OrgRole orgr 
+                     left join orgr.org as o 
+                         where orgr.sub in (:subscriptions) 
+                         and orgr.roleType in (:provider, :agency)""",
+                    [subscriptions: current,
+                     provider     : RDStore.OR_PROVIDER,
+                     agency       : RDStore.OR_AGENCY]
+            )
+        }
+        result
+    }
+
 }
