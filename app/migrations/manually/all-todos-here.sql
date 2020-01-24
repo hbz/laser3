@@ -384,5 +384,18 @@ where i10n_reference_class like 'com.k_int.properties.PropertyDefinition%' and i
 delete from i10n_translation
 where i10n_reference_class like 'com.k_int.properties.PropertyDefinition%' and i10n_reference_field = 'expl';
 
+-- 2020-01-24
+-- ERMS-2038: migrate refdata value translations
+-- changesets in changelog-2020-01-24.groovy
 
+alter table refdata_value add column rdv_explanation_de text;
+alter table refdata_value add column rdv_explanation_en text;
+
+update refdata_value
+set rdv_explanation_de = i10n_value_de, rdv_explanation_en = i10n_value_en
+from i10n_translation
+where rdv_id = i10n_reference_id and i10n_reference_class = 'com.k_int.kbplus.RefdataValue' and i10n_reference_field = 'expl';
+
+delete from i10n_translation
+where i10n_reference_class like 'com.k_int.kbplus.RefdataValue%' and i10n_reference_field = 'expl';
 
