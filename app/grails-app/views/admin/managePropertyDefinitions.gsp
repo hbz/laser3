@@ -48,8 +48,6 @@
                         </thead>
                         <tbody>
                             <g:each in="${entry.value}" var="pd">
-                                <g:set var="pdI10nName"  value="${I10nTranslation.createI10nOnTheFly(pd, 'name')}" />
-                                <g:set var="pdI10nExpl" value="${I10nTranslation.createI10nOnTheFly(pd, 'expl')}" />
                                 <tr>
                                     <td>
                                         <g:if test="${pd.isHardData}">
@@ -84,34 +82,34 @@
                                     </td>
                                     <td>
                                         <g:if test="${!pd.isHardData && SpringSecurityUtils.ifAnyGranted('ROLE_YODA')}">
-                                            <semui:xEditable owner="${pdI10nName}" field="valueDe" />
+                                            <semui:xEditable owner="${pd}" field="name_de" />
                                         </g:if>
                                         <g:else>
-                                            ${pdI10nName?.valueDe}
+                                            ${pd.getI10n('name', 'de')}
                                         </g:else>
                                     </td>
                                     <td>
                                         <g:if test="${!pd.isHardData && SpringSecurityUtils.ifAnyGranted('ROLE_YODA')}">
-                                            <semui:xEditable owner="${pdI10nName}" field="valueEn" />
+                                            <semui:xEditable owner="${pd}" field="name_en" />
                                         </g:if>
                                         <g:else>
-                                            ${pdI10nName?.valueEn}
+                                            ${pd.getI10n('name', 'en')}
                                         </g:else>
                                     </td>
                                     <td>
                                         <g:if test="${!pd.isHardData && SpringSecurityUtils.ifAnyGranted('ROLE_YODA')}">
-                                            <semui:xEditable owner="${pdI10nExpl}" field="valueDe" type="textarea" />
+                                            <semui:xEditable owner="${pd}" field="expl_de" type="textarea" />
                                         </g:if>
                                         <g:else>
-                                            ${pdI10nExpl?.valueDe}
+                                            ${pd.getI10n('expl', 'de')}
                                         </g:else>
                                     </td>
                                     <td>
                                         <g:if test="${!pd.isHardData && SpringSecurityUtils.ifAnyGranted('ROLE_YODA')}">
-                                            <semui:xEditable owner="${pdI10nExpl}" field="valueEn" type="textarea" />
+                                            <semui:xEditable owner="${pd}" field="expl_en" type="textarea" />
                                         </g:if>
                                         <g:else>
-                                            ${pdI10nExpl?.valueEn}
+                                            ${pd.getI10n('expl', 'en')}
                                         </g:else>
                                     </td>
                                     <td>

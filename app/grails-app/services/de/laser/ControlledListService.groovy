@@ -74,11 +74,26 @@ class ControlledListService {
             queryString += " and s != :ctx "
         }
         if(params.status) {
-            if(params.status != 'FETCH_ALL') { //FETCH_ALL may be sent from finances/_filter.gsp
-                if(params.status instanceof RefdataValue)
-                    filter.status = params.status
-                else filter.status = RefdataValue.get(params.status)
-                queryString += " and s.status = :status "
+            if (params.status instanceof List){
+                if (params.status.size() > 0) {
+                    queryString += " and s.status in (:status) "
+                    if (params.status instanceof List<RefdataValue>){
+                        filter.status = params.status
+                    } else {
+                        List statusList = []
+                        params.status.each{
+                            statusList += RefdataValue.get(it)
+                        }
+                        filter.status = statusList
+                    }
+                }
+            } else {
+                if(params.status != 'FETCH_ALL') { //FETCH_ALL may be sent from finances/_filter.gsp
+                    if(params.status instanceof RefdataValue)
+                        filter.status = params.status
+                    else filter.status = RefdataValue.get(params.status)
+                    queryString += " and s.status = :status "
+                }
             }
         }
         else {
