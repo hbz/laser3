@@ -359,6 +359,9 @@ update property_definition set pd_rdc = 'y.n.u' where pd_rdc = 'YNU';
 alter table property_definition add column pd_name_de varchar(255);
 alter table property_definition add column pd_name_en varchar(255);
 
+update property_definition set pd_name_de = pd_name where pd_name is not null;
+update property_definition set pd_name_en = pd_name where pd_name is not null;
+
 update property_definition
 set pd_name_de = i10n_value_de, pd_name_en = i10n_value_en
 from i10n_translation

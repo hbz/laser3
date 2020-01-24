@@ -317,36 +317,6 @@ class PropertyDefinition extends AbstractI10nOverride implements Serializable , 
         GrailsHibernateUtil.unwrapIfProxy(newProp)
     }
 
-    @Deprecated
-    static PropertyDefinition loc(String name, String descr, String typeClass, RefdataCategory rdc, String expl, multipleOccurence, mandatory, Org tenant) {
-
-        typeIsValid(typeClass)
-
-        PropertyDefinition type = findWhere(
-            name:   name,
-            descr:  descr,
-            tenant: tenant
-        )
-
-        if (! type) {
-            log.debug("No PropertyDefinition match for ${name} : ${descr} ( ${expl} ) @ ${tenant?.name}. Creating new one ..")
-
-            type = new PropertyDefinition(
-                    name:               name,
-                    descr:              descr,
-                    expl:               expl,
-                    type:               typeClass,
-                    refdataCategory:    rdc?.desc,
-                    multipleOccurrence: (multipleOccurence ? true : false),
-                    mandatory:          (mandatory ? true : false),
-                    isUsedForLogic:     false,
-                    tenant:             tenant
-            )
-            type.save(flush:true)
-        }
-        type
-    }
-
     static def refdataFind(params) {
         def result = []
         def propDefsInCalcGroups = []
@@ -561,7 +531,9 @@ class PropertyDefinition extends AbstractI10nOverride implements Serializable , 
     }
 
     int compareTo(PropertyDefinition pd) {
-        return this.getI10n('name').toLowerCase()?.compareTo(pd.getI10n('name').toLowerCase())
+        String a = this.getI10n('name') ?:''
+        String b = pd.getI10n('name') ?:''
+        return a.toLowerCase()?.compareTo(b.toLowerCase())
     }
 }
 

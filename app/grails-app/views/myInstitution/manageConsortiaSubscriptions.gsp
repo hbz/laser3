@@ -105,7 +105,6 @@
                     def fakeList = []
                     fakeList.addAll(RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_STATUS))
                     fakeList.add(RefdataValue.getByValueAndCategory('subscription.status.no.status.set.but.null', 'filter.fake.values'))
-                    fakeList.remove(RefdataValue.getByValueAndCategory('Deleted', RDConstants.SUBSCRIPTION_STATUS))
                 %>
                 <laser:select class="ui dropdown" name="status"
                               from="${ fakeList }"
