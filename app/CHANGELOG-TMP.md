@@ -2,6 +2,9 @@
 
 **Ticket    Date    Branch      Author  Feature/Bug     Description/Keywords**
 
+
+2102    24.01.202   hbz-dev     David   Feature     Refactoring: Übersetzungen für PropertyDefinitions
+
 --      23.01.202   hbz-dev     David   Feature     Importing Refdata and PropertyDefinitions via CSV
 
 2088    21.01.2020  rc1.2       Moe     Bug         Keine Alert Mail mehr, wenn Umfrage abgeschlossen ist

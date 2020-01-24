@@ -354,7 +354,7 @@ update property_definition set pd_rdc = 'y.n.u' where pd_rdc = 'YNU';
 
 -- 2020-01-23
 -- ERMS-2102: migrate property translations
--- changesets in changelog-2020-01-17.groovy
+-- changesets in changelog-2020-01-24.groovy
 
 alter table property_definition add column pd_name_de varchar(255);
 alter table property_definition add column pd_name_en varchar(255);
