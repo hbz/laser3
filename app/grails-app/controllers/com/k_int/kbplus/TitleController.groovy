@@ -2,6 +2,7 @@ package com.k_int.kbplus
 
 import com.k_int.kbplus.auth.User
 import de.laser.controller.AbstractDebugController
+import de.laser.helper.RDConstants
 import grails.plugin.springsecurity.SpringSecurityUtils
 import grails.plugin.springsecurity.annotation.Secured
 
@@ -87,7 +88,7 @@ class TitleController extends AbstractDebugController {
   def createTitle() {
     log.debug("Create new title for ${params.title}");
     //def new_title = new TitleInstance(title:params.title, impId:java.util.UUID.randomUUID().toString()
-    def ti_status = RefdataValue.getByValueAndCategory('Current', RefdataCategory.TI_STATUS)
+    def ti_status = RefdataValue.getByValueAndCategory('Current', RefdataCategory.TITLE_STATUS)
     def new_title =  ((params.typ=='Ebook') ? new BookInstance(title:params.title, impId:java.util.UUID.randomUUID().toString(), status: ti_status, type: RefdataValue.getByValueAndCategory('EBook', RefdataCategory.TI_MEDIUM)) :
               (params.typ=='Database' ? new DatabaseInstance(title:params.title, impId:java.util.UUID.randomUUID().toString(), status: ti_status, type: RefdataValue.getByValueAndCategory('Database', RefdataCategory.TI_MEDIUM)) : new JournalInstance(title:params.title, impId:java.util.UUID.randomUUID().toString(), status: ti_status, type: RefdataValue.getByValueAndCategory('Journal', RefdataCategory.TI_MEDIUM))))
 
@@ -304,9 +305,8 @@ class TitleController extends AbstractDebugController {
     Map<String, Object> result = [:]
     result.max = params.max ? Integer.parseInt(params.max) : user.getDefaultPageSizeTMP()
     result.offset = params.offset ? Integer.parseInt(params.offset) : 0;
-    
-    def ti_cat = RefdataCategory.getByDesc(RefdataCategory.TI_STATUS)
-    result.availableStatuses = RefdataValue.findAllByOwner(ti_cat)
+
+    result.availableStatuses = RefdataCategory.getAllRefdataValues(RDConstants.TITLE_STATUS)
     def ti_status = null
     
     if(params.status){

@@ -1,6 +1,7 @@
 package com.k_int.kbplus
 
 import com.k_int.kbplus.auth.User
+import de.laser.helper.RDConstants
 import de.laser.helper.RefdataAnnotation
 
 /**
@@ -14,13 +15,13 @@ class Reminder {
     Date lastUpdated
     Date lastRan  //i.e. successful email operation
 
-    @RefdataAnnotation(cat = '?')
+    @RefdataAnnotation(cat = RDConstants.REMINDER_METHOD)
     RefdataValue  reminderMethod   //email
 
-    @RefdataAnnotation(cat = '?')
+    @RefdataAnnotation(cat = RDConstants.REMINDER_UNIT)
     RefdataValue  unit     //day, week, month
 
-    @RefdataAnnotation(cat = '?')
+    @RefdataAnnotation(cat = RDConstants.REMINDER_TRIGGER)
     RefdataValue  trigger  //Subscription manual renewal date
 
     Date dateCreated

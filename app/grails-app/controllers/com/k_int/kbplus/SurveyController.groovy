@@ -84,10 +84,7 @@ class SurveyController {
 
         params.tab = params.tab ?: 'created'
 
-        List<Org> providers = orgTypeService.getCurrentProviders( contextService.getOrg())
-        List<Org> agencies   = orgTypeService.getCurrentAgencies( contextService.getOrg())
-        providers.addAll(agencies)
-        result.providers = providers.unique { a, b -> a?.id <=> b?.id }
+        result.providers = orgTypeService.getCurrentOrgsOfProvidersAndAgencies( contextService.org )
 
         DateFormat sdFormat = new DateUtil().getSimpleDateFormat_NoTime()
         def fsq = filterService.getSurveyConfigQueryConsortia(params, sdFormat, result.institution)
@@ -195,11 +192,7 @@ class SurveyController {
             }
         }
 
-        List<Org> providers = orgTypeService.getCurrentProviders(contextService.getOrg())
-        List<Org> agencies = orgTypeService.getCurrentAgencies(contextService.getOrg())
-
-        providers.addAll(agencies)
-        List orgIds = providers.unique().collect { it.id }
+        List orgIds = orgTypeService.getCurrentOrgIdsOfProvidersAndAgencies( contextService.org )
 
         result.providers = Org.findAllByIdInList(orgIds).sort { it?.name }
 
@@ -268,11 +261,7 @@ class SurveyController {
             }
         }
 
-        List<Org> providers = orgTypeService.getCurrentProviders(contextService.getOrg())
-        List<Org> agencies = orgTypeService.getCurrentAgencies(contextService.getOrg())
-
-        providers.addAll(agencies)
-        List orgIds = providers.unique().collect { it.id }
+        List orgIds = orgTypeService.getCurrentOrgIdsOfProvidersAndAgencies( contextService.org )
 
         result.providers = Org.findAllByIdInList(orgIds).sort { it?.name }
 
@@ -673,7 +662,7 @@ class SurveyController {
         result.selectedParticipants = getfilteredSurveyOrgs(surveyOrgs.orgsWithoutSubIDs, fsq.query, fsq.queryParams, params)
         result.selectedSubParticipants = getfilteredSurveyOrgs(surveyOrgs.orgsWithSubIDs, fsq.query, fsq.queryParams, params)
 
-        result.selectedCostItemElement = params.selectedCostItemElement ?: RefdataValue.getByValueAndCategory('price: consortial price', de.laser.helper.RDConstants.COST_ITEM_ELEMENT).id.toString()
+        result.selectedCostItemElement = params.selectedCostItemElement ?: RefdataValue.getByValueAndCategory('price: consortial price', RDConstants.COST_ITEM_ELEMENT).id.toString()
 
         if (params.selectedCostItemElement) {
             params.remove('selectedCostItemElement')
@@ -2006,7 +1995,7 @@ class SurveyController {
         def costItemElementConfigurations = []
         def orgConfigurations = []
 
-        def ciecs = RefdataValue.findAllByOwner(RefdataCategory.getByDesc(RDConstants.COST_CONFIGURATION))
+        List<RefdataValue> ciecs = RefdataCategory.getAllRefdataValues(RDConstants.COST_CONFIGURATION)
         ciecs.each { ciec ->
             costItemElementConfigurations.add([id: ciec.class.name + ":" + ciec.id, value: ciec.getI10n('value')])
         }
@@ -2037,7 +2026,7 @@ class SurveyController {
         def costItemElementConfigurations = []
         def orgConfigurations = []
 
-        def ciecs = RefdataValue.findAllByOwner(RefdataCategory.getByDesc(RDConstants.COST_CONFIGURATION))
+        List<RefdataValue> ciecs = RefdataCategory.getAllRefdataValues(RDConstants.COST_CONFIGURATION)
         ciecs.each { ciec ->
             costItemElementConfigurations.add([id: ciec.class.name + ":" + ciec.id, value: ciec.getI10n('value')])
         }
@@ -2630,6 +2619,8 @@ class SurveyController {
         if (params?.isRenewSub) {
             result.isRenewSub = params?.isRenewSub
         }
+
+        result.isConsortialSubs = (result.sourceSubscription?.getCalculatedType() == TemplateSupport.CALCULATED_TYPE_CONSORTIAL && result.targetSubscription?.getCalculatedType() == TemplateSupport.CALCULATED_TYPE_CONSORTIAL) ?: false
 
         result.allSubscriptions_readRights = subscriptionService.getMySubscriptions_readRights()
         result.allSubscriptions_writeRights = subscriptionService.getMySubscriptions_writeRights()
@@ -3532,23 +3523,20 @@ class SurveyController {
 
                 propDef = surveyProperty ? PropertyDefinition.getByNameAndDescr(surveyProperty.name, 'Subscription Property') : null
                 if (!propDef && surveyProperty) {
-                    propDef = PropertyDefinition.loc(
-                            surveyProperty.name,
-                            'Subscription Property',
-                            surveyProperty.type,
-                            (surveyProperty.type == RefdataValue.toString()) ? RefdataCategory.getByDesc(surveyProperty.refdataCategory) : null,
-                            surveyProperty.expl,
-                            null,
-                            PropertyDefinition.FALSE,
-                            null)
 
-                    if (propDef?.hasErrors()) {
-                        log.error(propDef.errors)
-                    } else {
-                        propDef.save(flush: true)
-                        I10nTranslation.copyI10n(surveyProperty, 'name', propDef)
-                        I10nTranslation.copyI10n(surveyProperty, 'expl', propDef)
-                    }
+                    Map<String, Object> map = [
+                            token       : surveyProperty.name,
+                            category    : 'Subscription Property',
+                            type        : surveyProperty.type,
+                            rdc         : (surveyProperty.type == RefdataValue.toString()) ? surveyProperty.refdataCategory : null,
+                            i10n        : [
+                                    name_de: surveyProperty.getI10n('name', 'de'),
+                                    name_en: surveyProperty.getI10n('name', 'en'),
+                                    expl_de: surveyProperty.getI10n('expl', 'de'),
+                                    expl_en: surveyProperty.getI10n('expl', 'en')
+                            ]
+                    ]
+                    propDef = PropertyDefinition.construct(map)
                 }
 
             } else {

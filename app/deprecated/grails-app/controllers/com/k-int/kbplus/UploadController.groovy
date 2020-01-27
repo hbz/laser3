@@ -91,9 +91,9 @@ class UploadController extends AbstractDebugController {
       incrementStatsCounter(upload, message(code:'package.upload.provider_matched', default:'Content Provider Org Matched'));
     }
 
-    RefdataValue pkg_type = RefdataValue.getByValueAndCategory('Unknown', "${RefdataCategory.PKG_TYPE}")
+    RefdataValue pkg_type = RefdataValue.getByValueAndCategory('Unknown', RDConstants.PACKAGE_TYPE)
     RefdataValue cp_role = RefdataValue.getByValueAndCategory('Content Provider', RDConstants.ORGANISATIONAL_ROLE)
-    RefdataValue tipp_current = RefdataValue.getByValueAndCategory('Current', "${RefdataCategory.TIPP_STATUS}")
+    RefdataValue tipp_current = RefdataValue.getByValueAndCategory('Current', RDConstants.TIPP_STATUS)
 
     def consortium = null;
 
@@ -192,14 +192,14 @@ class UploadController extends AbstractDebugController {
 
           def hybrid_oa_status_value = null;
           if ( tipp.hybrid_oa != null ) {
-            // ERMS-2016: hybrid_oa_status_value = RefdataCategory.lookupOrCreate(de.laser.helper.RDConstants.TIPP_HYBRID_OA, tipp.hybrid_oa.capitalize())
+            // ERMS-2016: hybrid_oa_status_value = RefdataCategory.lookupOrCreate(RDConstants.TIPP_HYBRID_OA, tipp.hybrid_oa.capitalize())
             // if value exists --> RefdataValue.getByValueAndCategory()
 
             hybrid_oa_status_value = RefdataValue.construct([
                     token   : tipp.hybrid_oa.capitalize(),
                     rdc     : RDConstants.TIPP_HYBRID_OA,
                     hardData: false,
-                    i10n    : [en: tipp.hybrid_oa.capitalize(), de: tipp.hybrid_oa.capitalize()]
+                    i10n    : [value_en: tipp.hybrid_oa.capitalize(), value_de: tipp.hybrid_oa.capitalize()]
             ])
           }
 

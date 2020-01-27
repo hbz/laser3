@@ -3101,8 +3101,6 @@ class SubscriptionController extends AbstractDebugController {
             RefdataValue licensee_role = OR_LICENSEE
             RefdataValue licensee_cons_role = OR_LICENSING_CONSORTIUM
 
-            RefdataValue template_license_type = RefdataValue.getByValueAndCategory('Template', RDConstants.LICENSE_TYPE)
-
             Org org
             if(subscription.instanceOf) {
                 if(subscription.getConsortia())
@@ -3483,7 +3481,7 @@ class SubscriptionController extends AbstractDebugController {
 
         sources.each { link ->
             Subscription destination = Subscription.get(link.destination)
-            if (destination.isVisibleBy(result.user) && destination.status != SUBSCRIPTION_DELETED) {
+            if (destination.isVisibleBy(result.user)) {
                 def index = link.linkType.getI10n("value")?.split("\\|")[0]
                 if (result.links[index] == null) {
                     result.links[index] = [link]
@@ -3492,7 +3490,7 @@ class SubscriptionController extends AbstractDebugController {
         }
         destinations.each { link ->
             Subscription source = Subscription.get(link.source)
-            if (source.isVisibleBy(result.user) && source.status != SUBSCRIPTION_DELETED) {
+            if (source.isVisibleBy(result.user)) {
                 def index = link.linkType.getI10n("value")?.split("\\|")[1]
                 if (result.links[index] == null) {
                     result.links[index] = [link]
@@ -4450,6 +4448,8 @@ class SubscriptionController extends AbstractDebugController {
         }
 
         if (params.isRenewSub) {result.isRenewSub = params.isRenewSub}
+
+        result.isConsortialSubs = (result.sourceSubscription?.getCalculatedType() == TemplateSupport.CALCULATED_TYPE_CONSORTIAL && result.targetSubscription?.getCalculatedType() == TemplateSupport.CALCULATED_TYPE_CONSORTIAL) ?: false
 
         result.allSubscriptions_readRights = subscriptionService.getMySubscriptions_readRights()
         result.allSubscriptions_writeRights = subscriptionService.getMySubscriptions_writeRights()

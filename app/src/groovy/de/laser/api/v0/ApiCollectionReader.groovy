@@ -161,7 +161,7 @@ class ApiCollectionReader {
             def tmp             = [:]
             tmp.name            = it.type?.name     // com.k_int.kbplus.PropertyDefinition.String
             tmp.description     = it.type?.descr    // com.k_int.kbplus.PropertyDefinition.String
-            tmp.explanation     = it.type?.expl     // com.k_int.kbplus.PropertyDefinition.String
+            //tmp.explanation     = it.type?.expl     // com.k_int.kbplus.PropertyDefinition.String
             tmp.value           = (it.stringValue ?: (it.intValue ?: (it.decValue ?: (it.refValue?.value ?: (it.urlValue ?: (it.dateValue ?: null)))))) // RefdataValue
 
             if (it.type.type == RefdataValue.toString()) {
@@ -455,7 +455,7 @@ class ApiCollectionReader {
             def tmp             = [:]
             tmp.name            = it.type?.name     // com.k_int.kbplus.PropertyDefinition.String
             tmp.description     = it.type?.descr    // com.k_int.kbplus.PropertyDefinition.String
-            tmp.explanation     = it.type?.expl     // com.k_int.kbplus.PropertyDefinition.String
+            //tmp.explanation     = it.type?.expl     // com.k_int.kbplus.PropertyDefinition.String
             //tmp.tenant          = ApiStubReader.resolveOrganisationStub(it.tenant, context) // com.k_int.kbplus.Org
             tmp.value           = (it.stringValue ?: (it.intValue ?: (it.decValue ?: (it.refValue?.value ?: (it.urlValue ?: (it.dateValue ?: null)))))) // RefdataValue
             tmp.note            = it.note

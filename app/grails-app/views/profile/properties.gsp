@@ -38,13 +38,11 @@
                 </thead>
                 <tbody>
                     <g:each in="${entry.value}" var="pd">
-                        <g:set var="pdI10nName" value="${I10nTranslation.createI10nOnTheFly(pd, 'name')}" />
-                        <g:set var="pdI10nExpl" value="${I10nTranslation.createI10nOnTheFly(pd, 'expl')}" />
                         <tr>
-                            <td>${pdI10nName.valueDe}</td>
-                            <td>${pdI10nName.valueEn}</td>
-                            <td>${pdI10nExpl?.valueDe}</td>
-                            <td>${pdI10nExpl?.valueEn}</td>
+                            <td>${pd.getI10n('name', 'de')}</td>
+                            <td>${pd.getI10n('name', 'en')}</td>
+                            <td>${pd.getI10n('expl', 'de')}</td>
+                            <td>${pd.getI10n('expl', 'en')}</td>
                             <td>
                                 <g:set var="pdRdc" value="${pd.type?.split('\\.').last()}"/>
                                 <g:if test="${pd?.type == 'class com.k_int.kbplus.RefdataValue'}">
@@ -115,7 +113,7 @@
                     </td>
                 </tr>
 
-                <g:each in="${RefdataValue.findAllByOwner(rdc).toSorted()}" var="rdv">
+                <g:each in="${RefdataCategory.getAllRefdataValues(rdc.desc)}" var="rdv">
                     <tr>
                         <td>
                             ${rdv.getI10n('value', 'de')}

@@ -95,7 +95,7 @@ class ApiSubscription {
         available.each { sub ->
             //if (calculateAccess(sub, context, hasAccess)) {
                 println sub.id + ' ' + sub.name
-                result.add(ApiStubReader.requestSubscriptionStub(sub, context, true))
+                result.add(ApiStubReader.requestSubscriptionStub(sub, context))
                 //result.add([globalUID: sub.globalUID])
             //}
         }

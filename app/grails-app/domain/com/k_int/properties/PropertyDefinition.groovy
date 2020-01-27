@@ -8,6 +8,7 @@ import com.k_int.kbplus.RefdataValue
 import com.k_int.kbplus.abstract_domain.AbstractProperty
 import de.laser.CacheService
 import de.laser.ContextService
+import de.laser.domain.AbstractI10nOverride
 import de.laser.domain.AbstractI10nTranslatable
 import de.laser.domain.I10nTranslation
 import de.laser.helper.SwissKnife
@@ -26,7 +27,7 @@ import javax.persistence.Transient
 import javax.validation.UnexpectedTypeException
 
 @Log4j
-class PropertyDefinition extends AbstractI10nTranslatable implements Serializable , Comparable<PropertyDefinition> {
+class PropertyDefinition extends AbstractI10nOverride implements Serializable , Comparable<PropertyDefinition> {
 
     static Log static_logger = LogFactory.getLog(PropertyDefinition)
 
@@ -88,10 +89,15 @@ class PropertyDefinition extends AbstractI10nTranslatable implements Serializabl
     ]
 
     String name
+    String name_de
+    String name_en
+
+    String expl_de
+    String expl_en
+
     String descr
     String type
     String refdataCategory
-    String expl
 
     // used for private properties
     Org tenant
@@ -140,7 +146,10 @@ class PropertyDefinition extends AbstractI10nTranslatable implements Serializabl
                       id column: 'pd_id'
                    descr column: 'pd_description', index: 'td_new_idx', type: 'text'
                     name column: 'pd_name',        index: 'td_new_idx'
-                    expl column: 'pd_explanation', index: 'td_new_idx', type: 'text'
+                 name_de column: 'pd_name_de'
+                 name_en column: 'pd_name_en'
+                 expl_de column: 'pd_explanation_de', type: 'text'
+                 expl_en column: 'pd_explanation_en', type: 'text'
                     type column: 'pd_type',        index: 'td_type_idx'
          refdataCategory column: 'pd_rdc',         index: 'td_type_idx'
                   tenant column: 'pd_tenant_fk',   index: 'pd_tenant_idx'
@@ -157,8 +166,11 @@ class PropertyDefinition extends AbstractI10nTranslatable implements Serializabl
 
     static constraints = {
         name                (nullable: false, blank: false)
+        name_de             (nullable: true, blank: false)
+        name_en             (nullable: true, blank: false)
+        expl_de             (nullable: true, blank: false)
+        expl_en             (nullable: true, blank: false)
         descr               (nullable: true,  blank: false)
-        expl                (nullable: true,  blank: true)
         type                (nullable: false, blank: false)
         refdataCategory     (nullable: true)
         tenant              (nullable: true,  blank: true)
@@ -181,9 +193,14 @@ class PropertyDefinition extends AbstractI10nTranslatable implements Serializabl
         boolean multiple    = new Boolean( map.get('multiple') )
         boolean logic       = new Boolean( map.get('logic') )
         Org tenant          = map.get('tenant') ? Org.findByShortname(map.get('tenant')) : null
-        Map i10n            = map.get('i10n')  ?: [de: token, en: token]
-        Map descr           = map.get('descr') ?: [de: category, en: category]
-        Map expl            = map.get('expl')  ?: [de: null, en: null]
+        Map i10n            = map.get('i10n')  ?: [
+                name_de: token,
+                name_en: token,
+                //descr_de: category,
+                //descr_en: category,
+                expl_de: null,
+                expl_en: null
+        ]
 
         typeIsValid(type)
 
@@ -207,26 +224,29 @@ class PropertyDefinition extends AbstractI10nTranslatable implements Serializabl
                     multipleOccurrence: multiple,
                     mandatory:          mandatory,
                     isUsedForLogic:     logic,
-                    tenant:             tenant,
-                    expl:               expl['en'],
+                    tenant:             tenant
             )
 
             // TODO .. which attributes can change for existing pds ?
         }
 
+        pd.name_de = i10n.get('name_de') ?: null
+        pd.name_en = i10n.get('name_en') ?: null
+
+        pd.expl_de = i10n.get('expl_de') ?: null
+        pd.expl_en = i10n.get('expl_en') ?: null
+
         pd.isHardData = hardData
         pd.save(flush: true)
 
-        I10nTranslation.createOrUpdateI10n(pd, 'name', i10n)
-        I10nTranslation.createOrUpdateI10n(pd, 'descr', descr)
-        I10nTranslation.createOrUpdateI10n(pd, 'expl', expl)
+        // I10nTranslation.createOrUpdateI10n(pd, 'descr', descr)
 
         pd
     }
 
     static PropertyDefinition getByNameAndDescr(String name, String descr) {
 
-        List result = PropertyDefinition.findAllByNameAndDescrAndTenantIsNull(name, descr)
+        List result = PropertyDefinition.findAllByNameIlikeAndDescrAndTenantIsNull(name, descr)
 
         if (result.size() == 0) {
             return null
@@ -242,7 +262,7 @@ class PropertyDefinition extends AbstractI10nTranslatable implements Serializabl
 
     static PropertyDefinition getByNameAndDescrAndTenant(String name, String descr, Org tenant) {
 
-        List result = PropertyDefinition.findAllByNameAndDescrAndTenant(name, descr, tenant)
+        List result = PropertyDefinition.findAllByNameIlikeAndDescrAndTenant(name, descr, tenant)
 
         if (result.size() == 0) {
             return null
@@ -296,36 +316,6 @@ class PropertyDefinition extends AbstractI10nTranslatable implements Serializabl
 
         newProp.save(flush:true)
         GrailsHibernateUtil.unwrapIfProxy(newProp)
-    }
-
-    @Deprecated
-    static PropertyDefinition loc(String name, String descr, String typeClass, RefdataCategory rdc, String expl, multipleOccurence, mandatory, Org tenant) {
-
-        typeIsValid(typeClass)
-
-        PropertyDefinition type = findWhere(
-            name:   name,
-            descr:  descr,
-            tenant: tenant
-        )
-
-        if (! type) {
-            log.debug("No PropertyDefinition match for ${name} : ${descr} ( ${expl} ) @ ${tenant?.name}. Creating new one ..")
-
-            type = new PropertyDefinition(
-                    name:               name,
-                    descr:              descr,
-                    expl:               expl,
-                    type:               typeClass,
-                    refdataCategory:    rdc?.desc,
-                    multipleOccurrence: (multipleOccurence ? true : false),
-                    mandatory:          (mandatory ? true : false),
-                    isUsedForLogic:     false,
-                    tenant:             tenant
-            )
-            type.save(flush:true)
-        }
-        type
     }
 
     static def refdataFind(params) {
@@ -448,20 +438,6 @@ class PropertyDefinition extends AbstractI10nTranslatable implements Serializabl
         return 0
     }
 
-    /*
-    def afterInsert() {
-        I10nTranslation.createOrUpdateI10n(this, 'name',  [de: this.name, en: this.name])
-        I10nTranslation.createOrUpdateI10n(this, 'descr', [de: this.descr, en: this.descr])
-        I10nTranslation.createOrUpdateI10n(this, 'expl', [de: this.expl, en: this.expl])
-    }
-    */
-
-    def afterDelete() {
-        String rc = this.getClass().getName()
-        def id = this.getId()
-        I10nTranslation.where{referenceClass == rc && referenceId == id}.deleteAll()
-    }
-
 
   @Transient
   def getOccurrencesOwner(String[] cls){
@@ -541,7 +517,9 @@ class PropertyDefinition extends AbstractI10nTranslatable implements Serializabl
     }
 
     int compareTo(PropertyDefinition pd) {
-        return this.getI10n('name').toLowerCase()?.compareTo(pd.getI10n('name').toLowerCase())
+        String a = this.getI10n('name') ?:''
+        String b = pd.getI10n('name') ?:''
+        return a.toLowerCase()?.compareTo(b.toLowerCase())
     }
 }
 

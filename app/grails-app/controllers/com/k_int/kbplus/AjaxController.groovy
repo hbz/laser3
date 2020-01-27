@@ -790,6 +790,12 @@ class AjaxController {
   }
 
   @Secured(['ROLE_USER'])
+  def lookupSubscriptions_IndendedAndCurrent() {
+      params.status = [RDStore.SUBSCRIPTION_INTENDED, RDStore.SUBSCRIPTION_CURRENT]
+      render controlledListService.getSubscriptions(params) as JSON
+  }
+
+  @Secured(['ROLE_USER'])
   def lookupSubscriptionPackages() {
       render controlledListService.getSubscriptionPackages(params) as JSON
   }
@@ -1179,7 +1185,7 @@ class AjaxController {
 
         def rdc = RefdataCategory.findById(params.refdata_category_id)
 
-        if (RefdataValue.findByOwnerAndValue(rdc, params.refdata_value)) {
+        if (RefdataValue.getByValueAndCategory(params.refdata_value, rdc.desc)) {
             error = message(code: "refdataValue.create_new.unique")
             log.debug(error)
         }
@@ -1188,7 +1194,7 @@ class AjaxController {
                     token   : params.refdata_value,
                     rdc     : rdc.desc,
                     hardData: false,
-                    i10n    : [de: params.refdata_value, en: params.refdata_value]
+                    i10n    : [value_de: params.refdata_value, value_en: params.refdata_value]
             ]
 
             newRefdataValue = RefdataValue.construct(map)
@@ -1226,7 +1232,7 @@ class AjaxController {
             Map<String, Object> map = [
                     token   : params.refdata_category,
                     hardData: false,
-                    i10n    : [de: params.refdata_category, en: params.refdata_category]
+                    i10n    : [desc_de: params.refdata_category, desc_en: params.refdata_category]
             ]
 
             newRefdataCategory = RefdataCategory.construct(map)
@@ -1270,8 +1276,12 @@ class AjaxController {
                             type        : params.cust_prop_type,
                             rdc         : RefdataCategory.get(params.refdatacategory)?.getDesc(),
                             multiple    : (params.cust_prop_multiple_occurence == 'on'),
-                            i10n        : [de: params.cust_prop_name, en: params.cust_prop_name],
-                            expl        : [de: params.cust_prop_expl, en: params.cust_prop_expl]
+                            i10n        : [
+                                    name_de: params.cust_prop_name?.trim(),
+                                    name_en: params.cust_prop_name?.trim(),
+                                    expl_de: params.cust_prop_expl?.trim(),
+                                    expl_en: params.cust_prop_expl?.trim()
+                            ]
                     ]
 
                     newProp = PropertyDefinition.construct(map)
@@ -1286,8 +1296,12 @@ class AjaxController {
                             category    : params.cust_prop_desc,
                             type        : params.cust_prop_type,
                             multiple    : (params.cust_prop_multiple_occurence == 'on'),
-                            i10n        : [de: params.cust_prop_name, en: params.cust_prop_name],
-                            expl        : [de: params.cust_prop_expl, en: params.cust_prop_expl]
+                            i10n        : [
+                                    name_de: params.cust_prop_name?.trim(),
+                                    name_en: params.cust_prop_name?.trim(),
+                                    expl_de: params.cust_prop_expl?.trim(),
+                                    expl_en: params.cust_prop_expl?.trim()
+                            ]
                     ]
 
                     newProp = PropertyDefinition.construct(map)

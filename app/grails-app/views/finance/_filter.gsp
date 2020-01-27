@@ -43,17 +43,9 @@
                 </div>
                 <g:if test="${!fixedSubscription}">
                     <div class="field">
-                        <%
-                            List fakeList = []
-                            RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_STATUS).each { rdv ->
-                                if(!rdv.equals(RDStore.SUBSCRIPTION_DELETED))
-                                    fakeList.add(rdv)
-                            }
-                            //fakeList.add(RefdataValue.getByValueAndCategory('subscription.status.no.status.set.but.null', 'filter.fake.values'))
-                        %>
                         <label for="filterSubStatus">${message(code:'subscription.status.label')}</label>
                         <laser:select id="filterSubStatus" class="ui fluid dropdown search" name="filterSubStatus"
-                                      from="${ fakeList }"
+                                      from="${ RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_STATUS) }"
                                       optionKey="id"
                                       optionValue="value"
                                       value="${params.filterSubStatus}"

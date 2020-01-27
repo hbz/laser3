@@ -199,7 +199,7 @@ class ApiStatistic {
                     }
                 }
             }
-            if (orgList) {
+            if (sub != Constants.HTTP_FORBIDDEN && orgList) {
 
                 sub?.put('organisations', ApiToolkit.cleanUp(orgList, true, true))
 

@@ -993,7 +993,11 @@ class SemanticUiTagLib {
             }
             out <<  '">'
             out <<  optionValue(el).toString().encodeAsHTML()
-            if (el?.tenant!= null || el?.owner != null){
+
+            def tenant = el.hasProperty('tenant') ? el.tenant : null
+            def owner  = el.hasProperty('owner') ? el.owner : null
+
+            if (tenant != null || owner != null){
                 out <<  " <i class='${iconWhich} icon'></i>"
             }
             out <<  '</div>'

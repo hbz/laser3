@@ -21,16 +21,6 @@ class ApiWriterHelper {
         date
     }
 
-    @Deprecated
-    static getRefdataValue(def value, String category) {
-        if (value && category) {
-            def rdCategory = RefdataCategory.getByDesc(category)
-            def rdValue = RefdataValue.findByOwnerAndValue(rdCategory, value.toString())
-            return rdValue
-        }
-        null
-    }
-
     // #####
 
     @Deprecated
@@ -49,7 +39,7 @@ class ApiWriterHelper {
             )
 
             // RefdataValues
-            address.type = getRefdataValue(it.type?.value, RDConstants.ADDRESS_TYPE)
+            address.type = RefdataValue.getByValueAndCategory(it.type?.value, RDConstants.ADDRESS_TYPE)
 
             // References
             address.org = ownerOrg
@@ -70,8 +60,8 @@ class ApiWriterHelper {
             )
 
             // RefdataValues
-            contact.type        = getRefdataValue(it.type?.value, RDConstants.CONTACT_TYPE)
-            contact.contentType = getRefdataValue(it.category?.value, RDConstants.CONTACT_CONTENT_TYPE)
+            contact.type        = RefdataValue.getByValueAndCategory(it.type?.value, RDConstants.CONTACT_TYPE)
+            contact.contentType = RefdataValue.getByValueAndCategory(it.category?.value, RDConstants.CONTACT_CONTENT_TYPE)
 
             // References
             contact.org = ownerOrg
@@ -97,7 +87,7 @@ class ApiWriterHelper {
             )
 
             // RefdataValues
-            person.gender   = getRefdataValue(it.gender?.value, RDConstants.GENDER)
+            person.gender   = RefdataValue.getByValueAndCategory(it.gender?.value, RDConstants.GENDER)
             person.isPublic = it.isPublic in ['Yes', 'yes']
 
             // References
@@ -118,7 +108,7 @@ class ApiWriterHelper {
                     )
 
                     // RefdataValues
-                    personRole.functionType = getRefdataValue(it2.functionType?.value, RDConstants.PERSON_FUNCTION)
+                    personRole.functionType = RefdataValue.getByValueAndCategory(it2.functionType?.value, RDConstants.PERSON_FUNCTION)
                     if (personRole.functionType) {
                         result['persons'] << person
                         result['personRoles'] << personRole
@@ -171,7 +161,7 @@ class ApiWriterHelper {
                         org:        org,
                         endDate:    getValidDateFormat(it.endDate),
                         startDate:  getValidDateFormat(it.startDate),
-                        roleType:   getRefdataValue(it.roleType, de.laser.helper.RDConstants.ORGANISATIONAL_ROLE)
+                        roleType:   RefdataValue.getByValueAndCategory(it.roleType, RDConstants.ORGANISATIONAL_ROLE)
                 )
                 orgRole.setReference(owner)
 

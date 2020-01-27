@@ -28,7 +28,7 @@ class RDStore {
     static final OR_PROVIDER                = getRefdataValue('Provider', RDConstants.ORGANISATIONAL_ROLE)
     static final OR_PUBLISHER               = getRefdataValue('Publisher', RDConstants.ORGANISATIONAL_ROLE)
     static final OR_CONTENT_PROVIDER        = getRefdataValue('Content Provider', RDConstants.ORGANISATIONAL_ROLE)
-    static final OR_PACKAGE_CONSORTIA       = getRefdataValue('Package Consortiar', RDConstants.ORGANISATIONAL_ROLE)
+    static final OR_PACKAGE_CONSORTIA       = getRefdataValue('Package Consortia', RDConstants.ORGANISATIONAL_ROLE)
 
     static final OT_CONSORTIUM              = getRefdataValue('Consortium', RDConstants.ORG_TYPE)
     static final OT_INSTITUTION             = getRefdataValue('Institution', RDConstants.ORG_TYPE)
@@ -75,7 +75,6 @@ class RDStore {
     static final SURVEY_TYPE_INTEREST       = getRefdataValue('interest', RDConstants.SURVEY_TYPE)
     static final SURVEY_TYPE_TITLE_SELECTION= getRefdataValue('selection', RDConstants.SURVEY_TYPE)
 
-    static final LICENSE_CURRENT            = getRefdataValue('Current', RDConstants.LICENSE_STATUS)
 
     static final COST_ITEM_ACTUAL           = getRefdataValue('Actual', RDConstants.COST_ITEM_STATUS)
     static final COST_ITEM_DELETED          = getRefdataValue('Deleted', RDConstants.COST_ITEM_STATUS)
@@ -89,8 +88,11 @@ class RDStore {
 
     static final LICENSE_TYPE_TEMPLATE      = getRefdataValue('Template', RDConstants.LICENSE_TYPE)
     static final LICENSE_TYPE_ACTUAL        = getRefdataValue('Actual', RDConstants.LICENSE_TYPE)
-    static final LICENSE_TYPE_CURRENT       = getRefdataValue('Current', RDConstants.LICENSE_TYPE)
+
     static final LICENSE_NO_STATUS          = getRefdataValue('Status not defined', RDConstants.LICENSE_STATUS)
+    static final LICENSE_CURRENT            = getRefdataValue('Current', RDConstants.LICENSE_STATUS)
+    static final LICENSE_INTENDED           = getRefdataValue('Intended', RDConstants.LICENSE_STATUS)
+    static final LICENSE_IN_PROGRESS        = getRefdataValue('In Progress', RDConstants.LICENSE_STATUS)
 
     static final LINKTYPE_FOLLOWS           = getRefdataValue('follows', RDConstants.LINK_TYPE)
 

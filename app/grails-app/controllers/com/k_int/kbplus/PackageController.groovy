@@ -1011,7 +1011,7 @@ class PackageController extends AbstractDebugController {
                             tipp_to_bulk_edit.save();
                     } else {
                         log.debug("Bulk removal ${tipp_to_bulk_edit.id}");
-                        tipp_to_bulk_edit.status = RefdataValue.getByValueAndCategory('Deleted', RefdataCategory.TIPP_STATUS)
+                        tipp_to_bulk_edit.status = RefdataValue.getByValueAndCategory('Deleted', RDConstants.TIPP_STATUS)
                         tipp_to_bulk_edit.save();
                     }
                 }

@@ -1,4 +1,4 @@
-
+<%@ page import="de.laser.helper.RDConstants" %>
   ### nested ###
 
 <%--
@@ -89,9 +89,9 @@
           Exclusive with cluster, license, package, subscription and title
       roleType:
         type: string
-        description: Mapping RefdataCategory "${de.laser.helper.RDConstants.ORGANISATIONAL_ROLE}"
+        description: Mapping RefdataCategory "${RDConstants.ORGANISATIONAL_ROLE}"
         enum:
-          [${ com.k_int.kbplus.RefdataCategory.getAllRefdataValues(de.laser.helper.RDConstants.ORGANISATIONAL_ROLE).collect{ it.value }.join(', ') }]
+          [${ com.k_int.kbplus.RefdataCategory.getAllRefdataValues(RDConstants.ORGANISATIONAL_ROLE).collect{ it.value }.join(', ') }]
       startDate:
         type: string
         format: date
@@ -133,9 +133,9 @@
             type: string
             description: |
               Exclusive with responsibilityType |
-              Mapping RefdataCategory "${de.laser.helper.RDConstants.PERSON_FUNCTION}"
+              Mapping RefdataCategory "${RDConstants.PERSON_FUNCTION}"
             enum:
-              [${ com.k_int.kbplus.RefdataCategory.getAllRefdataValues(de.laser.helper.RDConstants.PERSON_FUNCTION).collect{ it.value }.join(', ') }]
+              [${ com.k_int.kbplus.RefdataCategory.getAllRefdataValues(RDConstants.PERSON_FUNCTION).collect{ it.value }.join(', ') }]
 
   PersonRole(usedAsResponsibility):
     allOf:
@@ -162,9 +162,9 @@
             type: string
             description: |
               Exclusive with functionType |
-              Mapping RefdataCategory "${de.laser.helper.RDConstants.PERSON_RESPONSIBILITY}"
+              Mapping RefdataCategory "${RDConstants.PERSON_RESPONSIBILITY}"
             enum:
-              [${ com.k_int.kbplus.RefdataCategory.getAllRefdataValues(de.laser.helper.RDConstants.PERSON_RESPONSIBILITY).collect{ it.value }.join(', ') }]
+              [${ com.k_int.kbplus.RefdataCategory.getAllRefdataValues(RDConstants.PERSON_RESPONSIBILITY).collect{ it.value }.join(', ') }]
           subscription:
             description: |
               Exclusive with cluster, license, organisation, package and title

@@ -326,7 +326,7 @@ class DataManagerController extends AbstractDebugController {
         def paginate_after = params.paginate_after ?: ( (2*result.max)-1);
         result.offset = params.offset ? Integer.parseInt(params.offset) : 0;
 
-    def deleted_title_status =  RefdataValue.getByValueAndCategory('Deleted', RefdataCategory.TI_STATUS)
+    def deleted_title_status =  RefdataValue.getByValueAndCategory('Deleted', RDConstants.TITLE_STATUS)
     def qry_params = [deleted_title_status]
 
         def base_qry = " from TitleInstance as t where ( t.status = ? )"

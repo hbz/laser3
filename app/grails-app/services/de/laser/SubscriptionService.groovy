@@ -118,10 +118,7 @@ class SubscriptionService {
     }
 
     List getValidSubChilds(Subscription subscription) {
-        def validSubChilds = Subscription.findAllByInstanceOfAndStatusNotEqual(
-                subscription,
-                SUBSCRIPTION_DELETED
-        )
+        def validSubChilds = Subscription.findAllByInstanceOf(subscription)
         validSubChilds = validSubChilds?.sort { a, b ->
             def sa = a.getSubscriber()
             def sb = b.getSubscriber()

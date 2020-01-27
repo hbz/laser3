@@ -56,9 +56,9 @@ public class PackageIngestService {
       incrementStatsCounter(upload,'Content Provider Org Matched');
     }
 
-    RefdataValue pkg_type = RefdataValue.getByValueAndCategory('Unknown', RefdataCategory.PKG_TYPE)
+    RefdataValue pkg_type = RefdataValue.getByValueAndCategory('Unknown', RDConstants.PACKAGE_TYPE)
     RefdataValue cp_role = RefdataValue.getByValueAndCategory('Content Provider', RDConstants.ORGANISATIONAL_ROLE)
-    RefdataValue tipp_current = RefdataValue.getByValueAndCategory('Current', RefdataCategory.TIPP_STATUS)
+    RefdataValue tipp_current = RefdataValue.getByValueAndCategory('Current', RDConstants.TIPP_STATUS)
     
     def consortium = null;
     if ( upload.consortium != null )  {

@@ -72,7 +72,7 @@
                     <br/>
                     <br/>
 
-                    <g:select from="${RefdataValue.findAllByOwner(rdcSubStatus)}" class="ui dropdown"
+                    <g:select from="${RefdataCategory.getAllRefdataValues(de.laser.helper.RDConstants.SUBSCRIPTION_STATUS)}" class="ui dropdown"
                               optionKey="id"
                               optionValue="${{ it.getI10n('value') }}"
                               name="subStatus"

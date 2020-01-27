@@ -1,4 +1,4 @@
-<%@ page import="de.laser.interfaces.TemplateSupport; de.laser.helper.RDStore; com.k_int.kbplus.RefdataValue; com.k_int.kbplus.RefdataCategory" %>
+<%@ page import="de.laser.interfaces.TemplateSupport;de.laser.helper.RDStore;de.laser.helper.RDConstants;com.k_int.kbplus.RefdataValue;com.k_int.kbplus.RefdataCategory" %>
 <!doctype html>
 <html>
   <head>
@@ -93,8 +93,8 @@
 
                 <%
                     def fakeList = []
-                    fakeList.addAll(RefdataCategory.getAllRefdataValues(de.laser.helper.RDConstants.LICENSE_STATUS))
-                    fakeList.remove(RefdataValue.getByValueAndCategory('Deleted', de.laser.helper.RDConstants.LICENSE_STATUS))
+                    fakeList.addAll(RefdataCategory.getAllRefdataValues(RDConstants.LICENSE_STATUS))
+                    fakeList.remove(RefdataValue.getByValueAndCategory('Deleted', RDConstants.LICENSE_STATUS))
                 %>
 
                 <div class="field">

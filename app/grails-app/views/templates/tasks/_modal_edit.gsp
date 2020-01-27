@@ -1,4 +1,4 @@
-<%@ page import="com.k_int.kbplus.Task" %>
+<%@ page import="com.k_int.kbplus.Task;de.laser.helper.RDConstants" %>
 <laser:serviceInjection />
 
 <semui:modal id="modalEditTask" message="task.edit" isEditModal="true" >
@@ -76,9 +76,9 @@
                     <label for="status">
                         <g:message code="task.status.label" default="Status" />
                     </label>
-                    <laser:select id="status" name="status.id" from="${com.k_int.kbplus.RefdataCategory.getAllRefdataValues(de.laser.helper.RDConstants.TASK_STATUS)}"
+                    <laser:select id="status" name="status.id" from="${com.k_int.kbplus.RefdataCategory.getAllRefdataValues(RDConstants.TASK_STATUS)}"
                                   optionValue="value" optionKey="id" required=""
-                                  value="${taskInstance?.status?.id ?: com.k_int.kbplus.RefdataValue.findByValueAndOwner("Open", com.k_int.kbplus.RefdataCategory.getByDesc(de.laser.helper.RDConstants.TASK_STATUS)).id}"
+                                  value="${taskInstance?.status?.id ?: com.k_int.kbplus.RefdataValue.getByValueAndCategory("Open", RDConstants.TASK_STATUS).id}"
                                   class="ui dropdown search many-to-one"/>
                 </div>
 

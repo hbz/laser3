@@ -1,5 +1,5 @@
 <!-- _copyEmailAddresses.gsp -->
-<%@ page import="com.k_int.kbplus.RefdataValue; de.laser.helper.RDStore; com.k_int.kbplus.PersonRole; com.k_int.kbplus.Contact" %>
+<%@ page import="com.k_int.kbplus.RefdataValue; de.laser.helper.RDStore; de.laser.helper.RDConstants; com.k_int.kbplus.PersonRole; com.k_int.kbplus.Contact" %>
 <laser:serviceInjection />
 
 <g:set var="modalID" value="${modalID ?: 'copyEmailaddresses_ajaxModal'}"/>
@@ -8,8 +8,8 @@
 
     <g:set var="rdvEmail"               value="${RDStore.CCT_EMAIL}"/>
     <g:set var="rdvGeneralContactPrs"   value="${RDStore.PRS_FUNC_GENERAL_CONTACT_PRS}"/>
-    <g:set var="rdvAllPersonFunctions"  value="${PersonRole.getAllRefdataValues(de.laser.helper.RDConstants.PERSON_FUNCTION)}"/>
-    <g:set var="rdvAllPersonPositions"  value="${PersonRole.getAllRefdataValues(de.laser.helper.RDConstants.PERSON_POSITION)}"/>
+    <g:set var="rdvAllPersonFunctions"  value="${PersonRole.getAllRefdataValues(RDConstants.PERSON_FUNCTION)}"/>
+    <g:set var="rdvAllPersonPositions"  value="${PersonRole.getAllRefdataValues(RDConstants.PERSON_POSITION)}"/>
 
     <div class="field">
         <label><g:message code="person.function.label" default="Function"/></label>&nbsp

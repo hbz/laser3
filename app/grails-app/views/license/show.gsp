@@ -1,4 +1,4 @@
-<%@ page import="de.laser.helper.RDStore; com.k_int.properties.PropertyDefinition;de.laser.interfaces.TemplateSupport" %>
+<%@ page import="de.laser.helper.RDStore;de.laser.helper.RDConstants;com.k_int.properties.PropertyDefinition;de.laser.interfaces.TemplateSupport" %>
 <!doctype html>
 <%-- r:require module="annotations" / --%>
 <laser:serviceInjection />
@@ -92,7 +92,7 @@
                                 <dl>
                                     <dt class="control-label">${message(code: 'license.status')}</dt>
                                     <dd>
-                                        <semui:xEditableRefData owner="${license}" field="status" config="${de.laser.helper.RDConstants.LICENSE_STATUS}"/>
+                                        <semui:xEditableRefData owner="${license}" field="status" config="${RDConstants.LICENSE_STATUS}"/>
                                     </dd>
                                     <dd class="la-js-editmode-container"><semui:auditButton auditable="[license, 'status']" /></dd>
                                 </dl>
@@ -101,7 +101,7 @@
 
                                     <dt><label class="control-label" for="licenseCategory">${message(code:'license.licenseCategory', default:'License Category')}</label></dt>
                                     <dd>
-                                        <semui:xEditableRefData owner="${license}" field="licenseCategory" config="${de.laser.helper.RDConstants.LICENSE_CATEGORY}"/>
+                                        <semui:xEditableRefData owner="${license}" field="licenseCategory" config="${RDConstants.LICENSE_CATEGORY}"/>
                                     </dd>
                                 </dl>
                                 -->
@@ -109,7 +109,7 @@
                                 <dl>
                                     <dt><label class="control-label" for="isPublic">${message(code:'license.isPublic', default:'Public?')}</label></dt>
                                     <dd>
-                                        <semui:xEditableRefData owner="${license}" field="isPublic" config="${de.laser.helper.RDConstants.Y_N}" />
+                                        <semui:xEditableRefData owner="${license}" field="isPublic" config="${RDConstants.Y_N}" />
                                     </dd>
                                 </dl>
                                 --%>
@@ -140,11 +140,16 @@
                         <div class="content">
 
                             <g:if test="${license.subscriptions && ( license.subscriptions.size() > 0 )}">
-                                <g:each in="${license.subscriptions.sort{it.name}}" var="sub">
-                                    <g:if test="${sub.status == RDStore.SUBSCRIPTION_CURRENT && contextOrg?.id in sub.orgRelations?.org?.id}">
-                                        <table class="ui three column table">
+                                <table class="ui three column table">
+                                    <g:each in="${license.subscriptions.sort{it.name}}" status="i" var="sub">
+                                        %{--<g:if test="${sub.status == RDStore.SUBSCRIPTION_CURRENT && contextOrg?.id in sub.orgRelations?.org?.id}">--}%
+                                        <g:if test="${contextOrg?.id in sub.orgRelations?.org?.id}">
                                             <tr>
-                                                <th scope="row">${message(code:'license.linkedSubscription', default:'Linked Subscription')}</th>
+                                                <th scope="row">
+                                                    <g:if test="${i < 1}">
+                                                        ${message(code:'license.linkedSubscriptions', default:'Linked Subscriptions')}
+                                                    </g:if>
+                                                </th>
                                                 <td>
                                                     <g:link controller="subscription" action="show" id="${sub.id}">${sub.name }</g:link>
                                                 </td>
@@ -162,10 +167,9 @@
                                                     </g:if>
                                                 </td>
                                             </tr>
-                                        </table>
-                                    </g:if>
-
-                                </g:each>
+                                        </g:if>
+                                    </g:each>
+                                </table>
                             </g:if>
                             <g:else>
                                 <dl>
@@ -176,9 +180,9 @@
                                 </dl>
                             </g:else>
 
-                            <dl>
-                                <dt></dt>
-                                <dd>
+                            %{--<dl>--}%
+                                %{--<dt></dt>--}%
+                                %{--<dd>--}%
                                     <g:if test="${editable}">
                                         <g:form id="linkSubscription" class="ui form" name="linkSubscription" action="linkToSubscription">
                                             <input type="hidden" name="license" value="${license.id}"/>
@@ -197,8 +201,8 @@
                                             </div>
                                         </g:form>
                                     </g:if>
-                                </dd>
-                            </dl>
+                                %{--</dd>--}%
+                            %{--</dl>--}%
                             <%--
                             <dl>
 
@@ -295,7 +299,7 @@
             $(document).ready(function() {
               $("#subscription").dropdown({
                 apiSettings: {
-                    url: "<g:createLink controller="ajax" action="lookupSubscriptions"/>" +
+                    url: "<g:createLink controller="ajax" action="lookupSubscriptions_IndendedAndCurrent"/>" +
                             "?ltype=${license.getCalculatedType()}" +
                             "&query={query}",
                     cache: false

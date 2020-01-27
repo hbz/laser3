@@ -60,7 +60,7 @@ class CostItem
     @RefdataAnnotation(cat = RDConstants.TAX_TYPE)
     RefdataValue taxCode          //to be deleted, will be replaced by TAX_TYPES
 
-    @RefdataAnnotation(cat = 'Currency')
+    @RefdataAnnotation(cat = RDConstants.CURRENCY)
     RefdataValue billingCurrency
 
     Boolean includeInSubscription //include in sub details page
@@ -259,7 +259,7 @@ class CostItem
                         token   : it,
                         rdc     : "Currency",
                         hardData: false,
-                        i10n    : [en: it, de: it]
+                        i10n    : [value_en: it, value_de: it]
                 ])
             }
             if (currencyPriorityList) {

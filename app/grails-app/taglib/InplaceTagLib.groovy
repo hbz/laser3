@@ -7,7 +7,7 @@ class InplaceTagLib {
     if ( attrs.cat ) {
       def category = RefdataCategory.getByDesc(attrs.cat)
       if ( category ) {
-        def value = RefdataValue.findByOwnerAndValue(category, attrs.val)
+        def value = RefdataValue.getByValueAndCategory(attrs.val, attrs.cat)
 
         def id = "${attrs.domain}:${attrs.pk}:${attrs.field}:${attrs.cat}:${attrs.id}"
         if ( value ) {

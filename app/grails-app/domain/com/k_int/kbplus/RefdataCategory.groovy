@@ -13,36 +13,10 @@ class RefdataCategory extends AbstractI10nOverride {
 
     static Log static_logger = LogFactory.getLog(RefdataCategory)
 
-    @Transient
-    public static final ORG_STATUS = RDConstants.ORG_STATUS
-    @Transient
-    public static final PKG_SCOPE = RDConstants.PACKAGE_SCOPE
-    @Transient
-    public static final PKG_LIST_STAT = RDConstants.PACKAGE_LIST_STATUS
-    @Transient
-    public static final PKG_FIXED = RDConstants.PACKAGE_FIXED
-    @Transient
-    public static final PKG_BREAKABLE = RDConstants.PACKAGE_BREAKABLE
-    @Transient
-    public static final PKG_CONSISTENT = RDConstants.PACKAGE_CONSISTENT
-    @Transient
-    public static final PKG_TYPE = RDConstants.PACKAGE_TYPE
-    @Transient
-    public static final TI_STATUS = RDConstants.TITLE_STATUS
-    @Transient
-    public static final LIC_STATUS = RDConstants.LICENSE_STATUS
-    @Transient
-    public static final LIC_TYPE = RDConstants.LICENSE_TYPE
-    @Transient
-    public static final TIPP_STATUS = RDConstants.TIPP_STATUS
-    @Transient
-    public static final TI_MEDIUM = RDConstants.TITLE_MEDIUM
-    @Transient
-    public static final PKG_PAYMENTTYPE = 'Package Payment Type'
-    @Transient
-    public static final PKG_GLOBAL = 'Package Global'
-     @Transient
-    public static final IE_ACCEPT_STATUS = RDConstants.IE_ACCEPT_STATUS
+    //@Transient
+    //public static final PKG_PAYMENTTYPE = 'Package Payment Type'
+    //@Transient
+    //public static final PKG_GLOBAL = 'Package Global'
 
     String desc
     String desc_de
@@ -89,8 +63,8 @@ class RefdataCategory extends AbstractI10nOverride {
             rdc = new RefdataCategory(desc:token) // todo: token
         }
 
-        rdc.desc_de = i10n.get('de') ?: null
-        rdc.desc_en = i10n.get('en') ?: null
+        rdc.desc_de = i10n.get('desc_de') ?: null
+        rdc.desc_en = i10n.get('desc_en') ?: null
 
         rdc.isHardData = hardData
         rdc.save(flush: true)
@@ -155,29 +129,16 @@ class RefdataCategory extends AbstractI10nOverride {
       String i10value = LocaleContextHolder.getLocale().getLanguage() == Locale.GERMAN.getLanguage() ? 'value_de' : 'value_en'
 
       RefdataValue.executeQuery(
-              "select rdv from RefdataValue as rdv, RefdataCategory as rdc where rdv.owner = rdc and rdc.desc = ? order by rdv.${i10value}"
-              , ["${category_name}"] )
+              "select rdv from RefdataValue as rdv, RefdataCategory as rdc where rdv.owner = rdc and lower(rdc.desc) = ? order by rdv.${i10value}"
+              , ["${category_name}".toLowerCase()] )
   }
 
     static getAllRefdataValuesWithI10nExplanation(String category_name, Map sort) {
         List<RefdataValue> refdatas = RefdataValue.findAllByOwner(RefdataCategory.findByDescIlike(category_name),sort)
-        return fetchData(refdatas)
-    }
 
-    private static List fetchData(refdatas) {
         List result = []
         refdatas.each { rd ->
-            String explanation
-            I10nTranslation translation = I10nTranslation.findByReferenceClassAndReferenceFieldAndReferenceId(rd.class.name,'expl',rd.id)
-            switch(I10nTranslation.decodeLocale(LocaleContextHolder.getLocale().toString())) {
-                case "de": explanation = translation.valueDe
-                    break
-                case "en": explanation = translation.valueEn
-                    break
-                case "fr": explanation = translation.valueFr
-                    break
-            }
-            result.add(id:rd.id,value:rd.getI10n('value'),expl:explanation)
+            result.add(id:rd.id, value:rd.getI10n('value'), expl:rd.getI10n('expl'))
         }
         result
     }
