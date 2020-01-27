@@ -373,7 +373,10 @@ class BootStrap {
                             Map<String, Object> map = [
                                     token   : line[0].trim(),
                                     hardData: BOOTSTRAP,
-                                    i10n    : [de: line[1].trim(), en: line[2].trim()]
+                                    i10n    : [
+                                            desc_de: line[1].trim(),
+                                            desc_en: line[2].trim()
+                                    ]
                             ]
                             result.add(map)
                         }
@@ -383,8 +386,12 @@ class BootStrap {
                                     token   : line[1].trim(),
                                     rdc     : line[0].trim(),
                                     hardData: BOOTSTRAP,
-                                    i10n    : [de: line[2].trim(), en: line[3].trim()],
-                                    expl    : [de: line[4].trim(), en: line[5].trim()]
+                                    i10n    : [
+                                            value_de: line[2].trim(),
+                                            value_en: line[3].trim(),
+                                            expl_de:  line[4].trim(),
+                                            expl_en:  line[5].trim()
+                                    ]
                             ]
                             result.add(map)
                         }
@@ -399,9 +406,14 @@ class BootStrap {
                                     logic       : new Boolean( line[8].trim() ),
                                     tenant      : line[11].trim(),
                                     hardData    : BOOTSTRAP,
-                                    i10n        : [de: line[2].trim(), en: line[3].trim()],
-                                    // descr       : [de: line[0].trim(), en: line[0].trim()],
-                                    expl        : [de: line[9].trim(), en: line[10].trim()],
+                                    i10n        : [
+                                            name_de: line[2].trim(),
+                                            name_en: line[3].trim(),
+                                            //descr_de: line[0].trim(),
+                                            //descr_en: line[0].trim(),
+                                            expl_de: line[9].trim(),
+                                            expl_en: line[10].trim()
+                                    ]
                             ]
                             result.add(map)
                         }
@@ -685,8 +697,12 @@ class BootStrap {
                     multiple    : default_prop.multiple,
                     logic       : default_prop.isUsedForLogic,
                     tenant      : tenant,
-                    i10n        : default_prop.name,
-                    expl        : default_prop.expl
+                    i10n        : [
+                            name_de: default_prop.name?.trim(),
+                            name_en: default_prop.name?.trim(),
+                            expl_de: default_prop.expl?.trim(),
+                            expl_en: default_prop.expl?.trim()
+                    ]
             ]
 
             PropertyDefinition.construct(map)
@@ -885,7 +901,7 @@ class BootStrap {
                         token   : rdv,
                         rdc     : rdc,
                         hardData: BOOTSTRAP,
-                        i10n    : [de: rdv, en: rdv]
+                        i10n    : [value_de: rdv, value_en: rdv]
                 ]
 
                 RefdataValue.construct(map)

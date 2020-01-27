@@ -3529,8 +3529,12 @@ class SurveyController {
                             category    : 'Subscription Property',
                             type        : surveyProperty.type,
                             rdc         : (surveyProperty.type == RefdataValue.toString()) ? surveyProperty.refdataCategory : null,
-                            i10n        : [de: surveyProperty.getI10n('name', 'de'), en: surveyProperty.getI10n('name', 'en')],
-                            expl        : [de: surveyProperty.getI10n('expl', 'de'), en: surveyProperty.getI10n('expl', 'en')]
+                            i10n        : [
+                                    name_de: surveyProperty.getI10n('name', 'de'),
+                                    name_en: surveyProperty.getI10n('name', 'en'),
+                                    expl_de: surveyProperty.getI10n('expl', 'de'),
+                                    expl_en: surveyProperty.getI10n('expl', 'en')
+                            ]
                     ]
                     propDef = PropertyDefinition.construct(map)
                 }

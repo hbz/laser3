@@ -75,7 +75,7 @@ class StatsSyncServiceOptions {
                 token   : report.toString(),
                 rdc     : RDConstants.FACT_TYPE,
                 hardData: false,
-                i10n    : [en: report.toString(), de: report.toString()]
+                i10n    : [value_en: report.toString(), value_de: report.toString()]
         ])
     }
 

@@ -907,8 +907,12 @@ class OrganisationService {
                 type        : "class com.k_int.kbplus.RefdataValue",
                 rdc         : RDConstants.Y_N_O,
                 tenant      : current,
-                i10n        : [de: "Quellensteuer-Befreiung", en: "Quellensteuer-Befreiung"],
-                expl        : [de: "Hat der Anbieter für dieses Produkt eine Befreiung der Quellensteuer erwirkt?", en: "Hat der Anbieter für dieses Produkt eine Befreiung der Quellensteuer erwirkt?"],
+                i10n        : [
+                        name_de: "Quellensteuer-Befreiung",
+                        name_en: "Quellensteuer-Befreiung",
+                        expl_de: "Hat der Anbieter für dieses Produkt eine Befreiung der Quellensteuer erwirkt?",
+                        expl_en: "Hat der Anbieter für dieses Produkt eine Befreiung der Quellensteuer erwirkt?"
+                ]
         ]
 
         Map<String, Object> map2 = [
@@ -917,8 +921,12 @@ class OrganisationService {
                 type        : "class com.k_int.kbplus.RefdataValue",
                 rdc         : RDConstants.Y_N,
                 tenant      : current,
-                i10n        : [de: "BGA", en: "BGA"],
-                expl        : [de: "Betrieb gewerblicher Art", en: "Betrieb gewerblicher Art"],
+                i10n        : [
+                        name_de: "BGA",
+                        name_en: "BGA",
+                        expl_de: "Betrieb gewerblicher Art",
+                        expl_en: "Betrieb gewerblicher Art"
+                ]
         ]
 
         Map<String, Object> map3 = [
@@ -926,8 +934,12 @@ class OrganisationService {
                 category    : "Organisation Property",
                 type        : "class java.lang.Integer",
                 tenant      : current,
-                i10n        : [de: "EGP Nr.", en: "EGP Nr."],
-                expl        : [de: "ID für das SAP System des rechtlichen Trägers", en: "ID für das SAP System des rechtlichen Trägers"],
+                i10n        : [
+                        name_de: "EGP Nr.",
+                        name_en: "EGP Nr.",
+                        expl_de: "ID für das SAP System des rechtlichen Trägers",
+                        expl_en: "ID für das SAP System des rechtlichen Trägers"
+                ]
         ]
 
         Set<PropertyDefinition> privatePropertyDefMaps = [

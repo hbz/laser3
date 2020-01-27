@@ -388,7 +388,7 @@ class PendingChangeService extends AbstractLockableService {
                                             token   : changeDoc.newLabel,
                                             rdc     : propDef.refdataCategory,
                                             hardData: false,
-                                            i10n    : [en: changeDoc.newLabel, de: changeDoc.newLabel]
+                                            i10n    : [value_en: changeDoc.newLabel, value_de: changeDoc.newLabel]
                                     ])
                                 }
                             }

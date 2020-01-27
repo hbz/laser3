@@ -85,14 +85,13 @@ class RefdataValue extends AbstractI10nOverride implements Comparable<RefdataVal
         String rdc       = map.get('rdc')
         boolean hardData = new Boolean( map.get('hardData') )
         Map i10n         = map.get('i10n')
-        Map expl         = map.get('expl')  ?: [de: null, en: null]
 
         RefdataCategory cat = RefdataCategory.findByDescIlike(rdc)
         if (! cat) {
             cat = RefdataCategory.construct([
                     token   : rdc,
                     hardData: false,
-                    i10n    : [en: rdc, de: rdc],
+                    i10n    : [desc_de: rdc, desc_en: rdc],
             ])
         }
 
@@ -102,11 +101,11 @@ class RefdataValue extends AbstractI10nOverride implements Comparable<RefdataVal
             rdv = new RefdataValue(owner: cat, value: token)
         }
 
-        rdv.value_de = i10n.get('de') ?: null
-        rdv.value_en = i10n.get('en') ?: null
+        rdv.value_de = i10n.get('value_de') ?: null
+        rdv.value_en = i10n.get('value_en') ?: null
 
-        rdv.expl_de = expl.get('de') ?: null
-        rdv.expl_en = expl.get('en') ?: null
+        rdv.expl_de = i10n.get('expl_de') ?: null
+        rdv.expl_en = i10n.get('expl_en') ?: null
 
         rdv.isHardData = hardData
         rdv.save(flush: true)
