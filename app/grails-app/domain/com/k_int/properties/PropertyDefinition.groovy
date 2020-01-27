@@ -438,21 +438,6 @@ class PropertyDefinition extends AbstractI10nOverride implements Serializable , 
         return 0
     }
 
-    /*
-    def afterInsert() {
-        I10nTranslation.createOrUpdateI10n(this, 'name',  [de: this.name, en: this.name])
-        I10nTranslation.createOrUpdateI10n(this, 'descr', [de: this.descr, en: this.descr])
-        I10nTranslation.createOrUpdateI10n(this, 'expl', [de: this.expl, en: this.expl])
-    }
-
-
-    def afterDelete() {
-        String rc = this.getClass().getName()
-        def id = this.getId()
-        I10nTranslation.where{referenceClass == rc && referenceId == id}.deleteAll()
-    }
-     */
-
 
   @Transient
   def getOccurrencesOwner(String[] cls){
