@@ -197,7 +197,7 @@ class StatsSyncService {
     }
 
     def getRelevantReportList(queryParams) {
-        List<RefdataValue> reports = RDConstants.TITLE_STATUS(RDConstants.FACT_TYPE)
+        List<RefdataValue> reports = RefdataCategory.getAllRefdataValues(RDConstants.FACT_TYPE)
         def availableReports = getAvailableReportsForPlatform(queryParams)
         reports.removeAll {
             if (it.value.startsWith('STATS') || (it.value.startsWith('JUSP'))){
