@@ -46,7 +46,7 @@ class FactService {
                   token   : fact.type,
                   rdc     : RDConstants.FACT_TYPE,
                   hardData: false,
-                  i10n    : [en: fact.type, de: fact.type]
+                  i10n    : [value_de: fact.type, value_en: fact.type]
           ])
 
           // Are we updating an existing fact?

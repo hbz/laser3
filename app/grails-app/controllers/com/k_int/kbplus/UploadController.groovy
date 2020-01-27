@@ -199,7 +199,7 @@ class UploadController extends AbstractDebugController {
                     token   : tipp.hybrid_oa.capitalize(),
                     rdc     : RDConstants.TIPP_HYBRID_OA,
                     hardData: false,
-                    i10n    : [en: tipp.hybrid_oa.capitalize(), de: tipp.hybrid_oa.capitalize()]
+                    i10n    : [value_en: tipp.hybrid_oa.capitalize(), value_de: tipp.hybrid_oa.capitalize()]
             ])
           }
 
