@@ -2,6 +2,8 @@
 
 **Ticket    Date    Branch      Author  Feature/Bug     Description/Keywords**
 
+--      27.01.2020  rc1.2       David   Bug         Bugfix: API /statistic
+
 2102    24.01.2020   hbz-dev    David   Feature     Refactoring: Übersetzungen für PropertyDefinitions
 
 1961    24.01.2020  hbz-dev     Anja    Feature     Verknüpfungsauswahl bei Vertrag: Jetzt werden auch Subscriptons vom Status intended zur Auswahl angezeigt. 
@@ -172,7 +174,7 @@
  
 --      06.12.2019  rc1.1       Andreas Bug         Entfernen der Währungsbezeichnung aus den Finanzsichten
 
- /      06.12.2019  hbz-dev     David   Feature     Verbesserte Cronjob-Übersicht
+--      06.12.2019  hbz-dev     David   Feature     Verbesserte Cronjob-Übersicht
 
 --      05.12.2019  rc1.1       Andreas Bug         Sicherheitslücke behoben und Template-Generierung angelegt für Kostenimport
 
@@ -185,6 +187,8 @@
 1945    09.12.2019  hbz-dev     David   Bug         Falsche Aktualisierungsmeldung im Nutzerprofil
 
 1941    09.12.2019  hbz-dev     David   Feature     Tabelle "Meine Konsorten" angepasst
+
+--      09.12.2019  hbz-dev     Daniel  Feature     Allgemeine Subscriptionmerkmale um "EZB Kollektionsdatenweitergabe an Drittsysteme erlaubt?" ergänzt 
 
 1935    06.12.2019  hbz-dev     Anja    Feature     GASCO-Monitor: Es werden Kontakte nur noch aus öffentichem Adressbuch angezeigt
 
@@ -269,5 +273,3 @@
 1867    12.11.2019  rc-1.1      David   Bug         Fehlende Merkmale bei verschiedenen API-Enpunkten (0.70)
 
 1837    06.11.2019  rc-1.1      David   Bug         Standard-Dashboard beim Einloggen setzen
-
-/       09.12.2019  hbz-dev     Daniel  Feature     Allgemeine Subscriptionmerkmale um "EZB Kollektionsdatenweitergabe an Drittsysteme erlaubt?" ergänzt 
