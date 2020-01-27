@@ -85,6 +85,7 @@ package.list.status,Package.ListStatus,Package.ListStatus
 package.scope,Package.Scope,Package.Scope
 package.status,Paketstatus,Package Status
 package.type,Package.Type,Package.Type
+package.content.type,Package Content Type,Package Content Type
 pending.change.status,PendingChangeStatus,PendingChangeStatus
 permissions,Berechtigungen,Permissions
 person.contact.type,Kontaktart,Person: Contact Type

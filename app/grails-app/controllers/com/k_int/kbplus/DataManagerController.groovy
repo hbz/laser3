@@ -375,76 +375,25 @@ class DataManagerController extends AbstractDebugController {
         result
     }
 
-    @Secured(['ROLE_ADMIN'])
-    def expungeDeletedTitles() {
+    @Secured(['ROLE_YODA'])
+    Map<String,Object> listPlatformDuplicates() {
+        log.debug("listPlatformDuplicates ...")
+        Map<String, Object> result = [:]
 
-        log.debug("expungeDeletedTitles.. Create async task..");
-        if(SpringSecurityUtils.ifNotGranted('ROLE_ADMIN')){
-            flash.error =  message(code:"default.access.error")
-            response.sendError(401)
-            return;
-        }
-        def p = TitleInstance.async.task {
-
-            def ctr = 0;
-
-            try {
-                log.debug("Delayed start");
-                synchronized(this) {
-                    Thread.sleep(2000);
-                }
-
-                log.debug("Query...");
-                def l = TitleInstance.executeQuery('select t.id from TitleInstance t where t.status.value=?',['Deleted']);
-
-                if ( ( l != null ) && ( l instanceof List ) ) {
-                    log.debug("Processing...");
-                    l.each { ti_id ->
-                        TitleInstance.withNewTransaction {
-                            log.debug("Expunging title [${ctr++}] ${ti_id}");
-                            TitleInstance.expunge(ti_id);
-                        }
-                    }
-                }
-                else {
-                    log.error("${l} was null or not a list -- ${l?.class.name}");
-                }
-
-                log.debug("Completed processing - ${ctr}");
-            }
-            catch( Exception e ) {
-                e.printStackTrace()
-                log.error("Problem",e);
-            }
-
-            return "expungeDeletedTitles Completed - ${ctr} titles expunged"
-        }
-
-
-        p.onError { Throwable err ->
-            log.debug("An error occured ${err.message}")
-        }
-
-        p.onComplete { result ->
-            log.debug("Promise returned $result")
-        }
-
-        log.debug("Got promise : ${p}. ${p.class.name}");
-        log.debug("expungeDeletedTitles.. Returning");
-
-        redirect(controller:'home')
+        log.debug("listPlatformDuplicates ... returning")
+        result
     }
 
     @Secured(['ROLE_YODA'])
     Map<String,Object> listDeletedTIPPS() {
-        log.debug("expungeDeletedTIPPS ...")
+        log.debug("listDeletedTIPPS ...")
         SessionCacheWrapper sessionCache = contextService.getSessionCache()
         Map<String,Object> result = sessionCache.get("DataManagerController/listDeletedTIPPS/result")
         if(!result){
             result = yodaService.processDeletedTIPPs()
             sessionCache.put("DataManagerController/listDeletedTIPPS/result",result)
         }
-        log.debug("expungeDeletedTIPPS ... returning")
+        log.debug("listDeletedTIPPS ... returning")
         result
     }
 
@@ -459,6 +408,7 @@ class DataManagerController extends AbstractDebugController {
                 IssueEntitlement.withTransaction { status ->
                     try {
                         IssueEntitlement.executeUpdate('update IssueEntitlement ie set ie.tipp.id = :mergeTarget where ie.id in (:iesToMerge)',[mergeTarget:mergingTIPP.mergeTarget,iesToMerge:mergingTIPP.iesToMerge])
+                        status.flush()
                     }
                     catch (Exception e) {
                         log.error("failure on merging TIPPs ... rollback!")
@@ -467,22 +417,30 @@ class DataManagerController extends AbstractDebugController {
                 }
             }
             log.debug("remapping done, purge now duplicate entries ...")
+            globalSourceSyncService.cleanUpGorm()
             List<String> colHeaders = ['Konsortium','Teilnehmer','Lizenz','Paket','Titel','Grund']
             List<List<String>> reportRows = []
-            Map<RefdataValue,Set<TitleInstancePackagePlatform>> pendingChangeSetupMap = [:]
+            Map<RefdataValue,Set<String>> pendingChangeSetupMap = [:]
+            Set<String> alreadyProcessed = []
+
             result.deletedWithoutGOKbRecord.each { entry ->
                 entry.each { delTIPP,issueEntitlements ->
                     issueEntitlements.each { ieDetails ->
                         IssueEntitlement ie = (IssueEntitlement) ieDetails.ie
                         switch(ieDetails.action) {
                             case "deleteCascade":
+                                //mark as deleted!
                                 log.debug("deletion cascade: deleting ${ie}, deleting ${ie.subscription}")
-                                deletionService.deleteIssueEntitlement(ie)
-                                deletionService.deleteSubscription(ie.subscription,false)
+                                //deletionService.deleteIssueEntitlement(ie)
+                                //deletionService.deleteSubscription(ie.subscription,false)
                                 break
                             case "report": reportRows << [ieDetails.report.consortium,ieDetails.report.subscriber,ieDetails.report.subscription,ieDetails.report.package,ieDetails.report.title,ieDetails.report.cause]
                                 break
-                            case "remap": deletionService.deleteTIPP(delTIPP,TitleInstancePackagePlatform.findByGokbId(ieDetails.target))
+                            case "remap": if(!alreadyProcessed.contains(delTIPP.gokbId)){
+                                //mark obsolete ones as deleted!
+                                deletionService.deleteTIPP(delTIPP,TitleInstancePackagePlatform.findByGokbId(ieDetails.target))
+                                alreadyProcessed << delTIPP.gokbId
+                                }
                                 break
                         }
                     }
@@ -490,7 +448,7 @@ class DataManagerController extends AbstractDebugController {
             }
             result.deletedWithGOKbRecord.each { row ->
                 row.each { delTIPP, tippDetails ->
-                    Set<TitleInstancePackagePlatform> tippsToUpdate = pendingChangeSetupMap[tippDetails.status]
+                    Set<Long> tippsToUpdate = pendingChangeSetupMap[tippDetails.status]
                     if(!tippsToUpdate)
                         tippsToUpdate = []
                     tippsToUpdate << delTIPP
@@ -503,25 +461,29 @@ class DataManagerController extends AbstractDebugController {
                 //hook up pending changes
                 Locale locale = LocaleContextHolder.locale
                 String defaultAcceptChange = messageSource.getMessage('default.accept.change.ie',null,locale)
-                tippsToUpdate.each { tippKey ->
-                    TitleInstancePackagePlatform tipp = genericOIDService.resolveOID(tippKey)
-                    String titleLink = grailsLinkGenerator.link(controller: 'title', action: 'show', id: tipp.title.id)
-                    String pkgLink = grailsLinkGenerator.link(controller: 'package', action: 'show', id: tipp.pkg.id)
-                    List<IssueEntitlement> iesToNotify = IssueEntitlement.findAllByTipp(tipp)
-                    iesToNotify.each { IssueEntitlement ie ->
-                        log.debug("notifying subscription ${ie.subscription}")
-                        String changeDesc = ""
-                        Map<String, Object> changeMap = [:]
-                        Object[] args = [titleLink,tipp.title.title,pkgLink,tipp.pkg.name,messageSource.getMessage("tipp.status",null,locale),ie.status,status,defaultAcceptChange]
-                        changeDesc = messageSource.getMessage('pendingChange.message_TP02',args,locale)
-                        changeMap.changeTarget = "${ie.class.name}:${ie.id}"
-                        changeMap.changeType = PendingChangeService.EVENT_PROPERTY_CHANGE
-                        changeMap.changeDoc = [field: 'status', fieldType: RefdataValue.class.name, refdataCategory: RefdataCategory.TIPP_STATUS, newValue: status, oldValue: ie.status]
-                        changeNotificationService.registerPendingChange(PendingChange.PROP_SUBSCRIPTION,ie.subscription,ie.subscription.getSubscriber(),changeMap,null,null,changeDesc)
+                List<IssueEntitlement> iesToNotify = IssueEntitlement.executeQuery('select ie from IssueEntitlement ie where ie.tipp.globalUID in :tippKeys',[tippKeys:tippsToUpdate])
+                if(iesToNotify) {
+                    tippsToUpdate.each { tippKey ->
+                        TitleInstancePackagePlatform tipp = genericOIDService.resolveOID(tippKey)
+                        String titleLink = grailsLinkGenerator.link(controller: 'title', action: 'show', id: tipp.title.id)
+                        String pkgLink = grailsLinkGenerator.link(controller: 'package', action: 'show', id: tipp.pkg.id)
+                        iesToNotify.each { IssueEntitlement ie ->
+                            log.debug("notifying subscription ${ie.subscription}")
+                            String changeDesc = ""
+                            Map<String, Object> changeMap = [:]
+                            Object[] args = [titleLink,tipp.title.title,pkgLink,tipp.pkg.name,messageSource.getMessage("tipp.status",null,locale),ie.status,status,defaultAcceptChange]
+                            changeDesc = messageSource.getMessage('pendingChange.message_TP02',args,locale)
+                            changeMap.changeTarget = "${ie.class.name}:${ie.id}"
+                            changeMap.changeType = PendingChangeService.EVENT_PROPERTY_CHANGE
+                            changeMap.changeDoc = [prop: 'status', fieldType: RefdataValue.class.name, refdataCategory: RefdataCategory.TIPP_STATUS, 'new': status, 'old': ie.status]
+                            changeNotificationService.registerPendingChange(PendingChange.PROP_SUBSCRIPTION,ie.subscription,ie.subscription.getSubscriber(),changeMap,null,null,changeDesc)
+                        }
                     }
                 }
+                else log.debug("no issue entitlements depending!")
             }
             Set<TitleInstancePackagePlatform> tippsToDelete = TitleInstancePackagePlatform.findAllByGokbIdInListAndIdNotInList(result.duplicateTIPPKeys,result.excludes)
+            //this is correct; only the duplicates should be deleted!
             if(tippsToDelete)
                 deletionService.deleteTIPPsCascaded(tippsToDelete)
             sessionCache.remove("DataManagerController/listDeletedTIPPS/result")
@@ -533,7 +495,7 @@ class DataManagerController extends AbstractDebugController {
                 csv {
                     response.setHeader("Content-disposition","attachment; filename=\"Subscriptions_to_report.csv\"")
                     response.outputStream.withWriter { writer ->
-                        writer.write(exportService.generateSeparatorTableString(colHeaders,reportRows,','))
+                        writer.write(exportService.generateSeparatorTableString(colHeaders,reportRows,'\t'))
                     }
                     response.outputStream.flush()
                     response.outputStream.close()

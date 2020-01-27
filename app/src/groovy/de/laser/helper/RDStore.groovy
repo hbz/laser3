@@ -3,7 +3,6 @@ package de.laser.helper
 
 import com.k_int.kbplus.RefdataValue
 import com.k_int.kbplus.SurveyProperty
-import groovy.transform.CompileStatic
 import org.codehaus.groovy.grails.orm.hibernate.cfg.GrailsHibernateUtil
 
 //@CompileStatic
@@ -116,9 +115,9 @@ class RDStore {
     static final PERM_NOT_APPLICABLE        = getRefdataValue('Not applicable', RDConstants.PERMISSIONS)
     static final PERM_UNKNOWN               = getRefdataValue('Unknown', RDConstants.PERMISSIONS)
 
-    static final TITLE_TYPE_EBOOK           = getRefdataValue('EBook', RDConstants.TITLE_TYPE)
-    static final TITLE_TYPE_JOURNAL         = getRefdataValue('Journal', RDConstants.TITLE_TYPE)
-    static final TITLE_TYPE_DATABASE        = getRefdataValue('Database', RDConstants.TITLE_TYPE)
+    static final TITLE_TYPE_EBOOK           = getRefdataValue('EBook', RDConstants.TITLE_MEDIUM)
+    static final TITLE_TYPE_JOURNAL         = getRefdataValue('Journal', RDConstants.TITLE_MEDIUM)
+    static final TITLE_TYPE_DATABASE        = getRefdataValue('Database', RDConstants.TITLE_MEDIUM)
 
     static final TITLE_STATUS_CURRENT       = getRefdataValue('Current', RDConstants.TITLE_STATUS)
     static final TITLE_STATUS_RETIRED       = getRefdataValue('Retired', RDConstants.TITLE_STATUS)

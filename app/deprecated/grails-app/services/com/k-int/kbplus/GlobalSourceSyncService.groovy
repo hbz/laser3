@@ -347,7 +347,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
                     name: grt.name,
                     gokbId: grt.owner.uuid ?: grt.owner.identifier,
                     autoAccept: false,
-                    packageType: null,
+                    contentType: null,
                     packageStatus: packageStatus,
                     packageListStatus: listStatus,
                     breakable: breakable,

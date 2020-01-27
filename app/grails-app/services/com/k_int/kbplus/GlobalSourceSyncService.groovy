@@ -5,6 +5,7 @@ import de.laser.SystemEvent
 import de.laser.domain.IssueEntitlementCoverage
 import de.laser.domain.TIPPCoverage
 import de.laser.exceptions.SyncException
+import de.laser.helper.RDConstants
 import de.laser.helper.RDStore
 import de.laser.interfaces.AbstractLockableService
 import groovy.util.slurpersupport.GPathResult
@@ -19,6 +20,7 @@ import org.hibernate.SessionFactory
 import org.hibernate.classic.Session
 import org.springframework.context.MessageSource
 import org.springframework.context.i18n.LocaleContextHolder
+import org.springframework.transaction.TransactionStatus
 
 import java.text.SimpleDateFormat
 import java.util.concurrent.Callable
@@ -189,12 +191,13 @@ class GlobalSourceSyncService extends AbstractLockableService {
         List<Map<String,Object>> tippsToNotify = [] //this is the actual return object; a pool within which we will contain all the TIPPs whose IssueEntitlements needs to be notified
         String packageUUID = packageData.'@uuid'.text()
         String packageName = packageData.name.text()
-        RefdataValue packageStatus = RefdataValue.getByValueAndCategory(packageData.status.text(), 'Package Status')
-        RefdataValue packageScope = RefdataValue.getByValueAndCategory(packageData.scope.text(),RefdataCategory.PKG_SCOPE) //needed?
-        RefdataValue packageListStatus = RefdataValue.getByValueAndCategory(packageData.listStatus.text(),RefdataCategory.PKG_LIST_STAT) //needed?
-        RefdataValue breakable = RefdataValue.getByValueAndCategory(packageData.breakable.text(),RefdataCategory.PKG_BREAKABLE) //needed?
-        RefdataValue consistent = RefdataValue.getByValueAndCategory(packageData.consistent.text(),RefdataCategory.PKG_CONSISTENT) //needed?
-        RefdataValue fixed = RefdataValue.getByValueAndCategory(packageData.fixed.text(),RefdataCategory.PKG_FIXED) //needed?
+        RefdataValue packageStatus = RefdataValue.getByValueAndCategory(packageData.status.text(), RDConstants.PACKAGE_STATUS)
+        RefdataValue packageScope = RefdataValue.getByValueAndCategory(packageData.scope.text(),RDConstants.PACKAGE_SCOPE) //needed?
+        RefdataValue packageListStatus = RefdataValue.getByValueAndCategory(packageData.listStatus.text(),RDConstants.PACKAGE_LIST_STATUS) //needed?
+        RefdataValue breakable = RefdataValue.getByValueAndCategory(packageData.breakable.text(),RDConstants.PACKAGE_BREAKABLE) //needed?
+        RefdataValue consistent = RefdataValue.getByValueAndCategory(packageData.consistent.text(),RDConstants.PACKAGE_CONSISTENT) //needed?
+        RefdataValue fixed = RefdataValue.getByValueAndCategory(packageData.fixed.text(),RDConstants.PACKAGE_LIST_STATUS) //needed?
+        RefdataValue contentType = RefdataValue.getByValueAndCategory(packageData.conentType.text(),RDConstants.PACKAGE_CONTENT_TYPE)
         Date listVerifiedDate = packageData.listVerifiedDate.text() ? escapeService.parseDate(packageData.listVerifiedDate.text()) : null
         //result.global = packageData.global.text() needed? not used in packageReconcile
         //result.paymentType = packageData.paymentType.text() needed? not used in packageReconcile
@@ -210,41 +213,11 @@ class GlobalSourceSyncService extends AbstractLockableService {
         //ex packageConv, processing TIPPs - conversion necessary because package may be not existent in LAS:eR; then, no comparison is needed any more
         List<Map<String,Object>> tipps = []
         packageData.TIPPs.TIPP.eachWithIndex { tipp, int ctr ->
-            Map<String,Object> updatedTIPP = [
-                    title: [
-                            gokbId: tipp.title.'@uuid'.text()
-                    ],
-                    status: tipp.status.text(),
-                    platformUUID: tipp.platform.'@uuid'.text(),
-                    coverages: [],
-                    hostPlatformURL: tipp.url.text(),
-                    identifiers: [],
-                    id: tipp.'@id'.text(),
-                    uuid: tipp.'@uuid'.text(),
-                    accessStartDate : tipp.access.'@start'.text() ? escapeService.parseDate(tipp.access.'@start'.text()) : null,
-                    accessEndDate   : tipp.access.'@end'.text() ? escapeService.parseDate(tipp.access.'@end'.text()) : null,
-                    medium      : tipp.medium.text()
-            ]
-            updatedTIPP.identifiers.add([namespace: 'uri', value: tipp.'@id'.tippId])
-            tipp.coverage.each { cov ->
-                updatedTIPP.coverages << [
-                        startDate: cov.'@startDate'.text() ? escapeService.parseDate(cov.'@startDate'.text()) : null,
-                        endDate: cov.'@endDate'.text() ? escapeService.parseDate(cov.'@endDate'.text()) : null,
-                        startVolume: cov.'@startVolume'.text() ?: '',
-                        endVolume: cov.'@endVolume'.text() ?: '',
-                        startIssue: cov.'@startIssue'.text() ?: '',
-                        endIssue: cov.'@endIssue'.text() ?: '',
-                        coverageDepth: cov.'@coverageDepth'.text() ?: '',
-                        coverageNote: cov.'@coverageNote'.text() ?: '',
-                        embargo: cov.'@embargo'.text() ?: ''
-                ]
-            }
-            updatedTIPP.coverages = updatedTIPP.coverages.toSorted { a, b -> a.startDate <=> b.startDate }
-            tipps << updatedTIPP
+            tipps << tippConv(tipp)
         }
         log.info("Rec conversion for package returns object with name ${packageName} and ${tipps.size()} tipps")
         Package result = Package.findByGokbId(packageUUID)
-        Package.withTransaction { transactionStatus ->
+        Package.withTransaction { TransactionStatus transactionStatus ->
             try {
                 if(result) {
                     //local package exists -> update closure, build up GokbDiffEngine and the horrendous closures
@@ -262,7 +235,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
                             TitleInstancePackagePlatform tippA = result.tipps.find { TitleInstancePackagePlatform b -> b.gokbId == tippB.uuid } //we have to consider here TIPPs, too, which were deleted but have been reactivated
                             if(tippA) {
                                 //ex updatedTippClosure / tippUnchangedClosure
-                                RefdataValue status = RefdataValue.getByValueAndCategory(tippB.status,RefdataCategory.TIPP_STATUS)
+                                RefdataValue status = RefdataValue.getByValueAndCategory(tippB.status,RDConstants.TIPP_STATUS)
                                 if(status == RDStore.TIPP_DELETED) {
                                     log.info("TIPP with UUID ${tippA.gokbId} has been deleted from package ${result.gokbId}")
                                     tippA.status = status
@@ -362,9 +335,10 @@ class GlobalSourceSyncService extends AbstractLockableService {
                         throw new SyncException("Error on saving package: ${result.errors}")
                     }
                 }
-                log.info("before processing identifiers")
-                packageData.identifiers.each { id ->
-                    Identifier.construct([namespace: id.'@namespace'.text(), value: id.'@value'.text(), reference: result])
+                log.info("before processing identifiers - identifier count: ${packageData.identifiers.identifier.size()}")
+                packageData.identifiers.identifier.each { id ->
+                    if(id.'@namespace'.text().toLowerCase() != 'originediturl')
+                        Identifier.construct([namespace: id.'@namespace'.text(), value: id.'@value'.text(), reference: result])
                 }
             }
             catch (Exception e) {
@@ -372,9 +346,48 @@ class GlobalSourceSyncService extends AbstractLockableService {
                 e.printStackTrace()
                 transactionStatus.setRollbackOnly()
             }
+            transactionStatus.flush()
         }
-
         tippsToNotify
+    }
+
+    /**
+     * Converts the TIPP data from OAI-XML elements into an object structure, reflected by a {@link Map}, representing the {@link TitleInstancePackagePlatform} and {@link TIPPCoverage} class structures
+     * @param TIPPData - the base branch ({@link NodeChildren}) containing the OAI extract for {@link TitleInstancePackagePlatform} data
+     * @return a {@link Map} containing the underlying TIPP data
+     */
+    Map<String,Object> tippConv(tipp) {
+        Map<String,Object> updatedTIPP = [
+                title: [
+                        gokbId: tipp.title.'@uuid'.text()
+                ],
+                status: tipp.status.text(),
+                platformUUID: tipp.platform.'@uuid'.text(),
+                coverages: [],
+                hostPlatformURL: tipp.url.text(),
+                identifiers: [],
+                id: tipp.'@id'.text(),
+                uuid: tipp.'@uuid'.text(),
+                accessStartDate : tipp.access.'@start'.text() ? escapeService.parseDate(tipp.access.'@start'.text()) : null,
+                accessEndDate   : tipp.access.'@end'.text() ? escapeService.parseDate(tipp.access.'@end'.text()) : null,
+                medium      : tipp.medium.text()
+        ]
+        updatedTIPP.identifiers.add([namespace: 'uri', value: tipp.'@id'.tippId])
+        tipp.coverage.each { cov ->
+            updatedTIPP.coverages << [
+                    startDate: cov.'@startDate'.text() ? escapeService.parseDate(cov.'@startDate'.text()) : null,
+                    endDate: cov.'@endDate'.text() ? escapeService.parseDate(cov.'@endDate'.text()) : null,
+                    startVolume: cov.'@startVolume'.text() ?: '',
+                    endVolume: cov.'@endVolume'.text() ?: '',
+                    startIssue: cov.'@startIssue'.text() ?: '',
+                    endIssue: cov.'@endIssue'.text() ?: '',
+                    coverageDepth: cov.'@coverageDepth'.text() ?: '',
+                    coverageNote: cov.'@coverageNote'.text() ?: '',
+                    embargo: cov.'@embargo'.text() ?: ''
+            ]
+        }
+        updatedTIPP.coverages = updatedTIPP.coverages.toSorted { a, b -> a.startDate <=> b.startDate }
+        updatedTIPP
     }
 
     /**
@@ -386,7 +399,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
     void addNewTIPP(Package pkg, Map<String,Object> tippData) throws SyncException {
         TitleInstancePackagePlatform newTIPP = new TitleInstancePackagePlatform(
                 gokbId: tippData.uuid,
-                status: RefdataValue.getByValueAndCategory(tippData.status, RefdataCategory.TIPP_STATUS),
+                status: RefdataValue.getByValueAndCategory(tippData.status, RDConstants.TIPP_STATUS),
                 hostPlatformURL: tippData.hostPlatformURL,
                 accessStartDate: (Date) tippData.accessStartDate,
                 accessEndDate: (Date) tippData.accessEndDate,
@@ -437,9 +450,9 @@ class GlobalSourceSyncService extends AbstractLockableService {
             log.info("title record loaded, converting XML record and reconciling title record for UUID ${titleUUID} ...")
             TitleInstance titleInstance = TitleInstance.findByGokbId(titleUUID)
             if(titleRecord.type.text()) {
-                RefdataValue status = RefdataValue.getByValueAndCategory(titleRecord.status.text(),RefdataCategory.TI_STATUS)
+                RefdataValue status = RefdataValue.getByValueAndCategory(titleRecord.status.text(),RDConstants.TITLE_STATUS)
                 //titleRecord.medium.text()
-                RefdataValue medium = RefdataValue.getByValueAndCategory(titleRecord.medium.text(),RefdataCategory.TI_MEDIUM) //misunderstandable mapping ...
+                RefdataValue medium = RefdataValue.getByValueAndCategory(titleRecord.medium.text(),RDConstants.TITLE_MEDIUM) //misunderstandable mapping ...
                 try {
                     switch(titleRecord.type.text()) {
                         case 'BookInstance': titleInstance = titleInstance ? (BookInstance) titleInstance : BookInstance.construct([gokbId:titleUUID])
@@ -586,7 +599,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
             case JournalInstance.class.name: participant = participant ? (JournalInstance) participant : JournalInstance.construct([gokbId:particData.uuid.text()])
                 break
         }
-        participant.status = RefdataValue.getByValueAndCategory(particData.status.text(),RefdataCategory.TI_STATUS)
+        participant.status = RefdataValue.getByValueAndCategory(particData.status.text(),RDConstants.TITLE_STATUS)
         participant.title = particData.title.text()
         if(participant.save()) {
             if(particData.identifiers) {
@@ -623,7 +636,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
                         name: providerRecord.name,
                         sector: RDStore.O_SECTOR_PUBLISHER,
                         type: [RDStore.OT_PROVIDER],
-                        status: RefdataValue.getByValueAndCategory(providerRecord.status,RefdataCategory.ORG_STATUS),
+                        status: RefdataValue.getByValueAndCategory(providerRecord.status,RDConstants.ORG_STATUS),
                         gokbId: providerUUID
                 )
                 if(provider.save()) {
@@ -727,7 +740,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
         Set<Map<String, Object>> result = []
 
         if (tippa.hostPlatformURL != tippb.hostPlatformURL) {
-            result.add([field: 'hostPlatformURL', newValue: tippb.hostPlatformURL, oldValue: tippa.hostPlatformURL])
+            result.add([field: 'hostPlatformURL', new: tippb.hostPlatformURL, old: tippa.hostPlatformURL])
         }
 
         // This is the boss enemy when refactoring coverage statements ... works so far, is going to be kept
@@ -738,15 +751,15 @@ class GlobalSourceSyncService extends AbstractLockableService {
         }
 
         if (tippa.accessStartDate != tippb.accessStartDate) {
-            result.add([field: 'accessStartDate', newValue: tippb.accessStartDate, oldValue: tippa.accessStartDate])
+            result.add([field: 'accessStartDate', new: tippb.accessStartDate, old: tippa.accessStartDate])
         }
 
         if (tippa.accessEndDate != tippb.accessEndDate) {
-            result.add([field: 'accessEndDate', newValue: tippb.accessEndDate, oldValue: tippa.accessEndDate])
+            result.add([field: 'accessEndDate', new: tippb.accessEndDate, old: tippa.accessEndDate])
         }
 
-        if(tippa.status != RefdataValue.getByValueAndCategory(tippb.status,RefdataCategory.TIPP_STATUS)) {
-            result.add([field: 'status', fieldType: RefdataValue.class.name, refdataCategory: RefdataCategory.TIPP_STATUS, newValue: tippb.status, oldValue: tippa.status])
+        if(tippa.status != RefdataValue.getByValueAndCategory(tippb.status,RDConstants.TIPP_STATUS)) {
+            result.add([field: 'status', fieldType: RefdataValue.class.name, refdataCategory: RDConstants.TIPP_STATUS, new: tippb.status, old: tippa.status])
         }
 
         result
@@ -869,7 +882,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
                                     }
                                 }
                                 else {
-                                    Object[] args = [titleLink,target.title.title,pkgLink,target.pkg.name,messageSource.getMessage("tipp.${diff.field}",null,locale),diff.oldValue,diff.newValue,defaultAcceptChange]
+                                    Object[] args = [titleLink,target.title.title,pkgLink,target.pkg.name,messageSource.getMessage("tipp.${diff.field}",null,locale),diff.old,diff.new,defaultAcceptChange]
                                     changeDesc = messageSource.getMessage('pendingChange.message_TP02',args,locale)
                                     changeMap.changeTarget = "${ie.class.name}:${ie.id}"
                                     changeMap.changeType = PendingChangeService.EVENT_PROPERTY_CHANGE

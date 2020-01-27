@@ -46,18 +46,6 @@
                   </dl>
               </g:if>
 
-              <g:if test="${titleInstancePackagePlatformInstance?.additionalPlatforms}">
-                  <dl>
-                      <dt><g:message code="tipp.additionalPlatform" default="Additional Platforms" /></dt>
-                      <g:each in="${titleInstancePackagePlatformInstance?.additionalPlatforms}" var="i">
-                          <dd>${i.rel} : <g:link controller="Platform" action="show" id="${i.platform.id}">${i.platform.name }</g:link>
-                          <g:if test="${(i.titleUrl != null ) && ( i.titleUrl.trim().length() > 0)}">( <a href="${i.titleUrl}">${i.titleUrl}</a> )</g:if>
-                          </dd>
-                      </g:each>
-                  </dl>
-              </g:if>
-
-
               <dl>
                   <g:each in="${titleInstancePackagePlatformInstance?.coverages}" var="covStmt">
                       <dt><g:message code="tipp.startDate" default="Start Date" /></dt>

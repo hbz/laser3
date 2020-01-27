@@ -439,7 +439,8 @@
                                 <i class="dropdown icon"></i>
 
                                 <div class="menu">
-                                    <g:link class="item" controller="dataManager" action="expungeDeletedTitles" onclick="return confirm('${message(code:'confirm.expunge.deleted.titles')}')">Expunge Deleted Titles</g:link>
+                                    <g:link class="item" controller="dataManager" action="listPlatformDuplicates">List Platform Duplicates</g:link>
+                                    <g:link class="item" controller="package" action="getDuplicatePackages">${message(code:'menu.yoda.purgeDuplicatePackages')}</g:link>
                                     <g:link class="item" controller="dataManager" onclick="return confirm('${message(code:'confirm.expunge.deleted.tipps')}')" action="listDeletedTIPPS">Expunge Deleted TIPPS</g:link>
                                     <g:link class="item" controller="admin" action="titleMerge">${message(code:'menu.admin.titleMerge')}</g:link>
                                     <g:link class="item" controller="admin" action="tippTransfer">${message(code:'menu.admin.tippTransfer')}</g:link>
@@ -458,7 +459,6 @@
                                 <div class="menu">
                                     <g:link class="item" controller="yoda" action="globalSync" onclick="return confirm('${message(code:'confirm.start.globalDataSync')}')">${message(code:'menu.yoda.globalDataSync')}</g:link>
                                     <g:link class="item" controller="yoda" action="manageGlobalSources">${message(code:'menu.yoda.manageGlobalSources')}</g:link>
-                                    <g:link class="item" controller="package" action="getDuplicatePackages">${message(code:'menu.yoda.purgeDuplicatePackages')}</g:link>
                                     <g:link class="item" controller="yoda" action="pendingChanges">${message(code:'menu.yoda.pendingChanges')}</g:link>
                                     <g:link class="item" controller="yoda" action="retriggerPendingChanges">${message(code:'menu.yoda.retriggerPendingChanges')}</g:link>
                                     <g:link class="item" controller="yoda" action="getTIPPsWithoutGOKBId">${message(code:'menu.yoda.purgeTIPPsWithoutGOKBID')}</g:link>

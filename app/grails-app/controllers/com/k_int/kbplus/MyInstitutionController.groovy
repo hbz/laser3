@@ -1769,8 +1769,7 @@ from License as l where (
         RefdataValue role_sub_cons   = RDStore.OR_SUBSCRIBER_CONS
 
         RefdataValue role_sub_consortia = RDStore.OR_SUBSCRIPTION_CONSORTIA
-        RefdataValue role_pkg_consortia = RDStore.OR_PACKAGE_CONSORTIA
-        def roles = [role_sub.id,role_sub_consortia.id,role_pkg_consortia.id]
+        def roles = [role_sub.id,role_sub_consortia.id]
 
         log.debug("viable roles are: ${roles}")
         log.debug("Using params: ${params}")
@@ -1786,9 +1785,6 @@ from License as l where (
                 "INNER JOIN subscription sub on ie.ie_subscription_fk = sub.sub_id INNER JOIN org_role orole on sub.sub_id = orole.or_sub_fk, " +
                 "title_instance_package_platform tipp INNER JOIN title_instance ti on tipp.tipp_ti_fk = ti.ti_id cross join title_instance ti2 "
 
-        if (filterOtherPlat) {
-            sub_qry += "INNER JOIN platformtipp ap on ap.tipp_id = tipp.tipp_id "
-        }
         if (filterPvd) {
             sub_qry += "INNER JOIN org_role orgrole on orgrole.or_pkg_fk=tipp.tipp_pkg_fk "
         }
@@ -2117,23 +2113,14 @@ SELECT Distinct(role.org), role.org.name FROM SubscriptionPackage sp INNER JOIN 
 SELECT Distinct(role.org), role.org.name FROM SubscriptionPackage sp INNER JOIN sp.pkg.orgs AS role 
 WHERE EXISTS ( FROM ${sub_qry} AND sp.subscription = s ) 
 AND role.roleType=:role_cp 
-ORDER BY role.org.name""", sub_params+[role_cp:cp]);
+ORDER BY role.org.name""", sub_params+[role_cp:cp])
 
         // Query the list of Host Platforms
         result.hostplatforms = IssueEntitlement.executeQuery("""
 SELECT distinct(ie.tipp.platform), ie.tipp.platform.name
 FROM IssueEntitlement AS ie, ${sub_qry}
 AND s = ie.subscription
-ORDER BY ie.tipp.platform.name""", sub_params);
-
-        // Query the list of Other Platforms
-        result.otherplatforms = IssueEntitlement.executeQuery("""
-SELECT distinct(p.platform), p.platform.name
-FROM IssueEntitlement AS ie
-  INNER JOIN ie.tipp.additionalPlatforms as p,
-  ${sub_qry}
-AND s = ie.subscription
-ORDER BY p.platform.name""", sub_params);
+ORDER BY ie.tipp.platform.name""", sub_params)
 
         return result
     }

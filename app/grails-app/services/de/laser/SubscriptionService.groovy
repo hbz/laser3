@@ -9,6 +9,7 @@ import com.k_int.properties.PropertyDefinitionGroup
 import com.k_int.properties.PropertyDefinitionGroupBinding
 import de.laser.domain.IssueEntitlementCoverage
 import de.laser.domain.PriceItem
+import de.laser.domain.TIPPCoverage
 import de.laser.exceptions.EntitlementCreationException
 import de.laser.helper.DebugAnnotation
 import de.laser.helper.FactoryResult
@@ -1004,6 +1005,21 @@ class SubscriptionService {
             else{
                 return false
             }
+        }
+    }
+
+    static boolean rebaseSubscriptions(TitleInstancePackagePlatform tipp, TitleInstancePackagePlatform replacement) {
+        try {
+            Map<String,TitleInstancePackagePlatform> rebasingParams = [old:tipp,replacement:replacement]
+            IssueEntitlement.executeUpdate('update IssueEntitlement ie set ie.tipp = :replacement where ie.tipp = :old',rebasingParams)
+            Identifier.executeUpdate('update Identifier i set i.tipp = :replacement where i.tipp = :old',rebasingParams)
+            TIPPCoverage.executeUpdate('update TIPPCoverage tc set tc.tipp = :replacement where tc.tipp = :old',rebasingParams)
+            return true
+        }
+        catch (Exception e) {
+            println 'error while rebasing TIPP ... rollback!'
+            println e.message
+            return false
         }
     }
 

@@ -5,21 +5,20 @@
 -- yyyy-mm-dd
 -- <short description>
 
--- 2019-11-25 / 2019-11-28
--- Delete deprecated package identifier (we use gokbId instead), move TitleInstance.type to TitleInstance.medium
-alter table package drop column pkg_identifier;
-ALTER TABLE public.title_instance ALTER COLUMN ti_gokb_id TYPE character varying(255);
-
 -- 2019-12-06
 -- ERMS-1929
 -- removing deprecated field impId, move ti_type_rv_fk to ti_medium_rv_fk
+alter table package drop column pkg_identifier;
+ALTER TABLE title_instance ALTER COLUMN ti_gokb_id TYPE character varying(512);
+alter table title_instance alter column ti_gokb_id set not null;
+alter table title_instance add constraint unique_gokb_id unique (ti_gokb_id);
 alter table org drop column org_imp_id;
 alter table package drop column pkg_imp_id;
 alter table platform drop column plat_imp_id;
 alter table subscription drop column sub_imp_id;
 alter table title_instance drop column ti_imp_id;
 alter table title_instance_package_platform drop column tipp_imp_id;
-alter table title_instance rename ti_type_rv_fk to ti_medium_rk_fk;
+alter table title_instance rename ti_type_rv_fk to ti_medium_rv_fk;
 update refdata_value set rdv_value = 'Book' where rdv_value = 'EBook';
 update refdata_category set rdc_description = 'Title Medium' where rdc_description = 'Title Type';
 
@@ -410,6 +409,20 @@ where i10n_reference_class like 'com.k_int.properties.PropertyDefinition%' and i
 delete from i10n_translation
 where i10n_reference_class like 'com.k_int.properties.PropertyDefinition%' and i10n_reference_field = 'expl';
 
+-- 2020-01-23
+-- ERMS-1901 (ERMS-1948): cleanup - set null values to generic null value, set gokbId as unique and not null, delete erroneous coverage data from ebooks and databases, delete column package_type_rv_fk
+
+delete from issue_entitlement_coverage where ic_ie_fk in (select ie_id from issue_entitlement join title_instance_package_platform on ie_tipp_fk = tipp_id join title_instance ti on tipp_ti_fk = ti_id where class not like '%JournalInstance%');
+update title_instance_package_platform set tipp_gokb_id = (select rdv_value from refdata_value join refdata_category on rdv_owner = rdc_id where rdc_description = 'filter.fake.values') where tipp_gokb_id is null;
+alter table title_instance_package_platform alter column tipp_gokb_id type character varying(512);
+alter table title_instance_package_platform alter column tipp_gokb_id set not null;
+alter table title_instance_package_platform ADD CONSTRAINT unique_gokb_id UNIQUE (tipp_gokb_id);
+update package set pkg_gokb_id = (select rdv_value from refdata_value join refdata_category on rdv_owner = rdc_id where rdc_description = 'filter.fake.values') where pkg_gokb_id is null;
+alter table package alter column pkg_gokb_id type character varying(512);
+alter table package alter column pkg_gokb_id set not null;
+alter table package ADD CONSTRAINT unique_gokb_id UNIQUE (pkg_gokb_id);
+ALTER TABLE package DROP COLUMN pkg_type_rv_fk;
+
 -- 2020-01-24
 -- ERMS-2038: migrate refdata value translations
 -- changesets in changelog-2020-01-24.groovy
@@ -424,4 +437,3 @@ where rdv_id = i10n_reference_id and i10n_reference_class = 'com.k_int.kbplus.Re
 
 delete from i10n_translation
 where i10n_reference_class like 'com.k_int.kbplus.RefdataValue%' and i10n_reference_field = 'expl';
-

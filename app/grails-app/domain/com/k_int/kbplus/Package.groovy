@@ -7,10 +7,6 @@ import de.laser.helper.RDStore
 import de.laser.helper.RefdataAnnotation
 import de.laser.interfaces.ShareSupport
 import de.laser.traits.ShareableTrait
-import groovy.util.slurpersupport.NodeChildren
-import groovyx.net.http.HTTPBuilder
-import static groovyx.net.http.ContentType.XML
-import static groovyx.net.http.Method.GET
 import org.apache.commons.logging.Log
 import org.apache.commons.logging.LogFactory
 
@@ -43,8 +39,8 @@ class Package
 
   Date listVerifiedDate
 
-    @RefdataAnnotation(cat = RDConstants.PACKAGE_TYPE)
-    RefdataValue packageType
+    @RefdataAnnotation(cat = RDConstants.PACKAGE_CONTENT_TYPE)
+    RefdataValue contentType
 
     @RefdataAnnotation(cat = RDConstants.PACKAGE_STATUS)
     RefdataValue packageStatus
@@ -104,7 +100,7 @@ static hasMany = [  tipps:     TitleInstancePackagePlatform,
                 sortName column:'pkg_sort_name'
                   gokbId column:'pkg_gokb_id', type:'text'
          //originEditUrl column:'pkg_origin_edit_url'
-             packageType column:'pkg_type_rv_fk'
+             contentType column:'pkg_content_type_rv_fk'
            packageStatus column:'pkg_status_rv_fk'
        packageListStatus column:'pkg_list_status_rv_fk'
                breakable column:'pkg_breakable_rv_fk'
@@ -133,7 +129,7 @@ static hasMany = [  tipps:     TitleInstancePackagePlatform,
 
   static constraints = {
                  globalUID(nullable:true, blank:false, unique:true, maxSize:255)
-               packageType(nullable:true, blank:false)
+               contentType(nullable:true, blank:false)
              packageStatus(nullable:true, blank:false)
            nominalPlatform(nullable:true, blank:false)
          packageListStatus(nullable:true, blank:false)

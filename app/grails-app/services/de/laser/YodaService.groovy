@@ -90,7 +90,7 @@ class YodaService {
         List<IssueEntitlement> allIE = IssueEntitlement.findAll()
         Map<Long,List<IssueEntitlement>> tippIEMap = [:]
         allIE.each { ie ->
-            List<IssueEntitlement> tippIEs = tippIEMap.get(ie.tipp)
+            List<IssueEntitlement> tippIEs = tippIEMap.get(ie.tipp.id)
             if(!tippIEs)
                 tippIEs = []
             tippIEs << ie
@@ -143,7 +143,7 @@ class YodaService {
                         }
                         issueEntitlements << ieDetails
                     }
-                    Map<TitleInstancePackagePlatform,Map<String,Object>> result = [:]
+                    Map<TitleInstancePackagePlatform,List<Map<String,Object>>> result = [:]
                     result[delTIPP] = issueEntitlements
                     deletedWithoutGOKbRecord << result
                 }
@@ -161,12 +161,47 @@ class YodaService {
                     /*
                     case: there is a TIPP in LAS:eR with an invalid GOKb UUID, thus no record.
                     If we have IssueEntitlements depending on it: check subscription state
-                        if deleted: delete subscription, delete IE, delete TIPP
+                        if deleted: delete subscription, delete IE, delete TIPP (i.e. mark the whole cascade as deleted)
                         else check if there is an equivalent GOKb record -> load package, check if there is an equivalent TitleInstance-Package-Platform entry (so a TIPP entry!)
                         if so: remap to new UUID
                         else show subscriber
                      */
+                    NodeChildren oaiTitleRecord = oaiRecords.get(delTIPP.title.gokbId)
                     List<Map<String,Object>> issueEntitlements = []
+                    def equivalentTIPP
+                    boolean titleRecordExists
+                    boolean equivalentTIPPExists
+                    if(!oaiTitleRecord) {
+                        def titleRecord = http.get(path:'titles',query:[verb:'getRecord',metadataPrefix:'gokb',identifier:delTIPP.title.gokbId],contentType:'xml') { resp, xml ->
+                            GPathResult record = new XmlSlurper().parseText(xml.text)
+                            if(record.error.@code == 'idDoesNotExist')
+                                return "title ${delTIPP.title.gokbId} inexistent, name is ${delTIPP.title.title}"
+                            else return record.'GetRecord'.record.metadata.gokb.title
+                        }
+                        if(titleRecord instanceof GString) {
+                            log.debug(titleRecord)
+                            titleRecordExists = false
+                        }
+                        else if (titleRecord instanceof NodeChildren) {
+                            log.debug("title instance ${delTIPP.title.gokbId} found, reconcile UUID by retrieving package and platform")
+                            titleRecordExists = true
+                            oaiTitleRecord = (NodeChildren) titleRecord
+                            oaiRecords.put(delTIPP.title.gokbId,oaiTitleRecord)
+                        }
+                    }
+                    if(oaiTitleRecord) {
+                        equivalentTIPP = oaiTitleRecord.TIPPs.TIPP.find { node ->
+                            node.package.name == delTIPP.pkg.name && node.platform.name == delTIPP.platform.name
+                        }
+                        if(equivalentTIPP) {
+                            equivalentTIPPExists = true
+                            log.debug("TIPP found: should remapped to UUID ${equivalentTIPP.@uuid}")
+                        }
+                        else {
+                            equivalentTIPPExists = false
+                            log.debug("no equivalent TIPP found")
+                        }
+                    }
                     tippIEMap.get(delTIPP.id).each { ie ->
                         Map<String,Object> ieDetails = [ie:ie]
                         if(ie.subscription.status == RDStore.TIPP_DELETED) {
@@ -174,13 +209,7 @@ class YodaService {
                             ieDetails.action = "deleteCascade"
                         }
                         else {
-                            log.debug("${ie.subscription} is current, check in GOKb if equivalent TIPP exists ...")
-                            def titleRecord = http.get(path:'titles',query:[verb:'getRecord',metadataPrefix:'gokb',identifier:delTIPP.title.gokbId],contentType:'xml') { resp, xml ->
-                                GPathResult record = new XmlSlurper().parseText(xml.text)
-                                if(record.error.@code == 'idDoesNotExist')
-                                    return "title ${delTIPP.title.gokbId} inexistent, name is ${delTIPP.title.title}"
-                                else return record.'GetRecord'.record.metadata.gokb.title
-                            }
+                            log.debug("${ie.subscription} is current, check if action needs to be taken ...")
                             Map<String,Object> report = [subscriber:ie.subscription.getSubscriber().shortname,subscription:ie.subscription.name,title:delTIPP.title.title,package:delTIPP.pkg.name]
                             if(ie.subscription.getCalculatedType() in [TemplateSupport.CALCULATED_TYPE_PARTICIPATION_AS_COLLECTIVE,TemplateSupport.CALCULATED_TYPE_PARTICIPATION]) {
                                 report.consortium = ie.subscription.getConsortia().shortname
@@ -188,19 +217,13 @@ class YodaService {
                             else {
                                 report.consortium = ""
                             }
-                            if(titleRecord instanceof GString){
-                                log.debug(titleRecord)
+                            if(!titleRecordExists){
                                 ieDetails.action = "report"
                                 ieDetails.report = report+[cause:"Titel ${delTIPP.title.gokbId} existiert nicht"]
                                 log.debug(ieDetails.report)
                             }
-                            else if(titleRecord instanceof NodeChildren) {
-                                log.debug("title instance ${delTIPP.title.gokbId} found, reconcile UUID by retrieving package and platform")
-                                def equivalentTIPP = titleRecord.TIPPs.TIPP.find { node ->
-                                    node.package.name == delTIPP.pkg.name && node.platform.name == delTIPP.platform.name
-                                }
-                                if(equivalentTIPP) {
-                                    log.debug("TIPP found: should remapped to UUID ${equivalentTIPP.@uuid}")
+                            else if(titleRecordExists) {
+                                if(equivalentTIPPExists) {
                                     ieDetails.action = "remap"
                                     ieDetails.target = equivalentTIPP.@uuid
                                 }
@@ -213,7 +236,7 @@ class YodaService {
                         }
                         issueEntitlements << ieDetails
                     }
-                    Map<TitleInstancePackagePlatform,Map<String,Object>> result = [:]
+                    Map<TitleInstancePackagePlatform,List<Map<String,Object>>> result = [:]
                     result[delTIPP] = issueEntitlements
                     deletedWithoutGOKbRecord << result
                 }

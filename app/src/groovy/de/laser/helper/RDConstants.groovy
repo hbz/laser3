@@ -100,7 +100,7 @@ class RDConstants {
     public static final String PACKAGE_FIXED          = 'package.fixed'
     public static final String PACKAGE_LIST_STATUS    = 'package.list.status'
     public static final String PACKAGE_SCOPE          = 'package.scope'
-    public static final String PACKAGE_TYPE           = 'package.type'
+    public static final String PACKAGE_CONTENT_TYPE   = 'package.content.type'
     public static final String PENDING_CHANGE_STATUS  = 'pending.change.status'
     public static final String PERMISSIONS            = 'permissions'
     public static final String PERSON_CONTACT_TYPE    = 'person.contact.type'
@@ -132,7 +132,7 @@ class RDConstants {
     public static final String TIPP_ACCESS_STATUS     = 'tipp.access.status'
     public static final String TIPP_STATUS            = 'tipp.status'
     public static final String TIPP_STATUS_REASON     = 'tipp.status.reason'
-    public static final String TITLE_TYPE             = 'title.type'
+    public static final String TITLE_MEDIUM           = 'title.medium'
 
     public static final String TIPP_DELAYED_OA        = 'tipp.delayed.oa'
     public static final String TIPP_HYBRID_OA         = 'tipp.hybrid.oa'

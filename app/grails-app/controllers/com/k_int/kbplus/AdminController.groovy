@@ -16,6 +16,7 @@ import de.laser.domain.I10nTranslation
 import de.laser.helper.DebugAnnotation
 import de.laser.helper.RDConstants
 import de.laser.helper.RDStore
+import de.laser.helper.SessionCacheWrapper
 import grails.converters.JSON
 import grails.plugin.springsecurity.SpringSecurityUtils
 import grails.plugin.springsecurity.annotation.Secured
@@ -25,6 +26,8 @@ import groovy.util.slurpersupport.FilteredNodeChildren
 import groovy.util.slurpersupport.GPathResult
 import groovy.xml.MarkupBuilder
 import org.springframework.context.i18n.LocaleContextHolder
+import groovyx.net.http.HTTPBuilder
+import org.springframework.transaction.TransactionStatus
 
 import java.text.SimpleDateFormat
 
@@ -48,6 +51,7 @@ class AdminController extends AbstractDebugController {
     def propertyService
     def dataConsistencyService
     def organisationService
+  GlobalSourceSyncService globalSourceSyncService
 
   def docstoreService
   def propertyInstanceMap = org.codehaus.groovy.grails.plugins.DomainClassGrailsPlugin.PROPERTY_INSTANCE_MAP
@@ -603,34 +607,124 @@ class AdminController extends AbstractDebugController {
     result
   }
 
-  @Secured(['ROLE_ADMIN'])
-  def titleMerge() {
-
-    log.debug(params)
-
-    def result=[:]
-
-    if ( ( params.titleIdToDeprecate != null ) &&
-         ( params.titleIdToDeprecate.length() > 0 ) &&
-         ( params.correctTitleId != null ) &&
-         ( params.correctTitleId.length() > 0 ) ) {
-      result.title_to_deprecate = TitleInstance.get(params.titleIdToDeprecate)
-      result.correct_title = TitleInstance.get(params.correctTitleId)
-
-      if ( params.MergeButton=='Go' ) {
-        log.debug("Execute title merge....");
-        result.title_to_deprecate.tipps.each { tipp ->
-          log.debug("Update tipp... ${tipp.id}");
-          tipp.title = result.correct_title
-          tipp.save()
+  @Secured(['ROLE_YODA'])
+  Map<String,Object> titleMerge() {
+    SessionCacheWrapper sessionCache = contextService.getSessionCache()
+    Map<String,Object> result = sessionCache.get("AdminController/titleMerge/result")
+    if(!result) {
+      globalSourceSyncService.cleanUpGorm()
+      GlobalRecordSource grs = GlobalRecordSource.findAll().get(0)
+      List<String,Integer> duplicateTiRows = TitleInstance.executeQuery('select ti.gokbId,count(ti.gokbId) from TitleInstance ti group by ti.gokbId having count(ti.gokbId) > 1')
+      List<Map<String,Object>> dupsWithoutTIPP = []
+      List<Long> excludes = []
+      List<Map<String,Object>> dupsWithTIPP = []
+      duplicateTiRows.eachWithIndex { row, int ctr ->
+        log.debug("Processing entry ${ctr}. Title UUID ${row[0]} occurs ${row[1]} times in DB. Do further checks!")
+        //check if title has TIPPs / IssueEntitlements linked
+        List<TitleInstance> duplicateTitles = TitleInstance.findAllByGokbId(row[0])
+        duplicateTitles.each { title ->
+          List<String> tipps = TitleInstancePackagePlatform.executeQuery('select tipp.globalUID from TitleInstancePackagePlatform tipp where tipp.title = :title',[title:title])
+          if(tipps) {
+            excludes << title.id
+            dupsWithTIPP << [titleKey:title.id,titleName:title.title,tipps:tipps,issueEntitlements:IssueEntitlement.executeQuery('select ie from IssueEntitlement ie where ie.tipp.globalUID in :tipps',[tipps:tipps])]
+            globalSourceSyncService.cleanUpGorm()
+          }
+          else dupsWithoutTIPP << [titleKey:title.id,titleName:title.title]
         }
-        redirect(action:'titleMerge',params:[titleIdToDeprecate:params.titleIdToDeprecate, correctTitleId:params.correctTitleId])
       }
-
-      result.title_to_deprecate.status = RefdataValue.getByValueAndCategory('Deleted', RDConstants.TITLE_STATUS)
-      result.title_to_deprecate.save(flush:true);
+      result = [dupsWithoutTIPP:dupsWithoutTIPP,excludes:excludes,dupsWithTIPP:dupsWithTIPP]
+      sessionCache.put("AdminController/titleMerge/result",result)
     }
     result
+  }
+
+  @Secured(['ROLE_YODA'])
+  def executeTiCleanup() {
+    log.debug("WARNING: bulk deletion of title entries triggered! Start nuking!")
+    SessionCacheWrapper sessionCache = contextService.getSessionCache()
+    GlobalRecordSource grs = GlobalRecordSource.findAll().get(0)
+    globalSourceSyncService.setSource(grs)
+    Map<String,Object> result = (Map<String,Object>) sessionCache.get("AdminController/titleMerge/result")
+    if(result) {
+      TitleInstance.withTransaction { TransactionStatus status ->
+        try {
+          Set<Long> treated = [], toDelete = []
+          result.dupsWithoutTIPP.each { duplicateObj ->
+            toDelete << duplicateObj.titleKey
+          }
+          result.dupsWithTIPP.each { duplicateObj ->
+            //merge them ... relink title! The objects in GOKb are the same! Continue here: sketch procedure flow of remapping
+            /*
+              decision tree:
+              are titles identical? If so: take that which is newer in last updated
+              Else: take the TIPP's package, load that and check to which title instance the TIPP(!!!!) UUID is actually pointing at
+             */
+            if(!treated.contains(duplicateObj.titleKey)){
+              TitleInstance dupTitle = TitleInstance.get(duplicateObj.titleKey)
+              def counterKey = result.dupsWithTIPP.find {
+                it.titleName == dupTitle.title && it.titleKey != dupTitle.id
+              }
+              def counterWithoutTIPP = result.dupsWithoutTIPP.find {
+                it.titleName == dupTitle.title
+              }
+              if(!counterWithoutTIPP) {
+                TitleInstance mergeTarget
+                if(counterKey) {
+                  TitleInstance counterpart = TitleInstance.get(counterKey.titleKey)
+                  TitleInstance obsolete
+                  treated << counterpart.id
+                  if(counterpart.lastUpdated > dupTitle.lastUpdated){
+                    mergeTarget = counterpart
+                    obsolete = dupTitle
+                  }
+                  else if(dupTitle.lastUpdated > counterpart.lastUpdated){
+                    mergeTarget = dupTitle
+                    obsolete = counterpart
+                  }
+                  if(mergeTarget && obsolete)
+                    TitleInstancePackagePlatform.executeUpdate('update TitleInstancePackagePlatform tipp set tipp.title.id = :mergeTarget where tipp.title.id = :obsolete',[mergeTarget:mergeTarget.id,obsolete:obsolete.id])
+                }
+                else if(!counterKey) {
+                  //duplicate key without name match, this may indicate a misleaded TitleInstance uuid. Go fetch the correct UUID! Do this by fetching the TIPP
+                  duplicateObj.tipps.each { tippKey ->
+                    TitleInstancePackagePlatform tipp = TitleInstancePackagePlatform.findByGlobalUID(tippKey)
+                    GPathResult packageOAI = globalSourceSyncService.fetchRecord(grs.uri,'packages',[verb:'GetRecord',metadataPrefix:grs.fullPrefix,identifier:tipp.pkg.gokbId])
+                    if(packageOAI && packageOAI.record.metadata.gokb.package) {
+                      GPathResult gokbPackageRecord = packageOAI.record.metadata.gokb.package
+                      def gokbTIPP = gokbPackageRecord.TIPPs.TIPP.find { node ->
+                        node.'@uuid'.text() == tipp.gokbId //the TIPP's UUID which is correct! ONLY the TitleInstance's GOKb key got messed!
+                      }
+                      if(gokbTIPP) {
+                        TitleInstance.executeUpdate('update TitleInstance ti set ti.gokbId = :correctKey where ti.globalUID = :uid',[correctKey:gokbTIPP.title.'@uuid',uid:dupTitle.globalUID])
+                      }
+                      else log.warn("Something got very wrong! Please check data: TIPP ${tipp.id} with GOKb ID ${tipp.gokbId}, the GOKb link is http://gokb.org/gokb/resource/show/${tipp.gokbId}, OAI-PMH extract: ${grs.editUri}?verb=getRecord&metadataPrefix=${grs.fullPrefix}&identifier=${tipp.pkg.gokbId} with ${grs.editUri.replace('packages','titles')}?verb=getRecord&metadataPrefix=${grs.fullPrefix}&identifier=${dupTitle.gokbId}")
+                    }
+                  }
+                }
+              }
+            }
+          }
+          if(toDelete) {
+            Identifier.executeUpdate('delete from Identifier id where id.ti.id in (:toDelete)',[toDelete:toDelete])
+            TitleInstitutionProvider.executeUpdate('delete from TitleInstitutionProvider tip where tip.title.id in (:toDelete)',[toDelete:toDelete])
+            OrgRole.executeUpdate('delete from OrgRole oo where oo.title.id in (:toDelete)',[toDelete:toDelete])
+            TitleHistoryEventParticipant.executeUpdate('delete from TitleHistoryEventParticipant thep where thep.participant.id in (:toDelete)',[toDelete:toDelete])
+            PersonRole.executeUpdate('delete from PersonRole pr where pr.title.id in (:toDelete)',[toDelete:toDelete])
+            CreatorTitle.executeUpdate('delete from CreatorTitle ct where ct.title.id in (:toDelete)',[toDelete:toDelete])
+            TitleInstance.executeUpdate('delete from TitleInstance ti where ti.id in (:toDelete)',[toDelete:toDelete])
+          }
+        }
+        catch (Exception e) {
+          log.error("failure on merging titles ... rollback!")
+          e.printStackTrace()
+          status.setRollbackOnly()
+        }
+      }
+    }
+    else {
+      log.error("data missing, rebuilding data")
+    }
+    redirect(controller:'package',action: 'index')
   }
 
   @Secured(['ROLE_ADMIN'])

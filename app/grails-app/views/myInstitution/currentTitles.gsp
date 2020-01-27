@@ -236,7 +236,7 @@
                         <tr>
                             <td>${(params.int('offset') ?: 0) + jj + 1}</td>
                             <td>
-                                <semui:listIcon type="${ti?.type?.value}"/>
+                                <semui:listIcon type="${ti.printTitleType()}"/>
                                 <strong><g:link controller="title" action="show"
                                                 id="${ti?.id}">${ti?.title}</g:link></strong>
 

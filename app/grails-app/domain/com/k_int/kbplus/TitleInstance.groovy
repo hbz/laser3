@@ -43,7 +43,7 @@ class TitleInstance extends AbstractBaseDomain /*implements AuditableTrait*/ {
   //@RefdataAnnotation(cat = 'Title Type')
   //RefdataValue type
 
-  @RefdataAnnotation(cat = 'Title Medium')
+  @RefdataAnnotation(cat = RDConstants.TITLE_MEDIUM)
   RefdataValue medium
 
   Date dateCreated
@@ -224,6 +224,46 @@ class TitleInstance extends AbstractBaseDomain /*implements AuditableTrait*/ {
 
     return result;
   }
+
+    def getInstitutionalCoverageSummary(institution, dateformat) {
+        getInstitutionalCoverageSummary(institution, dateformat, null);
+    }
+
+    def getInstitutionalCoverageSummary(institution, dateformat, date_restriction) {
+        def sdf = new java.text.SimpleDateFormat(dateformat)
+        def qry = """
+select ie from IssueEntitlement as ie JOIN ie.subscription.orgRelations as o 
+  where ie.tipp.title = :title and o.org = :institution 
+  AND (o.roleType.value = 'Subscriber' OR o.roleType.value = 'Subscriber_Consortial' OR o.roleType.value = 'Subscription Consortia') 
+  AND ie.status.value != 'Deleted'
+"""
+        def qry_params = ['title':this, institution:institution]
+
+        if ( date_restriction ) {
+            qry += " AND (ie.subscription.startDate <= :date_restriction OR ie.subscription.startDate = null) AND (ie.subscription.endDate >= :date_restriction OR ie.subscription.endDate = null) "
+            qry_params.date_restriction = date_restriction
+        }
+
+        def ies = IssueEntitlement.executeQuery(qry,qry_params)
+        def earliest = null
+        def latest = null
+        boolean open = false
+
+        /*
+        TODO: BUG ERMS-1638
+        ies.each { ie ->
+          if ( earliest == null ) { earliest = ie.startDate } else { if ( ie.startDate < earliest ) { earliest = ie.startDate } }
+          if ( latest == null ) { latest = ie.endDate } else { if ( ie.endDate > latest ) { latest = ie.endDate } }
+          if ( ie.endDate == null ) open = true;
+        }
+        */
+
+        [
+                earliest:earliest?sdf.format(earliest):'',
+                latest: open ? '': (latest?sdf.format(latest):''),
+                ies:ies
+        ]
+    }
 
   static String generateSortTitle(String input_title) {
     if ( ! input_title ) return null;

@@ -17,14 +17,14 @@ class PendingChangeController extends AbstractDebugController {
     @Secured(['ROLE_USER'])
     def accept() {
         log.debug("Accept");
-        pendingChangeService.performAccept(PendingChange.get((Long) params.id), User.get(springSecurityService.principal.id))
+        pendingChangeService.performAccept(PendingChange.get(Long.parseLong(params.id)), User.get(springSecurityService.principal.id))
         redirect(url: request.getHeader('referer'))
     }
 
     @Secured(['ROLE_USER'])
     def reject() {
         log.debug("Reject")
-        pendingChangeService.performReject(params.id, User.get(springSecurityService.principal.id))
+        pendingChangeService.performReject(Long.parseLong(params.id), User.get(springSecurityService.principal.id))
         redirect(url: request.getHeader('referer'))
     }
 

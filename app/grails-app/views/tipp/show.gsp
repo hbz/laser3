@@ -169,6 +169,7 @@
                target="_blank"><i class="cloud icon"></i></a>
         </g:if>
 
+        <%--
         <br>
         <dl>
             <dt style="margin-top:10px"><g:message code="tipp.additionalPlatforms"/></dt>
@@ -191,7 +192,7 @@
                     </tbody>
                 </table>
             </dd>
-        </dl>
+        </dl>--%>
     </div>
 </semui:form>
 

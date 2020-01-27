@@ -86,7 +86,7 @@ class ApiPkg {
 		// RefdataValues
 
 		result.packageListStatus 	= pkg.packageListStatus?.value
-		result.packageType      	= pkg.packageType?.value
+		result.packageType      	= pkg.contentType?.value
 		result.packageScope     	= pkg.packageScope?.value
 		result.packageStatus    	= pkg.packageStatus?.value
 		result.breakable        	= pkg.breakable?.value

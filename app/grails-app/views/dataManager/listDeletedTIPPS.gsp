@@ -14,7 +14,7 @@
     </head>
 
     <body>
-        <table>
+        <table class="ui table">
             <tbody>
                 <%--<tr>
                     <th colspan="2">Duplicate TIPPs</th>

@@ -10,7 +10,6 @@ import de.laser.domain.PriceItem
 import de.laser.domain.SystemProfiler
 import de.laser.domain.TIPPCoverage
 import de.laser.helper.RDConstants
-import org.codehaus.groovy.grails.commons.GrailsApplication
 import org.elasticsearch.action.delete.DeleteRequest
 import org.elasticsearch.action.delete.DeleteResponse
 import org.elasticsearch.client.*
@@ -18,7 +17,7 @@ import org.elasticsearch.client.*
 //@CompileStatic
 class DeletionService {
 
-    GrailsApplication grailsApplication
+    SubscriptionService subscriptionService
     def ESWrapperService
 
     static boolean DRY_RUN                  = true
@@ -804,14 +803,14 @@ class DeletionService {
                 //deleting (empty) subscription packages
                 SubscriptionPackage.findAllByPkg(pkg).each { tmp -> tmp.delete() }
                 //deleting empty-running trackers
-                GlobalRecordTracker.findByLocalOid(pkg.class.name+':'+pkg.id).delete()
+                GlobalRecordTracker.findAllByLocalOid(pkg.class.name+':'+pkg.id).each { tmp -> tmp.delete() }
                 pkg.delete()
                 status.flush()
                 return true
             }
             catch(Exception e) {
                 println 'error while deleting package ' + pkg.id + ' .. rollback'
-                println e.message
+                e.printStackTrace()
                 status.setRollbackOnly()
                 return false
             }
@@ -820,24 +819,26 @@ class DeletionService {
 
     static boolean deleteTIPP(TitleInstancePackagePlatform tipp, TitleInstancePackagePlatform replacement) {
         println "processing tipp #${tipp.id}"
-        TitleInstancePackagePlatform.withTransaction { status ->
-            try {
-                //rebasing subscriptions
-                Map<String,TitleInstancePackagePlatform> rebasingParams = [old:tipp,replacement:replacement]
-                IssueEntitlement.executeUpdate('update IssueEntitlement ie set ie.tipp = :replacement where ie.tipp = :old',rebasingParams)
-                Identifier.executeUpdate('update Identifier i set i.tipp = :replacement where i.tipp = :old',rebasingParams)
-                TIPPCoverage.executeUpdate('update TIPPCoverage tc set tc.tipp = :replacement where tc.tipp = :old',rebasingParams)
-                //deleting old TIPPs
-                tipp.delete()
-                status.flush()
-                return true
+        //rebasing subscriptions
+        if(SubscriptionService.rebaseSubscriptions(tipp,replacement)) {
+            TitleInstancePackagePlatform.withTransaction { status ->
+                try {
+                    //deleting old TIPPs
+                    tipp.delete()
+                    status.flush()
+                    return true
+                }
+                catch(Exception e) {
+                    println 'error while deleting tipp ' + tipp.id + ' .. rollback'
+                    println e.printStackTrace()
+                    status.setRollbackOnly()
+                    return false
+                }
             }
-            catch(Exception e) {
-                println 'error while deleting tipp ' + tipp.id + ' .. rollback'
-                println e.message
-                status.setRollbackOnly()
-                return false
-            }
+        }
+        else {
+            println 'error while rebasing subscriptions for tipp '+tipp.id+' ... rollback'
+            return false
         }
     }
 
