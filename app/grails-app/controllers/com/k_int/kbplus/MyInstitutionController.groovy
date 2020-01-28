@@ -1980,11 +1980,8 @@ from License as l where (
         //def cache = contextService.getCache('MyInstitutionController/currentPackages/', contextService.ORG_SCOPE)
 
         List currentSubIds = []
-        List allLocals     = []
-        List allSubscrCons = []
-        List allSubscrColl = []
-        List allConsOnly   = []
-        List allCollOnly   = []
+        List idsCategory1  = []
+        List idsCategory2  = []
 
         if (! params.status) {
             if (params.isSiteReloaded != "yes") {
@@ -2000,13 +1997,18 @@ from License as l where (
         result.filterSet = tmpQ[2]
         List<Subscription> subscriptions = Subscription.executeQuery("select s ${tmpQ[0]}", tmpQ[1]) //,[max: result.max, offset: result.offset]
 
-            currentSubIds = subscriptions.collect{ it.id }
-            allLocals     = OrgRole.findAllWhere(org: contextService.getOrg(), roleType: RDStore.OR_SUBSCRIBER).findAll{it.sub}.collect{it.sub.id }.unique()
-            allSubscrCons = OrgRole.findAllWhere(org: contextService.getOrg(), roleType: RDStore.OR_SUBSCRIBER_CONS).findAll{it.sub}.collect{it.sub.id }.unique()
-            allSubscrColl = OrgRole.findAllWhere(org: contextService.getOrg(), roleType: RDStore.OR_SUBSCRIBER_COLLECTIVE).findAll{it.sub}.collect{it.sub.id }.unique()
-            allConsOnly   = OrgRole.findAllWhere(org: contextService.getOrg(), roleType: RDStore.OR_SUBSCRIPTION_CONSORTIA).findAll{it.sub}.collect{it.sub.id }.unique()
-            allCollOnly   = OrgRole.findAllWhere(org: contextService.getOrg(), roleType: RDStore.OR_SUBSCRIPTION_COLLECTIVE).findAll{it.sub}.collect{it.sub.id }.unique()
+        currentSubIds = subscriptions.collect{ it.id }
 
+        idsCategory1 = OrgRole.executeQuery("select distinct (sub.id) from OrgRole where org=:org and roleType in (:roleTypes)", [
+                org: contextService.getOrg(), roleTypes: [
+                RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER_COLLECTIVE
+        ]
+        ])
+        idsCategory2 = OrgRole.executeQuery("select distinct (sub.id) from OrgRole where org=:org and roleType in (:roleTypes)", [
+                org: contextService.getOrg(), roleTypes: [
+                RDStore.OR_SUBSCRIPTION_CONSORTIA, RDStore.OR_SUBSCRIPTION_COLLECTIVE
+        ]
+        ])
 
         result.subscriptionMap = [:]
 
@@ -2038,7 +2040,6 @@ from License as l where (
             List packageSubscriptionList = Subscription.executeQuery(qry3, qryParams3)
             /*, [max:result.max, offset:result.offset])) */
 
-
             packageSubscriptionList.each { entry ->
                 String key = 'package_' + entry[0].id
 
@@ -2047,19 +2048,10 @@ from License as l where (
                 }
                 if (entry[1].status?.value == RDStore.SUBSCRIPTION_CURRENT.value) {
 
-                    if (allLocals.contains(entry[1].id)) {
+                    if (idsCategory1.contains(entry[1].id)) {
                         result.subscriptionMap.get(key).add(entry[1])
                     }
-                    else if (allSubscrCons.contains(entry[1].id)) {
-                        result.subscriptionMap.get(key).add(entry[1])
-                    }
-                    else if (allSubscrColl.contains(entry[1].id)) {
-                        result.subscriptionMap.get(key).add(entry[1])
-                    }
-                    else if (allConsOnly.contains(entry[1].id) && entry[1].instanceOf == null) {
-                        result.subscriptionMap.get(key).add(entry[1])
-                    }
-                    else if (allCollOnly.contains(entry[1].id) && entry[1].instanceOf == null) {
+                    else if (idsCategory2.contains(entry[1].id) && entry[1].instanceOf == null) {
                         result.subscriptionMap.get(key).add(entry[1])
                     }
                 }

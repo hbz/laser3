@@ -27,7 +27,7 @@ import javax.persistence.Transient
 import javax.validation.UnexpectedTypeException
 
 @Log4j
-class PropertyDefinition extends AbstractI10nOverride implements Serializable , Comparable<PropertyDefinition> {
+class PropertyDefinition extends AbstractI10nOverride implements Serializable, Comparable<PropertyDefinition> {
 
     static Log static_logger = LogFactory.getLog(PropertyDefinition)
 
