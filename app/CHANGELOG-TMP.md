@@ -2,6 +2,8 @@
 
 **Ticket    Date    Branch      Author  Feature/Bug     Description/Keywords**
 
+2086    28.01.2020  rc1.2       David   Bug         Bugfix: Kundennummern lassen sich nur mit Anmerkungen anlegen
+
 --      27.01.2020  rc1.2       David   Bug         Bugfix: API /statistic
 
 2088    21.01.2020  rc1.2       Moe     Bug         Keine Alert Mail mehr, wenn Umfrage abgeschlossen ist
