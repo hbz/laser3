@@ -35,7 +35,7 @@ class ApiDoc {
     /**
      * @return Doc | FORBIDDEN
      */
-    static getDocument(Doc doc, Org context){
+    static requestDocument(Doc doc, Org context){
 
         boolean hasAccess = false
 
@@ -72,7 +72,7 @@ class ApiDoc {
     /**
      * @return Doc | FORBIDDEN | null
      */
-    static getOnixPlDocument(License license, Org context){
+    static requestOnixPlDocument(License license, Org context){
         def doc = license.onixplLicense?.doc
         if (! doc) {
             return null // not found
@@ -98,7 +98,7 @@ class ApiDoc {
     /**
      * @return Map<String, Object>
      */
-    static Map<String, Object> retrieveDocumentMap(Doc doc) {
+    static Map<String, Object> getDocumentMap(Doc doc) {
         Map<String, Object> result = [:]
 
         if (doc) {
@@ -113,6 +113,6 @@ class ApiDoc {
             result.type     = doc.type?.value
         }
 
-        return ApiToolkit.cleanUp(result, true, true)
+        ApiToolkit.cleanUp(result, true, true)
     }
 }

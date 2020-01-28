@@ -16,7 +16,7 @@ import javax.servlet.http.HttpServletRequest
 @Log4j
 class ApiManager {
 
-    static final VERSION = '0.78'
+    static final VERSION = '0.79'
     static final NOT_SUPPORTED = false
 
     /**
@@ -51,7 +51,7 @@ class ApiManager {
             result = ApiCostItem.findCostItemBy(query, value)
 
             if (result && !(result in failureCodes)) {
-                result = ApiCostItem.getCostItem((CostItem) result, contextOrg, isInvoiceTool)
+                result = ApiCostItem.requestCostItem((CostItem) result, contextOrg, isInvoiceTool)
             }
         }
         else if (resolve('costItemList', ApiReader.SUPPORTED_FORMATS.costItem) == Constants.VALID_REQUEST) {
@@ -65,10 +65,10 @@ class ApiManager {
 
             if (result && !(result in failureCodes)) {
                 if(identifierAndTimestamp[1].key == 'timestamp'){
-                    result = ApiCostItem.getCostItemListWithTimeStamp(result, contextOrg, isInvoiceTool, identifierAndTimestamp[1].value)
+                    result = ApiCostItem.requestCostItemListWithTimeStamp(result, contextOrg, isInvoiceTool, identifierAndTimestamp[1].value)
                 }
                 else {
-                    result = ApiCostItem.getCostItemList(result, contextOrg, isInvoiceTool)
+                    result = ApiCostItem.requestCostItemList(result, contextOrg, isInvoiceTool)
                 }
             }
         }
@@ -77,7 +77,7 @@ class ApiManager {
             result = ApiDoc.findDocumentBy(query, value)
 
             if (result && !(result in failureCodes)) {
-                result = ApiDoc.getDocument((Doc) result, contextOrg)
+                result = ApiDoc.requestDocument((Doc) result, contextOrg)
             }
         }
         /* else if (NOT_SUPPORTED && 'issueEntitlements'.equalsIgnoreCase(obj)) {
@@ -98,7 +98,7 @@ class ApiManager {
             result = ApiLicense.findLicenseBy(query, value)
 
             if (result && !(result in failureCodes)) {
-                result = ApiLicense.getLicense((License) result, contextOrg)
+                result = ApiLicense.requestLicense((License) result, contextOrg)
             }
         }
         else if (resolve('licenseList', ApiReader.SUPPORTED_FORMATS.license) == Constants.VALID_REQUEST) {
@@ -117,7 +117,7 @@ class ApiManager {
             result = ApiOrg.findOrganisationBy(query, value)
 
             if (result && !(result in failureCodes)) {
-                result = ApiOAMonitor.getOrganisation(result, contextOrg)
+                result = ApiOAMonitor.requestOrganisation(result, contextOrg)
             }
         }
         else if (resolve('oaMonitorList', ApiReader.SUPPORTED_FORMATS.oaMonitorList) == Constants.VALID_REQUEST) {
@@ -141,7 +141,7 @@ class ApiManager {
             result = ApiOrg.findOrganisationBy(query, value)
 
             if (result && !(result in failureCodes)) {
-                result = ApiOrg.getOrganisation((Org) result, contextOrg, isInvoiceTool)
+                result = ApiOrg.requestOrganisation((Org) result, contextOrg, isInvoiceTool)
             }
         }
         else if (resolve('package', ApiReader.SUPPORTED_FORMATS.package) == Constants.VALID_REQUEST) {
@@ -149,7 +149,7 @@ class ApiManager {
             result = ApiPkg.findPackageBy(query, value)
 
             if (result && !(result in failureCodes)) {
-                result = ApiPkg.getPackage((Package) result, contextOrg)
+                result = ApiPkg.requestPackage((Package) result, contextOrg)
             }
         }
         else if (resolve('propertyList', ApiReader.SUPPORTED_FORMATS.propertyList) == Constants.VALID_REQUEST) {
@@ -168,7 +168,7 @@ class ApiManager {
             result = ApiPkg.findPackageBy(query, value)
 
             if (result && !(result in failureCodes)) {
-                result = ApiStatistic.getPackage(result, contextOrg)
+                result = ApiStatistic.requestPackage(result)
             }
         }
         else if (resolve('statisticList', ApiReader.SUPPORTED_FORMATS.statistic) == Constants.VALID_REQUEST) {
@@ -184,7 +184,7 @@ class ApiManager {
             result = ApiSubscription.findSubscriptionBy(query, value)
 
             if (result && !(result in failureCodes)) {
-                result = ApiSubscription.getSubscription((Subscription) result, contextOrg, isInvoiceTool)
+                result = ApiSubscription.requestSubscription((Subscription) result, contextOrg, isInvoiceTool)
             }
         }
         else if (resolve('subscriptionList', ApiReader.SUPPORTED_FORMATS.subscription) == Constants.VALID_REQUEST) {

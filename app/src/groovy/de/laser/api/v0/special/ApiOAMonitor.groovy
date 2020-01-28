@@ -52,7 +52,7 @@ class ApiOAMonitor {
 
         List<Org> orgs = getAccessibleOrgs()
         orgs.each { o ->
-            result << ApiStubReader.retrieveOrganisationStubMap(o, o)
+            result << ApiStubReaderUnsecured.getOrganisationStubMap(o)
         }
 
         return new JSON(result)
@@ -61,7 +61,7 @@ class ApiOAMonitor {
     /**
      * @return JSON | FORBIDDEN
      */
-    static getOrganisation(Org org, Org context) {
+    static requestOrganisation(Org org, Org context) {
         Map<String, Object> result = [:]
 
         boolean hasAccess = calculateAccess(org)
@@ -96,13 +96,13 @@ class ApiOAMonitor {
 
             //result.addresses    = ApiCollectionReader.retrieveAddressCollection(org.addresses, ApiReader.NO_CONSTRAINT) // com.k_int.kbplus.Address
             //result.contacts     = ApiCollectionReader.retrieveContactCollection(org.contacts, ApiReader.NO_CONSTRAINT) // com.k_int.kbplus.Contact
-            result.identifiers  = ApiCollectionReader.retrieveIdentifierCollection(org.ids) // com.k_int.kbplus.Identifier
+            result.identifiers  = ApiCollectionReader.getIdentifierCollection(org.ids) // com.k_int.kbplus.Identifier
             //result.persons      = ApiCollectionReader.retrievePrsLinkCollection(
             //        org.prsLinks, ApiCollectionReader.NO_CONSTRAINT, ApiCollectionReader.NO_CONSTRAINT, context
             //) // com.k_int.kbplus.PersonRole
 
-            result.properties    = ApiCollectionReader.retrievePropertyCollection(org, context, ApiReader.IGNORE_PRIVATE_PROPERTIES) // com.k_int.kbplus.(OrgCustomProperty, OrgPrivateProperty)
-            result.subscriptions = retrieveSubscriptionCollection(org)
+            result.properties    = ApiCollectionReader.getPropertyCollection(org, context, ApiReader.IGNORE_PRIVATE_PROPERTIES) // com.k_int.kbplus.(OrgCustomProperty, OrgPrivateProperty)
+            result.subscriptions = getSubscriptionCollection(org)
 
             result = ApiToolkit.cleanUp(result, true, true)
         }
@@ -110,7 +110,7 @@ class ApiOAMonitor {
         return (hasAccess ? new JSON(result) : Constants.HTTP_FORBIDDEN)
     }
 
-    static private Collection<Object> retrieveSubscriptionCollection(Org org) {
+    static private Collection<Object> getSubscriptionCollection(Org org) {
         if (!org ) {
             return null
         }
@@ -130,8 +130,6 @@ class ApiOAMonitor {
             result.add(ApiStubReader.requestSubscriptionStub(sub, org))
         }
 
-        result = ApiToolkit.cleanUp(result, true, true)
-
-        result
+        ApiToolkit.cleanUp(result, true, true)
     }
 }
