@@ -187,56 +187,55 @@ class MyInstitutionController extends AbstractDebugController {
 
         EhcacheWrapper cache = contextService.getCache('MyInstitutionController/currentPlatforms', contextService.ORG_SCOPE)
 
-        List currentSubIds = []
-        List allLocals     = []
-        List allSubscrCons = []
-        List allSubscrColl = []
-        List allConsOnly   = []
-        List allCollOnly   = []
+        List idsCurrentSubscriptions = []
+        List idsCategory1 = []
+        List idsCategory2 = []
 
         if (cache.get('currentSubInfo')) {
             def currentSubInfo = cache.get('currentSubInfo')
-            currentSubIds = currentSubInfo['currentSubIds']
-            allLocals     = currentSubInfo['allLocals']
-            allSubscrCons = currentSubInfo['allSubscrCons']
-            allSubscrColl = currentSubInfo['allSubscrColl']
-            allConsOnly   = currentSubInfo['allConsOnly']
-            allCollOnly   = currentSubInfo['allCollOnly']
+
+            idsCurrentSubscriptions = currentSubInfo['idsCurrentSubscriptions']
+            idsCategory1 = currentSubInfo['idsCategory1']
+            idsCategory2 = currentSubInfo['idsCategory2']
 
             log.debug('currentSubInfo from cache')
         }
         else {
-            currentSubIds = orgTypeService.getCurrentSubscriptions(contextService.getOrg()).findAll{ it }.collect{ it.id }
-            allLocals     = OrgRole.findAllWhere(org: contextService.getOrg(), roleType: RDStore.OR_SUBSCRIBER).findAll{ it.sub }.collect{ it.sub.id }.unique()
-            allSubscrCons = OrgRole.findAllWhere(org: contextService.getOrg(), roleType: RDStore.OR_SUBSCRIBER_CONS).findAll{ it.sub }.collect{ it.sub.id }.unique()
-            allSubscrColl = OrgRole.findAllWhere(org: contextService.getOrg(), roleType: RDStore.OR_SUBSCRIBER_COLLECTIVE).findAll{ it.sub }.collect{ it.sub.id }.unique()
-            allConsOnly   = OrgRole.findAllWhere(org: contextService.getOrg(), roleType: RDStore.OR_SUBSCRIPTION_CONSORTIA).findAll{ it.sub }.collect{ it.sub.id }.unique()
-            allCollOnly   = OrgRole.findAllWhere(org: contextService.getOrg(), roleType: RDStore.OR_SUBSCRIPTION_COLLECTIVE).findAll{ it.sub }.collect{ it.sub.id }.unique()
+            idsCurrentSubscriptions = orgTypeService.getCurrentSubscriptions(contextService.getOrg()).findAll{ it }.collect{ it.id }
+
+            idsCategory1 = OrgRole.executeQuery("select distinct (sub.id) from OrgRole where org=:org and roleType in (:roleTypes)", [
+                    org: contextService.getOrg(), roleTypes: [
+                        RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER_COLLECTIVE
+                    ]
+            ])
+            idsCategory2 = OrgRole.executeQuery("select distinct (sub.id) from OrgRole where org=:org and roleType in (:roleTypes)", [
+                    org: contextService.getOrg(), roleTypes: [
+                    RDStore.OR_SUBSCRIPTION_CONSORTIA, RDStore.OR_SUBSCRIPTION_COLLECTIVE
+                ]
+            ])
 
             cache.put('currentSubInfo', [
-                    currentSubIds: currentSubIds,
-                    allLocals: allLocals,
-                    allSubscrCons: allSubscrCons,
-                    allSubscrColl: allSubscrColl,
-                    allConsOnly: allConsOnly,
-                    allCollOnly: allCollOnly
+                    idsCurrentSubscriptions: idsCurrentSubscriptions,
+                    idsCategory1: idsCategory1,
+                    idsCategory2: idsCategory2
             ])
         }
 
         result.subscriptionMap = [:]
+        result.platformInstanceList = []
 
-        if(currentSubIds) {
+        if (idsCurrentSubscriptions) {
 
             String qry3 = "select distinct p, s from SubscriptionPackage subPkg join subPkg.subscription s join subPkg.pkg pkg, " +
                     "TitleInstancePackagePlatform tipp join tipp.platform p left join p.org o " +
-                    "where tipp.pkg = pkg and s.id in (:currentSubIds) "
+                    "where tipp.pkg = pkg and s.id in (:subIds) "
 
             qry3 += " and ((pkg.packageStatus is null) or (pkg.packageStatus != :pkgDeleted))"
             qry3 += " and ((p.status is null) or (p.status != :platformDeleted))"
             qry3 += " and ((tipp.status is null) or (tipp.status != :tippDeleted))"
 
             def qryParams3 = [
-                    currentSubIds  : currentSubIds,
+                    subIds         : idsCurrentSubscriptions,
                     pkgDeleted     : RDStore.PACKAGE_DELETED,
                     platformDeleted: RDStore.PLATFORM_DELETED,
                     tippDeleted    : RDStore.TIPP_DELETED
@@ -258,36 +257,32 @@ class MyInstitutionController extends AbstractDebugController {
             qry3 += " group by p, s"
 
             List platformSubscriptionList = Subscription.executeQuery(qry3, qryParams3)
+
+            log.debug("found ${platformSubscriptionList.size()} in list ..")
             /*, [max:result.max, offset:result.offset])) */
+
             platformSubscriptionList.each { entry ->
+                // entry[0] = Platform
+                // entry[0] = Subscription
+
                 String key = 'platform_' + entry[0].id
 
                 if (! result.subscriptionMap.containsKey(key)) {
                     result.subscriptionMap.put(key, [])
+                    result.platformInstanceList.add(entry[0])
                 }
+
                 if (entry[1].status?.value == RDStore.SUBSCRIPTION_CURRENT.value) {
 
-                    if (allLocals.contains(entry[1].id)) {
+                    if (idsCategory1.contains(entry[1].id)) {
                         result.subscriptionMap.get(key).add(entry[1])
                     }
-                    else if (allSubscrCons.contains(entry[1].id)) {
-                        result.subscriptionMap.get(key).add(entry[1])
-                    }
-                    else if (allSubscrColl.contains(entry[1].id)) {
-                        result.subscriptionMap.get(key).add(entry[1])
-                    }
-                    else if (allConsOnly.contains(entry[1].id) && entry[1].instanceOf == null) {
-                        result.subscriptionMap.get(key).add(entry[1])
-                    }
-                    else if (allCollOnly.contains(entry[1].id) && entry[1].instanceOf == null) {
+                    else if (idsCategory2.contains(entry[1].id) && entry[1].instanceOf == null) {
                         result.subscriptionMap.get(key).add(entry[1])
                     }
                 }
             }
-
-            result.platformInstanceList = (platformSubscriptionList.collect { it[0] }).unique()
         }
-        else result.platformInstanceList = []
         result.platformInstanceTotal    = result.platformInstanceList.size()
 
         result.cachedContent = true
