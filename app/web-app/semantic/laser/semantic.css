@@ -16540,7 +16540,7 @@ ol.ui.list ol li,
 .ui.selection.list .list > .item,
 .ui.selection.list > .item {
   cursor: pointer;
-  background: transparent;
+  background: #ffffff;
   padding: 0.5em 0.5em;
   margin: 0em;
   color: rgba(0, 0, 0, 0.4);

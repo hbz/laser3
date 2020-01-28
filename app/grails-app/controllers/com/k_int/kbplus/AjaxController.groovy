@@ -1855,6 +1855,16 @@ class AjaxController {
             prop_desc: prop_desc // form data
     ])
   }
+    /**
+     * Delete Dashboard DueDate
+     *
+     * @return
+     */
+    @Secured(['ROLE_USER'])
+    def deleteDashboardDueDate(){
+        log.debug("Delete Dashboard DueDate")
+        render template:"/user/test"
+    }
 
   def coreExtend(){
     log.debug("ajax::coreExtend:: ${params}")
