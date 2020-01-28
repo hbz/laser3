@@ -695,7 +695,7 @@ class AdminController extends AbstractDebugController {
                         node.'@uuid'.text() == tipp.gokbId //the TIPP's UUID which is correct! ONLY the TitleInstance's GOKb key got messed!
                       }
                       if(gokbTIPP) {
-                        TitleInstance.executeUpdate('update TitleInstance ti set ti.gokbId = :correctKey where ti.globalUID = :uid',[correctKey:gokbTIPP.title.'@uuid',uid:dupTitle.globalUID])
+                        TitleInstance.executeUpdate('update TitleInstance ti set ti.gokbId = :correctKey where ti.globalUID = :uid',[correctKey:gokbTIPP.title.'@uuid'.text(),uid:dupTitle.globalUID])
                       }
                       else log.warn("Something got very wrong! Please check data: TIPP ${tipp.id} with GOKb ID ${tipp.gokbId}, the GOKb link is http://gokb.org/gokb/resource/show/${tipp.gokbId}, OAI-PMH extract: ${grs.editUri}?verb=getRecord&metadataPrefix=${grs.fullPrefix}&identifier=${tipp.pkg.gokbId} with ${grs.editUri.replace('packages','titles')}?verb=getRecord&metadataPrefix=${grs.fullPrefix}&identifier=${dupTitle.gokbId}")
                     }
@@ -713,6 +713,7 @@ class AdminController extends AbstractDebugController {
             CreatorTitle.executeUpdate('delete from CreatorTitle ct where ct.title.id in (:toDelete)',[toDelete:toDelete])
             TitleInstance.executeUpdate('delete from TitleInstance ti where ti.id in (:toDelete)',[toDelete:toDelete])
           }
+          sessionCache.remove("AdminController/titleMerge/result")
         }
         catch (Exception e) {
           log.error("failure on merging titles ... rollback!")

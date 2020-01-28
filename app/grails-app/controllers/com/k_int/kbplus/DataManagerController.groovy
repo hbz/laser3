@@ -6,6 +6,7 @@ import de.laser.YodaService
 import de.laser.controller.AbstractDebugController
 import de.laser.domain.MailTemplate
 import de.laser.helper.RDConstants
+import de.laser.helper.RDStore
 import de.laser.helper.SessionCacheWrapper
 import grails.plugin.springsecurity.SpringSecurityUtils
 import grails.plugin.springsecurity.annotation.Secured
@@ -431,8 +432,7 @@ class DataManagerController extends AbstractDebugController {
                             case "deleteCascade":
                                 //mark as deleted!
                                 log.debug("deletion cascade: deleting ${ie}, deleting ${ie.subscription}")
-                                //deletionService.deleteIssueEntitlement(ie)
-                                //deletionService.deleteSubscription(ie.subscription,false)
+                                deletionService.deleteSubscription(ie.subscription,false)
                                 break
                             case "report": reportRows << [ieDetails.report.consortium,ieDetails.report.subscriber,ieDetails.report.subscription,ieDetails.report.package,ieDetails.report.title,ieDetails.report.cause]
                                 break

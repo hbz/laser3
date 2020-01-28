@@ -9,6 +9,7 @@ import com.k_int.kbplus.Identifier
 import com.k_int.kbplus.IssueEntitlement
 import com.k_int.kbplus.TitleInstancePackagePlatform
 import de.laser.domain.TIPPCoverage
+import de.laser.helper.RDConstants
 import de.laser.helper.RDStore
 import de.laser.interfaces.TemplateSupport
 import grails.plugin.springsecurity.SpringSecurityUtils
@@ -83,7 +84,7 @@ class YodaService {
             }
         }
         Map<String,RefdataValue> refdatas = [:]
-        RefdataCategory.getAllRefdataValues(RefdataCategory.TIPP_STATUS).each { tippStatus ->
+        RefdataCategory.getAllRefdataValues(RDConstants.TIPP_STATUS).each { tippStatus ->
             refdatas[tippStatus.value] = tippStatus
         }
         //get to deleted tipps
