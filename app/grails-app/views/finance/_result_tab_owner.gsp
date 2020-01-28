@@ -111,7 +111,7 @@
                         <br />
                         <g:formatNumber number="${ci.costInBillingCurrencyAfterTax ?: 0.0}" type="currency" currencyCode="${ci.billingCurrency ?: 'EUR'}"/>
                         <g:if test="${ci.taxKey && ci.taxKey.display}">
-                            (${ci.taxRate ?: 0}%)
+                            (${ci.taxKey.taxRate ?: 0}%)
                         </g:if>
                         <g:elseif test="${ci.taxKey == CostItem.TAX_TYPES.TAX_REVERSE_CHARGE}">
                             (${RDStore.TAX_REVERSE_CHARGE.getI10n("value")})
@@ -122,7 +122,7 @@
                         <br />
                         <g:formatNumber number="${ci.costInLocalCurrencyAfterTax ?: 0.0}" type="currency" currencyCode="EUR" />
                         <g:if test="${ci.taxKey && ci.taxKey.display}">
-                            (${ci.taxRate ?: 0}%)
+                            (${ci.taxKey.taxRate ?: 0}%)
                         </g:if>
                         <g:elseif test="${ci.taxKey == CostItem.TAX_TYPES.TAX_REVERSE_CHARGE}">
                             (${RDStore.TAX_REVERSE_CHARGE.getI10n("value")})

@@ -39,11 +39,11 @@
             <g:link controller="subscription" action="delete" params="${[id: subscription.id]}" class="ui button">Zur Übersicht</g:link>
         </g:if>
 
-        <g:link controller="subscription" action="edit" params="${[id: subscription.id]}" class="ui button">Vorgang abbrechen</g:link>
+        <g:link controller="subscription" action="edit" params="${[id: subscription.id]}" class="ui button"><g:message code="default.button.cancel.label"/></g:link>
 
         <g:if test="${editable}">
             <g:if test="${delResult.deletable}">
-                <g:link controller="subscription" action="delete" params="${[id: subscription.id, process: true]}" class="ui button red">Lizenz löschen</g:link>
+                <g:link controller="subscription" action="delete" params="${[id: subscription.id, process: true]}" class="ui button red"><g:message code="default.button.delete.label"/></g:link>
             </g:if>
             <g:else>
                 <input disabled type="submit" class="ui button red" value="Lizenz löschen" />
