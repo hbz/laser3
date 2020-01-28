@@ -608,7 +608,7 @@ class AdminController extends AbstractDebugController {
   }
 
   @Secured(['ROLE_YODA'])
-  Map<String,Object> titleMerge() {
+  Map<String,Object> titleRemap() {
     SessionCacheWrapper sessionCache = contextService.getSessionCache()
     Map<String,Object> result = sessionCache.get("AdminController/titleMerge/result")
     if(!result) {
@@ -644,6 +644,7 @@ class AdminController extends AbstractDebugController {
     SessionCacheWrapper sessionCache = contextService.getSessionCache()
     GlobalRecordSource grs = GlobalRecordSource.findAll().get(0)
     globalSourceSyncService.setSource(grs)
+    Map<String,GPathResult> oaiRecords = [:]
     Map<String,Object> result = (Map<String,Object>) sessionCache.get("AdminController/titleMerge/result")
     if(result) {
       TitleInstance.withTransaction { TransactionStatus status ->
@@ -652,13 +653,14 @@ class AdminController extends AbstractDebugController {
           result.dupsWithoutTIPP.each { duplicateObj ->
             toDelete << duplicateObj.titleKey
           }
-          result.dupsWithTIPP.each { duplicateObj ->
+          result.dupsWithTIPP.eachWithIndex { duplicateObj, int ctr ->
             //merge them ... relink title! The objects in GOKb are the same! Continue here: sketch procedure flow of remapping
             /*
               decision tree:
               are titles identical? If so: take that which is newer in last updated
               Else: take the TIPP's package, load that and check to which title instance the TIPP(!!!!) UUID is actually pointing at
              */
+            log.debug("now processing entry #${ctr} with ${duplicateObj.titleKey}")
             if(!treated.contains(duplicateObj.titleKey)){
               TitleInstance dupTitle = TitleInstance.get(duplicateObj.titleKey)
               def counterKey = result.dupsWithTIPP.find {
@@ -688,7 +690,11 @@ class AdminController extends AbstractDebugController {
                   //duplicate key without name match, this may indicate a misleaded TitleInstance uuid. Go fetch the correct UUID! Do this by fetching the TIPP
                   duplicateObj.tipps.each { tippKey ->
                     TitleInstancePackagePlatform tipp = TitleInstancePackagePlatform.findByGlobalUID(tippKey)
-                    GPathResult packageOAI = globalSourceSyncService.fetchRecord(grs.uri,'packages',[verb:'GetRecord',metadataPrefix:grs.fullPrefix,identifier:tipp.pkg.gokbId])
+                    GPathResult packageOAI = oaiRecords.get(tipp.pkg.gokbId)
+                    if(!packageOAI) {
+                      packageOAI = globalSourceSyncService.fetchRecord(grs.uri,'packages',[verb:'GetRecord',metadataPrefix:grs.fullPrefix,identifier:tipp.pkg.gokbId])
+                      oaiRecords.put(tipp.pkg.gokbId,packageOAI)
+                    }
                     if(packageOAI && packageOAI.record.metadata.gokb.package) {
                       GPathResult gokbPackageRecord = packageOAI.record.metadata.gokb.package
                       def gokbTIPP = gokbPackageRecord.TIPPs.TIPP.find { node ->

@@ -442,7 +442,7 @@
                                     <g:link class="item" controller="dataManager" action="listPlatformDuplicates">List Platform Duplicates</g:link>
                                     <g:link class="item" controller="package" action="getDuplicatePackages">List Package Duplicates</g:link>
                                     <g:link class="item" controller="dataManager" action="listDeletedTIPPS">List TIPP Duplicates and deleted TIPPs</g:link>
-                                    <g:link class="item" controller="admin" action="titleMerge">List Title Duplicates</g:link>
+                                    <g:link class="item" controller="admin" action="titleRemap">Check Title GOKb IDs</g:link>
                                     <%--<g:link class="item" controller="admin" action="tippTransfer">${message(code:'menu.admin.tippTransfer')}</g:link>--%>
                                     <%--<g:link class="item" controller="admin" action="ieTransfer">${message(code:'menu.admin.ieTransfer')}</g:link>--%>
                                     <%--<g:link class="item" controller="admin" action="userMerge">${message(code:'menu.admin.userMerge')}</g:link>--%>
