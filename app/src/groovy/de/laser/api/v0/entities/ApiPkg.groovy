@@ -5,6 +5,7 @@ import com.k_int.kbplus.Org
 import com.k_int.kbplus.Package
 import de.laser.api.v0.ApiCollectionReader
 import de.laser.api.v0.ApiReader
+import de.laser.api.v0.ApiUnsecuredMapReader
 import de.laser.api.v0.ApiToolkit
 import de.laser.helper.Constants
 import grails.converters.JSON
@@ -47,12 +48,12 @@ class ApiPkg {
     /**
      * @return JSON | FORBIDDEN
      */
-    static getPackage(Package pkg, Org context) {
+    static requestPackage(Package pkg, Org context) {
         Map<String, Object> result = [:]
 
 		// TODO check hasAccess
 		boolean hasAccess = true
-        result = retrievePackageMap(pkg, context)
+        result = getPackageMap(pkg, context)
 
         return (hasAccess ? new JSON(result) : Constants.HTTP_FORBIDDEN)
     }
@@ -60,7 +61,7 @@ class ApiPkg {
 	/**
 	 * @return Map<String, Object>
 	 */
-	static Map<String, Object> retrievePackageMap(com.k_int.kbplus.Package pkg, Org context) {
+	static Map<String, Object> getPackageMap(com.k_int.kbplus.Package pkg, Org context) {
 		Map<String, Object> result = [:]
 
 		pkg = GrailsHibernateUtil.unwrapIfProxy(pkg)
@@ -97,12 +98,12 @@ class ApiPkg {
 		// References
 
 		//result.documents        = ApiCollectionReader.retrieveDocumentCollection(pkg.documents) // com.k_int.kbplus.DocContext
-		result.identifiers      = ApiCollectionReader.retrieveIdentifierCollection(pkg.ids) // com.k_int.kbplus.Identifier
+		result.identifiers      = ApiCollectionReader.getIdentifierCollection(pkg.ids) // com.k_int.kbplus.Identifier
 		//result.license          = ApiStubReader.requestLicenseStub(pkg.license, context) // com.k_int.kbplus.License
-		result.nominalPlatform  = ApiCollectionReader.retrievePlatformMap(pkg.nominalPlatform) // com.k_int.kbplus.Platform
-		result.organisations    = ApiCollectionReader.retrieveOrgLinkCollection(pkg.orgs, ApiReader.IGNORE_PACKAGE, context) // com.k_int.kbplus.OrgRole
+		result.nominalPlatform  = ApiUnsecuredMapReader.getPlatformMap(pkg.nominalPlatform) // com.k_int.kbplus.Platform
+		result.organisations    = ApiCollectionReader.getOrgLinkCollection(pkg.orgs, ApiReader.IGNORE_PACKAGE, context) // com.k_int.kbplus.OrgRole
 		//result.subscriptions    = ApiStubReader.retrieveSubscriptionPackageStubCollection(pkg.subscriptions, ApiCollectionReader.IGNORE_PACKAGE, context) // com.k_int.kbplus.SubscriptionPackage
-		result.tipps            = ApiCollectionReader.retrieveTippCollection(pkg.tipps, ApiReader.IGNORE_ALL, context) // com.k_int.kbplus.TitleInstancePackagePlatform
+		result.tipps            = ApiCollectionReader.getTippCollection(pkg.tipps, ApiReader.IGNORE_ALL, context) // com.k_int.kbplus.TitleInstancePackagePlatform
 
 		// Ignored
 		/*
@@ -110,6 +111,6 @@ class ApiPkg {
 				pkg.prsLinks, exportHelperService.NO_CONSTRAINT, exportHelperService.NO_CONSTRAINT, context
 		) // com.k_int.kbplus.PersonRole
 		*/
-		return ApiToolkit.cleanUp(result, true, true)
+		ApiToolkit.cleanUp(result, true, true)
 	}
 }

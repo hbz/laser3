@@ -1,13 +1,9 @@
 package de.laser.api.v0
 
 import com.k_int.kbplus.*
-import com.k_int.properties.PropertyDefinition
-import de.laser.CacheService
 import de.laser.api.v0.entities.ApiDoc
 import de.laser.helper.Constants
-import de.laser.helper.RDStore
 import groovy.util.logging.Log4j
-import org.codehaus.groovy.grails.orm.hibernate.cfg.GrailsHibernateUtil
 
 @Log4j
 class ApiReader {
@@ -90,7 +86,7 @@ class ApiReader {
             result.title    = opl.title
 
             // References
-            result.document = ApiDoc.retrieveDocumentMap(opl.doc) // com.k_int.kbplus.Doc
+            result.document = ApiDoc.getDocumentMap(opl.doc) // com.k_int.kbplus.Doc
             //result.licenses = ApiStubReader.resolveLicenseStubs(opl.licenses) // com.k_int.kbplus.License
             //result.xml = opl.xml // XMLDoc // TODO
             result = ApiToolkit.cleanUp(result, true, true)
