@@ -3,7 +3,7 @@ package de.laser.api.v0.special
 import com.k_int.kbplus.*
 import de.laser.api.v0.ApiCollectionReader
 import de.laser.api.v0.ApiReader
-import de.laser.api.v0.ApiStubReader
+import de.laser.api.v0.ApiUnsecuredMapReader
 import de.laser.api.v0.ApiToolkit
 import de.laser.helper.Constants
 import de.laser.helper.RDConstants
@@ -64,7 +64,7 @@ class ApiStatistic {
         Collection<Object> result = []
 
         getAccessiblePackages().each { p ->
-            result << ApiStubReader.retrievePackageStubMap(p, null) // ? null
+            result << ApiUnsecuredMapReader.getPackageStubMap(p)
         }
 
         return new JSON(result)
@@ -73,7 +73,7 @@ class ApiStatistic {
     /**
      * @return JSON | FORBIDDEN
      */
-    static getPackage(Package pkg, Org context) {
+    static requestPackage(Package pkg) {
         if (! pkg || pkg.packageStatus?.value == 'Deleted') {
             return null
         }
@@ -93,12 +93,12 @@ class ApiStatistic {
             result.variantNames     = ['TODO-TODO-TODO'] // todo
 
             // References
-            result.contentProvider  = retrievePkgOrganisationCollection(pkg.orgs)
-            result.license          = requestPkgLicense(pkg.license)
-            result.identifiers      = ApiCollectionReader.retrieveIdentifierCollection(pkg.ids) // com.k_int.kbplus.Identifier
+            result.contentProvider  = getPkgOrganisationCollection(pkg.orgs)
+            result.license          = getPkgLicense(pkg.license)
+            result.identifiers      = ApiCollectionReader.getIdentifierCollection(pkg.ids) // com.k_int.kbplus.Identifier
             //result.platforms        = resolvePkgPlatforms(pkg.nominalPlatform)
             //result.tipps            = resolvePkgTipps(pkg.tipps)
-            result.subscriptions    = retrievePkgSubscriptionCollection(pkg.subscriptions, getAccessibleOrgs())
+            result.subscriptions    = getPkgSubscriptionCollection(pkg.subscriptions, getAccessibleOrgs())
 
             result = ApiToolkit.cleanUp(result, true, true)
         }
@@ -106,7 +106,7 @@ class ApiStatistic {
         return (hasAccess ? new JSON(result) : Constants.HTTP_FORBIDDEN)
     }
 
-    static private Collection<Object> retrievePkgOrganisationCollection(Set<OrgRole> orgRoles) {
+    static private Collection<Object> getPkgOrganisationCollection(Set<OrgRole> orgRoles) {
         if (! orgRoles) {
             return null
         }
@@ -117,21 +117,21 @@ class ApiStatistic {
                 if (ogr.org.status?.value == 'Deleted') {
                 }
                 else {
-                    result.add(ApiStubReader.retrieveOrganisationStubMap(ogr.org, null))
+                    result.add(ApiUnsecuredMapReader.getOrganisationStubMap(ogr.org))
                 }
             }
         }
 
-        return ApiToolkit.cleanUp(result, true, true)
+        ApiToolkit.cleanUp(result, true, true)
     }
 
-    static private requestPkgLicense(License lic) {
+    static private getPkgLicense(License lic) {
         if (! lic || lic.status?.value == 'Deleted') {
             return null
         }
-        def result = ApiStubReader.requestLicenseStub(lic, null)
+        def result = ApiUnsecuredMapReader.getLicenseStubMap(lic)
 
-        return ApiToolkit.cleanUp(result, true, true)
+        ApiToolkit.cleanUp(result, true, true)
     }
 
     /*
@@ -165,7 +165,7 @@ class ApiStatistic {
     }
     */
 
-    static private Collection<Object> retrievePkgSubscriptionCollection(Set<SubscriptionPackage> subscriptionPackages, List<Org> accessibleOrgs) {
+    static private Collection<Object> getPkgSubscriptionCollection(Set<SubscriptionPackage> subscriptionPackages, List<Org> accessibleOrgs) {
         if (!subscriptionPackages) {
             return null
         }
@@ -178,7 +178,7 @@ class ApiStatistic {
             if (subPkg.subscription.status?.value == 'Deleted') {
             }
             else {
-                sub = ApiStubReader.requestSubscriptionStub(subPkg.subscription, null)
+                sub = ApiUnsecuredMapReader.getSubscriptionStubMap(subPkg.subscription)
             }
 
             List<Org> orgList = []
@@ -191,7 +191,7 @@ class ApiStatistic {
                         if (ogr.org.status?.value == 'Deleted') {
                         }
                         else {
-                            def org = ApiStubReader.retrieveOrganisationStubMap(ogr.org, null)
+                            def org = ApiUnsecuredMapReader.getOrganisationStubMap(ogr.org)
                             if (org) {
                                 orgList.add(ApiToolkit.cleanUp(org, true, true))
                             }
@@ -199,9 +199,10 @@ class ApiStatistic {
                     }
                 }
             }
+
             if (orgList) {
 
-                sub?.put('organisations', ApiToolkit.cleanUp(orgList, true, true))
+                sub.put('organisations', ApiToolkit.cleanUp(orgList, true, true))
 
                 List<IssueEntitlement> ieList = []
 
@@ -217,13 +218,13 @@ class ApiStatistic {
                             if (ie.status?.value == 'Deleted') {
 
                             } else {
-                                ieList.add(ApiCollectionReader.retrieveIssueEntitlementMap(ie, ApiReader.IGNORE_SUBSCRIPTION_AND_PACKAGE, null))
+                                ieList.add(ApiCollectionReader.getIssueEntitlementCollection(ie, ApiReader.IGNORE_SUBSCRIPTION_AND_PACKAGE, null))
                             }
                         }
                     }
                 }
                 if (ieList) {
-                    sub?.put('issueEntitlements', ApiToolkit.cleanUp(ieList, true, true))
+                    sub.put('issueEntitlements', ApiToolkit.cleanUp(ieList, true, true))
                 }
 
                 //result.add( ApiStubReader.resolveSubscriptionStub(subPkg.subscription, null, true))
@@ -234,10 +235,10 @@ class ApiStatistic {
             }
             else {
                 // result.add( ['NO_APPROVAL': subPkg.subscription.globalUID] )
-                result.add( ['NO_APPROVAL': 'NO_APPROVAL'] )
+                result.add( ['NO_APPROVAL': 'ACCESS_IS_BLOCKED'] )
             }
         }
 
-        return ApiToolkit.cleanUp(result, true, true)
+        ApiToolkit.cleanUp(result, true, true)
     }
 }

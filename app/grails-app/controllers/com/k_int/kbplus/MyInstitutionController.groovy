@@ -711,11 +711,7 @@ from License as l where (
             log.debug('orgIds from cache')
         }
         else {
-            List<Org> providers = orgTypeService.getCurrentProviders( contextService.getOrg())
-            List<Org> agencies   = orgTypeService.getCurrentAgencies( contextService.getOrg())
-            providers.addAll(agencies)
-            orgIds = providers.collect{ it.id }.unique()
-
+            orgIds = orgTypeService.getCurrentOrgIdsOfProvidersAndAgencies( contextService.getOrg() )
             cache.put('orgIds', orgIds)
         }
 
@@ -4136,8 +4132,12 @@ AND EXISTS (
                     rdc         : rdc?.getDesc(),
                     multiple    : (params.pd_multiple_occurrence ? true : false),
                     mandatory   : (params.pd_mandatory ? true : false),
-                    i10n        : [de: params.pd_name, en: params.pd_name],
-                    expl        : [de: params.pd_expl, en: params.pd_expl],
+                    i10n        : [
+                            name_de: params.pd_name?.trim(),
+                            name_en: params.pd_name?.trim(),
+                            expl_de: params.pd_expl?.trim(),
+                            expl_en: params.pd_expl?.trim()
+                    ],
                     tenant      : tenant?.getShortname()
             ]
 

@@ -4,7 +4,6 @@ import com.k_int.kbplus.Org
 import com.k_int.kbplus.RefdataCategory
 import com.k_int.properties.PropertyDefinition
 import de.laser.CacheService
-import de.laser.api.v0.ApiReader
 import de.laser.api.v0.ApiToolkit
 import de.laser.helper.EhcacheWrapper
 import grails.converters.JSON
@@ -17,7 +16,7 @@ class ApiCatalogue {
      * @return JSON
      */
     static JSON getAllProperties(Org context) {
-        Collection<Object> result = ApiCatalogue.retrievePropertyCollection(context)
+        Collection<Object> result = ApiCatalogue.getPropertyCollection(context)
 
         return (result ? new JSON(result) : null)
     }
@@ -26,7 +25,7 @@ class ApiCatalogue {
      * @return JSON
      */
     static JSON getAllRefdatas() {
-        Collection<Object> result = ApiCatalogue.retrieveRefdataCollection()
+        Collection<Object> result = ApiCatalogue.getRefdataCollection()
 
         return (result ? new JSON(result) : null)
     }
@@ -44,7 +43,7 @@ class ApiCatalogue {
     /**
      * @return
      */
-    static Collection<Object> retrievePropertyCollection(Org context){
+    static Collection<Object> getPropertyCollection(Org context){
         def result = []
 
         def validLabel = { lb ->
@@ -54,7 +53,7 @@ class ApiCatalogue {
         PropertyDefinition.where { tenant == null || tenant == context }.sort('name').each { pd ->
             def pdTmp = [:]
 
-            pdTmp.key = pd.name
+            pdTmp.token = pd.name
             pdTmp.scope = pd.descr
             pdTmp.type = PropertyDefinition.validTypes2[pd.type]['en']
 
@@ -82,7 +81,7 @@ class ApiCatalogue {
     /**
      * @return
      */
-    static Collection<Object> retrieveRefdataCollection(){
+    static Collection<Object> getRefdataCollection(){
         CacheService cacheService = grails.util.Holders.applicationContext.getBean('cacheService') as CacheService
 
         EhcacheWrapper cache = cacheService.getTTL1800Cache('ApiReader/exportRefdatas')
@@ -100,7 +99,7 @@ class ApiCatalogue {
             RefdataCategory.where {}.sort('desc').each { rdc ->
                 def rdcTmp = [:]
 
-                rdcTmp.desc = rdc.desc
+                rdcTmp.token = rdc.desc
                 rdcTmp.label_de = validLabel(rdc.getI10n('desc', 'de'))
                 rdcTmp.label_en = validLabel(rdc.getI10n('desc', 'en'))
                 rdcTmp.entries = []
@@ -108,9 +107,11 @@ class ApiCatalogue {
                 RefdataCategory.getAllRefdataValues(rdc.desc).each { rdv ->
                     def tmpRdv = [:]
 
-                    tmpRdv.value = rdv.value
+                    tmpRdv.token = rdv.value
                     tmpRdv.label_de = validLabel(rdv.getI10n('value', 'de'))
                     tmpRdv.label_en = validLabel(rdv.getI10n('value', 'en'))
+                    tmpRdv.explanation_de = validLabel(rdv.getI10n('expl', 'de'))
+                    tmpRdv.explanation_en = validLabel(rdv.getI10n('expl', 'en'))
 
                     rdcTmp.entries << ApiToolkit.cleanUp(tmpRdv, true, true)
                 }

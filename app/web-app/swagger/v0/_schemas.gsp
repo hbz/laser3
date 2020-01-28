@@ -635,8 +635,8 @@
       properties:
         description: # mapping attr descr
           type: string
-        explanation: # mapping attr expl
-          type: string
+<%--        explanation: # mapping attr expl
+          type: string --%>
         paragraph: # only if license preoperties
           type: string
         name:
@@ -979,7 +979,7 @@
       items:
         type: object
         properties:
-          key:
+          token:
             type: string
             description: Primary Identifier
           scope:
@@ -1022,8 +1022,9 @@
       items:
         type: object
         properties:
-          desc:
+          token:
             type: string
+            description: Primary Identifier
           label_de:
             type: string
           label_en:
@@ -1033,11 +1034,16 @@
             items:
               type: object
               properties:
-                value:
+                token:
                   type: string
+                  description: Primary Identifier
                 label_de:
                   type: string
                 label_en:
+                  type: string
+                explanation_de:
+                  type: string
+                explanation_en:
                   type: string
 
 
