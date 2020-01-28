@@ -2,9 +2,9 @@ package de.laser.api.v0.entities
 
 import com.k_int.kbplus.CostItem
 import com.k_int.kbplus.Org
-import de.laser.api.v0.ApiCollectionReader
 import de.laser.api.v0.ApiReader
 import de.laser.api.v0.ApiStubReader
+import de.laser.api.v0.ApiUnsecuredMapReader
 import de.laser.api.v0.ApiToolkit
 import de.laser.helper.Constants
 import grails.converters.JSON
@@ -40,7 +40,7 @@ class ApiCostItem {
     /**
      * @return JSON | FORBIDDEN
      */
-    static getCostItem(CostItem costItem, Org context, boolean hasAccess){
+    static requestCostItem(CostItem costItem, Org context, boolean hasAccess){
         Map<String, Object> result = [:]
 
         if (! hasAccess) {
@@ -49,7 +49,7 @@ class ApiCostItem {
             }
         }
         if (hasAccess) {
-            result = retrieveCostItemMap(costItem, context)
+            result = getCostItemMap(costItem, context)
         }
 
         return (hasAccess ? new JSON(result) : Constants.HTTP_FORBIDDEN)
@@ -58,7 +58,7 @@ class ApiCostItem {
     /**
      * @return JSON | FORBIDDEN
      */
-    static getCostItemList(Org owner, Org context, boolean hasAccess){
+    static requestCostItemList(Org owner, Org context, boolean hasAccess){
         Collection<Object> result = []
 
         if (! hasAccess) {
@@ -78,7 +78,7 @@ class ApiCostItem {
     /**
      * @return JSON | FORBIDDEN
      */
-    static getCostItemListWithTimeStamp(Org owner, Org context, boolean hasAccess, String timestamp){
+    static requestCostItemListWithTimeStamp(Org owner, Org context, boolean hasAccess, String timestamp){
         Collection<Object> result = []
 
         if (! hasAccess) {
@@ -101,7 +101,7 @@ class ApiCostItem {
     /**
      * @return Map<String, Object>
      */
-    static Map<String, Object> retrieveCostItemMap(CostItem costItem, Org context){
+    static Map<String, Object> getCostItemMap(CostItem costItem, Org context){
         Map<String, Object> result = [:]
 
         costItem = GrailsHibernateUtil.unwrapIfProxy(costItem)
@@ -141,15 +141,15 @@ class ApiCostItem {
 
         // References
 
-        result.owner    = ApiStubReader.retrieveOrganisationStubMap(costItem.owner, context) // com.k_int.kbplus.Org
+        result.owner    = ApiUnsecuredMapReader.getOrganisationStubMap(costItem.owner) // com.k_int.kbplus.Org
         result.sub      = ApiStubReader.requestSubscriptionStub(costItem.sub, context) // com.k_int.kbplus.Subscription // RECURSION ???
         //result.subPkg   = ApiStubReader.resolveSubscriptionPackageStub(costItem.subPkg, ApiCollectionReader.IGNORE_SUBSCRIPTION, context) // com.k_int.kbplus.SubscriptionPackage
-        result.issueEntitlement = ApiIssueEntitlement.retrieveIssueEntitlementMap(costItem.issueEntitlement, ApiReader.IGNORE_ALL, context) // com.k_int.kbplus.issueEntitlement
-        result.order    = ApiCollectionReader.retrieveOrderMap(costItem.order) // com.k_int.kbplus.Order
-        result.invoice  = ApiCollectionReader.retrieveInvoiceMap(costItem.invoice)
+        result.issueEntitlement = ApiIssueEntitlement.getIssueEntitlementMap(costItem.issueEntitlement, ApiReader.IGNORE_ALL, context) // com.k_int.kbplus.issueEntitlement
+        result.order    = ApiUnsecuredMapReader.getOrderMap(costItem.order) // com.k_int.kbplus.Order
+        result.invoice  = ApiUnsecuredMapReader.getInvoiceMap(costItem.invoice)
         result.surveyOrg = costItem?.surveyOrg ?: null
 
-        return ApiToolkit.cleanUp(result, true, true)
+        ApiToolkit.cleanUp(result, true, true)
     }
 }
 

@@ -46,12 +46,12 @@ class ApiOrg {
     /**
      * @return JSON | FORBIDDEN
      */
-    static getOrganisation(Org org, Org context, boolean isInvoiceTool) {
+    static requestOrganisation(Org org, Org context, boolean isInvoiceTool) {
         Map<String, Object> result = [:]
 
         boolean hasAccess = isInvoiceTool || (org.id == context.id)
         if (hasAccess) {
-            result = retrieveOrganisationMap(org, context)
+            result = getOrganisationMap(org, context)
         }
 
         return (hasAccess ? new JSON(result) : Constants.HTTP_FORBIDDEN)
@@ -60,7 +60,7 @@ class ApiOrg {
     /**
      * @return Map<String, Object>
      */
-    static Map<String, Object> retrieveOrganisationMap(Org org, Org context) {
+    static Map<String, Object> getOrganisationMap(Org org, Org context) {
         Map<String, Object> result = [:]
 
         org = GrailsHibernateUtil.unwrapIfProxy(org)
@@ -88,14 +88,14 @@ class ApiOrg {
 
         // References
 
-        result.addresses    = ApiCollectionReader.retrieveAddressCollection(org.addresses, ApiReader.NO_CONSTRAINT) // com.k_int.kbplus.Address
-        result.contacts     = ApiCollectionReader.retrieveContactCollection(org.contacts, ApiReader.NO_CONSTRAINT) // com.k_int.kbplus.Contact
-        result.identifiers  = ApiCollectionReader.retrieveIdentifierCollection(org.ids) // com.k_int.kbplus.Identifier
-        result.persons      = ApiCollectionReader.retrievePrsLinkCollection(
+        result.addresses    = ApiCollectionReader.getAddressCollection(org.addresses, ApiReader.NO_CONSTRAINT) // com.k_int.kbplus.Address
+        result.contacts     = ApiCollectionReader.getContactCollection(org.contacts, ApiReader.NO_CONSTRAINT) // com.k_int.kbplus.Contact
+        result.identifiers  = ApiCollectionReader.getIdentifierCollection(org.ids) // com.k_int.kbplus.Identifier
+        result.persons      = ApiCollectionReader.getPrsLinkCollection(
                 org.prsLinks, ApiReader.NO_CONSTRAINT, ApiReader.NO_CONSTRAINT, context
         ) // com.k_int.kbplus.PersonRole
 
-        result.properties   = ApiCollectionReader.retrievePropertyCollection(org, context, ApiReader.IGNORE_NONE) // com.k_int.kbplus.(OrgCustomProperty, OrgPrivateProperty)
+        result.properties   = ApiCollectionReader.getPropertyCollection(org, context, ApiReader.IGNORE_NONE) // com.k_int.kbplus.(OrgCustomProperty, OrgPrivateProperty)
 
         // Ignored
 
@@ -105,6 +105,6 @@ class ApiOrg {
         //result.membership           = org.membership?.value // RefdataValue
         //result.outgoingCombos       = org.outgoingCombos // com.k_int.kbplus.Combo
 
-        return ApiToolkit.cleanUp(result, true, true)
+        ApiToolkit.cleanUp(result, true, true)
     }
 }

@@ -68,12 +68,12 @@ class ApiLicense {
     /**
      * @return JSON | FORBIDDEN
      */
-    static getLicense(License lic, Org context){
+    static requestLicense(License lic, Org context){
         Map<String, Object> result = [:]
 
         boolean hasAccess = calculateAccess(lic, context)
         if (hasAccess) {
-            result = retrieveLicenseMap(lic, ApiReader.IGNORE_NONE, context)
+            result = getLicenseMap(lic, ApiReader.IGNORE_NONE, context)
         }
 
         return (hasAccess ? new JSON(result) : Constants.HTTP_FORBIDDEN)
@@ -107,7 +107,7 @@ class ApiLicense {
     /**
      * @return Map<String, Object>
      */
-    static Map<String, Object> retrieveLicenseMap(License lic, def ignoreRelation, Org context){
+    static Map<String, Object> getLicenseMap(License lic, def ignoreRelation, Org context){
         Map<String, Object> result = [:]
 
         lic = GrailsHibernateUtil.unwrapIfProxy(lic)
@@ -140,15 +140,15 @@ class ApiLicense {
 
         // References
 
-        result.identifiers      = ApiCollectionReader.retrieveIdentifierCollection(lic.ids) // com.k_int.kbplus.Identifier
+        result.identifiers      = ApiCollectionReader.getIdentifierCollection(lic.ids) // com.k_int.kbplus.Identifier
         result.instanceOf       = ApiStubReader.requestLicenseStub(lic.instanceOf, context) // com.k_int.kbplus.License
-        result.properties       = ApiCollectionReader.retrievePropertyCollection(lic, context, ApiReader.IGNORE_NONE)  // com.k_int.kbplus.(LicenseCustomProperty, LicensePrivateProperty)
-        result.documents        = ApiCollectionReader.retrieveDocumentCollection(lic.documents) // com.k_int.kbplus.DocContext
+        result.properties       = ApiCollectionReader.getPropertyCollection(lic, context, ApiReader.IGNORE_NONE)  // com.k_int.kbplus.(LicenseCustomProperty, LicensePrivateProperty)
+        result.documents        = ApiCollectionReader.getDocumentCollection(lic.documents) // com.k_int.kbplus.DocContext
         result.onixplLicense    = ApiReader.requestOnixplLicense(lic.onixplLicense, lic, context) // com.k_int.kbplus.OnixplLicense
 
         if (ignoreRelation != ApiReader.IGNORE_ALL) {
             if (ignoreRelation != ApiReader.IGNORE_SUBSCRIPTION) {
-                result.subscriptions = ApiStubReader.retrieveStubCollection(lic.subscriptions, ApiReader.SUBSCRIPTION_STUB, context) // com.k_int.kbplus.Subscription
+                result.subscriptions = ApiStubReader.getStubCollection(lic.subscriptions, ApiReader.SUBSCRIPTION_STUB, context) // com.k_int.kbplus.Subscription
             }
             if (ignoreRelation != ApiReader.IGNORE_LICENSE) {
                 def allOrgRoles = []
@@ -180,7 +180,7 @@ class ApiLicense {
                 }
                 allOrgRoles = allOrgRoles.unique()
 
-                result.organisations = ApiCollectionReader.retrieveOrgLinkCollection(allOrgRoles, ApiReader.IGNORE_LICENSE, context) // com.k_int.kbplus.OrgRole
+                result.organisations = ApiCollectionReader.getOrgLinkCollection(allOrgRoles, ApiReader.IGNORE_LICENSE, context) // com.k_int.kbplus.OrgRole
             }
         }
 
@@ -191,6 +191,6 @@ class ApiLicense {
                 lic.prsLinks, exportHelperService.NO_CONSTRAINT, exportHelperService.NO_CONSTRAINT, context
         ) // com.k_int.kbplus.PersonRole
         */
-        return ApiToolkit.cleanUp(result, true, true)
+        ApiToolkit.cleanUp(result, true, true)
     }
 }
