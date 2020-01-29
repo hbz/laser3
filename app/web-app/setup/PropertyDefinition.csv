@@ -192,7 +192,7 @@ Subscription Property,Restricted user group,Eingeschränkter Benutzerkreis,Restr
 Subscription Property,reverse charge,reverse charge,reverse charge,class com.k_int.kbplus.RefdataValue,y.n,,,,Unterliegt die Lizenz dem reverse charge?,,
 Subscription Property,Scale of discount,Rabattstaffel,Scale of discount,class java.lang.String,,,,,Wie sieht die Rabattstaffel für die Lizenz aus?,,
 Subscription Property,SFX entry,SFX-Eintrag,SFX entry,class com.k_int.kbplus.RefdataValue,y.n,,,,Gibt es einen SFX-Eintrag?,,
-Subscription Property,Sim-User Number,Sim-User Zahl,Sim-User Number,class com.k_int.kbplus.RefdataValue,sim.user.number,,,,Wieviele gleichzeitige Nutzerzugriffe umfasst die Lizenz?,,
+Subscription Property,Sim-User Number,Sim-User-Zahl,Sim-User Number,class com.k_int.kbplus.RefdataValue,sim.user.number,,,,Wie viele gleichzeitige Nutzerzugriffe umfasst die Lizenz?,,
 Subscription Property,Simuser,Simuser,Simuser,class com.k_int.kbplus.RefdataValue,y.n,,,,Sind die simuser relevant für die Preisbestimmung?,,
 Subscription Property,Specialised statistics / classification,Fachstatistik / Klassifikation,Specialised statistics / classification,class java.lang.Integer,,,true,,Fachstatistik / Klassifikation,,
 Subscription Property,Statistic,Statistik,Statistic,class java.lang.String,,,,,,,
