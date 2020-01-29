@@ -76,7 +76,8 @@
         </form>
     </semui:filter>
     --%>
-    <semui:filter>
+    <g:render template="../templates/filter/javascript" />
+    <semui:filter showFilterButton="true">
         <g:form action="members" controller="subscription" params="${[id:params.id]}" method="get" class="ui form">
             <%
                 List<List<String>> tmplConfigShow
