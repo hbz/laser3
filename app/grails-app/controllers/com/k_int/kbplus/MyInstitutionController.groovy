@@ -201,7 +201,7 @@ class MyInstitutionController extends AbstractDebugController {
             log.debug('currentSubInfo from cache')
         }
         else {
-            idsCurrentSubscriptions = orgTypeService.getCurrentSubscriptions(contextService.getOrg()).findAll{ it }.collect{ it.id }
+            idsCurrentSubscriptions = orgTypeService.getCurrentSubscriptionIds(contextService.getOrg())
 
             idsCategory1 = OrgRole.executeQuery("select distinct (sub.id) from OrgRole where org=:org and roleType in (:roleTypes)", [
                     org: contextService.getOrg(), roleTypes: [
