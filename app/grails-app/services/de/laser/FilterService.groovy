@@ -603,10 +603,12 @@ class FilterService {
             base_qry = "from TitleInstancePackagePlatform as tipp where tipp.platform = :platInstance "
 
         if (params.mode != 'advanced') {
-            base_qry += "and tipp.status.value = 'Current' "
+            base_qry += "and tipp.status = :tippStatusCurrent "
+            qry_params.tippStatusCurrent = RDStore.TIPP_STATUS_CURRENT
         }
         else if (params.mode == 'advanced' && showDeletedTipps != true) {
-            base_qry += "and tipp.status.value != 'Deleted' "
+            base_qry += "and tipp.status != :tippStatusDeleted "
+            qry_params.tippStatusDeleted = RDStore.TIPP_STATUS_DELETED
         }
 
         if (asAt != null) {

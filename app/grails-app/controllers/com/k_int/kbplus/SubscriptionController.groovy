@@ -632,7 +632,8 @@ class SubscriptionController extends AbstractDebugController {
         def base_qry = "from IssueEntitlement as ie where ie.subscription = ? and ie.tipp.title.status.value != 'Deleted' "
 
         if (showDeletedTipps == false) {
-            base_qry += "and ie.tipp.status.value != 'Deleted' "
+            base_qry += "and ie.tipp.status != ? "
+            qry_params.add(RDStore.TIPP_STATUS_DELETED)
         }
 
         if (params.filter) {
