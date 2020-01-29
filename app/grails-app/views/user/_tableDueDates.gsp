@@ -87,11 +87,26 @@
                     </div>
                 </td>
                 <td>
-                    <laser:remoteLink class="ui icon  button  js-open-confirm-modal"
+                    <laser:remoteLink class="ui icon  negative button  js-open-confirm-modal"
                                       controller="ajax"
                                       action=""
                                       params=''
-                                      id="${dashDueDate?.id}"
+                                      id="delete_${dashDueDate?.id}"
+                                      data-confirm-tokenMsg="Möchten Sie wirklich diesen fälligen Termin aus dem System löschen?"
+                                      data-confirm-term-how="ok"
+
+                                      data-done=""
+                                      data-always="bb8.init('#container-table')"
+                                      data-update="container-table"
+                                      role="button"
+                    >
+                        <i class="trash alternate icon"></i>
+                    </laser:remoteLink>
+                    <laser:remoteLink class="ui icon  button"
+                                      controller="ajax"
+                                      action=""
+                                      params=''
+                                      id="restore_${dashDueDate?.id}"
                                       data-confirm-tokenMsg="Möchten Sie diesen fälligen Termin wieder auf Ihrem Dashboard anzeigen lassen? "
                                       data-confirm-term-how="ok"
 
@@ -102,13 +117,12 @@
                     >
                         <i class="icon slash eye la-js-editmode-icon"></i>
                     </laser:remoteLink>
-                    <laser:remoteLink class="ui icon green button  js-open-confirm-modal"
+                    <laser:remoteLink class="ui icon green button"
                                       controller="ajax"
                                       action="deleteDashboardDueDate"
                                       params=''
-                                      id="${dashDueDate?.id}"
-                                      data-confirm-tokenMsg="${message(code: "confirm.dialog.dueDate.hide")}"
-                                      data-confirm-term-how="ok"
+                                      id="remove_${dashDueDate?.id}"
+
 
                                       data-done=""
                                       data-always="bb8.init('#container-table')"
