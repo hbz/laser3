@@ -476,7 +476,8 @@ static hasMany = [  tipps:     TitleInstancePackagePlatform,
     }
 
     if(params.hideDeleted == 'true'){
-      hqlString += " AND pkg.packageStatus.value != 'Deleted'"
+        hqlString += " AND pkg.packageStatus != ?"
+        hqlParams += RDStore.PACKAGE_DELETED
     }
 
     def queryResults = Package.executeQuery(hqlString,hqlParams);
