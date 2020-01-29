@@ -5,7 +5,6 @@ import com.k_int.kbplus.Org
 import com.k_int.kbplus.OrgRole
 import com.k_int.kbplus.Subscription
 import de.laser.helper.RDStore
-import org.apache.commons.io.filefilter.FalseFileFilter
 
 class OrgTypeService {
 
