@@ -255,7 +255,7 @@ class DeletionService {
         result.info << ['Pakete', subPkgs]
         result.info << ['Anstehende Änderungen', pendingChanges]
         result.info << ['IssueEntitlements', ies]
-        result.info << ['Kostenposten', costs, FLAG_WARNING]
+        result.info << ['Kostenposten', costs, FLAG_BLOCKER]
         result.info << ['OrgAccessPointLink', oapl]
         result.info << ['Private Merkmale', sub.privateProperties]
         result.info << ['Allgemeine Merkmale', sub.customProperties]

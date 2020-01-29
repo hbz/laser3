@@ -30,7 +30,7 @@ class CustomerIdentifier {
     static constraints = {
         type     (nullable:false, blank:false)
         value    (nullable:false, blank:true)
-        note     (nullable:false, blank:true)
+        note     (nullable:true, blank:true)
         customer (nullable:false, blank:false)
         platform (nullable:false, blank:false)
         owner    (nullable:false, blank:false)
