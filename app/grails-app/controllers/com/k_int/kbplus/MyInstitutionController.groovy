@@ -1995,9 +1995,7 @@ from License as l where (
 
         def tmpQ = subscriptionsQueryService.myInstitutionCurrentSubscriptionsBaseQuery(params, contextService.org)
         result.filterSet = tmpQ[2]
-        List<Subscription> subscriptions = Subscription.executeQuery("select s ${tmpQ[0]}", tmpQ[1]) //,[max: result.max, offset: result.offset]
-
-        currentSubIds = subscriptions.collect{ it.id }
+        currentSubIds = Subscription.executeQuery("select s.id ${tmpQ[0]}", tmpQ[1]) //,[max: result.max, offset: result.offset]
 
         idsCategory1 = OrgRole.executeQuery("select distinct (sub.id) from OrgRole where org=:org and roleType in (:roleTypes)", [
                 org: contextService.getOrg(), roleTypes: [
