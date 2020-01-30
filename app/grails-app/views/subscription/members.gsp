@@ -76,7 +76,8 @@
         </form>
     </semui:filter>
     --%>
-    <semui:filter>
+    <g:render template="../templates/filter/javascript" />
+    <semui:filter showFilterButton="true">
         <g:form action="members" controller="subscription" params="${[id:params.id]}" method="get" class="ui form">
             <%
                 List<List<String>> tmplConfigShow
@@ -209,10 +210,19 @@
                                     </span>
                                 </g:else>
                             </g:if>
-                            <g:link class="ui icon negative button" controller="subscription" action="delete" params="${[id:sub.id]}">
-                                <i class="trash alternate icon"></i>
-                            </g:link>
-
+                            <g:set var="hasCostItems" value="${CostItem.executeQuery('select ci from CostItem ci where ci.sub = :sub',[sub:sub])}"/>
+                            <g:if test="${!hasCostItems}">
+                                <g:link class="ui icon negative button" controller="subscription" action="delete" params="${[id:sub.id]}">
+                                    <i class="trash alternate icon"></i>
+                                </g:link>
+                            </g:if>
+                            <g:else>
+                                <div class="ui icon negative buttons la-popup-tooltip" data-content="${message(code:'subscription.delete.existingCostItems')}">
+                                    <button class="ui disabled button la-selectable-button">
+                                        <i class="trash alternate icon"></i>
+                                    </button>
+                                </div>
+                            </g:else>
                         </g:if>
                     </td>
                 </tr>

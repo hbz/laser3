@@ -1,13 +1,33 @@
 ## temporary change log
 
 **Ticket    Date    Branch      Author  Feature/Bug     Description/Keywords**
+2104    28.01.2020  rc1.2       Andreas Bug         Steuersatz wird im Tab Eigene Kosten korrekt dargestellt
 
+2083    28.01.2020  rc1.2       Andreas Bug         Teilnehmerlizenzen sind nicht mehr löschbar, wenn Kostenposten anhängig sind
+
+2086    28.01.2020  rc1.2       David   Bug         Bugfix: Kundennummern lassen sich nur mit Anmerkungen anlegen
+
+2118    28.01.2020  hbz-dev     Andreas Feature     Verbesserungsvorschläge aus Menüpunkt entfernt
+
+2105    28.01.2020  hbz-dev     Andreas Bug         Entfernen des Platzhaltertextes aus Dropdown
+
+--      27.01.2020  rc1.2       David   Bug         Bugfix: API /statistic
 
 2102    24.01.2020   hbz-dev    David   Feature     Refactoring: Übersetzungen für PropertyDefinitions
 
 1961    24.01.2020  hbz-dev     Anja    Feature     Verknüpfungsauswahl bei Vertrag: Jetzt werden auch Subscriptons vom Status intended zur Auswahl angezeigt. 
 
+2102    24.01.2020  hbz-dev     David   Feature     Refactoring: Übersetzungen für PropertyDefinitions
+
 --      23.01.202   hbz-dev     David   Feature     Importing Refdata and PropertyDefinitions via CSV
+
+2012    23.01.2020  hbz-dev     Anja    Feature     PerformanceImprovement (GASCO-Monitor, currentProviders, createSubscriptionSurvey, createIssueEntitlementsSurvey)
+
+1947    23.01.2020  hbz-dev     Anja    Feature     Meine Lizenzen: neuer Filter für Konsortialstelle sichtbar für Einrichtungen
+
+--      23.01.2020  hbz-dev     David   Feature     Importing Refdata and PropertyDefinitions via CSV
+
+1943    22.01.2020  hbz-dev     Anja    Feature     Subskription-Elemente kopieren: Identifikator lassen sich nun auch kopieren
 
 2088    21.01.2020  rc1.2       Moe     Bug         Keine Alert Mail mehr, wenn Umfrage abgeschlossen ist
 
@@ -163,7 +183,7 @@
  
 --      06.12.2019  rc1.1       Andreas Bug         Entfernen der Währungsbezeichnung aus den Finanzsichten
 
- /      06.12.2019  hbz-dev     David   Feature     Verbesserte Cronjob-Übersicht
+--      06.12.2019  hbz-dev     David   Feature     Verbesserte Cronjob-Übersicht
 
 --      05.12.2019  rc1.1       Andreas Bug         Sicherheitslücke behoben und Template-Generierung angelegt für Kostenimport
 
@@ -176,6 +196,8 @@
 1945    09.12.2019  hbz-dev     David   Bug         Falsche Aktualisierungsmeldung im Nutzerprofil
 
 1941    09.12.2019  hbz-dev     David   Feature     Tabelle "Meine Konsorten" angepasst
+
+--      09.12.2019  hbz-dev     Daniel  Feature     Allgemeine Subscriptionmerkmale um "EZB Kollektionsdatenweitergabe an Drittsysteme erlaubt?" ergänzt 
 
 1935    06.12.2019  hbz-dev     Anja    Feature     GASCO-Monitor: Es werden Kontakte nur noch aus öffentichem Adressbuch angezeigt
 
@@ -260,5 +282,3 @@
 1867    12.11.2019  rc-1.1      David   Bug         Fehlende Merkmale bei verschiedenen API-Enpunkten (0.70)
 
 1837    06.11.2019  rc-1.1      David   Bug         Standard-Dashboard beim Einloggen setzen
-
-/       09.12.2019  hbz-dev     Daniel  Feature     Allgemeine Subscriptionmerkmale um "EZB Kollektionsdatenweitergabe an Drittsysteme erlaubt?" ergänzt 

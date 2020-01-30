@@ -22,6 +22,9 @@ class RefdataValue extends AbstractI10nOverride implements Comparable<RefdataVal
     String value_de
     String value_en
 
+    String expl_de
+    String expl_en
+
     // N.B. This used to be ICON but in the 2.x series this was changed to be a css class which denotes an icon
     // Please stick with the change to store css classes in here and not explicit icons
     String icon
@@ -49,6 +52,8 @@ class RefdataValue extends AbstractI10nOverride implements Comparable<RefdataVal
                  value column: 'rdv_value', index: 'rdv_owner_value_idx'
               value_de column: 'rdv_value_de', index:'rdv_value_de_idx'
               value_en column: 'rdv_value_en', index:'rdv_value_en_idx'
+               expl_de column: 'rdv_explanation_de', type: 'text'
+               expl_en column: 'rdv_explanation_en', type: 'text'
                   icon column: 'rdv_icon'
                  group column: 'rdv_group'
               isHardData column: 'rdv_is_hard_data'
@@ -66,6 +71,8 @@ class RefdataValue extends AbstractI10nOverride implements Comparable<RefdataVal
         order    (nullable:true,  blank: false)
         value_de (nullable: true, blank: false)
         value_en (nullable: true, blank: false)
+        expl_de  (nullable: true, blank: false)
+        expl_en  (nullable: true, blank: false)
 
         // Nullable is true, because values are already in the database
         lastUpdated (nullable: true, blank: false)
@@ -84,7 +91,7 @@ class RefdataValue extends AbstractI10nOverride implements Comparable<RefdataVal
             cat = RefdataCategory.construct([
                     token   : rdc,
                     hardData: false,
-                    i10n    : [en: rdc, de: rdc],
+                    i10n    : [desc_de: rdc, desc_en: rdc],
             ])
         }
 
@@ -94,8 +101,11 @@ class RefdataValue extends AbstractI10nOverride implements Comparable<RefdataVal
             rdv = new RefdataValue(owner: cat, value: token)
         }
 
-        rdv.value_de = i10n.get('de') ?: null
-        rdv.value_en = i10n.get('en') ?: null
+        rdv.value_de = i10n.get('value_de') ?: null
+        rdv.value_en = i10n.get('value_en') ?: null
+
+        rdv.expl_de = i10n.get('expl_de') ?: null
+        rdv.expl_en = i10n.get('expl_en') ?: null
 
         rdv.isHardData = hardData
         rdv.save(flush: true)

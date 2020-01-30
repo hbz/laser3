@@ -75,14 +75,13 @@ class StatsSyncServiceOptions {
                 token   : report.toString(),
                 rdc     : RDConstants.FACT_TYPE,
                 hardData: false,
-                i10n    : [en: report.toString(), de: report.toString()]
+                i10n    : [value_en: report.toString(), value_de: report.toString()]
         ])
     }
 
     LinkedHashMap getQueryParams(org_inst, supplier_inst) {
-        def platform = supplier_inst.customProperties.find(){
-            it.type.name = "NatStat Supplier ID"
-        }
+        PlatformCustomProperty platform = PlatformCustomProperty.executeQuery(
+            "select pcp from PlatformCustomProperty pcp where pcp.owner = :supplier and pcp.type.name = 'NatStat Supplier ID'",[supplier:supplier_inst]).get(0)
         def customer = org_inst.getIdentifierByType('wibid').value
         def apiKey = OrgSettings.get(org_inst, OrgSettings.KEYS.NATSTAT_SERVER_API_KEY)?.getValue()
         def requestor = OrgSettings.get(org_inst, OrgSettings.KEYS.NATSTAT_SERVER_REQUESTOR_ID)?.getValue()

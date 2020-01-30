@@ -84,10 +84,7 @@ class SurveyController {
 
         params.tab = params.tab ?: 'created'
 
-        List<Org> providers = orgTypeService.getCurrentProviders( contextService.getOrg())
-        List<Org> agencies   = orgTypeService.getCurrentAgencies( contextService.getOrg())
-        providers.addAll(agencies)
-        result.providers = providers.unique { a, b -> a?.id <=> b?.id }
+        result.providers = orgTypeService.getCurrentOrgsOfProvidersAndAgencies( contextService.org )
 
         DateFormat sdFormat = new DateUtil().getSimpleDateFormat_NoTime()
         def fsq = filterService.getSurveyConfigQueryConsortia(params, sdFormat, result.institution)
@@ -195,11 +192,7 @@ class SurveyController {
             }
         }
 
-        List<Org> providers = orgTypeService.getCurrentProviders(contextService.getOrg())
-        List<Org> agencies = orgTypeService.getCurrentAgencies(contextService.getOrg())
-
-        providers.addAll(agencies)
-        List orgIds = providers.unique().collect { it.id }
+        List orgIds = orgTypeService.getCurrentOrgIdsOfProvidersAndAgencies( contextService.org )
 
         result.providers = Org.findAllByIdInList(orgIds).sort { it?.name }
 
@@ -268,11 +261,7 @@ class SurveyController {
             }
         }
 
-        List<Org> providers = orgTypeService.getCurrentProviders(contextService.getOrg())
-        List<Org> agencies = orgTypeService.getCurrentAgencies(contextService.getOrg())
-
-        providers.addAll(agencies)
-        List orgIds = providers.unique().collect { it.id }
+        List orgIds = orgTypeService.getCurrentOrgIdsOfProvidersAndAgencies( contextService.org )
 
         result.providers = Org.findAllByIdInList(orgIds).sort { it?.name }
 
@@ -3540,8 +3529,12 @@ class SurveyController {
                             category    : 'Subscription Property',
                             type        : surveyProperty.type,
                             rdc         : (surveyProperty.type == RefdataValue.toString()) ? surveyProperty.refdataCategory : null,
-                            i10n        : [de: surveyProperty.getI10n('name', 'de'), en: surveyProperty.getI10n('name', 'en')],
-                            expl        : [de: surveyProperty.getI10n('expl', 'de'), en: surveyProperty.getI10n('expl', 'en')]
+                            i10n        : [
+                                    name_de: surveyProperty.getI10n('name', 'de'),
+                                    name_en: surveyProperty.getI10n('name', 'en'),
+                                    expl_de: surveyProperty.getI10n('expl', 'de'),
+                                    expl_en: surveyProperty.getI10n('expl', 'en')
+                            ]
                     ]
                     propDef = PropertyDefinition.construct(map)
                 }

@@ -255,7 +255,7 @@ class DeletionService {
         result.info << ['Pakete', subPkgs]
         result.info << ['Anstehende Änderungen', pendingChanges]
         result.info << ['IssueEntitlements', ies]
-        result.info << ['Kostenposten', costs, FLAG_WARNING]
+        result.info << ['Kostenposten', costs, FLAG_BLOCKER]
         result.info << ['OrgAccessPointLink', oapl]
         result.info << ['Private Merkmale', sub.privateProperties]
         result.info << ['Allgemeine Merkmale', sub.customProperties]
@@ -726,15 +726,14 @@ class DeletionService {
 
                     // docs
                     docs.each { tmp ->
-                        if (tmp.creator.id == user.id) {
+                        if (tmp.creator?.id == user.id) {
                             tmp.creator = replacement
                         }
-                        if (tmp.user.id == user.id) {
+                        if (tmp.user?.id == user.id) {
                             tmp.user = replacement
                         }
                         tmp.save()
                     }
-                    docs.each { tmp -> tmp.delete() }
 
                     links.each { tmp ->
                         tmp.lastUpdatedBy = replacement

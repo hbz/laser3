@@ -387,7 +387,7 @@ class AccessPointController extends AbstractDebugController {
         def ipv4Ranges = orgAccessPoint.getIpRangeStrings('ipv4', ipv4Format.substring(2))
         def ipv6Ranges = orgAccessPoint.getIpRangeStrings('ipv6', ipv6Format.substring(2))
 
-        List currentSubIds = orgTypeService.getCurrentSubscriptions(contextService.getOrg()).collect{ it.id }
+        List currentSubIds = orgTypeService.getCurrentSubscriptionIds(contextService.getOrg())
 
 //        String qry = ""
 //        qry = "select distinct(platf), spoap" +
