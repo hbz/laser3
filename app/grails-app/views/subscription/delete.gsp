@@ -14,41 +14,37 @@
         ${subscription.name}
     </h1>
 
-    <g:if test="${deletionService.RESULT_SUCCESS != delResult?.status}">
+    <g:if test="${delResult.status != deletionService.RESULT_SUCCESS}">
         <g:render template="nav" />
     </g:if>
 
     <g:if test="${delResult}">
-        <semui:msg class="info" header="" message="subscription.delete.info" />
-
-        <%-- --%>
-
-        <g:if test="${delResult.status == deletionService.RESULT_BLOCKED}">
-            <semui:msg class="negative" header="Löschvorgang blockiert"
-                       text="Es existieren Teilnehmerlizenzen. Diese müssen zuerst gelöscht werden." />
-            <g:link controller="myInstitution" action="currentSubscriptions" class="ui button">Meine Lizenzen</g:link>
-        </g:if>
         <g:if test="${delResult.status == deletionService.RESULT_SUCCESS}">
-            <semui:msg class="positive" header=""
-                       text="Löschvorgang wurde erfolgreich durchgeführt." />
+            <semui:msg class="positive" header="" text="Löschvorgang wurde erfolgreich durchgeführt." />
             <g:link controller="myInstitution" action="currentSubscriptions" class="ui button">Meine Lizenzen</g:link>
         </g:if>
-        <g:if test="${delResult.status == deletionService.RESULT_ERROR}">
-            <semui:msg class="negative" header="Unbekannter Fehler"
-                       text="Der Löschvorgang wurde abgebrochen." />
-            <g:link controller="subscription" action="delete" params="${[id: subscription.id]}" class="ui button">Zur Übersicht</g:link>
-        </g:if>
+        <g:else>
+            <semui:msg class="info" header="" message="subscription.delete.info" />
 
-        <g:link controller="subscription" action="edit" params="${[id: subscription.id]}" class="ui button"><g:message code="default.button.cancel.label"/></g:link>
-
-        <g:if test="${editable}">
-            <g:if test="${delResult.deletable}">
-                <g:link controller="subscription" action="delete" params="${[id: subscription.id, process: true]}" class="ui button red"><g:message code="default.button.delete.label"/></g:link>
+            <g:if test="${delResult.status == deletionService.RESULT_BLOCKED}">
+                <semui:msg class="negative" header="Löschvorgang blockiert" text="Es existieren Teilnehmerlizenzen. Diese müssen zuerst gelöscht werden." />
             </g:if>
-            <g:else>
-                <input disabled type="submit" class="ui button red" value="Lizenz löschen" />
-            </g:else>
-        </g:if>
+            <g:if test="${delResult.status == deletionService.RESULT_ERROR}">
+                <semui:msg class="negative" header="Unbekannter Fehler" text="Der Löschvorgang wurde abgebrochen." />
+            </g:if>
+
+            <g:link controller="myInstitution" action="currentSubscriptions" class="ui button">Meine Lizenzen</g:link>
+            <g:link controller="subscription" action="show" params="${[id: subscription.id]}" class="ui button"><g:message code="default.button.cancel.label"/></g:link>
+
+            <g:if test="${editable}">
+                <g:if test="${delResult.deletable}">
+                    <g:link controller="subscription" action="delete" params="${[id: subscription.id, process: true]}" class="ui button red"><g:message code="default.button.delete.label"/></g:link>
+                </g:if>
+                <g:else>
+                    <input disabled type="submit" class="ui button red" value="Lizenz löschen" />
+                </g:else>
+            </g:if>
+        </g:else>
 
         <%-- --%>
 
