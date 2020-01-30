@@ -50,26 +50,11 @@ class QueryService {
 
         if (contextUser.getSettingsValue(IS_REMIND_FOR_SURVEYS_ENDDATE)==YN_YES) {
 
-            long t0 = System.currentTimeMillis()
-            def surveys_old = SurveyInfo.executeQuery("SELECT sr.surveyConfig.surveyInfo FROM SurveyResult sr LEFT JOIN sr.surveyConfig surConfig LEFT JOIN surConfig.surveyInfo surInfo WHERE sr.participant = :org AND surInfo.endDate <= :endDate AND sr.finishDate is NULL AND surInfo.status = :status ",
+            dueObjects.addAll(SurveyInfo.executeQuery("SELECT distinct(sr.surveyConfig.surveyInfo) FROM SurveyResult sr LEFT JOIN sr.surveyConfig surConfig LEFT JOIN surConfig.surveyInfo surInfo WHERE sr.participant = :org AND surInfo.endDate <= :endDate AND sr.finishDate is NULL AND surInfo.status = :status ",
                     [org: contextOrg,
                      endDate: computeInfoDate(contextUser, REMIND_PERIOD_FOR_SURVEYS_ENDDATE),
-                     status: RDStore.SURVEY_SURVEY_STARTED])
+                     status: RDStore.SURVEY_SURVEY_STARTED]))
 
-            surveys = surveys_old?.unique { a, b -> a?.id <=> b?.id }
-            long t1 = System.currentTimeMillis()
-
-            List surveys = SurveyInfo.executeQuery("SELECT distinct(sr.surveyConfig.surveyInfo) FROM SurveyResult sr LEFT JOIN sr.surveyConfig surConfig LEFT JOIN surConfig.surveyInfo surInfo WHERE sr.participant = :org AND surInfo.endDate <= :endDate AND sr.finishDate is NULL AND surInfo.status = :status ",
-                    [org: contextOrg,
-                     endDate: computeInfoDate(contextUser, REMIND_PERIOD_FOR_SURVEYS_ENDDATE),
-                     status: RDStore.SURVEY_SURVEY_STARTED])
-            long t2 = System.currentTimeMillis()
-            dueObjects.addAll(surveys)
-
-            print 'a '+ t1-t0
-            print 'b '+ t2-t1
-            print surveys_old
-            dueObjects.addAll(surveys)
         }
 
         if (contextUser.getSettingsValue(IS_REMIND_FOR_LICENSE_CUSTOM_PROP)==YN_YES) {
