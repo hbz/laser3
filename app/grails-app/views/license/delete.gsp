@@ -20,7 +20,7 @@
     <g:if test="${delResult}">
         <g:if test="${delResult.status == deletionService.RESULT_SUCCESS}">
             <semui:msg class="positive" header="" message="deletion.success.msg" />
-            <g:link controller="myInstitution" action="currentLicenses" class="ui button">Meine Verträge</g:link>
+            <g:link controller="myInstitution" action="currentLicenses" class="ui button">${message(code:'menu.my.licenses')}</g:link>
         </g:if>
         <g:else>
             <semui:msg class="info" header="" message="license.delete.info" />
@@ -32,7 +32,7 @@
                 <semui:msg class="negative" header="${message(code: 'deletion.error.header')}" message="deletion.error.msg" />
             </g:if>
 
-            <g:link controller="myInstitution" action="currentLicenses" class="ui button">Meine Verträge</g:link>
+            <g:link controller="myInstitution" action="currentLicenses" class="ui button">${message(code:'menu.my.licenses')}</g:link>
             <g:link controller="license" action="show" params="${[id: license.id]}" class="ui button"><g:message code="default.button.cancel.label"/></g:link>
 
             <g:if test="${editable}">
