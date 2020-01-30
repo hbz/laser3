@@ -2,6 +2,7 @@ package com.k_int.kbplus
 
 import com.k_int.kbplus.auth.User
 import de.laser.controller.AbstractDebugController
+import de.laser.helper.RDStore
 import grails.plugin.springsecurity.SpringSecurityUtils
 import grails.plugin.springsecurity.annotation.Secured
 
@@ -32,8 +33,8 @@ class TippController extends AbstractDebugController {
     result.max = params.max
     result.offset = params.offset ? Integer.parseInt(params.offset) : 0;
 
-    def base_qry = "from TitleInstancePackagePlatform as tipp where tipp.title = ? and tipp.status.value != 'Deleted' "
-    def qry_params = [result.titleInstanceInstance]
+    def base_qry = "from TitleInstancePackagePlatform as tipp where tipp.title = ? and tipp.status != ? "
+    def qry_params = [result.titleInstanceInstance, RDStore.TIPP_STATUS_DELETED]
 
     if ( params.filter ) {
       base_qry += " and lower(tipp.pkg.name) like ? "

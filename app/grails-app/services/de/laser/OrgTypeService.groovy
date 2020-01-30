@@ -59,13 +59,22 @@ class OrgTypeService {
      * @return List<Subscription> with accessible (my) subscriptions
      */
     List<Subscription> getCurrentSubscriptions(Org context) {
-        return Subscription.executeQuery( """
-            select s from Subscription as s join s.orgRelations as ogr where
-                ( s = ogr.sub and ogr.org = :subOrg ) and
-                ( ogr.roleType in (:roleTypes) )
-        """, [subOrg: context,
-              roleTypes: [RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIPTION_CONSORTIA, RDStore.OR_SUBSCRIBER_COLLECTIVE, RDStore.OR_SUBSCRIPTION_COLLECTIVE]]
+        String query = "select s from Subscription as s join s.orgRelations as ogr where ( s = ogr.sub and ogr.org = :subOrg ) and ( ogr.roleType in (:roleTypes) )"
+
+        return Subscription.executeQuery( query, [
+                subOrg: context,
+                roleTypes: [
+                    RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER_COLLECTIVE,
+                    RDStore.OR_SUBSCRIPTION_CONSORTIA, RDStore.OR_SUBSCRIPTION_COLLECTIVE
+            ]]
         )
+    }
+
+    /**
+     * @return List<Long> with accessible (my) subscription ids
+     */
+    List<Long> getCurrentSubscriptionIds(Org context) {
+        getCurrentSubscriptions(context).collect{ it.id }
     }
 
     /**

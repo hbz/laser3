@@ -254,7 +254,8 @@ class SubscriptionsQueryService {
         if (params.status) {
 
             if (params.status == 'FETCH_ALL') {
-                base_qry += " AND ( s.status.value != 'Deleted' ) "
+                base_qry += " AND ( s.status != :delState ) "
+                qry_params.put('delState', RDStore.SUBSCRIPTION_DELETED)
             }
             else {
                 base_qry += " and s.status.id = :status "

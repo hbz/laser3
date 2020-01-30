@@ -137,13 +137,31 @@ class TaskService {
         tasks
     }
 
-    def getTasksByResponsiblesAndObject(User user, Org org, Object obj) {
+    List<Task> getTasksByResponsiblesAndObject(User user, Org org, Object obj) {
         def tasks = []
-        def a = getTasksByResponsibleAndObject(user, obj)
-        def b = getTasksByResponsibleAndObject(org, obj)
-
-        tasks = a.plus(b).unique()
-        tasks.sort{ it.endDate }
+        String tableName = ''
+        if (user && org && obj) {
+            switch (obj.getClass().getSimpleName()) {
+                case 'License':
+                    tableName = 'license'
+                    break
+                case 'Org':
+                    tableName = 'org'
+                    break
+                case 'Package':
+                    tableName = 'pkg'
+                    break
+                case 'Subscription':
+                    tableName = 'subscription'
+                    break
+                case 'SurveyConfig':
+                    tableName = 'surveyConfig'
+                    break
+            }
+            tasks = Task.executeQuery("""select distinct(t) from Task t where ${tableName}=:obj and (responsibleUser=:user or responsibleOrg=:org) order by endDate""",
+                [user: user, org: org, obj: obj])
+        }
+        tasks
     }
 
     def getTasksByResponsibleAndObject(User user, Object obj,  Map params) {

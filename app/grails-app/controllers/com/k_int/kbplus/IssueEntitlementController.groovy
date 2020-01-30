@@ -4,6 +4,7 @@ import com.k_int.kbplus.auth.User
 import com.k_int.properties.PropertyDefinition
 import de.laser.controller.AbstractDebugController
 import de.laser.helper.DebugAnnotation
+import de.laser.helper.RDStore
 import grails.plugin.springsecurity.annotation.Secured
 import org.springframework.dao.DataIntegrityViolationException
 
@@ -99,9 +100,8 @@ class IssueEntitlementController extends AbstractDebugController {
         return
       }
 
-
-      def base_qry = "from TitleInstancePackagePlatform as tipp where tipp.title = ? and tipp.status.value != 'Deleted' "
-      def qry_params = [result.issueEntitlementInstance.tipp.title]
+      def base_qry = "from TitleInstancePackagePlatform as tipp where tipp.title = ? and tipp.status != ?"
+      def qry_params = [result.issueEntitlementInstance.tipp.title, RDStore.TIPP_STATUS_DELETED]
 
       if ( params.filter ) {
         base_qry += " and lower(tipp.pkg.name) like ? "

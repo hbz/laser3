@@ -705,11 +705,9 @@ class PackageController extends AbstractDebugController {
 
         def limits = (!params.format || params.format.equals("html")) ? [max: result.max, offset: result.offset] : [offset: 0]
 
-        // def base_qry = "from TitleInstancePackagePlatform as tipp where tipp.pkg = ? "
-        def qry_params = [packageInstance]
+        def qry_params = [packageInstance, RDStore.TIPP_STATUS_DELETED]
 
-        def base_qry = "from TitleInstancePackagePlatform as tipp where tipp.pkg = ? "
-        base_qry += "and tipp.status.value != 'Deleted' "
+        def base_qry = "from TitleInstancePackagePlatform as tipp where tipp.pkg = ? and tipp.status != ? "
 
         if (func == "expected") {
             base_qry += " and ( coalesce(tipp.accessStartDate, tipp.pkg.startDate) >= ? ) "
