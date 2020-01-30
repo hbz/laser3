@@ -329,56 +329,34 @@ class PropertyDefinition extends AbstractI10nOverride implements Serializable, C
             if (obj) {
                 ContextService contextService = (ContextService) Holders.grailsApplication.mainContext.getBean('contextService')
                 Map<String, Object> calcPropDefGroups = obj.getCalculatedPropDefGroups(contextService.getOrg())
-                propDefsInCalcGroups = SwissKnife.getCalculatedPropertiesForPropDefGroups(calcPropDefGroups).collect { "${it.id}" } // as String !
+                propDefsInCalcGroups = SwissKnife.getCalculatedPropertiesForPropDefGroups(calcPropDefGroups)
             }
         }
 
-        def cache
+        List<PropertyDefinition> matches = []
 
-        if (! params.tenant) {
-            CacheService cacheService = (CacheService) Holders.grailsApplication.mainContext.getBean('cacheService')
-            cache = cacheService.getTTL300Cache("PropertyDefinition/refdataFind/custom/${params.desc}/${LocaleContextHolder.getLocale()}")
-        }
-        else {
-            ContextService contextService = (ContextService) Holders.grailsApplication.mainContext.getBean('contextService')
-            cache = contextService.getCache("PropertyDefinition/refdataFind/private/${params.desc}/${LocaleContextHolder.getLocale()}", contextService.ORG_SCOPE)
+        switch (I10nTranslation.decodeLocale(LocaleContextHolder.getLocale().toString())) {
+            case 'en':
+                matches = PropertyDefinition.findAllByDescrAndName_enIlike(params.desc, "%${params.q}%")
+                break
+            case 'de':
+                matches = PropertyDefinition.findAllByDescrAndName_deIlike(params.desc, "%${params.q}%")
+                break
         }
 
-        if (! cache.get('propDefs')) {
-            List propDefs = I10nTranslation.refdataFindHelper(
-                    params.baseClass,
-                    'name',
-                    '',
-                    LocaleContextHolder.getLocale()
-            )
-            propDefs.each { it ->
-                def tenantMatch = (params.tenant.equals(it.getTenant()?.id?.toString()))
-                if (tenantMatch && it.getDescr() == params.desc) {
-                    result.add([id: "${it.id}", text: "${it.getI10n('name')}"])
-                }
-            }
+        int c1 = matches.size()
+        matches.removeAll(propDefsInCalcGroups)
+        int c2 = matches.size()
 
-            cache.put('propDefs', result)
-        }
-        else {
-            log.debug ('reading from cache .. ')
-            cache.get('propDefs').each { it ->
-                if (params.q == '*' || it.text?.toLowerCase()?.contains(params.q?.toLowerCase())) {
-                    result.add(it)
-                }
+        matches.each { it ->
+            if (params.tenant.equals(it.getTenant()?.id?.toString())) {
+                result.add([id: "${it.id}", text: "${it.getI10n('name')}"])
             }
         }
 
-        List resultWithoutExcludes = []
+        static_logger.debug("found property definitions: ${c1} -> ${c2} -> ${result.size()}")
 
-        result.each { it ->
-            if (! propDefsInCalcGroups.contains(it.id)) {
-                resultWithoutExcludes << it
-            }
-        }
-        println "result: ${result.size()} -> resultWithoutExcludes: ${resultWithoutExcludes.size()}"
-
-        resultWithoutExcludes
+        result
     }
 
     String getDescrClass() {
