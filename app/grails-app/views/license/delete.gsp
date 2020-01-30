@@ -19,17 +19,17 @@
 
     <g:if test="${delResult}">
         <g:if test="${delResult.status == deletionService.RESULT_SUCCESS}">
-            <semui:msg class="positive" header="" text="Löschvorgang wurde erfolgreich durchgeführt." />
+            <semui:msg class="positive" header="" message="deletion.success.msg" />
             <g:link controller="myInstitution" action="currentLicenses" class="ui button">Meine Verträge</g:link>
         </g:if>
         <g:else>
             <semui:msg class="info" header="" message="license.delete.info" />
 
             <g:if test="${delResult.status == deletionService.RESULT_BLOCKED}">
-                <semui:msg class="negative" header="Löschvorgang blockiert" text="Es existieren Teilnehmerverträge. Diese müssen zuerst gelöscht werden." />
+                <semui:msg class="negative" header="${message(code: 'deletion.blocked.header')}" message="deletion.blocked.msg.license" />
             </g:if>
             <g:if test="${delResult.status == deletionService.RESULT_ERROR}">
-                <semui:msg class="negative" header="Unbekannter Fehler" text="Der Löschvorgang wurde abgebrochen." />
+                <semui:msg class="negative" header="${message(code: 'deletion.error.header')}" message="deletion.error.msg" />
             </g:if>
 
             <g:link controller="myInstitution" action="currentLicenses" class="ui button">Meine Verträge</g:link>
@@ -37,10 +37,10 @@
 
             <g:if test="${editable}">
                 <g:if test="${delResult.deletable}">
-                    <g:link controller="license" action="delete" params="${[id: license.id, process: true]}" class="ui button red">Vertrag löschen</g:link>
+                    <g:link controller="license" action="delete" params="${[id: license.id, process: true]}" class="ui button red">${message(code:'deletion.license')}</g:link>
                 </g:if>
                 <g:else>
-                    <input disabled type="submit" class="ui button red" value="Vertrag löschen" />
+                    <input disabled type="submit" class="ui button red" value="${message(code:'deletion.license')}" />
                 </g:else>
             </g:if>
         </g:else>

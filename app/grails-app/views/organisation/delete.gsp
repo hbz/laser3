@@ -22,7 +22,7 @@
 
     <g:if test="${delResult}">
         <g:if test="${delResult.status == deletionService.RESULT_SUCCESS}">
-            <semui:msg class="positive" header="" text="Löschvorgang wurde erfolgreich durchgeführt." />
+            <semui:msg class="positive" header="" message="deletion.success.msg" />
             <g:link controller="organisation" action="listInstitution" class="ui button">${message(code:'menu.public.all_insts')}</g:link>
         </g:if>
         <g:else>
@@ -34,10 +34,10 @@
             </g:else>
 
             <g:if test="${delResult.status == deletionService.RESULT_BLOCKED}">
-                <semui:msg class="negative" header="Löschvorgang blockiert" text="Es existieren relevante Verknüpfungen. Diese müssen zuerst gelöscht werden." />
+                <semui:msg class="negative" header="${message(code: 'deletion.blocked.header')}" message="deletion.blocked.msg.org" />
             </g:if>
             <g:if test="${delResult.status == deletionService.RESULT_ERROR}">
-                <semui:msg class="negative" header="Unbekannter Fehler" text="Der Löschvorgang wurde abgebrochen." />
+                <semui:msg class="negative" header="${message(code: 'deletion.error.header')}" message="deletion.error.msg" />
             </g:if>
 
             <g:link controller="organisation" action="listInstitution" class="ui button">${message(code:'menu.public.all_insts')}</g:link>
@@ -60,11 +60,11 @@
                                       --%>
                         </g:if>
                         <g:elseif test="${delResult.status != deletionService.RESULT_ERROR}">
-                            <input type="submit" class="ui button red" value="Organisation löschen" />
+                            <input type="submit" class="ui button red" value="${message(code:'deletion.org')}" />
                         </g:elseif>
                     </g:if>
                     <g:else>
-                        <input disabled type="submit" class="ui button red" value="Organisation löschen" />
+                        <input disabled type="submit" class="ui button red" value="${message(code:'deletion.org')}" />
                     </g:else>
                 </g:form>
             </g:if>
