@@ -67,7 +67,7 @@ class UserController extends AbstractDebugController {
             )
         }
 
-        render view: '/templates/user/_delete', model: result
+        render view: 'delete', model: result
     }
 
     @Secured(['ROLE_ADMIN'])

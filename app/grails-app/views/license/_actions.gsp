@@ -43,10 +43,10 @@
 
             <g:if test="${editable}">
                 <div class="divider"></div>
-                <g:link class="item" action="delete" id="${params.id}"><i class="trash alternate icon"></i> Vertrag löschen</g:link>
+                <g:link class="item" action="delete" id="${params.id}"><i class="trash alternate icon"></i> ${message(code:'deletion.license')}</g:link>
             </g:if>
             <g:else>
-                <a class="item disabled" href="#"><i class="trash alternate icon"></i> Vertrag löschen</a>
+                <a class="item disabled" href="#"><i class="trash alternate icon"></i> ${message(code:'deletion.license')}</a>
             </g:else>
 
         </g:if>
