@@ -1,5 +1,7 @@
 <%@ page import="org.springframework.context.i18n.LocaleContextHolder; de.laser.helper.SqlDateUtils; com.k_int.kbplus.*; com.k_int.kbplus.abstract_domain.AbstractProperty; de.laser.DashboardDueDate" %>
-
+TTTTT
+<semui:messages data="${flash}" />
+UUUUU
 <table class="ui celled table la-table">
     <thead>
     <tr>
@@ -22,9 +24,10 @@
                 %{--${dashDueDate.id} &nbsp--}%
                     <g:if test="${Locale.GERMAN.getLanguage() == org.springframework.context.i18n.LocaleContextHolder.getLocale().getLanguage()}">
                         ${dashDueDate.attribute_value_de}
-                    </g:if><g:else>
-                    ${dashDueDate.attribute_value_en}
-                </g:else>
+                    </g:if>
+                    <g:else>
+                        ${dashDueDate.attribute_value_en}
+                    </g:else>
                 </td>
                 <td>
                     <g:formatDate format="${message(code:'default.date.format.notime', default:'yyyy-MM-dd')}" date="${dashDueDate.date}"/>
@@ -87,50 +90,56 @@
                     </div>
                 </td>
                 <td>
-                    <laser:remoteLink class="ui icon  negative button  js-open-confirm-modal"
-                                      controller="ajax"
-                                      action=""
-                                      params=''
-                                      id="delete_${dashDueDate?.id}"
-                                      data-confirm-tokenMsg="Möchten Sie wirklich diesen fälligen Termin aus dem System löschen?"
-                                      data-confirm-term-how="ok"
+                    <g:if test="${false}">
+                        <laser:remoteLink class="ui icon  negative button  js-open-confirm-modal"
+                                          controller="ajax"
+                                          action="deleteDashboardDueDate_does_not_exist_yet"
+                                          params=''
+                                          id="${dashDueDate?.id}"
+                                          data-confirm-tokenMsg="Möchten Sie wirklich diesen fälligen Termin aus dem System löschen?"
+                                          data-confirm-term-how="ok"
 
-                                      data-done=""
-                                      data-always="bb8.init('#container-table')"
-                                      data-update="container-table"
-                                      role="button"
-                    >
-                        <i class="trash alternate icon"></i>
-                    </laser:remoteLink>
-                    <laser:remoteLink class="ui icon  button"
-                                      controller="ajax"
-                                      action=""
-                                      params=''
-                                      id="restore_${dashDueDate?.id}"
-                                      data-confirm-tokenMsg="Möchten Sie diesen fälligen Termin wieder auf Ihrem Dashboard anzeigen lassen? "
-                                      data-confirm-term-how="ok"
+                                          data-done=""
+                                          data-always="bb8.init('#container-table')"
+                                          data-update="container-table"
+                                          role="button"
+                        >
+                            <i class="trash alternate icon"></i>
+                        </laser:remoteLink>
+                    </g:if>
+                    <g:if test="${dashDueDate?.isHidden}">
+                        <laser:remoteLink class="ui icon  button"
+                                          controller="ajax"
+                                          action="showDashboardDueDate"
+                                          params=''
+                                          id="${dashDueDate?.id}"
+                                          data-confirm-tokenMsg="Möchten Sie diesen fälligen Termin wieder auf Ihrem Dashboard anzeigen lassen? "
+                                          data-confirm-term-how="ok"
 
-                                      data-done=""
-                                      data-always="bb8.init('#container-table')"
-                                      data-update="container-table"
-                                      role="button"
-                    >
-                        <i class="icon slash eye la-js-editmode-icon"></i>
-                    </laser:remoteLink>
-                    <laser:remoteLink class="ui icon green button"
-                                      controller="ajax"
-                                      action="deleteDashboardDueDate"
-                                      params=''
-                                      id="remove_${dashDueDate?.id}"
+                                          data-done=""
+                                          data-always="bb8.init('#container-table')"
+                                          data-update="container-table"
+                                          role="button"
+                        >
+                            <i class="icon slash eye la-js-editmode-icon"></i>
+                        </laser:remoteLink>
+                    </g:if>
+                    <g:else>
+                        <laser:remoteLink class="ui icon green button"
+                                          controller="ajax"
+                                          action="hideDashboardDueDate"
+                                          params=''
+                                          id="${dashDueDate?.id}"
 
 
-                                      data-done=""
-                                      data-always="bb8.init('#container-table')"
-                                      data-update="container-table"
-                                      role="button"
-                    >
-                        <i class="icon eye la-js-editmode-icon"></i>
-                    </laser:remoteLink>
+                                          data-done=""
+                                          data-always="bb8.init('#container-table')"
+                                          data-update="container-table"
+                                          role="button"
+                        >
+                            <i class="icon eye la-js-editmode-icon"></i>
+                        </laser:remoteLink>
+                    </g:else>
                     <semui:xEditableBoolean owner="${dashDueDate}" field="isHidden" />
                 </td>
                 %{--<td><semui:xEditableBoolean owner="${dashDueDate}" field="isDone" /></td>--}%
