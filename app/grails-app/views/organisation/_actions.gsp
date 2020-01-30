@@ -43,7 +43,7 @@
             <semui:actionsDropdownItem controller="organisation" action="setupBasicTestData" params="[id: orgInstance.id]" message="datamanager.setupBasicOrgData.label"/>
 
             <div class="divider"></div>
-            <g:link class="item" action="_delete" id="${params.id}"><i class="trash alternate icon"></i> Organisation löschen</g:link>
+            <g:link class="item" action="_delete" id="${params.id}"><i class="trash alternate icon"></i> ${message(code:'deletion.org')}</g:link>
         </sec:ifAnyGranted>
     </g:if>
 </semui:actionsDropdown>
