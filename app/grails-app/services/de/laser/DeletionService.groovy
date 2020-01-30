@@ -725,15 +725,14 @@ class DeletionService {
 
                     // docs
                     docs.each { tmp ->
-                        if (tmp.creator.id == user.id) {
+                        if (tmp.creator?.id == user.id) {
                             tmp.creator = replacement
                         }
-                        if (tmp.user.id == user.id) {
+                        if (tmp.user?.id == user.id) {
                             tmp.user = replacement
                         }
                         tmp.save()
                     }
-                    docs.each { tmp -> tmp.delete() }
 
                     links.each { tmp ->
                         tmp.lastUpdatedBy = replacement
