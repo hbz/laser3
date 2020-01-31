@@ -869,7 +869,7 @@ bb8 = {
             url: url,
 
             beforeSend: function (xhr) {
-                if (before) {trigger
+                if (before) {
                     //console.log('before')
                     eval(before)
                 }
