@@ -649,7 +649,7 @@ class BootStrap {
                 ],
                 [
                         name: [en: "Sim-User Number", de: "Sim-User-Zahl"],
-                        expl: [en: "Please indicate which number of Sim users should be licensed.", de: "Wie viele gleichzeitige Nutzerzugriffe umfasst die Lizenz?"],
+                        expl: [en: "How many users may access the subscription at the same time?", de: "Wie viele gleichzeitige Nutzerzugriffe umfasst die Lizenz?"],
                         type: OT.Rdv, cat: RDConstants.SIM_USER_NUMBER
                 ],
 
