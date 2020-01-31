@@ -911,7 +911,7 @@ from License as l where (
                        g.message(code: 'subscription.endDate.label'),
                        g.message(code: 'subscription.manualCancellationDate.label'),
                        g.message(code: 'default.identifiers.label'),
-                       g.message(code: 'subscription.details.status'),
+                       g.message(code: 'default.status.label'),
                        g.message(code: 'subscription.details.type'),
                        g.message(code: 'subscription.form.label'),
                        g.message(code: 'subscription.resource.label')]
@@ -1046,7 +1046,7 @@ from License as l where (
                        g.message(code: 'surveyProperty.subAgency'),
                        g.message(code: 'subscription.owner.label'),
                        g.message(code: 'subscription.packages.label'),
-                       g.message(code: 'subscription.details.status'),
+                       g.message(code: 'default.status.label'),
                        g.message(code: 'subscription.details.type'),
                        g.message(code: 'subscription.form.label'),
                        g.message(code: 'subscription.resource.label'),

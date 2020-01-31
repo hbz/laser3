@@ -166,7 +166,7 @@
                 <th>${message(code: 'subscription')}</th>
                 <th>${message(code: 'default.startDate.label')}</th>
                 <th>${message(code: 'default.endDate.label')}</th>
-                <th>${message(code: 'subscription.details.status')}</th>
+                <th>${message(code: 'default.status.label')}</th>
                 <th>${message(code: 'subscription.propertiesMembers.propertySelected')}: ${filterPropDef?.getI10n('name')}</th>
                 <th></th>
             </tr>
@@ -350,7 +350,7 @@
                 <th>${message(code: 'subscriptionDetails.members.members')}</th>
                 <th>${message(code: 'default.startDate.label')}</th>
                 <th>${message(code: 'default.endDate.label')}</th>
-                <th>${message(code: 'subscription.details.status')}</th>
+                <th>${message(code: 'default.status.label')}</th>
                 <th class="la-no-uppercase">
                     <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="bottom center"
                           data-content="${message(code: 'subscription.isMultiYear.consortial.label')}">

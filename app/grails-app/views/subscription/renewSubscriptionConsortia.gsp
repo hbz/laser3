@@ -250,7 +250,7 @@ ${message(code: 'subscription.details.renewalsConsortium.label')}: ${subscriptio
 
                                 <th>${message(code: 'default.startDate.label')}</th>
                                 <th>${message(code: 'default.endDate.label')}</th>
-                                <th>${message(code: 'subscription.details.status')}</th>
+                                <th>${message(code: 'default.status.label')}</th>
                             </tr>
                             </thead>
                             <tbody>

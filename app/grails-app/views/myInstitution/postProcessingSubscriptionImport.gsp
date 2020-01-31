@@ -47,7 +47,7 @@
                                         <li><g:message code="myinst.subscriptionImport.instanceOf" args="${parentSubType}"/>: ${genericOIDService.resolveOID(sub.instanceOf)}</li>
                                         <li><g:message code="myinst.subscriptionImport.member"/>: ${genericOIDService.resolveOID(sub.member)}</li>
                                     </g:if>
-                                    <li><g:message code="myinst.subscriptionImport.status"/>: ${genericOIDService.resolveOID(sub.status)?.getI10n('value')}</li>
+                                    <li><g:message code="default.status.label"/>: ${genericOIDService.resolveOID(sub.status)?.getI10n('value')}</li>
                                     <li><g:message code="myinst.subscriptionImport.type"/>: ${genericOIDService.resolveOID(sub.type)?.getI10n('value')}</li>
                                     <li><g:message code="myinst.subscriptionImport.form"/>: ${genericOIDService.resolveOID(sub.form)?.getI10n('value')}</li>
                                     <li><g:message code="myinst.subscriptionImport.resource"/>: ${genericOIDService.resolveOID(sub.resource)?.getI10n('value')}</li>

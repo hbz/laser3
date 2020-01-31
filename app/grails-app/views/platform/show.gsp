@@ -97,7 +97,7 @@
                     <dd><semui:xEditableRefData owner="${platformInstance}" field="type" config="${RDConstants.Y_N_O}"/></dd>
                   </dl>
                   <dl>
-                    <dt>${message(code: 'platform.status', default: 'Status')}</dt>
+                    <dt>${message(code: 'default.status.label', default: 'Status')}</dt>
                     <dd><semui:xEditableRefData owner="${platformInstance}" field="status"
                                                 config="${RDConstants.USAGE_STATUS}"/></dd>
                   </dl>

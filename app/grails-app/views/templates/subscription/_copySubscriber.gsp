@@ -26,7 +26,7 @@
 										<th>${message(code: 'default.sortname.label')}</th>
 										<th>${message(code: 'default.startDate.label')}</th>
 										<th>${message(code: 'default.endDate.label')}</th>
-										<th>${message(code: 'subscription.details.status')}</th>
+										<th>${message(code: 'default.status.label')}</th>
 										<th>
 											<input type="checkbox" name="checkAllCopyCheckboxes" data-action="copy" onClick="toggleAllCheckboxes(this)" checked />
 										</th>
@@ -63,7 +63,7 @@
 									<th>${message(code: 'default.sortname.label')}</th>
 									<th>${message(code: 'default.startDate.label')}</th>
 									<th>${message(code: 'default.endDate.label')}</th>
-									<th>${message(code: 'subscription.details.status')}</th>
+									<th>${message(code: 'default.status.label')}</th>
 								</tr>
 								</thead>
 								<tbody>

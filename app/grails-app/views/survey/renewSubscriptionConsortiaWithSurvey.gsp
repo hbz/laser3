@@ -89,7 +89,7 @@ ${surveyInfo?.name}
                 </td>
             </tr>
             <tr>
-                <th>${message(code: 'subscription.details.status')}</th>
+                <th>${message(code: 'default.status.label')}</th>
                 <td>
                 <g:set var="rdcSubStatus" value="${com.k_int.kbplus.RefdataCategory.getByDesc(RDConstants.SUBSCRIPTION_STATUS)}"/>
                 <g:select from="${com.k_int.kbplus.RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_STATUS)}" class="ui dropdown"
