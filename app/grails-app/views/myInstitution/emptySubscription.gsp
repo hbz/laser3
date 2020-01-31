@@ -38,7 +38,7 @@
                 </div>
 
                 <div class="field required">
-                    <label>${message(code:'myinst.emptySubscription.status')}</label>
+                    <label>${message(code:'default.status.label')}</label>
                     <%
                         def fakeList = []
                         fakeList.addAll(RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_STATUS))

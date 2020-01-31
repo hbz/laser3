@@ -474,7 +474,7 @@ String period
                                         ${id.type}: ${id.value} &nbsp;
                                     </g:each>
                                     <br>
-                                    <b>${message(code: 'license.status')}</b>: ${RefdataValue.get(hit.getSourceAsMap().statusId) ? RefdataValue.get(hit.getSourceAsMap().statusId).getI10n('value') : hit.getSourceAsMap().status}
+                                    <b>${message(code: 'default.status.label')}</b>: ${RefdataValue.get(hit.getSourceAsMap().statusId) ? RefdataValue.get(hit.getSourceAsMap().statusId).getI10n('value') : hit.getSourceAsMap().status}
                                     <br>
                                     <b>${message(code: 'subscription.details.type')}</b>: ${RefdataValue.get(hit.getSourceAsMap().typeId) ? RefdataValue.get(hit.getSourceAsMap().typeId).getI10n('value') : ''}
                                     <br>
@@ -532,7 +532,7 @@ String period
                                         period = period ? period : ''
                                     %>
 
-                                    <b>${message(code: 'surveyInfo.status.label')}</b>: ${RefdataValue.get(hit.getSourceAsMap().statusId) ? RefdataValue.get(hit.getSourceAsMap().statusId).getI10n('value') : hit.getSourceAsMap().status}
+                                    <b>${message(code: 'default.status.label')}</b>: ${RefdataValue.get(hit.getSourceAsMap().statusId) ? RefdataValue.get(hit.getSourceAsMap().statusId).getI10n('value') : hit.getSourceAsMap().status}
                                     <br>
                                     <b>${message(code: 'renewalWithSurvey.period')}</b>: ${period}
                                     <br>
@@ -571,7 +571,7 @@ String period
                                         period = period ? period : ''
                                     %>
 
-                                    <b>${message(code: 'surveyInfo.status.label')}</b>: ${RefdataValue.get(hit.getSourceAsMap().statusId) ? RefdataValue.get(hit.getSourceAsMap().statusId).getI10n('value') : hit.getSourceAsMap().status}
+                                    <b>${message(code: 'default.status.label')}</b>: ${RefdataValue.get(hit.getSourceAsMap().statusId) ? RefdataValue.get(hit.getSourceAsMap().statusId).getI10n('value') : hit.getSourceAsMap().status}
                                     <br>
                                     <b>${message(code: 'renewalWithSurvey.period')}</b>: ${period}
                                 </td>
