@@ -26,14 +26,20 @@
         <tr>
             <g:sortableColumn property="platform" title="${message(code: "platform.label", default: "Platform")}" />
     <g:if test="${ accessService.checkPermAffiliation('ORG_BASIC_MEMBER','INST_EDITOR') || (accessService.checkPermAffiliation('ORG_CONSORTIUM','INST_EDITOR') && inContextOrg)}">
-            <th>${message(code: 'accessPoint.action', default: 'Action')}</th>
+        <th>${message(code: "accessPoint.subscriptions.label", default: "Subscription")}</th>
+        <th>${message(code: 'accessPoint.action', default: 'Action')}</th>
     </g:if>
         </tr>
         </thead>
         <tbody>
-        <g:each in="${linkedPlatformsMap}" var="linkedPlatform">
+        <g:each in="${linkedPlatforms}" var="linkedPlatform">
             <tr>
                 <td><g:link controller="platform" action="show" id="${linkedPlatform.platform.id}">${linkedPlatform.platform.name}</g:link></td>
+                <td>
+                    <g:each in="${linkedPlatform.linkedSubs}" var="linkedSub">
+                        <g:link controller="Subscription" action="show" id="${linkedSub.id}">${linkedSub.name}</g:link><br/>
+                    </g:each>
+                </td>
             <g:if test="${ accessService.checkPermAffiliation('ORG_BASIC_MEMBER','INST_EDITOR') || (accessService.checkPermAffiliation('ORG_CONSORTIUM','INST_EDITOR') && inContextOrg)}">
                 <td class="center aligned">
                     <g:link class="ui negative icon button button js-open-confirm-modal" controller="accessPoint" action="unlinkPlatform" id="${linkedPlatform.aplink.id}"
@@ -48,5 +54,37 @@
         </g:each>
         </tbody>
     </table>
-
+    <h5>${message(code: 'accessPoint.link.with.subscription', default: 'Custom assignment to license')}
+        <span class="la-long-tooltip la-popup-tooltip la-delay"
+              data-html='${message(code: "accessPoint.linkedSubscriptionHelp")}'>
+            <i class="question circle icon la-popup"></i>
+        </span>
+    </h5>
+    <g:if test="${linkedPlatformSubscriptionPackages}">
+        <table class="ui celled la-table table compact">
+            <thead>
+            <tr>
+                <th>${message(code: "accessPoint.subscription.label", default: "Subscription")}</th>
+                <th>${message(code: "accessPoint.package.label", default: "Package")}</th>
+                <g:sortableColumn property="platform"
+                                  title="${message(code: "platform.label", default: "Platform")}"/>
+            </tr>
+            </thead>
+            <tbody>
+            <g:each in="${linkedPlatformSubscriptionPackages}" var="linkedPlatformSubscriptionPackage">
+                <tr>
+                    <td><g:link controller="subscription" action="show"
+                                id="${linkedPlatformSubscriptionPackage[1].subscription.id}">${linkedPlatformSubscriptionPackage[1].subscription.name}</g:link></td>
+                    <td><g:link controller="package" action="show"
+                                id="${linkedPlatformSubscriptionPackage[1].pkg.id}">${linkedPlatformSubscriptionPackage[1].pkg.name}</g:link></td>
+                    <td><g:link controller="platform" action="show"
+                                id="${linkedPlatformSubscriptionPackage[0].id}">${linkedPlatformSubscriptionPackage[0].name}</g:link></td>
+                </tr>
+            </g:each>
+            </tbody>
+        </table>
+    </g:if>
+    <g:else>
+        <p>${message(code: "accessPoint.info.noCustomLink")}</p>
+    </g:else>
 </g:form>
