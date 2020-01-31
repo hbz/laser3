@@ -28,7 +28,7 @@
             <th>${message(code:'sidewide.number')}</th>
             <th>${message(code:'license')}</th>
             <th>${message(code:'subscriptionDetails.members.members')}</th>
-            <th>${message(code:'license.details.status')}</th>
+            <th>${message(code:'default.status.label')}</th>
             <th class="la-action-info">${message(code:'default.actions')}</th>
         </tr>
     </thead>

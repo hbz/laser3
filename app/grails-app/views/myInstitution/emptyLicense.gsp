@@ -47,7 +47,7 @@
             </div>
 
             <div class="field required">
-                <label>${message(code:'myinst.emptyLicense.status')}</label>
+                <label>${message(code:'default.status.label')}</label>
                 <%
                     def fakeList = []
                     fakeList.addAll(RefdataCategory.getAllRefdataValues(RDConstants.LICENSE_STATUS))

@@ -97,7 +97,7 @@
                     <div class="ui card">
                         <div class="content">
                             <dl>
-                                <dt>${message(code: 'package.show.status')}</dt>
+                                <dt>${message(code: 'default.status.label')}</dt>
                                 <dd>${packageInstance.packageStatus?.getI10n('value')}</dd>
                             </dl>
                             <dl>

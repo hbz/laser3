@@ -100,7 +100,7 @@
             </div>
 
             <div class="field fieldcontain">
-                <label>${message(code: 'myinst.currentSubscriptions.filter.status.label')}</label>
+                <label>${message(code: 'default.status.label')}</label>
                 <%
                     def fakeList = []
                     fakeList.addAll(RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_STATUS))

@@ -97,7 +97,7 @@
                     <div class="ui card">
                         <div class="content">
                             <dl>
-                                <dt class="control-label">${message(code: 'subscription.details.status')}</dt>
+                                <dt class="control-label">${message(code: 'default.status.label')}</dt>
                                 <dd><semui:xEditableRefData owner="${subscriptionInstance}" field="status" config="${RDConstants.SUBSCRIPTION_STATUS}" constraint="removeValue_deleted" /></dd>
                                 <dd class="la-js-editmode-container"><semui:auditButton auditable="[subscriptionInstance, 'status']"/></dd>
                             </dl>

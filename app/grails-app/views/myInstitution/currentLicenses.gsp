@@ -98,7 +98,7 @@
                 %>
 
                 <div class="field">
-                    <label>${message(code: 'license.status')}</label>
+                    <label>${message(code: 'default.status.label')}</label>
                     <laser:select class="ui fluid dropdown" name="status"
                                   from="${ fakeList }"
                                   optionKey="id"
@@ -165,7 +165,7 @@
                       <g:if test="${params.orgRole == 'Licensing Consortium'}">
                           <th>${message(code:'license.details.incoming.childs',args:[message(code:'consortium.superOrgType')])}</th>
                       </g:if>
-                      <th>${message(code:'license.status')}</th>
+                      <th>${message(code:'default.status.label')}</th>
                     <g:sortableColumn params="${params}" property="startDate" title="${message(code:'license.start_date', default:'Start Date')}" />
                     <g:sortableColumn params="${params}" property="endDate" title="${message(code:'license.end_date', default:'End Date')}" />
                       <th class="la-action-info">${message(code:'default.actions')}</th>
