@@ -152,7 +152,7 @@ ${message(code: 'survey.label')} -
                 <div class="ui card">
                     <div class="content">
                         <dl>
-                            <dt class="control-label">${message(code: 'subscription.details.status')}</dt>
+                            <dt class="control-label">${message(code: 'default.status.label')}</dt>
                             <dd>${subscriptionInstance?.status?.getI10n('value')}</dd>
                             <dd><semui:auditInfo auditable="[subscriptionInstance, 'status']"/></dd>
                         </dl>

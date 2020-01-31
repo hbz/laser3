@@ -70,7 +70,8 @@
     <div class="row">
         <div class="column">
 
-            <semui:filter>
+            <g:render template="../templates/filter/javascript" />
+            <semui:filter showFilterButton="true">
                 <g:form action="index" params="${params}" method="get" class="ui form">
                     <input type="hidden" name="sort" value="${params.sort}">
                     <input type="hidden" name="order" value="${params.order}">

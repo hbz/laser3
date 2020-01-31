@@ -41,7 +41,7 @@
             <g:sortableColumn params="${params}" property="subscription.name"
                               title="${message(code: 'surveyInfo.slash.name')}" rowspan="2" scope="col"/>
 
-            <th>${message(code: 'surveyInfo.status.label')}</th>
+            <th>${message(code: 'default.status.label')}</th>
 
             <g:sortableColumn params="${params}" property="surveyInfo.startDate"
                               title="${message(code: 'default.startDate.label', default: 'Start Date')}"/>

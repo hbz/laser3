@@ -62,7 +62,7 @@
                 <div class="ui card">
                     <div class="content">
                         <dl>
-                            <dt class="control-label">${message(code: 'surveyInfo.status.label')}</dt>
+                            <dt class="control-label">${message(code: 'default.status.label')}</dt>
                             <dd>
                                 ${surveyInfo.status.getI10n('value')}
                             </dd>

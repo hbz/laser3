@@ -8,7 +8,7 @@
         <tr>
             <th>${message(code: 'profile.membership.org', default:'Organisation')}</th>
             <th>${message(code: 'profile.membership.role', default:'Role')}</th>
-            <th>${message(code: 'profile.membership.status', default:'Status')}</th>
+            <th>${message(code: 'default.status.label', default:'Status')}</th>
             <th>${message(code: 'profile.membership.date', default:'Date Requested / Actioned')}</th>
             <g:if test="${tmplUserEdit}">
                 <th class="la-action-info">${message(code:'default.actions')}</th>

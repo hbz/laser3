@@ -26,7 +26,7 @@
                         <th>${message(code: "profile.email")}</th>
                         <th>Organisation</th>
                         <th>${message(code: "profile.membership.role")}</th>
-                        <th>${message(code: "profile.membership.status")}</th>
+                        <th>${message(code: "default.status.label")}</th>
                         <th>${message(code: "profile.membership.date2")}</th>
                         <th class="la-action-info">${message(code:'default.actions')}</th>
                     </tr>
@@ -71,7 +71,7 @@
                     <th>${message(code: "profile.email")}</th>
                     <th>Organisation</th>
                     <th>${message(code: "profile.membership.role")}</th>
-                    <th>${message(code: "profile.membership.status")}</th>
+                    <th>${message(code: "default.status.label")}</th>
                     <th>${message(code: "profile.membership.date2")}</th>
                     <th class="la-action-info">${message(code:'default.actions')}</th>
                 </tr>

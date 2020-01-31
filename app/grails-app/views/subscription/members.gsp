@@ -76,7 +76,8 @@
         </form>
     </semui:filter>
     --%>
-    <semui:filter>
+    <g:render template="../templates/filter/javascript" />
+    <semui:filter showFilterButton="true">
         <g:form action="members" controller="subscription" params="${[id:params.id]}" method="get" class="ui form">
             <%
                 List<List<String>> tmplConfigShow
@@ -108,7 +109,7 @@
                 <g:if test="${accessService.checkPerm('ORG_CONSORTIUM')}">
                     <th>${message(code: 'subscription.linktoLicense')}</th>
                 </g:if>
-                <th>${message(code:'subscription.details.status')}</th>
+                <th>${message(code:'default.status.label')}</th>
                 <th class="la-no-uppercase">
                     <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="bottom center"
                           data-content="${message(code: 'subscription.isMultiYear.consortial.label')}">

@@ -5508,7 +5508,7 @@ class SubscriptionController extends AbstractDebugController {
 
         titles.add(g.message(code: 'subscription.details.startDate'))
         titles.add(g.message(code: 'subscription.details.endDate'))
-        titles.add(g.message(code: 'subscription.details.status'))
+        titles.add(g.message(code: 'default.status.label'))
         titles.add(RefdataValue.getByValueAndCategory('General contact person', RDConstants.PERSON_FUNCTION).getI10n('value'))
         //titles.add(RefdataValue.getByValueAndCategory('Functional contact', RDConstants.PERSON_CONTACT_TYPE).getI10n('value'))
 
