@@ -1,6 +1,15 @@
 ## temporary change log
 
 **Ticket    Date    Branch      Author  Feature/Bug     Description/Keywords**
+2104    28.01.2020  rc1.2       Andreas Bug         Steuersatz wird im Tab Eigene Kosten korrekt dargestellt
+
+2083    28.01.2020  rc1.2       Andreas Bug         Teilnehmerlizenzen sind nicht mehr löschbar, wenn Kostenposten anhängig sind
+
+2086    28.01.2020  rc1.2       David   Bug         Bugfix: Kundennummern lassen sich nur mit Anmerkungen anlegen
+
+2118    28.01.2020  hbz-dev     Andreas Feature     Verbesserungsvorschläge aus Menüpunkt entfernt
+
+2105    28.01.2020  hbz-dev     Andreas Bug         Entfernen des Platzhaltertextes aus Dropdown
 
 --      27.01.2020  rc1.2       David   Bug         Bugfix: API /statistic
 

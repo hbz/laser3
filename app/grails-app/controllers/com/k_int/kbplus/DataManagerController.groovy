@@ -4,6 +4,7 @@ import com.k_int.kbplus.auth.User
 import de.laser.controller.AbstractDebugController
 import de.laser.domain.MailTemplate
 import de.laser.helper.RDConstants
+import de.laser.helper.RDStore
 import grails.plugin.springsecurity.SpringSecurityUtils
 import grails.plugin.springsecurity.annotation.Secured
 import org.codehaus.groovy.grails.plugins.orm.auditable.AuditLogEvent
@@ -382,7 +383,7 @@ class DataManagerController extends AbstractDebugController {
         }
 
         log.debug("Query...");
-        def l = TitleInstance.executeQuery('select t.id from TitleInstance t where t.status.value=?',['Deleted']);
+        def l = TitleInstance.executeQuery('select t.id from TitleInstance t where t.status = :delState', [delState: RDStore.TITLE_STATUS_DELETED])
 
         if ( ( l != null ) && ( l instanceof List ) ) {
           log.debug("Processing...");
@@ -442,7 +443,7 @@ class DataManagerController extends AbstractDebugController {
         }
 
         log.debug("Query...");
-        def l = TitleInstancePackagePlatform.executeQuery('select t.id from TitleInstancePackagePlatform t where t.status.value=?',['Deleted']);
+        def l = TitleInstancePackagePlatform.executeQuery('select t.id from TitleInstancePackagePlatform t where t.status = :delState', [delState: RDStore.TIPP_STATUS_DELETED])
 
         if ( ( l != null ) && ( l instanceof List ) ) {
           log.debug("Processing...");

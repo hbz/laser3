@@ -155,7 +155,7 @@ class PlatformController extends AbstractDebugController {
 
 
 
-        List currentSubIds = orgTypeService.getCurrentSubscriptions(contextService.getOrg()).collect{ it.id }
+        List currentSubIds = orgTypeService.getCurrentSubscriptionIds(contextService.getOrg())
 
         //"    SubscriptionPackage subPkg join subPkg.subscriptionPackageOrgAccessPoint  spoap join spoap.orgAccessPoint ap" +
 

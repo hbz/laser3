@@ -78,7 +78,7 @@ class OrgAccessPoint extends AbstractBaseDomain {
 
     def getNotLinkedPlatforms()
     {
-        List currentSubIds = orgTypeService.getCurrentSubscriptions(org).collect{ it.id }
+        List currentSubIds = orgTypeService.getCurrentSubscriptionIds(org)
         // TODO check if this is enough
         if (!currentSubIds){
             return

@@ -1,5 +1,5 @@
 <g:set var="deletionService" bean="deletionService" />
-
+<laser:serviceInjection />
 <!doctype html>
 <html>
     <head>
@@ -15,52 +15,53 @@
     </h1>
 
     <g:if test="${delResult}">
-        <g:if test="${delResult?.status == deletionService.RESULT_SUBSTITUTE_NEEDED}">
-            <semui:msg class="info" header="" message="user.delete.info2" />
+        <g:if test="${delResult.status == deletionService.RESULT_SUCCESS}">
+            <semui:msg class="positive" header="" message="deletion.success.msg" />
+            <g:link controller="organisation" action="users" params="${[id: contextService.getOrg()?.id]}" class="ui button">${message(code:'org.nav.users')}</g:link>
         </g:if>
         <g:else>
-            <semui:msg class="info" header="" message="user.delete.info" />
-        </g:else>
+            <g:if test="${delResult.status == deletionService.RESULT_SUBSTITUTE_NEEDED}">
+                <semui:msg class="info" header="" message="user.delete.info2" />
+            </g:if>
+            <g:else>
+                <semui:msg class="info" header="" message="user.delete.info" />
+            </g:else>
 
-        <%-- --%>
+            <g:if test="${delResult.status == deletionService.RESULT_BLOCKED}">
+                <semui:msg class="negative" header="${message(code: 'deletion.blocked.header')}" message="deletion.blocked.msg.user" />
+            </g:if>
+            <g:if test="${delResult.status == deletionService.RESULT_ERROR}">
+                <semui:msg class="negative" header="${message(code: 'deletion.error.header')}" message="deletion.error.msg" />
+            </g:if>
 
-        <g:if test="${delResult.status == deletionService.RESULT_BLOCKED}">
-            <semui:msg class="negative" header="Löschvorgang blockiert"
-                       text="Es existieren Referenzen. Diese müssen zuerst gelöscht werden." />
-            <g:link controller="user" action="delete" params="${[id: user.id]}" class="ui button">Zur Übersicht</g:link>
-        </g:if>
-        <g:if test="${delResult.status == deletionService.RESULT_SUCCESS}">
-            <semui:msg class="positive" header=""
-                       text="Löschvorgang wurde erfolgreich durchgeführt." />
-            <g:link controller="organisation" action="users" params="${[id: contextService.getOrg()?.id]}" class="ui button">Nutzerverwaltung</g:link>
-        </g:if>
-        <g:if test="${delResult.status == deletionService.RESULT_ERROR}">
-            <semui:msg class="negative" header="Unbekannter Fehler"
-                       text="Der Löschvorgang wurde abgebrochen." />
-            <g:link controller="user" action="delete" params="${[id: user.id]}" class="ui button">Zur Übersicht</g:link>
-        </g:if>
+            <g:link controller="organisation" action="users" params="${[id: contextService.getOrg()?.id]}" class="ui button">${message(code:'org.nav.users')}</g:link>
+            <g:link controller="user" action="edit" params="${[id: user.id]}" class="ui button"><g:message code="default.button.cancel.label"/></g:link>
 
-        <g:if test="${editable}">
-            <g:form controller="user" action="_delete" params="${[id: user.id, process: true]}">
-                <g:link controller="user" action="edit" params="${[id: user.id]}" class="ui button">Vorgang abbrechen</g:link>
+            <g:if test="${editable}">
+                <g:form controller="user" action="_delete" params="${[id: user.id, process: true]}" style="display:inline-block;vertical-align:top">
 
-                <g:if test="${delResult.deletable}">
-                    <input type="submit" class="ui button red" value="Benutzer löschen" />
+                    <g:if test="${delResult.deletable}">
+                        <g:if test="${delResult.status == deletionService.RESULT_SUBSTITUTE_NEEDED}">
+                            <input type="submit" class="ui button red" value="${message(code:'deletion.user')}" />
 
-                    <g:if test="${delResult.status == deletionService.RESULT_SUBSTITUTE_NEEDED}">
-                        <br /><br />
-                        Die gekennzeichneten Daten dabei an folgenden Nutzer übertragen:
+                            <br /><br />
+                            Beim Löschen relevante Daten an folgenden Nutzer übertragen:
 
-                        <g:select id="userReplacement" name="userReplacement" class="ui dropdown selection"
-                              from="${substituteList.sort()}"
-                              optionKey="${{'com.k_int.kbplus.auth.User:' + it.id}}" optionValue="${{it.displayName + ' (' + it.username + ')'}}" />
+                            <g:select id="userReplacement" name="userReplacement" class="ui dropdown selection"
+                                      from="${substituteList.sort()}"
+                                      optionKey="${{'com.k_int.kbplus.auth.User:' + it.id}}" optionValue="${{it.displayName + ' (' + it.username + ')'}}" />
+                        </g:if>
+                        <g:elseif test="${delResult.status != deletionService.RESULT_ERROR}">
+                            <input type="submit" class="ui button red" value="${message(code:'deletion.user')}" />
+                        </g:elseif>
                     </g:if>
-                </g:if>
-                <g:else>
-                    <input disabled type="submit" class="ui button red" value="Benutzer löschen" />
-                </g:else>
-            </g:form>
-        </g:if>
+                    <g:else>
+                        <input disabled type="submit" class="ui button red" value="${message(code:'deletion.user')}" />
+                    </g:else>
+                </g:form>
+            </g:if>
+
+        </g:else>
 
         <%-- --%>
 

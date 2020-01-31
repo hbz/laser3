@@ -151,6 +151,32 @@ class YodaController {
         println privatePropertyDefMaps
 
 
+        println "-----------------------------------------------------------------------------"
+
+        def t1 = System.currentTimeMillis()
+        def test1 = Subscription.executeQuery("select s from Subscription s where s.status.value = 'Current'")
+
+        println test1.size() + ' Matches > ' + (System.currentTimeMillis() - t1)
+
+        def t2 = System.currentTimeMillis()
+        def test2 = Subscription.executeQuery('select s from Subscription s where s.status = :state', [state: RDStore.SUBSCRIPTION_CURRENT])
+
+        println test2.size() + ' Matches > ' + (System.currentTimeMillis() - t2)
+
+        println "-----------------------------------------------------------------------------"
+
+        def t3 = System.currentTimeMillis()
+        def test3 = Subscription.executeQuery("select s from Subscription s where s.status.value = 'Current'")
+
+        println test1.size() + ' Matches > ' + (System.currentTimeMillis() - t3)
+
+        def t4 = System.currentTimeMillis()
+        def test4 = Subscription.executeQuery('select s from Subscription s where s.status = :state', [state: RDStore.SUBSCRIPTION_CURRENT])
+
+        println test4.size() + ' Matches > ' + (System.currentTimeMillis() - t4)
+
+        println "-----------------------------------------------------------------------------"
+
         result
     }
 
