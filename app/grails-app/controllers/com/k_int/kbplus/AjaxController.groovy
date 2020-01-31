@@ -1885,9 +1885,8 @@ class AjaxController {
 
     @Secured(['ROLE_USER'])
     private setDashboardDueDateIsHidden(boolean isHidden){
-        log.debug("Hide Dashboard DueDate")
+        log.debug("Hide/Show Dashboard DueDate - isHidden="+isHidden)
 
-//        def result = setResultGenerics()
         def result = [:]
         result.user = contextService.user
         result.institution = contextService.org
@@ -1897,17 +1896,19 @@ class AjaxController {
             response.sendError(401)
             return;
         }
-        flash.error = "Fehler testen"
 
         if (params.id) {
             DashboardDueDate dueDate = DashboardDueDate.get(params.id)
             if (dueDate){
                 dueDate.isHidden = isHidden
                 dueDate.save(flush: true)
+            } else {
+                if (isHidden)   flash.error += message(code:'dashboardDueDate.err.toShow.doesNotExist')
+                else            flash.error += message(code:'dashboardDueDate.err.toHide.doesNotExist')
             }
         } else {
-            if (isHidden)   flash.error = "Der mitgegebene fällige Termin, der eingeblendet werden soll, existiert nicht."
-            else            flash.error = "Der mitgegebene fällige Termin, der ausgeblendet werden soll, existiert nicht."
+            if (isHidden)   flash.error += message(code:'dashboardDueDate.err.toShow.doesNotExist')
+            else            flash.error += message(code:'dashboardDueDate.err.toHide.doesNotExist')
         }
 
         result.is_inst_admin = accessService.checkMinUserOrgRole(result.user, result.institution, 'INST_ADM')
@@ -1917,22 +1918,11 @@ class AjaxController {
         result.offset = params.offset ? Integer.parseInt(params.offset) : 0
         result.dashboardDueDatesOffset = result.offset
 
-        // changes
-
-//        def periodInDays = contextService.getUser().getSettingsValue(UserSettings.KEYS.DASHBOARD_ITEMS_TIME_WINDOW, 14)
-
-//        getTodoForInst(result, periodInDays)
-
-//        def dcCheck = (new Date()).minus(periodInDays)
-
-
-        result.dueDates = DashboardDueDate.findAllByResponsibleUserAndResponsibleOrg(contextService.user, contextService.org, [sort: 'date', order: 'asc', max: result.max, offset: result.dashboardDueDatesOffset])
-//        result.dueDates = DashboardDueDate.findAllByResponsibleUserAndResponsibleOrgAndIsHiddenAndIsDone(contextService.user, contextService.org, false, false, [sort: 'date', order: 'asc', max: result.max, offset: result.dashboardDueDatesOffset])
+//        result.dueDates = DashboardDueDate.findAllByResponsibleUserAndResponsibleOrg(contextService.user, contextService.org, [sort: 'date', order: 'asc', max: result.max, offset: result.dashboardDueDatesOffset])
+        result.dueDates = DashboardDueDate.findAllByResponsibleUserAndResponsibleOrgAndIsHiddenAndIsDone(contextService.user, contextService.org, false, false, [sort: 'date', order: 'asc', max: result.max, offset: result.dashboardDueDatesOffset])
         result.dueDatesCount = DashboardDueDate.findAllByResponsibleUserAndResponsibleOrgAndIsHiddenAndIsDone(contextService.user, contextService.org, false, false).size()
 
         render (template: "/user/tableDueDates", model: [dueDates: result.dueDates, dueDatesCount: result.dueDatesCount, max: result.max, offset: result.offset])
-//        render (template: "/user/test")
-//        render result as JSON
 
     }
 

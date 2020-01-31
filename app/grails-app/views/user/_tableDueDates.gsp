@@ -1,7 +1,5 @@
-<%@ page import="org.springframework.context.i18n.LocaleContextHolder; de.laser.helper.SqlDateUtils; com.k_int.kbplus.*; com.k_int.kbplus.abstract_domain.AbstractProperty; de.laser.DashboardDueDate" %>
-TTTTT
-<semui:messages data="${flash}" />
-UUUUU
+<%@ page import="org.springframework.context.i18n.LocaleContextHolder; de.laser.helper.SqlDateUtils; com.k_int.kbplus.*; com.k_int.kbplus.abstract_domain.AbstractProperty; de.laser.DashboardDueDate; com.k_int.kbplus.GenericOIDService" %>
+<laser:serviceInjection />
 <table class="ui celled table la-table">
     <thead>
     <tr>
@@ -14,7 +12,7 @@ UUUUU
     </thead>
     <tbody>
     <g:each in="${dueDates}" var="dashDueDate">
-        <g:set var="obj" value="${genericOIDService.resolveOID(dashDueDate.oid)}"/>
+        <g:set var="obj" value="${dashDueDate? genericOIDService.resolveOID(dashDueDate.oid) : null}"/>
         <g:if test="${obj}">
             <tr>
                 <td>
@@ -140,7 +138,7 @@ UUUUU
                             <i class="icon eye la-js-editmode-icon"></i>
                         </laser:remoteLink>
                     </g:else>
-                    <semui:xEditableBoolean owner="${dashDueDate}" field="isHidden" />
+                    %{--<semui:xEditableBoolean owner="${dashDueDate}" field="isHidden" />--}%
                 </td>
                 %{--<td><semui:xEditableBoolean owner="${dashDueDate}" field="isDone" /></td>--}%
             </tr>
