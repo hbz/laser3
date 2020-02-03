@@ -12,7 +12,7 @@
                 <th class="la-no-uppercase"><span class="la-popup-tooltip la-delay" data-content="${message(code:'financials.costItemConfiguration')}" data-position="left center"><i class="money bill alternate icon"></i></span></th>
                 <g:sortableColumn property="ci.costInBillingCurrency" title="${message(code:'financials.invoice_total')}" params="[ownSort: true]"/>
                 <g:sortableColumn property="ci.costInLocalCurrency" title="${message(code:'financials.newCosts.value')}" params="[ownSort: true]"/>
-                <g:sortableColumn property="ci.costItemStatus" title="${message(code:'financials.costItemStatus')}" params="[ownSort: true]"/>
+                <g:sortableColumn property="ci.costItemStatus" title="${message(code:'default.status.label')}" params="[ownSort: true]"/>
                 <g:sortableColumn property="ci.startDate" title="${message(code:'financials.dateFrom')}" params="[ownSort: true]"/>
                 <g:sortableColumn property="ci.costItemElement" title="${message(code:'financials.costItemElement')}" params="[ownSort: true]"/>
                 <th></th>
@@ -23,7 +23,7 @@
                 <th class="la-no-uppercase"><span class="la-popup-tooltip la-delay" data-content="${message(code:'financials.costItemConfiguration')}" data-position="left center"><i class="money bill alternate icon"></i></span></th>
                 <g:sortableColumn property="ci.costInBillingCurrency" title="${message(code:'financials.invoice_total')}" params="[ownSort: true, sub: fixedSubscription.id]" mapping="subfinance"/>
                 <g:sortableColumn property="ci.costInLocalCurrency" title="${message(code:'financials.newCosts.value')}" params="[ownSort: true, sub: fixedSubscription.id]" mapping="subfinance"/>
-                <g:sortableColumn property="ci.costItemStatus" title="${message(code:'financials.costItemStatus')}" params="[ownSort: true, sub: fixedSubscription.id]" mapping="subfinance"/>
+                <g:sortableColumn property="ci.costItemStatus" title="${message(code:'default.status.label')}" params="[ownSort: true, sub: fixedSubscription.id]" mapping="subfinance"/>
                 <g:sortableColumn property="ci.startDate" title="${message(code:'financials.dateFrom')}" params="[ownSort: true, sub: fixedSubscription.id]" mapping="subfinance"/>
                 <g:sortableColumn property="ci.costItemElement" title="${message(code:'financials.costItemElement')}" params="[ownSort: true, sub: fixedSubscription.id]" mapping="subfinance"/>
                 <th></th>
@@ -111,7 +111,7 @@
                         <br />
                         <g:formatNumber number="${ci.costInBillingCurrencyAfterTax ?: 0.0}" type="currency" currencyCode="${ci.billingCurrency ?: 'EUR'}"/>
                         <g:if test="${ci.taxKey && ci.taxKey.display}">
-                            (${ci.taxRate ?: 0}%)
+                            (${ci.taxKey.taxRate ?: 0}%)
                         </g:if>
                         <g:elseif test="${ci.taxKey == CostItem.TAX_TYPES.TAX_REVERSE_CHARGE}">
                             (${RDStore.TAX_REVERSE_CHARGE.getI10n("value")})
@@ -122,7 +122,7 @@
                         <br />
                         <g:formatNumber number="${ci.costInLocalCurrencyAfterTax ?: 0.0}" type="currency" currencyCode="EUR" />
                         <g:if test="${ci.taxKey && ci.taxKey.display}">
-                            (${ci.taxRate ?: 0}%)
+                            (${ci.taxKey.taxRate ?: 0}%)
                         </g:if>
                         <g:elseif test="${ci.taxKey == CostItem.TAX_TYPES.TAX_REVERSE_CHARGE}">
                             (${RDStore.TAX_REVERSE_CHARGE.getI10n("value")})

@@ -67,12 +67,12 @@ class ApiSubscription {
     /**
      * @return JSON | FORBIDDEN
      */
-    static getSubscription(Subscription sub, Org context, boolean isInvoiceTool){
+    static requestSubscription(Subscription sub, Org context, boolean isInvoiceTool){
         Map<String, Object> result = [:]
 
 		boolean hasAccess = isInvoiceTool || calculateAccess(sub, context)
         if (hasAccess) {
-            result = retrieveSubscriptionMap(sub, ApiReader.IGNORE_NONE, context)
+            result = getSubscriptionMap(sub, ApiReader.IGNORE_NONE, context)
         }
 
         return (hasAccess ? new JSON(result) : Constants.HTTP_FORBIDDEN)
@@ -92,10 +92,12 @@ class ApiSubscription {
                 ]
         )
 
+		println "${available.size()} available subscriptions found .."
+
         available.each { sub ->
             //if (calculateAccess(sub, context, hasAccess)) {
                 println sub.id + ' ' + sub.name
-                result.add(ApiStubReader.requestSubscriptionStub(sub, context, true))
+                result.add(ApiStubReader.requestSubscriptionStub(sub, context))
                 //result.add([globalUID: sub.globalUID])
             //}
         }
@@ -106,7 +108,7 @@ class ApiSubscription {
 	/**
 	 * @return Map<String, Object>
 	 */
-	static Map<String, Object> retrieveSubscriptionMap(Subscription sub, def ignoreRelation, Org context){
+	static Map<String, Object> getSubscriptionMap(Subscription sub, def ignoreRelation, Org context){
 		Map<String, Object> result = [:]
 
 		sub = GrailsHibernateUtil.unwrapIfProxy(sub)
@@ -138,9 +140,9 @@ class ApiSubscription {
 
 		// References
 
-		result.documents            = ApiCollectionReader.retrieveDocumentCollection(sub.documents) // com.k_int.kbplus.DocContext
+		result.documents            = ApiCollectionReader.getDocumentCollection(sub.documents) // com.k_int.kbplus.DocContext
 		//result.derivedSubscriptions = ApiStubReader.resolveStubs(sub.derivedSubscriptions, ApiCollectionReader.SUBSCRIPTION_STUB, context) // com.k_int.kbplus.Subscription
-		result.identifiers          = ApiCollectionReader.retrieveIdentifierCollection(sub.ids) // com.k_int.kbplus.Identifier
+		result.identifiers          = ApiCollectionReader.getIdentifierCollection(sub.ids) // com.k_int.kbplus.Identifier
 		result.instanceOf           = ApiStubReader.requestSubscriptionStub(sub.instanceOf, context) // com.k_int.kbplus.Subscription
 		result.license              = ApiStubReader.requestLicenseStub(sub.owner, context) // com.k_int.kbplus.License
 		//removed: result.license          = ApiCollectionReader.resolveLicense(sub.owner, ApiCollectionReader.IGNORE_ALL, context) // com.k_int.kbplus.License
@@ -149,7 +151,7 @@ class ApiSubscription {
 
 		result.predecessor = ApiStubReader.requestSubscriptionStub(sub.getCalculatedPrevious(), context) // com.k_int.kbplus.Subscription
 		result.successor   = ApiStubReader.requestSubscriptionStub(sub.getCalculatedSuccessor(), context) // com.k_int.kbplus.Subscription
-		result.properties  = ApiCollectionReader.retrievePropertyCollection(sub, context, ApiReader.IGNORE_NONE) // com.k_int.kbplus.(SubscriptionCustomProperty, SubscriptionPrivateProperty)
+		result.properties  = ApiCollectionReader.getPropertyCollection(sub, context, ApiReader.IGNORE_NONE) // com.k_int.kbplus.(SubscriptionCustomProperty, SubscriptionPrivateProperty)
 
 		def allOrgRoles = []
 
@@ -162,10 +164,10 @@ class ApiSubscription {
 		}
 		allOrgRoles.addAll(sub.orgRelations)
 
-		result.organisations = ApiCollectionReader.retrieveOrgLinkCollection(allOrgRoles, ApiReader.IGNORE_SUBSCRIPTION, context) // com.k_int.kbplus.OrgRole
+		result.organisations = ApiCollectionReader.getOrgLinkCollection(allOrgRoles, ApiReader.IGNORE_SUBSCRIPTION, context) // com.k_int.kbplus.OrgRole
 
 		// TODO refactoring with issueEntitlementService
-		result.packages = ApiCollectionReader.retrievePackageWithIssueEntitlementsCollection(sub.packages, context) // com.k_int.kbplus.SubscriptionPackage
+		result.packages = ApiCollectionReader.getPackageWithIssueEntitlementsCollection(sub.packages, context) // com.k_int.kbplus.SubscriptionPackage
 
 		// Ignored
 
@@ -179,8 +181,8 @@ class ApiSubscription {
 		*/
 
 		// TODO: oaMonitor
-		result.costItems    = ApiCollectionReader.retrieveCostItemCollection(sub.costItems) // com.k_int.kbplus.CostItem
+		result.costItems    = ApiCollectionReader.getCostItemCollection(sub.costItems) // com.k_int.kbplus.CostItem
 
-		return ApiToolkit.cleanUp(result, true, true)
+		ApiToolkit.cleanUp(result, true, true)
 	}
 }

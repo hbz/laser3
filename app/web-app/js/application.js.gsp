@@ -431,7 +431,7 @@ r2d2 = {
             inline     : true,
             lastResort: true
         });*/
-        $("a[href], input.js-wait-wheel").not("a[href^='#'], a[target='_blank'], .js-open-confirm-modal, a[data-tab], a[data-content], a.la-ctrls , .close, .js-no-wait-wheel, .trigger-modal").click(function() {
+        $("a[href], input.js-wait-wheel").not("a[href^='#'], a[href*='ajax'], a[target='_blank'], .js-open-confirm-modal, a[data-tab], a[data-content], a.la-ctrls , .close, .js-no-wait-wheel, .trigger-modal").click(function() {
             $("html").css("cursor", "wait");
         });
 
@@ -869,7 +869,7 @@ bb8 = {
             url: url,
 
             beforeSend: function (xhr) {
-                if (before) {trigger
+                if (before) {
                     //console.log('before')
                     eval(before)
                 }

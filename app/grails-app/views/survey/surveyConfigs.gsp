@@ -44,7 +44,7 @@
                     </th>
                     <th>${message(code: 'surveyProperty.subName')}</th>
                     <th>${message(code: 'surveyProperty.subProviderAgency')}</th>
-                    <th>${message(code: 'surveyProperty.subStatus')}</th>
+                    <th>${message(code: 'default.status.label')}</th>
 
                     <th>${message(code: 'surveyProperty.plural.label')}</th>
                     <th>${message(code: 'surveyConfig.documents.label')}</th>

@@ -14,60 +14,62 @@
         ${orgInstance?.name}
     </h1>
 
-    <g:if test="${deletionService.RESULT_SUCCESS != result?.status}">
+    <g:if test="${delResult.status != deletionService.RESULT_SUCCESS}">
         <g:render template="nav" />
     </g:if>
 
     <h3>[ Funktionalität unvollständig implementiert ]</h3>
 
     <g:if test="${delResult}">
-        <g:if test="${delResult.status == deletionService.RESULT_SUBSTITUTE_NEEDED}">
-            <semui:msg class="info" header="" message="org.delete.info2" />
+        <g:if test="${delResult.status == deletionService.RESULT_SUCCESS}">
+            <semui:msg class="positive" header="" message="deletion.success.msg" />
+            <g:link controller="organisation" action="listInstitution" class="ui button">${message(code:'menu.public.all_insts')}</g:link>
         </g:if>
         <g:else>
-            <semui:msg class="info" header="" message="org.delete.info" />
-        </g:else>
+            <g:if test="${delResult.status == deletionService.RESULT_SUBSTITUTE_NEEDED}">
+                <semui:msg class="info" header="" message="org.delete.info2" />
+            </g:if>
+            <g:else>
+                <semui:msg class="info" header="" message="org.delete.info" />
+            </g:else>
 
-        <%-- --%>
+            <g:if test="${delResult.status == deletionService.RESULT_BLOCKED}">
+                <semui:msg class="negative" header="${message(code: 'deletion.blocked.header')}" message="deletion.blocked.msg.org" />
+            </g:if>
+            <g:if test="${delResult.status == deletionService.RESULT_ERROR}">
+                <semui:msg class="negative" header="${message(code: 'deletion.error.header')}" message="deletion.error.msg" />
+            </g:if>
 
-        <g:if test="${delResult.status == deletionService.RESULT_BLOCKED}">
-            <semui:msg class="negative" header="Löschvorgang blockiert"
-                       text="Es existieren relevante Verknüpfungen. Diese müssen zuerst gelöscht werden." />
-            <g:link controller="organisation" action="_delete" params="${[id: orgInstance.id]}" class="ui button">Zur Übersicht</g:link>
-        </g:if>
-        <g:if test="${delResult.status == deletionService.RESULT_SUCCESS}">
-            <semui:msg class="positive" header=""
-                       text="Löschvorgang wurde erfolgreich durchgeführt." />
-            <g:link controller="organisation" action="listInstitution" class="ui button">Alle Einrichtungen</g:link>
-        </g:if>
-        <g:if test="${delResult.status == deletionService.RESULT_ERROR}">
-            <semui:msg class="negative" header="Unbekannter Fehler"
-                       text="Der Löschvorgang wurde abgebrochen." />
-            <g:link controller="organisation" action="_delete" params="${[id: orgInstance.id]}" class="ui button">Zur Übersicht</g:link>
-        </g:if>
+            <g:link controller="organisation" action="listInstitution" class="ui button">${message(code:'menu.public.all_insts')}</g:link>
+            <g:link controller="organisation" action="show" params="${[id: orgInstance.id]}" class="ui button"><g:message code="default.button.cancel.label"/></g:link>
 
-        <g:if test="${editable}">
-            <g:form controller="organisation" action="_delete" params="${[id: orgInstance.id, process: true]}" style="display:inline-block;">
-                <g:link controller="organisation" action="show" params="${[id: orgInstance.id]}" class="ui button">Vorgang abbrechen</g:link>
+            <g:if test="${editable}">
+                <g:form controller="organisation" action="_delete" params="${[id: orgInstance.id, process: true]}" style="display:inline-block;vertical-align:top">
 
-                <g:if test="${delResult.deletable}">
-                    <input type="submit" class="ui button red" value="Organisation löschen" />
+                    <g:if test="${delResult.deletable}">
+                        <g:if test="${delResult.status == deletionService.RESULT_SUBSTITUTE_NEEDED}">
+                            <p>Löschen mit Datenübertrag wird noch nicht unterstützt.</p>
+                            <%--<input type="submit" class="ui button red" value="Organisation löschen" />
 
-                    <g:if test="${delResult.status == deletionService.RESULT_SUBSTITUTE_NEEDED}">
+                            <br /><br />
+                            Beim Löschen relevante Daten an folgende Organisation übertragen:
 
-                        <br /><br />
-                        Die gekennzeichneten Daten dabei an folgende Organisation übertragen:
-
-                        <g:select id="orgReplacement" name="orgReplacement" class="ui dropdown selection"
-                                  from="${substituteList.sort()}"
-                                  optionKey="${{'com.k_int.kbplus.auth.Org:' + it.id}}" optionValue="${{(it.sortname ?: it.shortname) + ' (' + it.name + ')'}}" />
+                            <g:select id="orgReplacement" name="orgReplacement" class="ui dropdown selection"
+                                      from="${substituteList.sort()}"
+                                      optionKey="${{'com.k_int.kbplus.auth.Org:' + it.id}}" optionValue="${{(it.sortname ?: it.shortname) + ' (' + it.name + ')'}}" />
+                                      --%>
+                        </g:if>
+                        <g:elseif test="${delResult.status != deletionService.RESULT_ERROR}">
+                            <input type="submit" class="ui button red" value="${message(code:'deletion.org')}" />
+                        </g:elseif>
                     </g:if>
-                </g:if>
-                <g:else>
-                    <input disabled type="submit" class="ui button red" value="Organisation löschen" />
-                </g:else>
-            </g:form>
-        </g:if>
+                    <g:else>
+                        <input disabled type="submit" class="ui button red" value="${message(code:'deletion.org')}" />
+                    </g:else>
+                </g:form>
+            </g:if>
+
+        </g:else>
 
         <%-- --%>
 

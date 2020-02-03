@@ -476,7 +476,8 @@ static hasMany = [  tipps:     TitleInstancePackagePlatform,
     }
 
     if(params.hideDeleted == 'true'){
-      hqlString += " AND pkg.packageStatus.value != 'Deleted'"
+        hqlString += " AND pkg.packageStatus != ?"
+        hqlParams += RDStore.PACKAGE_DELETED
     }
 
     def queryResults = Package.executeQuery(hqlString,hqlParams);
@@ -643,8 +644,8 @@ static hasMany = [  tipps:     TitleInstancePackagePlatform,
         result
     }
 
-    List<TitleInstancePackagePlatform> getCurrentTipps() {
-        List<TitleInstancePackagePlatform> result = []
+    Set<TitleInstancePackagePlatform> getCurrentTipps() {
+        Set<TitleInstancePackagePlatform> result = []
         if (this.tipps) {
             result = this.tipps?.findAll{it?.status?.id == RDStore.TIPP_STATUS_CURRENT.id}
         }

@@ -73,7 +73,7 @@
                       <tr>
                           <th>${message(code:'sidewide.number')}</th>
                           <g:sortableColumn property="name" title="${message(code:'package.show.pkg_name', default:'Package Name')}" params="${params}" />
-                          <th>${message(code:'package.show.status')}</th>
+                          <th>${message(code:'default.status.label')}</th>
                           <th>${message(code:'package.compare.overview.tipps')}</th>
                           <th>${message(code:'package.content_provider')}</th>
                           <th>${message(code:'package.nominalPlatform')}</th>

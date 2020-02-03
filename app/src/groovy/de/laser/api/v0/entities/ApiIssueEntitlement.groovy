@@ -43,7 +43,7 @@ class ApiIssueEntitlement {
     /**
      * @return JSON | FORBIDDEN
      */
-    static getIssueEntitlements(SubscriptionPackage subPkg, Org context){
+    static requestIssueEntitlements(SubscriptionPackage subPkg, Org context){
         Collection<Object> result = []
 
         boolean hasAccess = false
@@ -63,7 +63,7 @@ class ApiIssueEntitlement {
         }
 
         if (hasAccess) {
-            result = ApiCollectionReader.retrieveIssueEntitlementCollection(subPkg, ApiReader.IGNORE_NONE, context) // TODO check orgRole.roleType
+            result = ApiCollectionReader.getIssueEntitlementCollection(subPkg, ApiReader.IGNORE_NONE, context) // TODO check orgRole.roleType
         }
 
         return (hasAccess ? new JSON(result) : Constants.HTTP_FORBIDDEN)
@@ -72,7 +72,7 @@ class ApiIssueEntitlement {
     /**
      * @return Map<String, Object>
      */
-    static Map<String, Object> retrieveIssueEntitlementMap(IssueEntitlement ie, def ignoreRelation, Org context) {
+    static Map<String, Object> getIssueEntitlementMap(IssueEntitlement ie, def ignoreRelation, Org context) {
         Map<String, Object> result = [:]
         if (! ie) {
             return null
@@ -91,16 +91,16 @@ class ApiIssueEntitlement {
         result.medium           = ie.medium?.value
         //result.status           = ie.status?.value // legacy; not needed ?
 
-        result.coverages        = retrieveIssueEntitlementCoverageCollection(ie.coverages, ApiReader.IGNORE_ALL, context) // com.k_int.kbplus.TitleInstancePackagePlatform
+        result.coverages        = getIssueEntitlementCoverageCollection(ie.coverages, ApiReader.IGNORE_ALL, context) // com.k_int.kbplus.TitleInstancePackagePlatform
 
         // References
         if (ignoreRelation != ApiReader.IGNORE_ALL) {
             if (ignoreRelation == ApiReader.IGNORE_SUBSCRIPTION_AND_PACKAGE) {
-                result.tipp = ApiCollectionReader.retrieveTippMap(ie.tipp, ApiReader.IGNORE_ALL, context) // com.k_int.kbplus.TitleInstancePackagePlatform
+                result.tipp = ApiCollectionReader.getTippMap(ie.tipp, ApiReader.IGNORE_ALL, context) // com.k_int.kbplus.TitleInstancePackagePlatform
             }
             else {
                 if (ignoreRelation != ApiReader.IGNORE_TIPP) {
-                    result.tipp = ApiCollectionReader.retrieveTippMap(ie.tipp, ApiReader.IGNORE_NONE, context)
+                    result.tipp = ApiCollectionReader.getTippMap(ie.tipp, ApiReader.IGNORE_NONE, context)
                     // com.k_int.kbplus.TitleInstancePackagePlatform
                 }
                 if (ignoreRelation != ApiReader.IGNORE_SUBSCRIPTION) {
@@ -110,13 +110,13 @@ class ApiIssueEntitlement {
             }
         }
 
-        return ApiToolkit.cleanUp(result, true, true)
+        ApiToolkit.cleanUp(result, true, true)
     }
 
     /**
      * @return Map<String, Object>
      */
-    static Map<String, Object> retrieveIssueEntitlementCoverageMap(IssueEntitlementCoverage coverage, def ignoreRelation, Org context) {
+    static Map<String, Object> getIssueEntitlementCoverageMap(IssueEntitlementCoverage coverage, def ignoreRelation, Org context) {
         Map<String, Object> result = [:]
         if (! coverage) {
             return null
@@ -133,7 +133,7 @@ class ApiIssueEntitlement {
         result.coverageNote     = coverage?.coverageNote
         result.lastUpdated      = coverage?.lastUpdated
 
-        return ApiToolkit.cleanUp(result, true, true)
+        ApiToolkit.cleanUp(result, true, true)
     }
 
     /**
@@ -144,11 +144,11 @@ class ApiIssueEntitlement {
      * @param com.k_int.kbplus.Org context
      * @return Collection<Object>
      */
-    static Collection<Object> retrieveIssueEntitlementCoverageCollection(Collection<IssueEntitlementCoverage> list, def ignoreRelation, Org context) {
+    static Collection<Object> getIssueEntitlementCoverageCollection(Collection<IssueEntitlementCoverage> list, def ignoreRelation, Org context) {
         def result = []
 
         list?.each { it -> // com.k_int.kbplus.IssueEntitlementCoverage
-            result << retrieveIssueEntitlementCoverageMap(it, ignoreRelation, context)
+            result << getIssueEntitlementCoverageMap(it, ignoreRelation, context)
         }
 
         result

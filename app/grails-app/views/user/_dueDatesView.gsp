@@ -5,121 +5,34 @@
     </g:if>
     <g:set var="dashboard_last_update" value="${DashboardDueDate.executeQuery("select max(lastUpdated) from DashboardDueDate ")[0]}" />
     <g:if test="${dashboard_last_update != null}" >
-        <div class="la-float-right">
+        <g:set var="message_lastUpdated" value="${message(code:'myinst.dash.due_dates.lastUpdate')}" />
+        <%
+            def sdf = new java.text.SimpleDateFormat(message(code:'default.date.format.notime', default:'yyyy-MM-dd'))
+            def dateString = sdf.format(dashboard_last_update)
+        %>
+
             <g:if test="${ ! SqlDateUtils.isYesterdayOrToday(dashboard_last_update)}">
-                <span style="color: red;">
-                    <i class="exclamation alternate triangle icon" style="text-decoration:blink;" id="noData" data-content="${message(code:'myinst.dash.due_dates.tooltip')}"></i>
-                    ${message(code:'myinst.dash.due_dates.lastUpdate')}&nbsp;<g:formatDate format="${message(code:'default.date.format.notime', default:'yyyy-MM-dd')}" date="${dashboard_last_update}"/>&nbsp;
-                </span>
+                <semui:msg class="negative" header="${message(code: 'myinst.message.attention')}" text="${message_lastUpdated} ${dateString}" >
+                    <i class="exclamation alternate triangle icon"  id="noData" data-content="${message(code:'myinst.dash.due_dates.tooltip')}"></i>
+                </semui:msg>
             </g:if>
-            <g:else>
-                ${message(code:'myinst.dash.due_dates.lastUpdate')}&nbsp;<g:formatDate format="${message(code:'default.date.format.notime', default:'yyyy-MM-dd')}" date="${dashboard_last_update}"/>&nbsp;
-            </g:else>
-        </div>
+            %{--<g:else>--}%
+                %{--<semui:msg class="positive" header="${message(code: 'default.info.label')}" text="${message_lastUpdated} ${dateString}" />--}%
+            %{--</g:else>--}%
+
     </g:if>
+<style>
+
+</style>
 <r:script>
     $('#noData')
             .popup()
     ;
 </r:script>
 
-    <br />
-    <br />
-
     <g:if test="${dueDates}">
-
-        <table class="ui celled table">
-            <thead>
-                <tr>
-                    <th>${message(code:'myinst.dash.due_dates.attribute.label')}</th>
-                    <th>${message(code:'myinst.dash.due_date.date.label')}</th>
-                    <th>${message(code:'myinst.dash.due_dates.name.label')}</th>
-                    <th>${message(code:'myinst.dash.due_dates.hide.label')}</th>
-                    %{--<th>${message(code:'myinst.dash.due_dates.done.label')}</th>--}%
-                </tr>
-            </thead>
-            <tbody>
-                <g:each in="${dueDates}" var="dashDueDate">
-                    <g:set var="obj" value="${genericOIDService.resolveOID(dashDueDate.oid)}"/>
-                    <g:if test="${obj}">
-                        <tr>
-                            <td>
-                                <g:if test="${obj instanceof AbstractProperty}">
-                                    <i class="icon tags la-list-icon"></i>
-                                </g:if>
-                                %{--${dashDueDate.id} &nbsp--}%
-                                <g:if test="${Locale.GERMAN.getLanguage() == org.springframework.context.i18n.LocaleContextHolder.getLocale().getLanguage()}">
-                                    ${dashDueDate.attribute_value_de}
-                                </g:if><g:else>
-                                    ${dashDueDate.attribute_value_en}
-                                </g:else>
-                            </td>
-                            <td>
-                                <g:formatDate format="${message(code:'default.date.format.notime', default:'yyyy-MM-dd')}" date="${dashDueDate.date}"/>
-                                <g:if test="${SqlDateUtils.isToday(dashDueDate.date)}">
-                                    <span  class="la-popup-tooltip la-delay" data-content="${message(code:'myinst.dash.due_date.enddate.isDueToday.label')}" data-position="top right">
-                                        <i class="icon yellow exclamation"></i>
-                                    </span>
-                                </g:if>
-                                <g:elseif test="${SqlDateUtils.isBeforeToday(dashDueDate.date)}">
-                                    <span  class="la-popup-tooltip la-delay" data-content="${message(code:'myinst.dash.due_date.enddate.isOverdue.label')}" data-position="top right">
-                                        <i class="icon red exclamation"></i>
-                                    </span>
-                                </g:elseif>
-                            </td>
-                            <td>
-                                <div class="la-flexbox">
-                                    <g:if test="${obj instanceof Subscription}">
-                                        <i class="icon clipboard outline la-list-icon"></i>
-                                        <g:link controller="subscription" action="show" id="${obj.id}">${obj.name}</g:link>
-                                    </g:if>
-                                    <g:elseif test="${obj instanceof License}">
-                                        <i class="icon balance scale la-list-icon"></i>
-                                        <g:link controller="license" action="show" id="${obj.id}">${obj.name}</g:link>
-                                    </g:elseif>
-                                    <g:elseif test="${obj instanceof SurveyInfo}">
-                                        <i class="icon chart pie la-list-icon"></i>
-                                        <g:link controller="myInstitution" action="surveyInfos" id="${obj.id}">${obj.name}</g:link>
-                                    </g:elseif>
-                                    <g:elseif test="${obj instanceof Task}">
-                                        <span data-position="top right"  class="la-popup-tooltip la-delay" data-content="Aufgabe">
-                                            <i class="icon checked calendar la-list-icon"></i>
-                                        </span>
-                                        <a href="#" class="header" onclick="taskedit(${obj?.id});">${obj?.title}</a>
-                                        &nbsp; (Status: ${obj.status?.getI10n("value")})
-                                    </g:elseif>
-                                    <g:elseif test="${obj instanceof AbstractProperty}">
-                                        <g:if test="${obj.owner instanceof Person}">
-                                            <i class="icon address book la-list-icon"></i>
-                                            <g:link controller="person" action="show" id="${obj.owner.id}">${obj.owner?.first_name}&nbsp;${obj.owner?.last_name}</g:link>
-                                        </g:if>
-                                        <g:elseif test="${obj.owner instanceof Subscription}">
-                                            <i class="icon clipboard outline la-list-icon"></i>
-                                            <g:link controller="subscription" action="show" id="${obj.owner?.id}">${obj.owner?.name}</g:link>
-                                        </g:elseif>
-                                        <g:elseif test="${obj.owner instanceof License}">
-                                            <i class="icon balance scale la-list-icon"></i>
-                                            <g:link controller="license" action="show" id="${obj.owner?.id}">${obj.owner?.reference}</g:link>
-                                        </g:elseif>
-                                        <g:elseif test="${obj.owner instanceof Org}">
-                                            <i class="icon university la-list-icon"></i>
-                                            <g:link controller="organisation" action="show" id="${obj.owner?.id}">${obj.owner?.name}</g:link>
-                                        </g:elseif>
-                                        <g:else>
-                                            ${obj.owner?.name}
-                                        </g:else>
-                                    </g:elseif>
-                                    <g:else>
-                                        Not implemented yet!
-                                    </g:else>
-                                </div>
-                            </td>
-                            <td><semui:xEditableBoolean owner="${dashDueDate}" field="isHidden" /></td>
-                            %{--<td><semui:xEditableBoolean owner="${dashDueDate}" field="isDone" /></td>--}%
-                        </tr>
-                    </g:if>
-                </g:each>
-            </tbody>
-        </table>
+        <div id="container-table">
+            <g:render template="/user/tableDueDates"/>
+        </div>
         <semui:paginate offset="${dashboardDueDatesOffset ? dashboardDueDatesOffset : '0'}" max="${max ?: contextService.getUser().getDefaultPageSizeTMP()}" params="${[view:'dueDatesView']}" total="${dueDatesCount}"/>
     </g:if>

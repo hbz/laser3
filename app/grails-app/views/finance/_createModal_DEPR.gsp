@@ -33,7 +33,7 @@
                         <input type="text" readonly value="${message(code:'financials.newCosts.UID')}" />
                     </div><!-- .field -->
                     <div class="field">
-                        <label for="newCostItemStatus">${message(code:'financials.costItemStatus')}</label>
+                        <label for="newCostItemStatus">${message(code:'default.status.label')}</label>
                         <laser:select  name="newCostItemStatus" title="${g.message(code: 'financials.addNew.costState')}" class="ui dropdown"
                                       id="newCostItemStatus"
                                       from="${costItemStatus}"

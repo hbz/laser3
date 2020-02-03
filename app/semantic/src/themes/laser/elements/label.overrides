@@ -32,7 +32,8 @@
     opacity: 0.7;
   }
   i.disabled.icon {
-    opacity: .2!important;
+    opacity: 0!important;
+    margin: 0 0 0 .1em;
   }
   .la-status-active {
     background-color: @green;

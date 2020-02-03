@@ -92,7 +92,7 @@
                     <div class="content">
                         <g:if test="${surveyConfig?.type == 'Subscription'}">
                             <dl>
-                                <dt class="control-label">${message(code: 'subscription.details.status')}</dt>
+                                <dt class="control-label">${message(code: 'default.status.label')}</dt>
                                 <dd>${surveyConfig?.subscription?.status?.getI10n('value')}</dd>
                                 <dd><semui:auditInfo auditable="[surveyConfig?.subscription, 'status']"/></dd>
                             </dl>

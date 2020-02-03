@@ -23,7 +23,12 @@
 <semui:msg class="warning" header="${message(code: 'message.information')}" message="myinst.addressBook.visible" />
 
 
-<laser:remoteLink controller="ajax" action="readNote" id="1" xyz="xyz" abc="abc" update="#test123"
+<laser:remoteLink controller="ajax"
+                  action="readNote"
+                  id="1"
+                  xyz="xyz"
+                  abc="abc"
+                  update="#test123"
                   data-before="alert('data-before')" data-done="alert('data-done')" data-always="alert('data-always')">
     Click here @ div#test123
 </laser:remoteLink>

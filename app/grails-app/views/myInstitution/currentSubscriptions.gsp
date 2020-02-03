@@ -117,7 +117,7 @@
             %>
 
             <div class="field fieldcontain">
-                <label>${message(code: 'myinst.currentSubscriptions.filter.status.label')}</label>
+                <label>${message(code: 'default.status.label')}</label>
                 <laser:select class="ui dropdown" name="status"
                               from="${ fakeList }"
                               optionKey="id"
@@ -145,7 +145,7 @@
             </div>
             <!-- 2-2 -->
             <div class="field disabled fieldcontain">
-                <label>${message(code: 'myinst.currentSubscriptions.filter.status.label')}</label>
+                <label>${message(code: 'default.status.label')}</label>
                 <laser:select name="status" class="ui dropdown"
                               from="${RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_STATUS)}"
                               optionKey="id"

@@ -74,7 +74,7 @@
             %>
 
             <div class="field fieldcontain">
-                <label>${message(code: 'myinst.currentSubscriptions.filter.status.label')}</label>
+                <label>${message(code: 'default.status.label')}</label>
                 <laser:select class="ui dropdown" name="status"
                               from="${fakeList}"
                               optionKey="id"

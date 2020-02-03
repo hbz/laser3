@@ -259,7 +259,7 @@ class CostItem
                         token   : it,
                         rdc     : "Currency",
                         hardData: false,
-                        i10n    : [en: it, de: it]
+                        i10n    : [value_en: it, value_de: it]
                 ])
             }
             if (currencyPriorityList) {

@@ -15905,7 +15905,8 @@ a.ui.basic.label:hover {
 }
 
 .ui.label.la-annual-rings i.disabled.icon {
-  opacity: .2!important;
+  opacity: 0!important;
+  margin: 0 0 0 .1em;
 }
 
 .ui.label.la-annual-rings .la-status-active {
@@ -16540,7 +16541,7 @@ ol.ui.list ol li,
 .ui.selection.list .list > .item,
 .ui.selection.list > .item {
   cursor: pointer;
-  background: transparent;
+  background: #ffffff;
   padding: 0.5em 0.5em;
   margin: 0em;
   color: rgba(0, 0, 0, 0.4);

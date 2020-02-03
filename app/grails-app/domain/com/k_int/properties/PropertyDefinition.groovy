@@ -27,7 +27,7 @@ import javax.persistence.Transient
 import javax.validation.UnexpectedTypeException
 
 @Log4j
-class PropertyDefinition extends AbstractI10nOverride implements Serializable , Comparable<PropertyDefinition> {
+class PropertyDefinition extends AbstractI10nOverride implements Serializable, Comparable<PropertyDefinition> {
 
     static Log static_logger = LogFactory.getLog(PropertyDefinition)
 
@@ -92,7 +92,6 @@ class PropertyDefinition extends AbstractI10nOverride implements Serializable , 
     String name_de
     String name_en
 
-    String expl
     String expl_de
     String expl_en
 
@@ -149,7 +148,6 @@ class PropertyDefinition extends AbstractI10nOverride implements Serializable , 
                     name column: 'pd_name',        index: 'td_new_idx'
                  name_de column: 'pd_name_de'
                  name_en column: 'pd_name_en'
-                    expl column: 'pd_explanation', index: 'td_new_idx', type: 'text'
                  expl_de column: 'pd_explanation_de', type: 'text'
                  expl_en column: 'pd_explanation_en', type: 'text'
                     type column: 'pd_type',        index: 'td_type_idx'
@@ -170,7 +168,6 @@ class PropertyDefinition extends AbstractI10nOverride implements Serializable , 
         name                (nullable: false, blank: false)
         name_de             (nullable: true, blank: false)
         name_en             (nullable: true, blank: false)
-        expl                (nullable: true,  blank: true)
         expl_de             (nullable: true, blank: false)
         expl_en             (nullable: true, blank: false)
         descr               (nullable: true,  blank: false)
@@ -196,9 +193,14 @@ class PropertyDefinition extends AbstractI10nOverride implements Serializable , 
         boolean multiple    = new Boolean( map.get('multiple') )
         boolean logic       = new Boolean( map.get('logic') )
         Org tenant          = map.get('tenant') ? Org.findByShortname(map.get('tenant')) : null
-        Map i10n            = map.get('i10n')  ?: [de: token, en: token]
-        Map descr           = map.get('descr') ?: [de: category, en: category]
-        Map expl            = map.get('expl')  ?: [de: null, en: null]
+        Map i10n            = map.get('i10n')  ?: [
+                name_de: token,
+                name_en: token,
+                //descr_de: category,
+                //descr_en: category,
+                expl_de: null,
+                expl_en: null
+        ]
 
         typeIsValid(type)
 
@@ -222,18 +224,17 @@ class PropertyDefinition extends AbstractI10nOverride implements Serializable , 
                     multipleOccurrence: multiple,
                     mandatory:          mandatory,
                     isUsedForLogic:     logic,
-                    tenant:             tenant,
-                    expl:               expl['en'],
+                    tenant:             tenant
             )
 
             // TODO .. which attributes can change for existing pds ?
         }
 
-        pd.name_de = i10n.get('de') ?: null
-        pd.name_en = i10n.get('en') ?: null
+        pd.name_de = i10n.get('name_de') ?: null
+        pd.name_en = i10n.get('name_en') ?: null
 
-        pd.expl_de = expl.get('de') ?: null
-        pd.expl_en = expl.get('en') ?: null
+        pd.expl_de = i10n.get('expl_de') ?: null
+        pd.expl_en = i10n.get('expl_en') ?: null
 
         pd.isHardData = hardData
         pd.save(flush: true)
@@ -328,56 +329,34 @@ class PropertyDefinition extends AbstractI10nOverride implements Serializable , 
             if (obj) {
                 ContextService contextService = (ContextService) Holders.grailsApplication.mainContext.getBean('contextService')
                 Map<String, Object> calcPropDefGroups = obj.getCalculatedPropDefGroups(contextService.getOrg())
-                propDefsInCalcGroups = SwissKnife.getCalculatedPropertiesForPropDefGroups(calcPropDefGroups).collect { "${it.id}" } // as String !
+                propDefsInCalcGroups = SwissKnife.getCalculatedPropertiesForPropDefGroups(calcPropDefGroups)
             }
         }
 
-        def cache
+        List<PropertyDefinition> matches = []
 
-        if (! params.tenant) {
-            CacheService cacheService = (CacheService) Holders.grailsApplication.mainContext.getBean('cacheService')
-            cache = cacheService.getTTL300Cache("PropertyDefinition/refdataFind/custom/${params.desc}/${LocaleContextHolder.getLocale()}")
-        }
-        else {
-            ContextService contextService = (ContextService) Holders.grailsApplication.mainContext.getBean('contextService')
-            cache = contextService.getCache("PropertyDefinition/refdataFind/private/${params.desc}/${LocaleContextHolder.getLocale()}", contextService.ORG_SCOPE)
+        switch (I10nTranslation.decodeLocale(LocaleContextHolder.getLocale().toString())) {
+            case 'en':
+                matches = PropertyDefinition.findAllByDescrAndName_enIlike(params.desc, "%${params.q}%")
+                break
+            case 'de':
+                matches = PropertyDefinition.findAllByDescrAndName_deIlike(params.desc, "%${params.q}%")
+                break
         }
 
-        if (! cache.get('propDefs')) {
-            List propDefs = I10nTranslation.refdataFindHelper(
-                    params.baseClass,
-                    'name',
-                    '',
-                    LocaleContextHolder.getLocale()
-            )
-            propDefs.each { it ->
-                def tenantMatch = (params.tenant.equals(it.getTenant()?.id?.toString()))
-                if (tenantMatch && it.getDescr() == params.desc) {
-                    result.add([id: "${it.id}", text: "${it.getI10n('name')}"])
-                }
-            }
+        int c1 = matches.size()
+        matches.removeAll(propDefsInCalcGroups)
+        int c2 = matches.size()
 
-            cache.put('propDefs', result)
-        }
-        else {
-            log.debug ('reading from cache .. ')
-            cache.get('propDefs').each { it ->
-                if (params.q == '*' || it.text?.toLowerCase()?.contains(params.q?.toLowerCase())) {
-                    result.add(it)
-                }
+        matches.each { it ->
+            if (params.tenant.equals(it.getTenant()?.id?.toString())) {
+                result.add([id: "${it.id}", text: "${it.getI10n('name')}"])
             }
         }
 
-        List resultWithoutExcludes = []
+        static_logger.debug("found property definitions: ${c1} -> ${c2} -> ${result.size()}")
 
-        result.each { it ->
-            if (! propDefsInCalcGroups.contains(it.id)) {
-                resultWithoutExcludes << it
-            }
-        }
-        println "result: ${result.size()} -> resultWithoutExcludes: ${resultWithoutExcludes.size()}"
-
-        resultWithoutExcludes
+        result
     }
 
     String getDescrClass() {
@@ -436,21 +415,6 @@ class PropertyDefinition extends AbstractI10nOverride implements Serializable , 
         }
         return 0
     }
-
-    /*
-    def afterInsert() {
-        I10nTranslation.createOrUpdateI10n(this, 'name',  [de: this.name, en: this.name])
-        I10nTranslation.createOrUpdateI10n(this, 'descr', [de: this.descr, en: this.descr])
-        I10nTranslation.createOrUpdateI10n(this, 'expl', [de: this.expl, en: this.expl])
-    }
-
-
-    def afterDelete() {
-        String rc = this.getClass().getName()
-        def id = this.getId()
-        I10nTranslation.where{referenceClass == rc && referenceId == id}.deleteAll()
-    }
-     */
 
 
   @Transient

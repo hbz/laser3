@@ -179,12 +179,12 @@
                         %>
                         <g:select name="ciec" class="ui dropdown" from="${costItemElementConfigurations}"
                         optionKey="id" optionValue="value" value="${ciec}"
-                        noSelection="${[null:message(code:'financials.costItemConfiguration.notSet')]}"/>
+                        noSelection="${[null:'']}"/>
                     </div>
                 </div>
 
                 <div class="field">
-                    <label>${message(code:'financials.costItemStatus')}</label>
+                    <label>${message(code:'default.status.label')}</label>
                     <laser:select name="newCostItemStatus" title="${g.message(code: 'financials.addNew.costState')}" class="ui dropdown"
                                   id="newCostItemStatus"
                                   from="${costItemStatus}"

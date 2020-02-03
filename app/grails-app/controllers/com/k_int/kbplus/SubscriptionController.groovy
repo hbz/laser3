@@ -632,7 +632,8 @@ class SubscriptionController extends AbstractDebugController {
         def base_qry = "from IssueEntitlement as ie where ie.subscription = ? and ie.tipp.title.status.value != 'Deleted' "
 
         if (showDeletedTipps == false) {
-            base_qry += "and ie.tipp.status.value != 'Deleted' "
+            base_qry += "and ie.tipp.status != ? "
+            qry_params.add(RDStore.TIPP_STATUS_DELETED)
         }
 
         if (params.filter) {
@@ -5507,7 +5508,7 @@ class SubscriptionController extends AbstractDebugController {
 
         titles.add(g.message(code: 'subscription.details.startDate'))
         titles.add(g.message(code: 'subscription.details.endDate'))
-        titles.add(g.message(code: 'subscription.details.status'))
+        titles.add(g.message(code: 'default.status.label'))
         titles.add(RefdataValue.getByValueAndCategory('General contact person', RDConstants.PERSON_FUNCTION).getI10n('value'))
         //titles.add(RefdataValue.getByValueAndCategory('Functional contact', RDConstants.PERSON_CONTACT_TYPE).getI10n('value'))
 

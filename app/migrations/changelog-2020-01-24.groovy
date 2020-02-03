@@ -103,7 +103,7 @@ where rdv_id = i10n_reference_id and i10n_reference_class = 'com.k_int.kbplus.Re
 		}
 	}
 
-	//changeSet(author: "kloberd (generated)", id: "1579869872860-12") {
-	//	dropColumn(columnName: "pd_explanation", tableName: "property_definition")
-	//}
+	changeSet(author: "kloberd (generated)", id: "1579869872860-12") {
+		dropColumn(columnName: "pd_explanation", tableName: "property_definition")
+	}
 }

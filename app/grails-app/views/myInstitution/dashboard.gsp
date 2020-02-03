@@ -128,14 +128,14 @@
 
     </div><!-- secondary -->
 
-        <div class="ui bottom attached tab segment ${US_DASHBOARD_TAB.getValue().value == 'Due Dates' || US_DASHBOARD_TAB.getValue()=='Due Dates' ? 'active':''}" data-tab="first" style="border-top: 1px solid #d4d4d5; ">
+        <div class="ui bottom attached tab ${US_DASHBOARD_TAB.getValue().value == 'Due Dates' || US_DASHBOARD_TAB.getValue()=='Due Dates' ? 'active':''}" data-tab="first">
             <div>
                 <g:render template="/user/dueDatesView"
                           model="[user: user, dueDates: dueDates, dueDatesCount: dueDatesCount]"/>
             </div>
         </div>
 
-        <div class="ui bottom attached tab segment ${US_DASHBOARD_TAB.getValue().value == 'Changes' || US_DASHBOARD_TAB.getValue() == 'Changes' ? 'active':''}" data-tab="second" style="border-top: 1px solid #d4d4d5; ">
+        <div class="ui bottom attached tab ${US_DASHBOARD_TAB.getValue().value == 'Changes' || US_DASHBOARD_TAB.getValue() == 'Changes' ? 'active':''}" data-tab="second">
             <g:if test="${editable}">
                 <div class="la-float-right">
                     <g:link action="changes" class="ui button">${message(code:'myinst.todo.submit.label', default:'View To Do List')}</g:link>
@@ -418,7 +418,7 @@
                 });
                 $('.xEditableManyToOne').editable({
                 }).on('hidden', function() {
-                        location.reload();
+                        //location.reload();
                  });
 
 
