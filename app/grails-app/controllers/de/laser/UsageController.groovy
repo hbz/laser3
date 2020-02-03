@@ -33,10 +33,10 @@ class UsageController extends AbstractDebugController {
         // criteria and totalCount for PageResultList Object seems to be problematic with projections and aggregation
         // use extra hql query for now, TODO only use hql base query and move the query out of this method
 
-        def hql = "select stc.supplierId, stc.customerId, min(stc.availFrom), max(stc.availTo), stc.factType.id from StatsTripleCursor as stc"
-        def groupCondition = " group by stc.supplierId, stc.customerId, stc.factType.id"
-        def whereConditions = []
-        def queryParams = [:]
+        String hql = "select stc.supplierId, stc.customerId, min(stc.availFrom), max(stc.availTo), stc.factType.id from StatsTripleCursor as stc"
+        String groupCondition = " group by stc.supplierId, stc.customerId, stc.factType.id"
+        ArrayList whereConditions = []
+        LinkedHashMap queryParams = [:]
         if (params.supplier){
             whereConditions.add('supplierId=:supplierId')
             queryParams += [supplierId: params.supplier]
@@ -56,10 +56,9 @@ class UsageController extends AbstractDebugController {
         } else {
             hql += " order by stc.supplierId asc"
         }*/
-        def totalResultIds = StatsTripleCursor.executeQuery(hql, queryParams)
+        ArrayList totalResultIds = StatsTripleCursor.executeQuery(hql, queryParams)
 
-        def criteria = StatsTripleCursor.createCriteria()
-        def results = criteria.list(max: result.max, offset: result.offset) {
+        def results =StatsTripleCursor.createCriteria().list(max: result.max, offset: result.offset) {
             projections {
                 groupProperty('supplierId', 'supplierId')
                 groupProperty('customerId', 'customerId')
