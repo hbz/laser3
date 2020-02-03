@@ -2,6 +2,12 @@
 
 **Ticket    Date    Branch      Author  Feature/Bug     Description/Keywords**
 
+
+
+1991    03.02.2020  rc1.2       Moe     Bug         "Alle anzeigen" funktioniert bei "Alle Titel" nicht
+
+2113    03.02.2020  rc1.2       Moe     Bug         Alle Titel - Exakte Suche funktioniert nicht
+
 2013    03.02.2020  rc1.2       Moe     Bug         Meine Umfragen: In der Übersicht einer Umfrage passt der Tabellenkopf nicht zu den Inhalten
 
 2121    30.01.2020  rc1.2       David   Bug         Falsche geladene Seite nach Lizenz löschen (und mehr ..)

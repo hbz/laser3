@@ -435,7 +435,7 @@ grails.project.dependency.resolver = "maven"
 environments {
     development {
         grails.logging.jul.usebridge = true
-        grails.serverURL = "http://localhost:8080/laser"
+        grails.serverURL = "http://localhost:8090/laser"
     }
     production {
         grails.logging.jul.usebridge = false
