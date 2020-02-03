@@ -2,6 +2,8 @@
 
 **Ticket    Date    Branch      Author  Feature/Bug     Description/Keywords**
 
+2013    03.02.2020  rc1.2       Moe     Bug         Meine Umfragen: In der Übersicht einer Umfrage passt der Tabellenkopf nicht zu den Inhalten
+
 2121    30.01.2020  rc1.2       David   Bug         Falsche geladene Seite nach Lizenz löschen (und mehr ..)
 
 2104    28.01.2020  rc1.2       Andreas Bug         Steuersatz wird im Tab Eigene Kosten korrekt dargestellt
