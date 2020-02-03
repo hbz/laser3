@@ -60,7 +60,8 @@ data-confirm-term-how="concludeBinding":
         data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.costItemElementConfiguration", args: [ciec.costItemElement.getI10n("value")])}"
         data-confirm-term-how="delete"
         controller="costConfiguration" action="deleteCostConfiguration"
-        params="${[ciec: ciec.id]}">
+        params="${[ciec: ciec.id]}"
+        role="button">
     <i class="trash alternate icon"></i>
 </g:link>
 
@@ -85,21 +86,20 @@ data-confirm-term-how="concludeBinding":
 #### Use in Link with AJAX Call
 
 ```
-<button class="ui mini icon button js-open-confirm-modal-copycat js-no-wait-wheel">
-    <i class="la-share slash icon"></i>
-</button>
-<g:remoteLink class="js-gost la-popup-tooltip la-delay"
-              controller="ajax" action="toggleShare"
-              params='[owner: "${ownobj.class.name}:${ownobj.id}", sharedObject: "${docctx.class.name}:${docctx.id}", tmpl: "documents"]'
-              onSuccess=""
-              onComplete=""
-              update="container-documents"
-              data-position="top right"
-              data-content="${message(code: 'property.share.tooltip.off')}"
-
-              data-confirm-tokenMsg="${message(code: "confirm.dialog.share.element.member", args: [docctx.owner.title])}"
-              data-confirm-term-how="share">
-</g:remoteLink>
+<laser:remoteLink class="ui icon negative button js-open-confirm-modal"
+                  controller="ajax"
+                  action="deletePrivateProperty"
+                  params='[propClass: prop.getClass(),ownerId:"${ownobj.id}", ownerClass:"${ownobj.class}", editable:"${editable}"]'
+                  id="${prop.id}"
+                  data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.property", args: [prop.type.getI10n('name')])}"
+                  data-confirm-term-how="delete"
+                  data-done="c3po.initProperties('${createLink(controller:'ajax', action:'lookup')}', '#${custom_props_div}', ${tenant?.id})"
+                  data-always="c3po.loadJsAfterAjax(); bb8.init('#${custom_props_div}')"
+                  data-update="${custom_props_div}"
+                  role="button"
+>
+    <i class="trash alternate icon"></i>
+</laser:remoteLink>
 
 ```
 
