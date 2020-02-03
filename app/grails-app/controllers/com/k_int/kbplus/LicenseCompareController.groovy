@@ -81,7 +81,7 @@ class LicenseCompareController extends AbstractDebugController {
          */
         String wrapperKey = propDefGroupWrapper.getKey()
         if(wrapperKey.equals("orphanedProperties")) {
-          TreeMap orphanedProperties = result.orphanedProperties
+          Map orphanedProperties = result.orphanedProperties
           orphanedProperties = comparisonService.buildComparisonTree(orphanedProperties,lic,propDefGroupWrapper.getValue())
           result.orphanedProperties = orphanedProperties
         }
@@ -131,7 +131,7 @@ class LicenseCompareController extends AbstractDebugController {
           result.groupedProperties = groupedProperties
         }
       }
-      TreeMap privateProperties = result.privateProperties
+      Map privateProperties = result.privateProperties
       privateProperties = comparisonService.buildComparisonTree(privateProperties,lic,lic.privateProperties)
       result.privateProperties = privateProperties
     }
