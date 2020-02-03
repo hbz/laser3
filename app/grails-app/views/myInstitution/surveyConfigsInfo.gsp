@@ -157,7 +157,7 @@ ${message(code: 'survey.label')} -
                             <dd><semui:auditInfo auditable="[subscriptionInstance, 'status']"/></dd>
                         </dl>
                         <dl>
-                            <dt class="control-label">${message(code: 'subscription.details.type')}</dt>
+                            <dt class="control-label">${message(code: 'default.type.label')}</dt>
                             <dd>${subscriptionInstance?.type?.getI10n('value')}</dd>
                             <dd><semui:auditInfo auditable="[subscriptionInstance, 'type']"/></dd>
                         </dl>
@@ -468,7 +468,7 @@ ${message(code: 'survey.label')} -
         <tr>
             <th class="center aligned">${message(code: 'sidewide.number')}</th>
             <th>${message(code: 'surveyProperty.label')}</th>
-            <th>${message(code: 'surveyProperty.type.label')}</th>
+            <th>${message(code: 'default.type.label')}</th>
             <th>${message(code: 'surveyResult.result')}</th>
             <th>${message(code: 'surveyResult.commentParticipant')}</th>
             <th>

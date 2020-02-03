@@ -60,7 +60,7 @@
             <thead>
                 <tr>
                     <th>${message(code:'sidewide.number')}</th>
-                    <g:sortableColumn property="name" title="${message(code: 'package.name.label', default: 'Name')}" />
+                    <g:sortableColumn property="name" title="${message(code: 'default.name.label', default: 'Name')}" />
                     <th>
                         ${message(code: 'package.content_provider')}
                     </th>

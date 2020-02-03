@@ -90,11 +90,11 @@
           <div class="ui form-actions">
             <g:link class="ui button" action="edit" id="${titleInstancePackagePlatformInstance?.id}">
               <i class="write icon"></i>
-              <g:message code="default.button.edit.label" default="Edit" />
+              <g:message code="default.button.edit.label" />
             </g:link>
             <button class="ui negative button" type="submit" name="_action_delete">
               <i class="trash alternate icon"></i>
-              <g:message code="default.button.delete.label" default="Delete" />
+              <g:message code="default.button.delete.label" />
             </button>
           </div>
            </sec:ifAnyGranted>

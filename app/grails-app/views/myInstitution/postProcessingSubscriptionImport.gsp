@@ -27,7 +27,7 @@
             <table class="ui striped table">
                 <thead>
                     <tr>
-                        <th rowspan="2"><g:message code="myinst.subscriptionImport.post.subscription"/></th>
+                        <th rowspan="2"><g:message code="default.subscription.label"/></th>
                         <th><g:message code="myinst.subscriptionImport.post.takeItem"/></th>
                     </tr>
                     <tr>
@@ -41,7 +41,7 @@
                                 <ul>
                                     <g:set var="sub" value="${row.getKey()}"/>
                                     <g:set var="errors" value="${row.getValue()}"/>
-                                    <li><g:message code="myinst.subscriptionImport.name"/>: ${sub.name}</li>
+                                    <li><g:message code="default.name.label"/>: ${sub.name}</li>
                                     <li><g:message code="myinst.subscriptionImport.owner"/>: ${genericOIDService.resolveOID(sub.owner)}</li>
                                     <g:if test="${accessService.checkPerm("ORG_INST_COLLECTIVE,ORG_CONSORTIUM") && sub.instanceOf && sub.member}">
                                         <li><g:message code="myinst.subscriptionImport.instanceOf" args="${parentSubType}"/>: ${genericOIDService.resolveOID(sub.instanceOf)}</li>

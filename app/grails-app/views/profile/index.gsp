@@ -584,11 +584,11 @@
                     <table class="ui celled la-table table">
                         <thead>
                         <tr>
-                            <th><g:message code="reminder.trigger" default="Trigger"/></th>
-                            <th><g:message code="reminder.method" default="Method"/></th>
-                            <th>${message(code:'profile.reminder.new.time', default:'Time')} (<g:message code="reminder.unit" default="Unit"/>/<g:message code="reminder.number" default="Number"/>)</th>
-                            <th><g:message code="reminder.lastNotification" default="Last Notification"/></th>
-                            <th><g:message code="reminder.update" default="Delete / Disable"/></th>
+                            <th><g:message code="reminder.trigger" /></th>
+                            <th><g:message code="reminder.method" /></th>
+                            <th>${message(code:'profile.reminder.new.time', default:'Time')} (<g:message code="reminder.unit" default="Unit"/>/<g:message code="reminder.number"/>)</th>
+                            <th><g:message code="reminder.lastNotification" /></th>
+                            <th><g:message code="reminder.update" /></th>
                         </tr>
                         </thead>
                         <tbody>

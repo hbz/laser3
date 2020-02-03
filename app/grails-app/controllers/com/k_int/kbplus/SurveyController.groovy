@@ -4106,7 +4106,7 @@ class SurveyController {
                        g.message(code: 'subscription.owner.label'),
                        g.message(code: 'subscription.packages.label'),
                        g.message(code: 'default.status.label'),
-                       g.message(code: 'subscription.details.type'),
+                       g.message(code: 'default.type.label'),
                        g.message(code: 'subscription.form.label'),
                        g.message(code: 'subscription.resource.label'),
 
@@ -4114,7 +4114,7 @@ class SurveyController {
                        g.message(code: 'surveyConfigsInfo.newPrice.comment'),
 
                        g.message(code: 'surveyProperty.label'),
-                       g.message(code: 'surveyProperty.type.label'),
+                       g.message(code: 'default.type.label'),
                        g.message(code: 'surveyResult.result'),
                        g.message(code: 'surveyResult.comment'),
                        g.message(code: 'surveyResult.finishDate')]
@@ -4199,7 +4199,7 @@ class SurveyController {
     private def exportRenewalResult(Map renewalResult) {
         SimpleDateFormat sdf = new SimpleDateFormat(g.message(code: 'default.date.format.notime'))
         List titles = [g.message(code: 'org.sortname.label'),
-                       g.message(code: 'org.name.label'),
+                       g.message(code: 'default.name.label'),
 
                        renewalResult.participationProperty?.getI10n('name'),
                        g.message(code: 'surveyResult.participantComment') + " " + renewalResult.participationProperty?.getI10n('name')

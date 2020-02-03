@@ -128,7 +128,7 @@ ${surveyInfo?.name}
         <thead>
         <tr>
             <th class="center aligned">${message(code: 'sidewide.number')}</th>
-            <th>${message(code: 'org.name.label')}</th>
+            <th>${message(code: 'default.name.label')}</th>
 
             <th>
                 ${participationProperty?.getI10n('name')}
@@ -337,7 +337,7 @@ ${surveyInfo?.name}
         <thead>
         <tr>
             <th class="center aligned">${message(code: 'sidewide.number')}</th>
-            <th>${message(code: 'org.name.label')}</th>
+            <th>${message(code: 'default.name.label')}</th>
 
             <th>
                 ${participationProperty?.getI10n('name')}
@@ -652,7 +652,7 @@ ${surveyInfo?.name}
         <thead>
         <tr>
             <th class="center aligned">${message(code: 'sidewide.number')}</th>
-            <th>${message(code: 'org.name.label')}</th>
+            <th>${message(code: 'default.name.label')}</th>
 
             <th>
                 ${participationProperty?.getI10n('name')}
@@ -814,7 +814,7 @@ ${surveyInfo?.name}
         <thead>
         <tr>
             <th class="center aligned">${message(code: 'sidewide.number')}</th>
-            <th>${message(code: 'org.name.label')}</th>
+            <th>${message(code: 'default.name.label')}</th>
 
             <th>
                 ${participationProperty?.getI10n('name')}

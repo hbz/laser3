@@ -63,7 +63,7 @@
                 </div>
                 <g:if test="${!fixedSubscription}">
                     <div class="field fieldcontain"><!--NEW -->
-                        <label>${message(code:'subscription.label')}</label>
+                        <label>${message(code:'default.subscription.label')}</label>
                         <div class="ui search selection multiple dropdown newFilter" id="filterCISub">
                             <input type="hidden" name="filterCISub" value="${params.filterCISub}">
                             <i class="dropdown icon"></i>

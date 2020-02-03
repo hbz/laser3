@@ -11,7 +11,7 @@
 
 <div class="field fieldcontain ${hasErrors(bean: orgInstance, field: 'name', 'error')} required">
 	<label for="name">
-		<g:message code="org.name.label" default="Name" />
+		<g:message code="default.name.label" default="Name" />
 	</label>
     <g:textField name="name" maxlength="255" value="${orgInstance?.name}"/>
 </div>

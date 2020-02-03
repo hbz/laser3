@@ -26,11 +26,11 @@
 						
 							<th class="header">${com.k_int.kbplus.RefdataCategory.getByDesc(RDConstants.CONTACT_TYPE).getI10n('desc')}</th>
 
-               <th class="header"><g:message code="contact.prs.label" default="Prs" /></th>
+               <th class="header"><g:message code="contact.prs.label" /></th>
 
-							<th class="header"><g:message code="contact.org.label" default="Org" /></th>
+							<th class="header"><g:message code="contact.org.label" /></th>
 
-							<th class="header"><g:message code="person.isPublic.label" default="IsPublic" /></th>
+							<th class="header"><g:message code="person.isPublic.label" /></th>
 
 							<th></th>
 						</tr>
