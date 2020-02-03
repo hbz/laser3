@@ -496,7 +496,7 @@ class FactService {
     result
   }
 
-  ArrayList institutionsWithRequestorIDAndAPIKey()
+  List<Org> institutionsWithRequestorIDAndAPIKey()
   {
     String hql = "select os.org from OrgSettings as os" +
         " where os.key='${OrgSettings.KEYS.NATSTAT_SERVER_REQUESTOR_ID}'" +
@@ -504,14 +504,14 @@ class FactService {
     return OrgSettings.executeQuery(hql)
   }
 
-  ArrayList platformsWithNatstatId()
+  List<Platform> platformsWithNatstatId()
   {
     String hql = "select platform from Platform as platform" +
         " where exists (select 1 from platform.customProperties as pcp where pcp.owner = platform.id and pcp.type.name = 'NatStat Supplier ID') order by platform.name"
     return Platform.executeQuery(hql)
   }
 
-  ArrayList getFactInstitutionList()
+  List<Org> getFactInstitutionList()
   {
     Fact.withCriteria {
       projections {
@@ -520,7 +520,7 @@ class FactService {
     }
   }
 
-  ArrayList getFactProviderList()
+  List<Platform> getFactProviderList()
   {
     Fact.withCriteria {
       projections {

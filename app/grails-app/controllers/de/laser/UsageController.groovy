@@ -9,7 +9,9 @@ import com.k_int.kbplus.auth.User
 import com.k_int.properties.PropertyDefinition
 import de.laser.controller.AbstractDebugController
 import de.laser.domain.StatsTripleCursor
+import grails.gorm.PagedResultList
 import grails.plugin.springsecurity.annotation.Secured
+import grails.rest.Link
 import grails.transaction.Transactional
 import org.hibernate.criterion.CriteriaSpecification
 
@@ -36,7 +38,7 @@ class UsageController extends AbstractDebugController {
         String hql = "select stc.supplierId, stc.customerId, min(stc.availFrom), max(stc.availTo), stc.factType.id from StatsTripleCursor as stc"
         String groupCondition = " group by stc.supplierId, stc.customerId, stc.factType.id"
         ArrayList whereConditions = []
-        LinkedHashMap queryParams = [:]
+        LinkedHashMap<String,Object> queryParams = [:]
         if (params.supplier){
             whereConditions.add('supplierId=:supplierId')
             queryParams += [supplierId: params.supplier]
@@ -58,7 +60,7 @@ class UsageController extends AbstractDebugController {
         }*/
         ArrayList totalResultIds = StatsTripleCursor.executeQuery(hql, queryParams)
 
-        def results =StatsTripleCursor.createCriteria().list(max: result.max, offset: result.offset) {
+        List<HashMap> results = StatsTripleCursor.createCriteria().list(max: result.max, offset: result.offset) {
             projections {
                 groupProperty('supplierId', 'supplierId')
                 groupProperty('customerId', 'customerId')
@@ -115,7 +117,7 @@ class UsageController extends AbstractDebugController {
                 String hql = "select s.id from Subscription s join s.orgRelations as institution " +
                     "where institution.org.id in (${joinedInstitutions}) and exists (select 1 from IssueEntitlement as ie INNER JOIN ie.tipp.platform  as platform where ie.subscription=s and platform.id=:platform_id)"
                 ArrayList subsWithIssueEntitlements = Subscription.executeQuery(hql, [platform_id: it.id])
-                LinkedHashMap listItem = [:]
+                LinkedHashMap<String,Object> listItem = [:]
                 listItem.id = it.id
                 listItem.name = it.name
                 listItem.optionDisabled = (subsWithIssueEntitlements.size() == 0)
