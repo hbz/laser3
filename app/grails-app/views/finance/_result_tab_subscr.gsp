@@ -12,8 +12,8 @@
                 <g:sortableColumn property="ci.costInBillingCurrency" title="${message(code:'financials.invoice_total')}" params="[subscrSort: true, sub: fixedSubscription.id]" mapping="subfinance"/>
                 <g:sortableColumn property="ci.costInLocalCurrency" title="${message(code:'financials.newCosts.value')}" params="[subscrSort: true, sub: fixedSubscription.id]" mapping="subfinance"/>
                 <g:sortableColumn property="ci.costItemElement" title="${message(code:'financials.costItemElement')}" params="[subscrSort: true, sub: fixedSubscription.id]" mapping="subfinance"/>
-                <g:sortableColumn property="sub.name" title="${message(code:'financials.forSubscription')}" params="[subscrSort: true, sub: fixedSubscription.id]" mapping="subfinance"/>
-                <g:sortableColumn property="subPkg.pkg" title="${message(code:'financials.forPackage')}" params="[subscrSort: true, sub: fixedSubscription.id]" mapping="subfinance"/>
+                <g:sortableColumn property="sub.name" title="${message(code:'default.subscription.label')}" params="[subscrSort: true, sub: fixedSubscription.id]" mapping="subfinance"/>
+                <g:sortableColumn property="subPkg.pkg" title="${message(code:'package.label')}" params="[subscrSort: true, sub: fixedSubscription.id]" mapping="subfinance"/>
                 <th></th>
             </g:if>
             <g:else>
@@ -22,10 +22,10 @@
                 <g:sortableColumn property="ci.costInBillingCurrency" title="${message(code:'financials.invoice_total')}" params="[subscrSort: true]"/>
                 <g:sortableColumn property="ci.costInLocalCurrency" title="${message(code:'financials.newCosts.value')}" params="[subscrSort: true]"/>
                 <g:sortableColumn property="ci.costItemElement" title="${message(code:'financials.costItemElement')}" params="[subscrSort: true]"/>
-                <g:sortableColumn property="sub.name" title="${message(code:'financials.forSubscription')}" params="[subscrSort: true]"/>
-                <g:sortableColumn property="subPkg.pkg" title="${message(code:'financials.forPackage')}" params="[subscrSort: true]"/>
+                <g:sortableColumn property="sub.name" title="${message(code:'default.subscription.label')}" params="[subscrSort: true]"/>
+                <g:sortableColumn property="subPkg.pkg" title="${message(code:'package.label')}" params="[subscrSort: true]"/>
                 <g:if test="${accessService.checkPermAffiliation("ORG_INST","INST_EDITOR")}">
-                    <th class="la-action-info">${message(code:'default.actions')}</th>
+                    <th class="la-action-info">${message(code:'default.actions.label')}</th>
                 </g:if>
             </g:else>
         </tr>

@@ -47,16 +47,16 @@
 
                             <g:if test="${language?.toLowerCase() in ['de_de', 'de']}">
                                 <g:set var="SUBSTITUTE" value="de" />
-                                <th>${message(code:'propertyDefinition.name.label')}</th>
+                                <th>${message(code:'default.name.label')}</th>
                                 <th>${message(code:'propertyDefinition.expl.label')}</th>
                             </g:if>
                             <g:else>
                                 <g:set var="SUBSTITUTE" value="en" />
-                                <th>${message(code:'propertyDefinition.name.label')}</th>
+                                <th>${message(code:'default.name.label')}</th>
                                 <th>${message(code:'propertyDefinition.expl.label')}</th>
                             </g:else>
-                            <th>${message(code:'propertyDefinition.type.label')}</th>
-                            <%--<th class="la-action-info">${message(code:'default.actions')}</th>--%>
+                            <th>${message(code:'default.type.label')}</th>
+                            <%--<th class="la-action-info">${message(code:'default.actions.label')}</th>--%>
                         </tr>
                         </thead>
                         <tbody>
@@ -233,7 +233,7 @@
                         </select>
                     </div>
                     <div class="field five wide">
-                        <label class="property-label"><g:message code="propertyDefinition.type.label" /></label>
+                        <label class="property-label"><g:message code="default.type.label" /></label>
                         <g:select class="ui dropdown"
                             from="${PropertyDefinition.validTypes2.entrySet()}"
                             optionKey="key" optionValue="${{PropertyDefinition.getLocalizedValue(it.key)}}"

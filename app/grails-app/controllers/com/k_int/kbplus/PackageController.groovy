@@ -484,7 +484,7 @@ class PackageController extends AbstractDebugController {
         result.user = User.get(springSecurityService.principal.id)
         def packageInstance = Package.get(params.id)
         if (!packageInstance) {
-            flash.message = message(code: 'default.not.found.message', args: [message(code: 'package.label', default: 'Package'), params.id])
+            flash.message = message(code: 'default.not.found.message', args: [message(code: 'package.label'), params.id])
             redirect action: 'list'
             return
         }
@@ -614,7 +614,7 @@ class PackageController extends AbstractDebugController {
 
         def packageInstance = Package.get(params.id)
         if (!packageInstance) {
-            flash.message = message(code: 'default.not.found.message', args: [message(code: 'package.label', default: 'Package'), params.id])
+            flash.message = message(code: 'default.not.found.message', args: [message(code: 'package.label'), params.id])
             redirect action: 'list'
             return
         }
@@ -691,7 +691,7 @@ class PackageController extends AbstractDebugController {
         result.editable = isEditable()
         def packageInstance = Package.get(params.id)
         if (!packageInstance) {
-            flash.message = message(code: 'default.not.found.message', args: [message(code: 'package.label', default: 'Package'), params.id])
+            flash.message = message(code: 'default.not.found.message', args: [message(code: 'package.label'), params.id])
             redirect action: 'list'
             return
         }

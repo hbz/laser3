@@ -24,7 +24,7 @@
 						
 							<g:sortableColumn property="middlename" title="${message(code: 'creator.middlename.label', default: 'Middlename')}" />
 						
-							<th class="header"><g:message code="creator.gnd_id.label" default="Gndid" /></th>
+							<th class="header"><g:message code="creator.gnd_id.label" /></th>
 						
 							<th></th>
 						</tr>

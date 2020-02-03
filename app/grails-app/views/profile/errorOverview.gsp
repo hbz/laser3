@@ -30,10 +30,10 @@
                     <sec:ifAnyGranted roles="ROLE_ADMIN">
                         <th>Status</th>
                     </sec:ifAnyGranted>
-                    <th class="header"><g:message code="ticket.created.label" default="Created" /></th>
-                    <th class="header"><g:message code="ticket.title.label" default="Title" /></th>
-                    <th class="header"><g:message code="ticket.author.label" default="Author" /></th>
-                    <th class="la-action-info">${message(code:'default.actions')}</th>
+                    <th class="header"><g:message code="ticket.created.label" /></th>
+                    <th class="header"><g:message code="ticket.title.label" /></th>
+                    <th class="header"><g:message code="ticket.author.label" /></th>
+                    <th class="la-action-info">${message(code:'default.actions.label')}</th>
                 </tr>
             </thead>
             <tbody>

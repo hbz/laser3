@@ -173,7 +173,7 @@
                             </g:if>
                             <g:else>
                                 <dl>
-                                    <dt class="control-label">${message(code:'subscription.label')}</dt>
+                                    <dt class="control-label">${message(code:'default.subscription.label')}</dt>
                                     <dd>
                                         ${message(code:'license.noLinkedSubscriptions', default:'No currently linked subscriptions.')}
                                     </dd>

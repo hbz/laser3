@@ -226,8 +226,8 @@ class FinanceController extends AbstractDebugController {
             titles.add(message(code: 'financials.newCosts.costTitle'))
             if(viewMode == "cons")
                 titles.add(message(code:'default.provider.label'))
-            titles.addAll([message(code: 'financials.forSubscription'), message(code:'subscription.startDate.label'), message(code: 'subscription.endDate.label'),
-                           message(code: 'financials.costItemConfiguration'), message(code: 'package'), message(code: 'issueEntitlement.label'),
+            titles.addAll([message(code: 'default.subscription.label'), message(code:'subscription.startDate.label'), message(code: 'subscription.endDate.label'),
+                           message(code: 'financials.costItemConfiguration'), message(code: 'package.label'), message(code: 'issueEntitlement.label'),
                            message(code: 'financials.datePaid'), message(code: 'financials.dateFrom'), message(code: 'financials.dateTo'), message(code:'financials.financialYear'),
                            message(code: 'default.status.label'), message(code: 'financials.billingCurrency'), message(code: 'financials.costInBillingCurrency'),"EUR",
                            message(code: 'financials.costInLocalCurrency')])
@@ -526,8 +526,8 @@ class FinanceController extends AbstractDebugController {
             titles.add(message(code: 'financials.newCosts.costTitle'))
             if(viewMode == "cons")
                 titles.add(message(code:'default.provider.label'))
-            titles.addAll([message(code: 'financials.forSubscription'), message(code:'subscription.startDate.label'), message(code: 'subscription.endDate.label'),
-                           message(code: 'financials.costItemConfiguration'), message(code: 'package'), message(code: 'issueEntitlement.label'),
+            titles.addAll([message(code: 'default.subscription.label'), message(code:'subscription.startDate.label'), message(code: 'subscription.endDate.label'),
+                           message(code: 'financials.costItemConfiguration'), message(code: 'package.label'), message(code: 'issueEntitlement.label'),
                            message(code: 'financials.datePaid'), message(code: 'financials.dateFrom'), message(code: 'financials.dateTo'), message(code:'financials.financialYear'),
                            message(code: 'default.status.label'), message(code: 'financials.billingCurrency'), message(code: 'financials.costInBillingCurrency'),"EUR",
                            message(code: 'financials.costInLocalCurrency')])

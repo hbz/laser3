@@ -33,11 +33,11 @@
                         <div class="ui form-actions">
                             <button type="submit" class="ui button">
                                 <i class="checkmark icon"></i>
-                                <g:message code="default.button.update.label" default="Update" />
+                                <g:message code="default.button.update.label" />
                             </button>
                             <button type="submit" class="ui negative button" name="_action_delete" formnovalidate>
                                 <i class="trash icon"></i>
-                                <g:message code="default.button.delete.label" default="Delete" />
+                                <g:message code="default.button.delete.label" />
                             </button>
                         </div>
 					</g:form>

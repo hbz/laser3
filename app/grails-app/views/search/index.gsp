@@ -187,7 +187,7 @@ String period
                 <a href="${request.forwardURI}"
                    class="ui reset primary button">${message(code: 'default.button.searchreset.label')}</a>
                 <button name="search" type="submit" value="true" class="ui secondary button">
-                    <g:message code="search.button" default="Search"/>
+                    <g:message code="search.button" />
                 </button>
             </div>
         </div>
@@ -417,7 +417,7 @@ String period
 
                                     <b>${message(code: 'subscription.status.label')}</b>: ${RefdataValue.get(hit.getSourceAsMap().statusId) ? RefdataValue.get(hit.getSourceAsMap().statusId).getI10n('value') : hit.getSourceAsMap().status}
                                     <br>
-                                    <b>${message(code: 'subscription.details.type')}</b>: ${RefdataValue.get(hit.getSourceAsMap().typeId) ? RefdataValue.get(hit.getSourceAsMap().typeId).getI10n('value') : ''}
+                                    <b>${message(code: 'default.type.label')}</b>: ${RefdataValue.get(hit.getSourceAsMap().typeId) ? RefdataValue.get(hit.getSourceAsMap().typeId).getI10n('value') : ''}
                                     <br>
                                     <b>${message(code: 'subscription.periodOfValidity.label')}</b>: ${period}
                                     <br>
@@ -476,7 +476,7 @@ String period
                                     <br>
                                     <b>${message(code: 'default.status.label')}</b>: ${RefdataValue.get(hit.getSourceAsMap().statusId) ? RefdataValue.get(hit.getSourceAsMap().statusId).getI10n('value') : hit.getSourceAsMap().status}
                                     <br>
-                                    <b>${message(code: 'subscription.details.type')}</b>: ${RefdataValue.get(hit.getSourceAsMap().typeId) ? RefdataValue.get(hit.getSourceAsMap().typeId).getI10n('value') : ''}
+                                    <b>${message(code: 'default.type.label')}</b>: ${RefdataValue.get(hit.getSourceAsMap().typeId) ? RefdataValue.get(hit.getSourceAsMap().typeId).getI10n('value') : ''}
                                     <br>
                                     <b>${message(code: 'subscription.periodOfValidity.label')}</b>: ${period}
                                     <br>

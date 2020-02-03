@@ -16,17 +16,17 @@
                     <div class="item">
                         <g:if test="${i.pkg}">
                             <g:link controller="package" action="show" id="${i.pkg.id}">
-                                ${message(code:'package.label', default:'Package')}: ${i.pkg.name}
+                                ${message(code:'package.label')}: ${i.pkg.name}
                             </g:link>
                         </g:if>
                         <g:if test="${i.sub}">
                             <g:link controller="subscription" action="show" id="${i.sub.id}">
-                                ${message(code:'subscription.label', default:'Subscription')}: ${i.sub.dropdownNamingConvention()}
+                                ${message(code:'default.subscription.label', default:'Subscription')}: ${i.sub.dropdownNamingConvention()}
                             </g:link>
                         </g:if>
                         <g:if test="${i.lic}">
                             <g:link controller="license" action="show" id="${i.lic.id}">
-                                ${message(code:'license.label', default:'License')}: ${i.lic.reference ?: i.lic.id}
+                                ${message(code:'license.label')}: ${i.lic.reference ?: i.lic.id}
                             </g:link>
                         </g:if>
                         <g:if test="${i.title}">

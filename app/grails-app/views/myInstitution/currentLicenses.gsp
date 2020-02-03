@@ -168,7 +168,7 @@
                       <th>${message(code:'default.status.label')}</th>
                     <g:sortableColumn params="${params}" property="startDate" title="${message(code:'license.start_date', default:'Start Date')}" />
                     <g:sortableColumn params="${params}" property="endDate" title="${message(code:'license.end_date', default:'End Date')}" />
-                      <th class="la-action-info">${message(code:'default.actions')}</th>
+                      <th class="la-action-info">${message(code:'default.actions.label')}</th>
                   </tr>
                 </thead>
                 <tbody>

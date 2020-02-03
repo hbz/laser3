@@ -147,7 +147,7 @@
                 <g:if test="${params.tab == 'finish'}">
                     <th><g:message code="surveyInfo.finishedDate"/></th>
                 </g:if>
-                <th class="la-action-info">${message(code: 'default.actions')}</th>
+                <th class="la-action-info">${message(code: 'default.actions.label')}</th>
             </tr>
 
             </thead>
