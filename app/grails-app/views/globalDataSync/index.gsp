@@ -66,7 +66,7 @@
             <g:sortableColumn property="source.name" title="${message(code: 'package.source.label')}"/>
             <g:sortableColumn property="kbplusCompliant" title="${message(code: 'package.kbplusCompliant.label')}"/>
             <g:sortableColumn property="globalRecordInfoStatus"
-                              title="${message(code: 'package.globalRecordInfoStatus.label')}"/>
+                              title="${message(code: 'default.status.label')}"/>
             <th>${message(code: 'globalDataSync.tippscount')}</th>
             <th>${message(code: 'default.actions')}</th>
         </tr>

@@ -6,9 +6,11 @@ import com.k_int.properties.PropertyDefinition
 import com.k_int.properties.PropertyDefinitionGroup
 import com.k_int.properties.PropertyDefinitionGroupBinding
 import de.laser.AuditConfig
+import de.laser.DashboardDueDate
 import de.laser.domain.AbstractI10nOverride
 import de.laser.domain.AbstractI10nTranslatable
 import de.laser.domain.SystemProfiler
+import de.laser.helper.DateUtil
 import de.laser.helper.DebugAnnotation
 import de.laser.helper.DebugUtil
 import de.laser.helper.EhcacheWrapper
@@ -25,6 +27,7 @@ import org.codehaus.groovy.grails.orm.hibernate.cfg.GrailsHibernateUtil
 import org.springframework.web.servlet.LocaleResolver
 import org.springframework.web.servlet.support.RequestContextUtils
 
+import java.text.DateFormat
 import java.text.SimpleDateFormat
 import java.util.regex.Matcher
 import java.util.regex.Pattern
@@ -1869,6 +1872,59 @@ class AjaxController {
             prop_desc: prop_desc // form data
     ])
   }
+
+    @Secured(['ROLE_USER'])
+    def hideDashboardDueDate(){
+        setDashboardDueDateIsHidden(true)
+    }
+
+    @Secured(['ROLE_USER'])
+    def showDashboardDueDate(){
+        setDashboardDueDateIsHidden(false)
+    }
+
+    @Secured(['ROLE_USER'])
+    private setDashboardDueDateIsHidden(boolean isHidden){
+        log.debug("Hide/Show Dashboard DueDate - isHidden="+isHidden)
+
+        def result = [:]
+        result.user = contextService.user
+        result.institution = contextService.org
+
+        if (! accessService.checkUserIsMember(result.user, result.institution)) {
+            flash.error = "You do not have permission to access ${contextService.org.name} pages. Please request access on the profile page"
+            response.sendError(401)
+            return;
+        }
+
+        if (params.id) {
+            DashboardDueDate dueDate = DashboardDueDate.get(params.id)
+            if (dueDate){
+                dueDate.isHidden = isHidden
+                dueDate.save(flush: true)
+            } else {
+                if (isHidden)   flash.error += message(code:'dashboardDueDate.err.toShow.doesNotExist')
+                else            flash.error += message(code:'dashboardDueDate.err.toHide.doesNotExist')
+            }
+        } else {
+            if (isHidden)   flash.error += message(code:'dashboardDueDate.err.toShow.doesNotExist')
+            else            flash.error += message(code:'dashboardDueDate.err.toHide.doesNotExist')
+        }
+
+        result.is_inst_admin = accessService.checkMinUserOrgRole(result.user, result.institution, 'INST_ADM')
+        result.editable = accessService.checkMinUserOrgRole(result.user, result.institution, 'INST_EDITOR')
+
+        result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeTMP()
+        result.offset = params.offset ? Integer.parseInt(params.offset) : 0
+        result.dashboardDueDatesOffset = result.offset
+
+//        result.dueDates = DashboardDueDate.findAllByResponsibleUserAndResponsibleOrg(contextService.user, contextService.org, [sort: 'date', order: 'asc', max: result.max, offset: result.dashboardDueDatesOffset])
+        result.dueDates = DashboardDueDate.findAllByResponsibleUserAndResponsibleOrgAndIsHiddenAndIsDone(contextService.user, contextService.org, false, false, [sort: 'date', order: 'asc', max: result.max, offset: result.dashboardDueDatesOffset])
+        result.dueDatesCount = DashboardDueDate.findAllByResponsibleUserAndResponsibleOrgAndIsHiddenAndIsDone(contextService.user, contextService.org, false, false).size()
+
+        render (template: "/user/tableDueDates", model: [dueDates: result.dueDates, dueDatesCount: result.dueDatesCount, max: result.max, offset: result.offset])
+
+    }
 
   def coreExtend(){
     log.debug("ajax::coreExtend:: ${params}")

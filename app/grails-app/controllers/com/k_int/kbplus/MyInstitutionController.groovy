@@ -911,7 +911,7 @@ from License as l where (
                        g.message(code: 'subscription.endDate.label'),
                        g.message(code: 'subscription.manualCancellationDate.label'),
                        g.message(code: 'default.identifiers.label'),
-                       g.message(code: 'subscription.details.status'),
+                       g.message(code: 'default.status.label'),
                        g.message(code: 'subscription.details.type'),
                        g.message(code: 'subscription.form.label'),
                        g.message(code: 'subscription.resource.label')]
@@ -1046,7 +1046,7 @@ from License as l where (
                        g.message(code: 'surveyProperty.subAgency'),
                        g.message(code: 'subscription.owner.label'),
                        g.message(code: 'subscription.packages.label'),
-                       g.message(code: 'subscription.details.status'),
+                       g.message(code: 'default.status.label'),
                        g.message(code: 'subscription.details.type'),
                        g.message(code: 'subscription.form.label'),
                        g.message(code: 'subscription.resource.label'),
@@ -2381,6 +2381,7 @@ AND EXISTS (
         result.recentAnnouncements = Doc.findAllByType(announcement_type, [max: result.max,offset:result.announcementOffset, sort: 'dateCreated', order: 'desc'])
         result.recentAnnouncementsCount = Doc.findAllByType(announcement_type).size()*/
 
+//        result.dueDates = DashboardDueDate.findAllByResponsibleUserAndResponsibleOrg(contextService.user, contextService.org, [sort: 'date', order: 'asc', max: result.max, offset: result.dashboardDueDatesOffset])
         result.dueDates = DashboardDueDate.findAllByResponsibleUserAndResponsibleOrgAndIsHiddenAndIsDone(contextService.user, contextService.org, false, false, [sort: 'date', order: 'asc', max: result.max, offset: result.dashboardDueDatesOffset])
         result.dueDatesCount = DashboardDueDate.findAllByResponsibleUserAndResponsibleOrgAndIsHiddenAndIsDone(contextService.user, contextService.org, false, false).size()
 

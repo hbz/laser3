@@ -90,7 +90,7 @@
                         <div class="ui card ">
                             <div class="content">
                                 <dl>
-                                    <dt class="control-label">${message(code: 'license.status')}</dt>
+                                    <dt class="control-label">${message(code: 'default.status.label')}</dt>
                                     <dd>
                                         <semui:xEditableRefData owner="${license}" field="status" config="${RDConstants.LICENSE_STATUS}"/>
                                     </dd>

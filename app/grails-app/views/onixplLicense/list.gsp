@@ -27,7 +27,7 @@
 
                             <g:sortableColumn property="Type" title="${message(code: 'onixplLicense.type.label', default: 'Type')}" />
 
-                            <g:sortableColumn property="Status" title="${message(code: 'onixplLicense.status.label', default: 'Status')}" />
+                            <g:sortableColumn property="Status" title="${message(code: 'default.status.label', default: 'Status')}" />
 
                             <g:sortableColumn property="Document" title="${message(code: 'onixplLicense.document.label', default: 'Document')}" />
 

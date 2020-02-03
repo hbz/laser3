@@ -166,7 +166,7 @@
                 </div>
 
                 <div class="field fieldcontain">
-                    <label for="filterCIStatus">${message(code:'financials.costItemStatus')}</label>
+                    <label for="filterCIStatus">${message(code:'default.status.label')}</label>
                     <laser:select id="filterCIStatus" class="ui dropdown selection search"
                                   name="filterCIStatus"
                                   from="${RefdataCategory.getAllRefdataValues(RDConstants.COST_ITEM_STATUS)}"

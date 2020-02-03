@@ -1,3 +1,4 @@
 /* Inverted */
 @invertedItemLinkColor: rgba(255,255,255,.5);
 @invertedItemLinkHoverColor: #ffffff;
+ @selectionListBackground: #ffffff;

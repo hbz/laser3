@@ -99,7 +99,7 @@
 
                     <div class="three fields">
                         <div class="field">
-                            <label>${message(code: 'subscription.details.status')}</label>
+                            <label>${message(code: 'default.status.label')}</label>
                             <%
                                 def fakeList = []
                                 fakeList.addAll(RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_STATUS))
@@ -144,7 +144,7 @@
                         <th>${message(code: 'subscription')}</th>
                         <th>${message(code: 'default.startDate.label')}</th>
                         <th>${message(code: 'default.endDate.label')}</th>
-                        <th>${message(code: 'subscription.details.status')}</th>
+                        <th>${message(code: 'default.status.label')}</th>
                         <th>${message(code: 'subscription.form.label')}</th>
                         <th>${message(code: 'subscription.resource.label')}</th>
                         <th></th>
@@ -198,7 +198,7 @@
                         <th>${message(code: 'subscriptionDetails.members.members')}</th>
                         <th>${message(code: 'default.startDate.label')}</th>
                         <th>${message(code: 'default.endDate.label')}</th>
-                        <th>${message(code: 'subscription.details.status')}</th>
+                        <th>${message(code: 'default.status.label')}</th>
                         <th>${message(code: 'subscription.form.label')}</th>
                         <th>${message(code: 'subscription.resource.label')}</th>
                         <th class="la-no-uppercase">
@@ -494,7 +494,7 @@
                         <th>${message(code: 'subscription')}</th>
                         <th>${message(code: 'default.startDate.label')}</th>
                         <th>${message(code: 'default.endDate.label')}</th>
-                        <th>${message(code: 'subscription.details.status')}</th>
+                        <th>${message(code: 'default.status.label')}</th>
                         <th></th>
                     </tr>
                     </thead>
@@ -535,7 +535,7 @@
                         <th>${message(code: 'subscriptionDetails.members.members')}</th>
                         <th>${message(code: 'default.startDate.label')}</th>
                         <th>${message(code: 'default.endDate.label')}</th>
-                        <th>${message(code: 'subscription.details.status')}</th>
+                        <th>${message(code: 'default.status.label')}</th>
                         <th>${message(code: 'subscription.isMultiYear.label')}</th>
                         <th></th>
                     </tr>
