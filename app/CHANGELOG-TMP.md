@@ -15,13 +15,20 @@
 
 --      27.01.2020  rc1.2       David   Bug         Bugfix: API /statistic
 
-2102    24.01.2020   hbz-dev    David   Feature     Refactoring: Übersetzungen für PropertyDefinitions
+
+2102    24.01.2020  hbz-dev     David   Feature     Refactoring: Übersetzungen für PropertyDefinitions
 
 1961    24.01.2020  hbz-dev     Anja    Feature     Verknüpfungsauswahl bei Vertrag: Jetzt werden auch Subscriptons vom Status intended zur Auswahl angezeigt. 
 
 2102    24.01.2020  hbz-dev     David   Feature     Refactoring: Übersetzungen für PropertyDefinitions
 
---      23.01.202   hbz-dev     David   Feature     Importing Refdata and PropertyDefinitions via CSV
+2005    23.01.2020  hbz-dev     Moe     Feature     "Mehrjahreslaufzeit" auch für lokale Lizenzen?
+
+2069    23.01.2020  hbz-dev     Moe     Bug         Umfrage-Lizenz-Verlängerung: Fehler beim Kopieren von mehrfach vergebenen Merkmalen
+    
+2066    23.01.2020  hbz-dev     Moe     Feature     Merkmale kopieren bzw. verlängern
+
+--      23.01.2020  hbz-dev     David   Feature     Importing Refdata and PropertyDefinitions via CSV
 
 2012    23.01.2020  hbz-dev     Anja    Feature     PerformanceImprovement (GASCO-Monitor, currentProviders, createSubscriptionSurvey, createIssueEntitlementsSurvey)
 

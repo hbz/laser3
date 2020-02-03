@@ -57,8 +57,8 @@ class ComparisonService {
    * @param result - the map being filled or updated
    * @return the updated map
    */
-    TreeMap buildComparisonTree(TreeMap result,cmpObject,Collection<AbstractProperty> props) {
-      props.each { prop ->
+    Map buildComparisonTree(Map result,cmpObject,Collection<AbstractProperty> props) {
+      props.sort{it.type.getI10n('name')}.each { prop ->
 
         //property level - check if the group contains already a mapping for the current property
         def propertyMap = result.get(prop.type.class.name+":"+prop.type.id)
@@ -72,6 +72,7 @@ class ComparisonService {
         else {
           propertyList.add(prop)
         }
+
         propertyMap.put(cmpObject,propertyList)
         result.put(prop.type.class.name+":"+prop.type.id,propertyMap)
       }

@@ -335,7 +335,7 @@
             <g:if test="${!(contextService.getOrg().getCustomerType() in ['ORG_CONSORTIUM', 'ORG_CONSORTIUM_SURVEY'])}">
             <th class="la-no-uppercase" scope="col" rowspan="2" >
                 <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="bottom center"
-                      data-content="${message(code: 'subscription.isMultiYear.consortial.label')}">
+                      data-content="${message(code: 'subscription.isMultiYear.label')}">
                  <i class="map orange icon"></i>
                 </span>
             </th>
@@ -455,10 +455,19 @@
                 <g:if test="${!(contextService.getOrg().getCustomerType() in ['ORG_CONSORTIUM', 'ORG_CONSORTIUM_SURVEY'])}">
                     <td>
                         <g:if test="${s.isMultiYear}">
-                            <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="bottom center"
-                                  data-content="${message(code: 'subscription.isMultiYear.consortial.label')}">
-                                <i class="map orange icon"></i>
-                            </span>
+                            <g:if test="${(s.type == de.laser.helper.RDStore.SUBSCRIPTION_TYPE_CONSORTIAL &&
+                                    s.getCalculatedType() == de.laser.interfaces.TemplateSupport.CALCULATED_TYPE_PARTICIPATION)}">
+                                <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="bottom center"
+                                      data-content="${message(code: 'subscription.isMultiYear.consortial.label')}">
+                                    <i class="map orange icon"></i>
+                                </span>
+                            </g:if>
+                            <g:else>
+                                <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="bottom center"
+                                      data-content="${message(code: 'subscription.isMultiYear.label')}">
+                                    <i class="map orange icon"></i>
+                                </span>
+                            </g:else>
                         </g:if>
                     </td>
                 </g:if>
