@@ -24,19 +24,19 @@
 					<thead>
 						<tr>
 						
-							<th class="header"><g:message code="task.license.label" default="License" /></th>
+							<th class="header"><g:message code="license.label" /></th>
 						
-							<th class="header"><g:message code="task.org.label" default="Org" /></th>
+							<th class="header"><g:message code="task.org.label" /></th>
 						
-							<th class="header"><g:message code="task.pkg.label" default="Pkg" /></th>
+							<th class="header"><g:message code="package.label" /></th>
 						
-							<th class="header"><g:message code="default.subscription.label" default="Subscription" /></th>
+							<th class="header"><g:message code="default.subscription.label" /></th>
 						
 							<g:sortableColumn property="title" title="${message(code: 'task.title.label', default: 'Title')}" />
 						
 							<g:sortableColumn property="endDate" title="${message(code: 'task.endDate.label', default: 'End Date')}" />
 
-							<th class="la-action-info">${message(code:'default.actions')}</th>
+							<th class="la-action-info">${message(code:'default.actions.label')}</th>
 						</tr>
 					</thead>
 					<tbody>

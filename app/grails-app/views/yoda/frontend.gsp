@@ -246,7 +246,7 @@
         &lt;th&gt;${message(code:'property.table.paragraph')}&lt;/th&gt;
     &lt;/g:if&gt;
     &lt;th&gt;${message(code:'property.table.notes')}&lt;/th&gt;
-    &lt;th&gt;${message(code:'default.actions')}&lt;/th&gt;
+    &lt;th&gt;${message(code:'default.actions.label')}&lt;/th&gt;
 &lt;/tr&gt;
 &lt;/thead&gt;
                     .

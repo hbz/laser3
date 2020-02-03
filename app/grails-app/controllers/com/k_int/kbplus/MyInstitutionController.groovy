@@ -902,7 +902,7 @@ from License as l where (
     private def exportcurrentSubscription(List<Subscription> subscriptions, String format,contextOrg) {
         SimpleDateFormat sdf = new SimpleDateFormat(g.message(code:'default.date.format.notime'))
         List titles = ['Name',
-                       g.message(code: 'subscription.owner.label'),
+                       g.message(code: 'license.label'),
                        g.message(code: 'subscription.packages.label'),
                        g.message(code: 'consortium.label'),
                        g.message(code: 'default.provider.label'),
@@ -1044,7 +1044,7 @@ from License as l where (
                        g.message(code: 'surveyProperty.subName'),
                        g.message(code: 'surveyProperty.subProvider'),
                        g.message(code: 'surveyProperty.subAgency'),
-                       g.message(code: 'subscription.owner.label'),
+                       g.message(code: 'license.label'),
                        g.message(code: 'subscription.packages.label'),
                        g.message(code: 'default.status.label'),
                        g.message(code: 'default.type.label'),
@@ -2533,7 +2533,7 @@ AND EXISTS (
         }
 
         PendingChange.executeQuery('select distinct(pc.license) from PendingChange as pc where pc.owner = ?',[result.institution]).each {
-          result.institutional_objects.add(['com.k_int.kbplus.License:'+it.id,"${message(code:'license')}: "+it.reference]);
+          result.institutional_objects.add(['com.k_int.kbplus.License:'+it.id,"${message(code:'license.label')}: "+it.reference]);
         }
         PendingChange.executeQuery('select distinct(pc.subscription) from PendingChange as pc where pc.owner = ?',[result.institution]).each {
           result.institutional_objects.add(['com.k_int.kbplus.Subscription:'+it.id,"${message(code:'subscription')}: "+it.name]);
@@ -3648,7 +3648,7 @@ AND EXISTS (
             sheet.setAutobreaks(true)
             Row headerRow = sheet.createRow(0)
             headerRow.setHeightInPoints(16.75f)
-            List titles = [message(code:'sidewide.number'),message(code:'myinst.consortiaSubscriptions.member'),message(code:'myinst.consortiaSubscriptions.subscription'),message(code:'myinst.consortiaSubscriptions.license'),
+            List titles = [message(code:'sidewide.number'),message(code:'myinst.consortiaSubscriptions.member'),message(code:'myinst.consortiaSubscriptions.subscription'),message(code:'license.label'),
                            message(code:'myinst.consortiaSubscriptions.packages'),message(code:'myinst.consortiaSubscriptions.provider'),message(code:'myinst.consortiaSubscriptions.runningTimes'),
                            message(code:'financials.amountFinal'),"${message(code:'financials.isVisibleForSubscriber')} / ${message(code:'financials.costItemConfiguration')}"]
             titles.eachWithIndex{ titleName, int i ->
@@ -3788,7 +3788,7 @@ AND EXISTS (
                     result
                 }
                 csv {
-                    List titles = [message(code:'sidewide.number'),message(code:'myinst.consortiaSubscriptions.member'),message(code:'myinst.consortiaSubscriptions.subscription'),message(code:'myinst.consortiaSubscriptions.license'),
+                    List titles = [message(code:'sidewide.number'),message(code:'myinst.consortiaSubscriptions.member'),message(code:'myinst.consortiaSubscriptions.subscription'),message(code:'license.label'),
                                    message(code:'myinst.consortiaSubscriptions.packages'),message(code:'myinst.consortiaSubscriptions.provider'),message(code:'myinst.consortiaSubscriptions.runningTimes'),
                                    message(code:'financials.amountFinal'),"${message(code:'financials.isVisibleForSubscriber')} / ${message(code:'financials.costItemConfiguration')}"]
                     List columnData = []

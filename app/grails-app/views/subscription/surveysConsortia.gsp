@@ -52,7 +52,7 @@
             <th>${message(code: 'surveyParticipants.label')}</th>
             <th>${message(code: 'surveyCostItems.label')}</th>
             <th>${message(code: 'surveyInfo.finished')}</th>
-            <th class="la-action-info">${message(code: 'default.actions')}</th>
+            <th class="la-action-info">${message(code: 'default.actions.label')}</th>
 
         </tr>
 

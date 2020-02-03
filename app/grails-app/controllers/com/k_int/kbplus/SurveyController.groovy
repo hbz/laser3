@@ -4103,7 +4103,7 @@ class SurveyController {
                        g.message(code: 'surveyProperty.subName'),
                        g.message(code: 'surveyProperty.subProvider'),
                        g.message(code: 'surveyProperty.subAgency'),
-                       g.message(code: 'subscription.owner.label'),
+                       g.message(code: 'license.label'),
                        g.message(code: 'subscription.packages.label'),
                        g.message(code: 'default.status.label'),
                        g.message(code: 'default.type.label'),

@@ -82,9 +82,9 @@
 									<g:if test="${comboType == RDStore.COMBO_TYPE_CONSORTIUM}">
 										<td>
 											<ul>
-												<li><g:message code="org.globalUID.label" default="Global UID" />: <g:fieldValue bean="${organisationInstance}" field="globalUID"/></li>
+												<li><g:message code="org.globalUID.label" />: <g:fieldValue bean="${organisationInstance}" field="globalUID"/></li>
 												<g:if test="${organisationInstance.impId}">
-													<li><g:message code="org.impId.label" default="Import ID" />: <g:fieldValue bean="${organisationInstance}" field="impId"/></li>
+													<li><g:message code="org.impId.label" />: <g:fieldValue bean="${organisationInstance}" field="impId"/></li>
 												</g:if>
 												<g:each in="${organisationInstance.ids?.sort{it?.ns?.ns}}" var="id"><li>${id.ns.ns}: ${id.value}</li></g:each>
 											</ul>

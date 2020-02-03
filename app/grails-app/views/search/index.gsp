@@ -187,7 +187,7 @@ String period
                 <a href="${request.forwardURI}"
                    class="ui reset primary button">${message(code: 'default.button.searchreset.label')}</a>
                 <button name="search" type="submit" value="true" class="ui secondary button">
-                    <g:message code="search.button" default="Search"/>
+                    <g:message code="search.button" />
                 </button>
             </div>
         </div>

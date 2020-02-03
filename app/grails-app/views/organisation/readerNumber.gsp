@@ -44,7 +44,7 @@
 <g:render template="/readerNumber/formModal"/>
 
 
-<h5 class="ui header"><g:message code="menu.institutions.readerNumbers" default="Numbers"/></h5>
+<h5 class="ui header"><g:message code="menu.institutions.readerNumbers" /></h5>
 
 <table class="ui table celled sortable la-table">
     <thead>
@@ -58,7 +58,7 @@
                           params="${params}"/>
         <g:sortableColumn property="semester" title="${message(code: 'readerNumber.semester.label')}"
                           params="${params}"/>
-        <th>${message(code: 'default.actions')}</th>
+        <th>${message(code: 'default.actions.label')}</th>
     </tr>
     </thead>
     <tbody>

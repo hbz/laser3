@@ -52,7 +52,7 @@
                         </div>
                         <div class="description">
                             <i class="calendar alternate outline icon"></i>${message(code: 'subscription.periodOfValidity.label')}
-                            <i class="balance scale icon"></i>${message(code: 'license')}
+                            <i class="balance scale icon"></i>${message(code: 'license.label')}
                             <i class="university icon"></i>${message(code: 'subscription.organisations.label')}
                         </div>
                     </div>
@@ -66,7 +66,7 @@
                         </g:link>
                     </div>
                     <div class="description">
-                        <i class="gift icon"></i>${message(code: 'package')}
+                        <i class="gift icon"></i>${message(code: 'package.label')}
                         <i class="book icon"></i>${message(code: 'title')}
                     </div>
                 </div>

@@ -63,7 +63,7 @@
             <div class="ui card">
                 <div class="content">
                     <dl>
-                        <dt><g:message code="default.name.label" default="Name"/></dt>
+                        <dt><g:message code="default.name.label" /></dt>
                         <dd>
                             <semui:xEditable owner="${orgInstance}" field="name"/>
                             <g:if test="${orgInstance.getCustomerType() in ['ORG_INST', 'ORG_INST_COLLECTIVE']}">
@@ -77,7 +77,7 @@
                     <g:if test="${!inContextOrg || isGrantedOrgRoleAdminOrOrgEditor}">
                         <g:if test="${departmentalView == false}">
                             <dl>
-                                <dt><g:message code="org.shortname.label" default="Shortname"/></dt>
+                                <dt><g:message code="org.shortname.label" /></dt>
                                 <dd>
                                     <semui:xEditable owner="${orgInstance}" field="shortname"/>
                                 </dd>
@@ -86,7 +86,7 @@
                         <g:if test="${!(RDStore.OT_PROVIDER.id in allOrgTypeIds)}">
                             <dl>
                                 <dt>
-                                    <g:message code="org.sortname.label" default="Sortname"/>
+                                    <g:message code="org.sortname.label" />
                                     <g:if test="${departmentalView == false}">
                                         <br>
                                         <g:message code="org.sortname.onlyForLibraries.label"/>
@@ -216,7 +216,7 @@
                     <div class="content">
                         <g:if test="${orgInstance.hasPerm("ORG_INST") || isGrantedOrgRoleAdminOrOrgEditor}">
                             <dl>
-                                <dt><g:message code="org.sector.label" default="Sector"/></dt>
+                                <dt><g:message code="org.sector.label" /></dt>
                                 <dd>
                                     <semui:xEditableRefData owner="${orgInstance}" field="sector" config="${RDConstants.ORG_SECTOR}" overwriteEditable="${isGrantedOrgRoleAdminOrOrgEditor}"/>
                                 </dd>
@@ -224,7 +224,7 @@
                         </g:if>
                         <g:else>
                             <dl>
-                                <dt><g:message code="org.sector.label" default="Sector"/></dt>
+                                <dt><g:message code="org.sector.label" /></dt>
                                 <dd>
                                     ${orgInstance.sector?.getI10n('value')}
                                 </dd>
@@ -251,7 +251,7 @@
                     <div class="content">
                         <%-- ROLE_ADMIN: all , ROLE_ORG_EDITOR: all minus Consortium --%>
                         <dl>
-                            <dt><g:message code="org.orgType.label" default="Organisation Type"/></dt>
+                            <dt><g:message code="org.orgType.label" /></dt>
                             <dd>
                                 <%
                                     // hotfix:
@@ -281,7 +281,7 @@
                     <div class="content">
                             <dl>
                                 <dt>
-                                    <g:message code="org.libraryType.label" default="Library Type"/>
+                                    <g:message code="org.libraryType.label" />
                                     <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
                                           data-content="${message(code: 'org.libraryType.expl')}">
                                         <i class="question circle icon"></i>
@@ -294,7 +294,7 @@
                             </dl>
                             <dl>
                                 <dt>
-                                    <g:message code="org.libraryNetwork.label" default="Library Network"/>
+                                    <g:message code="org.libraryNetwork.label" />
                                     <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
                                           data-content="${message(code: 'org.libraryNetwork.expl')}">
                                         <i class="question circle icon"></i>
@@ -307,7 +307,7 @@
                             </dl>
                             <dl>
                                 <dt>
-                                    <g:message code="org.funderType.label" default="Funder Type"/>
+                                    <g:message code="org.funderType.label" />
                                     <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
                                           data-content="${message(code: 'org.funderType.expl')}">
                                         <i class="question circle icon"></i>
@@ -319,7 +319,7 @@
                             </dl>
                             <dl>
                                 <dt>
-                                    <g:message code="org.federalState.label" default="Federal State"/>
+                                    <g:message code="org.federalState.label" />
                                     <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
                                           data-content="${message(code: 'org.federalState.expl')}">
                                         <i class="question circle icon"></i>
@@ -332,7 +332,7 @@
                             </dl>
                             <dl>
                                 <dt>
-                                    <g:message code="org.country.label" default="Country"/>
+                                    <g:message code="org.country.label" />
                                     <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
                                           data-content="${message(code: 'org.country.expl')}">
                                         <i class="question circle icon"></i>
@@ -351,7 +351,7 @@
                 <div class="ui card">
                     <div class="content">
                         <dl>
-                            <dt><g:message code="org.platforms.label" default="Platforms "/></dt>
+                            <dt><g:message code="org.platforms.label" /></dt>
                             <dd>
 
                                 <div class="ui divided middle aligned selection list la-flex-list">
@@ -375,7 +375,7 @@
                 <div class="ui card">
                     <div class="content">
                         <dl>
-                            <dt><g:message code="org.addresses.label" default="Addresses"/>
+                            <dt><g:message code="org.addresses.label" />
 
                                 <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
                                       data-content="${message(code: 'adressFormModal.info')}">
@@ -440,7 +440,7 @@
                         </dl>
                         %{--ERMS:1236
                         <dl>
-                            <dt><g:message code="org.contacts.label" default="Contacts"/></dt>
+                            <dt><g:message code="org.contacts.label" /></dt>
                             <dd>
                                 <div class="ui divided middle aligned selection list la-flex-list">
                                     <g:each in="${orgInstance?.contacts?.toSorted()}" var="c">
@@ -466,7 +466,7 @@
                             </dd>
                         </dl>--}%
                         <dl>
-                            <dt><g:message code="org.prsLinks.label" default="Kontaktpersonen"/>
+                            <dt><g:message code="org.prsLinks.label" />
 
                                 <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
                                       data-content="${message(code: 'personFormModal.info')}">
@@ -585,7 +585,7 @@
                                 <g:if test="${orgInstance.createdBy}">
                                     <dl>
                                         <dt>
-                                            <g:message code="org.createdBy.label" default="createdBy"/>
+                                            <g:message code="org.createdBy.label" />
                                         </dt>
                                         <dd>
                                             <h5 class="ui header">
@@ -610,7 +610,7 @@
                                 <g:if test="${orgInstance.legallyObligedBy}">
                                     <dl>
                                         <dt>
-                                            <g:message code="org.legallyObligedBy.label" default="legallyObligedBy"/>
+                                            <g:message code="org.legallyObligedBy.label" />
                                         </dt>
                                         <dd>
                                             <h5 class="ui header">
