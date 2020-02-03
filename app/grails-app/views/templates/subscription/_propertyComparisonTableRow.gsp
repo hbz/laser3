@@ -48,7 +48,7 @@
     </tr>
 </thead>
 <tbody>
-<g:each in="${group.sort{it.key}}" var="prop">
+<g:each in="${group}" var="prop">
     <% PropertyDefinition propKey = (PropertyDefinition) genericOIDService.resolveOID(prop.getKey()) %>
     <tr>
         <td>
