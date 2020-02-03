@@ -106,7 +106,7 @@ class TitleController extends AbstractDebugController {
   }
 
     @Secured(['ROLE_USER'])
-    def show() {
+    Map<String,Object> show() {
         Map<String, Object> result = [:]
 
         result.editable = SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')

@@ -1,5 +1,7 @@
 package com.k_int.kbplus
 
+import de.laser.helper.RDConstants
+
 class JournalInstance extends TitleInstance {
 
     static mapping = {
@@ -16,7 +18,7 @@ class JournalInstance extends TitleInstance {
     }
 
     String printTitleType() {
-        RefdataValue.getByValueAndCategory('Journal',RefdataCategory.TI_MEDIUM).getI10n('value')
+        RefdataValue.getByValueAndCategory('Journal', RDConstants.TITLE_MEDIUM).getI10n('value')
     }
 
 }

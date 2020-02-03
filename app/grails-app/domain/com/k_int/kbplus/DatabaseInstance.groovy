@@ -1,5 +1,7 @@
 package com.k_int.kbplus
 
+import de.laser.helper.RDConstants
+
 class DatabaseInstance extends TitleInstance{
 
     static mapping = {
@@ -16,7 +18,7 @@ class DatabaseInstance extends TitleInstance{
     }
 
     String printTitleType() {
-        RefdataValue.getByValueAndCategory('Database',RefdataCategory.TI_MEDIUM).getI10n('value')
+        RefdataValue.getByValueAndCategory('Database', RDConstants.TITLE_MEDIUM).getI10n('value')
     }
 
 }

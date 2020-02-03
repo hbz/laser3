@@ -50,7 +50,7 @@ class RDStore {
     static final ORG_DELETED                = getRefdataValue('Deleted', RDConstants.ORG_STATUS)
     static final PACKAGE_DELETED            = getRefdataValue('Deleted', RDConstants.PACKAGE_STATUS)
     static final PLATFORM_DELETED           = getRefdataValue('Deleted', RDConstants.PLATFORM_STATUS)
-    static final TIPP_DELETED               = getRefdataValue('Deleted',  RDConstants.TIPP_STATUS)
+    static final TIPP_DELETED               = getRefdataValue('Deleted', RDConstants.TIPP_STATUS)
 
 //DO NOT USE THIS STATUS. Subs have no longer a deleted flag. They ARE deleted!
     @Deprecated

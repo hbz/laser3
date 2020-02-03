@@ -147,7 +147,7 @@ class SubscriptionController extends AbstractDebugController {
         log.debug("max = ${result.max}");
 
         def pending_change_pending_status = RefdataValue.getByValueAndCategory('Pending', RDConstants.PENDING_CHANGE_STATUS)
-        List<PendingChange> pendingChanges = PendingChange.executeQuery("select pc.id from PendingChange as pc where subscription=? and ( pc.status is null or pc.status = ? ) order by ts desc", [result.subscriptionInstance, pending_change_pending_status]);
+        List<PendingChange> pendingChanges = PendingChange.executeQuery("select pc from PendingChange as pc where subscription=? and ( pc.status is null or pc.status = ? ) order by ts desc", [result.subscriptionInstance, pending_change_pending_status]);
 
         if (result.subscriptionInstance?.isSlaved && pendingChanges) {
             log.debug("Slaved subscription, auto-accept pending changes")
@@ -156,7 +156,7 @@ class SubscriptionController extends AbstractDebugController {
                 if (!pendingChangeService.performAccept(change, result.user)) {
                     log.debug("Auto-accepting pending change has failed.")
                 } else {
-                    changesDesc.add(PendingChange.get(change).desc)
+                    changesDesc.add(change.desc)
                 }
             }
             // ERMS-1844: Hotfix: Änderungsmitteilungen ausblenden

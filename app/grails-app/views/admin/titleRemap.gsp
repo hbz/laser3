@@ -21,22 +21,29 @@
                 <table class="ui table">
                     <tbody>
                         <tr>
-                            <th>Title duplicates without TIPPs</th>
+                            <th>Duplicate titles without TIPPs</th>
                         </tr>
-                        <g:each in="${dupsWithoutTIPP}" var="duplicate">
+                        <g:each in="${titlesWithoutTIPP}" var="duplicate">
                             <tr>
                                 <td>${duplicate}</td>
                             </tr>
                         </g:each>
                         <tr>
-                            <th>Title duplicates with TIPPs</th>
+                            <th>Duplicate titles with TIPPs</th>
                         </tr>
-                        <g:each in="${dupsWithTIPP}" var="duplicate">
+                        <g:each in="${titlesWithTIPP}" var="duplicate">
                             <tr>
                                 <td>${duplicate}</td>
                             </tr>
                         </g:each>
-                        <tr></tr>
+                        <tr>
+                            <th>Mismatched titles</th>
+                        </tr>
+                        <g:each in="${mismatchedTites}" var="mismatch">
+                            <tr>
+                                <td>${mismatch}</td>
+                            </tr>
+                        </g:each>
                     </tbody>
                     <tfoot>
                         <tr>

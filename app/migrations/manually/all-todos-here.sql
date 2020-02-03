@@ -336,7 +336,7 @@ update refdata_category set rdc_description = 'ticket.status' where rdc_descript
 update refdata_category set rdc_description = 'tipp.access.status' where rdc_description = 'TIPP Access Status';
 update refdata_category set rdc_description = 'tipp.status' where rdc_description = 'TIPP Status';
 update refdata_category set rdc_description = 'tipp.status.reason' where rdc_description = 'Tipp.StatusReason';
-update refdata_category set rdc_description = 'title.type' where rdc_description = 'Title Type';
+update refdata_category set rdc_description = 'title.medium' where rdc_description = 'Title Medium';
 update refdata_category set rdc_description = 'tipp.delayed.oa' where rdc_description = 'TitleInstancePackagePlatform.DelayedOA';
 update refdata_category set rdc_description = 'tipp.hybrid.oa' where rdc_description = 'TitleInstancePackagePlatform.HybridOA';
 update refdata_category set rdc_description = 'tipp.payment.type' where rdc_description = 'TitleInstancePackagePlatform.PaymentType';
@@ -360,7 +360,7 @@ update property_definition set pd_rdc = 'ticket.status' where pd_rdc = 'Ticket.S
 update property_definition set pd_rdc = 'tipp.access.status' where pd_rdc = 'TIPP Access Status';
 update property_definition set pd_rdc = 'tipp.status' where pd_rdc = 'TIPP Status';
 update property_definition set pd_rdc = 'tipp.status.reason' where pd_rdc = 'Tipp.StatusReason';
-update property_definition set pd_rdc = 'title.type' where pd_rdc = 'Title Type';
+update property_definition set pd_rdc = 'title.medium' where pd_rdc = 'Title Medium';
 update property_definition set pd_rdc = 'tipp.delayed.oa' where pd_rdc = 'TitleInstancePackagePlatform.DelayedOA';
 update property_definition set pd_rdc = 'tipp.hybrid.oa' where pd_rdc = 'TitleInstancePackagePlatform.HybridOA';
 update property_definition set pd_rdc = 'tipp.payment.type' where pd_rdc = 'TitleInstancePackagePlatform.PaymentType';

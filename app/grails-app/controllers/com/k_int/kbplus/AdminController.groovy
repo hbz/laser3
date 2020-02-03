@@ -9,6 +9,7 @@ import com.k_int.properties.PropertyDefinition
 import com.k_int.properties.PropertyDefinitionGroup
 import com.k_int.properties.PropertyDefinitionGroupItem
 import de.laser.ContextService
+import de.laser.GOKbService
 import de.laser.SystemEvent
 import de.laser.api.v0.ApiToolkit
 import de.laser.controller.AbstractDebugController
@@ -22,8 +23,8 @@ import grails.plugin.springsecurity.SpringSecurityUtils
 import grails.plugin.springsecurity.annotation.Secured
 import grails.util.Holders
 import groovy.sql.Sql
-import groovy.util.slurpersupport.FilteredNodeChildren
 import groovy.util.slurpersupport.GPathResult
+import groovy.util.slurpersupport.NodeChildren
 import groovy.xml.MarkupBuilder
 import org.springframework.context.i18n.LocaleContextHolder
 import groovyx.net.http.HTTPBuilder
@@ -52,7 +53,7 @@ class AdminController extends AbstractDebugController {
     def dataConsistencyService
     def organisationService
   GlobalSourceSyncService globalSourceSyncService
-
+  def GOKbService
   def docstoreService
   def propertyInstanceMap = org.codehaus.groovy.grails.plugins.DomainClassGrailsPlugin.PROPERTY_INSTANCE_MAP
 
@@ -610,33 +611,73 @@ class AdminController extends AbstractDebugController {
   @Secured(['ROLE_YODA'])
   Map<String,Object> titleRemap() {
     SessionCacheWrapper sessionCache = contextService.getSessionCache()
-    Map<String,Object> result = sessionCache.get("AdminController/titleMerge/result")
+    Map<String,Object> result = sessionCache.get("AdminController/titleRemap/result")
     if(!result) {
-      globalSourceSyncService.cleanUpGorm()
       GlobalRecordSource grs = GlobalRecordSource.findAll().get(0)
-      List<String,Integer> duplicateTiRows = TitleInstance.executeQuery('select ti.gokbId,count(ti.gokbId) from TitleInstance ti group by ti.gokbId having count(ti.gokbId) > 1')
-      List<Map<String,Object>> dupsWithoutTIPP = []
-      List<Long> excludes = []
-      List<Map<String,Object>> dupsWithTIPP = []
-      duplicateTiRows.eachWithIndex { row, int ctr ->
-        log.debug("Processing entry ${ctr}. Title UUID ${row[0]} occurs ${row[1]} times in DB. Do further checks!")
-        //check if title has TIPPs / IssueEntitlements linked
-        List<TitleInstance> duplicateTitles = TitleInstance.findAllByGokbId(row[0])
-        duplicateTitles.each { title ->
-          List<String> tipps = TitleInstancePackagePlatform.executeQuery('select tipp.globalUID from TitleInstancePackagePlatform tipp where tipp.title = :title',[title:title])
-          if(tipps) {
-            excludes << title.id
-            dupsWithTIPP << [titleKey:title.id,titleName:title.title,tipps:tipps,issueEntitlements:IssueEntitlement.executeQuery('select ie from IssueEntitlement ie where ie.tipp.globalUID in :tipps',[tipps:tipps])]
-            globalSourceSyncService.cleanUpGorm()
+      globalSourceSyncService.setSource(grs)
+      Map<String,Object> titlesWithoutTIPP = [:], titlesWithTIPP = [:]
+      List<TitleInstance> mismatchedTitles = []
+      TitleInstance.executeQuery('select ti.gokbId,count(ti.gokbId) from TitleInstance ti group by ti.gokbId having count(ti.gokbId) > 1').eachWithIndex { tiKey, int ctr ->
+        List<TitleInstance> titleInstances = TitleInstance.findAllByGokbId(tiKey)
+        titleInstances.each { TitleInstance titleA ->
+          log.info("attempt get with link ${grs.uri}?verb=GetRecord&metadataPrefix=${grs.fullPrefix}&identifier=${titleA.gokbId} ...")
+          GPathResult titleB
+          GPathResult oaiRecord = globalSourceSyncService.fetchRecord(grs.uri,'titles',[verb:'GetRecord',metadataPrefix:grs.fullPrefix,identifier:titleA.gokbId])
+          if(oaiRecord.record.metadata.gokb.title) {
+            titleB = oaiRecord.record.metadata.gokb.title
+            log.info("processing record for #${ctr}, GOKb record name is ${titleB.name.text()}")
+            if(titleA.title != titleB.name.text()) {
+              log.info("Title mismatch! ${titleA.title} vs. ${titleB.name.text()}! Process to diff!")
+              //check if titleB is not already existing in LAS:eR - continue here
+              TitleInstance laserTitleB = TitleInstance.findByTitleAndGokbIdNotEqual(titleB.name,titleB.'@uuid'.text())
+              if(laserTitleB) {
+                mismatchedTitles << laserTitleB
+              }
+              else {
+                if(titleA.tipps.size() > 0) {
+                  titleA.tipps.each { TitleInstancePackagePlatform tippA ->
+                    def tippB = titleB.TIPPs.TIPP.find { node ->
+                      node.'@uuid'.text() == tippA.gokbId
+                    }
+                    if(tippB) {
+                      log.info("TIPPs are matching; title instance data is wrong")
+                      titlesWithTIPP[titleA.globalUID] = [action:'updateData',correctData:titleB]
+                    }
+                  }
+                }
+                else {
+                  log.info("no TIPPs in LAS:eR title instance, update data")
+                  titlesWithoutTIPP[titleA.globalUID] = [action:'updateData',correctData:titleB]
+                }
+              }
+            }
+            else {
+              log.info("${titleA.title} and ${titleB.name.text()} are matching, no action!")
+            }
           }
-          else dupsWithoutTIPP << [titleKey:title.id,titleName:title.title]
+          else {
+            log.info("UUID ${titleA.gokbId} does not exist in GOKb, mark everything dependent as deleted!")
+            if(titleA.tipps.size() > 0)
+              titlesWithTIPP.put(titleA.globalUID,[action:'markAsDeleted'])
+            else titlesWithoutTIPP.put(titleA.globalUID,[action:'markAsDeleted'])
+          }
         }
       }
-      result = [dupsWithoutTIPP:dupsWithoutTIPP,excludes:excludes,dupsWithTIPP:dupsWithTIPP]
-      sessionCache.put("AdminController/titleMerge/result",result)
+      result = [titlesWithoutTIPP:titlesWithoutTIPP,titlesWithTIPP:titlesWithTIPP,mismatchedTites:mismatchedTitles]
+      sessionCache.put("AdminController/titleRemap/result",result)
     }
     result
   }
+
+  /*
+  titleA.title = titleB.name.text()
+                    //I hate this solution ...
+                    Identifier.executeUpdate("delete from Identifier i where i.ti = :titleToUpdate",[titleToUpdate:titleA])
+                    titleB.identifiers.identifier.each { idData ->
+                      if(idData.'@namespace'.text().toLowerCase() != 'originediturl')
+                        Identifier.construct([namespace:idData.'@namespace'.text(),value:idData.'@value'.text(),reference:titleA])
+                    }
+   */
 
   @Secured(['ROLE_YODA'])
   def executeTiCleanup() {
@@ -645,7 +686,7 @@ class AdminController extends AbstractDebugController {
     GlobalRecordSource grs = GlobalRecordSource.findAll().get(0)
     globalSourceSyncService.setSource(grs)
     Map<String,GPathResult> oaiRecords = [:]
-    Map<String,Object> result = (Map<String,Object>) sessionCache.get("AdminController/titleMerge/result")
+    Map<String,Object> result = (Map<String,Object>) sessionCache.get("AdminController/titleRemap/result")
     if(result) {
       TitleInstance.withTransaction { TransactionStatus status ->
         try {
@@ -719,7 +760,7 @@ class AdminController extends AbstractDebugController {
             CreatorTitle.executeUpdate('delete from CreatorTitle ct where ct.title.id in (:toDelete)',[toDelete:toDelete])
             TitleInstance.executeUpdate('delete from TitleInstance ti where ti.id in (:toDelete)',[toDelete:toDelete])
           }
-          sessionCache.remove("AdminController/titleMerge/result")
+          sessionCache.remove("AdminController/titleRemap/result")
         }
         catch (Exception e) {
           log.error("failure on merging titles ... rollback!")

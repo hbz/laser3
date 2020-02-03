@@ -1,5 +1,6 @@
 package com.k_int.kbplus
 
+import de.laser.helper.RDConstants
 import grails.util.Holders
 import org.springframework.context.i18n.LocaleContextHolder
 
@@ -54,7 +55,7 @@ class BookInstance extends TitleInstance {
     }
 
     String printTitleType() {
-        RefdataValue.getByValueAndCategory('EBook',RefdataCategory.TI_MEDIUM).getI10n('value')
+        RefdataValue.getByValueAndCategory('EBook', RDConstants.TITLE_MEDIUM).getI10n('value')
     }
 
     String getEbookFirstAutorOrFirstEditor(){
