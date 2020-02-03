@@ -47,7 +47,7 @@
                                     <g:set var="errors" value="${row.getValue()}"/>
                                     <%--li><g:message code="myinst.financeImport.institution"/>: ${ci.owner?.sortname}</li--%>
                                     <li><g:message code="default.subscription.label"/>: ${ci.sub?.dropdownNamingConvention()}</li>
-                                    <li><g:message code="myinst.financeImport.package"/>: ${ci.subPkg?.pkg?.name}</li>
+                                    <li><g:message code="package.label"/>: ${ci.subPkg?.pkg?.name}</li>
                                     <li><g:message code="myinst.financeImport.issueEntitlement"/>: ${ci.issueEntitlement?.tipp?.title?.title}</li>
                                     <li><g:message code="myinst.financeImport.orderNumber"/>: ${ci.order?.orderNumber}</li>
                                     <li><g:message code="myinst.financeImport.invoiceNumber"/>: ${ci.invoice?.invoiceNumber}</li>

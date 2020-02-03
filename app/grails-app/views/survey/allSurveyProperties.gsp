@@ -71,7 +71,7 @@
                 <th>${message(code: 'surveyProperty.expl.label')}</th>
                 <th>${message(code: 'surveyProperty.comment.label')}</th>
                 <th>${message(code: 'default.type.label')}</th>
-                <th class="la-action-info">${message(code:'default.actions')}</th>
+                <th class="la-action-info">${message(code:'default.actions.label')}</th>
             </tr>
             </thead>
 

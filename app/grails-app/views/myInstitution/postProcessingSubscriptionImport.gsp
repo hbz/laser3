@@ -42,7 +42,7 @@
                                     <g:set var="sub" value="${row.getKey()}"/>
                                     <g:set var="errors" value="${row.getValue()}"/>
                                     <li><g:message code="default.name.label"/>: ${sub.name}</li>
-                                    <li><g:message code="myinst.subscriptionImport.owner"/>: ${genericOIDService.resolveOID(sub.owner)}</li>
+                                    <li><g:message code="license.label"/>: ${genericOIDService.resolveOID(sub.owner)}</li>
                                     <g:if test="${accessService.checkPerm("ORG_INST_COLLECTIVE,ORG_CONSORTIUM") && sub.instanceOf && sub.member}">
                                         <li><g:message code="myinst.subscriptionImport.instanceOf" args="${parentSubType}"/>: ${genericOIDService.resolveOID(sub.instanceOf)}</li>
                                         <li><g:message code="myinst.subscriptionImport.member"/>: ${genericOIDService.resolveOID(sub.member)}</li>

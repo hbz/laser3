@@ -38,7 +38,7 @@
                 <th><g:message code="propertyDefinitionGroup.table.header.properties"/></th>
                 <th><g:message code="default.type.label"/></th>
                 <th><g:message code="propertyDefinitionGroup.table.header.presetShow"/></th>
-                <th class="la-action-info">${message(code:'default.actions')}</th>
+                <th class="la-action-info">${message(code:'default.actions.label')}</th>
             </tr>
         </thead>
         <tbody>

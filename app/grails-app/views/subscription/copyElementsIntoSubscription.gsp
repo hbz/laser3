@@ -43,7 +43,7 @@
                         </div>
                         <div class="description">
                             <i class="calendar alternate outline icon"></i>${message(code: 'subscription.periodOfValidity.label')}
-                            <i class="balance scale icon"></i>${message(code: 'license')}
+                            <i class="balance scale icon"></i>${message(code: 'license.label')}
                             <i class="university icon"></i>${message(code: 'subscription.organisations.label')}
                             <i class="barcode icon"></i>${message(code: 'default.identifiers.label')}
                         </div>
@@ -59,7 +59,7 @@
                         </g:link>
                     </div>
                     <div class="description">
-                        <i class="gift icon"></i>${message(code: 'package')}
+                        <i class="gift icon"></i>${message(code: 'package.label')}
                         <i class="book icon"></i>${message(code: 'title')}
                     </div>
                 </div>
@@ -114,7 +114,7 @@
                     <div class="title">${message(code: 'subscription.details.copyElementsIntoSubscription.general_data.label')}</div>
                     <div class="description">
                         <i class="calendar alternate outline icon"></i>${message(code: 'subscription.periodOfValidity.label')}
-                        <i class="balance scale icon"></i>${message(code: 'license')}
+                        <i class="balance scale icon"></i>${message(code: 'license.label')}
                         <i class="university icon"></i>${message(code: 'subscription.organisations.label')}
                         <i class="barcode icon"></i>${message(code: 'default.identifiers.label')}
                     </div>
@@ -125,7 +125,7 @@
                 <div class="content" >
                     <div class="title">${message(code: 'subscription.details.copyElementsIntoSubscription.inventory.label')}</div>
                     <div class="description">
-                        <i class="gift icon"></i>${message(code: 'package')}
+                        <i class="gift icon"></i>${message(code: 'package.label')}
                         <i class="book icon"></i>${message(code: 'title')}
                     </div>
                 </div>

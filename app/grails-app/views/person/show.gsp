@@ -44,7 +44,7 @@ ${personInstance}
                     </dl>
 
                     <g:if test="${personType}">
-                        <dl><dt id="person_title"><g:message code="person.title.label" default="Title"/></dt>
+                        <dl><dt id="person_title"><g:message code="person.title.label" /></dt>
                             <dd><semui:xEditable owner="${personInstance}" field="title"/></dd>
                         </dl>
                     </g:if>
@@ -52,7 +52,7 @@ ${personInstance}
                     <dl>
                         <dt id="person_last_name">
                             <g:if test="${personType}">
-                                <g:message code="person.last_name.label" default="Lastname"/>
+                                <g:message code="person.last_name.label" />
                             </g:if>
                             <g:else>
                                 Bezeichnung
@@ -63,13 +63,13 @@ ${personInstance}
 
                     <g:if test="${personType}">
 
-                        <dl><dt><g:message code="person.first_name.label" default="Firstname"/></dt>
+                        <dl><dt><g:message code="person.first_name.label" /></dt>
                             <dd><semui:xEditable owner="${personInstance}" field="first_name"/></dd></dl>
 
-                        <dl><dt><g:message code="person.middle_name.label" default="Middlename"/></dt>
+                        <dl><dt><g:message code="person.middle_name.label" /></dt>
                             <dd><semui:xEditable owner="${personInstance}" field="middle_name"/></dd></dl>
 
-                        <dl><dt><g:message code="person.gender.label" default="Gender"/></dt>
+                        <dl><dt><g:message code="person.gender.label" /></dt>
                             <dd><semui:xEditableRefData owner="${personInstance}" field="gender" config="${RDConstants.GENDER}"/></dd>
                         </dl>
 
@@ -84,7 +84,7 @@ ${personInstance}
             <div class="ui card">
                 <div class="content">
 
-                    <dl><dt><g:message code="person.contacts.label" default="Contacts"/></dt>
+                    <dl><dt><g:message code="person.contacts.label"/></dt>
                         <dd>
                             <div class="ui divided middle aligned selection list la-flex-list">
                                 <g:each in="${personInstance?.contacts?.toSorted()}" var="c">
@@ -107,7 +107,7 @@ ${personInstance}
                         </dd>
                     </dl>
 
-                    <dl><dt><g:message code="person.addresses.label" default="Addresses"/></dt>
+                    <dl><dt><g:message code="person.addresses.label" /></dt>
                         <dd>
                             <div class="ui divided middle aligned selection list la-flex-list">
                                 <g:each in="${personInstance.addresses.sort{it.type?.getI10n('value')}}" var="a">
@@ -137,7 +137,7 @@ ${personInstance}
                 <div class="ui card">
                     <div class="content">
 
-                        <dl><dt><g:message code="person.functions.label" default="Functions"/></dt>
+                        <dl><dt><g:message code="person.functions.label" /></dt>
                             <dd>
                                 <div class="ui divided middle aligned selection list la-flex-list">
                                     <g:each in="${personInstance.roleLinks}" var="link">
@@ -202,7 +202,7 @@ ${personInstance}
                             </dd>
                         </dl>
 
-                        <dl><dt><g:message code="person.positions.label" default="Positions"/></dt>
+                        <dl><dt><g:message code="person.positions.label" /></dt>
                             <dd>
                                 <div class="ui divided middle aligned selection list la-flex-list">
                                     <g:each in="${personInstance.roleLinks}" var="link">
@@ -267,7 +267,7 @@ ${personInstance}
                             </dd>
                         </dl>
 
-                        <dl><dt><g:message code="person.responsibilites.label" default="Responsibilites"/></dt>
+                        <dl><dt><g:message code="person.responsibilites.label" /></dt>
                             <dd>
                                 <div class="ui divided middle aligned selection list la-flex-list">
                                     <g:each in="${personInstance.roleLinks}" var="link">
@@ -355,7 +355,7 @@ ${personInstance}
                     <g:if test="${personInstance?.tenant && !myPublicContact}">
                         <div class="ui card">
                             <div class="content">
-                                <dl><dt><g:message code="person.tenant.label" default="Tenant"/></dt>
+                                <dl><dt><g:message code="person.tenant.label" /></dt>
                                 <dd>
 
                                     <g:if test="${editable /* && personInstance?.tenant?.id == contextService.getOrg().id */ && personInstance?.isPublic}">

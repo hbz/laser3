@@ -60,7 +60,7 @@
                     <th>${message(code: 'accessMethod.label', default: 'Access Method')}</th>
                     <th>${message(code: 'accessRule.plural', default: 'Access Rules')}</th>
                     <g:if test="${accessService.checkPermAffiliation('ORG_BASIC_MEMBER','INST_EDITOR') || (accessService.checkPermAffiliation('ORG_CONSORTIUM','INST_EDITOR') && inContextOrg)}">
-                        <th class="la-action-info">${message(code: 'accessPoint.actions', default: 'Actions')}</th>
+                        <th class="la-action-info">${message(code: 'default.actions.label')}</th>
                     </g:if>
                 </tr>
                 </thead>
