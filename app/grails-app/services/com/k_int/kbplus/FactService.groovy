@@ -500,14 +500,14 @@ class FactService {
   {
     def hql = "select os.org from OrgSettings as os" +
         " where os.key='${OrgSettings.KEYS.NATSTAT_SERVER_REQUESTOR_ID}'" +
-        " and exists (select 1 from OrgSettings as inneros where inneros.key = '${OrgSettings.KEYS.NATSTAT_SERVER_API_KEY}' and inneros.org=os.org)"
+        " and exists (select 1 from OrgSettings as inneros where inneros.key = '${OrgSettings.KEYS.NATSTAT_SERVER_API_KEY}' and inneros.org=os.org) order by os.org.name"
     return OrgSettings.executeQuery(hql)
   }
 
   def platformsWithNatstatId()
   {
     def hql = "select platform from Platform as platform" +
-        " where exists (select 1 from platform.customProperties as pcp where pcp.owner = platform.id and pcp.type.name = 'NatStat Supplier ID')"
+        " where exists (select 1 from platform.customProperties as pcp where pcp.owner = platform.id and pcp.type.name = 'NatStat Supplier ID') order by platform.name"
     return Platform.executeQuery(hql)
   }
 

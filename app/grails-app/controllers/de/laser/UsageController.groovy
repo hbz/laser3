@@ -130,11 +130,13 @@ class UsageController extends AbstractDebugController {
             projections {
                 distinct("supplierId")
             }
+            order("supplierId", "asc")
         }
         def institutionsForQuery = StatsTripleCursor.withCriteria {
             projections {
                 distinct("customerId")
             }
+            order("customerId", "asc")
         }.collect {"'$it'"}.join(',')
 
         def hql = "select ident.org, ident from Identifier as ident where ident.value in (${institutionsForQuery})"
