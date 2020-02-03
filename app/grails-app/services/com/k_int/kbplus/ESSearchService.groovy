@@ -95,11 +95,12 @@ class ESSearchService{
           }else{
 
             searchSourceBuilder.query(QueryBuilders.queryStringQuery(query_str))
+            searchSourceBuilder.from(params.offset)
             searchSourceBuilder.size(params.max)
             searchRequest.source(searchSourceBuilder)
 
           }
-          searchResponse = esclient.prepareSearch(searchRequest, RequestOptions.DEFAULT)
+          searchResponse = esclient.search(searchRequest, RequestOptions.DEFAULT)
 
           //search = searchRequestBuilder.get()
         }
