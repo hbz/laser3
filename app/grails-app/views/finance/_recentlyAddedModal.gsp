@@ -13,7 +13,7 @@
                     <th>${message(code:'financials.newCosts.costTitle')}</th>
                     <th>${message(code:'financials.invoice_number')}</th>
                     <th>${message(code:'financials.order_number')}</th>
-                    <th>${message(code:'subscription.label')}</th>
+                    <th>${message(code:'default.subscription.label')}</th>
                 </tr>
                 <tr>
                     <th>${message(code:'package.label')}</th>

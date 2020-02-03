@@ -2,7 +2,7 @@
 <html>
   <head>
     <meta name="layout" content="semanticUI">
-    <g:set var="entityName" value="${message(code: 'package.label', default: 'Package')}" />
+    <g:set var="entityName" value="${message(code: 'package.label')}" />
     <title><g:message code="default.list.label" args="[entityName]" /></title>
   </head>
   <body>
@@ -72,7 +72,7 @@
             <g:else>
               <th><g:message code="globalDataSync.localPackage" args="[localPkg.name]"/></th>
             </g:else>
-          <th><g:message code="default.actions" /></th>
+          <th><g:message code="default.actions.label" /></th>
           <th>
             <g:if test="${type=='new'}">
               <g:message code="globalDataSync.newPackageafterProc"/>

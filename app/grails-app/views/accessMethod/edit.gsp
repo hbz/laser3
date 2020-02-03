@@ -23,19 +23,19 @@
                         <div class="ui card">
                             <div class="content">
                                 <dl>
-                                    <dt><g:message code="accessMethod.type" default="Type" /></dt>
+                                    <dt><g:message code="default.type.label" /></dt>
                                     <dd>${accessMethod.accessMethod.getI10n('value')}</dd>
                                 </dl>
                                 <dl>
 
-                                    <dt><g:message code="accessMethod.valid_from" default="Valid From" /></dt>
+                                    <dt><g:message code="accessMethod.valid_from" /></dt>
                                     <dd>
                                         <g:formatDate format="${message(code:'default.date.format.notime', default:'yyyy-MM-dd')}" date="${accessMethod.validFrom}" />
                                         <g:hiddenField name="validFrom" value="${accessMethod.validFrom}" />
                                     </dd>
                                 </dl><dl>
 
-                                    <dt><g:message code="accessMethod.valid_to" default="Valid To" /></dt>
+                                    <dt><g:message code="accessMethod.valid_to" /></dt>
                                     <dd>
                                         <semui:datepicker hideLabel="true" id="validTo" name="validTo" value ="${accessMethod.validTo}">
                                         </semui:datepicker>

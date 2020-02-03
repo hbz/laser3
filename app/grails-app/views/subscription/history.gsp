@@ -29,7 +29,7 @@
             <tr>
               <th>${message(code:'default.eventID.label', default:'Event ID')}</th>
               <th>${message(code:'default.person.label', default:'Person')}</th>
-              <th>${message(code:'default.date.label', default:'Date')}</th>
+              <th>${message(code:'default.date.label')}</th>
               <th>${message(code:'default.event.label', default:'Event')}</th>
               <th>${message(code:'default.field.label', default:'Field')}</th>
               <th>${message(code:'default.oldValue.label', default:'Old Value')}</th>

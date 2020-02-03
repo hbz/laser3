@@ -2,7 +2,7 @@
 
 <div class="field fieldcontain ${hasErrors(bean: taskInstance, field: 'license', 'error')} ">
 	<label for="license">
-		<g:message code="task.license.label" default="License" />
+		<g:message code="license.label" />
 	</label>
 	<g:select id="license" name="license.id" from="${validLicenses}" optionKey="id" value="${taskInstance?.license?.id}" class="many-to-one" noSelection="['null': '']"/>
 
@@ -10,21 +10,21 @@
 
 <div class="field fieldcontain ${hasErrors(bean: taskInstance, field: 'org', 'error')} ">
 	<label for="org">
-		<g:message code="task.org.label" default="Org" />
+		<g:message code="task.org.label" />
 	</label>
 	<g:select id="org" name="org.id" from="${validOrgs}" optionKey="id" value="${taskInstance?.org?.id}" class="many-to-one" noSelection="['null': '']"/>
 </div>
 
 <div class="field fieldcontain ${hasErrors(bean: taskInstance, field: 'pkg', 'error')} ">
 	<label for="pkg">
-		<g:message code="task.pkg.label" default="Pkg" />
+		<g:message code="package.label" />
 	</label>
 	<g:select id="pkg" name="pkg.id" from="${validPackages}" optionKey="id" value="${taskInstance?.pkg?.id}" class="many-to-one" noSelection="['null': '']"/>
 </div>
 
 <div class="field fieldcontain ${hasErrors(bean: taskInstance, field: 'subscription', 'error')} ">
 	<label for="subscription">
-		<g:message code="task.subscription.label" default="Subscription" />
+		<g:message code="default.subscription.label" />
 	</label>
 	<g:select id="subscription" name="subscription.id" from="${validSubscriptions}" optionKey="id" value="${taskInstance?.subscription?.id}" class="many-to-one" noSelection="['null': '']"/>
 </div>
@@ -45,7 +45,7 @@
 
 <div class="field fieldcontain ${hasErrors(bean: taskInstance, field: 'status', 'error')} required">
 	<label for="status">
-		<g:message code="task.status.label" default="Status" />
+		<g:message code="task.status.label" />
 	</label>
 	<g:select id="status" name="status.id" from="${com.k_int.kbplus.RefdataCategory.getAllRefdataValues(RDConstants.TASK_STATUS)}"
 			  optionKey="id" required="" value="${taskInstance?.status?.id ?: com.k_int.kbplus.RefdataValue.getByValueAndCategory("Open", RDConstants.TASK_STATUS).id}" class="many-to-one"/>

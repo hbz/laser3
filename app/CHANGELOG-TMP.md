@@ -2,6 +2,10 @@
 
 **Ticket    Date    Branch      Author  Feature/Bug     Description/Keywords**
 
+2130    03.02.2020  hbz-dev     Andreas Bug         Rechteüberprüfung bei Löschen von Kindlizenzen korrigiert
+
+2118    03.02.2020  hbz-dev     Andreas Feature     Satz bezüglich des Status aus Übersetzungsdatei entfernt
+
 2077    03.02.2020  dev         Anja    Feature     Löschrückfrage für Merkmale 
 
 2104    28.01.2020  rc1.2       Andreas Bug         Steuersatz wird im Tab Eigene Kosten korrekt dargestellt
@@ -15,7 +19,6 @@
 2105    28.01.2020  hbz-dev     Andreas Bug         Entfernen des Platzhaltertextes aus Dropdown
 
 --      27.01.2020  rc1.2       David   Bug         Bugfix: API /statistic
-
 
 2102    24.01.2020  hbz-dev     David   Feature     Refactoring: Übersetzungen für PropertyDefinitions
 

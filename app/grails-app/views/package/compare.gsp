@@ -3,7 +3,7 @@
 <html>
   <head>
     <meta name="layout" content="semanticUI">
-    <g:set var="entityName" value="${message(code: 'package.label', default: 'Package')}" />
+    <g:set var="entityName" value="${message(code: 'package.label')}" />
     <title>${message(code:'laser', default:'LAS:eR')} : <g:message code="package.compare" /></title>
   </head>
  <body>
@@ -34,8 +34,8 @@
 			<thead>
 				<tr>
 					<th></th>
-					<th>${message(code:'package.label', default:'Package')} A</th>
-					<th>${message(code:'package.label', default:'Package')} B</th>
+					<th>${message(code:'package.label')} A</th>
+					<th>${message(code:'package.label')} B</th>
 				</tr>
 			</thead>
 			<tbody>

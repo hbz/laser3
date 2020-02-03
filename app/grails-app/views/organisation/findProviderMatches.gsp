@@ -38,7 +38,7 @@
 						<table class="ui celled la-table table">
 							<thead>
 							<tr>
-								<th>${message(code:'org.name.label', default:'Name')}</th>
+								<th>${message(code:'default.name.label', default:'Name')}</th>
 								<th>${message(code:'indentifier.plural', default:'Identifiers')}</th>
 								<th>${message(code:'org.shortname.label', default:'Shortname')}</th>
 								<th>${message(code:'org.country.label', default:'Country')}</th>
@@ -49,9 +49,9 @@
 								<tr>
 									<td>${providerInstance.name} <g:link controller="organisation" action="show" id="${providerInstance.id}">(${message(code:'default.button.edit.label', default:'Edit')})</g:link></td>
 									<td><ul>
-											<li><g:message code="org.globalUID.label" default="Global UID" />: <g:fieldValue bean="${providerInstance}" field="globalUID"/></li>
+											<li><g:message code="org.globalUID.label" />: <g:fieldValue bean="${providerInstance}" field="globalUID"/></li>
 											<g:if test="${providerInstance.impId}">
-												<li><g:message code="org.impId.label" default="Import ID" />: <g:fieldValue bean="${providerInstance}" field="impId"/></li>
+												<li><g:message code="org.impId.label" />: <g:fieldValue bean="${providerInstance}" field="impId"/></li>
 											</g:if>
 											<g:each in="${providerInstance.ids?.sort{it?.ns?.ns}}" var="id"><li>${id.ns.ns}: ${id.value}</li></g:each>
 									</ul></td>

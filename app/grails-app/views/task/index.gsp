@@ -24,13 +24,13 @@
 			<thead>
 					<tr>
 					
-						<th><g:message code="task.license.label" default="License" /></th>
+						<th><g:message code="license.label" default="License" /></th>
 					
-						<th><g:message code="task.org.label" default="Org" /></th>
+						<th><g:message code="task.org.label" /></th>
 					
-						<th><g:message code="task.pkg.label" default="Pkg" /></th>
+						<th><g:message code="package.label"/></th>
 					
-						<th><g:message code="task.subscription.label" default="Subscription" /></th>
+						<th><g:message code="default.subscription.label" /></th>
 					
 						<g:sortableColumn property="title" title="${message(code: 'task.title.label', default: 'Title')}" />
 					

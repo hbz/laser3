@@ -102,7 +102,7 @@
                     <th>${message(code: 'surveyConfigDocs.docs.table.title', default: 'Title')}</th>
                     <th>${message(code: 'surveyConfigDocs.docs.table.fileName', default: 'File Name')}</th>
                     <th>${message(code: 'surveyConfigDocs.docs.table.type', default: 'Type')}</th>
-                    <th>${message(code: 'default.actions', default: 'Actions')}</th>
+                    <th>${message(code: 'default.actions.label')}</th>
                 </tr>
                 </thead>
                 <tbody>

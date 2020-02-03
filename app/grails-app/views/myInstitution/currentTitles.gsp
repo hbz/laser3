@@ -449,7 +449,7 @@
                                 <th>eISSN</th>
                                 <th>${message(code: 'subscription.details.startDate', default: 'Earliest Date')}</th>
                                 <th>${message(code: 'subscription.details.endDate', default: 'Latest Date')}</th>
-                                <th>${message(code: 'subscription.label', default: 'Subscription')}</th>
+                                <th>${message(code: 'default.subscription.label', default: 'Subscription')}</th>
                                 <th>${message(code: 'package.content_provider', default: 'Content Provider')}</th>
                                 <th>${message(code: 'tipp.host_platform', default: 'Host Platform')}</th>
                                 <th>${message(code: 'tipp.additionalPlatforms', default: 'Additional Platforms')}</th>

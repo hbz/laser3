@@ -35,7 +35,7 @@
                 <th>${pendingChanges.size()? "1-"+pendingChanges.size() : 0}</th>
               <th>${message(code:'default.info.label', default:'Info')}</th>
                 <th>${message(code: 'event.timestamp', default: 'Timestamp')}</th>
-              <th>${message(code:'default.actions.label', default:'Action')}</th>
+              <th>${message(code:'default.actions.label')}</th>
             </tr>
           </thead>
           <tbody>

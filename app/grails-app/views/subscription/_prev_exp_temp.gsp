@@ -5,7 +5,7 @@
 <html>
 <head>
     <meta name="layout" content="semanticUI"/>
-    <title>${message(code:'laser', default:'LAS:eR')} : ${message(code:'subscription.label', default:'Subscription')}</title>
+    <title>${message(code:'laser', default:'LAS:eR')} : ${message(code:'default.subscription.label', default:'Subscription')}</title>
 </head>
 <body>
 
@@ -13,7 +13,7 @@
     <ul class="breadcrumb">
         <li> <g:link controller="home" action="index">${message(code:'default.home.label', default:'Home')}</g:link> <span class="divider">/</span> </li>
         <li> <g:link controller="myInstitution" action="currentSubscriptions">${message(code:'myinst.currentSubscriptions.label', default:'Current Subscriptions')}</g:link> <span class="divider">/</span> </li>
-        <li> <g:link controller="subscription" action="index" id="${subscriptionInstance.id}">${message(code:'subscription.label', default:'Subscription')} ${subscriptionInstance.id} - ${message(code:'subscription.details.details.label', default:'Details')}</g:link> </li>
+        <li> <g:link controller="subscription" action="index" id="${subscriptionInstance.id}">${message(code:'default.subscription.label', default:'Subscription')} ${subscriptionInstance.id} - ${message(code:'subscription.details.details.label', default:'Details')}</g:link> </li>
     </ul>
 </div>
 

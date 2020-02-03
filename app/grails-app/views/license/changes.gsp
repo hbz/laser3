@@ -21,7 +21,7 @@
             <tr>
               <th>${message(code:'license.history.todo.description', default:'ToDo Description')}</th>
               <th>${message(code:'default.status.label', default:'Status')}</th>
-              <th>${message(code:'default.date.label', default:'Date')}</th>
+              <th>${message(code:'default.date.label')}</th>
             </tr>
           </thead>
         <g:if test="${todoHistoryLines}">

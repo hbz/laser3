@@ -39,7 +39,7 @@
                     <th>${message(code:'profile.membership.role')}</th>
                     <th>${message(code: "profile.membership.date2")}</th>
                     <th>${message(code:'user.status')}</th>
-                    <th class="la-action-info">${message(code:'default.actions')}</th>
+                    <th class="la-action-info">${message(code:'default.actions.label')}</th>
                 </tr>
                 </thead>
 

@@ -3,8 +3,8 @@
 <html>
   <head>
     <meta name="layout" content="semanticUI">
-    <g:set var="entityName" value="${message(code: 'package.label', default: 'Package')}" />
-    <title>${message(code:'laser', default:'LAS:eR')} : ${message(code:'package', default:'Package Details')}</title>
+    <g:set var="entityName" value="${message(code: 'package.label')}" />
+    <title>${message(code:'laser', default:'LAS:eR')} : ${message(code:'package.label')}</title>
     <r:require modules="bootstrap-typeahead"/>
   </head>
   <body>
