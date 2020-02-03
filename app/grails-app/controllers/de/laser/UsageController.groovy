@@ -9,9 +9,7 @@ import com.k_int.kbplus.auth.User
 import com.k_int.properties.PropertyDefinition
 import de.laser.controller.AbstractDebugController
 import de.laser.domain.StatsTripleCursor
-import grails.gorm.PagedResultList
 import grails.plugin.springsecurity.annotation.Secured
-import grails.rest.Link
 import grails.transaction.Transactional
 import org.hibernate.criterion.CriteriaSpecification
 
