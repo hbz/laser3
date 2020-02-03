@@ -111,7 +111,8 @@
                                                         params="[cmd:'delete', deleteIds: pd?.id]"
                                                         data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.property", args: [fieldValue(bean: pd, field: "name")])}"
                                                         data-confirm-term-how="delete"
-                                                        class="ui icon negative button js-open-confirm-modal">
+                                                        class="ui icon negative button js-open-confirm-modal"
+                                                        role="button">
                                                     <i class="trash alternate icon"></i>
                                                 </g:link>
                                             </g:if>
