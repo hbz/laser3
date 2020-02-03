@@ -22,7 +22,7 @@
             <tr>
                 <td colspan="3">
                     <g:if test="${ua.rootObj.class.name == 'com.k_int.kbplus.License'}">
-                        <span class="label label-info">${message(code: 'license')}</span>
+                        <span class="label label-info">${message(code: 'license.label')}</span>
                         <em><g:link action="show"
                                     controller="license"
                                     id="${ua.rootObj.id}">${ua.rootObj.reference}</g:link></em>

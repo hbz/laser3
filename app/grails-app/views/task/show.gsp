@@ -16,7 +16,7 @@
 
 				<dl>
 					<g:if test="${taskInstance?.license}">
-						<dt><g:message code="task.license.label" default="License" /></dt>
+						<dt><g:message code="license.label" /></dt>
 						<dd><g:link controller="license" action="show" id="${taskInstance?.license?.id}">${taskInstance?.license}</g:link></dd>
 					</g:if>
 					<g:if test="${taskInstance?.org}">

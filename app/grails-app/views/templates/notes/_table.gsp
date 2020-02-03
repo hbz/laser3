@@ -7,7 +7,7 @@
             <%--<g:if test="${editable}"><th>${message(code:'default.select.label', default:'Select')}</th></g:if> : REMOVED BULK --%>
             <th>${message(code:'title.label', default:'Title')}</th>
             <th>${message(code:'default.note.label', default:'Note')}</th>
-            <th>${message(code:'default.date.label', default:'Date')}</th>
+            <th>${message(code:'default.date.label')}</th>
             <th>${message(code:'default.creator.label', default:'Creator')}</th>
             <th>${message(code:'default.actions.label')}</th>
         </tr>

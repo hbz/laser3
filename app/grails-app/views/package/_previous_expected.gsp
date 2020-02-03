@@ -116,19 +116,19 @@
                 </td>
 
                 <td>
-                  ${message(code:'default.date.label', default:'Date')}: <semui:xEditable owner="${t}" type="date" field="startDate" /><br/>
+                  ${message(code:'default.date.label')}: <semui:xEditable owner="${t}" type="date" field="startDate" /><br/>
                   ${message(code:'tipp.volume', default:'Volume')}: <semui:xEditable owner="${t}" field="startVolume" /><br/>
                   ${message(code:'tipp.issue', default:'Issue')}: <semui:xEditable owner="${t}" field="startIssue" />
                 </td>
                 <td>
-                    ${message(code:'default.date.label', default:'Date')}: <semui:xEditable owner="${t}" type="date" field="endDate" /><br/>
+                    ${message(code:'default.date.label')}: <semui:xEditable owner="${t}" type="date" field="endDate" /><br/>
                     ${message(code:'tipp.volume', default:'Volume')}: <semui:xEditable owner="${t}" field="endVolume" /><br/>
                     ${message(code:'tipp.issue', default:'Issue')}: <semui:xEditable owner="${t}" field="endIssue" /></td>
                 <td>
-                    ${message(code:'default.date.label', default:'Date')}: <semui:xEditable owner="${t}" type="date" field="accessStartDate" />
+                    ${message(code:'default.date.label')}: <semui:xEditable owner="${t}" type="date" field="accessStartDate" />
                 </td>
                 <td>
-                    ${message(code:'default.date.label', default:'Date')}: <semui:xEditable owner="${t}" type="date" field="accessEndDate" />
+                    ${message(code:'default.date.label')}: <semui:xEditable owner="${t}" type="date" field="accessEndDate" />
                 </td>
                 <td>
                   <semui:xEditable owner="${t}" field="coverageDepth" />

@@ -24,7 +24,7 @@
 			<thead>
 					<tr>
 					
-						<th><g:message code="task.license.label" default="License" /></th>
+						<th><g:message code="license.label" default="License" /></th>
 					
 						<th><g:message code="task.org.label" /></th>
 					

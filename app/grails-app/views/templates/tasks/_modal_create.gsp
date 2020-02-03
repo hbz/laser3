@@ -46,7 +46,7 @@ double t8 = 0L
                     <div class="ui radio checkbox">
                         <input id="licenseradio" type="radio" value="license" name="linkto" tabindex="0" class="hidden">
                         <label for="licenseradio">
-                            <g:message code="task.license.label" />
+                            <g:message code="license.label" />
                         </label>
                     </div>
                     &nbsp &nbsp
@@ -77,7 +77,7 @@ double t8 = 0L
             <div id="licensediv"
                  class="field fieldcontain ${hasErrors(bean: taskInstance, field: 'license', 'error')} required">
                 <label for="license">
-                    <g:message code="task.linkto" default="Task link to "/><g:message code="task.license.label" />
+                    <g:message code="task.linkto" default="Task link to "/><g:message code="license.label" />
                 </label>
                 <g:select class="ui dropdown search many-to-one"
                           id="license"

@@ -43,7 +43,7 @@
                                     <g:link controller="subscription" action="changes" id="${change.id}"> ${change.toString()}</g:link>
                                 </g:if>
                                 <g:if test="${change instanceof License}">
-                                    <strong>${message(code:'license')}</strong>
+                                    <strong>${message(code:'license.label')}</strong>
                                     <br>
                                     <g:link controller="license" action="changes" id="${change.id}">${change.toString()}</g:link>
                                 </g:if>

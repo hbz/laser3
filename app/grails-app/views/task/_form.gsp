@@ -2,7 +2,7 @@
 
 <div class="field fieldcontain ${hasErrors(bean: taskInstance, field: 'license', 'error')} ">
 	<label for="license">
-		<g:message code="task.license.label" default="License" />
+		<g:message code="license.label" />
 	</label>
 	<g:select id="license" name="license.id" from="${validLicenses}" optionKey="id" value="${taskInstance?.license?.id}" class="many-to-one" noSelection="['null': '']"/>
 

@@ -26,7 +26,7 @@
                         </g:if>
                         <g:if test="${i.lic}">
                             <g:link controller="license" action="show" id="${i.lic.id}">
-                                ${message(code:'license.label', default:'License')}: ${i.lic.reference ?: i.lic.id}
+                                ${message(code:'license.label')}: ${i.lic.reference ?: i.lic.id}
                             </g:link>
                         </g:if>
                         <g:if test="${i.title}">
