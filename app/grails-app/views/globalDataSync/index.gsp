@@ -61,14 +61,14 @@
     <table class="ui sortable celled la-table table">
         <thead>
         <tr>
-            <g:sortableColumn property="identifier" title="${message(code: 'package.identifier.label')}"/>
+            <g:sortableColumn property="identifier" title="${message(code: 'default.identifier.label')}"/>
             <th>${message(code: 'package.name.slash.description')}</th>
             <g:sortableColumn property="source.name" title="${message(code: 'package.source.label')}"/>
             <g:sortableColumn property="kbplusCompliant" title="${message(code: 'package.kbplusCompliant.label')}"/>
             <g:sortableColumn property="globalRecordInfoStatus"
                               title="${message(code: 'default.status.label')}"/>
             <th>${message(code: 'globalDataSync.tippscount')}</th>
-            <th>${message(code: 'default.actions')}</th>
+            <th>${message(code: 'default.actions.label')}</th>
         </tr>
         </thead>
         <tbody>

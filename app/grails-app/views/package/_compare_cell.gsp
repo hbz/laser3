@@ -6,13 +6,13 @@
 	<tbody>
 		<tr>
 			<td style="white-space: nowrap;border:1px solid #dddddd;">
-			  ${message(code:'default.date.label', default:'Date')}: <g:formatDate formatName="default.date.format.notime" date="${obj.startDate}"/> <br/>
+			  ${message(code:'default.date.label')}: <g:formatDate formatName="default.date.format.notime" date="${obj.startDate}"/> <br/>
 			  ${message(code:'tipp.volume', default:'Volume')}: ${obj.startVolume} <br/>
 			  ${message(code:'tipp.issue', default:'Issue')}: ${obj.startIssue}
 			</td>	
 
 			<td style="white-space: nowrap;border:1px solid #dddddd;"> 
-			   ${message(code:'default.date.label', default:'Date')}: <g:formatDate formatName="default.date.format.notime" date="${obj.endDate}"/> <br/>
+			   ${message(code:'default.date.label')}: <g:formatDate formatName="default.date.format.notime" date="${obj.endDate}"/> <br/>
 			   ${message(code:'tipp.volume', default:'Volume')}: ${obj.endVolume} <br/>
 			   ${message(code:'tipp.issue', default:'Issue')}: ${obj.endIssue}
 			</td>

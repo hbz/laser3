@@ -38,7 +38,7 @@
 				<thead>
 				<tr>
 					<th>${message(code:'sidewide.number')}</th>
-					<g:sortableColumn property="name" title="${message(code: 'platform.name.label', default: 'Name')}" />
+					<g:sortableColumn property="name" title="${message(code: 'default.name.label', default: 'Name')}" />
 					<th>${message(code:'default.provider.label')}</th>
 					<th>${message(code:'org.url.label')}</th>
 				</tr>

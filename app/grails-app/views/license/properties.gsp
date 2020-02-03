@@ -4,8 +4,8 @@
 <html>
 <head>
     <meta name="layout" content="semanticUI">
-    <g:set var="entityName" value="${message(code: 'license.label', default: 'License')}" />
-    <title>${message(code:'laser', default:'LAS:eR')} : <g:message code="license" default="License"/></title>
+    <g:set var="entityName" value="${message(code: 'license.label')}" />
+    <title>${message(code:'laser', default:'LAS:eR')} : <g:message code="license" /></title>
     <%-- r:require module="annotations" / --%>
     <g:javascript src="properties.js"/>
 </head>

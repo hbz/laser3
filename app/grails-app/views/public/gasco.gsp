@@ -16,7 +16,7 @@
                 <g:form action="gasco" controller="public" method="get" class="ui small form">
 
                     <div class="field">
-                        <label for="search">${message(code: 'gasco.filter.search')}</label>
+                        <label for="search">${message(code: 'default.search.label')}</label>
 
                         <div class="ui input">
                             <input type="text" id="search" name="q"

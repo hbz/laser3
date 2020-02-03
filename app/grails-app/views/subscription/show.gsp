@@ -105,7 +105,7 @@
                                 <dd class="la-js-editmode-container"><semui:auditButton auditable="[subscriptionInstance, 'status']"/></dd>
                             </dl>
                             <dl>
-                                <dt class="control-label">${message(code: 'subscription.details.type')}</dt>
+                                <dt class="control-label">${message(code: 'default.type.label')}</dt>
                                 <dd>
                                     <%-- TODO: subscribers may not edit type, but admins and yoda --%>
                                     <%
@@ -361,7 +361,7 @@
 
                         <table class="ui three column table">
                             <tr>
-                                <th scope="row" class="control-label la-js-dont-hide-this-card">${message(code:'license')}</th>
+                                <th scope="row" class="control-label la-js-dont-hide-this-card">${message(code:'license.label')}</th>
                                 <td>
                                     <g:if test="${subscriptionInstance.owner == null}">
                                         <semui:xEditableRefData owner="${subscriptionInstance}" field="owner" dataController="subscription" dataAction="possibleLicensesForSubscription" />

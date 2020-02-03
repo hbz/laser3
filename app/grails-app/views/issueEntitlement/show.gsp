@@ -27,7 +27,7 @@
 
             <dl>
                 <g:if test="${issueEntitlementInstance?.subscription}">
-                    <dt><g:message code="subscription.label"/></dt>
+                    <dt><g:message code="default.subscription.label"/></dt>
 
                     <dd><g:link controller="subscription" action="index" id="${issueEntitlementInstance?.subscription?.id}">${issueEntitlementInstance?.subscription?.name}</g:link></dd>
 

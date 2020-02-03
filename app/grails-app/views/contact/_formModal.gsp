@@ -11,7 +11,7 @@
 
                 <div class="field eight wide required">
                     <label for="contentType">
-                        <g:message code="contact.contentType.label" default="ContentType" />
+                        <g:message code="contact.contentType.label" />
                     </label>
                     <laser:select class="ui dropdown" id="contentType" name="contentType.id"
                         from="${com.k_int.kbplus.Contact.getAllRefdataValues(RDConstants.CONTACT_CONTENT_TYPE)}"
@@ -35,7 +35,7 @@
 
         <div class="field fieldcontain required">
             <label for="content">
-                <g:message code="contact.content.label" default="Content" />
+                <g:message code="contact.content.label" />
             </label>
             <g:textField id="content" name="content" value="${contactInstance?.content}"/>
         </div>
@@ -43,7 +43,7 @@
         <g:if test="${!orgId}">
             <div class="field fieldcontain">
                 <label for="prs">
-                    <g:message code="contact.prs.label" default="Prs" />
+                    <g:message code="contact.prs.label" />
                 </label>
                 <g:if test="${prsId}">
                     ${com.k_int.kbplus.Person.findById(prsId)}

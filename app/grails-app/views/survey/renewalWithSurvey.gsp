@@ -128,7 +128,7 @@ ${surveyInfo?.name}
         <thead>
         <tr>
             <th class="center aligned">${message(code: 'sidewide.number')}</th>
-            <th>${message(code: 'org.name.label')}</th>
+            <th>${message(code: 'default.name.label')}</th>
 
             <th>
                 ${participationProperty?.getI10n('name')}
@@ -160,7 +160,7 @@ ${surveyInfo?.name}
                 </th>
             </g:each>
             <th>${message(code: 'renewalWithSurvey.costItem.label')}</th>
-            <th>${message(code: 'default.actions')}</th>
+            <th>${message(code: 'default.actions.label')}</th>
         </tr>
         </thead>
         <g:each in="${orgsContinuetoSubscription}" var="participantResult" status="i">
@@ -337,7 +337,7 @@ ${surveyInfo?.name}
         <thead>
         <tr>
             <th class="center aligned">${message(code: 'sidewide.number')}</th>
-            <th>${message(code: 'org.name.label')}</th>
+            <th>${message(code: 'default.name.label')}</th>
 
             <th>
                 ${participationProperty?.getI10n('name')}
@@ -369,7 +369,7 @@ ${surveyInfo?.name}
                 </th>
             </g:each>
             <th>${message(code: 'renewalWithSurvey.costItem.label')}</th>
-            <th>${message(code: 'default.actions')}</th>
+            <th>${message(code: 'default.actions.label')}</th>
         </tr>
         </thead>
         <g:each in="${newOrgsContinuetoSubscription}" var="participantResult" status="i">
@@ -552,7 +552,7 @@ ${surveyInfo?.name}
             <th>${message(code: 'default.startDate.label')}</th>
             <th>${message(code: 'default.endDate.label')}</th>
             <th>${message(code: 'default.status.label')}</th>
-            <th>${message(code: 'default.actions')}</th>
+            <th>${message(code: 'default.actions.label')}</th>
 
         </tr>
         </thead>
@@ -604,7 +604,7 @@ ${surveyInfo?.name}
             <th>${message(code: 'default.startDate.label')}</th>
             <th>${message(code: 'default.endDate.label')}</th>
             <th>${message(code: 'default.status.label')}</th>
-            <th>${message(code: 'default.actions')}</th>
+            <th>${message(code: 'default.actions.label')}</th>
 
         </tr>
         </thead>
@@ -652,7 +652,7 @@ ${surveyInfo?.name}
         <thead>
         <tr>
             <th class="center aligned">${message(code: 'sidewide.number')}</th>
-            <th>${message(code: 'org.name.label')}</th>
+            <th>${message(code: 'default.name.label')}</th>
 
             <th>
                 ${participationProperty?.getI10n('name')}
@@ -678,7 +678,7 @@ ${surveyInfo?.name}
                 </th>
             </g:each>
             <th>${message(code: 'renewalWithSurvey.costItem.label')}</th>
-            <th>${message(code: 'default.actions')}</th>
+            <th>${message(code: 'default.actions.label')}</th>
         </tr>
         </thead>
         <g:each in="${orgsWithTermination}" var="participantResult" status="i">
@@ -814,7 +814,7 @@ ${surveyInfo?.name}
         <thead>
         <tr>
             <th class="center aligned">${message(code: 'sidewide.number')}</th>
-            <th>${message(code: 'org.name.label')}</th>
+            <th>${message(code: 'default.name.label')}</th>
 
             <th>
                 ${participationProperty?.getI10n('name')}
@@ -840,7 +840,7 @@ ${surveyInfo?.name}
                 </th>
             </g:each>
             <th>${message(code: 'renewalWithSurvey.costItem.label')}</th>
-            <th>${message(code: 'default.actions')}</th>
+            <th>${message(code: 'default.actions.label')}</th>
         </tr>
         </thead>
         <g:each in="${orgsWithoutResult}" var="participantResult" status="i">

@@ -1,5 +1,5 @@
 <dl>
-    <dt><g:message code="license.responsibilites" default="Responsibilites" /></dt>
+    <dt><g:message code="license.responsibilites" /></dt>
     <dd>
 
         <g:each in="${visiblePrsLinks}" var="pr">

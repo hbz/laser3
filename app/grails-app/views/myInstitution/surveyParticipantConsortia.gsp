@@ -70,7 +70,7 @@ ${surveyInfo.name}
             <tr>
                 <th class="center aligned">${message(code: 'sidewide.number')}</th>
                 <th>${message(code: 'surveyProperty.label')}</th>
-                <th>${message(code: 'surveyProperty.type.label')}</th>
+                <th>${message(code: 'default.type.label')}</th>
                 <th>${message(code: 'surveyResult.result')}</th>
                 <th>${message(code: 'surveyResult.participantComment')}</th>
                 <th>${message(code: 'surveyResult.commentOnlyForOwner')}</th>

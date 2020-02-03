@@ -34,11 +34,11 @@
 						
 							<g:sortableColumn property="state" title="${message(code: 'address.state.label', default: 'State')}" />
 							
-							<th class="header"><g:message code="address.prs.label" default="Prs" /></th>
+							<th class="header"><g:message code="address.prs.label" /></th>
 						
-							<th class="header"><g:message code="address.org.label" default="Org" /></th>
+							<th class="header"><g:message code="address.org.label" /></th>
 							
-							<th class="header"><g:message code="person.isPublic.label" default="IsPublic" /></th>
+							<th class="header"><g:message code="person.isPublic.label" /></th>
 						
 							<th></th>
 						</tr>

@@ -93,7 +93,7 @@
                 </dl>
                 <g:if test="${params.mode == 'advanced'}">
                   <dl>
-                    <dt>${message(code: 'platform.type', default: 'Type')}</dt>
+                    <dt>${message(code: 'default.type.label', default: 'Type')}</dt>
                     <dd><semui:xEditableRefData owner="${platformInstance}" field="type" config="${RDConstants.Y_N_O}"/></dd>
                   </dl>
                   <dl>

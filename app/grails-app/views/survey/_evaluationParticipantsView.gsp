@@ -35,7 +35,7 @@
                 ${message(code: 'org.sortname.label')}
             </th>
             <th>
-                ${message(code: 'org.name.label')}
+                ${message(code: 'default.name.label')}
             </th>
             <th>
                 ${message(code: 'surveyInfo.finished')}
@@ -119,7 +119,7 @@
                 ${message(code: 'org.sortname.label')}
             </th>
             <th>
-                ${message(code: 'org.name.label')}
+                ${message(code: 'default.name.label')}
             </th>
             <th></th>
         </tr>
