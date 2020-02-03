@@ -44,7 +44,7 @@
 <g:render template="/readerNumber/formModal"/>
 
 
-<h5 class="ui header"><g:message code="menu.institutions.readerNumbers" default="Numbers"/></h5>
+<h5 class="ui header"><g:message code="menu.institutions.readerNumbers" /></h5>
 
 <table class="ui table celled sortable la-table">
     <thead>

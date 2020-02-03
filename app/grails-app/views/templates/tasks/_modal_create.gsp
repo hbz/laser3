@@ -20,14 +20,14 @@ double t8 = 0L
 
         <div class="field fieldcontain ${hasErrors(bean: taskInstance, field: 'title', 'error')} required">
             <label for="title">
-                <g:message code="task.title.label" default="Title"/>
+                <g:message code="task.title.label" />
             </label>
             <g:textField id="title" name="title" required="" value="${taskInstance?.title}"/>
         </div>
 
         <div class="field fieldcontain ${hasErrors(bean: taskInstance, field: 'description', 'error')}">
             <label for="description">
-                <g:message code="task.description.label" default="Description"/>
+                <g:message code="task.description.label" />
             </label>
             <g:textArea name="description" value="${taskInstance?.description}" rows="5" cols="40"/>
         </div>
@@ -36,7 +36,7 @@ double t8 = 0L
             <div class="field fieldcontain required">
                 <fieldset>
                     <legend>
-                        <g:message code="task.typ" default="Task Typ"/>
+                        <g:message code="task.typ" />
                     </legend>
                     <div class="ui radio checkbox">
                         <input id="generalradio" type="radio" value="general" name="linkto" tabindex="0" class="hidden" checked="">
@@ -46,28 +46,28 @@ double t8 = 0L
                     <div class="ui radio checkbox">
                         <input id="licenseradio" type="radio" value="license" name="linkto" tabindex="0" class="hidden">
                         <label for="licenseradio">
-                            <g:message code="task.license.label" default="License"/>
+                            <g:message code="task.license.label" />
                         </label>
                     </div>
                     &nbsp &nbsp
                     <div class="ui radio checkbox">
                         <input id="pkgradio" type="radio" value="pkg" name="linkto" tabindex="0" class="hidden">
                         <label for="pkgradio">
-                            <g:message code="task.pkg.label" default="Pkg"/>
+                            <g:message code="task.pkg.label" />
                         </label>
                     </div>
                     &nbsp &nbsp
                     <div class="ui radio checkbox">
                         <input id="subscriptionradio" type="radio" value="subscription" name="linkto" tabindex="0" class="hidden">
                         <label for="subscriptionradio">
-                            <g:message code="default.subscription.label" default="Subscription"/>
+                            <g:message code="default.subscription.label" />
                         </label>
                     </div>
                     &nbsp &nbsp
                     <div class="ui radio checkbox">
                         <input id="orgradio" type="radio" value="org" name="linkto" tabindex="0" class="hidden">
                         <label for="orgradio">
-                            <g:message code="task.org.label" default="Subscription"/>
+                            <g:message code="task.org.label" />
                         </label>
                     </div>
                 </fieldset>
@@ -77,7 +77,7 @@ double t8 = 0L
             <div id="licensediv"
                  class="field fieldcontain ${hasErrors(bean: taskInstance, field: 'license', 'error')} required">
                 <label for="license">
-                    <g:message code="task.linkto" default="Task link to "/><g:message code="task.license.label" default="License"/>
+                    <g:message code="task.linkto" default="Task link to "/><g:message code="task.license.label" />
                 </label>
                 <g:select class="ui dropdown search many-to-one"
                           id="license"
@@ -93,7 +93,7 @@ double t8 = 0L
 
             <div id="orgdiv" class="field fieldcontain ${hasErrors(bean: taskInstance, field: 'org', 'error')} required">
             <label for="org">
-                <g:message code="task.linkto" default="Task link to "/><g:message code="task.org.label" default="Org"/>
+                <g:message code="task.linkto" default="Task link to "/><g:message code="task.org.label" />
             </label>
                 <g:select id="org"
                           name="org"
@@ -118,7 +118,7 @@ double t8 = 0L
             <div id="subscriptiondiv"
                  class="field fieldcontain ${hasErrors(bean: taskInstance, field: 'subscription', 'error')} required">
                 <label for="subscription">
-                    <g:message code="task.linkto" default="Task link to "/><g:message code="default.subscription.label" default="Subscription"/>
+                    <g:message code="task.linkto" default="Task link to "/><g:message code="default.subscription.label" />
                 </label>
                 <g:select class="ui dropdown search many-to-one"
                           id="subscription"
@@ -141,7 +141,7 @@ double t8 = 0L
 
                 <div class="field wide eight fieldcontain ${hasErrors(bean: taskInstance, field: 'status', 'error')} required">
                     <label for="status">
-                        <g:message code="task.status.label" default="Status"/>
+                        <g:message code="task.status.label" />
                     </label>
                     <laser:select id="status" name="status.id"
                                   from="${com.k_int.kbplus.RefdataCategory.getAllRefdataValues(RDConstants.TASK_STATUS)}"
@@ -165,7 +165,7 @@ double t8 = 0L
                 <div class="field wide eight fieldcontain ${hasErrors(bean: taskInstance, field: 'responsible', 'error')}">
                     <fieldset>
                         <legend>
-                            <g:message code="task.responsible.label" default="Responsible"/>
+                            <g:message code="task.responsible.label" />
                         </legend>
 
                         <div class="field">
@@ -187,7 +187,7 @@ double t8 = 0L
                 <div id="responsibleUser"
                      class="field wide eight fieldcontain ${hasErrors(bean: taskInstance, field: 'responsibleUser', 'error')}">
                     <label for="responsibleUserInput">
-                        <g:message code="task.responsibleUser.label" default="Responsible User"/>
+                        <g:message code="task.responsibleUser.label" />
                     </label>
                     <g:select id="responsibleUserInput"
                               name="responsibleUser.id"

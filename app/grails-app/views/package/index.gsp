@@ -255,7 +255,7 @@
 
         </g:if>
         <g:else>
-            <p><g:message code="default.search.empty" default="No results found"/></p>
+            <p><g:message code="default.search.empty" /></p>
         </g:else>
     </div>
 </div>
