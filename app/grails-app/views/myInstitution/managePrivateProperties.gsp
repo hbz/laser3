@@ -107,7 +107,11 @@
                                         </td>
                                         <td class="x">
                                             <g:if test="${pd.countUsages()==0}">
-                                                <g:link action="managePrivateProperties" params="[cmd:'delete', deleteIds: pd?.id]" class="ui icon negative button">
+                                                <g:link action="managePrivateProperties"
+                                                        params="[cmd:'delete', deleteIds: pd?.id]"
+                                                        data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.document", args: [fieldValue(bean: pd, field: "name")])}"
+                                                        data-confirm-term-how="delete"
+                                                        class="ui icon negative button js-open-confirm-modal">
                                                     <i class="trash alternate icon"></i>
                                                 </g:link>
                                             </g:if>
