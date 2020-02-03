@@ -146,6 +146,7 @@ class UsageController extends AbstractDebugController {
         if (statsSyncService.getErrors()) {
             flash.error = statsSyncService.errors.join('</br>')
         }
+        statsSyncService.errors = []
         return result
     }
 
