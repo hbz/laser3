@@ -45,7 +45,7 @@
                     <i class="handshake outline icon"></i>
                 </span></th>
                 <th>${message(code:'org.hasAccessOrg')}</th>
-                <th class="la-action-info">${message(code:'default.actions')}</th>
+                <th class="la-action-info">${message(code:'default.actions.label')}</th>
             </tr>
         </thead>
         <tbody>

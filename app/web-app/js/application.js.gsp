@@ -11,7 +11,7 @@ var currLanguage = $('html').attr('lang');
         'statusbar.hideButtons.tooltip',
         'statusbar.showButtons.tooltip',
         'default.informations',
-        'default.actions',
+        'default.actions.label',
         'property.select.placeholder',
         'confirm.dialog.delete',
         'confirm.dialog.unlink',
@@ -744,7 +744,7 @@ deckSaver = {
             deckSaver.enableXeditable ('.xEditableDatepicker');
             deckSaver.enableXeditable ('.xEditableManyToOne');
 
-            $('.la-action-info').css('text-align', 'left').text(dict.get('default.actions',currLanguage))
+            $('.la-action-info').css('text-align', 'left').text(dict.get('default.actions.label',currLanguage))
         }
         else {
             // ***************************

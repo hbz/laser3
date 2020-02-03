@@ -33,7 +33,7 @@
                     <th class="header"><g:message code="ticket.created.label" /></th>
                     <th class="header"><g:message code="ticket.title.label" /></th>
                     <th class="header"><g:message code="ticket.author.label" /></th>
-                    <th class="la-action-info">${message(code:'default.actions')}</th>
+                    <th class="la-action-info">${message(code:'default.actions.label')}</th>
                 </tr>
             </thead>
             <tbody>

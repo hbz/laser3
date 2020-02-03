@@ -258,7 +258,7 @@
             </th>
         </tr>
         <tr>
-            <g:sortableColumn property="subK.owner.reference" params="${params}" title="${message(code:'myinst.consortiaSubscriptions.license')}" class="la-smaller-table-head" />
+            <g:sortableColumn property="subK.owner.reference" params="${params}" title="${message(code:'license.label')}" class="la-smaller-table-head" />
         </tr>
     </thead>
     <tbody>

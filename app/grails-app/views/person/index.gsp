@@ -24,13 +24,13 @@
 			<thead>
 					<tr>
 					
-						<g:sortableColumn property="first_name" title="${message(code: 'person.first_name.label', default: 'Firstname')}" />
+						<g:sortableColumn property="first_name" title="${message(code: 'person.first_name.label')}" />
 					
-						<g:sortableColumn property="middle_name" title="${message(code: 'person.middle_name.label', default: 'Middlename')}" />
+						<g:sortableColumn property="middle_name" title="${message(code: 'person.middle_name.label')}" />
 					
-						<g:sortableColumn property="last_name" title="${message(code: 'person.last_name.label', default: 'Lastname')}" />
+						<g:sortableColumn property="last_name" title="${message(code: 'person.last_name.label')}" />
 					
-						<th><g:message code="person.gender.label" default="Gender" /></th>
+						<th><g:message code="person.gender.label" /></th>
 					
 					</tr>
 				</thead>

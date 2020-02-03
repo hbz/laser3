@@ -160,7 +160,7 @@ ${surveyInfo?.name}
                 </th>
             </g:each>
             <th>${message(code: 'renewalWithSurvey.costItem.label')}</th>
-            <th>${message(code: 'default.actions')}</th>
+            <th>${message(code: 'default.actions.label')}</th>
         </tr>
         </thead>
         <g:each in="${orgsContinuetoSubscription}" var="participantResult" status="i">
@@ -369,7 +369,7 @@ ${surveyInfo?.name}
                 </th>
             </g:each>
             <th>${message(code: 'renewalWithSurvey.costItem.label')}</th>
-            <th>${message(code: 'default.actions')}</th>
+            <th>${message(code: 'default.actions.label')}</th>
         </tr>
         </thead>
         <g:each in="${newOrgsContinuetoSubscription}" var="participantResult" status="i">
@@ -552,7 +552,7 @@ ${surveyInfo?.name}
             <th>${message(code: 'default.startDate.label')}</th>
             <th>${message(code: 'default.endDate.label')}</th>
             <th>${message(code: 'default.status.label')}</th>
-            <th>${message(code: 'default.actions')}</th>
+            <th>${message(code: 'default.actions.label')}</th>
 
         </tr>
         </thead>
@@ -604,7 +604,7 @@ ${surveyInfo?.name}
             <th>${message(code: 'default.startDate.label')}</th>
             <th>${message(code: 'default.endDate.label')}</th>
             <th>${message(code: 'default.status.label')}</th>
-            <th>${message(code: 'default.actions')}</th>
+            <th>${message(code: 'default.actions.label')}</th>
 
         </tr>
         </thead>
@@ -678,7 +678,7 @@ ${surveyInfo?.name}
                 </th>
             </g:each>
             <th>${message(code: 'renewalWithSurvey.costItem.label')}</th>
-            <th>${message(code: 'default.actions')}</th>
+            <th>${message(code: 'default.actions.label')}</th>
         </tr>
         </thead>
         <g:each in="${orgsWithTermination}" var="participantResult" status="i">
@@ -840,7 +840,7 @@ ${surveyInfo?.name}
                 </th>
             </g:each>
             <th>${message(code: 'renewalWithSurvey.costItem.label')}</th>
-            <th>${message(code: 'default.actions')}</th>
+            <th>${message(code: 'default.actions.label')}</th>
         </tr>
         </thead>
         <g:each in="${orgsWithoutResult}" var="participantResult" status="i">

@@ -11,7 +11,7 @@
 
 <semui:breadcrumbs>
     <semui:crumb controller="package" action="show" id="${tipp.pkg.id}"
-                 text="${tipp.pkg.name} [${message(code: 'package.label', default: 'package')}]"/>
+                 text="${tipp.pkg.name} [${message(code: 'package.label')}]"/>
     <semui:crumb text="${tipp.title.title} [${message(code: 'title.label')}]" class="active"/>
 </semui:breadcrumbs>
 <br>

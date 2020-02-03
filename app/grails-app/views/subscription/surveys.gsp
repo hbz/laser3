@@ -49,7 +49,7 @@
             <th>${message(code: 'surveyInfo.type.label')}</th>
             <th>${message(code: 'default.status.label')}</th>
             <th>${message(code: 'surveyInfo.finishedDate')}</th>
-            <th class="la-action-info">${message(code: 'default.actions')}</th>
+            <th class="la-action-info">${message(code: 'default.actions.label')}</th>
 
         </tr>
 

@@ -104,7 +104,7 @@
                                 ${message(code: 'surveyTitlesEvaluation.currentAndFixedEntitlements')}
                             </th>
                             <th>
-                                ${message(code: 'default.actions')}
+                                ${message(code: 'default.actions.label')}
                             </th>
                             <th></th>
                         </tr>
@@ -184,7 +184,7 @@
                             <th>
                                 ${message(code: 'surveyTitlesEvaluation.currentAndFixedEntitlements')}
                             </th>
-                            <th> ${message(code: 'default.actions')}</th>
+                            <th> ${message(code: 'default.actions.label')}</th>
                         </tr>
                         </thead>
                         <tbody>
@@ -276,7 +276,7 @@
                             ${message(code: 'surveyTitlesEvaluation.currentAndFixedEntitlements')}
                         </th>
                         <th>
-                            ${message(code: 'default.actions')}
+                            ${message(code: 'default.actions.label')}
                         </th>
                         <th></th>
                     </tr>
@@ -355,7 +355,7 @@
                         <th>
                             ${message(code: 'surveyTitlesEvaluation.currentAndFixedEntitlements')}
                         </th>
-                        <th> ${message(code: 'default.actions')}</th>
+                        <th> ${message(code: 'default.actions.label')}</th>
                     </tr>
                     </thead>
                     <tbody>
@@ -447,7 +447,7 @@
                             ${message(code: 'surveyTitlesEvaluation.currentAndFixedEntitlements')}
                         </th>
                         <th>
-                            ${message(code: 'default.actions')}
+                            ${message(code: 'default.actions.label')}
                         </th>
                         <th></th>
                     </tr>
@@ -526,7 +526,7 @@
                         <th>
                             ${message(code: 'surveyTitlesEvaluation.currentAndFixedEntitlements')}
                         </th>
-                        <th> ${message(code: 'default.actions')}</th>
+                        <th> ${message(code: 'default.actions.label')}</th>
                     </tr>
                     </thead>
                     <tbody>

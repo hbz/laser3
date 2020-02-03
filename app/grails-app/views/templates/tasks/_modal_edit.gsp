@@ -36,7 +36,7 @@
         %{--<g:if test="${params.owntp == 'license' || enableMyInstFormFields}">
             <div class="field fieldcontain ${hasErrors(bean: taskInstance, field: 'license', 'error')} ">
                 <label for="license">
-                    <g:message code="task.license.label" default="License" />
+                    <g:message code="license.label" />
                 </label>
                 <g:select id="license" name="license.id" from="${validLicenses}" optionKey="id" value="${taskInstance?.license.id}" class="many-to-one" noSelection="['null': '']"/>
             </div>
@@ -45,7 +45,7 @@
         <g:if test="${params.owntp == 'organisation'}">
             <div class="field fieldcontain ${hasErrors(bean: taskInstance, field: 'org', 'error')} ">
                 <label for="org">
-                    <g:message code="task.org.label" default="Org" />
+                    <g:message code="task.org.label" />
                 </label>
                 <g:select id="org" name="org.id" from="${validOrgs}" optionKey="id" value="${taskInstance?.org.id}" class="many-to-one" noSelection="['null': '']"/>
             </div>
@@ -54,7 +54,7 @@
         <g:if test="${params.owntp == 'package' || enableMyInstFormFields}">
             <div class="field fieldcontain ${hasErrors(bean: taskInstance, field: 'pkg', 'error')} ">
                 <label for="pkg">
-                    <g:message code="task.pkg.label" default="Pkg" />
+                    <g:message code="package.label" />
                 </label>
                 <g:select id="pkg" name="pkg.id" from="${validPackages}" optionKey="id" value="${taskInstance?.pkg.id}" class="many-to-one" noSelection="['null': '']"/>
             </div>
@@ -63,7 +63,7 @@
         <g:if test="${params.owntp == 'subscription' || enableMyInstFormFields}">
             <div class="field fieldcontain ${hasErrors(bean: taskInstance, field: 'subscription', 'error')} ">
                 <label for="subscription">
-                    <g:message code="default.subscription.label" default="Subscription" />
+                    <g:message code="default.subscription.label" />
                 </label>
                 <g:select id="subscription" name="subscription.id" from="${validSubscriptions}" optionKey="id" value="${taskInstance?.subscription.id}" class="many-to-one" noSelection="['null': '']"/>
             </div>
@@ -74,7 +74,7 @@
 
                 <div class="field wide eight fieldcontain ${hasErrors(bean: taskInstance, field: 'status', 'error')} required">
                     <label for="status">
-                        <g:message code="task.status.label" default="Status" />
+                        <g:message code="task.status.label" />
                     </label>
                     <laser:select id="status" name="status.id" from="${com.k_int.kbplus.RefdataCategory.getAllRefdataValues(RDConstants.TASK_STATUS)}"
                                   optionValue="value" optionKey="id" required=""
@@ -92,7 +92,7 @@
                 <div class="field wide eight fieldcontain ${hasErrors(bean: taskInstance, field: 'responsible', 'error')}">
                     <fieldset>
                         <legend>
-                            <g:message code="task.responsible.label" default="Responsible" />
+                            <g:message code="task.responsible.label" />
                         </legend>
                         <g:if test="${taskInstance?.responsibleOrg?.id}"><g:set var="checked" value="checked" /></g:if><g:else> <g:set var="checked" value="" /></g:else>
 
@@ -114,7 +114,7 @@
                 <div id="responsibleUserEdit"
                      class="field wide eight fieldcontain ${hasErrors(bean: taskInstance, field: 'responsibleUser', 'error')}">
                     <label for="responsibleUser">
-                        <g:message code="task.responsibleUser.label" default="Responsible User" />
+                        <g:message code="task.responsibleUser.label" />
                     </label>
                     <g:select id="responsibleUser"
                               name="responsibleUser.id"

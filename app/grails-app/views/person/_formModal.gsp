@@ -51,7 +51,7 @@
                 <div id="person_first_name"
                      class="field wide eight ${hasErrors(bean: personInstance, field: 'first_name', 'error')}">
                     <label for="first_name">
-                        <g:message code="person.first_name.label" default="Firstname"/>
+                        <g:message code="person.first_name.label" />
                     </label>
                     <g:textField name="first_name" required="" value="${personInstance?.first_name}"/>
                 </div>
@@ -59,7 +59,7 @@
                 <div id="person_middle_name"
                      class="field wide four ${hasErrors(bean: personInstance, field: 'middle_name', 'error')} ">
                     <label for="middle_name">
-                        <g:message code="person.middle_name.label" default="Middlename"/>
+                        <g:message code="person.middle_name.label" />
                     </label>
                     <g:textField name="middle_name" value="${personInstance?.middle_name}"/>
                 </div>
@@ -67,7 +67,7 @@
                 <div id="person_gender"
                      class="field wide four ${hasErrors(bean: personInstance, field: 'gender', 'error')} ">
                     <label for="gender">
-                        <g:message code="person.gender.label" default="Gender"/>
+                        <g:message code="person.gender.label" />
                     </label>
                     <laser:select class="ui dropdown" id="gender" name="gender"
                                   from="${com.k_int.kbplus.Person.getAllRefdataValues(RDConstants.GENDER).sort { a, b -> a.value.compareTo(b.value) }}"
@@ -99,7 +99,7 @@
 
                     <div class="field wide four fieldcontain ${hasErrors(bean: personInstance, field: 'isPublic', 'error')} required">
                         <label for="isPublic">
-                            <g:message code="person.isPublic.label" default="IsPublic"/>
+                            <g:message code="person.isPublic.label" />
                         </label>
 
                         ${isPublic ? RDStore.YN_YES.getI10n('value') : RDStore.YN_NO.getI10n('value')}
@@ -158,7 +158,7 @@
 
                     <div class="field ten wide fieldcontain">
                         <label for="contact1_content" for="contact2_content" for="contact3_content">
-                            <g:message code="contact.content.label" default="Content" />
+                            <g:message code="contact.content.label" />
                         </label>
 
                         <g:textField name="contact1_content" value=""/>
@@ -182,7 +182,7 @@
                             <div class="two fields">
                                 <div class="field">
                                     <label for="functionType">
-                                        <g:message code="person.function.label" default="Function"/>
+                                        <g:message code="person.function.label" />
                                     </label>
                                     <laser:select class="ui dropdown values"
                                                   name="functionType"
@@ -223,7 +223,7 @@
                         <div class="two fields">
                             <div class="field">
                                 <label for="positionOrg">
-                                    <g:message code="person.position.label" default="Position"/>
+                                    <g:message code="person.position.label" />
                                 </label>
                                 <laser:select class="ui dropdown values"
                                               name="positionType"

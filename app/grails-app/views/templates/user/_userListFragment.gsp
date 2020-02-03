@@ -20,7 +20,7 @@
             </g:elseif>
         </th>
         <th>${message(code:'user.enabled.label')}</th>
-        <th class="la-action-info">${message(code:'default.actions')}</th>
+        <th class="la-action-info">${message(code:'default.actions.label')}</th>
     </tr>
     </thead>
     <tbody>
