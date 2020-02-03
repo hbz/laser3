@@ -1,4 +1,4 @@
-<%@ page import="com.k_int.kbplus.CostItem; com.k_int.kbplus.Person; de.laser.helper.RDStore; de.laser.interfaces.TemplateSupport" %>
+<%@ page import="com.k_int.kbplus.CostItem; com.k_int.kbplus.Person; de.laser.helper.RDStore; de.laser.interfaces.TemplateSupport; com.k_int.kbplus.Subscription" %>
 <laser:serviceInjection />
 
 <!doctype html>
@@ -104,8 +104,10 @@
                 <th>${message(code:'sidewide.number')}</th>
                 <th>${message(code:'default.sortname.label')}</th>
                 <th>${message(code:'subscriptionDetails.members.members')}</th>
+                <th>${message(code:'default.previous.label')}</th>
                 <th>${message(code:'default.startDate.label')}</th>
                 <th>${message(code:'default.endDate.label')}</th>
+                <th>${message(code:'default.next.label')}</th>
                 <g:if test="${accessService.checkPerm('ORG_CONSORTIUM')}">
                     <th>${message(code: 'subscription.linktoLicense')}</th>
                 </g:if>
@@ -169,9 +171,29 @@
                         <td></td>
                         <td></td>
                     </g:if>
-
+                    <%
+                        LinkedHashMap<String, List> links = navigationGenerationService.generateNavigation(Subscription.class.name, sub.id)
+                        Subscription navPrevSubscription = (links?.prevLink && links?.prevLink?.size() > 0) ? links?.prevLink[0] : null
+                        Subscription navNextSubscription = (links?.nextLink && links?.nextLink?.size() > 0) ? links?.nextLink[0] : null
+                    %>
+                    <td class="center aligned">
+                        <g:if test="${navPrevSubscription}">
+                            <g:link controller="subscription" action="show" id="${navPrevSubscription.id}"><i class="arrow left icon"></i></g:link>
+                        </g:if>
+                        <g:else>
+                            <i class="arrow left icon disabled"></i>
+                        </g:else>
+                    </td>
                     <td><g:formatDate formatName="default.date.format.notime" date="${sub.startDate}"/></td>
                     <td><g:formatDate formatName="default.date.format.notime" date="${sub.endDate}"/></td>
+                    <td class="center aligned">
+                        <g:if test="${navNextSubscription}">
+                            <g:link controller="subscription" action="show" id="${navNextSubscription.id}"><i class="arrow right icon"></i></g:link>
+                        </g:if>
+                        <g:else>
+                            <i class="arrow right icon disabled"></i>
+                        </g:else>
+                    </td>
                     <g:if test="${accessService.checkPerm("ORG_CONSORTIUM")}">
                         <td class="center aligned">
                             <g:if test="${sub?.owner?.id}">
