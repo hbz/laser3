@@ -60,7 +60,7 @@ double t8 = 0L
                     <div class="ui radio checkbox">
                         <input id="subscriptionradio" type="radio" value="subscription" name="linkto" tabindex="0" class="hidden">
                         <label for="subscriptionradio">
-                            <g:message code="task.subscription.label" default="Subscription"/>
+                            <g:message code="default.subscription.label" default="Subscription"/>
                         </label>
                     </div>
                     &nbsp &nbsp
@@ -118,7 +118,7 @@ double t8 = 0L
             <div id="subscriptiondiv"
                  class="field fieldcontain ${hasErrors(bean: taskInstance, field: 'subscription', 'error')} required">
                 <label for="subscription">
-                    <g:message code="task.linkto" default="Task link to "/><g:message code="task.subscription.label" default="Subscription"/>
+                    <g:message code="task.linkto" default="Task link to "/><g:message code="default.subscription.label" default="Subscription"/>
                 </label>
                 <g:select class="ui dropdown search many-to-one"
                           id="subscription"

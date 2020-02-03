@@ -110,7 +110,7 @@ ${message(code: 'issueEntitlementsSurvey.label')} - ${surveyInfo.name}
                             <dd><semui:auditInfo auditable="[subscriptionInstance, 'status']"/></dd>
                         </dl>
                         <dl>
-                            <dt class="control-label">${message(code: 'subscription.details.type')}</dt>
+                            <dt class="control-label">${message(code: 'default.type.label')}</dt>
                             <dd>${subscriptionInstance?.type?.getI10n('value')}</dd>
                             <dd><semui:auditInfo auditable="[subscriptionInstance, 'type']"/></dd>
                         </dl>

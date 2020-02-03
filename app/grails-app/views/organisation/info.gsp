@@ -17,7 +17,7 @@
 
         <dl>
           <g:if test="${orgInstance?.name}">
-            <dt><g:message code="org.name.label" default="Name" /></dt>
+            <dt><g:message code="default.name.label" default="Name" /></dt>
             
               <dd><g:fieldValue bean="${orgInstance}" field="name"/></dd>
           </g:if>
@@ -120,7 +120,7 @@
                       </g:if>
                       <g:if test="${i.sub}">
                         <g:link controller="subscription" action="index" id="${i.sub.id}">
-                          ${message(code:'subscription.label', default:'Subscription')}: ${i.sub.name} (${i.sub.status?.getI10n('value')})
+                          ${message(code:'default.subscription.label', default:'Subscription')}: ${i.sub.name} (${i.sub.status?.getI10n('value')})
                         </g:link>
                       </g:if>
                       <g:if test="${i.lic}">

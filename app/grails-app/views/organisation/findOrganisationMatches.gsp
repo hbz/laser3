@@ -56,7 +56,7 @@
 						<table class="ui celled la-table table">
 							<thead>
 								<tr>
-									<th>${message(code:'org.name.label', default:'Name')}</th>
+									<th>${message(code:'default.name.label', default:'Name')}</th>
 									<g:if test="${comboType == RDStore.COMBO_TYPE_CONSORTIUM}">
 										<th>${message(code:'identifier.plural', default:'Identifiers')}</th>
 										<th>${message(code:'org.shortname.label', default:'Shortname')}</th>

@@ -35,7 +35,7 @@
                         <div class="ui card">
                             <div class="content">
                                 <dl>
-                                    <dt><g:message code="org.name.label" default="Name" /></dt>
+                                    <dt><g:message code="default.name.label" default="Name" /></dt>
                                     <dd><semui:xEditable owner="${accessPoint}" field="name"/></dd>
                                 </dl>
                                 <dl>

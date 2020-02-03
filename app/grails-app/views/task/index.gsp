@@ -30,7 +30,7 @@
 					
 						<th><g:message code="task.pkg.label" default="Pkg" /></th>
 					
-						<th><g:message code="task.subscription.label" default="Subscription" /></th>
+						<th><g:message code="default.subscription.label" default="Subscription" /></th>
 					
 						<g:sortableColumn property="title" title="${message(code: 'task.title.label', default: 'Title')}" />
 					

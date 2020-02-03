@@ -29,7 +29,7 @@
 
                 <div class="field wide twelve ${hasErrors(bean: personInstance, field: 'last_name', 'error')} required">
                     <label for="last_name">
-                        <g:message code="person.last_name.label" default="Lastname"/>
+                        <g:message code="person.last_name.label" />
                     </label>
                     <g:textField name="last_name" required="" value="${personInstance?.last_name}"/>
                 </div>
@@ -37,7 +37,7 @@
                 <div id="person_title"
                      class="field wide four ${hasErrors(bean: personInstance, field: 'title', 'error')}">
                     <label for="title">
-                        <g:message code="person.title.label" default="Title"/>
+                        <g:message code="person.title.label" />
                     </label>
                     <g:textField name="title" required="" value="${personInstance?.title}"/>
                 </div>

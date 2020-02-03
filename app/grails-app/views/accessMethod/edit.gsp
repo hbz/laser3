@@ -23,7 +23,7 @@
                         <div class="ui card">
                             <div class="content">
                                 <dl>
-                                    <dt><g:message code="accessMethod.type" default="Type" /></dt>
+                                    <dt><g:message code="default.type.label" default="Type" /></dt>
                                     <dd>${accessMethod.accessMethod.getI10n('value')}</dd>
                                 </dl>
                                 <dl>

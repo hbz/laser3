@@ -285,7 +285,7 @@ ${personInstance}
                                                     </span>
                                                 </g:if>
                                                 <g:if test="${link.sub}">
-                                                    <span class="la-popup-tooltip la-delay" data-content="${message(code:'subscription.label')}" data-position="top right" data-variation="tiny">
+                                                    <span class="la-popup-tooltip la-delay" data-content="${message(code:'default.subscription.label')}" data-position="top right" data-variation="tiny">
                                                         <i class="ui icon clipboard outline la-list-icon"></i>
                                                     </span>
                                                 </g:if>

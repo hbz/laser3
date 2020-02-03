@@ -95,7 +95,7 @@
                                 ${message(code: 'org.sortname.label')}
                             </th>
                             <th>
-                                ${message(code: 'org.name.label')}
+                                ${message(code: 'default.name.label')}
                             </th>
                             <th>
                                 ${message(code: 'surveyInfo.finishedDate')}
@@ -176,7 +176,7 @@
                                 ${message(code: 'org.sortname.label')}
                             </th>
                             <th>
-                                ${message(code: 'org.name.label')}
+                                ${message(code: 'default.name.label')}
                             </th>
                             <th>
                                 ${message(code: 'surveyInfo.finishedDate')}
@@ -267,7 +267,7 @@
                             ${message(code: 'org.sortname.label')}
                         </th>
                         <th>
-                            ${message(code: 'org.name.label')}
+                            ${message(code: 'default.name.label')}
                         </th>
                         <th>
                             ${message(code: 'surveyInfo.finishedDate')}
@@ -347,7 +347,7 @@
                             ${message(code: 'org.sortname.label')}
                         </th>
                         <th>
-                            ${message(code: 'org.name.label')}
+                            ${message(code: 'default.name.label')}
                         </th>
                         <th>
                             ${message(code: 'surveyInfo.finishedDate')}
@@ -438,7 +438,7 @@
                             ${message(code: 'org.sortname.label')}
                         </th>
                         <th>
-                            ${message(code: 'org.name.label')}
+                            ${message(code: 'default.name.label')}
                         </th>
                         <th>
                             ${message(code: 'surveyInfo.finishedDate')}
@@ -518,7 +518,7 @@
                             ${message(code: 'org.sortname.label')}
                         </th>
                         <th>
-                            ${message(code: 'org.name.label')}
+                            ${message(code: 'default.name.label')}
                         </th>
                         <th>
                             ${message(code: 'surveyInfo.finishedDate')}

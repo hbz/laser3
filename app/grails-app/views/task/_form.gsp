@@ -24,7 +24,7 @@
 
 <div class="field fieldcontain ${hasErrors(bean: taskInstance, field: 'subscription', 'error')} ">
 	<label for="subscription">
-		<g:message code="task.subscription.label" default="Subscription" />
+		<g:message code="default.subscription.label" default="Subscription" />
 	</label>
 	<g:select id="subscription" name="subscription.id" from="${validSubscriptions}" optionKey="id" value="${taskInstance?.subscription?.id}" class="many-to-one" noSelection="['null': '']"/>
 </div>

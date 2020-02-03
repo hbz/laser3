@@ -34,7 +34,7 @@
         <table class="ui sortable celled la-table table">
           <thead>
             <tr>
-              <g:sortableColumn property="name" title="${message(code: 'package.name.label', default: 'Name')}" />
+              <g:sortableColumn property="name" title="${message(code: 'default.name.label', default: 'Name')}" />
               <th></th>
             </tr>
           </thead>

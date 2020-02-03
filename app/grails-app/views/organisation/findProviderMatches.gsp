@@ -38,7 +38,7 @@
 						<table class="ui celled la-table table">
 							<thead>
 							<tr>
-								<th>${message(code:'org.name.label', default:'Name')}</th>
+								<th>${message(code:'default.name.label', default:'Name')}</th>
 								<th>${message(code:'indentifier.plural', default:'Identifiers')}</th>
 								<th>${message(code:'org.shortname.label', default:'Shortname')}</th>
 								<th>${message(code:'org.country.label', default:'Country')}</th>

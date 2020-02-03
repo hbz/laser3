@@ -150,7 +150,7 @@
                         <div class="ui label circular ${(config?.type == 'Subscription') ? 'black' : 'blue'}">${com.k_int.kbplus.SurveyConfig.getLocalizedValue(config?.type)}</div>
 
                         <g:if test="${config?.type != 'Subscription'}">
-                            ${message(code: 'surveyProperty.type.label')}: ${config?.surveyProperty?.getLocalizedType()}</br>
+                            ${message(code: 'default.type.label')}: ${config?.surveyProperty?.getLocalizedType()}</br>
 
                         </g:if>
 
@@ -258,7 +258,7 @@
                                                     <thead>
                                                     <tr>
                                                         <th>${message(code: 'surveyProperty.name')}</th>
-                                                        <th>${message(code: 'surveyProperty.type.label')}</th>
+                                                        <th>${message(code: 'default.type.label')}</th>
                                                     </tr>
 
                                                     </thead>
@@ -282,7 +282,7 @@
                                                             <td>
                                                                 ${message(code: 'surveyConfigs.surveyPropToSub')}
                                                                 <br>
-                                                                <b>${message(code: 'surveyProperty.type.label')}: ${prop?.surveyProperty?.getLocalizedType()}</b>
+                                                                <b>${message(code: 'default.type.label')}: ${prop?.surveyProperty?.getLocalizedType()}</b>
 
                                                             </td>
                                                         </tr>
