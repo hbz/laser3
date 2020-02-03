@@ -58,7 +58,7 @@
                           params="${params}"/>
         <g:sortableColumn property="semester" title="${message(code: 'readerNumber.semester.label')}"
                           params="${params}"/>
-        <th>${message(code: 'default.actions')}</th>
+        <th>${message(code: 'default.actions.label')}</th>
     </tr>
     </thead>
     <tbody>

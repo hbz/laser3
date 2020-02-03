@@ -20,17 +20,17 @@
 						<dd><g:link controller="license" action="show" id="${taskInstance?.license?.id}">${taskInstance?.license}</g:link></dd>
 					</g:if>
 					<g:if test="${taskInstance?.org}">
-						<dt><g:message code="task.org.label"  /></dt>
+						<dt><g:message code="task.org.label" /></dt>
 						<dd><g:link controller="organisation" action="show" id="${taskInstance?.org?.id}">${taskInstance?.org}</g:link></dd>
 					</g:if>
 				
 					<g:if test="${taskInstance?.pkg}">
-						<dt><g:message code="task.pkg.label" default="Pkg" /></dt>
+						<dt><g:message code="package.label" /></dt>
 						<dd><g:link controller="package" action="show" id="${taskInstance?.pkg?.id}">${taskInstance?.pkg}</g:link></dd>
 					</g:if>
 				
 					<g:if test="${taskInstance?.subscription}">
-						<dt><g:message code="default.subscription.label"  /></dt>
+						<dt><g:message code="default.subscription.label" /></dt>
 						<dd><g:link controller="subscription" action="show" id="${taskInstance?.subscription?.id}">${taskInstance?.subscription}</g:link></dd>
 					</g:if>
 				
@@ -45,7 +45,7 @@
 					</g:if>
 				
 					<g:if test="${taskInstance?.status}">
-						<dt><g:message code="task.status.label"  /></dt>
+						<dt><g:message code="task.status.label" /></dt>
 						<dd><g:link controller="refdataValue" action="show" id="${taskInstance?.status?.id}">${taskInstance?.status}</g:link></dd>
 					</g:if>
 				

@@ -222,8 +222,8 @@
                       <th><g:message code="tipp.endIssue"/></th>
                       <th><g:message code="tipp.coverageDepth"/></th>
                       <th><g:message code="tipp.platform"/></th>
-                      <th><g:message code="tipp.package"/></th>
-                      <th class="la-action-info"><g:message code="default.actions"/></th>
+                      <th><g:message code="package.label"/></th>
+                      <th class="la-action-info"><g:message code="default.actions.label"/></th>
                   </tr>
                   </thead>
                   <tbody>
@@ -251,13 +251,13 @@
                     <tr>
                   --}%%{--<th rowspan="2"></th> BULK_REMOVE --}%%{--
                       <th><g:message code="tipp.platform"/></th>
-                      <th><g:message code="tipp.package"/></th>
+                      <th><g:message code="package.label"/></th>
                       <th><g:message code="tipp.start"/></th>
                       <th><g:message code="tipp.end"/></th>
                       <th><g:message code="tipp.start"/></th>
                       <th><g:message code="tipp.end"/></th>
                       <th><g:message code="tipp.coverageDepth"/></th>
-                      <th class="la-action-info"><g:message code="default.actions"/></th>
+                      <th class="la-action-info"><g:message code="default.actions.label"/></th>
                     </tr>
                     <tr>
                       <th colspan="6"><g:message code="tipp.coverageNote"/></th>

@@ -66,7 +66,7 @@
                         </g:link>
                     </div>
                     <div class="description">
-                        <i class="gift icon"></i>${message(code: 'package')}
+                        <i class="gift icon"></i>${message(code: 'package.label')}
                         <i class="book icon"></i>${message(code: 'title')}
                     </div>
                 </div>

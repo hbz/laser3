@@ -115,7 +115,7 @@
                     <li>
                       <g:if test="${i.pkg}">
                         <g:link controller="package" action="show" id="${i.pkg.id}">
-                          ${message(code:'package.label', default:'Package')}: ${i.pkg.name} (${i.pkg?.packageStatus?.getI10n('value')})
+                          ${message(code:'package.label')}: ${i.pkg.name} (${i.pkg?.packageStatus?.getI10n('value')})
                         </g:link>
                       </g:if>
                       <g:if test="${i.sub}">

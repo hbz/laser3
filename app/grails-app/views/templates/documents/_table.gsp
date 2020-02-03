@@ -36,7 +36,7 @@
                     <th>${message(code:'org.docs.table.targetFor')}</th>
                     <th>${message(code:'org.docs.table.shareConf')}</th>
                 </g:elseif>--%>
-                <th>${message(code:'default.actions', default:'Actions')}</th>
+                <th>${message(code:'default.actions.label')}</th>
             </tr>
         </thead>
         <tbody>

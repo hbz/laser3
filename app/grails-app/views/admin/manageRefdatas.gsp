@@ -48,7 +48,7 @@
                             <th>Wert (Schlüssel)</th>
                             <th>DE</th>
                             <th>EN</th>
-                            <th class="la-action-info">${message(code:'default.actions')}</th>
+                            <th class="la-action-info">${message(code:'default.actions.label')}</th>
                         </tr>
                         </thead>
                         <tbody>

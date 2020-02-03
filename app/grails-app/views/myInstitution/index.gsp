@@ -34,7 +34,7 @@
                                     id="${ua.rootObj.id}">${ua.rootObj.name}</g:link></em>
                     </g:elseif>
                     <g:elseif test="${ua.rootObj.class.name == 'com.k_int.kbplus.Package'}">
-                        <span class="label label-info">${message(code: 'package')}</span>
+                        <span class="label label-info">${message(code: 'package.label')}</span>
                         <em><g:link action="show"
                                     controller="package"
                                     id="${ua.rootObj.id}">${ua.rootObj.name}</g:link></em>

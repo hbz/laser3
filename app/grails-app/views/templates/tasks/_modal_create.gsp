@@ -53,7 +53,7 @@ double t8 = 0L
                     <div class="ui radio checkbox">
                         <input id="pkgradio" type="radio" value="pkg" name="linkto" tabindex="0" class="hidden">
                         <label for="pkgradio">
-                            <g:message code="task.pkg.label" />
+                            <g:message code="package.label" />
                         </label>
                     </div>
                     &nbsp &nbsp
@@ -108,7 +108,7 @@ double t8 = 0L
 
             <div id="pkgdiv" class="field fieldcontain ${hasErrors(bean: taskInstance, field: 'pkg', 'error')} required">
                 <label for="pkg">
-                    <g:message code="task.linkto" default="Task link to "/><g:message code="task.pkg.label" default="Pkg"/>
+                    <g:message code="task.linkto" default="Task link to "/><g:message code="package.label" />
                 </label>
                 <g:select id="pkg" name="pkg" from="${validPackages}" optionKey="id" value="${ownobj?.id}"
                           class="ui dropdown search many-to-one" noSelection="[null: '']"/>

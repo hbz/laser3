@@ -118,7 +118,7 @@
     <thead>
     <tr>
         <g:sortableColumn property="ipData" title="${message(code: 'accessPoint.ip.data', default: 'IP or IP Range')} "  />
-        <th>${message(code: 'accessPoint.actions', default: 'Actions')}</th>
+        <th>${message(code: 'default.actions.label')}</th>
     </tr>
     </thead>
     <tbody>
@@ -163,7 +163,7 @@
                         <thead>
                         <tr>
                             <g:sortableColumn property="platform" title="${message(code: "platform.label", default: "Platform")}" />
-                            <th>${message(code: 'accessPoint.actions', default: 'Actions')}</th>
+                            <th>${message(code: 'default.actions.label')}</th>
                         </tr>
                         </thead>
                         <tbody>

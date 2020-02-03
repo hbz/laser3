@@ -4,7 +4,7 @@
 
 <div class="fieldcontain ${hasErrors(bean: numbersInstance, field: 'type', 'error')} required">
 	<label for="type">
-		<g:message code="readerNumber.referenceGroup.label"  />
+		<g:message code="readerNumber.referenceGroup.label" />
 		<span class="required-indicator">*</span>
 	</label>
 	<g:select id="type" name="type.id" from="${com.k_int.kbplus.RefdataValue.list()}" optionKey="id" required="" value="${numbersInstance?.type?.id}" class="many-to-one"/>

@@ -59,7 +59,7 @@
                         </g:link>
                     </div>
                     <div class="description">
-                        <i class="gift icon"></i>${message(code: 'package')}
+                        <i class="gift icon"></i>${message(code: 'package.label')}
                         <i class="book icon"></i>${message(code: 'title')}
                     </div>
                 </div>
@@ -125,7 +125,7 @@
                 <div class="content" >
                     <div class="title">${message(code: 'subscription.details.copyElementsIntoSubscription.inventory.label')}</div>
                     <div class="description">
-                        <i class="gift icon"></i>${message(code: 'package')}
+                        <i class="gift icon"></i>${message(code: 'package.label')}
                         <i class="book icon"></i>${message(code: 'title')}
                     </div>
                 </div>
