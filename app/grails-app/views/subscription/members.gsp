@@ -104,10 +104,10 @@
                 <th>${message(code:'sidewide.number')}</th>
                 <th>${message(code:'default.sortname.label')}</th>
                 <th>${message(code:'subscriptionDetails.members.members')}</th>
-                <th>Voränger</th>
+                <th>${message(code:'default.previous.label')}</th>
                 <th>${message(code:'default.startDate.label')}</th>
                 <th>${message(code:'default.endDate.label')}</th>
-                <th>Nachfolger</th>
+                <th>${message(code:'default.next.label')}</th>
                 <g:if test="${accessService.checkPerm('ORG_CONSORTIUM')}">
                     <th>${message(code: 'subscription.linktoLicense')}</th>
                 </g:if>
