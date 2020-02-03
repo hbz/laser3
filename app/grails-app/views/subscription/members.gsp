@@ -173,12 +173,12 @@
                     </g:if>
                     <%
                         LinkedHashMap<String, List> links = navigationGenerationService.generateNavigation(Subscription.class.name, sub.id)
-                        def navPrevSubscription = (links?.prevLink && links?.prevLink?.size() > 0) ? links?.prevLink[0] : null
-                        def navNextSubscription = (links?.nextLink && links?.nextLink?.size() > 0) ? links?.nextLink[0] : null
+                        Subscription navPrevSubscription = (links?.prevLink && links?.prevLink?.size() > 0) ? links?.prevLink[0] : null
+                        Subscription navNextSubscription = (links?.nextLink && links?.nextLink?.size() > 0) ? links?.nextLink[0] : null
                     %>
                     <td class="center aligned">
                         <g:if test="${navPrevSubscription}">
-                            <g:link controller="subscription" action="show" id="${navPrevSubscription?.id}"><i class="arrow left icon"></i></g:link>
+                            <g:link controller="subscription" action="show" id="${navPrevSubscription.id}"><i class="arrow left icon"></i></g:link>
                         </g:if>
                         <g:else>
                             <i class="arrow left icon disabled"></i>
@@ -188,7 +188,7 @@
                     <td><g:formatDate formatName="default.date.format.notime" date="${sub.endDate}"/></td>
                     <td class="center aligned">
                         <g:if test="${navNextSubscription}">
-                            <g:link controller="subscription" action="show" id="${navNextSubscription?.id}"><i class="arrow right icon"></i></g:link>
+                            <g:link controller="subscription" action="show" id="${navNextSubscription.id}"><i class="arrow right icon"></i></g:link>
                         </g:if>
                         <g:else>
                             <i class="arrow right icon disabled"></i>
