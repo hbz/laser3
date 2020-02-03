@@ -18,7 +18,7 @@ class AccessPointController extends AbstractDebugController {
     def orgTypeService
 
 
-    static allowedMethods = [create: ['GET', 'POST'], edit: ['POST'], delete: ['GET', 'POST']]
+    static allowedMethods = [create: ['GET', 'POST'], delete: ['GET', 'POST']]
 
 
     @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
