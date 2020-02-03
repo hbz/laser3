@@ -28,9 +28,9 @@
 						
 						<th>${com.k_int.kbplus.RefdataCategory.getByDesc(RDConstants.CONTACT_TYPE).getI10n('desc')}</th>
 					
-						<th><g:message code="contact.prs.label" default="Prs" /></th>
+						<th><g:message code="contact.prs.label" /></th>
 					
-						<th><g:message code="contact.org.label" default="Org" /></th>
+						<th><g:message code="contact.org.label" /></th>
 					
 					</tr>
 				</thead>

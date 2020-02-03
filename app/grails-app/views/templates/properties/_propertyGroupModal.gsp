@@ -12,7 +12,7 @@
             <div class="column">
 
                 <div class="field">
-                    <label><g:message code="propertyDefinitionGroup.editModal.name"/></label>
+                    <label><g:message code="default.name.label"/></label>
                     <input type="text" name="name" value="${pdGroup?.name}"/>
                 </div>
 

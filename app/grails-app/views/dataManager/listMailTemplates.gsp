@@ -29,7 +29,7 @@
             <tr>
                 <th>${message(code: 'sidewide.number')}</th>
                 <th>${message(code: 'mailTemplate.name.label')}</th>
-                <th>${message(code: 'mailTemplate.type.label')}</th>
+                <th>${message(code: 'default.type.label')}</th>
                 <th>${message(code: 'mailTemplate.language.label')}</th>
                 <th>${message(code: 'mailTemplate.owner.label')}</th>
                 <th class="la-action-info">${message(code: 'default.actions')}</th>
@@ -118,7 +118,7 @@
         </div>
 
         <div  class="field fieldcontain required">
-            <label for="mailTemplateType">${message(code:'mailTemplate.type.label')}:</label>
+            <label for="mailTemplateType">${message(code:'default.type.label')}:</label>
             <g:select id="mailTemplateTypeEdit"
                       name="type"
                       from="${com.k_int.kbplus.RefdataCategory.getAllRefdataValues(RDConstants.MAIL_TEMPLATE_TYPE)}"
@@ -176,7 +176,7 @@
         </div>
 
         <div  class="field fieldcontain required">
-            <label for="mailTemplateType">${message(code:'mailTemplate.type.label')}:</label>
+            <label for="mailTemplateType">${message(code:'default.type.label')}:</label>
             <g:select id="mailTemplateType"
                       name="type"
                       from="${com.k_int.kbplus.RefdataCategory.getAllRefdataValues(RDConstants.MAIL_TEMPLATE_TYPE)}"

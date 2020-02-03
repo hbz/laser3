@@ -25,7 +25,7 @@
 							<th><g:message code="identifierNamespace.ns.label"/></th>
 							<th>Identifiers</th>
 							<th><g:message code="identifierNamespace.family.label"/></th>
-							<th><g:message code="identifierNamespace.nsType.label"/></th>
+							<th><g:message code="default.type.label"/></th>
                             <th><g:message code="identifierNamespace.validationRegex.label"/></th>
                                 <%--<th><g:message code="identifierNamespace.hide.label"/></th>--%>
                             <th><g:message code="identifierNamespace.unique.label"/></th>
@@ -102,7 +102,7 @@
 
 								<div class="field fieldcontain ${hasErrors(bean: identifierNamespaceInstance, field: 'nsType', 'error')} ">
 									<label for="nsType">
-										<g:message code="identifierNamespace.nsType.label" />
+										<g:message code="default.type.label" />
 									</label>
 									<g:select id="nsType" name="nsType"
 									        from="${IdentifierNamespace.getAVAILABLE_NSTYPES()}"
@@ -128,7 +128,7 @@
 								<input name="isHidden" type="hidden" value="false" />
 
 								<button type="submit" class="ui button">
-									<g:message code="default.button.create.label" default="Create" />
+									<g:message code="default.button.create.label"/>
 								</button>
 
 							</g:form>

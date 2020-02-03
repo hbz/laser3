@@ -7,14 +7,14 @@
         <g:hiddenField name="version" value="${taskInstance?.version}" />
         <div class="field fieldcontain ${hasErrors(bean: taskInstance, field: 'title', 'error')} required">
             <label for="title">
-                <g:message code="task.title.label" default="Title" />
+                <g:message code="task.title.label"/>
             </label>
             <g:textField name="title" required="" value="${taskInstance?.title}"/>
         </div>
 
         <div class="field fieldcontain ${hasErrors(bean: taskInstance, field: 'description', 'error')}">
             <label for="description">
-                <g:message code="task.description.label" default="Description" />
+                <g:message code="task.description.label"/>
             </label>
             <g:textArea name="description" value="${taskInstance?.description}" rows="5" cols="40"/>
         </div>
@@ -63,7 +63,7 @@
         <g:if test="${params.owntp == 'subscription' || enableMyInstFormFields}">
             <div class="field fieldcontain ${hasErrors(bean: taskInstance, field: 'subscription', 'error')} ">
                 <label for="subscription">
-                    <g:message code="task.subscription.label" default="Subscription" />
+                    <g:message code="default.subscription.label" default="Subscription" />
                 </label>
                 <g:select id="subscription" name="subscription.id" from="${validSubscriptions}" optionKey="id" value="${taskInstance?.subscription.id}" class="many-to-one" noSelection="['null': '']"/>
             </div>

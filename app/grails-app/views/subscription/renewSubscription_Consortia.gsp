@@ -93,7 +93,7 @@
                 </td>
             </tr>
             <tr>
-                <th>${message(code: 'subscription.details.type')}</th>
+                <th>${message(code: 'default.type.label')}</th>
                 <td>
                     <g:set var="rdcSubType" value="${com.k_int.kbplus.RefdataCategory.getByDesc(RDConstants.SUBSCRIPTION_TYPE)}"/>
                     <g:select from="${com.k_int.kbplus.RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_TYPE)}" class="ui dropdown"

@@ -26,10 +26,10 @@
 
 				<div class="inline-lists">
 					<dl>
-                        <dt><g:message code="contact.contentType.label" default="ContentType" /></dt>
+                        <dt><g:message code="contact.contentType.label" /></dt>
                         <dd><semui:xEditableRefData owner="${contactInstance}" field="contentType" config="${RDConstants.CONTACT_CONTENT_TYPE}" /></dd>
 
-                        <dt><g:message code="contact.content.label" default="Content" /></dt>
+                        <dt><g:message code="contact.content.label" /></dt>
                         <dd>
 							<semui:xEditable owner="${contactInstance}" field="content" id="js-mailContent"/>
 						</dd>
@@ -38,22 +38,22 @@
                         <dd><semui:xEditableRefData owner="${contactInstance}" field="type" config="${RDConstants.CONTACT_TYPE}" /></dd>
 
                         <g:if test="${contactInstance?.prs}">
-                            <dt><g:message code="contact.prs.label" default="Prs" /></dt>
+                            <dt><g:message code="contact.prs.label" /></dt>
                             <dd><g:link controller="person" action="show" id="${contactInstance?.prs?.id}">${contactInstance?.prs}</g:link></dd>
                         </g:if>
 
                         <g:if test="${contactInstance?.org}">
-                            <dt><g:message code="contact.org.label" default="Org" /></dt>
+                            <dt><g:message code="contact.org.label" /></dt>
                             <dd><g:link controller="organisation" action="show" id="${contactInstance?.org?.id}">${contactInstance?.org}</g:link></dd>
                         </g:if>
 
 						<g:if test="${contactInstance?.prs?.tenant}">
-							<dt><g:message code="person.tenant.label" default="Tenant (derived from Prs)" /></dt>
+							<dt><g:message code="person.tenant.label" /></dt>
 							<dd><g:link controller="organisation" action="show" id="${contactInstance?.prs?.tenant?.id}">${contactInstance?.prs?.tenant}</g:link></dd>
 						</g:if>
 
 						<g:if test="${contactInstance?.prs?.isPublic}">
-							<dt><g:message code="person.isPublic.label" default="IsPublic (derived from Prs)" /></dt>
+							<dt><g:message code="person.isPublic.label" /></dt>
 							<dd>${RDStore.YN_YES.getI10n('value')}</dd>
 						</g:if>
 					</dl>
@@ -66,11 +66,11 @@
 						<div class="ui form-actions">
 							<g:link class="ui button" action="edit" id="${contactInstance?.id}">
 								<i class="write icon"></i>
-								<g:message code="default.button.edit.label" default="Edit" />
+								<g:message code="default.button.edit.label" />
 							</g:link>
 							<button class="ui negative button" type="submit" name="_action_delete">
 								<i class="trash alternate icon"></i>
-								<g:message code="default.button.delete.label" default="Delete" />
+								<g:message code="default.button.delete.label" />
 							</button>
 						</div>
 					</g:form>

@@ -155,7 +155,7 @@
 			</h5>
 			<div class="adding"></div>
 			<h5 class="ui header">
-				<g:message code="default.button.delete.label" default="Delete"/>
+				<g:message code="default.button.delete.label"/>
 			</h5>
 			<div class="existing"></div>
 		</div>
@@ -186,7 +186,7 @@
 			</h5>
 			<div class="adding"></div>
 			<h5 class="ui header">
-				<g:message code="default.button.delete.label" default="Delete"/>
+				<g:message code="default.button.delete.label"/>
 			</h5>
 			<div class="existing"></div>
 		</div>

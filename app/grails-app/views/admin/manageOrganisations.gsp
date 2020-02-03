@@ -37,7 +37,7 @@
                 <th>${message(code:'sidewide.number')}</th>
                 <th>${message(code: 'org.sortname.label', default: 'Sortname')}</th>
                 <th>${message(code: 'org.fullName.label', default: 'Name')}</th>
-                <th>${message(code: 'org.type.label', default: 'Type')}</th>
+                <th>${message(code: 'default.type.label')}</th>
                 <th>${message(code:'org.customerType.label')}</th>
                 <th>${message(code:'org.apiLevel.label')}</th>
                 <th class="la-no-uppercase"><span class="la-popup-tooltip la-delay" data-position="left center"

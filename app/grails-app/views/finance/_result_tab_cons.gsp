@@ -31,7 +31,7 @@
                 <th>${message(code:'sidewide.number')}</th>
                 <g:sortableColumn property="orgRoles.org.sortname" title="${message(code:'financials.newCosts.costParticipants')}" params="[consSort: true]"/>
                 <g:sortableColumn property="ci.costTitle" title="${message(code:'financials.newCosts.costTitle')}" params="[consSort: true]"/>
-                <g:sortableColumn property="sub.name" title="${message(code:'financials.forSubscription')}" params="[consSort: true]"/>
+                <g:sortableColumn property="sub.name" title="${message(code:'default.subscription.label')}" params="[consSort: true]"/>
                 <th class="la-no-uppercase"><span class="la-popup-tooltip la-delay" data-content="${message(code:'financials.costItemConfiguration')}" data-position="left center"><i class="money bill alternate icon"></i></span></th>
                 <g:sortableColumn property="ci.billingCurrency" title="${message(code:'financials.currency')}" params="[consSort:true]"/>
                 <g:sortableColumn property="ci.costInBillingCurrency" title="${message(code:'financials.invoice_total')}" params="[consSort: true]"/>

@@ -912,7 +912,7 @@ from License as l where (
                        g.message(code: 'subscription.manualCancellationDate.label'),
                        g.message(code: 'default.identifiers.label'),
                        g.message(code: 'default.status.label'),
-                       g.message(code: 'subscription.details.type'),
+                       g.message(code: 'default.type.label'),
                        g.message(code: 'subscription.form.label'),
                        g.message(code: 'subscription.resource.label')]
         boolean asCons = false
@@ -1047,7 +1047,7 @@ from License as l where (
                        g.message(code: 'subscription.owner.label'),
                        g.message(code: 'subscription.packages.label'),
                        g.message(code: 'default.status.label'),
-                       g.message(code: 'subscription.details.type'),
+                       g.message(code: 'default.type.label'),
                        g.message(code: 'subscription.form.label'),
                        g.message(code: 'subscription.resource.label'),
 
@@ -1055,7 +1055,7 @@ from License as l where (
                        g.message(code: 'surveyConfigsInfo.newPrice.comment'),
 
                        g.message(code: 'surveyProperty.label'),
-                       g.message(code: 'surveyProperty.type.label'),
+                       g.message(code: 'default.type.label'),
                        g.message(code: 'surveyResult.result'),
                        g.message(code: 'surveyResult.comment'),
                         g.message(code: 'surveyResult.finishDate')]
@@ -1691,7 +1691,7 @@ from License as l where (
             // This is done by basePackage.createSubscription
             // def new_sub_package = new SubscriptionPackage(subscription: new_sub, pkg: basePackage).save();
 
-            flash.message = message(code: 'subscription.created.message', args: [message(code: 'subscription.label', default: 'Package'), basePackage.id])
+            flash.message = message(code: 'subscription.created.message', args: [message(code: 'default.subscription.label', default: 'Package'), basePackage.id])
             redirect controller: 'subscription', action: 'index', params: params, id: new_sub.id
         } else {
             flash.message = message(code: 'subscription.unknown.message')

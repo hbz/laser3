@@ -20,7 +20,7 @@
       <thead>
         <tr>
           <g:sortableColumn property="sortname" title="${message(code: 'org.sortname.label')}" />
-          <g:sortableColumn property="name" title="${message(code: 'org.name.label')}" />
+          <g:sortableColumn property="name" title="${message(code: 'default.name.label')}" />
           <th></th>
         </tr>
       </thead>

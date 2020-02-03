@@ -47,9 +47,9 @@
                                 <tr>
                                     <th></th>
                                     <th>${message(code:'propertyDefinition.key.label')}</th>
-                                    <th>${message(code:'propertyDefinition.name.label')}</th>
+                                    <th>${message(code:'default.name.label')}</th>
                                     <th>${message(code:'propertyDefinition.expl.label')}</th>
-                                    <th>${message(code:'propertyDefinition.type.label')}</th>
+                                    <th>${message(code:'default.type.label')}</th>
                                     <th>${message(code:'propertyDefinition.count.label', default:'Count in Use')}</th>
                                     <th class="la-action-info">${message(code:'default.actions')}</th>
                                 </tr>
@@ -151,7 +151,7 @@
                 </div>
 
                 <div class="field five wide">
-                    <label class="property-label"><g:message code="propertyDefinition.type.label" /></label>
+                    <label class="property-label"><g:message code="default.type.label" /></label>
                     <g:select class="ui dropdown"
                         from="${PropertyDefinition.validTypes2.entrySet()}"
                         optionKey="key" optionValue="${{PropertyDefinition.getLocalizedValue(it.key)}}"

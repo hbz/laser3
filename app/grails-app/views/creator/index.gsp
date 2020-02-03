@@ -28,7 +28,7 @@
 					
 						<g:sortableColumn property="middlename" title="${message(code: 'creator.middlename.label', default: 'Middlename')}" />
 					
-						<th><g:message code="creator.gnd_id.label" default="Gndid" /></th>
+						<th><g:message code="creator.gnd_id.label" /></th>
 					
 						<g:sortableColumn property="globalUID" title="${message(code: 'creator.globalUID.label', default: 'Global UID')}" />
 					

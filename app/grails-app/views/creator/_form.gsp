@@ -4,7 +4,7 @@
 
 <div class="fieldcontain ${hasErrors(bean: creatorInstance, field: 'lastname', 'error')} required">
 	<label for="lastname">
-		<g:message code="creator.lastname.label" default="Lastname" />
+		<g:message code="creator.lastname.label" />
 		<span class="required-indicator">*</span>
 	</label>
 	<g:textField name="lastname" required="" value="${creatorInstance?.lastname}"/>
@@ -13,7 +13,7 @@
 
 <div class="fieldcontain ${hasErrors(bean: creatorInstance, field: 'firstname', 'error')} ">
 	<label for="firstname">
-		<g:message code="creator.firstname.label" default="Firstname" />
+		<g:message code="creator.firstname.label" />
 		
 	</label>
 	<g:textField name="firstname" value="${creatorInstance?.firstname}"/>
@@ -22,7 +22,7 @@
 
 <div class="fieldcontain ${hasErrors(bean: creatorInstance, field: 'middlename', 'error')} ">
 	<label for="middlename">
-		<g:message code="creator.middlename.label" default="Middlename" />
+		<g:message code="creator.middlename.label" />
 		
 	</label>
 	<g:textField name="middlename" value="${creatorInstance?.middlename}"/>

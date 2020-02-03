@@ -63,7 +63,7 @@
             <div class="ui card">
                 <div class="content">
                     <dl>
-                        <dt><g:message code="org.name.label" default="Name"/></dt>
+                        <dt><g:message code="default.name.label" default="Name"/></dt>
                         <dd>
                             <semui:xEditable owner="${orgInstance}" field="name"/>
                             <g:if test="${orgInstance.getCustomerType() in ['ORG_INST', 'ORG_INST_COLLECTIVE']}">
