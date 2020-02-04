@@ -15,7 +15,6 @@ class DateUtil {
     public static final String DATE_FORMAT_NOZ              = 'default.date.format.noZ'
     public static final String DATE_FORMAT_ONLYTIME         = 'default.date.format.onlytime'
 
-
     static SimpleDateFormat getSimpleDateFormatByToken(String token) {
         def messageSource = Holders.grailsApplication.mainContext.getBean('messageSource')
         Locale locale = org.springframework.context.i18n.LocaleContextHolder.getLocale()
@@ -49,5 +48,33 @@ class DateUtil {
 
     static Date toDate_NoTime(String value) {
         (Date) getSDF_NoTime()?.parseObject(value)
+    }
+
+    // --
+
+    static Date parseDateGeneric(String value) {
+        Date parsed_date
+
+        List<SimpleDateFormat> supportedFormats = [
+                new SimpleDateFormat('yyyy/MM/dd'),
+                new SimpleDateFormat('dd.MM.yyyy'),
+                new SimpleDateFormat('dd/MM/yyyy'),
+                new SimpleDateFormat('dd/MM/yy'),
+                new SimpleDateFormat('yyyy/MM'),
+                new SimpleDateFormat('yyyy')
+        ]
+
+        if (value && (value.trim().length() > 0)) {
+            for (Iterator<SimpleDateFormat> i = supportedFormats.iterator(); (i.hasNext() && (parsed_date == null));) {
+                SimpleDateFormat next = i.next()
+                try {
+                    parsed_date = next.parse(value)
+                }
+                catch (Exception e) {
+                    static_logger.info("Parser for ${next.toPattern()} could not parse date ${value}. Trying next one ...")
+                }
+            }
+        }
+        parsed_date
     }
 }

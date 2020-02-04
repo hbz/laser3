@@ -1492,8 +1492,8 @@ from License as l where (
                     render view: 'editLicense', model: [licenseInstance: copyLicense]
                 } else {
                     copyLicense.reference = params.licenseName
-                    copyLicense.startDate = escapeService.parseDate(params.licenseStartDate)
-                    copyLicense.endDate = escapeService.parseDate(params.licenseEndDate)
+                    copyLicense.startDate = DateUtil.parseDateGeneric(params.licenseStartDate)
+                    copyLicense.endDate = DateUtil.parseDateGeneric(params.licenseEndDate)
                     copyLicense.status = RefdataValue.get(params.status)
 
                     if (copyLicense.save(flush: true)) {
@@ -1515,8 +1515,8 @@ from License as l where (
         def license_type = RDStore.LICENSE_TYPE_ACTUAL
 
         def licenseInstance = new License(type: license_type, reference: params.licenseName,
-                startDate:params.licenseStartDate ? parseDate(params.licenseStartDate, escapeService.possible_date_formats) : null,
-                endDate: params.licenseEndDate ? parseDate(params.licenseEndDate, escapeService.possible_date_formats) : null,
+                startDate:params.licenseStartDate ? DateUtil.parseDateGeneric(params.licenseStartDate) : null,
+                endDate: params.licenseEndDate ? DateUtil.parseDateGeneric(params.licenseEndDate) : null,
                 status: RefdataValue.get(params.status)
         )
 
@@ -2317,20 +2317,6 @@ AND EXISTS (
         }
 
         redirect action: 'currentSubscriptions'
-    }
-
-    def parseDate(datestr, possible_formats) {
-        def parsed_date = null;
-        if (datestr && (datestr.toString().trim().length() > 0)) {
-            for (Iterator i = possible_formats.iterator(); (i.hasNext() && (parsed_date == null));) {
-                try {
-                    parsed_date = i.next().parse(datestr.toString());
-                }
-                catch (Exception e) {
-                }
-            }
-        }
-        parsed_date
     }
 
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")')

@@ -920,7 +920,7 @@ class FinanceService {
             }
             //datePaid(nullable: true, blank: false) -> to date paid
             if(colMap.datePaid != null) {
-                Date datePaid = escapeService.parseDate(cols[colMap.datePaid])
+                Date datePaid = DateUtil.parseDateGeneric(cols[colMap.datePaid])
                 if(datePaid)
                     costItem.datePaid = datePaid
             }
@@ -1031,7 +1031,7 @@ class FinanceService {
             }
             //invoiceDate(nullable: true, blank: false) -> to invoice date
             if(colMap.invoiceDate != null) {
-                Date invoiceDate = escapeService.parseDate(cols[colMap.invoiceDate])
+                Date invoiceDate = DateUtil.parseDateGeneric(cols[colMap.invoiceDate])
                 if(invoiceDate)
                     costItem.invoiceDate = invoiceDate
             }
@@ -1092,13 +1092,13 @@ class FinanceService {
             }
             //startDate(nullable: true, blank: false) -> to date from
             if(colMap.dateFrom != null) {
-                Date startDate = escapeService.parseDate(cols[colMap.dateFrom])
+                Date startDate = DateUtil.parseDateGeneric(cols[colMap.dateFrom])
                 if(startDate)
                     costItem.startDate = startDate
             }
             //endDate(nullable: true, blank: false) -> to date to
             if(colMap.dateTo != null) {
-                Date endDate = escapeService.parseDate(cols[colMap.dateTo])
+                Date endDate = DateUtil.parseDateGeneric(cols[colMap.dateTo])
                 if(endDate)
                     costItem.endDate = endDate
             }
