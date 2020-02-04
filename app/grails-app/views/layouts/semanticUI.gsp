@@ -520,13 +520,14 @@
                 <div class="right menu la-right-menuPart">
                     <div id="mainSearch" class="ui category search spotlight">
                         <div class="ui icon input">
-                            <input  type="search" id="spotlightSearch" class="prompt" placeholder="${message(code:'spotlight.search.placeholder')}">
+                            <input  aria-label="${message(code:'spotlight.search.placeholder')}" type="search" id="spotlightSearch" class="prompt" placeholder="${message(code:'spotlight.search.placeholder')}">
                             <i id="btn-search"  class="search icon"></i>
                         </div>
                         <div class="results" style="overflow-y:scroll;max-height: 400px;"></div>
                     </div>
 
-                    <g:link  controller="search" action="index"  class="la-search-advanced la-popup-tooltip la-delay"
+                    <g:link controller="search" action="index"
+                            class="la-search-advanced la-popup-tooltip la-delay"
                              data-content="${message(code: 'search.advancedSearch.tooltip')}">
                         <i class="large icons">
                             <i class="search icon"></i>
