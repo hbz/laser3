@@ -3,6 +3,7 @@ package de.laser
 import com.k_int.kbplus.RefdataCategory
 import com.k_int.kbplus.RefdataValue
 import de.laser.helper.RDStore
+import java.text.SimpleDateFormat
 
 class SemanticUiInplaceTagLib {
 
@@ -56,7 +57,7 @@ class SemanticUiInplaceTagLib {
 
             switch (attrs.type) {
                 case 'date':
-                    data_link = createLink(controller:'ajax', action: 'editableSetValue', params:[type:'date', format:"${message(code:'default.date.format.notime', default:'yyyy-MM-dd')}"]).encodeAsHTML()
+                    data_link = createLink(controller:'ajax', action: 'editableSetValue', params:[type:'date', format:"${message(code:'default.date.format.notime')}"]).encodeAsHTML()
                 break
                 case 'url':
                     data_link = createLink(controller:'ajax', action: 'editableSetValue', params:[type:'url']).encodeAsHTML()
@@ -81,7 +82,7 @@ class SemanticUiInplaceTagLib {
             if (! body) {
                 def oldValue = ''
                 if (attrs.owner[attrs.field] && attrs.type=='date') {
-                    def sdf = new java.text.SimpleDateFormat(attrs.format?: message(code:'default.date.format.notime', default:'yyyy-MM-dd'))
+                    SimpleDateFormat sdf = new SimpleDateFormat(attrs.format?: message(code:'default.date.format.notime'))
                     oldValue = sdf.format(attrs.owner[attrs.field])
                 }
                 else {
@@ -108,7 +109,7 @@ class SemanticUiInplaceTagLib {
             }
             else {
                 if (attrs.owner[attrs.field] && attrs.type=='date') {
-                    def sdf = new java.text.SimpleDateFormat(attrs.format?: message(code:'default.date.format.notime', default:'yyyy-MM-dd'))
+                    SimpleDateFormat sdf = new SimpleDateFormat(attrs.format?: message(code:'default.date.format.notime', default:'yyyy-MM-dd'))
                     out << sdf.format(attrs.owner[attrs.field])
                 }
                 else {

@@ -2479,7 +2479,7 @@ class SurveyController {
 
         def subscription = Subscription.get(params.parentSub ?: null)
 
-        def sdf = new SimpleDateFormat('dd.MM.yyyy')
+        SimpleDateFormat sdf = new SimpleDateFormat('dd.MM.yyyy')
 
         result.errors = []
         def newStartDate

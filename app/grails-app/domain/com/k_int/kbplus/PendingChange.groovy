@@ -198,7 +198,7 @@ class PendingChange {
             parsedParams[2] = rdv2.getI10n('value')
         }
         else if (type == 'date') {
-            //def sdf = new java.text.SimpleDateFormat(messageSource.getMessage('default.date.format', null, locale))
+            //java.text.SimpleDateFormat sdf = new java.text.SimpleDateFormat(messageSource.getMessage('default.date.format', null, locale))
             //TODO JSON @ Wed Jan 03 00:00:00 CET 2018
 
             //def date1 = parsedParams[1] ? sdf.parse(parsedParams[1]) : null

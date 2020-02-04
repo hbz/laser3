@@ -1327,7 +1327,7 @@ class SubscriptionController extends AbstractDebugController {
 
         result.filterSet = params.filterSet ? true : false
 
-        def sdf = new SimpleDateFormat('yyyy-MM-dd')
+        SimpleDateFormat sdf = new SimpleDateFormat('yyyy-MM-dd')
         def datetoday = sdf.format(new Date(System.currentTimeMillis()))
         def message = escapeService.escapeString(result.subscription.name) + "_" + g.message(code: 'subscriptionDetails.members.members') + "_" + datetoday
         def orgs = []
@@ -3821,7 +3821,7 @@ class SubscriptionController extends AbstractDebugController {
             return;
         }
 
-        def sdf = new SimpleDateFormat('dd.MM.yyyy')
+        SimpleDateFormat sdf = new SimpleDateFormat('dd.MM.yyyy')
 
         def subscription = Subscription.get(params.id)
 
@@ -4462,7 +4462,7 @@ class SubscriptionController extends AbstractDebugController {
 
         def subscription = Subscription.get(params.baseSubscription ?: params.id)
 
-        def sdf = new SimpleDateFormat('dd.MM.yyyy')
+        SimpleDateFormat sdf = new SimpleDateFormat('dd.MM.yyyy')
 
         result.errors = []
         def newStartDate
