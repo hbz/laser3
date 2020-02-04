@@ -6,6 +6,8 @@ import groovy.xml.StreamingMarkupBuilder
 import org.codehaus.groovy.grails.commons.GrailsApplication
 import org.gokb.cred.*
 
+import java.text.SimpleDateFormat
+
 // K-Int generic OAI Module, imported into KB+ 15/03/16 to support title data exchange.
 // Licensed under GPL
 
@@ -18,7 +20,7 @@ class OaiController extends AbstractDebugController {
   //     return it?.toString("yyyy-MM-dd'T'HH:mm:ss'Z'")
   // }
 
-  def sdf = new java.text.SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
+  SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
 
   def index() {
     Map<String, Object> result = [:]

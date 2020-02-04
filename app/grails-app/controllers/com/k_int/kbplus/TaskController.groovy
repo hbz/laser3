@@ -2,9 +2,13 @@ package com.k_int.kbplus
 
 import com.k_int.kbplus.auth.User
 import de.laser.controller.AbstractDebugController
+import de.laser.helper.DateUtil
 import de.laser.helper.DebugAnnotation
 import grails.plugin.springsecurity.annotation.Secured
 import org.springframework.dao.DataIntegrityViolationException
+
+import java.text.SimpleDateFormat
+
 @Secured(['IS_AUTHENTICATED_FULLY'])
 class TaskController extends AbstractDebugController {
 
@@ -34,7 +38,7 @@ class TaskController extends AbstractDebugController {
         def contextOrg  = contextService.getOrg()
 //		def result      = taskService.getPreconditions(contextOrg)
 
-		def sdf = new java.text.SimpleDateFormat(message(code:'default.date.format.notime', default:'yyyy-MM-dd'))
+		SimpleDateFormat sdf = DateUtil.getSDF_NoTime()
 
 		if (params.endDate)
 			params.endDate = sdf.parse(params.endDate)
@@ -118,7 +122,7 @@ class TaskController extends AbstractDebugController {
         def contextOrg = contextService.getOrg()
         def result     = taskService.getPreconditionsWithoutTargets(contextOrg)
 
-		def sdf = new java.text.SimpleDateFormat(message(code:'default.date.format.notime', default:'yyyy-MM-dd'))
+		SimpleDateFormat sdf = DateUtil.getSDF_NoTime()
 
 		if (params.endDate)
 			params.endDate = sdf.parse(params.endDate)

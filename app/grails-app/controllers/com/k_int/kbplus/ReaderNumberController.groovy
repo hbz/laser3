@@ -1,6 +1,7 @@
 package com.k_int.kbplus
 
 import de.laser.controller.AbstractDebugController
+import de.laser.helper.DateUtil
 import de.laser.helper.DebugAnnotation
 import grails.plugin.springsecurity.annotation.Secured
 import org.springframework.dao.DataIntegrityViolationException
@@ -24,7 +25,7 @@ class ReaderNumberController extends AbstractDebugController {
 			break
 		case 'POST':
 
-			SimpleDateFormat sdf = new SimpleDateFormat(message(code:'default.date.format.notime', default:'yyyy-MM-dd'))
+			SimpleDateFormat sdf = DateUtil.getSDF_NoTime()
 
 			if (params.dueDate)
 				params.dueDate = sdf.parse(params.dueDate)
@@ -67,7 +68,7 @@ class ReaderNumberController extends AbstractDebugController {
 				redirect(url: request.getHeader('referer'))
 				return
 			}
-			SimpleDateFormat sdf = new SimpleDateFormat(message(code:'default.date.format.notime', default:'yyyy-MM-dd'))
+			SimpleDateFormat sdf = DateUtil.getSDF_NoTime()
 	        if (params.version) {
 	            def version = params.version.toLong()
 	            if (numbersInstance.version > version) {

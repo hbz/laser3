@@ -1,26 +1,80 @@
 package de.laser.helper
 
 import grails.util.Holders
+import org.apache.commons.logging.Log
+import org.apache.commons.logging.LogFactory
 
-import java.text.DateFormat
 import java.text.SimpleDateFormat
 
 class DateUtil {
 
-    static Date toDate_NoTime(String value) {
-        getSimpleDateFormat_NoTime().parseObject(value)
-    }
-    static DateFormat getSimpleDateFormat_NoTime(){
+    static Log static_logger = LogFactory.getLog(DateUtil)
+
+    public static final String DATE_FORMAT_NOTIME_NOPOINT   = 'default.date.format.notimenopoint'
+    public static final String DATE_FORMAT_NOTIME           = 'default.date.format.notime'
+    public static final String DATE_FORMAT_NOZ              = 'default.date.format.noZ'
+    public static final String DATE_FORMAT_ONLYTIME         = 'default.date.format.onlytime'
+
+    static SimpleDateFormat getSimpleDateFormatByToken(String token) {
         def messageSource = Holders.grailsApplication.mainContext.getBean('messageSource')
         Locale locale = org.springframework.context.i18n.LocaleContextHolder.getLocale()
-        String format = messageSource.getMessage('default.date.format.notime', null, locale)
-        new SimpleDateFormat(format)
+        String format = messageSource.getMessage(token, null, locale)
+
+        if (format) {
+            return new SimpleDateFormat(format)
+        }
+        else {
+            static_logger.debug("WARNING: no date format found for ( ${token}, ${locale} )")
+
+        }
+        return null
     }
 
-    static DateFormat getSimpleDateFormat_NoZ(){
-        def messageSource = Holders.grailsApplication.mainContext.getBean('messageSource')
-        Locale locale = org.springframework.context.i18n.LocaleContextHolder.getLocale()
-        String format = messageSource.getMessage('default.date.format.noZ', null, locale)
-        new SimpleDateFormat(format)
+    static SimpleDateFormat getSDF_NoTimeNoPoint(){
+        getSimpleDateFormatByToken(DATE_FORMAT_NOTIME_NOPOINT)
+    }
+
+    static SimpleDateFormat getSDF_NoTime(){
+        getSimpleDateFormatByToken(DATE_FORMAT_NOTIME)
+    }
+
+    static SimpleDateFormat getSDF_NoZ(){
+        getSimpleDateFormatByToken(DATE_FORMAT_NOZ)
+    }
+
+    static SimpleDateFormat getSDF_OnlyTime(){
+        getSimpleDateFormatByToken(DATE_FORMAT_ONLYTIME)
+    }
+
+    static Date toDate_NoTime(String value) {
+        (Date) getSDF_NoTime()?.parseObject(value)
+    }
+
+    // --
+
+    static Date parseDateGeneric(String value) {
+        Date parsed_date
+
+        List<SimpleDateFormat> supportedFormats = [
+                new SimpleDateFormat('yyyy/MM/dd'),
+                new SimpleDateFormat('dd.MM.yyyy'),
+                new SimpleDateFormat('dd/MM/yyyy'),
+                new SimpleDateFormat('dd/MM/yy'),
+                new SimpleDateFormat('yyyy/MM'),
+                new SimpleDateFormat('yyyy')
+        ]
+
+        if (value && (value.trim().length() > 0)) {
+            for (Iterator<SimpleDateFormat> i = supportedFormats.iterator(); (i.hasNext() && (parsed_date == null));) {
+                SimpleDateFormat next = i.next()
+                try {
+                    parsed_date = next.parse(value)
+                }
+                catch (Exception e) {
+                    static_logger.info("Parser for ${next.toPattern()} could not parse date ${value}. Trying next one ...")
+                }
+            }
+        }
+        parsed_date
     }
 }

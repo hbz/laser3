@@ -3,11 +3,14 @@ package com.k_int.kbplus
 import com.k_int.kbplus.auth.User
 import de.laser.controller.AbstractDebugController
 import de.laser.domain.MailTemplate
+import de.laser.helper.DateUtil
 import de.laser.helper.RDConstants
 import de.laser.helper.RDStore
 import grails.plugin.springsecurity.SpringSecurityUtils
 import grails.plugin.springsecurity.annotation.Secured
 import org.codehaus.groovy.grails.plugins.orm.auditable.AuditLogEvent
+
+import java.text.SimpleDateFormat
 
 @Secured(['IS_AUTHENTICATED_FULLY'])
 class DataManagerController extends AbstractDebugController {
@@ -32,7 +35,7 @@ class DataManagerController extends AbstractDebugController {
 
     def result =[:]
     log.debug("changeLog ${params}");
-    def formatter = new java.text.SimpleDateFormat(message(code:'default.date.format.notime', default:'yyyy-MM-dd'))
+    SimpleDateFormat formatter = DateUtil.getSDF_NoTime()
 
     def exporting = params.format == 'csv' ? true : false
 

@@ -2,6 +2,7 @@ package com.k_int.kbplus
 
 
 import de.laser.domain.I10nTranslation
+import de.laser.helper.DateUtil
 import grails.util.Holders
 import org.codehaus.groovy.grails.web.json.JSONElement
 import org.springframework.context.i18n.LocaleContextHolder
@@ -152,7 +153,7 @@ class SurveyConfig {
     String getConfigName() {
 
         def messageSource = Holders.grailsApplication.mainContext.getBean('messageSource')
-        SimpleDateFormat sdf = new SimpleDateFormat(messageSource.getMessage('default.date.format.notime', null, LocaleContextHolder.getLocale()))
+        SimpleDateFormat sdf = DateUtil.getSDF_NoTime()
 
         if (type == 'Subscription') {
             return subscription?.name + ' - ' + subscription?.status?.getI10n('value') + ' ' +

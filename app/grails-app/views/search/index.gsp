@@ -2,7 +2,7 @@
 <laser:serviceInjection/>
 <%-- r:require module="annotations" / --%>
 
-<% SimpleDateFormat sdf = new SimpleDateFormat(message(code: 'default.date.format.notime'))
+<% SimpleDateFormat sdf = de.laser.helper.DateUtil.getSDF_NoTime()
 
 String period
 %>

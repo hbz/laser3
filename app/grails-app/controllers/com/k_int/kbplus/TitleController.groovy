@@ -2,9 +2,12 @@ package com.k_int.kbplus
 
 import com.k_int.kbplus.auth.User
 import de.laser.controller.AbstractDebugController
+import de.laser.helper.DateUtil
 import de.laser.helper.RDConstants
 import grails.plugin.springsecurity.SpringSecurityUtils
 import grails.plugin.springsecurity.annotation.Secured
+
+import java.text.SimpleDateFormat
 
 @Secured(['IS_AUTHENTICATED_FULLY'])
 class TitleController extends AbstractDebugController {
@@ -159,7 +162,7 @@ class TitleController extends AbstractDebugController {
     @Secured(['ROLE_ADMIN'])
   def batchUpdate() {
     log.debug(params);
-    def formatter = new java.text.SimpleDateFormat(message(code:'default.date.format.notime', default:'yyyy-MM-dd'))
+        SimpleDateFormat formatter = DateUtil.getSDF_NoTime()
     def user = User.get(springSecurityService.principal.id)
 
       params.each { p ->

@@ -2,9 +2,9 @@ package com.k_int.kbplus
 
 import com.k_int.kbplus.auth.Role
 import com.k_int.kbplus.auth.User
-import com.k_int.properties.PropertyDefinition
 import de.laser.DeletionService
 import de.laser.controller.AbstractDebugController
+import de.laser.helper.DateUtil
 import de.laser.helper.DebugAnnotation
 import de.laser.helper.RDConstants
 import de.laser.helper.RDStore
@@ -15,6 +15,8 @@ import org.apache.poi.hssf.usermodel.HSSFRow
 import org.apache.poi.hssf.usermodel.HSSFSheet
 import org.apache.poi.hssf.usermodel.HSSFWorkbook
 import org.codehaus.groovy.grails.plugins.orm.auditable.AuditLogEvent
+
+import java.text.SimpleDateFormat
 
 @Secured(['IS_AUTHENTICATED_FULLY'])
 class PackageController extends AbstractDebugController {
@@ -381,7 +383,7 @@ class PackageController extends AbstractDebugController {
                         def comparisonMap =
                                 institutionsService.generateComparisonMap(unionList, mapA, mapB, 0, unionList.size(), filterRules)
                         log.debug("Create CSV Response")
-                        def dateFormatter = new java.text.SimpleDateFormat(message(code: 'default.date.format.notime', default: 'yyyy-MM-dd'))
+                        SimpleDateFormat dateFormatter = DateUtil.getSDF_NoTime()
                         response.setHeader("Content-disposition", "attachment; filename=\"packageComparison.csv\"")
                         response.contentType = "text/csv"
                         def out = response.outputStream
@@ -411,7 +413,8 @@ class PackageController extends AbstractDebugController {
             }
 
         } else {
-            def currentDate = new java.text.SimpleDateFormat(message(code: 'default.date.format.notime', default: 'yyyy-MM-dd')).format(new Date())
+            SimpleDateFormat sdf = DateUtil.getSDF_NoTime()
+            def currentDate = sdf?.format(new Date())
             params.dateA = currentDate
             params.dateB = currentDate
             params.insrt = "Y"
@@ -435,7 +438,7 @@ class PackageController extends AbstractDebugController {
 
     private def createCompareList(pkg, dateStr, params, result) {
         def returnVals = [:]
-        def sdf = new java.text.SimpleDateFormat(message(code: 'default.date.format.notime', default: 'yyyy-MM-dd'))
+        SimpleDateFormat sdf = DateUtil.getSDF_NoTime()
         def date = dateStr ? sdf.parse(dateStr) : new Date()
         def packageId = pkg.substring(pkg.indexOf(":") + 1)
 
@@ -533,7 +536,7 @@ class PackageController extends AbstractDebugController {
         // def base_qry = "from TitleInstancePackagePlatform as tipp where tipp.pkg = ? "
         def qry_params = [pkgInstance: packageInstance]
 
-        def sdf = new java.text.SimpleDateFormat(message(code: 'default.date.format.notime', default: 'yyyy-MM-dd'));
+        SimpleDateFormat sdf = DateUtil.getSDF_NoTime()
         def today = new Date()
         if (!params.asAt) {
             if (packageInstance.startDate > today) {
@@ -951,7 +954,7 @@ class PackageController extends AbstractDebugController {
 
         log.debug("packageBatchUpdate ${params}");
 
-        def formatter = new java.text.SimpleDateFormat(message(code: 'default.date.format.notime', default: 'yyyy-MM-dd'))
+        SimpleDateFormat formatter = DateUtil.getSDF_NoTime()
 
         def bulk_fields = [
                 [formProp: 'start_date', domainClassProp: 'startDate', type: 'date'],

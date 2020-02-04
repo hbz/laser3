@@ -4,7 +4,7 @@
 <laser:serviceInjection />
 <g:set var="overwriteEditable"
        value="${editable || accessService.checkMinUserOrgRole(user, contextService.getOrg(), 'INST_EDITOR')}"/>
-<g:set var="sdf" value="${new SimpleDateFormat(message(code: 'default.date.format.notime'))}"/>
+<g:set var="sdf" value="${de.laser.helper.DateUtil.getSDF_NoTime()}"/>
 <!doctype html>
 <html>
 <head>

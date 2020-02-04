@@ -1,4 +1,4 @@
-<%@ page import="com.k_int.kbplus.SystemMessage" %>
+<%@ page import="de.laser.helper.RDStore; com.k_int.kbplus.SystemMessage" %>
 <!doctype html>
 <html>
 <head>
@@ -65,7 +65,7 @@
             <div class="field">
                 <label>Organisation</label>
                 <g:select name="org"
-                          from="${com.k_int.kbplus.Org.executeQuery('from Org o where o.sector.value = ? order by o.name', 'Higher Education')}"
+                          from="${com.k_int.kbplus.Org.executeQuery('from Org o where o.sector = ? order by o.name', [RDStore.O_SECTOR_HIGHER_EDU])}"
                           optionKey="id"
                           optionValue="name"
                           class="ui fluid search dropdown"/>

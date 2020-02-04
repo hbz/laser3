@@ -6,6 +6,7 @@ import com.k_int.kbplus.auth.UserOrg
 import com.k_int.properties.PropertyDefinition
 import de.laser.DeletionService
 import de.laser.controller.AbstractDebugController
+import de.laser.helper.DateUtil
 import de.laser.helper.DebugAnnotation
 import de.laser.helper.DebugUtil
 import de.laser.helper.RDConstants
@@ -172,7 +173,7 @@ class OrganisationController extends AbstractDebugController {
         result.orgListTotal = orgListTotal.size()
         result.orgList = orgListTotal.drop((int) result.offset).take((int) result.max)
 
-        SimpleDateFormat sdf = new SimpleDateFormat(g.message(code:'default.date.format.notimenopoint'))
+        SimpleDateFormat sdf = DateUtil.getSDF_NoTimeNoPoint()
         String datetoday = sdf.format(new Date(System.currentTimeMillis()))
         def message = message(code: 'export.all.orgs')
         // Write the output to a file
@@ -261,7 +262,7 @@ class OrganisationController extends AbstractDebugController {
         result.orgList      = orgListTotal.drop((int) result.offset).take((int) result.max)
 
         def message = g.message(code: 'export.all.providers')
-        SimpleDateFormat sdf = new SimpleDateFormat(g.message(code:'default.date.format.notime', default:'yyyy-MM-dd'))
+        SimpleDateFormat sdf = DateUtil.getSDF_NoTime()
         String datetoday = sdf.format(new Date(System.currentTimeMillis()))
         String filename = message+"_${datetoday}"
 

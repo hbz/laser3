@@ -3,10 +3,13 @@ package com.k_int.kbplus
 import com.k_int.kbplus.auth.User
 import com.k_int.properties.PropertyDefinition
 import de.laser.controller.AbstractDebugController
+import de.laser.helper.DateUtil
 import de.laser.helper.DebugAnnotation
 import de.laser.helper.RDStore
 import grails.plugin.springsecurity.annotation.Secured
 import org.springframework.dao.DataIntegrityViolationException
+
+import java.text.SimpleDateFormat
 
 @Secured(['IS_AUTHENTICATED_FULLY'])
 class IssueEntitlementController extends AbstractDebugController {
@@ -109,14 +112,14 @@ class IssueEntitlementController extends AbstractDebugController {
       }
 
       if ( params.endsAfter && params.endsAfter.length() > 0 ) {
-        def sdf = new java.text.SimpleDateFormat(message(code:'default.date.format.notime', default:'yyyy-MM-dd'));
+        SimpleDateFormat sdf = DateUtil.getSDF_NoTime()
         def d = sdf.parse(params.endsAfter)
         base_qry += " and (select max(tc.endDate) from TIPPCoverage tc where tc.tipp = tipp) >= ?"
         qry_params.add(d)
       }
 
       if ( params.startsBefore && params.startsBefore.length() > 0 ) {
-        def sdf = new java.text.SimpleDateFormat(message(code:'default.date.format.notime', default:'yyyy-MM-dd'));
+          SimpleDateFormat sdf = DateUtil.getSDF_NoTime()
         def d = sdf.parse(params.startsBefore)
         base_qry += " and (select min(tc.startDate) from TIPPCoverage tc where tc.tipp = tipp) <= ?"
         qry_params.add(d)

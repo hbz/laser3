@@ -10,19 +10,18 @@ import com.k_int.properties.PropertyDefinitionGroupBinding
 import de.laser.domain.IssueEntitlementCoverage
 import de.laser.domain.PriceItem
 import de.laser.exceptions.EntitlementCreationException
-import de.laser.helper.DebugAnnotation
+import de.laser.helper.DateUtil
 import de.laser.helper.FactoryResult
 import de.laser.helper.RDConstants
-import org.codehaus.groovy.tools.shell.util.MessageSource
 import org.springframework.web.multipart.commons.CommonsMultipartFile
 import de.laser.helper.RDStore
-import com.k_int.kbplus.Identifier
 
 import java.nio.file.Path
 import java.nio.file.Files
+import java.text.SimpleDateFormat
 
 import static de.laser.helper.RDStore.*
-import grails.plugin.springsecurity.annotation.Secured
+
 import grails.util.Holders
 import org.codehaus.groovy.runtime.InvokerHelper
 
@@ -157,7 +156,7 @@ class SubscriptionService {
 
             def date_filter
             if (params.asAt && params?.asAt?.length() > 0) {
-                def sdf = new java.text.SimpleDateFormat(message(code: 'default.date.format.notime', default: 'yyyy-MM-dd'));
+                SimpleDateFormat sdf = DateUtil.getSDF_NoTime()
                 date_filter = sdf.parse(params.asAt)
                 /*result.as_at_date = date_filter
                 result.editable = false;*/
@@ -905,8 +904,8 @@ class SubscriptionService {
 					status: tipp.status,
                     subscription: sub,
                     tipp: tipp,
-                    accessStartDate: issueEntitlementOverwrite?.accessStartDate ? escapeService.parseDate(issueEntitlementOverwrite.accessStartDate) : tipp.accessStartDate,
-                    accessEndDate: issueEntitlementOverwrite?.accessEndDate ? escapeService.parseDate(issueEntitlementOverwrite.accessEndDate) : tipp.accessEndDate,
+                    accessStartDate: issueEntitlementOverwrite?.accessStartDate ? DateUtil.parseDateGeneric(issueEntitlementOverwrite.accessStartDate) : tipp.accessStartDate,
+                    accessEndDate: issueEntitlementOverwrite?.accessEndDate ? DateUtil.parseDateGeneric(issueEntitlementOverwrite.accessEndDate) : tipp.accessEndDate,
                     ieReason: 'Manually Added by User',
                     acceptStatus: acceptStatus)
             if (new_ie.save()) {
@@ -953,7 +952,7 @@ class SubscriptionService {
 
                     }else {
 
-                        PriceItem pi = new PriceItem(priceDate: escapeService.parseDate(issueEntitlementOverwrite.priceDate),
+                        PriceItem pi = new PriceItem(priceDate: DateUtil.parseDateGeneric(issueEntitlementOverwrite.priceDate),
                                 listPrice: issueEntitlementOverwrite.listPrice,
                                 listCurrency: RefdataValue.getByValueAndCategory(issueEntitlementOverwrite.listCurrency, 'Currency'),
                                 localPrice: issueEntitlementOverwrite.localPrice,
@@ -1245,7 +1244,7 @@ class SubscriptionService {
             */
             Date startDate
             if(colMap.startDate != null) {
-                startDate = escapeService.parseDate(cols[colMap.startDate].trim())
+                startDate = DateUtil.parseDateGeneric(cols[colMap.startDate].trim())
             }
             /*
             endDate(nullable:true, blank:false, validator: { val, obj ->
@@ -1256,7 +1255,7 @@ class SubscriptionService {
             */
             Date endDate
             if(colMap.endDate != null) {
-                endDate = escapeService.parseDate(cols[colMap.endDate].trim())
+                endDate = DateUtil.parseDateGeneric(cols[colMap.endDate].trim())
             }
             if(startDate && endDate) {
                 if(startDate <= endDate) {
@@ -1273,7 +1272,7 @@ class SubscriptionService {
                 candidate.endDate = endDate
             //manualCancellationDate(nullable:true, blank:false)
             if(colMap.manualCancellationDate != null) {
-                Date manualCancellationDate = escapeService.parseDate(cols[colMap.manualCancellationDate])
+                Date manualCancellationDate = DateUtil.parseDateGeneric(cols[colMap.manualCancellationDate])
                 if(manualCancellationDate)
                     candidate.manualCancellationDate = manualCancellationDate
             }

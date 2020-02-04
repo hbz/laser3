@@ -263,7 +263,7 @@ import de.laser.helper.RDConstants
 
         boolean first = true;
 
-        def formatter = new DateUtil().getSimpleDateFormat_NoTime()
+        def formatter = DateUtil.getSDF_NoTime()
 
         // Add in JR1 and JR1a reports
         def c = new GregorianCalendar()
@@ -447,7 +447,7 @@ import de.laser.helper.RDConstants
 
             // read http://stackoverflow.com/questions/2824486/groovy-grails-how-do-you-stream-or-buffer-a-large-file-in-a-controllers-respon
             def date = new Date()
-            def sdf = new SimpleDateFormat("dd.MM.yyyy")
+            SimpleDateFormat sdf = new SimpleDateFormat("dd.MM.yyyy")
 
             XSSFWorkbook wb = new XSSFWorkbook()
             POIXMLProperties xmlProps = wb.getProperties()
@@ -760,7 +760,7 @@ import de.laser.helper.RDConstants
             return;
         }
 
-        def sdf = new SimpleDateFormat('dd.MM.yyyy')
+        SimpleDateFormat sdf = new SimpleDateFormat('dd.MM.yyyy')
 
         def subscription = Subscription.get(params.sub_id)
 
@@ -788,7 +788,7 @@ import de.laser.helper.RDConstants
             return;
         }
 
-        def sdf = new SimpleDateFormat('dd.MM.yyyy')
+        SimpleDateFormat sdf = new SimpleDateFormat('dd.MM.yyyy')
 
         def subscription = Subscription.get(params.sub_id)
 
@@ -856,7 +856,7 @@ import de.laser.helper.RDConstants
             }
             XSSFSheet firstSheet = wb.getSheetAt(0);
 
-            def sdf = new SimpleDateFormat('dd.MM.yyyy')
+            SimpleDateFormat sdf = new SimpleDateFormat('dd.MM.yyyy')
 
             // Step 1 - Extract institution id, name and shortcode
             Row org_details_row = firstSheet.getRow(2)

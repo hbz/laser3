@@ -112,7 +112,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
             // Title History Events are IMMUTABLE - so we delete them rather than updating them.
             def base_query = "select the from TitleHistoryEvent as the where"
             // Need to parse date...
-            def sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
             def query_params = []
 
             if (historyEvent.date && historyEvent.date.trim().length() > 0) {
@@ -381,7 +381,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
         }
 
         def onNewTipp = { ctx, tipp, auto_accept ->
-            def sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.S");
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.S");
             log.debug("new tipp: ${tipp}");
             log.debug("identifiers: ${tipp.title.identifiers}");
 
@@ -1181,7 +1181,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
                 throw new RuntimeException("Unable to resolve config for ID ${sync_job.rectype}");
             }
 
-            def sdf = new java.text.SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
 
             def date = sync_job.haveUpTo
 
@@ -1518,7 +1518,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
 
             if (title_instance instanceof BookInstance) {
 
-                def sdf = new java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss.S");
+                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.S");
                 //Solange von GOKB kein Integer Feld kommt, weg lassen
                 //title_instance.editionNumber = titleinfo.editionNumber
                 title_instance.editionDifferentiator = titleinfo.editionDifferentiator
@@ -1552,7 +1552,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
                     def orgSector = RDStore.O_SECTOR_PUBLISHER
                     def publisher = Org.lookupOrCreate(pub.name, orgSector, null, publisher_identifiers, null, pub.uuid)
                     def pub_role = RDStore.OR_PUBLISHER
-                    def sdf = new java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
+                    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
                     def start_date
                     def end_date
 
@@ -1592,7 +1592,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
                 if (historyEvent.date && historyEvent.date.trim().length() > 0) {
                     def base_query = "select the from TitleHistoryEvent as the where the.eventDate = :eventDate "
                     // Need to parse date...
-                    def sdf = new java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
+                    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
                     def query_params = [eventDate: sdf.parse(historyEvent.date)]
 
 
