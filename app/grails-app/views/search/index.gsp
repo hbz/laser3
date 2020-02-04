@@ -671,7 +671,7 @@ String period
                                     <b>${message(code: 'search.object.'+hit.getSourceAsMap().objectClassName)}</b>:
                                     <g:link controller="${hit.getSourceAsMap().objectClassName}" action="show" id="${hit.getSourceAsMap().objectId}">${hit.getSourceAsMap().objectName}</g:link>
                                     <br>
-                                    <b>${message(code: 'license.docs.table.type')}</b>: ${docContext.owner?.type?.getI10n('value')}
+                                    <b>${message(code: 'license.docs.table.type')}</b>: ${docContext ? docContext.owner?.type?.getI10n('value'): ""}
 
                                 </td>
                             </g:if>
