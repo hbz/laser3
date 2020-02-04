@@ -23,7 +23,7 @@ class SearchController extends AbstractDebugController {
         params.searchObjects = params.searchObjects ?: 'allObjects'
         result.contextOrg = contextService.getOrg()
 
-        def query = params.q ? "${params.q}": null
+        def query = params.q ?: null
         if (!query) {
             return result
         }
