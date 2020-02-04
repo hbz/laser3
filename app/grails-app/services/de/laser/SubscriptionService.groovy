@@ -10,19 +10,18 @@ import com.k_int.properties.PropertyDefinitionGroupBinding
 import de.laser.domain.IssueEntitlementCoverage
 import de.laser.domain.PriceItem
 import de.laser.exceptions.EntitlementCreationException
-import de.laser.helper.DebugAnnotation
+import de.laser.helper.DateUtil
 import de.laser.helper.FactoryResult
 import de.laser.helper.RDConstants
-import org.codehaus.groovy.tools.shell.util.MessageSource
 import org.springframework.web.multipart.commons.CommonsMultipartFile
 import de.laser.helper.RDStore
-import com.k_int.kbplus.Identifier
 
 import java.nio.file.Path
 import java.nio.file.Files
+import java.text.SimpleDateFormat
 
 import static de.laser.helper.RDStore.*
-import grails.plugin.springsecurity.annotation.Secured
+
 import grails.util.Holders
 import org.codehaus.groovy.runtime.InvokerHelper
 
@@ -157,7 +156,7 @@ class SubscriptionService {
 
             def date_filter
             if (params.asAt && params?.asAt?.length() > 0) {
-                def sdf = new java.text.SimpleDateFormat(message(code: 'default.date.format.notime', default: 'yyyy-MM-dd'));
+                SimpleDateFormat sdf = DateUtil.getSDF_NoTime()
                 date_filter = sdf.parse(params.asAt)
                 /*result.as_at_date = date_filter
                 result.editable = false;*/

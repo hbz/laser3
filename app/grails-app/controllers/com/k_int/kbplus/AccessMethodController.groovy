@@ -2,8 +2,11 @@ package com.k_int.kbplus
 
 import com.k_int.kbplus.auth.User
 import de.laser.controller.AbstractDebugController
+import de.laser.helper.DateUtil
 import grails.plugin.springsecurity.annotation.Secured
 import org.springframework.dao.DataIntegrityViolationException
+
+import java.text.SimpleDateFormat
 
 class AccessMethodController extends AbstractDebugController {
 
@@ -14,8 +17,8 @@ class AccessMethodController extends AbstractDebugController {
     @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
     def create() {
         params.max = params.max ?: ((User) springSecurityService.getCurrentUser())?.getDefaultPageSizeTMP()
-        
-        def sdf = new java.text.SimpleDateFormat(message(code:'default.date.format.notime', default:'yyyy-MM-dd'))
+
+        SimpleDateFormat sdf = DateUtil.getSDF_NoTime()
         if (params.validFrom) {
             params.validFrom = sdf.parse(params.validFrom)
         } else {
@@ -86,7 +89,7 @@ class AccessMethodController extends AbstractDebugController {
         def platf = accessMethod.getPlatf()
 
 
-        def sdf = new java.text.SimpleDateFormat(message(code:'default.date.format.notime', default:'yyyy-MM-dd'))
+        SimpleDateFormat sdf = DateUtil.getSDF_NoTime()
         if (params.validFrom) {
             params.validFrom = sdf.parse(params.validFrom)
         } else {

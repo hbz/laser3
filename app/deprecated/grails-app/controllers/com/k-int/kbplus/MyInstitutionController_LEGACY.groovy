@@ -263,7 +263,7 @@ import de.laser.helper.RDConstants
 
         boolean first = true;
 
-        def formatter = new DateUtil().getSimpleDateFormat_NoTime()
+        def formatter = DateUtil.getSDF_NoTime()
 
         // Add in JR1 and JR1a reports
         def c = new GregorianCalendar()

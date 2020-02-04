@@ -1,8 +1,8 @@
 package com.k_int.kbplus
 
+import de.laser.helper.DateUtil
 import de.laser.helper.RDConstants
 import grails.transaction.Transactional
-import org.springframework.context.i18n.LocaleContextHolder
 import org.springframework.web.multipart.commons.CommonsMultipartFile
 import java.text.ParseException
 import java.text.SimpleDateFormat
@@ -344,7 +344,7 @@ class FinanceService {
     List processFilterParams(params,String filterView,boolean forSingleSubscription) {
         String filterQuery = ""
         LinkedHashMap queryParams = [:]
-        SimpleDateFormat sdf = new SimpleDateFormat(messageSource.getMessage('default.date.format.notime',null, LocaleContextHolder.getLocale()))
+        SimpleDateFormat sdf = DateUtil.getSDF_NoTime()
         //subscription filter settings
         //subscription members
         if(params.filterSubMembers && filterView.equals("cons")) {

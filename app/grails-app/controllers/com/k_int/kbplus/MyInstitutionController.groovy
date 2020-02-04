@@ -32,7 +32,6 @@ import javax.servlet.ServletOutputStream
 import java.nio.charset.Charset
 import java.sql.Timestamp
 import java.text.DateFormat
-import java.text.RuleBasedCollator
 import java.text.SimpleDateFormat
 
 @Secured(['IS_AUTHENTICATED_FULLY'])
@@ -318,7 +317,7 @@ class MyInstitutionController extends AbstractDebugController {
         result.editable      = accessService.checkMinUserOrgRole(result.user, result.institution, 'INST_EDITOR')
 
         def date_restriction = null;
-        def sdf = new DateUtil().getSimpleDateFormat_NoTime()
+        SimpleDateFormat sdf = DateUtil.getSDF_NoTime()
 
         if (params.validOn == null || params.validOn.trim() == '') {
             result.validOn = ""
@@ -630,7 +629,7 @@ from License as l where (
         }
 
         def cal = new java.util.GregorianCalendar()
-        def sdf = new DateUtil().getSimpleDateFormat_NoTime()
+        SimpleDateFormat sdf = DateUtil.getSDF_NoTime()
 
         cal.setTimeInMillis(System.currentTimeMillis())
         cal.set(Calendar.MONTH, Calendar.JANUARY)
@@ -728,7 +727,7 @@ from License as l where (
         result.orgList = orgListTotal.drop((int) result.offset).take((int) result.max)
 
         def message = g.message(code: 'export.my.currentProviders')
-        SimpleDateFormat sdf = new SimpleDateFormat(g.message(code:'default.date.format.notime'))
+        SimpleDateFormat sdf = DateUtil.getSDF_NoTime()
         String datetoday = sdf.format(new Date(System.currentTimeMillis()))
         String filename = message+"_${datetoday}"
 
@@ -806,7 +805,7 @@ from License as l where (
         viableOrgs.add(result.institution)
 
         def date_restriction = null;
-        def sdf = new DateUtil().getSimpleDateFormat_NoTime()
+        SimpleDateFormat sdf = DateUtil.getSDF_NoTime()
 
         if (params.validOn == null || params.validOn.trim() == '') {
             result.validOn = ""
@@ -861,7 +860,7 @@ from License as l where (
 
 
         // Write the output to a file
-        sdf = new SimpleDateFormat(g.message(code: 'default.date.format.notimenopoint'))
+        sdf = DateUtil.getSDF_NoTimeNoPoint()
         String datetoday = sdf.format(new Date(System.currentTimeMillis()))
         String filename = "${datetoday}_" + g.message(code: "export.my.currentSubscriptions")
 
@@ -900,7 +899,7 @@ from License as l where (
 
 
     private def exportcurrentSubscription(List<Subscription> subscriptions, String format,contextOrg) {
-        SimpleDateFormat sdf = new SimpleDateFormat(g.message(code:'default.date.format.notime'))
+        SimpleDateFormat sdf = DateUtil.getSDF_NoTime()
         List titles = ['Name',
                        g.message(code: 'license.label'),
                        g.message(code: 'subscription.packages.label'),
@@ -1036,7 +1035,7 @@ from License as l where (
     }
 
     private def exportSurveyInfo(List<SurveyResult> results, String format, Org org) {
-        SimpleDateFormat sdf = new SimpleDateFormat(g.message(code:'default.date.format.notime'))
+        SimpleDateFormat sdf = DateUtil.getSDF_NoTime()
         List titles = [g.message(code: 'surveyInfo.owner.label'),
 
                        g.message(code: 'surveyConfigsInfo.comment'),
@@ -1153,7 +1152,7 @@ from License as l where (
         def result = setResultGenerics()
 
         def date_restriction = null;
-        def sdf = new DateUtil().getSimpleDateFormat_NoTime()
+        SimpleDateFormat sdf = DateUtil.getSDF_NoTime()
 
         if (params.validOn == null) {
             result.validOn = sdf.format(new Date(System.currentTimeMillis()))
@@ -1224,7 +1223,7 @@ from License as l where (
 
         if (result.editable) {
             def cal = new java.util.GregorianCalendar()
-            def sdf = new DateUtil().getSimpleDateFormat_NoTime()
+            SimpleDateFormat sdf = DateUtil.getSDF_NoTime()
 
             cal.setTimeInMillis(System.currentTimeMillis())
             cal.set(Calendar.MONTH, Calendar.JANUARY)
@@ -1295,7 +1294,7 @@ from License as l where (
 
         if (accessService.checkMinUserOrgRole(result.user, result.institution, 'INST_EDITOR')) {
 
-            SimpleDateFormat sdf = new DateUtil().getSimpleDateFormat_NoTime()
+            SimpleDateFormat sdf = DateUtil.getSDF_NoTime()
             Date startDate = params.valid_from ? sdf.parse(params.valid_from) : null
             Date endDate = params.valid_to ? sdf.parse(params.valid_to) : null
             RefdataValue status = RefdataValue.get(params.status)
@@ -1728,7 +1727,7 @@ from License as l where (
         // Set Date Restriction
         def date_restriction = null;
 
-        def sdf = new DateUtil().getSimpleDateFormat_NoTime()
+        SimpleDateFormat sdf = DateUtil.getSDF_NoTime()
         boolean defaultSet = false
         if (params.validOn == null) {
             result.validOn = sdf.format(new Date(System.currentTimeMillis()))
@@ -2383,7 +2382,7 @@ AND EXISTS (
 
         // tasks
 
-        DateFormat sdFormat    = new DateUtil().getSimpleDateFormat_NoTime()
+        SimpleDateFormat sdFormat    = DateUtil.getSDF_NoTime()
         params.taskStatus = 'not done'
         def query       = filterService.getTaskQuery(params << [sort: 't.endDate', order: 'asc'], sdFormat)
         def contextOrg  = contextService.getOrg()
@@ -2566,7 +2565,7 @@ AND EXISTS (
                 result
             }
             csv {
-                def dateFormat = new DateUtil().getSimpleDateFormat_NoTime()
+                SimpleDateFormat dateFormat = DateUtil.getSDF_NoTime()
                 def changes = PendingChange.executeQuery("select pc "+base_query+"  order by ts desc", qry_params)
                 response.setHeader("Content-disposition", "attachment; filename=\"${escapeService.escapeString(result.institution.name)}_changes.csv\"")
                 response.contentType = "text/csv"
@@ -2722,7 +2721,7 @@ AND EXISTS (
 
         params.tab = params.tab ?: 'new'
 
-        DateFormat sdFormat = new DateUtil().getSimpleDateFormat_NoTime()
+        SimpleDateFormat sdFormat = DateUtil.getSDF_NoTime()
 
         def fsq = filterService.getParticipantSurveyQuery_New(params, sdFormat, result.institution)
 
@@ -2762,7 +2761,7 @@ AND EXISTS (
         }
 
         if ( params.exportXLS ) {
-            def sdf = new SimpleDateFormat(g.message(code: 'default.date.format.notimenopoint'));
+            SimpleDateFormat sdf = DateUtil.getSDF_NoTimeNoPoint()
             String datetoday = sdf.format(new Date(System.currentTimeMillis()))
             String filename = "${datetoday}_" + g.message(code: "survey.label")
             //if(wb instanceof XSSFWorkbook) file += "x";
@@ -3002,7 +3001,7 @@ AND EXISTS (
 
       if (request.method == 'POST' && result.tip ){
         log.debug("Add usage ${params}")
-        def sdf = new DateUtil().getSimpleDateFormat_NoTime()
+          SimpleDateFormat sdf = DateUtil.getSDF_NoTime()
         def usageDate = sdf.parse(params.usageDate);
         def cal = new GregorianCalendar()
         cal.setTime(usageDate)
@@ -3238,7 +3237,7 @@ AND EXISTS (
             params.sort = "t.endDate"
             params.order = "asc"
         }
-        DateFormat sdFormat = new DateUtil().getSimpleDateFormat_NoTime()
+        SimpleDateFormat sdFormat = DateUtil.getSDF_NoTime()
         def queryForFilter = filterService.getTaskQuery(params, sdFormat)
         int offset = params.offset ? Integer.parseInt(params.offset) : 0
         result.taskInstanceList = taskService.getTasksByResponsibles(result.user, result.institution, queryForFilter)
@@ -3303,7 +3302,7 @@ AND EXISTS (
                 result.memberIds << cmb.fromOrg.id
             }
 
-        SimpleDateFormat sdf = new SimpleDateFormat(message(code:'default.date.format.notimenopoint'))
+        SimpleDateFormat sdf = DateUtil.getSDF_NoTimeNoPoint()
 
         def tableHeader
         if(result.comboType == 'Consortium')
@@ -3413,7 +3412,7 @@ AND EXISTS (
             header = g.message(code: 'menu.my.departments')
             exportHeader = message(code: 'export.my.departments')
         }
-        SimpleDateFormat sdf = new SimpleDateFormat(message(code:'default.date.format.notimenopoint'))
+        SimpleDateFormat sdf = DateUtil.getSDF_NoTimeNoPoint()
         // Write the output to a file
         String file = "${sdf.format(new Date(System.currentTimeMillis()))}_"+exportHeader
 
@@ -3531,7 +3530,7 @@ AND EXISTS (
             query += "( ci.endDate >= :validOn OR (ci.endDate is null AND (subT.endDate >= :validOn OR subT.endDate is null) ) ) "
             query += ") "
 
-            DateFormat sdf = new DateUtil().getSimpleDateFormat_NoTime()
+            SimpleDateFormat sdf = DateUtil.getSDF_NoTime()
             qarams.put('validOn', new Timestamp(sdf.parse(params.validOn).getTime()))
         }
 
@@ -3624,7 +3623,8 @@ AND EXISTS (
             else orgs.add(it.org)
             providers.put(it.sub,orgs)
         }
-        SimpleDateFormat sdf = new SimpleDateFormat(message(code:'default.date.format.notime'))
+        SimpleDateFormat sdf = DateUtil.getSDF_NoTime()
+
         if(params.exportXLS) {
             XSSFWorkbook wb = new XSSFWorkbook()
             POIXMLProperties xmlProps = wb.getProperties()
@@ -3918,7 +3918,7 @@ AND EXISTS (
         result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeTMP()
         result.offset = params.offset ? Integer.parseInt(params.offset) : 0
 
-        DateFormat sdFormat = new DateUtil().getSimpleDateFormat_NoTime()
+        DateFormat sdFormat = DateUtil.getSDF_NoTime()
 
         result.participant = Org.get(Long.parseLong(params.id))
 

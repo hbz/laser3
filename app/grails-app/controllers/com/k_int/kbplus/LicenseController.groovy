@@ -7,9 +7,12 @@ import com.k_int.properties.PropertyDefinition
 import de.laser.AccessService
 import de.laser.DeletionService
 import de.laser.controller.AbstractDebugController
+import de.laser.helper.DateUtil
 import de.laser.helper.DebugAnnotation
 import de.laser.helper.DebugUtil
 import de.laser.helper.RDStore
+
+import java.text.SimpleDateFormat
 
 import static de.laser.helper.RDStore.*
 import grails.converters.JSON
@@ -399,7 +402,7 @@ class LicenseController extends AbstractDebugController {
 
     def subscriptions = null
     if(licenseInstitutions){
-      def sdf = new java.text.SimpleDateFormat(message(code:'default.date.format.notime', default:'yyyy-MM-dd'))
+      SimpleDateFormat sdf = DateUtil.getSDF_NoTime()
       def date_restriction =  new Date(System.currentTimeMillis())
 
       def base_qry = """
