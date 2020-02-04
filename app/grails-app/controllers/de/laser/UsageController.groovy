@@ -33,10 +33,10 @@ class UsageController extends AbstractDebugController {
         // criteria and totalCount for PageResultList Object seems to be problematic with projections and aggregation
         // use extra hql query for now, TODO only use hql base query and move the query out of this method
 
-        def hql = "select stc.supplierId, stc.customerId, min(stc.availFrom), max(stc.availTo), stc.factType.id from StatsTripleCursor as stc"
-        def groupCondition = " group by stc.supplierId, stc.customerId, stc.factType.id"
-        def whereConditions = []
-        def queryParams = [:]
+        String hql = "select stc.supplierId, stc.customerId, min(stc.availFrom), max(stc.availTo), stc.factType.id from StatsTripleCursor as stc"
+        String groupCondition = " group by stc.supplierId, stc.customerId, stc.factType.id"
+        ArrayList whereConditions = []
+        LinkedHashMap<String,Object> queryParams = [:]
         if (params.supplier){
             whereConditions.add('supplierId=:supplierId')
             queryParams += [supplierId: params.supplier]
@@ -56,10 +56,9 @@ class UsageController extends AbstractDebugController {
         } else {
             hql += " order by stc.supplierId asc"
         }*/
-        def totalResultIds = StatsTripleCursor.executeQuery(hql, queryParams)
+        ArrayList totalResultIds = StatsTripleCursor.executeQuery(hql, queryParams)
 
-        def criteria = StatsTripleCursor.createCriteria()
-        def results = criteria.list(max: result.max, offset: result.offset) {
+        List<HashMap> results = StatsTripleCursor.createCriteria().list(max: result.max, offset: result.offset) {
             projections {
                 groupProperty('supplierId', 'supplierId')
                 groupProperty('customerId', 'customerId')
@@ -107,16 +106,16 @@ class UsageController extends AbstractDebugController {
         result.institutionList = factService.institutionsWithRequestorIDAndAPIKey()
         result.user = User.get(springSecurityService.principal.id)
 
-        def platformsWithNatstatId = factService.platformsWithNatstatId()
+        ArrayList platformsWithNatstatId = factService.platformsWithNatstatId()
 
-        def providerList = []
+        ArrayList providerList = []
         if (!result.institutionList.isEmpty()) {
-            def joinedInstitutions = result.institutionList.id.join(',')
+            String joinedInstitutions = result.institutionList.id.join(',')
             platformsWithNatstatId.each {
-                def hql = "select s.id from Subscription s join s.orgRelations as institution " +
+                String hql = "select s.id from Subscription s join s.orgRelations as institution " +
                     "where institution.org.id in (${joinedInstitutions}) and exists (select 1 from IssueEntitlement as ie INNER JOIN ie.tipp.platform  as platform where ie.subscription=s and platform.id=:platform_id)"
-                def subsWithIssueEntitlements = Subscription.executeQuery(hql, [platform_id: it.id])
-                def listItem = [:]
+                ArrayList subsWithIssueEntitlements = Subscription.executeQuery(hql, [platform_id: it.id])
+                LinkedHashMap<String,Object> listItem = [:]
                 listItem.id = it.id
                 listItem.name = it.name
                 listItem.optionDisabled = (subsWithIssueEntitlements.size() == 0)
@@ -130,20 +129,23 @@ class UsageController extends AbstractDebugController {
             projections {
                 distinct("supplierId")
             }
+            order("supplierId", "asc")
         }
-        def institutionsForQuery = StatsTripleCursor.withCriteria {
+        String institutionsForQuery = StatsTripleCursor.withCriteria {
             projections {
                 distinct("customerId")
             }
+            order("customerId", "asc")
         }.collect {"'$it'"}.join(',')
 
-        def hql = "select ident.org, ident from Identifier as ident where ident.value in (${institutionsForQuery})"
+        String hql = "select ident.org, ident from Identifier as ident where ident.value in (${institutionsForQuery})"
         result.natstatInstitutions = institutionsForQuery ? Org.executeQuery(hql) : []
         result.cursorCount = factService.getSupplierCursorCount()
 
         if (statsSyncService.getErrors()) {
             flash.error = statsSyncService.errors.join('</br>')
         }
+        statsSyncService.errors = []
         return result
     }
 

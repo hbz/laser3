@@ -6,6 +6,8 @@
 
 2118    03.02.2020  hbz-dev     Andreas Feature     Satz bezüglich des Status aus Übersetzungsdatei entfernt
 
+2077    03.02.2020  dev         Anja    Feature     Löschrückfrage für Merkmale 
+
 2104    28.01.2020  rc1.2       Andreas Bug         Steuersatz wird im Tab Eigene Kosten korrekt dargestellt
 
 2083    28.01.2020  rc1.2       Andreas Bug         Teilnehmerlizenzen sind nicht mehr löschbar, wenn Kostenposten anhängig sind
