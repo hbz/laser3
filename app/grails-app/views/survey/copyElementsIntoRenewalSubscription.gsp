@@ -7,7 +7,7 @@
 <html>
 <head>
     <meta name="layout" content="semanticUI"/>
-    <title>${message(code: 'laser', default: 'LAS:eR')} : ${message(code: 'subscription.details.copyElementsIntoSubscription.label')}</title>
+    <title>${message(code: 'laser')} : ${message(code: 'subscription.details.copyElementsIntoSubscription.label')}</title>
 </head>
 <body>
 

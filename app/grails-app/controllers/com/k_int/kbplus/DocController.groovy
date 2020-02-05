@@ -46,7 +46,7 @@ class DocController extends AbstractDebugController {
 					return
 				}
 
-				flash.message = message(code: 'default.created.message', args: [message(code: 'doc.label', default: 'Doc'), docInstance.id])
+				flash.message = message(code: 'default.created.message', args: [message(code: 'doc.label'), docInstance.id])
 				redirect action: 'show', id: docInstance.id
 			break
 		}
@@ -57,7 +57,7 @@ class DocController extends AbstractDebugController {
     def show() {
         def docInstance = Doc.get(params.id)
         if (!docInstance) {
-			flash.message = message(code: 'default.not.found.message', args: [message(code: 'doc.label', default: 'Doc'), params.id])
+			flash.message = message(code: 'default.not.found.message', args: [message(code: 'doc.label'), params.id])
             redirect action: 'list'
             return
         }
@@ -72,7 +72,7 @@ class DocController extends AbstractDebugController {
 		case 'GET':
 	        def docInstance = Doc.get(params.id)
 	        if (!docInstance) {
-	            flash.message = message(code: 'default.not.found.message', args: [message(code: 'doc.label', default: 'Doc'), params.id])
+	            flash.message = message(code: 'default.not.found.message', args: [message(code: 'doc.label'), params.id])
 	            redirect action: 'list'
 	            return
 	        }
@@ -82,7 +82,7 @@ class DocController extends AbstractDebugController {
 		case 'POST':
 	        def docInstance = Doc.get(params.id)
 	        if (!docInstance) {
-	            flash.message = message(code: 'default.not.found.message', args: [message(code: 'doc.label', default: 'Doc'), params.id])
+	            flash.message = message(code: 'default.not.found.message', args: [message(code: 'doc.label'), params.id])
 	            redirect action: 'list'
 	            return
 	        }
@@ -91,7 +91,7 @@ class DocController extends AbstractDebugController {
 	            def version = params.version.toLong()
 	            if (docInstance.version > version) {
 	                docInstance.errors.rejectValue('version', 'default.optimistic.locking.failure',
-	                          [message(code: 'doc.label', default: 'Doc')] as Object[],
+	                          [message(code: 'doc.label')] as Object[],
 	                          "Another user has updated this Doc while you were editing")
 	                render view: 'edit', model: [docInstance: docInstance]
 	                return
@@ -107,7 +107,7 @@ class DocController extends AbstractDebugController {
 	            return
 	        }
 
-			flash.message = message(code: 'default.updated.message', args: [message(code: 'doc.label', default: 'Doc'), docInstance.id])
+			flash.message = message(code: 'default.updated.message', args: [message(code: 'doc.label'), docInstance.id])
 	        redirect action: 'show', id: docInstance.id
 			break
 		}
@@ -119,7 +119,7 @@ class DocController extends AbstractDebugController {
 		/*case 'GET':
 	        def docInstance = Doc.get(params.id)
 	        if (!docInstance) {
-	            flash.message = message(code: 'default.not.found.message', args: [message(code: 'doc.label', default: 'Doc'), params.id])
+	            flash.message = message(code: 'default.not.found.message', args: [message(code: 'doc.label'), params.id])
 	            redirect action: 'list'
 	            return
 	        }
@@ -129,7 +129,7 @@ class DocController extends AbstractDebugController {
 			case 'POST':
 				def docInstance = Doc.get(params.id)
 				if (!docInstance) {
-					flash.message = message(code: 'default.not.found.message', args: [message(code: 'default.note.label', default: 'Note'), params.id])
+					flash.message = message(code: 'default.not.found.message', args: [message(code: 'default.note.label'), params.id])
 					//redirect action: 'list'
 					redirect(url: request.getHeader('referer'))
 					return
@@ -139,7 +139,7 @@ class DocController extends AbstractDebugController {
 					def version = params.version.toLong()
 					if (docInstance.version > version) {
 						docInstance.errors.rejectValue('version', 'default.optimistic.locking.failure',
-								[message(code: 'default.note.label', default: 'Note')] as Object[],
+								[message(code: 'default.note.label')] as Object[],
 								"Another user has updated this Doc while you were editing")
 						//render view: 'edit', model: [docInstance: docInstance]
 						redirect(url: request.getHeader('referer'))
@@ -157,7 +157,7 @@ class DocController extends AbstractDebugController {
 					return
 				}
 
-				flash.message = message(code: 'default.updated.message', args: [message(code: 'default.note.label', default: 'Note'), docInstance.title])
+				flash.message = message(code: 'default.updated.message', args: [message(code: 'default.note.label'), docInstance.title])
 				//redirect action: 'show', id: docInstance.id
 				redirect(url: request.getHeader('referer'))
 				break
@@ -169,18 +169,18 @@ class DocController extends AbstractDebugController {
     def delete() {
         def docInstance = Doc.get(params.id)
         if (!docInstance) {
-			flash.message = message(code: 'default.not.found.message', args: [message(code: 'doc.label', default: 'Doc'), params.id])
+			flash.message = message(code: 'default.not.found.message', args: [message(code: 'doc.label'), params.id])
             redirect action: 'list'
             return
         }
 
         try {
             docInstance.delete(flush: true)
-			flash.message = message(code: 'default.deleted.message', args: [message(code: 'doc.label', default: 'Doc'), params.id])
+			flash.message = message(code: 'default.deleted.message', args: [message(code: 'doc.label'), params.id])
             redirect action: 'list'
         }
         catch (DataIntegrityViolationException e) {
-			flash.message = message(code: 'default.not.deleted.message', args: [message(code: 'doc.label', default: 'Doc'), params.id])
+			flash.message = message(code: 'default.not.deleted.message', args: [message(code: 'doc.label'), params.id])
             redirect action: 'show', id: params.id
         }
     }

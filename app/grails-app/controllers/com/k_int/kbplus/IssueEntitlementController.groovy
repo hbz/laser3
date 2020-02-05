@@ -47,7 +47,7 @@ class IssueEntitlementController extends AbstractDebugController {
               return
           }
 
-      flash.message = message(code: 'default.created.message', args: [message(code: 'issueEntitlement.label', default: 'IssueEntitlement'), issueEntitlementInstance.id])
+      flash.message = message(code: 'default.created.message', args: [message(code: 'issueEntitlement.label'), issueEntitlementInstance.id])
           redirect action: 'show', id: issueEntitlementInstance.id
       break
     }
@@ -98,7 +98,7 @@ class IssueEntitlementController extends AbstractDebugController {
       }
 
       if (!result.issueEntitlementInstance) {
-        flash.message = message(code: 'default.not.found.message', args: [message(code: 'issueEntitlement.label', default: 'IssueEntitlement'), params.id])
+        flash.message = message(code: 'default.not.found.message', args: [message(code: 'issueEntitlement.label'), params.id])
         redirect action: 'list'
         return
       }
@@ -149,7 +149,7 @@ class IssueEntitlementController extends AbstractDebugController {
     case 'GET':
           def issueEntitlementInstance = IssueEntitlement.get(params.id)
           if (!issueEntitlementInstance) {
-              flash.message = message(code: 'default.not.found.message', args: [message(code: 'issueEntitlement.label', default: 'IssueEntitlement'), params.id])
+              flash.message = message(code: 'default.not.found.message', args: [message(code: 'issueEntitlement.label'), params.id])
               redirect action: 'list'
               return
           }
@@ -159,7 +159,7 @@ class IssueEntitlementController extends AbstractDebugController {
     case 'POST':
           def issueEntitlementInstance = IssueEntitlement.get(params.id)
           if (!issueEntitlementInstance) {
-              flash.message = message(code: 'default.not.found.message', args: [message(code: 'issueEntitlement.label', default: 'IssueEntitlement'), params.id])
+              flash.message = message(code: 'default.not.found.message', args: [message(code: 'issueEntitlement.label'), params.id])
               redirect action: 'list'
               return
           }
@@ -168,7 +168,7 @@ class IssueEntitlementController extends AbstractDebugController {
               def version = params.version.toLong()
               if (issueEntitlementInstance.version > version) {
                   issueEntitlementInstance.errors.rejectValue('version', 'default.optimistic.locking.failure',
-                            [message(code: 'issueEntitlement.label', default: 'IssueEntitlement')] as Object[],
+                            [message(code: 'issueEntitlement.label')] as Object[],
                             "Another user has updated this IssueEntitlement while you were editing")
                   render view: 'edit', model: [issueEntitlementInstance: issueEntitlementInstance]
                   return
@@ -182,7 +182,7 @@ class IssueEntitlementController extends AbstractDebugController {
               return
           }
 
-      flash.message = message(code: 'default.updated.message', args: [message(code: 'issueEntitlement.label', default: 'IssueEntitlement'), issueEntitlementInstance.id])
+      flash.message = message(code: 'default.updated.message', args: [message(code: 'issueEntitlement.label'), issueEntitlementInstance.id])
           redirect action: 'show', id: issueEntitlementInstance.id
       break
     }
@@ -193,18 +193,18 @@ class IssueEntitlementController extends AbstractDebugController {
   def delete() {
     def issueEntitlementInstance = IssueEntitlement.get(params.id)
     if (!issueEntitlementInstance) {
-    flash.message = message(code: 'default.not.found.message', args: [message(code: 'issueEntitlement.label', default: 'IssueEntitlement'), params.id])
+    flash.message = message(code: 'default.not.found.message', args: [message(code: 'issueEntitlement.label'), params.id])
         redirect action: 'list'
         return
     }
 
     try {
       issueEntitlementInstance.delete(flush: true)
-      flash.message = message(code: 'default.deleted.message', args: [message(code: 'issueEntitlement.label', default: 'IssueEntitlement'), params.id])
+      flash.message = message(code: 'default.deleted.message', args: [message(code: 'issueEntitlement.label'), params.id])
       redirect action: 'list'
     }
     catch (DataIntegrityViolationException e) {
-      flash.message = message(code: 'default.not.deleted.message', args: [message(code: 'issueEntitlement.label', default: 'IssueEntitlement'), params.id])
+      flash.message = message(code: 'default.not.deleted.message', args: [message(code: 'issueEntitlement.label'), params.id])
       redirect action: 'show', id: params.id
     }
   }

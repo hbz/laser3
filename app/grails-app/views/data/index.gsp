@@ -3,7 +3,7 @@
 <html>
   <head>
     <meta name="layout" content="semanticUI"/>
-    <title>${message(code:'laser', default:'LAS:eR')} Data import explorer</title>
+    <title>${message(code:'laser')} Data import explorer</title>
   </head>
 
   <body>
@@ -15,7 +15,7 @@
 
     <div>
       <p>
-        ${message(code:'laser', default:'LAS:eR')} data explorer. Use the links above to navigate the data items imported by the ${message(code:'laser', default:'LAS:eR')} import process and validate the data.
+        ${message(code:'laser')} data explorer. Use the links above to navigate the data items imported by the ${message(code:'laser')} import process and validate the data.
       </p>
       <p>
         Browse using the categories above, or search over organisations and titles below.

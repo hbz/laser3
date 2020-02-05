@@ -38,7 +38,7 @@ class SemanticUiInplaceTagLib {
 
             if (attrs.type == "date") {
                 out << " data-type=\"text\"" // combodate | date
-                def df = "${message(code:'default.date.format.notime', default:'yyyy-mm-dd').toUpperCase()}"
+                def df = "${message(code:'default.date.format.notime').toUpperCase()}"
                 out << " data-format=\"${df}\""
                 out << " data-viewformat=\"${df}\""
                 out << " data-template=\"${df}\""
@@ -109,7 +109,7 @@ class SemanticUiInplaceTagLib {
             }
             else {
                 if (attrs.owner[attrs.field] && attrs.type=='date') {
-                    SimpleDateFormat sdf = new SimpleDateFormat(attrs.format?: message(code:'default.date.format.notime', default:'yyyy-MM-dd'))
+                    SimpleDateFormat sdf = new SimpleDateFormat(attrs.format?: message(code:'default.date.format.notime'))
                     out << sdf.format(attrs.owner[attrs.field])
                 }
                 else {
@@ -239,7 +239,7 @@ class SemanticUiInplaceTagLib {
 
         if (attrs.type == "date") {
             out << " data-type=\"text\"" // combodate | date
-            def df = "${message(code:'default.date.format.notime', default:'yyyy-mm-dd').toUpperCase()}"
+            def df = "${message(code:'default.date.format.notime').toUpperCase()}"
             out << " data-format=\"${df}\""
             out << " data-viewformat=\"${df}\""
             out << " data-template=\"${df}\""

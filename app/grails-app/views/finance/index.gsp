@@ -8,7 +8,7 @@
 <html xmlns="http://www.w3.org/1999/html">
     <head>
         <meta name="layout" content="semanticUI"/>
-        <title>${message(code:'laser', default:'LAS:eR')} : ${message(code:'subscription.details.financials.label')}</title>
+        <title>${message(code:'laser')} : ${message(code:'subscription.details.financials.label')}</title>
     </head>
     <body>
         <laser:serviceInjection />

@@ -10,7 +10,7 @@
 		<g:elseif test="${comboType == RDStore.COMBO_TYPE_DEPARTMENT}">
 			<g:set var="entityName" value="${message(code: 'default.department')}" />
 		</g:elseif>
-		<title>${message(code:'laser', default:'LAS:eR')} : <g:message code="default.create.label" args="[entityName]" /></title>
+		<title>${message(code:'laser')} : <g:message code="default.create.label" args="[entityName]" /></title>
 	</head>
 	<body>
 	<semui:breadcrumbs>

@@ -1690,7 +1690,7 @@ from License as l where (
             // This is done by basePackage.createSubscription
             // def new_sub_package = new SubscriptionPackage(subscription: new_sub, pkg: basePackage).save();
 
-            flash.message = message(code: 'subscription.created.message', args: [message(code: 'default.subscription.label', default: 'Package'), basePackage.id])
+            flash.message = message(code: 'subscription.created.message', args: [message(code: 'default.subscription.label'), basePackage.id])
             redirect controller: 'subscription', action: 'index', params: params, id: new_sub.id
         } else {
             flash.message = message(code: 'subscription.unknown.message')
@@ -3078,7 +3078,7 @@ AND EXISTS (
         def success = userService.addNewUser(params,flash)
         //despite IntelliJ's warnings, success may be an array other than the boolean true
         if(success instanceof User) {
-            flash.message = message(code: 'default.created.message', args: [message(code: 'user.label', default: 'User'), success.id])
+            flash.message = message(code: 'default.created.message', args: [message(code: 'user.label'), success.id])
             redirect action: 'userEdit', id: success.id
         }
         else if(success instanceof List) {
@@ -3092,7 +3092,7 @@ AND EXISTS (
     def addAffiliation() {
         Map result = userService.setResultGenerics(params)
         if (! result.editable) {
-            flash.error = message(code: 'default.noPermissions', default: 'KEINE BERECHTIGUNG')
+            flash.error = message(code: 'default.noPermissions')
             redirect action: 'userEdit', id: params.id
             return
         }
@@ -3209,13 +3209,13 @@ AND EXISTS (
             if (dTask && (dTask.creator.id == result.user.id || contextService.getUser().hasAffiliation("INST_ADM"))) {
                 try {
                     dTask.delete(flush: true)
-                    flash.message = message(code: 'default.deleted.message', args: [message(code: 'task.label', default: 'Task'), params.deleteId])
+                    flash.message = message(code: 'default.deleted.message', args: [message(code: 'task.label'), params.deleteId])
                 }
                 catch (Exception e) {
-                    flash.message = message(code: 'default.not.deleted.message', args: [message(code: 'task.label', default: 'Task'), params.deleteId])
+                    flash.message = message(code: 'default.not.deleted.message', args: [message(code: 'task.label'), params.deleteId])
                 }
             } else {
-                flash.message = message(code: 'default.not.deleted.notAutorized.message', args: [message(code: 'task.label', default: 'Task'), params.deleteId])
+                flash.message = message(code: 'default.not.deleted.notAutorized.message', args: [message(code: 'task.label'), params.deleteId])
             }
         }
 

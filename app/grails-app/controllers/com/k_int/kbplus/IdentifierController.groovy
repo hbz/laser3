@@ -47,7 +47,7 @@ class IdentifierController {
 	            return
 	        }
 
-			flash.message = message(code: 'default.created.message', args: [message(code: 'identifier.label', default: 'Identifier'), identifierInstance.id])
+			flash.message = message(code: 'default.created.message', args: [message(code: 'identifier.label'), identifierInstance.id])
 	        redirect action: 'show', id: identifierInstance.id
 			break
 		}
@@ -58,7 +58,7 @@ class IdentifierController {
 
         def identifierInstance = Identifier.get(params.id)
         if (!identifierInstance) {
-			flash.message = message(code: 'default.not.found.message', args: [message(code: 'identifier.label', default: 'Identifier'), params.id])
+			flash.message = message(code: 'default.not.found.message', args: [message(code: 'identifier.label'), params.id])
             redirect action: 'list'
             return
         }
@@ -76,7 +76,7 @@ class IdentifierController {
 		case 'GET':
 	        def identifierInstance = Identifier.get(params.id)
 	        if (!identifierInstance) {
-	            flash.message = message(code: 'default.not.found.message', args: [message(code: 'identifier.label', default: 'Identifier'), params.id])
+	            flash.message = message(code: 'default.not.found.message', args: [message(code: 'identifier.label'), params.id])
 	            redirect action: 'list'
 	            return
 	        }
@@ -86,7 +86,7 @@ class IdentifierController {
 		case 'POST':
 	        def identifierInstance = Identifier.get(params.id)
 	        if (!identifierInstance) {
-	            flash.message = message(code: 'default.not.found.message', args: [message(code: 'identifier.label', default: 'Identifier'), params.id])
+	            flash.message = message(code: 'default.not.found.message', args: [message(code: 'identifier.label'), params.id])
 	            redirect action: 'list'
 	            return
 	        }
@@ -95,7 +95,7 @@ class IdentifierController {
 	            def version = params.version.toLong()
 	            if (identifierInstance.version > version) {
 	                identifierInstance.errors.rejectValue('version', 'default.optimistic.locking.failure',
-	                          [message(code: 'identifier.label', default: 'Identifier')] as Object[],
+	                          [message(code: 'identifier.label')] as Object[],
 	                          "Another user has updated this Identifier while you were editing")
 	                render view: 'edit', model: [identifierInstance: identifierInstance]
 	                return
@@ -109,7 +109,7 @@ class IdentifierController {
 	            return
 	        }
 
-			flash.message = message(code: 'default.updated.message', args: [message(code: 'identifier.label', default: 'Identifier'), identifierInstance.id])
+			flash.message = message(code: 'default.updated.message', args: [message(code: 'identifier.label'), identifierInstance.id])
 	        redirect action: 'show', id: identifierInstance.id
 			break
 		}
@@ -123,18 +123,18 @@ class IdentifierController {
 
         def identifierInstance = Identifier.get(params.id)
         if (!identifierInstance) {
-			flash.message = message(code: 'default.not.found.message', args: [message(code: 'identifier.label', default: 'Identifier'), params.id])
+			flash.message = message(code: 'default.not.found.message', args: [message(code: 'identifier.label'), params.id])
             redirect action: 'list'
             return
         }
 
         try {
             identifierInstance.delete(flush: true)
-			flash.message = message(code: 'default.deleted.message', args: [message(code: 'identifier.label', default: 'Identifier'), params.id])
+			flash.message = message(code: 'default.deleted.message', args: [message(code: 'identifier.label'), params.id])
             redirect action: 'list'
         }
         catch (DataIntegrityViolationException e) {
-			flash.message = message(code: 'default.not.deleted.message', args: [message(code: 'identifier.label', default: 'Identifier'), params.id])
+			flash.message = message(code: 'default.not.deleted.message', args: [message(code: 'identifier.label'), params.id])
             redirect action: 'show', id: params.id
         }
     }

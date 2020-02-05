@@ -8,10 +8,10 @@
 <head>
     <meta name="layout" content="semanticUI"/>
     <g:if test="${isRenewSub}">
-        <title>${message(code: 'laser', default: 'LAS:eR')} : ${message(code: 'subscription.details.renewals.renew_sub.label')}</title>
+        <title>${message(code: 'laser')} : ${message(code: 'subscription.details.renewals.renew_sub.label')}</title>
     </g:if>
     <g:else>
-        <title>${message(code: 'laser', default: 'LAS:eR')} : ${message(code: 'subscription.details.copyElementsIntoSubscription.label')}</title>
+        <title>${message(code: 'laser')} : ${message(code: 'subscription.details.copyElementsIntoSubscription.label')}</title>
     </g:else>
 </head>
 <body>

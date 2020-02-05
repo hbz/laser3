@@ -26,7 +26,7 @@ class TippController extends AbstractDebugController {
     result.titleInstanceInstance = result.tipp.title
 
     if (!result.titleInstanceInstance) {
-      flash.message = message(code: 'default.not.found.message', args: [message(code: 'titleInstance.label', default: 'TitleInstance'), params.id])
+      flash.message = message(code: 'default.not.found.message', args: [message(code: 'titleInstance.label'), params.id])
       redirect action: 'list'
       return
     }

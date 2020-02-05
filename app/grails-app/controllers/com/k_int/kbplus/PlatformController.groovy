@@ -82,7 +82,7 @@ class PlatformController extends AbstractDebugController {
               return
           }
 
-      flash.message = message(code: 'default.created.message', args: [message(code: 'platform.label', default: 'Platform'), platformInstance.id])
+      flash.message = message(code: 'default.created.message', args: [message(code: 'platform.label'), platformInstance.id])
           redirect action: 'show', id: platformInstance.id
       break
     }
@@ -95,7 +95,7 @@ class PlatformController extends AbstractDebugController {
       def platformInstance = Platform.get(params.id)
       if (!platformInstance) {
         flash.message = message(code: 'default.not.found.message', 
-                                args: [message(code: 'platform.label', default: 'Platform'), params.id])
+                                args: [message(code: 'platform.label'), params.id])
         redirect action: 'list'
         return
       }
@@ -201,7 +201,7 @@ class PlatformController extends AbstractDebugController {
         def platformInstance = Platform.get(params.id)
         if (!platformInstance) {
             flash.message = message(code: 'default.not.found.message',
-                    args: [message(code: 'platform.label', default: 'Platform'), params.id])
+                    args: [message(code: 'platform.label'), params.id])
             redirect action: 'list'
             return
         }
@@ -232,7 +232,7 @@ class PlatformController extends AbstractDebugController {
     case 'GET':
           def platformInstance = Platform.get(params.id)
           if (!platformInstance) {
-              flash.message = message(code: 'default.not.found.message', args: [message(code: 'platform.label', default: 'Platform'), params.id])
+              flash.message = message(code: 'default.not.found.message', args: [message(code: 'platform.label'), params.id])
               redirect action: 'list'
               return
           }
@@ -242,7 +242,7 @@ class PlatformController extends AbstractDebugController {
     case 'POST':
           def platformInstance = Platform.get(params.id)
           if (!platformInstance) {
-              flash.message = message(code: 'default.not.found.message', args: [message(code: 'platform.label', default: 'Platform'), params.id])
+              flash.message = message(code: 'default.not.found.message', args: [message(code: 'platform.label'), params.id])
               redirect action: 'list'
               return
           }
@@ -251,7 +251,7 @@ class PlatformController extends AbstractDebugController {
               def version = params.version.toLong()
               if (platformInstance.version > version) {
                   platformInstance.errors.rejectValue('version', 'default.optimistic.locking.failure',
-                            [message(code: 'platform.label', default: 'Platform')] as Object[],
+                            [message(code: 'platform.label')] as Object[],
                             "Another user has updated this Platform while you were editing")
                   render view: 'edit', model: [platformInstance: platformInstance]
                   return
@@ -265,7 +265,7 @@ class PlatformController extends AbstractDebugController {
               return
           }
 
-      flash.message = message(code: 'default.updated.message', args: [message(code: 'platform.label', default: 'Platform'), platformInstance.id])
+      flash.message = message(code: 'default.updated.message', args: [message(code: 'platform.label'), platformInstance.id])
           redirect action: 'show', id: platformInstance.id
       break
     }
@@ -277,18 +277,18 @@ class PlatformController extends AbstractDebugController {
     def delete() {
         def platformInstance = Platform.get(params.id)
         if (!platformInstance) {
-      flash.message = message(code: 'default.not.found.message', args: [message(code: 'platform.label', default: 'Platform'), params.id])
+      flash.message = message(code: 'default.not.found.message', args: [message(code: 'platform.label'), params.id])
             redirect action: 'list'
             return
         }
 
         try {
             platformInstance.delete(flush: true)
-      flash.message = message(code: 'default.deleted.message', args: [message(code: 'platform.label', default: 'Platform'), params.id])
+      flash.message = message(code: 'default.deleted.message', args: [message(code: 'platform.label'), params.id])
             redirect action: 'list'
         }
         catch (DataIntegrityViolationException e) {
-      flash.message = message(code: 'default.not.deleted.message', args: [message(code: 'platform.label', default: 'Platform'), params.id])
+      flash.message = message(code: 'default.not.deleted.message', args: [message(code: 'platform.label'), params.id])
             redirect action: 'show', id: params.id
         }
     }
@@ -299,7 +299,7 @@ class PlatformController extends AbstractDebugController {
         def platformInstance = Platform.get(params.id)
         if (!platformInstance) {
             flash.message = message(code: 'default.not.found.message',
-                    args: [message(code: 'platform.label', default: 'Platform'), params.id])
+                    args: [message(code: 'platform.label'), params.id])
             redirect action: 'list'
             return
         }
@@ -316,7 +316,7 @@ class PlatformController extends AbstractDebugController {
         def platformInstance = Platform.get(params.id)
         if (!platformInstance) {
             flash.message = message(code: 'default.not.found.message',
-                args: [message(code: 'platform.label', default: 'Platform'), params.id])
+                args: [message(code: 'platform.label'), params.id])
             redirect action: 'list'
             return
         }
@@ -349,7 +349,7 @@ class PlatformController extends AbstractDebugController {
         def platformInstance = Platform.get(params.platform_id)
         if (!platformInstance) {
             flash.message = message(code: 'default.not.found.message',
-                args: [message(code: 'platform.label', default: 'Platform'), params.platform_id])
+                args: [message(code: 'platform.label'), params.platform_id])
             redirect action: 'list'
             return
         }

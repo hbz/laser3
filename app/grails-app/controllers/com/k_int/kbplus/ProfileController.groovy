@@ -364,17 +364,17 @@ class ProfileController {
 
         if (passwordEncoder.isPasswordValid(user.password, params.passwordCurrent, null)) {
             if (params.passwordNew.trim().size() < 5) {
-                flash.message += message(code:'profile.password.update.enterValidNewPassword', default:"Please enter new password (min. 5 chars)")
+                flash.message += message(code:'profile.password.update.enterValidNewPassword')
             } else {
                 user.password = params.passwordNew
 
                 if (user.save()) {
-                    flash.message += message(code:'profile.password.update.success', default:"Password succesfully updated")
+                    flash.message += message(code:'profile.password.update.success')
                 }
             }
 
         } else {
-            flash.message += message(code:'profile.password.update.enterValidCurrentPassword', default:"Please enter valid current password")
+            flash.message += message(code:'profile.password.update.enterValidCurrentPassword')
         }
         redirect(action: "index")
     }

@@ -80,12 +80,12 @@ class TaskController extends AbstractDebugController {
 				if (!taskInstance.save(flush: true)) {
 					/*result.taskInstance = taskInstance
 					render view: 'create', model: result*/
-					flash.error = message(code: 'default.not.created.message', args: [message(code: 'task.label', default: 'Task')])
+					flash.error = message(code: 'default.not.created.message', args: [message(code: 'task.label')])
 					redirect(url: request.getHeader('referer'))
 					return
 				}
 
-				flash.message = message(code: 'default.created.message', args: [message(code: 'task.label', default: 'Task'), taskInstance.title])
+				flash.message = message(code: 'default.created.message', args: [message(code: 'task.label'), taskInstance.title])
 
 				redirect(url: request.getHeader('referer'))
 				break
@@ -107,7 +107,7 @@ class TaskController extends AbstractDebugController {
     def show() {
         def taskInstance = Task.get(params.id)
         if (! taskInstance) {
-			flash.message = message(code: 'default.not.found.message', args: [message(code: 'task.label', default: 'Task'), params.id])
+			flash.message = message(code: 'default.not.found.message', args: [message(code: 'task.label'), params.id])
             //redirect action: 'list'
 			redirect controller: 'myInstitution', action: 'dashboard'
             return
@@ -131,7 +131,7 @@ class TaskController extends AbstractDebugController {
 		/*case 'GET':
             result.taskInstance = Task.get(params.id)
 	        if (! result.taskInstance) {
-	            flash.message = message(code: 'default.not.found.message', args: [message(code: 'task.label', default: 'Task'), params.id])
+	            flash.message = message(code: 'default.not.found.message', args: [message(code: 'task.label'), params.id])
 	            //redirect action: 'list'
 				redirect controller: 'myInstitution', action: 'dashboard'
 	            return
@@ -150,7 +150,7 @@ class TaskController extends AbstractDebugController {
 			}
 
 	        if (! taskInstance) {
-	            flash.message = message(code: 'default.not.found.message', args: [message(code: 'task.label', default: 'Task'), params.id])
+	            flash.message = message(code: 'default.not.found.message', args: [message(code: 'task.label'), params.id])
 	            //redirect action: 'list'
 				redirect controller: 'myInstitution', action: 'dashboard'
 	            return
@@ -160,7 +160,7 @@ class TaskController extends AbstractDebugController {
 	            def version = params.version.toLong()
 	            if (taskInstance.version > version) {
 	                taskInstance.errors.rejectValue('version', 'default.optimistic.locking.failure',
-	                          [message(code: 'task.label', default: 'Task')] as Object[],
+	                          [message(code: 'task.label')] as Object[],
 	                          "Another user has updated this Task while you were editing")
 
                     result.taskInstance = taskInstance
@@ -185,12 +185,12 @@ class TaskController extends AbstractDebugController {
 	        if (! taskInstance.save(flush: true)) {
                 result.taskInstance = taskInstance
 	            /*render view: 'edit', model: result*/
-				flash.error = message(code: 'default.not.updated.message', args: [message(code: 'task.label', default: 'Task'), taskInstance.title])
+				flash.error = message(code: 'default.not.updated.message', args: [message(code: 'task.label'), taskInstance.title])
 				redirect(url: request.getHeader('referer'))
 	            return
 	        }
 
-			flash.message = message(code: 'default.updated.message', args: [message(code: 'task.label', default: 'Task'), taskInstance.title])
+			flash.message = message(code: 'default.updated.message', args: [message(code: 'task.label'), taskInstance.title])
 			redirect(url: request.getHeader('referer'))
 			break
 		}
@@ -212,7 +212,7 @@ class TaskController extends AbstractDebugController {
         def taskInstance = Task.get(params.id)
 		def tasktitel = taskInstance.title
         if (! taskInstance) {
-			flash.message = message(code: 'default.not.found.message', args: [message(code: 'task.label', default: 'Task'), params.id])
+			flash.message = message(code: 'default.not.found.message', args: [message(code: 'task.label'), params.id])
             //redirect action: 'list'
 			redirect(url: request.getHeader('referer'))
 			return
@@ -228,12 +228,12 @@ class TaskController extends AbstractDebugController {
         try {
 
             taskInstance.delete(flush: true)
-			flash.message = message(code: 'default.deleted.message', args: [message(code: 'task.label', default: 'Task'), tasktitel])
+			flash.message = message(code: 'default.deleted.message', args: [message(code: 'task.label'), tasktitel])
             //redirect action: 'list'
 			redirect(url: request.getHeader('referer'))
         }
         catch (DataIntegrityViolationException e) {
-			flash.error = message(code: 'default.not.deleted.message', args: [message(code: 'task.label', default: 'Task'),  tasktitel])
+			flash.error = message(code: 'default.not.deleted.message', args: [message(code: 'task.label'),  tasktitel])
             //redirect action: 'show', id: params.id
 			redirect(url: request.getHeader('referer'))
         }

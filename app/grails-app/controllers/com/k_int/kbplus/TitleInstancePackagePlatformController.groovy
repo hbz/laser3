@@ -65,7 +65,7 @@ class TitleInstancePackagePlatformController {
 
         def titleInstancePackagePlatformInstance = TitleInstancePackagePlatform.get(params.id)
         if (! titleInstancePackagePlatformInstance) {
-            flash.message = message(code: 'default.not.found.message', args: [message(code: 'titleInstancePackagePlatform.label', default: 'TitleInstancePackagePlatform'), params.id])
+            flash.message = message(code: 'default.not.found.message', args: [message(code: 'titleInstancePackagePlatform.label'), params.id])
             redirect action: 'list'
             return
         }
@@ -83,7 +83,7 @@ class TitleInstancePackagePlatformController {
         case 'GET':
               def titleInstancePackagePlatformInstance = TitleInstancePackagePlatform.get(params.id)
               if (! titleInstancePackagePlatformInstance) {
-                  flash.message = message(code: 'default.not.found.message', args: [message(code: 'titleInstancePackagePlatform.label', default: 'TitleInstancePackagePlatform'), params.id])
+                  flash.message = message(code: 'default.not.found.message', args: [message(code: 'titleInstancePackagePlatform.label'), params.id])
                   redirect action: 'list'
                   return
               }
@@ -93,7 +93,7 @@ class TitleInstancePackagePlatformController {
         case 'POST':
               def titleInstancePackagePlatformInstance = TitleInstancePackagePlatform.get(params.id)
               if (! titleInstancePackagePlatformInstance) {
-                  flash.message = message(code: 'default.not.found.message', args: [message(code: 'titleInstancePackagePlatform.label', default: 'TitleInstancePackagePlatform'), params.id])
+                  flash.message = message(code: 'default.not.found.message', args: [message(code: 'titleInstancePackagePlatform.label'), params.id])
                   redirect action: 'list'
                   return
               }
@@ -102,7 +102,7 @@ class TitleInstancePackagePlatformController {
                   def version = params.version.toLong()
                   if (titleInstancePackagePlatformInstance.version > version) {
                       titleInstancePackagePlatformInstance.errors.rejectValue('version', 'default.optimistic.locking.failure',
-                                [message(code: 'titleInstancePackagePlatform.label', default: 'TitleInstancePackagePlatform')] as Object[],
+                                [message(code: 'titleInstancePackagePlatform.label')] as Object[],
                                 "Another user has updated this TitleInstancePackagePlatform while you were editing")
                       render view: 'edit', model: [titleInstancePackagePlatformInstance: titleInstancePackagePlatformInstance]
                       return
@@ -130,18 +130,18 @@ class TitleInstancePackagePlatformController {
 
         def titleInstancePackagePlatformInstance = TitleInstancePackagePlatform.get(params.id)
         if (!titleInstancePackagePlatformInstance) {
-          flash.message = message(code: 'default.not.found.message', args: [message(code: 'titleInstancePackagePlatform.label', default: 'TitleInstancePackagePlatform'), params.id])
+          flash.message = message(code: 'default.not.found.message', args: [message(code: 'titleInstancePackagePlatform.label'), params.id])
           redirect action: 'list'
           return
         }
 
         try {
           titleInstancePackagePlatformInstance.delete(flush: true)
-          flash.message = message(code: 'default.deleted.message', args: [message(code: 'titleInstancePackagePlatform.label', default: 'TitleInstancePackagePlatform'), params.id])
+          flash.message = message(code: 'default.deleted.message', args: [message(code: 'titleInstancePackagePlatform.label'), params.id])
           redirect action: 'list'
         }
         catch (DataIntegrityViolationException e) {
-          flash.message = message(code: 'default.not.deleted.message', args: [message(code: 'titleInstancePackagePlatform.label', default: 'TitleInstancePackagePlatform'), params.id])
+          flash.message = message(code: 'default.not.deleted.message', args: [message(code: 'titleInstancePackagePlatform.label'), params.id])
           redirect action: 'show', id: params.id
         }
     }

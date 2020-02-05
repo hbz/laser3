@@ -4,7 +4,7 @@
 <html>
     <head>
         <meta name="layout" content="semanticUI"/>
-        <title>${message(code:'laser', default:'LAS:eR')} : ${message(code:'menu.institutions.prop_groups')}</title>
+        <title>${message(code:'laser')} : ${message(code:'menu.institutions.prop_groups')}</title>
     </head>
     <body>
 
