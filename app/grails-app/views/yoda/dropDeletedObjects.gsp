@@ -2,7 +2,7 @@
 <html>
 <head>
     <meta name="layout" content="semanticUI">
-    <title>${message(code:'laser', default:'LAS:eR')} : Datenbereinigung</title>
+    <title>${message(code:'laser')} : Datenbereinigung</title>
 </head>
 <body>
 

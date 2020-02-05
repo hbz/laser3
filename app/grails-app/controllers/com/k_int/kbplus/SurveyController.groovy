@@ -3463,7 +3463,7 @@ class SurveyController {
                 if (params.tab == 'surveyProperties') {
                     def surProp = SurveyProperty.get(result.selectedProperty)
                     newMap.surveyProperty = SurveyResult.findBySurveyConfigAndTypeAndParticipant(result.surveyConfig, surProp, org)
-                    def propDef = surProp ? PropertyDefinition.getByNameAndDescr(surProp.name, 'Subscription Property') : null
+                    def propDef = surProp ? PropertyDefinition.getByNameAndDescr(surProp.name, PropertyDefinition.SUB_PROP) : null
 
                     newMap.newCustomProperty = (sub && propDef) ? sub.customProperties.find {
                         it.type.id == propDef.id
@@ -3520,7 +3520,7 @@ class SurveyController {
 
                 surveyProperty = params.copyProperty ? SurveyProperty.get(Long.parseLong(params.copyProperty)) : null
 
-                propDef = surveyProperty ? PropertyDefinition.getByNameAndDescr(surveyProperty.name, 'Subscription Property') : null
+                propDef = surveyProperty ? PropertyDefinition.getByNameAndDescr(surveyProperty.name, PropertyDefinition.SUB_PROP) : null
                 if (!propDef && surveyProperty) {
 
                     Map<String, Object> map = [

@@ -32,7 +32,7 @@ class AccessMethodController extends AbstractDebugController {
         def accessMethod = new PlatformAccessMethod(params)
 
         if (params.validTo && params.validFrom && params.validTo.before(params.validFrom)) {
-            flash.error = message(code: 'accessMethod.dateValidationError', args: [message(code: 'accessMethod.label', default: 'Access Method'), accessMethod.accessMethod])
+            flash.error = message(code: 'accessMethod.dateValidationError', args: [message(code: 'accessMethod.label'), accessMethod.accessMethod])
         } else {
 
             accessMethod.platf = Platform.get(params.platfId)
@@ -68,7 +68,7 @@ class AccessMethodController extends AbstractDebugController {
             redirect controller: 'platform', action: 'AccessMethods', id: platformId
         }
         catch (DataIntegrityViolationException e) {
-			flash.message = message(code: 'default.not.deleted.message', args: [message(code: 'address.label', default: 'Address'), params.id])
+			flash.message = message(code: 'default.not.deleted.message', args: [message(code: 'address.label'), params.id])
             redirect action: 'show', id: params.id
         }
     }
@@ -102,7 +102,7 @@ class AccessMethodController extends AbstractDebugController {
         }
 
         if (params.validTo == "" || params.validTo && params.validFrom && params.validTo.before(params.validFrom)) {
-            flash.error = message(code: 'accessMethod.dateValidationError', args: [message(code: 'accessMethod.label', default: 'Access Method'), accessMethod.accessMethod])
+            flash.error = message(code: 'accessMethod.dateValidationError', args: [message(code: 'accessMethod.label'), accessMethod.accessMethod])
             redirect controller: 'accessMethod', action: 'edit', id: accessMethod.id
         } else {
             accessMethod.validTo = params.validTo

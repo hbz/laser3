@@ -51,7 +51,7 @@ class OrganisationController extends AbstractDebugController {
         Org org   = Org.get(params.id)
 
         if (! org) {
-            flash.message = message(code: 'default.not.found.message', args: [message(code: 'org.label', default: 'Org'), params.id])
+            flash.message = message(code: 'default.not.found.message', args: [message(code: 'org.label'), params.id])
             redirect action: 'list'
             return
         }
@@ -313,7 +313,7 @@ class OrganisationController extends AbstractDebugController {
                     if (orgInstance.save(flush: true)) {
                         orgInstance.setDefaultCustomerType()
 
-                        flash.message = message(code: 'default.created.message', args: [message(code: 'org.label', default: 'Org'), orgInstance.name])
+                        flash.message = message(code: 'default.created.message', args: [message(code: 'org.label'), orgInstance.name])
                         redirect action: 'show', id: orgInstance.id
                         return
                     }
@@ -353,7 +353,7 @@ class OrganisationController extends AbstractDebugController {
             orgInstance.addToOrgType(orgType2)
             orgInstance.save(flush:true)
 
-            flash.message = message(code: 'default.created.message', args: [message(code: 'org.label', default: 'Org'), orgInstance.name])
+            flash.message = message(code: 'default.created.message', args: [message(code: 'org.label'), orgInstance.name])
             redirect action: 'show', id: orgInstance.id
         }
         else {
@@ -577,7 +577,7 @@ class OrganisationController extends AbstractDebugController {
         }
         
       if (!result.orgInstance) {
-        flash.message = message(code: 'default.not.found.message', args: [message(code: 'org.label', default: 'Org'), params.id])
+        flash.message = message(code: 'default.not.found.message', args: [message(code: 'org.label'), params.id])
         redirect action: 'list'
         return
       }
@@ -593,7 +593,7 @@ class OrganisationController extends AbstractDebugController {
 
             // create mandatory OrgPrivateProperties if not existing
 
-            def mandatories = PropertyDefinition.findAllByDescrAndMandatoryAndTenant("Organisation Property", true, result.institution)
+            List<PropertyDefinition> mandatories = PropertyDefinition.getAllByDescrAndMandatoryAndTenant(PropertyDefinition.ORG_PROP, true, result.institution)
 
             mandatories.each { pd ->
                 if (!OrgPrivateProperty.findWhere(owner: result.orgInstance, type: pd)) {
@@ -720,7 +720,7 @@ class OrganisationController extends AbstractDebugController {
         result.editable = accessService.checkMinUserOrgRole(result.user, orgInstance, 'INST_EDITOR') || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')
 
         if (!orgInstance) {
-            flash.message = message(code: 'default.not.found.message', args: [message(code: 'org.label', default: 'Org'), params.id])
+            flash.message = message(code: 'default.not.found.message', args: [message(code: 'org.label'), params.id])
             redirect action: 'list'
             return
         }
@@ -729,7 +729,7 @@ class OrganisationController extends AbstractDebugController {
 
         def mandatories = []
         result.user?.authorizedOrgs?.each{ org ->
-            def ppd = PropertyDefinition.findAllByDescrAndMandatoryAndTenant("Organisation Property", true, org)
+            List<PropertyDefinition> ppd = PropertyDefinition.getAllByDescrAndMandatoryAndTenant(PropertyDefinition.ORG_PROP, true, org)
             if(ppd){
                 mandatories << ppd
             }
@@ -767,7 +767,7 @@ class OrganisationController extends AbstractDebugController {
         }
 
           if (!orgInstance) {
-            flash.message = message(code: 'default.not.found.message', args: [message(code: 'org.label', default: 'Org'), params.id])
+            flash.message = message(code: 'default.not.found.message', args: [message(code: 'org.label'), params.id])
             redirect action: 'list'
             return
           }
@@ -820,7 +820,7 @@ class OrganisationController extends AbstractDebugController {
         def success = userService.addNewUser(params, flash)
         //despite IntelliJ's warnings, success may be an array other than the boolean true
         if(success instanceof User) {
-            flash.message = message(code: 'default.created.message', args: [message(code: 'user.label', default: 'User'), success.id])
+            flash.message = message(code: 'default.created.message', args: [message(code: 'user.label'), success.id])
             redirect action: 'userEdit', id: success.id
         }
         else if(success instanceof List) {
@@ -834,7 +834,7 @@ class OrganisationController extends AbstractDebugController {
     def addAffiliation() {
         Map result = userService.setResultGenerics(params)
         if (! result.editable) {
-            flash.error = message(code: 'default.noPermissions', default: 'KEINE BERECHTIGUNG')
+            flash.error = message(code: 'default.noPermissions')
             redirect action: 'userEdit', id: params.id
             return
         }
@@ -938,7 +938,7 @@ class OrganisationController extends AbstractDebugController {
         result.editable = accessService.checkMinUserOrgRole(result.user, result.institution, 'INST_EDITOR') || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')
 
         if (! result.institution) {
-            flash.message = message(code: 'default.not.found.message', args: [message(code: 'org.label', default: 'Org'), params.id])
+            flash.message = message(code: 'default.not.found.message', args: [message(code: 'org.label'), params.id])
             redirect action: 'list'
             return
         }
@@ -1002,7 +1002,7 @@ class OrganisationController extends AbstractDebugController {
         result.editable = accessService.checkMinUserOrgRole(result.user, result.orgInstance, 'INST_EDITOR') || SpringSecurityUtils.ifAllGranted('ROLE_ADMIN')
 
         if (! result.orgInstance) {
-            flash.message = message(code: 'default.not.found.message', args: [message(code: 'org.label', default: 'Org'), params.id])
+            flash.message = message(code: 'default.not.found.message', args: [message(code: 'org.label'), params.id])
             redirect action: 'list'
             return
         }
@@ -1020,7 +1020,7 @@ class OrganisationController extends AbstractDebugController {
         Org orgInstance = Org.get(params.org)
 
         if (!orgInstance) {
-            flash.message = message(code: 'default.not.found.message', args: [message(code: 'org.label', default: 'Org'), params.id])
+            flash.message = message(code: 'default.not.found.message', args: [message(code: 'org.label'), params.id])
             redirect action: 'list'
             return
         }
@@ -1036,7 +1036,7 @@ class OrganisationController extends AbstractDebugController {
         {
             orgInstance.addToOrgType(RefdataValue.get(params.orgType))
             orgInstance.save(flush: true)
-            flash.message = message(code: 'default.updated.message', args: [message(code: 'org.label', default: 'Org'), orgInstance.name])
+            flash.message = message(code: 'default.updated.message', args: [message(code: 'org.label'), orgInstance.name])
             redirect action: 'show', id: orgInstance.id
         }
     }
@@ -1047,7 +1047,7 @@ class OrganisationController extends AbstractDebugController {
         Org orgInstance = Org.get(params.org)
 
         if (!orgInstance) {
-            flash.message = message(code: 'default.not.found.message', args: [message(code: 'org.label', default: 'Org'), params.id])
+            flash.message = message(code: 'default.not.found.message', args: [message(code: 'org.label'), params.id])
             redirect action: 'list'
             return
         }
@@ -1063,7 +1063,7 @@ class OrganisationController extends AbstractDebugController {
         {
             orgInstance.removeFromOrgType(RefdataValue.get(params.removeOrgType))
             orgInstance.save(flush: true)
-            flash.message = message(code: 'default.updated.message', args: [message(code: 'org.label', default: 'Org'), orgInstance.name])
+            flash.message = message(code: 'default.updated.message', args: [message(code: 'org.label'), orgInstance.name])
             redirect action: 'show', id: orgInstance.id
         }
     }

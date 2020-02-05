@@ -2590,7 +2590,7 @@ class SubscriptionController extends AbstractDebugController {
         }
 
         if (!result.subscriptionInstance) {
-            flash.message = message(code: 'default.not.found.message', args: [message(code: 'package.label', default: 'Subscription'), params.id])
+            flash.message = message(code: 'default.not.found.message', args: [message(code: 'package.label'), params.id])
             redirect action: 'list'
             return
         }
@@ -2971,13 +2971,13 @@ class SubscriptionController extends AbstractDebugController {
             def dTask = Task.get(params.deleteId)
             if (dTask && dTask.creator.id == result.user.id) {
                 try {
-                    flash.message = message(code: 'default.deleted.message', args: [message(code: 'task.label', default: 'Task'), dTask.title])
+                    flash.message = message(code: 'default.deleted.message', args: [message(code: 'task.label'), dTask.title])
                     dTask.delete(flush: true)
                     if(params.returnToShow)
                         redirect action: 'show', id: params.id
                 }
                 catch (Exception e) {
-                    flash.message = message(code: 'default.not.deleted.message', args: [message(code: 'task.label', default: 'Task'), params.deleteId])
+                    flash.message = message(code: 'default.not.deleted.message', args: [message(code: 'task.label'), params.deleteId])
                 }
             }
         }
@@ -3653,7 +3653,7 @@ class SubscriptionController extends AbstractDebugController {
 
             // create mandatory OrgPrivateProperties if not existing
 
-            def mandatories = PropertyDefinition.findAllByDescrAndMandatoryAndTenant("Subscription Property", true, result.contextOrg)
+            List<PropertyDefinition> mandatories = PropertyDefinition.getAllByDescrAndMandatoryAndTenant(PropertyDefinition.SUB_PROP, true, result.contextOrg)
 
             mandatories.each { pd ->
                 if (!SubscriptionPrivateProperty.findWhere(owner: result.subscriptionInstance, type: pd)) {
@@ -5005,7 +5005,7 @@ class SubscriptionController extends AbstractDebugController {
 
         def mandatories = []
         result.user?.authorizedOrgs?.each { org ->
-            def ppd = PropertyDefinition.findAllByDescrAndMandatoryAndTenant("Subscription Property", true, org)
+            List<PropertyDefinition> ppd = PropertyDefinition.getAllByDescrAndMandatoryAndTenant(PropertyDefinition.SUB_PROP, true, org)
             if (ppd) {
                 mandatories << ppd
             }

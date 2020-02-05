@@ -113,7 +113,7 @@ class UserController extends AbstractDebugController {
             return
         }
         else if (! result.user) {
-            flash.message = message(code: 'default.not.found.message', args: [message(code: 'user.label', default: 'Org'), params.id])
+            flash.message = message(code: 'default.not.found.message', args: [message(code: 'user.label'), params.id])
             redirect action: 'list'
             return
         }
@@ -165,7 +165,7 @@ class UserController extends AbstractDebugController {
         def result = userService.setResultGenerics(params)
 
         if (! result.editable) {
-            flash.error = message(code: 'default.noPermissions', default: 'KEINE BERECHTIGUNG')
+            flash.error = message(code: 'default.noPermissions')
             redirect url: request.getHeader('referer'), id: params.id
         }
         if (result.user) {
@@ -191,7 +191,7 @@ class UserController extends AbstractDebugController {
         def result = userService.setResultGenerics(params)
 
         if (! result.editable) {
-            flash.error = message(code: 'default.noPermissions', default: 'KEINE BERECHTIGUNG')
+            flash.error = message(code: 'default.noPermissions')
             redirect controller: 'user', action: 'edit', id: params.id
             return
         }
@@ -227,7 +227,7 @@ class UserController extends AbstractDebugController {
         def success = userService.addNewUser(params,flash)
         //despite IntelliJ's warnings, success may be an array other than the boolean true
         if(success instanceof User) {
-            flash.message = message(code: 'default.created.message', args: [message(code: 'user.label', default: 'User'), success.id])
+            flash.message = message(code: 'default.created.message', args: [message(code: 'user.label'), success.id])
             redirect action: 'edit', id: success.id
         }
         else if(success instanceof List) {

@@ -5,7 +5,7 @@
 <html>
 <head>
     <meta name="layout" content="semanticUI"/>
-    <title>${message(code:'laser', default:'LAS:eR')} :
+    <title>${message(code:'laser')} :
         <g:if test="${accessService.checkPerm("ORG_CONSORTIUM")}">
             <g:message code="subscription.details.consortiaMembers.label"/>
         </g:if>

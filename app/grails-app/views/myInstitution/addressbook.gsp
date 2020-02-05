@@ -8,7 +8,7 @@ import="de.laser.helper.RDStore; com.k_int.kbplus.Org; com.k_int.kbplus.Person; 
 <html>
     <head>
         <meta name="layout" content="semanticUI"/>
-        <title>${message(code:'laser', default:'LAS:eR')} : ${message(code:'menu.institutions.myAddressbook')}</title>
+        <title>${message(code:'laser')} : ${message(code:'menu.institutions.myAddressbook')}</title>
     </head>
     <body>
 

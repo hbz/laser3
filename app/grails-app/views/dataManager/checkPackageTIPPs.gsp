@@ -2,7 +2,7 @@
 <html>
 <head>
     <meta name="layout" content="semanticUI"/>
-    <title>${message(code:'laser', default:'LAS:eR')} : Package Tipps LAS:eR and GOKB</title>
+    <title>${message(code:'laser')} : Package Tipps LAS:eR and GOKB</title>
 </head>
 
 <body>

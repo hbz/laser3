@@ -2,7 +2,7 @@
 <html>
     <head>
         <meta name="layout" content="semanticUI"/>
-        <title>${message(code:'laser', default:'LAS:eR')} ${message(code:'myinst.addLicense.label', default:'Data import explorer')}</title>
+        <title>${message(code:'laser')} ${message(code:'myinst.addLicense.label', default:'Data import explorer')}</title>
     </head>
 
     <body>

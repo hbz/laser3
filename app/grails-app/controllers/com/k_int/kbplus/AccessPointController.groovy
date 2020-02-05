@@ -326,18 +326,18 @@ class AccessPointController extends AbstractDebugController {
         def orgId = org.id;
 
         if (!accessPoint) {
-            flash.message = message(code: 'default.not.found.message', args: [message(code: 'address.label', default: 'Address'), params.id])
+            flash.message = message(code: 'default.not.found.message', args: [message(code: 'address.label'), params.id])
             redirect action: 'list'
             return
         }
 
         try {
             accessPoint.delete(flush: true)
-            flash.message = message(code: 'default.deleted.message', args: [message(code: 'accessPoint.label', default: 'Access Point'), accessPoint.name])
+            flash.message = message(code: 'default.deleted.message', args: [message(code: 'accessPoint.label'), accessPoint.name])
             redirect controller: 'organisation', action: 'accessPoints', id: orgId
         }
         catch (DataIntegrityViolationException e) {
-            flash.message = message(code: 'default.not.deleted.message', args: [message(code: 'address.label', default: 'Address'), accessPoint.id])
+            flash.message = message(code: 'default.not.deleted.message', args: [message(code: 'address.label'), accessPoint.id])
             redirect action: 'show', id: params.id
         }
     }

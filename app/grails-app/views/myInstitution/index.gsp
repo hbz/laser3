@@ -2,7 +2,7 @@
 <html>
 <head>
     <meta name="layout" content="semanticUI"/>
-    <title>${message(code:'laser', default:'LAS:eR')} : ${message(code:'myinstadmin.title', default:'Institutional Admin Dash')}</title>
+    <title>${message(code:'laser')} : ${message(code:'myinstadmin.title', default:'Institutional Admin Dash')}</title>
 </head>
 
 <body>

@@ -2,7 +2,7 @@
 <html>
   <head>
     <meta name="layout" content="semanticUI"/>
-    <title>${message(code:'laser', default:'LAS:eR')} : ${message(code:'default.permissionInfo.label')}</title>
+    <title>${message(code:'laser')} : ${message(code:'default.permissionInfo.label')}</title>
   </head>
 
   <body>

@@ -4,7 +4,7 @@
 <html>
 <head>
     <meta name="layout" content="semanticUI">
-    <title>${message(code: 'laser', default: 'LAS:eR')} : Frontend for Developers</title>
+    <title>${message(code: 'laser')} : Frontend for Developers</title>
     <style>
     #example .example .column .icon {
         opacity: 1;

@@ -21,7 +21,7 @@
     <g:else>
         <g:set var="entityName" value="${message(code: 'org.label')}"/>
     </g:else>
-    <title>${message(code: 'laser', default: 'LAS:eR')} : ${message(code:'menu.institutions.org_info')}</title>
+    <title>${message(code: 'laser')} : ${message(code:'menu.institutions.org_info')}</title>
 
     <g:javascript src="properties.js"/>
 </head>

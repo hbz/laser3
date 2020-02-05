@@ -133,22 +133,22 @@ class PackageController extends AbstractDebugController {
 
         if (params.updateStartDate?.length() > 0) {
             base_qry += " and ( p.lastUpdated > ? )"
-            qry_params.add(params.date('updateStartDate', message(code: 'default.date.format.notime', default: 'yyyy-MM-dd')));
+            qry_params.add(params.date('updateStartDate', message(code: 'default.date.format.notime')));
         }
 
         if (params.updateEndDate?.length() > 0) {
             base_qry += " and ( p.lastUpdated < ? )"
-            qry_params.add(params.date('updateEndDate', message(code: 'default.date.format.notime', default: 'yyyy-MM-dd')));
+            qry_params.add(params.date('updateEndDate', message(code: 'default.date.format.notime')));
         }
 
         if (params.createStartDate?.length() > 0) {
             base_qry += " and ( p.dateCreated > ? )"
-            qry_params.add(params.date('createStartDate', message(code: 'default.date.format.notime', default: 'yyyy-MM-dd')));
+            qry_params.add(params.date('createStartDate', message(code: 'default.date.format.notime')));
         }
 
         if (params.createEndDate?.length() > 0) {
             base_qry += " and ( p.dateCreated < ? )"
-            qry_params.add(params.date('createEndDate', message(code: 'default.date.format.notime', default: 'yyyy-MM-dd')));
+            qry_params.add(params.date('createEndDate', message(code: 'default.date.format.notime')));
         }
 
         if ((params.sort != null) && (params.sort.length() > 0)) {
@@ -310,7 +310,7 @@ class PackageController extends AbstractDebugController {
                     return
                 }
 
-                // flash.message = message(code: 'default.created.message', args: [message(code: 'package.label', default: 'Package'), packageInstance.id])
+                // flash.message = message(code: 'default.created.message', args: [message(code: 'package.label'), packageInstance.id])
                 // redirect action: 'show', id: packageInstance.id
                 break
         }
@@ -919,11 +919,11 @@ class PackageController extends AbstractDebugController {
             def dTask = Task.get(params.deleteId)
             if (dTask && dTask.creator.id == result.user.id) {
                 try {
-                    flash.message = message(code: 'default.deleted.message', args: [message(code: 'task.label', default: 'Task'), dTask.title])
+                    flash.message = message(code: 'default.deleted.message', args: [message(code: 'task.label'), dTask.title])
                     dTask.delete(flush: true)
                 }
                 catch (Exception e) {
-                    flash.message = message(code: 'default.not.deleted.message', args: [message(code: 'task.label', default: 'Task'), params.deleteId])
+                    flash.message = message(code: 'default.not.deleted.message', args: [message(code: 'task.label'), params.deleteId])
                 }
             }
         }

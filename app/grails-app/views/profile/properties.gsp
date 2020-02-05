@@ -3,7 +3,7 @@
 <html>
 <head>
     <meta name="layout" content="semanticUI"/>
-    <title>${message(code:'laser', default:'LAS:eR')} : ${message(code: 'menu.user.properties', default: 'Properties and Refdatas')}</title>
+    <title>${message(code:'laser')} : ${message(code: 'menu.user.properties', default: 'Properties and Refdatas')}</title>
 </head>
 
 <body>

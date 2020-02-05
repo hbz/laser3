@@ -2,7 +2,7 @@
 <html>
 <head>
     <meta name="layout" content="semanticUI"/>
-    <title>${message(code: 'laser', default: 'LAS:eR')} - ${message(code: 'serverCode.forbidden.message2')}</title>
+    <title>${message(code: 'laser')} - ${message(code: 'serverCode.forbidden.message2')}</title>
 </head>
 
 <body>
