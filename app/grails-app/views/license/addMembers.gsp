@@ -5,7 +5,7 @@
 <html>
 <head>
     <meta name="layout" content="semanticUI"/>
-    <title>${message(code: 'laser', default: 'LAS:eR')} : ${message(code: 'license.details.addMembers.label',args:[message(code:'consortium.subscriber')])}</title>
+    <title>${message(code: 'laser')} : ${message(code: 'license.details.addMembers.label',args:[message(code:'consortium.subscriber')])}</title>
 </head>
 
 <body>

@@ -5,7 +5,7 @@
 <html>
 <head>
     <meta name="layout" content="semanticUI"/>
-    <title>${message(code:'laser', default:'LAS:eR')} : ${message(code: 'profile', default: 'LAS:eR User Profile')}</title>
+    <title>${message(code:'laser')} : ${message(code: 'profile', default: 'LAS:eR User Profile')}</title>
 </head>
 
 <body>
@@ -510,7 +510,7 @@
                 </h4>
 
                 <p style="word-break:normal">
-                    <g:message code="profile.membership.request.text" default="Select an organisation and a role below. Requests to join existing organisations will be referred to the administrative users of that organisation. If you feel you should be the administrator of an organisation please contact the ${message(code:'laser', default:'LAS:eR')} team for support." />
+                    <g:message code="profile.membership.request.text" default="Select an organisation and a role below. Requests to join existing organisations will be referred to the administrative users of that organisation. If you feel you should be the administrator of an organisation please contact the ${message(code:'laser')} team for support." />
                 </p>
 
                 <g:render template="/templates/user/membership_form" model="[userInstance: user, availableOrgs: availableOrgs, availableOrgRoles: availableOrgRoles, tmplProfile: true]" />

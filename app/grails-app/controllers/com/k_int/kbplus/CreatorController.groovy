@@ -41,7 +41,7 @@ class CreatorController extends AbstractDebugController {
 	            return
 	        }
 
-			flash.message = message(code: 'default.created.message', args: [message(code: 'creator.label', default: 'Creator'), creatorInstance.id])
+			flash.message = message(code: 'default.created.message', args: [message(code: 'creator.label'), creatorInstance.id])
 	        redirect action: 'show', id: creatorInstance.id
 			break
 		}
@@ -51,7 +51,7 @@ class CreatorController extends AbstractDebugController {
     def show() {
         def creatorInstance = Creator.get(params.id)
         if (! creatorInstance) {
-			flash.message = message(code: 'default.not.found.message', args: [message(code: 'creator.label', default: 'Creator'), params.id])
+			flash.message = message(code: 'default.not.found.message', args: [message(code: 'creator.label'), params.id])
             redirect action: 'list'
             return
         }
@@ -69,7 +69,7 @@ class CreatorController extends AbstractDebugController {
 		case 'GET':
 	        def creatorInstance = Creator.get(params.id)
 	        if (! creatorInstance) {
-	            flash.message = message(code: 'default.not.found.message', args: [message(code: 'creator.label', default: 'Creator'), params.id])
+	            flash.message = message(code: 'default.not.found.message', args: [message(code: 'creator.label'), params.id])
 	            redirect action: 'list'
 	            return
 	        }
@@ -79,7 +79,7 @@ class CreatorController extends AbstractDebugController {
 		case 'POST':
 	        def creatorInstance = Creator.get(params.id)
 	        if (! creatorInstance) {
-	            flash.message = message(code: 'default.not.found.message', args: [message(code: 'creator.label', default: 'Creator'), params.id])
+	            flash.message = message(code: 'default.not.found.message', args: [message(code: 'creator.label'), params.id])
 	            redirect action: 'list'
 	            return
 	        }
@@ -88,7 +88,7 @@ class CreatorController extends AbstractDebugController {
 	            def version = params.version.toLong()
 	            if (creatorInstance.version > version) {
 	                creatorInstance.errors.rejectValue('version', 'default.optimistic.locking.failure',
-	                          [message(code: 'creator.label', default: 'Creator')] as Object[],
+	                          [message(code: 'creator.label')] as Object[],
 	                          "Another user has updated this Creator while you were editing")
 	                render view: 'edit', model: [creatorInstance: creatorInstance]
 	                return
@@ -102,7 +102,7 @@ class CreatorController extends AbstractDebugController {
 	            return
 	        }
 
-			flash.message = message(code: 'default.updated.message', args: [message(code: 'creator.label', default: 'Creator'), creatorInstance.id])
+			flash.message = message(code: 'default.updated.message', args: [message(code: 'creator.label'), creatorInstance.id])
 	        redirect action: 'show', id: creatorInstance.id
 			break
 		}
@@ -112,18 +112,18 @@ class CreatorController extends AbstractDebugController {
     def delete() {
         def creatorInstance = Creator.get(params.id)
         if (! creatorInstance) {
-			flash.message = message(code: 'default.not.found.message', args: [message(code: 'creator.label', default: 'Creator'), params.id])
+			flash.message = message(code: 'default.not.found.message', args: [message(code: 'creator.label'), params.id])
             redirect action: 'list'
             return
         }
 
         try {
             creatorInstance.delete(flush: true)
-			flash.message = message(code: 'default.deleted.message', args: [message(code: 'creator.label', default: 'Creator'), params.id])
+			flash.message = message(code: 'default.deleted.message', args: [message(code: 'creator.label'), params.id])
             redirect action: 'list'
         }
         catch (DataIntegrityViolationException e) {
-			flash.message = message(code: 'default.not.deleted.message', args: [message(code: 'creator.label', default: 'Creator'), params.id])
+			flash.message = message(code: 'default.not.deleted.message', args: [message(code: 'creator.label'), params.id])
             redirect action: 'show', id: params.id
         }
     }

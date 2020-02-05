@@ -6,6 +6,8 @@ import de.laser.helper.DateUtil
 import de.laser.helper.RDStore
 import org.codehaus.groovy.grails.web.servlet.mvc.GrailsParameterMap
 
+import java.text.SimpleDateFormat
+
 class SubscriptionsQueryService {
     def genericOIDService
     def propertyService
@@ -14,7 +16,7 @@ class SubscriptionsQueryService {
     List myInstitutionCurrentSubscriptionsBaseQuery(params, Org contextOrg) {
 
         def date_restriction
-        def sdf = new DateUtil().getSimpleDateFormat_NoTime()
+        SimpleDateFormat sdf = DateUtil.getSDF_NoTime()
         boolean filterSet = false
         if (params.validOn == null || params.validOn.trim() == '') {
             date_restriction = null
@@ -108,10 +110,11 @@ class SubscriptionsQueryService {
         def consortia = params.consortia ? genericOIDService.resolveOID(params.consortia) : null
         if (consortia) {
             base_qry += " and exists ("
-            base_qry += "    select cr from s.orgRelations as cr where lower(cr.roleType.value) = 'subscription consortia'"
+            base_qry += "    select cr from s.orgRelations as cr where cr.roleType = :rtSubCons"
             base_qry += "       and cr.org = :consortia"
             base_qry += " )"
 
+            qry_params.put('rtSubCons', RDStore.OR_SUBSCRIPTION_CONSORTIA)
             qry_params.put('consortia', consortia)
         }
 

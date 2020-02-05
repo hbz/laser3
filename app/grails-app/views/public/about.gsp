@@ -2,7 +2,7 @@
 <html>
 <head>
     <meta name="layout" content="public"/>
-    <title>${message(code: 'public.about.label', default: 'About')} | ${message(code: 'laser', default: 'LAS:eR')}</title>
+    <title>${message(code: 'public.about.label', default: 'About')} | ${message(code: 'laser')}</title>
 </head>
 
 <body class="public">

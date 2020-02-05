@@ -3,7 +3,7 @@
     <g:form class="ui form" id="compare" name="compare" action="compare" method="post">
         <input type="hidden" name="institution" value="${institution.id}"/>
         <div class="fields">
-            <g:set var="sdf" value="${new SimpleDateFormat(message(code:'default.date.format.notime'))}"/>
+            <g:set var="sdf" value="${de.laser.helper.DateUtil.getSDF_NoTime()}"/>
             <div class="field">
                 <label for="availableLicenses">${message(code:'onixplLicense.compare.add_id.label', default:'Search licenses for comparison:')}</label>
                 <div class="ui multiple search selection dropdown" id="availableLicenses">

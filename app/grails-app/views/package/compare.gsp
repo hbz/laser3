@@ -4,7 +4,7 @@
   <head>
     <meta name="layout" content="semanticUI">
     <g:set var="entityName" value="${message(code: 'package.label')}" />
-    <title>${message(code:'laser', default:'LAS:eR')} : <g:message code="package.compare" /></title>
+    <title>${message(code:'laser')} : <g:message code="package.compare" /></title>
   </head>
  <body>
 

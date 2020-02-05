@@ -17,7 +17,7 @@
 <head>
     <meta name="layout" content="semanticUI">
     <g:set var="entityName" value="${message(code: 'org.label', default: 'Org')}"/>
-    <title>${message(code: 'laser', default: 'LAS:eR')} : ${title}</title>
+    <title>${message(code: 'laser')} : ${title}</title>
 </head>
 
 <body>

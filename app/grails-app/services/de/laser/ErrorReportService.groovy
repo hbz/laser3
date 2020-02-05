@@ -69,7 +69,7 @@ class ErrorReportService {
         }
 
         def jb = new JsonBuilder(data)
-        def sdf = new SimpleDateFormat('yMMdd:HHmmss')
+        SimpleDateFormat sdf = new SimpleDateFormat('yMMdd:HHmmss')
         def dd  = sdf.format(new Date())
 
         def filename = (grailsApplication.config.laserSystemId ?: 'Quelle unbekannt') + " - ${springSecurityService.getCurrentUser().email} - ${dd}"

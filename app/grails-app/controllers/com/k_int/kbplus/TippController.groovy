@@ -2,9 +2,12 @@ package com.k_int.kbplus
 
 import com.k_int.kbplus.auth.User
 import de.laser.controller.AbstractDebugController
+import de.laser.helper.DateUtil
 import de.laser.helper.RDStore
 import grails.plugin.springsecurity.SpringSecurityUtils
 import grails.plugin.springsecurity.annotation.Secured
+
+import java.text.SimpleDateFormat
 
 @Secured(['IS_AUTHENTICATED_FULLY'])
 class TippController extends AbstractDebugController {
@@ -23,7 +26,7 @@ class TippController extends AbstractDebugController {
     result.titleInstanceInstance = result.tipp.title
 
     if (!result.titleInstanceInstance) {
-      flash.message = message(code: 'default.not.found.message', args: [message(code: 'titleInstance.label', default: 'TitleInstance'), params.id])
+      flash.message = message(code: 'default.not.found.message', args: [message(code: 'titleInstance.label'), params.id])
       redirect action: 'list'
       return
     }
@@ -42,14 +45,14 @@ class TippController extends AbstractDebugController {
     }
 
     if ( params.endsAfter && params.endsAfter.length() > 0 ) {
-      def sdf = new java.text.SimpleDateFormat(message(code:'default.date.format.notime', default:'yyyy-MM-dd'));
+      SimpleDateFormat sdf = DateUtil.getSDF_NoTime()
       def d = sdf.parse(params.endsAfter)
       base_qry += " and (select max(tc.endDate) from TIPPCoverage tc where tc.tipp = tipp) >= ?"
       qry_params.add(d)
     }
 
     if ( params.startsBefore && params.startsBefore.length() > 0 ) {
-      def sdf = new java.text.SimpleDateFormat(message(code:'default.date.format.notime', default:'yyyy-MM-dd'));
+      SimpleDateFormat sdf = DateUtil.getSDF_NoTime()
       def d = sdf.parse(params.startsBefore)
       base_qry += " and (select min(tc.startDate) from TIPPCoverage tc where tc.tipp = tipp) <= ?"
       qry_params.add(d)

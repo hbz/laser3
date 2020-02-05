@@ -1,5 +1,5 @@
 <div class="control-group">
-  <label class="control-label" for="outgoingCombos">${message(code:'org.outgoingCombos.label', default:'Outgoing Combos')}</label>
+  <label class="control-label" for="outgoingCombos">${message(code:'org.outgoingCombos.label')}</label>
   <div class="controls">
     <g:if test="${orgInstance.outgoingCombos && orgInstance.outgoingCombos.size() > 0}">
       <ul>

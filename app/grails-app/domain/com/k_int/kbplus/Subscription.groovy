@@ -3,10 +3,10 @@ package com.k_int.kbplus
 
 import com.k_int.kbplus.auth.Role
 import com.k_int.kbplus.auth.User
-import com.k_int.kbplus.OrgRole
 import com.k_int.properties.PropertyDefinitionGroup
 import com.k_int.properties.PropertyDefinitionGroupBinding
 import de.laser.domain.AbstractBaseDomain
+import de.laser.helper.DateUtil
 import de.laser.helper.RDConstants
 import de.laser.helper.RDStore
 import de.laser.helper.RefdataAnnotation
@@ -14,9 +14,7 @@ import de.laser.interfaces.*
 import de.laser.traits.AuditableTrait
 import de.laser.traits.ShareableTrait
 import grails.util.Holders
-import org.apache.lucene.index.DocIDMerger
 import org.springframework.context.i18n.LocaleContextHolder
-import org.springframework.dao.TransientDataAccessResourceException
 
 import javax.persistence.Transient
 import java.text.SimpleDateFormat
@@ -846,7 +844,7 @@ select distinct oap from OrgAccessPoint oap
 
   def dropdownNamingConvention(contextOrg){
        def messageSource = Holders.grailsApplication.mainContext.getBean('messageSource')
-       SimpleDateFormat sdf = new SimpleDateFormat(messageSource.getMessage('default.date.format.notime',null, LocaleContextHolder.getLocale()))
+       SimpleDateFormat sdf = DateUtil.getSDF_NoTime()
        String period = startDate ? sdf.format(startDate)  : ''
 
        period = endDate ? period + ' - ' + sdf.format(endDate)  : ''
@@ -889,7 +887,7 @@ select distinct oap from OrgAccessPoint oap
 
     def dropdownNamingConventionWithoutOrg(Org contextOrg){
         def messageSource = Holders.grailsApplication.mainContext.getBean('messageSource')
-        SimpleDateFormat sdf = new SimpleDateFormat(messageSource.getMessage('default.date.format.notime',null, LocaleContextHolder.getLocale()))
+        SimpleDateFormat sdf = DateUtil.getSDF_NoTime()
         String period = startDate ? sdf.format(startDate)  : ''
 
         period = endDate ? period + ' - ' + sdf.format(endDate)  : ''

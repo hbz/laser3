@@ -560,7 +560,7 @@ class StatsSyncService {
     }
 
     private String getDateForLastDayOfMonth(yearMonthString) {
-        def sdf = new SimpleDateFormat("yyyy-MM")
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM")
         def cal = new GregorianCalendar()
         cal.setTime(sdf.parse(yearMonthString))
         cal.set(Calendar.DAY_OF_MONTH, cal.getActualMaximum(Calendar.DAY_OF_MONTH))
@@ -612,7 +612,7 @@ class StatsSyncService {
     }
 
     static synchronized void incrementActivityHistogram() {
-        def sdf = new SimpleDateFormat('yyyy/MM/dd HH:mm')
+        SimpleDateFormat sdf = new SimpleDateFormat('yyyy/MM/dd HH:mm')
         def col_identifier = sdf.format(new Date())
 
         completedCount++

@@ -4,13 +4,13 @@
 <laser:serviceInjection />
 <g:set var="overwriteEditable"
        value="${editable || accessService.checkMinUserOrgRole(user, contextService.getOrg(), 'INST_EDITOR')}"/>
-<g:set var="sdf" value="${new SimpleDateFormat(message(code: 'default.date.format.notime'))}"/>
+<g:set var="sdf" value="${de.laser.helper.DateUtil.getSDF_NoTime()}"/>
 <!doctype html>
 <html>
 <head>
     <meta name="layout" content="semanticUI">
     <g:set var="entityName" value="${message(code: 'org.label', default: 'Org')}"/>
-    <title>${message(code: 'laser', default: 'LAS:eR')} : ${message(code:'menu.institutions.readerNumbers')}</title>
+    <title>${message(code: 'laser')} : ${message(code:'menu.institutions.readerNumbers')}</title>
 </head>
 
 <body>

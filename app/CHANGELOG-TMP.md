@@ -2,11 +2,25 @@
 
 **Ticket    Date    Branch      Author  Feature/Bug     Description/Keywords**
 
+2150    05.02.2020  hbz-dev     David   Bug         API: Referenzwerte mit Doppelpunkt werden als Map interpretiert
+
+--      04.02.2020  rc1.2       David   Bug         Filter ausblenden: "Meine Plattformen"
+
+2136    04.02.2020  hbz-dev     David   Feature     Refactoring: DateUtil erweitern
+
+1991    03.02.2020  rc1.2       Moe     Bug         "Alle anzeigen" funktioniert bei "Alle Titel" nicht
+
+2113    03.02.2020  rc1.2       Moe     Bug         Alle Titel - Exakte Suche funktioniert nicht
+
+2013    03.02.2020  rc1.2       Moe     Bug         Meine Umfragen: In der Übersicht einer Umfrage passt der Tabellenkopf nicht zu den Inhalten
+
 2130    03.02.2020  hbz-dev     Andreas Bug         Rechteüberprüfung bei Löschen von Kindlizenzen korrigiert
 
 2118    03.02.2020  hbz-dev     Andreas Feature     Satz bezüglich des Status aus Übersetzungsdatei entfernt
 
 2077    03.02.2020  dev         Anja    Feature     Löschrückfrage für Merkmale 
+
+2121    30.01.2020  rc1.2       David   Bug         Falsche geladene Seite nach Lizenz löschen (und mehr ..)
 
 2104    28.01.2020  rc1.2       Andreas Bug         Steuersatz wird im Tab Eigene Kosten korrekt dargestellt
 

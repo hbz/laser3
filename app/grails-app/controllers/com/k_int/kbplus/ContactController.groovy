@@ -44,7 +44,7 @@ class ContactController extends AbstractDebugController {
 	            return
 	        }
 
-			flash.message = message(code: 'default.created.message', args: [message(code: 'contact.label', default: 'Contact'), contactInstance.id])
+			flash.message = message(code: 'default.created.message', args: [message(code: 'contact.label'), contactInstance.id])
 			if (params.redirect) {
 				redirect(url: request.getHeader('referer'), params: params)
 			} else {
@@ -58,7 +58,7 @@ class ContactController extends AbstractDebugController {
     def show() {
         def contactInstance = Contact.get(params.id)
         if (! contactInstance) {
-			flash.message = message(code: 'default.not.found.message', args: [message(code: 'contact.label', default: 'Contact'), params.id])
+			flash.message = message(code: 'default.not.found.message', args: [message(code: 'contact.label'), params.id])
             redirect action: 'list'
             return
         }
@@ -78,7 +78,7 @@ class ContactController extends AbstractDebugController {
 
         def contactInstance = Contact.get(params.id)
         if (! contactInstance) {
-            flash.message = message(code: 'default.not.found.message', args: [message(code: 'contact.label', default: 'Contact'), params.id])
+            flash.message = message(code: 'default.not.found.message', args: [message(code: 'contact.label'), params.id])
             redirect action: 'list'
             return
         }
@@ -96,7 +96,7 @@ class ContactController extends AbstractDebugController {
 	            def version = params.version.toLong()
 	            if (contactInstance.version > version) {
 	                contactInstance.errors.rejectValue('version', 'default.optimistic.locking.failure',
-	                          [message(code: 'contact.label', default: 'Contact')] as Object[],
+	                          [message(code: 'contact.label')] as Object[],
 	                          "Another user has updated this Contact while you were editing")
 	                render view: 'edit', model: [contactInstance: contactInstance]
 	                return
@@ -110,7 +110,7 @@ class ContactController extends AbstractDebugController {
 	            return
 	        }
 
-			flash.message = message(code: 'default.updated.message', args: [message(code: 'contact.label', default: 'Contact'), contactInstance.id])
+			flash.message = message(code: 'default.updated.message', args: [message(code: 'contact.label'), contactInstance.id])
 	        redirect action: 'show', id: contactInstance.id
 			break
 		}
@@ -121,7 +121,7 @@ class ContactController extends AbstractDebugController {
     def delete() {
         def contactInstance = Contact.get(params.id)
         if (! contactInstance) {
-			flash.message = message(code: 'default.not.found.message', args: [message(code: 'contact.label', default: 'Contact'), params.id])
+			flash.message = message(code: 'default.not.found.message', args: [message(code: 'contact.label'), params.id])
             redirect action: 'list'
             return
         }
@@ -132,11 +132,11 @@ class ContactController extends AbstractDebugController {
 
         try {
             contactInstance.delete(flush: true)
-			flash.message = message(code: 'default.deleted.message', args: [message(code: 'contact.label', default: 'Contact'), params.id])
+			flash.message = message(code: 'default.deleted.message', args: [message(code: 'contact.label'), params.id])
             redirect action: 'list'
         }
         catch (DataIntegrityViolationException e) {
-			flash.message = message(code: 'default.not.deleted.message', args: [message(code: 'contact.label', default: 'Contact'), params.id])
+			flash.message = message(code: 'default.not.deleted.message', args: [message(code: 'contact.label'), params.id])
             redirect action: 'show', id: params.id
         }
     }

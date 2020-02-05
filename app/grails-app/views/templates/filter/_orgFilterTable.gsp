@@ -607,7 +607,7 @@
 
             </td>
         </g:if>
-        <g:if test="${tmplConfigShow?.contains('surveyCostItem')}">
+        <g:if test="${tmplConfigItem.equalsIgnoreCase('surveyCostItem')}">
             <td class="x">
 
                 <g:if test="${orgSub?.isCurrentMultiYearSubscriptionNew()}">

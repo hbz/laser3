@@ -12,6 +12,7 @@ import org.apache.commons.logging.LogFactory
 
 import javax.persistence.Transient
 import java.text.Normalizer
+import java.text.SimpleDateFormat
 import java.util.regex.Pattern
 
 @Log4j
@@ -1109,7 +1110,7 @@ class TitleInstance extends AbstractBaseDomain /*implements AuditableTrait*/ {
   }
 
   def getInstitutionalCoverageSummary(institution, dateformat, date_restriction) {
-    def sdf = new java.text.SimpleDateFormat(dateformat)
+    SimpleDateFormat sdf = new SimpleDateFormat(dateformat)
     def qry = """
 select ie from IssueEntitlement as ie JOIN ie.subscription.orgRelations as o 
   where ie.tipp.title = :title and o.org = :institution 
@@ -1303,7 +1304,7 @@ select ie from IssueEntitlement as ie JOIN ie.subscription.orgRelations as o
   @Transient
   def toKBPlus(builder, attr) {
 
-    def sdf = new java.text.SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
+    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
     def pub = getPublisher()
 
     try {

@@ -4,7 +4,7 @@
 <html>
 <head>
     <meta name="layout" content="semanticUI"/>
-    <title>${message(code:'laser', default:'LAS:eR')}</title>
+    <title>${message(code:'laser')}</title>
 </head>
 
 <body>

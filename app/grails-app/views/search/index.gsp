@@ -2,7 +2,7 @@
 <laser:serviceInjection/>
 <%-- r:require module="annotations" / --%>
 
-<% SimpleDateFormat sdf = new SimpleDateFormat(message(code: 'default.date.format.notime'))
+<% SimpleDateFormat sdf = de.laser.helper.DateUtil.getSDF_NoTime()
 
 String period
 %>
@@ -11,7 +11,7 @@ String period
 <html>
 <head>
     <meta name="layout" content="semanticUI"/>
-    <title>${message(code: 'laser', default: 'LAS:eR')} : ${message(code: 'search.advancedSearch')}</title>
+    <title>${message(code: 'laser')} : ${message(code: 'search.advancedSearch')}</title>
 </head>
 
 <body>
@@ -671,7 +671,7 @@ String period
                                     <b>${message(code: 'search.object.'+hit.getSourceAsMap().objectClassName)}</b>:
                                     <g:link controller="${hit.getSourceAsMap().objectClassName}" action="show" id="${hit.getSourceAsMap().objectId}">${hit.getSourceAsMap().objectName}</g:link>
                                     <br>
-                                    <b>${message(code: 'license.docs.table.type')}</b>: ${docContext.owner?.type?.getI10n('value')}
+                                    <b>${message(code: 'license.docs.table.type')}</b>: ${docContext ? docContext.owner?.type?.getI10n('value'): ""}
 
                                 </td>
                             </g:if>

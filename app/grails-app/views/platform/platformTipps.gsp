@@ -4,7 +4,7 @@
 <html>
 <head>
     <meta name="layout" content="semanticUI">
-    <title>${message(code: 'laser', default: 'LAS:eR')} : <g:message code="platform.nav.platformTipps"/></title>
+    <title>${message(code: 'laser')} : <g:message code="platform.nav.platformTipps"/></title>
 </head>
 
 <body>

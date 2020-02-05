@@ -42,7 +42,7 @@ class PersonController extends AbstractDebugController {
 		case 'POST':
 	        def personInstance = new Person(params)
 	        if (!personInstance.save(flush: true)) {
-                flash.error = message(code: 'default.not.created.message', args: [message(code: 'person.label', default: 'Person')])
+                flash.error = message(code: 'default.not.created.message', args: [message(code: 'person.label')])
                 redirect(url: request.getHeader('referer'))
 	            //render view: 'create', model: [personInstance: personInstance, userMemberships: userMemberships]
 	            return
@@ -61,7 +61,7 @@ class PersonController extends AbstractDebugController {
                 }
             }
             
-			flash.message = message(code: 'default.created.message', args: [message(code: 'person.label', default: 'Person'), personInstance.toString()])
+			flash.message = message(code: 'default.created.message', args: [message(code: 'person.label'), personInstance.toString()])
             redirect(url: request.getHeader('referer'))
 			break
 		}
@@ -71,7 +71,7 @@ class PersonController extends AbstractDebugController {
     def show() {
         def personInstance = Person.get(params.id)
         if (! personInstance) {
-			flash.message = message(code: 'default.not.found.message', args: [message(code: 'person.label', default: 'Person'), params.id])
+			flash.message = message(code: 'default.not.found.message', args: [message(code: 'person.label'), params.id])
             //redirect action: 'list'
             redirect(url: request.getHeader('referer'))
             return
@@ -120,7 +120,7 @@ class PersonController extends AbstractDebugController {
         def personInstance = Person.get(params.id)
 
         if (! personInstance) {
-            flash.message = message(code: 'default.not.found.message', args: [message(code: 'person.label', default: 'Person'), params.id])
+            flash.message = message(code: 'default.not.found.message', args: [message(code: 'person.label'), params.id])
             //redirect action: 'list'
             redirect(url: request.getHeader('referer'))
             return
@@ -148,7 +148,7 @@ class PersonController extends AbstractDebugController {
 	            def version = params.version.toLong()
 	            if (personInstance.version > version) {
 	                personInstance.errors.rejectValue('version', 'default.optimistic.locking.failure',
-	                          [message(code: 'person.label', default: 'Person')] as Object[],
+	                          [message(code: 'person.label')] as Object[],
 	                          "Another user has updated this Person while you were editing")
 	                render view: 'show', model: [personInstance: personInstance, userMemberships: userMemberships]
 	                return
@@ -170,7 +170,7 @@ class PersonController extends AbstractDebugController {
                 userMemberships << personInstance.tenant 
             }
             
-			flash.message = message(code: 'default.updated.message', args: [message(code: 'person.label', default: 'Person'), personInstance.toString()])
+			flash.message = message(code: 'default.updated.message', args: [message(code: 'person.label'), personInstance.toString()])
 	        redirect action: 'show', id: personInstance.id
 			break
 		}
@@ -181,7 +181,7 @@ class PersonController extends AbstractDebugController {
     def _delete() {
         def personInstance = Person.get(params.id)
         if (! personInstance) {
-			flash.message = message(code: 'default.not.found.message', args: [message(code: 'person.label', default: 'Person'), params.id])
+			flash.message = message(code: 'default.not.found.message', args: [message(code: 'person.label'), params.id])
             String referer = request.getHeader('referer')
             if (referer.endsWith('person/show/'+params.id)) {
                 if (params.previousReferer && ! params.previousReferer.endsWith('person/show/'+params.id)){
@@ -202,7 +202,7 @@ class PersonController extends AbstractDebugController {
 
         try {
             personInstance.delete(flush: true)
-			flash.message = message(code: 'default.deleted.message', args: [message(code: 'person.label', default: 'Person'), params.id])
+			flash.message = message(code: 'default.deleted.message', args: [message(code: 'person.label'), params.id])
             String referer = request.getHeader('referer')
             if (referer.endsWith('person/show/'+params.id)) {
                 if (params.previousReferer && ! params.previousReferer.endsWith('person/show/'+params.id)){
@@ -215,7 +215,7 @@ class PersonController extends AbstractDebugController {
                 redirect(url: referer)
             }
         } catch (DataIntegrityViolationException e) {
- 			flash.message = message(code: 'default.not.deleted.message', args: [message(code: 'person.label', default: 'Person'), params.id])
+ 			flash.message = message(code: 'default.not.deleted.message', args: [message(code: 'person.label'), params.id])
             redirect action: 'show', id: params.id
         }
     }
@@ -224,7 +224,7 @@ class PersonController extends AbstractDebugController {
     def properties() {
         def personInstance = Person.get(params.id)
         if (!personInstance) {
-            flash.message = message(code: 'default.not.found.message', args: [message(code: 'person.label', default: 'Person'), params.id])
+            flash.message = message(code: 'default.not.found.message', args: [message(code: 'person.label'), params.id])
             //redirect action: 'list'
             redirect(url: request.getHeader('referer'))
             return
@@ -236,7 +236,7 @@ class PersonController extends AbstractDebugController {
         // create mandatory PersonPrivateProperties if not existing
 
         Org org = contextService.getOrg()
-        def mandatories = PropertyDefinition.findAllByDescrAndMandatoryAndTenant("Person Property", true, org)
+        List<PropertyDefinition> mandatories = PropertyDefinition.getAllByDescrAndMandatoryAndTenant(PropertyDefinition.PRS_PROP, true, org)
 
         mandatories.each{ pd ->
             if (! PersonPrivateProperty.findWhere(owner: personInstance, type: pd)) {

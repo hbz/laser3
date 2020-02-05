@@ -27,7 +27,6 @@ import org.codehaus.groovy.grails.orm.hibernate.cfg.GrailsHibernateUtil
 import org.springframework.web.servlet.LocaleResolver
 import org.springframework.web.servlet.support.RequestContextUtils
 
-import java.text.DateFormat
 import java.text.SimpleDateFormat
 import java.util.regex.Matcher
 import java.util.regex.Pattern
@@ -246,7 +245,7 @@ class AjaxController {
               result=of.format(value);
             }
             else {
-              def of = new java.text.SimpleDateFormat(message(code:'default.date.format.notime'))
+                SimpleDateFormat of = DateUtil.getSDF_NoTime()
               result=of.format(value)
             }
           }
@@ -947,7 +946,7 @@ class AjaxController {
               else
                   ieCoverage = ieCandidate.coverages[covStmtKey]
               if(prop in ['startDate','endDate']) {
-                  SimpleDateFormat sdf = new SimpleDateFormat(message(code:'default.date.format.notime'))
+                  SimpleDateFormat sdf = DateUtil.getSDF_NoTime()
                   ieCoverage[prop] = sdf.parse(params.propValue)
               }
               else {
@@ -1930,7 +1929,7 @@ class AjaxController {
     log.debug("ajax::coreExtend:: ${params}")
     def tipID = params.tipID
     try{
-      def sdf = new SimpleDateFormat(message(code:'default.date.format.notime'))
+        SimpleDateFormat sdf = DateUtil.getSDF_NoTime()
       def startDate = sdf.parse(params.coreStartDate)
       def endDate = params.coreEndDate? sdf.parse(params.coreEndDate) : null
       if(tipID && startDate){
@@ -2301,7 +2300,7 @@ class AjaxController {
 
             if (target_object) {
                 if (params.type == 'date') {
-                    def sdf = new java.text.SimpleDateFormat(message(code: 'default.date.format.notime', default: 'yyyy-MM-dd'))
+                    SimpleDateFormat sdf = DateUtil.getSDF_NoTime()
 
                     def backup = target_object."${params.name}"
                     try {
@@ -2324,7 +2323,7 @@ class AjaxController {
                     }
                     finally {
                         if (target_object."${params.name}") {
-                            result = (target_object."${params.name}").format(message(code: 'default.date.format.notime', default: 'yyyy-MM-dd'))
+                            result = (target_object."${params.name}").format(message(code: 'default.date.format.notime'))
                         }
                     }
                 } else if (params.type == 'url') {

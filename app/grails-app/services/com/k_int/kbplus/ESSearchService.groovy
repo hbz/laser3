@@ -14,14 +14,15 @@ import org.elasticsearch.search.aggregations.AggregationBuilders;
 
 class ESSearchService{
 // Map the parameter names we use in the webapp with the ES fields
-  def reversemap = ['rectype':'rectype',
-                    'endYear':'endYear',
+  def reversemap = ['endYear':'endYear',
                     'startYear':'startYear',
                     'consortiaName':'consortiaName',
                     'providerName':'providerName',
                     'availableToOrgs':'availableToOrgs',
                     'isPublic':'isPublic',
-                    'status':'status']
+                    'status':'status',
+                    'publisher':'publisher',
+                    'name':'name']
 
   def ESWrapperService
   def grailsApplication
@@ -43,7 +44,7 @@ class ESSearchService{
     try {
       if ( (params.q && params.q.length() > 0) || params.rectype) {
   
-        params.max = Math.min(params.max ? params.int('max') : 15, 100)
+        params.max = Math.min(params.max ? params.int('max') : 15, 10000)
         params.offset = params.offset ? params.int('offset') : 0
 
         def query_str = buildQuery(params,field_map)
@@ -76,7 +77,7 @@ class ESSearchService{
           //searchRequestBuilder = searchRequestBuilder.addSort("priority", SortOrder.DESC)
           searchSourceBuilder.sort(new FieldSortBuilder("priority").order(SortOrder.DESC))
 
-          log.debug("index: ${esSettings.indexName} -> searchRequestBuilder start to add query and aggregration query string is ${query_str}")
+          log.debug("index: ${esSettings.indexName} -> searchRequestBuilder: ${query_str}")
 
           if(params.actionName == 'index') {
 
@@ -100,6 +101,7 @@ class ESSearchService{
 
           }
           searchResponse = esclient.search(searchRequest, RequestOptions.DEFAULT)
+
           //search = searchRequestBuilder.get()
         }
         catch (Exception ex) {
@@ -163,9 +165,12 @@ class ESSearchService{
           sw.write(" AND ((NOT gokbId:'${params.q}') AND (NOT guid:'${params.q}')) ")
         }
       }else {
-        if((params.q.charAt(1) == '"' && params.q.charAt(params.q.length()-2) == '"') || params.q.contains(":") || params.q.contains("-")) {
-          params.q = params.q.replaceAll('\\*', '')
+        if(params.q.contains(":") || params.q.contains("-")) {
+          //params.q = params.q.replaceAll('\\*', '')
           sw.write("\"${params.q}\"")
+        }else if (params.q.count("\"") >= 2){
+          sw.write("${params.q}")
+          sw.write(" AND ((NOT gokbId:'${params.q}') AND (NOT guid:'${params.q}')) ")
         }else{
           params.q = params.q.replaceAll('\\"', '')
           sw.write("${params.q}")
@@ -188,7 +193,7 @@ class ESSearchService{
                   "AND ( NOT rectype:\"ParticipantSurvey\" ) AND ( NOT rectype:\"Survey\" ) " +
                   "AND ( NOT rectype:\"Task\" ) AND ( NOT rectype:\"Note\" ) AND ( NOT rectype:\"Document\" ) " +
                   "AND ( NOT rectype:\"IssueEntitlement\" )" +
-                  "AND ( NOT rectype:\"SubscriptionCustomProperty\" ) AND ( NOT rectype:\"SubscriptionPrivateProperty\" )" +
+                  "AND ( NOT rectype:\"SubscriptionCustomProperty\" ) AND ( NOT rectype:\"SubscriptionPrivateProperty\" ) " +
                   "AND ( NOT rectype:\"LicenseCustomProperty\" ) AND ( NOT rectype:\"LicensePrivateProperty\" )" +
                   ") ")
 
@@ -235,8 +240,11 @@ class ESSearchService{
                 sw.write(":")
                 if(params[mapping.key].startsWith("[") && params[mapping.key].endsWith("]")){
                   sw.write("${params[mapping.key]}")
-                }else{
-                  sw.write("\"${params[mapping.key]}\"")
+                }
+                else if (params[mapping.key].count("\"") >= 2){
+                  sw.write("${params[mapping.key]}")
+                } else{
+                  sw.write("( ${params[mapping.key]} )")
                 }
               }
             }

@@ -2,7 +2,7 @@
 <html>
 <head>
     <meta name="layout" content="semanticUI"/>
-    <title>${message(code:'laser', default:'LAS:eR')} : Migrate Collective Subscriptions</title>
+    <title>${message(code:'laser')} : Migrate Collective Subscriptions</title>
 </head>
 
 <body>

@@ -6,7 +6,7 @@
 <html>
     <head>
         <meta name="layout" content="semanticUI"/>
-        <title>${message(code:'laser', default:'LAS:eR')} : ${message(code:'task.plural', default:'Tasks')}</title>
+        <title>${message(code:'laser')} : ${message(code:'task.plural', default:'Tasks')}</title>
     </head>
     <body>
 

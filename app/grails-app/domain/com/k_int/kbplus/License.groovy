@@ -6,6 +6,7 @@ import com.k_int.properties.PropertyDefinition
 import com.k_int.properties.PropertyDefinitionGroup
 import com.k_int.properties.PropertyDefinitionGroupBinding
 import de.laser.domain.AbstractBaseDomain
+import de.laser.helper.DateUtil
 import de.laser.helper.RDConstants
 import de.laser.helper.RDStore
 import de.laser.helper.RefdataAnnotation
@@ -822,7 +823,7 @@ AND lower(l.reference) LIKE (:ref)
     String dropdownNamingConvention() {
         String statusString = "" + status ? status.getI10n('value') : RDStore.LICENSE_NO_STATUS.getI10n('value')
 
-        SimpleDateFormat sdf = new SimpleDateFormat(messageSource.getMessage('default.date.format.notime', null, LocaleContextHolder.getLocale()))
+        SimpleDateFormat sdf = DateUtil.getSDF_NoTime()
         String period = startDate ? sdf.format(startDate) : ''
         period = endDate ? period + ' - ' + sdf.format(endDate) : ''
         period = period ? '(' + period + ')' : ''

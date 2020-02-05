@@ -2,7 +2,7 @@
 <html>
 <head>
     <meta name="layout" content="semanticUI"/>
-    <title>${message(code: 'laser', default: 'LAS:eR')} - Service Unavailable</title>
+    <title>${message(code: 'laser')} - Service Unavailable</title>
 </head>
 
 <body>

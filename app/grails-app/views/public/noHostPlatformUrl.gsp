@@ -2,7 +2,7 @@
 <html>
 <head>
     <meta name="layout" content="public"/>
-    <title>No Host Platform URL | ${message(code: 'laser', default: 'LAS:eR')}</title>
+    <title>No Host Platform URL | ${message(code: 'laser')}</title>
 </head>
 
 <body class="public">

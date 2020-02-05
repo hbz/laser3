@@ -2,18 +2,16 @@ package de.laser
 
 import com.k_int.kbplus.ApiSource
 import com.k_int.kbplus.RefdataValue
-import com.k_int.kbplus.Subscription
 import com.k_int.kbplus.SurveyOrg
 import com.k_int.kbplus.SurveyResult
 import com.k_int.kbplus.UserSettings
-import com.k_int.kbplus.abstract_domain.PrivateProperty
 import com.k_int.kbplus.auth.User
+import de.laser.helper.DateUtil
 import de.laser.helper.RDConstants
-import de.laser.helper.RDStore
 import de.laser.helper.SessionCacheWrapper
 import de.laser.helper.SwissKnife
-import org.codehaus.groovy.grails.plugins.web.taglib.ValidationTagLib
-import org.springframework.web.servlet.support.RequestContextUtils
+
+import java.text.SimpleDateFormat
 
 
 // Semantic UI
@@ -727,7 +725,7 @@ class SemanticUiTagLib {
         def id = attrs.id ? "${message(code: attrs.id)}" : ''
         def placeholder = attrs.placeholder ? "${message(code: attrs.placeholder)}" : 'Date'
 
-        def sdf = new java.text.SimpleDateFormat(message(code: 'default.date.format.notime'))
+        SimpleDateFormat sdf = DateUtil.getSDF_NoTime()
         def value = ''
         try {
             value = attrs.value ? sdf.format(attrs.value) : value

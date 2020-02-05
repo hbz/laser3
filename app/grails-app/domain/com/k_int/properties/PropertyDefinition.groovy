@@ -41,29 +41,21 @@ class PropertyDefinition extends AbstractI10nOverride implements Serializable, C
     @Transient
     final static PRIVATE_PROPERTY = "PRIVATE_PROPERTY"
 
-
     @Transient
     final static String LIC_PROP    = 'License Property'
-
-    //@Transient
-    //@Deprecated
-    //final static String LIC_OA_PROP = 'License Property: Open Access'
-    //@Transient
-    //@Deprecated
-    //final static String LIC_ARC_PROP = 'License Property: Archive'
+    @Transient
+    final static String ORG_PROP    = 'Organisation Property'
+    @Transient
+    final static String PRS_PROP    = 'Person Property'
+    @Transient
+    final static String PLA_PROP    = 'Platform Property'
+    @Transient
+    final static String SUB_PROP    = 'Subscription Property'
 
     @Transient
     final static String ORG_CONF    = 'Organisation Config'
     @Transient
-    final static String SUB_PROP    = 'Subscription Property'
-    @Transient
     final static String SYS_CONF    = 'System Config'
-    @Transient
-    final static String PRS_PROP    = 'Person Property'
-    @Transient
-    final static String ORG_PROP    = 'Organisation Property'
-    @Transient
-    final static String PLA_PROP    = 'Platform Property'
 
     @Transient
     final static String[] AVAILABLE_CUSTOM_DESCR = [
@@ -274,6 +266,22 @@ class PropertyDefinition extends AbstractI10nOverride implements Serializable, C
             static_logger.debug("WARNING: multiple matches found ( ${name}, ${descr}, ${tenant.id} )")
             return result[0]
         }
+    }
+
+    static List<PropertyDefinition> getAllByDescr(String descr) {
+        findAllByDescrAndTenantIsNull(descr)
+    }
+
+    static List<PropertyDefinition> getAllByDescrAndTenant(String descr, Org tenant) {
+        findAllByDescrAndTenant(descr, tenant)
+    }
+
+    static List<PropertyDefinition> getAllByDescrAndMandatory(String descr, boolean mandatory) {
+        findAllByDescrAndMandatoryAndTenantIsNull(descr, mandatory)
+    }
+
+    static List<PropertyDefinition> getAllByDescrAndMandatoryAndTenant(String descr, boolean mandatory, Org tenant) {
+        findAllByDescrAndMandatoryAndTenant(descr, mandatory, tenant)
     }
 
     private static def typeIsValid(String key) {

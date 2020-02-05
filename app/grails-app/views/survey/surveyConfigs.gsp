@@ -5,7 +5,7 @@
 <html>
 <head>
     <meta name="layout" content="semanticUI"/>
-    <title>${message(code: 'laser', default: 'LAS:eR')} : ${message(code: 'surveyConfigs.label')}</title>
+    <title>${message(code: 'laser')} : ${message(code: 'surveyConfigs.label')}</title>
 </head>
 
 <body>

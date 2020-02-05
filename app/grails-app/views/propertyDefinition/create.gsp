@@ -5,7 +5,7 @@
 <html>
   <head>
     <meta name="layout" content="semanticUI"/>
-    <title>${message(code:'laser', default:'LAS:eR')} Manage Custom Properties</title>
+    <title>${message(code:'laser')} Manage Custom Properties</title>
   </head>
      <g:set var="entityName" value="${message(code: 'propertyDefinition.label', default: 'PropertyDefinition')}"/>
 <body>
