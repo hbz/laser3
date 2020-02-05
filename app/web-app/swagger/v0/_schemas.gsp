@@ -1,4 +1,17 @@
-<%@ page import="de.laser.helper.RDConstants; com.k_int.kbplus.RefdataCategory" %>
+<%@ page import="de.laser.helper.RDConstants; com.k_int.kbplus.RefdataCategory;" %>
+<%
+    def printRefdataEnum = { rdc, pos ->
+        String spacer = ''
+        for (pos; pos>0; pos--) {
+            spacer += ' '
+        }
+
+        println()
+        RefdataCategory.getAllRefdataValues(rdc).each {
+            println("${spacer}- \"${it.value}\"")
+        }
+    }
+%>
 <%-- indention: 4 --%>
 
     PlaceholderObject:
@@ -43,18 +56,15 @@
         state:
           type: string
           description: Mapping RefdataCategory "${RDConstants.FEDERAL_STATE}"
-          enum:
-            [${ RefdataCategory.getAllRefdataValues(RDConstants.FEDERAL_STATE).collect{ it.value }.join(', ') }]
+          enum: <% printRefdataEnum(RDConstants.FEDERAL_STATE, 12) %>
         country:
           type: string
           description: Mapping RefdataCategory "${RDConstants.COUNTRY}"
-          enum:
-            [${ RefdataCategory.getAllRefdataValues(RDConstants.COUNTRY).collect{ it.value }.join(', ') }]
+          enum: <% printRefdataEnum(RDConstants.COUNTRY, 12) %>
         type:
           type: string
           description: Mapping RefdataCategory "${RDConstants.ADDRESS_TYPE}"
-          enum:
-            [${ RefdataCategory.getAllRefdataValues(RDConstants.ADDRESS_TYPE).collect{ it.value }.join(', ') }]
+          enum: <% printRefdataEnum(RDConstants.ADDRESS_TYPE, 12) %>
         lastUpdated:
           type: string
           format: date-time
@@ -66,8 +76,7 @@
         category: # mapping attr contentType
           type: string
           description: Mapping RefdataCategory "${RDConstants.CONTACT_CONTENT_TYPE}"
-          enum:
-            [${ RefdataCategory.getAllRefdataValues(RDConstants.CONTACT_CONTENT_TYPE).collect{ it.value }.join(', ') }]
+          enum: <% printRefdataEnum(RDConstants.CONTACT_CONTENT_TYPE, 12) %>
         content:
           type: string
         lastUpdated:
@@ -76,8 +85,7 @@
         type:
           type: string
           description: Mapping RefdataCategory "${RDConstants.CONTACT_TYPE}"
-          enum:
-            [${ RefdataCategory.getAllRefdataValues(RDConstants.CONTACT_TYPE).collect{ it.value }.join(', ') }]
+          enum: <% printRefdataEnum(RDConstants.CONTACT_TYPE, 12) %>
 
 
     CostItem:
@@ -94,8 +102,7 @@
         billingCurrency:
           type: string
           description: Mapping RefdataCategory "Currency"
-          enum:
-            [${ RefdataCategory.getAllRefdataValues('Currency').collect{ it.value }.join(', ') }]
+          enum: <% printRefdataEnum('Currency', 12) %>
         costInBillingCurrency:
           type: string
         costInBillingCurrencyAfterTax:
@@ -107,13 +114,11 @@
         costItemElement:
           type: string
           description: Mapping RefdataCategory "${RDConstants.COST_ITEM_ELEMENT}"
-          enum:
-            [${ RefdataCategory.getAllRefdataValues(RDConstants.COST_ITEM_ELEMENT).collect{ it.value }.join(', ') }]
+          enum: <% printRefdataEnum(RDConstants.COST_ITEM_ELEMENT, 12) %>
         costItemStatus:
           type: string
           description: Mapping RefdataCategory "${RDConstants.COST_ITEM_STATUS}"
-          enum:
-            [${ RefdataCategory.getAllRefdataValues(RDConstants.COST_ITEM_STATUS).collect{ it.value }.join(', ') }]
+          enum: <% printRefdataEnum(RDConstants.COST_ITEM_STATUS, 12) %>
 <%--    costItemCategory:
           type: string
           description: Mapping RefdataCategory "CostItemCategory"
@@ -162,8 +167,7 @@
         taxCode:
           type: string
           description: Mapping RefdataCategory "${RDConstants.TAX_TYPE}"
-          enum:
-            [${ RefdataCategory.getAllRefdataValues(RDConstants.TAX_TYPE).collect{ it.value }.join(', ') }]
+          enum: <% printRefdataEnum(RDConstants.TAX_TYPE, 12) %>
         taxRate:
           type: string
 
@@ -185,8 +189,7 @@
         type:
           type: string
           description: Mapping RefdataCategory "${RDConstants.DOCUMENT_TYPE}"
-          enum:
-            [${ RefdataCategory.getAllRefdataValues(RDConstants.DOCUMENT_TYPE).collect{ it.value }.join(', ') }]
+          enum: <% printRefdataEnum(RDConstants.DOCUMENT_TYPE, 12) %>
         uuid:
           type: string
           example: "70d4ef8a-71b9-4b39-b339-9f3773c29b26"
@@ -309,8 +312,7 @@
         isPublic:
           type: string #mapped to boolean
           description: Mapping RefdataCategory "${RDConstants.Y_N}"
-          enum:
-            [${ RefdataCategory.getAllRefdataValues(RDConstants.Y_N).collect{ it.value }.join(', ') }]
+          enum: <% printRefdataEnum(RDConstants.Y_N, 12) %>
         lastUpdated:
           type: string
           format: date-time
@@ -332,8 +334,7 @@
         status:
           type: string
           description: Mapping RefdataCategory "${RDConstants.LICENSE_STATUS}"
-          enum:
-            [${ RefdataCategory.getAllRefdataValues(RDConstants.LICENSE_STATUS).collect{ it.value }.join(', ') }]
+          enum: <% printRefdataEnum(RDConstants.LICENSE_STATUS, 12) %>
         subscriptions:
           type: array
           items:
@@ -383,13 +384,11 @@
         country:
           type: string
           description: Mapping RefdataCategory "${RDConstants.COUNTRY}"
-          enum:
-            [${ RefdataCategory.getAllRefdataValues(RDConstants.COUNTRY).collect{ it.value }.join(', ') }]
+          enum: <% printRefdataEnum(RDConstants.COUNTRY, 12) %>
         federalState:
           type: string
           description: Mapping RefdataCategory "FederalState"
-          enum:
-            [${ RefdataCategory.getAllRefdataValues('FederalState').collect{ it.value }.join(', ') }]
+          enum: <% printRefdataEnum('FederalState', 12) %>
 <%--    fteStudents:
           type: integer
         fteStaff:
@@ -403,8 +402,7 @@
         libraryType:
           type: string
           description: Mapping RefdataCategory "LibraryType"
-          enum:
-            [${ RefdataCategory.getAllRefdataValues('LibraryType').collect{ it.value }.join(', ') }]
+          enum: <% printRefdataEnum('LibraryType', 12) %>
         persons: # mapping attr prsLinks
           type: array
           items:
@@ -418,16 +416,14 @@
           items:
             type: string
           description: Mapping RefdataCategory "${RDConstants.ORG_TYPE}"
-          enum:
-            [${ RefdataCategory.getAllRefdataValues(RDConstants.ORG_TYPE).collect{ it.value }.join(', ') }]
+          enum: <% printRefdataEnum(RDConstants.ORG_TYPE, 12) %>
         scope:
           type: string
         sector:
           #deprecated: true
           type: string
           description: Mapping RefdataCategory "${RDConstants.ORG_SECTOR}"
-          enum:
-            [${ RefdataCategory.getAllRefdataValues(RDConstants.ORG_SECTOR).collect{ it.value }.join(', ') }]
+          enum: <% printRefdataEnum(RDConstants.ORG_SECTOR, 12) %>
         shortname:
           type: string
         sortname:
@@ -441,8 +437,7 @@
           #deprecated: true
           type: string
           description: Mapping RefdataCategory "OrgType"
-          enum:
-            [${ RefdataCategory.getAllRefdataValues('OrgType').collect{ it.value }.join(', ') }]
+          enum: <% printRefdataEnum('OrgType', 12) %>
 
     Package:
       allOf:
@@ -452,20 +447,17 @@
           autoAccept:
             type: string #mapped to boolean
             description: Mapping RefdataCategory "${RDConstants.Y_N}"
-            enum:
-              [${ RefdataCategory.getAllRefdataValues(RDConstants.Y_N).collect{ it.value }.join(', ') }]
+            enum: <% printRefdataEnum(RDConstants.Y_N, 12) %>
           breakable:
             type: string
             description: Mapping RefdataCategory "${RDConstants.Y_N}"
-            enum:
-              [${ RefdataCategory.getAllRefdataValues(RDConstants.Y_N).collect{ it.value }.join(', ') }]
+            enum: <% printRefdataEnum(RDConstants.Y_N, 12) %>
           cancellationAllowances:
             type: string
           consistent:
             type: string
             description: Mapping RefdataCategory "${RDConstants.Y_N}"
-            enum:
-              [${ RefdataCategory.getAllRefdataValues(RDConstants.Y_N).collect{ it.value }.join(', ') }]
+            enum: <% printRefdataEnum(RDConstants.Y_N, 12) %>
           dateCreated:
             type: string
             format: date
@@ -482,15 +474,13 @@
           fixed:
             type: string
             description: Mapping RefdataCategory "${RDConstants.Y_N}"
-            enum:
-              [${ RefdataCategory.getAllRefdataValues(RDConstants.Y_N).collect{ it.value }.join(', ') }]
+            enum: <% printRefdataEnum(RDConstants.Y_N, 12) %>
 <%--          forumId:
             type: string --%>
           isPublic:
             type: string #mapped to boolean
             description: Mapping RefdataCategory "${RDConstants.Y_N}"
-            enum:
-              [${ RefdataCategory.getAllRefdataValues(RDConstants.Y_N).collect{ it.value }.join(', ') }]
+            enum: <% printRefdataEnum(RDConstants.Y_N, 12) %>
           lastUpdated:
             type: string
             format: date-time
@@ -505,8 +495,7 @@
           packageListStatus:
             type: string
             description: Mapping RefdataCategory "${RDConstants.PACKAGE_LIST_STATUS}"
-            enum:
-              [${ RefdataCategory.getAllRefdataValues(RDConstants.PACKAGE_LIST_STATUS).collect{ it.value }.join(', ') }]
+            enum: <% printRefdataEnum(RDConstants.PACKAGE_LIST_STATUS, 12) %>
           packageScope:
             type: string
             description: Mapping RefdataCategory
@@ -515,8 +504,7 @@
           packageStatus:
             type: string
             description: Mapping RefdataCategory "${RDConstants.PACKAGE_STATUS}"
-            enum:
-              [${ RefdataCategory.getAllRefdataValues(RDConstants.PACKAGE_STATUS).collect{ it.value }.join(', ') }]
+            enum: <% printRefdataEnum(RDConstants.PACKAGE_STATUS, 12) %>
           packageType:
             type: string
             description: Mapping RefdataCategory
@@ -562,13 +550,11 @@
         gender:
           type: string
           description: Mapping RefdataCategory "${RDConstants.GENDER}"
-          enum:
-            [${ RefdataCategory.getAllRefdataValues(RDConstants.GENDER).collect{ it.value }.join(', ') }]
+          enum: <% printRefdataEnum(RDConstants.GENDER, 12) %>
         isPublic:
           type: string
           description: Mapping RefdataCategory "${RDConstants.Y_N}". If set *No*, it's an hidden entry to/from an addressbook (depending on the given organisation context)
-          enum:
-            [${ RefdataCategory.getAllRefdataValues(RDConstants.Y_N).collect{ it.value }.join(', ') }]
+          enum: <% printRefdataEnum(RDConstants.Y_N, 12) %>
         lastName:
           type: string
         middleName:
@@ -579,8 +565,7 @@
         contactType:
           type: string
           description: Mapping RefdataCategory "${RDConstants.PERSON_CONTACT_TYPE}"
-          enum:
-            [${ RefdataCategory.getAllRefdataValues(RDConstants.PERSON_CONTACT_TYPE).collect{ it.value }.join(', ') }]
+          enum: <% printRefdataEnum(RDConstants.PERSON_CONTACT_TYPE, 12) %>
         properties: # mapping attr privateProperties
           type: array
           items:
@@ -621,8 +606,7 @@
             status:
               type: stringRefdataCategory
               description: Mapping RefdataCategory "${RDConstants.PLATFORM_STATUS}"
-              enum:
-                [${ RefdataCategory.getAllRefdataValues(RDConstants.PLATFORM_STATUS).collect{ it.value }.join(', ') }]
+              enum: <% printRefdataEnum(RDConstants.PLATFORM_STATUS, 14) %>
             type:
               type: string
               description: Mapping RefdataCategory
@@ -646,8 +630,7 @@
         isPublic: # derived to substitute tentant
           type: string
           description: Mapping RefdataCategory "${RDConstants.Y_N}". If set *No*, it's an hidden entry to/from the given organisation context
-          enum:
-            [${ RefdataCategory.getAllRefdataValues(RDConstants.Y_N).collect{ it.value }.join(', ') }]
+          enum: <% printRefdataEnum(RDConstants.Y_N, 12) %>
         value: # mapping attr stringValue, intValue, decValue, refValue, urlValue, dateValue
           type: string
 
@@ -673,20 +656,17 @@
         form:
           type: string
           description: Mapping RefdataCategory "${RDConstants.SUBSCRIPTION_FORM}"
-          enum:
-            [${ RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_FORM).collect{ it.value }.join(', ') }]
+          enum: <% printRefdataEnum(RDConstants.SUBSCRIPTION_FORM, 12) %>
         instanceOf:
           $ref: "#/components/schemas/SubscriptionStub"
         isSlaved:
           type: string #mapped to boolean
           description: Mapping RefdataCategory "${RDConstants.Y_N}"
-          enum:
-            [${ RefdataCategory.getAllRefdataValues(RDConstants.Y_N).collect{ it.value }.join(', ') }]
+          enum: <% printRefdataEnum(RDConstants.Y_N, 12) %>
         isMultiYear:
           type: string #mapped to boolean
           description: Mapping RefdataCategory "${RDConstants.Y_N}"
-          enum:
-            [${ RefdataCategory.getAllRefdataValues(RDConstants.Y_N).collect{ it.value }.join(', ') }]
+          enum: <% printRefdataEnum(RDConstants.Y_N, 12) %>
         lastUpdated:
           type: string
           format: date-time
@@ -717,23 +697,20 @@
         resource:
           type: string
           description: Mapping RefdataCategory "${RDConstants.SUBSCRIPTION_RESOURCE}"
-          enum:
-            [${ RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_RESOURCE).collect{ it.value }.join(', ') }]
+          enum: <% printRefdataEnum(RDConstants.SUBSCRIPTION_RESOURCE, 12) %>
         startDate:
           type: string
           format: date-time
         status:
           type: string
           description: Mapping RefdataCategory "${RDConstants.SUBSCRIPTION_STATUS}"
-          enum:
-            [${ RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_STATUS).collect{ it.value }.join(', ') }]
+          enum: <% printRefdataEnum(RDConstants.SUBSCRIPTION_STATUS, 12) %>
         successor:
           $ref: "#/components/schemas/SubscriptionStub"
         type:
           type: string
           description: Mapping RefdataCategory "${RDConstants.SUBSCRIPTION_TYPE}"
-          enum:
-            [${ RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_TYPE).collect{ it.value }.join(', ') }]
+          enum: <% printRefdataEnum(RDConstants.SUBSCRIPTION_TYPE, 12) %>
 
 
     TitleInstancePackagePlatform:
@@ -764,8 +741,7 @@
           billingCurrency:
             type: string
             description: Mapping RefdataCategory "Currency"
-            enum:
-              [${ RefdataCategory.getAllRefdataValues('Currency').collect{ it.value }.join(', ') }]
+            enum: <% printRefdataEnum('Currency', 12) %>
           budgetCodes:
             type: array
             items:
@@ -783,23 +759,19 @@
           costItemElement:
             type: string
             description: Mapping RefdataCategory "${RDConstants.COST_ITEM_ELEMENT}"
-            enum:
-              [${ RefdataCategory.getAllRefdataValues(RDConstants.COST_ITEM_ELEMENT).collect{ it.value }.join(', ') }]
+            enum: <% printRefdataEnum(RDConstants.COST_ITEM_ELEMENT, 12) %>
           costItemElementConfiguration:
             type: string
             description: Mapping RefdataCategory "${RDConstants.COST_CONFIGURATION}"
-            enum:
-              [${ RefdataCategory.getAllRefdataValues(RDConstants.COST_CONFIGURATION).collect{ it.value }.join(', ') }]
+            enum: <% printRefdataEnum(RDConstants.COST_CONFIGURATION, 12) %>
           costItemStatus:
             type: string
             description: Mapping RefdataCategory "${RDConstants.COST_ITEM_STATUS}"
-            enum:
-              [${ RefdataCategory.getAllRefdataValues(RDConstants.COST_ITEM_STATUS).collect{ it.value }.join(', ') }]
+            enum: <% printRefdataEnum(RDConstants.COST_ITEM_STATUS, 12) %>
           costItemCategory:
             type: string
             description: Mapping RefdataCategory "${RDConstants.COST_ITEM_CATEGORY}"
-            enum:
-              [${ RefdataCategory.getAllRefdataValues(RDConstants.COST_ITEM_CATEGORY).collect{ it.value }.join(', ') }]
+            enum: <% printRefdataEnum(RDConstants.COST_ITEM_CATEGORY, 12) %>
           costTitle:
             type: string
           costDescription:
@@ -851,8 +823,7 @@
           taxCode:
             type: string
             description: Mapping RefdataCategory "${RDConstants.TAX_TYPE}"
-            enum:
-              [${ RefdataCategory.getAllRefdataValues(RDConstants.TAX_TYPE).collect{ it.value }.join(', ') }]
+            enum: <% printRefdataEnum(RDConstants.TAX_TYPE, 12) %>
           taxRate:
             type: string
             enum:
@@ -949,8 +920,7 @@
         roleType:
           type: string
           description: Mapping RefdataCategory "${RDConstants.ORGANISATIONAL_ROLE}"
-          enum:
-            [${ RefdataCategory.getAllRefdataValues(RDConstants.ORGANISATIONAL_ROLE).collect{ it.value }.join(', ') }]
+          enum: <% printRefdataEnum(RDConstants.ORGANISATIONAL_ROLE, 12) %>
         startDate:
           type: string
           format: date-time
@@ -1001,18 +971,15 @@
           multiple:
             type: string #mapped to boolean
             description: Mapping RefdataCategory "${RDConstants.Y_N}"
-            enum:
-              [${ RefdataCategory.getAllRefdataValues(RDConstants.Y_N).collect{ it.value }.join(', ') }]
+            enum: <% printRefdataEnum(RDConstants.Y_N, 12) %>
           usedForLogic:
             type: string #mapped to boolean
             description: Mapping RefdataCategory "${RDConstants.Y_N}"
-            enum:
-              [${ RefdataCategory.getAllRefdataValues(RDConstants.Y_N).collect{ it.value }.join(', ') }]
+            enum: <% printRefdataEnum(RDConstants.Y_N, 12) %>
           isPublic:
             type: string #mapped to boolean
             description: Mapping RefdataCategory "${RDConstants.Y_N}". If set *No*, it's an hidden entry to/from the given organisation context
-            enum:
-              [${ RefdataCategory.getAllRefdataValues(RDConstants.Y_N).collect{ it.value }.join(', ') }]
+            enum: <% printRefdataEnum(RDConstants.Y_N, 12) %>
           refdataCategory:
             type: string
 
@@ -1053,13 +1020,11 @@
         functionType:
           type: string
           description: Mapping RefdataCategory "${RDConstants.PERSON_FUNCTION}"
-          enum:
-            [${ RefdataCategory.getAllRefdataValues(RDConstants.PERSON_FUNCTION).collect{ it.value }.join(', ') }]
+          enum: <% printRefdataEnum(RDConstants.PERSON_FUNCTION, 12) %>
         positionType:
           type: string
           description: Mapping RefdataCategory "${RDConstants.PERSON_POSITION}"
-          enum:
-            [${ RefdataCategory.getAllRefdataValues(RDConstants.PERSON_POSITION).collect{ it.value }.join(', ') }]
+          enum: <% printRefdataEnum(RDConstants.PERSON_POSITION, 12) %>
 
 
     Statistic_Virtual:
