@@ -2,7 +2,9 @@
 
 **Ticket    Date    Branch      Author  Feature/Bug     Description/Keywords**
 
-2151    03.02.2020  rc1.2       Moe     Bug         Status bei Mehrjahreslizenzen von Kindlizenzen wird nicht richtig gesetzt
+1917    05.02.2020  hbz-dev     Moe     Feature     Datenschutzerklärung etc. als eigene Seite statt als Modal
+
+2151    05.02.2020  rc1.2       Moe     Bug         Status bei Mehrjahreslizenzen von Kindlizenzen wird nicht richtig gesetzt
 
 2150    05.02.2020  hbz-dev     David   Bug         API: Referenzwerte mit Doppelpunkt werden als Map interpretiert
 
