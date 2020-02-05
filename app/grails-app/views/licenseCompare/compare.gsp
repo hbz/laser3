@@ -25,30 +25,27 @@
 
         <g:render template="selectionForm" model="${[selectedLicenses:licenses]}" />
 
+        <br>
+
         <div class="ui grid">
-            <table class="ui la-table la-table-small table">
-                <g:set var="licenseCount" value="${licenses.size()}"/>
-                <thead>
-                    <th colspan="${licenseCount}">${message(code:'property.table.property')}</th>
-                </thead>
-                <tbody>
+
                     <g:each in="${groupedProperties}" var="groupedProps">
                         <%-- leave it for debugging
                         <tr>
                             <td colspan="999">${groupedProps}</td>
                         </tr>--%>
                         <g:if test="${groupedProps.getValue()}">
-                            <g:render template="comparisonTableRow" model="[group:groupedProps.getValue().groupTree,key:groupedProps.getKey().name,propBinding:groupedProps.getValue().binding,licenses:licenses]" />
+                            <g:render template="comparisonTable" model="[group:groupedProps.getValue().groupTree,key:groupedProps.getKey().name,propBinding:groupedProps.getValue().binding,licenses:licenses]" />
                         </g:if>
                     </g:each>
                     <g:if test="${orphanedProperties.size() > 0}">
-                        <g:render template="comparisonTableRow" model="[group:orphanedProperties,key:message(code:'license.properties'),licenses:licenses]" />
+                        <g:render template="comparisonTable" model="[group:orphanedProperties,key:message(code:'license.properties'),licenses:licenses]" />
                     </g:if>
                     <g:if test="${privateProperties.size() > 0}">
-                        <g:render template="comparisonTableRow" model="[group:privateProperties,key:message(code:'license.properties.private')+' '+contextService.getOrg().name,licenses:licenses]" />
+                        <g:render template="comparisonTable" model="[group:privateProperties,key:message(code:'license.properties.private')+' '+contextService.getOrg().name,licenses:licenses]" />
                     </g:if>
-                </tbody>
-            </table>
+
         </div>
+    <br>
     </body>
 </html>

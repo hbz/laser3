@@ -2,6 +2,8 @@
 
 **Ticket    Date    Branch      Author  Feature/Bug     Description/Keywords**
 
+--      05.02.2020  hbz-dev     Moe     Feature     Improve License Compare View
+
 1917    05.02.2020  hbz-dev     Moe     Feature     Datenschutzerklärung etc. als eigene Seite statt als Modal
 
 2151    05.02.2020  rc1.2       Moe     Bug         Status bei Mehrjahreslizenzen von Kindlizenzen wird nicht richtig gesetzt
