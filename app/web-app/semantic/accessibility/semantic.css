@@ -15914,6 +15914,7 @@ a.ui.basic.label:hover {
 
 .ui.label.la-annual-rings > a {
   opacity: 0.7;
+  text-decoration: none;
 }
 
 .ui.label.la-annual-rings i.disabled.icon {
