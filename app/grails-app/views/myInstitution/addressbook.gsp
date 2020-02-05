@@ -1,5 +1,5 @@
 <%@ page
-import="de.laser.helper.RDStore; com.k_int.kbplus.Org; com.k_int.kbplus.Person; com.k_int.kbplus.PersonRole; com.k_int.kbplus.RefdataValue; com.k_int.kbplus.RefdataCategory"
+import="de.laser.helper.RDStore; de.laser.helper.RDConstants; com.k_int.kbplus.Org; com.k_int.kbplus.Person; com.k_int.kbplus.PersonRole; com.k_int.kbplus.RefdataValue; com.k_int.kbplus.RefdataCategory"
 %>
 
 <!doctype html>
