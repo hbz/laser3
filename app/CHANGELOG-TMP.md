@@ -2,9 +2,15 @@
 
 **Ticket    Date    Branch      Author  Feature/Bug     Description/Keywords**
 
+2079    05.02.2020 hbz-dev      Anja    Feature     Fehlende Sicherheitsabfrage (Kontakt löschen)
+
+1742    03.02.2020  hbz-dev     Anja    Feature     Vorgänger/Nachfolgerlizenz in TN-Übersicht
+
 --      04.02.2020  rc1.2       David   Bug         Filter ausblenden: "Meine Plattformen"
 
 2136    04.02.2020  hbz-dev     David   Feature     Refactoring: DateUtil erweitern
+
+1914    03.02.2020  hbz-dev     Ingrid  Feature     Button fürs Ausblenden des Fälligen Termins
 
 1991    03.02.2020  rc1.2       Moe     Bug         "Alle anzeigen" funktioniert bei "Alle Titel" nicht
 
@@ -17,6 +23,8 @@
 2118    03.02.2020  hbz-dev     Andreas Feature     Satz bezüglich des Status aus Übersetzungsdatei entfernt
 
 2077    03.02.2020  dev         Anja    Feature     Löschrückfrage für Merkmale 
+
+1914    31.01.2020  hbz-dev     Anja    Feature     Button fürs Ausblenden des Fälligen Termins
 
 2121    30.01.2020  rc1.2       David   Bug         Falsche geladene Seite nach Lizenz löschen (und mehr ..)
 
@@ -106,6 +114,8 @@
 
 1993    10.01.2020  rc1.2       Anja    Bug         Emails auch an CC für Surveys
 
+1859    10.01.2020  hbz-dev     Anja    Feature     Merkmale verwalten anpassen
+
 2016    10.01.2020  hbz-dev     David   Feature     Refactoring: Deprecated RefdataCategory.lookupOrCreate()
 
 2019    09.01.2020  hbz-dev     David   Feature     Refactoring: Factory für RefdataValue und RefdataCategory
@@ -117,6 +127,8 @@
 --      09.01.2020  rc1.2       Moe     Bug         Verlängerung Konsortial: Mehrjahres Flag setzen, Merkmale kopieren
 
 2029    09.01.2020  rc1.2       David   Feature     Refactoring: Shared Caches für User, bzw Organisationen
+
+2002    08.01.2020  hbz-dev     Anja    Feature     Keine fälligen Termine für ...
 
 --      08.01.2020  rc1.2       Moe     Bug         ES Searchs blockieren Threads
 
