@@ -44,7 +44,7 @@ class AddressController extends AbstractDebugController {
 					return
 	        	}
 
-			flash.message = message(code: 'default.created.message', args: [message(code: 'address.label', default: 'Address'), addressInstance.id])
+			flash.message = message(code: 'default.created.message', args: [message(code: 'address.label'), addressInstance.id])
 			if (params.redirect) {
 				redirect(url: request.getHeader('referer'), params: params)
 			}
@@ -59,7 +59,7 @@ class AddressController extends AbstractDebugController {
     def show() {
         def addressInstance = Address.get(params.id)
         if (! addressInstance) {
-			flash.message = message(code: 'default.not.found.message', args: [message(code: 'address.label', default: 'Address'), params.id])
+			flash.message = message(code: 'default.not.found.message', args: [message(code: 'address.label'), params.id])
             redirect action: 'list'
             return
         }
@@ -79,7 +79,7 @@ class AddressController extends AbstractDebugController {
 
         def addressInstance = Address.get(params.id)
         if (! addressInstance) {
-            flash.message = message(code: 'default.not.found.message', args: [message(code: 'address.label', default: 'Address'), params.id])
+            flash.message = message(code: 'default.not.found.message', args: [message(code: 'address.label'), params.id])
             redirect action: 'list'
             return
         }
@@ -97,7 +97,7 @@ class AddressController extends AbstractDebugController {
 	            def version = params.version.toLong()
 	            if (addressInstance.version > version) {
 	                addressInstance.errors.rejectValue('version', 'default.optimistic.locking.failure',
-	                          [message(code: 'address.label', default: 'Address')] as Object[],
+	                          [message(code: 'address.label')] as Object[],
 	                          "Another user has updated this Address while you were editing")
 	                render view: 'edit', model: [addressInstance: addressInstance]
 	                return
@@ -111,7 +111,7 @@ class AddressController extends AbstractDebugController {
 	            return
 	        }
 
-			flash.message = message(code: 'default.updated.message', args: [message(code: 'address.label', default: 'Address'), addressInstance.id])
+			flash.message = message(code: 'default.updated.message', args: [message(code: 'address.label'), addressInstance.id])
 	        redirect action: 'show', id: addressInstance.id
 			break
 		}
@@ -122,7 +122,7 @@ class AddressController extends AbstractDebugController {
     def delete() {
         def addressInstance = Address.get(params.id)
         if (! addressInstance) {
-			flash.message = message(code: 'default.not.found.message', args: [message(code: 'address.label', default: 'Address'), params.id])
+			flash.message = message(code: 'default.not.found.message', args: [message(code: 'address.label'), params.id])
             redirect action: 'list'
             return
         }
@@ -133,11 +133,11 @@ class AddressController extends AbstractDebugController {
 
         try {
             addressInstance.delete(flush: true)
-			flash.message = message(code: 'default.deleted.message', args: [message(code: 'address.label', default: 'Address'), params.id])
+			flash.message = message(code: 'default.deleted.message', args: [message(code: 'address.label'), params.id])
             redirect action: 'list'
         }
         catch (DataIntegrityViolationException e) {
-			flash.message = message(code: 'default.not.deleted.message', args: [message(code: 'address.label', default: 'Address'), params.id])
+			flash.message = message(code: 'default.not.deleted.message', args: [message(code: 'address.label'), params.id])
             redirect action: 'show', id: params.id
         }
     }

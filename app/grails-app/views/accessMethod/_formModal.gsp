@@ -6,7 +6,7 @@
             <div class="three fields">
                 <div class="field wide four fieldcontain">
                     <label for="accessMethod">
-                        <g:message code="accessMethod.type.label" default="accessMethod" />
+                        <g:message code="default.type.label" />
                     </label>
                     <laser:select class="values"
                                      id="accessMethod" name="accessMethod"

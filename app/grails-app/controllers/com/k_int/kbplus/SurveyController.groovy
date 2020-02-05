@@ -5,7 +5,6 @@ import com.k_int.kbplus.auth.User
 import com.k_int.properties.PropertyDefinition
 import de.laser.AccessService
 import de.laser.AuditConfig
-import de.laser.domain.I10nTranslation
 import de.laser.helper.DateUtil
 import de.laser.helper.DebugAnnotation
 import de.laser.helper.RDConstants
@@ -86,7 +85,7 @@ class SurveyController {
 
         result.providers = orgTypeService.getCurrentOrgsOfProvidersAndAgencies( contextService.org )
 
-        DateFormat sdFormat = new DateUtil().getSimpleDateFormat_NoTime()
+        DateFormat sdFormat = DateUtil.getSDF_NoTime()
         def fsq = filterService.getSurveyConfigQueryConsortia(params, sdFormat, result.institution)
 
         result.surveys = SurveyInfo.executeQuery(fsq.query, fsq.queryParams, params)
@@ -133,7 +132,7 @@ class SurveyController {
             flash.error = g.message(code: "default.notAutorized.message")
             redirect(url: request.getHeader('referer'))
         }
-        def sdf = new DateUtil().getSimpleDateFormat_NoTime()
+        def sdf = DateUtil.getSDF_NoTime()
         def surveyInfo = new SurveyInfo(
                 name: params.name,
                 startDate: params.startDate ? sdf.parse(params.startDate) : null,
@@ -167,7 +166,7 @@ class SurveyController {
         result.offset = params.offset ? Integer.parseInt(params.offset) : 0
 
         def date_restriction = null;
-        def sdf = new DateUtil().getSimpleDateFormat_NoTime()
+        def sdf = DateUtil.getSDF_NoTime()
 
         if (params.validOn == null || params.validOn.trim() == '') {
             result.validOn = ""
@@ -236,7 +235,7 @@ class SurveyController {
         result.offset = params.offset ? Integer.parseInt(params.offset) : 0
 
         def date_restriction = null;
-        def sdf = new DateUtil().getSimpleDateFormat_NoTime()
+        def sdf = DateUtil.getSDF_NoTime()
 
         if (params.validOn == null || params.validOn.trim() == '') {
             result.validOn = ""
@@ -358,7 +357,7 @@ class SurveyController {
             flash.error = g.message(code: "default.notAutorized.message")
             redirect(url: request.getHeader('referer'))
         }
-        def sdf = new DateUtil().getSimpleDateFormat_NoTime()
+        def sdf = DateUtil.getSDF_NoTime()
 
         def surveyInfo = new SurveyInfo(
                 name: params.name,
@@ -429,7 +428,7 @@ class SurveyController {
             flash.error = g.message(code: "default.notAutorized.message")
             redirect(url: request.getHeader('referer'))
         }
-        def sdf = new DateUtil().getSimpleDateFormat_NoTime()
+        def sdf = DateUtil.getSDF_NoTime()
 
         def surveyInfo = new SurveyInfo(
                 name: params.name,
@@ -2076,7 +2075,7 @@ class SurveyController {
 
 
         if (params.exportXLS) {
-            def sdf = new SimpleDateFormat(g.message(code: 'default.date.format.notimenopoint'));
+            def sdf = DateUtil.getSDF_NoTimeNoPoint()
             String datetoday = sdf.format(new Date(System.currentTimeMillis()))
             String filename = "${datetoday}_" + g.message(code: "survey.label")
             //if(wb instanceof XSSFWorkbook) file += "x";
@@ -2439,7 +2438,7 @@ class SurveyController {
 
 
         def message = g.message(code: 'renewalexport.renewals')
-        SimpleDateFormat sdf = new SimpleDateFormat(g.message(code: 'default.date.format.notime', default: 'yyyy-MM-dd'))
+        SimpleDateFormat sdf = DateUtil.getSDF_NoTime()
         String datetoday = sdf.format(new Date(System.currentTimeMillis()))
         String filename = message + "_" + result?.surveyConfig?.getSurveyName() +"_${datetoday}"
         if (params.exportXLS) {
@@ -2480,7 +2479,7 @@ class SurveyController {
 
         def subscription = Subscription.get(params.parentSub ?: null)
 
-        def sdf = new SimpleDateFormat('dd.MM.yyyy')
+        SimpleDateFormat sdf = new SimpleDateFormat('dd.MM.yyyy')
 
         result.errors = []
         def newStartDate
@@ -3025,7 +3024,7 @@ class SurveyController {
            def surveyConfig = SurveyConfig.findByIdAndSurveyInfo(params.surveyConfigID, surveyInfo)*/
 
         if (params.exportXLS) {
-            def sdf = new SimpleDateFormat(g.message(code: 'default.date.format.notimenopoint'));
+            def sdf = DateUtil.getSDF_NoTimeNoPoint()
             String datetoday = sdf.format(new Date(System.currentTimeMillis()))
             String filename = "${datetoday}_" + g.message(code: "survey.label")
             //if(wb instanceof XSSFWorkbook) file += "x";
@@ -3065,7 +3064,7 @@ class SurveyController {
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_EDITOR") })
     def newSurveyCostItem() {
 
-        def dateFormat = new java.text.SimpleDateFormat(message(code: 'default.date.format.notime', default: 'yyyy-MM-dd'))
+        SimpleDateFormat dateFormat = DateUtil.getSDF_NoTime()
 
         Map<String, Object> result = [:]
         def newCostItem = null
@@ -3464,7 +3463,7 @@ class SurveyController {
                 if (params.tab == 'surveyProperties') {
                     def surProp = SurveyProperty.get(result.selectedProperty)
                     newMap.surveyProperty = SurveyResult.findBySurveyConfigAndTypeAndParticipant(result.surveyConfig, surProp, org)
-                    def propDef = surProp ? PropertyDefinition.getByNameAndDescr(surProp.name, 'Subscription Property') : null
+                    def propDef = surProp ? PropertyDefinition.getByNameAndDescr(surProp.name, PropertyDefinition.SUB_PROP) : null
 
                     newMap.newCustomProperty = (sub && propDef) ? sub.customProperties.find {
                         it.type.id == propDef.id
@@ -3521,7 +3520,7 @@ class SurveyController {
 
                 surveyProperty = params.copyProperty ? SurveyProperty.get(Long.parseLong(params.copyProperty)) : null
 
-                propDef = surveyProperty ? PropertyDefinition.getByNameAndDescr(surveyProperty.name, 'Subscription Property') : null
+                propDef = surveyProperty ? PropertyDefinition.getByNameAndDescr(surveyProperty.name, PropertyDefinition.SUB_PROP) : null
                 if (!propDef && surveyProperty) {
 
                     Map<String, Object> map = [
@@ -3870,7 +3869,7 @@ class SurveyController {
 
                     log.debug("Generating seperate slaved instances for members")
 
-                    SimpleDateFormat sdf = new DateUtil().getSimpleDateFormat_NoTime()
+                    SimpleDateFormat sdf = DateUtil.getSDF_NoTime()
                     Date startDate = newStartDate ?: null
                     Date endDate = newEndDate ?: null
 
@@ -4094,7 +4093,7 @@ class SurveyController {
 
 
     private def exportSurveyParticipantResult(List<SurveyResult> results, String format, Org org) {
-        SimpleDateFormat sdf = new SimpleDateFormat(g.message(code: 'default.date.format.notime'))
+        SimpleDateFormat sdf = DateUtil.getSDF_NoTime()
         List titles = [g.message(code: 'surveyInfo.owner.label'),
 
                        g.message(code: 'surveyConfigsInfo.comment'),
@@ -4103,10 +4102,10 @@ class SurveyController {
                        g.message(code: 'surveyProperty.subName'),
                        g.message(code: 'surveyProperty.subProvider'),
                        g.message(code: 'surveyProperty.subAgency'),
-                       g.message(code: 'subscription.owner.label'),
+                       g.message(code: 'license.label'),
                        g.message(code: 'subscription.packages.label'),
                        g.message(code: 'default.status.label'),
-                       g.message(code: 'subscription.details.type'),
+                       g.message(code: 'default.type.label'),
                        g.message(code: 'subscription.form.label'),
                        g.message(code: 'subscription.resource.label'),
 
@@ -4114,7 +4113,7 @@ class SurveyController {
                        g.message(code: 'surveyConfigsInfo.newPrice.comment'),
 
                        g.message(code: 'surveyProperty.label'),
-                       g.message(code: 'surveyProperty.type.label'),
+                       g.message(code: 'default.type.label'),
                        g.message(code: 'surveyResult.result'),
                        g.message(code: 'surveyResult.comment'),
                        g.message(code: 'surveyResult.finishDate')]
@@ -4197,9 +4196,9 @@ class SurveyController {
     }
 
     private def exportRenewalResult(Map renewalResult) {
-        SimpleDateFormat sdf = new SimpleDateFormat(g.message(code: 'default.date.format.notime'))
+        SimpleDateFormat sdf = DateUtil.getSDF_NoTime()
         List titles = [g.message(code: 'org.sortname.label'),
-                       g.message(code: 'org.name.label'),
+                       g.message(code: 'default.name.label'),
 
                        renewalResult.participationProperty?.getI10n('name'),
                        g.message(code: 'surveyResult.participantComment') + " " + renewalResult.participationProperty?.getI10n('name')
@@ -4485,7 +4484,7 @@ class SurveyController {
     }
 
     private def exportSurveyParticipantResultMin(List<SurveyResult> results, String format, Org org) {
-        SimpleDateFormat sdf = new SimpleDateFormat(g.message(code: 'default.date.format.notime'))
+        SimpleDateFormat sdf = DateUtil.getSDF_NoTime()
         List titles = [
                 g.message(code: 'org.shortname.label'),
                 g.message(code: 'surveyParticipants.label'),
@@ -4567,7 +4566,7 @@ class SurveyController {
     }
 
     private def exportSurveyCostItems(SurveyConfig surveyConfig, String format, Org org) {
-        SimpleDateFormat sdf = new SimpleDateFormat(g.message(code: 'default.date.format.notime'))
+        SimpleDateFormat sdf = DateUtil.getSDF_NoTime()
         List titles = ['Name',
                        '',
                        g.message(code: 'surveyConfig.type.label'),
@@ -4747,7 +4746,7 @@ class SurveyController {
                         println(property.error)
                     }
                 } else if(field == "dateValue") {
-                    def sdf = new java.text.SimpleDateFormat(message(code: 'default.date.format.notime', default: 'yyyy-MM-dd'))
+                    SimpleDateFormat sdf = DateUtil.getSDF_NoTime()
 
                     def backup = property."${field}"
                     try {

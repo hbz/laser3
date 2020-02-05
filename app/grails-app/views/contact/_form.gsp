@@ -4,7 +4,7 @@
 
 <div class="field fieldcontain ${hasErrors(bean: contactInstance, field: 'contentType', 'error')} ">
 	<label for="contentType">
-		<g:message code="contact.contentType.label" default="ContentType" />
+		<g:message code="contact.contentType.label" />
 		
 	</label>
 	<laser:select class="ui dropdown" id="contentType" name="contentType.id"
@@ -18,7 +18,7 @@
 
 <div class="field fieldcontain ${hasErrors(bean: contactInstance, field: 'content', 'error')} ">
 	<label for="content">
-		<g:message code="contact.content.label" default="Content" />
+		<g:message code="contact.content.label" />
 		
 	</label>
 	<g:textField id="content" name="content" value="${contactInstance?.content}"/>
@@ -40,7 +40,7 @@
 
 <div class="field fieldcontain ${hasErrors(bean: contactInstance, field: 'prs', 'error')} ">
 	<label for="prs">
-		<g:message code="contact.prs.label" default="Prs" />
+		<g:message code="contact.prs.label" />
 		
 	</label>
 	<g:select id="prs" name="prs.id" from="${com.k_int.kbplus.Person.list()}" optionKey="id" value="${contactInstance?.prs?.id}" class="many-to-one" noSelection="['null': '']"/>
@@ -49,7 +49,7 @@
 
 <div class="field fieldcontain ${hasErrors(bean: contactInstance, field: 'org', 'error')} ">
 	<label for="org">
-		<g:message code="contact.org.label" default="Org" />
+		<g:message code="contact.org.label" />
 		
 	</label>
 	<g:select id="org" name="org.id" from="${com.k_int.kbplus.Org.list()}" optionKey="id" value="${contactInstance?.org?.id}" class="many-to-one" noSelection="['null': '']"/>

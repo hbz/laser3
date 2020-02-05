@@ -7,7 +7,7 @@
 <html>
 <head>
     <meta name="layout" content="semanticUI"/>
-    <title>${message(code: 'laser', default: 'LAS:eR')} : ${message(code: 'surveyConfigsInfo.label')}</title>
+    <title>${message(code: 'laser')} : ${message(code: 'surveyConfigsInfo.label')}</title>
 </head>
 
 <body>
@@ -97,7 +97,7 @@
                                 <dd><semui:auditInfo auditable="[surveyConfig?.subscription, 'status']"/></dd>
                             </dl>
                             <dl>
-                                <dt class="control-label">${message(code: 'subscription.details.type')}</dt>
+                                <dt class="control-label">${message(code: 'default.type.label')}</dt>
                                 <dd>${surveyConfig?.subscription.type?.getI10n('value')}</dd>
                                 <dd><semui:auditInfo auditable="[surveyConfig?.subscription, 'type']"/></dd>
                             </dl>
@@ -400,7 +400,7 @@
                     <th>${message(code: 'surveyProperty.name')}</th>
                     <th>${message(code: 'surveyProperty.expl.label')}</th>
                     <th>${message(code: 'surveyProperty.comment.label')}</th>
-                    <th>${message(code: 'surveyProperty.type.label')}</th>
+                    <th>${message(code: 'default.type.label')}</th>
                     <th></th>
                 </tr>
                 </thead>

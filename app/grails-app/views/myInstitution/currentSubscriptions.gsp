@@ -7,7 +7,7 @@
 <html>
     <head>
         <meta name="layout" content="semanticUI" />
-        <title>${message(code:'laser', default:'LAS:eR')} : ${message(code:'myinst.currentSubscriptions.label', default:'Current Subscriptions')}</title>
+        <title>${message(code:'laser')} : ${message(code:'myinst.currentSubscriptions.label', default:'Current Subscriptions')}</title>
     </head>
     <body>
 
@@ -344,7 +344,7 @@
 
             <% /* <g:sortableColumn params="${params}" property="s.manualCancellationDate"
                               title="${message(code: 'default.cancellationDate.label')}"/> */ %>
-            <th scope="col" rowspan="2" class="two">${message(code:'default.actions')}</th>
+            <th scope="col" rowspan="2" class="two">${message(code:'default.actions.label')}</th>
         </tr>
 
         <tr>

@@ -35,7 +35,7 @@
                         <div class="ui card">
                             <div class="content">
                                 <dl>
-                                    <dt><g:message code="org.name.label" default="Name" /></dt>
+                                    <dt><g:message code="default.name.label" default="Name" /></dt>
                                     <dd><semui:xEditable owner="${accessPoint}" field="name"/></dd>
                                 </dl>
                                 <dl>
@@ -118,7 +118,7 @@
     <thead>
     <tr>
         <g:sortableColumn property="ipData" title="${message(code: 'accessPoint.ip.data', default: 'IP or IP Range')} "  />
-        <th>${message(code: 'accessPoint.actions', default: 'Actions')}</th>
+        <th>${message(code: 'default.actions.label')}</th>
     </tr>
     </thead>
     <tbody>
@@ -153,50 +153,7 @@
 
 </g:form>
 </g:if>
-<g:render template="link" model="${[accessPoint:accessPoint, params:params, linkedPlatformsMap: linkedPlatformsMap, linkedSubscriptionPackagesMap: linkedSubscriptionPackagesMap]}"/>
 
-%{--
-
-                <g:form class="ui form" url="[controller: 'accessPoint', action: 'linkPlatform']" id="linkPlatform" method="POST">
-                    <g:hiddenField name="id" value="${accessPoint?.id}" />
-                    <table class="ui celled la-table table compact collapsing ignore-floatThead">
-                        <thead>
-                        <tr>
-                            <g:sortableColumn property="platform" title="${message(code: "platform.label", default: "Platform")}" />
-                            <th>${message(code: 'accessPoint.actions', default: 'Actions')}</th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        <g:each in="${linkedPlatformsMap}" var="linkedPlatform">
-                            <tr>
-                                <td><g:link controller="platform" action="show" id="${linkedPlatform.platform.id}">${linkedPlatform.platform.name}</g:link></td>
-                                <td class="center aligned">
-                                    <g:link class="ui negative icon button" controller="accessPoint" action="unlinkPlatform" id="${linkedPlatform.aplink.id}" onclick="return confirm('${message(code: "accessPoint.link.delete.confirm", default: "Remove Access Config?")}')">
-                                        <i class="trash alternate icon"></i>
-                                    </g:link>
-                                </td>
-                            </tr>
-                        </g:each>
-                        <tr>
-                            <td>
-                                <g:select id="platforms" class="ui dropdown" name="platforms"
-                                          from="${platformList}"
-                                          optionKey="id"
-                                          optionValue="name"
-                                          noSelection="${[null: message(code: 'default.select.choose.label')]}"/>
-                            </td>
-                            <td class="center aligned">
-                                <input type="Submit" class="ui tiny button" value="${message(code:'accessPoint.button.linkPlatform', default:'Create link')}" onClick="this.form.submit()" class="ui button"/>
-                            </td>
-                        </tr>
-                        </tbody>
-                    </table>
-                </g:form>
-
-
---}%
-
-
-
+<g:render template="link" model="${[accessPoint:accessPoint, params:params, linkedPlatforms: linkedPlatforms, linkedPlatformSubscriptionPackages : linkedPlatformSubscriptionPackages]}"/>
     </body>
 </html>

@@ -40,7 +40,7 @@ class ClusterController extends AbstractDebugController {
 	            return
 	        }
 
-			flash.message = message(code: 'default.created.message', args: [message(code: 'cluster.label', default: 'Cluster'), clusterInstance.id])
+			flash.message = message(code: 'default.created.message', args: [message(code: 'cluster.label'), clusterInstance.id])
 	        redirect action: 'show', id: clusterInstance.id
 			break
 		}
@@ -50,7 +50,7 @@ class ClusterController extends AbstractDebugController {
     def show() {
         def clusterInstance = Cluster.get(params.id)
         if (!clusterInstance) {
-			flash.message = message(code: 'default.not.found.message', args: [message(code: 'cluster.label', default: 'Cluster'), params.id])
+			flash.message = message(code: 'default.not.found.message', args: [message(code: 'cluster.label'), params.id])
             redirect action: 'list'
             return
         }
@@ -65,7 +65,7 @@ class ClusterController extends AbstractDebugController {
 		case 'GET':
 	        def clusterInstance = Cluster.get(params.id)
 	        if (!clusterInstance) {
-	            flash.message = message(code: 'default.not.found.message', args: [message(code: 'cluster.label', default: 'Cluster'), params.id])
+	            flash.message = message(code: 'default.not.found.message', args: [message(code: 'cluster.label'), params.id])
 	            redirect action: 'list'
 	            return
 	        }
@@ -75,7 +75,7 @@ class ClusterController extends AbstractDebugController {
 		case 'POST':
 	        def clusterInstance = Cluster.get(params.id)
 	        if (!clusterInstance) {
-	            flash.message = message(code: 'default.not.found.message', args: [message(code: 'cluster.label', default: 'Cluster'), params.id])
+	            flash.message = message(code: 'default.not.found.message', args: [message(code: 'cluster.label'), params.id])
 	            redirect action: 'list'
 	            return
 	        }
@@ -84,7 +84,7 @@ class ClusterController extends AbstractDebugController {
 	            def version = params.version.toLong()
 	            if (clusterInstance.version > version) {
 	                clusterInstance.errors.rejectValue('version', 'default.optimistic.locking.failure',
-	                          [message(code: 'cluster.label', default: 'Cluster')] as Object[],
+	                          [message(code: 'cluster.label')] as Object[],
 	                          "Another user has updated this Cluster while you were editing")
 	                render view: 'edit', model: [clusterInstance: clusterInstance]
 	                return
@@ -98,7 +98,7 @@ class ClusterController extends AbstractDebugController {
 	            return
 	        }
 
-			flash.message = message(code: 'default.updated.message', args: [message(code: 'cluster.label', default: 'Cluster'), clusterInstance.id])
+			flash.message = message(code: 'default.updated.message', args: [message(code: 'cluster.label'), clusterInstance.id])
 	        redirect action: 'show', id: clusterInstance.id
 			break
 		}
@@ -109,18 +109,18 @@ class ClusterController extends AbstractDebugController {
     def delete() {
         def clusterInstance = Cluster.get(params.id)
         if (!clusterInstance) {
-			flash.message = message(code: 'default.not.found.message', args: [message(code: 'cluster.label', default: 'Cluster'), params.id])
+			flash.message = message(code: 'default.not.found.message', args: [message(code: 'cluster.label'), params.id])
             redirect action: 'list'
             return
         }
 
         try {
             clusterInstance.delete(flush: true)
-			flash.message = message(code: 'default.deleted.message', args: [message(code: 'cluster.label', default: 'Cluster'), params.id])
+			flash.message = message(code: 'default.deleted.message', args: [message(code: 'cluster.label'), params.id])
             redirect action: 'list'
         }
         catch (DataIntegrityViolationException e) {
-			flash.message = message(code: 'default.not.deleted.message', args: [message(code: 'cluster.label', default: 'Cluster'), params.id])
+			flash.message = message(code: 'default.not.deleted.message', args: [message(code: 'cluster.label'), params.id])
             redirect action: 'show', id: params.id
         }
     }

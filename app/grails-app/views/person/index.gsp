@@ -5,7 +5,7 @@
 	<head>
 		<meta name="layout" content="main">
 		<g:set var="entityName" value="${message(code: 'person.label', default: 'Person')}" />
-		<title>${message(code:'laser', default:'LAS:eR')} : <g:message code="default.list.label" args="[entityName]" /></title>
+		<title>${message(code:'laser')} : <g:message code="default.list.label" args="[entityName]" /></title>
 	</head>
 	<body>
 		<a href="#list-person" class="skip" tabindex="-1"><g:message code="default.link.skip.label" default="Skip to content&hellip;"/></a>
@@ -24,13 +24,13 @@
 			<thead>
 					<tr>
 					
-						<g:sortableColumn property="first_name" title="${message(code: 'person.first_name.label', default: 'Firstname')}" />
+						<g:sortableColumn property="first_name" title="${message(code: 'person.first_name.label')}" />
 					
-						<g:sortableColumn property="middle_name" title="${message(code: 'person.middle_name.label', default: 'Middlename')}" />
+						<g:sortableColumn property="middle_name" title="${message(code: 'person.middle_name.label')}" />
 					
-						<g:sortableColumn property="last_name" title="${message(code: 'person.last_name.label', default: 'Lastname')}" />
+						<g:sortableColumn property="last_name" title="${message(code: 'person.last_name.label')}" />
 					
-						<th><g:message code="person.gender.label" default="Gender" /></th>
+						<th><g:message code="person.gender.label" /></th>
 					
 					</tr>
 				</thead>

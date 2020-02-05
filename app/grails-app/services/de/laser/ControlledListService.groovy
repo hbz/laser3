@@ -1,6 +1,7 @@
 package de.laser
 
 import com.k_int.kbplus.*
+import de.laser.helper.DateUtil
 import de.laser.helper.RDStore
 import de.laser.interfaces.TemplateSupport
 import grails.transaction.Transactional
@@ -140,7 +141,7 @@ class ControlledListService {
      */
     Map getIssueEntitlements(Map params) {
         Org org = contextService.getOrg()
-        SimpleDateFormat sdf = new SimpleDateFormat(messageSource.getMessage('default.date.format.notime',null, LocaleContextHolder.getLocale()))
+        SimpleDateFormat sdf = DateUtil.getSDF_NoTime()
         LinkedHashMap issueEntitlements = [results:[]]
         //build up set of subscriptions which are owned by the current organisation or instances of such - or filter for a given subscription
         String filter = 'in (select distinct o.sub from OrgRole as o where o.org = :org and o.roleType in ( :orgRoles ) and o.sub.status = :current ) '
@@ -193,7 +194,7 @@ class ControlledListService {
         }
         result = License.executeQuery('select l from License as l join l.orgLinks ol where ol.org = :org and ol.roleType in (:orgRoles)'+licFilter+" order by l.reference asc",filterParams)
         if(result.size() > 0) {
-            SimpleDateFormat sdf = new SimpleDateFormat(messageSource.getMessage('default.date.format.notime',null, LocaleContextHolder.getLocale()))
+            SimpleDateFormat sdf = DateUtil.getSDF_NoTime()
             log.debug("licenses found")
             result.each { res ->
                 licenses.results += ([name:"${res.reference} (${res.startDate ? sdf.format(res.startDate) : '???'} - ${res.endDate ? sdf.format(res.endDate) : ''})",value:res.class.name+":"+res.id])
@@ -208,7 +209,7 @@ class ControlledListService {
      * @return a map containing a sorted list of issue entitlements, an empty one if no issue entitlements match the filter
      */
     Map getSubscriptionPackages(Map params) {
-        SimpleDateFormat sdf = new SimpleDateFormat(messageSource.getMessage('default.date.format.notime',null,LocaleContextHolder.getLocale()))
+        SimpleDateFormat sdf = DateUtil.getSDF_NoTime()
         Org org = contextService.getOrg()
         LinkedHashMap result = [results:[]]
         String queryString = 'select distinct s, orgRoles.org.sortname from Subscription s join s.orgRelations orgRoles where orgRoles.org = :org and orgRoles.roleType in ( :orgRoles )'
@@ -324,7 +325,7 @@ class ControlledListService {
     Map getElements(Map params) {
         Map result = [results:[]]
         Org org = contextService.getOrg()
-        SimpleDateFormat sdf = new SimpleDateFormat(messageSource.getMessage('default.date.format.notime',null,LocaleContextHolder.getLocale()))
+        SimpleDateFormat sdf = DateUtil.getSDF_NoTime()
         if(params.org == "true") {
             List allOrgs = DocContext.executeQuery('select distinct dc.org,dc.org.sortname from DocContext dc where dc.owner.owner = :ctxOrg and dc.org != null and (genfunc_filter_matcher(dc.org.name,:query) = true or genfunc_filter_matcher(dc.org.sortname,:query) = true) order by dc.org.sortname asc',[ctxOrg:org,query:params.query])
             allOrgs.each { it ->

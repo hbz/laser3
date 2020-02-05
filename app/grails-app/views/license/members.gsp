@@ -5,7 +5,7 @@
 <html>
 <head>
   <meta name="layout" content="semanticUI"/>
-  <title>${message(code:'laser', default:'LAS:eR')} : ${message(code:'license.details.incoming.childs',args:[message(code:'consortium.subscriber')])}</title>
+  <title>${message(code:'laser')} : ${message(code:'license.details.incoming.childs',args:[message(code:'consortium.subscriber')])}</title>
 </head>
 <body>
 
@@ -26,10 +26,10 @@
     <thead>
         <tr>
             <th>${message(code:'sidewide.number')}</th>
-            <th>${message(code:'license')}</th>
+            <th>${message(code:'license.label')}</th>
             <th>${message(code:'subscriptionDetails.members.members')}</th>
             <th>${message(code:'default.status.label')}</th>
-            <th class="la-action-info">${message(code:'default.actions')}</th>
+            <th class="la-action-info">${message(code:'default.actions.label')}</th>
         </tr>
     </thead>
     <tbody>

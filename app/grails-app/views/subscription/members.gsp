@@ -1,11 +1,11 @@
-<%@ page import="com.k_int.kbplus.CostItem; com.k_int.kbplus.Person; de.laser.helper.RDStore; de.laser.interfaces.TemplateSupport" %>
+<%@ page import="com.k_int.kbplus.CostItem; com.k_int.kbplus.Person; de.laser.helper.RDStore; de.laser.interfaces.TemplateSupport; com.k_int.kbplus.Subscription" %>
 <laser:serviceInjection />
 
 <!doctype html>
 <html>
 <head>
     <meta name="layout" content="semanticUI"/>
-    <title>${message(code:'laser', default:'LAS:eR')} :
+    <title>${message(code:'laser')} :
         <g:if test="${accessService.checkPerm("ORG_CONSORTIUM")}">
             <g:message code="subscription.details.consortiaMembers.label"/>
         </g:if>
@@ -104,8 +104,10 @@
                 <th>${message(code:'sidewide.number')}</th>
                 <th>${message(code:'default.sortname.label')}</th>
                 <th>${message(code:'subscriptionDetails.members.members')}</th>
+                <th>${message(code:'default.previous.label')}</th>
                 <th>${message(code:'default.startDate.label')}</th>
                 <th>${message(code:'default.endDate.label')}</th>
+                <th>${message(code:'default.next.label')}</th>
                 <g:if test="${accessService.checkPerm('ORG_CONSORTIUM')}">
                     <th>${message(code: 'subscription.linktoLicense')}</th>
                 </g:if>
@@ -116,7 +118,7 @@
                         <i class="map orange icon"></i>
                     </span>
                 </th>
-                <th class="la-action-info">${message(code:'default.actions')}</th>
+                <th class="la-action-info">${message(code:'default.actions.label')}</th>
             </tr>
             </thead>
             <tbody>
@@ -169,9 +171,29 @@
                         <td></td>
                         <td></td>
                     </g:if>
-
+                    <%
+                        LinkedHashMap<String, List> links = navigationGenerationService.generateNavigation(Subscription.class.name, sub.id)
+                        Subscription navPrevSubscription = (links?.prevLink && links?.prevLink?.size() > 0) ? links?.prevLink[0] : null
+                        Subscription navNextSubscription = (links?.nextLink && links?.nextLink?.size() > 0) ? links?.nextLink[0] : null
+                    %>
+                    <td class="center aligned">
+                        <g:if test="${navPrevSubscription}">
+                            <g:link controller="subscription" action="show" id="${navPrevSubscription.id}"><i class="arrow left icon"></i></g:link>
+                        </g:if>
+                        <g:else>
+                            <i class="arrow left icon disabled"></i>
+                        </g:else>
+                    </td>
                     <td><g:formatDate formatName="default.date.format.notime" date="${sub.startDate}"/></td>
                     <td><g:formatDate formatName="default.date.format.notime" date="${sub.endDate}"/></td>
+                    <td class="center aligned">
+                        <g:if test="${navNextSubscription}">
+                            <g:link controller="subscription" action="show" id="${navNextSubscription.id}"><i class="arrow right icon"></i></g:link>
+                        </g:if>
+                        <g:else>
+                            <i class="arrow right icon disabled"></i>
+                        </g:else>
+                    </td>
                     <g:if test="${accessService.checkPerm("ORG_CONSORTIUM")}">
                         <td class="center aligned">
                             <g:if test="${sub?.owner?.id}">
@@ -193,7 +215,7 @@
                     </td>
                     <td class="x">
                         <g:link controller="subscription" action="show" id="${sub.id}" class="ui icon button"><i class="write icon"></i></g:link>
-                        <g:if test="${editable}">
+                        <g:if test="${sub.isEditableBy(contextService.getUser())}"> <%-- needs to be checked for child subscription because of collective subscriptions! --%>
                             <g:if test="${sub.getCalculatedType() in [TemplateSupport.CALCULATED_TYPE_PARTICIPATION, TemplateSupport.CALCULATED_TYPE_PARTICIPATION_AS_COLLECTIVE] && sub.instanceOf.getCalculatedType() == TemplateSupport.CALCULATED_TYPE_ADMINISTRATIVE}">
                                 <g:if test="${sub.orgRelations.find{it.roleType == RDStore.OR_SUBSCRIBER_CONS_HIDDEN}}">
                                     <span  class="la-popup-tooltip la-delay" data-content="${message(code:'subscription.details.hiddenForSubscriber')}">

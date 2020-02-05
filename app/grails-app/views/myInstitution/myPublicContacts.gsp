@@ -1,6 +1,5 @@
-<%@ page
-import="de.laser.helper.RDStore; com.k_int.kbplus.Org; com.k_int.kbplus.Person; com.k_int.kbplus.PersonRole; com.k_int.kbplus.RefdataValue; com.k_int.kbplus.RefdataCategory"
-%>
+<%@ page import="de.laser.helper.RDStore;de.laser.helper.RDConstants;" %>
+<%@ page import="com.k_int.kbplus.Org; com.k_int.kbplus.Person; com.k_int.kbplus.PersonRole; com.k_int.kbplus.RefdataValue; com.k_int.kbplus.RefdataCategory" %>
 <!doctype html>
 
 <laser:serviceInjection />
@@ -8,7 +7,7 @@ import="de.laser.helper.RDStore; com.k_int.kbplus.Org; com.k_int.kbplus.Person; 
 <html>
     <head>
         <meta name="layout" content="semanticUI"/>
-        <title>${message(code:'laser', default:'LAS:eR')} : ${message(code:'menu.institutions.publicContacts')}</title>
+        <title>${message(code:'laser')} : ${message(code:'menu.institutions.publicContacts')}</title>
     </head>
     <body>
 

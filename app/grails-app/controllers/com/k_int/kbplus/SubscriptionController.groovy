@@ -183,7 +183,7 @@ class SubscriptionController extends AbstractDebugController {
 
         def date_filter
         if (params.asAt && params.asAt.length() > 0) {
-            def sdf = new java.text.SimpleDateFormat(message(code: 'default.date.format.notime', default: 'yyyy-MM-dd'));
+            SimpleDateFormat sdf = DateUtil.getSDF_NoTime()
             date_filter = sdf.parse(params.asAt)
             result.as_at_date = date_filter
             result.editable = false;
@@ -547,7 +547,7 @@ class SubscriptionController extends AbstractDebugController {
                         log.debug("Create CSV Response")
                         def comparisonMap =
                                 institutionsService.generateComparisonMap(unionList, mapA, mapB, 0, unionList.size(), filterRules)
-                        def dateFormatter = new java.text.SimpleDateFormat(message(code: 'default.date.format.notime', default: 'yyyy-MM-dd'))
+                        def dateFormatter = DateUtil.getSDF_NoTime()
 
                         response.setHeader("Content-disposition", "attachment; filename=\"subscriptionComparison.csv\"")
                         response.contentType = "text/csv"
@@ -577,7 +577,7 @@ class SubscriptionController extends AbstractDebugController {
                 }
             }
         } else {
-            def currentDate = new java.text.SimpleDateFormat(message(code: 'default.date.format.notime', default: 'yyyy-MM-dd')).format(new Date())
+            def currentDate = (DateUtil.getSDF_NoTime()).format(new Date())
             params.dateA = currentDate
             params.dateB = currentDate
             params.insrt = "Y"
@@ -605,7 +605,7 @@ class SubscriptionController extends AbstractDebugController {
 
     def createCompareList(sub, dateStr, params, result) {
         def returnVals = [:]
-        def sdf = new java.text.SimpleDateFormat(message(code: 'default.date.format.notime', default: 'yyyy-MM-dd'))
+        SimpleDateFormat sdf = DateUtil.getSDF_NoTime()
         def date = dateStr ? sdf.parse(dateStr) : new Date()
         def subId = sub.substring(sub.indexOf(":") + 1)
 
@@ -643,7 +643,7 @@ class SubscriptionController extends AbstractDebugController {
         }
 
         if (params.startsBefore && params.startsBefore.length() > 0) {
-            def sdf = new java.text.SimpleDateFormat(message(code: 'default.date.format.notime', default: 'yyyy-MM-dd'));
+            SimpleDateFormat sdf = DateUtil.getSDF_NoTime()
             def d = sdf.parse(params.startsBefore)
             base_qry += " and (select min(ic.startDate) from IssueEntitlementCoverage ic where ic.ie = ie) <= ?"
             qry_params.add(d)
@@ -668,7 +668,7 @@ class SubscriptionController extends AbstractDebugController {
         }
 
         // def formatter = new java.text.SimpleDateFormat("MM/dd/yyyy")
-        SimpleDateFormat formatter = new SimpleDateFormat(message(code: 'default.date.format.notime', default: 'yyyy-MM-dd'))
+        SimpleDateFormat formatter = DateUtil.getSDF_NoTime()
 
         // def subscriptionInstance = Subscription.get(params.id)
         // def user = User.get(springSecurityService.principal.id)
@@ -785,14 +785,14 @@ class SubscriptionController extends AbstractDebugController {
             }
 
             if (params.endsAfter && params.endsAfter.length() > 0) {
-                def sdf = new java.text.SimpleDateFormat(message(code: 'default.date.format.notime', default: 'yyyy-MM-dd'));
+                SimpleDateFormat sdf = DateUtil.getSDF_NoTime()
                 def d = sdf.parse(params.endsAfter)
                 basequery += " and (select max(tc.endDate) from TIPPCoverage tc where tc.tipp = tipp) >= ?"
                 qry_params.add(d)
             }
 
             if (params.startsBefore && params.startsBefore.length() > 0) {
-                def sdf = new java.text.SimpleDateFormat(message(code: 'default.date.format.notime', default: 'yyyy-MM-dd'));
+                SimpleDateFormat sdf = DateUtil.getSDF_NoTime()
                 def d = sdf.parse(params.startsBefore)
                 basequery += " and (select min(tc.startDate) from TIPPCoverage tc where tc.tipp = tipp) <= ?"
                 qry_params.add(d)
@@ -1327,7 +1327,7 @@ class SubscriptionController extends AbstractDebugController {
 
         result.filterSet = params.filterSet ? true : false
 
-        def sdf = new SimpleDateFormat('yyyy-MM-dd')
+        SimpleDateFormat sdf = new SimpleDateFormat('yyyy-MM-dd')
         def datetoday = sdf.format(new Date(System.currentTimeMillis()))
         def message = escapeService.escapeString(result.subscription.name) + "_" + g.message(code: 'subscriptionDetails.members.members') + "_" + datetoday
         def orgs = []
@@ -2089,7 +2089,7 @@ class SubscriptionController extends AbstractDebugController {
         def change = []
                 validSubChilds.each { subChild ->
 
-                    def sdf = new DateUtil().getSimpleDateFormat_NoTime()
+                    SimpleDateFormat sdf = DateUtil.getSDF_NoTime()
                     def startDate = params.valid_from ? sdf.parse(params.valid_from) : null
                     def endDate = params.valid_to ? sdf.parse(params.valid_to) : null
 
@@ -2381,7 +2381,7 @@ class SubscriptionController extends AbstractDebugController {
                     //if (true) {
                         log.debug("Generating seperate slaved instances for members")
 
-                        SimpleDateFormat sdf = new DateUtil().getSimpleDateFormat_NoTime()
+                        SimpleDateFormat sdf = DateUtil.getSDF_NoTime()
                         Date startDate = params.valid_from ? sdf.parse(params.valid_from) : null
                         Date endDate = params.valid_to ? sdf.parse(params.valid_to) : null
 
@@ -2590,7 +2590,7 @@ class SubscriptionController extends AbstractDebugController {
         }
 
         if (!result.subscriptionInstance) {
-            flash.message = message(code: 'default.not.found.message', args: [message(code: 'package.label', default: 'Subscription'), params.id])
+            flash.message = message(code: 'default.not.found.message', args: [message(code: 'package.label'), params.id])
             redirect action: 'list'
             return
         }
@@ -2971,13 +2971,13 @@ class SubscriptionController extends AbstractDebugController {
             def dTask = Task.get(params.deleteId)
             if (dTask && dTask.creator.id == result.user.id) {
                 try {
-                    flash.message = message(code: 'default.deleted.message', args: [message(code: 'task.label', default: 'Task'), dTask.title])
+                    flash.message = message(code: 'default.deleted.message', args: [message(code: 'task.label'), dTask.title])
                     dTask.delete(flush: true)
                     if(params.returnToShow)
                         redirect action: 'show', id: params.id
                 }
                 catch (Exception e) {
-                    flash.message = message(code: 'default.not.deleted.message', args: [message(code: 'task.label', default: 'Task'), params.deleteId])
+                    flash.message = message(code: 'default.not.deleted.message', args: [message(code: 'task.label'), params.deleteId])
                 }
             }
         }
@@ -3653,7 +3653,7 @@ class SubscriptionController extends AbstractDebugController {
 
             // create mandatory OrgPrivateProperties if not existing
 
-            def mandatories = PropertyDefinition.findAllByDescrAndMandatoryAndTenant("Subscription Property", true, result.contextOrg)
+            List<PropertyDefinition> mandatories = PropertyDefinition.getAllByDescrAndMandatoryAndTenant(PropertyDefinition.SUB_PROP, true, result.contextOrg)
 
             mandatories.each { pd ->
                 if (!SubscriptionPrivateProperty.findWhere(owner: result.subscriptionInstance, type: pd)) {
@@ -3821,7 +3821,7 @@ class SubscriptionController extends AbstractDebugController {
             return;
         }
 
-        def sdf = new SimpleDateFormat('dd.MM.yyyy')
+        SimpleDateFormat sdf = new SimpleDateFormat('dd.MM.yyyy')
 
         def subscription = Subscription.get(params.id)
 
@@ -4462,7 +4462,7 @@ class SubscriptionController extends AbstractDebugController {
 
         def subscription = Subscription.get(params.baseSubscription ?: params.id)
 
-        def sdf = new SimpleDateFormat('dd.MM.yyyy')
+        SimpleDateFormat sdf = new SimpleDateFormat('dd.MM.yyyy')
 
         result.errors = []
         def newStartDate
@@ -5005,7 +5005,7 @@ class SubscriptionController extends AbstractDebugController {
 
         def mandatories = []
         result.user?.authorizedOrgs?.each { org ->
-            def ppd = PropertyDefinition.findAllByDescrAndMandatoryAndTenant("Subscription Property", true, org)
+            List<PropertyDefinition> ppd = PropertyDefinition.getAllByDescrAndMandatoryAndTenant(PropertyDefinition.SUB_PROP, true, org)
             if (ppd) {
                 mandatories << ppd
             }
@@ -5264,7 +5264,7 @@ class SubscriptionController extends AbstractDebugController {
         boolean withErrors = false
         Org contextOrg = contextService.org
         SimpleDateFormat databaseDateFormatParser = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'")
-        SimpleDateFormat sdf = new SimpleDateFormat(message(code:'default.date.format.notime'))
+        SimpleDateFormat sdf = DateUtil.getSDF_NoTime()
         flash.error = ""
         def candidates = JSON.parse(params.candidates)
         candidates.eachWithIndex{ entry, int s ->
@@ -5799,7 +5799,7 @@ class SubscriptionController extends AbstractDebugController {
                         println(property.error)
                     }
                 } else if(field == "dateValue") {
-                    def sdf = new java.text.SimpleDateFormat(message(code: 'default.date.format.notime', default: 'yyyy-MM-dd'))
+                    SimpleDateFormat sdf = DateUtil.getSDF_NoTime()
 
                     def backup = property."${field}"
                     try {

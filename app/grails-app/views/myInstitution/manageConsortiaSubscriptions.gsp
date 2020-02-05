@@ -6,7 +6,7 @@
 <head>
     <meta name="layout" content="semanticUI">
     <g:set var="entityName" value="${message(code: 'org.label', default: 'Org')}"/>
-    <title>${message(code: 'laser', default: 'LAS:eR')} : ${message(code: 'menu.my.consortiaSubscriptions')}</title>
+    <title>${message(code: 'laser')} : ${message(code: 'menu.my.consortiaSubscriptions')}</title>
 </head>
 
 <body>
@@ -258,7 +258,7 @@
             </th>
         </tr>
         <tr>
-            <g:sortableColumn property="subK.owner.reference" params="${params}" title="${message(code:'myinst.consortiaSubscriptions.license')}" class="la-smaller-table-head" />
+            <g:sortableColumn property="subK.owner.reference" params="${params}" title="${message(code:'license.label')}" class="la-smaller-table-head" />
         </tr>
     </thead>
     <tbody>

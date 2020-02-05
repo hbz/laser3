@@ -5,7 +5,7 @@
 <html>
 <head>
     <meta name="layout" content="semanticUI"/>
-    <title>${message(code: 'laser', default: 'LAS:eR')} : ${message(code:'subscription.propertiesMembers.label',args:args.memberTypeGenitive)}</title>
+    <title>${message(code: 'laser')} : ${message(code:'subscription.propertiesMembers.label',args:args.memberTypeGenitive)}</title>
 </head>
 
 <body>
@@ -54,7 +54,7 @@
 %{--<div class="ui segment">
 
     <b>${message(code: 'subscription.propertiesMembers.propertySelected')}: ${filterPropDef?.getI10n('name')}</b>
-    <br>${message(code: 'propertyDefinition.type.label')}: ${PropertyDefinition.getLocalizedValue(filterPropDef?.type)}
+    <br>${message(code: 'default.type.label')}: ${PropertyDefinition.getLocalizedValue(filterPropDef?.type)}
     <g:if test="${filterPropDef?.type == 'class com.k_int.kbplus.RefdataValue'}">
         <g:set var="refdataValues" value="${[]}"/>
         <g:each in="${com.k_int.kbplus.RefdataCategory.getAllRefdataValues(filterPropDef.refdataCategory)}"
@@ -110,7 +110,7 @@
                 <g:hiddenField name="filterPropDef" value="${filterPropDef}"/>
 
 
-                ${message(code: 'propertyDefinition.type.label')}: ${PropertyDefinition.getLocalizedValue(filterPropDef?.type)}
+                ${message(code: 'default.type.label')}: ${PropertyDefinition.getLocalizedValue(filterPropDef?.type)}
                 <g:if test="${filterPropDef?.type == 'class com.k_int.kbplus.RefdataValue'}">
                     <g:set var="refdataValues" value="${[]}"/>
                     <g:each in="${com.k_int.kbplus.RefdataCategory.getAllRefdataValues(filterPropDef.refdataCategory)}"

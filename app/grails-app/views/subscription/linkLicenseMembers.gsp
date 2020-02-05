@@ -5,7 +5,7 @@
 <html>
 <head>
     <meta name="layout" content="semanticUI"/>
-    <title>${message(code: 'laser', default: 'LAS:eR')} : ${message(code:'subscription.details.linkLicenseMembers.label',args:args.memberTypeGenitive)}</title>
+    <title>${message(code: 'laser')} : ${message(code:'subscription.details.linkLicenseMembers.label',args:args.memberTypeGenitive)}</title>
 </head>
 
 <body>
@@ -95,7 +95,7 @@
                     <i class="map orange icon"></i>
                     </span>
                 </th>
-                <th class="la-action-info">${message(code:'default.actions')}</th>
+                <th class="la-action-info">${message(code:'default.actions.label')}</th>
             </tr>
             </thead>
             <tbody>

@@ -1,6 +1,7 @@
 package com.k_int.kbplus
 
 import de.laser.controller.AbstractDebugController
+import de.laser.helper.DateUtil
 import grails.plugin.springsecurity.annotation.Secured
 import net.sf.jasperreports.engine.JasperCompileManager
 import net.sf.jasperreports.engine.JasperFillManager
@@ -108,7 +109,7 @@ class JasperReportsController extends AbstractDebugController {
 		}
 	 
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-		SimpleDateFormat sdf2 = new SimpleDateFormat(message(code:'default.date.format.notime', default:'yyyy-MM-dd'));
+		SimpleDateFormat sdf2 = DateUtil.getSDF_NoTime()
 
 		def filteredDateParams =params.findAll {it.key.toString().contains("date") }
 		filteredDateParams.each { key, value ->

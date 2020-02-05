@@ -3,8 +3,8 @@
 <html>
   <head>
     <meta name="layout" content="semanticUI">
-    <g:set var="entityName" value="${message(code: 'package.label', default: 'Package')}" />
-    <title>${message(code:'laser', default:'LAS:eR')} : ${message(code:'myinst.packages')}</title>
+    <g:set var="entityName" value="${message(code: 'package.label')}" />
+    <title>${message(code:'laser')} : ${message(code:'myinst.packages')}</title>
   </head>
   <body>
 
@@ -60,7 +60,7 @@
             <thead>
                 <tr>
                     <th>${message(code:'sidewide.number')}</th>
-                    <g:sortableColumn property="name" title="${message(code: 'package.name.label', default: 'Name')}" />
+                    <g:sortableColumn property="name" title="${message(code: 'default.name.label', default: 'Name')}" />
                     <th>
                         ${message(code: 'package.content_provider')}
                     </th>

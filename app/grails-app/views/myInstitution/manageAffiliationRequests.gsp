@@ -2,7 +2,7 @@
 <html>
 <head>
     <meta name="layout" content="semanticUI"/>
-    <title>${message(code:'laser', default:'LAS:eR')} : ${message(code:'myinstadmin.title', default:'Institutional Admin Dash')}</title>
+    <title>${message(code:'laser')} : ${message(code:'myinstadmin.title', default:'Institutional Admin Dash')}</title>
 </head>
 
 <body>
@@ -26,7 +26,7 @@
             <th>${message(code: "profile.membership.role")}</th>
             <th>${message(code: "default.status.label")}</th>
             <th>${message(code: "profile.membership.date2")}</th>
-            <th class="la-action-info">${message(code:'default.actions')}</th>
+            <th class="la-action-info">${message(code:'default.actions.label')}</th>
         </tr>
         </thead>
         <tbody>

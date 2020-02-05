@@ -185,7 +185,7 @@
 
                                 <g:if test="${showPackage}">
                                     <div class="item">
-                                        <i class="grey icon gift scale la-popup-tooltip la-delay" data-content="${message(code: 'tipp.package', default: 'Package')}"></i>
+                                        <i class="grey icon gift scale la-popup-tooltip la-delay" data-content="${message(code: 'package.label')}"></i>
                                         <div class="content">
                                             <g:link controller="package" action="show"
                                                     id="${tipp?.pkg?.id}">${tipp?.pkg?.name}</g:link>

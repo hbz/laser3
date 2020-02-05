@@ -6,7 +6,7 @@
     <head>
         <meta name="layout" content="semanticUI">
         <g:set var="entityName" value="${message(code: 'org.label', default: 'Org')}" />
-        <title>${message(code:'laser', default:'LAS:eR')} : <g:message code="default.show.label" args="[entityName]" /></title>
+        <title>${message(code:'laser')} : <g:message code="default.show.label" args="[entityName]" /></title>
     </head>
     <body>
 
@@ -67,7 +67,7 @@
                 <th>${message(code:'profile.membership.role')}</th>
                 <th>${message(code: "profile.membership.date2")}</th>
                 <th>${message(code:'user.status')}</th>
-                <th class="la-action-info">${message(code:'default.actions')}</th>
+                <th class="la-action-info">${message(code:'default.actions.label')}</th>
             </tr>
             </thead>
 
@@ -125,7 +125,7 @@
             <th>${message(code:'profile.membership.role')}</th>
             <%--<th>${message(code:'user.sys_role', default:'System Role')}</th>--%>
             <g:if test="${editable}">
-                <th class="la-action-info">${message(code:'default.actions')}</th>
+                <th class="la-action-info">${message(code:'default.actions.label')}</th>
             </g:if>
         </tr>
         </thead>

@@ -1,6 +1,6 @@
 <g:set var="tip" value="${issueEntitlement.getTIP()}" />
 <g:if test="${tip}">
-  <g:set var="dateFormatter" value="${new java.text.SimpleDateFormat(message(code:'default.date.format.notime'))}"/>
+  <g:set var="dateFormatter" value="${de.laser.helper.DateUtil.getSDF_NoTime()}"/>
   <g:set var="date" value="${date ? dateFormatter.parse(date) : null}"/>
   <g:set var="status" value="${tip.coreStatus(date)}"/>
   <g:set var="date_text" 

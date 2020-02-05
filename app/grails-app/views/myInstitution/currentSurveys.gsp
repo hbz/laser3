@@ -7,7 +7,7 @@
 <html>
 <head>
     <meta name="layout" content="semanticUI"/>
-    <title>${message(code: 'laser', default: 'LAS:eR')} : ${message(code: 'currentSurveys.label', default: 'Current Surveys')}</title>
+    <title>${message(code: 'laser')} : ${message(code: 'currentSurveys.label', default: 'Current Surveys')}</title>
 </head>
 
 <body>
@@ -128,7 +128,7 @@
                 <th><g:message code="surveyInfo.finishedDate"/></th>
             </g:if>
 
-            <th class="la-action-info">${message(code:'default.actions')}</th>
+            <th class="la-action-info">${message(code:'default.actions.label')}</th>
         </tr>
 
         </thead>

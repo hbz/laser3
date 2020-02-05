@@ -4,7 +4,7 @@
 <html>
 <head>
     <meta name="layout" content="semanticUI"/>
-    <title>${message(code: 'laser', default: 'LAS:eR')} : ${message(code: 'surveyShow.label')}</title>
+    <title>${message(code: 'laser')} : ${message(code: 'surveyShow.label')}</title>
 
 </head>
 
@@ -150,7 +150,7 @@
                         <div class="ui label circular ${(config?.type == 'Subscription') ? 'black' : 'blue'}">${com.k_int.kbplus.SurveyConfig.getLocalizedValue(config?.type)}</div>
 
                         <g:if test="${config?.type != 'Subscription'}">
-                            ${message(code: 'surveyProperty.type.label')}: ${config?.surveyProperty?.getLocalizedType()}</br>
+                            ${message(code: 'default.type.label')}: ${config?.surveyProperty?.getLocalizedType()}</br>
 
                         </g:if>
 
@@ -175,7 +175,7 @@
                                                 <th>${message(code: 'surveyConfigDocs.docs.table.title', default: 'Title')}</th>
                                                 <th>${message(code: 'surveyConfigDocs.docs.table.fileName', default: 'File Name')}</th>
                                                 <th>${message(code: 'surveyConfigDocs.docs.table.type', default: 'Type')}</th>
-                                                <th>${message(code: 'default.actions', default: 'Actions')}</th>
+                                                <th>${message(code: 'default.actions.label')}</th>
                                             </tr>
                                             </thead>
                                             <tbody>
@@ -258,7 +258,7 @@
                                                     <thead>
                                                     <tr>
                                                         <th>${message(code: 'surveyProperty.name')}</th>
-                                                        <th>${message(code: 'surveyProperty.type.label')}</th>
+                                                        <th>${message(code: 'default.type.label')}</th>
                                                     </tr>
 
                                                     </thead>
@@ -282,7 +282,7 @@
                                                             <td>
                                                                 ${message(code: 'surveyConfigs.surveyPropToSub')}
                                                                 <br>
-                                                                <b>${message(code: 'surveyProperty.type.label')}: ${prop?.surveyProperty?.getLocalizedType()}</b>
+                                                                <b>${message(code: 'default.type.label')}: ${prop?.surveyProperty?.getLocalizedType()}</b>
 
                                                             </td>
                                                         </tr>

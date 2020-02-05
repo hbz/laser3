@@ -66,7 +66,7 @@ class InplaceTagLib {
       def data_link = null
       switch ( attrs.type ) {
         case 'date':
-          data_link = createLink(controller:'ajax', action: 'editableSetValue', params:[type:'date', format:"${message(code:'default.date.format.notime', default:'yyyy-MM-dd')}"]).encodeAsHTML()
+          data_link = createLink(controller:'ajax', action: 'editableSetValue', params:[type:'date', format:"${message(code:'default.date.format.notime')}"]).encodeAsHTML()
           break;
         case 'string':
         default:
@@ -92,7 +92,7 @@ class InplaceTagLib {
       }
       else {
         if ( attrs.owner[attrs.field] && attrs.type=='date' ) {
-          def sdf = new java.text.SimpleDateFormat(attrs.format?: message(code:'default.date.format.notime', default:'yyyy-MM-dd'))
+          java.text.SimpleDateFormat sdf = new java.text.SimpleDateFormat(attrs.format?: message(code:'default.date.format.notime'))
           out << sdf.format(attrs.owner[attrs.field])
         }
         else {
@@ -110,7 +110,7 @@ class InplaceTagLib {
       }
       else {
         if ( attrs.owner[attrs.field] && attrs.type=='date' ) {
-          def sdf = new java.text.SimpleDateFormat(attrs.format?: message(code:'default.date.format.notime', default:'yyyy-MM-dd'))
+          java.text.SimpleDateFormat sdf = new java.text.SimpleDateFormat(attrs.format?: message(code:'default.date.format.notime'))
           out << sdf.format(attrs.owner[attrs.field])
         }
         else {

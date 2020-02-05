@@ -4,7 +4,7 @@
 <head>
     <meta name="layout" content="semanticUI">
     <g:set var="entityName" value="${message(code: 'platform.label', default: 'Platform')}"/>
-    <title>${message(code: 'laser', default: 'LAS:eR')} : <g:message code="platform.details"/></title>
+    <title>${message(code: 'laser')} : <g:message code="platform.details"/></title>
     <g:javascript src="properties.js"/>
 </head>
 
@@ -93,7 +93,7 @@
                 </dl>
                 <g:if test="${params.mode == 'advanced'}">
                   <dl>
-                    <dt>${message(code: 'platform.type', default: 'Type')}</dt>
+                    <dt>${message(code: 'default.type.label', default: 'Type')}</dt>
                     <dd><semui:xEditableRefData owner="${platformInstance}" field="type" config="${RDConstants.Y_N_O}"/></dd>
                   </dl>
                   <dl>

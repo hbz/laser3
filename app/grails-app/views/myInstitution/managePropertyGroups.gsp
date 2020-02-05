@@ -4,7 +4,7 @@
 <html>
     <head>
         <meta name="layout" content="semanticUI"/>
-        <title>${message(code:'laser', default:'LAS:eR')} : ${message(code:'menu.institutions.prop_groups')}</title>
+        <title>${message(code:'laser')} : ${message(code:'menu.institutions.prop_groups')}</title>
     </head>
     <body>
 
@@ -33,12 +33,12 @@
     <table class="ui celled sortable table la-table la-table-small">
         <thead>
             <tr>
-                <th><g:message code="propertyDefinitionGroup.table.header.name"/></th>
+                <th><g:message code="default.name.label"/></th>
                 <th><g:message code="propertyDefinitionGroup.table.header.description"/></th>
                 <th><g:message code="propertyDefinitionGroup.table.header.properties"/></th>
-                <th><g:message code="propertyDefinitionGroup.table.header.type"/></th>
+                <th><g:message code="default.type.label"/></th>
                 <th><g:message code="propertyDefinitionGroup.table.header.presetShow"/></th>
-                <th class="la-action-info">${message(code:'default.actions')}</th>
+                <th class="la-action-info">${message(code:'default.actions.label')}</th>
             </tr>
         </thead>
         <tbody>
@@ -75,7 +75,13 @@
                             <g:link controller="myInstitution" action="managePropertyGroups" params="${[cmd:'edit', oid:pdgOID]}" class="ui icon button trigger-modal">
                                 <i class="write icon"></i>
                             </g:link>
-                            <g:link controller="myInstitution" action="managePropertyGroups" params="${[cmd:'delete', oid:pdgOID]}" class="ui icon negative button">
+                            <g:link controller="myInstitution"
+                                    action="managePropertyGroups"
+                                    params="${[cmd:'delete', oid:pdgOID]}"
+                                    data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.prop_groups", args: [fieldValue(bean: pdGroup, field: "name")])}"
+                                    data-confirm-term-how="delete"
+                                    class="ui icon negative button js-open-confirm-modal"
+                                    role="button">
                                 <i class="trash alternate icon"></i>
                             </g:link>
                         </g:if>

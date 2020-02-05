@@ -4,7 +4,7 @@
 <html>
 <head>
     <meta name="layout" content="semanticUI">
-    <title>${message(code:'laser', default:'LAS:eR')} : ${message(code:'title.details')}</title>
+    <title>${message(code:'laser')} : ${message(code:'title.details')}</title>
 </head>
   <body>
 
@@ -174,7 +174,7 @@
             <table class="ui celled la-table table">
               <thead>
                 <tr>
-                  <th>${message(code: 'title.show.history.date')}</th>
+                  <th>${message(code: 'default.date.label')}</th>
                   <th>${message(code: 'title.show.history.from')}</th>
                   <th>${message(code: 'title.show.history.to')}</th>
                 </tr>
@@ -222,8 +222,8 @@
                       <th><g:message code="tipp.endIssue"/></th>
                       <th><g:message code="tipp.coverageDepth"/></th>
                       <th><g:message code="tipp.platform"/></th>
-                      <th><g:message code="tipp.package"/></th>
-                      <th class="la-action-info"><g:message code="default.actions"/></th>
+                      <th><g:message code="package.label"/></th>
+                      <th class="la-action-info"><g:message code="default.actions.label"/></th>
                   </tr>
                   </thead>
                   <tbody>
@@ -251,13 +251,13 @@
                     <tr>
                   --}%%{--<th rowspan="2"></th> BULK_REMOVE --}%%{--
                       <th><g:message code="tipp.platform"/></th>
-                      <th><g:message code="tipp.package"/></th>
+                      <th><g:message code="package.label"/></th>
                       <th><g:message code="tipp.start"/></th>
                       <th><g:message code="tipp.end"/></th>
                       <th><g:message code="tipp.start"/></th>
                       <th><g:message code="tipp.end"/></th>
                       <th><g:message code="tipp.coverageDepth"/></th>
-                      <th class="la-action-info"><g:message code="default.actions"/></th>
+                      <th class="la-action-info"><g:message code="default.actions.label"/></th>
                     </tr>
                     <tr>
                       <th colspan="6"><g:message code="tipp.coverageNote"/></th>
@@ -271,7 +271,7 @@
                     <td colspan="2"><button class="ui button" type="submit" value="Go" name="BatchEdit"><g:message code="default.button.apply_batch.label"/></button></td>
                     <td>
 
-                        <semui:datepicker label="title.show.history.date" id="bulk_start_date" name="bulk_start_date" value="${params.bulk_start_date}" />
+                        <semui:datepicker label="default.date.label" id="bulk_start_date" name="bulk_start_date" value="${params.bulk_start_date}" />
                        - <input type="checkbox" id="clear_start_date" name="clear_start_date"/> (<g:message code="title.edit.tipp.clear"/>)
 
                         <div class="field">
@@ -288,7 +288,7 @@
                     </td>
                     <td>
 
-                        <semui:datepicker label="title.show.history.date" id="bulk_end_date" name="bulk_end_date" value="${params.bulk_end_date}" />
+                        <semui:datepicker label="default.date.label" id="bulk_end_date" name="bulk_end_date" value="${params.bulk_end_date}" />
                        - <input type="checkbox" id="clear_end_date" name="clear_end_date"/> (<g:message code="title.edit.tipp.clear"/>)
 
                         <br/>
@@ -343,10 +343,10 @@
                         </div>
                     </td>
 
-                    <td><g:message code="title.show.history.date"/>: <g:formatDate format="${message(code:'default.date.format.notime')}" date="${t.startDate}"/><br/>
+                    <td><g:message code="default.date.label"/>: <g:formatDate format="${message(code:'default.date.format.notime')}" date="${t.startDate}"/><br/>
                     <g:message code="tipp.volume"/>: ${t.startVolume}<br/>
                     <g:message code="tipp.issue"/>: ${t.startIssue}</td>
-                    <td><g:message code="title.show.history.date"/>: <g:formatDate format="${message(code:'default.date.format.notime')}" date="${t.endDate}"/><br/>
+                    <td><g:message code="default.date.label"/>: <g:formatDate format="${message(code:'default.date.format.notime')}" date="${t.endDate}"/><br/>
                     <g:message code="tipp.volume"/>: ${t.endVolume}<br/>
                     <g:message code="tipp.issue"/>: ${t.endIssue}</td>
                     <td>${t.coverageDepth}</td>

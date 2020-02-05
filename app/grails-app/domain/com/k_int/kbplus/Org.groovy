@@ -20,6 +20,7 @@ import org.codehaus.groovy.grails.orm.hibernate.cfg.GrailsHibernateUtil
 
 import javax.persistence.Id
 import javax.persistence.Transient
+import java.text.SimpleDateFormat
 
 @Log4j
 class Org
@@ -568,7 +569,7 @@ class Org
   @Transient
   def toKBPlus(builder, attr) {
 
-    def sdf = new java.text.SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
+    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
     def pub = getPublisher()
 
     try {

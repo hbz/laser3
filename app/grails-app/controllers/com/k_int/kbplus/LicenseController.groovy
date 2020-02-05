@@ -7,9 +7,12 @@ import com.k_int.properties.PropertyDefinition
 import de.laser.AccessService
 import de.laser.DeletionService
 import de.laser.controller.AbstractDebugController
+import de.laser.helper.DateUtil
 import de.laser.helper.DebugAnnotation
 import de.laser.helper.DebugUtil
 import de.laser.helper.RDStore
+
+import java.text.SimpleDateFormat
 
 import static de.laser.helper.RDStore.*
 import grails.converters.JSON
@@ -131,7 +134,7 @@ class LicenseController extends AbstractDebugController {
 
             // create mandatory LicensePrivateProperties if not existing
 
-            def mandatories = PropertyDefinition.findAllByDescrAndMandatoryAndTenant("License Property", true, result.contextOrg)
+            List<PropertyDefinition> mandatories = PropertyDefinition.getAllByDescrAndMandatoryAndTenant(PropertyDefinition.LIC_PROP, true, result.contextOrg)
 
             mandatories.each { pd ->
                 if (!LicensePrivateProperty.findWhere(owner: result.license, type: pd)) {
@@ -399,7 +402,7 @@ class LicenseController extends AbstractDebugController {
 
     def subscriptions = null
     if(licenseInstitutions){
-      def sdf = new java.text.SimpleDateFormat(message(code:'default.date.format.notime', default:'yyyy-MM-dd'))
+      SimpleDateFormat sdf = DateUtil.getSDF_NoTime()
       def date_restriction =  new Date(System.currentTimeMillis())
 
       def base_qry = """
@@ -720,11 +723,11 @@ from Subscription as s where
             def dTask = Task.get(params.deleteId)
             if (dTask && dTask.creator.id == result.user.id) {
                 try {
-                    flash.message = message(code: 'default.deleted.message', args: [message(code: 'task.label', default: 'Task'), dTask.title])
+                    flash.message = message(code: 'default.deleted.message', args: [message(code: 'task.label'), dTask.title])
                     dTask.delete(flush: true)
                 }
                 catch (Exception e) {
-                    flash.message = message(code: 'default.not.deleted.message', args: [message(code: 'task.label', default: 'Task'), params.deleteId])
+                    flash.message = message(code: 'default.not.deleted.message', args: [message(code: 'task.label'), params.deleteId])
                 }
             }
         }
@@ -759,7 +762,7 @@ from Subscription as s where
 
         def mandatories = []
         result.user?.authorizedOrgs?.each{ org ->
-            def ppd = PropertyDefinition.findAllByDescrAndMandatoryAndTenant("License Property", true, org)
+            List<PropertyDefinition> ppd = PropertyDefinition.getAllByDescrAndMandatoryAndTenant(PropertyDefinition.LIC_PROP, true, org)
             if (ppd) {
                 mandatories << ppd
             }

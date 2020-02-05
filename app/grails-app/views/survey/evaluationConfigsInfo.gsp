@@ -7,7 +7,7 @@
 <html>
 <head>
     <meta name="layout" content="semanticUI"/>
-    <title>${message(code: 'laser', default: 'LAS:eR')} : ${message(code: 'surveyEvaluation.label', default: 'Evaluation')}</title>
+    <title>${message(code: 'laser')} : ${message(code: 'surveyEvaluation.label', default: 'Evaluation')}</title>
 </head>
 
 <body>
@@ -58,7 +58,7 @@
 
                             <g:if test="${surveyConfig?.surveyProperty}">
 
-                                <b>${message(code: 'surveyProperty.type.label')}: ${surveyConfig?.surveyProperty?.getLocalizedType()}
+                                <b>${message(code: 'default.type.label')}: ${surveyConfig?.surveyProperty?.getLocalizedType()}
 
                                 </b>
                             </g:if>
@@ -142,7 +142,7 @@
             <thead>
             <tr>
                 <th class="center aligned">${message(code: 'sidewide.number')}</th>
-                <th>${message(code: 'org.name.label')}</th>
+                <th>${message(code: 'default.name.label')}</th>
 
                 <g:each in="${surveyParticipantsHasAccess.groupBy {
                     it?.type.id
@@ -308,7 +308,7 @@
             <thead>
             <tr>
                 <th class="center aligned">${message(code: 'sidewide.number')}</th>
-                <th>${message(code: 'org.name.label')}</th>
+                <th>${message(code: 'default.name.label')}</th>
                 <g:each in="${surveyParticipantsHasNotAccess.groupBy {
                     it?.type.id
                 }.sort{it?.value?.type?.name}}" var="property">

@@ -5,7 +5,7 @@
 <html>
 <head>
     <meta name="layout" content="semanticUI"/>
-    <title>${message(code: 'laser', default: 'LAS:eR')} : ${message(code: 'subscription.details.surveys.label')}</title>
+    <title>${message(code: 'laser')} : ${message(code: 'subscription.details.surveys.label')}</title>
 </head>
 
 <body>
@@ -49,7 +49,7 @@
             <th>${message(code: 'surveyInfo.type.label')}</th>
             <th>${message(code: 'default.status.label')}</th>
             <th>${message(code: 'surveyInfo.finishedDate')}</th>
-            <th class="la-action-info">${message(code: 'default.actions')}</th>
+            <th class="la-action-info">${message(code: 'default.actions.label')}</th>
 
         </tr>
 

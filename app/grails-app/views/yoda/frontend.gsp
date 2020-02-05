@@ -4,7 +4,7 @@
 <html>
 <head>
     <meta name="layout" content="semanticUI">
-    <title>${message(code: 'laser', default: 'LAS:eR')} : Frontend for Developers</title>
+    <title>${message(code: 'laser')} : Frontend for Developers</title>
     <style>
     #example .example .column .icon {
         opacity: 1;
@@ -246,7 +246,7 @@
         &lt;th&gt;${message(code:'property.table.paragraph')}&lt;/th&gt;
     &lt;/g:if&gt;
     &lt;th&gt;${message(code:'property.table.notes')}&lt;/th&gt;
-    &lt;th&gt;${message(code:'default.actions')}&lt;/th&gt;
+    &lt;th&gt;${message(code:'default.actions.label')}&lt;/th&gt;
 &lt;/tr&gt;
 &lt;/thead&gt;
                     .
@@ -353,6 +353,47 @@ if (customerType) {
     $('#customerTypeModal select[name=customerType]').dropdown('clear')
 }</pre>
     </div>
+
+    <%-- Confimation Modal --%>
+
+    <h2 class="ui dividing header">Confimation Modal<a class="anchor" id="icons"></a></h2>
+    <h4 class="ui header">Buttons, die Confirmation Modals haben</h4>
+    <div class="html ui top attached segment example">
+        <div class="ui top attached label">Link, der als Button funktioniert (daß heiß, eine Aktion ausführt)</div>
+        <g:link controller="yoda"
+                action="frontend"
+                params=""
+                data-content="Hier kommt der Tooltip rein"
+                data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.function", args: ['Button auf der YODA/FRONTENDSEITE'])}"
+                data-confirm-term-how="delete"
+                class="ui icon negative button js-open-confirm-modal la-popup-tooltip la-delay"
+                role="button">
+            <i class="trash alternate icon"></i>
+        </g:link>
+    </div>
+
+    <div class="html ui top attached segment example">
+        <div class="ui top attached label">Link, der den AJAX-Contoler aufruft und  als Button funktioniert (daß heiß, eine Aktion ausführt)</div>
+        <laser:remoteLink class="ui icon negative button js-open-confirm-modal la-popup-tooltip la-delay"
+                          controller="yoda"
+                          action="frontend"
+                          params=""
+                          id=""
+                          data-content="Hier kommt der Tooltip rein"
+                          data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.function", args: ['Button auf der YODA/FRONTENDSEITE'])}"
+                          data-confirm-term-how="delete"
+                          data-done=""
+                          data-always=""
+                          data-update=""
+                          role="button"
+        >
+            <i class="trash alternate icon"></i>
+        </laser:remoteLink>
+    </div>
+
+
+    <%-- Charts --%>
+
     <h2 class="ui dividing header">Charts<a class="anchor" id="icons"></a></h2>
     <h4 class="ui header">Einbindung von Chartist als Javascript Library zum Rendern von Daten</h4>
     <div class="html ui top attached segment example">

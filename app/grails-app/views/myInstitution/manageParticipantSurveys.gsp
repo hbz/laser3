@@ -5,7 +5,7 @@
 <html>
 <head>
     <meta name="layout" content="semanticUI">
-    <title>${message(code: 'laser', default: 'LAS:eR')} : ${message(code: 'manageParticipantSurveys.header')}</title>
+    <title>${message(code: 'laser')} : ${message(code: 'manageParticipantSurveys.header')}</title>
 </head>
 
 <body>
@@ -147,7 +147,7 @@
                 <g:if test="${params.tab == 'finish'}">
                     <th><g:message code="surveyInfo.finishedDate"/></th>
                 </g:if>
-                <th class="la-action-info">${message(code: 'default.actions')}</th>
+                <th class="la-action-info">${message(code: 'default.actions.label')}</th>
             </tr>
 
             </thead>

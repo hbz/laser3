@@ -2,7 +2,7 @@
 <html>
   <head>
     <meta name="layout" content="semanticUI"/>
-    <title>${message(code:'laser', default:'LAS:eR')} : Database Migration</title>
+    <title>${message(code:'laser')} : Database Migration</title>
   </head>
 
   <body>

@@ -5,7 +5,7 @@
 <html>
 <head>
 <meta name="layout" content="semanticUI" />
-<title>${message(code:'laser', default:'LAS:eR')} ${message(code:'onixplLicense.compare.label', default:'ONIX-PL License Compare')} </title>
+<title>${message(code:'laser')} ${message(code:'onixplLicense.compare.label', default:'ONIX-PL License Compare')} </title>
 </head>
 <body>
 

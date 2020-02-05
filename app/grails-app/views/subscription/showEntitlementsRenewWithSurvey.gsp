@@ -3,7 +3,7 @@
 <html>
 <head>
     <meta name="layout" content="semanticUI"/>
-    <title>${message(code: 'laser', default: 'LAS:eR')} : ${message(code: 'subscription.details.renewEntitlements.label')}</title>
+    <title>${message(code: 'laser')} : ${message(code: 'subscription.details.renewEntitlements.label')}</title>
 </head>
 
 <body>
@@ -182,7 +182,7 @@
 
                             <div class="item">
                                 <i class="grey icon gift scale la-popup-tooltip la-delay"
-                                   data-content="${message(code: 'tipp.package', default: 'Package')}"></i>
+                                   data-content="${message(code: 'package.label')}"></i>
 
                                 <div class="content">
                                     <g:link controller="package" action="show"

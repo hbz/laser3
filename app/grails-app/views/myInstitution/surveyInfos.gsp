@@ -5,7 +5,7 @@
 <html>
 <head>
     <meta name="layout" content="semanticUI"/>
-    <title>${message(code: 'laser', default: 'LAS:eR')} : ${message(code: 'subscriptionSurvey.label')}</title>
+    <title>${message(code: 'laser')} : ${message(code: 'subscriptionSurvey.label')}</title>
 </head>
 
 <body>
@@ -262,7 +262,7 @@ ${message(code: 'subscriptionSurvey.label')} - ${surveyInfo.name}
                     ${message(code: 'sidewide.number')}
                 </th>
                 <th>${message(code: 'surveyProperty.name')}</th>
-                <th>${message(code: 'surveyProperty.type.label')}</th>
+                <th>${message(code: 'default.type.label')}</th>
                 <th>${message(code: 'surveyResult.result')}</th>
                 <th>${message(code: 'surveyResult.commentParticipant')}</th>
 
@@ -298,7 +298,7 @@ ${message(code: 'subscriptionSurvey.label')} - ${surveyInfo.name}
 
                             <g:if test="${surveyConfig?.surveyProperty}">
                                 <br>
-                                <b>${message(code: 'surveyProperty.type.label')}: ${surveyConfig?.surveyProperty?.getLocalizedType()}
+                                <b>${message(code: 'default.type.label')}: ${surveyConfig?.surveyProperty?.getLocalizedType()}
 
                             </g:if>
 

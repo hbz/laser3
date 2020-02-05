@@ -130,8 +130,8 @@ class DataConsistencyService {
     def ajaxQuery(String key1, String key2, String value) {
 
         def result = []
-        SimpleDateFormat sdfA = DateUtil.getSimpleDateFormat_NoTime()
-        SimpleDateFormat sdfB = DateUtil.getSimpleDateFormat_NoZ()
+        SimpleDateFormat sdfA = DateUtil.getSDF_NoTime()
+        SimpleDateFormat sdfB = DateUtil.getSDF_NoZ()
 
         if (key1 == 'Org') {
             result = Org.findAllWhere( "${key2}": value ).collect{ it ->

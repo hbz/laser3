@@ -2,7 +2,7 @@
 <html>
   <head>
     <meta name="layout" content="semanticUI"/>
-    <title>${message(code:'laser', default:'LAS:eR')} ${message(code:'menu.datamanager.dash', default:'Data Manager Dashboard')}</title>
+    <title>${message(code:'laser')} ${message(code:'menu.datamanager.dash', default:'Data Manager Dashboard')}</title>
   </head>
 
   <body>
@@ -22,7 +22,7 @@
           <thead>
             <tr>
               <th>${message(code:'default.info.label', default:'Info')}</th>
-              <th class="la-action-info">${message(code:'default.actions')}</th>
+              <th class="la-action-info">${message(code:'default.actions.label')}</th>
             </tr>
           </thead>
           <tbody>

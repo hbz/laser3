@@ -227,7 +227,7 @@ class PublicController {
             def pkg = sp?.pkg
             def scp = SubscriptionCustomProperty.findByOwnerAndTypeAndRefValue(
                     sub,
-                    PropertyDefinition.getByNameAndDescr('GASCO Entry', 'Subscription Property'),
+                    PropertyDefinition.getByNameAndDescr('GASCO Entry', PropertyDefinition.SUB_PROP),
                     RDStore.YN_YES
             )
 

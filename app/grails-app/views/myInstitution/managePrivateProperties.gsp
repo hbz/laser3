@@ -5,7 +5,7 @@
     <head>
         <meta name="layout" content="semanticUI">
         <g:set var="entityName" value="${message(code: 'org.label', default: 'Org')}" />
-        <title>${message(code:'laser', default:'LAS:eR')} : ${message(code: 'menu.institutions.private_props')}</title>
+        <title>${message(code:'laser')} : ${message(code: 'menu.institutions.private_props')}</title>
     </head>
     <body>
 
@@ -47,11 +47,11 @@
                                 <tr>
                                     <th></th>
                                     <th>${message(code:'propertyDefinition.key.label')}</th>
-                                    <th>${message(code:'propertyDefinition.name.label')}</th>
+                                    <th>${message(code:'default.name.label')}</th>
                                     <th>${message(code:'propertyDefinition.expl.label')}</th>
-                                    <th>${message(code:'propertyDefinition.type.label')}</th>
+                                    <th>${message(code:'default.type.label')}</th>
                                     <th>${message(code:'propertyDefinition.count.label', default:'Count in Use')}</th>
-                                    <th class="la-action-info">${message(code:'default.actions')}</th>
+                                    <th class="la-action-info">${message(code:'default.actions.label')}</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -107,7 +107,12 @@
                                         </td>
                                         <td class="x">
                                             <g:if test="${pd.countUsages()==0}">
-                                                <g:link action="managePrivateProperties" params="[cmd:'delete', deleteIds: pd?.id]" class="ui icon negative button">
+                                                <g:link action="managePrivateProperties"
+                                                        params="[cmd:'delete', deleteIds: pd?.id]"
+                                                        data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.property", args: [fieldValue(bean: pd, field: "name")])}"
+                                                        data-confirm-term-how="delete"
+                                                        class="ui icon negative button js-open-confirm-modal"
+                                                        role="button">
                                                     <i class="trash alternate icon"></i>
                                                 </g:link>
                                             </g:if>
@@ -151,7 +156,7 @@
                 </div>
 
                 <div class="field five wide">
-                    <label class="property-label"><g:message code="propertyDefinition.type.label" /></label>
+                    <label class="property-label"><g:message code="default.type.label" /></label>
                     <g:select class="ui dropdown"
                         from="${PropertyDefinition.validTypes2.entrySet()}"
                         optionKey="key" optionValue="${{PropertyDefinition.getLocalizedValue(it.key)}}"

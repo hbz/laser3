@@ -5,7 +5,7 @@
 <html>
 <head>
     <meta name="layout" content="semanticUI">
-    <title>${message(code: 'laser', default: 'LAS:eR')} : ${message(code: 'gasco.title')}</title>
+    <title>${message(code: 'laser')} : ${message(code: 'gasco.title')}</title>
 </head>
 
 <body>
@@ -89,7 +89,7 @@
                         </g:else>
                         <br />
 
-                        ${message(code:'tipp.package', default:'Package')}:
+                        ${message(code:'package.label')}:
                         <g:if test="${tipp.pkg}"><!-- TODO: show all packages -->
                             ${tipp.pkg}
                         </g:if>
@@ -150,7 +150,7 @@
                 </g:else>
                 <br />
 
-                ${message(code:'tipp.package', default:'Package')}:
+                ${message(code:'package.label')}:
                 <g:if test="${ie.tipp?.pkg}">
                     ${ie.tipp?.pkg}
                 </g:if>

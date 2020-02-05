@@ -2,7 +2,7 @@
 <html>
   <head>
     <meta name="layout" content="semanticUI"/>
-    <title>${message(code:'laser', default:'LAS:eR')} : ${message(code:'myinst.addSubscription.label', default:'Add Subscripton')}</title>
+    <title>${message(code:'laser')} : ${message(code:'myinst.addSubscription.label', default:'Add Subscripton')}</title>
   </head>
   <body>
 
@@ -49,7 +49,7 @@
                   <g:sortableColumn params="${params}" property="p.startDate" title="${message(code:'default.startDate.label', default:'Start Date')}" />
                   <g:sortableColumn params="${params}" property="p.endDate" title="${message(code:'default.endDate.label', default:'End Date')}" />
                   <th>${message(code:'tipp.platform', default:'Platform')}</th>
-                  <th>${message(code:'license.label', default:'License')}</th>
+                  <th>${message(code:'license.label')}</th>
                 </tr>
                 <g:each in="${packages}" var="p">
                   <tr>

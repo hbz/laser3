@@ -2,7 +2,7 @@
 <html>
     <head>
         <meta name="layout" content="semanticUI"/>
-        <title>${message(code:'laser', default:'LAS:eR')} : ${message(code:'license.nav.todo_history')}</title>
+        <title>${message(code:'laser')} : ${message(code:'license.nav.todo_history')}</title>
 </head>
 <body>
     <g:render template="breadcrumb" model="${[ license:license, params:params ]}"/>
@@ -21,7 +21,7 @@
             <tr>
               <th>${message(code:'license.history.todo.description', default:'ToDo Description')}</th>
               <th>${message(code:'default.status.label', default:'Status')}</th>
-              <th>${message(code:'default.date.label', default:'Date')}</th>
+              <th>${message(code:'default.date.label')}</th>
             </tr>
           </thead>
         <g:if test="${todoHistoryLines}">

@@ -1,5 +1,5 @@
 <!-- _filter.gsp -->
-<%@ page import="java.text.SimpleDateFormat;de.laser.helper.RDStore;de.laser.helper.RDConstants;com.k_int.properties.PropertyDefinition;com.k_int.kbplus.OrgRole;com.k_int.kbplus.RefdataCategory;com.k_int.kbplus.RefdataValue;com.k_int.kbplus.FinanceController;com.k_int.kbplus.CostItem" %>
+<%@ page import="de.laser.helper.DateUtil; java.text.SimpleDateFormat;de.laser.helper.RDStore;de.laser.helper.RDConstants;com.k_int.properties.PropertyDefinition;com.k_int.kbplus.OrgRole;com.k_int.kbplus.RefdataCategory;com.k_int.kbplus.RefdataValue;com.k_int.kbplus.FinanceController;com.k_int.kbplus.CostItem" %>
 <laser:serviceInjection />
 
 
@@ -8,7 +8,7 @@
     <semui:filter showFilterButton="true">
         <%
             def formUrl = [controller: 'myInstitution', action: 'finance']
-            SimpleDateFormat sdf = new SimpleDateFormat(message(code:'default.date.format.notime'))
+            SimpleDateFormat sdf = de.laser.helper.DateUtil.getSDF_NoTime()
             if (fixedSubscription) {
                 formUrl = [mapping: 'subfinance', params: [sub: "${fixedSubscription?.id}"]]
             }
@@ -63,7 +63,7 @@
                 </div>
                 <g:if test="${!fixedSubscription}">
                     <div class="field fieldcontain"><!--NEW -->
-                        <label>${message(code:'subscription.label')}</label>
+                        <label>${message(code:'default.subscription.label')}</label>
                         <div class="ui search selection multiple dropdown newFilter" id="filterCISub">
                             <input type="hidden" name="filterCISub" value="${params.filterCISub}">
                             <i class="dropdown icon"></i>

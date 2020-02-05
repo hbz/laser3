@@ -1,7 +1,7 @@
 <%@ page import="com.k_int.kbplus.SurveyConfig; de.laser.helper.RDStore; com.k_int.kbplus.RefdataValue; java.text.SimpleDateFormat;com.k_int.kbplus.DocContext;" %>
 <%
     def result = []
-    SimpleDateFormat sdf = new SimpleDateFormat(message(code: 'default.date.format.notime'))
+    SimpleDateFormat sdf = de.laser.helper.DateUtil.getSDF_NoTime()
 
     hits.each { hit ->
 

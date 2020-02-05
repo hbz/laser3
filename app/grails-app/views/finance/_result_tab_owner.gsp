@@ -8,7 +8,7 @@
             <g:if test="${!fixedSubscription}">
                 <th>${message(code:'sidewide.number')}</th>
                 <g:sortableColumn property="ci.costTitle" title="${message(code:'financials.newCosts.costTitle')}" params="[ownSort: true]"/>
-                <g:sortableColumn property="ci.sub.name" title="${message(code:'financials.forSubscription')}" params="[ownSort: true]"/>
+                <g:sortableColumn property="ci.sub.name" title="${message(code:'default.subscription.label')}" params="[ownSort: true]"/>
                 <th class="la-no-uppercase"><span class="la-popup-tooltip la-delay" data-content="${message(code:'financials.costItemConfiguration')}" data-position="left center"><i class="money bill alternate icon"></i></span></th>
                 <g:sortableColumn property="ci.costInBillingCurrency" title="${message(code:'financials.invoice_total')}" params="[ownSort: true]"/>
                 <g:sortableColumn property="ci.costInLocalCurrency" title="${message(code:'financials.newCosts.value')}" params="[ownSort: true]"/>

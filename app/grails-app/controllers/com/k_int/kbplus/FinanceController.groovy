@@ -3,6 +3,7 @@ package com.k_int.kbplus
 
 import com.k_int.kbplus.auth.User
 import de.laser.controller.AbstractDebugController
+import de.laser.helper.DateUtil
 import de.laser.helper.DebugAnnotation
 import de.laser.helper.RDStore
 import de.laser.interfaces.TemplateSupport
@@ -197,7 +198,7 @@ class FinanceController extends AbstractDebugController {
         else if(orgRoleSubscr) {
             result.cost_item_tabs["subscr"] = financialData.subscr
         }
-        SimpleDateFormat sdf = new SimpleDateFormat(g.message(code:'default.date.format.notimenopoint'))
+        SimpleDateFormat sdf = DateUtil.getSDF_NoTimeNoPoint()
         String filename = result.subscription ? escapeService.escapeString(result.subscription.name)+"_financialExport" : escapeService.escapeString(result.institution.name)+"_financialExport"
         if(params.exportXLS) {
             SXSSFWorkbook workbook = processFinancialXLSX(result)
@@ -226,8 +227,8 @@ class FinanceController extends AbstractDebugController {
             titles.add(message(code: 'financials.newCosts.costTitle'))
             if(viewMode == "cons")
                 titles.add(message(code:'default.provider.label'))
-            titles.addAll([message(code: 'financials.forSubscription'), message(code:'subscription.startDate.label'), message(code: 'subscription.endDate.label'),
-                           message(code: 'financials.costItemConfiguration'), message(code: 'package'), message(code: 'issueEntitlement.label'),
+            titles.addAll([message(code: 'default.subscription.label'), message(code:'subscription.startDate.label'), message(code: 'subscription.endDate.label'),
+                           message(code: 'financials.costItemConfiguration'), message(code: 'package.label'), message(code: 'issueEntitlement.label'),
                            message(code: 'financials.datePaid'), message(code: 'financials.dateFrom'), message(code: 'financials.dateTo'), message(code:'financials.financialYear'),
                            message(code: 'default.status.label'), message(code: 'financials.billingCurrency'), message(code: 'financials.costInBillingCurrency'),"EUR",
                            message(code: 'financials.costInLocalCurrency')])
@@ -236,7 +237,7 @@ class FinanceController extends AbstractDebugController {
             titles.addAll([message(code: 'financials.costItemElement'),message(code: 'financials.newCosts.description'),
                            message(code: 'financials.newCosts.constsReferenceOn'), message(code: 'financials.budgetCode'),
                            message(code: 'financials.invoice_number'), message(code: 'financials.order_number')])
-            SimpleDateFormat dateFormat = new SimpleDateFormat(message(code: 'default.date.format.notime', default: 'dd.MM.yyyy'))
+            SimpleDateFormat dateFormat = DateUtil.getSDF_NoTime()
             LinkedHashMap<Subscription,List<Org>> subscribers = [:]
             LinkedHashMap<Subscription,List<Org>> providers = [:]
             LinkedHashMap<Subscription,BudgetCode> costItemGroups = [:]
@@ -470,7 +471,7 @@ class FinanceController extends AbstractDebugController {
      * @return
      */
     SXSSFWorkbook processFinancialXLSX(result) {
-        SimpleDateFormat dateFormat = new SimpleDateFormat(message(code: 'default.date.format.notime', default: 'dd.MM.yyyy'))
+        SimpleDateFormat dateFormat = DateUtil.getSDF_NoTime()
         XSSFWorkbook workbook = new XSSFWorkbook()
         POIXMLProperties xmlProps = workbook.getProperties()
         POIXMLProperties.CoreProperties coreProps = xmlProps.getCoreProperties()
@@ -526,8 +527,8 @@ class FinanceController extends AbstractDebugController {
             titles.add(message(code: 'financials.newCosts.costTitle'))
             if(viewMode == "cons")
                 titles.add(message(code:'default.provider.label'))
-            titles.addAll([message(code: 'financials.forSubscription'), message(code:'subscription.startDate.label'), message(code: 'subscription.endDate.label'),
-                           message(code: 'financials.costItemConfiguration'), message(code: 'package'), message(code: 'issueEntitlement.label'),
+            titles.addAll([message(code: 'default.subscription.label'), message(code:'subscription.startDate.label'), message(code: 'subscription.endDate.label'),
+                           message(code: 'financials.costItemConfiguration'), message(code: 'package.label'), message(code: 'issueEntitlement.label'),
                            message(code: 'financials.datePaid'), message(code: 'financials.dateFrom'), message(code: 'financials.dateTo'), message(code:'financials.financialYear'),
                            message(code: 'default.status.label'), message(code: 'financials.billingCurrency'), message(code: 'financials.costInBillingCurrency'),"EUR",
                            message(code: 'financials.costInLocalCurrency')])
@@ -889,7 +890,7 @@ class FinanceController extends AbstractDebugController {
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_EDITOR") })
     def newCostItem() {
 
-        def dateFormat      = new java.text.SimpleDateFormat(message(code:'default.date.format.notime', default:'yyyy-MM-dd'))
+        SimpleDateFormat dateFormat = DateUtil.getSDF_NoTime()
 
         def result =  [showView:params.tab]
         CostItem newCostItem = null

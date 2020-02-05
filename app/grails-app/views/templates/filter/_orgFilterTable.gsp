@@ -72,7 +72,7 @@
             <th>ISIL</th>
         </g:if>
         <g:if test="${tmplConfigItem.equalsIgnoreCase('type')}">
-            <th>${message(code: 'org.type.label', default: 'Type')}</th>
+            <th>${message(code: 'default.type.label')}</th>
         </g:if>
         <g:if test="${tmplConfigItem.equalsIgnoreCase('sector')}">
             <th>${message(code: 'org.sector.label', default: 'Sector')}</th>
@@ -607,7 +607,7 @@
 
             </td>
         </g:if>
-        <g:if test="${tmplConfigShow?.contains('surveyCostItem')}">
+        <g:if test="${tmplConfigItem.equalsIgnoreCase('surveyCostItem')}">
             <td class="x">
 
                 <g:if test="${orgSub?.isCurrentMultiYearSubscriptionNew()}">

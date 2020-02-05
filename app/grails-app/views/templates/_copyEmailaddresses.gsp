@@ -11,7 +11,7 @@
     <g:set var="rdvAllPersonPositions"  value="${PersonRole.getAllRefdataValues(RDConstants.PERSON_POSITION)}" scope="request"/>
 
     <div>
-    <label><g:message code="person.function.label" default="Function"/></label>&nbsp
+    <label><g:message code="person.function.label" /></label>&nbsp
         <laser:select class="ui dropdown search"
                       name="prsFunctionMultiSelect"
                       multiple=""
@@ -22,7 +22,7 @@
     </div>
     <br>
     <div>
-        <label><g:message code="person.position.label" default="Position"/></label>&nbsp
+        <label><g:message code="person.position.label" /></label>&nbsp
         <laser:select class="ui dropdown search"
                       name="prsPositionMultiSelect"
                       multiple=""

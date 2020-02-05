@@ -4,7 +4,7 @@
     <head>
         <meta name="layout" content="semanticUI">
         <g:set var="entityName" value="${message(code: 'default.provider.label', default: 'Provider')}" />
-        <title>${message(code:'laser', default:'LAS:eR')} : <g:message code="menu.public.all_provider" /></title>
+        <title>${message(code:'laser')} : <g:message code="menu.public.all_provider" /></title>
     </head>
     <body>
 
