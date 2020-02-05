@@ -82,10 +82,10 @@
 		</g:each>
 	</ul>
     <% /* <input class="ui button" type="button" data-semui="modal" href="#contactFormModal"
-			   value="${message(code: 'default.add.label', args: [message(code: 'contact.label', default: 'Contact')])}"> */ %>
+			   value="${message(code: 'default.add.label', args: [message(code: 'contact.label')])}"> */ %>
     <g:if test="${personInstance.id}">
         <g:link class="ui button" controller="contact" action="create" params="['prs.id': personInstance?.id]">
-            ${message(code: 'default.add.label', args: [message(code: 'contact.label', default: 'Contact')])}
+            ${message(code: 'default.add.label', args: [message(code: 'contact.label')])}
         </g:link>
     </g:if>
     <% /* <g:render template="/contact/formModal" model="['prsId': personInstance?.id]"/> */ %>
@@ -100,11 +100,11 @@
 		    <li><g:link controller="address" action="show" id="${a.id}">${a}</g:link></li>
 		</g:each>
         <% /* <input class="ui button" type="button" data-semui="modal" href="#addressFormModal"
-			   value="${message(code: 'default.add.label', args: [message(code: 'address.label', default: 'Address')])}"> */ %>
+			   value="${message(code: 'default.add.label', args: [message(code: 'address.label')])}"> */ %>
 	</ul>
     <g:if test="${personInstance.id}">
         <g:link class="ui button" controller="address" action="create" params="['prs.id': personInstance?.id]">
-            ${message(code: 'default.add.label', args: [message(code: 'address.label', default: 'Address')])}
+            ${message(code: 'default.add.label', args: [message(code: 'address.label')])}
         </g:link>
     </g:if>
     <% /* <g:render template="/address/formModal" model="['prsId': personInstance?.id]"/> */ %>

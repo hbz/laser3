@@ -253,14 +253,14 @@
 <g:if test="${data.costItems}">
     <g:if test="${fixedSubcription}">
         <semui:paginate mapping="subfinance" params="${params+[view:'own']}"
-                        next="${message(code: 'default.paginate.next', default: 'Next')}"
-                        prev="${message(code: 'default.paginate.prev', default: 'Prev')}"
+                        next="${message(code: 'default.paginate.next')}"
+                        prev="${message(code: 'default.paginate.prev')}"
                         max="${max}" offset="${ownOffset ? ownOffset : 0}" total="${data.count}"/>
     </g:if>
     <g:else>
         <semui:paginate action="finance" controller="myInstitution" params="${params+[view:'own']}"
-                        next="${message(code: 'default.paginate.next', default: 'Next')}"
-                        prev="${message(code: 'default.paginate.prev', default: 'Prev')}"
+                        next="${message(code: 'default.paginate.next')}"
+                        prev="${message(code: 'default.paginate.prev')}"
                         max="${max}" offset="${ownOffset ? ownOffset : 0}" total="${data.count}"/>
     </g:else>
 </g:if>

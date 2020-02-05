@@ -82,7 +82,7 @@
                                   class="ui dropdown search many-to-one"/>
                 </div>
 
-                <semui:datepicker class="wide eight" label="task.endDate.label" id="endDate" name="endDate" placeholder="default.date.label" value="${formatDate(format:message(code:'default.date.format.notime', default:'yyyy-MM-dd'), date:taskInstance?.endDate)}" required bean="${taskInstance}" />
+                <semui:datepicker class="wide eight" label="task.endDate.label" id="endDate" name="endDate" placeholder="default.date.label" value="${formatDate(format:message(code:'default.date.format.notime'), date:taskInstance?.endDate)}" required bean="${taskInstance}" />
 
             </div>
         </div>

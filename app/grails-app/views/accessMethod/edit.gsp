@@ -3,7 +3,7 @@
 <html>
 	<head>
 		<meta name="layout" content="semanticUI">
-		<g:set var="entityName" value="${message(code: 'accessMethod.label', default: 'Access Method')}" />
+		<g:set var="entityName" value="${message(code: 'accessMethod.label')}" />
 		<title><g:message code="default.edit.label" args="[entityName]" /></title>
 	</head>
 	<body>
@@ -30,7 +30,7 @@
 
                                     <dt><g:message code="accessMethod.valid_from" /></dt>
                                     <dd>
-                                        <g:formatDate format="${message(code:'default.date.format.notime', default:'yyyy-MM-dd')}" date="${accessMethod.validFrom}" />
+                                        <g:formatDate format="${message(code:'default.date.format.notime')}" date="${accessMethod.validFrom}" />
                                         <g:hiddenField name="validFrom" value="${accessMethod.validFrom}" />
                                     </dd>
                                 </dl><dl>
@@ -48,11 +48,11 @@
 
 
                     <div class="ui segment form-actions">
-                        <g:link class="ui button" controller="platform" action="accessMethods"  id="${platfId}" >${message(code:'accessMethod.button.back', default:'Back')}</g:link>
-                        <input type="Submit" class="ui button" value="${message(code:'accessMethod.button.update', default:'Update')}" onClick="this.form.submit()" />
+                        <g:link class="ui button" controller="platform" action="accessMethods"  id="${platfId}" >${message(code:'accessMethod.button.back')}</g:link>
+                        <input type="Submit" class="ui button" value="${message(code:'accessMethod.button.update')}" onClick="this.form.submit()" />
                         <g:link class="ui negative button" action="delete" controller="accessMethod"
                                 id="${accessMethod.id}" onclick="return confirm('${message(code: 'accessMethod.delete.confirm', args: [(accessMethod.accessMethod ?: 'this access method')])}')"
-                        >${message(code:'default.button.delete.label', default:'Delete')}</g:link>
+                        >${message(code:'default.button.delete.label')}</g:link>
                     </div>
 
                 </g:form>

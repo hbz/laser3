@@ -3,7 +3,7 @@
 <html>
 <head>
     <meta name="layout" content="semanticUI"/>
-    <title>${message(code:'laser')} : ${message(code: 'menu.user.properties', default: 'Properties and Refdatas')}</title>
+    <title>${message(code:'laser')} : ${message(code: 'menu.user.properties')}</title>
 </head>
 
 <body>
@@ -12,10 +12,10 @@
     <semui:crumb message="menu.user.properties" class="active"/>
 </semui:breadcrumbs>
 <br>
-<h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon />${message(code: 'menu.user.properties', default: 'Properties and Refdatas')}</h1>
+<h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon />${message(code: 'menu.user.properties')}</h1>
 <br>
 
-<h3 class="la-clear-before">${message(code: 'propertyDefinition.plural', default: 'Properties')}</h3>
+<h3 class="la-clear-before">${message(code: 'propertyDefinition.plural')}</h3>
 
 <div class="ui styled fluid accordion">
     <g:each in="${propertyDefinitions}" var="entry">
@@ -82,7 +82,7 @@
     </g:each>
 </div>
 
-<h3>${message(code: 'refdata.plural', default: 'Refdatas')}</h3>
+<h3>${message(code: 'refdata.plural')}</h3>
 
 <div class="ui styled fluid accordion">
     <g:each in="${rdCategories}" var="rdc">

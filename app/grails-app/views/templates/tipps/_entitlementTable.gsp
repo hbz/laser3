@@ -59,7 +59,7 @@
                     </g:if>
                 </th>
                 <th>${message(code: 'sidewide.number')}</th>
-                <g:sortableColumn class="ten wide" params="${params}" property="tipp.title.sortTitle" title="${message(code: 'title.label', default: 'Title')}"/>
+                <g:sortableColumn class="ten wide" params="${params}" property="tipp.title.sortTitle" title="${message(code: 'title.label')}"/>
                 <th class="two wide"><g:message code="tipp.price"/></th>
                 <th class="two wide"><g:message code="default.actions.label"/></th>
             </tr>
@@ -167,7 +167,7 @@
 
                                %{-- <g:if test="${tipp.availabilityStatus?.getI10n('value')}">
                                     <div class="item">
-                                        <i class="grey key icon la-popup-tooltip la-delay" data-content="${message(code: 'default.access.label', default: 'Access')}"></i>
+                                        <i class="grey key icon la-popup-tooltip la-delay" data-content="${message(code: 'default.access.label')}"></i>
                                         <div class="content">
                                             ${tipp.availabilityStatus?.getI10n('value')}
                                         </div>

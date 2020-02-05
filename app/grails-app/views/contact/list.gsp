@@ -4,7 +4,7 @@
 <html>
 	<head>
 		<meta name="layout" content="semanticUI">
-		<g:set var="entityName" value="${message(code: 'contact.label', default: 'Contact')}" />
+		<g:set var="entityName" value="${message(code: 'contact.label')}" />
 		<title><g:message code="default.list.label" args="[entityName]" /></title>
 	</head>
 	<body>
@@ -20,9 +20,9 @@
 					<thead>
 						<tr>
 						
-							<g:sortableColumn property="contentType" title="${message(code: 'contact.contentType.label', default: 'ContentType')}" />
+							<g:sortableColumn property="contentType" title="${message(code: 'contact.contentType.label')}" />
 						
-							<g:sortableColumn property="content" title="${message(code: 'contact.content.label', default: 'Content')}" />
+							<g:sortableColumn property="content" title="${message(code: 'contact.content.label')}" />
 						
 							<th class="header">${com.k_int.kbplus.RefdataCategory.getByDesc(RDConstants.CONTACT_TYPE).getI10n('desc')}</th>
 
