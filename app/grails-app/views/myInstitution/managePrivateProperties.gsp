@@ -107,6 +107,7 @@
                                         </td>
                                         <td class="x">
                                             <g:if test="${pd.countUsages()==0}">
+                                                AAAAAAA
                                                 <g:link action="managePrivateProperties"
                                                         params="[cmd:'delete', deleteIds: pd?.id]"
                                                         data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.property", args: [fieldValue(bean: pd, field: "name")])}"
@@ -115,6 +116,7 @@
                                                         role="button">
                                                     <i class="trash alternate icon"></i>
                                                 </g:link>
+                                                BBBBBBBB
                                             </g:if>
                                         </td>
                                     </tr>

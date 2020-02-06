@@ -8,9 +8,11 @@
 
 2150    05.02.2020  hbz-dev     David   Bug         API: Referenzwerte mit Doppelpunkt werden als Map interpretiert
 
-2081    05.02.2020 hbz-dev      Anja    Feature     Fehlende Sicherheitsabfrage (Budgetcode löschen)
+2081    05.02.2020  hbz-dev     Anja    Feature     Fehlende Sicherheitsabfrage (Budgetcode löschen)
 
-2079    05.02.2020 hbz-dev      Anja    Feature     Fehlende Sicherheitsabfrage (Kontakt löschen)
+2079    05.02.2020  hbz-dev     Anja    Feature     Fehlende Sicherheitsabfrage (Kontakt löschen)
+
+1742    03.02.2020  hbz-dev     Anja    Feature     Vorgänger/Nachfolgerlizenz in TN-Übersicht
 
 --      04.02.2020  rc1.2       David   Bug         Filter ausblenden: "Meine Plattformen"
 
