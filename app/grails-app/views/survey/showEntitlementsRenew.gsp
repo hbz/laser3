@@ -4,7 +4,7 @@
 <html>
 <head>
     <meta name="layout" content="semanticUI"/>
-    <title>${message(code: 'laser', default: 'LAS:eR')} : ${message(code: 'subscription.details.renewEntitlements.label')}</title>
+    <title>${message(code: 'laser')} : ${message(code: 'subscription.details.renewEntitlements.label')}</title>
 </head>
 
 <body>
@@ -199,12 +199,12 @@
                             <g:if test="${id.identifier.ns.ns == 'originEditUrl'}">
                             <%--<span class="ui small teal image label">
                                 ${id.identifier.ns.ns}: <div class="detail"><a
-                                    href="${id.identifier.value}">${message(code: 'package.show.openLink', default: 'Open Link')}</a>
+                                    href="${id.identifier.value}">${message(code: 'package.show.openLink')}</a>
                             </div>
                             </span>
                             <span class="ui small teal image label">
                                 ${id.identifier.ns.ns}: <div class="detail"><a
-                                    href="${id.identifier.value.toString().replace("resource/show", "public/packageContent")}">${message(code: 'package.show.openLink', default: 'Open Link')}</a>
+                                    href="${id.identifier.value.toString().replace("resource/show", "public/packageContent")}">${message(code: 'package.show.openLink')}</a>
                             </div>
                             </span>--%>
                             </g:if>
@@ -219,7 +219,7 @@
 
                         %{-- <g:if test="${tipp.availabilityStatus?.getI10n('value')}">
                              <div class="item">
-                                 <i class="grey key icon la-popup-tooltip la-delay" data-content="${message(code: 'default.access.label', default: 'Access')}"></i>
+                                 <i class="grey key icon la-popup-tooltip la-delay" data-content="${message(code: 'default.access.label')}"></i>
                                  <div class="content">
                                      ${tipp.availabilityStatus?.getI10n('value')}
                                  </div>
@@ -240,7 +240,7 @@
 
                             <div class="item">
                                 <i class="grey icon gift scale la-popup-tooltip la-delay"
-                                   data-content="${message(code: 'tipp.package', default: 'Package')}"></i>
+                                   data-content="${message(code: 'package.label')}"></i>
 
                                 <div class="content">
                                     <g:link controller="package" action="show"

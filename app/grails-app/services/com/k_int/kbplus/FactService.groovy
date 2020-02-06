@@ -496,32 +496,31 @@ class FactService {
     result
   }
 
-  def institutionsWithRequestorIDAndAPIKey()
+  List<Org> institutionsWithRequestorIDAndAPIKey()
   {
-    def hql = "select os.org from OrgSettings as os" +
+    String hql = "select os.org from OrgSettings as os" +
         " where os.key='${OrgSettings.KEYS.NATSTAT_SERVER_REQUESTOR_ID}'" +
-        " and exists (select 1 from OrgSettings as inneros where inneros.key = '${OrgSettings.KEYS.NATSTAT_SERVER_API_KEY}' and inneros.org=os.org)"
+        " and exists (select 1 from OrgSettings as inneros where inneros.key = '${OrgSettings.KEYS.NATSTAT_SERVER_API_KEY}' and inneros.org=os.org) order by os.org.name"
     return OrgSettings.executeQuery(hql)
   }
 
-  def platformsWithNatstatId()
+  List<Platform> platformsWithNatstatId()
   {
-    def hql = "select platform from Platform as platform" +
-        " where exists (select 1 from platform.customProperties as pcp where pcp.owner = platform.id and pcp.type.name = 'NatStat Supplier ID')"
+    String hql = "select platform from Platform as platform" +
+        " where exists (select 1 from platform.customProperties as pcp where pcp.owner = platform.id and pcp.type.name = 'NatStat Supplier ID') order by platform.name"
     return Platform.executeQuery(hql)
   }
 
-  def getFactInstitutionList()
+  List<Org> getFactInstitutionList()
   {
-    def institutions = Fact.withCriteria {
+    Fact.withCriteria {
       projections {
         distinct("inst")
       }
     }
-    institutions
   }
 
-  def getFactProviderList()
+  List<Platform> getFactProviderList()
   {
     Fact.withCriteria {
       projections {
@@ -532,14 +531,13 @@ class FactService {
 
   def getSupplierCursorCount()
   {
-    def hql = 'select supplierId, count(*) from StatsTripleCursor group by supplierId'
+    String hql = 'select supplierId, count(*) from StatsTripleCursor group by supplierId'
     return StatsTripleCursor.executeQuery(hql)
   }
 
   def getStatsErrors(asr)
   {
-    def criteria = StatsTripleCursor.createCriteria()
-    def results = criteria.list() {
+    ArrayList results = StatsTripleCursor.createCriteria().list() {
       eq('supplierId', asr.supplierId)
       eq('customerId', asr.customerId)
       eq('factType', asr.factType)

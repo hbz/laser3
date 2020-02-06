@@ -5,7 +5,7 @@
 <html>
 <head>
     <meta name="layout" content="semanticUI">
-    <title>${message(code: 'laser', default: 'LAS:eR')} : ${message(code: 'gasco.title')}</title>
+    <title>${message(code: 'laser')} : ${message(code: 'gasco.title')}</title>
 </head>
 
 <body>
@@ -16,7 +16,7 @@
                 <g:form action="gasco" controller="public" method="get" class="ui small form">
 
                     <div class="field">
-                        <label for="search">${message(code: 'gasco.filter.search')}</label>
+                        <label for="search">${message(code: 'default.search.label')}</label>
 
                         <div class="ui input">
                             <input type="text" id="search" name="q"
@@ -75,7 +75,7 @@
 
                     <div class="field la-field-right-aligned ">
                         <a href="${request.forwardURI}" class="ui reset primary button">${message(code:'default.button.reset.label')}</a>
-                        <input type="submit" class="ui secondary button" value="${message(code:'default.button.search.label', default:'Search')}">
+                        <input type="submit" class="ui secondary button" value="${message(code:'default.button.search.label')}">
                     </div>
 
                 </g:form>

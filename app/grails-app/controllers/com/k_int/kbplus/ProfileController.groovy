@@ -35,7 +35,7 @@ class ProfileController {
         result.user = User.get(springSecurityService.principal.id)
         result.editable = true
 
-        result.availableOrgs  = Org.executeQuery('from Org o where o.sector.value = ? order by o.sortname', 'Higher Education')
+        result.availableOrgs  = Org.executeQuery('from Org o where o.sector = ? order by o.sortname', [RDStore.O_SECTOR_HIGHER_EDU])
         result.availableOrgRoles = Role.findAllByRoleType('user')
         result
     }
@@ -364,17 +364,17 @@ class ProfileController {
 
         if (passwordEncoder.isPasswordValid(user.password, params.passwordCurrent, null)) {
             if (params.passwordNew.trim().size() < 5) {
-                flash.message += message(code:'profile.password.update.enterValidNewPassword', default:"Please enter new password (min. 5 chars)")
+                flash.message += message(code:'profile.password.update.enterValidNewPassword')
             } else {
                 user.password = params.passwordNew
 
                 if (user.save()) {
-                    flash.message += message(code:'profile.password.update.success', default:"Password succesfully updated")
+                    flash.message += message(code:'profile.password.update.success')
                 }
             }
 
         } else {
-            flash.message += message(code:'profile.password.update.enterValidCurrentPassword', default:"Please enter valid current password")
+            flash.message += message(code:'profile.password.update.enterValidCurrentPassword')
         }
         redirect(action: "index")
     }

@@ -6,7 +6,7 @@
 <html>
 <head>
     <meta name="layout" content="semanticUI"/>
-    <title>${message(code: 'laser', default: 'LAS:eR')} : ${message(code: 'surveyShow.label')}</title>
+    <title>${message(code: 'laser')} : ${message(code: 'surveyShow.label')}</title>
 
 </head>
 
@@ -224,8 +224,8 @@
 </div>
     <g:if test="${entitlements}">
         <semui:paginate action="index" controller="subscription" params="${params}"
-                        next="${message(code: 'default.paginate.next', default: 'Next')}"
-                        prev="${message(code: 'default.paginate.prev', default: 'Prev')}" max="${max}"
+                        next="${message(code: 'default.paginate.next')}"
+                        prev="${message(code: 'default.paginate.prev')}" max="${max}"
                         total="${num_sub_rows}"/>
     </g:if>
 

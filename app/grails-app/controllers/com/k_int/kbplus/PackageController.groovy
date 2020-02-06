@@ -4,6 +4,7 @@ import com.k_int.kbplus.auth.Role
 import com.k_int.kbplus.auth.User
 import de.laser.DeletionService
 import de.laser.controller.AbstractDebugController
+import de.laser.helper.DateUtil
 import de.laser.helper.DebugAnnotation
 import de.laser.helper.RDConstants
 import de.laser.helper.RDStore
@@ -14,6 +15,8 @@ import org.apache.poi.hssf.usermodel.HSSFRow
 import org.apache.poi.hssf.usermodel.HSSFSheet
 import org.apache.poi.hssf.usermodel.HSSFWorkbook
 import org.codehaus.groovy.grails.plugins.orm.auditable.AuditLogEvent
+
+import java.text.SimpleDateFormat
 
 @Secured(['IS_AUTHENTICATED_FULLY'])
 class PackageController extends AbstractDebugController {
@@ -130,22 +133,22 @@ class PackageController extends AbstractDebugController {
 
         if (params.updateStartDate?.length() > 0) {
             base_qry += " and ( p.lastUpdated > ? )"
-            qry_params.add(params.date('updateStartDate', message(code: 'default.date.format.notime', default: 'yyyy-MM-dd')));
+            qry_params.add(params.date('updateStartDate', message(code: 'default.date.format.notime')));
         }
 
         if (params.updateEndDate?.length() > 0) {
             base_qry += " and ( p.lastUpdated < ? )"
-            qry_params.add(params.date('updateEndDate', message(code: 'default.date.format.notime', default: 'yyyy-MM-dd')));
+            qry_params.add(params.date('updateEndDate', message(code: 'default.date.format.notime')));
         }
 
         if (params.createStartDate?.length() > 0) {
             base_qry += " and ( p.dateCreated > ? )"
-            qry_params.add(params.date('createStartDate', message(code: 'default.date.format.notime', default: 'yyyy-MM-dd')));
+            qry_params.add(params.date('createStartDate', message(code: 'default.date.format.notime')));
         }
 
         if (params.createEndDate?.length() > 0) {
             base_qry += " and ( p.dateCreated < ? )"
-            qry_params.add(params.date('createEndDate', message(code: 'default.date.format.notime', default: 'yyyy-MM-dd')));
+            qry_params.add(params.date('createEndDate', message(code: 'default.date.format.notime')));
         }
 
         if ((params.sort != null) && (params.sort.length() > 0)) {
@@ -309,7 +312,7 @@ class PackageController extends AbstractDebugController {
                     return
                 }
 
-                // flash.message = message(code: 'default.created.message', args: [message(code: 'package.label', default: 'Package'), packageInstance.id])
+                // flash.message = message(code: 'default.created.message', args: [message(code: 'package.label'), packageInstance.id])
                 // redirect action: 'show', id: packageInstance.id
                 break
         }
@@ -382,7 +385,7 @@ class PackageController extends AbstractDebugController {
                         def comparisonMap =
                                 institutionsService.generateComparisonMap(unionList, mapA, mapB, 0, unionList.size(), filterRules)
                         log.debug("Create CSV Response")
-                        def dateFormatter = new java.text.SimpleDateFormat(message(code: 'default.date.format.notime', default: 'yyyy-MM-dd'))
+                        SimpleDateFormat dateFormatter = DateUtil.getSDF_NoTime()
                         response.setHeader("Content-disposition", "attachment; filename=\"packageComparison.csv\"")
                         response.contentType = "text/csv"
                         def out = response.outputStream
@@ -412,7 +415,8 @@ class PackageController extends AbstractDebugController {
             }
 
         } else {
-            def currentDate = new java.text.SimpleDateFormat(message(code: 'default.date.format.notime', default: 'yyyy-MM-dd')).format(new Date())
+            SimpleDateFormat sdf = DateUtil.getSDF_NoTime()
+            def currentDate = sdf?.format(new Date())
             params.dateA = currentDate
             params.dateB = currentDate
             params.insrt = "Y"
@@ -436,7 +440,7 @@ class PackageController extends AbstractDebugController {
 
     private def createCompareList(pkg, dateStr, params, result) {
         def returnVals = [:]
-        def sdf = new java.text.SimpleDateFormat(message(code: 'default.date.format.notime', default: 'yyyy-MM-dd'))
+        SimpleDateFormat sdf = DateUtil.getSDF_NoTime()
         def date = dateStr ? sdf.parse(dateStr) : new Date()
         def packageId = pkg.substring(pkg.indexOf(":") + 1)
 
@@ -485,7 +489,7 @@ class PackageController extends AbstractDebugController {
         result.user = User.get(springSecurityService.principal.id)
         def packageInstance = Package.get(params.id)
         if (!packageInstance) {
-            flash.message = message(code: 'default.not.found.message', args: [message(code: 'package.label', default: 'Package'), params.id])
+            flash.message = message(code: 'default.not.found.message', args: [message(code: 'package.label'), params.id])
             redirect action: 'list'
             return
         }
@@ -534,7 +538,7 @@ class PackageController extends AbstractDebugController {
         // def base_qry = "from TitleInstancePackagePlatform as tipp where tipp.pkg = ? "
         def qry_params = [pkgInstance: packageInstance]
 
-        def sdf = new java.text.SimpleDateFormat(message(code: 'default.date.format.notime', default: 'yyyy-MM-dd'));
+        SimpleDateFormat sdf = DateUtil.getSDF_NoTime()
         def today = new Date()
         if (!params.asAt) {
             if (packageInstance.startDate > today) {
@@ -615,7 +619,7 @@ class PackageController extends AbstractDebugController {
 
         def packageInstance = Package.get(params.id)
         if (!packageInstance) {
-            flash.message = message(code: 'default.not.found.message', args: [message(code: 'package.label', default: 'Package'), params.id])
+            flash.message = message(code: 'default.not.found.message', args: [message(code: 'package.label'), params.id])
             redirect action: 'list'
             return
         }
@@ -692,7 +696,7 @@ class PackageController extends AbstractDebugController {
         result.editable = isEditable()
         def packageInstance = Package.get(params.id)
         if (!packageInstance) {
-            flash.message = message(code: 'default.not.found.message', args: [message(code: 'package.label', default: 'Package'), params.id])
+            flash.message = message(code: 'default.not.found.message', args: [message(code: 'package.label'), params.id])
             redirect action: 'list'
             return
         }
@@ -917,11 +921,11 @@ class PackageController extends AbstractDebugController {
             def dTask = Task.get(params.deleteId)
             if (dTask && dTask.creator.id == result.user.id) {
                 try {
-                    flash.message = message(code: 'default.deleted.message', args: [message(code: 'task.label', default: 'Task'), dTask.title])
+                    flash.message = message(code: 'default.deleted.message', args: [message(code: 'task.label'), dTask.title])
                     dTask.delete(flush: true)
                 }
                 catch (Exception e) {
-                    flash.message = message(code: 'default.not.deleted.message', args: [message(code: 'task.label', default: 'Task'), params.deleteId])
+                    flash.message = message(code: 'default.not.deleted.message', args: [message(code: 'task.label'), params.deleteId])
                 }
             }
         }
@@ -952,7 +956,7 @@ class PackageController extends AbstractDebugController {
 
         log.debug("packageBatchUpdate ${params}");
 
-        def formatter = new java.text.SimpleDateFormat(message(code: 'default.date.format.notime', default: 'yyyy-MM-dd'))
+        SimpleDateFormat formatter = DateUtil.getSDF_NoTime()
 
         def bulk_fields = [
                 [formProp: 'start_date', domainClassProp: 'startDate', type: 'date'],

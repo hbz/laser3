@@ -2,7 +2,7 @@
 <html>
   <head>
     <meta name="layout" content="semanticUI"/>
-    <title>${message(code:'laser', default:'LAS:eR')} ${message(code:'menu.datamanager.changelog', default:'Data Manager Change Log')}</title>
+    <title>${message(code:'laser')} ${message(code:'menu.datamanager.changelog', default:'Data Manager Change Log')}</title>
   </head>
 
   <body>
@@ -55,10 +55,10 @@
                 </div>
                 <div class="field">
                     <label>${message(code:'datamanager.changeLog.what_changed')}</label>
-                    <input type="checkbox" style="vertical-align:top;" name="packages" value="Y" ${params.packages=='Y'?'checked':''}/> <g:message code="package.plural" default="Packages"/> &nbsp;
-                    <input type="checkbox" style="vertical-align:top;" name="licenses" value="Y" ${params.licenses=='Y'?'checked':''}/> <g:message code="license.plural" default="Licenses"/> &nbsp;
-                    <input type="checkbox" style="vertical-align:top;" name="titles" value="Y" ${params.titles=='Y'?'checked':''}/> <g:message code="title.plural" default="Titles"/> &nbsp;
-                    <input type="checkbox" style="vertical-align:top;" name="tipps" value="Y" ${params.tipps=='Y'?'checked':''}/> <g:message code="tipp.plural" default="TIPPs"/> &nbsp; <br/>
+                    <input type="checkbox" style="vertical-align:top;" name="packages" value="Y" ${params.packages=='Y'?'checked':''}/> <g:message code="package.plural" /> &nbsp;
+                    <input type="checkbox" style="vertical-align:top;" name="licenses" value="Y" ${params.licenses=='Y'?'checked':''}/> <g:message code="license.plural" /> &nbsp;
+                    <input type="checkbox" style="vertical-align:top;" name="titles" value="Y" ${params.titles=='Y'?'checked':''}/> <g:message code="title.plural" /> &nbsp;
+                    <input type="checkbox" style="vertical-align:top;" name="tipps" value="Y" ${params.tipps=='Y'?'checked':''}/> <g:message code="tipp.plural" /> &nbsp; <br/>
                 </div>
                 <div class="field">
                     <label>${message(code:'datamanager.changeLog.how_changed')}</label>

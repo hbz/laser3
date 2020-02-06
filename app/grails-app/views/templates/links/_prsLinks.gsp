@@ -7,7 +7,7 @@
                 <th>Verantwortlichkeit</th>
             </g:if>
             <th>Organisation</th>
-            <th class="la-action-info">${message(code:'default.actions')}</th>
+            <th class="la-action-info">${message(code:'default.actions.label')}</th>
         </tr>
     </thead>
     <g:each in="${visiblePrsLinks}" var="pr">
@@ -45,7 +45,7 @@
 
 <g:if test="${editable}">
     <input class="ui button"
-           value="${message(code: 'default.add.label', args: [message(code: 'person.label', default: 'Person')])}"
+           value="${message(code: 'default.add.label', args: [message(code: 'person.label')])}"
            data-semui="modal"
            data-href="#prsLinksModal" />
 </g:if>

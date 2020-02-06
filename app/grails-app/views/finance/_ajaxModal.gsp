@@ -309,7 +309,7 @@
                 <label>${message(code:'financials.newCosts.constsReferenceOn')}</label>
 
                 <div class="field">
-                    <label>${message(code:'subscription.label')}</label>
+                    <label>${message(code:'default.subscription.label')}</label>
 
                     <g:if test="${costItem?.sub}">
                         <input class="la-full-width"

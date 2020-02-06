@@ -4,7 +4,7 @@
 <html>
 	<head>
 		<meta name="layout" content="semanticUI">
-		<title>${message(code:'laser', default:'LAS:eR')} : ${message(code: 'menu.admin.managePropertyDefinitions')}</title>
+		<title>${message(code:'laser')} : ${message(code: 'menu.admin.managePropertyDefinitions')}</title>
 	</head>
 
 		<semui:breadcrumbs>
@@ -43,7 +43,7 @@
                             <th>${message(code:'propertyDefinition.expl.de.label')}</th>
                             <th>${message(code:'propertyDefinition.expl.en.label')}</th>
                             <th></th>
-                            <th class="la-action-info">${message(code:'default.actions')}</th>
+                            <th class="la-action-info">${message(code:'default.actions.label')}</th>
                         </tr>
                         </thead>
                         <tbody>
@@ -239,7 +239,7 @@
                         </select>
                     </div>
                     <div class="field five wide">
-                        <label class="property-label"><g:message code="propertyDefinition.type.label" /></label>
+                        <label class="property-label"><g:message code="default.type.label" /></label>
                         <g:select class="ui dropdown"
                             from="${PropertyDefinition.validTypes2.entrySet()}"
                             optionKey="key" optionValue="${{PropertyDefinition.getLocalizedValue(it.key)}}"

@@ -2,14 +2,14 @@
 <html>
   <head>
     <meta name="layout" content="semanticUI"/>
-    <title>${message(code:'laser', default:'LAS:eR')} Data import explorer</title>
+    <title>${message(code:'laser')} Data import explorer</title>
   </head>
 
   <body>
 
     <div>
         <ul class="breadcrumb">
-        <li> <g:link controller="home">${message(code:'default.home.label', default:'Home')}</g:link> <span class="divider">/</span> </li>
+        <li> <g:link controller="home">${message(code:'default.home.label')}</g:link> <span class="divider">/</span> </li>
         <li> <g:link controller='admin' action='index'>Admin</g:link> <span class="divider">/</span> </li>
         <li class="active">Manage Affiliation Requests</li>
       </ul>

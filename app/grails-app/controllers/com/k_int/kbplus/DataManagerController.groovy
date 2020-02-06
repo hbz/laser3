@@ -5,6 +5,7 @@ import de.laser.DeletionService
 import de.laser.YodaService
 import de.laser.controller.AbstractDebugController
 import de.laser.domain.MailTemplate
+import de.laser.helper.DateUtil
 import de.laser.helper.RDConstants
 import de.laser.helper.RDStore
 import de.laser.helper.SessionCacheWrapper
@@ -14,6 +15,8 @@ import org.codehaus.groovy.grails.plugins.orm.auditable.AuditLogEvent
 import org.codehaus.groovy.grails.web.mapping.LinkGenerator
 import org.springframework.context.MessageSource
 import org.springframework.context.i18n.LocaleContextHolder
+
+import java.text.SimpleDateFormat
 
 @Secured(['IS_AUTHENTICATED_FULLY'])
 class DataManagerController extends AbstractDebugController {
@@ -43,9 +46,9 @@ class DataManagerController extends AbstractDebugController {
     @Secured(['ROLE_ADMIN'])
     def changeLog() {
 
-        def result =[:]
-        log.debug("changeLog ${params}");
-        def formatter = new java.text.SimpleDateFormat(message(code:'default.date.format.notime', default:'yyyy-MM-dd'))
+    def result =[:]
+    log.debug("changeLog ${params}");
+    SimpleDateFormat formatter = DateUtil.getSDF_NoTime()
 
         def exporting = params.format == 'csv' ? true : false
 

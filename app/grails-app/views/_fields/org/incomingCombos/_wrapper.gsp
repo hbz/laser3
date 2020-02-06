@@ -1,6 +1,6 @@
 <laser:serviceInjection/>
 <div class="control-group">
-  <label class="control-label" for="incomingCombos">${message(code:'org.incomingCombos.label', default:'Incoming Combos')}</label>
+  <label class="control-label" for="incomingCombos">${message(code:'org.incomingCombos.label')}</label>
   <div class="controls">
     <g:if test="${orgInstance.incomingCombos && orgInstance.incomingCombos.size() > 0}">
       <ul>
@@ -26,7 +26,7 @@
                   data-complete-text="Add Org Combo"
                   type="submit"
                   class="ui button">
-            ${message(code: 'default.add.label', args:[message(code:'combo.label', default:'Combo')],default:'Add Combo')}
+            ${message(code: 'default.add.label', args:[message(code:'combo.label')])}
           </button>
         </g:form>
     </g:if>

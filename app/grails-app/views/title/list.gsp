@@ -2,7 +2,7 @@
 <html>
   <head>
     <meta name="layout" content="semanticUI"/>
-    <title>${message(code:'laser', default:'LAS:eR')} : ${message(code:'menu.public.all_titles')}</title>
+    <title>${message(code:'laser')} : ${message(code:'menu.public.all_titles')}</title>
   </head>
   <body>
 
@@ -25,7 +25,7 @@
           </div>
           <div class="field">
             <label for="filter">${message(code: 'title.search_in')}</label>
-            <g:select class="ui dropdown" id="filter" name="filter" from="${[[key:'title',value:"${message(code: 'title.title.label')}"],[key:'publisher',value:"${message(code:'title.publisher.label')}"],[key:'',value:"${message(code: 'title.all.label')}"]]}" optionKey="key" optionValue="value" value="${params.filter}"/>
+            <g:select class="ui dropdown" id="filter" name="filter" from="${[[key:'name',value:"${message(code: 'title.title.label')}"],[key:'publisher',value:"${message(code:'title.publisher.label')}"],[key:'',value:"${message(code: 'title.all.label')}"]]}" optionKey="key" optionValue="value" value="${params.filter}"/>
           </div>
             <div class="field la-field-right-aligned">
               <a href="${request.forwardURI}" class="ui reset primary button">${message(code:'default.button.reset.label')}</a>
@@ -57,9 +57,9 @@
                     <thead>
                       <tr>
                           <th>${message(code:'sidewide.number')}</th>
-                      <g:sortableColumn property="sortTitle" title="${message(code: 'title.title.label', default: 'Title')}" params="${params}" />
+                      <g:sortableColumn property="sortTitle" title="${message(code: 'title.title.label')}" params="${params}" />
                       <g:sortableColumn property="typTitle" title="${message(code: 'title.type.label')}" params="${params}" />
-                      <g:sortableColumn property="publisher" style="white-space:nowrap" title="${message(code: 'title.publisher.label', default: 'Publisher')}" params="${params}" />
+                      <g:sortableColumn property="publisher" style="white-space:nowrap" title="${message(code: 'title.publisher.label')}" params="${params}" />
                       <th style="white-space:nowrap"><g:message code="title.identifiers.label" /></th>
                       </tr>
                     </thead>

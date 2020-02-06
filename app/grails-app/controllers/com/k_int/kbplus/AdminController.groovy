@@ -1489,13 +1489,13 @@ class AdminController extends AbstractDebugController {
                 if (IdentifierNamespace.findByNsIlike(params.ns) || !identifierNamespaceInstance.save(flush: true)) {
 
                     if(IdentifierNamespace.findByNsIlike(params.ns)) {
-                        flash.error = message(code: 'identifier.namespace.exist', default: 'IdentifierNamespace exist', args:[params.ns])
+                        flash.error = message(code: 'identifier.namespace.exist', args:[params.ns])
                         break
                     }
                     return
                 }
                 else {
-                    flash.message = message(code: 'default.created.message', args: [message(code: 'identifier.namespace.label', default: 'IdentifierNamespace'), identifierNamespaceInstance.ns])
+                    flash.message = message(code: 'default.created.message', args: [message(code: 'identifier.namespace.label'), identifierNamespaceInstance.ns])
                 }
                 break
         }

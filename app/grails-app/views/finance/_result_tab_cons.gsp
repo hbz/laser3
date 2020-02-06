@@ -23,15 +23,24 @@
     def jb = new groovy.json.JsonBuilder(jsonSource)
     println jb.toPrettyString()
 --%>
-
-<table id="costTable_${i}" data-queryMode="${i}" class="ui celled sortable table table-tworow la-table la-ignore-fixed">
+<%
+    int colspan1 = 5
+    int colspan2 = 7
+    int wideColspan2 = 13
+    if(fixedSubscription) {
+        colspan1 = 4
+        colspan2 = 6
+        wideColspan2 = 12
+    }
+%>
+<table id="costTable_${customerType}" class="ui celled sortable table table-tworow la-table la-ignore-fixed">
     <thead>
         <tr>
             <g:if test="${!fixedSubscription}">
                 <th>${message(code:'sidewide.number')}</th>
                 <g:sortableColumn property="orgRoles.org.sortname" title="${message(code:'financials.newCosts.costParticipants')}" params="[consSort: true]"/>
                 <g:sortableColumn property="ci.costTitle" title="${message(code:'financials.newCosts.costTitle')}" params="[consSort: true]"/>
-                <g:sortableColumn property="sub.name" title="${message(code:'financials.forSubscription')}" params="[consSort: true]"/>
+                <g:sortableColumn property="sub.name" title="${message(code:'default.subscription.label')}" params="[consSort: true]"/>
                 <th class="la-no-uppercase"><span class="la-popup-tooltip la-delay" data-content="${message(code:'financials.costItemConfiguration')}" data-position="left center"><i class="money bill alternate icon"></i></span></th>
                 <g:sortableColumn property="ci.billingCurrency" title="${message(code:'financials.currency')}" params="[consSort:true]"/>
                 <g:sortableColumn property="ci.costInBillingCurrency" title="${message(code:'financials.invoice_total')}" params="[consSort: true]"/>
@@ -54,7 +63,7 @@
                 <g:sortableColumn property="ci.costInLocalCurrency" title="${message(code:'financials.newCosts.value')}" params="[consSort: true, sub: fixedSubscription.id]" mapping="subfinance"/>
                 <g:sortableColumn property="ci.startDate" title="${message(code:'financials.dateFrom')}" params="[consSort: true, sub: fixedSubscription.id]" mapping="subfinance"/>
                 <g:sortableColumn property="ci.costItemElement" title="${message(code:'financials.costItemElement')}" params="[consSort: true, sub: fixedSubscription.id]" mapping="subfinance"/>
-                <th class="la-action-info">${message(code:'default.actions')}</th>
+                <th class="la-action-info">${message(code:'default.actions.label')}</th>
             </g:else>
         </tr>
         <tr>
@@ -75,7 +84,7 @@
         %{--Empty result set--}%
         <g:if test="${data.count == 0}">
             <tr>
-                <td colspan="12" style="text-align:center">
+                <td colspan="${wideColspan2}" style="text-align:center">
                     <br />
                     <g:if test="${msg}">${msg}</g:if>
                     <g:else>${message(code:'finance.result.filtered.empty')}</g:else>
@@ -218,16 +227,8 @@
     </tbody>
     <tfoot>
         <g:if test="${data.count > 0 && data.sums.billingSums}">
-            <%
-                int colspan1 = 5
-                int colspan2 = 7
-                if(fixedSubscription) {
-                    colspan1 = 4
-                    colspan2 = 6
-                }
-            %>
             <tr>
-                <th colspan="13">
+                <th colspan="${wideColspan2}">
                     ${message(code:'financials.totalCost')}
                 </th>
             </tr>
@@ -265,32 +266,30 @@
                     <g:formatNumber number="${data.sums.localSums.localSum}" type="currency" currencySymbol="" currencyCode="EUR"/><br>
                     <g:formatNumber number="${data.sums.localSums.localSumAfterTax}" type="currency" currencySymbol="" currencyCode="EUR"/>
                 </td>
-                <td colspan="4">
+                <td colspan="3">
 
                 </td>
             </tr>
         </g:if>
         <g:elseif test="${data.count > 0 && !data.sums.billingSums}">
             <tr>
-                <td colspan="13">
+                <td colspan="${wideColspan2}">
                     ${message(code:'financials.noCostsConsidered')}
                 </td>
             </tr>
         </g:elseif>
         <tr>
-            <td colspan="13">
+            <td colspan="${wideColspan2}">
                 <div class="ui fluid accordion">
                     <div class="title">
                         <i class="dropdown icon"></i>
                         <strong>${message(code: 'financials.calculationBase')}</strong>
                     </div>
                     <div class="content">
-                        <p>
-                            <%
-                                def argv0 = contextService.getOrg().costConfigurationPreset ? contextService.getOrg().costConfigurationPreset.getI10n('value') : message(code:'financials.costItemConfiguration.notSet')
-                            %>
-                            ${message(code: 'financials.calculationBase.paragraph1', args: [argv0])}
-                        </p>
+                        <%
+                            def argv0 = contextService.getOrg().costConfigurationPreset ? contextService.getOrg().costConfigurationPreset.getI10n('value') : message(code:'financials.costItemConfiguration.notSet')
+                        %>
+                        ${message(code: 'financials.calculationBase.paragraph1', args: [argv0])}
                         <p>
                             ${message(code: 'financials.calculationBase.paragraph2')}
                         </p>
@@ -303,14 +302,14 @@
 <g:if test="${data.costItems}">
     <g:if test="${fixedSubscription}">
         <semui:paginate mapping="subfinance" params="${params+[view:'cons']}"
-                        next="${message(code: 'default.paginate.next', default: 'Next')}"
-                        prev="${message(code: 'default.paginate.prev', default: 'Prev')}"
+                        next="${message(code: 'default.paginate.next')}"
+                        prev="${message(code: 'default.paginate.prev')}"
                         max="${max}" offset="${consOffset ? consOffset : 0}" total="${data.count}"/>
     </g:if>
     <g:else>
         <semui:paginate action="finance" controller="myInstitution" params="${params+[view:'cons']}"
-                        next="${message(code: 'default.paginate.next', default: 'Next')}"
-                        prev="${message(code: 'default.paginate.prev', default: 'Prev')}"
+                        next="${message(code: 'default.paginate.next')}"
+                        prev="${message(code: 'default.paginate.prev')}"
                         max="${max}" offset="${consOffset ? consOffset : 0}" total="${data.count}"/>
     </g:else>
 </g:if>

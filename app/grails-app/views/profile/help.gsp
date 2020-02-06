@@ -3,7 +3,7 @@
 <html>
 <head>
     <meta name="layout" content="semanticUI"/>
-    <title>${message(code:'laser', default:'LAS:eR')} : ${message(code: 'menu.user.help')}</title>
+    <title>${message(code:'laser')} : ${message(code: 'menu.user.help')}</title>
 </head>
 
 <body>
@@ -42,7 +42,7 @@
         <div class="ui relaxed divided list">
             <p>
 
-                <g:link class="item" controller="profile" action="properties">${message(code: 'menu.user.properties', default: 'Properties and Refdatas')}</g:link>
+                <g:link class="item" controller="profile" action="properties">${message(code: 'menu.user.properties')}</g:link>
 
             </p>
 

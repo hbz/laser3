@@ -2,7 +2,7 @@
 <html>
     <head>
         <meta name="layout" content="semanticUI"/>
-        <title>${message(code:'laser', default:'LAS:eR')} : ${message(code:'default.notes.label')}</title>
+        <title>${message(code:'laser')} : ${message(code:'default.notes.label')}</title>
     </head>
     <body>
         <g:render template="breadcrumb" model="${[ params:params ]}"/>

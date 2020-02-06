@@ -6,7 +6,7 @@
 <!-- deprecated -->
   <head>
     <meta name="layout" content="semanticUI"/>
-    <title>${message(code:'laser', default:'LAS:eR')} : ${institution.name} :: Financial Information</title>
+    <title>${message(code:'laser')} : ${institution.name} :: Financial Information</title>
   </head>
 
   <body>
@@ -190,8 +190,8 @@
     });
 
    $('#newDatePaid').datepicker({
-      format:"${message(code:'default.date.format.notime', default:'yyyy-MM-dd').toLowerCase()}",
-      language:"${message(code:'default.locale.label', default:'en')}",
+      format:"${message(code:'default.date.format.notime').toLowerCase()}",
+      language:"${message(code:'default.locale.label')}",
       autoclose:true
     });
   });

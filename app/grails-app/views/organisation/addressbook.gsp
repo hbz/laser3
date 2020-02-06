@@ -1,11 +1,11 @@
-<%@ page import="com.k_int.kbplus.Org; com.k_int.kbplus.Person; com.k_int.kbplus.PersonRole; com.k_int.kbplus.RefdataValue; com.k_int.kbplus.RefdataCategory" %>
+<%@ page import="com.k_int.kbplus.Org; com.k_int.kbplus.Person; com.k_int.kbplus.PersonRole; com.k_int.kbplus.RefdataValue; com.k_int.kbplus.RefdataCategory; de.laser.helper.RDConstants " %>
 
 <!doctype html>
 <html>
     <head>
         <meta name="layout" content="semanticUI">
         <g:set var="entityName" value="${message(code: 'org.label', default: 'Org')}" />
-        <title>${message(code:'laser', default:'LAS:eR')} : <g:message code="default.show.label" args="[entityName]" /></title>
+        <title>${message(code:'laser')} : <g:message code="default.show.label" args="[entityName]" /></title>
     </head>
     <body>
 

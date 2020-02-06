@@ -3,7 +3,7 @@
 <html>
   <head>
     <meta name="layout" content="semanticUI">
-    <title>${message(code:'laser', default:'LAS:eR')} : <g:message code="user.edit.label" /></title>
+    <title>${message(code:'laser')} : <g:message code="user.edit.label" /></title>
   </head>
     <body>
 
@@ -139,7 +139,7 @@
             <thead>
               <tr>
                 <th>${message(code:'user.role', default:'Role')}</th>
-                  <th class="la-action-info">${message(code:'default.actions')}</th>
+                  <th class="la-action-info">${message(code:'default.actions.label')}</th>
               </tr>
             </thead>
             <tbody>

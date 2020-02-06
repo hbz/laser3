@@ -2,7 +2,7 @@
 <html>
 <head>
     <meta name="layout" content="semanticUI"/>
-    <title>${message(code: 'laser', default: 'LAS:eR')} : ${message(code: 'myinst.copyLicense')}</title>
+    <title>${message(code: 'laser')} : ${message(code: 'myinst.copyLicense')}</title>
 </head>
 
 <body>
@@ -27,7 +27,7 @@
 
 
         <div class="field required">
-            <label>${message(code: 'myinst.emptyLicense.name', default: 'New License Name')}</label>
+            <label>${message(code: 'myinst.emptyLicense.name')}</label>
             <input required type="text" name="lic_name" value="" placeholder=""/>
         </div>
 
@@ -102,7 +102,7 @@
                             </g:else>
 
                             (${message(code:'template.notes.created')}
-                            <g:formatDate format="${message(code:'default.date.format.notime', default:'yyyy-MM-dd')}" date="${docctx.owner.dateCreated}"/>)
+                            <g:formatDate format="${message(code:'default.date.format.notime')}" date="${docctx.owner.dateCreated}"/>)
 
                         <br>
                 </g:if>
@@ -116,7 +116,7 @@
             <g:each in="${tasks}" var="tsk">
                     <div id="summary" class="summary">
                     <b>${tsk?.title}</b> (${message(code:'task.endDate.label')}
-                            <g:formatDate format="${message(code:'default.date.format.notime', default:'yyyy-MM-dd')}" date="${tsk.endDate}"/>)
+                            <g:formatDate format="${message(code:'default.date.format.notime')}" date="${tsk.endDate}"/>)
                     <br>
             </g:each>
         </td>
@@ -137,7 +137,7 @@
     </tr>
     </tbody>
 </table>
-        <input type="submit" class="ui button js-click-control" value="${message(code: 'default.button.create.label', default: 'Create')}"/>
+        <input type="submit" class="ui button js-click-control" value="${message(code: 'default.button.create.label')}"/>
     </g:form>
 </semui:form>
 </body>

@@ -1,6 +1,39 @@
 ## temporary change log
 
 **Ticket    Date    Branch      Author  Feature/Bug     Description/Keywords**
+
+2147    05.02.2020  hbz-dev     David   Feature     Refactoring: default-Werte bei message-Tags entfernen
+
+2014    05.02.2020  hbz-dev     David   Feature     Refactoring: Zugriff auf PropertyDefinitions nur über (name + descr)
+
+2150    05.02.2020  hbz-dev     David   Bug         API: Referenzwerte mit Doppelpunkt werden als Map interpretiert
+
+2081    05.02.2020 hbz-dev      Anja    Feature     Fehlende Sicherheitsabfrage (Budgetcode löschen)
+
+2079    05.02.2020 hbz-dev      Anja    Feature     Fehlende Sicherheitsabfrage (Kontakt löschen)
+
+--      04.02.2020  rc1.2       David   Bug         Filter ausblenden: "Meine Plattformen"
+
+2136    04.02.2020  hbz-dev     David   Feature     Refactoring: DateUtil erweitern
+
+1742    03.02.2020  hbz-dev     Anja    Feature     Vorgänger/Nachfolgerlizenz in TN-Übersicht
+
+1914    03.02.2020  hbz-dev     Ingrid  Feature     Button fürs Ausblenden des Fälligen Termins
+
+1991    03.02.2020  rc1.2       Moe     Bug         "Alle anzeigen" funktioniert bei "Alle Titel" nicht
+
+2113    03.02.2020  rc1.2       Moe     Bug         Alle Titel - Exakte Suche funktioniert nicht
+
+2013    03.02.2020  rc1.2       Moe     Bug         Meine Umfragen: In der Übersicht einer Umfrage passt der Tabellenkopf nicht zu den Inhalten
+
+2130    03.02.2020  hbz-dev     Andreas Bug         Rechteüberprüfung bei Löschen von Kindlizenzen korrigiert
+
+2118    03.02.2020  hbz-dev     Andreas Feature     Satz bezüglich des Status aus Übersetzungsdatei entfernt
+
+2077    03.02.2020  dev         Anja    Feature     Löschrückfrage für Merkmale 
+
+2121    30.01.2020  rc1.2       David   Bug         Falsche geladene Seite nach Lizenz löschen (und mehr ..)
+
 2104    28.01.2020  rc1.2       Andreas Bug         Steuersatz wird im Tab Eigene Kosten korrekt dargestellt
 
 2083    28.01.2020  rc1.2       Andreas Bug         Teilnehmerlizenzen sind nicht mehr löschbar, wenn Kostenposten anhängig sind
@@ -12,7 +45,6 @@
 2105    28.01.2020  hbz-dev     Andreas Bug         Entfernen des Platzhaltertextes aus Dropdown
 
 --      27.01.2020  rc1.2       David   Bug         Bugfix: API /statistic
-
 
 2102    24.01.2020  hbz-dev     David   Feature     Refactoring: Übersetzungen für PropertyDefinitions
 
@@ -88,6 +120,8 @@
 
 1993    10.01.2020  rc1.2       Anja    Bug         Emails auch an CC für Surveys
 
+1859    10.01.2020  hbz-dev     Anja    Feature     Merkmale verwalten anpassen
+
 2016    10.01.2020  hbz-dev     David   Feature     Refactoring: Deprecated RefdataCategory.lookupOrCreate()
 
 2019    09.01.2020  hbz-dev     David   Feature     Refactoring: Factory für RefdataValue und RefdataCategory
@@ -99,6 +133,8 @@
 --      09.01.2020  rc1.2       Moe     Bug         Verlängerung Konsortial: Mehrjahres Flag setzen, Merkmale kopieren
 
 2029    09.01.2020  rc1.2       David   Feature     Refactoring: Shared Caches für User, bzw Organisationen
+
+2002    08.01.2020  hbz-dev     Anja    Feature     Keine fälligen Termine für ...
 
 --      08.01.2020  rc1.2       Moe     Bug         ES Searchs blockieren Threads
 

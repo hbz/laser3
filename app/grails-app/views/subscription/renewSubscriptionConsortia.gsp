@@ -5,7 +5,7 @@
 <html>
 <head>
     <meta name="layout" content="semanticUI"/>
-    <title>${message(code: 'laser', default: 'LAS:eR')} : ${message(code: 'subscription.details.renewalsConsortium.label')}</title>
+    <title>${message(code: 'laser')} : ${message(code: 'subscription.details.renewalsConsortium.label')}</title>
 </head>
 
 <body>
@@ -123,7 +123,7 @@ ${message(code: 'subscription.details.renewalsConsortium.label')}: ${subscriptio
                         </g:each>
                         <br>
                         <g:if test="${subscriptionInstance.owner}">
-                            <b>${message(code: 'license')}:</b>
+                            <b>${message(code: 'license.label')}:</b>
                             <g:link controller="license" action="show" target="_blank"
                                     id="${subscriptionInstance.owner.id}">
                                 ${subscriptionInstance.owner}

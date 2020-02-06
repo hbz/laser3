@@ -2,8 +2,11 @@ package com.k_int.kbplus
 
 import com.k_int.kbplus.auth.User
 import de.laser.controller.AbstractDebugController
+import de.laser.helper.DateUtil
 import grails.plugin.springsecurity.annotation.Secured
 import org.springframework.dao.DataIntegrityViolationException
+
+import java.text.SimpleDateFormat
 
 class AccessMethodController extends AbstractDebugController {
 
@@ -14,8 +17,8 @@ class AccessMethodController extends AbstractDebugController {
     @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
     def create() {
         params.max = params.max ?: ((User) springSecurityService.getCurrentUser())?.getDefaultPageSizeTMP()
-        
-        def sdf = new java.text.SimpleDateFormat(message(code:'default.date.format.notime', default:'yyyy-MM-dd'))
+
+        SimpleDateFormat sdf = DateUtil.getSDF_NoTime()
         if (params.validFrom) {
             params.validFrom = sdf.parse(params.validFrom)
         } else {
@@ -29,7 +32,7 @@ class AccessMethodController extends AbstractDebugController {
         def accessMethod = new PlatformAccessMethod(params)
 
         if (params.validTo && params.validFrom && params.validTo.before(params.validFrom)) {
-            flash.error = message(code: 'accessMethod.dateValidationError', args: [message(code: 'accessMethod.label', default: 'Access Method'), accessMethod.accessMethod])
+            flash.error = message(code: 'accessMethod.dateValidationError', args: [message(code: 'accessMethod.label'), accessMethod.accessMethod])
         } else {
 
             accessMethod.platf = Platform.get(params.platfId)
@@ -65,7 +68,7 @@ class AccessMethodController extends AbstractDebugController {
             redirect controller: 'platform', action: 'AccessMethods', id: platformId
         }
         catch (DataIntegrityViolationException e) {
-			flash.message = message(code: 'default.not.deleted.message', args: [message(code: 'address.label', default: 'Address'), params.id])
+			flash.message = message(code: 'default.not.deleted.message', args: [message(code: 'address.label'), params.id])
             redirect action: 'show', id: params.id
         }
     }
@@ -86,7 +89,7 @@ class AccessMethodController extends AbstractDebugController {
         def platf = accessMethod.getPlatf()
 
 
-        def sdf = new java.text.SimpleDateFormat(message(code:'default.date.format.notime', default:'yyyy-MM-dd'))
+        SimpleDateFormat sdf = DateUtil.getSDF_NoTime()
         if (params.validFrom) {
             params.validFrom = sdf.parse(params.validFrom)
         } else {
@@ -99,7 +102,7 @@ class AccessMethodController extends AbstractDebugController {
         }
 
         if (params.validTo == "" || params.validTo && params.validFrom && params.validTo.before(params.validFrom)) {
-            flash.error = message(code: 'accessMethod.dateValidationError', args: [message(code: 'accessMethod.label', default: 'Access Method'), accessMethod.accessMethod])
+            flash.error = message(code: 'accessMethod.dateValidationError', args: [message(code: 'accessMethod.label'), accessMethod.accessMethod])
             redirect controller: 'accessMethod', action: 'edit', id: accessMethod.id
         } else {
             accessMethod.validTo = params.validTo

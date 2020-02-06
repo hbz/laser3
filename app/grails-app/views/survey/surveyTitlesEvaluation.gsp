@@ -6,7 +6,7 @@
 <html>
 <head>
     <meta name="layout" content="semanticUI"/>
-    <title>${message(code: 'laser', default: 'LAS:eR')} : ${message(code: 'surveyTitlesEvaluation.label')}</title>
+    <title>${message(code: 'laser')} : ${message(code: 'surveyTitlesEvaluation.label')}</title>
 </head>
 
 <body>
@@ -95,7 +95,7 @@
                                 ${message(code: 'org.sortname.label')}
                             </th>
                             <th>
-                                ${message(code: 'org.name.label')}
+                                ${message(code: 'default.name.label')}
                             </th>
                             <th>
                                 ${message(code: 'surveyInfo.finishedDate')}
@@ -104,7 +104,7 @@
                                 ${message(code: 'surveyTitlesEvaluation.currentAndFixedEntitlements')}
                             </th>
                             <th>
-                                ${message(code: 'default.actions')}
+                                ${message(code: 'default.actions.label')}
                             </th>
                             <th></th>
                         </tr>
@@ -176,7 +176,7 @@
                                 ${message(code: 'org.sortname.label')}
                             </th>
                             <th>
-                                ${message(code: 'org.name.label')}
+                                ${message(code: 'default.name.label')}
                             </th>
                             <th>
                                 ${message(code: 'surveyInfo.finishedDate')}
@@ -184,7 +184,7 @@
                             <th>
                                 ${message(code: 'surveyTitlesEvaluation.currentAndFixedEntitlements')}
                             </th>
-                            <th> ${message(code: 'default.actions')}</th>
+                            <th> ${message(code: 'default.actions.label')}</th>
                         </tr>
                         </thead>
                         <tbody>
@@ -267,7 +267,7 @@
                             ${message(code: 'org.sortname.label')}
                         </th>
                         <th>
-                            ${message(code: 'org.name.label')}
+                            ${message(code: 'default.name.label')}
                         </th>
                         <th>
                             ${message(code: 'surveyInfo.finishedDate')}
@@ -276,7 +276,7 @@
                             ${message(code: 'surveyTitlesEvaluation.currentAndFixedEntitlements')}
                         </th>
                         <th>
-                            ${message(code: 'default.actions')}
+                            ${message(code: 'default.actions.label')}
                         </th>
                         <th></th>
                     </tr>
@@ -347,7 +347,7 @@
                             ${message(code: 'org.sortname.label')}
                         </th>
                         <th>
-                            ${message(code: 'org.name.label')}
+                            ${message(code: 'default.name.label')}
                         </th>
                         <th>
                             ${message(code: 'surveyInfo.finishedDate')}
@@ -355,7 +355,7 @@
                         <th>
                             ${message(code: 'surveyTitlesEvaluation.currentAndFixedEntitlements')}
                         </th>
-                        <th> ${message(code: 'default.actions')}</th>
+                        <th> ${message(code: 'default.actions.label')}</th>
                     </tr>
                     </thead>
                     <tbody>
@@ -438,7 +438,7 @@
                             ${message(code: 'org.sortname.label')}
                         </th>
                         <th>
-                            ${message(code: 'org.name.label')}
+                            ${message(code: 'default.name.label')}
                         </th>
                         <th>
                             ${message(code: 'surveyInfo.finishedDate')}
@@ -447,7 +447,7 @@
                             ${message(code: 'surveyTitlesEvaluation.currentAndFixedEntitlements')}
                         </th>
                         <th>
-                            ${message(code: 'default.actions')}
+                            ${message(code: 'default.actions.label')}
                         </th>
                         <th></th>
                     </tr>
@@ -518,7 +518,7 @@
                             ${message(code: 'org.sortname.label')}
                         </th>
                         <th>
-                            ${message(code: 'org.name.label')}
+                            ${message(code: 'default.name.label')}
                         </th>
                         <th>
                             ${message(code: 'surveyInfo.finishedDate')}
@@ -526,7 +526,7 @@
                         <th>
                             ${message(code: 'surveyTitlesEvaluation.currentAndFixedEntitlements')}
                         </th>
-                        <th> ${message(code: 'default.actions')}</th>
+                        <th> ${message(code: 'default.actions.label')}</th>
                     </tr>
                     </thead>
                     <tbody>

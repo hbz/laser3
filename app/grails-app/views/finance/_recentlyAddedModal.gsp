@@ -13,7 +13,7 @@
                     <th>${message(code:'financials.newCosts.costTitle')}</th>
                     <th>${message(code:'financials.invoice_number')}</th>
                     <th>${message(code:'financials.order_number')}</th>
-                    <th>${message(code:'subscription.label')}</th>
+                    <th>${message(code:'default.subscription.label')}</th>
                 </tr>
                 <tr>
                     <th>${message(code:'package.label')}</th>
@@ -34,7 +34,7 @@
                         <td>${item?.subPkg?.pkg?.name}</td>
                         <td>${item?.issueEntitlement?.tipp?.title?.title}</td>
                         <td>${item?.costInBillingCurrency}</td>
-                        <td><g:formatDate format="${message(code:'default.date.format.notime', default:'yyyy-MM-dd')}" date="${item?.lastUpdated}"/></td>
+                        <td><g:formatDate format="${message(code:'default.date.format.notime')}" date="${item?.lastUpdated}"/></td>
                     </tr>
                 </g:each>
             </tbody>

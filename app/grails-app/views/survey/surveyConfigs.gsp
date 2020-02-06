@@ -5,7 +5,7 @@
 <html>
 <head>
     <meta name="layout" content="semanticUI"/>
-    <title>${message(code: 'laser', default: 'LAS:eR')} : ${message(code: 'surveyConfigs.label')}</title>
+    <title>${message(code: 'laser')} : ${message(code: 'surveyConfigs.label')}</title>
 </head>
 
 <body>
@@ -186,7 +186,7 @@
                         ${message(code: 'surveyConfig.configOrder.label')}
                     </th>
                     <th>${message(code: 'surveyProperty.name')}</th>
-                    <th>${message(code: 'surveyProperty.type.label')}</th>
+                    <th>${message(code: 'default.type.label')}</th>
                     <th>${message(code: 'surveyConfig.documents.label')}</th>
                     <th>${message(code: 'surveyConfig.orgs.label')}</th>
                     <th></th>
@@ -240,7 +240,7 @@
 
                             <g:if test="${config?.surveyProperty}">
                                 <br>
-                                <b>${message(code: 'surveyProperty.type.label')}: ${config?.surveyProperty?.getLocalizedType()}</b>
+                                <b>${message(code: 'default.type.label')}: ${config?.surveyProperty?.getLocalizedType()}</b>
 
                             </g:if>
 

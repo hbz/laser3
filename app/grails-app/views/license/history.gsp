@@ -2,7 +2,7 @@
 <html>
     <head>
         <meta name="layout" content="semanticUI"/>
-        <title>${message(code:'laser', default:'LAS:eR')} : ${message(code:'license.nav.edit_history')}</title>
+        <title>${message(code:'laser')} : ${message(code:'license.nav.edit_history')}</title>
 </head>
 
 <body>
@@ -22,7 +22,7 @@
             <tr>
               <th>${message(code:'default.eventID.label', default:'Event ID')}</th>
               <th>${message(code:'person.label', default:'Person')}</th>
-              <th>${message(code:'default.date.label', default:'Date')}</th>
+              <th>${message(code:'default.date.label')}</th>
               <th>${message(code:'default.event.label', default:'Event')}</th>
               <th>${message(code:'default.field.label', default:'Field')}</th>
               <th>${message(code:'default.oldValue.label', default:'Old Value')}</th>

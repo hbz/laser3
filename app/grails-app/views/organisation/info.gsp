@@ -5,7 +5,7 @@
   <head>
     <meta name="layout" content="semanticUI">
     <g:set var="entityName" value="${message(code: 'org.label', default: 'Org')}" />
-    <title>${message(code:'laser', default:'LAS:eR')} : <g:message code="default.show.label" args="[entityName]" /></title>
+    <title>${message(code:'laser')} : <g:message code="default.show.label" args="[entityName]" /></title>
   </head>
   <body>
 
@@ -17,13 +17,13 @@
 
         <dl>
           <g:if test="${orgInstance?.name}">
-            <dt><g:message code="org.name.label" default="Name" /></dt>
+            <dt><g:message code="default.name.label" /></dt>
             
               <dd><g:fieldValue bean="${orgInstance}" field="name"/></dd>
           </g:if>
         
 			<g:if test="${orgInstance?.addresses}">
-				<dt><g:message code="org.addresses.label" default="Addresses" /></dt>
+				<dt><g:message code="org.addresses.label" /></dt>
 				<g:each in="${orgInstance?.addresses?.sort{it?.type?.getI10n('value')}}" var="a">
 					<g:if test="${a.org}">
 						<g:render template="/templates/cpa/address" model="${[address: a]}"></g:render>
@@ -32,7 +32,7 @@
 			</g:if>
 		
 			<g:if test="${orgInstance?.contacts}">
-				<dt><g:message code="org.contacts.label" default="Contacts" /></dt>
+				<dt><g:message code="org.contacts.label" /></dt>
 				<g:each in="${orgInstance?.contacts?.toSorted()}" var="c">
 					<g:if test="${c.org}">
 						<g:render template="/templates/cpa/contact" model="${[contact: c]}"></g:render>
@@ -41,7 +41,7 @@
 			</g:if>
 
         	<g:if test="${orgInstance?.prsLinks}">
-				<dt><g:message code="org.prsLinks.label" default="Persons" /></dt>
+				<dt><g:message code="org.prsLinks.label" /></dt>
 				<g:each in="${orgInstance?.prsLinks?.toSorted()}" var="pl">
 					<g:if test="${pl?.functionType?.value && pl?.prs.isPublic}">
 						<g:render template="/templates/cpa/person_details" model="${[
@@ -53,35 +53,35 @@
 			</g:if>
 		
           <g:if test="${orgInstance?.ipRange}">
-            <dt><g:message code="org.ipRange.label" default="Ip Range" /></dt>
+            <dt><g:message code="org.ipRange.label" /></dt>
             
               <dd>${orgInstance.ipRange}</dd>
             
           </g:if>
         
           <g:if test="${orgInstance?.sector}">
-            <dt><g:message code="org.sector.label" default="Sector" /></dt>
+            <dt><g:message code="org.sector.label" /></dt>
             
               <dd>${orgInstance.sector.getI10n('value')}</dd>
             
           </g:if>
 
       <g:if test="${orgInstance?.membership}">
-        <dt><g:message code="org.membership.label" default="Membership" /></dt>
+        <dt><g:message code="org.membership.label" /></dt>
 
         <dd>${orgInstance.membership.getI10n('value')}</dd>
 
       </g:if>
         
           <g:if test="${orgInstance?.ids?.sort{it?.ns?.ns}}">
-            <dt><g:message code="org.ids.label" default="Ids" /></dt>
+            <dt><g:message code="org.ids.label" /></dt>
               <g:each in="${orgInstance.ids?.sort{it?.ns?.ns}}" var="i">
               <dd><g:link controller="identifier" action="show" id="${i.id}">${i?.ns?.ns} : ${i?.value}</g:link></dd>
               </g:each>
           </g:if>
 
           <g:if test="${orgInstance?.outgoingCombos}">
-            <dt><g:message code="org.outgoingCombos.label" default="Outgoing Combos" /></dt>
+            <dt><g:message code="org.outgoingCombos.label" /></dt>
             <g:each in="${orgInstance.outgoingCombos}" var="i">
               <dd>${i.type?.value} - <g:link controller="organisation" action="show" id="${i.toOrg.id}">${i.toOrg?.name}</g:link>
                 (<g:each in="${i?.toOrg?.ids?.sort{it?.ns?.ns}}" var="id">
@@ -92,7 +92,7 @@
           </g:if>
 
           <g:if test="${orgInstance?.incomingCombos}">
-            <dt><g:message code="org.incomingCombos.label" default="Incoming Combos" /></dt>
+            <dt><g:message code="org.incomingCombos.label" /></dt>
             <g:each in="${orgInstance.incomingCombos}" var="i">
               <dd>${i.type?.value} - <g:link controller="organisation" action="show" id="${i.toOrg.id}">${i.fromOrg?.name}</g:link>
                 (<g:each in="${i?.fromOrg?.ids?.sort{it?.ns?.ns}}" var="id">
@@ -115,17 +115,17 @@
                     <li>
                       <g:if test="${i.pkg}">
                         <g:link controller="package" action="show" id="${i.pkg.id}">
-                          ${message(code:'package.label', default:'Package')}: ${i.pkg.name} (${i.pkg?.packageStatus?.getI10n('value')})
+                          ${message(code:'package.label')}: ${i.pkg.name} (${i.pkg?.packageStatus?.getI10n('value')})
                         </g:link>
                       </g:if>
                       <g:if test="${i.sub}">
                         <g:link controller="subscription" action="index" id="${i.sub.id}">
-                          ${message(code:'subscription.label', default:'Subscription')}: ${i.sub.name} (${i.sub.status?.getI10n('value')})
+                          ${message(code:'default.subscription.label', default:'Subscription')}: ${i.sub.name} (${i.sub.status?.getI10n('value')})
                         </g:link>
                       </g:if>
                       <g:if test="${i.lic}">
                         <g:link controller="license" action="show" id="${i.lic.id}">
-                          ${message(code:'license.label', default:'License')}: ${i.lic.reference ?: i.lic.id} (${i.lic.status?.getI10n('value')})
+                          ${message(code:'license.label')}: ${i.lic.reference ?: i.lic.id} (${i.lic.status?.getI10n('value')})
                         </g:link>
                       </g:if>
                       <g:if test="${i.title}">

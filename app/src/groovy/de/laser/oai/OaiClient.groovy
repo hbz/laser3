@@ -3,6 +3,8 @@ package de.laser.oai
 
 import groovyx.net.http.HTTPBuilder
 
+import java.text.SimpleDateFormat
+
 import static groovyx.net.http.ContentType.XML
 import static groovyx.net.http.Method.GET
 
@@ -17,7 +19,7 @@ public class OaiClient {
   public getChangesSince(datestamp, syncJob, processing_closure) {
     def metadataPrefix = syncJob.fullPrefix
     println("Get latest changes");
-    def sdf = new java.text.SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
+    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
 
     def http = new HTTPBuilder( host )
 

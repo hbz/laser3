@@ -2,7 +2,7 @@
 <html>
 <head>
     <meta name="layout" content="public"/>
-    <title>Terms and Conditions | ${message(code: 'laser', default: 'LAS:eR')}</title>
+    <title>Terms and Conditions | ${message(code: 'laser')}</title>
 </head>
 
 <body class="public">

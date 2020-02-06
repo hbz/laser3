@@ -2,7 +2,7 @@
 <html>
   <head>
     <meta name="layout" content="semanticUI"/>
-    <title>${message(code:'laser', default:'LAS:eR')} : Manage Affiliation Requests</title>
+    <title>${message(code:'laser')} : Manage Affiliation Requests</title>
   </head>
 
     <body>
@@ -28,7 +28,7 @@
                         <th>${message(code: "profile.membership.role")}</th>
                         <th>${message(code: "default.status.label")}</th>
                         <th>${message(code: "profile.membership.date2")}</th>
-                        <th class="la-action-info">${message(code:'default.actions')}</th>
+                        <th class="la-action-info">${message(code:'default.actions.label')}</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -73,7 +73,7 @@
                     <th>${message(code: "profile.membership.role")}</th>
                     <th>${message(code: "default.status.label")}</th>
                     <th>${message(code: "profile.membership.date2")}</th>
-                    <th class="la-action-info">${message(code:'default.actions')}</th>
+                    <th class="la-action-info">${message(code:'default.actions.label')}</th>
                 </tr>
                 </thead>
                 <tbody>

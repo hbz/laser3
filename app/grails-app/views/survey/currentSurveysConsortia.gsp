@@ -7,7 +7,7 @@
 <html>
 <head>
     <meta name="layout" content="semanticUI"/>
-    <title>${message(code: 'laser', default: 'LAS:eR')} : ${message(code: 'currentSurveys.label', default: 'Current Surveys')}</title>
+    <title>${message(code: 'laser')} : ${message(code: 'currentSurveys.label')}</title>
 </head>
 
 <body>
@@ -21,7 +21,7 @@
 </semui:controlButtons>
 
 
-<h1 class="ui left floated aligned icon header la-clear-before"><semui:headerIcon/>${message(code: 'currentSurveys.label', default: 'Current Surveys')}
+<h1 class="ui left floated aligned icon header la-clear-before"><semui:headerIcon/>${message(code: 'currentSurveys.label')}
 <semui:totalNumber total="${surveysCount}"/>
 </h1>
 
@@ -367,8 +367,8 @@
 
 <g:if test="${surveysCount}">
     <semui:paginate action="${actionName}" controller="${controllerName}" params="${params}"
-                    next="${message(code: 'default.paginate.next', default: 'Next')}"
-                    prev="${message(code: 'default.paginate.prev', default: 'Prev')}" max="${max}"
+                    next="${message(code: 'default.paginate.next')}"
+                    prev="${message(code: 'default.paginate.prev')}" max="${max}"
                     total="${surveysCount}"/>
 </g:if>
 

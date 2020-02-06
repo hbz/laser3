@@ -4,7 +4,7 @@
 <html>
 	<head>
 		<meta name="layout" content="main">
-		<g:set var="entityName" value="${message(code: 'task.label', default: 'Task')}" />
+		<g:set var="entityName" value="${message(code: 'task.label')}" />
 		<title><g:message code="default.list.label" args="[entityName]" /></title>
 	</head>
 	<body>
@@ -24,17 +24,17 @@
 			<thead>
 					<tr>
 					
-						<th><g:message code="task.license.label" default="License" /></th>
+						<th><g:message code="license.label" default="License" /></th>
 					
-						<th><g:message code="task.org.label" default="Org" /></th>
+						<th><g:message code="task.org.label" /></th>
 					
-						<th><g:message code="task.pkg.label" default="Pkg" /></th>
+						<th><g:message code="package.label"/></th>
 					
-						<th><g:message code="task.subscription.label" default="Subscription" /></th>
+						<th><g:message code="default.subscription.label" /></th>
 					
-						<g:sortableColumn property="title" title="${message(code: 'task.title.label', default: 'Title')}" />
+						<g:sortableColumn property="title" title="${message(code: 'task.title.label')}" />
 					
-						<g:sortableColumn property="description" title="${message(code: 'task.description.label', default: 'Description')}" />
+						<g:sortableColumn property="description" title="${message(code: 'task.description.label')}" />
 					
 					</tr>
 				</thead>

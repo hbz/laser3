@@ -6,6 +6,7 @@ import com.k_int.properties.PropertyDefinition
 import de.laser.SystemEvent
 import de.laser.domain.ActivityProfiler
 import de.laser.domain.SystemProfiler
+import de.laser.helper.DateUtil
 import de.laser.helper.DebugAnnotation
 import de.laser.helper.RDConstants
 import de.laser.helper.RDStore
@@ -104,7 +105,7 @@ class YodaController {
 
         Map<String, Object> map1 = [
                 token       : "Quellensteuer-Befreiung",
-                category    : "Subscription Property",
+                category    : PropertyDefinition.SUB_PROP,
                 type        : "class com.k_int.kbplus.RefdataValue",
                 rdc         : RDConstants.Y_N_O,
                 tenant      : contextService.getOrg(),
@@ -118,7 +119,7 @@ class YodaController {
 
         Map<String, Object> map2 = [
                 token       : "BGA",
-                category    : "Organisation Property",
+                category    : PropertyDefinition.ORG_PROP,
                 type        : "class com.k_int.kbplus.RefdataValue",
                 rdc         : RDConstants.Y_N,
                 tenant      : contextService.getOrg(),
@@ -132,7 +133,7 @@ class YodaController {
 
         Map<String, Object> map3 = [
                 token       : "EGP Nr.",
-                category    : "Organisation Property",
+                category    : PropertyDefinition.ORG_PROP,
                 type        : "class java.lang.Integer",
                 tenant      : contextService.getOrg(),
                 i10n        : [
@@ -321,14 +322,14 @@ class YodaController {
                             " group by date_trunc('hour', dateCreated) order by min(dateCreated), max(dateCreated)",
                     [day: it])
 
-            String key = (new java.text.SimpleDateFormat(message(code:'default.date.format.notime'))).format(new Date(it.getTime()))
+            String key = (DateUtil.getSDF_NoTime()).format(new Date(it.getTime()))
             activity.put(key, [])
 
             slots.each { hour ->
                 activity[key].add([
-                        (new java.text.SimpleDateFormat(message(code: 'default.date.format.onlytime'))).format(new Date(hour[0].getTime())),
-                        (new java.text.SimpleDateFormat(message(code: 'default.date.format.onlytime'))).format(new Date(hour[1].getTime())),
-                        (new java.text.SimpleDateFormat(message(code: 'default.date.format.onlytime'))).format(new Date(hour[2].getTime())),
+                        (DateUtil.getSDF_OnlyTime()).format(new Date(hour[0].getTime())),
+                        (DateUtil.getSDF_OnlyTime()).format(new Date(hour[1].getTime())),
+                        (DateUtil.getSDF_OnlyTime()).format(new Date(hour[2].getTime())),
                         hour[3],
                         hour[4],
                         hour[5]

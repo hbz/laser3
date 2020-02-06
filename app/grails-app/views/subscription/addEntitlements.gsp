@@ -3,7 +3,7 @@
 <html>
 <head>
     <meta name="layout" content="semanticUI"/>
-    <title>${message(code: 'laser', default: 'LAS:eR')} : ${message(code: 'subscription.details.addEntitlements.label')}</title>
+    <title>${message(code: 'laser')} : ${message(code: 'subscription.details.addEntitlements.label')}</title>
 </head>
 
 <body>
@@ -254,7 +254,7 @@ ${message(code: 'subscription.details.availableTitles', default: 'Available Titl
                 ${tipp.status.getI10n('value')}
             </div>
 
-            <div class="item"><b>${message(code: 'tipp.package', default: 'Package')}:</b>
+            <div class="item"><b>${message(code: 'package.label')}:</b>
 
                 <div class="la-flexbox">
                     <i class="icon gift scale la-list-icon"></i>
@@ -377,8 +377,8 @@ ${message(code: 'subscription.details.availableTitles', default: 'Available Titl
         <semui:paginate controller="subscription"
                         action="addEntitlements"
                         params="${params + [pagination: true]}"
-                        next="${message(code: 'default.paginate.next', default: 'Next')}"
-                        prev="${message(code: 'default.paginate.prev', default: 'Prev')}"
+                        next="${message(code: 'default.paginate.next')}"
+                        prev="${message(code: 'default.paginate.prev')}"
                         max="${max}"
                         total="${num_tipp_rows}"/>
     </g:if>

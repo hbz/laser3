@@ -3,7 +3,7 @@
 <html>
 <head>
     <meta name="layout" content="semanticUI"/>
-    <title>${message(code: 'laser', default: 'LAS:eR')} : Yoda Dashboard</title>
+    <title>${message(code: 'laser')} : Yoda Dashboard</title>
 </head>
 
 <body>

@@ -4,7 +4,7 @@
 <html>
 	<head>
 		<meta name="layout" content="main">
-		<g:set var="entityName" value="${message(code: 'creator.label', default: 'Creator')}" />
+		<g:set var="entityName" value="${message(code: 'creator.label')}" />
 		<title><g:message code="default.list.label" args="[entityName]" /></title>
 	</head>
 	<body>
@@ -24,13 +24,13 @@
 			<thead>
 					<tr>
 					
-						<g:sortableColumn property="firstname" title="${message(code: 'creator.firstname.label', default: 'Firstname')}" />
+						<g:sortableColumn property="firstname" title="${message(code: 'creator.firstname.label')}" />
 					
-						<g:sortableColumn property="middlename" title="${message(code: 'creator.middlename.label', default: 'Middlename')}" />
+						<g:sortableColumn property="middlename" title="${message(code: 'creator.middlename.label')}" />
 					
-						<th><g:message code="creator.gnd_id.label" default="Gndid" /></th>
+						<th><g:message code="creator.gnd_id.label" /></th>
 					
-						<g:sortableColumn property="globalUID" title="${message(code: 'creator.globalUID.label', default: 'Global UID')}" />
+						<g:sortableColumn property="globalUID" title="${message(code: 'creator.globalUID.label')}" />
 					
 						<g:sortableColumn property="dateCreated" title="${message(code: 'creator.dateCreated.label', default: 'Date Created')}" />
 					

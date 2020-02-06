@@ -2,7 +2,7 @@
 <html>
   <head>
     <meta name="layout" content="semanticUI"/>
-    <title>${message(code:'laser', default:'LAS:eR')} Admin::Package Delete</title>
+    <title>${message(code:'laser')} Admin::Package Delete</title>
     <r:require module='annotations' />
   </head>
 
@@ -34,7 +34,7 @@
         <table class="ui sortable celled la-table table">
           <thead>
             <tr>
-              <g:sortableColumn property="name" title="${message(code: 'package.name.label', default: 'Name')}" />
+              <g:sortableColumn property="name" title="${message(code: 'default.name.label')}" />
               <th></th>
             </tr>
           </thead>

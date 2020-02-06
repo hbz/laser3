@@ -4,7 +4,7 @@
 <html>
 <head>
     <meta name="layout" content="semanticUI"/>
-    <title>${message(code: 'laser', default: 'LAS:eR')} : ${message(code: 'myinst.copySubscription')}</title>
+    <title>${message(code: 'laser')} : ${message(code: 'myinst.copySubscription')}</title>
 </head>
 
 <body>
@@ -32,7 +32,7 @@
 
 
         <div class="field required">
-            <label>${message(code: 'myinst.emptySubscription.name', default: 'New Subscription Name')}</label>
+            <label>${message(code: 'myinst.emptySubscription.name')}</label>
             <input required type="text" name="sub_name" value="" placeholder=""/>
         </div>
 
@@ -43,7 +43,7 @@
 
             <input type="hidden" name="baseSubscription" value="${params.id}"/>
 
-            <tr><th>${message(code:'default.select.label', default:'Select')}</th><th >${message(code:'subscription.property', default:'Subscription Properties')}</th><th>${message(code:'default.value.label', default:'Value')}</th></tr>
+            <tr><th>${message(code:'default.select.label')}</th><th >${message(code:'subscription.property')}</th><th>${message(code:'default.value.label')}</th></tr>
             <tr>
                 <th><g:checkBox name="subscription.copyDates" value="${true}" /></th>
                 <th>${message(code:'subscription.copyDates', default:'Copy all Dates from Subscription')}</th>
@@ -172,7 +172,7 @@
                             </g:else>
 
                             (${message(code:'template.notes.created')}
-                            <g:formatDate format="${message(code:'default.date.format.notime', default:'yyyy-MM-dd')}" date="${docctx.owner.dateCreated}"/>)
+                            <g:formatDate format="${message(code:'default.date.format.notime')}" date="${docctx.owner.dateCreated}"/>)
 
                             <br>
                         </g:if>
@@ -186,7 +186,7 @@
                     <g:each in="${tasks}" var="tsk">
                         <div id="summary" class="summary">
                         <b>${tsk?.title}</b> (${message(code:'task.endDate.label')}
-                        <g:formatDate format="${message(code:'default.date.format.notime', default:'yyyy-MM-dd')}" date="${tsk.endDate}"/>)
+                        <g:formatDate format="${message(code:'default.date.format.notime')}" date="${tsk.endDate}"/>)
                         <br>
                     </g:each>
                 </td>
@@ -194,7 +194,7 @@
 
             </tbody>
         </table>
-        <input type="submit" class="ui button js-click-control" value="${message(code: 'default.button.create.label', default: 'Create')}"/>
+        <input type="submit" class="ui button js-click-control" value="${message(code: 'default.button.create.label')}"/>
     </g:form>
 </semui:form>
 </body>

@@ -9,7 +9,7 @@
     <laser:serviceInjection/>
     <head>
         <meta name="layout" content="semanticUI">
-        <title>${message(code: 'laser', default: 'LAS:eR')} : Paket-Duplikate</title>
+        <title>${message(code: 'laser')} : Paket-Duplikate</title>
     </head>
     <body>
         <g:set var="toDelete" value="${[]}"/>

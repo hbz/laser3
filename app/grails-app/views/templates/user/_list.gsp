@@ -4,7 +4,7 @@
 <html>
   <head>
     <meta name="layout" content="semanticUI">
-    <title>${message(code:'laser', default:'LAS:eR')} : ${message(code:'menu.institutions.users')}</title>
+    <title>${message(code:'laser')} : ${message(code:'menu.institutions.users')}</title>
   </head>
     <body>
 
@@ -39,7 +39,7 @@
                     <th>${message(code:'profile.membership.role')}</th>
                     <th>${message(code: "profile.membership.date2")}</th>
                     <th>${message(code:'user.status')}</th>
-                    <th class="la-action-info">${message(code:'default.actions')}</th>
+                    <th class="la-action-info">${message(code:'default.actions.label')}</th>
                 </tr>
                 </thead>
 

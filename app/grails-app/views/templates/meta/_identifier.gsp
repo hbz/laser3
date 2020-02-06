@@ -9,7 +9,7 @@
     <div class="content">
         <div class="inline-lists">
             <dl>
-                <dt><g:message code="org.globalUID.label" default="Global UID"/></dt>
+                <dt><g:message code="org.globalUID.label"/></dt>
                 <dd><g:fieldValue bean="${object}" field="globalUID"/></dd>
 
                 <g:if test="${!(object instanceof com.k_int.kbplus.License) && !(object instanceof com.k_int.kbplus.Subscription)}">
@@ -57,7 +57,7 @@
                         <tr>
                             <th>${message(code: 'default.authority.label', default: 'Authority')}</th>
                             <th>${message(code: 'default.identifier.label', default: 'Identifier')}</th>
-                            <th>${message(code: 'default.actions.label', default: 'Actions')}</th>
+                            <th>${message(code: 'default.actions.label')}</th>
                         </tr>
                         </thead>
                         <tbody>

@@ -1,10 +1,10 @@
 <g:set var="tip" value="${issueEntitlement.getTIP()}" />
 <g:if test="${tip}">
-  <g:set var="dateFormatter" value="${new java.text.SimpleDateFormat(message(code:'default.date.format.notime'))}"/>
+  <g:set var="dateFormatter" value="${de.laser.helper.DateUtil.getSDF_NoTime()}"/>
   <g:set var="date" value="${date ? dateFormatter.parse(date) : null}"/>
   <g:set var="status" value="${tip.coreStatus(date)}"/>
   <g:set var="date_text" 
-         value="${status ? message(code:'default.boolean.true', default:'True') + '(' + message(code:'default.now', default:'Now') + ')' : status==null ? message(code:'default.boolean.false', default:'False') + '(' + message(code:'default.never', default:'Never') + ')' : message(code:'default.boolean.false', default:'False') + '(' + message(code:'default.now', default:'Now') + ')'}"/>
+         value="${status ? message(code:'default.boolean.true') + '(' + message(code:'default.now') + ')' : status==null ? message(code:'default.boolean.false') + '(' + message(code:'default.never') + ')' : message(code:'default.boolean.false') + '(' + message(code:'default.now') + ')'}"/>
   <g:remoteLink url="[controller: 'ajax', action: 'getTipCoreDates', params:[tipID:tip.id,title:issueEntitlement.tipp?.title?.title]]"
                 method="get" name="show_core_assertion_modal" onComplete="showCoreAssertionModal()" class="editable-click"
                 update="magicArea">${ date_text }</g:remoteLink>

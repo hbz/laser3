@@ -34,7 +34,7 @@
 
                 <g:if test="${address?.pob || address?.pobZipcode || address?.pobCity}">
                     <br />
-                    <g:message code="address.pob.label" default="Pob" />
+                    <g:message code="address.pob.label" />
                     ${address?.pob}
                     <g:if test="${address?.pobZipcode || address?.pobCity}">, </g:if>
                     ${address?.pobZipcode} ${address?.pobCity}

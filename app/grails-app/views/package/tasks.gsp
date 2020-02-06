@@ -3,7 +3,7 @@
 <html>
 <head>
     <meta name="layout" content="semanticUI">
-    <title>${message(code:'laser', default:'LAS:eR')} : ${message(code:'task.plural')}</title>
+    <title>${message(code:'laser')} : ${message(code:'task.plural')}</title>
 </head>
 
 <body>

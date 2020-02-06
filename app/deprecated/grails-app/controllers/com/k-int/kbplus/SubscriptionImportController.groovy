@@ -154,7 +154,7 @@ class SubscriptionImportController extends AbstractDebugController {
 
     boolean first = true;
 
-    def formatter = new java.text.SimpleDateFormat(message(code:'default.date.format.notime', default:'yyyy-MM-dd'))
+    SimpleDateFormat formatter = de.laser.helper.DateUtil.getSDF_NoTime()
 
     // Step one - Assemble a list of all titles and packages.. We aren't assembling the matrix
     // of titles x packages yet.. Just gathering the data for the X and Y axis

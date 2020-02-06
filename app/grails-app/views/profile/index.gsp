@@ -5,7 +5,7 @@
 <html>
 <head>
     <meta name="layout" content="semanticUI"/>
-    <title>${message(code:'laser', default:'LAS:eR')} : ${message(code: 'profile', default: 'LAS:eR User Profile')}</title>
+    <title>${message(code:'laser')} : ${message(code: 'profile')}</title>
 </head>
 
 <body>
@@ -29,7 +29,7 @@
 </semui:controlButtons>--}%
 
 <br>
-<h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon />${message(code: 'profile', default: 'LAS:eR User Profile')}</h1>
+<h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon />${message(code: 'profile')}</h1>
 
 <semui:messages data="${flash}" />
 
@@ -510,7 +510,7 @@
                 </h4>
 
                 <p style="word-break:normal">
-                    <g:message code="profile.membership.request.text" default="Select an organisation and a role below. Requests to join existing organisations will be referred to the administrative users of that organisation. If you feel you should be the administrator of an organisation please contact the ${message(code:'laser', default:'LAS:eR')} team for support." />
+                    <g:message code="profile.membership.request.text" default="Select an organisation and a role below. Requests to join existing organisations will be referred to the administrative users of that organisation. If you feel you should be the administrator of an organisation please contact the ${message(code:'laser')} team for support." />
                 </p>
 
                 <g:render template="/templates/user/membership_form" model="[userInstance: user, availableOrgs: availableOrgs, availableOrgRoles: availableOrgRoles, tmplProfile: true]" />
@@ -570,7 +570,7 @@
                                 </select>
                             </div>
 
-                            <button id="submitReminder" type="submit" class="ui button">${message(code:'default.button.create.label', default: 'Create')}</button>
+                            <button id="submitReminder" type="submit" class="ui button">${message(code:'default.button.create.label')}</button>
                         </g:form>
                     </div>
                 </div><!-- #reminders -->
@@ -584,11 +584,11 @@
                     <table class="ui celled la-table table">
                         <thead>
                         <tr>
-                            <th><g:message code="reminder.trigger" default="Trigger"/></th>
-                            <th><g:message code="reminder.method" default="Method"/></th>
-                            <th>${message(code:'profile.reminder.new.time', default:'Time')} (<g:message code="reminder.unit" default="Unit"/>/<g:message code="reminder.number" default="Number"/>)</th>
-                            <th><g:message code="reminder.lastNotification" default="Last Notification"/></th>
-                            <th><g:message code="reminder.update" default="Delete / Disable"/></th>
+                            <th><g:message code="reminder.trigger" /></th>
+                            <th><g:message code="reminder.method" /></th>
+                            <th>${message(code:'profile.reminder.new.time', default:'Time')} (<g:message code="reminder.unit" default="Unit"/>/<g:message code="reminder.number"/>)</th>
+                            <th><g:message code="reminder.lastNotification" /></th>
+                            <th><g:message code="reminder.update" /></th>
                         </tr>
                         </thead>
                         <tbody>

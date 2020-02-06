@@ -34,7 +34,7 @@
             <div class="field la-field-right-aligned">
 
                 <a href="${request.forwardURI}" class="ui reset primary button">${message(code:'default.button.filterreset.label')}</a>
-                <input type="submit" class="ui secondary button" value="${message(code:'package.compare.filter.submit.label', default:'Filter Results')}" />
+                <input type="submit" class="ui secondary button" value="${message(code:'package.compare.filter.submit.label')}" />
             </div>
         </div>
     </g:form>

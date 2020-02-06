@@ -5,7 +5,7 @@
 <html>
 <head>
     <meta name="layout" content="semanticUI"/>
-    <title>${message(code: 'laser', default: 'LAS:eR')} : ${message(code: 'subscription.details.surveys.label')}</title>
+    <title>${message(code: 'laser')} : ${message(code: 'subscription.details.surveys.label')}</title>
 </head>
 
 <body>
@@ -43,13 +43,13 @@
                               title="${message(code: 'surveyInfo.slash.name')}" rowspan="2" scope="col"/>
 
             <g:sortableColumn params="${params}" property="surInfo.startDate"
-                              title="${message(code: 'default.startDate.label', default: 'Start Date')}"/>
+                              title="${message(code: 'default.startDate.label')}"/>
             <g:sortableColumn params="${params}" property="surInfo.endDate"
-                              title="${message(code: 'default.endDate.label', default: 'End Date')}"/>
+                              title="${message(code: 'default.endDate.label')}"/>
             <th>${message(code: 'surveyInfo.type.label')}</th>
             <th>${message(code: 'default.status.label')}</th>
             <th>${message(code: 'surveyInfo.finishedDate')}</th>
-            <th class="la-action-info">${message(code: 'default.actions')}</th>
+            <th class="la-action-info">${message(code: 'default.actions.label')}</th>
 
         </tr>
 

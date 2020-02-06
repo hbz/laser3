@@ -2,7 +2,7 @@
 <html>
 <head>
     <meta name="layout" content="semanticUI"/>
-    <title>${message(code: 'laser', default: 'LAS:eR')} ${message(code: 'myinst.renewalSearch.label', default: 'Renewals Generation - Search')}</title>
+    <title>${message(code: 'laser')} ${message(code: 'myinst.renewalSearch.label', default: 'Renewals Generation - Search')}</title>
 </head>
 
 <body>
@@ -146,8 +146,8 @@
         <div class="paginateButtons" style="text-align:center">
             <g:if test="${hits}">
                 <span><g:paginate controller="myInstitution" action="renewalsSearch" params="${params}"
-                                  next="${message(code: 'default.paginate.next', default: 'Next')}"
-                                  prev="${message(code: 'default.paginate.prev', default: 'Prev')}" maxsteps="10"
+                                  next="${message(code: 'default.paginate.next')}"
+                                  prev="${message(code: 'default.paginate.prev')}" maxsteps="10"
                                   total="${resultsTotal}"/></span>
             </g:if>
         </div>

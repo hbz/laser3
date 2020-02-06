@@ -1,7 +1,7 @@
 <%@ page import="com.k_int.kbplus.RefdataCategory;com.k_int.kbplus.RefdataValue;de.laser.helper.RDConstants;com.k_int.kbplus.Org;de.laser.domain.I10nTranslation; java.text.SimpleDateFormat;" %>
 <laser:serviceInjection />
 <%
-    SimpleDateFormat sdf = new SimpleDateFormat(message(code:'default.date.format.notime'))
+    SimpleDateFormat sdf = de.laser.helper.DateUtil.getSDF_NoTime()
     Date startOfYear = new SimpleDateFormat('yyyy-MM-dd').parse(Calendar.getInstance().get(Calendar.YEAR)+'-01-01')
 %>
 <semui:modal id="${formId ?: 'create_number'}" text="${message(code: 'readerNumber.create.label')}" isEditModal="${formId ?: null}">
@@ -49,7 +49,7 @@
 
                 <div class="field eight wide required">
                     <label for="value">
-                        <g:message code="readerNumber.number.label" default="Number" />
+                        <g:message code="readerNumber.number.label"/>
                     </label>
                     <input type="number" id="value" name="value" value="${numbersInstance?.value}"/>
 

@@ -5,7 +5,7 @@
 <html>
 <head>
     <meta name="layout" content="semanticUI"/>
-    <title>${message(code: 'laser', default: 'LAS:eR')} : ${message(code: 'license.details.addMembers.label',args:[message(code:'consortium.subscriber')])}</title>
+    <title>${message(code: 'laser')} : ${message(code: 'license.details.addMembers.label',args:[message(code:'consortium.subscriber')])}</title>
 </head>
 
 <body>
@@ -120,7 +120,7 @@
             <br/>
             <g:if test="${members}">
                 <input type="submit" class="ui button js-click-control"
-                        value="${message(code: 'default.button.create.label', default: 'Create')}"/>
+                        value="${message(code: 'default.button.create.label')}"/>
             </g:if>
         </g:if>
     </g:form>

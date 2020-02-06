@@ -3,7 +3,7 @@
 <html>
 <head>
     <meta name="layout" content="semanticUI"/>
-    <title>${message(code: 'laser', default: 'LAS:eR')} : ${message(code: 'subscription.details.renewEntitlements.label')}</title>
+    <title>${message(code: 'laser')} : ${message(code: 'subscription.details.renewEntitlements.label')}</title>
 </head>
 
 <body>
@@ -98,7 +98,7 @@ ${message(code: 'subscription.details.availableTitles')} ( ${message(code: 'defa
                            surveyConfigID      : surveyConfig?.id]}"
                         class="ui reset primary button">${message(code: 'default.button.filterreset.label')}</g:link>
                 <input type="submit" class="ui secondary button"
-                       value="${message(code: 'default.button.filter.label', default: 'Filtern')}"/>
+                       value="${message(code: 'default.button.filter.label')}"/>
             </div>
         </div>
     </g:form>

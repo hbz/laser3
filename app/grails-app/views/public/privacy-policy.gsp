@@ -2,7 +2,7 @@
 <html>
 <head>
     <meta name="layout" content="public"/>
-    <title>Privacy Policy | ${message(code: 'laser', default: 'LAS:eR')}</title>
+    <title>Privacy Policy | ${message(code: 'laser')}</title>
 </head>
 
 <body class="public">

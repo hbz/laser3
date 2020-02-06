@@ -4,7 +4,7 @@
 <html>
 	<head>
 		<meta name="layout" content="semanticUI">
-		<g:set var="entityName" value="${message(code: 'doc.label', default: 'Doc')}" />
+		<g:set var="entityName" value="${message(code: 'doc.label')}" />
 		<title><g:message code="default.create.label" args="[entityName]" /></title>
 	</head>
 	<body>
@@ -45,7 +45,7 @@
 							<div class="ui form-actions">
 								<button type="submit" class="ui button">
 									<i class="checkmark icon"></i>
-									<g:message code="default.button.create.label" default="Create" />
+									<g:message code="default.button.create.label"/>
 								</button>
 							</div>
 						</fieldset>

@@ -18,7 +18,7 @@ class AccessPointController extends AbstractDebugController {
     def orgTypeService
 
 
-    static allowedMethods = [create: ['GET', 'POST'], edit: ['GET', 'POST'], delete: ['GET', 'POST']]
+    static allowedMethods = [create: ['GET', 'POST'], delete: ['GET', 'POST']]
 
 
     @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
@@ -149,7 +149,7 @@ class AccessPointController extends AbstractDebugController {
             return render(template: 'create_' + accessMethod, model: [accessMethod: accessMethod, availableIpOptions : params.availableIpOptions])
         } else {
             if (!params.accessMethod) {
-                params.accessMethod = RefdataValue.getByValueAndCategory('ip', RDConstants.ACCESS_POINT_TYPE)
+                params.accessMethod = RefdataValue.getByValueAndCategory('ip', RDConstants.ACCESS_POINT_TYPE).value
             }
             params.accessMethod = RefdataValue.getByValue(params.accessMethod);
 
@@ -326,18 +326,18 @@ class AccessPointController extends AbstractDebugController {
         def orgId = org.id;
 
         if (!accessPoint) {
-            flash.message = message(code: 'default.not.found.message', args: [message(code: 'address.label', default: 'Address'), params.id])
+            flash.message = message(code: 'default.not.found.message', args: [message(code: 'address.label'), params.id])
             redirect action: 'list'
             return
         }
 
         try {
             accessPoint.delete(flush: true)
-            flash.message = message(code: 'default.deleted.message', args: [message(code: 'accessPoint.label', default: 'Access Point'), accessPoint.name])
+            flash.message = message(code: 'default.deleted.message', args: [message(code: 'accessPoint.label'), accessPoint.name])
             redirect controller: 'organisation', action: 'accessPoints', id: orgId
         }
         catch (DataIntegrityViolationException e) {
-            flash.message = message(code: 'default.not.deleted.message', args: [message(code: 'address.label', default: 'Address'), accessPoint.id])
+            flash.message = message(code: 'default.not.deleted.message', args: [message(code: 'address.label'), accessPoint.id])
             redirect action: 'show', id: params.id
         }
     }
@@ -368,71 +368,67 @@ class AccessPointController extends AbstractDebugController {
     }
 
     def private _edit() {
-
         OrgAccessPoint orgAccessPoint = OrgAccessPoint.get(params.id)
+        Org org = orgAccessPoint.org;
+        Long orgId = org.id;
 
         String ipv4Format = (params.ipv4Format) ? params.ipv4Format : 'v4ranges'
         String ipv6Format = (params.ipv6Format) ? params.ipv6Format : 'v6ranges'
         Boolean autofocus = (params.autofocus) ? true : false
 
-        //String ipv4Format = 'range'
-
-        Org org = orgAccessPoint.org;
-        def orgId = org.id;
-
-        def accessPointDataList = AccessPointData.findAllByOrgAccessPoint(orgAccessPoint);
+        ArrayList accessPointDataList = AccessPointData.findAllByOrgAccessPoint(orgAccessPoint);
 
         orgAccessPoint.getAllRefdataValues(RDConstants.IPV6_ADDRESS_FORMAT)
 
-        def ipv4Ranges = orgAccessPoint.getIpRangeStrings('ipv4', ipv4Format.substring(2))
-        def ipv6Ranges = orgAccessPoint.getIpRangeStrings('ipv6', ipv6Format.substring(2))
+        String[] ipv4Ranges = orgAccessPoint.getIpRangeStrings('ipv4', ipv4Format.substring(2))
+        String[] ipv6Ranges = orgAccessPoint.getIpRangeStrings('ipv6', ipv6Format.substring(2))
 
         List currentSubIds = orgTypeService.getCurrentSubscriptionIds(contextService.getOrg())
 
-//        String qry = ""
-//        qry = "select distinct(platf), spoap" +
-//                " from " +
-//                "    TitleInstancePackagePlatform tipp join tipp.pkg pkg join tipp.platform platf, " +
-//                "    SubscriptionPackage subPkg join subPkg.subscriptionPackageOrgAccessPoint  spoap join spoap.orgAccessPoint ap" +
-//                " where " +
-//                "    subPkg.pkg = pkg and " +
-//                "    ap.id  = :accessPointId "
-//
-//        def qryParams = [
-//                accessPointId : params.id as Long
-//        ]
-//        List linkedPlatformsMap = Platform.executeQuery(qry,qryParams)
         def sort = params.sort ?: "LOWER(p.name)"
         def order = params.order ?: "ASC"
 
-        def hql = "select new map(p as platform,oapl as aplink) from Platform p join p.oapp as oapl where oapl.active = true and oapl.oap=${orgAccessPoint.id} and oapl.subPkg is null order by ${sort} ${order}"
-        def linkedPlatformsMap = Platform.executeQuery(hql)
-
-        def linkedSubscriptionsQuery = "select new map(sp as subPkg,oapl as oapl) from OrgAccessPointLink oapl join oapl.subPkg as sp where oapl.active = true and oapl.oap=${orgAccessPoint.id}"
-
-        def linkedSubscriptionPackagesMap = OrgAccessPointLink.executeQuery(linkedSubscriptionsQuery)
-
-        switch (request.method) {
-            case 'GET':
-                [accessPoint           : orgAccessPoint, accessPointDataList: accessPointDataList, orgId: orgId,
-                 platformList          : orgAccessPoint.getNotLinkedPlatforms(),
-                 linkedPlatformsMap    : linkedPlatformsMap,
-                 linkedSubscriptionPackagesMap: linkedSubscriptionPackagesMap,
-                 ip                    : params.ip, editable: true,
-                 ipv4Ranges            : ipv4Ranges, ipv4Format: ipv4Format,
-                 ipv6Ranges            : ipv6Ranges, ipv6Format: ipv6Format,
-                 autofocus             : autofocus,
-                 orgInstance           : orgAccessPoint.org,
-                 inContextOrg          : orgId == contextService.org.id
-                ]
-                break
-            case 'POST':
-                orgAccessPoint.properties = params;
-                orgAccessPoint.save(flush: true)
-
-                redirect controller: 'organisation', action: 'accessPoints', orgId: orgId
-                break
+        String qry1 = "select new map(p as platform,oapl as aplink) from Platform p join p.oapp as oapl where oapl.active = true and oapl.oap=${orgAccessPoint.id} and oapl.subPkg is null order by ${sort} ${order}"
+        ArrayList<HashMap> linkedPlatforms = Platform.executeQuery(qry1)
+        linkedPlatforms.each() {
+            String qry2 = """
+            SELECT distinct s from Subscription s
+            JOIN s.packages as sp
+            JOIN sp.pkg as pkg
+            JOIN pkg.tipps as tipps
+            WHERE s.id in (:currentSubIds)
+            AND tipps.platform.id = ${it.platform.id}
+            AND NOT EXISTS 
+            (SELECT ioapl from OrgAccessPointLink ioapl
+                WHERE ioapl.active=true and ioapl.subPkg=sp and ioapl.oap is null)
+"""
+            ArrayList linkedSubs = Subscription.executeQuery(qry2, [currentSubIds: currentSubIds])
+            it['linkedSubs'] = linkedSubs
         }
+        String linkedSubscriptionsQuery = "select new map(sp as subPkg,oapl as oapl) from OrgAccessPointLink oapl join oapl.subPkg as sp where oapl.active = true and oapl.oap=${orgAccessPoint.id}"
+
+        String qry3 = """
+            Select p, sp from Platform p
+            JOIN p.oapp as oapl
+            JOIN oapl.subPkg as sp
+            WHERE oapl.active=true and oapl.oap=${orgAccessPoint.id} 
+            AND EXISTS (SELECT 1 FROM OrgAccessPointLink ioapl 
+                where ioapl.subPkg=oapl.subPkg and ioapl.platform=p and ioapl.oap is null)
+"""
+        ArrayList linkedPlatformSubscriptionPackages = Platform.executeQuery(qry3)
+
+        return [
+             accessPoint           : orgAccessPoint, accessPointDataList: accessPointDataList, orgId: orgId,
+             platformList          : orgAccessPoint.getNotLinkedPlatforms(),
+             linkedPlatforms    : linkedPlatforms,
+             linkedPlatformSubscriptionPackages : linkedPlatformSubscriptionPackages,
+             ip                    : params.ip, editable: true,
+             ipv4Ranges            : ipv4Ranges, ipv4Format: ipv4Format,
+             ipv6Ranges            : ipv6Ranges, ipv6Format: ipv6Format,
+             autofocus             : autofocus,
+             orgInstance           : orgAccessPoint.org,
+             inContextOrg          : orgId == contextService.org.id
+        ]
     }
 
     @Secured(closure = {

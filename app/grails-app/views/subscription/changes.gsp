@@ -2,7 +2,7 @@
 <html>
     <head>
         <meta name="layout" content="semanticUI"/>
-        <title>${message(code:'laser', default:'LAS:eR')} : ${message(code:'license.nav.todo_history')}</title>
+        <title>${message(code:'laser')} : ${message(code:'license.nav.todo_history')}</title>
 </head>
 
 <body>
@@ -37,9 +37,9 @@
     <table class="ui celled la-table table">
           <thead>
             <tr>
-              <th>${message(code:'subscription.details.todo_history.descr', default:'ToDo Description')}</th>
-              <th>${message(code:'default.status.label', default:'Status')}</th>
-              <th>${message(code:'default.date.label', default:'Date')}</th>
+              <th>${message(code:'subscription.details.todo_history.descr')}</th>
+              <th>${message(code:'default.status.label')}</th>
+              <th>${message(code:'default.date.label')}</th>
             </tr>
           </thead>
         <g:if test="${todoHistoryLines}">
@@ -65,18 +65,18 @@
 
                 <g:if test="${hl.status?.value in ['Accepted', 'Rejected']}">
                     <%--${message(code:'subscription.details.todo_history.by_on', args:[hl.user?.display?:hl.user?.username])}--%>
-                    / <g:formatDate format="${message(code:'default.date.format.notime', default:'yyyy-MM-dd')}" date="${hl.actionDate}"/>
+                    / <g:formatDate format="${message(code:'default.date.format.notime')}" date="${hl.actionDate}"/>
                 </g:if>
               </td>
               <td>
-                  <g:formatDate format="${message(code:'default.date.format.notime', default:'yyyy-MM-dd')}" date="${hl.ts}"/>
+                  <g:formatDate format="${message(code:'default.date.format.notime')}" date="${hl.ts}"/>
               </td>
             </tr>
           </g:each>
         </g:if>
       </table>
 
-        <semui:paginate  action="todoHistory" controller="subscription" params="${params}" next="${message(code:'default.paginate.next', default:'Next')}" prev="${message(code:'default.paginate.prev', default:'Prev')}" max="${max}" total="${todoHistoryLinesTotal}" />
+        <semui:paginate  action="todoHistory" controller="subscription" params="${params}" next="${message(code:'default.paginate.next')}" prev="${message(code:'default.paginate.prev')}" max="${max}" total="${todoHistoryLinesTotal}" />
 
 </body>
 </html>

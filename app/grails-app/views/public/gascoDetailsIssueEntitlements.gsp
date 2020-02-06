@@ -5,7 +5,7 @@
 <html>
 <head>
     <meta name="layout" content="semanticUI">
-    <title>${message(code: 'laser', default: 'LAS:eR')} : ${message(code: 'gasco.title')}</title>
+    <title>${message(code: 'laser')} : ${message(code: 'gasco.title')}</title>
 </head>
 
 <body>
@@ -48,7 +48,7 @@
                 <div class="field la-field-right-aligned">
                     <a href="${request.forwardURI}" class="ui reset primary primary button">${message(code:'default.button.reset.label')}</a>
 
-                    <input type="submit" class="ui secondary button" value="${message(code:'default.button.filter.label', default:'Filter')}" />
+                    <input type="submit" class="ui secondary button" value="${message(code:'default.button.filter.label')}" />
                 </div>
 
             </div>
@@ -80,7 +80,7 @@
                         </g:if>
                         <br />
 
-                        ${message(code:'tipp.platform', default:'Platform')}:
+                        ${message(code:'tipp.platform')}:
                         <g:if test="${tipp.platform.name}">
                             ${tipp.platform.name}
                         </g:if>
@@ -89,7 +89,7 @@
                         </g:else>
                         <br />
 
-                        ${message(code:'tipp.package', default:'Package')}:
+                        ${message(code:'package.label')}:
                         <g:if test="${tipp.pkg}"><!-- TODO: show all packages -->
                             ${tipp.pkg}
                         </g:if>
@@ -141,7 +141,7 @@
                     <br />
                 </g:if>
 
-                ${message(code:'tipp.platform', default:'Platform')}:
+                ${message(code:'tipp.platform')}:
                 <g:if test="${ie.tipp?.platform.name}">
                     ${ie.tipp?.platform.name}
                 </g:if>
@@ -150,7 +150,7 @@
                 </g:else>
                 <br />
 
-                ${message(code:'tipp.package', default:'Package')}:
+                ${message(code:'package.label')}:
                 <g:if test="${ie.tipp?.pkg}">
                     ${ie.tipp?.pkg}
                 </g:if>

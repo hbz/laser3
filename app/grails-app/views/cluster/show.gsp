@@ -4,7 +4,7 @@
 <html>
 	<head>
 		<meta name="layout" content="semanticUI">
-		<g:set var="entityName" value="${message(code: 'cluster.label', default: 'Cluster')}" />
+		<g:set var="entityName" value="${message(code: 'cluster.label')}" />
 		<title><g:message code="default.show.label" args="[entityName]" /></title>
 	</head>
 	<body>
@@ -50,11 +50,11 @@
 					<div class="ui form-actions">
 						<g:link class="ui button" action="edit" id="${clusterInstance?.id}">
 							<i class="write icon"></i>
-							<g:message code="default.button.edit.label" default="Edit" />
+							<g:message code="default.button.edit.label" />
 						</g:link>
 						<button class="ui negative button" type="submit" name="_action_delete">
 							<i class="trash alternate icon"></i>
-							<g:message code="default.button.delete.label" default="Delete" />
+							<g:message code="default.button.delete.label" />
 						</button>
 					</div>
 				</g:form>

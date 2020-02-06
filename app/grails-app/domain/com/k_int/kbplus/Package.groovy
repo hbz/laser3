@@ -504,7 +504,7 @@ static hasMany = [  tipps:     TitleInstancePackagePlatform,
   def toComparablePackage() {
     Map<String, Object> result = [:]
     println "converting old package to comparable package"
-    def sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
+    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
     println "processing metadata"
     result.packageName = this.name
     result.packageId = this.identifier

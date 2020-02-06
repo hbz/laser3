@@ -25,7 +25,7 @@
 
     <br/>
     <g:if test="${editable}">
-        <input type="submit" class="ui button" value="${message(code: 'default.button.add.label', default: 'Add')}"/>
+        <input type="submit" class="ui button" value="${message(code: 'default.button.add.label')}"/>
     </g:if>
 
 </g:form>

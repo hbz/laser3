@@ -896,7 +896,7 @@ class OrganisationService {
 
         Map<String, Object> map1 = [
                 token       : "Quellensteuer-Befreiung",
-                category    : "Subscription Property",
+                category    : PropertyDefinition.SUB_PROP,
                 type        : "class com.k_int.kbplus.RefdataValue",
                 rdc         : RDConstants.Y_N_O,
                 tenant      : current,
@@ -910,7 +910,7 @@ class OrganisationService {
 
         Map<String, Object> map2 = [
                 token       : "BGA",
-                category    : "Organisation Property",
+                category    : PropertyDefinition.ORG_PROP,
                 type        : "class com.k_int.kbplus.RefdataValue",
                 rdc         : RDConstants.Y_N,
                 tenant      : current,
@@ -924,7 +924,7 @@ class OrganisationService {
 
         Map<String, Object> map3 = [
                 token       : "EGP Nr.",
-                category    : "Organisation Property",
+                category    : PropertyDefinition.ORG_PROP,
                 type        : "class java.lang.Integer",
                 tenant      : current,
                 i10n        : [

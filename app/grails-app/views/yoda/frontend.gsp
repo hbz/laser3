@@ -1,9 +1,10 @@
 <%@ page import="com.k_int.kbplus.UserSettings" %>
 <!doctype html>
+<r:require module="chartist" />
 <html>
 <head>
     <meta name="layout" content="semanticUI">
-    <title>${message(code: 'laser', default: 'LAS:eR')} : Frontend for Developers</title>
+    <title>${message(code: 'laser')} : Frontend for Developers</title>
     <style>
     #example .example .column .icon {
         opacity: 1;
@@ -192,7 +193,7 @@
             <div class="ui instructive bottom attached segment">
                 <pre>
 &lt;div class=&quot;field&quot;&gt;com.k_int.properties.PropertyDefinition:269
-    &lt;label <b>for=&quot;filterPropDef&quot;</b>&gt;
+    &lt;label <strong>for=&quot;filterPropDef&quot;</strong>&gt;
         Merkmal
         &lt;i class=&quot;question circle icon la-popup&quot;&gt;&lt;/i&gt;
         &lt;div class=&quot;ui  popup &quot;&gt;
@@ -201,7 +202,7 @@
     &lt;/label&gt;
     &lt;div class=&quot;ui search selection dropdown la-filterPropDef&quot;&gt;
         &lt;input type=&quot;hidden&quot; name=&quot;filterPropDef&quot;&gt; &lt;i class=&quot;dropdown icon&quot;&gt;&lt;/i&gt;
-        &lt;input class=&quot;search&quot; <b>id=&quot;filterPropDef&quot;</b> &gt;
+        &lt;input class=&quot;search&quot; <strong>id=&quot;filterPropDef&quot;</strong> &gt;
         &lt;div class=&quot;default text&quot;&gt;Bitte ausw&auml;hlen&lt;/div&gt;
         &lt;div class=&quot;menu&quot;&gt;
             &lt;div class=&quot;item selected&quot; data-value=&quot;linkurl&quot;&gt;Abbestellgrund&lt;/div&gt;
@@ -221,8 +222,8 @@
             <ui>
                 <li>Cards, die keinen Inhalt haben, müssen ausgeschaltet werden:
                     <ol>
-                    <li>class <b>'la-js-dont-hide-this-card'</b> zu ins Markup einer Tabellen-Zelle</li>
-                    <li>class <b>'la-js-hideable'</b> zu ins Markup einer Card</li>
+                    <li>class <strong>'la-js-dont-hide-this-card'</strong> zu ins Markup einer Tabellen-Zelle</li>
+                    <li>class <strong>'la-js-hideable'</strong> zu ins Markup einer Card</li>
                     </ol>
                 </li>
                 <li><g:link controller="subscription" action="show">zum Beispiel hier verwendet</g:link></li>
@@ -239,20 +240,20 @@
                 <pre>
 &lt;thead&gt;
 &lt;tr&gt;
-    &lt;th class="<b>la-js-dont-hide-this-card</b>" &gt;${message(code:'property.table.property')}&lt;/th&gt;
+    &lt;th class="<strong>la-js-dont-hide-this-card</strong>" &gt;${message(code:'property.table.property')}&lt;/th&gt;
     &lt;th&gt;${message(code:'property.table.value')}&lt;/th&gt;
     &lt;g:if test="${ownobj instanceof com.k_int.kbplus.License}"&gt;
         &lt;th&gt;${message(code:'property.table.paragraph')}&lt;/th&gt;
     &lt;/g:if&gt;
     &lt;th&gt;${message(code:'property.table.notes')}&lt;/th&gt;
-    &lt;th&gt;${message(code:'default.actions')}&lt;/th&gt;
+    &lt;th&gt;${message(code:'default.actions.label')}&lt;/th&gt;
 &lt;/tr&gt;
 &lt;/thead&gt;
                     .
                     .
                     .
 
-&lt;div class="ui card la-dl-no-table <b>la-js-hideable</b>"&gt;
+&lt;div class="ui card la-dl-no-table <strong>la-js-hideable</strong>"&gt;
                 </pre>
             </div>
         </div>
@@ -264,9 +265,9 @@
     <h4 class="ui header">Anzeige Icon</h4>
     <div class="html ui top attached segment example">
         <ul>
-            <li><code>tabindex="0"</code><b> – für den Screenreader</b>
-            <li><code>class="la-popup-tooltip la-delay"</code> <b> – für die Aktivierung des Tooltips mit Jvascript</b>
-            <li><code>class="icon thumbtack blue"</code> <b> – für Gestaltung</b>
+            <li><code>tabindex="0"</code><strong> – für den Screenreader</strong>
+            <li><code>class="la-popup-tooltip la-delay"</code> <strong> – für die Aktivierung des Tooltips mit Jvascript</strong>
+            <li><code>class="icon thumbtack blue"</code> <strong> – für Gestaltung</strong>
             <li><code>data-content="1 2 3"</code>
         </ul>
         <div class="ui top attached label">WCAG-Proof Icon</div>
@@ -275,12 +276,12 @@
     <h4 class="ui header">Funktions-Button, der ausgeschaltet werden kan, Icon bleibt</h4>
     <div class="html ui top attached segment example">
         <ul>
-            <li><code>la-js-editmode-container</code> <b>im umschließenden Element</b>
-            <li><code>role="button"</code>, <b>wenn es ein Link ist</b>
+            <li><code>la-js-editmode-container</code> <strong>im umschließenden Element</strong>
+            <li><code>role="button"</code>, <strong>wenn es ein Link ist</strong>
             <li><code>class="ui icon mini button </code>
                 <ul>
                     <li><code>la-audit-button </code>
-                    <li><code>class="la-popup-tooltip la-delay"</code> <b> – für die Aktivierung des Tooltips mit Jvascript</b>
+                    <li><code>class="la-popup-tooltip la-delay"</code> <strong> – für die Aktivierung des Tooltips mit Jvascript</strong>
                     <li><code>la-js-editmode-remain-icon"</code>
                 </ul>
             </li>
@@ -297,9 +298,9 @@
     <h4 class="ui header">Funktions-Button, der ausgeschaltet werden kann, Icon verschwindet</h4>
     <div class="html ui top attached segment example">
         <ul>
-            <li><code>role="button"</code>, <b>wenn es ein Link ist</b>
+            <li><code>role="button"</code>, <strong>wenn es ein Link ist</strong>
             <li><code>class="ui icon mini button </code>
-            <li><code>class="la-popup-tooltip la-delay"</code> <b> – für die Aktivierung des Tooltips mit Jvascript</b>
+            <li><code>class="la-popup-tooltip la-delay"</code> <strong> – für die Aktivierung des Tooltips mit Jvascript</strong>
 
             </li>
 
@@ -313,9 +314,9 @@
     <h4 class="ui header">Funktions-Button, der ausgeschaltet werden kann, Icon verschwindet</h4>
     <div class="html ui top attached segment example">
         <ul>
-            <li><code>role="button"</code>, <b>wenn es ein Link ist</b>
+            <li><code>role="button"</code>, <strong>wenn es ein Link ist</strong>
             <li><code>class="ui icon mini button </code>
-            <li><code>class="la-popup-tooltip la-delay"</code> <b> – für die Aktivierung des Tooltips mit Jvascript</b>
+            <li><code>class="la-popup-tooltip la-delay"</code> <strong> – für die Aktivierung des Tooltips mit Jvascript</strong>
 
             </li>
 
@@ -335,8 +336,8 @@
 Javascript:
 
 dcbStore.modal.show.customerTypeModal = function(trigger) {
-    $('#customerTypeModal #orgName_ct').attr('value', $(trigger).<b>attr('data-orgName')</b>)
-    $('#customerTypeModal input[name=target]').attr('value', $(trigger).<b>attr('data-ctTarget')</b>)
+    $('#customerTypeModal #orgName_ct').attr('value', $(trigger).<strong>attr('data-orgName')</strong>)
+    $('#customerTypeModal input[name=target]').attr('value', $(trigger).<strong>attr('data-ctTarget')</strong>)
                 .
                 .
                 .</pre>
@@ -347,14 +348,95 @@ dcbStore.modal.show.customerTypeModal = function(trigger) {
 
 var customerType = $(trigger).attr('data-customerType')
 if (customerType) {
-        $('#customerTypeModal select[name=customerType]').dropdown(<b>'set selected'</b>, customerType)
+        $('#customerTypeModal select[name=customerType]').dropdown(<strong>'set selected'</strong>, customerType)
 } else {
     $('#customerTypeModal select[name=customerType]').dropdown('clear')
 }</pre>
     </div>
+
+    <%-- Confimation Modal --%>
+
+    <h2 class="ui dividing header">Confimation Modal<a class="anchor" id="icons"></a></h2>
+    <h4 class="ui header">Buttons, die Confirmation Modals haben</h4>
+    <div class="html ui top attached segment example">
+        <div class="ui top attached label">Link, der als Button funktioniert (daß heiß, eine Aktion ausführt)</div>
+        <g:link controller="yoda"
+                action="frontend"
+                params=""
+                data-content="Hier kommt der Tooltip rein"
+                data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.function", args: ['Button auf der YODA/FRONTENDSEITE'])}"
+                data-confirm-term-how="delete"
+                class="ui icon negative button js-open-confirm-modal la-popup-tooltip la-delay"
+                role="button">
+            <i class="trash alternate icon"></i>
+        </g:link>
+    </div>
+
+    <div class="html ui top attached segment example">
+        <div class="ui top attached label">Link, der den AJAX-Contoler aufruft und  als Button funktioniert (daß heiß, eine Aktion ausführt)</div>
+        <laser:remoteLink class="ui icon negative button js-open-confirm-modal la-popup-tooltip la-delay"
+                          controller="yoda"
+                          action="frontend"
+                          params=""
+                          id=""
+                          data-content="Hier kommt der Tooltip rein"
+                          data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.function", args: ['Button auf der YODA/FRONTENDSEITE'])}"
+                          data-confirm-term-how="delete"
+                          data-done=""
+                          data-always=""
+                          data-update=""
+                          role="button"
+        >
+            <i class="trash alternate icon"></i>
+        </laser:remoteLink>
+    </div>
+
+
+    <%-- Charts --%>
+
+    <h2 class="ui dividing header">Charts<a class="anchor" id="icons"></a></h2>
+    <h4 class="ui header">Einbindung von Chartist als Javascript Library zum Rendern von Daten</h4>
+    <div class="html ui top attached segment example">
+        <div class="ui top attached label">Require-Tag für Chartist eingebauen</div>
+
+        <pre>
+            &ltr:require module="chartist" /&gt;
+        </pre>
+
+    </div>
+    <div class="html ui top attached segment example">
+        <div class="ui top attached label">Chartis-Objekt mit Javascript aufrufen innerhalb r:script</div>
+        <pre> &ltr:script /&gt;
+        </pre>
+        <pre>    new Chartist.Line('.ct-chart', data);
+        </pre>
+        <pre>&lt/r:script&gt;
+        </pre>
+    </div>
+    <div class="html ui top attached segment example">
+        <div class="ui top attached label">Beispiel</div>
+        <div class="ct-chart ct-perfect-fourth"></div>
+    </div>
 </section>
 
 
+
+<r:script>
+
+    var data = {
+        // A labels array that can contain any sort of values
+        labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri'],
+        // Our series array that contains series objects or in this case series data arrays
+        series: [
+            [5, 2, 4, 2, 0]
+        ]
+    };
+
+    // Create a new line chart object where as first parameter we pass in a selector
+    // that is resolving to our chart container element. The Second parameter
+    // is the actual data object.
+    new Chartist.Line('.ct-chart', data);
+</r:script>
 
 
 </body>

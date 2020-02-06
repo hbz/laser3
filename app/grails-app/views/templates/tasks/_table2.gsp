@@ -7,22 +7,22 @@
         <table class="ui sortable celled la-table table">
             <thead>
             <tr>
-                <g:sortableColumn property="lower(t.title)" title="${message(code: 'task.title.label', default: 'Title')}"/>
+                <g:sortableColumn property="lower(t.title)" title="${message(code: 'task.title.label')}"/>
 
-                <g:sortableColumn property="t.endDate" title="${message(code: 'task.endDate.label', default: 'End Date')}"/>
+                <g:sortableColumn property="t.endDate" title="${message(code: 'task.endDate.label')}"/>
 
-                <g:sortableColumn property="t.status" title="${message(code: 'task.status.label', default: 'Status')}"/>
+                <g:sortableColumn property="t.status" title="${message(code: 'task.status.label')}"/>
 
 
                 <g:if test="${controllerName == 'myInstitution'}">
-                    <th>${message(code: 'task.object.label', default: 'Object')}</th>
+                    <th>${message(code: 'task.object.label')}</th>
                 </g:if>
 
                 <g:sortableColumn property="lower(ru.username)" title="${message(code: 'task.responsibleEmployee.label', default: 'Responsible Employee')}"/>
 
-                <g:sortableColumn property="t.createDate" title="${message(code: 'task.createDate.label', default: 'Create Date')}"/>
+                <g:sortableColumn property="t.createDate" title="${message(code: 'task.createDate.label')}"/>
 
-                <th class="la-action-info">${message(code:'default.actions')}</th>
+                <th class="la-action-info">${message(code:'default.actions.label')}</th>
             </tr>
             </thead>
             <tbody>
@@ -30,7 +30,7 @@
                 <tr>
                     <td class="la-main-object" >${fieldValue(bean: taskInstance, field: "title")}</td>
 
-                    <td><g:formatDate format="${message(code:'default.date.format.notime', default:'yyyy-MM-dd')}" date="${taskInstance?.endDate}"/></td>
+                    <td><g:formatDate format="${message(code:'default.date.format.notime')}" date="${taskInstance?.endDate}"/></td>
 
                     <td>
                         <semui:xEditableRefData config="${de.laser.helper.RDConstants.TASK_STATUS}" owner="${taskInstance}" field="status" overwriteEditable="${overwriteEditable}" />
@@ -56,7 +56,7 @@
                     <td>${fieldValue(bean: taskInstance, field: "responsibleUser")}
                     </td>
 
-                    <td><g:formatDate format="${message(code:'default.date.format.notime', default:'yyyy-MM-dd')}" date="${taskInstance?.createDate}"/></td>
+                    <td><g:formatDate format="${message(code:'default.date.format.notime')}" date="${taskInstance?.createDate}"/></td>
 
                     <td class="x">
                         <a onclick="taskedit(${taskInstance.id});" class="ui icon button">

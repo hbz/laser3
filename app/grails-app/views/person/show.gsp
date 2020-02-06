@@ -3,8 +3,8 @@
 <html>
 <head>
     <meta name="layout" content="semanticUI">
-    <g:set var="entityName" value="${message(code: 'person.label', default: 'Person')}"/>
-    <title>${message(code:'laser', default:'LAS:eR')} : <g:message code="default.show.label" args="[entityName]"/></title>
+    <g:set var="entityName" value="${message(code: 'person.label')}"/>
+    <title>${message(code:'laser')} : <g:message code="default.show.label" args="[entityName]"/></title>
 
 </head>
 <laser:serviceInjection />
@@ -44,7 +44,7 @@ ${personInstance}
                     </dl>
 
                     <g:if test="${personType}">
-                        <dl><dt id="person_title"><g:message code="person.title.label" default="Title"/></dt>
+                        <dl><dt id="person_title"><g:message code="person.title.label" /></dt>
                             <dd><semui:xEditable owner="${personInstance}" field="title"/></dd>
                         </dl>
                     </g:if>
@@ -52,7 +52,7 @@ ${personInstance}
                     <dl>
                         <dt id="person_last_name">
                             <g:if test="${personType}">
-                                <g:message code="person.last_name.label" default="Lastname"/>
+                                <g:message code="person.last_name.label" />
                             </g:if>
                             <g:else>
                                 Bezeichnung
@@ -63,13 +63,13 @@ ${personInstance}
 
                     <g:if test="${personType}">
 
-                        <dl><dt><g:message code="person.first_name.label" default="Firstname"/></dt>
+                        <dl><dt><g:message code="person.first_name.label" /></dt>
                             <dd><semui:xEditable owner="${personInstance}" field="first_name"/></dd></dl>
 
-                        <dl><dt><g:message code="person.middle_name.label" default="Middlename"/></dt>
+                        <dl><dt><g:message code="person.middle_name.label" /></dt>
                             <dd><semui:xEditable owner="${personInstance}" field="middle_name"/></dd></dl>
 
-                        <dl><dt><g:message code="person.gender.label" default="Gender"/></dt>
+                        <dl><dt><g:message code="person.gender.label" /></dt>
                             <dd><semui:xEditableRefData owner="${personInstance}" field="gender" config="${RDConstants.GENDER}"/></dd>
                         </dl>
 
@@ -84,7 +84,7 @@ ${personInstance}
             <div class="ui card">
                 <div class="content">
 
-                    <dl><dt><g:message code="person.contacts.label" default="Contacts"/></dt>
+                    <dl><dt><g:message code="person.contacts.label"/></dt>
                         <dd>
                             <div class="ui divided middle aligned selection list la-flex-list">
                                 <g:each in="${personInstance?.contacts?.toSorted()}" var="c">
@@ -101,13 +101,13 @@ ${personInstance}
                             </div>
                             <g:if test="${editable}">
                                 <input class="ui button" type="button" data-semui="modal" data-href="#contactFormModal"
-                                       value="${message(code: 'default.add.label', args: [message(code: 'person.contacts.label', default: 'Contacts')])}">
+                                       value="${message(code: 'default.add.label', args: [message(code: 'person.contacts.label')])}">
                                 <g:render template="/contact/formModal" model="['prsId': personInstance?.id]"/>
                             </g:if>
                         </dd>
                     </dl>
 
-                    <dl><dt><g:message code="person.addresses.label" default="Addresses"/></dt>
+                    <dl><dt><g:message code="person.addresses.label" /></dt>
                         <dd>
                             <div class="ui divided middle aligned selection list la-flex-list">
                                 <g:each in="${personInstance.addresses.sort{it.type?.getI10n('value')}}" var="a">
@@ -124,7 +124,7 @@ ${personInstance}
                             </div>
                             <g:if test="${editable}">
                                 <input class="ui button" type="button" data-semui="modal" data-href="#addressFormModal"
-                                       value="${message(code: 'default.add.label', args: [message(code: 'address.label', default: 'Address')])}">
+                                       value="${message(code: 'default.add.label', args: [message(code: 'address.label')])}">
                                 <g:render template="/address/formModal" model="['prsId': personInstance?.id]"/>
                             </g:if>
                         </dd>
@@ -137,7 +137,7 @@ ${personInstance}
                 <div class="ui card">
                     <div class="content">
 
-                        <dl><dt><g:message code="person.functions.label" default="Functions"/></dt>
+                        <dl><dt><g:message code="person.functions.label" /></dt>
                             <dd>
                                 <div class="ui divided middle aligned selection list la-flex-list">
                                     <g:each in="${personInstance.roleLinks}" var="link">
@@ -202,7 +202,7 @@ ${personInstance}
                             </dd>
                         </dl>
 
-                        <dl><dt><g:message code="person.positions.label" default="Positions"/></dt>
+                        <dl><dt><g:message code="person.positions.label" /></dt>
                             <dd>
                                 <div class="ui divided middle aligned selection list la-flex-list">
                                     <g:each in="${personInstance.roleLinks}" var="link">
@@ -267,7 +267,7 @@ ${personInstance}
                             </dd>
                         </dl>
 
-                        <dl><dt><g:message code="person.responsibilites.label" default="Responsibilites"/></dt>
+                        <dl><dt><g:message code="person.responsibilites.label" /></dt>
                             <dd>
                                 <div class="ui divided middle aligned selection list la-flex-list">
                                     <g:each in="${personInstance.roleLinks}" var="link">
@@ -285,7 +285,7 @@ ${personInstance}
                                                     </span>
                                                 </g:if>
                                                 <g:if test="${link.sub}">
-                                                    <span class="la-popup-tooltip la-delay" data-content="${message(code:'subscription.label')}" data-position="top right" data-variation="tiny">
+                                                    <span class="la-popup-tooltip la-delay" data-content="${message(code:'default.subscription.label')}" data-position="top right" data-variation="tiny">
                                                         <i class="ui icon clipboard outline la-list-icon"></i>
                                                     </span>
                                                 </g:if>
@@ -355,7 +355,7 @@ ${personInstance}
                     <g:if test="${personInstance?.tenant && !myPublicContact}">
                         <div class="ui card">
                             <div class="content">
-                                <dl><dt><g:message code="person.tenant.label" default="Tenant"/></dt>
+                                <dl><dt><g:message code="person.tenant.label" /></dt>
                                 <dd>
 
                                     <g:if test="${editable /* && personInstance?.tenant?.id == contextService.getOrg().id */ && personInstance?.isPublic}">
@@ -387,12 +387,14 @@ ${personInstance}
             <g:if test="${editable && personInstance?.tenant?.id == contextService.getOrg().id}">
                 <div class="ui card">
                     <div class="content">
-                            <g:link class="ui button negative"
-                                    controller="person"
+                            <g:link controller="person"
                                     action="_delete"
                                     id="${personInstance?.id}"
+                                    data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.contact", args: [personInstance])}"
+                                    data-confirm-term-how="delete"
+                                    class="ui icon negative button js-open-confirm-modal"
                                     params="[previousReferer: request.getHeader('referer')]">
-                                Kontakt löschen
+                                ${message(code: 'default.delete.label', args: ["${message(code: 'person')}"])}
                             </g:link>
                     </div>
                 </div>

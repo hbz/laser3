@@ -4,7 +4,7 @@
 <html>
 	<head>
 		<meta name="layout" content="semanticUI">
-		<title>${message(code: 'laser', default: 'LAS:eR')} : ${message(code: 'menu.admin.manageSurveyPropertyDefinitions')}</title>
+		<title>${message(code: 'laser')} : ${message(code: 'menu.admin.manageSurveyPropertyDefinitions')}</title>
 	</head>
 
 <semui:breadcrumbs>
@@ -43,7 +43,7 @@
         <thead>
         <tr>
             <th class="center aligned">${message(code: 'sidewide.number')}</th>
-            <th>${message(code: 'surveyProperty.name.label')}</th>
+            <th>${message(code: 'default.name.label')}</th>
             <th>DE</th>
             <th>EN</th>
             <th>DE ${message(code: 'surveyProperty.introduction.label')}</th>
@@ -51,7 +51,7 @@
             <th>DE ${message(code: 'surveyProperty.expl.label')}</th>
             <th>EN ${message(code: 'surveyProperty.expl.label')}</th>
             <th>${message(code: 'surveyProperty.comment.label')}</th>
-            <th>${message(code: 'surveyProperty.type.label')}</th>
+            <th>${message(code: 'default.type.label')}</th>
         </tr>
         </thead>
 
@@ -182,7 +182,7 @@
             <div class="two fields required">
 
                 <div class="field five wide">
-                    <label class="property-label"><g:message code="surveyProperty.type.label"/></label>
+                    <label class="property-label"><g:message code="default.type.label"/></label>
                     <g:select class="ui dropdown"
                               from="${SurveyProperty.validTypes.entrySet()}"
                               optionKey="key" optionValue="${{ SurveyProperty.getLocalizedValue(it.key) }}"
@@ -200,17 +200,17 @@
 
             <div class="three fields">
                 <div class="field six wide">
-                    <label class="property-label">${message(code: 'surveyProperty.expl.label', default: 'Explanation')}</label>
+                    <label class="property-label">${message(code: 'surveyProperty.expl.label')}</label>
                     <textarea name="expl" class="ui textarea"></textarea>
                 </div>
 
                 <div class="field six wide">
-                    <label class="property-label">${message(code: 'surveyProperty.introduction.label', default: 'Introduction')}</label>
+                    <label class="property-label">${message(code: 'surveyProperty.introduction.label')}</label>
                     <textarea name="introduction" class="ui textarea"></textarea>
                 </div>
 
                 <div class="field six wide">
-                    <label class="property-label">${message(code: 'surveyProperty.comment.label', default: 'Comment')}</label>
+                    <label class="property-label">${message(code: 'surveyProperty.comment.label')}</label>
                     <textarea name="comment" class="ui textarea"></textarea>
                 </div>
 

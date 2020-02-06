@@ -27,7 +27,7 @@ class AnnouncementController extends AbstractDebugController {
         Map<String, Object> result = [:]
         if (params.annTxt) {
             result.user = User.get(springSecurityService.principal.id)
-            flash.message = message(code: 'announcement.created', default: "Announcement Created")
+            flash.message = message(code: 'announcement.created')
             def announcement_type = RefdataValue.getByValueAndCategory('Announcement', RDConstants.DOCUMENT_TYPE)
 
             def new_announcement = new Doc(title: params.subjectTxt,

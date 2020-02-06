@@ -3,8 +3,8 @@
 <html>
 	<head>
 		<meta name="layout" content="semanticUI">
-		<g:set var="entityName" value="${message(code: 'person.label', default: 'Person')}" />
-		<title>${message(code:'laser', default:'LAS:eR')} : <g:message code="default.edit.label" args="[entityName]" /></title>
+		<g:set var="entityName" value="${message(code: 'person.label')}" />
+		<title>${message(code:'laser')} : <g:message code="default.edit.label" args="[entityName]" /></title>
 	</head>
 	<body>
 
@@ -28,11 +28,11 @@
 							<div class="ui form-actions">
 								<button type="submit" class="ui button">
 									<i class="checkmark icon"></i>
-									<g:message code="default.button.update.label" default="Update" />
+									<g:message code="default.button.update.label" />
 								</button>
 								<button type="submit" class="ui negative button" name="_action_delete" formnovalidate>
 									<i class="trash alternate icon"></i>
-									<g:message code="default.button.delete.label" default="Delete" />
+									<g:message code="default.button.delete.label" />
 								</button>
 							</div>
 						</fieldset>

@@ -108,7 +108,7 @@
                 <fieldset class="field la-modal-fieldset-no-margin">
                 <label>${message(code:'financials.newCosts.constsReferenceOn')}</label>
                     <div class="field">
-                        <label for="newSubscription">${message(code:'subscription.label')}</label>
+                        <label for="newSubscription">${message(code:'default.subscription.label')}</label>
                         <input ${inSubMode ? "disabled='disabled' data-filterMode='${fixedSubscription?.class.getName()}:${fixedSubscription?.id}'" : '' }
                                 name="newSubscription" class="la-full-width select2" placeholder="${message(code:'financials.newCosts.newLicence')}" id="newSubscription"
                                 value="${inSubMode ? fixedSubscription?.name : params.newSubscription}" data-subfilter=""/>

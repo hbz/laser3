@@ -50,7 +50,7 @@
                             </g:else>
                             <br/>
                             ${message(code:'template.notes.created')}
-                            <g:formatDate format="${message(code:'default.date.format.notime', default:'yyyy-MM-dd')}" date="${docctx.owner.dateCreated}"/>
+                            <g:formatDate format="${message(code:'default.date.format.notime'')}" date="${docctx.owner.dateCreated}"/>
                         </div>
                         <div class="right aligned six wide column la-column-left-lessPadding">
                             <%-- START First Button --%>

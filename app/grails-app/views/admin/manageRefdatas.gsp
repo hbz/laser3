@@ -4,7 +4,7 @@
 <html>
 	<head>
 		<meta name="layout" content="semanticUI">
-		<title>${message(code:'laser', default:'LAS:eR')} : ${message(code: 'menu.admin.manageRefdatas')}</title>
+		<title>${message(code:'laser')} : ${message(code: 'menu.admin.manageRefdatas')}</title>
 	</head>
 
         <semui:debugInfo>
@@ -48,7 +48,7 @@
                             <th>Wert (Schlüssel)</th>
                             <th>DE</th>
                             <th>EN</th>
-                            <th class="la-action-info">${message(code:'default.actions')}</th>
+                            <th class="la-action-info">${message(code:'default.actions.label')}</th>
                         </tr>
                         </thead>
                         <tbody>

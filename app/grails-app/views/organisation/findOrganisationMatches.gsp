@@ -10,7 +10,7 @@
 		<g:elseif test="${comboType == RDStore.COMBO_TYPE_DEPARTMENT}">
 			<g:set var="entityName" value="${message(code: 'default.department')}" />
 		</g:elseif>
-		<title>${message(code:'laser', default:'LAS:eR')} : <g:message code="default.create.label" args="[entityName]" /></title>
+		<title>${message(code:'laser')} : <g:message code="default.create.label" args="[entityName]" /></title>
 	</head>
 	<body>
 	<semui:breadcrumbs>
@@ -56,7 +56,7 @@
 						<table class="ui celled la-table table">
 							<thead>
 								<tr>
-									<th>${message(code:'org.name.label', default:'Name')}</th>
+									<th>${message(code:'default.name.label', default:'Name')}</th>
 									<g:if test="${comboType == RDStore.COMBO_TYPE_CONSORTIUM}">
 										<th>${message(code:'identifier.plural', default:'Identifiers')}</th>
 										<th>${message(code:'org.shortname.label', default:'Shortname')}</th>
@@ -82,9 +82,9 @@
 									<g:if test="${comboType == RDStore.COMBO_TYPE_CONSORTIUM}">
 										<td>
 											<ul>
-												<li><g:message code="org.globalUID.label" default="Global UID" />: <g:fieldValue bean="${organisationInstance}" field="globalUID"/></li>
+												<li><g:message code="org.globalUID.label" />: <g:fieldValue bean="${organisationInstance}" field="globalUID"/></li>
 												<g:if test="${organisationInstance.gokbId}">
-													<li><g:message code="org.gokbId.label" default="GOKb ID" />: <g:fieldValue bean="${organisationInstance}" field="gokbId"/></li>
+													<li><g:message code="org.gokbId.label" />: <g:fieldValue bean="${organisationInstance}" field="gokbId"/></li>
 												</g:if>
 												<g:each in="${organisationInstance.ids?.sort{it?.ns?.ns}}" var="id"><li>${id.ns.ns}: ${id.value}</li></g:each>
 											</ul>

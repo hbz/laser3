@@ -20,19 +20,19 @@
         </g:if>
 
         <g:if test="${tmplConfigItem.equalsIgnoreCase('sortname')}">
-            <g:sortableColumn title="${message(code: 'org.sortname.label', default: 'Sortname')}"
+            <g:sortableColumn title="${message(code: 'org.sortname.label')}"
                               property="lower(o.sortname)" params="${request.getParameterMap()}"/>
         </g:if>
         <g:if test="${tmplConfigItem.equalsIgnoreCase('shortname')}">
-            <g:sortableColumn title="${message(code: 'org.shortname.label', default: 'Shortname')}"
+            <g:sortableColumn title="${message(code: 'org.shortname.label')}"
                               property="lower(o.shortname)" params="${request.getParameterMap()}"/>
         </g:if>
         <g:if test="${tmplConfigItem.equalsIgnoreCase('name')}">
-            <g:sortableColumn title="${message(code: 'org.fullName.label', default: 'Name')}" property="lower(o.name)"
+            <g:sortableColumn title="${message(code: 'org.fullName.label')}" property="lower(o.name)"
                               params="${request.getParameterMap()}"/>
         </g:if>
         <g:if test="${tmplConfigItem.equalsIgnoreCase('mainContact')}">
-            <th>${message(code: 'org.mainContact.label', default: 'Main Contact')}</th>
+            <th>${message(code: 'org.mainContact.label')}</th>
         </g:if>
         <g:if test="${tmplConfigItem.equalsIgnoreCase('hasInstAdmin')}">
             <th>${message(code: 'org.hasInstAdmin.label')}</th>
@@ -46,16 +46,16 @@
             </th>
         </g:if>
         <g:if test="${tmplConfigItem.equalsIgnoreCase('publicContacts')}">
-            <th>${message(code: 'org.publicContacts.label', default: 'Public Contacts')}</th>
+            <th>${message(code: 'org.publicContacts.label')}</th>
         </g:if>
         <g:if test="${tmplConfigItem.equalsIgnoreCase('privateContacts')}">
-            <th>${message(code: 'org.privateContacts.label', default: 'Public Contacts')}</th>
+            <th>${message(code: 'org.privateContacts.label')}</th>
         </g:if>
         <g:if test="${tmplConfigItem.equalsIgnoreCase('currentFTEs')}">
-            <th class="la-th-wrap">${message(code: 'org.currentFTEs.label', default: 'Current FTEs')}</th>
+            <th class="la-th-wrap">${message(code: 'org.currentFTEs.label')}</th>
         </g:if>
         <g:if test="${tmplConfigItem.equalsIgnoreCase('numberOfSubscriptions')}">
-            <th class="la-th-wrap">${message(code: 'org.subscriptions.label', default: 'Public Contacts')}</th>
+            <th class="la-th-wrap">${message(code: 'org.subscriptions.label')}</th>
         </g:if>
         <g:if test="${grailsApplication.config.featureSurvey}">
             <g:if test="${tmplConfigItem.equalsIgnoreCase('numberOfSurveys')}">
@@ -72,10 +72,10 @@
             <th>ISIL</th>
         </g:if>
         <g:if test="${tmplConfigItem.equalsIgnoreCase('type')}">
-            <th>${message(code: 'org.type.label', default: 'Type')}</th>
+            <th>${message(code: 'default.type.label')}</th>
         </g:if>
         <g:if test="${tmplConfigItem.equalsIgnoreCase('sector')}">
-            <th>${message(code: 'org.sector.label', default: 'Sector')}</th>
+            <th>${message(code: 'org.sector.label')}</th>
         </g:if>
         <g:if test="${tmplConfigItem.equalsIgnoreCase('federalState')}">
             <th>${message(code: 'org.federalState.label')}</th>
@@ -607,7 +607,7 @@
 
             </td>
         </g:if>
-        <g:if test="${tmplConfigShow?.contains('surveyCostItem')}">
+        <g:if test="${tmplConfigItem.equalsIgnoreCase('surveyCostItem')}">
             <td class="x">
 
                 <g:if test="${orgSub?.isCurrentMultiYearSubscriptionNew()}">

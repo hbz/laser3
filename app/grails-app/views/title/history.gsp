@@ -3,7 +3,7 @@
 <html>
 <head>
     <meta name="layout" content="semanticUI">
-    <title>${message(code:'laser', default:'LAS:eR')} : ${message(code:'title.nav.history')}</title>
+    <title>${message(code:'laser')} : ${message(code:'title.nav.history')}</title>
 </head>
 
 <body>
@@ -35,7 +35,7 @@
               <th>${message(code:'event.property', default:'Property')}</th>
               <th>${message(code:'event.old', default:'Old')}</th>
               <th>${message(code:'event.new', default:'New')}</th>
-              <th>${message(code:'default.date.label', default:'Date')}</th>
+              <th>${message(code:'default.date.label')}</th>
             </tr>
           </thead>
           <tbody>

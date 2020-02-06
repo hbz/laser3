@@ -2,9 +2,12 @@ package com.k_int.kbplus
 
 import com.k_int.kbplus.auth.User
 import de.laser.controller.AbstractDebugController
+import de.laser.helper.DateUtil
 import de.laser.helper.RDConstants
 import grails.plugin.springsecurity.SpringSecurityUtils
 import grails.plugin.springsecurity.annotation.Secured
+
+import java.text.SimpleDateFormat
 
 @Secured(['IS_AUTHENTICATED_FULLY'])
 class TitleController extends AbstractDebugController {
@@ -32,9 +35,10 @@ class TitleController extends AbstractDebugController {
             result.user = springSecurityService.getCurrentUser()
             params.max = params.max ?: result.user.getDefaultPageSizeTMP()
 
+
             if (params.search.equals("yes")) {
                 //when searching make sure results start from first page
-                params.offset = 0
+                params.offset = params.offset ? params.int('offset') : 0
                 params.remove("search")
             }
 
@@ -45,12 +49,13 @@ class TitleController extends AbstractDebugController {
             params.sort = params.sort ?: "sortTitle.keyword"
 
             if (params.filter) {
-                params.q = "${params.filter}:${params.q}"
+                params.put(params.filter, params.q)
+                params.q = null
             }
 
             result =  ESSearchService.search(params)
             //Double-Quoted search strings wont display without this
-            params.q = old_q?.replace("\"","&quot;")
+            params.q = old_q
 
             if(! old_q ) {
                 params.remove('q')
@@ -62,7 +67,7 @@ class TitleController extends AbstractDebugController {
 
         result.editable = SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')
 
-        log.debug(result)
+        //log.debug(result)
 
         result
     }
@@ -163,7 +168,7 @@ class TitleController extends AbstractDebugController {
     @Secured(['ROLE_ADMIN'])
   def batchUpdate() {
     log.debug(params);
-    def formatter = new java.text.SimpleDateFormat(message(code:'default.date.format.notime', default:'yyyy-MM-dd'))
+        SimpleDateFormat formatter = DateUtil.getSDF_NoTime()
     def user = User.get(springSecurityService.principal.id)
 
       params.each { p ->

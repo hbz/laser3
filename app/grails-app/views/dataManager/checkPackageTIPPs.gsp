@@ -2,7 +2,7 @@
 <html>
 <head>
     <meta name="layout" content="semanticUI"/>
-    <title>${message(code:'laser', default:'LAS:eR')} : Package Tipps LAS:eR and GOKB</title>
+    <title>${message(code:'laser')} : Package Tipps LAS:eR and GOKB</title>
 </head>
 
 <body>
@@ -72,8 +72,8 @@
             </div>
 
             <semui:paginate action="${actionName}" controller="${controllerName}" params="${params}"
-                            next="${message(code: 'default.paginate.next', default: 'Next')}"
-                            prev="${message(code: 'default.paginate.prev', default: 'Prev')}"
+                            next="${message(code: 'default.paginate.next')}"
+                            prev="${message(code: 'default.paginate.prev')}"
                             max="${max}"
                             total="${resultsTotal2}"/>
         </g:if>

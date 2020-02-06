@@ -7,7 +7,7 @@
 <html>
 <head>
     <meta name="layout" content="semanticUI"/>
-    <title>${message(code: 'laser', default: 'LAS:eR')} : ${message(code: 'myinst.currentSubscriptions.label', default: 'Current Subscriptions')}</title>
+    <title>${message(code: 'laser')} : ${message(code: 'myinst.currentSubscriptions.label', default: 'Current Subscriptions')}</title>
 </head>
 
 <body>
@@ -44,7 +44,7 @@
         <div class="three fields">
             <!-- 1-1 -->
             <div class="field">
-                <label for="q">${message(code: 'default.search.text', default: 'Search text')}
+                <label for="q">${message(code: 'default.search.text')}
                     <span data-position="right center" data-variation="tiny"
                           class="la-popup-tooltip la-delay"
                           data-content="${message(code: 'default.search.tooltip.subscription')}">
@@ -128,7 +128,7 @@
                         <a href="${request.forwardURI}"
                            class="ui reset primary button">${message(code: 'default.button.reset.label')}</a>
                         <input type="submit" class="ui secondary button"
-                               value="${message(code: 'default.button.filter.label', default: 'Filter')}">
+                               value="${message(code: 'default.button.filter.label')}">
 
             </div>
         </div>
@@ -147,24 +147,24 @@
                                   title="${message(code: 'subscription.slash.name')}"
                                   rowspan="2"/>
                 <th rowspan="2">
-                    ${message(code: 'license.details.linked_pkg', default: 'Linked Packages')}
+                    ${message(code: 'license.details.linked_pkg')}
                 </th>
 
                 <g:if test="${params.orgRole == 'Subscriber'}">
-                    <th rowspan="2">${message(code: 'consortium', default: 'Consortia')}</th>
+                    <th rowspan="2">${message(code: 'consortium')}</th>
                 </g:if>
 
                 <g:sortableColumn params="${params}" property="orgRole§provider"
-                                  title="${message(code: 'default.provider.label', default: 'Provider')} / ${message(code: 'default.agency.label', default: 'Agency')}"
+                                  title="${message(code: 'default.provider.label')} / ${message(code: 'default.agency.label')}"
                                   rowspan="2"/>
 
                 <g:sortableColumn class="la-smaller-table-head" params="${params}" property="s.startDate"
-                                  title="${message(code: 'default.startDate.label', default: 'Start Date')}"/>
+                                  title="${message(code: 'default.startDate.label')}"/>
 
 
                 <g:if test="${params.orgRole == 'Subscription Consortia'}">
                     <th rowspan="2">${message(code: 'subscription.numberOfLicenses.label', default: 'Number of ChildLicenses')}</th>
-                    <th rowspan="2">${message(code: 'subscription.numberOfCostItems.label', default: 'Cost Items')}</th>
+                    <th rowspan="2">${message(code: 'subscription.numberOfCostItems.label')}</th>
                 </g:if>
 
                 <th rowspan="2" class="two wide"></th>
@@ -173,7 +173,7 @@
 
             <tr>
                 <g:sortableColumn class="la-smaller-table-head" params="${params}" property="s.endDate"
-                                  title="${message(code: 'default.endDate.label', default: 'End Date')}"/>
+                                  title="${message(code: 'default.endDate.label')}"/>
             </tr>
             </thead>
             <g:each in="${subscriptions}" var="s" status="i">
@@ -241,7 +241,7 @@
                             </g:each>
                             <g:each in="${s.agencies}" var="org">
                                 <g:link controller="organisation" action="show"
-                                        id="${org.id}">${org.name} (${message(code: 'default.agency.label', default: 'Agency')})</g:link><br/>
+                                        id="${org.id}">${org.name} (${message(code: 'default.agency.label')})</g:link><br/>
                             </g:each>
                         </td>
                         <%--
@@ -303,8 +303,8 @@
 
 <g:if test="${true}">
     <semui:paginate action="createSubscriptionSurvey" controller="survey" params="${params}"
-                    next="${message(code: 'default.paginate.next', default: 'Next')}"
-                    prev="${message(code: 'default.paginate.prev', default: 'Prev')}" max="${max}"
+                    next="${message(code: 'default.paginate.next')}"
+                    prev="${message(code: 'default.paginate.prev')}" max="${max}"
                     total="${num_sub_rows}"/>
 </g:if>
 

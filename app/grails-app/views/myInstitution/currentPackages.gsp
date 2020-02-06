@@ -3,7 +3,7 @@
 <html>
 <head>
     <meta name="layout" content="semanticUI">
-    <title>${message(code:'laser', default:'LAS:eR')} : ${message(code:'menu.my.packages')}</title>
+    <title>${message(code:'laser')} : ${message(code:'menu.my.packages')}</title>
 </head>
 <body>
 
@@ -67,7 +67,7 @@
     <thead>
     <tr>
         <th>${message(code:'sidewide.number')}</th>
-        <g:sortableColumn property="name" title="${message(code: 'package.name.label')}" />
+        <g:sortableColumn property="name" title="${message(code: 'default.name.label')}" />
         <th>${message(code:'package.compare.overview.tipps')}</th>
         <th>${message(code:'default.provider.label')}</th>
         <th>${message(code:'package.nominalPlatform')}</th>

@@ -5,15 +5,15 @@
 <html>
 <head>
     <meta name="layout" content="semanticUI"/>
-    <title>${message(code:'laser', default:'LAS:eR')} : ${message(code:'subscription.label', default:'Subscription')}</title>
+    <title>${message(code:'laser')} : ${message(code:'default.subscription.label')}</title>
 </head>
 <body>
 
 <div>
     <ul class="breadcrumb">
-        <li> <g:link controller="home" action="index">${message(code:'default.home.label', default:'Home')}</g:link> <span class="divider">/</span> </li>
-        <li> <g:link controller="myInstitution" action="currentSubscriptions">${message(code:'myinst.currentSubscriptions.label', default:'Current Subscriptions')}</g:link> <span class="divider">/</span> </li>
-        <li> <g:link controller="subscription" action="index" id="${subscriptionInstance.id}">${message(code:'subscription.label', default:'Subscription')} ${subscriptionInstance.id} - ${message(code:'subscription.details.details.label', default:'Details')}</g:link> </li>
+        <li> <g:link controller="home" action="index">${message(code:'default.home.label')}</g:link> <span class="divider">/</span> </li>
+        <li> <g:link controller="myInstitution" action="currentSubscriptions">${message(code:'myinst.currentSubscriptions.label')}</g:link> <span class="divider">/</span> </li>
+        <li> <g:link controller="subscription" action="index" id="${subscriptionInstance.id}">${message(code:'default.subscription.label')} ${subscriptionInstance.id} - ${message(code:'subscription.details.details.label')}</g:link> </li>
     </ul>
 </div>
 
@@ -27,7 +27,7 @@
 
     <dl>
         <g:if test="${num_ie_rows > max}">
-            <dt>${message(code:'title.plural', default:'Titles')} ( ${message(code:'default.paginate.offset', args:[(offset+1),lastie,num_ie_rows])} ) </dt>
+            <dt>${message(code:'title.plural')} ( ${message(code:'default.paginate.offset', args:[(offset+1),lastie,num_ie_rows])} ) </dt>
         </g:if>
         <g:set var="counter" value="${offset+1}" />
 
@@ -38,20 +38,20 @@
 
                 <tr>
                     <th rowspan="2">${message(code:'sidewide.number')}</th>
-                    <g:sortableColumn params="${params}" property="tipp.title.sortTitle" title="${message(code:'title.label', default:'Title')}" />
+                    <g:sortableColumn params="${params}" property="tipp.title.sortTitle" title="${message(code:'title.label')}" />
                     <th>ISSN</th>
-                    <g:sortableColumn params="${params}" property="coreStatus" title="${message(code:'subscription.details.core', default:'Core')}" />
-                    <g:sortableColumn params="${params}" property="startDate" title="${message(code:'subscription.details.coverageStartDate', default:'Coverage Start Date')}" />
-                    <g:sortableColumn params="${params}" property="coreStatusStart" title="${message(code:'subscription.details.coreStartDate', default:'Core Start Date')}" />
-                    <th rowspan="2">${message(code:'default.actions.label', default:'Actions')}</th>
+                    <g:sortableColumn params="${params}" property="coreStatus" title="${message(code:'subscription.details.core')}" />
+                    <g:sortableColumn params="${params}" property="startDate" title="${message(code:'subscription.details.coverageStartDate')}" />
+                    <g:sortableColumn params="${params}" property="coreStatusStart" title="${message(code:'subscription.details.coreStartDate')}" />
+                    <th rowspan="2">${message(code:'default.actions.label')}</th>
                 </tr>
 
                 <tr>
-                    <th>${message(code:'subscription.details.access_dates', default:'Access Dates')}</th>
+                    <th>${message(code:'subscription.details.access_dates')}</th>
                     <th>eISSN</th>
                     <th></th>
-                    <g:sortableColumn params="${params}" property="endDate" title="${message(code:'subscription.details.coverageEndDate', default:'Coverage End Date')}" />
-                    <g:sortableColumn params="${params}" property="coreStatusEnd" title="${message(code:'subscription.details.coreEndDate', default:'Core End Date')}"  />
+                    <g:sortableColumn params="${params}" property="endDate" title="${message(code:'subscription.details.coverageEndDate')}" />
+                    <g:sortableColumn params="${params}" property="coreStatusEnd" title="${message(code:'subscription.details.coreEndDate')}"  />
                 </tr>
 
 
@@ -64,18 +64,18 @@
                             <td>${counter++}</td>
                             <td>
                                 <g:link controller="issueEntitlement" id="${ie.id}" action="show">${ie.tipp.title.title}</g:link>
-                                <g:if test="${ie.tipp?.hostPlatformURL}">( <a href="${ie.tipp?.hostPlatformURL}" TITLE="${ie.tipp?.hostPlatformURL}">${message(code:'tipp.hostPlatformURL', default:'Host Link')}</a>
-                                    <a href="${ie.tipp?.hostPlatformURL}" TITLE="${ie.tipp?.hostPlatformURL} (${message(code:'default.new_window', default:'In new window')})" target="_blank"><i class="icon-share-alt"></i></a>)</g:if> <br/>
-                                ${message(code:'default.access.label', default:'Access')}: ${ie.availabilityStatus?.value}
+                                <g:if test="${ie.tipp?.hostPlatformURL}">( <a href="${ie.tipp?.hostPlatformURL}" TITLE="${ie.tipp?.hostPlatformURL}">${message(code:'tipp.hostPlatformURL')}</a>
+                                    <a href="${ie.tipp?.hostPlatformURL}" TITLE="${ie.tipp?.hostPlatformURL} (${message(code:'default.new_window')})" target="_blank"><i class="icon-share-alt"></i></a>)</g:if> <br/>
+                                ${message(code:'default.access.label')}: ${ie.availabilityStatus?.value}
                                 <g:if test="${ie.availabilityStatus?.value=='Expected'}">
-                                    ${message(code:'default.on', default:'on')} <g:formatDate format="${message(code:'default.date.format.notime')}" date="${ie.accessStartDate}"/>
+                                    ${message(code:'default.on')} <g:formatDate format="${message(code:'default.date.format.notime')}" date="${ie.accessStartDate}"/>
                                 </g:if>
                                 <g:if test="${ie.availabilityStatus?.value=='Expired'}">
-                                    ${message(code:'default.on', default:'on')} <g:formatDate format="${message(code:'default.date.format.notime')}" date="${ie.accessEndDate}"/>
+                                    ${message(code:'default.on')} <g:formatDate format="${message(code:'default.date.format.notime')}" date="${ie.accessEndDate}"/>
                                 </g:if>
-                                <br/> ${message(code:'subscription.details.record_status', default:'Record Status')}: ${ie.status}
-                                <br/> ${message(code:'subscription.details.access_start', default:'Access Start')}: <g:formatDate format="${message(code:'default.date.format.notime')}" date="${ie.accessStartDate}"/>
-                                <br/> ${message(code:'subscription.details.access_end', default:'Access End')}: <g:formatDate format="${message(code:'default.date.format.notime')}" date="${ie.accessEndDate}"/>
+                                <br/> ${message(code:'subscription.details.record_status')}: ${ie.status}
+                                <br/> ${message(code:'subscription.details.access_start')}: <g:formatDate format="${message(code:'default.date.format.notime')}" date="${ie.accessStartDate}"/>
+                                <br/> ${message(code:'subscription.details.access_end')}: <g:formatDate format="${message(code:'default.date.format.notime')}" date="${ie.accessEndDate}"/>
 
                             </td>
                             <td>
@@ -113,7 +113,7 @@
 
 
         <g:if test="${titlesList}" >
-            <semui:paginate  action="${screen}" controller="subscription" params="${params}" next="${message(code:'default.paginate.next', default:'Next')}" prev="${message(code:'default.paginate.prev', default:'Prev')}" maxsteps="${max}" total="${num_ie_rows}" />
+            <semui:paginate  action="${screen}" controller="subscription" params="${params}" next="${message(code:'default.paginate.next')}" prev="${message(code:'default.paginate.prev')}" maxsteps="${max}" total="${num_ie_rows}" />
         </g:if>
 
 </div>

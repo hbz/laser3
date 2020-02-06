@@ -4,7 +4,7 @@
 <html>
 <head>
     <meta name="layout" content="semanticUI">
-    <g:set var="entityName" value="${message(code: 'creator.label', default: 'Creator')}"/>
+    <g:set var="entityName" value="${message(code: 'creator.label')}"/>
     <title><g:message code="default.show.label" args="[entityName]"/></title>
 </head>
 
@@ -43,18 +43,18 @@
                 <div class="inline-lists">
                     <dl>
 
-                        <dt><g:message code="creator.lastname.label" default="Lastname"/></dt>
+                        <dt><g:message code="creator.lastname.label" /></dt>
                         <dd><semui:xEditable owner="${creatorInstance}" field="lastname"/></dd>
 
-                        <dt><g:message code="creator.firstname.label" default="Firstname"/></dt>
+                        <dt><g:message code="creator.firstname.label" /></dt>
                         <dd><semui:xEditable owner="${creatorInstance}" field="firstname"/></dd>
 
 
-                        <dt><g:message code="creator.middlename.label" default="Middlename"/></dt>
+                        <dt><g:message code="creator.middlename.label" /></dt>
                         <dd><semui:xEditable owner="${creatorInstance}" field="middlename"/></dd>
 
 
-                        <dt><g:message code="creator.gnd_id.label" default="Gndid"/></dt>
+                        <dt><g:message code="creator.gnd_id.label" /></dt>
                         <dd><g:if test="${editable}">
                             <semui:formAddIdentifier owner="${creatorInstance}" uniqueCheck="yes" onlyoneNamespace="GND"
                                                      uniqueWarningText="${message(code: 'creator.gnd_id.duplicate.warn')}">
@@ -65,14 +65,14 @@
                                     id="${creatorInstance?.gnd_id?.id}">${creatorInstance?.gnd_id}</g:link></dd>
 
 --%>
-                        <dt><g:message code="creator.globalUID.label" default="Global UID"/></dt>
+                        <dt><g:message code="creator.globalUID.label" /></dt>
                         <dd>${creatorInstance.globalUID}</dd>
 
 
 
 
 
-                        <dt><g:message code="creator.title.label" default="Title"/></dt>
+                        <dt><g:message code="creator.title.label" /></dt>
 
                         <dd><g:each in="${creatorInstance?.title}" var="t">
                             <dl>
@@ -101,11 +101,11 @@
                         <div class="ui form-actions">
                             %{-- <g:link class="ui button" action="edit" id="${creatorInstance?.id}">
                                  <i class="write icon"></i>
-                                 <g:message code="default.button.edit.label" default="Edit"/>
+                                 <g:message code="default.button.edit.label" />
                              </g:link>--}%
                             <button class="ui button negative" type="submit" name="_action_delete">
                                 <i class="trash alternate icon"></i>
-                                <g:message code="default.button.delete.label" default="Delete"/>
+                                <g:message code="default.button.delete.label" />
                             </button>
                         </div>
                     </g:form>

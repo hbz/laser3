@@ -2,7 +2,7 @@
 
 <div class="field fieldcontain ${hasErrors(bean: personInstance, field: 'title', 'error')}">
 	<label for="title">
-		<g:message code="person.title.label" default="Title" />
+		<g:message code="person.title.label"/>
 	</label>
 	<g:textField id="title" name="title" value="${personInstance?.title}"/>
 
@@ -10,7 +10,7 @@
 
 <div class="field fieldcontain ${hasErrors(bean: personInstance, field: 'first_name', 'error')} required">
 	<label for="first_name">
-		<g:message code="person.first_name.label" default="Firstname" />
+		<g:message code="person.first_name.label" />
 	</label>
 	<g:textField id="first_name" name="first_name" required="" value="${personInstance?.first_name}"/>
 
@@ -18,7 +18,7 @@
 
 <div class="field fieldcontain ${hasErrors(bean: personInstance, field: 'middle_name', 'error')} ">
 	<label for="middle_name">
-		<g:message code="person.middle_name.label" default="Middlename" />
+		<g:message code="person.middle_name.label" />
 		
 	</label>
 	<g:textField id="middle_name" name="middle_name" value="${personInstance?.middle_name}"/>
@@ -27,7 +27,7 @@
 
 <div class="field fieldcontain ${hasErrors(bean: personInstance, field: 'last_name', 'error')} required">
 	<label for="last_name">
-		<g:message code="person.last_name.label" default="Lastname" />
+		<g:message code="person.last_name.label" />
 	</label>
 	<g:textField id="last_name" name="last_name" required="" value="${personInstance?.last_name}"/>
 
@@ -35,7 +35,7 @@
 
 <div class="field fieldcontain ${hasErrors(bean: personInstance, field: 'gender', 'error')} ">
     <label for="gender">
-        <g:message code="person.gender.label" default="Gender" />
+        <g:message code="person.gender.label" />
 
     </label>
     <laser:select class="ui dropdown" id="gender" name="gender"
@@ -74,7 +74,7 @@
 
 <div class="field fieldcontain ${hasErrors(bean: personInstance, field: 'contacts', 'error')} ">
 	<label for="contacts">
-		<g:message code="person.contacts.label" default="Contacts" />
+		<g:message code="person.contacts.label" />
 	</label>
 	<ul class="one-to-many">
 		<g:each in="${personInstance?.contacts?}" var="c">
@@ -82,10 +82,10 @@
 		</g:each>
 	</ul>
     <% /* <input class="ui button" type="button" data-semui="modal" href="#contactFormModal"
-			   value="${message(code: 'default.add.label', args: [message(code: 'contact.label', default: 'Contact')])}"> */ %>
+			   value="${message(code: 'default.add.label', args: [message(code: 'contact.label')])}"> */ %>
     <g:if test="${personInstance.id}">
         <g:link class="ui button" controller="contact" action="create" params="['prs.id': personInstance?.id]">
-            ${message(code: 'default.add.label', args: [message(code: 'contact.label', default: 'Contact')])}
+            ${message(code: 'default.add.label', args: [message(code: 'contact.label')])}
         </g:link>
     </g:if>
     <% /* <g:render template="/contact/formModal" model="['prsId': personInstance?.id]"/> */ %>
@@ -93,18 +93,18 @@
 
 <div class="field fieldcontain ${hasErrors(bean: personInstance, field: 'addresses', 'error')} ">
 	<label for="addresses">
-		<g:message code="person.addresses.label" default="Addresses" />
+		<g:message code="person.addresses.label" />
 	</label>
 	<ul class="one-to-many">
 		<g:each in="${personInstance?.addresses?}" var="a">
 		    <li><g:link controller="address" action="show" id="${a.id}">${a}</g:link></li>
 		</g:each>
         <% /* <input class="ui button" type="button" data-semui="modal" href="#addressFormModal"
-			   value="${message(code: 'default.add.label', args: [message(code: 'address.label', default: 'Address')])}"> */ %>
+			   value="${message(code: 'default.add.label', args: [message(code: 'address.label')])}"> */ %>
 	</ul>
     <g:if test="${personInstance.id}">
         <g:link class="ui button" controller="address" action="create" params="['prs.id': personInstance?.id]">
-            ${message(code: 'default.add.label', args: [message(code: 'address.label', default: 'Address')])}
+            ${message(code: 'default.add.label', args: [message(code: 'address.label')])}
         </g:link>
     </g:if>
     <% /* <g:render template="/address/formModal" model="['prsId': personInstance?.id]"/> */ %>
@@ -112,7 +112,7 @@
 
 <div class="field fieldcontain ${hasErrors(bean: personInstance, field: 'isPublic', 'error')} required">
     <label for="isPublic">
-        <g:message code="person.isPublic.label" default="IsPublic" />
+        <g:message code="person.isPublic.label" />
     </label>
     <laser:select class="ui dropdown" id="isPublic" name="isPublic"
                   from="${com.k_int.kbplus.Person.getAllRefdataValues(RDConstants.Y_N)}"
@@ -132,7 +132,7 @@
 <div id="person-role-manager">
 
 	<div class="ui person-role-function-manager">
-		<h4 class="ui header"><g:message code="person.functions.label" default="Functions" /></h4>
+		<h4 class="ui header"><g:message code="person.functions.label" /></h4>
 
 		<div class="field">
 			<div class="two fields">
@@ -151,11 +151,11 @@
 
 		<div class="ui segment workspace">
 			<h5 class="ui header">
-				<g:message code="default.button.create_new.label" default="Adding"/>
+				<g:message code="default.button.create_new.label" />
 			</h5>
 			<div class="adding"></div>
 			<h5 class="ui header">
-				<g:message code="default.button.delete.label" default="Delete"/>
+				<g:message code="default.button.delete.label"/>
 			</h5>
 			<div class="existing"></div>
 		</div>
@@ -164,7 +164,7 @@
     <br />
 
 	<div class="ui person-role-responsibility-manager">
-		<h4 class="ui header"><g:message code="person.responsibilites.label" default="Responsibilites" /></h4>
+		<h4 class="ui header"><g:message code="person.responsibilites.label" /></h4>
 
 		<div class="field">
 			<div class="two fields">
@@ -182,11 +182,11 @@
 		</div>
 		<div class="ui segment workspace">
 			<h5 class="ui header">
-				<g:message code="default.button.create_new.label" default="Adding"/>
+				<g:message code="default.button.create_new.label" />
 			</h5>
 			<div class="adding"></div>
 			<h5 class="ui header">
-				<g:message code="default.button.delete.label" default="Delete"/>
+				<g:message code="default.button.delete.label"/>
 			</h5>
 			<div class="existing"></div>
 		</div>

@@ -5,8 +5,8 @@
 <html>
 	<head>
 		<meta name="layout" content="semanticUI">
-		<g:set var="entityName" value="${message(code: 'subscription.label')}"/>
-		<title>${message(code:'laser', default:'LAS:eR')} : ${message(code:'subscription.compare.label')}</title>
+		<g:set var="entityName" value="${message(code: 'default.subscription.label')}"/>
+		<title>${message(code:'laser')} : ${message(code:'subscription.compare.label')}</title>
 	</head>
 
     <body>
@@ -23,14 +23,14 @@
 
 				<g:form action="compare" controller="subscription" method="GET" class="ui form">
 					<g:set var="subs_message" value="${message(code:'subscription.plural', default:'Subscriptions')}" />
-					<g:set var="sub_message" value="${message(code:'subscription.label', default:'Subscription')}" />
+					<g:set var="sub_message" value="${message(code:'default.subscription.label', default:'Subscription')}" />
 
 					<table class="ui celled la-table table">
 						<thead>
 							<tr>
 								<th></th>
-								<th> ${message(code:'subscription.label', default:'Subscription')} A </th>
-								<th> ${message(code:'subscription.label', default:'Subscription')} B </th>
+								<th> ${message(code:'default.subscription.label', default:'Subscription')} A </th>
+								<th> ${message(code:'default.subscription.label', default:'Subscription')} B </th>
 							</tr>
 						</thead>
 						<tbody>
@@ -81,7 +81,7 @@
 										</div>
 										<div class="ui checkbox">
 											<g:checkBox name="dlt" id="dlt" checked="${dlt ? dlt:true}"/>
-											<label for="dlt">${message(code:'default.compare.filter.delete')}</label>
+											<label for="dlt">${message(code:'default.button.delete.label')}</label>
 										</div>
 										<div class="ui checkbox">
 											<g:checkBox name="updt" id="updt" checked="${updt ? updt:true}"/>

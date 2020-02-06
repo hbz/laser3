@@ -2,7 +2,7 @@
 <html>
 <head>
     <meta name="layout" content="public"/>
-    <title>${message(code: 'laser', default: 'LAS:eR')}</title>
+    <title>${message(code: 'laser')}</title>
     <script>
         var gspLocale = "${message(code:'default.locale.label')}";
         var gspDateFormat = "${message(code:'default.date.format.notime').toLowerCase()}";
@@ -18,12 +18,12 @@
         <div class="ui top fixed hidden inverted stackable menu la-fixed-menu">
             <div class="ui container">
                 <img class="logo" alt="Logo Laser" src="${resource(dir: 'images', file: 'laser.svg')}"/>
-                <a href="https://wiki1.hbz-nrw.de/display/LAS/Projekthintergrund" class="item" target="_blank">${message(code: 'landingpage.menu.about', default: 'About')}</a>
+                <a href="https://wiki1.hbz-nrw.de/display/LAS/Projekthintergrund" class="item" target="_blank">${message(code: 'landingpage.menu.about')}</a>
                 <a class="item" href="https://wiki1.hbz-nrw.de/display/LAS/Startseite" target="_blank">Wiki</a>
 
                 <div class="right item">
                     <g:link controller="home" action="index" class="ui button blue">
-                        ${message(code: 'landingpage.login', default: 'Login')}
+                        ${message(code: 'landingpage.login')}
                     </g:link>
                 </div>
             </div>
@@ -35,12 +35,12 @@
         <div class="ui inverted stackable menu la-top-menu">
             <div class="ui container">
                 <img class="logo" alt="Logo Laser" src="${resource(dir: 'images', file: 'laser.svg')}"/>
-                <a href="https://wiki1.hbz-nrw.de/display/LAS/Projekthintergrund" class="item" target="_blank">${message(code: 'landingpage.menu.about', default: 'About')}</a>
+                <a href="https://wiki1.hbz-nrw.de/display/LAS/Projekthintergrund" class="item" target="_blank">${message(code: 'landingpage.menu.about')}</a>
                 <a class="item" href="https://wiki1.hbz-nrw.de/display/LAS/Startseite" target="_blank">Wiki</a>
 
                 <div class="right item">
                     <g:link controller="home" action="index" class="ui button blue">
-                        ${message(code: 'landingpage.login', default: 'Login')}
+                        ${message(code: 'landingpage.login')}
                     </g:link>
                 </div>
             </div>
@@ -155,7 +155,7 @@
                         ${message(code: 'landingpage.feature.button')}<i class="right arrow icon"></i>
                     </a>
                     <g:link controller="home" action="index" class="ui huge blue button">
-                        ${message(code: 'landingpage.login', default: 'Login')}
+                        ${message(code: 'landingpage.login')}
                         <i class="right arrow icon"></i>
                     </g:link>
                 </div>

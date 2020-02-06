@@ -4,13 +4,13 @@
 <laser:serviceInjection />
 <g:set var="overwriteEditable"
        value="${editable || accessService.checkMinUserOrgRole(user, contextService.getOrg(), 'INST_EDITOR')}"/>
-<g:set var="sdf" value="${new SimpleDateFormat(message(code: 'default.date.format.notime'))}"/>
+<g:set var="sdf" value="${de.laser.helper.DateUtil.getSDF_NoTime()}"/>
 <!doctype html>
 <html>
 <head>
     <meta name="layout" content="semanticUI">
     <g:set var="entityName" value="${message(code: 'org.label', default: 'Org')}"/>
-    <title>${message(code: 'laser', default: 'LAS:eR')} : ${message(code:'menu.institutions.readerNumbers')}</title>
+    <title>${message(code: 'laser')} : ${message(code:'menu.institutions.readerNumbers')}</title>
 </head>
 
 <body>
@@ -44,7 +44,7 @@
 <g:render template="/readerNumber/formModal"/>
 
 
-<h5 class="ui header"><g:message code="menu.institutions.readerNumbers" default="Numbers"/></h5>
+<h5 class="ui header"><g:message code="menu.institutions.readerNumbers" /></h5>
 
 <table class="ui table celled sortable la-table">
     <thead>
@@ -58,7 +58,7 @@
                           params="${params}"/>
         <g:sortableColumn property="semester" title="${message(code: 'readerNumber.semester.label')}"
                           params="${params}"/>
-        <th>${message(code: 'default.actions')}</th>
+        <th>${message(code: 'default.actions.label')}</th>
     </tr>
     </thead>
     <tbody>
@@ -69,7 +69,7 @@
             <td class="la-main-object">${numbersInstance.referenceGroup}</td>
             <td><g:formatNumber number="${numbersInstance.value}" type="number"/></td>
             <td>${sdf.format(numbersInstance.dueDate)}</td>
-            <td>${RefdataValue.getByValue(numbersInstance.semester)?.getI10n('value')}</td>
+            <td>${numbersInstance.semester?.getI10n('value')}</td>
             <td class="x">
                 <g:if test="${editable}">
 

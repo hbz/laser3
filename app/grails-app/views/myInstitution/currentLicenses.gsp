@@ -3,7 +3,7 @@
 <html>
   <head>
     <meta name="layout" content="semanticUI"/>
-    <title>${message(code:'laser', default:'LAS:eR')} : ${message(code:'license.current', default:'Current Licenses')}</title>
+    <title>${message(code:'laser')} : ${message(code:'license.current')}</title>
   </head>
   <body>
 
@@ -142,7 +142,7 @@
                     <div class="field la-field-right-aligned">
                         <a href="${request.forwardURI}" class="ui reset primary primary button">${message(code:'default.button.reset.label')}</a>
                         <input type="hidden" name="filterSet" value="true" />
-                        <input type="submit" class="ui secondary button" value="${message(code:'default.button.filter.label', default:'Filter')}" />
+                        <input type="submit" class="ui secondary button" value="${message(code:'default.button.filter.label')}" />
                     </div>
 
             <g:if test="${accessService.checkPerm("ORG_CONSORTIUM")}">
@@ -160,15 +160,15 @@
                       <th>${message(code:'sidewide.number')}</th>
                     <g:sortableColumn params="${params}" property="reference" title="${message(code:'license.slash.name')}" />
                     <g:if test="${params.orgRole == 'Licensee'}">
-                        <th>${message(code:'license.licensor.label', default:'Licensor')}</th>
+                        <th>${message(code:'license.licensor.label')}</th>
                     </g:if>
                       <g:if test="${params.orgRole == 'Licensing Consortium'}">
                           <th>${message(code:'license.details.incoming.childs',args:[message(code:'consortium.superOrgType')])}</th>
                       </g:if>
                       <th>${message(code:'default.status.label')}</th>
-                    <g:sortableColumn params="${params}" property="startDate" title="${message(code:'license.start_date', default:'Start Date')}" />
-                    <g:sortableColumn params="${params}" property="endDate" title="${message(code:'license.end_date', default:'End Date')}" />
-                      <th class="la-action-info">${message(code:'default.actions')}</th>
+                    <g:sortableColumn params="${params}" property="startDate" title="${message(code:'license.start_date')}" />
+                    <g:sortableColumn params="${params}" property="endDate" title="${message(code:'license.end_date')}" />
+                      <th class="la-action-info">${message(code:'default.actions.label')}</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -214,8 +214,8 @@
                             </td>
                         </g:if>
                       <td>${l.status.getI10n('value')}</td>
-                      <td><g:formatDate format="${message(code:'default.date.format.notime', default:'yyyy-MM-dd')}" date="${l.startDate}"/></td>
-                      <td><g:formatDate format="${message(code:'default.date.format.notime', default:'yyyy-MM-dd')}" date="${l.endDate}"/></td>
+                      <td><g:formatDate format="${message(code:'default.date.format.notime')}" date="${l.startDate}"/></td>
+                      <td><g:formatDate format="${message(code:'default.date.format.notime')}" date="${l.endDate}"/></td>
                       <td class="x">
                         <g:if test="${editable && accessService.checkPerm('ORG_INST,ORG_CONSORTIUM')}">
                             %{-- bug: erms-459

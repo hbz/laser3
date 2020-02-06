@@ -6,6 +6,7 @@ import de.laser.traits.ShareableTrait
 import org.hibernate.event.PostUpdateEvent
 
 import javax.persistence.Transient
+import java.text.SimpleDateFormat
 
 class OrgRole implements ShareableTrait {
 
@@ -128,7 +129,7 @@ class OrgRole implements ShareableTrait {
 
         link = new OrgRole(title:ptitle, org:porg, roleType:prole)
 
-        def sdf = new java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
+          SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
 
         if(pstart){
           if(pstart instanceof Date){

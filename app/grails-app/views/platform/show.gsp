@@ -3,8 +3,8 @@
 <html>
 <head>
     <meta name="layout" content="semanticUI">
-    <g:set var="entityName" value="${message(code: 'platform.label', default: 'Platform')}"/>
-    <title>${message(code: 'laser', default: 'LAS:eR')} : <g:message code="platform.details"/></title>
+    <g:set var="entityName" value="${message(code: 'platform.label')}"/>
+    <title>${message(code: 'laser')} : <g:message code="platform.details"/></title>
     <g:javascript src="properties.js"/>
 </head>
 
@@ -41,7 +41,7 @@
             <div class="ui card la-time-card">
               <div class="content">
                 <dl>
-                  <dt>${message(code: 'platform.name', default: 'Platform Name')}</dt>
+                  <dt>${message(code: 'platform.name')}</dt>
                   <dd><semui:xEditable owner="${platformInstance}" field="name"/></dd>
                 </dl>
                 <dl>
@@ -59,7 +59,7 @@
                   </dd>
                 </dl>
                 <dl>
-                  <dt>${message(code: 'platform.org', default: 'Platform Provider')}</dt>
+                  <dt>${message(code: 'platform.org')}</dt>
                   <dd>
                     <g:if test="${platformInstance.org}">
                       <g:link controller="organisation" action="show"
@@ -84,20 +84,20 @@
                   </dd>
                 </dl>
                 <dl>
-                  <dt>${message(code: 'platform.serviceProvider', default: 'Service Provider')}</dt>
+                  <dt>${message(code: 'platform.serviceProvider')}</dt>
                   <dd><semui:xEditableRefData owner="${platformInstance}" field="serviceProvider" config="${RDConstants.Y_N}"/></dd>
                 </dl>
                 <dl>
-                  <dt>${message(code: 'platform.softwareProvider', default: 'Software Provider')}</dt>
+                  <dt>${message(code: 'platform.softwareProvider')}</dt>
                   <dd><semui:xEditableRefData owner="${platformInstance}" field="softwareProvider" config="${RDConstants.Y_N}"/></dd>
                 </dl>
                 <g:if test="${params.mode == 'advanced'}">
                   <dl>
-                    <dt>${message(code: 'platform.type', default: 'Type')}</dt>
+                    <dt>${message(code: 'default.type.label')}</dt>
                     <dd><semui:xEditableRefData owner="${platformInstance}" field="type" config="${RDConstants.Y_N_O}"/></dd>
                   </dl>
                   <dl>
-                    <dt>${message(code: 'default.status.label', default: 'Status')}</dt>
+                    <dt>${message(code: 'default.status.label')}</dt>
                     <dd><semui:xEditableRefData owner="${platformInstance}" field="status"
                                                 config="${RDConstants.USAGE_STATUS}"/></dd>
                   </dl>
@@ -123,7 +123,7 @@
                     <table class="ui three column table">
                         <g:each in="${orgAccessPointList}" var="orgAccessPoint">
                             <tr>
-                                <th scope="row" class="control-label la-js-dont-hide-this-card">${message(code: 'platform.accessPoint', default: 'Access Configuration')}</th>
+                                <th scope="row" class="control-label la-js-dont-hide-this-card">${message(code: 'platform.accessPoint')}</th>
                                 <td>
                                     <g:link controller="accessPoint" action="edit_${orgAccessPoint.oap.accessMethod}"  id="${orgAccessPoint.oap.id}">
                                         ${orgAccessPoint.oap.name}  (${orgAccessPoint.oap.accessMethod.getI10n('value')})

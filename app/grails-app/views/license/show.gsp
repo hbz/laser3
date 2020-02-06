@@ -7,7 +7,7 @@
   <head>
     <meta name="layout" content="semanticUI"/>
      <g:javascript src="properties.js"/>
-    <title>${message(code:'laser', default:'LAS:eR')} : ${message(code:'license.details.label')}</title>
+    <title>${message(code:'laser')} : ${message(code:'license.details.label')}</title>
   </head>
 
     <body>
@@ -173,7 +173,7 @@
                             </g:if>
                             <g:else>
                                 <dl>
-                                    <dt class="control-label">${message(code:'subscription.label')}</dt>
+                                    <dt class="control-label">${message(code:'default.subscription.label')}</dt>
                                     <dd>
                                         ${message(code:'license.noLinkedSubscriptions', default:'No currently linked subscriptions.')}
                                     </dd>

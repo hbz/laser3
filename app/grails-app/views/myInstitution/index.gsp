@@ -2,7 +2,7 @@
 <html>
 <head>
     <meta name="layout" content="semanticUI"/>
-    <title>${message(code:'laser', default:'LAS:eR')} : ${message(code:'myinstadmin.title', default:'Institutional Admin Dash')}</title>
+    <title>${message(code:'laser')} : ${message(code:'myinstadmin.title', default:'Institutional Admin Dash')}</title>
 </head>
 
 <body>
@@ -22,7 +22,7 @@
             <tr>
                 <td colspan="3">
                     <g:if test="${ua.rootObj.class.name == 'com.k_int.kbplus.License'}">
-                        <span class="label label-info">${message(code: 'license')}</span>
+                        <span class="label label-info">${message(code: 'license.label')}</span>
                         <em><g:link action="show"
                                     controller="license"
                                     id="${ua.rootObj.id}">${ua.rootObj.reference}</g:link></em>
@@ -34,7 +34,7 @@
                                     id="${ua.rootObj.id}">${ua.rootObj.name}</g:link></em>
                     </g:elseif>
                     <g:elseif test="${ua.rootObj.class.name == 'com.k_int.kbplus.Package'}">
-                        <span class="label label-info">${message(code: 'package')}</span>
+                        <span class="label label-info">${message(code: 'package.label')}</span>
                         <em><g:link action="show"
                                     controller="package"
                                     id="${ua.rootObj.id}">${ua.rootObj.name}</g:link></em>
