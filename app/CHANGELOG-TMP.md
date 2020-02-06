@@ -32,8 +32,6 @@
 
 2077    03.02.2020  dev         Anja    Feature     Löschrückfrage für Merkmale 
 
-1914    31.01.2020  hbz-dev     Anja    Feature     Button fürs Ausblenden des Fälligen Termins
-
 2121    30.01.2020  rc1.2       David   Bug         Falsche geladene Seite nach Lizenz löschen (und mehr ..)
 
 2104    28.01.2020  rc1.2       Andreas Bug         Steuersatz wird im Tab Eigene Kosten korrekt dargestellt
