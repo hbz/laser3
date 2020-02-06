@@ -19,7 +19,7 @@
     <semui:form>
         <g:form action="createAnnouncement" class="ui form">
             <div class="field">
-                <label>${message(code:'announcement.subject.label', default:'Subject')}</label>
+                <label>${message(code:'announcement.subject.label')}</label>
                 <input type="text" name="subjectTxt" value="${params.as}" />
             </div>
             <div class="field">
@@ -45,10 +45,10 @@
             </div>
               <br />
             <g:if test="${ra.user != null}">
-              ${message(code:'announcement.posted_by.label', default:'posted by')}
+              ${message(code:'announcement.posted_by.label')}
                 <em><g:link controller="user" action="show" id="${ra.user?.id}">${(ra.user?.displayName)?:'Unknown'}</g:link></em>
                 <br />
-                ${message(code:'default.on', default:'on')} <g:formatDate date="${ra.dateCreated}" format="${message(code:'default.date.format')}"/>
+                ${message(code:'default.on')} <g:formatDate date="${ra.dateCreated}" format="${message(code:'default.date.format')}"/>
             </g:if>
             <g:else>
                 ${message(code:'announcement.posted_auto.label', default:'posted automatically on')}

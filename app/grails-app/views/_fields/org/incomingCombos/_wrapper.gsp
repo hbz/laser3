@@ -26,7 +26,7 @@
                   data-complete-text="Add Org Combo"
                   type="submit"
                   class="ui button">
-            ${message(code: 'default.add.label', args:[message(code:'combo.label')],default:'Add Combo')}
+            ${message(code: 'default.add.label', args:[message(code:'combo.label')])}
           </button>
         </g:form>
     </g:if>

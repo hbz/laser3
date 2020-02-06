@@ -27,12 +27,12 @@
         <table class="ui celled la-table table">
           <thead>
             <tr>
-              <th>${message(code:'event.component', default:'Name')}</th>
-              <th>${message(code:'event.actor', default:'Actor')}</th>
-              <th>${message(code:'event.name', default:'Event name')}</th>
-              <th>${message(code:'event.property', default:'Property')}</th>
-              <th>${message(code:'event.old', default:'Old')}</th>
-              <th>${message(code:'event.new', default:'New')}</th>
+              <th>${message(code:'event.component')}</th>
+              <th>${message(code:'event.actor')}</th>
+              <th>${message(code:'event.name')}</th>
+              <th>${message(code:'event.property')}</th>
+              <th>${message(code:'event.old')}</th>
+              <th>${message(code:'event.new')}</th>
               <th>${message(code:'default.date.label')}</th>
             </tr>
           </thead>
@@ -47,14 +47,14 @@
                 <td>${hl.propertyName}</td>
                 <td>${hl.oldValue}</td>
                 <td>${hl.newValue}</td>
-                <td style="white-space:nowrap;"><g:formatDate format="${message(code:'default.date.format', default:'yyyy-MM-dd')}" date="${hl.lastUpdated}"/></td>
+                <td style="white-space:nowrap;"><g:formatDate format="${message(code:'default.date.format')}" date="${hl.lastUpdated}"/></td>
               </tr>
             </g:each>
           </tbody>
         </table>
 
         <g:if test="${historyLines != null}" >
-          <semui:paginate  action="history" controller="package" params="${params}" next="${message(code:'default.paginate.next', default:'Next')}" prev="${message(code:'default.paginate.prev', default:'Prev')}" maxsteps="${max}" total="${num_hl}" />
+          <semui:paginate  action="history" controller="package" params="${params}" next="${message(code:'default.paginate.next')}" prev="${message(code:'default.paginate.prev')}" maxsteps="${max}" total="${num_hl}" />
         </g:if>
 
     </g:if>

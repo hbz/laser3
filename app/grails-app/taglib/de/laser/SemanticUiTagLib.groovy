@@ -277,13 +277,13 @@ class SemanticUiTagLib {
                             out   << '<i class="icon la-js-editmode-icon thumbtack"></i>'
 
                             out   << '<div class="menu">'
-                            out << g.link( 'Vererbung deaktivieren. Wert für Teilnehmer <b>löschen</b>',
+                            out << g.link( 'Vererbung deaktivieren. Wert für Teilnehmer <strong>löschen</strong>',
                                     controller: 'ajax',
                                     action: 'toggleAudit',
                                     params: ['owner': oid, 'property': [objAttr]],
                                     class: 'item'
                             )
-                            out << g.link( 'Vererbung deaktivieren. Wert für Teilnehmer <b>erhalten</b>',
+                            out << g.link( 'Vererbung deaktivieren. Wert für Teilnehmer <strong>erhalten</strong>',
                                     controller: 'ajax',
                                     action: 'toggleAudit',
                                     params: ['owner': oid, 'property': [objAttr], keep: true],
@@ -823,9 +823,9 @@ class SemanticUiTagLib {
                         prevEndDate = g.formatDate(date: p.endDate, format: message(code: 'default.date.format.notime'))
                     }
                     if (attrs.mapping) {
-                        out << g.link("<b>${p.name}:</b> " + "${prevStartDate}" + "${dash}" + "${prevEndDate}", controller: attrs.controller, action: attrs.action, class: "item", params: [sub: p.id], mapping: attrs.mapping)
+                        out << g.link("<strong>${p.name}:</strong> " + "${prevStartDate}" + "${dash}" + "${prevEndDate}", controller: attrs.controller, action: attrs.action, class: "item", params: [sub: p.id], mapping: attrs.mapping)
                     } else {
-                        out << g.link("<b>${p.name}:</b> " + "${prevStartDate}" + "${dash}" + "${prevEndDate}", controller: attrs.controller, action: attrs.action, class: "item", id: p.id)
+                        out << g.link("<strong>${p.name}:</strong> " + "${prevStartDate}" + "${dash}" + "${prevEndDate}", controller: attrs.controller, action: attrs.action, class: "item", id: p.id)
                     }
                 }
                 out << "</div>" +
@@ -868,9 +868,9 @@ class SemanticUiTagLib {
                         nextEndDate = g.formatDate(date: n.endDate, format: message(code: 'default.date.format.notime'))
                     }
                     if (attrs.mapping) {
-                        out << g.link("<b>${n.name}:</b> " + "${nextStartDate}" + "${dash}" + "${nextEndDate}", controller: attrs.controller, action: attrs.action, class: "item", params: [sub: n.id], mapping: attrs.mapping)
+                        out << g.link("<strong>${n.name}:</strong> " + "${nextStartDate}" + "${dash}" + "${nextEndDate}", controller: attrs.controller, action: attrs.action, class: "item", params: [sub: n.id], mapping: attrs.mapping)
                     } else {
-                        out << g.link("<b>${n.name}:</b> " + "${nextStartDate}" + "${dash}" + "${nextEndDate}", controller: attrs.controller, action: attrs.action, class: "item", id: n.id)
+                        out << g.link("<strong>${n.name}:</strong> " + "${nextStartDate}" + "${dash}" + "${nextEndDate}", controller: attrs.controller, action: attrs.action, class: "item", id: n.id)
                     }
                 }
                 out << "</div>" +

@@ -16,9 +16,9 @@
     
     <table class="ui celled la-table table">
       <thead>
-        <th>${message(code:'subscription.details.coreStartDate', default:'Core Start Date')}</th>
-        <th>${message(code:'subscription.details.coreEndDate', default:'Core End Date')}</th>
-        <th>${message(code:'default.action.label', default:'Action')}</th>
+        <th>${message(code:'subscription.details.coreStartDate')}</th>
+        <th>${message(code:'subscription.details.coreEndDate')}</th>
+        <th>${message(code:'default.action.label')}</th>
       </thead>
       <tbody>
          <g:each in="${coreDates}" var="coreDate">
@@ -51,15 +51,15 @@
         <table style="width:100%">
           <tr>
             <td>
-              <label class="property-label">${message(code:'subscription.details.coreStartDate', default:'Core Start Date')}:</label>
+              <label class="property-label">${message(code:'subscription.details.coreStartDate')}:</label>
               <semui:simpleHiddenValue  id="coreStartDate" name="coreStartDate" type="date"/>
             </td>
             <td>
-             <label class="property-label">${message(code:'subscription.details.coreEndDate', default:'Core End Date')}:</label>
+             <label class="property-label">${message(code:'subscription.details.coreEndDate')}:</label>
               <semui:simpleHiddenValue id="coreEndDate" name="coreEndDate" type="date"/>
             </td>
             <td>
-              <input type="submit" value="${message(code:'default.button.apply.label', default:'Apply')}" class="ui button"/>&nbsp;
+              <input type="submit" value="${message(code:'default.button.apply.label')}" class="ui button"/>&nbsp;
             </td>
           </tr>
         </table>

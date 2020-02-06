@@ -42,7 +42,7 @@
         <div class="ui relaxed divided list">
             <p>
 
-                <g:link class="item" controller="profile" action="properties">${message(code: 'menu.user.properties', default: 'Properties and Refdatas')}</g:link>
+                <g:link class="item" controller="profile" action="properties">${message(code: 'menu.user.properties')}</g:link>
 
             </p>
 

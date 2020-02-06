@@ -3,7 +3,7 @@
 <html>
 <head>
     <meta name="layout" content="semanticUI">
-    <g:set var="entityName" value="${message(code: 'person.label', default: 'Person')}"/>
+    <g:set var="entityName" value="${message(code: 'person.label')}"/>
     <title>${message(code:'laser')} : <g:message code="default.show.label" args="[entityName]"/></title>
 
 </head>
@@ -101,7 +101,7 @@ ${personInstance}
                             </div>
                             <g:if test="${editable}">
                                 <input class="ui button" type="button" data-semui="modal" data-href="#contactFormModal"
-                                       value="${message(code: 'default.add.label', args: [message(code: 'person.contacts.label', default: 'Contacts')])}">
+                                       value="${message(code: 'default.add.label', args: [message(code: 'person.contacts.label')])}">
                                 <g:render template="/contact/formModal" model="['prsId': personInstance?.id]"/>
                             </g:if>
                         </dd>
@@ -124,7 +124,7 @@ ${personInstance}
                             </div>
                             <g:if test="${editable}">
                                 <input class="ui button" type="button" data-semui="modal" data-href="#addressFormModal"
-                                       value="${message(code: 'default.add.label', args: [message(code: 'address.label', default: 'Address')])}">
+                                       value="${message(code: 'default.add.label', args: [message(code: 'address.label')])}">
                                 <g:render template="/address/formModal" model="['prsId': personInstance?.id]"/>
                             </g:if>
                         </dd>

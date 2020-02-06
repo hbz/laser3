@@ -5,7 +5,7 @@
         <br />
         <p>
             <g:link controller="home" action="index" class="ui fluid button" >
-                ${message(code:'template.loginDiv.label', default:'LAS:eR Member Login')}
+                ${message(code:'template.loginDiv.label')}
             </g:link>
         </p>
     </div>

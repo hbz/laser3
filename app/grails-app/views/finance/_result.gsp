@@ -113,13 +113,13 @@
                             <!-- OWNER -->
                             <div data-tab="own" class="ui bottom attached tab">
                                 <br />
-                                <g:render template="result_tab_owner" model="[fixedSubscription: fixedSubscription, editable: editable, data: own]"/>
+                                <g:render template="result_tab_owner" model="[fixedSubscription: fixedSubscription, editable: editable, data: own, customerType: 'OWNER']"/>
                             </div><!-- OWNER -->
                         </g:if>
                         <g:if test="${showView.equals("cons") || (showView.equals("consAtSubscr") && accessService.checkPerm("ORG_CONSORTIUM"))}">
                             <div data-tab="cons" class="ui bottom attached tab">
                                 <br />
-                                <g:render template="result_tab_cons" model="[fixedSubscription: fixedSubscription, editable: editable, data: cons, orgRoles: financialData.consSubscribers]"/>
+                                <g:render template="result_tab_cons" model="[fixedSubscription: fixedSubscription, editable: editable, data: cons, orgRoles: financialData.consSubscribers, customerType: 'CONS']"/>
                             </div>
                         </g:if>
                         <g:elseif test="${showView in ["coll","collAsSubscr"] || (showView.equals("consAtSubscr") && accessService.checkPerm("ORG_INST_COLLECTIVE"))}">
@@ -129,7 +129,7 @@
                             </div>
                             <div data-tab="coll" class="ui bottom attached tab">
                                 <br />
-                                <g:render template="result_tab_cons" model="[fixedSubscription: fixedSubscription, editable: editable, data: coll, orgRoles: financialData.consSubscribers]"/>
+                                <g:render template="result_tab_cons" model="[fixedSubscription: fixedSubscription, editable: editable, data: coll, orgRoles: financialData.consSubscribers, customerType: 'COLL']"/>
                             </div>
                         </g:elseif>
                         <g:if test="${showView.equals("subscr")}">

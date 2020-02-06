@@ -200,17 +200,17 @@
 
             <div class="three fields">
                 <div class="field six wide">
-                    <label class="property-label">${message(code: 'surveyProperty.expl.label', default: 'Explanation')}</label>
+                    <label class="property-label">${message(code: 'surveyProperty.expl.label')}</label>
                     <textarea name="expl" class="ui textarea"></textarea>
                 </div>
 
                 <div class="field six wide">
-                    <label class="property-label">${message(code: 'surveyProperty.introduction.label', default: 'Introduction')}</label>
+                    <label class="property-label">${message(code: 'surveyProperty.introduction.label')}</label>
                     <textarea name="introduction" class="ui textarea"></textarea>
                 </div>
 
                 <div class="field six wide">
-                    <label class="property-label">${message(code: 'surveyProperty.comment.label', default: 'Comment')}</label>
+                    <label class="property-label">${message(code: 'surveyProperty.comment.label')}</label>
                     <textarea name="comment" class="ui textarea"></textarea>
                 </div>
 

@@ -4,7 +4,7 @@
 <html>
 	<head>
 		<meta name="layout" content="semanticUI">
-		<g:set var="entityName" value="${message(code: 'creator.label', default: 'Creator')}" />
+		<g:set var="entityName" value="${message(code: 'creator.label')}" />
 		<title><g:message code="default.list.label" args="[entityName]" /></title>
 	</head>
 	<body>
@@ -18,11 +18,11 @@
 					<thead>
 						<tr>
 
-							<g:sortableColumn property="lastname" title="${message(code: 'creator.lastname.label', default: 'Lastname')}" />
+							<g:sortableColumn property="lastname" title="${message(code: 'creator.lastname.label')}" />
 						
-							<g:sortableColumn property="firstname" title="${message(code: 'creator.firstname.label', default: 'Firstname')}" />
+							<g:sortableColumn property="firstname" title="${message(code: 'creator.firstname.label')}" />
 						
-							<g:sortableColumn property="middlename" title="${message(code: 'creator.middlename.label', default: 'Middlename')}" />
+							<g:sortableColumn property="middlename" title="${message(code: 'creator.middlename.label')}" />
 						
 							<th class="header"><g:message code="creator.gnd_id.label" /></th>
 						
