@@ -49,13 +49,13 @@
                 <g:if test="${params.mode == 'advanced'}">
                     ${message(code: 'subscription.details.advanced.note', default: 'Includes Expected or Expired entitlements, switch to')}
                     <g:link controller="subscription" action="index"
-                            params="${params + ['mode': 'basic']}">${message(code: 'default.basic', default: 'Basic')}</g:link>
+                            params="${params + ['mode': 'basic']}">${message(code: 'default.basic')}</g:link>
                     ${message(code: 'subscription.details.advanced.note.end', default: 'view to hide them')}
                 </g:if>
                 <g:else>
                     ${message(code: 'subscription.details.basic.note', default: 'Expected or Expired entitlements are filtered, use')}
                     <g:link controller="subscription" action="index" params="${params + ['mode': 'advanced']}"
-                            type="button">${message(code: 'default.advanced', default: 'Advanced')}</g:link>
+                            type="button">${message(code: 'default.advanced')}</g:link>
                     ${message(code: 'subscription.details.basic.note.end', default: 'view to see them')}
                 </g:else>
                 )
@@ -101,7 +101,7 @@
                             <a href="${request.forwardURI}"
                                class="ui reset primary button">${message(code: 'default.button.filterreset.label')}</a>
                             <input type="submit" class="ui secondary button"
-                                   value="${message(code: 'default.button.filter.label', default: 'Filtern')}"/>
+                                   value="${message(code: 'default.button.filter.label')}"/>
                         </div>
                     </div>
                 </g:form>
@@ -127,7 +127,7 @@
                         <th></th>
                         <th>${message(code: 'sidewide.number')}</th>
                         <g:sortableColumn class="eight wide" params="${params}" property="tipp.title.sortTitle"
-                                          title="${message(code: 'title.label', default: 'Title')}"/>
+                                          title="${message(code: 'title.label')}"/>
                         <th class="one wide">${message(code: 'subscription.details.print-electronic')}</th>
                         <th class="four wide">${message(code: 'subscription.details.coverage_dates')}</th>
                         <th class="two wide">${message(code: 'subscription.details.access_dates')}</th>
@@ -137,17 +137,17 @@
                     <tr>
                         <th rowspan="2" colspan="4"></th>
                         <g:sortableColumn class="la-smaller-table-head" params="${params}" property="startDate"
-                                          title="${message(code: 'default.from', default: 'Earliest date')}"/>
+                                          title="${message(code: 'default.from')}"/>
                         <g:sortableColumn class="la-smaller-table-head" params="${params}" property="accessStartDate"
-                                          title="${message(code: 'default.from', default: 'Earliest date')}"/>
+                                          title="${message(code: 'default.from')}"/>
 
                         <th rowspan="2" colspan="2"></th>
                     </tr>
                     <tr>
                         <g:sortableColumn class="la-smaller-table-head" property="endDate"
-                                          title="${message(code: 'default.to', default: 'Latest Date')}"/>
+                                          title="${message(code: 'default.to')}"/>
                         <g:sortableColumn class="la-smaller-table-head" params="${params}" property="accessEndDate"
-                                          title="${message(code: 'default.to', default: 'Latest Date')}"/>
+                                          title="${message(code: 'default.to')}"/>
                     </tr>
                     <tr>
                         <g:if test="${editable}">
@@ -164,16 +164,16 @@
 
                                     <div class="menu">
                                         <div class="item"
-                                             data-value="edit">${message(code: 'default.edit.label', args: [selected_label], default: 'Edit Selected')}</div>
+                                             data-value="edit">${message(code: 'default.edit.label', args: [selected_label])}</div>
 
                                         <div class="item"
-                                             data-value="remove">${message(code: 'default.remove.label', args: [selected_label], default: 'Remove Selected')}</div>
+                                             data-value="remove">${message(code: 'default.remove.label', args: [selected_label])}</div>
                                     </div>
                                 </div>
                                 <!--
                                 <select id="bulkOperationSelect" name="bulkOperation" class="ui wide dropdown">
-                                    <option value="edit">${message(code: 'default.edit.label', args: [selected_label], default: 'Edit Selected')}</option>
-                                    <option value="remove">${message(code: 'default.remove.label', args: [selected_label], default: 'Remove Selected')}</option>
+                                    <option value="edit">${message(code: 'default.edit.label', args: [selected_label])}</option>
+                                    <option value="remove">${message(code: 'default.remove.label', args: [selected_label])}</option>
                                 </select>
                                 -->
                             </th>
@@ -182,25 +182,25 @@
                             </th>
                             <th>
                                 <%--<semui:datepicker hideLabel="true"
-                                                  placeholder="${message(code: 'default.from', default: 'Earliest date')}"
+                                                  placeholder="${message(code: 'default.from')}"
                                                   inputCssClass="la-input-small" id="bulk_start_date"
                                                   name="bulk_start_date"/>
 
 
                                 <semui:datepicker hideLabel="true"
-                                                  placeholder="${message(code: 'default.to', default: 'Latest Date')}"
+                                                  placeholder="${message(code: 'default.to')}"
                                                   inputCssClass="la-input-small" id="bulk_end_date"
                                                   name="bulk_end_date"/>--%>
                             </th>
                             <th>
                                 <semui:datepicker hideLabel="true"
-                                                  placeholder="${message(code: 'default.from', default: 'Earliest date')}"
+                                                  placeholder="${message(code: 'default.from')}"
                                                   inputCssClass="la-input-small" id="bulk_access_start_date"
                                                   name="bulk_access_start_date"/>
 
 
                                 <semui:datepicker hideLabel="true"
-                                                  placeholder="${message(code: 'default.to', default: 'Latest Date')}"
+                                                  placeholder="${message(code: 'default.to')}"
                                                   inputCssClass="la-input-small" id="bulk_access_end_date"
                                                   name="bulk_access_end_date"/>
                             </th>
@@ -341,8 +341,8 @@
 
 <g:if test="${entitlements}">
     <semui:paginate action="index" controller="subscription" params="${params}"
-                    next="${message(code: 'default.paginate.next', default: 'Next')}"
-                    prev="${message(code: 'default.paginate.prev', default: 'Prev')}" max="${max}"
+                    next="${message(code: 'default.paginate.next')}"
+                    prev="${message(code: 'default.paginate.prev')}" max="${max}"
                     total="${num_sub_rows}"/>
 </g:if>
 

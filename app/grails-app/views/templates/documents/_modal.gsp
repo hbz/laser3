@@ -39,7 +39,7 @@
         <div class="inline-lists">
             <dl>
                 <dt>
-                    <label>${message(code: 'template.addDocument.name', default: 'Document Name')}:</label>
+                    <label>${message(code: 'template.addDocument.name')}:</label>
                 </dt>
                 <dd>
                     <input type="text" name="upload_title" value="${doc?.title}"/>
@@ -48,7 +48,7 @@
             <g:if test="${!docctx && !doc}">
                 <dl>
                     <dt>
-                        <label>${message(code: 'template.addDocument.file', default: 'File')}:</label>
+                        <label>${message(code: 'template.addDocument.file')}:</label>
                     </dt>
                     <dd>
                         <div class="ui fluid action input">
@@ -74,7 +74,7 @@
             </g:if>
             <dl>
                 <dt>
-                    <label>${message(code: 'template.addDocument.type', default: 'Document Type')}:</label>
+                    <label>${message(code: 'template.addDocument.type')}:</label>
                 </dt>
                 <dd>
                     <%

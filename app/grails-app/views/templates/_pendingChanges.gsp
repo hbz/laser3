@@ -17,11 +17,11 @@
             <g:if test="${! processingpc}">
                 <g:link controller="pendingChange" action="acceptAll" params="[OID: model.class.name + ':' + model.id]"
                         class="ui positive button">
-                  ${message(code:'template.pendingChanges.accept_all', default:'Accept All')}
+                  ${message(code:'template.pendingChanges.accept_all')}
               </g:link>
                 <g:link controller="pendingChange" action="rejectAll" params="[OID: model.class.name + ':' + model.id]"
                         class="ui negative button">
-                  ${message(code:'template.pendingChanges.reject_all', default:'Reject All')}
+                  ${message(code:'template.pendingChanges.reject_all')}
               </g:link>
             </g:if>
 
@@ -33,8 +33,8 @@
           <thead>
             <tr>
                 <th>${pendingChanges.size()? "1-"+pendingChanges.size() : 0}</th>
-              <th>${message(code:'default.info.label', default:'Info')}</th>
-                <th>${message(code: 'event.timestamp', default: 'Timestamp')}</th>
+              <th>${message(code:'default.info.label')}</th>
+                <th>${message(code: 'event.timestamp')}</th>
               <th>${message(code:'default.actions.label')}</th>
             </tr>
           </thead>

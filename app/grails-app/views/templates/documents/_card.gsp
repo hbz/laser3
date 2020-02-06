@@ -79,7 +79,7 @@
                                     ${docctx.owner?.filename}
                                 </g:elseif>
                                 <g:else>
-                                    ${message(code:'template.documents.missing', default: 'Missing title and filename')}
+                                    ${message(code:'template.documents.missing')}
                                 </g:else>
                             </g:link>(${docctx.owner?.type?.getI10n("value")})
                         </div>
@@ -174,7 +174,7 @@
                                     ${docctx.owner.filename}
                                 </g:elseif>
                                 <g:else>
-                                    ${message(code:'template.documents.missing', default: 'Missing title and filename')}
+                                    ${message(code:'template.documents.missing')}
                                 </g:else>
 
                             </g:link>(${docctx.owner?.type?.getI10n("value")})

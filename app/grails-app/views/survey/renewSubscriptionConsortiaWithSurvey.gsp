@@ -52,8 +52,8 @@ ${surveyInfo?.name}
             <input type="hidden" name="subscription.old_subid" value="${permissionInfo?.sub_id}"/>
 
             <tr>
-                <th>${message(code: 'myinst.renewalUpload.props', default: 'Subscription Properties')}</th>
-                <th>${message(code: 'default.value.label', default: 'Value')}</th>
+                <th>${message(code: 'myinst.renewalUpload.props')}</th>
+                <th>${message(code: 'default.value.label')}</th>
                 <th>${message(code: 'subscription.details.copyElementsIntoSubscription.audit')}</th>
             </tr>
             <tr>
@@ -71,7 +71,7 @@ ${surveyInfo?.name}
 
             </tr>
             <tr>
-                <th>${message(code: 'default.startDate.label', default: 'Start Date')}</th>
+                <th>${message(code: 'default.startDate.label')}</th>
                 <td><semui:datepicker class="wide eight" id="subscription.start_date" name="subscription.start_date" placeholder="default.date.label" value="${permissionInfo?.sub_startDate}" required="" /></td>
                 <td class="center aligned">
                     <div class="ui checkbox">
@@ -80,7 +80,7 @@ ${surveyInfo?.name}
                 </td>
             </tr>
             <tr>
-                <th>${message(code: 'default.endDate.label', default: 'End Date')}</th>
+                <th>${message(code: 'default.endDate.label')}</th>
                 <td><semui:datepicker class="wide eight" id="subscription.end_date" name="subscription.end_date" placeholder="default.date.label" value="${permissionInfo?.sub_endDate}" /></td>
                 <td class="center aligned">
                     <div class="ui checkbox">

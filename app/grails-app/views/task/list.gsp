@@ -4,7 +4,7 @@
 <html>
 	<head>
 		<meta name="layout" content="semanticUI">
-		<g:set var="entityName" value="${message(code: 'task.label', default: 'Task')}" />
+		<g:set var="entityName" value="${message(code: 'task.label')}" />
 		<title><g:message code="default.list.label" args="[entityName]" /></title>
 	</head>
 	<body>
@@ -32,9 +32,9 @@
 						
 							<th class="header"><g:message code="default.subscription.label" /></th>
 						
-							<g:sortableColumn property="title" title="${message(code: 'task.title.label', default: 'Title')}" />
+							<g:sortableColumn property="title" title="${message(code: 'task.title.label')}" />
 						
-							<g:sortableColumn property="endDate" title="${message(code: 'task.endDate.label', default: 'End Date')}" />
+							<g:sortableColumn property="endDate" title="${message(code: 'task.endDate.label')}" />
 
 							<th class="la-action-info">${message(code:'default.actions.label')}</th>
 						</tr>

@@ -434,20 +434,20 @@
                         <div class="content">
                             <g:if test="${costItemSums.ownCosts}">
                                 <g:if test="${(!(contextOrg.id in [subscription.getConsortia()?.id,subscription.getCollective()?.id]) && subscription.instanceOf) || !subscription.instanceOf}">
-                                    <h5 class="ui header">${message(code:'financials.label', default:'Financials')} : ${message(code:'financials.tab.ownCosts')}</h5>
+                                    <h5 class="ui header">${message(code:'financials.label')} : ${message(code:'financials.tab.ownCosts')}</h5>
                                     <g:render template="financials" model="[data:costItemSums.ownCosts]"/>
                                 </g:if>
                             </g:if>
                             <g:if test="${costItemSums.consCosts}">
-                                <h5 class="ui header">${message(code:'financials.label', default:'Financials')} : ${message(code:'financials.tab.consCosts')}</h5>
+                                <h5 class="ui header">${message(code:'financials.label')} : ${message(code:'financials.tab.consCosts')}</h5>
                                 <g:render template="financials" model="[data:costItemSums.consCosts]"/>
                             </g:if>
                             <g:elseif test="${costItemSums.collCosts}">
-                                <h5 class="ui header">${message(code:'financials.label', default:'Financials')} : ${message(code:'financials.tab.collCosts')}</h5>
+                                <h5 class="ui header">${message(code:'financials.label')} : ${message(code:'financials.tab.collCosts')}</h5>
                                 <g:render template="financials" model="[data:costItemSums.collCosts]"/>
                             </g:elseif>
                             <g:elseif test="${costItemSums.subscrCosts}">
-                                <h5 class="ui header">${message(code:'financials.label', default:'Financials')} : ${message(code:'financials.tab.subscrCosts')}</h5>
+                                <h5 class="ui header">${message(code:'financials.label')} : ${message(code:'financials.tab.subscrCosts')}</h5>
                                 <g:render template="financials" model="[data:costItemSums.subscrCosts]"/>
                             </g:elseif>
                         </div>

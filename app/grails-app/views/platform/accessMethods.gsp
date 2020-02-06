@@ -3,7 +3,7 @@
 <html>
     <head>
         <meta name="layout" content="semanticUI">
-        <g:set var="entityName" value="${message(code: 'platform.label', default: 'Platform')}" />
+        <g:set var="entityName" value="${message(code: 'platform.label')}" />
         <title><g:message code="default.show.label" args="[entityName]" /></title>
     </head>
     <body>
@@ -53,9 +53,9 @@
             <table  class="ui celled la-table table">
                 <thead>
                         <tr>
-                            <g:sortableColumn property="AccessMethod" title="${message(code: 'accessMethod.label', default: 'Access Method')}" />
-                            <g:sortableColumn property="validFrom" title="${message(code: 'accessMethod.valid_from', default: 'Valid From')}" />
-                            <g:sortableColumn property="validTo" title="${message(code: 'accessMethod.valid_to', default: 'Valid From')}" />
+                            <g:sortableColumn property="AccessMethod" title="${message(code: 'accessMethod.label')}" />
+                            <g:sortableColumn property="validFrom" title="${message(code: 'accessMethod.valid_from')}" />
+                            <g:sortableColumn property="validTo" title="${message(code: 'accessMethod.valid_to')}" />
                             <th>${message(code: 'accessMethod.actions', default: 'Actions')}</th>
                         </tr>
                 </thead>
@@ -64,10 +64,10 @@
                         <tr>
                             <td>${accessMethod.accessMethod.getI10n('value')}</td>
                             <td>
-                                <g:formatDate format="${message(code:'default.date.format.notime', default:'yyyy-MM-dd')}" date="${accessMethod.validFrom}" />
+                                <g:formatDate format="${message(code:'default.date.format.notime')}" date="${accessMethod.validFrom}" />
                             </td>
                             <td>
-                                <g:formatDate format="${message(code:'default.date.format.notime', default:'yyyy-MM-dd')}" date="${accessMethod.validTo}" />
+                                <g:formatDate format="${message(code:'default.date.format.notime')}" date="${accessMethod.validTo}" />
                             </td>
                             <td class="link">
                                 <g:link action="edit" controller="accessMethod" id="${accessMethod?.id}" class="ui icon button">

@@ -53,7 +53,7 @@
         </div>
 
         <div class="field ">
-            <label>${message(code: 'surveyInfo.comment.label', default: 'New Survey Name')}</label>
+            <label>${message(code: 'surveyInfo.comment.label')}</label>
 
             <textarea name="comment"></textarea>
         </div>
@@ -62,7 +62,7 @@
 
 
         <input type="submit" class="ui button"
-               value="${message(code: 'createGeneralSurvey.create', default: 'Create')}"/>
+               value="${message(code: 'createGeneralSurvey.create')}"/>
 
     </g:form>
 </semui:form>

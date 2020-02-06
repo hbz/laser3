@@ -11,7 +11,7 @@
                 <br />
                 <div class="content">
                     ${message(code:'task.endDate.label')}
-                    <g:formatDate format="${message(code:'default.date.format.notime', default:'yyyy-MM-dd')}" date="${tsk.endDate}"/>
+                    <g:formatDate format="${message(code:'default.date.format.notime')}" date="${tsk.endDate}"/>
                 </div>
             </div>
             <div class="right aligned four wide column la-column-left-lessPadding">
