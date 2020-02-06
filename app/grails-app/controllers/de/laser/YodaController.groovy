@@ -271,25 +271,15 @@ class YodaController {
     def systemProfiler() {
         Map<String, Object> result = [:]
 
-        result.globalCountByUri = [:]
+        result.globalCounter = [:]
 
-        SystemProfiler.executeQuery(
-        "select sp.uri, sp.ms as count from SystemProfiler sp where sp.context is null and sp.params is null"
-        ).each { it ->
-            result.globalCountByUri["${it[0]}"] = it[1]
-        }
+        result.globalStats = SystemProfiler.executeQuery(
+                "select sp.uri, max(sp.ms) as max, avg(sp.ms) as avg, count(sp.ms) as counter from SystemProfiler sp group by sp.uri"
+        ).sort{it[2]}.reverse()
 
-        result.byUri =
-                SystemProfiler.executeQuery("select sp.uri, max(sp.ms) as max, sum(sp.ms) as ms, count(sp.id) as count from SystemProfiler sp where sp.context is not null group by sp.uri")
-
-        result.byUri.each{ it ->
-            def tmp = ((it[2] + (de.laser.domain.SystemProfiler.THRESHOLD_MS * (result.globalCountByUri.get(it[0]) - it[3]))) / result.globalCountByUri.get(it[0]))
-            it[2] = tmp
-        }
-        result.byUri.sort{a,b -> Double.compare(a[2], b[2]) * -1}
-
-        result.byUriAndContext =
-                SystemProfiler.executeQuery("select sp.uri, org.id, max(sp.ms) as max, avg(sp.ms) as ms, count(org.id) as count from SystemProfiler sp join sp.context as org group by sp.uri, org.id").sort{it[3]}.reverse()
+        result.contextStats = SystemProfiler.executeQuery(
+                "select sp.uri, max(sp.ms) as max, avg(sp.ms) as avg, ctx.id, count(ctx.id) as counter from SystemProfiler sp join sp.context as ctx where ctx is not null group by sp.uri, ctx.id"
+        ).sort{it[2]}.reverse()
 
         result
     }
