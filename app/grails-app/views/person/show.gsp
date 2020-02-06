@@ -387,12 +387,14 @@ ${personInstance}
             <g:if test="${editable && personInstance?.tenant?.id == contextService.getOrg().id}">
                 <div class="ui card">
                     <div class="content">
-                            <g:link class="ui button negative"
-                                    controller="person"
+                            <g:link controller="person"
                                     action="_delete"
                                     id="${personInstance?.id}"
+                                    data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.contact", args: [personInstance])}"
+                                    data-confirm-term-how="delete"
+                                    class="ui icon negative button js-open-confirm-modal"
                                     params="[previousReferer: request.getHeader('referer')]">
-                                Kontakt löschen
+                                ${message(code: 'default.delete.label', args: ["${message(code: 'person')}"])}
                             </g:link>
                     </div>
                 </div>
