@@ -25,10 +25,10 @@
         <table class="ui celled la-table la-table-small table" id="globalTable">
             <thead>
                 <tr>
-                    <th>url</th>
-                    <th>total hits</th>
-                    <th>max ms</th>
-                    <th>avg ms</th>
+                    <th>Url</th>
+                    <th>Aufrufe</th>
+                    <th>max (s)</th>
+                    <th>avg (s)</th>
                 </tr>
             </thead>
             <tbody>
@@ -56,11 +56,11 @@
         <table class="ui celled la-table la-table-small table" id="contextTable">
             <thead>
                 <tr>
-                    <th>url</th>
-                    <th>context</th>
-                    <th>total hits</th>
-                    <th>max ms</th>
-                    <th>avg ms</th>
+                    <th>Url</th>
+                    <th>Kontext</th>
+                    <th>Aufrufe</th>
+                    <th>max (s)</th>
+                    <th>avg (s)</th>
                 </tr>
             </thead>
             <tbody>
