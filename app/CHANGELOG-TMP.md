@@ -6,6 +6,8 @@
 
 2014    05.02.2020  hbz-dev     David   Feature     Refactoring: Zugriff auf PropertyDefinitions nur über (name + descr)
 
+2150    05.02.2020  hbz-dev     David   Bug         API: Referenzwerte mit Doppelpunkt werden als Map interpretiert
+
 --      04.02.2020  rc1.2       David   Bug         Filter ausblenden: "Meine Plattformen"
 
 2136    04.02.2020  hbz-dev     David   Feature     Refactoring: DateUtil erweitern
