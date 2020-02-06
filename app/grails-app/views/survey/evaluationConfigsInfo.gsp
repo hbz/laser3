@@ -58,9 +58,9 @@
 
                             <g:if test="${surveyConfig?.surveyProperty}">
 
-                                <b>${message(code: 'default.type.label')}: ${surveyConfig?.surveyProperty?.getLocalizedType()}
+                                <strong>${message(code: 'default.type.label')}: ${surveyConfig?.surveyProperty?.getLocalizedType()}
 
-                                </b>
+                                </strong>
                             </g:if>
 
                         </dd>

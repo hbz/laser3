@@ -23,8 +23,17 @@
     def jb = new groovy.json.JsonBuilder(jsonSource)
     println jb.toPrettyString()
 --%>
-
-<table id="costTable_${i}" data-queryMode="${i}" class="ui celled sortable table table-tworow la-table la-ignore-fixed">
+<%
+    int colspan1 = 5
+    int colspan2 = 7
+    int wideColspan2 = 13
+    if(fixedSubscription) {
+        colspan1 = 4
+        colspan2 = 6
+        wideColspan2 = 12
+    }
+%>
+<table id="costTable_${customerType}" class="ui celled sortable table table-tworow la-table la-ignore-fixed">
     <thead>
         <tr>
             <g:if test="${!fixedSubscription}">
@@ -75,7 +84,7 @@
         %{--Empty result set--}%
         <g:if test="${data.count == 0}">
             <tr>
-                <td colspan="12" style="text-align:center">
+                <td colspan="${wideColspan2}" style="text-align:center">
                     <br />
                     <g:if test="${msg}">${msg}</g:if>
                     <g:else>${message(code:'finance.result.filtered.empty')}</g:else>
@@ -218,16 +227,8 @@
     </tbody>
     <tfoot>
         <g:if test="${data.count > 0 && data.sums.billingSums}">
-            <%
-                int colspan1 = 5
-                int colspan2 = 7
-                if(fixedSubscription) {
-                    colspan1 = 4
-                    colspan2 = 6
-                }
-            %>
             <tr>
-                <th colspan="13">
+                <th colspan="${wideColspan2}">
                     ${message(code:'financials.totalCost')}
                 </th>
             </tr>
@@ -265,32 +266,30 @@
                     <g:formatNumber number="${data.sums.localSums.localSum}" type="currency" currencySymbol="" currencyCode="EUR"/><br>
                     <g:formatNumber number="${data.sums.localSums.localSumAfterTax}" type="currency" currencySymbol="" currencyCode="EUR"/>
                 </td>
-                <td colspan="4">
+                <td colspan="3">
 
                 </td>
             </tr>
         </g:if>
         <g:elseif test="${data.count > 0 && !data.sums.billingSums}">
             <tr>
-                <td colspan="13">
+                <td colspan="${wideColspan2}">
                     ${message(code:'financials.noCostsConsidered')}
                 </td>
             </tr>
         </g:elseif>
         <tr>
-            <td colspan="13">
+            <td colspan="${wideColspan2}">
                 <div class="ui fluid accordion">
                     <div class="title">
                         <i class="dropdown icon"></i>
                         <strong>${message(code: 'financials.calculationBase')}</strong>
                     </div>
                     <div class="content">
-                        <p>
-                            <%
-                                def argv0 = contextService.getOrg().costConfigurationPreset ? contextService.getOrg().costConfigurationPreset.getI10n('value') : message(code:'financials.costItemConfiguration.notSet')
-                            %>
-                            ${message(code: 'financials.calculationBase.paragraph1', args: [argv0])}
-                        </p>
+                        <%
+                            def argv0 = contextService.getOrg().costConfigurationPreset ? contextService.getOrg().costConfigurationPreset.getI10n('value') : message(code:'financials.costItemConfiguration.notSet')
+                        %>
+                        ${message(code: 'financials.calculationBase.paragraph1', args: [argv0])}
                         <p>
                             ${message(code: 'financials.calculationBase.paragraph2')}
                         </p>

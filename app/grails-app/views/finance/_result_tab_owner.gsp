@@ -1,8 +1,15 @@
 <!-- _result_tab_owner.gsp -->
 <%@page import="de.laser.helper.RDStore;com.k_int.kbplus.CostItem"%>
 <laser:serviceInjection />
-
-<table id="costTable_${i}" data-queryMode="${i}" class="ui celled sortable table table-tworow la-table la-ignore-fixed">
+<%
+    int colspan = 2
+    int wideColspan = 10
+    if(fixedSubscription) {
+        colspan = 1
+        wideColspan = 9
+    }
+%>
+<table id="costTable_${customerType}" class="ui celled sortable table table-tworow la-table la-ignore-fixed">
     <thead>
         <tr>
             <g:if test="${!fixedSubscription}">
@@ -48,7 +55,7 @@
         %{--Empty result set--}%
         <g:if test="${!data.count || data.count == 0}">
             <tr>
-                <td colspan="10" style="text-align:center">
+                <td colspan="${wideColspan}" style="text-align:center">
                     <br />
                     <g:if test="${msg}">${msg}</g:if>
                     <g:else>${message(code:'finance.result.filtered.empty')}</g:else>
@@ -176,14 +183,9 @@
     </tbody>
     <tfoot>
         <g:if test="${data.count > 0 && data.sums.billingSums}">
-            <%
-                int colspan = 2
-                if(fixedSubscription) {
-                    colspan = 1
-                }
-            %>
+
             <tr>
-                <th colspan="10">
+                <th colspan="${wideColspan}">
                     ${message(code:'financials.totalCost')}
                 </th>
             </tr>
@@ -224,13 +226,13 @@
         </g:if>
         <g:elseif test="${data.count > 0 && !data.sums.billingSums}">
             <tr>
-                <td colspan="10">
+                <td colspan="${wideColspan}">
                     ${message(code:'financials.noCostsConsidered')}
                 </td>
             </tr>
         </g:elseif>
         <tr>
-            <td colspan="10">
+            <td colspan="${wideColspan}">
                 <div class="ui fluid accordion">
                     <div class="title">
                         <i class="dropdown icon"></i>
