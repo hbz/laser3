@@ -21,9 +21,6 @@
             %{--</g:else>--}%
 
     </g:if>
-<style>
-
-</style>
 <r:script>
     $('#noData')
             .popup()
