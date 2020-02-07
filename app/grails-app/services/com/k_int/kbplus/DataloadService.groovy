@@ -1136,6 +1136,12 @@ class DataloadService {
                 SystemEvent.createEvent('YODA_ES_RESET_CREATE_OK')
                 log.debug("Create ES index completed OK")
                 log.debug("manual start full text index")
+
+                log.debug("Delete all existing FT Control entries");
+                FTControl.withTransaction {
+                    FTControl.executeUpdate("delete FTControl c")
+                }
+
                 updateFTIndexes()
             } else {
                 log.error("Index wasn't created")
