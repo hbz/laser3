@@ -27,8 +27,18 @@
                 <tr>
                     <th>Url</th>
                     <th>Aufrufe</th>
-                    <th>max (s)</th>
-                    <th>avg (s)</th>
+                    <g:each in="${globalMatrixSteps}" var="step" status="i">
+                        <g:if test="${i>0}">
+                            <th>
+                                &lt; ${((int) step / 1000)} s
+                            </th>
+                        </g:if>
+                    </g:each>
+                    <g:if test="${globalMatrixSteps.size()>1}">
+                        <th> &gt; ${((int) globalMatrixSteps.last() / 1000)} s</th>
+                    </g:if>
+                    <th>max</th>
+                    <th>avg</th>
                 </tr>
             </thead>
             <tbody>
@@ -36,6 +46,27 @@
                     <tr data-uri="${stat[0]}">
                         <td data-uri="${stat[0]}">${stat[0]}</td>
                         <td>${stat[3]}</td>
+                        <g:each in="${globalMatrix[stat[0]]}" var="border,hits" status="i">
+                            <td>
+                                <g:if test="${hits > 0}">
+                                    <g:if test="${i==0}">
+                                        <strong class="ui green circular label">${hits}</strong>
+                                    </g:if>
+                                    <g:elseif test="${i==1}">
+                                        <strong class="ui yellow circular label">${hits}</strong>
+                                    </g:elseif>
+                                    <g:elseif test="${i==2}">
+                                        <strong class="ui orange circular label">${hits}</strong>
+                                    </g:elseif>
+                                    <g:else>
+                                        <strong class="ui red circular label">${hits}</strong>
+                                    </g:else>
+                                </g:if>
+                                <g:else>
+                                    ${hits}
+                                </g:else>
+                            </td>
+                        </g:each>
                         <td>${((double) stat[1] / 1000).round(2)}</td>
                         <td>${((double) stat[2] / 1000).round(2)}</td>
                     </tr>
@@ -59,8 +90,8 @@
                     <th>Url</th>
                     <th>Kontext</th>
                     <th>Aufrufe</th>
-                    <th>max (s)</th>
-                    <th>avg (s)</th>
+                    <th>max</th>
+                    <th>avg</th>
                 </tr>
             </thead>
             <tbody>

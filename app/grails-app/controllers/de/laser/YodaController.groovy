@@ -271,7 +271,24 @@ class YodaController {
     def systemProfiler() {
         Map<String, Object> result = [:]
 
-        result.globalCounter = [:]
+        result.globalMatrix = [:]
+        result.globalMatrixSteps = [0, 2000, 4000, 8000, 12000, 20000, 30000, 45000, 60000]
+
+        List<String> allUri = SystemProfiler.executeQuery('select distinct(uri) from SystemProfiler')
+
+        allUri.each { uri ->
+            result.globalMatrix["${uri}"] = [:]
+            result.globalMatrixSteps.eachWithIndex { step, i ->
+                String sql = 'select count(sp.uri) from SystemProfiler sp where sp.uri =:uri and sp.ms > :currStep'
+                Map sqlParams = [uri: uri, currStep: step]
+
+                if (i < result.globalMatrixSteps.size() - 1) {
+                    sql += ' and sp.ms < :nextStep'
+                    sqlParams = [uri: uri, currStep: step, nextStep: result.globalMatrixSteps[i+1]]
+                }
+                result.globalMatrix["${uri}"]["${step}"] = SystemProfiler.executeQuery(sql, sqlParams).get(0)
+            }
+        }
 
         result.globalStats = SystemProfiler.executeQuery(
                 "select sp.uri, max(sp.ms) as max, avg(sp.ms) as avg, count(sp.ms) as counter from SystemProfiler sp group by sp.uri"
