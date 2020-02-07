@@ -4,6 +4,10 @@
 
 --      06.02.2020  rc1.2       Christian   Bug     Zugangskonfigurationen auf Platformdetailseite wurden nicht korrekt bestimmt
 
+2158    07.02.2020  rc1.2       David   Bug         Identifikatorensuche bei Lizenzen (fehlerhafte Query)
+
+2155    06.02.2020  rc1.2       David   Feature     SystemProfiler soll kontextabhängig alle Zugriffe erfassen
+
 --      04.02.2020  rc1.2       David   Bug         Filter ausblenden: "Meine Plattformen"
 
 1991    03.02.2020  rc1.2       Moe     Bug         "Alle anzeigen" funktioniert bei "Alle Titel" nicht
