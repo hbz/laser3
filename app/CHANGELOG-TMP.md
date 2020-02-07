@@ -2,6 +2,12 @@
 
 **Ticket    Date    Branch      Author  Feature/Bug     Description/Keywords**
 
+--      06.02.2020  rc1.2       Christian   Bug     Zugangskonfigurationen auf Platformdetailseite wurden nicht korrekt bestimmt
+
+2158    07.02.2020  rc1.2       David   Bug         Identifikatorensuche bei Lizenzen (fehlerhafte Query)
+
+2155    06.02.2020  rc1.2       David   Feature     SystemProfiler soll kontextabhängig alle Zugriffe erfassen
+
 2147    05.02.2020  hbz-dev     David   Feature     Refactoring: default-Werte bei message-Tags entfernen
 
 2014    05.02.2020  hbz-dev     David   Feature     Refactoring: Zugriff auf PropertyDefinitions nur über (name + descr)
