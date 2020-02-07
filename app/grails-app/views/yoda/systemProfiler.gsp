@@ -25,33 +25,61 @@
         <table class="ui celled la-table la-table-small table" id="globalTable">
             <thead>
                 <tr>
-                    <th>url</th>
-                    <th>total hits</th>
-                    <th>count(*) > ${de.laser.domain.SystemProfiler.THRESHOLD_MS} ms</th>
-                    <th>max(count(*) > ${de.laser.domain.SystemProfiler.THRESHOLD_MS} ms)</th>
-                    <th>avg(count(*))</th>
+                    <th>Url</th>
+                    <th>Aufrufe</th>
+                    <g:each in="${globalMatrixSteps}" var="step" status="i">
+                        <g:if test="${i>0}">
+                            <th>
+                                &lt; ${((int) step / 1000)} s
+                            </th>
+                        </g:if>
+                    </g:each>
+                    <g:if test="${globalMatrixSteps.size()>1}">
+                        <th> &gt; ${((int) globalMatrixSteps.last() / 1000)} s</th>
+                    </g:if>
+                    <th>max</th>
+                    <th>avg</th>
                 </tr>
             </thead>
             <tbody>
-                <g:each in="${byUri}" var="bench">
-                    <tr data-uri="${bench[0]}">
-                        <td data-uri="${bench[0]}">${bench[0]}</td>
-                        <td>${globalCountByUri.get(bench[0])}</td><%-- //total hits --%>
-                        <td>${bench[3]}</td><%-- //count(*) --%>
-                        <td>${((double) bench[1] / 1000).round(2)}</td><%-- //max() --%>
-                        <td>${((double) bench[2] / 1000).round(2)}</td><%-- //avg() --%>
+                <g:each in="${globalStats}" var="stat">
+                    <tr data-uri="${stat[0]}">
+                        <td data-uri="${stat[0]}">${stat[0]}</td>
+                        <td>${stat[3]}</td>
+                        <g:each in="${globalMatrix[stat[0]]}" var="border,hits" status="i">
+                            <td>
+                                <g:if test="${hits > 0}">
+                                    <g:if test="${i==0}">
+                                        <strong class="ui green circular label">${hits}</strong>
+                                    </g:if>
+                                    <g:elseif test="${i==1}">
+                                        <strong class="ui yellow circular label">${hits}</strong>
+                                    </g:elseif>
+                                    <g:elseif test="${i==2}">
+                                        <strong class="ui orange circular label">${hits}</strong>
+                                    </g:elseif>
+                                    <g:else>
+                                        <strong class="ui red circular label">${hits}</strong>
+                                    </g:else>
+                                </g:if>
+                                <g:else>
+                                    ${hits}
+                                </g:else>
+                            </td>
+                        </g:each>
+                        <td>${((double) stat[1] / 1000).round(2)}</td>
+                        <td>${((double) stat[2] / 1000).round(2)}</td>
                     </tr>
                 </g:each>
             </tbody>
         </table>
 
     </div>
-
     <div data-tab="second" class="ui bottom attached tab segment" style="border-top: 1px solid #d4d4d5;">
 
         <br />
         <g:select id="filterTable" name="filterTable" class="ui dropdown search"
-                  from="${byUriAndContext.collect{com.k_int.kbplus.Org.get(it[1])}.unique()}"
+                  from="${contextStats.collect{com.k_int.kbplus.Org.get(it[3])}.unique()}"
                   optionKey="id" optionValue="${{it.sortname + ' (' + it.shortname + ')'}}"
                   noSelection="['':'Alle anzeigen']"
         />
@@ -59,26 +87,25 @@
         <table class="ui celled la-table la-table-small table" id="contextTable">
             <thead>
                 <tr>
-                    <th>url</th>
-                    <th>context</th>
-                    <th>count(*) > ${de.laser.domain.SystemProfiler.THRESHOLD_MS} ms</th>
-                    <th>max(count(*) > ${de.laser.domain.SystemProfiler.THRESHOLD_MS} ms)</th>
-                    <th>avg(max(count(*) > ${de.laser.domain.SystemProfiler.THRESHOLD_MS} ms))</th>
+                    <th>Url</th>
+                    <th>Kontext</th>
+                    <th>Aufrufe</th>
+                    <th>max</th>
+                    <th>avg</th>
                 </tr>
             </thead>
             <tbody>
-                <g:each in="${byUriAndContext}" var="bench">
-                    <tr data-uri="${bench[0]}" data-context="${bench[1]}">
-                        <td data-uri="${bench[0]}">${bench[0]}</td>
-                        <td data-context="${bench[1]}">${com.k_int.kbplus.Org.get(bench[1]).getDesignation()}</td>
-                        <td>${bench[4]}</td><%-- //count(*) --%>
-                        <td>${((double) bench[2] / 1000).round(2)}</td><%-- //max() --%>
-                        <td>${((double) bench[3] / 1000).round(2)}</td><%-- //avg() --%>
+            <g:each in="${contextStats}" var="bench">
+                <tr data-uri="${bench[0]}" data-context="${bench[3]}">
+                    <td data-uri="${bench[0]}">${bench[0]}</td>
+                    <td data-context="${bench[3]}">${com.k_int.kbplus.Org.get(bench[3]).getDesignation()}</td>
+                    <td>${bench[4]}</td>
+                    <td>${((double) bench[1] / 1000).round(2)}</td>
+                    <td>${((double) bench[2] / 1000).round(2)}</td>
                     </tr>
                 </g:each>
             </tbody>
         </table>
-
     </div>
 
 <r:script>
@@ -121,7 +148,6 @@
         cursor: pointer;
     }
 </style>
-
 
 </body>
 </html>
