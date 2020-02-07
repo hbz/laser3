@@ -12,8 +12,8 @@ class SystemProfiler {
 
     String  uri
     String  params
-    Integer ms
     Org     context
+    Integer ms
 
     Date dateCreated
 
@@ -24,45 +24,32 @@ class SystemProfiler {
         version     column:'sp_version'
         uri         column:'sp_uri',        index: 'sp_uri_idx'
         params      column:'sp_params',     type: 'text'
-        ms          column:'sp_ms'
         context     column:'sp_context_fk'
+        ms          column:'sp_ms'
+
         dateCreated column:'sp_created'
     }
 
     static constraints = {
         uri     (nullable:false, blank:false)
         params  (nullable:true,  blank:true)
-        ms      (nullable:false, blank:false)
         context (nullable:true,  blank:false)
+        ms      (nullable:true,  blank:false)
     }
 
     // triggerd via AjaxController.notifyProfiler()
 
     static void update(long delta, String actionUri) {
 
-        //println "updateSystemProfiler() delta: ${delta}, actionUri: ${actionUri}"
         ContextService contextService = (ContextService) Holders.grailsApplication.mainContext.getBean('contextService')
 
-        if (delta >= SystemProfiler.THRESHOLD_MS) {
+        // store current request
+        if (delta && delta > 0) {
             (new SystemProfiler(
-                    uri:      actionUri,
-                    ms:       delta,
-                    context:  contextService?.getOrg()
+                    uri: actionUri,
+                    context: contextService?.getOrg(),
+                    ms: delta
             )).save(flush: true)
-        }
-
-        // update global counts
-        SystemProfiler.withTransaction { status ->
-            SystemProfiler global = SystemProfiler.findWhere(uri: actionUri, context: null, params: null)
-
-            if (! global) {
-                global = new SystemProfiler(uri: actionUri, ms: 1)
-                global.save(flush:true)
-            }
-            else {
-                SystemProfiler.executeUpdate('UPDATE SystemProfiler SET ms =:newValue WHERE id =:spId',
-                        [newValue: Integer.valueOf(global.ms) + 1, spId: global.id])
-            }
         }
     }
 }
