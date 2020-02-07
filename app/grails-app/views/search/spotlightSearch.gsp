@@ -50,7 +50,7 @@
                 "description": "${statusString + ' ' +period}"
             ]
         }
-        else if (hit.getSourceAsMap().rectype == 'Title') {
+        else if (hit.getSourceAsMap().rectype == 'TitleInstance') {
             result << [
                 "title": "${hit.getSourceAsMap().name}",
                 "url":   g.createLink(controller:"title", action:"show", id:"${hit.getSourceAsMap().dbId}"),
@@ -59,14 +59,39 @@
                                         (hit.getSourceAsMap().typTitle == 'EBook') ? "${message(code: 'spotlight.ebooktitle')}" : "${message(code: 'spotlight.title')}",
                 "description": ""
             ]
-        }else if (hit.getSourceAsMap().rectype == 'ParticipantSurvey') {
+        }
+        else if (hit.getSourceAsMap().rectype == 'BookInstance') {
+            result << [
+                    "title": "${hit.getSourceAsMap().name}",
+                    "url":   g.createLink(controller:"title", action:"show", id:"${hit.getSourceAsMap().dbId}"),
+                    "category": "${message(code: 'spotlight.ebooktitle')}",
+                    "description": ""
+            ]
+        }
+        else if (hit.getSourceAsMap().rectype == 'DatabaseInstance') {
+            result << [
+                    "title": "${hit.getSourceAsMap().name}",
+                    "url":   g.createLink(controller:"title", action:"show", id:"${hit.getSourceAsMap().dbId}"),
+                    "category": "${message(code: 'spotlight.databasetitle')}",
+                    "description": ""
+            ]
+        }
+        else if (hit.getSourceAsMap().rectype == 'JournalInstance') {
+            result << [
+                    "title": "${hit.getSourceAsMap().name}",
+                    "url":   g.createLink(controller:"title", action:"show", id:"${hit.getSourceAsMap().dbId}"),
+                    "category":  "${message(code: 'spotlight.journaltitle')}",
+                    "description": ""
+            ]
+        }
+        else if (hit.getSourceAsMap().rectype == 'SurveyOrg') {
             result << [
                     "title": "${hit.getSourceAsMap().name}",
                     "url":   g.createLink(controller:"myInstitution", action:"surveyInfos", id:"${hit.getSourceAsMap().dbId}"),
                     "category": "${message(code: "spotlight.${hit.getSourceAsMap().rectype.toLowerCase()}")}",
                     "description": ""
             ]
-        }else if (hit.getSourceAsMap().rectype == 'Survey') {
+        }else if (hit.getSourceAsMap().rectype == 'SurveyConfig') {
             result << [
                     "title": "${hit.getSourceAsMap().name}",
                     "url":   g.createLink(controller:"survey", action:"show", id:"${SurveyConfig.get(hit.getSourceAsMap().dbId).surveyInfo.id}", params:"[surveyConfigID: ${hit.getSourceAsMap().dbId}]"),
