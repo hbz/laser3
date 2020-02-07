@@ -23,12 +23,12 @@
 				<g:form action="list" method="get" class="ui form">
                     <div class="two fields">
                         <div class="field">
-                            <label>${message(code:'default.search.text', default:'Search text')}</label>
+                            <label>${message(code:'default.search.text')}</label>
                             <input type="text" name="q" placeholder="${message(code:'default.search.ph', default:'enter search term...')}" value="${params.q}" />
                         </div>
 						<div class="field la-field-right-aligned">
 							<a href="${request.forwardURI}" class="ui reset primary button">${message(code:'default.button.filterreset.label')}</a>
-                            <input type="submit" class="ui secondary button" value="${message(code:'default.button.filter.label', default:'Filter')}" />
+                            <input type="submit" class="ui secondary button" value="${message(code:'default.button.filter.label')}" />
                         </div>
                     </div>
 				</g:form>
@@ -38,7 +38,7 @@
 				<thead>
 				<tr>
 					<th>${message(code:'sidewide.number')}</th>
-					<g:sortableColumn property="name" title="${message(code: 'default.name.label', default: 'Name')}" />
+					<g:sortableColumn property="name" title="${message(code: 'default.name.label')}" />
 					<th>${message(code:'default.provider.label')}</th>
 					<th>${message(code:'org.url.label')}</th>
 				</tr>

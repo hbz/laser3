@@ -3,16 +3,16 @@
     <button type="ui button" class="close" data-dismiss="modal">×</button>
 
     <div class="header">
-        <h6 class="ui header">${message(code: 'default.button.unlink.label', default: 'Unlink')}: ${pkg}</h6>
+        <h6 class="ui header">${message(code: 'default.button.unlink.label')}: ${pkg}</h6>
     </div>
 
     <div class="content">
         %{--<p>${message(code: 'subscription.details.unlink.note', default: 'No user actions required for this process.')}</p>--}%
         <table class="ui celled la-table table">
             <thead>
-            <th>${message(code: 'default.item.label', default: 'Item')}</th>
-            <th>${message(code: 'default.details.label', default: 'Details')}</th>
-            <th>${message(code: 'default.action.label', default: 'Action')}</th>
+            <th>${message(code: 'default.item.label')}</th>
+            <th>${message(code: 'default.details.label')}</th>
+            <th>${message(code: 'default.action.label')}</th>
             </thead>
             <tbody>
             <g:set var="actions_needed" value="false"/>
@@ -62,7 +62,7 @@
             <input type="hidden" name="subscription" value="${subscription.id}"/>
             <input type="hidden" name="confirmed" value="Y"/>
             <button type="submit"
-                    class="ui negative button">${message(code: 'default.button.confirm_delete.label', default: 'Confirm Delete')}</button>
+                    class="ui negative button">${message(code: 'default.button.confirm_delete.label')}</button>
         </g:form>
     </div>
 </div>  

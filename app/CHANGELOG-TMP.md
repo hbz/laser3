@@ -2,6 +2,18 @@
 
 **Ticket    Date    Branch      Author  Feature/Bug     Description/Keywords**
 
+--      07.02.2020  hbz-dev     David   Feature     Modified confirm dialog; added ajax content loading
+
+2158    07.02.2020  rc1.2       David   Bug         Identifikatorensuche bei Lizenzen (fehlerhafte Query)
+
+--      06.02.2020  rc1.2       Christian   Bug     Zugangskonfigurationen auf Platformdetailseite wurden nicht korrekt bestimmt
+
+2155    06.02.2020  rc1.2       David   Feature     SystemProfiler soll kontextabhängig alle Zugriffe erfassen
+
+2147    05.02.2020  hbz-dev     David   Feature     Refactoring: default-Werte bei message-Tags entfernen
+
+2014    05.02.2020  hbz-dev     David   Feature     Refactoring: Zugriff auf PropertyDefinitions nur über (name + descr)
+
 --      05.02.2020  hbz-dev     Moe     Feature     Improve License Compare View
 
 1917    05.02.2020  hbz-dev     Moe     Feature     Datenschutzerklärung etc. als eigene Seite statt als Modal
@@ -10,9 +22,17 @@
 
 2150    05.02.2020  hbz-dev     David   Bug         API: Referenzwerte mit Doppelpunkt werden als Map interpretiert
 
+2081    05.02.2020 hbz-dev      Anja    Feature     Fehlende Sicherheitsabfrage (Budgetcode löschen)
+
+2079    05.02.2020 hbz-dev      Anja    Feature     Fehlende Sicherheitsabfrage (Kontakt löschen)
+
 --      04.02.2020  rc1.2       David   Bug         Filter ausblenden: "Meine Plattformen"
 
 2136    04.02.2020  hbz-dev     David   Feature     Refactoring: DateUtil erweitern
+
+1742    03.02.2020  hbz-dev     Anja    Feature     Vorgänger/Nachfolgerlizenz in TN-Übersicht
+
+1914    03.02.2020  hbz-dev     Ingrid  Feature     Button fürs Ausblenden des Fälligen Termins
 
 1991    03.02.2020  rc1.2       Moe     Bug         "Alle anzeigen" funktioniert bei "Alle Titel" nicht
 
@@ -114,6 +134,8 @@
 
 1993    10.01.2020  rc1.2       Anja    Bug         Emails auch an CC für Surveys
 
+1859    10.01.2020  hbz-dev     Anja    Feature     Merkmale verwalten anpassen
+
 2016    10.01.2020  hbz-dev     David   Feature     Refactoring: Deprecated RefdataCategory.lookupOrCreate()
 
 2019    09.01.2020  hbz-dev     David   Feature     Refactoring: Factory für RefdataValue und RefdataCategory
@@ -125,6 +147,8 @@
 --      09.01.2020  rc1.2       Moe     Bug         Verlängerung Konsortial: Mehrjahres Flag setzen, Merkmale kopieren
 
 2029    09.01.2020  rc1.2       David   Feature     Refactoring: Shared Caches für User, bzw Organisationen
+
+2002    08.01.2020  hbz-dev     Anja    Feature     Keine fälligen Termine für ...
 
 --      08.01.2020  rc1.2       Moe     Bug         ES Searchs blockieren Threads
 

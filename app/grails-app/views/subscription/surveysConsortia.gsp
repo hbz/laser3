@@ -44,9 +44,9 @@
             <th>${message(code: 'default.status.label')}</th>
 
             <g:sortableColumn params="${params}" property="surveyInfo.startDate"
-                              title="${message(code: 'default.startDate.label', default: 'Start Date')}"/>
+                              title="${message(code: 'default.startDate.label')}"/>
             <g:sortableColumn params="${params}" property="surveyInfo.endDate"
-                              title="${message(code: 'default.endDate.label', default: 'End Date')}"/>
+                              title="${message(code: 'default.endDate.label')}"/>
             <th>${message(code: 'surveyProperty.plural.label')}</th>
             <th>${message(code: 'surveyConfigDocs.label')}</th>
             <th>${message(code: 'surveyParticipants.label')}</th>

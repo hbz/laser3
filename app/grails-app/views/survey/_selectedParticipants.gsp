@@ -62,7 +62,7 @@
 
     <g:if test="${selectedParticipants && editable}">
         <input type="submit" class="ui button"
-               value="${message(code: 'default.button.delete.label', default: 'Delete')}"/>
+               value="${message(code: 'default.button.delete.label')}"/>
     </g:if>
 
 </g:form>

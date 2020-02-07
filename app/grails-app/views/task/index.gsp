@@ -4,7 +4,7 @@
 <html>
 	<head>
 		<meta name="layout" content="main">
-		<g:set var="entityName" value="${message(code: 'task.label', default: 'Task')}" />
+		<g:set var="entityName" value="${message(code: 'task.label')}" />
 		<title><g:message code="default.list.label" args="[entityName]" /></title>
 	</head>
 	<body>
@@ -32,9 +32,9 @@
 					
 						<th><g:message code="default.subscription.label" /></th>
 					
-						<g:sortableColumn property="title" title="${message(code: 'task.title.label', default: 'Title')}" />
+						<g:sortableColumn property="title" title="${message(code: 'task.title.label')}" />
 					
-						<g:sortableColumn property="description" title="${message(code: 'task.description.label', default: 'Description')}" />
+						<g:sortableColumn property="description" title="${message(code: 'task.description.label')}" />
 					
 					</tr>
 				</thead>

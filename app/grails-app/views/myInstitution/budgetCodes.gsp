@@ -78,8 +78,12 @@
                         </g:if>
                         --%>
                         <g:if test="${editable && ! CostItemGroup.findAllByBudgetCode(bcode)}">
-                            <g:link controller="myInstitution" action="budgetCodes"
-                                    params="${[cmd: 'deleteBudgetCode', bc: 'com.k_int.kbplus.BudgetCode:' + bcode.id]}" class="ui icon negative button">
+                            <g:link controller="myInstitution"
+                                    action="budgetCodes"
+                                    params="${[cmd: 'deleteBudgetCode', bc: 'com.k_int.kbplus.BudgetCode:' + bcode.id]}"
+                                    data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.budgetcode", args: [fieldValue(bean: bcode, field: "value")])}"
+                                    data-confirm-term-how="delete"
+                                    class="ui icon negative button js-open-confirm-modal">
                                 <i class="trash alternate icon"></i>
                             </g:link>
                         </g:if>

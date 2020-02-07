@@ -5,7 +5,7 @@
 <html>
   <head>
       <meta name="layout" content="semanticUI"/>
-      <title>${message(code:'laser')} : ${message(code:'default.subscription.label', default:'Subscription')}</title>
+      <title>${message(code:'laser')} : ${message(code:'default.subscription.label')}</title>
   </head>
   <body>
 
@@ -24,18 +24,18 @@
         <table class="ui celled la-table table">
           <thead>
             <tr>
-              <th>${message(code:'financials.invoice_number', default:'Invoice Number')}</th>
-              <th>${message(code:'default.startDate.label', default:'Start Date')}</th>
-              <th>${message(code:'default.endDate.label', default:'End Date')}</th>
-              <th>${message(code:'financials.invoice_total', default:'Invoice Total')}</th>
+              <th>${message(code:'financials.invoice_number')}</th>
+              <th>${message(code:'default.startDate.label')}</th>
+              <th>${message(code:'default.endDate.label')}</th>
+              <th>${message(code:'financials.invoice_total')}</th>
             </tr>
           </thead>
           <tbody>
             <g:each in="${costItems}" var="ci">
               <tr>
                 <td>${ci.invoice.invoiceNumber}</td>
-                <td><g:formatDate date="${ci.invoice.startDate}" format="${message(code:'default.date.format.notime', default:'yyyy-MM-dd')}"/></td>
-                <td><g:formatDate date="${ci.invoice.endDate}" format="${message(code:'default.date.format.notime', default:'yyyy-MM-dd')}"/></td>
+                <td><g:formatDate date="${ci.invoice.startDate}" format="${message(code:'default.date.format.notime')}"/></td>
+                <td><g:formatDate date="${ci.invoice.endDate}" format="${message(code:'default.date.format.notime')}"/></td>
                 <td><span class="la-float-right"><g:formatNumber number="${ci.total}" groupingUsed="true" type="currency" currencyCode="${ci.billingCurrency}"/></span></td>
               </tr>
               <tr>

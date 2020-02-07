@@ -17,15 +17,15 @@
 
       <semui:messages data="${flash}" />
 
-      <h3 class="ui header">${message(code:'user.affiliation.plural', default:'Affiliations')}</h3>
+      <h3 class="ui header">${message(code:'user.affiliation.plural')}</h3>
 
       <table class="ui celled la-table table">
         <thead>
           <tr>
-            <th>${message(code:'user.id', default:'Id')}</th>
-            <th>${message(code:'user.org', default:'Org')}</th>
-            <th>${message(code:'user.role', default:'Role')}</th>
-            <th>${message(code:'user.status', default:'Status')}</th>
+            <th>${message(code:'user.id')}</th>
+            <th>${message(code:'user.org')}</th>
+            <th>${message(code:'user.role')}</th>
+            <th>${message(code:'user.status')}</th>
           </tr>
         </thead>
         <tbody>
@@ -40,12 +40,12 @@
         </tbody>
       </table>
 
-      <h3 class="ui header">${message(code:'user.role.plural', default:'Roles')}</h3>
+      <h3 class="ui header">${message(code:'user.role.plural')}</h3>
 
       <table class="ui celled la-table table">
         <thead>
           <tr>
-            <th>${message(code:'user.role', default:'Role')}</th>
+            <th>${message(code:'user.role')}</th>
           </tr>
         </thead>
         <tbody>

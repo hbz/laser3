@@ -120,7 +120,7 @@
             <br/>
             <g:if test="${members}">
                 <input type="submit" class="ui button js-click-control"
-                        value="${message(code: 'default.button.create.label', default: 'Create')}"/>
+                        value="${message(code: 'default.button.create.label')}"/>
             </g:if>
         </g:if>
     </g:form>

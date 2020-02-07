@@ -2,8 +2,7 @@
 <html>
 <head>
     <meta name="layout" content="semanticUI">
-    <g:set var="entityName" value="${message(code: 'onixplLicense.license.label',
-            default: 'ONIX-PL License')}" />
+    <g:set var="entityName" value="${message(code: 'onixplLicense.license.label')}" />
     <title><g:message code="default.import.label" args="[entityName]" /></title>
 </head>
 <body>
@@ -11,7 +10,7 @@
 
 
         <g:unless test="${validationResult?.success}">
-            <h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon />${message(code:'onix.import.license', default:'Import ONIX-PL License')}
+            <h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon />${message(code:'onix.import.license')}
             <g:if test="${license}"> ${message(code:'onix.import.for_license', args:[license.reference])}</g:if>
             <g:else> ${message(code:'onix.import.unspec', default:'for unspecified license')}</g:else>
             </h1>
