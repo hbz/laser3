@@ -120,6 +120,17 @@ class AjaxController {
     ]
   ]
 
+    def genericDialogMessage() {
+
+        if (params.template) {
+            render template: "/templates/ajax/${params.template}", model: [a: 1, b: 2, c: 3]
+        }
+        else {
+            render '<p>invalid call</p>'
+        }
+    }
+
+
     def notifyProfiler() {
         Map<String, Object> result = [status:'failed']
 

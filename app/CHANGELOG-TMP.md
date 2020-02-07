@@ -2,9 +2,11 @@
 
 **Ticket    Date    Branch      Author  Feature/Bug     Description/Keywords**
 
---      06.02.2020  rc1.2       Christian   Bug     Zugangskonfigurationen auf Platformdetailseite wurden nicht korrekt bestimmt
+--      07.02.2020  hbz-dev     David   Feature     Modified confirm dialog; added ajax content loading
 
 2158    07.02.2020  rc1.2       David   Bug         Identifikatorensuche bei Lizenzen (fehlerhafte Query)
+
+--      06.02.2020  rc1.2       Christian   Bug     Zugangskonfigurationen auf Platformdetailseite wurden nicht korrekt bestimmt
 
 2155    06.02.2020  rc1.2       David   Feature     SystemProfiler soll kontextabhängig alle Zugriffe erfassen
 
