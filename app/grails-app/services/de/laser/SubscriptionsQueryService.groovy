@@ -126,7 +126,7 @@ class SubscriptionsQueryService {
             // identifier based
             else {
                 String tmpBaseQuery1 = "( exists ( select ident from Identifier ident"
-                String tmpBaseQuery2 = "ident.value = :identifier ) )"
+                String tmpBaseQuery2 = "and ident.value = :identifier ) )"
 
                 base_qry += "AND ("
                 base_qry += tmpBaseQuery1 + " where ident.sub = s.id " + tmpBaseQuery2 + " or "
