@@ -2,9 +2,13 @@
 
 **Ticket    Date    Branch      Author  Feature/Bug     Description/Keywords**
 
---      06.02.2020  rc1.2       Christian   Bug     Zugangskonfigurationen auf Platformdetailseite wurden nicht korrekt bestimmt
+1505    07.02.2020  rc1.2       Moe     Bug         Kopierfunktion für Konsortiallizenzen überarbeiten
+
+--      07.02.2020  rc1.2       Moe     Bug         ES Index enthält nicht alle Objekte 
 
 2158    07.02.2020  rc1.2       David   Bug         Identifikatorensuche bei Lizenzen (fehlerhafte Query)
+
+--      06.02.2020  rc1.2       Christian   Bug     Zugangskonfigurationen auf Platformdetailseite wurden nicht korrekt bestimmt
 
 2155    06.02.2020  rc1.2       David   Feature     SystemProfiler soll kontextabhängig alle Zugriffe erfassen
 
