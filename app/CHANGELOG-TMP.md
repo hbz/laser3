@@ -6,6 +6,8 @@
 
 2005    10.02.2020  hbz-dev     Moe     Feature     "Mehrjahreslaufzeit" auch für lokale Lizenzen?
 
+2160    10.02.2020  hbz-dev     David   Feature     Legacy "Reminder" entfernen
+
 1505    07.02.2020  rc1.2       Moe     Bug         Kopierfunktion für Konsortiallizenzen überarbeiten
 
 --      07.02.2020  rc1.2       Moe     Bug         ES Index enthält nicht alle Objekte 
