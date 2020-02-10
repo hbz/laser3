@@ -32,6 +32,7 @@ fact.type,FactType,FactType
 federal.state,Bundesland,Federal State
 filter.fake.values,filter.fake.values,filter.fake.values
 funder.type,Trägerschaft,Funder Type
+funder.hsk.type,Trägerschaft,Funder Type HSK
 gender,Geschlecht,Gender
 ie.accept.status,IE Accept Status,IE Accept Status
 ie.access.status,IE Access Status,IE Access Status
@@ -92,6 +93,7 @@ person.function,Funktion,Person Function
 person.position,Position,Person Position
 person.responsibility,Verantwortlich,Person Responsibility
 platform.status,Platform Status,Platform Status
+region.de,Region in Deutschland,Region of Germany
 reminder.method,ReminderMethod,ReminderMethod
 reminder.trigger,ReminderTrigger,ReminderTrigger
 reminder.unit,ReminderUnit,ReminderUnit

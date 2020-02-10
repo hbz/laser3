@@ -73,6 +73,9 @@ class Org
     @RefdataAnnotation(cat = RDConstants.COUNTRY)
     RefdataValue country
 
+    @RefdataAnnotation(cat = RDConstants.REGION_DE)
+    RefdataValue regionDe
+
     @RefdataAnnotation(cat = RDConstants.FEDERAL_STATE)
     RefdataValue federalState
 
@@ -81,6 +84,9 @@ class Org
 
     @RefdataAnnotation(cat = RDConstants.FUNDER_TYPE)
     RefdataValue funderType
+
+    @RefdataAnnotation(cat = RDConstants.FUNDER_HSK_TYPE)
+    RefdataValue funderHskType
 
     @RefdataAnnotation(cat = RDConstants.LIBRARY_TYPE)
     RefdataValue libraryType
@@ -147,9 +153,11 @@ class Org
             status          column:'org_status_rv_fk'
         membership          column:'org_membership'
            country          column:'org_country_rv_fk'
+          regionDe          column:'org_region_de_rv_fk'
       federalState          column:'org_federal_state_rv_fk'
     libraryNetwork          column:'org_library_network_rv_fk'
         funderType          column:'org_funder_type_rv_fk'
+     funderHskType          column:'org_funder_hsk_type_rv_fk'
        libraryType          column:'org_library_type_rv_fk'
       importSource          column:'org_import_source'
     lastImportDate          column:'org_last_import_date'
@@ -197,9 +205,11 @@ class Org
               status(nullable:true, blank:true)
           membership(nullable:true, blank:true, maxSize:128)
              country(nullable:true, blank:true)
+            regionDe(nullable:true, blank:true)
         federalState(nullable:true, blank:true)
       libraryNetwork(nullable:true, blank:true)
           funderType(nullable:true, blank:true)
+       funderHskType(nullable:true, blank:true)
          libraryType(nullable:true, blank:true)
         importSource(nullable:true, blank:true)
       lastImportDate(nullable:true, blank:true)

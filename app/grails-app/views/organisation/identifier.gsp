@@ -7,11 +7,9 @@
 <head>
     <meta name="layout" content="semanticUI">
     <g:set var="allOrgTypeIds" value="${orgInstance.getallOrgTypeIds()}" />
-    <g:set var="isProvider" value="${RDStore.OT_PROVIDER.id in allOrgTypeIds}" />
     <g:set var="isGrantedOrgRoleAdminOrOrgEditor" value="${SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN,ROLE_ORG_EDITOR')}" />
-    <g:set var="isGrantedOrgRoleAdmin" value="${SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')}" />
 
-    <g:if test="${isProvider}">
+    <g:if test="${RDStore.OT_PROVIDER.id in allOrgTypeIds}">
         <g:set var="entityName" value="${message(code: 'default.provider.label')}"/>
     </g:if>
     <g:elseif test="${institutionalView}">
@@ -51,6 +49,10 @@
 
 <semui:objectStatus object="${orgInstance}" status="${orgInstance.status}"/>
 
+<g:if test="${departmentalView == false}">
+    <g:render template="/templates/meta/identifier" model="${[object: orgInstance, editable: editable]}"/>
+</g:if>
+
 <semui:messages data="${flash}"/>
 
 <div class="ui stackable grid">
@@ -81,7 +83,7 @@
                                 </dd>
                             </dl>
                         </g:if>
-                        <g:if test="${!isProvider}">
+                        <g:if test="${!(RDStore.OT_PROVIDER.id in allOrgTypeIds)}">
                             <dl>
                                 <dt>
                                     <g:message code="org.sortname.label" />
@@ -95,38 +97,27 @@
                     <dl>
                         <dt><g:message code="org.url.label"/></dt>
                         <dd>
-                            <semui:xEditable owner="${orgInstance}" type="url" field="url" overwriteEditable="${true}" class="la-overflow la-ellipsis" />
+                            <semui:xEditable owner="${orgInstance}" field="url"/>
                             <g:if test="${orgInstance.url}">
-                                <semui:linkIcon href="${orgInstance.url}" />
+                                <semui:linkIcon href="${orgInstance.url}"/>
                             </g:if>
                         </dd>
                     </dl>
                     <dl>
                         <dt>
                             <g:message code="org.nameGov.label" />
-                            <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
-                                  data-content="${message(code: 'org.nameGov.expl')}">
-                                <i class="question circle icon"></i>
-                            </span>
                         </dt>
                         <dd>
-                            ??? TODO
-                            %{--<semui:xEditable owner="${orgInstance}" field="sortname"/>--}%
+                            <semui:xEditable owner="${orgInstance}" field="sortname"/>
                         </dd>
                     </dl>
                     <g:if test="${!departmentalView}">
                         <dl>
-                            <dt>
-                                <g:message code="org.urlGov.label"/>
-                                <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
-                                      data-content="${message(code: 'org.urlGov.expl')}">
-                                    <i class="question circle icon"></i>
-                                </span>
-                            </dt>
+                            <dt><g:message code="org.urlGov.label"/></dt>
                             <dd>
-                                <semui:xEditable owner="${orgInstance}" type="url" field="urlGov" overwriteEditable="${true}" class="la-overflow la-ellipsis" />
+                                <semui:xEditable owner="${orgInstance}" field="urlGov"/>
                                 <g:if test="${orgInstance.urlGov}">
-                                    <semui:linkIcon href="${orgInstance.urlGov}" />
+                                    <semui:linkIcon href="${orgInstance.urlGov}"/>
                                 </g:if>
                             </dd>
                         </dl>
@@ -134,24 +125,124 @@
                 </div>
             </div><!-- .card -->
 
-            <g:if test="${isGrantedOrgRoleAdmin}">
+            <%-- orgInstance.hasPerm("ORG_INST,ORG_CONSORTIUM") && ((!fromCreate) || isGrantedOrgRoleAdminOrOrgEditor) --%>
+            <g:if test="${departmentalView == false}">
                 <div class="ui card">
                     <div class="content">
+                        <div class="header"><g:message code="default.identifiers.label"/></div>
+                    </div>
+
+                    <div class="content">
                         <dl>
-                            <dt><g:message code="org.sector.label" /></dt>
+                            <dt>ISIL</dt>
                             <dd>
-                                <semui:xEditableRefData owner="${orgInstance}" field="sector" config="${RDConstants.ORG_SECTOR}" overwriteEditable="${isGrantedOrgRoleAdminOrOrgEditor}"/>
-                            </dd>
-                        </dl>
+                                <g:set var="isils"
+                                       value="${orgInstance.ids.findAll { it?.ns?.ns == 'ISIL' }}"/>
+                                <g:if test="${isils}">
+                                    <div class="ui divided middle aligned selection list la-flex-list">
+                                        <g:each in="${isils}" var="isil">
+                                            <div class="ui item">
+
+                                                <div class="content la-space-right">
+                                                    <semui:xEditable owner="${isil}" field="value"/>
+                                                </div>
+
+                                                <div class="content">
+                                                    <g:if test="${editable}">
+                                                    <%-- TODO [ticket=1612] new identifier handling
+                                                        <g:link class="ui mini negative button" controller="ajax"
+                                                                action="deleteThrough"
+                                                                params='${[contextOid: "${orgInstance.class.name}:${orgInstance.id}", contextProperty: "ids", targetOid: "${isil.class.name}:${isil.id}"]}'>
+                                                            <i class="trash alternate icon"></i></g:link>
+                                                    --%>
+                                                        <g:link controller="ajax" action="deleteIdentifier" class="ui icon mini negative button"
+                                                                params='${[owner: "${orgInstance.class.name}:${orgInstance.id}", target: "${isil.class.name}:${isil.id}"]}'>
+                                                            <i class="trash alternate icon"></i></g:link>
+                                                    </g:if>
+                                                </div>
+
+                                            </div>
+                                        </g:each>
+
+                                    </div>
+
+                                </g:if>
+                                <g:if test="${editable}">
+                                    <%-- TODO [ticket=1612] new identifier handling --%>
+                                    <g:form controller="ajax" action="addIdentifier" class="ui form">
+                                        <input name="owner" type="hidden" value="${orgInstance.class.name}:${orgInstance.id}" />
+                                        <input name="namespace" type="hidden" value="com.k_int.kbplus.IdentifierNamespace:${com.k_int.kbplus.IdentifierNamespace.findByNs('ISIL').id}" />
+
+                                        <div class="fields">
+                                            <div class="field">
+                                                <input name="value" id="value" type="text" class="ui" />
+                                            </div>
+                                            <div class="field">
+                                                <button type="submit" class="ui button">Identifikator hinzufügen</button>
+                                            </div>
+                                        </div>
+                                    </g:form>
+                            </g:if>
+                        </dd>
+
+                    </dl>
+
+                    <dl>
+                        <dt>WIB-ID</dt>
+                        <dd>
+                            <g:set var="wibid" value="${orgInstance.ids.find { it?.ns?.ns == 'wibid' }}"/>
+                            <g:if test="${wibid}">
+                                <semui:xEditable owner="${wibid}" field="value"/>
+                            </g:if>
+                        </dd>
+                    </dl>
+                    <dl>
+                        <dt>EZB-ID</dt>
+                        <dd>
+                            <g:set var="ezb" value="${orgInstance.ids.find { it?.ns?.ns == 'ezb' }}"/>
+                            <g:if test="${ezb}">
+                                <semui:xEditable owner="${ezb}" field="value"/>
+                            </g:if>
+                        </dd>
+                    </dl>
+                </div>
+            </div><!-- .card -->
+        </g:if>
+
+            <g:if test="${isGrantedOrgRoleAdminOrOrgEditor}">
+                <div class="ui card">
+                    <div class="content">
+                        <g:if test="${orgInstance.hasPerm("ORG_INST") || isGrantedOrgRoleAdminOrOrgEditor}">
+                            <dl>
+                                <dt><g:message code="org.sector.label" /></dt>
+                                <dd>
+                                    <semui:xEditableRefData owner="${orgInstance}" field="sector" config="${RDConstants.ORG_SECTOR}" overwriteEditable="${isGrantedOrgRoleAdminOrOrgEditor}"/>
+                                </dd>
+                            </dl>
+                        </g:if>
+                        <g:else>
+                            <dl>
+                                <dt><g:message code="org.sector.label" /></dt>
+                                <dd>
+                                    ${orgInstance.sector?.getI10n('value')}
+                                </dd>
+                            </dl>
+                        </g:else>
                         <dl>
                             <dt>${message(code: 'default.status.label', default: 'Status')}</dt>
-                            <dd>
+
+                        <dd>
+                            <g:if test="${isGrantedOrgRoleAdminOrOrgEditor}">
                                 <semui:xEditableRefData owner="${orgInstance}" field="status" config="${RDConstants.ORG_STATUS}"/>
-                            </dd>
-                        </dl>
-                    </div>
-                </div><!-- .card -->
-            </g:if>
+                            </g:if>
+                            <g:else>
+                                ${orgInstance.status?.getI10n('value')}
+                            </g:else>
+                        </dd>
+                    </dl>
+                </div>
+            </div><!-- .card -->
+        </g:if>
 
             <g:if test="${isGrantedOrgRoleAdminOrOrgEditor}">
                 <div class="ui card">
@@ -183,7 +274,7 @@
                 </div>
             </g:if>
 
-            <g:if test="${departmentalView == false && !isProvider}">
+            <g:if test="${departmentalView == false && !(RDStore.OT_PROVIDER.id in allOrgTypeIds)}">
                 <div class="ui card">
                     <div class="content">
                             <dl>
@@ -197,20 +288,6 @@
                                 <dd>
                                     <semui:xEditableRefData owner="${orgInstance}" field="libraryType"
                                                             config="${RDConstants.LIBRARY_TYPE}"/>
-                                </dd>
-                            </dl>
-                            <dl>
-                                <dt>
-                                    <g:message code="org.subjectGroup.label" />
-                                    %{--<span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"--}%
-                                          %{--data-content="${message(code: 'org.libraryType.expl')}">--}%
-                                        %{--<i class="question circle icon"></i>--}%
-                                    %{--</span>--}%
-                                </dt>
-                                <dd>
-                                    ??? TODO
-                                    %{--<semui:xEditableRefData owner="${orgInstance}" field="libraryType"--}%
-                                                            %{--config="${RDConstants.LIBRARY_TYPE}"/>--}%
                                 </dd>
                             </dl>
                             <dl>
@@ -240,29 +317,15 @@
                             </dl>
                             <dl>
                                 <dt>
-                                    <g:message code="org.funderHSK.label" />
+                                    <g:message code="org.federalState.label" />
                                     <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
-                                          data-content="${message(code: 'org.funderHSK.expl')}">
+                                          data-content="${message(code: 'org.federalState.expl')}">
                                         <i class="question circle icon"></i>
                                     </span>
                                 </dt>
                                 <dd>
-                                    <semui:xEditableRefData owner="${orgInstance}" field="funderHskType" config="${RDConstants.FUNDER_HSK_TYPE}"/>
-                                </dd>
-                            </dl>
-                            <dl>
-                                <dt>
-                                    <g:message code="org.region.label" />
-                                    <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
-                                          data-content="${message(code: 'org.region.expl')}">
-                                        <i class="question circle icon"></i>
-                                    </span>
-                                </dt>
-                                <dd>
-                                    <semui:xEditableRefData owner="${orgInstance}" field="country" config="${RDConstants.COUNTRY}"/>
-                                </dd>
-                                <dd>
-                                    <semui:xEditableRefData owner="${orgInstance}" field="regionDe" config="${RDConstants.REGION_DE}"/>
+                                    <semui:xEditableRefData owner="${orgInstance}" field="federalState"
+                                                            config="${RDConstants.FEDERAL_STATE}"/>
                                 </dd>
                             </dl>
                             <dl>
@@ -282,7 +345,7 @@
             </g:if>
 
 
-            <g:if test="${isProvider}">
+            <g:if test="${(RDStore.OT_PROVIDER.id in allOrgTypeIds)}">
                 <div class="ui card">
                     <div class="content">
                         <dl>
@@ -311,6 +374,12 @@
                     <div class="content">
                         <dl>
                             <dt><g:message code="org.addresses.label" />
+
+                                <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
+                                      data-content="${message(code: 'adressFormModal.info')}">
+                                    <i class="question circle icon"></i>
+                                </span>
+
                             </dt>
                             <dd>
                                 <div class="ui divided middle aligned selection list la-flex-list">
@@ -396,6 +465,12 @@
                         </dl>--}%
                         <dl>
                             <dt><g:message code="org.prsLinks.label" />
+
+                                <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
+                                      data-content="${message(code: 'personFormModal.info')}">
+                                    <i class="question circle icon"></i>
+                                </span>
+
                             </dt>
                             <dd>
 

@@ -41,6 +41,7 @@ class RDConstants {
     public static final String FACT_TYPE              = 'fact.type'
     public static final String FEDERAL_STATE          = 'federal.state'
     public static final String FUNDER_TYPE            = 'funder.type'
+    public static final String FUNDER_HSK_TYPE        = 'funder.hsk.type'
 
     public static final String GENDER                 = 'gender'
 
@@ -108,6 +109,8 @@ class RDConstants {
     public static final String PERSON_POSITION        = 'person.position'
     public static final String PERSON_RESPONSIBILITY  = 'person.responsibility'
     public static final String PLATFORM_STATUS        = 'platform.status'
+
+    public static final String REGION_DE              = 'region.de'
 
     public static final String REMINDER_METHOD        = 'reminder.method'
     public static final String REMINDER_TRIGGER       = 'reminder.trigger'
