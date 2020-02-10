@@ -28,7 +28,6 @@ class LicenseController extends AbstractDebugController {
     def taskService
     def docstoreService
     def genericOIDService
-    def transformerService
     def exportService
     def escapeService
     def institutionsService

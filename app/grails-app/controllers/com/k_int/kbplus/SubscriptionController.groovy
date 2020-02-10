@@ -54,7 +54,6 @@ class SubscriptionController extends AbstractDebugController {
     def addressbookService
     def taskService
     def genericOIDService
-    def transformerService
     def exportService
     GrailsApplication grailsApplication
     def pendingChangeService

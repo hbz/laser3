@@ -22,7 +22,6 @@ import java.text.SimpleDateFormat
 class PackageController extends AbstractDebugController {
 
     def springSecurityService
-    def transformerService
     def genericOIDService
     def ESSearchService
     def exportService

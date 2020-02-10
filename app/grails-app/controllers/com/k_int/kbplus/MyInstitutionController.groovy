@@ -43,7 +43,6 @@ class MyInstitutionController extends AbstractDebugController {
     def instAdmService
     def exportService
     def escapeService
-    def transformerService
     def institutionsService
     def docstoreService
     def addressbookService
