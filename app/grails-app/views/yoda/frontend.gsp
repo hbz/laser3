@@ -379,6 +379,7 @@ if (customerType) {
 
         <g:link controller="yoda"
                 action="frontend"
+                extaContentFlag="false"
                 params=""
                 data-content="Hier kommt der Tooltip rein"
                 data-confirm-messageUrl="${createLink(controller:'ajax', action:'genericDialogMessage', params:[template:'abc'])}"
