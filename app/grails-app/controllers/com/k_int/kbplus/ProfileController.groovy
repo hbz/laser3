@@ -433,66 +433,6 @@ class ProfileController {
   }
 
     @Secured(['ROLE_USER'])
-    def createReminder() {
-        log.debug("Profile :: createReminder - ${params}")
-        def result    = [:]
-        def user      = User.load(springSecurityService.principal.id)
-        def trigger   = (params.int('trigger'))? RefdataValue.load(params.trigger) : RefdataValue.getByValueAndCategory("Subscription Manual Renewal Date", RDConstants.REMINDER_TRIGGER)
-        def remMethod = (params.int('method'))?  RefdataValue.load(params.method)  : RefdataValue.getByValueAndCategory("email", RDConstants.REMINDER_METHOD)
-        def unit      = (params.int('unit'))?    RefdataValue.load(params.unit)    : RefdataValue.getByValueAndCategory("Day", RDConstants.REMINDER_UNIT)
-
-
-        def reminder = new Reminder(trigger: trigger, unit: unit, reminderMethod: remMethod, amount: params.getInt('val')?:1, user: user, active: Boolean.TRUE)
-        if (reminder.save())
-        {
-            log.debug("Profile :: Index - Successfully saved reminder, adding to user")
-            user.addToReminders(reminder)
-            log.debug("User has following reminders ${user.reminders}")
-            result.status   = true
-            result.reminder = reminder
-        } else {
-            result.status = false
-            flash.error="Unable to create the reminder, invalid data received"
-            log.debug("Unable to save Reminder for user ${user.username}... Params as follows ${params}")
-        }
-        if (request.isXhr())
-            render result as JSON
-        else
-            redirect(action: "index", fragment: "reminders")
-    }
-
-    @Secured(['ROLE_USER'])
-    def updateReminder() {
-        def result    = [:]
-        result.status = true
-        result.op     = params.op
-        def user      = User.get(springSecurityService.principal.id)
-        def reminder  = Reminder.findByIdAndUser(params.id,user)
-        if (reminder)
-        {
-            switch (result.op)
-            {
-                case 'delete':
-                    user.reminders.clear()
-                    user.reminders.remove(reminder)
-                    reminder.delete(flush: true)
-                    break
-                case 'toggle':
-                    reminder.active = !reminder.active
-                    result.active   = reminder.active? 'disable':'enable'
-                    break
-                default:
-                    result.status = false
-                    log.error("Profile :: updateReminder - Unsupported operation for update reminder ${result.op}")
-                    break
-            }
-        } else
-            result.status = false
-
-        render result as JSON
-    }
-    
-    @Secured(['ROLE_USER'])
     def properties() {
 
         EhcacheWrapper cache = cacheService.getTTL300Cache('ProfileController/properties')

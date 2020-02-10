@@ -31,7 +31,7 @@ class User {
   SortedSet affiliations
   SortedSet roles
 
-  static hasMany = [ affiliations: com.k_int.kbplus.auth.UserOrg, roles: com.k_int.kbplus.auth.UserRole, reminders: com.k_int.kbplus.Reminder ]
+  static hasMany = [ affiliations: com.k_int.kbplus.auth.UserOrg, roles: com.k_int.kbplus.auth.UserRole ]
   static mappedBy = [ affiliations: 'user', roles: 'user' ]
 
   static constraints = {
@@ -49,7 +49,6 @@ class User {
 
       affiliations  batchSize: 10
       roles         batchSize: 10
-      reminders     batchSize: 10
   }
 
   Set<Role> getAuthorities() {
