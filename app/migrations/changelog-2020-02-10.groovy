@@ -29,4 +29,36 @@ update title_instance set date_created = '2018-01-01 00:00:0.000000' where date_
 	changeSet(author: "klober (generated)", id: "1581320763299-2") {
 		dropNotNullConstraint(columnDataType: "int4", columnName: "sp_ms", tableName: "system_profiler")
 	}
+
+	changeSet(author: "klober (generated)", id: "1581320763299-3") {
+		addColumn(schemaName: "public", tableName: "license") {
+			column(name: "lic_is_public_for_api", type: "bool")
+		}
+	}
+
+	changeSet(author: "kloberd (modified)", id: "1581320763299-4") {
+		grailsChange {
+			change {
+				sql.execute("update license set lic_is_public_for_api=false where lic_is_public_for_api is null;")
+			}
+			rollback {
+			}
+		}
+	}
+
+	changeSet(author: "klober (generated)", id: "1581320763299-5") {
+		addColumn(schemaName: "public", tableName: "subscription") {
+			column(name: "sub_is_public_for_api", type: "bool")
+		}
+	}
+
+	changeSet(author: "kloberd (modified)", id: "1581320763299-6") {
+		grailsChange {
+			change {
+				sql.execute("update subscription set sub_is_public_for_api=false where sub_is_public_for_api is null;")
+			}
+			rollback {
+			}
+		}
+	}
 }

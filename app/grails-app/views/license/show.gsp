@@ -132,6 +132,11 @@
                                     </dl>
                                 </g:if>
 
+                                <dl>
+                                    <dt class="control-label">${message(code: 'license.isPublicForApi.label')}</dt>
+                                    <dd><semui:xEditableBoolean owner="${license}" field="isPublicForApi" /></dd>
+                                </dl>
+
                             </div>
                         </div>
                     </div>

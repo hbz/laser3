@@ -154,6 +154,11 @@
                                     </dd>
                                 </dl>
                             </g:if>
+
+                            <dl>
+                                <dt class="control-label">${message(code: 'subscription.isPublicForApi.label')}</dt>
+                                <dd><semui:xEditableBoolean owner="${subscriptionInstance}" field="isPublicForApi" /></dd>
+                            </dl>
                         </div>
                     </div>
                 </div>

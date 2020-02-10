@@ -53,7 +53,8 @@ class License
 
     // If a license is slaved then any changes to instanceOf will automatically be applied to this license
     boolean isSlaved
-    boolean isPublic
+    boolean isPublic // ERMS-2148 remove
+    boolean isPublicForApi
 
     @RefdataAnnotation(cat = RDConstants.LICENSE_STATUS)
     RefdataValue status
@@ -121,6 +122,7 @@ class License
              licenseUrl column:'lic_license_url'
              instanceOf column:'lic_parent_lic_fk', index:'lic_parent_idx'
                isPublic column:'lic_is_public'
+         isPublicForApi column:'lic_is_public_for_api'
                isSlaved column:'lic_is_slaved'
             licenseType column:'lic_license_type_str'
           //licenseStatus column:'lic_license_status_str'
@@ -150,6 +152,7 @@ class License
         reference(nullable:false, blank:false)
         sortableReference(nullable:true, blank:true) // !! because otherwise, the beforeInsert() method which generates a value is not executed
         isPublic    (nullable:false, blank:false)
+        isPublicForApi (nullable:true, blank:true)
         noticePeriod(nullable:true, blank:true)
         licenseUrl(nullable:true, blank:true)
         instanceOf(nullable:true, blank:false)
