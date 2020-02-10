@@ -408,14 +408,14 @@
     </g:javascript>
         <r:script>
             $(document).ready( function(){
-                $('.tabular.menu .item').tab()
-                $('.item .widget-content').readmore({
+                $('.tabular.menu .item').tab();
+                /* $('.item .widget-content').readmore({
                     speed: 250,
                     collapsedHeight: 21,
                     startOpen: false,
                     moreLink: '<a href="#">[ ${message(code:'default.button.show.label')} ]</a>',
                     lessLink: '<a href="#">[ ${message(code:'default.button.hide.label')} ]</a>'
-                });
+                }); */
                 $('.xEditableManyToOne').editable({
                 }).on('hidden', function() {
                         //location.reload();
@@ -424,13 +424,5 @@
 
             })
         </r:script>
-
-        <style>
-            .item .widget-content {
-                overflow: hidden;
-                line-height: 20px;
-            }
-        </style>
-
     </body>
 </html>
