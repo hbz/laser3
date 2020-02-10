@@ -593,6 +593,15 @@ class YodaController {
     }
 
     @Secured(['ROLE_YODA'])
+    def checkESElementswithDBElements() {
+        log.debug("checkESElementswithDBElements")
+        dataloadService.checkESElementswithDBElements()
+        log.debug("redirecting to home ..")
+
+        redirect controller: 'home'
+    }
+
+    @Secured(['ROLE_YODA'])
     def globalSync() {
         log.debug("start global sync ..")
         globalSourceSyncService.runAllActiveSyncTasks()

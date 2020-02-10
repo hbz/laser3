@@ -2,6 +2,10 @@
 
 **Ticket    Date    Branch      Author  Feature/Bug     Description/Keywords**
 
+1505    07.02.2020  rc1.2       Moe     Bug         Kopierfunktion für Konsortiallizenzen überarbeiten
+
+--      07.02.2020  rc1.2       Moe     Bug         ES Index enthält nicht alle Objekte 
+
 --      07.02.2020  hbz-dev     David   Feature     Modified confirm dialog; added ajax content loading
 
 2158    07.02.2020  rc1.2       David   Bug         Identifikatorensuche bei Lizenzen (fehlerhafte Query)

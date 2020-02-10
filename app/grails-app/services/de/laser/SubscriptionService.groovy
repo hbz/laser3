@@ -58,8 +58,8 @@ class SubscriptionService {
             result.addAll(Subscription.executeQuery("select s ${tmpQ[0]}", tmpQ[1]))
 
         } else {
-            tmpQ = getSubscriptionsConsortialLicenseQuery()
-            result.addAll(Subscription.executeQuery("select s ${tmpQ[0]}", tmpQ[1]))
+           /* tmpQ = getSubscriptionsConsortialLicenseQuery()
+            result.addAll(Subscription.executeQuery("select s ${tmpQ[0]}", tmpQ[1]))*/
 
             tmpQ = getSubscriptionsLocalLicenseQuery()
             result.addAll(Subscription.executeQuery("select s ${tmpQ[0]}", tmpQ[1]))
