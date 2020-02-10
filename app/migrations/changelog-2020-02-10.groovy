@@ -29,4 +29,24 @@ update title_instance set date_created = '2018-01-01 00:00:0.000000' where date_
 	changeSet(author: "klober (generated)", id: "1581320763299-2") {
 		dropNotNullConstraint(columnDataType: "int4", columnName: "sp_ms", tableName: "system_profiler")
 	}
+
+	changeSet(author: "klober (generated)", id: "1581320763299-3") {
+		dropForeignKeyConstraint(baseTableName: "reminder", baseTableSchemaName: "public", constraintName: "fke116c0723d70d35d")
+	}
+
+	changeSet(author: "klober (generated)", id: "1581320763299-4") {
+		dropForeignKeyConstraint(baseTableName: "reminder", baseTableSchemaName: "public", constraintName: "fke116c07248e736b3")
+	}
+
+	changeSet(author: "klober (generated)", id: "1581320763299-5") {
+		dropForeignKeyConstraint(baseTableName: "reminder", baseTableSchemaName: "public", constraintName: "fke116c072e68d8f67")
+	}
+
+	changeSet(author: "klober (generated)", id: "1581320763299-6") {
+		dropForeignKeyConstraint(baseTableName: "reminder", baseTableSchemaName: "public", constraintName: "fke116c0723761cec3")
+	}
+
+	changeSet(author: "klober (generated)", id: "1581320763299-7") {
+		dropTable(tableName: "reminder")
+	}
 }
