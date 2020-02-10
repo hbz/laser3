@@ -386,52 +386,6 @@ class ProfileController {
         redirect(action: "index")
     }
 
-    private def addTransforms() {
-
-    def user = User.get(springSecurityService.principal.id)
-    def transforms = Transforms.findById(params.transformId)
-    
-    if(user && transforms){
-      def existing_transform = UserTransforms.findByUserAndTransforms(user,transforms);
-      if ( existing_transform == null ) {
-        new UserTransforms(
-            user: user,
-            transforms: transforms).save(failOnError: true)
-        flash.message="Transformation added"
-      }
-      else {
-        flash.error="You already have added this transform."
-      }
-    }else{  
-      log.error("Unable to locate transforms");
-      flash.error="Error we could not add this transformation"
-    }
-
-    redirect(action: "index")
-  }
-
-
-    private def removeTransforms() {
-    def user = User.get(springSecurityService.principal.id)
-    def transforms = Transforms.findById(params.transformId)
-    
-    //Check if has already transforms
-    if(user && transforms){
-      def existing_transform = UserTransforms.findByUserAndTransforms(user,transforms);
-      if(existing_transform){
-        transform.delete(failOnError: true, flush: true)
-        flash.message="Transformation removed from your list."
-      }else{
-        flash.error="This transformation is not in your list."
-      }
-    }else{
-      log.error("Unable to locate transforms");
-      flash.error="Error we could not remove this transformation"
-    }
-    
-    redirect(action: "index")
-  }
-
     @Secured(['ROLE_USER'])
     def properties() {
 

@@ -140,8 +140,6 @@ class SubscriptionController extends AbstractDebugController {
 
         log.debug("subscription id:${params.id} format=${response.format}");
 
-        result.transforms = grailsApplication.config.subscriptionTransforms
-
         result.max = params.max ? Integer.parseInt(params.max) : ((response.format && response.format != "html" && response.format != "all") ? 10000 : result.user.getDefaultPageSizeTMP());
         result.offset = (params.offset && response.format && response.format != "html") ? Integer.parseInt(params.offset) : 0;
 
@@ -164,14 +162,6 @@ class SubscriptionController extends AbstractDebugController {
             // flash.message = changesDesc
         } else {
             result.pendingChanges = pendingChanges.collect { PendingChange.get(it) }
-        }
-
-        // If transformer check user has access to it
-        if (params.transforms && !transformerService.hasTransformId(result.user, params.transforms)) {
-            flash.error = "It looks like you are trying to use an unvalid transformer or one you don't have access to!"
-            params.remove("transforms")
-            params.remove("format")
-            redirect action: 'currentTitles', params: params
         }
 
         if (params.mode == "advanced") {
@@ -301,13 +291,10 @@ class SubscriptionController extends AbstractDebugController {
                     def json = map as JSON
                     exportService.printDuration(starttime, "Create JSON")
 
-                    if (params.transforms) {
-                        transformerService.triggerTransform(result.user, filename, params.transforms, json, response)
-                    } else {
-                        response.setHeader("Content-disposition", "attachment; filename=\"${filename}.json\"")
-                        response.contentType = "application/json"
-                        render json
-                    }
+                    response.setHeader("Content-disposition", "attachment; filename=\"${filename}.json\"")
+                    response.contentType = "application/json"
+                    render json
+
                     exportService.printDuration(verystarttime, "Overall Time")
                 }
                 xml {
@@ -316,16 +303,12 @@ class SubscriptionController extends AbstractDebugController {
                     exportService.addSubIntoXML(doc, doc.getDocumentElement(), result.subscriptionInstance, result.entitlements)
                     exportService.printDuration(starttime, "Building XML Doc")
 
-                    if ((params.transformId) && (result.transforms[params.transformId] != null)) {
-                        String xml = exportService.streamOutXML(doc, new StringWriter()).getWriter().toString();
-                        transformerService.triggerTransform(result.user, filename, result.transforms[params.transformId], xml, response)
-                    } else {
-                        response.setHeader("Content-disposition", "attachment; filename=\"${filename}.xml\"")
-                        response.contentType = "text/xml"
-                        starttime = exportService.printStart("Sending XML")
-                        exportService.streamOutXML(doc, response.outputStream)
-                        exportService.printDuration(starttime, "Sending XML")
-                    }
+                    response.setHeader("Content-disposition", "attachment; filename=\"${filename}.xml\"")
+                    response.contentType = "text/xml"
+                    starttime = exportService.printStart("Sending XML")
+                    exportService.streamOutXML(doc, response.outputStream)
+                    exportService.printDuration(starttime, "Sending XML")
+
                     exportService.printDuration(verystarttime, "Overall Time")
                 }
             }

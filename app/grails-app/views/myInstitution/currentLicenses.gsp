@@ -24,12 +24,6 @@
                   <g:link class="item js-open-confirm-modal" data-confirm-tokenMsg = "${message(code: 'confirmation.content.exportPartial')}"
                           data-confirm-term-how="ok" action="currentLicenses" params="${params+[exportXLS:true]}">${message(code:'default.button.exports.xls')}</g:link>
               </semui:exportDropdownItem>
-              <g:each in="${transforms}" var="transkey,transval">
-                  <semui:exportDropdownItem>
-                      <g:link class="item js-open-confirm-modal" data-confirm-tokenMsg = "${message(code: 'confirmation.content.exportPartial')}"
-                              data-confirm-term-how="ok" action="currentLicenses" params="${params+[format:'xml',transformId:transkey,format_content:'subie']}">${transval.name}</g:link>
-                  </semui:exportDropdownItem>
-              </g:each>
           </g:if>
           <g:else>
               <semui:exportDropdownItem>
@@ -38,11 +32,6 @@
               <semui:exportDropdownItem>
                   <g:link class="item" action="currentLicenses" params="${params+[exportXLS:true]}">${message(code:'default.button.exports.xls')}</g:link>
               </semui:exportDropdownItem>
-              <g:each in="${transforms}" var="transkey,transval">
-                  <semui:exportDropdownItem>
-                      <g:link class="item" action="currentLicenses" params="${params+[format:'xml',transformId:transkey,format_content:'subie']}">${transval.name}</g:link>
-                  </semui:exportDropdownItem>
-              </g:each>
           </g:else>
       </semui:exportDropdown>
 
