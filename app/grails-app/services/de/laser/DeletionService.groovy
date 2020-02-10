@@ -646,8 +646,6 @@ class DeletionService {
 
         List pendingChanges = PendingChange.findAllByUser(user)
 
-        List reminders = new ArrayList(user.reminders)
-
         List surveyResults = SurveyResult.findAllByUser(user)
 
         List systemTickets = SystemTicket.findAllByAuthor(user)
@@ -669,7 +667,6 @@ class DeletionService {
         result.info << ['Dokumente', docs, FLAG_SUBSTITUTE]
         result.info << ['Links', links, FLAG_SUBSTITUTE]
         result.info << ['Anstehende Änderungen', pendingChanges, FLAG_SUBSTITUTE]
-        result.info << ['Reminder', reminders]
         result.info << ['Umfrageergebnisse', surveyResults, FLAG_SUBSTITUTE]
         result.info << ['Tickets', systemTickets, FLAG_SUBSTITUTE]
         result.info << ['Aufgaben', tasks, FLAG_SUBSTITUTE]
@@ -740,8 +737,6 @@ class DeletionService {
                         tmp.user = replacement
                         tmp.save()
                     }
-
-                    reminders.each { tmp -> tmp.delete() }
 
                     surveyResults.each { tmp ->
                         tmp.user = replacement
