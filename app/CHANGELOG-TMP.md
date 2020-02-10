@@ -2,6 +2,9 @@
 
 **Ticket    Date    Branch      Author  Feature/Bug     Description/Keywords**
 
+
+2005    10.02.2020  hbz-dev     Moe     Feature     "Mehrjahreslaufzeit" auch für lokale Lizenzen?
+
 --      05.02.2020  hbz-dev     Moe     Feature     Improve License Compare View
 
 1917    05.02.2020  hbz-dev     Moe     Feature     Datenschutzerklärung etc. als eigene Seite statt als Modal
