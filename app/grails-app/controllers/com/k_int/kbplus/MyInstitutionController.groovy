@@ -43,7 +43,6 @@ class MyInstitutionController extends AbstractDebugController {
     def instAdmService
     def exportService
     def escapeService
-    def transformerService
     def institutionsService
     def docstoreService
     def addressbookService
@@ -311,8 +310,6 @@ class MyInstitutionController extends AbstractDebugController {
 		DebugUtil du = new DebugUtil()
 		du.setBenchmark('init')
 
-        result.transforms = grailsApplication.config.licenseTransforms
-
         result.is_inst_admin = accessService.checkMinUserOrgRole(result.user, result.institution, 'INST_ADM')
         result.editable      = accessService.checkMinUserOrgRole(result.user, result.institution, 'INST_EDITOR')
 
@@ -547,22 +544,9 @@ from License as l where (
             xml {
                 def doc = exportService.buildDocXML("Licences")
 
-                if ((params.transformId) && (result.transforms[params.transformId] != null)) {
-                    switch(params.transformId) {
-                      case "sub_ie":
-                        exportService.addLicenseSubPkgTitleXML(doc, doc.getDocumentElement(),result.licenses)
-                      break;
-                      case "sub_pkg":
-                        exportService.addLicenseSubPkgXML(doc, doc.getDocumentElement(),result.licenses)
-                        break;
-                    }
-                    String xml = exportService.streamOutXML(doc, new StringWriter()).getWriter().toString();
-                    transformerService.triggerTransform(result.user, filename, result.transforms[params.transformId], xml, response)
-                }else{
-                    response.setHeader("Content-disposition", "attachment; filename=\"${filename}.xml\"")
-                    response.contentType = "text/xml"
-                    exportService.streamOutXML(doc, response.outputStream)
-                }
+                response.setHeader("Content-disposition", "attachment; filename=\"${filename}.xml\"")
+                response.contentType = "text/xml"
+                exportService.streamOutXML(doc, response.outputStream)
             }
         }
     }
@@ -1707,8 +1691,6 @@ from License as l where (
         def result = setResultGenerics()
 		DebugUtil du = new DebugUtil()
 		du.setBenchmark('init')
-		
-        result.transforms = grailsApplication.config.titlelistTransforms
 
         result.availableConsortia = Combo.executeQuery("select c.toOrg from Combo as c where c.fromOrg = ?", [result.institution])
 
@@ -1953,14 +1935,9 @@ from License as l where (
                     def doc = exportService.buildDocXML("TitleList")
                     exportService.addTitleListXML(doc, doc.getDocumentElement(), result.titles)
 
-                    if ((params.transformId) && (result.transforms[params.transformId] != null)) {
-                        String xml = exportService.streamOutXML(doc, new StringWriter()).getWriter().toString();
-                        transformerService.triggerTransform(result.user, filename, result.transforms[params.transformId], xml, response)
-                    } else { // send the XML to the user
-                        response.setHeader("Content-disposition", "attachment; filename=\"${filename}.xml\"")
-                        response.contentType = "text/xml"
-                        exportService.streamOutXML(doc, response.outputStream)
-                    }
+                    response.setHeader("Content-disposition", "attachment; filename=\"${filename}.xml\"")
+                    response.contentType = "text/xml"
+                    exportService.streamOutXML(doc, response.outputStream)
                 }
             }
         }

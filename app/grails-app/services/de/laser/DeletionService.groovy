@@ -633,7 +633,6 @@ class DeletionService {
         List userRoles      = new ArrayList(user.roles)
         List userFolder     = UserFolder.findAllWhere(user: user)
         List userSettings   = UserSettings.findAllWhere(user: user)
-        List userTransforms = UserTransforms.findAllWhere(user: user)
 
         List ciecs = CostItemElementConfiguration.executeQuery(
                 'select x from CostItemElementConfiguration x where x.createdBy = :user or x.lastUpdatedBy = :user', [user: user])
@@ -646,8 +645,6 @@ class DeletionService {
                 'select x from Links x where x.createdBy = :user or x.lastUpdatedBy = :user', [user: user])
 
         List pendingChanges = PendingChange.findAllByUser(user)
-
-        List reminders = new ArrayList(user.reminders)
 
         List surveyResults = SurveyResult.findAllByUser(user)
 
@@ -664,14 +661,12 @@ class DeletionService {
         result.info << ['Rollen', userRoles]
         result.info << ['Folder', userFolder]
         result.info << ['Einstellungen', userSettings]
-        result.info << ['Transforms', userTransforms]
 
         result.info << ['Kostenkonfigurationen', ciecs, FLAG_SUBSTITUTE]
         result.info << ['DashboardDueDate', ddds]
         result.info << ['Dokumente', docs, FLAG_SUBSTITUTE]
         result.info << ['Links', links, FLAG_SUBSTITUTE]
         result.info << ['Anstehende Änderungen', pendingChanges, FLAG_SUBSTITUTE]
-        result.info << ['Reminder', reminders]
         result.info << ['Umfrageergebnisse', surveyResults, FLAG_SUBSTITUTE]
         result.info << ['Tickets', systemTickets, FLAG_SUBSTITUTE]
         result.info << ['Aufgaben', tasks, FLAG_SUBSTITUTE]
@@ -712,9 +707,6 @@ class DeletionService {
                     // user settings
                     userSettings.each { tmp -> tmp.delete() }
 
-                    // user transforms
-                    userTransforms.each { tmp -> tmp.delete() }
-
                     // cost item element configurations
                     ciecs.each { tmp ->
                         tmp.lastUpdatedBy = replacement
@@ -745,8 +737,6 @@ class DeletionService {
                         tmp.user = replacement
                         tmp.save()
                     }
-
-                    reminders.each { tmp -> tmp.delete() }
 
                     surveyResults.each { tmp ->
                         tmp.user = replacement
