@@ -4,6 +4,7 @@ package com.k_int.kbplus
 import de.laser.SystemEvent
 import de.laser.helper.RDStore
 import de.laser.interfaces.TemplateSupport
+import grails.converters.JSON
 import groovy.json.JsonOutput
 import org.elasticsearch.ElasticsearchException
 import org.elasticsearch.action.admin.indices.delete.DeleteIndexRequest
@@ -15,6 +16,8 @@ import org.elasticsearch.action.search.SearchRequest
 import org.elasticsearch.action.search.SearchResponse
 import org.elasticsearch.action.support.replication.ReplicationResponse
 import org.elasticsearch.action.DocWriteResponse
+import org.elasticsearch.client.core.CountRequest
+import org.elasticsearch.client.core.CountResponse
 import org.elasticsearch.client.indices.*
 import org.elasticsearch.common.xcontent.XContentType
 import org.elasticsearch.common.unit.TimeValue
@@ -107,7 +110,7 @@ class DataloadService {
                 result.status = org.status?.value
                 result.statusId = org.status?.id
                 result.visible = 'Public'
-                result.rectype = 'Organisation'
+                result.rectype = org.getClass().getSimpleName()
 
                 result.sector = org.sector?.value
 
@@ -162,7 +165,7 @@ class DataloadService {
                     result.status = ti.status?.value
                     result.statusId = ti.status?.id
                     result.visible = 'Public'
-                    result.rectype = 'Title'
+                    result.rectype = ti.getClass().getSimpleName()
 
                     //result.keyTitle = ti.keyTitle
                     //result.normTitle = ti.normTitle
@@ -198,7 +201,7 @@ class DataloadService {
                 result.status = pkg.packageStatus?.value
                 result.statusId = pkg.packageStatus?.id
                 result.visible = 'Public'
-                result.rectype = 'Package'
+                result.rectype = pkg.getClass().getSimpleName()
 
                 result.consortiaGUID = pkg.getConsortia()?.globalUID
                 result.consortiaName = pkg.getConsortia()?.name
@@ -258,7 +261,7 @@ class DataloadService {
                 result.status = plat.status?.value
                 result.statusId = plat.status?.id
                 result.visible = 'Public'
-                result.rectype = 'Platform'
+                result.rectype = plat.getClass().getSimpleName()
 
                 result.normname = plat.normname
                 result.primaryUrl = plat.primaryUrl
@@ -280,7 +283,7 @@ class DataloadService {
             result.status = lic.status?.value
             result.statusId = lic.status?.id
             result.visible = 'Private'
-            result.rectype = 'License'
+            result.rectype = lic.getClass().getSimpleName()
 
             switch(lic.getCalculatedType()) {
                 case TemplateSupport.CALCULATED_TYPE_CONSORTIAL:
@@ -343,7 +346,7 @@ class DataloadService {
                 result.status = sub.status?.value
                 result.statusId = sub.status?.id
                 result.visible = 'Private'
-                result.rectype = 'Subscription'
+                result.rectype = sub.getClass().getSimpleName()
 
                 switch (sub.getCalculatedType()) {
                     case TemplateSupport.CALCULATED_TYPE_CONSORTIAL:
@@ -434,7 +437,7 @@ class DataloadService {
             result.status= surveyConfig.surveyInfo.status?.value
             result.statusId= surveyConfig.surveyInfo.status?.id
             result.visible = 'Private'
-            result.rectype = 'Survey'
+            result.rectype = surveyConfig.getClass().getSimpleName()
 
             result.availableToOrgs = [surveyConfig.surveyInfo.owner?.id]
 
@@ -468,7 +471,7 @@ class DataloadService {
             result.status= surOrg.surveyConfig.surveyInfo.status?.value
             result.statusId= surOrg.surveyConfig.surveyInfo.status?.id
             result.visible = 'Private'
-            result.rectype = 'ParticipantSurvey'
+            result.rectype = surOrg.getClass().getSimpleName()
 
             result.availableToOrgs = (surOrg.surveyConfig.surveyInfo.status.value != RDStore.SURVEY_IN_PROCESSING.value) ? [surOrg.org.id] : []
 
@@ -500,7 +503,7 @@ class DataloadService {
             result.status= task.status?.value
             result.statusId= task.status?.id
             result.visible = 'Private'
-            result.rectype = 'Task'
+            result.rectype = task.getClass().getSimpleName()
 
             result.availableToOrgs = [task.responsibleOrg?.id]
             result.availableToUser = [task.responsibleUser?.id]
@@ -543,15 +546,15 @@ class DataloadService {
             result._id = docCon.getClass().getSimpleName().toLowerCase()+":"+docCon.id
             result.priority = 40
             result.dbId = docCon.id
-            result.name = docCon.owner?.title
-            result.status= docCon.status?.value
-            result.statusId= docCon.status?.id
+            result.name = docCon.owner?.title ?: ''
+            result.status= docCon.status?.value ?: ''
+            result.statusId= docCon.status?.id ?: ''
             result.visible = 'Private'
             result.rectype = (docCon.owner?.contentType == 0) ? 'Note' : 'Document'
 
             result.availableToOrgs = [docCon.owner?.owner?.id ?: 0]
 
-            result.description = docCon.owner?.content
+            result.description = docCon.owner?.content ?: ''
 
             if(docCon.subscription){
                 result.objectId = docCon.subscription.id
@@ -592,7 +595,7 @@ class DataloadService {
             result.status= ie.status?.value
             result.statusId= ie.status?.id
             result.visible = 'Private'
-            result.rectype = 'IssueEntitlement'
+            result.rectype = ie.getClass().getSimpleName()
 
             switch (ie.subscription.getCalculatedType()) {
                 case TemplateSupport.CALCULATED_TYPE_CONSORTIAL:
@@ -646,7 +649,7 @@ class DataloadService {
             result.name = subCustProp.type?.name
 
             result.visible = 'Private'
-            result.rectype = 'SubscriptionCustomProperty'
+            result.rectype = subCustProp.getClass().getSimpleName()
 
             if(subCustProp.type.type == Integer.toString()){
                 result.description = subCustProp.intValue
@@ -664,7 +667,7 @@ class DataloadService {
                 result.description = subCustProp.urlValue
             }
             else if(subCustProp.type.type == RefdataValue.toString()){
-                result.description = subCustProp.refValue
+                result.description = subCustProp.refValue?.value
             }
 
             switch (subCustProp.owner.getCalculatedType()) {
@@ -707,7 +710,7 @@ class DataloadService {
             result.name = subPrivProp.type?.name
 
             result.visible = 'Private'
-            result.rectype = 'SubscriptionPrivateProperty'
+            result.rectype = subPrivProp.getClass().getSimpleName()
 
             if(subPrivProp.type.type == Integer.toString()){
                 result.description = subPrivProp.intValue
@@ -725,10 +728,10 @@ class DataloadService {
                 result.description = subPrivProp.urlValue
             }
             else if(subPrivProp.type.type == RefdataValue.toString()){
-                result.description = subPrivProp.refValue
+                result.description = subPrivProp.refValue?.value
             }
 
-            result.availableToOrgs = subPrivProp.type.tenant.id
+            result.availableToOrgs = [subPrivProp.type.tenant?.id ?: 0]
 
 
             if(subPrivProp.owner){
@@ -750,7 +753,7 @@ class DataloadService {
             result.name = licCustProp.type?.name
 
             result.visible = 'Private'
-            result.rectype = 'LicenseCustomProperty'
+            result.rectype = licCustProp.getClass().getSimpleName()
 
             if(licCustProp.type.type == Integer.toString()){
                 result.description = licCustProp.intValue
@@ -768,7 +771,7 @@ class DataloadService {
                 result.description = licCustProp.urlValue
             }
             else if(licCustProp.type.type == RefdataValue.toString()){
-                result.description = licCustProp.refValue
+                result.description = licCustProp.refValue?.value
             }
 
             switch(licCustProp.owner.getCalculatedType()) {
@@ -785,7 +788,7 @@ class DataloadService {
 
             if(licCustProp.owner){
                 result.objectId = licCustProp.owner.id
-                result.objectName = licCustProp.owner.name
+                result.objectName = licCustProp.owner.reference
                 result.objectTypeId = licCustProp.owner.type?.id
                 result.objectClassName = licCustProp.owner.getClass().getSimpleName().toLowerCase()
             }
@@ -802,7 +805,7 @@ class DataloadService {
             result.name = licPrivProp.type?.name
 
             result.visible = 'Private'
-            result.rectype = 'LicensePrivateProperty'
+            result.rectype = licPrivProp.getClass().getSimpleName()
 
             if(licPrivProp.type.type == Integer.toString()){
                 result.description = licPrivProp.intValue
@@ -820,15 +823,15 @@ class DataloadService {
                 result.description = licPrivProp.urlValue
             }
             else if(licPrivProp.type.type == RefdataValue.toString()){
-                result.description = licPrivProp.refValue
+                result.description = licPrivProp.refValue?.value
             }
 
-            result.availableToOrgs = licPrivProp.type.tenant.id
+            result.availableToOrgs = [licPrivProp.type.tenant?.id ?: 0]
 
 
             if(licPrivProp.owner){
                 result.objectId = licPrivProp.owner.id
-                result.objectName = licPrivProp.owner.name
+                result.objectName = licPrivProp.owner.reference
                 result.objectTypeId = licPrivProp.owner.type?.id
                 result.objectClassName = licPrivProp.owner.getClass().getSimpleName().toLowerCase()
             }
@@ -845,9 +848,10 @@ class DataloadService {
 
         log.debug("IndexUpdateJob completed in ${elapsed}ms at ${new Date()} ")
         SystemEvent.createEvent('FT_INDEX_UPDATE_END')
-        ESWrapperService.clusterHealth()
 
         esclient.close()
+
+        checkESElementswithDBElements()
 
         return true
     }
@@ -876,7 +880,7 @@ class DataloadService {
 
         //log.debug("result of findByDomain: ${latest_ft_record}")
 
-        log.debug("updateES ${domain.name} since ${latest_ft_record.lastTimestamp}")
+        log.debug("updateES ${domain.name} since ${new Date(latest_ft_record.lastTimestamp)}")
         Date from = new Date(latest_ft_record.lastTimestamp)
         // def qry = domain.findAllByLastUpdatedGreaterThan(from,[sort:'lastUpdated'])
 
@@ -912,11 +916,12 @@ class DataloadService {
 
           def recid = idx_record['_id'].toString()
           idx_record.remove('_id');
-          rectype = idx_record['rectype'].toString()
 
             IndexRequest request = new IndexRequest(es_index);
             request.id(recid);
-            String jsonString = JsonOutput.toJson(idx_record)
+            String jsonString = idx_record as JSON
+            //String jsonString = JsonOutput.toJson(idx_record)
+            //println(jsonString)
             request.source(jsonString, XContentType.JSON)
 
             IndexResponse indexResponse = esclient.index(request, RequestOptions.DEFAULT);
@@ -927,6 +932,8 @@ class DataloadService {
                 //log.debug("CREATED ${domain.name}")
             } else if (indexResponse.getResult() == DocWriteResponse.Result.UPDATED) {
                 //log.debug("UPDATED ${domain.name}")
+            }else {
+                log.debug("ELSE ${domain.name}: ${indexResponse.getResult()}")
             }
             ReplicationResponse.ShardInfo shardInfo = indexResponse.getShardInfo();
             if (shardInfo.getTotal() != shardInfo.getSuccessful()) {
@@ -951,6 +958,8 @@ class DataloadService {
             count = 0;
             log.debug("processed ${total} records (${domain.name})")
               latest_ft_record.lastTimestamp = highest_timestamp
+              latest_ft_record.esElements = latest_ft_record.esElements ?: 0
+              latest_ft_record.dbElements = latest_ft_record.dbElements ?: 0
             latest_ft_record.save(flush:true);
             cleanUpGorm();
           }
@@ -962,33 +971,10 @@ class DataloadService {
         // update timestamp
         latest_ft_record.lastTimestamp = highest_timestamp
 
-        //ES Abfrage
-        def query_str = "rectype: '${rectype}'"
+        latest_ft_record.esElements = latest_ft_record.esElements ?: 0
+        latest_ft_record.dbElements = latest_ft_record.dbElements ?: 0
+        latest_ft_record.save(flush:true);
 
-        if (domain.name == 'com.k_int.kbplus.DocContext'){
-            query_str = "rectype: 'Document' OR rectype: 'Note'"
-        }
-
-        SearchRequest searchRequest = new SearchRequest(es_index)
-        SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder()
-        searchSourceBuilder.query(QueryBuilders.queryStringQuery(query_str))
-        searchRequest.source(searchSourceBuilder)
-        searchRequest.scroll(TimeValue.timeValueMinutes(1L))
-
-        SearchResponse searchResponse = esclient.search(searchRequest, RequestOptions.DEFAULT)
-        Integer resultsTotal =  searchResponse ? searchResponse.getHits().getTotalHits().value.toInteger() : 0
-
-        //Datenbank Abfrage
-        def resultsinDB = domain.createCriteria().list(){}
-
-        latest_ft_record.dbElements = resultsinDB.size()?:0
-        latest_ft_record.esElements = resultsTotal
-        latest_ft_record.save(flush: true)
-        if(latest_ft_record.dbElements != latest_ft_record.esElements) {
-            log.debug("****ES NOT COMPLETE FOR ${rectype}: ES Results = ${resultsTotal}, DB Results = ${resultsinDB.size()}****")
-        }
-
-        //checkESElementswithDBElements(domain, latest_ft_record, esclient)
     }
     catch ( Exception e ) {
       log.error("Problem with FT index", e)
@@ -1150,6 +1136,12 @@ class DataloadService {
                 SystemEvent.createEvent('YODA_ES_RESET_CREATE_OK')
                 log.debug("Create ES index completed OK")
                 log.debug("manual start full text index")
+
+                log.debug("Delete all existing FT Control entries");
+                FTControl.withTransaction {
+                    FTControl.executeUpdate("delete FTControl c")
+                }
+
                 updateFTIndexes()
             } else {
                 log.error("Index wasn't created")
@@ -1157,81 +1149,61 @@ class DataloadService {
 
             //log.debug("Clear down and init ES completed...")
             client.close()
+        }else{
+            log.debug("!!!!Clear down and init ES is not possible because updateFTIndexes is currently in process!!!!");
         }
         SystemEvent.createEvent('YODA_ES_RESET_END')
     }
 
-    def checkESElementswithDBElements(domain, ft_record, esclient) {
+    boolean checkESElementswithDBElements() {
 
-        //Datenbank Abfrage
-        def c = domain.createCriteria()
-        def ResultsinDB = c.list(){}
+        log.debug("Begin to check ES Elements with DB Elements")
 
-        //ES Abfrage
-        def rectype = ""
-        if(domain.name == 'com.k_int.kbplus.Subscription')
-        {
-            rectype = "Subscription"
-        }else if(domain.name == 'com.k_int.kbplus.Org')
-        {
-            rectype = "Organisation"
-        }else if (domain.name == 'com.k_int.kbplus.TitleInstance')
-        {
-            rectype = "Title"
-        }
-        else if (domain.name == 'com.k_int.kbplus.Package')
-        {
-            rectype = "Package"
-        }else if (domain.name == 'com.k_int.kbplus.License')
-        {
-            rectype = "License"
-        }
-        else if (domain.name == 'com.k_int.kbplus.Platform')
-        {
-            rectype = "Platform"
-        }
-        else if (domain.name == 'com.k_int.kbplus.SurveyConfig')
-        {
-            rectype = "ParticipantSurvey"
-        }
+        FTControl.list().each { ft ->
 
-        else if (domain.name == 'com.k_int.kbplus.SurveyOrg')
-        {
-            rectype = "Survey"
-        }
+            RestHighLevelClient esclient = ESWrapperService.getClient()
 
-        else if (domain.name == 'com.k_int.kbplus.Task')
-        {
-            rectype = "Task"
-        }
+            Class domainClass = grailsApplication.getDomainClass(ft.domainClassName).clazz
 
-        else if (domain.name == 'com.k_int.kbplus.Task')
-        {
-            rectype = "Task"
-        }
+            String query_str = "rectype: '${ft.domainClassName.replaceAll("com.k_int.kbplus.","")}'"
 
-        def query_str = "rectype: '${rectype}'"
-
-        def index = ESWrapperService.getESSettings().indexName
-
-        SearchRequest searchRequest = new SearchRequest(index)
-        SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder()
-        searchSourceBuilder.query(QueryBuilders.queryStringQuery(query_str))
-
-        searchRequest.source(searchSourceBuilder)
-        //searchRequest.scroll(TimeValue.timeValueMinutes(1L))
-
-        SearchResponse searchResponse = esclient.search(searchRequest, RequestOptions.DEFAULT)
-
-            def resultsTotal =  searchResponse ? searchResponse.getHits().getTotalHits().value : 0
-
-            ft_record.dbElements = ResultsinDB.size()?:0
-            ft_record.esElements = resultsTotal ? resultsTotal.toInteger() :0
-            ft_record.save(flush: true)
-            if(ft_record.dbElements != ft_record.esElements) {
-                log.debug("****ES NOT COMPLETE FOR ${rectype}: ES Results = ${resultsTotal}, DB Results = ${ResultsinDB.size()}****")
+            if (ft.domainClassName.replaceAll("com.k_int.kbplus.","") == 'DocContext'){
+                query_str = "rectype:'Note' OR rectype:'Document'"
             }
-        esclient.close()
+
+            if (ft.domainClassName.replaceAll("com.k_int.kbplus.","") == 'TitleInstance'){
+                query_str = "rectype:'TitleInstance' OR rectype:'BookInstance' OR rectype:'JournalInstance' OR rectype:'DatabaseInstance'"
+            }
+
+            //println(query_str)
+
+            String index = ESWrapperService.getESSettings().indexName
+
+            CountRequest countRequest = new CountRequest(index);
+            SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
+            searchSourceBuilder.query(QueryBuilders.queryStringQuery(query_str))
+            countRequest.source(searchSourceBuilder);
+
+            CountResponse countResponse = esclient.count(countRequest, RequestOptions.DEFAULT)
+
+            ft.dbElements = domainClass.findAll().size()
+            ft.esElements = countResponse ? countResponse.getCount().toInteger() :0
+
+            //println(ft.dbElements +' , '+ ft.esElements)
+
+            if(ft.dbElements != ft.esElements) {
+                log.debug("****ES NOT COMPLETE FOR ${ft.domainClassName}: ES Results = ${ft.esElements}, DB Results = ${ft.dbElements} -> RESET lastTimestamp****")
+                //ft.lastTimestamp = 0
+            }
+
+            ft.save(flush: true)
+            esclient.close()
+
+        }
+
+        log.debug("End to check ES Elements with DB Elements")
+
+        return true
 
     }
 }

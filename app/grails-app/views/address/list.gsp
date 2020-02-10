@@ -4,7 +4,7 @@
 <html>
 	<head>
 		<meta name="layout" content="semanticUI">
-		<g:set var="entityName" value="${message(code: 'address.label'}" />
+		<g:set var="entityName" value="${message(code: 'address.label')}" />
 		<title><g:message code="default.list.label" args="[entityName]" /></title>
 	</head>
 	<body>
@@ -22,17 +22,17 @@
 					<thead>
 						<tr>
 						
-							<g:sortableColumn property="street_1" title="${message(code: 'address.street_1.label', default: 'Street1')}" />
+							<g:sortableColumn property="street_1" title="${message(code: 'address.street_1.label')}" />
 						
-							<g:sortableColumn property="street_2" title="${message(code: 'address.street_2.label', default: 'Street2')}" />
+							<g:sortableColumn property="street_2" title="${message(code: 'address.street_2.label')}" />
 						
-							<g:sortableColumn property="pob" title="${message(code: 'address.pob.label', default: 'Pob')}" />
+							<g:sortableColumn property="pob" title="${message(code: 'address.pob.label')}" />
 						
-							<g:sortableColumn property="zipcode" title="${message(code: 'address.zipcode.label', default: 'Zipcode')}" />
+							<g:sortableColumn property="zipcode" title="${message(code: 'address.zipcode.label')}" />
 						
-							<g:sortableColumn property="city" title="${message(code: 'address.city.label', default: 'City')}" />
+							<g:sortableColumn property="city" title="${message(code: 'address.city.label')}" />
 						
-							<g:sortableColumn property="state" title="${message(code: 'address.state.label', default: 'State')}" />
+							<g:sortableColumn property="state" title="${message(code: 'address.state.label')}" />
 							
 							<th class="header"><g:message code="address.prs.label" /></th>
 						

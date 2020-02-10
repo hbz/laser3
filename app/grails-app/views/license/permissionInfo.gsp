@@ -21,7 +21,7 @@
         <thead>
           <tr>
             <th>Organisation</th>
-            <th>${message(code:'subscription.details.permissionInfo.roles_and_perm', default:'Roles and Permissions')}</th>
+            <th>${message(code:'subscription.details.permissionInfo.roles_and_perm')}</th>
           </tr>
         </thead>
         <g:each in="${license.orgLinks}" var="ol">
@@ -34,10 +34,10 @@
                 <g:each in="${ol.roleType?.sharedPermissions}" var="sp">
                   <li>${message(code:"default.perm.${sp.perm.code}", default:"${sp.perm.code}")}
                       <g:if test="${license.checkPermissions(sp.perm.code,user)}">
-                        [${message(code:'default.perm.granted', default:'Granted')}]
+                        [${message(code:'default.perm.granted')}]
                       </g:if>
                       <g:else>
-                        [${message(code:'default.perm.not_granted', default:'Not granted')}]
+                        [${message(code:'default.perm.not_granted')}]
                       </g:else>
                   </li>
                 </g:each>
@@ -52,7 +52,7 @@
         <thead>
           <tr>
           <th>${message(code:'subscription.details.permissionInfo.aff_via', default:'Affiliated via Role')}</th>
-            <th>${message(code:'default.permissions.label', default:'Permissions')}</th>
+            <th>${message(code:'default.permissions.label')}</th>
           </tr>
         </thead>
         <g:each in="${user.affiliations}" var="ol">

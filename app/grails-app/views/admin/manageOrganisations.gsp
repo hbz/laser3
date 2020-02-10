@@ -35,8 +35,8 @@
         <thead>
             <tr>
                 <th>${message(code:'sidewide.number')}</th>
-                <th>${message(code: 'org.sortname.label', default: 'Sortname')}</th>
-                <th>${message(code: 'org.fullName.label', default: 'Name')}</th>
+                <th>${message(code: 'org.sortname.label')}</th>
+                <th>${message(code: 'org.fullName.label')}</th>
                 <th>${message(code: 'default.type.label')}</th>
                 <th>${message(code:'org.customerType.label')}</th>
                 <th>${message(code:'org.apiLevel.label')}</th>

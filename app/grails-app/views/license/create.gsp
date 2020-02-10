@@ -19,7 +19,7 @@
                 <input type="text" name="reference"/>
             </div>
             <div class="field">
-                <input class="ui button js-click-control" type="submit" value="${message(code:'default.button.create.label', default:'Create')}"/>
+                <input class="ui button js-click-control" type="submit" value="${message(code:'default.button.create.label')}"/>
             </div>
         </semui:simpleForm>
 

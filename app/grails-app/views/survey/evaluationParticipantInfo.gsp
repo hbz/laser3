@@ -7,7 +7,7 @@
 <html>
 <head>
     <meta name="layout" content="semanticUI"/>
-    <title>${message(code: 'laser')} : ${message(code: 'myinst.currentSubscriptions.label', default: 'Current Subscriptions')}</title>
+    <title>${message(code: 'laser')} : ${message(code: 'myinst.currentSubscriptions.label')}</title>
 </head>
 
 <body>

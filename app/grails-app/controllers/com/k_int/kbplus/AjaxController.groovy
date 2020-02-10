@@ -120,6 +120,17 @@ class AjaxController {
     ]
   ]
 
+    def genericDialogMessage() {
+
+        if (params.template) {
+            render template: "/templates/ajax/${params.template}", model: [a: 1, b: 2, c: 3]
+        }
+        else {
+            render '<p>invalid call</p>'
+        }
+    }
+
+
     def notifyProfiler() {
         Map<String, Object> result = [status:'failed']
 
@@ -2281,6 +2292,41 @@ class AjaxController {
     }
     redirect(url: request.getHeader('referer'))    
   }
+
+    @Secured(['ROLE_USER'])
+    def getEmailAddresses(){
+        def result
+        print 'getEmailAddresses'
+        def isPrivate = Boolean.valueOf(params.isPrivate)
+        def isPublic = Boolean.valueOf(params.isPublic)
+        def selectedRoleTypIds = params.selectedRoleTypIds
+        if (isPrivate){
+            if (isPublic){
+//                def erg = Contact.executeQuery("""select c from Contact c left join Person p on c.prs left join PersonRole pr on p.roleType
+//                where p.tenant=:tenant or p.tenant=:tenant_null
+//                and pr.id is in (:roleTypes)""",
+//                [tenant: contextService.org,
+//                tenant_null: null,
+//                roleTypes: selectedRoleTypIds])
+            } else {
+            }
+        } else if (isPublic){
+
+        }
+        result = ["info@hbz-nrw.de", "hauptkontakt<@hbz-nrw.de", "admin<@hbz-nrw.de"]
+//        PersonRole.findAllByFunctionTypeAndOrg(prsFunction, org).prs.each { person ->
+//            if (person.isPublic) {
+//                Contact.findAllByPrsAndContentType(person, CCT_EMAIL).each { email ->
+//                    def emailPF = email?.content?.trim()
+//                    if (emailPF != null) {
+////                        result.add(emailPF)
+//                    }
+//                }
+//            }
+//        }
+        render result as JSON
+    }
+
   def validationException(final grails.validation.ValidationException exception){
     log.error(exception)
     response.status = 400

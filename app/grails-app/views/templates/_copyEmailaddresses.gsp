@@ -221,6 +221,15 @@
             });
             emailsAsString = emailsAsString.join('; ');
             $("#emailAddressesTextArea").val(emailsAsString);
+            if (false){
+            $.ajax({
+                url: '<g:createLink controller="ajax" action="getEmailAddresses"/>' + '?isPrivate=' + isPrivate + '&isPublic=' + isPublic + '&selectedRoleTypIds=' + selectedRoleTypIds + '&format=json',
+                success: function (data) {
+                    $("#emailAddressesTextArea").val(data);
+                }
+            });
+            }
+
         }
     </g:javascript>
 

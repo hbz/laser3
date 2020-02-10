@@ -994,7 +994,7 @@ ol.ui.horizontal.list li:before,
   background: white!important;
 }
 .la-icon-list {
-  margin-top: 10px;
+  margin-top: 0.714em;
 }
 .la-icon-list .item {
   display: table-row;

@@ -47,7 +47,7 @@
 <div class="la-icon-list">
   <g:if test="${item.availabilityStatus?.getI10n('value')}">
     <div class="item">
-      <i class="grey key icon la-popup-tooltip la-delay" data-content="${message(code: 'default.access.label', default: 'Access')}"></i>
+      <i class="grey key icon la-popup-tooltip la-delay" data-content="${message(code: 'default.access.label')}"></i>
       <div class="content">
         ${item.availabilityStatus?.getI10n('value')}
       </div>
@@ -66,7 +66,7 @@
 
   <g:if test="${item.tipp?.platform.name}">
     <div class="item">
-      <i class="grey icon cloud la-popup-tooltip la-delay" data-content="${message(code: 'tipp.platform', default: 'Platform')}"></i>
+      <i class="grey icon cloud la-popup-tooltip la-delay" data-content="${message(code: 'tipp.platform')}"></i>
       <div class="content">
         <g:if test="${item.tipp?.platform.name}">
           <g:link controller="platform" action="show"
@@ -84,13 +84,13 @@
   <g:else>${message(code: 'default.unknown')}</g:else>
 
   <g:if test="${item?.availabilityStatus?.value == 'Expected'}">
-    ${message(code: 'default.on', default: 'on')} <g:formatDate
+    ${message(code: 'default.on')} <g:formatDate
         format="${message(code: 'default.date.format.notime')}"
         date="${item.accessStartDate}"/>
   </g:if>
 
   <g:if test="${item?.availabilityStatus?.value == 'Expired'}">
-    ${message(code: 'default.on', default: 'on')} <g:formatDate
+    ${message(code: 'default.on')} <g:formatDate
       format="${message(code: 'default.date.format.notime')}"
       date="${item.accessEndDate}"/>
   </g:if>

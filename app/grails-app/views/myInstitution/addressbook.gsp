@@ -1,5 +1,5 @@
 <%@ page
-import="de.laser.helper.RDStore; com.k_int.kbplus.Org; com.k_int.kbplus.Person; com.k_int.kbplus.PersonRole; com.k_int.kbplus.RefdataValue; com.k_int.kbplus.RefdataCategory"
+import="de.laser.helper.RDStore; de.laser.helper.RDConstants; com.k_int.kbplus.Org; com.k_int.kbplus.Person; com.k_int.kbplus.PersonRole; com.k_int.kbplus.RefdataValue; com.k_int.kbplus.RefdataCategory"
 %>
 
 <!doctype html>
@@ -72,8 +72,8 @@ import="de.laser.helper.RDStore; com.k_int.kbplus.Org; com.k_int.kbplus.Person; 
             <g:render template="/templates/cpa/person_table" model="${[persons: visiblePersons, restrictToOrg: null]}" />
 
             <semui:paginate action="addressbook" controller="myInstitution" params="${params}"
-                            next="${message(code: 'default.paginate.next', default: 'Next')}"
-                            prev="${message(code: 'default.paginate.prev', default: 'Prev')}"
+                            next="${message(code: 'default.paginate.next')}"
+                            prev="${message(code: 'default.paginate.prev')}"
                             max="${max}"
                             total="${num_visiblePersons}"/>
 

@@ -29,7 +29,7 @@
 
         <div class="item">
             <i class="grey key icon la-popup-tooltip la-delay"
-               data-content="${message(code: 'default.access.label', default: 'Access')}"></i>
+               data-content="${message(code: 'default.access.label')}"></i>
 
             <div class="content">
                 ${tipp.availabilityStatus?.getI10n('value')}
@@ -229,7 +229,7 @@
                         <a href="${request.forwardURI}"
                            class="ui reset primary button">${message(code: 'default.button.reset.label')}</a>
                         <input type="submit" class="ui secondary button"
-                               value="${message(code: 'default.button.filter.label', default: 'Filter')}">
+                               value="${message(code: 'default.button.filter.label')}">
                     </div>
                 </div>
             </g:form>

@@ -9,7 +9,7 @@
 
     <div>
         <ul class="breadcrumb">
-           <li> <g:link controller="home">${message(code:'default.home.label', default:'Home')}</g:link> <span class="divider">/</span> </li>
+           <li> <g:link controller="home">${message(code:'default.home.label')}</g:link> <span class="divider">/</span> </li>
            <li>Content Items</li>
         </ul>
     </div>

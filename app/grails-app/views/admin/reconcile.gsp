@@ -9,7 +9,7 @@
 
     <div>
         <ul class="breadcrumb">
-        <li> <g:link controller="home">${message(code:'default.home.label', default:'Home')}</g:link> <span class="divider">/</span> </li>
+        <li> <g:link controller="home">${message(code:'default.home.label')}</g:link> <span class="divider">/</span> </li>
         <li> <g:link controller='admin' action='index'>Admin</g:link> <span class="divider">/</span> </li>
         <li class="active">Manage Affiliation Requests</li>
       </ul>

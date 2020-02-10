@@ -157,8 +157,8 @@
 
         <g:if test="${licenses}">
             <semui:paginate action="emptyLicense" controller="myInstitution" params="${params}"
-                            next="${message(code: 'default.paginate.next', default: 'Next')}"
-                            prev="${message(code: 'default.paginate.prev', default: 'Prev')}" max="${max}"
+                            next="${message(code: 'default.paginate.next')}"
+                            prev="${message(code: 'default.paginate.prev')}" max="${max}"
                             total="${numLicenses}"/>
         </g:if>
 

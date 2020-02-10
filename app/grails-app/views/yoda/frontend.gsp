@@ -193,7 +193,7 @@
             <div class="ui instructive bottom attached segment">
                 <pre>
 &lt;div class=&quot;field&quot;&gt;com.k_int.properties.PropertyDefinition:269
-    &lt;label <b>for=&quot;filterPropDef&quot;</b>&gt;
+    &lt;label <strong>for=&quot;filterPropDef&quot;</strong>&gt;
         Merkmal
         &lt;i class=&quot;question circle icon la-popup&quot;&gt;&lt;/i&gt;
         &lt;div class=&quot;ui  popup &quot;&gt;
@@ -202,7 +202,7 @@
     &lt;/label&gt;
     &lt;div class=&quot;ui search selection dropdown la-filterPropDef&quot;&gt;
         &lt;input type=&quot;hidden&quot; name=&quot;filterPropDef&quot;&gt; &lt;i class=&quot;dropdown icon&quot;&gt;&lt;/i&gt;
-        &lt;input class=&quot;search&quot; <b>id=&quot;filterPropDef&quot;</b> &gt;
+        &lt;input class=&quot;search&quot; <strong>id=&quot;filterPropDef&quot;</strong> &gt;
         &lt;div class=&quot;default text&quot;&gt;Bitte ausw&auml;hlen&lt;/div&gt;
         &lt;div class=&quot;menu&quot;&gt;
             &lt;div class=&quot;item selected&quot; data-value=&quot;linkurl&quot;&gt;Abbestellgrund&lt;/div&gt;
@@ -222,8 +222,8 @@
             <ui>
                 <li>Cards, die keinen Inhalt haben, müssen ausgeschaltet werden:
                     <ol>
-                    <li>class <b>'la-js-dont-hide-this-card'</b> zu ins Markup einer Tabellen-Zelle</li>
-                    <li>class <b>'la-js-hideable'</b> zu ins Markup einer Card</li>
+                    <li>class <strong>'la-js-dont-hide-this-card'</strong> zu ins Markup einer Tabellen-Zelle</li>
+                    <li>class <strong>'la-js-hideable'</strong> zu ins Markup einer Card</li>
                     </ol>
                 </li>
                 <li><g:link controller="subscription" action="show">zum Beispiel hier verwendet</g:link></li>
@@ -240,7 +240,7 @@
                 <pre>
 &lt;thead&gt;
 &lt;tr&gt;
-    &lt;th class="<b>la-js-dont-hide-this-card</b>" &gt;${message(code:'property.table.property')}&lt;/th&gt;
+    &lt;th class="<strong>la-js-dont-hide-this-card</strong>" &gt;${message(code:'property.table.property')}&lt;/th&gt;
     &lt;th&gt;${message(code:'property.table.value')}&lt;/th&gt;
     &lt;g:if test="${ownobj instanceof com.k_int.kbplus.License}"&gt;
         &lt;th&gt;${message(code:'property.table.paragraph')}&lt;/th&gt;
@@ -253,7 +253,7 @@
                     .
                     .
 
-&lt;div class="ui card la-dl-no-table <b>la-js-hideable</b>"&gt;
+&lt;div class="ui card la-dl-no-table <strong>la-js-hideable</strong>"&gt;
                 </pre>
             </div>
         </div>
@@ -265,9 +265,9 @@
     <h4 class="ui header">Anzeige Icon</h4>
     <div class="html ui top attached segment example">
         <ul>
-            <li><code>tabindex="0"</code><b> – für den Screenreader</b>
-            <li><code>class="la-popup-tooltip la-delay"</code> <b> – für die Aktivierung des Tooltips mit Jvascript</b>
-            <li><code>class="icon thumbtack blue"</code> <b> – für Gestaltung</b>
+            <li><code>tabindex="0"</code><strong> – für den Screenreader</strong>
+            <li><code>class="la-popup-tooltip la-delay"</code> <strong> – für die Aktivierung des Tooltips mit Jvascript</strong>
+            <li><code>class="icon thumbtack blue"</code> <strong> – für Gestaltung</strong>
             <li><code>data-content="1 2 3"</code>
         </ul>
         <div class="ui top attached label">WCAG-Proof Icon</div>
@@ -276,12 +276,12 @@
     <h4 class="ui header">Funktions-Button, der ausgeschaltet werden kan, Icon bleibt</h4>
     <div class="html ui top attached segment example">
         <ul>
-            <li><code>la-js-editmode-container</code> <b>im umschließenden Element</b>
-            <li><code>role="button"</code>, <b>wenn es ein Link ist</b>
+            <li><code>la-js-editmode-container</code> <strong>im umschließenden Element</strong>
+            <li><code>role="button"</code>, <strong>wenn es ein Link ist</strong>
             <li><code>class="ui icon mini button </code>
                 <ul>
                     <li><code>la-audit-button </code>
-                    <li><code>class="la-popup-tooltip la-delay"</code> <b> – für die Aktivierung des Tooltips mit Jvascript</b>
+                    <li><code>class="la-popup-tooltip la-delay"</code> <strong> – für die Aktivierung des Tooltips mit Jvascript</strong>
                     <li><code>la-js-editmode-remain-icon"</code>
                 </ul>
             </li>
@@ -298,9 +298,9 @@
     <h4 class="ui header">Funktions-Button, der ausgeschaltet werden kann, Icon verschwindet</h4>
     <div class="html ui top attached segment example">
         <ul>
-            <li><code>role="button"</code>, <b>wenn es ein Link ist</b>
+            <li><code>role="button"</code>, <strong>wenn es ein Link ist</strong>
             <li><code>class="ui icon mini button </code>
-            <li><code>class="la-popup-tooltip la-delay"</code> <b> – für die Aktivierung des Tooltips mit Jvascript</b>
+            <li><code>class="la-popup-tooltip la-delay"</code> <strong> – für die Aktivierung des Tooltips mit Jvascript</strong>
 
             </li>
 
@@ -314,9 +314,9 @@
     <h4 class="ui header">Funktions-Button, der ausgeschaltet werden kann, Icon verschwindet</h4>
     <div class="html ui top attached segment example">
         <ul>
-            <li><code>role="button"</code>, <b>wenn es ein Link ist</b>
+            <li><code>role="button"</code>, <strong>wenn es ein Link ist</strong>
             <li><code>class="ui icon mini button </code>
-            <li><code>class="la-popup-tooltip la-delay"</code> <b> – für die Aktivierung des Tooltips mit Jvascript</b>
+            <li><code>class="la-popup-tooltip la-delay"</code> <strong> – für die Aktivierung des Tooltips mit Jvascript</strong>
 
             </li>
 
@@ -336,8 +336,8 @@
 Javascript:
 
 dcbStore.modal.show.customerTypeModal = function(trigger) {
-    $('#customerTypeModal #orgName_ct').attr('value', $(trigger).<b>attr('data-orgName')</b>)
-    $('#customerTypeModal input[name=target]').attr('value', $(trigger).<b>attr('data-ctTarget')</b>)
+    $('#customerTypeModal #orgName_ct').attr('value', $(trigger).<strong>attr('data-orgName')</strong>)
+    $('#customerTypeModal input[name=target]').attr('value', $(trigger).<strong>attr('data-ctTarget')</strong>)
                 .
                 .
                 .</pre>
@@ -348,7 +348,7 @@ dcbStore.modal.show.customerTypeModal = function(trigger) {
 
 var customerType = $(trigger).attr('data-customerType')
 if (customerType) {
-        $('#customerTypeModal select[name=customerType]').dropdown(<b>'set selected'</b>, customerType)
+        $('#customerTypeModal select[name=customerType]').dropdown(<strong>'set selected'</strong>, customerType)
 } else {
     $('#customerTypeModal select[name=customerType]').dropdown('clear')
 }</pre>
@@ -371,6 +371,25 @@ if (customerType) {
             <i class="trash alternate icon"></i>
         </g:link>
     </div>
+
+    <%-- ERMS-2082 --%>
+
+    <div class="html ui top attached segment example">
+        <div class="ui top attached label">Inhalt der Nachricht per Ajax: AjaxController.genericDialogMessage()</div>
+
+        <g:link controller="yoda"
+                action="frontend"
+                params=""
+                data-content="Hier kommt der Tooltip rein"
+                data-confirm-messageUrl="${createLink(controller:'ajax', action:'genericDialogMessage', params:[template:'abc'])}"
+                data-confirm-term-how="delete"
+                class="ui icon negative button js-open-confirm-modal la-popup-tooltip la-delay"
+                role="button">
+            <i class="trash alternate icon"></i>
+        </g:link>
+    </div>
+
+    <%-- ERMS-2082 --%>
 
     <div class="html ui top attached segment example">
         <div class="ui top attached label">Link, der den AJAX-Contoler aufruft und  als Button funktioniert (daß heiß, eine Aktion ausführt)</div>

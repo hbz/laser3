@@ -69,7 +69,7 @@
             <td class="la-main-object">${numbersInstance.referenceGroup}</td>
             <td><g:formatNumber number="${numbersInstance.value}" type="number"/></td>
             <td>${sdf.format(numbersInstance.dueDate)}</td>
-            <td>${RefdataValue.getByValue(numbersInstance.semester)?.getI10n('value')}</td>
+            <td>${numbersInstance.semester?.getI10n('value')}</td>
             <td class="x">
                 <g:if test="${editable}">
 

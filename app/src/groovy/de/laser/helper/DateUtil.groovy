@@ -15,6 +15,9 @@ class DateUtil {
     public static final String DATE_FORMAT_NOZ              = 'default.date.format.noZ'
     public static final String DATE_FORMAT_ONLYTIME         = 'default.date.format.onlytime'
 
+    /** This is a Utility-Class. There are only static methods. It is not necessary to create an instance */
+    private DateUtil(){}
+
     static SimpleDateFormat getSimpleDateFormatByToken(String token) {
         def messageSource = Holders.grailsApplication.mainContext.getBean('messageSource')
         Locale locale = org.springframework.context.i18n.LocaleContextHolder.getLocale()

@@ -3,7 +3,7 @@
 <html>
 <head>
     <meta name="layout" content="semanticUI">
-    <g:set var="entityName" value="${message(code: 'person.label', default: 'Person')}"/>
+    <g:set var="entityName" value="${message(code: 'person.label')}"/>
     <title>${message(code:'laser')} : <g:message code="default.show.label" args="[entityName]"/></title>
 
 </head>
@@ -101,7 +101,7 @@ ${personInstance}
                             </div>
                             <g:if test="${editable}">
                                 <input class="ui button" type="button" data-semui="modal" data-href="#contactFormModal"
-                                       value="${message(code: 'default.add.label', args: [message(code: 'person.contacts.label', default: 'Contacts')])}">
+                                       value="${message(code: 'default.add.label', args: [message(code: 'person.contacts.label')])}">
                                 <g:render template="/contact/formModal" model="['prsId': personInstance?.id]"/>
                             </g:if>
                         </dd>
@@ -124,7 +124,7 @@ ${personInstance}
                             </div>
                             <g:if test="${editable}">
                                 <input class="ui button" type="button" data-semui="modal" data-href="#addressFormModal"
-                                       value="${message(code: 'default.add.label', args: [message(code: 'address.label', default: 'Address')])}">
+                                       value="${message(code: 'default.add.label', args: [message(code: 'address.label')])}">
                                 <g:render template="/address/formModal" model="['prsId': personInstance?.id]"/>
                             </g:if>
                         </dd>
@@ -387,12 +387,14 @@ ${personInstance}
             <g:if test="${editable && personInstance?.tenant?.id == contextService.getOrg().id}">
                 <div class="ui card">
                     <div class="content">
-                            <g:link class="ui button negative"
-                                    controller="person"
+                            <g:link controller="person"
                                     action="_delete"
                                     id="${personInstance?.id}"
+                                    data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.contact", args: [personInstance])}"
+                                    data-confirm-term-how="delete"
+                                    class="ui icon negative button js-open-confirm-modal"
                                     params="[previousReferer: request.getHeader('referer')]">
-                                Kontakt löschen
+                                ${message(code: 'default.delete.label', args: ["${message(code: 'person')}"])}
                             </g:link>
                     </div>
                 </div>

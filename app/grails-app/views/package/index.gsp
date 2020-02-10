@@ -32,7 +32,7 @@
             <a href="${request.forwardURI}"
                class="ui reset primary button">${message(code: 'default.button.filterreset.label')}</a>
             <button type="submit" name="search" value="yes"
-                    class="ui secondary button">${message(code: 'default.button.filter.label', default: 'Filter')}</button>
+                    class="ui secondary button">${message(code: 'default.button.filter.label')}</button>
         </div>
     </g:form>
 </semui:filter>
@@ -130,8 +130,8 @@
                 </div><!-- #resultsarea -->
 
                  <semui:paginate action="index" controller="package" params="${params}"
-                                 next="${message(code: 'default.paginate.next', default: 'Next')}"
-                                 prev="${message(code: 'default.paginate.prev', default: 'Prev')}" max="${max}"
+                                 next="${message(code: 'default.paginate.next')}"
+                                 prev="${message(code: 'default.paginate.prev')}" max="${max}"
                                  total="${resultsTotal}"/>
 
              </g:if>
@@ -249,8 +249,8 @@
             </div><!-- #resultsarea -->
 
             <semui:paginate action="index" controller="package" params="${params}"
-                            next="${message(code: 'default.paginate.next', default: 'Next')}"
-                            prev="${message(code: 'default.paginate.prev', default: 'Prev')}" max="${max}"
+                            next="${message(code: 'default.paginate.next')}"
+                            prev="${message(code: 'default.paginate.prev')}" max="${max}"
                             total="${resultsTotal2}"/>
 
         </g:if>

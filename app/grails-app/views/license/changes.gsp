@@ -20,7 +20,7 @@
           <thead>
             <tr>
               <th>${message(code:'license.history.todo.description', default:'ToDo Description')}</th>
-              <th>${message(code:'default.status.label', default:'Status')}</th>
+              <th>${message(code:'default.status.label')}</th>
               <th>${message(code:'default.date.label')}</th>
             </tr>
           </thead>
@@ -47,11 +47,11 @@
 
                 <g:if test="${hl.status?.value in ['Accepted', 'Rejected']}">
                     <%--${message(code:'subscription.details.todo_history.by_on', args:[(hl.user?.display ?: hl.user?.username)])}--%>
-                    / <g:formatDate format="${message(code:'default.date.format.notime', default:'yyyy-MM-dd')}" date="${hl.actionDate}"/>
+                    / <g:formatDate format="${message(code:'default.date.format.notime')}" date="${hl.actionDate}"/>
                 </g:if>
               </td>
               <td>
-                  <g:formatDate format="${message(code:'default.date.format.notime', default:'yyyy-MM-dd')}" date="${hl.ts}"/>
+                  <g:formatDate format="${message(code:'default.date.format.notime')}" date="${hl.ts}"/>
               </td>
             </tr>
           </g:each>
