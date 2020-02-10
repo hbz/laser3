@@ -85,6 +85,13 @@ class ProfileController {
     }
 
     @Secured(['ROLE_USER'])
+    def dsgvo() {
+        Map<String, Object> result = [:]
+        result.user = User.get(springSecurityService.principal.id)
+        result
+    }
+
+    @Secured(['ROLE_USER'])
     def processJoinRequest() {
         log.debug("processJoinRequest(${params}) org with id ${params.org} role ${params.formalRole}")
 

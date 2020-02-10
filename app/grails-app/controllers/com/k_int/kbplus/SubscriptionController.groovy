@@ -4910,10 +4910,10 @@ class SubscriptionController extends AbstractDebugController {
         }
         subsToCompare.each{ sub ->
             Map customProperties = result.customProperties
-            customProperties = comparisonService.buildComparisonTree(customProperties,sub,sub.customProperties)
+            customProperties = comparisonService.buildComparisonTree(customProperties,sub,sub.customProperties.sort{it.type.getI10n('name')})
             result.customProperties = customProperties
             Map privateProperties = result.privateProperties
-            privateProperties = comparisonService.buildComparisonTree(privateProperties,sub,sub.privateProperties)
+            privateProperties = comparisonService.buildComparisonTree(privateProperties,sub,sub.privateProperties.sort{it.type.getI10n('name')})
             result.privateProperties = privateProperties
         }
         result
