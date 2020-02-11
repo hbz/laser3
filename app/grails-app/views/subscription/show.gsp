@@ -158,6 +158,7 @@
                             <dl>
                                 <dt class="control-label">${message(code: 'subscription.isPublicForApi.label')}</dt>
                                 <dd><semui:xEditableBoolean owner="${subscriptionInstance}" field="isPublicForApi" /></dd>
+                                <dd class="la-js-editmode-container"><semui:auditButton auditable="[subscriptionInstance, 'isPublicForApi']"/></dd>
                             </dl>
                         </div>
                     </div>

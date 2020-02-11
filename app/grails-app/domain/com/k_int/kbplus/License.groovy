@@ -47,7 +47,7 @@ class License
 
     // AuditableTrait
     static auditable            = [ ignore: ['version', 'lastUpdated', 'pendingChanges'] ]
-    static controlledProperties = [ 'startDate', 'endDate', 'licenseUrl', 'status', 'type' ]
+    static controlledProperties = [ 'startDate', 'endDate', 'licenseUrl', 'status', 'type', 'isPublicForApi' ]
 
     License instanceOf
 

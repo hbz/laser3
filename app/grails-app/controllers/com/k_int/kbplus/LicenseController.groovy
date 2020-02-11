@@ -74,7 +74,7 @@ class LicenseController extends AbstractDebugController {
         } else {
 
             def pending_change_pending_status = RDStore.PENDING_CHANGE_STATUS
-            List<PendingChange> pendingChanges = PendingChange.executeQuery("select pc.id from PendingChange as pc where license=? and ( pc.status is null or pc.status = ? ) order by pc.ts desc", [result.license, pending_change_pending_status]);
+            List pendingChanges = PendingChange.executeQuery("select pc.id from PendingChange as pc where license=? and ( pc.status is null or pc.status = ? ) order by pc.ts desc", [result.license, pending_change_pending_status]);
 
             log.debug("pc result is ${result.pendingChanges}");
             // refactoring: replace link table with instanceOf
@@ -84,7 +84,7 @@ class LicenseController extends AbstractDebugController {
                 log.debug("Slaved lincence, auto-accept pending changes")
                 def changesDesc = []
                 pendingChanges.each { change ->
-                    if (!pendingChangeService.performAccept(change, result.user)) {
+                    if (!pendingChangeService.performAccept(PendingChange.get(change), result.user)) {
                         log.debug("Auto-accepting pending change has failed.")
                     } else {
                         changesDesc.add(PendingChange.get(change).desc)
