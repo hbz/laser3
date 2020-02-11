@@ -1683,7 +1683,7 @@ class AjaxController {
                     // delete pending changes
                     // e.g. PendingChange.changeDoc = {changeTarget, changeType, changeDoc:{OID,  event}}
                     members.each { m ->
-                        def openPD = PendingChange.executeQuery("select pc from PendingChange as pc where pc.status is null and pc.costItem is null and pc.oid = :objectID",
+                        List<PendingChange> openPD = PendingChange.executeQuery("select pc from PendingChange as pc where pc.status is null and pc.costItem is null and pc.oid = :objectID",
                                 [objectID: "${m.class.name}:${m.id}"])
 
                         openPD?.each { pc ->

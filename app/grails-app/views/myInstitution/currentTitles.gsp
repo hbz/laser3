@@ -46,22 +46,6 @@
                         params="${params + [exportKBart: true]}">KBART Export</g:link>
             </g:else>
         </semui:exportDropdownItem>
-        <g:each in="${transforms}" var="transkey,transval">
-            <semui:exportDropdownItem>
-                <g:if test="${filterSet}">
-                    <g:link class="item js-open-confirm-modal"
-                            data-confirm-tokenMsg="${message(code: 'confirmation.content.exportPartial')}"
-                            data-confirm-term-how="ok" controller="myInstitution" action="currentTitles"
-                            params="${params + [format: 'xml', transformId: transkey]}">
-                        ${transval.name}
-                    </g:link>
-                </g:if>
-                <g:else>
-                    <g:link class="item" action="currentTitles"
-                            params="${params + [format: 'xml', transformId: transkey]}">${transval.name}</g:link>
-                </g:else>
-            </semui:exportDropdownItem>
-        </g:each>
     </semui:exportDropdown>
 </semui:controlButtons>
 

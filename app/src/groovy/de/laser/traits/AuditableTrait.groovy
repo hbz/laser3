@@ -40,11 +40,15 @@ trait AuditableTrait {
     @Transient
     def onChange = { oldMap, newMap ->
 
-        log?.debug("onChange(${this.id}): ${oldMap} => ${newMap}")
+        log?.debug("onChange(id:${this.id}): ${oldMap} => ${newMap}")
 
         List<String> gwp = auditService.getWatchedProperties(this)
-        gwp?.each { cp ->
+
+        log?.debug("found watched properties: ${gwp}")
+
+        gwp.each { cp ->
             if (oldMap[cp] != newMap[cp]) {
+
                 Map<String, Object> event = [:]
                 String clazz = this."${cp}".getClass().getName()
 
