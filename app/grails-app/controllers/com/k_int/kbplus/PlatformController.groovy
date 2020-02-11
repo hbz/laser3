@@ -179,13 +179,13 @@ class PlatformController extends AbstractDebugController {
 
         def authorizedOrgs = contextService.getUser().getAuthorizedOrgs()
         def hql = "select oapl from OrgAccessPointLink oapl join oapl.oap as ap "
-        hql += "where ap.org =:institution and oapl.active=true and oapl.platform.id=${platformInstance.id}"
+        hql += "where ap.org =:institution and oapl.active=true and oapl.platform.id=${platformInstance.id} and oapl.subPkg is null"
         List orgAccessPointList = OrgAccessPointLink.executeQuery(hql,[institution : selectedInstitution])
 
         def notActiveAPLinkQuery = "select oap from OrgAccessPoint oap where oap.org =:institution "
         notActiveAPLinkQuery += "and not exists ("
         notActiveAPLinkQuery += "select 1 from oap.oapp as oapl where oapl.oap=oap and oapl.active=true "
-        notActiveAPLinkQuery += "and oapl.platform.id = ${platformInstance.id}) order by lower(oap.name)"
+        notActiveAPLinkQuery += "and oapl.platform.id = ${platformInstance.id} and oapl.subPkg is null) order by lower(oap.name)"
 
         def accessPointList = OrgAccessPoint.executeQuery(notActiveAPLinkQuery, [institution : selectedInstitution])
 
@@ -467,15 +467,21 @@ class PlatformController extends AbstractDebugController {
         oapl.active = true
         oapl.oap = apInstance
         oapl.platform = Platform.get(params.platform_id)
+        List existingActiveAP = []
         if (params.subscriptionPackage_id){
             def sp = SubscriptionPackage.get(params.subscriptionPackage_id)
             if (sp) {
                 oapl.subPkg = sp
             }
+            existingActiveAP = OrgAccessPointLink.findAllByActiveAndPlatformAndOapAndSubPkgIsNotNull(
+                true, oapl.platform, apInstance
+            )
+        } else {
+            existingActiveAP = OrgAccessPointLink.findAllByActiveAndPlatformAndOapAndSubPkgIsNull(
+                true, oapl.platform, apInstance
+            )
         }
-        def existingActiveAP = OrgAccessPointLink.findAllByActiveAndPlatformAndOapAndSubPkgIsNotNull(
-            true, oapl.platform, apInstance
-        )
+
         if (!existingActiveAP.isEmpty()){
             flash.error = "Existing active AccessPoint for platform"
             redirect(url: request.getHeader('referer'))

@@ -2,11 +2,37 @@
 
 **Ticket    Date    Branch      Author  Feature/Bug     Description/Keywords**
 
+1505    07.02.2020  rc1.2       Moe     Bug         Kopierfunktion für Konsortiallizenzen überarbeiten
+
+--      07.02.2020  rc1.2       Moe     Bug         ES Index enthält nicht alle Objekte 
+
+2158    07.02.2020  rc1.2       David   Bug         Identifikatorensuche bei Lizenzen (fehlerhafte Query)
+
+--      06.02.2020  rc1.2       Christian   Bug     Zugangskonfigurationen auf Platformdetailseite wurden nicht korrekt bestimmt
+
+2155    06.02.2020  rc1.2       David   Feature     SystemProfiler soll kontextabhängig alle Zugriffe erfassen
+
+--      04.02.2020  rc1.2       David   Bug         Filter ausblenden: "Meine Plattformen"
+
+1991    03.02.2020  rc1.2       Moe     Bug         "Alle anzeigen" funktioniert bei "Alle Titel" nicht
+
+2113    03.02.2020  rc1.2       Moe     Bug         Alle Titel - Exakte Suche funktioniert nicht
+
+2013    03.02.2020  rc1.2       Moe     Bug         Meine Umfragen: In der Übersicht einer Umfrage passt der Tabellenkopf nicht zu den Inhalten
+
+2121    30.01.2020  rc1.2       David   Bug         Falsche geladene Seite nach Lizenz löschen (und mehr ..)
+
+2104    28.01.2020  rc1.2       Andreas Bug         Steuersatz wird im Tab Eigene Kosten korrekt dargestellt
+
+2083    28.01.2020  rc1.2       Andreas Bug         Teilnehmerlizenzen sind nicht mehr löschbar, wenn Kostenposten anhängig sind
+
+2086    28.01.2020  rc1.2       David   Bug         Bugfix: Kundennummern lassen sich nur mit Anmerkungen anlegen
+
+--      27.01.2020  rc1.2       David   Bug         Bugfix: API /statistic
 
 2088    21.01.2020  rc1.2       Moe     Bug         Keine Alert Mail mehr, wenn Umfrage abgeschlossen ist
 
 --      21.01.2020  rc1.2       Andreas Bug         Kostenfilter stürzte wegen falscher Überprüfung ab
-
 
 --      17.01.2020  rc1.2       Andreas Bug         Kostenfilter für Pakete arbeitete nicht richtig
 

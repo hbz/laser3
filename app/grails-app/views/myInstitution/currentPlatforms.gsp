@@ -17,6 +17,7 @@
 
 <semui:messages data="${flash}" />
 
+<%-- WORKAROUND
 <g:render template="/templates/filter/javascript" />
 <semui:filter showFilterButton="true">
     <g:form action="currentPlatforms" method="get" class="ui form">
@@ -32,6 +33,7 @@
         </div>
     </g:form>
 </semui:filter>
+--%>
 
 <table class="ui sortable celled la-table table">
     <thead>

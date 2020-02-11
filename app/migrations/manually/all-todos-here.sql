@@ -55,3 +55,21 @@
 -- update property_definition set pd_name = 'Perpetual access' where pd_name = 'Archivzugriff' and pd_description ='Subscription Property';
 -- update property_definition set pd_name = 'Restricted user group' where pd_name = 'Eingeschränkter Benutzerkreis' and pd_description ='Subscription Property';
 -- update property_definition set pd_name = 'SFX entry' where pd_name = 'SFX-Eintrag' and pd_description ='Subscription Property';
+
+-- 2020-02-07
+-- not all objects are loaded into ES Index because the objects have no date created value
+-- update doc_context set dc_date_created = '2018-01-01 00:00:0.000000' where dc_date_created is null;
+-- update issue_entitlement set ie_date_created = '2018-01-01 00:00:0.000000' where ie_date_created is null;
+-- update license set date_created = '2018-01-01 00:00:0.000000' where date_created is null;
+-- update license_custom_property set lcp_date_created = '2018-01-01 00:00:0.000000' where lcp_date_created is null;
+-- update license_private_property set lpp_date_created = '2018-01-01 00:00:0.000000' where lpp_date_created is null;
+-- update org set org_date_created = '2018-01-01 00:00:0.000000' where org_date_created is null;
+-- update package set date_created = '2018-01-01 00:00:0.000000' where date_created is null;
+-- update platform set date_created = '2018-01-01 00:00:0.000000' where date_created is null;
+-- update subscription set date_created = '2018-01-01 00:00:0.000000' where date_created is null;
+-- update subscription_custom_property set scp_date_created = '2018-01-01 00:00:0.000000' where scp_date_created is null;
+-- update subscription_private_property set spp_date_created = '2018-01-01 00:00:0.000000' where spp_date_created is null;
+-- update survey_config set surconf_date_created = '2018-01-01 00:00:0.000000' where surconf_date_created is null;
+-- update survey_org set surorg_date_created = '2018-01-01 00:00:0.000000' where surorg_date_created is null;
+-- update task set tsk_date_created = '2018-01-01 00:00:0.000000' where tsk_date_created is null;
+-- update title_instance set date_created = '2018-01-01 00:00:0.000000' where date_created is null;
