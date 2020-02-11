@@ -32,7 +32,7 @@
               <td>
               <g:if test="${editable == 'true' || editable == true}">
                 <g:remoteLink url="[controller: 'ajax', action: 'deleteCoreDate', params:[tipID:tipID,title:title,coreDateID:coreDate.id]]" method="get" name="show_core_assertion_modal" 
-                before="hideModal()" onComplete="showCoreAssertionModal()" update="magicArea" class="delete-coreDate">${message(code:'default.button.delete.label', default:'Delete')} </g:remoteLink>
+                before="hideModal()" onComplete="showCoreAssertionModal()" update="magicArea" class="delete-coreDate">${message(code:'default.button.delete.label')} </g:remoteLink>
                 </g:if>
               </td>
             </tr>

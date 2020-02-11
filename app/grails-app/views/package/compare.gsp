@@ -78,19 +78,19 @@
 					<td colspan="2">
 						<div class="ui checkbox">
         					<input type="checkbox" class="hidden" id="insrt" name="insrt" value="Y" ${params.insrt=='Y'?'checked':''}/>
-							<label for="insrt">${message(code:'package.compare.filter.insert', default:'Insert')}</label>
+							<label for="insrt">${message(code:'package.compare.filter.insert')}</label>
 						</div>
                         <div class="ui checkbox">
                             <input type="checkbox" class="hidden" id="dlt" name="dlt" value="Y" ${params.dlt=='Y'?'checked':''}/>
-                            <label for="dlt">${message(code:'package.compare.filter.delete', default:'Delete')}</label>
+                            <label for="dlt">${message(code:'package.compare.filter.delete')}</label>
                         </div>
                         <div class="ui checkbox">
                             <input type="checkbox" class="hidden" id="updt" name="updt" value="Y" ${params.updt=='Y'?'checked':''}/>
-                            <label for="updt">${message(code:'package.compare.filter.update', default:'Update')}</label>
+                            <label for="updt">${message(code:'package.compare.filter.update')}</label>
                         </div>
                         <div class="ui checkbox">
                             <input type="checkbox" class="hidden" id="nochng" name="nochng" value="Y" ${params.nochng=='Y'?'checked':''}/>
-                            <label for="nochng">${message(code:'package.compare.filter.no_change', default:'No Change')}</label>
+                            <label for="nochng">${message(code:'package.compare.filter.no_change')}</label>
                         </div>
 					</td>		
 				</tr>
@@ -101,7 +101,7 @@
                   <a href="${request.forwardURI}" class="ui button">${message(code:'default.button.comparereset.label')}</a>
                     </div>
                   <div class="field">
-					<input type="submit" class="ui button" value="${message(code:'default.button.compare.label', default:'Compare')}">
+					<input type="submit" class="ui button" value="${message(code:'default.button.compare.label')}">
 				  </div>
 		</div>
 	</g:form>
@@ -109,28 +109,28 @@
 <g:if test="${pkgInsts?.get(0) && pkgInsts?.get(1)}">
 
 	<div class="row">
-	<h3 class="ui header">${message(code:'package.compare.overview', default:'Packages Compared')}</h3>
+	<h3 class="ui header">${message(code:'package.compare.overview')}</h3>
 	<table class="ui celled la-table table">
 		<thead>
 			<tr>
-				<th>${message(code:'default.compare.overview.value', default:'Value')}</th>
+				<th>${message(code:'default.compare.overview.value')}</th>
 				<th>${pkgInsts.get(0).name}</th>
 				<th>${pkgInsts.get(1).name}</th>
 			</tr>
 		</thead>
 		<tbody>
 			<tr>
-				<td>${message(code:'default.dateCreated.label', default:'Date Created')}</td>
+				<td>${message(code:'default.dateCreated.label')}</td>
 				<td><g:formatDate format="${message(code:'default.date.format.notime', default:'yyyy-MM-dd')}" date="${pkgInsts.get(0).dateCreated}"/></td>
 				<td><g:formatDate format="${message(code:'default.date.format.notime', default:'yyyy-MM-dd')}" date="${pkgInsts.get(1).dateCreated}"/></td>
 			</tr>
 			<tr>
-				<td>${message(code:'default.startDate.label', default:'Start Date')}</td>
+				<td>${message(code:'default.startDate.label')}</td>
 				<td><g:formatDate format="${message(code:'default.date.format.notime', default:'yyyy-MM-dd')}" date="${pkgInsts.get(0).startDate}"/></td>
 				<td><g:formatDate format="${message(code:'default.date.format.notime', default:'yyyy-MM-dd')}" date="${pkgInsts.get(1).startDate}"/></td>
 			</tr>
 			<tr>
-				<td>${message(code:'default.endDate.label', default:'End Date')}</td>
+				<td>${message(code:'default.endDate.label')}</td>
 				<td><g:formatDate format="${message(code:'default.date.format.notime', default:'yyyy-MM-dd')}" date="${pkgInsts.get(0).endDate}"/></td>
 				<td><g:formatDate format="${message(code:'default.date.format.notime', default:'yyyy-MM-dd')}" date="${pkgInsts.get(1).endDate}"/></td>
 			</tr>

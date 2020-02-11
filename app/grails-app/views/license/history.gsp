@@ -20,13 +20,13 @@
       <table  class="ui celled la-table table">
           <thead>
             <tr>
-              <th>${message(code:'default.eventID.label', default:'Event ID')}</th>
-              <th>${message(code:'person.label', default:'Person')}</th>
+              <th>${message(code:'default.eventID.label')}</th>
+              <th>${message(code:'person.label')}</th>
               <th>${message(code:'default.date.label')}</th>
-              <th>${message(code:'default.event.label', default:'Event')}</th>
-              <th>${message(code:'default.field.label', default:'Field')}</th>
-              <th>${message(code:'default.oldValue.label', default:'Old Value')}</th>
-              <th>${message(code:'default.newValue.label', default:'New Value')}</th>
+              <th>${message(code:'default.event.label')}</th>
+              <th>${message(code:'default.field.label')}</th>
+              <th>${message(code:'default.oldValue.label')}</th>
+              <th>${message(code:'default.newValue.label')}</th>
             </tr>
           </thead>
         <g:if test="${historyLines}">
@@ -44,7 +44,7 @@
         </g:if>
       </table>
 
-        <semui:paginate  action="editHistory" controller="license" params="${params}" next="${message(code:'default.paginate.next', default:'Next')}" prev="${message(code:'default.paginate.prev', default:'Prev')}" max="${max}" total="${historyLinesTotal}" />
+        <semui:paginate  action="editHistory" controller="license" params="${params}" next="${message(code:'default.paginate.next')}" prev="${message(code:'default.paginate.prev')}" max="${max}" total="${historyLinesTotal}" />
 
 </body>
 </html>

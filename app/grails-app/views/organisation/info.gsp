@@ -4,7 +4,7 @@
 <html>
   <head>
     <meta name="layout" content="semanticUI">
-    <g:set var="entityName" value="${message(code: 'org.label', default: 'Org')}" />
+    <g:set var="entityName" value="${message(code: 'org.label')}" />
     <title>${message(code:'laser')} : <g:message code="default.show.label" args="[entityName]" /></title>
   </head>
   <body>
@@ -145,11 +145,11 @@
                 <div>
                   <g:if test="${link_cat.total > 10 && local_offset}">
                     <g:set var="os_prev" value="${local_offset > 9 ? (local_offset - 10) : 0}" />
-                    <g:link controller="organisation" action="info" id="${orgInstance.id}" params="${params + ["rdvl_${rdv_id}": os_prev]}">${message(code:'default.paginate.prev', default:'Prev')}</g:link>
+                    <g:link controller="organisation" action="info" id="${orgInstance.id}" params="${params + ["rdvl_${rdv_id}": os_prev]}">${message(code:'default.paginate.prev')}</g:link>
                   </g:if>
                   <g:if test="${link_cat.total > 10 && ( !local_offset || ( local_offset < (link_cat.total - 10) ) )}">
                     <g:set var="os_next" value="${local_offset ? (local_offset + 10) : 10}" />
-                    <g:link controller="organisation" action="info" id="${orgInstance.id}" params="${params + ["rdvl_${rdv_id}": os_next]}">${message(code:'default.paginate.next', default:'Next')}</g:link>
+                    <g:link controller="organisation" action="info" id="${orgInstance.id}" params="${params + ["rdvl_${rdv_id}": os_next]}">${message(code:'default.paginate.next')}</g:link>
                   </g:if>
                 </div>
               </g:each>

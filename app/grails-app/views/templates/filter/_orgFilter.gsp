@@ -16,7 +16,7 @@
                 <div class="field">
                     <label for="orgNameContains">${message(code: 'org.search.contains')}</label>
                     <input type="text" id="orgNameContains" name="orgNameContains"
-                           placeholder="${message(code:'default.search.ph', default:'enter search term...')}"
+                           placeholder="${message(code:'default.search.ph')}"
                            value="${params.orgNameContains}"/>
                 </div>
             </g:if>
@@ -47,7 +47,7 @@
                                   optionKey="id"
                                   optionValue="value"
                                   value="${params.orgType}"
-                                  noSelection="${['':message(code:'default.select.choose.label', default:'Please Choose...')]}"/>
+                                  noSelection="${['':message(code:'default.select.choose.label')]}"/>
                 </div>
             </g:if>
 
@@ -62,7 +62,7 @@
                                   optionKey="id"
                                   optionValue="value"
                                   value="${params.orgRole}"
-                                  noSelection="${['':message(code:'default.select.choose.label', default:'Please Choose...')]}"/>
+                                  noSelection="${['':message(code:'default.select.choose.label')]}"/>
                 </div>
             </g:if>
 
@@ -74,7 +74,7 @@
                                   optionKey="id"
                                   optionValue="value"
                                   value="${params.orgSector}"
-                                  noSelection="${['':message(code:'default.select.choose.label', default:'Please Choose...')]}"/>
+                                  noSelection="${['':message(code:'default.select.choose.label')]}"/>
                 </div>
             </g:if>
 
@@ -86,7 +86,7 @@
                                   optionKey="id"
                                   optionValue="value"
                                   value="${params.federalState}"
-                                  noSelection="${['':message(code:'default.select.choose.label', default:'Please Choose...')]}"/>
+                                  noSelection="${['':message(code:'default.select.choose.label')]}"/>
                 </div>
             </g:if>
 
@@ -98,7 +98,7 @@
                                   optionKey="id"
                                   optionValue="value"
                                   value="${params.libraryNetwork}"
-                                  noSelection="${['':message(code:'default.select.choose.label', default:'Please Choose...')]}"/>
+                                  noSelection="${['':message(code:'default.select.choose.label')]}"/>
                 </div>
             </g:if>
 
@@ -110,7 +110,7 @@
                                   optionKey="id"
                                   optionValue="value"
                                   value="${params.libraryType}"
-                                  noSelection="${['':message(code:'default.select.choose.label', default:'Please Choose...')]}"/>
+                                  noSelection="${['':message(code:'default.select.choose.label')]}"/>
                 </div>
             </g:if>
 
@@ -122,7 +122,7 @@
                                   optionKey="id"
                                   optionValue="value"
                                   value="${params.country}"
-                                  noSelection="${['':message(code:'default.select.choose.label', default:'Please Choose...')]}"/>
+                                  noSelection="${['':message(code:'default.select.choose.label')]}"/>
                 </div>
             </g:if>
             <g:if test="${field.equalsIgnoreCase('customerType')}">
@@ -134,7 +134,7 @@
                               optionValue="authority"
                               value="${params.customerType}"
                               class="ui dropdown"
-                              noSelection="${['':message(code:'default.select.choose.label', default:'Please Choose...')]}"
+                              noSelection="${['':message(code:'default.select.choose.label')]}"
                 />
             </div>
             </g:if>

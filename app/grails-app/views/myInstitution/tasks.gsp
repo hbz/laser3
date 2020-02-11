@@ -24,10 +24,10 @@
             <form class="ui form">
                 <div class="four fields">
                     <div class="field">
-                        <label>${message(code: 'task.title.label', default: 'Title')}</label>
+                        <label>${message(code: 'task.title.label')}</label>
                         <div class="ui input">
                             <input type="text" name="taskName"
-                                   placeholder="${message(code: 'default.search.ph', default: 'enter search term ..')}"
+                                   placeholder="${message(code: 'default.search.ph')}"
                                    value="${params.taskName}"/>
                         </div>
                     </div>
@@ -37,7 +37,7 @@
                     <semui:datepicker label="task.endDate.to.label" id="endDateTo" name="endDateTo" placeholder="default.date.label" value="${params.endDateTo}" />
 
                     <div class="field">
-                        <label>${message(code: 'task.status.label', default: 'Status')}</label>
+                        <label>${message(code: 'task.status.label')}</label>
                         <laser:select class="ui fluid dropdown"
                                   name="taskStatus"
                                   value="${params.taskStatus}"
