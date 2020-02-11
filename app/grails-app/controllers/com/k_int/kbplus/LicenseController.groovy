@@ -28,7 +28,6 @@ class LicenseController extends AbstractDebugController {
     def taskService
     def docstoreService
     def genericOIDService
-    def transformerService
     def exportService
     def escapeService
     def institutionsService
@@ -55,7 +54,6 @@ class LicenseController extends AbstractDebugController {
         }
 
         result.contextOrg = contextService.getOrg()
-        result.transforms = grailsApplication.config.licenseTransforms
 
         //used for showing/hiding the License Actions menus
         def admin_role = Role.findAllByAuthority("INST_ADM")
@@ -207,27 +205,12 @@ class LicenseController extends AbstractDebugController {
       }
       xml {
         def doc = exportService.buildDocXML("Licenses")
-            
 
-        if ((params.transformId) && (result.transforms[params.transformId] != null)) {
-            switch(params.transformId) {
-              case "sub_ie":
-                exportService.addLicenseSubPkgTitleXML(doc, doc.getDocumentElement(),[result.license])
-              break;
-              case "sub_pkg":
-                exportService.addLicenseSubPkgXML(doc, doc.getDocumentElement(),[result.license])
-                break;
-            }
-            String xml = exportService.streamOutXML(doc, new StringWriter()).getWriter().toString();
-            transformerService.triggerTransform(result.user, filename, result.transforms[params.transformId], xml, response)
-        }else{
-            exportService.addLicensesIntoXML(doc, doc.getDocumentElement(), [result.license])
-            
-            response.setHeader("Content-disposition", "attachment; filename=\"${filename}.xml\"")
-            response.contentType = "text/xml"
-            exportService.streamOutXML(doc, response.outputStream)
-        }
-        
+        exportService.addLicensesIntoXML(doc, doc.getDocumentElement(), [result.license])
+
+        response.setHeader("Content-disposition", "attachment; filename=\"${filename}.xml\"")
+        response.contentType = "text/xml"
+        exportService.streamOutXML(doc, response.outputStream)
       }
       /*
       csv {

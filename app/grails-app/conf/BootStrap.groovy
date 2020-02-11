@@ -85,9 +85,6 @@ class BootStrap {
             log.warn("there are user org rows with no role set. Please update the table to add role FKs")
         }
 
-        log.debug("setupTransforms ..")
-        setupTransforms()
-
         // def auto_approve_memberships = Setting.findByName('AutoApproveMemberships') ?: new Setting(name: 'AutoApproveMemberships', tp: Setting.CONTENT_TYPE_BOOLEAN, defvalue: 'true', value: 'true').save()
 
         def mailSent = Setting.findByName('MailSentDisabled') ?: new Setting(name: 'MailSentDisabled', tp: Setting.CONTENT_TYPE_BOOLEAN, defvalue: 'false', value: (grailsApplication.config.grails.mail.disabled ?: "false")).save()
@@ -423,90 +420,6 @@ class BootStrap {
         }
 
         result
-    }
-
-
-    def setupTransforms = {
-
-        // Transforms types and formats Refdata
-        // !!! HAS TO BE BEFORE the script adding the Transformers as it is used by those tables !!!
-
-        // Add Transformers and Transforms defined in local config (laser-config.groovy)
-        grailsApplication.config.systransforms.each { tr ->
-            def transformName = tr.transforms_name //"${tr.name}-${tr.format}-${tr.type}"
-
-            def transforms = Transforms.findByName("${transformName}")
-            def transformer = Transformer.findByName("${tr.transformer_name}")
-            if (transformer) {
-                if (transformer.url != tr.url) {
-                    log.debug("change transformer [${tr.transformer_name}] url to ${tr.url}")
-                    transformer.url = tr.url;
-                    transformer.save(failOnError: true, flush: true)
-                } else {
-                    log.debug("${tr.transformer_name} present and correct")
-                }
-            } else {
-                log.debug("create transformer ${tr.transformer_name} ..")
-                transformer = new Transformer(
-                        name: tr.transformer_name,
-                        url: tr.url).save(failOnError: true, flush: true)
-            }
-
-            log.debug("create transform ${transformName} ..")
-            List<RefdataValue> types = RefdataCategory.getAllRefdataValues(RDConstants.TRANSFORM_TYPE)
-            List<RefdataValue> formats = RefdataCategory.getAllRefdataValues(RDConstants.TRANSFORM_FORMAT)
-
-            if (transforms) {
-
-                if (tr.type) {
-                    // split values
-                    def type_list = tr.type.split(",")
-                    type_list.each { new_type ->
-                        if (!transforms.accepts_types.any { f -> f.value == new_type }) {
-                            log.debug("add transformer [${transformName}] type: ${new_type}")
-                            def type = types.find { t -> t.value == new_type }
-                            transforms.addToAccepts_types(type)
-                        }
-                    }
-                }
-                if (transforms.accepts_format.value != tr.format) {
-                    log.debug("change transformer [${transformName}] format to ${tr.format}")
-                    def format = formats.findAll { t -> t.value == tr.format }
-                    transforms.accepts_format = format[0]
-                }
-                if (transforms.return_mime != tr.return_mime) {
-                    log.debug("change transformer [${transformName}] return format to ${tr.'mime'}")
-                    transforms.return_mime = tr.return_mime;
-                }
-                if (transforms.return_file_extention != tr.return_file_extension) {
-                    log.debug("change transformer [${transformName}] return format to ${tr.'return'}")
-                    transforms.return_file_extention = tr.return_file_extension;
-                }
-                if (transforms.path_to_stylesheet != tr.path_to_stylesheet) {
-                    log.debug("change transformer [${transformName}] return format to ${tr.'path'}")
-                    transforms.path_to_stylesheet = tr.path_to_stylesheet;
-                }
-                transforms.save(failOnError: true, flush: true)
-            } else {
-                def format = formats.findAll { t -> t.value == tr.format }
-
-                assert format.size() == 1
-
-                transforms = new Transforms(
-                        name: transformName,
-                        accepts_format: format[0],
-                        return_mime: tr.return_mime,
-                        return_file_extention: tr.return_file_extension,
-                        path_to_stylesheet: tr.path_to_stylesheet,
-                        transformer: transformer).save(failOnError: true, flush: true)
-
-                def type_list = tr.type.split(",")
-                type_list.each { new_type ->
-                    def type = types.find { t -> t.value == new_type }
-                    transforms.addToAccepts_types(type)
-                }
-            }
-        }
     }
 
     def updatePsqlRoutines = {
