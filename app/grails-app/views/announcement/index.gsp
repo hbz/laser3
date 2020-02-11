@@ -14,7 +14,7 @@
 
     <semui:messages data="${flash}" />
     <br>
-    <h2 class="ui left floated aligned header la-clear-before">${message(code:'announcement.create.label', default:'Create announcement')}</h2>
+    <h2 class="ui left floated aligned header la-clear-before">${message(code:'announcement.create.label')}</h2>
 
     <semui:form>
         <g:form action="createAnnouncement" class="ui form">
@@ -28,7 +28,7 @@
             </div>
             <div class="field">
                 <label>&nbsp;</label>
-                <input type="submit" class="ui button" value="${message(code:'announcement.create.button.label', default:'Create Announcement...')}" />
+                <input type="submit" class="ui button" value="${message(code:'announcement.create.button.label')}" />
             </div>
         </g:form>
     </semui:form>

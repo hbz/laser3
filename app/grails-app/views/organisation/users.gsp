@@ -5,7 +5,7 @@
 <html>
     <head>
         <meta name="layout" content="semanticUI">
-        <g:set var="entityName" value="${message(code: 'org.label', default: 'Org')}" />
+        <g:set var="entityName" value="${message(code: 'org.label')}" />
         <title>${message(code:'laser')} : <g:message code="default.show.label" args="[entityName]" /></title>
     </head>
     <body>
@@ -32,7 +32,7 @@
             <div class="three fields">
                 <div class="field">
                     <label for="name">${message(code:'default.search.text')}</label>
-                    <input type="text" placeholder="${message(code:'default.search.ph', default:'enter search term...')}" id="name" name="name" value="${params.name}"/>
+                    <input type="text" placeholder="${message(code:'default.search.ph')}" id="name" name="name" value="${params.name}"/>
                 </div>
 
                 <div class="field">

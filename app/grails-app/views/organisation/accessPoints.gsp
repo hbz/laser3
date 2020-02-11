@@ -4,7 +4,7 @@
 <html>
     <head>
         <meta name="layout" content="semanticUI">
-        <g:set var="entityName" value="${message(code: 'org.label', default: 'Org')}" />
+        <g:set var="entityName" value="${message(code: 'org.label')}" />
         <title>${message(code:'laser')} : ${message(code:'org.nav.accessPoints')}</title>
 
         <g:javascript src="properties.js"/>
@@ -56,9 +56,9 @@
             <table  class="ui celled la-table table">
                 <thead>
                 <tr>
-                    <th>${message(code: 'accessPoint.name', default: 'Name')}</th>
-                    <th>${message(code: 'accessMethod.label', default: 'Access Method')}</th>
-                    <th>${message(code: 'accessRule.plural', default: 'Access Rules')}</th>
+                    <th>${message(code: 'accessPoint.name')}</th>
+                    <th>${message(code: 'accessMethod.label')}</th>
+                    <th>${message(code: 'accessRule.plural')}</th>
                     <g:if test="${accessService.checkPermAffiliation('ORG_BASIC_MEMBER','INST_EDITOR') || (accessService.checkPermAffiliation('ORG_CONSORTIUM','INST_EDITOR') && inContextOrg)}">
                         <th class="la-action-info">${message(code: 'default.actions.label')}</th>
                     </g:if>
