@@ -2433,7 +2433,7 @@ AND EXISTS (
 
         result.changes.addAll(result2)
 
-        List result3 = PendingChange.executeQuery("select pc from PendingChange pc join pc.costItem ci where pc.owner = :owner and pc.ts >= :tsCheck and pc.costItem is not null",[owner:result.institution,tsCheck:tsCheck],[max:result.max,offset:result.offset])
+        List<PendingChange> result3 = PendingChange.executeQuery("select pc from PendingChange pc join pc.costItem ci where pc.owner = :owner and pc.ts >= :tsCheck and pc.costItem is not null",[owner:result.institution,tsCheck:tsCheck],[max:result.max,offset:result.offset])
 
         //println result.changes
         result3.each { row ->
