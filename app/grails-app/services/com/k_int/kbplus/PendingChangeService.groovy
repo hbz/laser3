@@ -35,7 +35,7 @@ class PendingChangeService extends AbstractLockableService {
     final static EVENT_PROPERTY_CHANGE = 'PropertyChange'
 
     boolean performMultipleAcceptsForJob(List<PendingChange> subscriptionChanges, List<PendingChange> licenseChanges, User user) {
-        log.debug('performMultipleAcceptsFromJob')
+        log.debug('performMultipleAcceptsFromJob()')
 
         if (!running) {
             running = true
@@ -57,7 +57,7 @@ class PendingChangeService extends AbstractLockableService {
 
     boolean performAccept(PendingChange pendingChange, User user) {
 
-        log.debug('performAccept: ' + pendingChange + ', ' + user)
+        log.debug('performAccept(): ' + pendingChange + ', ' + user)
         boolean result = true
 
         PendingChange.withNewTransaction { TransactionStatus status ->
@@ -285,7 +285,7 @@ class PendingChangeService extends AbstractLockableService {
                     pendingChange.license?.save();
                     if(pendingChange.subscription?.pendingChanges) pendingChange.subscription?.pendingChanges?.remove(pendingChange)
                     pendingChange.subscription?.save();*/
-                    //pendingChange.status = RefdataValue.getByValueAndCategory("Accepted", RDConstants.PENDING_CHANGE_STATUS)
+                    pendingChange.status = RefdataValue.getByValueAndCategory("Accepted", RDConstants.PENDING_CHANGE_STATUS)
                     pendingChange.actionDate = new Date()
                     pendingChange.user = user
                     pendingChange.save()

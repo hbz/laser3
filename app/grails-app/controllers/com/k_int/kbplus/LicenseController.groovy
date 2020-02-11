@@ -74,25 +74,25 @@ class LicenseController extends AbstractDebugController {
         } else {
 
             def pending_change_pending_status = RDStore.PENDING_CHANGE_STATUS
-            List pendingChanges = PendingChange.executeQuery("select pc.id from PendingChange as pc where license=? and ( pc.status is null or pc.status = ? ) order by pc.ts desc", [result.license, pending_change_pending_status]);
+            List<PendingChange> pendingChanges = PendingChange.executeQuery("select pc from PendingChange as pc where license=? and ( pc.status is null or pc.status = ? ) order by pc.ts desc", [result.license, pending_change_pending_status]);
 
             log.debug("pc result is ${result.pendingChanges}");
             // refactoring: replace link table with instanceOf
             // if (result.license.incomingLinks.find { it?.isSlaved?.value == "Yes" } && pendingChanges) {
 
-            if (result.license.isSlaved && pendingChanges) {
+            if (result.license.isSlaved && ! pendingChanges.isEmpty()) {
                 log.debug("Slaved lincence, auto-accept pending changes")
                 def changesDesc = []
                 pendingChanges.each { change ->
-                    if (!pendingChangeService.performAccept(PendingChange.get(change), result.user)) {
+                    if (!pendingChangeService.performAccept(change, (User) result.user)) {
                         log.debug("Auto-accepting pending change has failed.")
                     } else {
-                        changesDesc.add(PendingChange.get(change).desc)
+                        changesDesc.add(change.desc)
                     }
                 }
                 flash.message = changesDesc
             } else {
-                result.pendingChanges = pendingChanges.collect { PendingChange.get(it) }
+                result.pendingChanges = pendingChanges
             }
         }
 
@@ -587,9 +587,9 @@ from Subscription as s where
             }
             else {
                 def pending_change_pending_status = RDStore.PENDING_CHANGE_STATUS
-                def pendingChanges = PendingChange.executeQuery("select pc.id from PendingChange as pc where license.id=? and ( pc.status is null or pc.status = ? ) order by pc.ts desc", [member.id, pending_change_pending_status])
+                List<PendingChange> pendingChanges = PendingChange.executeQuery("select pc from PendingChange as pc where license.id=? and ( pc.status is null or pc.status = ? ) order by pc.ts desc", [member.id, pending_change_pending_status])
 
-                result.pendingChanges << ["${member.id}": pendingChanges.collect { PendingChange.get(it) }]
+                result.pendingChanges << ["${member.id}": pendingChanges]
             }
         }
 

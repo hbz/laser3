@@ -40,14 +40,15 @@ trait AuditableTrait {
     @Transient
     def onChange = { oldMap, newMap ->
 
-        log?.debug("onChange(${this.id}): ${oldMap} => ${newMap}")
+        log?.debug("onChange(id:${this.id}): ${oldMap} => ${newMap}")
 
-        // groovy.lang.MissingMethodException:
-        // No signature of method: de.laser.AuditService.getWatchedProperties() is applicable for argument types: (groovy.lang.Reference) values: [groovy.lang.Reference]
-        // Possible solutions: getWatchedProperties(de.laser.traits.AuditableTrait)
-        List<String> gwp = this instanceof Reference ? auditService.getWatchedProperties(this.get()): auditService.getWatchedProperties(this)
+        List<String> gwp = auditService.getWatchedProperties(this)
+
+        log?.debug("found watched properties: ${gwp}")
+
         gwp.each { cp ->
             if (oldMap[cp] != newMap[cp]) {
+
                 Map<String, Object> event = [:]
                 String clazz = this."${cp}".getClass().getName()
 
