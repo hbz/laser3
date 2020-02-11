@@ -2380,7 +2380,6 @@ class SubscriptionController extends AbstractDebugController {
                                 identifier: UUID.randomUUID().toString(),
                                 instanceOf: result.subscriptionInstance,
                                 isSlaved: true,
-                                isPublic: result.subscriptionInstance.isPublic,
                                 impId: UUID.randomUUID().toString(),
                                 owner: licenseCopy,
                                 resource: result.subscriptionInstance.resource ?: null,
@@ -3855,7 +3854,6 @@ class SubscriptionController extends AbstractDebugController {
                 startDate: sub_startDate,
                 endDate: sub_endDate,
                 type: Subscription.get(old_subOID)?.type ?: null,
-                isPublic: false,
                 owner: params.subscription.copyLicense ? (Subscription.get(old_subOID)?.owner) : null,
                 resource: Subscription.get(old_subOID)?.resource ?: null,
                 form: Subscription.get(old_subOID)?.form ?: null
@@ -3939,7 +3937,6 @@ class SubscriptionController extends AbstractDebugController {
                                 instanceOf: newSubConsortia?.id,
                                 //previousSubscription: subMember?.id,
                                 isSlaved: subMember.isSlaved,
-                                isPublic: subMember.isPublic,
                                 impId: java.util.UUID.randomUUID().toString(),
                                 owner: newSubConsortia.owner?.id ? subMember.owner?.id : null,
                                 resource: newSubConsortia.resource ?: null,
@@ -4171,7 +4168,6 @@ class SubscriptionController extends AbstractDebugController {
                                 endDate: result.newEndDate,
                                 //previousSubscription: baseSub.id, overhauled as ERMS-800/ERMS-892
                                 identifier: java.util.UUID.randomUUID().toString(),
-                                isPublic: baseSub.isPublic,
                                 isSlaved: baseSub.isSlaved,
                                 type: baseSub.type,
                                 status: RefdataValue.getByValueAndCategory('Intended', RDConstants.SUBSCRIPTION_STATUS),
@@ -4376,7 +4372,6 @@ class SubscriptionController extends AbstractDebugController {
                     endDate: sub_endDate,
                     manualCancellationDate: manualCancellationDate,
                     identifier: java.util.UUID.randomUUID().toString(),
-                    isPublic: baseSub?.isPublic,
                     isSlaved: baseSub?.isSlaved,
                     type: sub_type,
                     status: sub_status,
@@ -5049,7 +5044,6 @@ class SubscriptionController extends AbstractDebugController {
                     status: baseSubscription.status,
                     type: baseSubscription.type,
                     identifier: java.util.UUID.randomUUID().toString(),
-                    isPublic: baseSubscription.isPublic,
                     isSlaved: baseSubscription.isSlaved,
                     startDate: params.subscription.copyDates ? baseSubscription?.startDate : null,
                     endDate: params.subscription.copyDates ? baseSubscription?.endDate : null,
@@ -5257,8 +5251,7 @@ class SubscriptionController extends AbstractDebugController {
                         type: genericOIDService.resolveOID(entry.type),
                         form: genericOIDService.resolveOID(entry.form),
                         resource: genericOIDService.resolveOID(entry.resource),
-                        identifier: UUID.randomUUID(),
-                        isPublic: YN_NO)
+                        identifier: UUID.randomUUID())
                 sub.startDate = entry.startDate ? databaseDateFormatParser.parse(entry.startDate) : null
                 sub.endDate = entry.endDate ? databaseDateFormatParser.parse(entry.endDate) : null
                 sub.manualCancellationDate = entry.manualCancellationDate ? databaseDateFormatParser.parse(entry.manualCancellationDate) : null

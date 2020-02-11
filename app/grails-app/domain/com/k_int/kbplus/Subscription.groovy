@@ -61,7 +61,6 @@ class Subscription
 
     // If a subscription is slaved then any changes to instanceOf will automatically be applied to this subscription
     boolean isSlaved
-	boolean isPublic // ERMS-2148 remove
 	boolean isPublicForApi
 
     boolean isMultiYear
@@ -138,7 +137,6 @@ class Subscription
         administrative          column:'sub_is_administrative'
         previousSubscription    column:'sub_previous_subscription_fk' //-> see Links, deleted as ERMS-800
         isSlaved        column:'sub_is_slaved'
-        isPublic        column:'sub_is_public'
         isPublicForApi  column:'sub_is_public_for_api'
         noticePeriod    column:'sub_notice_period'
         isMultiYear column: 'sub_is_multi_year'
@@ -182,7 +180,6 @@ class Subscription
         isSlaved    (nullable:false, blank:false)
         noticePeriod(nullable:true, blank:true)
         isPublicForApi (nullable:true, blank:true)
-        isPublic    (nullable:false, blank:false)
         cancellationAllowances(nullable:true, blank:true)
         lastUpdated(nullable: true, blank: true)
         isMultiYear(nullable: true, blank: false)
@@ -526,9 +523,6 @@ class Subscription
     }
 
     boolean hasPerm(perm, user) {
-        if (perm == 'view' && this.isPublic) {
-            return true
-        }
         Role adm = Role.findByAuthority('ROLE_ADMIN')
         Role yda = Role.findByAuthority('ROLE_YODA')
 

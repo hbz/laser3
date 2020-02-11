@@ -234,7 +234,6 @@ static hasMany = [  tipps:     TitleInstancePackagePlatform,
                                    impId:java.util.UUID.randomUUID().toString(),
                                    startDate:startdate,
                                    endDate:enddate,
-                                   isPublic: false,
                                    type: RefdataValue.getByValue(subtype),
                                    isSlaved: (slaved == "Yes" || slaved == true))
 

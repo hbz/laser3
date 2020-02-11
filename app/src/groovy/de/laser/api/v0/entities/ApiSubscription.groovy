@@ -133,7 +133,6 @@ class ApiSubscription {
 		result.form         = sub.form?.value
 		result.isSlaved     = sub.isSlaved ? 'Yes' : 'No'
         result.isMultiYear  = sub.isMultiYear ? 'Yes' : 'No'
-		//result.isPublic     = sub.isPublic ? 'Yes' : 'No'
 		result.resource     = sub.resource?.value
 		result.status       = sub.status?.value
 		result.type         = sub.type?.value

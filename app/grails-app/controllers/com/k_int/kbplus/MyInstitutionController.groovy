@@ -630,7 +630,6 @@ from License as l where (
 
         def template_license_type = RDStore.LICENSE_TYPE_TEMPLATE
         def qparams = [template_license_type]
-        boolean public_flag = false
 
        // This query used to allow institutions to copy their own licenses - now users only want to copy template licenses
         // (OS License specs)
@@ -643,10 +642,6 @@ from License as l where (
             qparams.add("%${params.filter.toLowerCase()}%")
         }
 
-        //separately select all licenses that are not public or are null, to test access rights.
-        // For some reason that I could track, l.isPublic != 'public-yes' returns different results.
-        def non_public_query = query + " and ( l.isPublic = ? ) "
-
         if ((params.sort != null) && (params.sort.length() > 0)) {
             query += " order by l.${params.sort} ${params.order}"
         } else {
@@ -656,14 +651,8 @@ from License as l where (
         result.numLicenses = License.executeQuery("select l.id ${query}", qparams).size()
         result.licenses = License.executeQuery("select l ${query}", qparams,[max: result.max, offset: result.offset])
 
-        //We do the following to remove any licenses the user does not have access rights
-        qparams += public_flag
-
-        def nonPublic = License.executeQuery("select l ${non_public_query}", qparams)
-        def no_access = nonPublic.findAll{ ! it.hasPerm("view", result.user)  }
-
-        result.licenses = result.licenses - no_access
-        result.numLicenses = result.numLicenses - no_access.size()
+        result.licenses = result.licenses
+        result.numLicenses = result.numLicenses
 
         if (params.sub) {
             result.sub         = params.sub
@@ -1296,7 +1285,6 @@ from License as l where (
                     status: status,
                     administrative: administrative,
                     identifier: params.newEmptySubId,
-                    isPublic: false,
                     impId: java.util.UUID.randomUUID().toString())
 
             if (new_sub.save()) {
@@ -1339,7 +1327,6 @@ from License as l where (
                                           administrative: administrative,
                                           instanceOf: new_sub,
                                           isSlaved: true,
-                                          isPublic: false,
                                           impId: java.util.UUID.randomUUID().toString()).save()
                         if(new_sub.administrative) {
                             new OrgRole(org: cm,

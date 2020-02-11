@@ -133,7 +133,6 @@ class ApiLicense {
 
         // RefdataValues
 
-        result.isPublic         = lic.isPublic ? 'Yes' : 'No'
         // result.licenseCategory  = lic.licenseCategory?.value // legacy
         result.status           = lic.status?.value
         // result.type             = lic.type?.value
