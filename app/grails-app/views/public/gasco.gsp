@@ -20,7 +20,7 @@
 
                         <div class="ui input">
                             <input type="text" id="search" name="q"
-                                   placeholder="${message(code: 'default.search.ph', default: 'enter search term...')}"
+                                   placeholder="${message(code: 'default.search.ph')}"
                                    value="${params.q}"/>
                         </div>
                     </div>

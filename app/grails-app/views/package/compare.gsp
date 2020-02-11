@@ -16,7 +16,7 @@
 	<semui:controlButtons>
 		<semui:exportDropdown>
 			<semui:exportDropdownItem>
-				<g:link class="item" action="compare" params="${params+[format:'csv']}">${message(code:'default.button.exports.csv', default:'CSV Export')}</g:link>
+				<g:link class="item" action="compare" params="${params+[format:'csv']}">${message(code:'default.button.exports.csv')}</g:link>
 			</semui:exportDropdownItem>
 		</semui:exportDropdown>
 	</semui:controlButtons>
@@ -40,7 +40,7 @@
 			</thead>
 			<tbody>
 				<tr>
-					<td>${message(code:'package.show.pkg_name', default:'Package Name')}</td>
+					<td>${message(code:'package.show.pkg_name')}</td>
 					<td>
 						${message(code:'package.compare.restrict.after', default:'Restrict this list to packages starting after')}
                         <semui:simpleHiddenValue id="startA" name="startA" type="date" value="${params.startA}"/>
@@ -74,7 +74,7 @@
 					</td>
 				</tr>
 				<tr>
-					<td>${message(code:'package.compare.filter.add', default:'Add Filter')}</td>
+					<td>${message(code:'package.compare.filter.add')}</td>
 					<td colspan="2">
 						<div class="ui checkbox">
         					<input type="checkbox" class="hidden" id="insrt" name="insrt" value="Y" ${params.insrt=='Y'?'checked':''}/>
@@ -121,18 +121,18 @@
 		<tbody>
 			<tr>
 				<td>${message(code:'default.dateCreated.label')}</td>
-				<td><g:formatDate format="${message(code:'default.date.format.notime', default:'yyyy-MM-dd')}" date="${pkgInsts.get(0).dateCreated}"/></td>
-				<td><g:formatDate format="${message(code:'default.date.format.notime', default:'yyyy-MM-dd')}" date="${pkgInsts.get(1).dateCreated}"/></td>
+				<td><g:formatDate format="${message(code:'default.date.format.notime')}" date="${pkgInsts.get(0).dateCreated}"/></td>
+				<td><g:formatDate format="${message(code:'default.date.format.notime')}" date="${pkgInsts.get(1).dateCreated}"/></td>
 			</tr>
 			<tr>
 				<td>${message(code:'default.startDate.label')}</td>
-				<td><g:formatDate format="${message(code:'default.date.format.notime', default:'yyyy-MM-dd')}" date="${pkgInsts.get(0).startDate}"/></td>
-				<td><g:formatDate format="${message(code:'default.date.format.notime', default:'yyyy-MM-dd')}" date="${pkgInsts.get(1).startDate}"/></td>
+				<td><g:formatDate format="${message(code:'default.date.format.notime')}" date="${pkgInsts.get(0).startDate}"/></td>
+				<td><g:formatDate format="${message(code:'default.date.format.notime')}" date="${pkgInsts.get(1).startDate}"/></td>
 			</tr>
 			<tr>
 				<td>${message(code:'default.endDate.label')}</td>
-				<td><g:formatDate format="${message(code:'default.date.format.notime', default:'yyyy-MM-dd')}" date="${pkgInsts.get(0).endDate}"/></td>
-				<td><g:formatDate format="${message(code:'default.date.format.notime', default:'yyyy-MM-dd')}" date="${pkgInsts.get(1).endDate}"/></td>
+				<td><g:formatDate format="${message(code:'default.date.format.notime')}" date="${pkgInsts.get(0).endDate}"/></td>
+				<td><g:formatDate format="${message(code:'default.date.format.notime')}" date="${pkgInsts.get(1).endDate}"/></td>
 			</tr>
 			<tr>
 				<td>${message(code:'package.compare.overview.tipps', default:'Number of TIPPs')}</td>
@@ -164,11 +164,11 @@
 				${message(code:'package.compare.filter.coverage_startsBefore', default:'Coverage Starts Before')}:
                                 <semui:simpleHiddenValue id="startsBefore" name="startsBefore" type="date" value="${params.startsBefore}"/>
 			</td>
-			<td style="padding-left:10px;"> <input type='button' class="ui button" id="resetFilters" value="${message(code:'default.button.clear.label', default:'Clear')}"/></td>
+			<td style="padding-left:10px;"> <input type='button' class="ui button" id="resetFilters" value="${message(code:'default.button.clear.label')}"/></td>
 		</tr>
 		<tr>
 		<td style="text-align:right;padding-right:10px;">
-			${message(code:'package.compare.filter.coverage_note', default:'Coverage note')}: <input type="text" name="coverageNoteFilter" value="${params.coverageNoteFilter}"/>
+			${message(code:'package.compare.filter.coverage_note')}: <input type="text" name="coverageNoteFilter" value="${params.coverageNoteFilter}"/>
 		</td>
 		<td>
 			${message(code:'package.compare.filter.coverage_endsAfter', default:'Coverage Ends After')}:
@@ -188,9 +188,9 @@
 <table class="ui celled la-table table">
 	<thead>
 		<tr> 
-			<th> ${message(code:'title.label', default:'Title')} </th>
-			<th> ${pkgInsts.get(0).name} ${message(code:'default.on', default:'on')} ${pkgDates.get(0)} </th>
-			<th> ${pkgInsts.get(1).name} ${message(code:'default.on', default:'on')} ${pkgDates.get(1)} </th>
+			<th> ${message(code:'title.label')} </th>
+			<th> ${pkgInsts.get(0).name} ${message(code:'default.on')} ${pkgDates.get(0)} </th>
+			<th> ${pkgInsts.get(1).name} ${message(code:'default.on')} ${pkgDates.get(1)} </th>
 		</tr>
 	</thead>
 	<tbody>

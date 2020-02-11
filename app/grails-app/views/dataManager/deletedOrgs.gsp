@@ -2,13 +2,13 @@
 <html>
   <head>
     <meta name="layout" content="semanticUI"/>
-    <title>${message(code:'laser')} ${message(code:'menu.datamanager.dash', default:'Data Manager Dashboard')}</title>
+    <title>${message(code:'laser')} ${message(code:'menu.datamanager.dash')}</title>
   </head>
 
   <body>
 
     <semui:breadcrumbs>
-      <semui:crumb controller="dataManager" action="index" text="${message(code:'menu.datamanager.dash', default:'Data Manager Dashboard')}" />
+      <semui:crumb controller="dataManager" action="index" text="${message(code:'menu.datamanager.dash')}" />
       <semui:crumb text="${message(code:'datamanager.deletedOrgManagement.label', default:'Deleted Title management')}" class="active"/>
     </semui:breadcrumbs>
     <br>
