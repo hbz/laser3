@@ -15,8 +15,6 @@ class SemanticUiDropdownTagLib {
 
     static namespace = "semui"
 
-    // <semui:exportDropdown params="${params}" transforms="${transforms}" />
-
     def controlButtons = { attrs, body ->
 
         out << '<div class="ui icon buttons la-ctrls la-float-right la-js-dont-hide-button">'

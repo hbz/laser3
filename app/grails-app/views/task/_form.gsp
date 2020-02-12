@@ -31,14 +31,14 @@
 
 <div class="field fieldcontain ${hasErrors(bean: taskInstance, field: 'title', 'error')} required">
 	<label for="title">
-		<g:message code="task.title.label" default="Title" />
+		<g:message code="task.title.label" />
 	</label>
 	<g:textField name="title" required="" value="${taskInstance?.title}"/>
 </div>
 
 <div class="field fieldcontain ${hasErrors(bean: taskInstance, field: 'description', 'error')}">
 	<label for="description">
-		<g:message code="task.description.label" default="Description" />
+		<g:message code="task.description.label" />
 	</label>
 	<g:textField name="description" value="${taskInstance?.description}"/>
 </div>
@@ -53,7 +53,7 @@
 
 <div class="field fieldcontain ${hasErrors(bean: taskInstance, field: 'creator', 'error')} required">
 	<label for="creator">
-		<g:message code="task.creator.label" default="Creator" />
+		<g:message code="task.creator.label" />
 	</label>
 	<g:select id="creator" name="creator.id" from="${taskCreator}" optionKey="id" optionValue="display" required="" value="${taskInstance?.creator?.id}" class="many-to-one"/>
 </div>
@@ -64,14 +64,14 @@
 
 <div class="field fieldcontain ${hasErrors(bean: taskInstance, field: 'responsibleUser', 'error')} required">
 	<label for="responsibleUser">
-		<g:message code="task.responsibleUser.label" default="Tenant User" />
+		<g:message code="task.responsibleUser.label" />
 	</label>
 	<g:select id="responsibleUser" name="responsibleUser.id" from="${validResponsibleUsers}" optionKey="id" optionValue="display" value="${taskInstance?.responsibleUser?.id}" class="many-to-one" noSelection="['null': '']" />
 </div>
 
 <div class="field fieldcontain ${hasErrors(bean: taskInstance, field: 'responsibleOrg', 'error')} required">
 	<label for="responsibleOrg">
-		<g:message code="task.responsibleOrg.label" default="Tenant Org" />
+		<g:message code="task.responsibleOrg.label" />
 	</label>
 	<g:select id="responsibleOrg" name="responsibleOrg.id" from="${validResponsibleOrgs}" optionKey="id" value="${taskInstance?.responsibleOrg?.id}" class="many-to-one" noSelection="['null': '']" />
 </div>

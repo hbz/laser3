@@ -45,7 +45,7 @@
 			</g:if>
 			<div class="field la-field-right-aligned">
 				<a href="${request.forwardURI}" class="ui reset primary button">${message(code:'default.button.searchreset.label')}</a>
-				<input type="submit" value="${message(code:'default.button.search.label', default:'Filter')}" class="ui secondary button">
+				<input type="submit" value="${message(code:'default.button.search.label')}" class="ui secondary button">
 			</div>
 		</semui:searchSegment>
 
@@ -56,11 +56,11 @@
 						<table class="ui celled la-table table">
 							<thead>
 								<tr>
-									<th>${message(code:'default.name.label', default:'Name')}</th>
+									<th>${message(code:'default.name.label')}</th>
 									<g:if test="${comboType == RDStore.COMBO_TYPE_CONSORTIUM}">
-										<th>${message(code:'identifier.plural', default:'Identifiers')}</th>
-										<th>${message(code:'org.shortname.label', default:'Shortname')}</th>
-										<th>${message(code:'org.country.label', default:'Country')}</th>
+										<th>${message(code:'identifier.plural')}</th>
+										<th>${message(code:'org.shortname.label')}</th>
+										<th>${message(code:'org.country.label')}</th>
 										<th>${message(code: 'org.consortiaToggle.label')}</th>
 									</g:if>
 									<g:elseif test="${comboType == RDStore.COMBO_TYPE_DEPARTMENT}">
@@ -76,7 +76,7 @@
 									<td>
 										${organisationInstance.name}
 										<g:if test="${(accessService.checkPerm('ORG_CONSORTIUM') && members.get(organisationInstance.id)?.contains(institution.id) && members.get(organisationInstance.id)?.size() == 1) || SpringSecurityUtils.ifAnyGranted("ROLE_ADMIN,ROLE_YODA")}">
-											<g:link controller="organisation" action="show" id="${organisationInstance.id}">(${message(code:'default.button.edit.label', default:'Edit')})</g:link>
+											<g:link controller="organisation" action="show" id="${organisationInstance.id}">(${message(code:'default.button.edit.label')})</g:link>
 										</g:if>
 									</td>
 									<g:if test="${comboType == RDStore.COMBO_TYPE_CONSORTIUM}">
@@ -99,7 +99,13 @@
 												</g:link>
 											</g:if>
 											<g:elseif test="${members.get(organisationInstance.id).contains(institution.id)}">
-												<g:link class="ui icon negative button la-popup-tooltip la-delay" data-content="${message(code:'org.consortiaToggle.remove.label')}" controller="organisation" action="toggleCombo" params="${params+[direction:'remove', fromOrg:organisationInstance.id]}">
+												<g:link class="ui icon negative button la-popup-tooltip la-delay js-open-confirm-modal"
+														data-confirm-tokenMsg="${message(code: "confirm.dialog.unlink.consortiaToggle", args: [organisationInstance.name])}"
+														data-confirm-term-how="unlink"
+														data-content="${message(code:'org.consortiaToggle.remove.label')}"
+														controller="organisation"
+														action="toggleCombo"
+														params="${params+[direction:'remove', fromOrg:organisationInstance.id]}">
 													<i class="minus icon"></i>
 												</g:link>
 											</g:elseif>

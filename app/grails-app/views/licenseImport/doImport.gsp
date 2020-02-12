@@ -75,9 +75,9 @@
                     <br/>
                     <br/>
                     <button name="replace_opl" id="replace_opl" value="replace"
-                            type="submit" class="ui negative button">${message(code:'default.button.replace.label', default:'Replace')}</button>
+                            type="submit" class="ui negative button">${message(code:'default.button.replace.label')}</button>
                     <button name="replace_opl" id="replace_opl" value="create"
-                            type="submit" class="ui button">${message(code:'default.button.create_new.label', default:'Create New')}</button>
+                            type="submit" class="ui button">${message(code:'default.button.create_new.label')}</button>
 
                     <g:hiddenField name="upload_title" value="${upload_title}" />
                     <g:hiddenField name="uploaded_file" value="${uploaded_file}" />
@@ -95,7 +95,7 @@
                     <input type="file" id="import_file" name="import_file" value="${import_file}"/>
                     <br/>
                     <br/>
-                    <button type="submit" class="ui button">${message(code:'onix.import.import', default:'Import license')}</button>
+                    <button type="submit" class="ui button">${message(code:'onix.import.import')}</button>
                 </g:else>
             </g:form>
         </g:else>

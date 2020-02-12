@@ -90,7 +90,7 @@
 
                      <div class="paginateButtons" style="text-align:center">
                         <g:if test="${hits}" >
-                          <span><g:paginate controller="subscriptionImport" action="generateImportWorksheet" params="${params}" next="${message(code:'default.paginate.next', default:'Next')}" prev="${message(code:'default.paginate.prev', default:'Prev')}" maxsteps="10" total="${resultsTotal}" /></span>
+                          <span><g:paginate controller="subscriptionImport" action="generateImportWorksheet" params="${params}" next="${message(code:'default.paginate.next')}" prev="${message(code:'default.paginate.prev')}" maxsteps="10" total="${resultsTotal}" /></span>
                         </g:if>
                       </div>
                 </div>

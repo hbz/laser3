@@ -46,28 +46,12 @@
                         params="${params + [exportKBart: true]}">KBART Export</g:link>
             </g:else>
         </semui:exportDropdownItem>
-        <g:each in="${transforms}" var="transkey,transval">
-            <semui:exportDropdownItem>
-                <g:if test="${filterSet}">
-                    <g:link class="item js-open-confirm-modal"
-                            data-confirm-tokenMsg="${message(code: 'confirmation.content.exportPartial')}"
-                            data-confirm-term-how="ok" controller="myInstitution" action="currentTitles"
-                            params="${params + [format: 'xml', transformId: transkey]}">
-                        ${transval.name}
-                    </g:link>
-                </g:if>
-                <g:else>
-                    <g:link class="item" action="currentTitles"
-                            params="${params + [format: 'xml', transformId: transkey]}">${transval.name}</g:link>
-                </g:else>
-            </semui:exportDropdownItem>
-        </g:each>
     </semui:exportDropdown>
 </semui:controlButtons>
 
 <semui:messages data="${flash}"/>
 
-<h1 class="ui left floated aligned icon header la-clear-before"><semui:headerIcon/>${message(code: 'myinst.currentTitles.label', default: 'Current Titles')}
+<h1 class="ui left floated aligned icon header la-clear-before"><semui:headerIcon/>${message(code: 'myinst.currentTitles.label')}
 <semui:totalNumber total="${num_ti_rows}"/>
 </h1>
 
@@ -83,7 +67,7 @@
 
         <div class="two fields">
             <div class="field">
-                <label>${message(code: 'default.search.text', default: 'Search text')}</label>
+                <label>${message(code: 'default.search.text')}</label>
                 <input type="hidden" name="sort" value="${params.sort}">
                 <input type="hidden" name="order" value="${params.order}">
                 <input type="text" name="filter" value="${params.filter}" style="padding-left:5px;"
@@ -100,7 +84,7 @@
                 <label for="filterSub">${message(code: 'subscription.plural')}</label>
                 <select id="filterSub" name="filterSub" multiple="" class="ui search selection fluid dropdown">
                     <option <%--<%= (filterSub.contains("all")) ? ' selected' : '' %>--%>
-                            value="">${message(code: 'myinst.currentTitles.all_subs', default: 'All Subscriptions')}</option>
+                            value="">${message(code: 'myinst.currentTitles.all_subs')}</option>
                     <g:each in="${subscriptions}" var="s">
                         <option <%=(filterSub.contains(s.id.toString())) ? 'selected="selected"' : ''%> value="${s.id}"
                                                                                                         title="${s.dropdownNamingConvention(institution)}">
@@ -114,7 +98,7 @@
                 <label for="filterPvd">${message(code: 'default.agency.provider.plural.label')}</label>
                 <select id="filterPvd" name="filterPvd" multiple="" class="ui search selection fluid dropdown">
                     <option <%--<%= (filterPvd.contains("all")) ? 'selected' : '' %>--%>
-                            value="">${message(code: 'myinst.currentTitles.all_providers', default: 'All Content Providers')}</option>
+                            value="">${message(code: 'myinst.currentTitles.all_providers')}</option>
                     <g:each in="${providers}" var="p">
                         <%
                             def pvdId = p[0].id.toString()
@@ -133,7 +117,7 @@
                 <label for="filterPvd">${message(code: 'default.host.platforms.label')}</label>
                 <select name="filterHostPlat" multiple="" class="ui search selection fluid dropdown">
                     <option <%--<%= (filterHostPlat.contains("all")) ? 'selected' : '' %>--%>
-                            value="">${message(code: 'myinst.currentTitles.all_host_platforms', default: 'All Host Platforms')}</option>
+                            value="">${message(code: 'myinst.currentTitles.all_host_platforms')}</option>
                     <g:each in="${hostplatforms}" var="hp">
                         <%
                             def hostId = hp[0].id.toString()
@@ -151,7 +135,7 @@
                 <label for="filterPvd">${message(code: 'default.all_other.platforms.label')}</label>
                 <select name="filterOtherPlat" multiple="" class="ui search selection fluid dropdown">
                     <option <%--<%= (filterOtherPlat.contains("all")) ? 'selected' : '' %>--%>
-                            value="">${message(code: 'myinst.currentTitles.all_other_platforms', default: 'All Additional Platforms')}</option>
+                            value="">${message(code: 'myinst.currentTitles.all_other_platforms')}</option>
                     <g:each in="${otherplatforms}" var="op">
 
                         <%
@@ -183,7 +167,7 @@
                    class="ui reset primary button">${message(code: 'default.button.reset.label')}</a>
                 <input type="hidden" name="filterSet" value="true"/>
                 <input type="submit" class="ui secondary button"
-                       value="${message(code: 'default.button.filter.label', default: 'Filter')}"/>
+                       value="${message(code: 'default.button.filter.label')}"/>
             </div>
         </div>
 
@@ -203,13 +187,13 @@
                         <tr>
                             <th>${message(code: 'sidewide.number')}</th>
                             <g:sortableColumn params="${params}" property="tipp.title.sortTitle"
-                                              title="${message(code: 'title.label', default: 'Title')}"/>
-                            <th>${message(code: 'subscription.details.startDate', default: 'Earliest Date')}</th>
-                            <th>${message(code: 'subscription.details.endDate', default: 'Latest Date')}</th>
+                                              title="${message(code: 'title.label')}"/>
+                            <th>${message(code: 'subscription.details.startDate')}</th>
+                            <th>${message(code: 'subscription.details.endDate')}</th>
                             <th style="width: 30%">
                                 <div class="ui three column grid">
                                     <div class="sixteen wide column">
-                                        ${message(code: 'myinst.currentTitles.sub_content', default: 'Subscribed Content')}
+                                        ${message(code: 'myinst.currentTitles.sub_content')}
                                     </div>
                                     <div class="eight wide column">
                                         ${message(code: 'subscription.details.coverage_dates')}
@@ -219,7 +203,7 @@
                                         ${message(code: 'default.to')}
                                     </div>
                                     <div class="eight wide column">
-                                        ${message(code: 'subscription.details.access_dates', default: 'Access')}
+                                        ${message(code: 'subscription.details.access_dates')}
                                         <br>
                                         ${message(code: 'default.from')}
                                         <br>
@@ -279,7 +263,7 @@
 
                                         <g:set var="platform" value="${com.k_int.kbplus.Platform.get(platformID.key)}"/>
 
-                                        <div class="item"><b>${message(code: 'tipp.platform', default: 'Platform')}:</b>
+                                        <div class="item"><b>${message(code: 'tipp.platform')}:</b>
                                             <g:if test="${platform?.name}">
                                                 ${platform?.name}
                                             </g:if>
@@ -309,7 +293,7 @@
                                    value="${ti.getInstitutionalCoverageSummary(institution, message(code: 'default.date.format.notime'), date_restriction)}"/>
 
                             <td style="white-space:nowrap">${title_coverage_info.earliest}</td>
-                            <td style="white-space:nowrap">${title_coverage_info.latest ?: message(code: 'myinst.currentTitles.to_current', default: 'To Current')}</td>
+                            <td style="white-space:nowrap">${title_coverage_info.latest ?: message(code: 'myinst.currentTitles.to_current')}</td>
                             <td >
 
                                 <div class="ui three column grid">
@@ -444,15 +428,15 @@
                         <table class="ui sortable celled la-table table">
                             <tr>
                                 <g:sortableColumn params="${params}" property="tipp.title.sortTitle"
-                                                  title="${message(code: 'title.label', default: 'Title')}"/>
+                                                  title="${message(code: 'title.label')}"/>
                                 <th>ISSN</th>
                                 <th>eISSN</th>
-                                <th>${message(code: 'subscription.details.startDate', default: 'Earliest Date')}</th>
-                                <th>${message(code: 'subscription.details.endDate', default: 'Latest Date')}</th>
-                                <th>${message(code: 'default.subscription.label', default: 'Subscription')}</th>
-                                <th>${message(code: 'package.content_provider', default: 'Content Provider')}</th>
-                                <th>${message(code: 'tipp.host_platform', default: 'Host Platform')}</th>
-                                <th>${message(code: 'tipp.additionalPlatforms', default: 'Additional Platforms')}</th>
+                                <th>${message(code: 'subscription.details.startDate')}</th>
+                                <th>${message(code: 'subscription.details.endDate')}</th>
+                                <th>${message(code: 'default.subscription.label')}</th>
+                                <th>${message(code: 'package.content_provider')}</th>
+                                <th>${message(code: 'tipp.host_platform')}</th>
+                                <th>${message(code: 'tipp.additionalPlatforms')}</th>
                             </tr>
                             <g:each in="${entitlements}" var="ie">
                                 <tr>

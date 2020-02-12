@@ -2,6 +2,14 @@
 
 **Ticket    Date    Branch      Author  Feature/Bug     Description/Keywords**
 
+2085    10.02.2020  hbz-dev     Moe     Feature     Sicherheitsabfrage Ent-/Verknüpfen von Konsorten
+
+2005    10.02.2020  hbz-dev     Moe     Feature     "Mehrjahreslaufzeit" auch für lokale Lizenzen?
+
+2162    10.02.2020  hbz-dev     David   Feature     Legacy Konstrukt "Transforms" entfernen
+
+2160    10.02.2020  hbz-dev     David   Feature     Legacy "Reminder" entfernen
+
 1505    07.02.2020  rc1.2       Moe     Bug         Kopierfunktion für Konsortiallizenzen überarbeiten
 
 --      07.02.2020  rc1.2       Moe     Bug         ES Index enthält nicht alle Objekte 
@@ -186,7 +194,7 @@
 
 2003    19.12.2019  rc1.2       Andreas Bug         creation of new orgs failed, NullPointerException fixed
 
---      18.12.2019  rc1.2       Moe   Bug           Unlink Package by linkPackagesMembers 
+--      18.12.2019  rc1.2       Moe     Bug         Unlink Package by linkPackagesMembers 
 
 --      18.12.2019  rc1.2       David   Bug         accessor for undeleted derived subscriptions
 
@@ -268,7 +276,7 @@
 
 1926    04.12.2019  rc1.1       David   Bug         Modaler Dialog: Funktions-/Personenkontakte funktioniert nicht
 
---      05.12.2019  hbz-dev     Moe      Feature    Workflow für Übertrag nach einer Umfrage-Verlängerung
+--      05.12.2019  hbz-dev     Moe     Feature     Workflow für Übertrag nach einer Umfrage-Verlängerung
 
 --      05.12.2019  hbz-dev     Moe/Ingrid  Feature Erweiterte Suche in der Menüleiste 
 

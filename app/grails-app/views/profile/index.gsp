@@ -41,26 +41,26 @@
 
             <g:form action="updateProfile" class="ui form updateProfile">
                 <h4 class="ui dividing header">
-                    ${message(code: 'profile.user', default:'User Profile')}
+                    ${message(code: 'profile.user')}
                 </h4>
 
                 <div class="field">
-                    <label>${message(code: 'profile.username', default:'User Name')}</label>
+                    <label>${message(code: 'profile.username')}</label>
                     <input type="text" readonly="readonly" value="${user.username}"/>
                 </div>
 
                 <div class="field ">
-                    <label>${message(code: 'profile.display', default:'Display Name')}</label>
+                    <label>${message(code: 'profile.display')}</label>
                     <input type="text" name="userDispName" value="${user.display}"/>
                 </div>
 
                 <div class="field required">
-                    <label>${message(code: 'profile.email', default:'Email Address')}</label>
+                    <label>${message(code: 'profile.email')}</label>
                     <input type="text" id="email" name="email" value="${user.email}"/>
                 </div>
 
                 <div class="field">
-                    <label>${message(code: 'profile.dash', default:'Default Dashboard')}</label>
+                    <label>${message(code: 'profile.dash')}</label>
 
                     <select name="defaultDash" value="${user.getSettingsValue(UserSettings.KEYS.DASHBOARD)?.id}" class="ui fluid dropdown">
                         <option value=""></option>
@@ -75,7 +75,7 @@
                 --%>
 
                 <div class="field">
-                    <button type="submit" class="ui button">${message(code: 'profile.update.button', default:'Update Profile')}</button>
+                    <button type="submit" class="ui button">${message(code: 'profile.update.button')}</button>
                 </div>
 
             </g:form>
@@ -107,28 +107,28 @@
             <g:form action="updatePassword" class="ui form">
 
                 <h4 class="ui dividing header">
-                    ${message(code: 'profile.password.label', default:'Update Password')}
+                    ${message(code: 'profile.password.label')}
                 </h4>
 
                 <div class="field required">
-                    <label>${message(code: 'profile.password.current', default:'Current Password')}</label>
+                    <label>${message(code: 'profile.password.current')}</label>
                     <input type="password" name="passwordCurrent" required class="pw"/>
                 </div>
                 <div class="field required">
-                    <label>${message(code: 'profile.password.new', default:'New Password')}</label>
+                    <label>${message(code: 'profile.password.new')}</label>
                     <input type="password" name="passwordNew" required class="pw pwn"/>
                 </div>
                 <div class="field required">
-                    <label>${message(code: 'profile.password.new.repeat', default:'New Password (Repeat)')}</label>
+                    <label>${message(code: 'profile.password.new.repeat')}</label>
                     <input type="password" name="passwordNew2" required class="pw pwn"/>
                 </div>
                 <div class="field">
-                    <label>${message(code: 'profile.password.show', default:'Show Passwords')}</label>
+                    <label>${message(code: 'profile.password.show')}</label>
                     <input type="checkbox" name="showPasswords" id="passwordToggler">
                 </div>
                 <div class="field">
                     <label></label>
-                    <button type="submit" class="ui button" id="passwordSubmit">${message(code: 'profile.password.update.button', default:'Update Password')}</button>
+                    <button type="submit" class="ui button" id="passwordSubmit">${message(code: 'profile.password.update.button')}</button>
                 </div>
 
             </g:form>
@@ -319,7 +319,7 @@
         <div class="ui segment">
             <div class="ui form">
                 <h4 class="ui dividing header">
-                    ${message(code: 'profile.preferences', default:'Preferences')}
+                    ${message(code: 'profile.preferences')}
                 </h4>
                 <%-- TODO: check this
                 <div class="field">
@@ -444,47 +444,6 @@
         </div><!-- .segment -->
     </div><!-- .column -->
 
-    <%--
-        <g:if test="${user.getAuthorities().contains(Role.findByAuthority('ROLE_API_READER')) | user.getAuthorities().contains(Role.findByAuthority('ROLE_API_WRITER'))}">
-            <div class="column wide eight">
-                <div class="ui segment">
-                    <div class="ui form">
-                        <h4 class="ui dividing header">
-                            ${message(code: 'api.label', default:'API')}
-                        </h4>
-
-                        <div class="field">
-                            <label>${message(code: 'api.apikey.label', default:'API-Key')}</label>
-                            <input type="text" readonly="readonly" value="${user.apikey}">
-                        </div>
-
-                        <div class="field">
-                            <label>${message(code: 'api.apisecret.label', default:'API-Secret')}</label>
-                            <input type="text" readonly="readonly" value="${user.apisecret}">
-                        </div>
-
-                        <div class="field">
-                            <label>Berechtigungen</label>
-                            <div class="ui list">
-                                <g:if test="${user.getAuthorities().contains(Role.findByAuthority('ROLE_API_READER'))}">
-                                    <div class="item"><i class="icon check circle outline"></i> Lesend</div>
-                                </g:if>
-                                <g:if test="${user.getAuthorities().contains(Role.findByAuthority('ROLE_API_WRITER'))}">
-                                    <div class="item"><i class="icon check circle"></i> Schreibend</div>
-                                </g:if>
-                            </div>
-                        </div>
-
-                        <div class="field">
-                            <label></label>
-                            <g:link class="ui button" controller="api" action="index">${message(code:'api.linkTo', default:'Visit API')}</g:link>
-                        </div>
-                    </div><!-- form -->
-                </div><!-- .segment -->
-            </div><!-- .column -->
-        </g:if>
-    --%>
-
 </div><!-- .grid -->
 
 <br />
@@ -519,107 +478,6 @@
     </sec:ifAnyGranted>
 
 </div><!-- .grid -->
-
-
-<g:if test="${grailsApplication.config.feature.notifications}">
-
-    <div>
-        <div class="ui one column grid">
-            <div class="column wide sixteen">
-                <h4 class="ui dividing header">${message(code: 'profile.misc', default:'Misc')}</h4>
-            </div>
-            <div class="column wide sixteen">
-                <div id="reminders">
-                    <div class="ui segment">
-                        <h2 class="ui header">${message(code: 'profile.reminder.new', default:'Create new Reminders / Notifications')}</h2>
-                        <p>${message(code: 'profile.reminder.new.text', default:'Select the condition you are interested about and time period you wished to be notified about said topic.')}</p>
-                        <p><i>${message(code: 'profile.reminder.new.email', default:'Ensure your email or other method of contact is a valid means of reaching yourself')}</i></p>
-
-                        <g:form name="createReminder" controller="profile" action="createReminder" class="form-search" method="POST" url="[controller:'profile', action:'createReminder']">
-
-                            <div class="field">
-                                <label>${message(code: 'profile.reminder.new.notify', default:'Notify for')}</label>
-                                <g:select name="trigger"
-                                          from="${com.k_int.kbplus.RefdataValue.executeQuery('select rdv from RefdataValue as rdv where rdv.owner.desc=?', RDConstants.REMINDER_TRIGGER)}"
-                                          optionKey="id"
-                                          optionValue="${{it.getI10n('value')}}"
-                                          class="input-medium"/>
-                            </div>
-                            <div class="field">
-                                <label>${message(code: 'profile.reminder.new.method', default:'Method')}</label>
-                                <g:select name="method"
-                                          from="${com.k_int.kbplus.RefdataValue.executeQuery('select rdv from RefdataValue as rdv where rdv.owner.desc=?', RDConstants.REMINDER_METHOD)}"
-                                          optionKey="id"
-                                          optionValue="${{it.getI10n('value')}}"
-                                          class="input-medium"/>
-                            </div>
-                            <div class="field">
-                                <label>${message(code: 'profile.reminder.new.period', default:'Period')}</label>
-                                <g:select name="unit"
-                                          from="${com.k_int.kbplus.RefdataValue.executeQuery('select rdv from RefdataValue as rdv where rdv.owner.desc=?', RDConstants.REMINDER_UNIT)}"
-                                          optionKey="id"
-                                          optionValue="${{it.getI10n('value')}}"
-                                          class="input-medium"/>
-                            </div>
-                            <div class="field">
-                                <label>${message(code: 'profile.reminder.new.time', default:'Time')}</label>
-                                <select name="val" class="input-medium required-indicator" id="val" value="${params.val}" data-type="select">
-                                    <g:each in="${(1..7)}" var="s">
-                                        <option value="${s}" ${s==params.long('val')?'selected="selected"':''}>${s}</option>
-                                    </g:each>
-                                </select>
-                            </div>
-
-                            <button id="submitReminder" type="submit" class="ui button">${message(code:'default.button.create.label')}</button>
-                        </g:form>
-                    </div>
-                </div><!-- #reminders -->
-            </div><!-- .column -->
-
-
-            <div class="column wide sixteen">
-                <div class="ui segment">
-                    <h2 class="ui header">${message(code: 'profile.reminder.active', default:'Active Reminders')}</h2>
-
-                    <table class="ui celled la-table table">
-                        <thead>
-                        <tr>
-                            <th><g:message code="reminder.trigger" /></th>
-                            <th><g:message code="reminder.method" /></th>
-                            <th>${message(code:'profile.reminder.new.time', default:'Time')} (<g:message code="reminder.unit" default="Unit"/>/<g:message code="reminder.number"/>)</th>
-                            <th><g:message code="reminder.lastNotification" /></th>
-                            <th><g:message code="reminder.update" /></th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        <g:if test="${user.reminders.size() == 0}">
-                            <tr><td colspan="5" style="text-align:center">&nbsp;<br/>${message(code:'reminder.none', default:'No reminders exist presently...')}<br/>&nbsp;</td></tr>
-                        </g:if>
-                        <g:else>
-                            <g:each in="${user.reminders}" var="r">
-                                <tr>
-                                    <td>${r.trigger.value}</td>
-                                    <td>${r.reminderMethod.value}</td>
-                                    <td>${r.amount} ${r.unit.value}${r.amount >1? 's':''} before</td>
-                                    <g:if test="${r.lastRan}"><td><g:formatDate format="${message(code:'default.date.format.notime', default:'yyyy-MM-dd')}" date="${r.lastRan}" /></td></g:if>
-                                    <g:else><td>${message(code:'reminder.never_ran', default:'Never executed!')}</td></g:else>
-                                    <td>
-                                        <button data-op="delete" data-id="${r.id}" class="ui button reminderBtn">${message(code:'default.button.remove.label', default:'Remove')}</button>&nbsp;/&nbsp;
-                                        <button data-op="toggle" data-id="${r.id}" class="ui button reminderBtn">${r.active? "${message(code:'default.button.disable.label', default:'disable')}":"${message(code:'default.button.enable.label', default:'enable')}"}</button>
-                                    </td>
-                                </tr>
-                            </g:each>
-                        </g:else>
-                        </tbody>
-                    </table>
-
-                </div>
-            </div><!-- .column -->
-
-        </div><!-- .grid -->
-    </div><!-- -->
-
-</g:if>
 
 <r:script>
     $(document).ready(function () {
@@ -703,28 +561,6 @@
         });
 
         $('#isRemindByEmail').trigger('change');
-
-        $(".reminderBtn").on('click', function (e) {
-            //e.preventDefault();
-            var element = $(this);
-            var yn = confirm("Are you sure you wish to continue?");
-            if(yn)
-            {
-                $.ajax({
-                    method: 'POST',
-                    url: "<g:createLink controller='profile' action='updateReminder'/>",
-                        data: {
-                        op: element.data('op'),
-                        id: element.data('id')
-                    }
-                }).done(function(data) {
-                    console.log(data)
-                    data.op == 'delete'? element.parents('tr').remove() : element.text(data.active);
-                });
-            }
-
-            //return false;
-        });
     });
 
     function setupUnitAmount(type, amount) {
