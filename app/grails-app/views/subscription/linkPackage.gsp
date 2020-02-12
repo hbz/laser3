@@ -1,4 +1,4 @@
-<%@ page import="com.k_int.kbplus.Subscription;com.k_int.kbplus.CostItem;com.k_int.kbplus.Org;com.k_int.kbplus.Platform;com.k_int.kbplus.Package" %>
+<%@ page import="com.k_int.kbplus.Subscription;com.k_int.kbplus.CostItem;" %>
 <!doctype html>
 
 <html>
@@ -10,7 +10,7 @@
 <body>
 <semui:breadcrumbs>
     <semui:crumb controller="myInstitution" action="currentSubscriptions"
-                 text="${message(code: 'myinst.currentSubscriptions.label', default: 'Current Subscriptions')}"/>
+                 text="${message(code: 'myinst.currentSubscriptions.label')}"/>
     <semui:crumb controller="subscription" action="index" id="${subscriptionInstance.id}"
                  text="${subscriptionInstance.name}"/>
     <semui:crumb class="active"
@@ -31,7 +31,7 @@
         <input type="hidden" name="id" value="${params.id}"/>
 
             <div class="field">
-                <label for="q">${message(code: 'package.show.pkg_name', default: 'Package Name')}</label>
+                <label for="q">${message(code: 'package.show.pkg_name')}</label>
                 <input id="q" name="q" value="${params.q}"/>
             </div>
 
@@ -39,7 +39,7 @@
                 <a href="${request.forwardURI}"
                    class="ui reset primary button">${message(code: 'default.button.filterreset.label')}</a>
                 <button type="submit" name="search" value="yes"
-                        class="ui secondary button">${message(code: 'default.button.filter.label', default: 'Filter')}</button>
+                        class="ui secondary button">${message(code: 'default.button.filter.label')}</button>
             </div>
 
     </g:form>
@@ -81,7 +81,7 @@
                         <thead>
                         <tr>
                             <g:sortableColumn property="name"
-                                              title="${message(code: 'package.show.pkg_name', default: 'Package Name')}"
+                                              title="${message(code: 'package.show.pkg_name')}"
                                               params="${params}"/>
                             <g:sortableColumn property="providerName"
                                               title="${message(code: 'package.content_provider')}"

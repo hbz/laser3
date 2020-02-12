@@ -593,14 +593,28 @@ r2d2 = {
         // confirmation modal
         var buildConfirmationModal =
             function(that){
+
+                var ajaxUrl = that.getAttribute("data-confirm-messageUrl")
+                if (ajaxUrl) {
+                    $.ajax({
+                        url: ajaxUrl
+                    })
+                    .done(function (data) {
+                        $('#js-confirmation-term').html( data )
+                    })
+                    .fail(function (data) {
+                        $('#js-confirmation-term').html( 'WARNING: AJAX-CALL FAILED' )
+                    })
+                }
+                else {
+                    var tokenMsg = that.getAttribute("data-confirm-tokenMsg") ? that.getAttribute("data-confirm-tokenMsg") : false;
+                    tokenMsg ? $('#js-confirmation-term').html(tokenMsg) : $("#js-confirmation-term").remove();
+                }
+
                 var dataAttr = that.getAttribute("data-confirm-id")? that.getAttribute("data-confirm-id")+'_form':false;
                 var how = that.getAttribute("data-confirm-term-how") ? that.getAttribute("data-confirm-term-how"):"delete";
-                var tokenMsg = that.getAttribute("data-confirm-tokenMsg")? that.getAttribute("data-confirm-tokenMsg"):false;
-
                 var url = that.getAttribute('href') && (that.getAttribute('class').indexOf('la-js-remoteLink') == -1) && (that.getAttribute('class') != 'js-gost') ? that.getAttribute('href'): false; // use url only if not remote link
 
-                tokenMsg ? $('#js-confirmation-term').html(tokenMsg) : $("#js-confirmation-term").remove();
-                
                 switch (how) {
                     case "delete":
                         $('#js-confirmation-button').html(dict.get('confirm.dialog.delete',currLanguage) + '<i class="trash alternate icon"></i>');

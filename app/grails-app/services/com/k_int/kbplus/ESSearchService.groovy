@@ -14,7 +14,8 @@ import org.elasticsearch.search.aggregations.AggregationBuilders;
 
 class ESSearchService{
 // Map the parameter names we use in the webapp with the ES fields
-  def reversemap = ['endYear':'endYear',
+  def reversemap = ['rectype':'rectype',
+                    'endYear':'endYear',
                     'startYear':'startYear',
                     'consortiaName':'consortiaName',
                     'providerName':'providerName',
@@ -179,10 +180,10 @@ class ESSearchService{
       }
     }
       
-    if(params?.rectype){
+    /*if(params?.rectype){
       if(sw.toString()) sw.write(" AND ");
       sw.write(" rectype:'${params.rectype}' ")
-    }
+    }*/
 
       field_map.each { mapping ->
 

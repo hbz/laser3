@@ -372,6 +372,25 @@ if (customerType) {
         </g:link>
     </div>
 
+    <%-- ERMS-2082 --%>
+
+    <div class="html ui top attached segment example">
+        <div class="ui top attached label">Inhalt der Nachricht per Ajax: AjaxController.genericDialogMessage()</div>
+
+        <g:link controller="yoda"
+                action="frontend"
+                params=""
+                data-content="Hier kommt der Tooltip rein"
+                data-confirm-messageUrl="${createLink(controller:'ajax', action:'genericDialogMessage', params:[template:'abc'])}"
+                data-confirm-term-how="delete"
+                class="ui icon negative button js-open-confirm-modal la-popup-tooltip la-delay"
+                role="button">
+            <i class="trash alternate icon"></i>
+        </g:link>
+    </div>
+
+    <%-- ERMS-2082 --%>
+
     <div class="html ui top attached segment example">
         <div class="ui top attached label">Link, der den AJAX-Contoler aufruft und  als Button funktioniert (daß heiß, eine Aktion ausführt)</div>
         <laser:remoteLink class="ui icon negative button js-open-confirm-modal la-popup-tooltip la-delay"

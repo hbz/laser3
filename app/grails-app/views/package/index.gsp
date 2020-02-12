@@ -24,8 +24,8 @@
         <input type="hidden" name="offset" value="${params.offset}"/>
 
         <div class="field">
-            <label>${message(code: 'home.search.text')}: ${message(code: 'package.show.pkg_name', default: 'Package Name')}, ${message(code: 'package.content_provider')}</label>
-            <input name="q" placeholder="${message(code:'default.search.ph', default:'enter search term...')}" value="${params.q}"/>
+            <label>${message(code: 'home.search.text')}: ${message(code: 'package.show.pkg_name')}, ${message(code: 'package.content_provider')}</label>
+            <input name="q" placeholder="${message(code:'default.search.ph')}" value="${params.q}"/>
         </div>
 
         <div class="field la-field-right-aligned">
@@ -152,7 +152,7 @@
                     <tr>
                         <th>${message(code: 'sidewide.number')}</th>
                         <g:sortableColumn property="name"
-                                          title="${message(code: 'package.show.pkg_name', default: 'Package Name')}"
+                                          title="${message(code: 'package.show.pkg_name')}"
                                           params="${params}"/>
                         <th>${message(code: 'package.compare.overview.tipps')}</th>
                         <g:sortableColumn property="providerName" title="${message(code: 'package.content_provider')}"

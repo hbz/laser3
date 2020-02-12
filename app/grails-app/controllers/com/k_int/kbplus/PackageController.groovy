@@ -22,7 +22,6 @@ import java.text.SimpleDateFormat
 class PackageController extends AbstractDebugController {
 
     def springSecurityService
-    def transformerService
     def genericOIDService
     def ESSearchService
     def exportService
@@ -476,8 +475,6 @@ class PackageController extends AbstractDebugController {
         Map<String, Object> result = [:]
         boolean showDeletedTipps = false
 
-        result.transforms = grailsApplication.config.packageTransforms
-
         //ask Daniel: downgrade to ROLE_DATAMANAGER?
         if (SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN,ROLE_PACKAGE_EDITOR')) {
             result.editable = true
@@ -596,15 +593,9 @@ class PackageController extends AbstractDebugController {
                 exportService.addPackageIntoXML(doc, doc.getDocumentElement(), packageInstance, result.titlesList)
                 exportService.printDuration(starttime, "Building XML Doc")
 
-                if ((params.transformId) && (result.transforms[params.transformId] != null)) {
-                    String xml = exportService.streamOutXML(doc, new StringWriter()).getWriter().toString();
-                    transformerService.triggerTransform(result.user, filename, result.transforms[params.transformId], xml, response)
-                } else { // send the XML to the user
-                    response.setHeader("Content-disposition", "attachment; filename=\"${filename}.xml\"")
-                    response.contentType = "text/xml"
-                    exportService.streamOutXML(doc, response.outputStream)
-                }
-
+                response.setHeader("Content-disposition", "attachment; filename=\"${filename}.xml\"")
+                response.contentType = "text/xml"
+                exportService.streamOutXML(doc, response.outputStream)
             }
         }
     }

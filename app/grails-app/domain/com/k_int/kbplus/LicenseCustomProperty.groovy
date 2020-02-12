@@ -174,7 +174,7 @@ class LicenseCustomProperty extends CustomProperty implements AuditableTrait  {
         }
         else if (changeDocument.event.equalsIgnoreCase('LicenseCustomProperty.deleted')) {
 
-            def openPD = PendingChange.executeQuery("select pc from PendingChange as pc where pc.status is null and pc.oid = :objectID",
+            List<PendingChange> openPD = PendingChange.executeQuery("select pc from PendingChange as pc where pc.status is null and pc.oid = :objectID",
                     [objectID: "${this.class.name}:${this.id}"] )
             openPD.each { pc ->
                 if (pc.payload) {

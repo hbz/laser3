@@ -71,7 +71,7 @@
 
 
         <input type="submit" class="ui button"
-               value="${message(code: 'createSubscriptionSurvey.create', default: 'Create')}"/>
+               value="${message(code: 'createSubscriptionSurvey.create')}"/>
 
     </g:form>
 </semui:form>

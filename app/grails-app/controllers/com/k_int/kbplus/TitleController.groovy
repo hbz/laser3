@@ -31,7 +31,7 @@ class TitleController extends AbstractDebugController {
         def result=[:]
 
         if (springSecurityService.isLoggedIn()) {
-            params.rectype = "Title" // Tells ESSearchService what to look for
+            params.rectype = ["EBookInstance", "JournalInstance", "BookInstance", "TitleInstance", "DatabaseInstance"] // Tells ESSearchService what to look for
             result.user = springSecurityService.getCurrentUser()
             params.max = params.max ?: result.user.getDefaultPageSizeTMP()
 

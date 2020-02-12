@@ -154,6 +154,28 @@ class SubscriptionUpdateService extends AbstractLockableService {
                 }
             }
 
+            // CURRENT PERENNIAL -> INTENDED PERENNIAL
+
+            /**
+            def currentSubsIds3 = Subscription.where {
+                status == RDStore.SUBSCRIPTION_CURRENT && instanceOf.startDate > currentDate && (endDate != null && (instanceOf.endDate > currentDate)) && isMultiYear == true
+            }.collect{ it.id }
+
+            log.info("Current subscriptions reached end date and are now intended pernennial (${currentDate}): " + currentSubsIds3)
+
+            if (currentSubsIds3) {
+                updatedObjs << ['currentPerennialToIntendedPerennial' : currentSubsIds3]
+
+                Subscription.executeUpdate(
+                        'UPDATE Subscription sub SET sub.status =:status WHERE sub.id in (:ids)',
+                        [status: RDStore.SUBSCRIPTION_INTENDED_PERENNIAL, ids: currentSubsIds3]
+                )
+
+                currentSubsIds3.each { id ->
+                    log.info('SubscriptionUpdateService UPDATE subscriptions WHERE ID ' + id + ' Status: ' + RDStore.SUBSCRIPTION_INTENDED_PERENNIAL)
+                }
+            }**/
+
             SystemEvent.createEvent('SUB_UPDATE_SERVICE_PROCESSING', updatedObjs)
             running = false
 

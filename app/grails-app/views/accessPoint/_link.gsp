@@ -24,10 +24,10 @@
     <table class="ui celled la-table table compact">
         <thead>
         <tr>
-            <g:sortableColumn property="platform" title="${message(code: "platform.label", default: "Platform")}" />
+            <g:sortableColumn property="platform" title="${message(code: "platform.label")}" />
     <g:if test="${ accessService.checkPermAffiliation('ORG_BASIC_MEMBER','INST_EDITOR') || (accessService.checkPermAffiliation('ORG_CONSORTIUM','INST_EDITOR') && inContextOrg)}">
-        <th>${message(code: "accessPoint.subscriptions.label", default: "Subscription")}</th>
-        <th>${message(code: 'accessPoint.platformLink.action', default: 'Action')}</th>
+        <th>${message(code: "accessPoint.subscriptions.label")}</th>
+        <th>${message(code: 'accessPoint.platformLink.action')}</th>
     </g:if>
         </tr>
         </thead>
@@ -64,10 +64,9 @@
         <table class="ui celled la-table table compact">
             <thead>
             <tr>
-                <th>${message(code: "accessPoint.subscription.label", default: "Subscription")}</th>
-                <th>${message(code: "accessPoint.package.label", default: "Package")}</th>
-                <g:sortableColumn property="platform"
-                                  title="${message(code: "platform.label", default: "Platform")}"/>
+                <th>${message(code: "accessPoint.subscription.label")}</th>
+                <th>${message(code: "accessPoint.package.label")}</th>
+                <g:sortableColumn property="platform" title="${message(code: "platform.label")}"/>
             </tr>
             </thead>
             <tbody>

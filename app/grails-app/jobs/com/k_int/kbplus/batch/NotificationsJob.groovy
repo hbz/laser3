@@ -6,7 +6,6 @@ class NotificationsJob extends AbstractJob {
 
     def changeNotificationService
     def grailsApplication
-    def reminderService
 
     /* ----> DISABLED
     
@@ -39,12 +38,6 @@ class NotificationsJob extends AbstractJob {
             if (grailsApplication.config.notificationsJobActive == true) {
                 if (! changeNotificationService.aggregateAndNotifyChanges()) {
                     log.warn( 'Failed. Maybe ignored due blocked changeNotificationService')
-                }
-
-                log.debug("About to start the Reminders Job..")
-
-                if (! reminderService.runReminders()) {
-                    log.warn( 'Failed. Maybe ignored due blocked reminderService')
                 }
             }
         }

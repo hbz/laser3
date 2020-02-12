@@ -2,9 +2,31 @@
 
 **Ticket    Date    Branch      Author  Feature/Bug     Description/Keywords**
 
+2162    10.02.2020  hbz-dev     David   Feature     Legacy Konstrukt "Transforms" entfernen
+
+2160    10.02.2020  hbz-dev     David   Feature     Legacy "Reminder" entfernen
+
+1505    07.02.2020  rc1.2       Moe     Bug         Kopierfunktion für Konsortiallizenzen überarbeiten
+
+--      07.02.2020  rc1.2       Moe     Bug         ES Index enthält nicht alle Objekte 
+
+--      07.02.2020  hbz-dev     David   Feature     Modified confirm dialog; added ajax content loading
+
+2158    07.02.2020  rc1.2       David   Bug         Identifikatorensuche bei Lizenzen (fehlerhafte Query)
+
+--      06.02.2020  rc1.2       Christian   Bug     Zugangskonfigurationen auf Platformdetailseite wurden nicht korrekt bestimmt
+
+2155    06.02.2020  rc1.2       David   Feature     SystemProfiler soll kontextabhängig alle Zugriffe erfassen
+
 2147    05.02.2020  hbz-dev     David   Feature     Refactoring: default-Werte bei message-Tags entfernen
 
 2014    05.02.2020  hbz-dev     David   Feature     Refactoring: Zugriff auf PropertyDefinitions nur über (name + descr)
+
+--      05.02.2020  hbz-dev     Moe     Feature     Improve License Compare View
+
+1917    05.02.2020  hbz-dev     Moe     Feature     Datenschutzerklärung etc. als eigene Seite statt als Modal
+
+2151    05.02.2020  rc1.2       Moe     Bug         Status bei Mehrjahreslizenzen von Kindlizenzen wird nicht richtig gesetzt
 
 2150    05.02.2020  hbz-dev     David   Bug         API: Referenzwerte mit Doppelpunkt werden als Map interpretiert
 
@@ -168,7 +190,7 @@
 
 2003    19.12.2019  rc1.2       Andreas Bug         creation of new orgs failed, NullPointerException fixed
 
---      18.12.2019  rc1.2       Moe   Bug           Unlink Package by linkPackagesMembers 
+--      18.12.2019  rc1.2       Moe     Bug         Unlink Package by linkPackagesMembers 
 
 --      18.12.2019  rc1.2       David   Bug         accessor for undeleted derived subscriptions
 
@@ -250,7 +272,7 @@
 
 1926    04.12.2019  rc1.1       David   Bug         Modaler Dialog: Funktions-/Personenkontakte funktioniert nicht
 
---      05.12.2019  hbz-dev     Moe      Feature    Workflow für Übertrag nach einer Umfrage-Verlängerung
+--      05.12.2019  hbz-dev     Moe     Feature     Workflow für Übertrag nach einer Umfrage-Verlängerung
 
 --      05.12.2019  hbz-dev     Moe/Ingrid  Feature Erweiterte Suche in der Menüleiste 
 

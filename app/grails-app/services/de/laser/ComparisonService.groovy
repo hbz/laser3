@@ -58,7 +58,7 @@ class ComparisonService {
    * @return the updated map
    */
     Map buildComparisonTree(Map result,cmpObject,Collection<AbstractProperty> props) {
-      props.sort{it.type.getI10n('name')}.each { prop ->
+      props.each { prop ->
 
         //property level - check if the group contains already a mapping for the current property
         def propertyMap = result.get(prop.type.class.name+":"+prop.type.id)

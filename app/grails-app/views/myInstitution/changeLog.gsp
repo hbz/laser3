@@ -14,7 +14,7 @@
   <semui:controlButtons>
     <semui:exportDropdown>
       <semui:exportDropdownItem>
-        <g:link controller="myInstitution" class="item" action="changeLog" params="${params+[format:'csv']}">${message(code:'default.button.exports.csv', default:'CSV Export')}</g:link>
+        <g:link controller="myInstitution" class="item" action="changeLog" params="${params+[format:'csv']}">${message(code:'default.button.exports.csv')}</g:link>
       </semui:exportDropdownItem>
     </semui:exportDropdown>
     <g:render template="actions"/>
@@ -56,7 +56,7 @@
       </table>
 
 
-        <semui:paginate  action="changeLog" controller="myInstitution" params="${params}" next="${message(code:'default.paginate.next', default:'Next')}" prev="${message(code:'default.paginate.prev', default:'Prev')}" max="${max}" total="${num_changes}" />
+        <semui:paginate  action="changeLog" controller="myInstitution" params="${params}" next="${message(code:'default.paginate.next')}" prev="${message(code:'default.paginate.prev')}" max="${max}" total="${num_changes}" />
 
 
     </div>

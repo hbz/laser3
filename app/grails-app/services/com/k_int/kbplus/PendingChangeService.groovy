@@ -35,7 +35,7 @@ class PendingChangeService extends AbstractLockableService {
     final static EVENT_PROPERTY_CHANGE = 'PropertyChange'
 
     boolean performMultipleAcceptsForJob(List<PendingChange> subscriptionChanges, List<PendingChange> licenseChanges, User user) {
-        log.debug('performMultipleAcceptsFromJob')
+        log.debug('performMultipleAcceptsFromJob()')
 
         if (!running) {
             running = true
@@ -57,7 +57,7 @@ class PendingChangeService extends AbstractLockableService {
 
     boolean performAccept(PendingChange pendingChange, User user) {
 
-        log.debug('performAccept')
+        log.debug('performAccept()')
         boolean result = true
 
         PendingChange.withNewTransaction { TransactionStatus status ->

@@ -3,7 +3,7 @@
 <html>
 	<head>
 		<meta name="layout" content="semanticUI">
-		<g:set var="entityName" value="${message(code: 'default.provider.label', default: 'Provider')}" />
+		<g:set var="entityName" value="${message(code: 'default.provider.label')}" />
 		<title>${message(code:'laser')} : <g:message code="default.create.label" args="[entityName]" /></title>
 	</head>
 	<body>
@@ -27,7 +27,7 @@
 			</div>
 			<div class="field la-field-right-aligned">
 				<a href="${request.forwardURI}" class="ui reset primary button">${message(code:'default.button.searchreset.label')}</a>
-				<input type="submit" value="${message(code:'default.button.search.label', default:'Filter')}" class="ui secondary button">
+				<input type="submit" value="${message(code:'default.button.search.label')}" class="ui secondary button">
 			</div>
 		</semui:searchSegment>
 
@@ -38,16 +38,16 @@
 						<table class="ui celled la-table table">
 							<thead>
 							<tr>
-								<th>${message(code:'default.name.label', default:'Name')}</th>
-								<th>${message(code:'indentifier.plural', default:'Identifiers')}</th>
-								<th>${message(code:'org.shortname.label', default:'Shortname')}</th>
-								<th>${message(code:'org.country.label', default:'Country')}</th>
+								<th>${message(code:'default.name.label')}</th>
+								<th>${message(code:'identifier.plural')}</th>
+								<th>${message(code:'org.shortname.label')}</th>
+								<th>${message(code:'org.country.label')}</th>
 							</tr>
 							</thead>
 							<tbody>
 							<g:each in="${providerMatches}" var="providerInstance">
 								<tr>
-									<td>${providerInstance.name} <g:link controller="organisation" action="show" id="${providerInstance.id}">(${message(code:'default.button.edit.label', default:'Edit')})</g:link></td>
+									<td>${providerInstance.name} <g:link controller="organisation" action="show" id="${providerInstance.id}">(${message(code:'default.button.edit.label')})</g:link></td>
 									<td><ul>
 											<li><g:message code="org.globalUID.label" />: <g:fieldValue bean="${providerInstance}" field="globalUID"/></li>
 											<g:if test="${providerInstance.gokbId}">

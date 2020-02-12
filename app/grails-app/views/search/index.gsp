@@ -2,7 +2,7 @@
 <laser:serviceInjection/>
 <%-- r:require module="annotations" / --%>
 
-<% SimpleDateFormat sdf = de.laser.helper.DateUtil.getSDF_NoTime()
+<% SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'")
 
 String period
 %>
@@ -284,7 +284,7 @@ String period
                     <thead>
                         <tr>
                             <th class="six wide">Title/Name</th>
-                            <th class="ten wide ">${message(code: 'search.additionalinfo', default: "Additional Info")}</th>
+                            <th class="ten wide ">${message(code: 'search.additionalinfo')}</th>
                         </tr>
                     </thead>
                     <g:each in="${hits}" var="hit">
@@ -314,7 +314,7 @@ String period
                                 </td>
                             </g:if>
 
-                            <g:if test="${hit.getSourceAsMap().rectype == 'Title'}">
+                            <g:if test="${hit.getSourceAsMap().rectype == 'TitleInstance'}">
                                 <td>
 
                                     <span data-position="top right" class="la-popup-tooltip la-delay"
@@ -330,6 +330,63 @@ String period
                                     <g:each in="${hit.getSourceAsMap().identifiers?.sort { it.type }}" var="id">
                                         ${id.type}: ${id.value} &nbsp;
                                     </g:each>
+                                </td>
+                            </g:if>
+
+                            <g:if test="${hit.getSourceAsMap().rectype == 'BookInstance'}">
+                                <td>
+
+                                    <span data-position="top right" class="la-popup-tooltip la-delay"
+                                          data-content="${message(code: "facet.so.rectype.${hit.getSourceAsMap().typTitle.toLowerCase()}")}">
+                                        <i class="circular icon la-search-${hit.getSourceAsMap().typTitle.toLowerCase()}"></i>
+                                    </span>
+
+                                    <g:link controller="title" action="show"
+                                            id="${hit.getSourceAsMap().dbId}">${hit.getSourceAsMap().name}</g:link>
+                                </td>
+                                <td>
+                                    <b><g:message code="default.identifiers.label"/></b>:
+                                <g:each in="${hit.getSourceAsMap().identifiers?.sort { it.type }}" var="id">
+                                    ${id.type}: ${id.value} &nbsp;
+                                </g:each>
+                                </td>
+                            </g:if>
+
+                            <g:if test="${hit.getSourceAsMap().rectype == 'DatabaseInstance'}">
+                                <td>
+
+                                    <span data-position="top right" class="la-popup-tooltip la-delay"
+                                          data-content="${message(code: "facet.so.rectype.${hit.getSourceAsMap().typTitle.toLowerCase()}")}">
+                                        <i class="circular icon la-search-${hit.getSourceAsMap().typTitle.toLowerCase()}"></i>
+                                    </span>
+
+                                    <g:link controller="title" action="show"
+                                            id="${hit.getSourceAsMap().dbId}">${hit.getSourceAsMap().name}</g:link>
+                                </td>
+                                <td>
+                                    <b><g:message code="default.identifiers.label"/></b>:
+                                <g:each in="${hit.getSourceAsMap().identifiers?.sort { it.type }}" var="id">
+                                    ${id.type}: ${id.value} &nbsp;
+                                </g:each>
+                                </td>
+                            </g:if>
+
+                            <g:if test="${hit.getSourceAsMap().rectype == 'JournalInstance'}">
+                                <td>
+
+                                    <span data-position="top right" class="la-popup-tooltip la-delay"
+                                          data-content="${message(code: "facet.so.rectype.${hit.getSourceAsMap().typTitle.toLowerCase()}")}">
+                                        <i class="circular icon la-search-${hit.getSourceAsMap().typTitle.toLowerCase()}"></i>
+                                    </span>
+
+                                    <g:link controller="title" action="show"
+                                            id="${hit.getSourceAsMap().dbId}">${hit.getSourceAsMap().name}</g:link>
+                                </td>
+                                <td>
+                                    <b><g:message code="default.identifiers.label"/></b>:
+                                <g:each in="${hit.getSourceAsMap().identifiers?.sort { it.type }}" var="id">
+                                    ${id.type}: ${id.value} &nbsp;
+                                </g:each>
                                 </td>
                             </g:if>
 
@@ -405,8 +462,8 @@ String period
                                 </td>
                                 <td>
                                     <%
-                                        period = hit.getSourceAsMap().startDate ? sdf.format(new Date().parse("yyyy-MM-dd'T'HH:mm:ssZ", hit.getSourceAsMap().startDate)) : ''
-                                        period = hit.getSourceAsMap().endDate ? period + ' - ' + sdf.format(new Date().parse("yyyy-MM-dd'T'HH:mm:ssZ", hit.getSourceAsMap().endDate)) : ''
+                                        period = hit.getSourceAsMap().startDate ? sdf.parse(hit.getSourceAsMap().startDate).format(message(code: 'default.date.format.notime')) : ''
+                                        period = hit.getSourceAsMap().endDate ? period + ' - ' + sdf.parse(hit.getSourceAsMap().endDate).format(message(code: 'default.date.format.notime')) : ''
                                         period = period ? period : ''
                                     %>
                                     <b><g:message code="default.identifiers.label"/></b>:
@@ -464,8 +521,8 @@ String period
                                 </td>
                                 <td>
                                     <%
-                                        period = hit.getSourceAsMap().startDate ? sdf.format(new Date().parse("yyyy-MM-dd'T'HH:mm:ssZ", hit.getSourceAsMap().startDate)) : ''
-                                        period = hit.getSourceAsMap().endDate ? period + ' - ' + sdf.format(new Date().parse("yyyy-MM-dd'T'HH:mm:ssZ", hit.getSourceAsMap().endDate)) : ''
+                                        period = hit.getSourceAsMap().startDate ? sdf.parse(hit.getSourceAsMap().startDate).format(message(code: 'default.date.format.notime')) : ''
+                                        period = hit.getSourceAsMap().endDate ? period + ' - ' + sdf.parse(hit.getSourceAsMap().endDate).format(message(code: 'default.date.format.notime')) : ''
                                         period = period ? period : ''
                                     %>
 
@@ -501,7 +558,7 @@ String period
                                 </td>
                             </g:if>
 
-                            <g:if test="${hit.getSourceAsMap().rectype == 'Survey'}">
+                            <g:if test="${hit.getSourceAsMap().rectype == 'SurveyConfig'}">
                                 <td>
 
                                     <span data-position="top right" class="la-popup-tooltip la-delay"
@@ -527,8 +584,8 @@ String period
                                 </td>
                                 <td>
                                     <%
-                                        period = hit.getSourceAsMap().startDate ? sdf.format(new Date().parse("yyyy-MM-dd'T'HH:mm:ssZ", hit.getSourceAsMap().startDate)) : ''
-                                        period = hit.getSourceAsMap().endDate ? period + ' - ' + sdf.format(new Date().parse("yyyy-MM-dd'T'HH:mm:ssZ", hit.getSourceAsMap().endDate)) : ''
+                                        period = hit.getSourceAsMap().startDate ? sdf.parse(hit.getSourceAsMap().startDate).format(message(code: 'default.date.format.notime')) : ''
+                                        period = hit.getSourceAsMap().endDate ? period + ' - ' + sdf.parse(hit.getSourceAsMap().endDate).format(message(code: 'default.date.format.notime')) : ''
                                         period = period ? period : ''
                                     %>
 
@@ -542,7 +599,7 @@ String period
                                 </td>
                             </g:if>
 
-                            <g:if test="${hit.getSourceAsMap().rectype == 'ParticipantSurvey'}">
+                            <g:if test="${hit.getSourceAsMap().rectype == 'SurveyOrg'}">
                                 <td>
 
                                     <span data-position="top right" class="la-popup-tooltip la-delay"
@@ -566,8 +623,8 @@ String period
                                 </td>
                                 <td>
                                     <%
-                                        period = hit.getSourceAsMap().startDate ? sdf.format(new Date().parse("yyyy-MM-dd'T'HH:mm:ssZ", hit.getSourceAsMap().startDate)) : ''
-                                        period = hit.getSourceAsMap().endDate ? period + ' - ' + sdf.format(new Date().parse("yyyy-MM-dd'T'HH:mm:ssZ", hit.getSourceAsMap().endDate)) : ''
+                                        period = hit.getSourceAsMap().startDate ? sdf.parse(hit.getSourceAsMap().startDate).format(message(code: 'default.date.format.notime')) : ''
+                                        period = hit.getSourceAsMap().endDate ? period + ' - ' + sdf.parse(hit.getSourceAsMap().endDate).format(message(code: 'default.date.format.notime')) : ''
                                         period = period ? period : ''
                                     %>
 
@@ -641,7 +698,7 @@ String period
                                     <b>${message(code: 'search.object.'+hit.getSourceAsMap().objectClassName)}</b>:
                                     <g:link controller="${hit.getSourceAsMap().objectClassName}" action="show" id="${hit.getSourceAsMap().objectId}">${hit.getSourceAsMap().objectName}</g:link>
                                     <br>
-
+                                    <b>${message(code: 'default.description.label')}</b>: <article class="la-readmore">${hit.getSourceAsMap()?.description}</article>
                                 </td>
                             </g:if>
 
@@ -726,7 +783,7 @@ String period
                                     <b>${message(code: 'search.object.'+hit.getSourceAsMap().objectClassName)}</b>:
                                 <g:link controller="${hit.getSourceAsMap().objectClassName}" action="show" id="${hit.getSourceAsMap().objectId}">${hit.getSourceAsMap().objectName}</g:link>
                                     <br>
-
+                                    <b>${message(code: 'default.description.label')}</b>: <article class="la-readmore">${hit.getSourceAsMap()?.description}</article>
                                 </td>
                             </g:if>
                             <g:if test="${hit.getSourceAsMap().rectype == 'SubscriptionPrivateProperty'}">
@@ -753,7 +810,7 @@ String period
                                     <b>${message(code: 'search.object.'+hit.getSourceAsMap().objectClassName)}</b>:
                                 <g:link controller="${hit.getSourceAsMap().objectClassName}" action="show" id="${hit.getSourceAsMap().objectId}">${hit.getSourceAsMap().objectName}</g:link>
                                     <br>
-
+                                    <b>${message(code: 'default.description.label')}</b>: <article class="la-readmore">${hit.getSourceAsMap()?.description}</article>
                                 </td>
                             </g:if>
                             <g:if test="${hit.getSourceAsMap().rectype == 'LicenseCustomProperty'}">
@@ -780,7 +837,7 @@ String period
                                     <b>${message(code: 'search.object.'+hit.getSourceAsMap().objectClassName)}</b>:
                                 <g:link controller="${hit.getSourceAsMap().objectClassName}" action="show" id="${hit.getSourceAsMap().objectId}">${hit.getSourceAsMap().objectName}</g:link>
                                     <br>
-
+                                    <b>${message(code: 'default.description.label')}</b>: <article class="la-readmore">${hit.getSourceAsMap()?.description}</article>
                                 </td>
                             </g:if>
                             <g:if test="${hit.getSourceAsMap().rectype == 'LicensePrivateProperty'}">
@@ -807,7 +864,7 @@ String period
                                     <b>${message(code: 'search.object.'+hit.getSourceAsMap().objectClassName)}</b>:
                                 <g:link controller="${hit.getSourceAsMap().objectClassName}" action="show" id="${hit.getSourceAsMap().objectId}">${hit.getSourceAsMap().objectName}</g:link>
                                     <br>
-
+                                    <b>${message(code: 'default.description.label')}</b>: <article class="la-readmore">${hit.getSourceAsMap()?.description}</article>
                                 </td>
                             </g:if>
                         </tr>
