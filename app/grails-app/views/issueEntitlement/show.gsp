@@ -318,7 +318,8 @@
 </g:if>
 </div>
 
-
+<%--
+Deprecated as of February 11th, '20
 <div id="magicArea">
 
     <g:set var="yodaService" bean="yodaService" />
@@ -341,5 +342,6 @@ $("[name='coreAssertionEdit']").modal('show');
 $('.xEditableValue').editable();
 }
 </r:script>
+--%>
 </body>
 </html>

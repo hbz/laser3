@@ -438,8 +438,8 @@ class DeletionService {
         List affiliations   = new ArrayList(org.affiliations)
         List docContexts    = new ArrayList(org.documents)
         List platforms      = new ArrayList(org.platforms)
-        List tips           = TitleInstitutionProvider.findAllByInstitution(org)
-        List tipsProviders  = TitleInstitutionProvider.findAllByProvider(org)
+        //List tips           = TitleInstitutionProvider.findAllByInstitution(org)
+        //List tipsProviders  = TitleInstitutionProvider.findAllByProvider(org)
 
         List customProperties       = new ArrayList(org.customProperties)
         List privateProperties      = new ArrayList(org.privateProperties)
@@ -493,8 +493,8 @@ class DeletionService {
         result.info << ['Nutzerzugehörigkeiten', affiliations, FLAG_BLOCKER]
         result.info << ['Dokumente', docContexts, FLAG_BLOCKER]   // delete ? docContext->doc
         result.info << ['Platformen', platforms, FLAG_BLOCKER]
-        result.info << ['TitleInstitutionProvider (inst)', tips, FLAG_BLOCKER]
-        result.info << ['TitleInstitutionProvider (provider)', tipsProviders, FLAG_BLOCKER]
+        //result.info << ['TitleInstitutionProvider (inst)', tips, FLAG_BLOCKER]
+        //result.info << ['TitleInstitutionProvider (provider)', tipsProviders, FLAG_BLOCKER]
         //result.info << ['TitleInstitutionProvider (provider)', tipsProviders, FLAG_SUBSTITUTE]
 
         result.info << ['Allgemeine Merkmale', customProperties]

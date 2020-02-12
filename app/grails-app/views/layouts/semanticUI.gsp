@@ -273,7 +273,7 @@
 
                                 <g:link class="item" controller="title" action="findTitleMatches">${message(code:'menu.datamanager.newTitle')}</g:link>
                                 <g:link class="item" controller="license" action="create">${message(code:'license.template.new')}</g:link>
-                                <g:link class="item" controller="platform" action="create">${message(code:'menu.datamanager.newPlatform')}</g:link>
+                                <%--<g:link class="item" controller="platform" action="create">${message(code:'menu.datamanager.newPlatform')}</g:link>--%>
 
                                 <g:link class="item" controller="subscription" action="compare">${message(code:'menu.datamanager.compareSubscriptions')}</g:link>
                                 <g:link class="item" controller="onixplLicenseCompare" action="index">${message(code:'menu.institutions.comp_onix')}</g:link>

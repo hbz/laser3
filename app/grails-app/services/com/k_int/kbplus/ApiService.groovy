@@ -406,7 +406,7 @@ class ApiService {
     }
 
     /*
-        hic codex data pro organisationibus atque utilisatoribus ex fons datium leget et in repositorium datium scribit. Fons datium omnia data vel partem datium continere potet; in ultimo caso data incrementum est
+        hic codex data pro organisationibus atque utilisatoribus ex fontem datium leget et in repositorium datium scribit. Fons datium omnia data vel partem datium continere potet; in ultimo caso data incrementum est
         We should not think in Latin - this code reads off data from an existing dump and writes them into the database. This may be the entire datasource or a part of it; in latter case, this is an increment
     */
     void setupBasicData(File baseFile) {

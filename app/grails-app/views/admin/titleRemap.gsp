@@ -1,3 +1,4 @@
+<%@ page import="com.k_int.kbplus.TitleInstance" %>
 <!doctype html>
 <html>
   <head>
@@ -16,32 +17,81 @@
 
         <semui:messages data="${flash}" />
 
+        <table class="ui table">
+            <tbody>
+                <tr>
+                    <th colspan="2">Reference list:</th>
+                </tr>
+                <g:each in="${duplicateRows.entrySet()}" var="duplicate">
+                    <tr>
+                        <td>
+                            ${duplicate.getKey()}
+                        </td>
+                        <td>
+                            <ul>
+                                <g:each in="${duplicate.getValue()}" var="title">
+                                    <li><g:link controller="title" action="show" id="${title.id}">${title.globalUID}</g:link> (${title.tipps.size()} TIPPs)</li>
+                                </g:each>
+                            </ul>
+                        </td>
+                    </tr>
+                </g:each>
+            </tbody>
+        </table>
         <semui:form>
             <g:form action="executeTiCleanup" method="post" class="ui form" data-confirm-id="clearUp_form">
                 <table class="ui table">
                     <tbody>
                         <tr>
-                            <th>Duplicate titles without TIPPs</th>
+                            <th>Duplicate titles with UUID entirely missing in GOKb</th>
                         </tr>
-                        <g:each in="${titlesWithoutTIPP}" var="duplicate">
+                        <g:each in="${missingTitles}" var="missing">
                             <tr>
-                                <td>${duplicate}</td>
+                                <td>${missing}</td>
                             </tr>
                         </g:each>
                         <tr>
-                            <th>Duplicate titles with TIPPs</th>
+                            <th>Duplicate titles without TIPPs; they may be subject of merge targets</th>
                         </tr>
-                        <g:each in="${titlesWithTIPP}" var="duplicate">
+                        <g:each in="${titlesWithoutTIPPs}" var="withoutTIPP">
                             <tr>
-                                <td>${duplicate}</td>
+                                <td><g:link controller="title" action="show" id="${TitleInstance.findByGlobalUID(withoutTIPP).id}">${withoutTIPP}</g:link></td>
                             </tr>
                         </g:each>
                         <tr>
-                            <th>Mismatched titles</th>
+                            <th>Duplicate titles where UUIDs can simply be remapped</th>
                         </tr>
-                        <g:each in="${mismatchedTites}" var="mismatch">
+                        <g:each in="${remappingTitles}" var="remapping">
                             <tr>
-                                <td>${mismatch}</td>
+                                <td>
+                                    ${remapping}
+                                </td>
+                            </tr>
+                        </g:each>
+                        <tr>
+                            <th>Duplicate titles that should be merged after name / UUID mismatch</th>
+                        </tr>
+                        <g:each in="${mergingTitles}" var="merging">
+                            <tr>
+                                <td>
+                                    ${merging}
+                                </td>
+                            </tr>
+                        </g:each>
+                        <tr>
+                            <th>Duplicate titles whose TIPPs should be put together</th>
+                        </tr>
+                        <g:each in="${tippMergers}" var="merging">
+                            <tr>
+                                <td>
+                                    <p>From: <g:link controller="title" action="show" id="${TitleInstance.findByGlobalUID(merging.from).id}">${merging.from}</g:link></p>
+                                    <p>To: ${merging.to}</p>
+                                    <p>Other concerned:
+                                        <g:each in="${merging.others}" var="other">
+                                            <g:link controller="title" action="show" id="${TitleInstance.findByGlobalUID(other).id}">${other}</g:link>
+                                        </g:each>
+                                    </p>
+                                </td>
                             </tr>
                         </g:each>
                     </tbody>

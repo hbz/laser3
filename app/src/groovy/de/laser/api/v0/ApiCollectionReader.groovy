@@ -365,6 +365,7 @@ class ApiCollectionReader {
     /**
      * Access rights due wrapping object
      */
+    /*
     static Collection<Object> getPlatformTippCollection(Collection<PlatformTIPP> list) {
         def result = []
 
@@ -378,6 +379,7 @@ class ApiCollectionReader {
 
         return ApiToolkit.cleanUp(result, true, true)
     }
+    */
 
     static Collection<Object> getPrivatePropertyCollection(Collection list, Org context) {
         def result = []
@@ -539,7 +541,7 @@ class ApiCollectionReader {
         result.payment          = tipp.payment?.value
 
         // References
-        result.additionalPlatforms  = getPlatformTippCollection(tipp.additionalPlatforms) // com.k_int.kbplus.PlatformTIPP
+        //result.additionalPlatforms  = getPlatformTippCollection(tipp.additionalPlatforms) // com.k_int.kbplus.PlatformTIPP
         result.identifiers          = getIdentifierCollection(tipp.ids)       // com.k_int.kbplus.Identifier
         result.platform             = ApiUnsecuredMapReader.getPlatformStubMap(tipp.platform) // com.k_int.kbplus.Platform
         result.title                = ApiUnsecuredMapReader.getTitleStubMap(tipp.title)       // com.k_int.kbplus.TitleInstance

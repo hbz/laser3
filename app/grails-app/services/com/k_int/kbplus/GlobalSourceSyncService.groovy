@@ -630,7 +630,11 @@ class GlobalSourceSyncService extends AbstractLockableService {
             GPathResult providerRecord = providerOAI.record.metadata.gokb.org
             log.info("provider record loaded, converting XML record and reconciling title record for UUID ${providerUUID} ...")
             Org provider = Org.findByGokbId(providerUUID)
-            if(!provider) {
+            if(provider) {
+                provider.name = providerRecord.name
+                provider.status = RefdataValue.getByValueAndCategory(providerRecord.status,RDConstants.ORG_STATUS)
+            }
+            else {
                 provider = new Org(
                         name: providerRecord.name,
                         sector: RDStore.O_SECTOR_PUBLISHER,
@@ -638,19 +642,20 @@ class GlobalSourceSyncService extends AbstractLockableService {
                         status: RefdataValue.getByValueAndCategory(providerRecord.status,RDConstants.ORG_STATUS),
                         gokbId: providerUUID
                 )
-                if(provider.save()) {
-                    providerRecord.providedPlatforms.platform.each { plat ->
-                        //ex setOrUpdateProviderPlattform()
-                        log.info("checking provider with uuid ${providerUUID}")
-                        Platform platform = Platform.findByGokbId(plat.'@uuid'.text())
-                        if(platform.org != provider) {
-                            platform.org = provider
-                            platform.save()
-                        }
+            }
+            if(provider.save()) {
+                providerRecord.providedPlatforms.platform.each { plat ->
+                    //ex setOrUpdateProviderPlattform()
+                    log.info("checking provider with uuid ${providerUUID}")
+                    createOrUpdatePlatform([gokbId: plat.'@uuid'.text(), name: plat.name.text(), primaryUrl: plat.primaryUrl.text()])
+                    Platform platform = Platform.findByGokbId(plat.'@uuid'.text())
+                    if(platform.org != provider) {
+                        platform.org = provider
+                        platform.save()
                     }
                 }
-                else throw new SyncException(provider.errors)
             }
+            else throw new SyncException(provider.errors)
         }
         else throw new SyncException("Provider loading failed for UUID ${providerUUID}!")
     }

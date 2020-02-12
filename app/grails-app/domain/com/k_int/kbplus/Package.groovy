@@ -142,7 +142,7 @@ static hasMany = [  tipps:     TitleInstancePackagePlatform,
                   isPublic(nullable:false, blank:false)
               packageScope(nullable:true, blank:false)
                    forumId(nullable:true, blank:false)
-                    gokbId(nullable:true, blank:false)
+                    gokbId(nullable:false, blank:false, unique: true)
            //originEditUrl(nullable:true, blank:false)
                  vendorURL(nullable:true, blank:false)
     cancellationAllowances(nullable:true, blank:false)

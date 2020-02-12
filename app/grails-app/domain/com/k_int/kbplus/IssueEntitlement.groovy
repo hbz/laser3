@@ -171,7 +171,9 @@ class IssueEntitlement extends AbstractBaseDomain implements Comparable {
     result
   }
 
+  /*
   @Transient
+  @Deprecated
   TitleInstitutionProvider getTIP(){
     Org inst = subscription?.getSubscriber()
     def title = tipp?.title
@@ -224,5 +226,5 @@ class IssueEntitlement extends AbstractBaseDomain implements Comparable {
     result
 
   }
-
+  */
 }

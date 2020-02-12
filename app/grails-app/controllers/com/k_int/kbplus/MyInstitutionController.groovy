@@ -96,6 +96,7 @@ class MyInstitutionController extends AbstractDebugController {
         result
     }
 
+    /*
     @DebugAnnotation(test='hasAffiliation("INST_USER")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
     def tipview() {
@@ -155,6 +156,7 @@ class MyInstitutionController extends AbstractDebugController {
         result.editable = accessService.checkMinUserOrgRole(result.user, current_inst, 'INST_EDITOR')
         result
     }
+     */
 
     @Deprecated
     @DebugAnnotation(test='hasAffiliation("INST_ADM")')
@@ -2938,7 +2940,7 @@ AND EXISTS (
         redirect action: 'surveyResult', id: result.surveyInfo.id
     }
 
-
+    /*
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
     def tip() {
@@ -2974,6 +2976,7 @@ AND EXISTS (
       }
       result
     }
+     */
 
     @DebugAnnotation(test = 'hasAffiliation("INST_ADM")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_ADM") })

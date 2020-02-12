@@ -136,7 +136,7 @@ class TitleInstancePackagePlatform extends AbstractBaseDomain /*implements Audit
 
     static constraints = {
         globalUID(nullable:true, blank:false, unique:true, maxSize:255)
-        gokbId (nullable:true, blank:false)
+        gokbId (nullable:false, blank:false, unique: true)
         //originEditUrl(nullable:true, blank:false)
         status(nullable:true, blank:false)
         delayedOA(nullable:true, blank:false)

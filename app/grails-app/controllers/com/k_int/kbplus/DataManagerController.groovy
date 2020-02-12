@@ -11,6 +11,7 @@ import de.laser.helper.RDStore
 import de.laser.helper.SessionCacheWrapper
 import grails.plugin.springsecurity.SpringSecurityUtils
 import grails.plugin.springsecurity.annotation.Secured
+import groovy.util.slurpersupport.GPathResult
 import org.codehaus.groovy.grails.plugins.orm.auditable.AuditLogEvent
 import org.codehaus.groovy.grails.web.mapping.LinkGenerator
 import org.springframework.context.MessageSource
@@ -383,7 +384,38 @@ class DataManagerController extends AbstractDebugController {
     Map<String,Object> listPlatformDuplicates() {
         log.debug("listPlatformDuplicates ...")
         Map<String, Object> result = [:]
-
+        Map<String, GPathResult> oaiRecords = [:]
+        result.platformsWithoutTIPPs = Platform.findAllByTippsIsEmpty().collect { plat -> plat.globalUID }
+        result.platformsWithoutGOKb = Platform.findAllByGokbIdIsNull().collect { plat -> plat.globalUID }
+        result.incorrectPlatformDups = []
+        GlobalRecordSource grs = GlobalRecordSource.findAll().get(0)
+        List duplicateKeys = Platform.executeQuery('select plat.gokbId,count(plat.gokbId) from Platform plat where plat.gokbId is not null group by plat.gokbId having count(plat.gokbId) > 1')
+        duplicateKeys.each { row ->
+            //get platform, get eventual TIPPs of platform, determine from package which platform key is correct, if it is correct: ignore, otherwise, add to result
+            List<Platform> platformDuplicates = Platform.findAllByGokbId(row[0])
+            platformDuplicates.each { Platform platform ->
+                //it ran too often into null pointer exceptions ... we set a tighter check!
+                if(platform.tipps.size() > 0) {
+                    TitleInstancePackagePlatform referenceTIPP = platform.tipps[0]
+                    GPathResult packageRecord = oaiRecords.get(referenceTIPP.pkg.gokbId)
+                    if(!packageRecord) {
+                        packageRecord = globalSourceSyncService.fetchRecord(grs.uri,'titles',[metadataPrefix:grs.fullPrefix,identifier:referenceTIPP.pkg.gokbId])
+                        oaiRecords.put(referenceTIPP.pkg.gokbId,packageRecord)
+                    }
+                    if(packageRecord.record.metadata.gokb.package) {
+                        GPathResult referenceGOKbTIPP = packageRecord.record.metadata.gokb.package.TIPPs.TIPP.find { tipp ->
+                            tipp.@uuid.text() == referenceTIPP.gokbId
+                        }
+                        if(referenceGOKbTIPP) {
+                            String guessedCorrectPlatformKey = referenceGOKbTIPP.platform.@uuid.text()
+                            if(platform.gokbId != guessedCorrectPlatformKey) {
+                                result.incorrectPlatformDups << platform.globalUID
+                            }
+                        }
+                    }
+                }
+            }
+        }
         log.debug("listPlatformDuplicates ... returning")
         result
     }

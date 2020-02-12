@@ -410,20 +410,20 @@ where i10n_reference_class like 'com.k_int.properties.PropertyDefinition%' and i
 -- ERMS-1901 (ERMS-1948): cleanup - set null values to generic null value, set gokbId as unique and not null, delete erroneous coverage data from ebooks and databases, delete column package_type_rv_fk
 
 delete from issue_entitlement_coverage where ic_ie_fk in (select ie_id from issue_entitlement join title_instance_package_platform on ie_tipp_fk = tipp_id join title_instance ti on tipp_ti_fk = ti_id where class not like '%JournalInstance%');
-ALTER TABLE title_instance ALTER COLUMN ti_gokb_id TYPE character varying(512);
+ALTER TABLE title_instance ALTER COLUMN ti_gokb_id TYPE character varying(511);
 alter table title_instance alter column ti_gokb_id set not null;
 alter table title_instance add constraint unique_ti_gokb_id unique (ti_gokb_id);
 update title_instance_package_platform set tipp_gokb_id = 'generic.null.value' where tipp_gokb_id is null;
-alter table title_instance_package_platform alter column tipp_gokb_id type character varying(512);
+alter table title_instance_package_platform alter column tipp_gokb_id type character varying(511);
 alter table title_instance_package_platform alter column tipp_gokb_id set not null;
 alter table title_instance_package_platform ADD CONSTRAINT unique_tipp_gokb_id UNIQUE (tipp_gokb_id);
 update package set pkg_gokb_id = 'generic.null.value' where pkg_gokb_id is null;
-alter table package alter column pkg_gokb_id type character varying(512);
+alter table package alter column pkg_gokb_id type character varying(511);
 alter table package alter column pkg_gokb_id set not null;
 alter table package ADD CONSTRAINT unique_pkg_gokb_id UNIQUE (pkg_gokb_id);
 ALTER TABLE package DROP COLUMN pkg_type_rv_fk;
 update platform set plat_gokb_id = 'generic.null.value' where plat_gokb_id is null;
-alter table platform alter column plat_gokb_id type character varying(512);
+alter table platform alter column plat_gokb_id type character varying(511);
 alter table platform alter column plat_gokb_id set not null;
 alter table platform ADD CONSTRAINT unique_plat_gokb_id UNIQUE (plat_gokb_id);
 
