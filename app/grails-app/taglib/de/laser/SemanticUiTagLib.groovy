@@ -698,14 +698,18 @@ class SemanticUiTagLib {
     //  - to call a link
     //        <g:link class="..... js-open-confirm-modal" data-confirm-term-what="diese Kontaktdresse" ...... >
     def confirmationModal = { attrs, body ->
-
         String msgDelete = "Endgültig löschen"
         String msgCancel = "Abbrechen"
+
 
         out << '<div class="ui tiny modal">'
         out << '<div class="header">'
         out << '<span class="confirmation-term" id="js-confirmation-term"></span>'
         out << '</div>'
+
+        out << '<div class="content confirmation-content" id="js-confirmation-content-term">'
+        out << '</div>'
+
         out << '<div class="actions">'
         out << '<div class="ui deny button">' + msgCancel + '</div>'
         out << '<button id="js-confirmation-button" class="ui positive right labeled icon button">' + msgDelete
