@@ -1280,11 +1280,22 @@ class SubscriptionController extends AbstractDebugController {
                 }
             }
             if (filteredSubscr) {
-                if (params.subRunTimeMultiYear) {
-                    if(sub?.isMultiYear) {
+                if (params.subRunTimeMultiYear || params.subRunTime) {
+
+                    if (params.subRunTimeMultiYear && !params.subRunTime) {
+                        if(sub?.isMultiYear) {
+                            result.filteredSubChilds << [sub: sub, orgs: filteredSubscr]
+                        }
+                    }else if (!params.subRunTimeMultiYear && params.subRunTime){
+                        if(!sub?.isMultiYear) {
+                            result.filteredSubChilds << [sub: sub, orgs: filteredSubscr]
+                        }
+                    }
+                    else {
                         result.filteredSubChilds << [sub: sub, orgs: filteredSubscr]
                     }
-                }else {
+                }
+                else {
                     result.filteredSubChilds << [sub: sub, orgs: filteredSubscr]
                 }
             }

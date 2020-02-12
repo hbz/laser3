@@ -498,7 +498,9 @@
                     </g:link>
                 </g:if>
                 <g:elseif test="${consortiaMemberIds.contains(org.id)}">
-                    <g:link class="ui icon negative button la-popup-tooltip la-delay"
+                    <g:link class="ui icon negative button la-popup-tooltip la-delay js-open-confirm-modal"
+                            data-confirm-tokenMsg="${message(code: "confirm.dialog.unlink.consortiaToggle", args: [org.name])}"
+                            data-confirm-term-how="unlink"
                             data-content="${message(code: 'org.consortiaToggle.remove.label')}"
                             controller="organisation" action="toggleCombo"
                             params="${params + [direction: 'remove', fromOrg: org.id]}">

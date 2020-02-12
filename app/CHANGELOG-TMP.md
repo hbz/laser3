@@ -2,6 +2,10 @@
 
 **Ticket    Date    Branch      Author  Feature/Bug     Description/Keywords**
 
+2085    10.02.2020  hbz-dev     Moe     Feature     Sicherheitsabfrage Ent-/Verknüpfen von Konsorten
+
+2005    10.02.2020  hbz-dev     Moe     Feature     "Mehrjahreslaufzeit" auch für lokale Lizenzen?
+
 2162    10.02.2020  hbz-dev     David   Feature     Legacy Konstrukt "Transforms" entfernen
 
 2160    10.02.2020  hbz-dev     David   Feature     Legacy "Reminder" entfernen
