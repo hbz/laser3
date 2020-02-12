@@ -60,31 +60,31 @@
     <div class="html ui top attached segment example">
 
         <div class="ui doubling five column grid">
-            <div class="column"><i class="hand pointer outline slash icon"></i>hand pointer outline slash</div>
+            <div class="column"><i aria-hidden="true" class="hand pointer outline slash icon"></i>hand pointer outline slash</div>
 
-            <div class="column"><i class="pencil alternate slash icon"></i>pencil alternate slash</div>
+            <div class="column"><i aria-hidden="true" class="pencil alternate slash icon"></i>pencil alternate slash</div>
 
-            <div class="column"><i class="la-thumbtack slash icon"></i>la-thumbtack slash</div>
+            <div class="column"><i aria-hidden="true" class="la-thumbtack slash icon"></i>la-thumbtack slash</div>
 
-            <div class="column"><i class="plus square slash icon"></i>plus square slash</div>
+            <div class="column"><i aria-hidden="true" class="plus square slash icon"></i>plus square slash</div>
 
-            <div class="column"><i class="la-chain broken icon"></i>la-chain broken</div>
+            <div class="column"><i aria-hidden="true" class="la-chain broken icon"></i>la-chain broken</div>
 
-            <div class="column"><i class="la-chain icon"></i>la-chain</div>
+            <div class="column"><i aria-hidden="true" class="la-chain icon"></i>la-chain</div>
 
-            <div class="column"><i class="la-share icon"></i>la-share</div>
+            <div class="column"><i aria-hidden="true" class="la-share icon"></i>la-share</div>
 
-            <div class="column"><i class="la-share slash icon"></i>la-share slash</div>
+            <div class="column"><i aria-hidden="true" class="la-share slash icon"></i>la-share slash</div>
 
-            <div class="column"><i class="la-copySend icon"></i>la-copySend</div>
+            <div class="column"><i aria-hidden="true" class="la-copySend icon"></i>la-copySend</div>
 
-            <div class="column"><i class="la-notebook icon"></i>la-notebook</div>
+            <div class="column"><i aria-hidden="true" class="la-notebook icon"></i>la-notebook</div>
 
-            <div class="column"><i class="la-books icon"></i>la-books</div>
+            <div class="column"><i aria-hidden="true" class="la-books icon"></i>la-books</div>
 
-            <div class="column"><i class="la-gokb icon"></i>la-gokb</div>
+            <div class="column"><i aria-hidden="true" class="la-gokb icon"></i>la-gokb</div>
 
-            <div class="column"><i class="la-laser icon"></i>la-laser</div>
+            <div class="column"><i aria-hidden="true" class="la-laser icon"></i>la-laser</div>
 
         </div>
 
@@ -104,48 +104,48 @@
             <div class="field">
                 <label for="filterPropDef">
                     Merkmal
-                    <i class="question circle icon la-popup"></i>
+                    <i aria-hidden="true" class="question circle icon la-popup"></i>
                     <div class="ui  popup ">
-                        <i class="shield alternate icon"></i> = Mein Merkmal
+                        <i aria-hidden="true" class="shield alternate icon"></i> = Mein Merkmal
                     </div>
                 </label>
                 <div class="ui search selection dropdown ">
                     <input type="hidden" name="filterPropDef">
-                    <i class="dropdown icon"></i>
+                    <i aria-hidden="true" class="dropdown icon"></i>
                     <input class="search" id="filterPropDef">
                     <div class="default text">Bitte auswählen</div>
                     <div class="menu">
                         <div class="item selected" data-value="com.k_int.properties.PropertyDefinition:418">Abbestellgrund</div>
                         <div class="item" data-value="com.k_int.properties.PropertyDefinition:414">Abbestellquote</div>
-                        <div class="item" data-value="com.k_int.properties.PropertyDefinition:269">AGB <i class="shield alternate icon"></i></div>
-                        <div class="item" data-value="com.k_int.properties.PropertyDefinition:384">Alternativname <i class="shield alternate icon"></i></div>
+                        <div class="item" data-value="com.k_int.properties.PropertyDefinition:269">AGB <i aria-hidden="true" class="shield alternate icon"></i></div>
+                        <div class="item" data-value="com.k_int.properties.PropertyDefinition:384">Alternativname <i aria-hidden="true" class="shield alternate icon"></i></div>
                         <div class="item" data-value="com.k_int.properties.PropertyDefinition:448" data-rdc="com.k_int.kbplus.RefdataCategory:1">Archivzugriff</div>
-                        <div class="item" data-value="com.k_int.properties.PropertyDefinition:225" data-rdc="com.k_int.kbplus.RefdataCategory:1">Bei hbz Aufnahme der Metadaten nachfragen <i class="shield alternate icon"></i></div>
+                        <div class="item" data-value="com.k_int.properties.PropertyDefinition:225" data-rdc="com.k_int.kbplus.RefdataCategory:1">Bei hbz Aufnahme der Metadaten nachfragen <i aria-hidden="true" class="shield alternate icon"></i></div>
                         <div class="item" data-value="com.k_int.properties.PropertyDefinition:415">Bestellnummer im Erwerbungssystem</div>
                         <div class="item" data-value="com.k_int.properties.PropertyDefinition:393" data-rdc="com.k_int.kbplus.RefdataCategory:1">Bundesweit offen</div>
                         <div class="item" data-value="com.k_int.properties.PropertyDefinition:447" data-rdc="com.k_int.kbplus.RefdataCategory:1">DBIS-Eintrag</div>
                         <div class="item" data-value="com.k_int.properties.PropertyDefinition:566">DBIS-Link</div>
-                        <div class="item" data-value="com.k_int.properties.PropertyDefinition:256">DBIS-Nummer <i class="shield alternate icon"></i></div>
+                        <div class="item" data-value="com.k_int.properties.PropertyDefinition:256">DBIS-Nummer <i aria-hidden="true" class="shield alternate icon"></i></div>
                         <div class="item" data-value="com.k_int.properties.PropertyDefinition:424">Eingeschränkter Benutzerkreis</div>
                         <div class="item" data-value="com.k_int.properties.PropertyDefinition:387" data-rdc="com.k_int.kbplus.RefdataCategory:1">EZB Gelbschaltung</div>
-                        <div class="item" data-value="com.k_int.properties.PropertyDefinition:217" data-rdc="com.k_int.kbplus.RefdataCategory:1">EZB-Gelbschaltungen <i class="shield alternate icon"></i></div>
+                        <div class="item" data-value="com.k_int.properties.PropertyDefinition:217" data-rdc="com.k_int.kbplus.RefdataCategory:1">EZB-Gelbschaltungen <i aria-hidden="true" class="shield alternate icon"></i></div>
                         <div class="item" data-value="com.k_int.properties.PropertyDefinition:423">Fachstatistik / Klassifikation</div>
                         <div class="item" data-value="com.k_int.properties.PropertyDefinition:450">GASCO-Anzeigename</div>
                         <div class="item" data-value="com.k_int.properties.PropertyDefinition:121" data-rdc="com.k_int.kbplus.RefdataCategory:1">GASCO-Eintrag</div>
                         <div class="item" data-value="com.k_int.properties.PropertyDefinition:461">GASCO-Informations-Link</div>
                         <div class="item" data-value="com.k_int.properties.PropertyDefinition:451">GASCO-Verhandlername</div>
                         <div class="item" data-value="com.k_int.properties.PropertyDefinition:419">Hosting-Gebühr</div>
-                        <div class="item" data-value="com.k_int.properties.PropertyDefinition:214">Institut <i class="shield alternate icon"></i></div>
+                        <div class="item" data-value="com.k_int.properties.PropertyDefinition:214">Institut <i aria-hidden="true" class="shield alternate icon"></i></div>
                         <div class="item" data-value="com.k_int.properties.PropertyDefinition:406" data-rdc="com.k_int.kbplus.RefdataCategory:1">KBART</div>
-                        <div class="item" data-value="com.k_int.properties.PropertyDefinition:248">Kostensplitting <i class="shield alternate icon"></i></div>
-                        <div class="item" data-value="com.k_int.properties.PropertyDefinition:293">Kostensplitting 2 <i class="shield alternate icon"></i></div>
+                        <div class="item" data-value="com.k_int.properties.PropertyDefinition:248">Kostensplitting <i aria-hidden="true" class="shield alternate icon"></i></div>
+                        <div class="item" data-value="com.k_int.properties.PropertyDefinition:293">Kostensplitting 2 <i aria-hidden="true" class="shield alternate icon"></i></div>
                         <div class="item" data-value="com.k_int.properties.PropertyDefinition:445" data-rdc="com.k_int.kbplus.RefdataCategory:1">Kündigungsfrist</div>
                         <div class="item" data-value="com.k_int.properties.PropertyDefinition:409" data-rdc="com.k_int.kbplus.RefdataCategory:1">Mehrjahreslaufzeit</div>
                         <div class="item" data-value="com.k_int.properties.PropertyDefinition:395" data-rdc="com.k_int.kbplus.RefdataCategory:1">Mengenrabatt Stichtag</div>
                         <div class="item" data-value="com.k_int.properties.PropertyDefinition:389">Metadaten Quelle</div>
                         <div class="item" data-value="com.k_int.properties.PropertyDefinition:388" data-rdc="com.k_int.kbplus.RefdataCategory:1">Metadatenlieferung</div>
                         <div class="item" data-value="com.k_int.properties.PropertyDefinition:398" data-rdc="com.k_int.kbplus.RefdataCategory:1">Neueinsteigerrabatt</div>
-                        <div class="item" data-value="com.k_int.properties.PropertyDefinition:234" data-rdc="com.k_int.kbplus.RefdataCategory:1">Open Access <i class="shield alternate icon"></i></div>
+                        <div class="item" data-value="com.k_int.properties.PropertyDefinition:234" data-rdc="com.k_int.kbplus.RefdataCategory:1">Open Access <i aria-hidden="true" class="shield alternate icon"></i></div>
                         <div class="item" data-value="com.k_int.properties.PropertyDefinition:421">PDA/EBS-Programm</div>
                         <div class="item" data-value="com.k_int.properties.PropertyDefinition:420">Pick&amp;Choose-Paket</div>
                         <div class="item" data-value="com.k_int.properties.PropertyDefinition:413">Preis abhängig von</div>
@@ -172,12 +172,12 @@
                         <div class="item" data-value="com.k_int.properties.PropertyDefinition:417">Subskriptionsnummer des Verlags</div>
                         <div class="item" data-value="com.k_int.properties.PropertyDefinition:404" data-rdc="com.k_int.kbplus.RefdataCategory:1">Teilzahlung</div>
                         <div class="item" data-value="com.k_int.properties.PropertyDefinition:377" data-rdc="com.k_int.kbplus.RefdataCategory:2">Testeigenschaft zum Übertragen original</div>
-                        <div class="item" data-value="com.k_int.properties.PropertyDefinition:186">Testmerkmal <i class="shield alternate icon"></i></div>
-                        <div class="item" data-value="com.k_int.properties.PropertyDefinition:257" data-rdc="com.k_int.kbplus.RefdataCategory:101">Testmerkmal zum Verschieben von Referenzwerten <i class="shield alternate icon"></i></div>
+                        <div class="item" data-value="com.k_int.properties.PropertyDefinition:186">Testmerkmal <i aria-hidden="true" class="shield alternate icon"></i></div>
+                        <div class="item" data-value="com.k_int.properties.PropertyDefinition:257" data-rdc="com.k_int.kbplus.RefdataCategory:101">Testmerkmal zum Verschieben von Referenzwerten <i aria-hidden="true" class="shield alternate icon"></i></div>
                         <div class="item" data-value="com.k_int.properties.PropertyDefinition:396">Testzeitraum</div>
                         <div class="item" data-value="com.k_int.properties.PropertyDefinition:397" data-rdc="com.k_int.kbplus.RefdataCategory:1">Unterjähriger Einstieg</div>
                         <div class="item" data-value="com.k_int.properties.PropertyDefinition:402">Zahlungsziel</div>
-                        <div class="item" data-value="com.k_int.properties.PropertyDefinition:235">Zugangskennungen (pro DB) <i class="shield alternate icon"></i></div>
+                        <div class="item" data-value="com.k_int.properties.PropertyDefinition:235">Zugangskennungen (pro DB) <i aria-hidden="true" class="shield alternate icon"></i></div>
                         <div class="item" data-value="com.k_int.properties.PropertyDefinition:416">Zugangskennungen für Nutzer (pro Zeitschrift)</div>
                         <div class="item" data-value="com.k_int.properties.PropertyDefinition:412" data-rdc="com.k_int.kbplus.RefdataCategory:1">Zusätzliche Software erforderlich?</div>
                     </div>
@@ -191,8 +191,8 @@
 
         <div class="annotation transition visible" style="display: none;">
             <div class="ui instructive bottom attached segment">
-                <pre>
-&lt;div class=&quot;field&quot;&gt;com.k_int.properties.PropertyDefinition:269
+                <pre aria-hidden="true">
+&lt;div class=&quot;field&quot;&gt;
     &lt;label <strong>for=&quot;filterPropDef&quot;</strong>&gt;
         Merkmal
         &lt;i class=&quot;question circle icon la-popup&quot;&gt;&lt;/i&gt;
@@ -237,7 +237,7 @@
 
         <div class="annotation transition visible" style="display: none;">
             <div class="ui instructive bottom attached segment">
-                <pre>
+                <pre aria-hidden="true">
 &lt;thead&gt;
 &lt;tr&gt;
     &lt;th class="<strong>la-js-dont-hide-this-card</strong>" &gt;${message(code:'property.table.property')}&lt;/th&gt;
@@ -291,7 +291,7 @@
     </div>
     <dd class="la-js-editmode-container">
         <a  role="button" class="ui icon mini button la-audit-button la-popup-tooltip la-delay" href='https://www.spiegel.de' data-content="4 5 6">
-            <i class="icon thumbtack la-js-editmode-icon"></i>
+            <i  class="icon thumbtack la-js-editmode-icon"></i>
         </a>
     </dd><br>
 
@@ -309,7 +309,7 @@
     </div>
 
     <a  role="button" class="ui icon mini button la-audit-button la-popup-tooltip la-delay" href='https://www.spiegel.de' data-content="10 11 12">
-        <i class="icon thumbtack la-js-editmode-icon"></i>
+        <i  class="icon thumbtack la-js-editmode-icon"></i>
     </a><br><br>
     <h4 class="ui header">Funktions-Button, der ausgeschaltet werden kann, Icon verschwindet</h4>
     <div class="html ui top attached segment example">
@@ -325,14 +325,14 @@
     </div>
 
     <a  role="button" class="ui icon mini button la-audit-button la-popup-tooltip la-delay la-js-dont-hide-button" href='https://www.spiegel.de' data-content="13 14 15">
-        <i class="icon thumbtack"></i>
+        <i  class="icon thumbtack"></i>
     </a><br><br>
 
     <h2 class="ui dividing header">Modale<a class="anchor" id="icons"></a></h2>
     <h4 class="ui header">Mehrere Modale auf einer Seite-Values in Formularfeldern werden mit Data-Attributen übertrage</h4>
     <div class="html ui top attached segment example">
         <div class="ui top attached label">Javascript in der View definiert die Data-Attribute</div>
-        <pre>
+        <pre aria-hidden="true">
 Javascript:
 
 dcbStore.modal.show.customerTypeModal = function(trigger) {
@@ -344,7 +344,7 @@ dcbStore.modal.show.customerTypeModal = function(trigger) {
     </div>
             <div class="html ui top attached segment example">
                 <div class="ui top attached label"></div>
-                <pre>
+                <pre aria-hidden="true">
 
 var customerType = $(trigger).attr('data-customerType')
 if (customerType) {
@@ -368,7 +368,7 @@ if (customerType) {
                 data-confirm-term-how="delete"
                 class="ui icon negative button js-open-confirm-modal la-popup-tooltip la-delay"
                 role="button">
-            <i class="trash alternate icon"></i>
+            <i aria-hidden="true" class="trash alternate icon"></i>
         </g:link>
     </div>
 
@@ -385,7 +385,7 @@ if (customerType) {
                 data-confirm-term-how="delete"
                 class="ui icon negative button js-open-confirm-modal la-popup-tooltip la-delay"
                 role="button">
-            <i class="trash alternate icon"></i>
+            <i aria-hidden="true" class="trash alternate icon"></i>
         </g:link>
     </div>
 
@@ -406,7 +406,7 @@ if (customerType) {
                           data-update=""
                           role="button"
         >
-            <i class="trash alternate icon"></i>
+            <i aria-hidden="true" class="trash alternate icon"></i>
         </laser:remoteLink>
     </div>
 
@@ -418,18 +418,18 @@ if (customerType) {
     <div class="html ui top attached segment example">
         <div class="ui top attached label">Require-Tag für Chartist eingebauen</div>
 
-        <pre>
+        <pre aria-hidden="true">
             &ltr:require module="chartist" /&gt;
         </pre>
 
     </div>
     <div class="html ui top attached segment example">
         <div class="ui top attached label">Chartis-Objekt mit Javascript aufrufen innerhalb r:script</div>
-        <pre> &ltr:script /&gt;
+        <pre aria-hidden="true"> &ltr:script /&gt;
         </pre>
-        <pre>    new Chartist.Line('.ct-chart', data);
+        <pre aria-hidden="true">    new Chartist.Line('.ct-chart', data);
         </pre>
-        <pre>&lt/r:script&gt;
+        <pre aria-hidden="true">&lt/r:script&gt;
         </pre>
     </div>
     <div class="html ui top attached segment example">
@@ -438,8 +438,41 @@ if (customerType) {
     </div>
 </section>
 
+<h1>Offene Fragen in Bezug auf WCAG</h1>
+<h2>Icons</h2>
+<h3>Dekorative Icon mit einer Dopplung der Semantik durch Text, der daneben steht oder ohne Linkfunktion</h3>
 
-
+<div class="ui icon info message">
+    <i aria-hidden="true" class="exclamation triangle icon"></i>
+    <div class="content">
+        <div class="header">
+            Achtung
+        </div>
+        <p>Wenn Sie ein neues Element nicht finden, warten Sie etwa <strong>10 Minuten</strong>, bis sich der Index aktualisiert hat.</p>
+    </div>
+</div>
+<h3>Icon ohne Linkfunktion</h3>
+<div class="ui icon info message">
+    <i aria-hidden="true" class="close icon"></i>
+    <div class="content">
+        <div class="header">
+            Achtung
+        </div>
+        <p>Wenn Sie ein neues Element nicht finden, warten Sie etwa <strong>10 Minuten</strong>, bis sich der Index aktualisiert hat.</p>
+    </div>
+</div>
+<h3>Icons in einem Button, der eine Bezeichnung hat</h3>
+<button class="ui   button la-inline-labeled la-js-filterButton la-clearfix blue"> Filter <i
+        aria-hidden="true" class="filter icon"></i> <span
+        class="ui circular label la-js-filter-total hidden">0</span>
+</button>
+<h3>Icons in einem Link ohne zusätzlichen Text</h3>
+<g:link controller="yoda" action="frontend" params="" class="ui icon positive button">
+    <i  class="checkmark icon"></i>
+</g:link>
+<g:link controller="yoda" action="frontend" params="" class="ui icon negative button">
+    <i aria-hidden="true" class="times icon"></i>
+</g:link>
 <r:script>
 
     var data = {
