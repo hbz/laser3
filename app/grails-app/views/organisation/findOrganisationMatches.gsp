@@ -99,7 +99,13 @@
 												</g:link>
 											</g:if>
 											<g:elseif test="${members.get(organisationInstance.id).contains(institution.id)}">
-												<g:link class="ui icon negative button la-popup-tooltip la-delay" data-content="${message(code:'org.consortiaToggle.remove.label')}" controller="organisation" action="toggleCombo" params="${params+[direction:'remove', fromOrg:organisationInstance.id]}">
+												<g:link class="ui icon negative button la-popup-tooltip la-delay js-open-confirm-modal"
+														data-confirm-tokenMsg="${message(code: "confirm.dialog.unlink.consortiaToggle", args: [organisationInstance.name])}"
+														data-confirm-term-how="unlink"
+														data-content="${message(code:'org.consortiaToggle.remove.label')}"
+														controller="organisation"
+														action="toggleCombo"
+														params="${params+[direction:'remove', fromOrg:organisationInstance.id]}">
 													<i class="minus icon"></i>
 												</g:link>
 											</g:elseif>

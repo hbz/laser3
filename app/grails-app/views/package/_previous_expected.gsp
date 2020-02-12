@@ -8,7 +8,7 @@
   <body>
 
       <semui:breadcrumbs>
-          <semui:crumb controller="package" action="index" text="${message(code:'package.show.all', default:'All Packages')}" />
+          <semui:crumb controller="package" action="index" text="${message(code:'package.show.all')}" />
           <semui:crumb text="${packageInstance.name}" id="${packageInstance.id}" class="active"/>
       </semui:breadcrumbs>
 

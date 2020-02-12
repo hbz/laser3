@@ -75,7 +75,7 @@
                     <g:if test="${showAddContacts}">
                         <input class="ui mini icon button" type="button" data-semui="modal"
                                data-href="#contactFormModal${personRole?.prs?.id}"
-                               value="${message(code: 'default.add.label', args: [message(code: 'person.contacts.label', default: 'Contacts')])}">
+                               value="${message(code: 'default.add.label', args: [message(code: 'person.contacts.label')])}">
                         <g:render template="/contact/formModal" model="['prsId': personRole?.prs?.id, modalId: 'contactFormModal'+personRole?.prs?.id]"/>
                     </g:if>
 

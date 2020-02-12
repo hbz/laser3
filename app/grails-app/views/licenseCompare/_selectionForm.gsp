@@ -18,7 +18,7 @@
             <div class="field">
                 <g:link controller="licenseCompare" action="index" class="ui button">${message(code:'default.button.comparereset.label')}</g:link>
                 &nbsp;
-                <input id="submitButton" disabled='true' type="submit" value="${message(code:'default.button.compare.label', default:'Compare')}"  name="Compare" class="ui button" />
+                <input id="submitButton" disabled='true' type="submit" value="${message(code:'default.button.compare.label')}"  name="Compare" class="ui button" />
             </div>
         </div>
     </g:form>

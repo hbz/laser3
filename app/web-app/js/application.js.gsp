@@ -598,17 +598,16 @@ r2d2 = {
                     $.ajax({
                         url: ajaxUrl
                     })
-                    .done(function (data) {
-                        $('#js-confirmation-term').html( data )
-                    })
-                    .fail(function (data) {
-                        $('#js-confirmation-term').html( 'WARNING: AJAX-CALL FAILED' )
-                    })
+                        .done(function (data) {
+                            $('#js-confirmation-content-term').html(data)
+                        })
+                        .fail(function (data) {
+                            $('#js-confirmation-content-term').html('WARNING: AJAX-CALL FAILED')
+                        })
                 }
-                else {
-                    var tokenMsg = that.getAttribute("data-confirm-tokenMsg") ? that.getAttribute("data-confirm-tokenMsg") : false;
-                    tokenMsg ? $('#js-confirmation-term').html(tokenMsg) : $("#js-confirmation-term").remove();
-                }
+
+                var tokenMsg = that.getAttribute("data-confirm-tokenMsg") ? that.getAttribute("data-confirm-tokenMsg") : false;
+                tokenMsg ? $('#js-confirmation-term').html(tokenMsg) : $("#js-confirmation-term").remove();
 
                 var dataAttr = that.getAttribute("data-confirm-id")? that.getAttribute("data-confirm-id")+'_form':false;
                 var how = that.getAttribute("data-confirm-term-how") ? that.getAttribute("data-confirm-term-how"):"delete";
@@ -655,6 +654,10 @@ r2d2 = {
                             if (remoteLink) {
                                 bb8.ajax(that)
                             }
+                            $('#js-confirmation-content-term').html('')
+                        },
+                        onDeny : function() {
+                            $('#js-confirmation-content-term').html('')
                         }
                     })
                     .modal('show')
