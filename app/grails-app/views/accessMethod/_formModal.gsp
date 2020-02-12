@@ -1,6 +1,6 @@
 <%@ page import="com.k_int.kbplus.Address;de.laser.helper.RDConstants" %>
 
-<semui:modal id="accessMethodFormModal" text="${message(code: 'default.add.label', args: [message(code: 'accessMethod.label', default: 'Address')])}">
+<semui:modal id="accessMethodFormModal" text="${message(code: 'default.add.label', args: [message(code: 'accessMethod.label')])}">
     <g:form class="ui form" url="[controller: 'accessMethod', action: 'create']" method="POST">
          <div class="field" style="height: 330px;">
             <div class="three fields">

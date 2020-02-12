@@ -68,7 +68,7 @@
 				</tbody>
 			</table>
 
-    <semui:paginate  action="list" controller="platform" params="${params}" next="${message(code:'default.paginate.next', default:'Next')}" prev="${message(code:'default.paginate.prev', default:'Prev')}" max="${max}" total="${platformInstanceTotal}" />
+    <semui:paginate  action="list" controller="platform" params="${params}" next="${message(code:'default.paginate.next')}" prev="${message(code:'default.paginate.prev')}" max="${max}" total="${platformInstanceTotal}" />
 
 
 	</body>

@@ -38,7 +38,7 @@
     </table>
 
 
-        <semui:paginate action="deletedOrgs" controller="dataManager" params="${params}" next="${message(code:'default.paginate.next', default:'Next')}" prev="${message(code:'default.paginate.prev', default:'Prev')}" max="${max}" total="${titleInstanceTotal}" />
+        <semui:paginate action="deletedOrgs" controller="dataManager" params="${params}" next="${message(code:'default.paginate.next')}" prev="${message(code:'default.paginate.prev')}" max="${max}" total="${titleInstanceTotal}" />
 
   </body>
 </html>

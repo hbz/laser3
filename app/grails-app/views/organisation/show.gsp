@@ -231,7 +231,7 @@
                             </dl>
                         </g:else>
                         <dl>
-                            <dt>${message(code: 'default.status.label', default: 'Status')}</dt>
+                            <dt>${message(code: 'default.status.label')}</dt>
 
                         <dd>
                             <g:if test="${isGrantedOrgRoleAdminOrOrgEditor}">
