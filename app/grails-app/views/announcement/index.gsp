@@ -34,7 +34,7 @@
     </semui:form>
 
 
-      <h2 class="ui  header la-clear-before">${message(code:'announcement.previous.label', default:'previous announcements')}</h2>
+      <h2 class="ui  header la-clear-before">${message(code:'announcement.previous.label')}</h2>
 
       <div class="ui divided relaxed list">
         <g:each in="${recentAnnouncements}" var="ra">

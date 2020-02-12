@@ -2,7 +2,7 @@
 <html>
   <head>
     <meta name="layout" content="semanticUI"/>
-    <title>${message(code:'laser')} ${message(code:'menu.datamanager.dash', default:'Data Manager Dashboard')}</title>
+    <title>${message(code:'laser')} ${message(code:'menu.datamanager.dash')}</title>
   </head>
 
   <body>
@@ -11,7 +11,7 @@
       <semui:crumb message="menu.datamanager.dash" class="active"/>
     </semui:breadcrumbs>
     <br>
-    <h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon />${message(code:'menu.datamanager.dash', default:'Data Manager Dashboard')}</h1>
+    <h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon />${message(code:'menu.datamanager.dash')}</h1>
 
   <semui:messages data="${flash}" />
 

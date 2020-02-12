@@ -3,13 +3,13 @@
 <html>
     <head>
         <meta name="layout" content="semanticUI">
-    <g:set var="entityName" value="${message(code: 'issueEntitlement.label', default: 'IssueEntitlement')}" />
+    <g:set var="entityName" value="${message(code: 'issueEntitlement.label')}" />
     <title><g:message code="default.show.label" args="[entityName]" /></title>
 </head>
 <body>
     <semui:breadcrumbs>
         <g:if test="${issueEntitlementInstance?.subscription.subscriber}">
-            <semui:crumb controller="myInstitution" action="currentSubscriptions" params="${[shortcode:issueEntitlementInstance?.subscription.subscriber.shortcode]}" text="${issueEntitlementInstance?.subscription.subscriber.name} - ${message(code:'subscription.plural', default:'Subscriptions')}"/>
+            <semui:crumb controller="myInstitution" action="currentSubscriptions" params="${[shortcode:issueEntitlementInstance?.subscription.subscriber.shortcode]}" text="${issueEntitlementInstance?.subscription.subscriber.name} - ${message(code:'subscription.plural')}"/>
         </g:if>
         <semui:crumb controller="subscription" action="index" id="${issueEntitlementInstance?.subscription.id}"  text="${issueEntitlementInstance?.subscription.name}" />
         <semui:crumb class="active" id="${issueEntitlementInstance?.id}" text="${issueEntitlementInstance?.tipp.title.title}" />
@@ -274,7 +274,7 @@
               </div>
           </div>
           <div class="field">
-              <input type="submit" class="ui secondary button" value="${message(code:'default.button.submit.label', default:'Submit')}">
+              <input type="submit" class="ui secondary button" value="${message(code:'default.button.submit.label')}">
           </div>
 
       </g:form>
@@ -299,16 +299,16 @@
           <g:each in="${tippList}" var="t">
               <g:each in="${t.coverages}" var="tippCoverage">
                 <tr>
-                    <td><g:formatDate format="${message(code:'default.date.format.notime', default:'yyyy-MM-dd')}" date="${tippCoverage.startDate}"/></td>
+                    <td><g:formatDate format="${message(code:'default.date.format.notime')}" date="${tippCoverage.startDate}"/></td>
                     <td>${tippCoverage.startVolume}</td>
                     <td>${tippCoverage.startIssue}</td>
-                    <td><g:formatDate format="${message(code:'default.date.format.notime', default:'yyyy-MM-dd')}" date="${tippCoverage.endDate}"/></td>
+                    <td><g:formatDate format="${message(code:'default.date.format.notime')}" date="${tippCoverage.endDate}"/></td>
                     <td>${tippCoverage.endVolume}</td>
                     <td>${tippCoverage.endIssue}</td>
                     <td>${tippCoverage.coverageDepth}</td>
                     <td><g:link controller="platform" action="show" id="${t.platform.id}">${t.platform.name}</g:link></td>
                     <td><g:link controller="package" action="show" id="${t.pkg.id}">${t.pkg.name}</g:link></td>
-                    <td><g:link controller="tipp" action="show" id="${t.id}">${message(code:'tipp.details', default:'View Details')}</g:link></td>
+                    <td><g:link controller="tipp" action="show" id="${t.id}">${message(code:'tipp.details')}</g:link></td>
                 </tr>
               </g:each>
           </g:each>

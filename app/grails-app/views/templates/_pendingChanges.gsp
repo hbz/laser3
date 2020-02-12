@@ -59,11 +59,11 @@
                   <g:if test="${! processingpc}">
                     <g:link controller="pendingChange" action="accept" id="${pc.id}" class="ui icon positive button">
                       <i class="checkmark icon"></i>
-                      <!--${message(code:'default.button.accept.label', default:'Accept')}-->
+                      <!--${message(code:'default.button.accept.label')}-->
                     </g:link>
                     <g:link controller="pendingChange" action="reject" id="${pc.id}" class="ui icon negative button">
                       <i class="times icon"></i>
-                      <!--${message(code:'default.button.reject.label', default:'Reject')}-->
+                      <!--${message(code:'default.button.reject.label')}-->
                     </g:link>
                   </g:if>
                 </td>
