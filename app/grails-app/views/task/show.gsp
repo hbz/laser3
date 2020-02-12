@@ -35,12 +35,12 @@
 					</g:if>
 				
 					<g:if test="${taskInstance?.title}">
-						<dt><g:message code="task.title.label" default="Title" /></dt>
+						<dt><g:message code="task.title.label" /></dt>
 						<dd><g:fieldValue bean="${taskInstance}" field="title"/></dd>
 					</g:if>
 				
 					<g:if test="${taskInstance?.description}">
-						<dt><g:message code="task.description.label" default="Description" /></dt>
+						<dt><g:message code="task.description.label" /></dt>
 						<dd><g:fieldValue bean="${taskInstance}" field="description"/></dd>
 					</g:if>
 				
@@ -50,27 +50,27 @@
 					</g:if>
 				
 					<g:if test="${taskInstance?.creator}">
-						<dt><g:message code="task.creator.label" default="Creator" /></dt>
+						<dt><g:message code="task.creator.label" /></dt>
 						<dd><g:link controller="user" action="show" id="${taskInstance?.creator?.id}">${taskInstance?.creator?.display}</g:link></dd>
 					</g:if>
 
 					<g:if test="${taskInstance?.createDate}">
-						<dt><g:message code="task.createDate.label" default="Create Date" /></dt>
+						<dt><g:message code="task.createDate.label" /></dt>
 						<dd><g:formatDate date="${taskInstance?.createDate}" /></dd>
 					</g:if>
 
 					<g:if test="${taskInstance?.endDate}">
-						<dt><g:message code="task.endDate.label" default="End Date" /></dt>
+						<dt><g:message code="task.endDate.label" /></dt>
 						<dd><g:formatDate date="${taskInstance?.endDate}" /></dd>
 					</g:if>
 				
 					<g:if test="${taskInstance?.responsibleUser}">
-						<dt><g:message code="task.responsibleUser.label" default="Responsible User" /></dt>
+						<dt><g:message code="task.responsibleUser.label" /></dt>
 						<dd><g:link controller="user" action="show" id="${taskInstance?.responsibleUser?.id}">${taskInstance?.responsibleUser?.display}</g:link></dd>
 					</g:if>
 				
 					<g:if test="${taskInstance?.responsibleOrg}">
-						<dt><g:message code="task.responsibleOrg.label" default="Responsible Org" /></dt>
+						<dt><g:message code="task.responsibleOrg.label" /></dt>
 						<dd><g:link controller="organisation" action="show" id="${taskInstance?.responsibleOrg?.id}">${taskInstance?.responsibleOrg}</g:link></dd>
 					</g:if>
 				</dl>

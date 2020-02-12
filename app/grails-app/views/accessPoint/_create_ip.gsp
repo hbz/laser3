@@ -4,7 +4,7 @@
             <g:render template="access_method" model="${[accessMethod: accessMethod]}"/>
             <g:render template="name" model="${[nameOptions: availableIpOptions.collectEntries(),
                                                 name: availableIpOptions.first().values().first()]}"/>
-            <input type="submit" class="ui button js-click-control" value="${message(code: 'default.button.create.label', default: 'Create')}"/>
+            <input type="submit" class="ui button js-click-control" value="${message(code: 'default.button.create.label')}"/>
         </g:form>
     </semui:form>
 </div>

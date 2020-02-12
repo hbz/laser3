@@ -65,7 +65,7 @@
         %{--<div class="four fields">--}%
             <!-- 1-1 -->
             <div class="field">
-                <label for="search-title">${message(code: 'default.search.text', default: 'Search text')}
+                <label for="search-title">${message(code: 'default.search.text')}
                     <span data-position="right center" data-variation="tiny" class="la-popup-tooltip la-delay" data-content="${message(code:'default.search.tooltip.subscription')}">
                         <i class="question circle icon"></i>
                     </span>
@@ -73,7 +73,7 @@
 
                 <div class="ui input">
                     <input type="text" id="search-title" name="q"
-                           placeholder="${message(code: 'default.search.ph', default: 'enter search term...')}"
+                           placeholder="${message(code: 'default.search.ph')}"
                            value="${params.q}"/>
                 </div>
             </div>
@@ -324,7 +324,7 @@
                 <th>${message(code: 'consortium.subscriber', default: 'Subscriber')}</th>
             </g:if>
             --%>
-            <g:sortableColumn scope="col" class="la-smaller-table-head" params="${params}" property="s.startDate" title="${message(code: 'default.startDate.label', default: 'Start Date')}"/>
+            <g:sortableColumn scope="col" class="la-smaller-table-head" params="${params}" property="s.startDate" title="${message(code: 'default.startDate.label')}"/>
 
 
             <g:if test="${params.orgRole in ['Subscription Consortia','Subscription Collective']}">
@@ -348,7 +348,7 @@
         </tr>
 
         <tr>
-            <g:sortableColumn scope="col" class="la-smaller-table-head" params="${params}" property="s.endDate" title="${message(code: 'default.endDate.label', default: 'End Date')}"/>
+            <g:sortableColumn scope="col" class="la-smaller-table-head" params="${params}" property="s.endDate" title="${message(code: 'default.endDate.label')}"/>
         </tr>
         </thead>
         <g:each in="${subscriptions}" var="s" status="i">
@@ -426,7 +426,7 @@
                         <g:link controller="organisation" action="show" id="${org.id}">${org.name}</g:link><br />
                     </g:each>
                     <g:each in="${s.agencies}" var="org">
-                        <g:link controller="organisation" action="show" id="${org.id}">${org.name} (${message(code: 'default.agency.label', default: 'Agency')})</g:link><br />
+                        <g:link controller="organisation" action="show" id="${org.id}">${org.name} (${message(code: 'default.agency.label')})</g:link><br />
                     </g:each>
                 </td>
                 <%--

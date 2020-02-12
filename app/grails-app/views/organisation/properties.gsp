@@ -4,7 +4,7 @@
 <html>
   <head>
     <meta name="layout" content="semanticUI">
-    <g:set var="entityName" value="${message(code: 'org.label', default: 'Org')}" />
+    <g:set var="entityName" value="${message(code: 'org.label')}" />
     <title><g:message code="default.show.label" args="[entityName]" /></title>
     <%-- r:require module="annotations" / --%>
     <g:javascript src="properties.js"/>

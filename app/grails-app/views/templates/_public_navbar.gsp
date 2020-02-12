@@ -5,13 +5,13 @@
             <!--
             <ul class="nav">
                 <li id="home" <g:if test="${active.equals("home")}"> class="active" </g:if>>
-                    <a href="${createLink(uri: '/')}">${message(code:'default.home.label', default:'Home')}</a>
+                    <a href="${createLink(uri: '/')}">${message(code:'default.home.label')}</a>
                 </li>
                 <li id="about" <g:if test="${active.equals("about")}"> class="active" </g:if>>
-                    <a href="${createLink(uri: '/about')}">${message(code:'public.nav.about.label', default:'About LAS:eR')}</a>
+                    <a href="${createLink(uri: '/about')}">${message(code:'public.nav.about.label')}</a>
                 </li>
                 <li id="signup" <g:if test="${active.equals("signup")}"> class="active" </g:if>>
-                    <a href="${createLink(uri: '/signup')}">${message(code:'public.nav.signUp.label', default:'Sign Up')}</a>
+                    <a href="${createLink(uri: '/signup')}">${message(code:'public.nav.signUp.label')}</a>
                 </li>
 
             <% /*
@@ -21,7 +21,7 @@
             </li>
             */ %>
                 <li id="contact" <g:if test="${active.equals("contact")}"> class="active" </g:if>>
-                    <a href="${createLink(uri: '/contact-us')}">${message(code:'public.nav.contact.label', default:'Contact Us')}</a>
+                    <a href="${createLink(uri: '/contact-us')}">${message(code:'public.nav.contact.label')}</a>
                 </li>
             </ul>
             -->

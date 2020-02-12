@@ -33,7 +33,7 @@
       </div>
       <div class="modal-body"></div>
       <div class="modal-footer">
-        <button type="button" class="ui button" data-dismiss="modal">${message(code:'default.button.close.label', default:'Close')}</button>
+        <button type="button" class="ui button" data-dismiss="modal">${message(code:'default.button.close.label')}</button>
       </div>
   </div>
   </div>
