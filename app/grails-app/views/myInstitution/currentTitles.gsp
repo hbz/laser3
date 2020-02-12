@@ -193,7 +193,7 @@
                             <th style="width: 30%">
                                 <div class="ui three column grid">
                                     <div class="sixteen wide column">
-                                        ${message(code: 'myinst.currentTitles.sub_content', default: 'Subscribed Content')}
+                                        ${message(code: 'myinst.currentTitles.sub_content')}
                                     </div>
                                     <div class="eight wide column">
                                         ${message(code: 'subscription.details.coverage_dates')}
@@ -293,7 +293,7 @@
                                    value="${ti.getInstitutionalCoverageSummary(institution, message(code: 'default.date.format.notime'), date_restriction)}"/>
 
                             <td style="white-space:nowrap">${title_coverage_info.earliest}</td>
-                            <td style="white-space:nowrap">${title_coverage_info.latest ?: message(code: 'myinst.currentTitles.to_current', default: 'To Current')}</td>
+                            <td style="white-space:nowrap">${title_coverage_info.latest ?: message(code: 'myinst.currentTitles.to_current')}</td>
                             <td >
 
                                 <div class="ui three column grid">

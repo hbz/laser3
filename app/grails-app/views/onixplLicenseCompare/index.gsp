@@ -25,7 +25,7 @@
 						<label for="addIdentifierSelect">${message(code:'onixplLicense.compare.add_id.label', default:'Search license for comparison:')}</label>
 
 		                <input type="hidden" name="selectedIdentifier" id="addIdentifierSelect"/>
-		                <button type="button" class="ui positive button" id="addToList" style="margin-top:10px">${message(code:'default.button.add.label', default:'Add')}</button>
+		                <button type="button" class="ui positive button" id="addToList" style="margin-top:10px">${message(code:'default.button.add.label')}</button>
 					</div>
 					
 					<label for="selectedLicenses">${message(code:'onixplLicense.compare.selected.label', default:'Licenses selected for comparison:')}</label>
@@ -43,7 +43,7 @@
                   		<a href="${request.forwardURI}" class="ui button">${message(code:'default.button.comparereset.label')}</a>
                     </div>
 					<div class="field">
-					  <input id="submitButton" disabled='true' type="submit" value="${message(code:'default.button.compare.label', default:'Compare')}"  name="Compare" class="ui button" />
+					  <input id="submitButton" disabled='true' type="submit" value="${message(code:'default.button.compare.label')}"  name="Compare" class="ui button" />
 					</div>
 				</div>
 				</g:form>

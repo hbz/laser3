@@ -229,7 +229,7 @@ class OrganisationController extends AbstractDebugController {
         result.consortiaMemberIds = []
         Combo.findAllWhere(
                 toOrg: result.institution,
-                type:    RefdataValue.getByValueAndCategory('Consortium','Combo Type')
+                type:    RefdataValue.getByValueAndCategory('Consortium', RDConstants.COMBO_TYPE)
         ).each { cmb ->
             result.consortiaMemberIds << cmb.fromOrg.id
         }
@@ -1116,17 +1116,30 @@ class OrganisationController extends AbstractDebugController {
             case 'add':
                 Map map = [toOrg: result.institution,
                         fromOrg: Org.get(params.fromOrg),
-                        type: RefdataValue.getByValueAndCategory('Consortium','Combo Type')]
+                        type: RefdataValue.getByValueAndCategory('Consortium', RDConstants.COMBO_TYPE)]
                 if (! Combo.findWhere(map)) {
                     def cmb = new Combo(map)
                     cmb.save()
                 }
                 break
             case 'remove':
-                Combo cmb = Combo.findWhere(toOrg: result.institution,
-                    fromOrg: Org.get(params.fromOrg),
-                    type: RefdataValue.getByValueAndCategory('Consortium','Combo Type'))
-                cmb.delete()
+
+                def subs = Subscription.executeQuery("from Subscription as s where exists ( select o from s.orgRelations as o where o.org in (:orgs) )", [orgs: [result.institution, Org.get(params.fromOrg)]])
+                if(subs){
+                    flash.error = message(code:'org.consortiaToggle.remove.notPossible.sub')
+                }
+                def lics = License.executeQuery("from License as l where exists ( select o from l.orgLinks as o where o.org in (:orgs) )", [orgs: [result.institution, Org.get(params.fromOrg)]])
+                if(lics){
+                    flash.error = message(code:'org.consortiaToggle.remove.notPossible.sub')
+                }
+
+                if(!subs && !lics) {
+
+                    Combo cmb = Combo.findWhere(toOrg: result.institution,
+                            fromOrg: Org.get(params.fromOrg),
+                            type: RefdataValue.getByValueAndCategory('Consortium', RDConstants.COMBO_TYPE))
+                    cmb.delete()
+                }
                 break
         }
         redirect action: 'listInstitution'

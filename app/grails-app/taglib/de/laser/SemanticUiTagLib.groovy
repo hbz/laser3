@@ -41,7 +41,7 @@ class SemanticUiTagLib {
 
         if (flash && flash.message) {
             out << '<div class="ui success message la-clear-before">'
-            out << '<i class="close icon"></i>'
+            out << '<i aria-hidden="true" class="close icon"></i>'
             out << '<p>'
             out << flash.message
             out << '</p>'
@@ -50,7 +50,7 @@ class SemanticUiTagLib {
 
         if (flash && flash.error) {
             out << '<div class="ui negative message la-clear-before">'
-            out << '<i class="close icon"></i>'
+            out << '<i aria-hidden="true" class="close icon"></i>'
             out << '<p>'
             out << flash.error
             out << '</p>'
@@ -63,7 +63,7 @@ class SemanticUiTagLib {
     def msg = { attrs, body ->
 
         out << '<div class="ui ' + attrs.class + ' message la-clear-before">'
-        out << '<i class="close icon"></i>'
+        out << '<i aria-hidden="true" class="close icon"></i>'
         out << '<div class="content">'
 
         if (attrs.header) {
@@ -96,7 +96,7 @@ class SemanticUiTagLib {
 
         if (attrs.bean?.errors?.allErrors) {
             out << '<div class="ui negative message">'
-            out << '<i class="close icon"></i>'
+            out << '<i aria-hidden="true" class="close icon"></i>'
             out << '<ul class="list">'
             attrs.bean.errors.allErrors.each { e ->
                 if (e in org.springframework.validation.FieldError) {
@@ -143,7 +143,7 @@ class SemanticUiTagLib {
             out << '            </div>'
             if (attrs.editable && attrs.href) {
                 out << '        <div class="right aligned four wide column">'
-                out << '            <button type="button" class="ui icon mini button editable-cancel" data-semui="modal" data-href="' + attrs.href + '" ><i class="plus icon"></i></button>'
+                out << '            <button type="button" class="ui icon mini button editable-cancel" data-semui="modal" data-href="' + attrs.href + '" ><i aria-hidden="true" class="plus icon"></i></button>'
                 out << '        </div>'
             }
             out << '        </div>'
@@ -164,7 +164,7 @@ class SemanticUiTagLib {
 
         if (attrs.editable) {
             out << '<div class="ui orange circular label" style="margin-left:0">'
-            out << '<i class="write icon" style="margin-right:0"></i>'
+            out << '<i aria-hidden="true" class="write icon" style="margin-right:0"></i>'
             out << '</div>'
         }
     }
@@ -174,11 +174,11 @@ class SemanticUiTagLib {
         if (yodaService.showDebugInfo()) {
 
             out << '<a href="#debugInfo" id="showDebugInfo" aria-label="Debug Info" class="ui button icon" data-semui="modal">'
-            out << '<i class="red bug icon"></i>'
+            out << '<i aria-hidden="true" class="red bug icon"></i>'
             out << '</a>'
 
             out << '<div id="debugInfo" class="ui modal">'
-            out << '<h4 class="ui red header"> <i class="bug icon"></i> DEBUG-INFORMATION</h4>'
+            out << '<h4 class="ui red header"> <i aria-hidden="true" class="bug icon"></i> DEBUG-INFORMATION</h4>'
             out << '<div class="scrolling content">'
             out << body()
             out << '<br />'
@@ -197,11 +197,11 @@ class SemanticUiTagLib {
         if (systemChecks) {
 
             out << '<a href="#systemInfo" id="showSystemInfo" aria-label="System Info" class="ui button icon" data-semui="modal">'
-            out << '<i class="red fire extinguisher icon"></i>'
+            out << '<i aria-hidden="true" class="red fire extinguisher icon"></i>'
             out << '</a>'
 
             out << '<div id="systemInfo" class="ui modal">'
-            out << '<h4 class="ui red header"> <i class="red fire extinguisher icon"></i> SYSTEM-INFORMATION</h4>'
+            out << '<h4 class="ui red header"> <i aria-hidden="true" class="red fire extinguisher icon"></i> SYSTEM-INFORMATION</h4>'
             out << '<div class="scrolling content">'
             out << '<div class="ui list">'
             systemChecks.each {systemCheck ->
@@ -221,26 +221,26 @@ class SemanticUiTagLib {
 
     def headerIcon = { attrs, body ->
 
-        out << '<i class="circular icon la-object"></i> '
+        out << '<i aria-hidden="true" class="circular icon la-object"></i> '
     }
 
     def headerTitleIcon = { attrs, body ->
 
         switch (attrs.type) {
             case 'Journal':
-                out << '<i class="circular icon la-object-journal"></i> '
+                out << '<i aria-hidden="true" class="circular icon la-object-journal"></i> '
                 break
             case 'Database':
-                out << '<i class="circular icon la-object-database"></i> '
+                out << '<i aria-hidden="true" class="circular icon la-object-database"></i> '
                 break
             case 'EBook':
-                out << '<i class="circular icon la-object-ebook"></i> '
+                out << '<i aria-hidden="true" class="circular icon la-object-ebook"></i> '
                 break
             case 'Survey':
-                out << '<i class="circular icon inverted blue chart pie"></i> '
+                out << '<i aria-hidden="true" class="circular icon inverted blue chart pie"></i> '
                 break
             default:
-                out << '<i class="circular icon la-object"></i> '
+                out << '<i aria-hidden="true" class="circular icon la-object"></i> '
                 break
         }
     }
@@ -260,13 +260,13 @@ class SemanticUiTagLib {
                         if (auditService.getAuditConfig(obj.instanceOf, objAttr)) {
                             if (obj.isSlaved) {
                                 out << '&nbsp; <span class="la-popup-tooltip la-delay" data-content="Wert wird automatisch geerbt" data-position="top right">'
-                                out << '<i class="icon thumbtack blue"></i>'
+                                out << '<i aria-hidden="true" class="icon thumbtack blue"></i>'
                                 out << '</span>'
                             }
                             else {
                                 out << '&nbsp; <span class="la-popup-tooltip la-delay" data-content="Wert wird geerbt" data-position="top right">'
                                 //out <<   '<button class="ui icon mini green button">'
-                                out << '<i class="icon thumbtack grey"></i>'
+                                out << '<i aria-hidden="true" class="icon thumbtack grey"></i>'
                                 out << '</span>'
                             }
                         }
@@ -277,7 +277,7 @@ class SemanticUiTagLib {
 
                         if (auditService.getAuditConfig(obj, objAttr)) {
                             out << '<div class="ui simple dropdown icon mini green button la-audit-button" data-content="Wert wird vererbt">'
-                            out   << '<i class="icon la-js-editmode-icon thumbtack"></i>'
+                            out   << '<i aria-hidden="true" class="icon la-js-editmode-icon thumbtack"></i>'
 
                             out   << '<div class="menu">'
                             out << g.link( 'Vererbung deaktivieren. Wert für Teilnehmer <strong>löschen</strong>',
@@ -303,7 +303,7 @@ class SemanticUiTagLib {
                                     params: ['owner': oid, 'property': [objAttr]],
                             )
                             out << '">'
-                            out << '<i class="icon la-js-editmode-icon la-thumbtack slash"></i>'
+                            out << '<i aria-hidden="true" class="icon la-js-editmode-icon la-thumbtack slash"></i>'
                             out << '</a>'
                         }
                     }
@@ -329,13 +329,13 @@ class SemanticUiTagLib {
                         if (auditService.getAuditConfig(obj.instanceOf, objAttr)) {
                             if (obj.isSlaved) {
                                 out << '&nbsp; <span class="la-popup-tooltip la-delay" data-content="Wert wird automatisch geerbt" data-position="top right">'
-                                out << '<i class="icon thumbtack blue"></i>'
+                                out << '<i aria-hidden="true" class="icon thumbtack blue"></i>'
                                 out << '</span>'
                             }
                             else {
                                 out << '&nbsp; <span class="la-popup-tooltip la-delay" data-content="Wert wird geerbt" data-position="top right">'
                                 //out <<   '<button class="ui icon mini green button">'
-                                out << '<i class="icon thumbtack grey"></i>'
+                                out << '<i aria-hidden="true" class="icon thumbtack grey"></i>'
                                 out << '</span>'
                             }
                         }
@@ -348,19 +348,19 @@ class SemanticUiTagLib {
 
                             if (obj.isSlaved) {
                                 out << '&nbsp; <span class="la-popup-tooltip la-delay" data-content="Wert wird automatisch geerbt" data-position="top right">'
-                                out << '<i class="icon thumbtack blue"></i>'
+                                out << '<i aria-hidden="true" class="icon thumbtack blue"></i>'
                                 out << '</span>'
                             }
                             else {
                                 out << '&nbsp; <span class="la-popup-tooltip la-delay" data-content="Wert wird geerbt" data-position="top right">'
                                 //out <<   '<button class="ui icon mini green button">'
-                                out << '<i class="icon thumbtack grey"></i>'
+                                out << '<i aria-hidden="true" class="icon thumbtack grey"></i>'
                                 out << '</span>'
                             }
                         }
                         else {
                             out << '&nbsp; <span class="la-popup-tooltip la-delay" data-content="Wert wird nicht vererbt" data-position="top right">'
-                            out << '<i class="icon la-thumbtack slash"></i>'
+                            out << '<i aria-hidden="true" class="icon la-thumbtack slash"></i>'
                             out << '</span>'
                         }
                     }
@@ -381,7 +381,7 @@ class SemanticUiTagLib {
                 if (hideTooltip) {
                     out << 'data-content="' + message(code: 'spotlight.journaltitle') + '" data-position="left center" data-variation="tiny"'
                 }
-                out << '><i class="icon newspaper outline la-list-icon"></i>'
+                out << '><i aria-hidden="true" class="icon newspaper outline la-list-icon"></i>'
                 out << '</div>'
                 break
             case 'Database':
@@ -390,7 +390,7 @@ class SemanticUiTagLib {
                 if (hideTooltip) {
                     out << 'data-content="' + message(code: 'spotlight.databasetitle') + '" data-position="left center" data-variation="tiny"'
                 }
-                out << '><i class="icon database la-list-icon"></i>'
+                out << '><i aria-hidden="true" class="icon database la-list-icon"></i>'
                 out << '</div>'
                 break
             case 'EBook':
@@ -399,7 +399,7 @@ class SemanticUiTagLib {
                 if (hideTooltip) {
                     out << 'data-content="' + message(code: 'spotlight.ebooktitle') + '" data-position="left center" data-variation="tiny"'
                 }
-                out << '><i class="icon tablet alternate la-list-icon"></i>'
+                out << '><i aria-hidden="true" class="icon tablet alternate la-list-icon"></i>'
                 out << '</div>'
                 break
             default:
@@ -407,7 +407,7 @@ class SemanticUiTagLib {
                 if (hideTooltip) {
                     out <<  ' data-content="' + message(code: 'spotlight.title') + '" data-position="left center" data-variation="tiny"'
                 }
-                out << '><i class="icon book la-list-icon"></i>'
+                out << '><i aria-hidden="true" class="icon book la-list-icon"></i>'
                 out << '</div>'
                 break
         }
@@ -422,7 +422,7 @@ class SemanticUiTagLib {
                 if (hideTooltip) {
                     out << 'data-content="' + message(code: 'issueEntitlement.acceptStatus.fixed') + '" data-position="left center" data-variation="tiny"'
                 }
-                out << '><i class="icon certificate green"></i>'
+                out << '><i aria-hidden="true" class="icon certificate green"></i>'
                 out << '</div>'
                 break
             case 'Under Negotiation':
@@ -430,7 +430,7 @@ class SemanticUiTagLib {
                 if (hideTooltip) {
                     out << 'data-content="' + message(code: 'issueEntitlement.acceptStatus.underNegotiation') + '" data-position="left center" data-variation="tiny"'
                 }
-                out << '><i class="icon hourglass end yellow"></i>'
+                out << '><i aria-hidden="true" class="icon hourglass end yellow"></i>'
                 out << '</div>'
                 break
             case 'Under Consideration':
@@ -438,7 +438,7 @@ class SemanticUiTagLib {
                 if (hideTooltip) {
                     out << 'data-content="' + message(code: 'issueEntitlement.acceptStatus.underConsideration') + '" data-position="left center" data-variation="tiny"'
                 }
-                out << '><i class="icon hourglass start red"></i>'
+                out << '><i aria-hidden="true" class="icon hourglass start red"></i>'
                 out << '</div>'
                 break
             default:
@@ -453,27 +453,27 @@ class SemanticUiTagLib {
             case 'E-Mail':
             case 'Mail': // Deprecated
                 out << '<span class="la-popup-tooltip la-delay" data-content="' + message(code: 'contact.icon.label.email') + '" data-position="left center" data-variation="tiny">'
-                out << '    <i class="ui icon envelope outline la-list-icon"></i>'
+                out << '    <i aria-hidden="true" class="ui icon envelope outline la-list-icon"></i>'
                 out << '</span>'
                 break
             case 'Fax':
                 out << '<span  class="la-popup-tooltip la-delay" data-content="' + message(code: 'contact.icon.label.fax') + '" data-position="left center" data-variation="tiny">'
-                out << '    <i class="ui icon tty la-list-icon"></i>'
+                out << '    <i aria-hidden="true" class="ui icon tty la-list-icon"></i>'
                 out << '</span>'
                 break
             case 'Phone':
                 out << '<span class="la-popup-tooltip la-delay" data-content="' + message(code: 'contact.icon.label.phone') + '" data-position="left center" data-variation="tiny">'
-                out << '<i class="icon phone la-list-icon"></i>'
+                out << '<i aria-hidden="true" class="icon phone la-list-icon"></i>'
                 out << '</span>'
                 break
             case 'Url':
                 out << '<span class="la-popup-tooltip la-delay" data-content="' + message(code: 'contact.icon.label.url') + '" data-position="left center" data-variation="tiny">'
-                out << '<i class="icon globe la-list-icon"></i>'
+                out << '<i aria-hidden="true" class="icon globe la-list-icon"></i>'
                 out << '</span>'
                 break
             default:
                 out << '<span  class="la-popup-tooltip la-delay" data-content="' + message(code: 'contact.icon.label.contactinfo') + '" data-position="left center" data-variation="tiny">'
-                out << '<i class="icon address book la-list-icon"></i>'
+                out << '<i aria-hidden="true" class="icon address book la-list-icon"></i>'
                 out << '</span>'
                 break
         }
@@ -484,7 +484,7 @@ class SemanticUiTagLib {
         if (attrs.editable) {
 
             out << '<div class="ui green circular horizontal label la-popup-tooltip la-delay"  style="margin-right:0; margin-left: 1rem;" data-content="' + message(code: 'statusbar.editable.tooltip') + '"  data-position="bottom right" data-variation="tiny">'
-            out << '<i class="write  icon" style="margin-right:0"></i>'
+            out << '<i aria-hidden="true" class="write  icon" style="margin-right:0"></i>'
             out << '</div>'
         }
     }
@@ -532,7 +532,7 @@ class SemanticUiTagLib {
     def meta = { attrs, body ->
 
         out << '<aside class="ui segment metaboxContent accordion">'
-        out << '<div class="title"> <i class="dropdown icon la-dropdown-accordion"></i>FREE TO USE</div>'
+        out << '<div class="title"> <i aria-hidden="true" class="dropdown icon la-dropdown-accordion"></i>FREE TO USE</div>'
         out << '<div class="content">'
         out << body()
         out << '</div>'
@@ -594,7 +594,7 @@ class SemanticUiTagLib {
         if (showFilterButton) {
             out << '<button class="ui right floated button la-inline-labeled la-js-filterButton la-clearfix ' + (extended ?'':'blue') + '">'
             out << '    Filter'
-            out << '    <i class="filter icon"></i>'
+            out << '    <i aria-hidden="true" class="filter icon"></i>'
             out << '   <span class="ui circular label la-js-filter-total hidden">0</span>'
             out << '</button>'
         }
@@ -715,7 +715,7 @@ class SemanticUiTagLib {
         out << '<div class="actions">'
         out << '<div class="ui deny button">' + msgCancel + '</div>'
         out << '<button id="js-confirmation-button" class="ui positive right labeled icon button">' + msgDelete
-        out << '    <i class="trash alternate icon"></i>'
+        out << '    <i aria-hidden="true" class="trash alternate icon"></i>'
         out << '</button>'
         out << '</div>'
         out << '</div>'
@@ -758,7 +758,7 @@ class SemanticUiTagLib {
         }
         out << '<div class="ui calendar datepicker">'
         out << '<div class="ui input left icon">'
-        out << '<i class="calendar icon"></i>'
+        out << '<i aria-hidden="true" class="calendar icon"></i>'
         out << '<input class="' + inputCssClass + '" name="' + name +  '" id="' + id +'" type="text" placeholder="' + placeholder + '" value="' + value + '" ' + required + '>'
         out << '</div>'
         out << '</div>'
@@ -838,7 +838,7 @@ class SemanticUiTagLib {
                         "</div>"
             }
         } else {
-            out << '<i class="arrow left icon disabled"></i>'
+            out << '<i aria-hidden="true" class="arrow left icon disabled"></i>'
         }
         out << "<span class='la-annual-rings-text'>"
         out << startDate
@@ -883,7 +883,7 @@ class SemanticUiTagLib {
                         "</div>"
             }
         } else {
-            out << '<i class="arrow right icon disabled"></i>'
+            out << '<i aria-hidden="true" class="arrow right icon disabled"></i>'
         }
         out << '</div>'
     }
@@ -929,7 +929,7 @@ class SemanticUiTagLib {
             dash = '–'
             endDate = g.formatDate(date: object.endDate, format: message(code: 'default.date.format.notime'))
         }
-        out << '<i class="icon"></i>'
+        out << '<i aria-hidden="true" class="icon"></i>'
         out << "<span class='la-annual-rings-text'>"
         out << startDate
         out << dash
@@ -939,7 +939,7 @@ class SemanticUiTagLib {
         out << "<a class='ui ${color} circular tiny label la-popup-tooltip la-delay'  data-variation='tiny' data-content='Status: ${tooltip}'>"
         out << '       &nbsp;'
         out << '</a>'
-        out << '<i class="icon"></i>'
+        out << '<i aria-hidden="true" class="icon"></i>'
 
         out << '</div>'
     }
@@ -975,7 +975,7 @@ class SemanticUiTagLib {
         out << "<div class='ui fluid search selection dropdown ${cssClass}'>"
 
         out << "<input type='hidden' name='${name}'>"
-        out << ' <i class="dropdown icon"></i>'
+        out << ' <i aria-hidden="true" class="dropdown icon"></i>'
         out << "<input class='search' id='${id}'>"
         out << ' <div class="default text">'
         out << "${noSelection}"
@@ -1015,7 +1015,7 @@ class SemanticUiTagLib {
     def linkIcon = { attrs, body ->
         out << ' <span class="la-popup-tooltip la-delay" style="bottom: -3px" data-position="top right" data-content="Diese URL aufrufen ..">'
         out << '&nbsp;<a href="' + attrs.href + '" target="_blank" class="ui icon blue la-js-dont-hide-button">'
-        out << '<i class="share square icon"></i>'
+        out << '<i aria-hidden="true" class="share square icon"></i>'
         out << '</a>'
         out << '</span>'
     }

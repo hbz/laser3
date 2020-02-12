@@ -77,7 +77,7 @@ double t8 = 0L
             <div id="licensediv"
                  class="field fieldcontain ${hasErrors(bean: taskInstance, field: 'license', 'error')} required">
                 <label for="license">
-                    <g:message code="task.linkto" default="Task link to "/><g:message code="license.label" />
+                    <g:message code="task.linkto" /><g:message code="license.label" />
                 </label>
                 <g:select class="ui dropdown search many-to-one"
                           id="license"
@@ -93,7 +93,7 @@ double t8 = 0L
 
             <div id="orgdiv" class="field fieldcontain ${hasErrors(bean: taskInstance, field: 'org', 'error')} required">
             <label for="org">
-                <g:message code="task.linkto" default="Task link to "/><g:message code="task.org.label" />
+                <g:message code="task.linkto" /><g:message code="task.org.label" />
             </label>
                 <g:select id="org"
                           name="org"
@@ -108,7 +108,7 @@ double t8 = 0L
 
             <div id="pkgdiv" class="field fieldcontain ${hasErrors(bean: taskInstance, field: 'pkg', 'error')} required">
                 <label for="pkg">
-                    <g:message code="task.linkto" default="Task link to "/><g:message code="package.label" />
+                    <g:message code="task.linkto" /><g:message code="package.label" />
                 </label>
                 <g:select id="pkg" name="pkg" from="${validPackages}" optionKey="id" value="${ownobj?.id}"
                           class="ui dropdown search many-to-one" noSelection="[null: '']"/>
@@ -118,7 +118,7 @@ double t8 = 0L
             <div id="subscriptiondiv"
                  class="field fieldcontain ${hasErrors(bean: taskInstance, field: 'subscription', 'error')} required">
                 <label for="subscription">
-                    <g:message code="task.linkto" default="Task link to "/><g:message code="default.subscription.label" />
+                    <g:message code="task.linkto" /><g:message code="default.subscription.label" />
                 </label>
                 <g:select class="ui dropdown search many-to-one"
                           id="subscription"
