@@ -383,6 +383,7 @@ if (customerType) {
                 params=""
                 data-content="Hier kommt der Tooltip rein"
                 data-confirm-messageUrl="${createLink(controller:'ajax', action:'genericDialogMessage', params:[template:'abc'])}"
+                data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.function", args: ['Button auf der YODA/FRONTENDSEITE'])}"
                 data-confirm-term-how="delete"
                 class="ui icon negative button js-open-confirm-modal la-popup-tooltip la-delay"
                 role="button">

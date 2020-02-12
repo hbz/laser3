@@ -706,14 +706,10 @@ class SemanticUiTagLib {
         out << '<div class="header">'
         out << '<span class="confirmation-term" id="js-confirmation-term"></span>'
         out << '</div>'
-        if (attrs.extaContentFlag) {
-            out << '<div class="content confirmation-content">'
-            out << '<ul>'
-            out << '<li><span>1</span><strong>Titel</strong> wird entknüpft</li>'
-            out << '<li><span>1</span><strong>Ausstehende Änderung</strong> wird gelöscht</li>'
-            out << '</ul>'
-            out << '</div>'
-        }
+
+        out << '<div class="content confirmation-content" id="js-confirmation-content-term">'
+        out << '</div>'
+
         out << '<div class="actions">'
         out << '<div class="ui deny button">' + msgCancel + '</div>'
         out << '<button id="js-confirmation-button" class="ui positive right labeled icon button">' + msgDelete
