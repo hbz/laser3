@@ -1963,7 +1963,6 @@ class SubscriptionController extends AbstractDebugController {
 
         result.parentSub = result.subscriptionInstance.instanceOf && result.subscription.getCalculatedType() != TemplateSupport.CALCULATED_TYPE_PARTICIPATION_AS_COLLECTIVE ? result.subscriptionInstance.instanceOf : result.subscriptionInstance
 
-        def validSubChilds = Subscription.findAllByInstanceOf(result.parentSub)
 
         if (params.filterPropDef && params.filterPropValue) {
 
@@ -1975,8 +1974,12 @@ class SubscriptionController extends AbstractDebugController {
             def changeProperties = 0
 
             if (propDef) {
-                validSubChilds.each { subChild ->
 
+                List selectedMembers = params.list("selectedMembers")
+
+                if(selectedMembers){
+                    selectedMembers.each { subId ->
+                        Subscription subChild = Subscription.get(subId)
                     if (propDef?.tenant != null) {
                         //private Property
                         def owner = subChild
@@ -2033,7 +2036,11 @@ class SubscriptionController extends AbstractDebugController {
                     }
 
                 }
-                flash.message = message(code: 'subscription.propertiesMembers.successful', args: [newProperties, changeProperties])
+                    flash.message = message(code: 'subscription.propertiesMembers.successful', args: [newProperties, changeProperties])
+                }else{
+                    flash.error = message(code: 'subscription.propertiesMembers.successful', args: [newProperties, changeProperties])
+                }
+
             }
 
         }
