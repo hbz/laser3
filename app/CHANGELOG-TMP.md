@@ -2,6 +2,14 @@
 
 **Ticket    Date    Branch      Author  Feature/Bug     Description/Keywords**
 
+2180    12.02.2020  rc1.2       Moe     Bug         NullPointerException subscription/index 
+
+2181    12.02.2020  rc1.2       Moe     Bug         processUnLinkPackagesConsortia: Schlüssel wird noch auf org_access_point_link verwiesen
+
+2174    12.02.2020  rc1.2       Moe     Bug         title/list Cannot invoke method getI10n() on null object
+
+2173    12.02.2020  rc1.2       Moe     Bug         Unparseable date bei spotlightSearch
+
 1505    07.02.2020  rc1.2       Moe     Bug         Kopierfunktion für Konsortiallizenzen überarbeiten
 
 --      07.02.2020  rc1.2       Moe     Bug         ES Index enthält nicht alle Objekte 

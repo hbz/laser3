@@ -94,7 +94,7 @@
             <g:if test="${subscriptionInstance.instanceOf}">
                 <g:if test="${params.pkgfilter}">
                     <g:set var="pkg" value="${SubscriptionPackage.get(params.pkgfilter)}"/>
-                    <g:if test="${!pkg.finishDate}">
+                    <g:if test="${pkg && !pkg.finishDate}">
                         <semui:actionsDropdownItem controller="subscription" action="renewEntitlements" params="${[targetSubscriptionId:params.id,packageId:params.pkgfilter]}" message="subscription.details.renewEntitlements.label"/>
                     </g:if>
                     <g:else>
