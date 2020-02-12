@@ -3,7 +3,7 @@
 <semui:modal id="${modalId ?: 'addressFormModal'}"
              text="${message(code: 'default.add.label', args: [message(code: 'person.address.label')])}">
 
-    <g:form id="create_address" class="ui form" url="[controller: 'address', action: 'create']" method="POST">
+    <g:form id="create_address_${modalId}" class="ui form" url="[controller: 'address', action: 'create']" method="POST">
         <input type="hidden" name="redirect" value="true"/>
 
         <div class="field fieldcontain ${hasErrors(bean: addressInstance, field: 'name', 'error')} ">
@@ -51,8 +51,7 @@
                                   from="${RefdataCategory.getAllRefdataValues(RDConstants.FEDERAL_STATE)}"
                                   optionKey="id"
                                   optionValue="value"
-                                  value="${addressInstance?.state?.id}"
-                                  noSelection="['null': '']"/>
+                                  noSelection="${['': message(code: 'default.select.choose.label')]}"/>
                 </div>
             </div>
         </div>
@@ -82,7 +81,7 @@
                                   optionKey="id"
                                   optionValue="value"
                                   value="${addressInstance?.country?.id}"
-                                  noSelection="['null': '']"/>
+                                  noSelection="${['': message(code: 'default.select.choose.label')]}"/>
                 </div>
             </div>
         </div>
@@ -180,7 +179,8 @@
 </semui:modal>
 <r:script>
         function handleRequired() {
-            $('#create_address')
+            //$('#create_address')
+            $("form[id*='create_address']")
                     .form({
 
                 inline: true,

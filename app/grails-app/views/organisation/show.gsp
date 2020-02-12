@@ -177,7 +177,7 @@
 
                                         <div class="fields">
                                             <div class="field">
-                                                <input name="value" id="value" type="text" class="ui" />
+                                                <input name="value" id="identificator" type="text" class="ui" />
                                             </div>
                                             <div class="field">
                                                 <button type="submit" class="ui button">Identifikator hinzufügen</button>
