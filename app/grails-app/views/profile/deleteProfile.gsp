@@ -5,7 +5,7 @@
 <html>
 <head>
     <meta name="layout" content="semanticUI"/>
-    <title>${message(code:'laser')} : ${message(code: 'profile', default: 'LAS:eR User Profile')}</title>
+    <title>${message(code:'laser')} : ${message(code: 'profile')}</title>
 </head>
 
 <body>
@@ -16,7 +16,7 @@
 
 
 <br>
-<h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon />${message(code: 'profile', default: 'LAS:eR User Profile')}</h1>
+<h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon />${message(code: 'profile')}</h1>
 
 <semui:messages data="${flash}" />
 

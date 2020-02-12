@@ -34,7 +34,7 @@
               <select name="createSubAction"> 
                 <option value="copy">${message(code:'myinst.addSubscription.copy_with_ent', default:'Copy With Entitlements')}</option>
                 <option value="nocopy">${message(code:'myinst.addSubscription.copy_wo_ent', default:'Copy Without Entitlements')}</option>
-                <input type="submit" class="ui button disabled" value="${message(code:'myinst.addSubscription.button.create', default:'Create Subscription')}" />
+                <input type="submit" class="ui button disabled" value="${message(code:'myinst.addSubscription.button.create')}" />
             </g:if>
             <g:else>${message(code:'myinst.addLicense.no_permission')}</g:else>
             </div>
@@ -44,10 +44,10 @@
             <table class="ui sortable celled la-table table subscriptions-list">
                 <tr>
                   <th>${message(code:'default.select.label', default:'Select')}</th>
-                  <g:sortableColumn params="${params}" property="p.name" title="${message(code:'default.name.label', default:'Name')}" />
+                  <g:sortableColumn params="${params}" property="p.name" title="${message(code:'default.name.label')}" />
                   <th>${message(code:'consortium.plural', default:'Consortia')}</th>
-                  <g:sortableColumn params="${params}" property="p.startDate" title="${message(code:'default.startDate.label', default:'Start Date')}" />
-                  <g:sortableColumn params="${params}" property="p.endDate" title="${message(code:'default.endDate.label', default:'End Date')}" />
+                  <g:sortableColumn params="${params}" property="p.startDate" title="${message(code:'default.startDate.label')}" />
+                  <g:sortableColumn params="${params}" property="p.endDate" title="${message(code:'default.endDate.label')}" />
                   <th>${message(code:'tipp.platform', default:'Platform')}</th>
                   <th>${message(code:'license.label')}</th>
                 </tr>
@@ -73,7 +73,7 @@
   
 
           <g:if test="${packages}" >
-            <semui:paginate  action="addSubscription" controller="myInstitution" params="${params}" next="${message(code:'default.paginate.next', default:'Next')}" prev="${message(code:'default.paginate.prev', default:'Prev')}" maxsteps="10" total="${num_pkg_rows}" />
+            <semui:paginate  action="addSubscription" controller="myInstitution" params="${params}" next="${message(code:'default.paginate.next')}" prev="${message(code:'default.paginate.prev')}" maxsteps="10" total="${num_pkg_rows}" />
           </g:if>
 
     </div>

@@ -1,5 +1,5 @@
 <div class="control-group">
-  <label class="control-label" for="links">${message(code:'org.links.label', default:'Org Links')}</label>
+  <label class="control-label" for="links">${message(code:'org.links.label')}</label>
   <div class="controls" style="display:flex">
     <g:if test="${orgInstance.links && orgInstance.links.size() > 0}">
       <ul>

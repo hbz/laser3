@@ -184,7 +184,7 @@ ${message(code: 'subscriptionSurvey.label')} - ${surveyInfo.name}
                             <g:each in="${surveyConfig?.subscription?.getDerivedSubscriptionBySubscribers(institution)?.agencies}"
                                     var="org">
                                 <g:link controller="organisation" action="show"
-                                        id="${org.id}">${org.name} (${message(code: 'default.agency.label', default: 'Agency')})</g:link><br/>
+                                        id="${org.id}">${org.name} (${message(code: 'default.agency.label')})</g:link><br/>
                             </g:each>
                         </g:if>
                         <g:else>
@@ -195,7 +195,7 @@ ${message(code: 'subscriptionSurvey.label')} - ${surveyInfo.name}
                             <g:each in="${surveyConfig?.subscription?.agencies}"
                                     var="org">
                                 <g:link controller="organisation" action="show"
-                                        id="${org.id}">${org.name} (${message(code: 'default.agency.label', default: 'Agency')})</g:link><br/>
+                                        id="${org.id}">${org.name} (${message(code: 'default.agency.label')})</g:link><br/>
                             </g:each>
                         </g:else>
 

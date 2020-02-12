@@ -24,11 +24,11 @@
 			<thead>
 					<tr>
 					
-						<th><g:message code="license.label" default="License" /></th>
+						<th><g:message code="license.label" /></th>
 					
 						<th><g:message code="task.org.label" /></th>
 					
-						<th><g:message code="package.label"/></th>
+						<th><g:message code="package.label" /></th>
 					
 						<th><g:message code="default.subscription.label" /></th>
 					

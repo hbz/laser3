@@ -27,7 +27,7 @@
 
                 <div class="field">
                     <label>Suche nach Name</label>
-                    <input type="text" name="q" placeholder="${message(code:'default.search.ph', default:'enter search term...')}" value="${params.q}" />
+                    <input type="text" name="q" placeholder="${message(code:'default.search.ph')}" value="${params.q}" />
                 </div>
 
                 <div class="field">
@@ -42,7 +42,7 @@
 
                 <div class="field">
                     <label>&nbsp;</label>
-                    <input type="text" name="idv" placeholder="${message(code:'default.search.ph', default:'enter search term...')}" value="${params.idv}" />
+                    <input type="text" name="idv" placeholder="${message(code:'default.search.ph')}" value="${params.idv}" />
                 </div>
 
                 <div class="field">

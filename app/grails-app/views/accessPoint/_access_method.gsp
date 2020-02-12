@@ -1,6 +1,6 @@
 
 <div class="field required">
-    <label>${message(code: 'accessMethod.label', default: 'Access Point Type')}</label>
+    <label>${message(code: 'accessMethod.label')}</label>
     <laser:select class="ui dropdown values" id="accessMethod" name="accessMethod"
                   from="${com.k_int.kbplus.OrgAccessPoint.getAllRefdataValues(de.laser.helper.RDConstants.ACCESS_POINT_TYPE)}"
                   optionKey="value"

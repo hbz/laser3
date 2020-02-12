@@ -158,16 +158,16 @@ class ProfileController {
 
     if ( user.display != params.userDispName ) {
       user.display = params.userDispName
-      flash.message += message(code:'profile.updateProfile.updated.name', default:"User display name updated<br/>")
+      flash.message += message(code:'profile.updateProfile.updated.name')
     }
 
     if ( user.email != params.email ) {
       if ( validateEmailAddress(params.email) ) {
         user.email = params.email
-        flash.message += message(code:'profile.updateProfile.updated.email', default:"User email address updated<br/>")
+        flash.message += message(code:'profile.updateProfile.updated.email')
       }
       else {
-        flash.error = message(code:'profile.updateProfile.updated.email.error', default:"Emails must be of the form user@domain.name<br/>")
+        flash.error = message(code:'profile.updateProfile.updated.email.error')
       }
     }
 
@@ -179,7 +179,7 @@ class ProfileController {
         if ( ( l >= 5 ) && ( l <= 100 ) ) {
           Long new_long = new Long(l);
           if ( new_long != user.getDefaultPageSizeTMP() ) {
-            flash.message += message(code:'profile.updateProfile.updated.pageSize', default:"User default page size updated<br/>")
+            flash.message += message(code:'profile.updateProfile.updated.pageSize')
           }
             //user.setDefaultPageSizeTMP(new_long)
             def setting = user.getSetting(UserSettings.KEYS.PAGE_SIZE, null)
@@ -187,7 +187,7 @@ class ProfileController {
      
         }
         else {
-          flash.message+= message(code:'profile.updateProfile.updated.pageSize.error', default:"Default page size must be between 5 and 100<br/>");
+          flash.message+= message(code:'profile.updateProfile.updated.pageSize.error')
         }
       }
       catch ( Exception e ) {
@@ -202,7 +202,7 @@ class ProfileController {
 
             if (org?.id != us.getValue()?.id) {
                 us.setValue(org)
-                flash.message += message(code: 'profile.updateProfile.updated.dash', default: "User default dashboard updated<br/>")
+                flash.message += message(code: 'profile.updateProfile.updated.dash')
             }
         }
 
@@ -245,7 +245,7 @@ class ProfileController {
             if (params.remindCCEmailaddress == null || params.remindCCEmailaddress.trim() == '' || validateEmailAddress(params.remindCCEmailaddress)){
                 changeValue(user.getSetting(REMIND_CC_EMAILADDRESS, null),       params.remindCCEmailaddress,     'profile.updateProfile.updated.remindCCEmailaddress')
             } else {
-                flash.error += message(code:'profile.updateProfile.updated.email.error', default:"Emails must be of the form user@domain.name<br/>")
+                flash.error += message(code:'profile.updateProfile.updated.email.error')
             }
             changeValue(user.getSetting(IS_REMIND_CC_BY_EMAIL, YN_NO),                   params.isRemindCCByEmail?:"N",     'profile.updateProfile.updated.isRemindCCByEmail')
         }
@@ -292,7 +292,7 @@ class ProfileController {
                     if (validateEmailAddress(params.notificationCCEmailaddress)){
                         changeValue(user.getSetting(NOTIFICATION_CC_EMAILADDRESS, null),       params.notificationCCEmailaddress,     'profile.updateProfile.updated.notificationCCEmailaddress')
                     } else {
-                        flash.error += message(code:'profile.updateProfile.updated.email.error', default:"Emails must be of the form user@domain.name<br/>")
+                        flash.error += message(code:'profile.updateProfile.updated.email.error')
                     }
                 }
                 changeValue(user.getSetting(IS_NOTIFICATION_CC_BY_EMAIL, YN_NO),                   params.isNotificationCCByEmail?:"N",     'profile.updateProfile.updated.isNotificationCCByEmail')
@@ -354,9 +354,9 @@ class ProfileController {
         def was_isRemindByEmail = user1.getSetting(UserSettings.KEYS.IS_REMIND_BY_EMAIL, RDStore.YN_NO)
         if ( was_isRemindByEmail != params.isRemindByEmail ) {
             was_isRemindByEmail = params.isRemindByEmail
-            flash.message += message(code:'profile.updateProfile.updated.isRemindByEmail', default:"isRemindByEmail updated<br/>")
+            flash.message += message(code:'profile.updateProfile.updated.isRemindByEmail')
             if ( ! user1.email && was_isRemindByEmail.equals(RDStore.YN_YES)) {
-                flash.error = message(code:'profile.updateProfile.updated.isRemindByEmail.error', default:"Please enter the email address<br/>")
+                flash.error = message(code:'profile.updateProfile.updated.isRemindByEmail.error')
             }
         }
         user.save();
@@ -385,52 +385,6 @@ class ProfileController {
         }
         redirect(action: "index")
     }
-
-    private def addTransforms() {
-
-    def user = User.get(springSecurityService.principal.id)
-    def transforms = Transforms.findById(params.transformId)
-    
-    if(user && transforms){
-      def existing_transform = UserTransforms.findByUserAndTransforms(user,transforms);
-      if ( existing_transform == null ) {
-        new UserTransforms(
-            user: user,
-            transforms: transforms).save(failOnError: true)
-        flash.message="Transformation added"
-      }
-      else {
-        flash.error="You already have added this transform."
-      }
-    }else{  
-      log.error("Unable to locate transforms");
-      flash.error="Error we could not add this transformation"
-    }
-
-    redirect(action: "index")
-  }
-
-
-    private def removeTransforms() {
-    def user = User.get(springSecurityService.principal.id)
-    def transforms = Transforms.findById(params.transformId)
-    
-    //Check if has already transforms
-    if(user && transforms){
-      def existing_transform = UserTransforms.findByUserAndTransforms(user,transforms);
-      if(existing_transform){
-        transform.delete(failOnError: true, flush: true)
-        flash.message="Transformation removed from your list."
-      }else{
-        flash.error="This transformation is not in your list."
-      }
-    }else{
-      log.error("Unable to locate transforms");
-      flash.error="Error we could not remove this transformation"
-    }
-    
-    redirect(action: "index")
-  }
 
     @Secured(['ROLE_USER'])
     def properties() {

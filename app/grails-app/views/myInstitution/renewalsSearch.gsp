@@ -19,16 +19,16 @@
 
         <div class="ui la-filter segment">
             <div class="field">
-                <label>${message(code: 'package.show.pkg_name', default: 'Package Name')}</label>
+                <label>${message(code: 'package.show.pkg_name')}</label>
                 <input name="pkgname" value="${params.pkgname}"/>
             </div>
 
             <div class="field">
                 <button class="ui secondary button" type="submit" name="search"
-                        value="yes">${message(code: 'default.button.search.label', default: 'Search')}</button>
+                        value="yes">${message(code: 'default.button.search.label')}</button>
                 <g:if test="${params.search == 'yes'}">
                     <button class="ui button" type="submit" name="searchreset"
-                            value="yes">${message(code: 'default.button.searchreset.label', default: 'Search Reset')}</button>
+                            value="yes">${message(code: 'default.button.searchreset.label')}</button>
                 </g:if>
             </div>
         </div>
@@ -108,7 +108,7 @@
                 <table class="ui celled la-table table">
                     <thead>
                     <tr>
-                        <th>${message(code: 'package.show.pkg_name', default: 'Package Name')}</th>
+                        <th>${message(code: 'package.show.pkg_name')}</th>
                         %{--<th>${message(code: 'consortium.label', default: 'Consortium')}</th>--}%
                         <th></th>
                     </tr>
@@ -166,7 +166,7 @@
             <table class="ui celled la-table table">
                 <thead>
                 <tr>
-                    <th><h4 class="ui header">${message(code: 'myinst.renewalSearch.basket', default: 'Basket')}</h4>
+                    <th><h4 class="ui header">${message(code: 'myinst.renewalSearch.basket')}</h4>
                     </th>
                     <th><g:if test="${basket}">
                         <button class="ui icon basic negative button" type="submit" name="clearBasket"
