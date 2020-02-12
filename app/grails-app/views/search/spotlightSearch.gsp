@@ -1,12 +1,12 @@
 <%@ page import="com.k_int.kbplus.SurveyConfig; de.laser.helper.RDStore; com.k_int.kbplus.RefdataValue; java.text.SimpleDateFormat;com.k_int.kbplus.DocContext;" %>
 <%
     def result = []
-    SimpleDateFormat sdf = new SimpleDateFormat(message(code: 'default.date.format.notime'))
+    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'")
 
     hits.each { hit ->
 
-        String period = hit.getSourceAsMap().startDate ? sdf.format(new Date().parse("yyyy-MM-dd'T'HH:mm:ssZ", hit.getSourceAsMap().startDate))  : ''
-        period = hit.getSourceAsMap().endDate ? period + ' - ' + sdf.format(new Date().parse("yyyy-MM-dd'T'HH:mm:ssZ", hit.getSourceAsMap().endDate))  : ''
+        String period = hit.getSourceAsMap().startDate ? sdf.parse(hit.getSourceAsMap().startDate).format(message(code: 'default.date.format.notime'))  : ''
+        period = hit.getSourceAsMap().endDate ? period + ' - ' + sdf.parse(hit.getSourceAsMap().endDate).format(message(code: 'default.date.format.notime'))  : ''
         period = period ? '('+period+')' : ''
         String statusString = hit.getSourceAsMap().statusId ? RefdataValue.get(hit.getSourceAsMap().statusId).getI10n('value') : hit.getSourceAsMap().status
 
