@@ -731,7 +731,7 @@ class DataloadService {
                 result.description = subPrivProp.refValue?.value
             }
 
-            result.availableToOrgs = [subPrivProp.type.tenant?.id]
+            result.availableToOrgs = [subPrivProp.type.tenant?.id ?: 0]
 
 
             if(subPrivProp.owner){
@@ -826,7 +826,7 @@ class DataloadService {
                 result.description = licPrivProp.refValue?.value
             }
 
-            result.availableToOrgs = [licPrivProp.type.tenant?.id]
+            result.availableToOrgs = [licPrivProp.type.tenant?.id ?: 0]
 
 
             if(licPrivProp.owner){
@@ -1186,7 +1186,7 @@ class DataloadService {
 
             CountResponse countResponse = esclient.count(countRequest, RequestOptions.DEFAULT)
 
-            ft.dbElements = domainClass.findAll().size()?:0
+            ft.dbElements = domainClass.findAll().size()
             ft.esElements = countResponse ? countResponse.getCount().toInteger() :0
 
             //println(ft.dbElements +' , '+ ft.esElements)
