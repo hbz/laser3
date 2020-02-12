@@ -36,9 +36,11 @@
         controller="subscription" action="show"
         id="${parentSub.id}">${parentSub.name}</g:link><br><br>
 
-    <g:if test="${parentPackages}">
-        <g:message code="package.plural"/>
 
+<g:message code="subscription.linkPackagesMembers.package.label"
+           args="${args.superOrgType}"/></label>
+
+    <g:if test="${parentPackages}">
         <div class="ui middle aligned selection list">
             <g:each in="${parentPackages}" var="subPkg">
                 <div class="item">
@@ -56,6 +58,9 @@
         </div>
 
     </g:if>
+    <g:else>
+        <g:message code="subscription.linkPackagesMembers.noValidLicenses" args="${args.superOrgType}"/>
+    </g:else>
 </h4>
 
 <div class="ui icon info message">
@@ -75,12 +80,12 @@
         <h4>${message(code: 'subscription.linkPackagesMembers.unlinkInfo')}</h4>
 
         <div class="ui buttons">
-            <g:link class="ui button js-open-confirm-modal"
+            <g:link class="ui button negative js-open-confirm-modal"
                     data-confirm-tokenMsg="${message(code: 'subscription.linkPackagesMembers.unlinkInfo.onlyPackage.confirm')}"
                     data-confirm-term-how="ok" action="processUnLinkPackagesConsortia" id="${params.id}"
                     params="[withIE: false]">${message(code: 'subscription.linkPackagesMembers.unlinkInfo.onlyPackage')}</g:link>
             <div class="or"></div>
-            <g:link class="ui button js-open-confirm-modal"
+            <g:link class="ui button negative js-open-confirm-modal"
                     data-confirm-tokenMsg="${message(code: 'subscription.linkPackagesMembers.unlinkInfo.withIE.confirm')}"
                     data-confirm-term-how="ok" action="processUnLinkPackagesConsortia" id="${params.id}"
                     params="[withIE: true]">${message(code: 'subscription.linkPackagesMembers.unlinkInfo.withIE')}</g:link>
@@ -88,40 +93,40 @@
 
     </div>
 
-    %{--<div class="ui segment">
-        <g:form action="processUnLinkPackagesConsortia" method="post" class="ui form">
-            <g:hiddenField name="id" value="${params.id}"/>
-            <div class="field required">
-                <h4>${message(code: 'subscription.linkPackagesMembers.unlinkInfoforPackage')}:</h4>
-                <label><g:message code="subscription.linkPackagesMembers.package.label"
-                                  args="${args.superOrgType}"/></label>
-                <g:if test="${validPackages}">
-                    <g:select class="ui search dropdown"
-                              optionKey="id" optionValue="${{ it.getPackageName() }}"
-                              from="${validPackages}" name="package_All" value=""
-                              required=""
-                              noSelection='["": "${message(code: 'subscription.linkPackagesMembers.unlinknoSelection')}"]'/>
-                </g:if>
-                <g:else>
-                    <g:message code="subscription.linkPackagesMembers.noValidLicenses" args="${args.superOrgType}"/>
-                </g:else>
-            </div>
+%{--<div class="ui segment">
+    <g:form action="processUnLinkPackagesConsortia" method="post" class="ui form">
+        <g:hiddenField name="id" value="${params.id}"/>
+        <div class="field required">
+            <h4>${message(code: 'subscription.linkPackagesMembers.unlinkInfoforPackage')}:</h4>
+            <label><g:message code="subscription.linkPackagesMembers.package.label"
+                              args="${args.superOrgType}"/></label>
+            <g:if test="${validPackages}">
+                <g:select class="ui search dropdown"
+                          optionKey="id" optionValue="${{ it.getPackageName() }}"
+                          from="${validPackages}" name="package_All" value=""
+                          required=""
+                          noSelection='["": "${message(code: 'subscription.linkPackagesMembers.unlinknoSelection')}"]'/>
+            </g:if>
+            <g:else>
+                <g:message code="subscription.linkPackagesMembers.noValidLicenses" args="${args.superOrgType}"/>
+            </g:else>
+        </div>
 
-            <div class="ui buttons">
-                <button class="ui button js-open-confirm-modal"
-                        data-confirm-tokenMsg="${message(code: 'subscription.linkPackagesMembers.unlinkInfo.onlyPackage.confirm')}"
-                        data-confirm-term-how="ok" type="submit" name="withIE"
-                        value="${false}">${message(code: 'subscription.linkPackagesMembers.unlinkInfo.onlyPackage')}</button>
+        <div class="ui buttons">
+            <button class="ui button js-open-confirm-modal"
+                    data-confirm-tokenMsg="${message(code: 'subscription.linkPackagesMembers.unlinkInfo.onlyPackage.confirm')}"
+                    data-confirm-term-how="ok" type="submit" name="withIE"
+                    value="${false}">${message(code: 'subscription.linkPackagesMembers.unlinkInfo.onlyPackage')}</button>
 
-                <div class="or"></div>
-                <button class="ui button js-open-confirm-modal"
-                        data-confirm-tokenMsg="${message(code: 'subscription.linkPackagesMembers.unlinkInfo.withIE.confirm')}"
-                        data-confirm-term-how="ok" type="submit" name="withIE"
-                        value="${true}">${message(code: 'subscription.linkPackagesMembers.unlinkInfo.withIE')}</button>
-            </div>
-        </g:form>
+            <div class="or"></div>
+            <button class="ui button js-open-confirm-modal"
+                    data-confirm-tokenMsg="${message(code: 'subscription.linkPackagesMembers.unlinkInfo.withIE.confirm')}"
+                    data-confirm-term-how="ok" type="submit" name="withIE"
+                    value="${true}">${message(code: 'subscription.linkPackagesMembers.unlinkInfo.withIE')}</button>
+        </div>
+    </g:form>
 
-    </div>--}%
+</div>--}%
 
 
     <g:form action="processLinkPackagesConsortia" method="post" class="ui form">
@@ -149,28 +154,32 @@
             <div class="two fields">
                 <div class="eight wide field" style="text-align: left;">
                     <div class="ui buttons">
-                        <button class="ui button" type="submit" name="processOption" value="linkwithoutIE">${message(code: 'subscription.linkPackagesMembers.linkwithoutIE')}</button>
+                        <button class="ui button" type="submit" name="processOption"
+                                value="linkwithoutIE">${message(code: 'subscription.linkPackagesMembers.linkwithoutIE')}</button>
+
                         <div class="or"></div>
-                        <button class="ui button" type="submit" name="processOption" value="linkwithIE">${message(code: 'subscription.linkPackagesMembers.linkwithIE', args: args.superOrgType)}</button>
+                        <button class="ui button" type="submit" name="processOption"
+                                value="linkwithIE">${message(code: 'subscription.linkPackagesMembers.linkwithIE', args: args.superOrgType)}</button>
 
                     </div>
                 </div>
+
                 <div class="eight wide field" style="text-align: right;">
                     <div class="ui buttons">
                         <button class="ui button negative"
-                                type="submit" name="processOption" value="unlinkwithoutIE"
-                                value="${false}">${message(code: 'subscription.linkPackagesMembers.unlinkInfo.onlyPackage')}</button>
+                                type="submit" name="processOption"
+                                value="unlinkwithoutIE">${message(code: 'subscription.linkPackagesMembers.unlinkInfo.onlyPackage')}</button>
 
                         <div class="or"></div>
                         <button class="ui button negative "
-                                type="submit" name="processOption" value="unlinkwithIE"
-                                value="${true}">${message(code: 'subscription.linkPackagesMembers.unlinkInfo.withIE')}</button>
+                                type="submit" name="processOption"
+                                value="unlinkwithIE">${message(code: 'subscription.linkPackagesMembers.unlinkInfo.withIE')}</button>
                     </div>
 
                 </div>
             </div>
 
-        <div class="divider"></div>
+            <div class="divider"></div>
 
             <table class="ui celled la-table table">
                 <thead>
@@ -331,7 +340,7 @@
             else {
                 $("tr[class!=disabled] input[name=selectedMembers]").prop('checked', false)
             }
-        })
+        });
 
       function unlinkPackage(pkg_id, subscriptionInstanceID){
 

@@ -1525,14 +1525,15 @@ class SubscriptionController extends AbstractDebugController {
 
         def validSubChilds = Subscription.findAllByInstanceOf(result.parentSub)
 
+        List selectedMembers = params.list("selectedMembers")
 
         def changeAccepted = []
-        if (params.license_All) {
+        if(selectedMembers && params.license_All){
             def lic = License.get(params.license_All)
-            validSubChilds.each { subChild ->
-                def sub = Subscription.get(subChild.id)
-                sub.owner = lic
-                if (sub.save(flush: true)) {
+            selectedMembers.each { subId ->
+                def subChild = Subscription.get(subId)
+                subChild.owner = (params.processOption == 'linkLicense') ? lic : ((params.processOption == 'unlinkLicense') ? null : subChild.owner)
+                if (subChild.save(flush: true)) {
                     changeAccepted << "${subChild?.name} (${message(code:'subscription.linkInstance.label')} ${subChild?.orgRelations.find { it.roleType in [OR_SUBSCRIBER_CONS,OR_SUBSCRIBER_COLLECTIVE] }.org.sortname})"
                 }
             }
@@ -1540,24 +1541,19 @@ class SubscriptionController extends AbstractDebugController {
                 flash.message = message(code: 'subscription.linkLicenseMembers.changeAcceptedAll', args: [changeAccepted.join(', ')])
             }
 
+            if (!changeAccepted) {
+                flash.error = message(code: 'subscription.linkLicenseMembers.noChanges')
+            }
+
 
         } else {
-            validSubChilds.each {
-                if (params."license_${it.id}") {
-                    def newLicense = License.get(params."license_${it.id}")
-                    if (it.owner != newLicense) {
-                        def sub = Subscription.get(it.id)
-                        sub.owner = newLicense
-                        if (sub.save(flush: true)) {
-                            changeAccepted << "${it?.name} (${message(code:'subscription.linkInstance.label')} ${it?.orgRelations.find { it.roleType in [OR_SUBSCRIBER_CONS,OR_SUBSCRIBER_COLLECTIVE] }.org.sortname})"
-                        }
-                    }
-                }
-            }
-            if (changeAccepted) {
-                flash.message = message(code: 'subscription.linkLicenseMembers.changeAcceptedAll', args: [changeAccepted.join('')])
+            if(!selectedMembers) {
+                flash.error = message(code: 'subscription.linkLicenseMembers.noSelectedMember')
             }
 
+            if(!params.license_All) {
+                flash.error = message(code: 'subscription.linkLicenseMembers.noSelectedLicense')
+            }
         }
 
 
@@ -1674,11 +1670,6 @@ class SubscriptionController extends AbstractDebugController {
         }
 
         result.parentSub = result.subscriptionInstance.instanceOf ? result.subscriptionInstance.instanceOf : result.subscriptionInstance
-
-        result.parentPackages = result.parentSub.packages.sort { it.pkg.name }
-
-        def validSubChilds = Subscription.findAllByInstanceOf(result.parentSub)
-
 
         def changeAccepted = []
         def changeAcceptedwithIE = []
@@ -2067,58 +2058,90 @@ class SubscriptionController extends AbstractDebugController {
             redirect(url: request.getHeader('referer'))
         }
 
-        result.parentSub = result.subscriptionInstance.instanceOf && result.subscription.getCalculatedType() != TemplateSupport.CALCULATED_TYPE_PARTICIPATION_AS_COLLECTIVE ? result.subscriptionInstance.instanceOf : result.subscriptionInstance
+        List selectedMembers = params.list("selectedMembers")
 
-        def validSubChilds = Subscription.findAllByInstanceOf(result.parentSub)
-        def change = []
-                validSubChilds.each { subChild ->
+        if(selectedMembers){
+            def change = []
+            def noChange = []
+            selectedMembers.each { subID ->
 
-                    SimpleDateFormat sdf = DateUtil.getSDF_NoTime()
-                    def startDate = params.valid_from ? sdf.parse(params.valid_from) : null
-                    def endDate = params.valid_to ? sdf.parse(params.valid_to) : null
+                        Subscription subChild = Subscription.get(subID)
+
+                        SimpleDateFormat sdf = DateUtil.getSDF_NoTime()
+                        def startDate = params.valid_from ? sdf.parse(params.valid_from) : null
+                        def endDate = params.valid_to ? sdf.parse(params.valid_to) : null
 
 
-                    if(startDate && !auditService.getAuditConfig(subChild?.instanceOf, 'startDate'))
-                    {
-                        subChild?.startDate = startDate
-                        change << message(code: 'default.startDate.label')
+                        if(startDate && !auditService.getAuditConfig(subChild?.instanceOf, 'startDate'))
+                        {
+                            subChild?.startDate = startDate
+                            change << message(code: 'default.startDate.label')
+                        }
+
+                        if(startDate && auditService.getAuditConfig(subChild?.instanceOf, 'startDate'))
+                        {
+                            noChange << message(code: 'default.startDate.label')
+                        }
+
+                        if(endDate && !auditService.getAuditConfig(subChild?.instanceOf, 'endDate'))
+                        {
+                            subChild?.endDate = endDate
+                            change << message(code: 'default.endDate.label')
+                        }
+
+                        if(endDate && auditService.getAuditConfig(subChild?.instanceOf, 'endDate'))
+                        {
+                            noChange << message(code: 'default.endDate.label')
+                        }
+
+
+                        if(params.status && !auditService.getAuditConfig(subChild?.instanceOf, 'status'))
+                        {
+                            subChild?.status = RefdataValue.get(params.status) ?: subChild?.status
+                            change << message(code: 'subscription.status.label')
+                        }
+                        if(params.status && auditService.getAuditConfig(subChild?.instanceOf, 'status'))
+                        {
+                            noChange << message(code: 'subscription.status.label')
+                        }
+
+                        if(params.form && !auditService.getAuditConfig(subChild?.instanceOf, 'form'))
+                        {
+                            subChild?.form = RefdataValue.get(params.form) ?: subChild?.form
+                            change << message(code: 'subscription.form.label')
+                        }
+                        if(params.form && auditService.getAuditConfig(subChild?.instanceOf, 'form'))
+                        {
+                            noChange << message(code: 'subscription.form.label')
+                        }
+
+                        if(params.resource && !auditService.getAuditConfig(subChild?.instanceOf, 'resource'))
+                        {
+                            subChild?.resource = RefdataValue.get(params.resource) ?: subChild?.resource
+                            change << message(code: 'subscription.resource.label')
+                        }
+                        if(params.resource && auditService.getAuditConfig(subChild?.instanceOf, 'resource'))
+                        {
+                            noChange << message(code: 'subscription.resource.label')
+                        }
+
+                        if (subChild?.isDirty()) {
+                            subChild?.save(flush: true)
+                        }
                     }
 
-                    if(endDate && !auditService.getAuditConfig(subChild?.instanceOf, 'endDate'))
-                    {
-                        subChild?.endDate = endDate
-                        change << message(code: 'default.endDate.label')
+                    if(change){
+                        flash.message = message(code: 'subscription.subscriptionPropertiesMembers.changes', args: [change?.unique { a, b -> a <=> b }.join(', ').toString()])
                     }
 
-
-                    if(params.status && !auditService.getAuditConfig(subChild?.instanceOf, 'status'))
-                    {
-                        subChild?.status = RefdataValue.get(params.status) ?: subChild?.status
-                        change << message(code: 'subscription.status.label')
+                    if(noChange){
+                        flash.error = message(code: 'subscription.subscriptionPropertiesMembers.noChanges', args: [noChange?.unique { a, b -> a <=> b }.join(', ').toString()])
                     }
-
-                    if(params.form && !auditService.getAuditConfig(subChild?.instanceOf, 'form'))
-                    {
-                        subChild?.form = RefdataValue.get(params.form) ?: subChild?.form
-                        change << message(code: 'subscription.form.label')
-                    }
-
-                    if(params.resource && !auditService.getAuditConfig(subChild?.instanceOf, 'resource'))
-                    {
-                        subChild?.resource = RefdataValue.get(params.resource) ?: subChild?.resource
-                        change << message(code: 'subscription.resource.label')
-                    }
-
-                    if (subChild?.isDirty()) {
-                        subChild?.save(flush: true)
-                    }
-                }
-        if(change){
-            flash.message = message(code: 'subscription.subscriptionPropertiesMembers.changes', args: [change?.unique { a, b -> a <=> b }.join(', ').toString()])
+        }else {
+            flash.error = message(code: 'subscription.subscriptionPropertiesMembers.noSelectedMember')
         }
 
-        def id = params.id
-        redirect(action: 'subscriptionPropertiesMembers', id: id)
+        redirect(action: 'subscriptionPropertiesMembers', id: params.id)
     }
 
     @DebugAnnotation(perm = "ORG_INST_COLLECTIVE,ORG_CONSORTIUM", affil = "INST_EDITOR")
