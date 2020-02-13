@@ -2,6 +2,8 @@
 
 **Ticket    Date    Branch      Author  Feature/Bug     Description/Keywords**
 
+2148    13.02.2020  hbz-dev     David   Feature     Individuelle Freigabe für API-Ausgabe für Lizenzen und Verträge
+
 2162    10.02.2020  hbz-dev     David   Feature     Legacy Konstrukt "Transforms" entfernen
 
 2160    10.02.2020  hbz-dev     David   Feature     Legacy "Reminder" entfernen
