@@ -1661,12 +1661,6 @@ class YodaController {
     }
 
     @Secured(['ROLE_YODA'])
-    def frontend() {
-        Map<String, Object> result = [test:123]
-        result
-    }
-
-    @Secured(['ROLE_YODA'])
     def cleanUpSurveys() {
         Map<String, Object> result = [:]
 

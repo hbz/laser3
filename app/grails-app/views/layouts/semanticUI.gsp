@@ -339,6 +339,16 @@
                                 </div>
                             </div>
 
+                            <div class="ui dropdown item">
+                                <i class="ui icon code branch"></i>Developer
+                                <i class="dropdown icon"></i>
+
+                                <div class="menu">
+                                    <g:link class="item" controller="dev" action="frontend">Frontend</g:link>
+                                </div>
+                            </div>
+
+
                             <div class="divider"></div>
 
                             <div class="ui dropdown item">
@@ -417,7 +427,7 @@
                             <g:link class="item" controller="yoda" action="dashboard">Dashboard</g:link>
 
                             <div class="ui dropdown item">
-                                <i class="ui icon wrench"></i> ${message(code:'menu.yoda.engine')}
+                                <i class="ui icon keyboard outline"></i>${message(code:'menu.yoda.engine')}
                                 <i class="dropdown icon"></i>
 
                                 <div class="menu">
@@ -508,10 +518,6 @@
 
                                 </div>
                             </div>
-
-                            <div class="divider"></div>
-                            <g:link class="item" controller="yoda" action="frontend">Frontend für Entwickler</g:link>
-
                         </div>
 
                     </div>
