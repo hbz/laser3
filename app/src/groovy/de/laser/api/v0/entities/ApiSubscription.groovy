@@ -51,7 +51,10 @@ class ApiSubscription {
 
 		boolean hasAccess = false
 
-		if (OrgRole.findBySubAndRoleTypeAndOrg(sub, RDStore.OR_SUBSCRIPTION_CONSORTIA, context)) {
+		if (! sub.isPublicForApi) {
+			hasAccess = false
+		}
+		else if (OrgRole.findBySubAndRoleTypeAndOrg(sub, RDStore.OR_SUBSCRIPTION_CONSORTIA, context)) {
 			hasAccess = true
 		}
 		else if (OrgRole.findBySubAndRoleTypeAndOrg(sub, RDStore.OR_SUBSCRIBER, context)) {
@@ -95,11 +98,7 @@ class ApiSubscription {
 		println "${available.size()} available subscriptions found .."
 
         available.each { sub ->
-            //if (calculateAccess(sub, context, hasAccess)) {
-                println sub.id + ' ' + sub.name
-                result.add(ApiStubReader.requestSubscriptionStub(sub, context))
-                //result.add([globalUID: sub.globalUID])
-            //}
+			result.add(ApiStubReader.requestSubscriptionStub(sub, context))
         }
 
 		return (result ? new JSON(result) : null)

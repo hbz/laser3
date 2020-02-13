@@ -52,7 +52,10 @@ class ApiLicense {
 
         boolean hasAccess = false
 
-        if (OrgRole.findByLicAndRoleTypeAndOrg(lic, RDStore.OR_LICENSING_CONSORTIUM, context)) {
+        if (! lic.isPublicForApi) {
+            hasAccess = false
+        }
+        else if (OrgRole.findByLicAndRoleTypeAndOrg(lic, RDStore.OR_LICENSING_CONSORTIUM, context)) {
             hasAccess = true
         }
         else if (OrgRole.findByLicAndRoleTypeAndOrg(lic, RDStore.OR_LICENSEE, context)) {
@@ -94,11 +97,7 @@ class ApiLicense {
         )
 
         available.each { lic ->
-            //if (calculateAccess(lic, context, hasAccess)) {
-                //println lic.id + ' ' + lic.reference
-                result.add(ApiStubReader.requestLicenseStub(lic, context))
-                //result.add([globalUID: lic.globalUID])
-            //}
+            result.add(ApiStubReader.requestLicenseStub(lic, context))
         }
 
         return (result ? new JSON(result) : null)
