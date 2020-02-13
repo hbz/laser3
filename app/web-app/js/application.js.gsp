@@ -223,8 +223,8 @@ r2d2 = {
         console.log("r2d2.initGlobalXEditableStuff()");
 
         $.fn.editable.defaults.mode = 'inline'
-        $.fn.editableform.buttons = '<button type="submit" class="ui icon button editable-submit"><i class="check icon"></i></button>' +
-            '<button type="button" class="ui icon button editable-cancel"><i class="times icon"></i></button>'
+        $.fn.editableform.buttons = '<button type="submit" class="ui icon button editable-submit"><i aria-hidden="true" class="check icon"></i></button>' +
+            '<button type="button" class="ui icon button editable-cancel"><i aria-hidden="true" class="times icon"></i></button>'
         $.fn.editableform.template =
             '<form class="ui form editableform">' +
             '	<div class="control-group">' +
@@ -615,25 +615,25 @@ r2d2 = {
 
                 switch (how) {
                     case "delete":
-                        $('#js-confirmation-button').html(dict.get('confirm.dialog.delete',currLanguage) + '<i class="trash alternate icon"></i>');
+                        $('#js-confirmation-button').html(dict.get('confirm.dialog.delete',currLanguage) + '<i aria-hidden="true" class="trash alternate icon"></i>');
                         break;
                     case "unlink":
-                        $('#js-confirmation-button').html(dict.get('confirm.dialog.unlink',currLanguage) + '<i class="la-chain broken icon"></i>');
+                        $('#js-confirmation-button').html(dict.get('confirm.dialog.unlink',currLanguage) + '<i aria-hidden="true" class="la-chain broken icon"></i>');
                         break;
                     case "share":
-                        $('#js-confirmation-button').html(dict.get('confirm.dialog.share',currLanguage) + '<i class="la-share icon"></i>');
+                        $('#js-confirmation-button').html(dict.get('confirm.dialog.share',currLanguage) + '<i aria-hidden="true" class="la-share icon"></i>');
                         break;
                     case "inherit":
-                        $('#js-confirmation-button').html(dict.get('confirm.dialog.inherit',currLanguage) + '<i class="thumbtack icon"></i>');
+                        $('#js-confirmation-button').html(dict.get('confirm.dialog.inherit',currLanguage) + '<i aria-hidden="true" class="thumbtack icon"></i>');
                         break;
                     case "ok":
-                        $('#js-confirmation-button').html(dict.get('confirm.dialog.ok',currLanguage) + '<i class="check icon"></i>');
+                        $('#js-confirmation-button').html(dict.get('confirm.dialog.ok',currLanguage) + '<i aria-hidden="true" class="check icon"></i>');
                         break;
                     case "concludeBinding":
-                        $('#js-confirmation-button').html(dict.get('confirm.dialog.concludeBinding',currLanguage) + '<i class="check icon"></i>');
+                        $('#js-confirmation-button').html(dict.get('confirm.dialog.concludeBinding',currLanguage) + '<i aria-hidden="true" class="check icon"></i>');
                         break;
                     default:
-                        $('').html('Entfernen<i class="x icon"></i>');
+                        $('').html('Entfernen<i aria-hidden="true" class="x icon"></i>');
                 }
 
                 var remoteLink = $(that).hasClass('la-js-remoteLink')

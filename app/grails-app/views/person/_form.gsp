@@ -43,7 +43,7 @@
                   optionKey="id"
                   optionValue="value"
                   value="${personInstance?.gender?.id}"
-                  noSelection="['': '']"/>
+                  noSelection="${['': message(code: 'default.select.choose.label')]}"/>
 </div>
 <%--
 <div class="field fieldcontain ${hasErrors(bean: personInstance, field: 'roleType', 'error')} ">
@@ -56,7 +56,7 @@
                   optionKey="id"
                   optionValue="value"
                   value="${personInstance?.roleType?.id}"
-                  noSelection="['': '']"/>
+                  noSelection="${['': message(code: 'default.select.choose.label')]}"/>
 </div>
 --%>
 <div class="field fieldcontain ${hasErrors(bean: personInstance, field: 'contactType', 'error')} ">
@@ -69,7 +69,7 @@
                   optionKey="id"
                   optionValue="value"
                   value="${personInstance?.contactType?.id}"
-                  noSelection="['': '']"/>
+                  noSelection="${['': message(code: 'default.select.choose.label')]}"/>
 </div>
 
 <div class="field fieldcontain ${hasErrors(bean: personInstance, field: 'contacts', 'error')} ">

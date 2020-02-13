@@ -7,9 +7,9 @@
         <input type="hidden" name="redirect" value="true" />
 
         <div class="field">
-            <label for="newPrsRoleOrg">Einrichtung</label>
+            <label for="newPrsRoleOrg_${tmplId}">Einrichtung</label>
             <g:select class="ui dropdown search"
-                      id="newPrsRoleOrg" name="newPrsRoleOrg"
+                      id="newPrsRoleOrg_${tmplId}" name="newPrsRoleOrg"
                           from="${Org.findAll("from Org o order by lower(o.name)")}"
                           optionKey="id"
                           optionValue="${{ it.name ?: it.sortname ?: it.shortname }}"
@@ -18,9 +18,9 @@
         </div>
 
         <div class="field">
-            <label for="newPrsRoleType">${tmplRoleType}</label>
+            <label for="newPrsRoleType_${tmplId}">${tmplRoleType}</label>
             <laser:select class="ui dropdown search"
-                          id="newPrsRoleType" name="newPrsRoleType"
+                          id="newPrsRoleType_${tmplId}" name="newPrsRoleType"
                           from="${roleTypeValues}"
                           optionKey="id"
                           optionValue="value"
