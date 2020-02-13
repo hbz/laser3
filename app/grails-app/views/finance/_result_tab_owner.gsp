@@ -39,7 +39,7 @@
             </g:if>
             <g:else>
                 <th colspan="6"></th>
-                <g:sortableColumn property="ci.endDate" title="${message(code:'financials.dateTo')}" params="[ownSort: true]"/>
+                <g:sortableColumn property="ci.endDate" title="${message(code:'financials.dateTo')}" params="[ownSort: true, sub: fixedSubscription.id]" mapping="subfinance"/>
                 <th colspan="2"></th>
             </g:else>
         </tr>

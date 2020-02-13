@@ -2,6 +2,10 @@
 
 **Ticket    Date    Branch      Author  Feature/Bug     Description/Keywords**
 
+--      12.02.2020  rc1.2       Andreas Bug         Sortierung nach Enddatum war bei eigenen Kosten innerhalb einer Lizenz nicht möglich
+
+2179    12.02.2020  rc1.2       Andreas Bug         Übernahme des Anbieternamens in Sync nachgeholt
+
 2180    12.02.2020  rc1.2       Moe     Bug         NullPointerException subscription/index 
 
 2181    12.02.2020  rc1.2       Moe     Bug         processUnLinkPackagesConsortia: Schlüssel wird noch auf org_access_point_link verwiesen

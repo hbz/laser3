@@ -42,7 +42,6 @@
     </semui:controlButtons>
 
       <h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon />
-        <g:if test="${params.asAt}">${message(code:'package.show.asAt', args:[params.asAt])}</g:if>
           <g:if test="${editable}"><span id="packageNameEdit"
                     class="xEditableValue"
                     data-type="textarea"

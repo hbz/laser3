@@ -551,6 +551,10 @@ class Org
           result.impId = imp_uuid
           result.save()
         }
+        else {
+            result.name = name
+            result.save()
+        }
         println "org lookup end"
         result
     }
