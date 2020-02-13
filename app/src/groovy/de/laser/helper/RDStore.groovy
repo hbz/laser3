@@ -156,6 +156,10 @@ class RDStore {
 
     static final PRS_FUNC_GENERAL_CONTACT_PRS   = getRefdataValue('General contact person', RDConstants.PERSON_FUNCTION)
     static final PRS_FUNC_GASCO_CONTACT         = getRefdataValue('GASCO-Contact', RDConstants.PERSON_FUNCTION)
+    static final PRS_FUNC_RESPONSIBLE_ADMIN     = getRefdataValue('Responsible Admin', RDConstants.PERSON_FUNCTION)
+    static final PRS_FUNC_FUNC_BILLING_ADERESS  = getRefdataValue('Functional Contact Billing Adress', RDConstants.PERSON_FUNCTION)
+    static final PRS_FUNC_TECHNICAL_SUPPORT     = getRefdataValue('Technichal Support', RDConstants.PERSON_FUNCTION)
+
     static final CCT_EMAIL                      = getRefdataValue('E-Mail', RDConstants.CONTACT_CONTENT_TYPE)
     static final CCT_PHONE                      = getRefdataValue('Phone', RDConstants.CONTACT_CONTENT_TYPE)
     static final CCT_URL                        = getRefdataValue('Url', RDConstants.CONTACT_CONTENT_TYPE)

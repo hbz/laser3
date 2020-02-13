@@ -1,4 +1,4 @@
-<%@ page import="com.k_int.kbplus.Org; com.k_int.kbplus.Person; com.k_int.kbplus.PersonRole; com.k_int.kbplus.RefdataValue; com.k_int.kbplus.RefdataCategory; de.laser.helper.RDConstants " %>
+<%@ page import="com.k_int.kbplus.Org; com.k_int.kbplus.Person; com.k_int.kbplus.PersonRole; com.k_int.kbplus.RefdataValue; com.k_int.kbplus.RefdataCategory; de.laser.helper.RDStore; de.laser.helper.RDConstants " %>
 
 <!doctype html>
 <html>
@@ -37,7 +37,7 @@
         <g:render template="/person/formModal" model="['tenant': contextOrg,
                                                        'org': orgInstance,
                                                        'isPublic': false,
-                                                       'presetFunctionType': RefdataValue.getByValueAndCategory('General contact person', RDConstants.PERSON_FUNCTION)]"/>
+                                                       'presetFunctionType': RDStore.PRS_FUNC_GENERAL_CONTACT_PRS]"/>
 
 		<g:if test="${visiblePersons}">
 			<g:render template="/templates/cpa/person_table" model="${[persons: visiblePersons, restrictToOrg: orgInstance]}" />
