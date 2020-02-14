@@ -42,7 +42,7 @@
 				<tr>
 					<td>${message(code:'package.show.pkg_name')}</td>
 					<td>
-						${message(code:'package.compare.restrict.after', default:'Restrict this list to packages starting after')}
+						${message(code:'package.compare.restrict.after')}
                         <semui:simpleHiddenValue id="startA" name="startA" type="date" value="${params.startA}"/>
 						${message(code:'package.compare.restrict.before', default:'and/or ending before')}
 						<semui:simpleHiddenValue id="endA" name="endA" type="date" value="${params.endA}"/>
@@ -63,7 +63,7 @@
 					</td>
 				</tr>
 				<tr>
-					<td>${message(code:'package.compare.snapshot', default:'Package On date')}</td>
+					<td>${message(code:'package.compare.snapshot')}</td>
 					<td>
 						<semui:datepicker id="dateA" name="dateA" placeholder ="default.date.label" value="${params.dateA}" >
 						</semui:datepicker>
@@ -135,7 +135,7 @@
 				<td><g:formatDate format="${message(code:'default.date.format.notime')}" date="${pkgInsts.get(1).endDate}"/></td>
 			</tr>
 			<tr>
-				<td>${message(code:'package.compare.overview.tipps', default:'Number of TIPPs')}</td>
+				<td>${message(code:'package.compare.overview.tipps')}</td>
 				<td>${params.countA}</td>
 				<td>${params.countB}</td>
 			</tr>

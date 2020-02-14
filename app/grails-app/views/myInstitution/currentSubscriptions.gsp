@@ -7,7 +7,7 @@
 <html>
     <head>
         <meta name="layout" content="semanticUI" />
-        <title>${message(code:'laser')} : ${message(code:'myinst.currentSubscriptions.label', default:'Current Subscriptions')}</title>
+        <title>${message(code:'laser')} : ${message(code:'myinst.currentSubscriptions.label')}</title>
     </head>
     <body>
 
@@ -282,7 +282,7 @@
             </g:if>
             <div class="field la-field-right-aligned">
                 <a href="${request.forwardURI}" class="ui reset primary button">${message(code:'default.button.reset.label')}</a>
-                <input type="submit" class="ui secondary button" value="${message(code:'default.button.filter.label', default:'Filter')}">
+                <input type="submit" class="ui secondary button" value="${message(code:'default.button.filter.label')}">
             </div>
 
 

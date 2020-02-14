@@ -123,7 +123,7 @@
             <th>${message(code:'user.displayName.label')}</th>
             <th>${message(code:'user.email')}</th>
             <th>${message(code:'profile.membership.role')}</th>
-            <%--<th>${message(code:'user.sys_role', default:'System Role')}</th>--%>
+            <%--<th>${message(code:'user.sys_role')}</th>--%>
             <g:if test="${editable}">
                 <th class="la-action-info">${message(code:'default.actions.label')}</th>
             </g:if>

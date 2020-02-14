@@ -2,7 +2,7 @@
 <html>
   <head>
     <meta name="layout" content="semanticUI"/>
-    <title>${message(code:'laser')} : ${message(code:'default.subscription.label', default:'Subscription')}</title>
+    <title>${message(code:'laser')} : ${message(code:'default.subscription.label')}</title>
   </head>
 
   <body>

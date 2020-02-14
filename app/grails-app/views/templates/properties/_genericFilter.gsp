@@ -138,7 +138,7 @@
 
                     });
                     /*$('label[for=filterProp]').next().replaceWith(
-                        '<input id="filterProp" type="text" name="filterProp" placeholder="${message(code:'license.search.property.ph', default:'property value')}" />'
+                        '<input id="filterProp" type="text" name="filterProp" placeholder="${message(code:'license.search.property.ph')}" />'
                     )*/
                 }
             },

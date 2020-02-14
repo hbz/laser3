@@ -11,7 +11,7 @@
 
         <%--
         <g:if test="${editable && controllerName != 'myInstitution'}">
-            <input type="button" class="ui button" value="${message(code:'task.create.new', default:'Add new Task')}" data-semui="modal" href="#modalCreateTask"/>
+            <input type="button" class="ui button" value="${message(code:'task.create.new')}" data-semui="modal" href="#modalCreateTask"/>
         </g:if>
         --%>
 

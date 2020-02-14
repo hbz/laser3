@@ -47,13 +47,13 @@
             <g:if test="${entitlements?.size() > 0}">
                 ${message(code: 'subscription.entitlement.plural')} ${message(code: 'default.paginate.offset', args: [(offset + 1), (offset + (entitlements?.size())), num_sub_rows])}. (
                 <g:if test="${params.mode == 'advanced'}">
-                    ${message(code: 'subscription.details.advanced.note', default: 'Includes Expected or Expired entitlements, switch to')}
+                    ${message(code: 'subscription.details.advanced.note')}
                     <g:link controller="subscription" action="index"
                             params="${params + ['mode': 'basic']}">${message(code: 'default.basic')}</g:link>
                     ${message(code: 'subscription.details.advanced.note.end')}
                 </g:if>
                 <g:else>
-                    ${message(code: 'subscription.details.basic.note', default: 'Expected or Expired entitlements are filtered, use')}
+                    ${message(code: 'subscription.details.basic.note')}
                     <g:link controller="subscription" action="index" params="${params + ['mode': 'advanced']}"
                             type="button">${message(code: 'default.advanced')}</g:link>
                     ${message(code: 'subscription.details.basic.note.end')}

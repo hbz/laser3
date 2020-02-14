@@ -570,7 +570,7 @@ class SubscriptionController extends AbstractDebugController {
                 result.institutionName = contextService.getOrg().getName()
                 log.debug("FIND ORG NAME ${result.institutionName}")
             }
-            flash.message = message(code: 'subscription.compare.note', default: "Please select two subscriptions for comparison")
+            flash.message = message(code: 'subscription.compare.note')
         }
         */
     }
@@ -2516,7 +2516,7 @@ class SubscriptionController extends AbstractDebugController {
                 }
 
             } else {
-                flash.error = message(code: 'myinst.actionCurrentSubscriptions.error', default: 'Unable to delete - The selected license has attached subscriptions')
+                flash.error = message(code: 'myinst.actionCurrentSubscriptions.error')
             }
         } else {
             log.warn("${result.user} attempted to delete subscription ${delSubscription} without perms")
@@ -4172,7 +4172,7 @@ class SubscriptionController extends AbstractDebugController {
 
                     ArrayList<Links> previousSubscriptions = Links.findAllByDestinationAndObjectTypeAndLinkType(baseSub.id, Subscription.class.name, LINKTYPE_FOLLOWS)
                     if (previousSubscriptions.size() > 0) {
-                        flash.error = message(code: 'subscription.renewSubExist', default: 'The Subscription is already renewed!')
+                        flash.error = message(code: 'subscription.renewSubExist')
                     } else {
 
 
@@ -4366,7 +4366,7 @@ class SubscriptionController extends AbstractDebugController {
 
         ArrayList<Links> previousSubscriptions = Links.findAllByDestinationAndObjectTypeAndLinkType(baseSub.id, Subscription.class.name, LINKTYPE_FOLLOWS)
         if (previousSubscriptions.size() > 0) {
-            flash.error = message(code: 'subscription.renewSubExist', default: 'The Subscription is already renewed!')
+            flash.error = message(code: 'subscription.renewSubExist')
         } else {
             def sub_startDate = params.subscription?.start_date ? parseDate(params.subscription?.start_date, possible_date_formats) : null
             def sub_endDate = params.subscription?.end_date ? parseDate(params.subscription?.end_date, possible_date_formats) : null
