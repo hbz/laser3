@@ -84,10 +84,6 @@ modules = {
         resource url:'js/libs/moment-with-locales.min.js'
         resource url:'js/libs/moment.min.js'
 
-
-
-
-
         resource url:'semantic-restoration/jquery.readmore.min.js' // new stuff
 
         //resource url:'css/select2.css'            // updated stuff // new version 3.5.4
@@ -95,7 +91,11 @@ modules = {
         resource url:'js/select2.min.js'         // updated stuff // new version 3.5.4
         resource url:'js/readmore.min.js'
 
+        resource url:'js/application/dict.js.gsp'
         resource url:'js/application.js.gsp'
+        resource url:'js/application/decksaver.js.gsp'
+        resource url:'js/application/tooltip.js.gsp'
+        resource url:'js/application/bb8.js.gsp'
     }
 
     swaggerApi {
