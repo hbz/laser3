@@ -180,66 +180,6 @@
   }
 
 
-  /*******************************
-               Types
-  *******************************/
-
-
-  /*--------------
-       Radio
-  ---------------*/
-
-
-  /* Radio Checkbox */
-
-  .ui.radio.checkbox .box:after,
-  .ui.radio.checkbox label:after {
-    transform: scale(@bulletScale);
-    background-color: @bulletColor;
-  }
-
-  /* Focus */
-
-  .ui.radio.checkbox input:focus ~ .box:before,
-  .ui.radio.checkbox input:focus ~ label:before {
-    background-color: @radioFocusBackground;
-  }
-
-  .ui.radio.checkbox input:focus ~ .box:after,
-  .ui.radio.checkbox input:focus ~ label:after {
-    background-color: @radioFocusBulletColor;
-  }
-
-  /* Indeterminate */
-
-  .ui.radio.checkbox input:indeterminate ~ .box:after,
-  .ui.radio.checkbox input:indeterminate ~ label:after {
-    opacity: 0;
-  }
-
-  /* Active */
-
-  .ui.radio.checkbox input:checked ~ .box:before,
-  .ui.radio.checkbox input:checked ~ label:before {
-    background-color: @radioActiveBackground;
-  }
-
-  .ui.radio.checkbox input:checked ~ .box:after,
-  .ui.radio.checkbox input:checked ~ label:after {
-    background-color: @radioActiveBulletColor;
-  }
-
-  /* Active Focus */
-
-  .ui.radio.checkbox input:focus:checked ~ .box:before,
-  .ui.radio.checkbox input:focus:checked ~ label:before {
-    background-color: @radioActiveFocusBackground;
-  }
-
-  .ui.radio.checkbox input:focus:checked ~ .box:after,
-  .ui.radio.checkbox input:focus:checked ~ label:after {
-    background-color: @radioActiveFocusBulletColor;
-  }
 
   /* Legende */
   legend {

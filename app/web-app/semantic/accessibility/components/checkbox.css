@@ -679,27 +679,6 @@
   ---------------*/
 
   
-
-/*******************************
-               Types
-  *******************************/
-
-  
-/*--------------
-       Radio
-  ---------------*/
-
-  
-/* Radio Checkbox */
-  
-/* Focus */
-  
-/* Indeterminate */
-  
-/* Active */
-  
-/* Active Focus */
-  
 /* Legende */
 }
 .la-filter .ui.checkbox .box:after,
@@ -786,40 +765,6 @@
 .la-filter .ui.checkbox input[disabled] ~ label {
   opacity: 0.5;
   color: #000000;
-}
-.la-filter .ui.radio.checkbox .box:after,
-.la-filter .ui.radio.checkbox label:after {
-  -webkit-transform: scale(0.46666667);
-          transform: scale(0.46666667);
-  background-color: rgba(0, 0, 0, 0.87);
-}
-.la-filter .ui.radio.checkbox input:focus ~ .box:before,
-.la-filter .ui.radio.checkbox input:focus ~ label:before {
-  background-color: #FFFFFF;
-}
-.la-filter .ui.radio.checkbox input:focus ~ .box:after,
-.la-filter .ui.radio.checkbox input:focus ~ label:after {
-  background-color: rgba(0, 0, 0, 0.95);
-}
-.la-filter .ui.radio.checkbox input:indeterminate ~ .box:after,
-.la-filter .ui.radio.checkbox input:indeterminate ~ label:after {
-  opacity: 0;
-}
-.la-filter .ui.radio.checkbox input:checked ~ .box:before,
-.la-filter .ui.radio.checkbox input:checked ~ label:before {
-  background-color: #FFFFFF;
-}
-.la-filter .ui.radio.checkbox input:checked ~ .box:after,
-.la-filter .ui.radio.checkbox input:checked ~ label:after {
-  background-color: rgba(0, 0, 0, 0.95);
-}
-.la-filter .ui.radio.checkbox input:focus:checked ~ .box:before,
-.la-filter .ui.radio.checkbox input:focus:checked ~ label:before {
-  background-color: #FFFFFF;
-}
-.la-filter .ui.radio.checkbox input:focus:checked ~ .box:after,
-.la-filter .ui.radio.checkbox input:focus:checked ~ label:after {
-  background-color: rgba(0, 0, 0, 0.95);
 }
 .la-filter legend {
   color: #FFFFFF;
