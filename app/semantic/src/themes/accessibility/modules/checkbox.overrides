@@ -8,34 +8,43 @@
           url(data:application/x-font-ttf;charset=utf-8;base64,AAEAAAALAIAAAwAwT1MvMg8SBD8AAAC8AAAAYGNtYXAYVtCJAAABHAAAAFRnYXNwAAAAEAAAAXAAAAAIZ2x5Zn4huwUAAAF4AAABYGhlYWQGPe1ZAAAC2AAAADZoaGVhB30DyAAAAxAAAAAkaG10eBBKAEUAAAM0AAAAHGxvY2EAmgESAAADUAAAABBtYXhwAAkALwAAA2AAAAAgbmFtZSC8IugAAAOAAAABknBvc3QAAwAAAAAFFAAAACAAAwMTAZAABQAAApkCzAAAAI8CmQLMAAAB6wAzAQkAAAAAAAAAAAAAAAAAAAABEAAAAAAAAAAAAAAAAAAAAABAAADoAgPA/8AAQAPAAEAAAAABAAAAAAAAAAAAAAAgAAAAAAADAAAAAwAAABwAAQADAAAAHAADAAEAAAAcAAQAOAAAAAoACAACAAIAAQAg6AL//f//AAAAAAAg6AD//f//AAH/4xgEAAMAAQAAAAAAAAAAAAAAAQAB//8ADwABAAAAAAAAAAAAAgAANzkBAAAAAAEAAAAAAAAAAAACAAA3OQEAAAAAAQAAAAAAAAAAAAIAADc5AQAAAAABAEUAUQO7AvgAGgAAARQHAQYjIicBJjU0PwE2MzIfAQE2MzIfARYVA7sQ/hQQFhcQ/uMQEE4QFxcQqAF2EBcXEE4QAnMWEP4UEBABHRAXFhBOEBCoAXcQEE4QFwAAAAABAAABbgMlAkkAFAAAARUUBwYjISInJj0BNDc2MyEyFxYVAyUQEBf9SRcQEBAQFwK3FxAQAhJtFxAQEBAXbRcQEBAQFwAAAAABAAAASQMlA24ALAAAARUUBwYrARUUBwYrASInJj0BIyInJj0BNDc2OwE1NDc2OwEyFxYdATMyFxYVAyUQEBfuEBAXbhYQEO4XEBAQEBfuEBAWbhcQEO4XEBACEm0XEBDuFxAQEBAX7hAQF20XEBDuFxAQEBAX7hAQFwAAAQAAAAIAAHRSzT9fDzz1AAsEAAAAAADRsdR3AAAAANGx1HcAAAAAA7sDbgAAAAgAAgAAAAAAAAABAAADwP/AAAAEAAAAAAADuwABAAAAAAAAAAAAAAAAAAAABwQAAAAAAAAAAAAAAAIAAAAEAABFAyUAAAMlAAAAAAAAAAoAFAAeAE4AcgCwAAEAAAAHAC0AAQAAAAAAAgAAAAAAAAAAAAAAAAAAAAAAAAAOAK4AAQAAAAAAAQAIAAAAAQAAAAAAAgAHAGkAAQAAAAAAAwAIADkAAQAAAAAABAAIAH4AAQAAAAAABQALABgAAQAAAAAABgAIAFEAAQAAAAAACgAaAJYAAwABBAkAAQAQAAgAAwABBAkAAgAOAHAAAwABBAkAAwAQAEEAAwABBAkABAAQAIYAAwABBAkABQAWACMAAwABBAkABgAQAFkAAwABBAkACgA0ALBDaGVja2JveABDAGgAZQBjAGsAYgBvAHhWZXJzaW9uIDIuMABWAGUAcgBzAGkAbwBuACAAMgAuADBDaGVja2JveABDAGgAZQBjAGsAYgBvAHhDaGVja2JveABDAGgAZQBjAGsAYgBvAHhSZWd1bGFyAFIAZQBnAHUAbABhAHJDaGVja2JveABDAGgAZQBjAGsAYgBvAHhGb250IGdlbmVyYXRlZCBieSBJY29Nb29uLgBGAG8AbgB0ACAAZwBlAG4AZQByAGEAdABlAGQAIABiAHkAIABJAGMAbwBNAG8AbwBuAC4AAAADAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA) format('truetype')
 ;
 }
+/* Filter */
+.la-filter {
+    .ui.checkbox label,
+    .ui.checkbox + label {
+      color: @white;
+    }
 
-/* Checkmark */
-.ui.checkbox label:after,
-.ui.checkbox .box:after {
-  font-family: 'Checkbox';
+
+  /* Checkmark */
+  .ui.checkbox label:after,
+  .ui.checkbox .box:after {
+    font-family: 'Checkbox';
+  }
+
+  /* Checked */
+  .ui.checkbox input:checked ~ .box:after,
+  .ui.checkbox input:checked ~ label:after {
+    content: '\e800';
+    color: @blue;
+    background-color: @orange !important;
+  }
+
+  /* Indeterminate */
+  .ui.checkbox input:indeterminate ~ .box:after,
+  .ui.checkbox input:indeterminate ~ label:after {
+    font-size: 12px;
+    content: '\e801';
+  }
+  .ui.checkbox input:checked~.box:before,
+  .ui.checkbox input:checked~label:before {
+    border-color: @orange;
+  }
+  legend {
+    color: @white;
+  }
 }
 
-/* Checked */
-.ui.checkbox input:checked ~ .box:after,
-.ui.checkbox input:checked ~ label:after {
-  content: '\e800';
-  color: @blue;
-  background-color: @white !important;
-}
-
-/* Indeterminate */
-.ui.checkbox input:indeterminate ~ .box:after,
-.ui.checkbox input:indeterminate ~ label:after {
-  font-size: 12px;
-  content: '\e801';
-}
-
-
-/*  UTF Reference
-.check:before { content: '\e800'; }
-.dash:before  { content: '\e801'; }
-.plus:before { content: '\e802'; }
-*/
 
 /************* laser three toggle icon buttons ***************/
 
@@ -51,10 +60,6 @@
 }
 
 .ui.checkbox.la-toggle-radio label:before {
-
-  //border: none;
-  //font-size: 25px;
-
   border: none;
   width: 40px;
   height: 40px;
@@ -75,12 +80,8 @@
   background-color: white !important;
   border-radius: 500rem;
   box-shadow: 0 2px 3px 0 #d3dae3;
- /*
-  content: "\f00c" !important;
-  font-family: Icons !important;
-  transform: scale(1.5);
-  */
 }
+
 /* REPLACE */
 .ui.checkbox.la-toggle-radio.la-replace {
   label:before {
@@ -110,9 +111,9 @@
   }
 }
 /* COPY LICENCE WITH PACKAGES, TITELS ETC */
- table tr td div.willStay {
-   background-color: #D4E096;
- }
+table tr td div.willStay {
+  background-color: #D4E096;
+}
 table tr td div.willBeReplaced {
   background-color: #EDC0BA;
   text-decoration: line-through;
