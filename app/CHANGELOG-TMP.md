@@ -2,6 +2,8 @@
 
 **Ticket    Date    Branch      Author  Feature/Bug     Description/Keywords**
 
+2176    14.02.2020  hbz-dev     David   Feature     Admin-Sicht: Unterschiede zwischen Servern
+
 2184    14.02.2020  hbz-dev     David   Bug         Vererbung im hbz-dev defekt
 
 2085    10.02.2020  hbz-dev     Moe     Feature     Sicherheitsabfrage Ent-/Verknüpfen von Konsorten
