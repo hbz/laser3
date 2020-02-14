@@ -458,7 +458,7 @@
                                 </div>
                                 <g:if test="${((orgInstance.id == contextService.getOrg().id) || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN'))}">
                                     <input class="ui button"
-                                           value="${message(code: 'default.add.label', args: [message(code: 'contact.label', default: 'Contact')])}"
+                                           value="${message(code: 'default.add.label', args: [message(code: 'contact.label')])}"
                                            data-semui="modal"
                                            data-href="#contactFormModal"/>
                                     <g:render template="/contact/formModal" model="['orgId': orgInstance?.id]"/>

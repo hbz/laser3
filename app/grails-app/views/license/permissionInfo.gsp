@@ -16,7 +16,7 @@
 
     <g:render template="nav" />
 
-      <h2 class="ui header">${message(code:'subscription.details.permissionInfo.orgs_granted', default:'The following organisations are granted the listed permissions from this license')}</h2>
+      <h2 class="ui header">${message(code:'subscription.details.permissionInfo.orgs_granted')}</h2>
       <table class="ui celled la-table table">
         <thead>
           <tr>
@@ -29,7 +29,7 @@
             <td>${ol.org.name}</td>
             <td>
               ${message(code:'subscription.license.connection', args:["${ol.roleType?.getI10n('value')}"])}<br/>
-              ${message(code:'subscription.details.permissionInfo.role.info', default:'This role grants the following permissions to members of that org whose membership role also includes the permission')}<br/>
+              ${message(code:'subscription.details.permissionInfo.role.info')}<br/>
               <ul>
                 <g:each in="${ol.roleType?.sharedPermissions}" var="sp">
                   <li>${message(code:"default.perm.${sp.perm.code}", default:"${sp.perm.code}")}
@@ -47,11 +47,11 @@
         </g:each>
       </table>
 
-      <h2 class="ui header">${message(code:'subscription.details.user.permissions', default:'Logged in user permissions')}</h2>
+      <h2 class="ui header">${message(code:'subscription.details.user.permissions')}</h2>
       <table class="ui celled la-table table">
         <thead>
           <tr>
-          <th>${message(code:'subscription.details.permissionInfo.aff_via', default:'Affiliated via Role')}</th>
+          <th>${message(code:'subscription.details.permissionInfo.aff_via')}</th>
             <th>${message(code:'default.permissions.label')}</th>
           </tr>
         </thead>

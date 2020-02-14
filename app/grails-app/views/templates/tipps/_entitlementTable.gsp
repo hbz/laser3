@@ -127,7 +127,7 @@
                                 </g:if>
 
                                 <%-- TODO; @moe: check merge conflict --%>
-                                <g:link controller="tipp" action="show" id="${tipp.id}">${message(code: 'platform.show.full_tipp', default: 'Full TIPP Details')}</g:link>&nbsp;&nbsp;&nbsp;
+                                <g:link controller="tipp" action="show" id="${tipp.id}">${message(code: 'platform.show.full_tipp')}</g:link>&nbsp;&nbsp;&nbsp;
                                 <g:each in="${ApiSource.findAllByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true)}" var="gokbAPI">
                                     <g:if test="${tipp?.gokbId}">
                                         <a target="_blank" href="${gokbAPI.editUrl ? gokbAPI.editUrl + '/gokb/resource/show/' + tipp?.gokbId : '#'}">

@@ -37,7 +37,7 @@
                 <div class="column">
                     <div class="ui divided relaxed list">
                         <div class="item">
-                            <g:link controller="myInstitution" action="changes">${message(code: 'myinst.todo.label', default: 'To Do')}</g:link>
+                            <g:link controller="myInstitution" action="changes">${message(code: 'myinst.todo.label')}</g:link>
                         </div>
                         <semui:securedMainNavItem specRole="ROLE_ADMIN" controller="myInstitution" action="announcements" message="announcement.plural" />
                         <%--<div class="item">

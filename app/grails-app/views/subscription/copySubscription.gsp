@@ -46,7 +46,7 @@
             <tr><th>${message(code:'default.select.label')}</th><th >${message(code:'subscription.property')}</th><th>${message(code:'default.value.label')}</th></tr>
             <tr>
                 <th><g:checkBox name="subscription.copyDates" value="${true}" /></th>
-                <th>${message(code:'subscription.copyDates', default:'Copy all Dates from Subscription')}</th>
+                <th>${message(code:'subscription.copyDates')}</th>
                 <td>
                     ${message(code:'subscription.copyDates.startDate')}:&nbsp<g:if test="${ ! subscription?.startDate}">-</g:if><g:formatDate date="${subscription?.startDate}" format="${message(code:'default.date.format.notime')}"/> &nbsp
                     ${message(code:'subscription.copyDates.endDate')}:&nbsp<g:if test="${ ! subscription?.endDate}">-</g:if><g:formatDate date="${subscription?.endDate}" format="${message(code:'default.date.format.notime')}"/>
@@ -54,33 +54,33 @@
             </tr>
             <tr>
                 <th><g:checkBox name="subscription.copylinktoSubscription" value="${true}" /></th>
-                <th>${message(code:'subscription.copylinktoSubscription', default:'Copy Dependent Subscription')}</th>
+                <th>${message(code:'subscription.copylinktoSubscription')}</th>
                 <td>
-                    <b>${message(code:'subscription.linktoSubscription', default:'Dependent Subscription')}:</b>
+                    <b>${message(code:'subscription.linktoSubscription')}:</b>
                     <g:if test="${subscription.instanceOf}">
                         <g:link controller="subscription" action="show" target="_blank" id="${subscription.instanceOf.id}">${subscription.instanceOf}</g:link>
                     </g:if>
                     <g:else>
-                        ${message(code:'subscription.linktoSubscriptionEmpty', default:'No Dependent Subscription available')}
+                        ${message(code:'subscription.linktoSubscriptionEmpty')}
                     </g:else>
                 </td>
             </tr>
             <tr>
                 <th><g:checkBox name="subscription.copyLicense" value="${true}" /></th>
-                <th>${message(code:'subscription.copyLicense', default:'Copy License from Subscription')}</th>
+                <th>${message(code:'subscription.copyLicense')}</th>
                 <td>
-                    <b>${message(code:'subscription.linktoLicense', default:'License for the Subscription')}:</b>
+                    <b>${message(code:'subscription.linktoLicense')}:</b>
                     <g:if test="${subscription.owner}">
                         <g:link controller="license" action="show" target="_blank" id="${subscription.owner?.id}">${subscription.owner?.reference}</g:link>
                     </g:if>
                     <g:else>
-                        ${message(code:'subscription.linktoLicenseEmpty', default:'No License available')}
+                        ${message(code:'subscription.linktoLicenseEmpty')}
                     </g:else>
                 </td>
             </tr>
             <tr>
                 <th><g:checkBox name="subscription.copyPackages" value="${true}" /></th>
-                <th>${message(code:'subscription.copyPackages', default:'Copy Packages from Subscription')}</th>
+                <th>${message(code:'subscription.copyPackages')}</th>
                 <td>
                     <g:each in="${subscription.packages.sort { it.pkg.name }}" var="sp">
                         <b>${message(code: 'subscription.packages.label')}:</b>
@@ -95,7 +95,7 @@
             </tr>
             <tr>
                 <th><g:checkBox name="subscription.copyLinks" value="${true}" /></th>
-                <th>${message(code:'subscription.copyLinks', default:'Copy Links from Subscription')}</th>
+                <th>${message(code:'subscription.copyLinks')}</th>
                 <td>
                     <g:each in="${visibleOrgRelations.sort { it.roleType?.getI10n("value") }}" var="role">
                         <g:if test="${role.org}">
@@ -108,7 +108,7 @@
             </tr>
             <tr>
                 <th><g:checkBox name="subscription.copyEntitlements" value="${true}"/></th>
-                <th>${message(code: 'subscription.copyEntitlements', default: 'Copy Current Entitlements from Subscription')}</th>
+                <th>${message(code: 'subscription.copyEntitlements')}</th>
                 <td><b>${message(code: 'issueEntitlement.countSubscription')}</b> ${subscription.issueEntitlements.findAll {
                     it.status != RDStore.TIPP_DELETED
                 }.size()}
@@ -123,20 +123,20 @@
 
             <tr>
                 <th><g:checkBox name="subscription.copyCustomProperties" value="${true}" /></th>
-                <th>${message(code:'subscription.copyCostumProperty', default:'Copy Property from Subscription')}</th>
+                <th>${message(code:'subscription.copyCostumProperty')}</th>
                 <td>${message(code:'subscription.properties')}<br>
                 </td>
             </tr>
             <tr>
                 <th><g:checkBox name="subscription.copyPrivateProperties" value="${true}" /></th>
-                <th>${message(code:'subscription.copyPrivateProperty', default:'Copy Property from Subscription')}</th>
+                <th>${message(code:'subscription.copyPrivateProperty')}</th>
                 <td>${message(code:'subscription.properties.private')} ${contextOrg?.name}<br>
                 </td>
             </tr>
 
             <tr>
                 <th><g:checkBox name="subscription.copyDocs" value="${true}" /></th>
-                <th>${message(code:'subscription.copyDocs', default:'Copy Documents from Subscription')}</th>
+                <th>${message(code:'subscription.copyDocs')}</th>
                 <td>
                     <g:each in="${subscription.documents.sort{it.owner?.title}}" var="docctx">
                         <g:if test="${(( (docctx.owner?.contentType==1) || ( docctx.owner?.contentType==3) ) && ( docctx.status?.value!='Deleted'))}">
@@ -149,7 +149,7 @@
                                         ${docctx.owner.filename}
                                     </g:if>
                                     <g:else>
-                                        ${message(code:'template.documents.missing', default: 'Missing title and filename')}
+                                        ${message(code:'template.documents.missing')}
                                     </g:else>
                                 </g:else>
 
@@ -160,7 +160,7 @@
             </tr>
             <tr>
                 <th><g:checkBox name="subscription.copyAnnouncements" value="${true}" /></th>
-                <th>${message(code:'subscription.copyAnnouncements', default:'Copy Notes from Subscription')}</th>
+                <th>${message(code:'subscription.copyAnnouncements')}</th>
                 <td>
                     <g:each in="${subscription.documents.sort{it.owner?.title}}" var="docctx">
                         <g:if test="${((docctx.owner?.contentType == com.k_int.kbplus.Doc.CONTENT_TYPE_STRING) && !(docctx.domain) && (docctx.status?.value != 'Deleted') )}">
@@ -181,7 +181,7 @@
             </tr>
             <tr>
                 <th><g:checkBox name="subscription.copyTasks" value="${true}" /></th>
-                <th>${message(code:'subscription.copyTasks', default:'Copy Tasks from Subscription')}</th>
+                <th>${message(code:'subscription.copyTasks')}</th>
                 <td>
                     <g:each in="${tasks}" var="tsk">
                         <div id="summary" class="summary">

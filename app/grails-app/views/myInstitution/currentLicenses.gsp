@@ -56,8 +56,8 @@
             <div class="four fields">
 
                 <div class="field">
-                    <label>${message(code:'license.search.by_ref', default:'Search by Reference')}</label>
-                    <input type="text" name="keyword-search" placeholder="${message(code:'default.search.ph', default:'enter search term...')}" value="${params['keyword-search']?:''}" />
+                    <label>${message(code:'license.search.by_ref')}</label>
+                    <input type="text" name="keyword-search" placeholder="${message(code:'default.search.ph')}" value="${params['keyword-search']?:''}" />
                 </div>
 
                 <div class="field">
@@ -181,7 +181,7 @@
                             </g:each>
                         </g:if>
                         <g:else>
-                          <br/>${message(code:'myinst.currentLicenses.no_subs', default:'No linked subscriptions.')}
+                          <br/>${message(code:'myinst.currentLicenses.no_subs')}
                         </g:else>
                       </td>
 
@@ -285,7 +285,7 @@
         });
       }else{
         //If we dont have RefdataValues,create a simple text input
-        $('#propertyFilter').replaceWith('<input id="propertyFilter" type="text" name="propertyFilter" placeholder="${message(code:'license.search.property.ph', default:'property value')}" />')
+        $('#propertyFilter').replaceWith('<input id="propertyFilter" type="text" name="propertyFilter" placeholder="${message(code:'license.search.property.ph')}" />')
       }
     }
 

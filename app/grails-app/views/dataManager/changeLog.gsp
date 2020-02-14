@@ -2,7 +2,7 @@
 <html>
   <head>
     <meta name="layout" content="semanticUI"/>
-    <title>${message(code:'laser')} ${message(code:'menu.datamanager.changelog', default:'Data Manager Change Log')}</title>
+    <title>${message(code:'laser')} ${message(code:'menu.datamanager.changelog')}</title>
   </head>
 
   <body>
@@ -21,7 +21,7 @@
 
     <semui:messages data="${flash}" />
 
-      <h2 class="ui header">${message(code:'menu.datamanager.changelog', default:'Data Manager Change Log')}</h2>
+      <h2 class="ui header">${message(code:'menu.datamanager.changelog')}</h2>
 
       <h6 class="ui header">${message(code:'menu.institutions.change_log')} <span class="la-float-right">${message(code:'datamanager.changeLog.num_changes', args:[num_hl])}</span></h6>
 

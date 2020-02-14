@@ -7,7 +7,7 @@
 <html>
 <head>
     <meta name="layout" content="semanticUI"/>
-    <title>${message(code: 'laser')} : ${message(code: 'myinst.currentSubscriptions.label', default: 'Current Subscriptions')}</title>
+    <title>${message(code: 'laser')} : ${message(code: 'myinst.currentSubscriptions.label')}</title>
 </head>
 
 <body>
@@ -44,7 +44,7 @@
         <div class="three fields">
             <!-- 1-1 -->
             <div class="field">
-                <label for="q">${message(code: 'default.search.text', default: 'Search text')}
+                <label for="q">${message(code: 'default.search.text')}
                     <span data-position="right center" data-variation="tiny"
                           class="la-popup-tooltip la-delay"
                           data-content="${message(code: 'default.search.tooltip.subscription')}">
@@ -54,7 +54,7 @@
 
                 <div class="ui input">
                     <input type="text" id="q" name="q"
-                           placeholder="${message(code: 'default.search.ph', default: 'enter search term...')}"
+                           placeholder="${message(code: 'default.search.ph')}"
                            value="${params.q}"/>
                 </div>
             </div>
@@ -127,7 +127,7 @@
                         <a href="${request.forwardURI}"
                            class="ui reset primary button">${message(code: 'default.button.reset.label')}</a>
                         <input type="submit" class="ui secondary button"
-                               value="${message(code: 'default.button.filter.label', default: 'Filter')}">
+                               value="${message(code: 'default.button.filter.label')}">
             </div>
         </div>
     </g:form>
@@ -146,15 +146,15 @@
                                   title="${message(code: 'subscription.slash.name')}"
                                   rowspan="2"/>
                 <th rowspan="2">
-                    ${message(code: 'license.details.linked_pkg', default: 'Linked Packages')}
+                    ${message(code: 'license.details.linked_pkg')}
                 </th>
 
                 <g:if test="${params.orgRole == 'Subscriber'}">
-                    <th rowspan="2">${message(code: 'consortium', default: 'Consortia')}</th>
+                    <th rowspan="2">${message(code: 'consortium')}</th>
                 </g:if>
 
                 <g:sortableColumn params="${params}" property="orgRole§provider"
-                                  title="${message(code: 'default.provider.label', default: 'Provider')} / ${message(code: 'default.agency.label', default: 'Agency')}"
+                                  title="${message(code: 'default.provider.label', default: 'Provider')} / ${message(code: 'default.agency.label')}"
                                   rowspan="2"/>
 
                 <g:sortableColumn class="la-smaller-table-head" params="${params}" property="s.startDate"
