@@ -2296,45 +2296,47 @@ class AjaxController {
 
     @Secured(['ROLE_USER'])
     def getEmailAddresses() {
-        List orgIds = params.orgIdList.split ','
-        List<Org> orgList = Org.findAllByIdInList(orgIds)
         Set result = []
-        boolean showPrivateContactEmails = Boolean.valueOf(params.isPrivate)
-        boolean showPublicContactEmails = Boolean.valueOf(params.isPublic)
+        if (params.orgIdList){
+            List<Long> orgIds = params.orgIdList.split ','
+            List<Org> orgList = Org.findAllByIdInList(orgIds)
+            boolean showPrivateContactEmails = Boolean.valueOf(params.isPrivate)
+            boolean showPublicContactEmails = Boolean.valueOf(params.isPublic)
 
-        List<RefdataValue> selectedRoleTypes = null
-        if (params.selectedRoleTypIds) {
-            List<Long> selectedRoleTypIds = params.selectedRoleTypIds.split ','
-            selectedRoleTypes = RefdataValue.findAllByIdInList(selectedRoleTypIds)
-        }
-
-        String query = "select distinct p from Person as p inner join p.roleLinks pr where pr.org in (:orgs) "
-        Map queryParams = [orgs: orgList]
-
-        if (showPublicContactEmails && showPrivateContactEmails){
-            query += "and ( (p.isPublic = false and p.tenant = :ctx) or (p.isPublic = true) ) "
-            queryParams << [ctx: contextService.org]
-        } else {
-            if (showPublicContactEmails){
-                query += "and p.isPublic = true "
-            } else if (showPrivateContactEmails){
-                query += "and (p.isPublic = false and p.tenant = :ctx) "
-                queryParams << [ctx: contextService.org]
+            List<RefdataValue> selectedRoleTypes = null
+            if (params.selectedRoleTypIds) {
+                List<Long> selectedRoleTypIds = params.selectedRoleTypIds.split ','
+                selectedRoleTypes = RefdataValue.findAllByIdInList(selectedRoleTypIds)
             }
+
+            String query = "select distinct p from Person as p inner join p.roleLinks pr where pr.org in (:orgs) "
+            Map queryParams = [orgs: orgList]
+
+            if (showPublicContactEmails && showPrivateContactEmails){
+                query += "and ( (p.isPublic = false and p.tenant = :ctx) or (p.isPublic = true) ) "
+                queryParams << [ctx: contextService.org]
+            } else {
+                if (showPublicContactEmails){
+                    query += "and p.isPublic = true "
+                } else if (showPrivateContactEmails){
+                    query += "and (p.isPublic = false and p.tenant = :ctx) "
+                    queryParams << [ctx: contextService.org]
+                }
+            }
+
+            if (selectedRoleTypes) {
+                query += "and pr.functionType in (:selectedRoleTypes) "
+                queryParams << [selectedRoleTypes: selectedRoleTypes]
+            }
+
+            List<Person> persons = Person.executeQuery(query, queryParams)
+
+            if (persons){
+                result = Contact.executeQuery("select c.content from Contact c where c.prs in (:persons) and c.contentType = :contentType",
+                        [persons: persons, contentType: RDStore.CCT_EMAIL])
+            }
+
         }
-
-        if (selectedRoleTypes) {
-            query += "and pr.functionType in (:selectedRoleTypes) "
-            queryParams << [selectedRoleTypes: selectedRoleTypes]
-        }
-
-        List<Person> persons = Person.executeQuery(query, queryParams)
-
-        if (persons){
-            result = Contact.executeQuery("select c.content from Contact c where c.prs in (:persons) and c.contentType = :contentType",
-                    [persons: persons, contentType: RDStore.CCT_EMAIL])
-        }
-
         render result as JSON
     }
 
