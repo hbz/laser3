@@ -2295,47 +2295,45 @@ class AjaxController {
   }
 
     @Secured(['ROLE_USER'])
-    def getEmailAddresses(){
-        List orgIds = params.orgIdList.split','
+    def getEmailAddresses() {
+        List orgIds = params.orgIdList.split ','
         List<Org> orgList = Org.findAllByIdInList(orgIds)
         Set result = []
         boolean showPrivateContactEmails = Boolean.valueOf(params.isPrivate)
         boolean showPublicContactEmails = Boolean.valueOf(params.isPublic)
-        List<Long> selectedRoleTypIds = params.selectedRoleTypIds.split','
-        List<RefdataValue> selectedRoleTypes = RefdataValue.findAllByIdInList(selectedRoleTypIds)
 
-        List<Person> persons = []
-        if (showPublicContactEmails) {
-            if (selectedRoleTypes) {
-                persons = Person.executeQuery(
-                        "select distinct p from Person as p inner join p.roleLinks pr where p.isPublic = true and pr.org in (:orgs) and pr.functionType in (:selectedRoleTypes)",
-                        [orgs: orgList, selectedRoleTypes: selectedRoleTypes]
-                )
-            } else {
-                persons = Person.executeQuery(
-                        "select distinct p from Person as p inner join p.roleLinks pr where p.isPublic = true and pr.org in (:orgs)",
-                        [orgs: orgList]
-                )
+        List<RefdataValue> selectedRoleTypes = null
+        if (params.selectedRoleTypIds) {
+            List<Long> selectedRoleTypIds = params.selectedRoleTypIds.split ','
+            selectedRoleTypes = RefdataValue.findAllByIdInList(selectedRoleTypIds)
+        }
+
+        String query = "select distinct p from Person as p inner join p.roleLinks pr where pr.org in (:orgs) "
+        Map queryParams = [orgs: orgList]
+
+        if (showPublicContactEmails && showPrivateContactEmails){
+            query += "and ( (p.isPublic = false and p.tenant = :ctx) or (p.isPublic = true) ) "
+            queryParams << [ctx: contextService.org]
+        } else {
+            if (showPublicContactEmails){
+                query += "and p.isPublic = true "
+            } else if (showPrivateContactEmails){
+                query += "and (p.isPublic = false and p.tenant = :ctx) "
+                queryParams << [ctx: contextService.org]
             }
         }
-        if (showPrivateContactEmails) {
-            if (selectedRoleTypes) {
-                persons.addAll(Person.executeQuery(
-                        """select distinct p from Person as p inner join p.roleLinks pr where 
-                pr.org in (:orgs) 
-                and pr.functionType in (:selectedRoleTypes) 
-                and ( (p.isPublic = false and p.tenant = :ctx) or (p.isPublic = true) )""",
-                        [orgs: orgList, selectedRoleTypes: selectedRoleTypes, ctx: contextService.org]
-                ))
-            } else {
-                persons.addAll(Person.executeQuery(
-                        """select distinct p from Person as p inner join p.roleLinks pr where pr.org in (:orgs)  
-                            and ( (p.isPublic = false and p.tenant = :ctx) or (p.isPublic = true) )""",
-                        [orgs: orgList, ctx: contextService.org]
-                ))
-            }
+
+        if (selectedRoleTypes) {
+            query += "and pr.functionType in (:selectedRoleTypes) "
+            queryParams << [selectedRoleTypes: selectedRoleTypes]
         }
-        persons.each{person -> result.addAll(Contact.findAllByPrsAndContentType(person, RDStore.CCT_EMAIL).content)}
+
+        List<Person> persons = Person.executeQuery(query, queryParams)
+
+        if (persons){
+            result = Contact.executeQuery("select c.content from Contact c where c.prs in (:persons) and c.contentType = :contentType",
+                    [persons: persons, contentType: RDStore.CCT_EMAIL])
+        }
 
         render result as JSON
     }
