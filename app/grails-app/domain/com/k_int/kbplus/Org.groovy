@@ -640,25 +640,6 @@ class Org
         }
     }
 
-    static List<Person> getPersons(List<Org> orgList, boolean getPublic, boolean getPrivate) {
-        List<Person> result = []
-        if (getPublic) {
-            result = Person.executeQuery(
-                    "select distinct p from Person as p inner join p.roleLinks pr where p.isPublic = true and pr.org in (:orgs) and pr.functionType = :gcp",
-                    [orgs: orgList, gcp: RDStore.PRS_FUNC_GENERAL_CONTACT_PRS]
-            )
-        }
-        if (getPrivate){
-            Org ctxOrg = Holders.grailsApplication.mainContext.getBean('contextService').getOrg()
-            result.addAll(Person.executeQuery(
-                    """select distinct p from Person as p inner join p.roleLinks pr where pr.org in (:orgs) and pr.functionType = :gcp 
-                    and ( (p.isPublic = false and p.tenant = :ctx) or (p.isPublic = true) )""",
-                    [orgs: orgList, gcp: RDStore.PRS_FUNC_GENERAL_CONTACT_PRS, ctx: ctxOrg]
-            ))
-        }
-        result
-    }
-
     List<Person> getPublicPersons() {
         Person.executeQuery(
                 "select distinct p from Person as p inner join p.roleLinks pr where p.isPublic = true and pr.org = :org",
