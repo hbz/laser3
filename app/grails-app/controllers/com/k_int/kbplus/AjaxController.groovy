@@ -20,6 +20,7 @@ import de.laser.helper.SessionCacheWrapper
 import de.laser.interfaces.ShareSupport
 import grails.converters.JSON
 import grails.plugin.springsecurity.annotation.Secured
+import grails.util.Holders
 import org.codehaus.groovy.grails.orm.hibernate.cfg.GrailsHibernateUtil
 
 //import org.grails.orm.hibernate.cfg.GrailsHibernateUtil
@@ -2295,35 +2296,47 @@ class AjaxController {
 
     @Secured(['ROLE_USER'])
     def getEmailAddresses(){
-        def result
-        print 'getEmailAddresses'
-        def isPrivate = Boolean.valueOf(params.isPrivate)
-        def isPublic = Boolean.valueOf(params.isPublic)
-        def selectedRoleTypIds = params.selectedRoleTypIds
-        if (isPrivate){
-            if (isPublic){
-//                def erg = Contact.executeQuery("""select c from Contact c left join Person p on c.prs left join PersonRole pr on p.roleType
-//                where p.tenant=:tenant or p.tenant=:tenant_null
-//                and pr.id is in (:roleTypes)""",
-//                [tenant: contextService.org,
-//                tenant_null: null,
-//                roleTypes: selectedRoleTypIds])
-            } else {
-            }
-        } else if (isPublic){
+        List orgIds = params.orgIdList.split','
+        List<Org> orgList = Org.findAllByIdInList(orgIds)
+        Set result = []
+        boolean showPrivateContactEmails = Boolean.valueOf(params.isPrivate)
+        boolean showPublicContactEmails = Boolean.valueOf(params.isPublic)
+        List<Long> selectedRoleTypIds = params.selectedRoleTypIds.split','
+        List<RefdataValue> selectedRoleTypes = RefdataValue.findAllByIdInList(selectedRoleTypIds)
 
+        List<Person> persons = []
+        if (showPublicContactEmails) {
+            if (selectedRoleTypes) {
+                persons = Person.executeQuery(
+                        "select distinct p from Person as p inner join p.roleLinks pr where p.isPublic = true and pr.org in (:orgs) and pr.functionType in (:selectedRoleTypes)",
+                        [orgs: orgList, selectedRoleTypes: selectedRoleTypes]
+                )
+            } else {
+                persons = Person.executeQuery(
+                        "select distinct p from Person as p inner join p.roleLinks pr where p.isPublic = true and pr.org in (:orgs)",
+                        [orgs: orgList]
+                )
+            }
         }
-        result = ["info@hbz-nrw.de", "hauptkontakt<@hbz-nrw.de", "admin<@hbz-nrw.de"]
-//        PersonRole.findAllByFunctionTypeAndOrg(prsFunction, org).prs.each { person ->
-//            if (person.isPublic) {
-//                Contact.findAllByPrsAndContentType(person, CCT_EMAIL).each { email ->
-//                    def emailPF = email?.content?.trim()
-//                    if (emailPF != null) {
-////                        result.add(emailPF)
-//                    }
-//                }
-//            }
-//        }
+        if (showPrivateContactEmails) {
+            if (selectedRoleTypes) {
+                persons.addAll(Person.executeQuery(
+                        """select distinct p from Person as p inner join p.roleLinks pr where 
+                pr.org in (:orgs) 
+                and pr.functionType in (:selectedRoleTypes) 
+                and ( (p.isPublic = false and p.tenant = :ctx) or (p.isPublic = true) )""",
+                        [orgs: orgList, selectedRoleTypes: selectedRoleTypes, ctx: contextService.org]
+                ))
+            } else {
+                persons.addAll(Person.executeQuery(
+                        """select distinct p from Person as p inner join p.roleLinks pr where pr.org in (:orgs)  
+                            and ( (p.isPublic = false and p.tenant = :ctx) or (p.isPublic = true) )""",
+                        [orgs: orgList, ctx: contextService.org]
+                ))
+            }
+        }
+        persons.each{person -> result.addAll(Contact.findAllByPrsAndContentType(person, RDStore.CCT_EMAIL).content)}
+
         render result as JSON
     }
 
