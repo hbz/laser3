@@ -31921,7 +31921,7 @@ a.ui.card:hover,
   height: 17px;
   text-align: center;
   opacity: 0;
-  color: rgba(0, 0, 0, 0.6);
+  color: rgba(0, 0, 0, 0.87);
   -webkit-transition: border 0.1s ease, opacity 0.1s ease, -webkit-transform 0.1s ease, -webkit-box-shadow 0.1s ease;
   transition: border 0.1s ease, opacity 0.1s ease, -webkit-transform 0.1s ease, -webkit-box-shadow 0.1s ease;
   transition: border 0.1s ease, opacity 0.1s ease, transform 0.1s ease, box-shadow 0.1s ease;
@@ -31936,7 +31936,7 @@ a.ui.card:hover,
 
 .ui.checkbox label,
 .ui.checkbox + label {
-  color: rgba(0, 0, 0, 0.6);
+  color: rgba(0, 0, 0, 0.87);
   -webkit-transition: color 0.1s ease;
   transition: color 0.1s ease;
 }
@@ -32010,14 +32010,14 @@ a.ui.card:hover,
 
 .ui.checkbox input:checked ~ .box:before,
 .ui.checkbox input:checked ~ label:before {
-  background: #004678;
-  border-color: #004678;
+  background: #FFFFFF;
+  border-color: rgba(34, 36, 38, 0.35);
 }
 
 .ui.checkbox input:checked ~ .box:after,
 .ui.checkbox input:checked ~ label:after {
   opacity: 1;
-  color: #004678;
+  color: rgba(0, 0, 0, 0.95);
 }
 
 /*--------------
@@ -32026,14 +32026,14 @@ a.ui.card:hover,
 
 .ui.checkbox input:not([type=radio]):indeterminate ~ .box:before,
 .ui.checkbox input:not([type=radio]):indeterminate ~ label:before {
-  background: #004678;
-  border-color: #004678;
+  background: #FFFFFF;
+  border-color: rgba(34, 36, 38, 0.35);
 }
 
 .ui.checkbox input:not([type=radio]):indeterminate ~ .box:after,
 .ui.checkbox input:not([type=radio]):indeterminate ~ label:after {
   opacity: 1;
-  color: #004678;
+  color: rgba(0, 0, 0, 0.95);
 }
 
 /*--------------
@@ -32044,15 +32044,15 @@ a.ui.card:hover,
 .ui.checkbox input:not([type=radio]):indeterminate:focus ~ label:before,
 .ui.checkbox input:checked:focus ~ .box:before,
 .ui.checkbox input:checked:focus ~ label:before {
-  background: #004678;
-  border-color: #004678;
+  background: #FFFFFF;
+  border-color: #96C8DA;
 }
 
 .ui.checkbox input:not([type=radio]):indeterminate:focus ~ .box:after,
 .ui.checkbox input:not([type=radio]):indeterminate:focus ~ label:after,
 .ui.checkbox input:checked:focus ~ .box:after,
 .ui.checkbox input:checked:focus ~ label:after {
-  color: #004678;
+  color: rgba(0, 0, 0, 0.95);
 }
 
 /*--------------
@@ -32151,7 +32151,7 @@ a.ui.card:hover,
   border-radius: 500rem;
   -webkit-transform: scale(0.46666667);
   transform: scale(0.46666667);
-  background-color: rgba(0, 0, 0, 0.6);
+  background-color: rgba(0, 0, 0, 0.87);
 }
 
 /* Focus */
@@ -32177,24 +32177,24 @@ a.ui.card:hover,
 
 .ui.radio.checkbox input:checked ~ .box:before,
 .ui.radio.checkbox input:checked ~ label:before {
-  background-color: #004678;
+  background-color: #FFFFFF;
 }
 
 .ui.radio.checkbox input:checked ~ .box:after,
 .ui.radio.checkbox input:checked ~ label:after {
-  background-color: #004678;
+  background-color: rgba(0, 0, 0, 0.95);
 }
 
 /* Active Focus */
 
 .ui.radio.checkbox input:focus:checked ~ .box:before,
 .ui.radio.checkbox input:focus:checked ~ label:before {
-  background-color: #004678;
+  background-color: #FFFFFF;
 }
 
 .ui.radio.checkbox input:focus:checked ~ .box:after,
 .ui.radio.checkbox input:focus:checked ~ label:after {
-  background-color: #004678;
+  background-color: rgba(0, 0, 0, 0.95);
 }
 
 /*--------------
@@ -32296,7 +32296,7 @@ a.ui.card:hover,
 
 .ui.slider.checkbox input:checked ~ .box:before,
 .ui.slider.checkbox input:checked ~ label:before {
-  background-color: #004678 !important;
+  background-color: #545454 !important;
 }
 
 .ui.slider.checkbox input:checked ~ .box:after,
@@ -32313,7 +32313,7 @@ a.ui.card:hover,
 
 .ui.slider.checkbox input:focus:checked ~ .box:before,
 .ui.slider.checkbox input:focus:checked ~ label:before {
-  background-color: #004678 !important;
+  background-color: #000000 !important;
 }
 
 /*--------------
@@ -32337,7 +32337,7 @@ a.ui.card:hover,
 .ui.toggle.checkbox label {
   min-height: 1.5rem;
   padding-left: 4.5rem;
-  color: rgba(0, 0, 0, 0.6);
+  color: rgba(0, 0, 0, 0.87);
 }
 
 .ui.toggle.checkbox label {
@@ -32473,12 +32473,85 @@ a.ui.card:hover,
   src: url(data:application/x-font-ttf;charset=utf-8;base64,AAEAAAALAIAAAwAwT1MvMg8SBD8AAAC8AAAAYGNtYXAYVtCJAAABHAAAAFRnYXNwAAAAEAAAAXAAAAAIZ2x5Zn4huwUAAAF4AAABYGhlYWQGPe1ZAAAC2AAAADZoaGVhB30DyAAAAxAAAAAkaG10eBBKAEUAAAM0AAAAHGxvY2EAmgESAAADUAAAABBtYXhwAAkALwAAA2AAAAAgbmFtZSC8IugAAAOAAAABknBvc3QAAwAAAAAFFAAAACAAAwMTAZAABQAAApkCzAAAAI8CmQLMAAAB6wAzAQkAAAAAAAAAAAAAAAAAAAABEAAAAAAAAAAAAAAAAAAAAABAAADoAgPA/8AAQAPAAEAAAAABAAAAAAAAAAAAAAAgAAAAAAADAAAAAwAAABwAAQADAAAAHAADAAEAAAAcAAQAOAAAAAoACAACAAIAAQAg6AL//f//AAAAAAAg6AD//f//AAH/4xgEAAMAAQAAAAAAAAAAAAAAAQAB//8ADwABAAAAAAAAAAAAAgAANzkBAAAAAAEAAAAAAAAAAAACAAA3OQEAAAAAAQAAAAAAAAAAAAIAADc5AQAAAAABAEUAUQO7AvgAGgAAARQHAQYjIicBJjU0PwE2MzIfAQE2MzIfARYVA7sQ/hQQFhcQ/uMQEE4QFxcQqAF2EBcXEE4QAnMWEP4UEBABHRAXFhBOEBCoAXcQEE4QFwAAAAABAAABbgMlAkkAFAAAARUUBwYjISInJj0BNDc2MyEyFxYVAyUQEBf9SRcQEBAQFwK3FxAQAhJtFxAQEBAXbRcQEBAQFwAAAAABAAAASQMlA24ALAAAARUUBwYrARUUBwYrASInJj0BIyInJj0BNDc2OwE1NDc2OwEyFxYdATMyFxYVAyUQEBfuEBAXbhYQEO4XEBAQEBfuEBAWbhcQEO4XEBACEm0XEBDuFxAQEBAX7hAQF20XEBDuFxAQEBAX7hAQFwAAAQAAAAIAAHRSzT9fDzz1AAsEAAAAAADRsdR3AAAAANGx1HcAAAAAA7sDbgAAAAgAAgAAAAAAAAABAAADwP/AAAAEAAAAAAADuwABAAAAAAAAAAAAAAAAAAAABwQAAAAAAAAAAAAAAAIAAAAEAABFAyUAAAMlAAAAAAAAAAoAFAAeAE4AcgCwAAEAAAAHAC0AAQAAAAAAAgAAAAAAAAAAAAAAAAAAAAAAAAAOAK4AAQAAAAAAAQAIAAAAAQAAAAAAAgAHAGkAAQAAAAAAAwAIADkAAQAAAAAABAAIAH4AAQAAAAAABQALABgAAQAAAAAABgAIAFEAAQAAAAAACgAaAJYAAwABBAkAAQAQAAgAAwABBAkAAgAOAHAAAwABBAkAAwAQAEEAAwABBAkABAAQAIYAAwABBAkABQAWACMAAwABBAkABgAQAFkAAwABBAkACgA0ALBDaGVja2JveABDAGgAZQBjAGsAYgBvAHhWZXJzaW9uIDIuMABWAGUAcgBzAGkAbwBuACAAMgAuADBDaGVja2JveABDAGgAZQBjAGsAYgBvAHhDaGVja2JveABDAGgAZQBjAGsAYgBvAHhSZWd1bGFyAFIAZQBnAHUAbABhAHJDaGVja2JveABDAGgAZQBjAGsAYgBvAHhGb250IGdlbmVyYXRlZCBieSBJY29Nb29uLgBGAG8AbgB0ACAAZwBlAG4AZQByAGEAdABlAGQAIABiAHkAIABJAGMAbwBNAG8AbwBuAC4AAAADAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA) format('truetype');
 }
 
-/* Filter */
+/* Checkmark */
+
+.ui.checkbox label:after,
+.ui.checkbox .box:after {
+  font-family: 'Checkbox';
+}
+
+/* Checked */
+
+.ui.checkbox input:checked ~ .box:after,
+.ui.checkbox input:checked ~ label:after {
+  content: '\e800';
+}
+
+/* Indeterminate */
+
+.ui.checkbox input:indeterminate ~ .box:after,
+.ui.checkbox input:indeterminate ~ label:after {
+  font-size: 12px;
+  content: '\e801';
+}
+
+/*--------------
+     ONLY FOR FILTER
+---------------*/
 
 .la-filter {
-  /* Checkmark */
-  /* Checked */
+  /*--------------
+      Checkmark
+  ---------------*/
+  /*--------------
+        Label
+  ---------------*/
+  /* Inside */
+  /*******************************
+             States
+  *******************************/
+  /*--------------
+        Hover
+  ---------------*/
+  /*--------------
+        Down
+  ---------------*/
+  /*--------------
+       Focus
+  ---------------*/
+  /*--------------
+       Active
+  ---------------*/
+  /*--------------
+    Indeterminate
+  ---------------*/
+  /*--------------
+    Active Focus
+  ---------------*/
+  /*--------------
+       Disabled
+  ---------------*/
+  /*******************************
+               Types
+  *******************************/
+  /*--------------
+       Radio
+  ---------------*/
+  /* Radio Checkbox */
+  /* Focus */
   /* Indeterminate */
+  /* Active */
+  /* Active Focus */
+  /* Legende */
+}
+
+.la-filter .ui.checkbox .box:after,
+.la-filter .ui.checkbox label:after {
+  color: rgba(0, 0, 0, 0.87);
+  -webkit-transition: border 0.1s ease, opacity 0.1s ease, -webkit-transform 0.1s ease, -webkit-box-shadow 0.1s ease;
+  transition: border 0.1s ease, opacity 0.1s ease, -webkit-transform 0.1s ease, -webkit-box-shadow 0.1s ease;
+  transition: border 0.1s ease, opacity 0.1s ease, transform 0.1s ease, box-shadow 0.1s ease;
+  transition: border 0.1s ease, opacity 0.1s ease, transform 0.1s ease, box-shadow 0.1s ease, -webkit-transform 0.1s ease, -webkit-box-shadow 0.1s ease;
 }
 
 .la-filter .ui.checkbox label,
@@ -32486,193 +32559,138 @@ a.ui.card:hover,
   color: #FFFFFF;
 }
 
-.la-filter .ui.checkbox label:after,
-.la-filter .ui.checkbox .box:after {
-  font-family: 'Checkbox';
+.la-filter .ui.checkbox .box:hover::before,
+.la-filter .ui.checkbox label:hover::before {
+  background: #FFFFFF;
+  border-color: rgba(34, 36, 38, 0.35);
 }
 
-.la-filter .ui.checkbox input:checked ~ .box:after,
-.la-filter .ui.checkbox input:checked ~ label:after {
-  content: '\e800';
-  color: #004678;
-  background-color: #fa820a !important;
+.la-filter .ui.checkbox label:hover,
+.la-filter .ui.checkbox + label:hover {
+  color: #FFFFFF;
 }
 
-.la-filter .ui.checkbox input:indeterminate ~ .box:after,
-.la-filter .ui.checkbox input:indeterminate ~ label:after {
-  font-size: 12px;
-  content: '\e801';
+.la-filter .ui.checkbox .box:active::before,
+.la-filter .ui.checkbox label:active::before {
+  background: #f4f8f9;
+  border-color: rgba(34, 36, 38, 0.35);
+}
+
+.la-filter .ui.checkbox .box:active::after,
+.la-filter .ui.checkbox label:active::after {
+  color: rgba(0, 0, 0, 0.95);
+}
+
+.la-filter .ui.checkbox input:active ~ label {
+  color: #FFFFFF;
+}
+
+.la-filter .ui.checkbox input:focus ~ .box:before,
+.la-filter .ui.checkbox input:focus ~ label:before {
+  background: #FFFFFF;
+  border-color: #fa820a;
+}
+
+.la-filter .ui.checkbox input:focus ~ .box:after,
+.la-filter .ui.checkbox input:focus ~ label:after {
+  color: rgba(0, 0, 0, 0.95);
+}
+
+.la-filter .ui.checkbox input:focus ~ label {
+  color: rgba(0, 0, 0, 0.95);
 }
 
 .la-filter .ui.checkbox input:checked ~ .box:before,
 .la-filter .ui.checkbox input:checked ~ label:before {
+  background: #FFFFFF;
+  border-color: rgba(34, 36, 38, 0.35);
+}
+
+.la-filter .ui.checkbox input:checked ~ .box:after,
+.la-filter .ui.checkbox input:checked ~ label:after {
+  opacity: 1;
+  color: rgba(0, 0, 0, 0.95);
+}
+
+.la-filter .ui.checkbox input:not([type=radio]):indeterminate ~ .box:before,
+.la-filter .ui.checkbox input:not([type=radio]):indeterminate ~ label:before {
+  background: #FFFFFF;
+  border-color: rgba(34, 36, 38, 0.35);
+}
+
+.la-filter .ui.checkbox input:not([type=radio]):indeterminate ~ .box:after,
+.la-filter .ui.checkbox input:not([type=radio]):indeterminate ~ label:after {
+  opacity: 1;
+  color: rgba(0, 0, 0, 0.95);
+}
+
+.la-filter .ui.checkbox input:not([type=radio]):indeterminate:focus ~ .box:before,
+.la-filter .ui.checkbox input:not([type=radio]):indeterminate:focus ~ label:before,
+.la-filter .ui.checkbox input:checked:focus ~ .box:before,
+.la-filter .ui.checkbox input:checked:focus ~ label:before {
+  background: #FFFFFF;
   border-color: #fa820a;
+}
+
+.la-filter .ui.checkbox input:not([type=radio]):indeterminate:focus ~ .box:after,
+.la-filter .ui.checkbox input:not([type=radio]):indeterminate:focus ~ label:after,
+.la-filter .ui.checkbox input:checked:focus ~ .box:after,
+.la-filter .ui.checkbox input:checked:focus ~ label:after {
+  color: rgba(0, 0, 0, 0.95);
+}
+
+.la-filter .ui.disabled.checkbox .box:after,
+.la-filter .ui.disabled.checkbox label,
+.la-filter .ui.checkbox input[disabled] ~ .box:after,
+.la-filter .ui.checkbox input[disabled] ~ label {
+  opacity: 0.5;
+  color: #000000;
+}
+
+.la-filter .ui.radio.checkbox .box:after,
+.la-filter .ui.radio.checkbox label:after {
+  -webkit-transform: scale(0.46666667);
+  transform: scale(0.46666667);
+  background-color: rgba(0, 0, 0, 0.87);
+}
+
+.la-filter .ui.radio.checkbox input:focus ~ .box:before,
+.la-filter .ui.radio.checkbox input:focus ~ label:before {
+  background-color: #FFFFFF;
+}
+
+.la-filter .ui.radio.checkbox input:focus ~ .box:after,
+.la-filter .ui.radio.checkbox input:focus ~ label:after {
+  background-color: rgba(0, 0, 0, 0.95);
+}
+
+.la-filter .ui.radio.checkbox input:indeterminate ~ .box:after,
+.la-filter .ui.radio.checkbox input:indeterminate ~ label:after {
+  opacity: 0;
+}
+
+.la-filter .ui.radio.checkbox input:checked ~ .box:before,
+.la-filter .ui.radio.checkbox input:checked ~ label:before {
+  background-color: #FFFFFF;
+}
+
+.la-filter .ui.radio.checkbox input:checked ~ .box:after,
+.la-filter .ui.radio.checkbox input:checked ~ label:after {
+  background-color: rgba(0, 0, 0, 0.95);
+}
+
+.la-filter .ui.radio.checkbox input:focus:checked ~ .box:before,
+.la-filter .ui.radio.checkbox input:focus:checked ~ label:before {
+  background-color: #FFFFFF;
+}
+
+.la-filter .ui.radio.checkbox input:focus:checked ~ .box:after,
+.la-filter .ui.radio.checkbox input:focus:checked ~ label:after {
+  background-color: rgba(0, 0, 0, 0.95);
 }
 
 .la-filter legend {
   color: #FFFFFF;
-}
-
-/************* laser three toggle icon buttons ***************/
-
-.radio,
-.checkbox.la-toggle-radio {
-  padding: 0;
-}
-
-/* BEFORE */
-
-.ui.checkbox.la-toggle-radio label {
-  font-size: 1.7em;
-  width: 40px;
-  height: 40px;
-  color: rgba(0, 0, 0, 0.6);
-}
-
-.ui.checkbox.la-toggle-radio label:before {
-  border: none;
-  width: 40px;
-  height: 40px;
-  padding-top: 11px;
-  text-align: center;
-  background-color: #d3dae3;
-  border-radius: 500rem;
-}
-
-.ui.checkbox.la-toggle-radio input:checked ~ label:before {
-  background-color: #d3dae3;
-}
-
-/* AFTER */
-
-.ui.checkbox.la-toggle-radio input:checked ~ label:after,
-.ui.radio.checkbox.la-toggle-radio input:checked ~ label:after {
-  color: #98B500 !important;
-  top: 25px !important;
-  left: 25px !important;
-  background-color: white !important;
-  border-radius: 500rem;
-  -webkit-box-shadow: 0 2px 3px 0 #d3dae3;
-  box-shadow: 0 2px 3px 0 #d3dae3;
-}
-
-/* REPLACE */
-
-.ui.checkbox.la-toggle-radio.la-replace label:before {
-  font-family: Icons;
-  content: "\f061";
-}
-
-/* INHERITY*/
-
-.ui.checkbox.la-toggle-radio.la-inherit label:before {
-  font-family: Icons;
-  content: "\f08d";
-}
-
-/* SHARE*/
-
-.ui.checkbox.la-toggle-radio.la-share label:before {
-  font-family: Icons;
-  content: "\e907";
-}
-
-/* TRASH*/
-
-.ui.checkbox.la-toggle-radio.la-noChange label:before {
-  font-family: Icons;
-  content: "\f2ed";
-}
-
-/* COPY LICENCE WITH PACKAGES, TITELS ETC */
-
-table tr td div.willStay {
-  background-color: #D4E096;
-}
-
-table tr td div.willBeReplaced {
-  background-color: #EDC0BA;
-  text-decoration: line-through;
-}
-
-table tr td div.willBeReplacedStrong {
-  background-color: #EDC0BA !important;
-  text-decoration: line-through !important;
-}
-
-.la-element {
-  padding: 4px 0;
-}
-
-.la-element .checkbox {
-  padding-left: 0;
-}
-
-.la-copyElements-flex-container {
-  display: -webkit-box;
-  display: -ms-flexbox;
-  display: flex;
-  -webkit-box-align: center;
-  -ms-flex-align: center;
-  align-items: center;
-  -webkit-box-pack: space-evenly;
-  -ms-flex-pack: space-evenly;
-  justify-content: space-evenly;
-}
-
-.la-copyElements-flex-item {
-  -webkit-box-flex: 1;
-  -ms-flex-positive: 1;
-  flex-grow: 1;
-  display: -webkit-box;
-  display: -ms-flexbox;
-  display: flex;
-  -webkit-box-pack: center;
-  -ms-flex-pack: center;
-  justify-content: center;
-}
-
-.la-copyElements-th-flex-container {
-  display: -webkit-box;
-  display: -ms-flexbox;
-  display: flex;
-  -webkit-box-align: center;
-  -ms-flex-align: center;
-  align-items: center;
-  -webkit-box-pack: space-evenly;
-  -ms-flex-pack: space-evenly;
-  justify-content: space-evenly;
-}
-
-.la-copyElements-th-flex-item {
-  -webkit-box-flex: 1;
-  -ms-flex-positive: 1;
-  flex-grow: 1;
-  display: -webkit-box;
-  display: -ms-flexbox;
-  display: flex;
-  -webkit-box-pack: center;
-  -ms-flex-pack: center;
-  justify-content: center;
-}
-
-.la-copyPack-container {
-  display: -webkit-box;
-  display: -ms-flexbox;
-  display: flex;
-  -webkit-box-pack: justify;
-  -ms-flex-pack: justify;
-  justify-content: space-between;
-}
-
-.la-copyPack-item {
-  -webkit-box-flex: 1;
-  -ms-flex-positive: 1;
-  flex-grow: 1;
-}
-
-.la-multi-sources:nth-child(n+2) {
-  margin-top: 30px;
 }
 /*!
  * # Semantic UI 2.3.1 - Dimmer
