@@ -91,11 +91,11 @@ modules = {
         resource url:'js/select2.min.js'         // updated stuff // new version 3.5.4
         resource url:'js/readmore.min.js'
 
-        resource url:'js/application/dict.js.gsp'
+        resource url:'js/submodules/dict.js.gsp'
         resource url:'js/application.js.gsp'
-        resource url:'js/application/decksaver.js.gsp'
-        resource url:'js/application/tooltip.js.gsp'
-        resource url:'js/application/bb8.js.gsp'
+        resource url:'js/submodules/decksaver.js.gsp'
+        resource url:'js/submodules/tooltip.js.gsp'
+        resource url:'js/submodules/bb8.js.gsp'
     }
 
     swaggerApi {
