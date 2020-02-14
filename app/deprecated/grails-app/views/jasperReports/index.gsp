@@ -2,7 +2,7 @@
 <html>
 <r:require module="scaffolding" />
 <head>
-    <title>${message(code:'laser', default:'LAS:eR')} ${message(code:'jasper.reports.label')}</title>
+    <title>${message(code:'laser')} ${message(code:'jasper.reports.label')}</title>
     <meta name="layout" content="semanticUI"/>
 </head>
 
