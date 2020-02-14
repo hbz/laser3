@@ -42,9 +42,9 @@ ${message(code: 'subscription.details.availableTitles', default: 'Available Titl
             </div>
 
             <div class="field">
-                <label for="pkgfilter">${message(code: 'subscription.details.from_pkg', default: 'From Package')}</label>
+                <label for="pkgfilter">${message(code: 'subscription.details.from_pkg')}</label>
                 <select id="pkgfilter" name="pkgfilter">
-                    <option value="">${message(code: 'subscription.details.from_pkg.all', default: 'All')}</option>
+                    <option value="">${message(code: 'subscription.details.from_pkg.all')}</option>
                     <g:each in="${subscriptionInstance.packages}" var="sp">
                         <option value="${sp.pkg.id}" ${sp.pkg.id.toString() == params.pkgfilter ? 'selected=true' : ''}>${sp.pkg.name}</option>
                     </g:each>
@@ -157,7 +157,7 @@ ${message(code: 'subscription.details.availableTitles', default: 'Available Titl
                                                 onClick="javascript:selectAll();"/></g:if>
             </th>
             <th rowspan="3"><g:message code="sidewide.number"/></th>
-            <g:sortableColumn class="ten wide" params="${params}" property="tipp.title.sortTitle" title="${message(code: 'title.label', default: 'Title')}"/>
+            <g:sortableColumn class="ten wide" params="${params}" property="tipp.title.sortTitle" title="${message(code: 'title.label')}"/>
             <th><g:message code="tipp.coverage"/></th>
             <th><g:message code="tipp.access"/></th>
             <g:if test="${uploadPriceInfo}">
@@ -238,13 +238,13 @@ ${message(code: 'subscription.details.availableTitles', default: 'Available Titl
 
             <div class="ui list">
                 <div class="item" title="${tipp.availabilityStatusExplanation}">
-                    <b>${message(code: 'default.access.label', default: 'Access')}:</b> ${tipp.availabilityStatus?.getI10n('value')}
+                    <b>${message(code: 'default.access.label')}:</b> ${tipp.availabilityStatus?.getI10n('value')}
                 </div>
 
             </div>
 
             <div class="item">
-                <b>${message(code: 'default.status.label', default: 'Status')}:</b>
+                <b>${message(code: 'default.status.label')}:</b>
                 <%--<semui:xEditableRefData owner="${tipp}" field="status" config="${de.laser.helper.RDConstants.TIPP_STATUS}"/>--%>
                 ${tipp.status.getI10n('value')}
             </div>
@@ -257,7 +257,7 @@ ${message(code: 'subscription.details.availableTitles', default: 'Available Titl
                 </div>
             </div>
 
-            <div class="item"><b>${message(code: 'tipp.platform', default: 'Platform')}:</b>
+            <div class="item"><b>${message(code: 'tipp.platform')}:</b>
                 <g:if test="${tipp?.platform.name}">
                     ${tipp?.platform.name}
                 </g:if>

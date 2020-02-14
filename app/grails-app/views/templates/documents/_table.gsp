@@ -24,9 +24,9 @@
         <thead>
             <tr>
                 <%--<g:if test="${editable}"><th>${message(code:'default.select.label', default:'Select')}</th></g:if> : REMOVED BULK--%>
-                <th>${message(code:'license.docs.table.title', default:'Title')}</th>
-                <th>${message(code:'license.docs.table.fileName', default:'File Name')}</th>
-                <th>${message(code:'license.docs.table.type', default:'Type')}</th>
+                <th>${message(code:'license.docs.table.title')}</th>
+                <th>${message(code:'license.docs.table.fileName')}</th>
+                <th>${message(code:'license.docs.table.type')}</th>
                 <%--<th>${message(code:'org.docs.table.ownerOrg')}</th>--%>
                 <g:if test="${controllerName == 'myInstitution'}">
                     <th>${message(code:'org.docs.table.targetBy')}</th>

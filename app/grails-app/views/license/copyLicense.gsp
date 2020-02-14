@@ -79,7 +79,7 @@
                                         ${docctx.owner.filename}
                                     </g:if>
                                     <g:else>
-                                        ${message(code:'template.documents.missing', default: 'Missing title and filename')}
+                                        ${message(code:'template.documents.missing')}
                                     </g:else>
                                 </g:else>
 

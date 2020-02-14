@@ -23,12 +23,12 @@
         <div class="two fields">
             <!-- 1-1 -->
             <div class="field">
-                <label for="search-title">${message(code: 'default.search.text', default: 'Search text')}
+                <label for="search-title">${message(code: 'default.search.text')}
                 </label>
 
                 <div class="ui input">
                     <input type="text" id="search-title" name="q"
-                           placeholder="${message(code: 'default.search.ph', default: 'enter search term...')}"
+                           placeholder="${message(code: 'default.search.ph')}"
                            value="${params.pkg_q}"/>
                 </div>
             </div>

@@ -2,7 +2,7 @@
 <html>
     <head>
         <meta name="layout" content="semanticUI"/>
-        <title>${message(code:'laser')} ${message(code:'myinst.addLicense.label', default:'Data import explorer')}</title>
+        <title>${message(code:'laser')} ${message(code:'myinst.addLicense.label')}</title>
     </head>
 
     <body>
@@ -51,7 +51,7 @@
                 ${message(code:'default.on')} <g:formatDate date="${ra.dateCreated}" format="${message(code:'default.date.format')}"/>
             </g:if>
             <g:else>
-                ${message(code:'announcement.posted_auto.label', default:'posted automatically on')}
+                ${message(code:'announcement.posted_auto.label')}
                 <br />
                 <g:formatDate date="${ra.dateCreated}" format="${message(code:'default.date.format')}"/>
             </g:else>

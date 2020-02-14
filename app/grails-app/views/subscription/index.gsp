@@ -61,7 +61,7 @@
                 )
             </g:if>
             <g:else>
-                ${message(code: 'subscription.details.no_ents', default: 'No entitlements yet')}
+                ${message(code: 'subscription.details.no_ents')}
             </g:else>
 
         </div>

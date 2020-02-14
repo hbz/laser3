@@ -21,7 +21,7 @@
         <table class="ui celled la-table table">
           <thead>
             <tr>
-              <th>${message(code:'default.info.label', default:'Info')}</th>
+              <th>${message(code:'default.info.label')}</th>
               <th class="la-action-info">${message(code:'default.actions.label')}</th>
             </tr>
           </thead>
