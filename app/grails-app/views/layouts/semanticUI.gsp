@@ -348,6 +348,7 @@
                                 </div>
                             </div>
 
+                            <g:link class="item" controller="admin" action="serverDifferences">${message(code:'menu.admin.serverDifferences')}</g:link>
 
                             <div class="divider"></div>
 
