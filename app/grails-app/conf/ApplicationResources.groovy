@@ -93,9 +93,9 @@ modules = {
 
         resource url:'js/application/dict.js.gsp'
         resource url:'js/application.js.gsp'
-        resource url:'js/application/bb8.js.gsp'
         resource url:'js/application/decksaver.js.gsp'
         resource url:'js/application/tooltip.js.gsp'
+        resource url:'js/application/bb8.js.gsp'
     }
 
     swaggerApi {
