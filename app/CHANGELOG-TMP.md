@@ -6,6 +6,18 @@
 
 2184    14.02.2020  hbz-dev     David   Bug         Vererbung im hbz-dev defekt
 
+--      12.02.2020  rc1.2       Andreas Bug         Sortierung nach Enddatum war bei eigenen Kosten innerhalb einer Lizenz nicht möglich
+
+2179    12.02.2020  rc1.2       Andreas Bug         Übernahme des Anbieternamens in Sync nachgeholt
+
+2180    12.02.2020  rc1.2       Moe     Bug         NullPointerException subscription/index 
+
+2181    12.02.2020  rc1.2       Moe     Bug         processUnLinkPackagesConsortia: Schlüssel wird noch auf org_access_point_link verwiesen
+
+2174    12.02.2020  rc1.2       Moe     Bug         title/list Cannot invoke method getI10n() on null object
+
+2173    12.02.2020  rc1.2       Moe     Bug         Unparseable date bei spotlightSearch
+
 2085    10.02.2020  hbz-dev     Moe     Feature     Sicherheitsabfrage Ent-/Verknüpfen von Konsorten
 
 2005    10.02.2020  hbz-dev     Moe     Feature     "Mehrjahreslaufzeit" auch für lokale Lizenzen?
