@@ -53,7 +53,7 @@
 
         <semui:messages data="${flash}"/>
 
-        <h1 class="ui left floated aligned icon header la-clear-before"><semui:headerIcon />${message(code:'myinst.currentSubscriptions.label', default:'Current Subscriptions')}
+        <h1 class="ui left floated aligned icon header la-clear-before"><semui:headerIcon />${message(code:'myinst.currentSubscriptions.label')}
             <semui:totalNumber total="${num_sub_rows}"/>
         </h1>
 
@@ -317,11 +317,11 @@
             </g:elseif>
 
             <g:sortableColumn scope="col" params="${params}" property="orgRole§provider" title="${message(code: 'default.provider.label', default: 'Provider')} / ${message(code: 'default.agency.label', default: 'Agency')}" rowspan="2" />
-            <%--<th rowspan="2" >${message(code: 'default.provider.label', default: 'Provider')} / ${message(code: 'default.agency.label', default: 'Agency')}</th>--%>
+            <%--<th rowspan="2" >${message(code: 'default.provider.label')} / ${message(code: 'default.agency.label')}</th>--%>
 
             <%--
             <g:if test="${params.orgRole == 'Subscription Consortia'}">
-                <th>${message(code: 'consortium.subscriber', default: 'Subscriber')}</th>
+                <th>${message(code: 'consortium.subscriber')}</th>
             </g:if>
             --%>
             <g:sortableColumn scope="col" class="la-smaller-table-head" params="${params}" property="s.startDate" title="${message(code: 'default.startDate.label')}"/>
@@ -362,7 +362,7 @@
                             ${s.name}
                         </g:if>
                         <g:else>
-                            -- ${message(code: 'myinst.currentSubscriptions.name_not_set', default: 'Name Not Set')}  --
+                            -- ${message(code: 'myinst.currentSubscriptions.name_not_set')}  --
                         </g:else>
                         <g:if test="${s.instanceOf}">
                             <g:if test="${s.consortia && s.consortia == institution}">

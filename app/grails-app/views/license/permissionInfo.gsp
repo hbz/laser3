@@ -47,11 +47,11 @@
         </g:each>
       </table>
 
-      <h2 class="ui header">${message(code:'subscription.details.user.permissions', default:'Logged in user permissions')}</h2>
+      <h2 class="ui header">${message(code:'subscription.details.user.permissions')}</h2>
       <table class="ui celled la-table table">
         <thead>
           <tr>
-          <th>${message(code:'subscription.details.permissionInfo.aff_via', default:'Affiliated via Role')}</th>
+          <th>${message(code:'subscription.details.permissionInfo.aff_via')}</th>
             <th>${message(code:'default.permissions.label')}</th>
           </tr>
         </thead>

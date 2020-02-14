@@ -24,7 +24,7 @@
                                 : "com.k_int.properties.PropertyDefinition:${it.id}"
                     }}"
                     optionValue="${{ it.getI10n('name') }}"
-                    noSelection="${message(code: 'default.select.choose.label', default: 'Please Choose...')}"/>
+                    noSelection="${message(code: 'default.select.choose.label')}"/>
     <r:script>
         $(function() {
             $.each($(".la-filterPropDef"), function(i, dropdown) {
@@ -80,7 +80,7 @@
                             select = ' <div class="ui fluid search selection dropdown la-filterProp">' +
                                 '   <input type="hidden" id="filterProp" name="filterProp">' +
                                 '   <i class="dropdown icon"></i>' +
-                                '   <div class="default text">${message(code: 'default.select.choose.label', default: 'Please Choose...')}</div>' +
+                                '   <div class="default text">${message(code: 'default.select.choose.label')}</div>' +
                                 '   <div class="menu">'
                                 + select +
                                 '   </div>' +

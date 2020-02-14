@@ -27,7 +27,7 @@
 <%-- <g:render template="nav"/> --%>
 
 <g:set var="counter" value="${offset + 1}"/>
-${message(code: 'subscription.details.availableTitles', default: 'Available Titles')} ( ${message(code: 'default.paginate.offset', args: [(offset + 1), (offset + (tipps?.size())), num_tipp_rows])} )
+${message(code: 'subscription.details.availableTitles')} ( ${message(code: 'default.paginate.offset', args: [(offset + 1), (offset + (tipps?.size())), num_tipp_rows])} )
 
 <g:render template="../templates/filter/javascript" />
 <semui:filter showFilterButton="true">
@@ -37,7 +37,7 @@ ${message(code: 'subscription.details.availableTitles', default: 'Available Titl
 
         <div class="fields two">
             <div class="field">
-                <label for="filter">${message(code: 'subscription.compare.filter.title', default: 'Filters - Title')}</label>
+                <label for="filter">${message(code: 'subscription.compare.filter.title')}</label>
                 <input id="filter" name="filter" value="${params.filter}"/>
             </div>
 
@@ -67,7 +67,7 @@ ${message(code: 'subscription.details.availableTitles', default: 'Available Titl
                 <a href="${request.forwardURI}"
                    class="ui reset primary button">${message(code: 'default.button.reset.label')}</a>
                 <input type="submit" class="ui secondary button"
-                       value="${message(code: 'default.button.filter.label', default: 'Filter')}">
+                       value="${message(code: 'default.button.filter.label')}">
             </div>
         </div>
 
@@ -202,7 +202,7 @@ ${message(code: 'subscription.details.availableTitles', default: 'Available Titl
 
             <br>
             <g:link controller="tipp" action="show"
-                    id="${tipp.id}">${message(code: 'platform.show.full_tipp', default: 'Full TIPP Details')}</g:link>
+                    id="${tipp.id}">${message(code: 'platform.show.full_tipp')}</g:link>
             &nbsp;&nbsp;&nbsp;
             <g:each in="${ApiSource.findAllByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true)}"
                     var="gokbAPI">
@@ -360,7 +360,7 @@ ${message(code: 'subscription.details.availableTitles', default: 'Available Titl
 
     <div class="paginateButtons" style="text-align:center">
         <input type="submit"
-               value="${message(code: 'subscription.details.addEntitlements.add_selected', default: 'Add Selected Entitlements')}"
+               value="${message(code: 'subscription.details.addEntitlements.add_selected')}"
                class="ui button"/>
     </div>
 

@@ -43,7 +43,7 @@
     </g:if>
     <g:else>
       <div class="container alert-warn">
-        <h6 class="ui header">${message(code:'datamanager.none_pending.label', default:'No pending package changes')}</h6>
+        <h6 class="ui header">${message(code:'datamanager.none_pending.label')}</h6>
       </div>
     </g:else>
 

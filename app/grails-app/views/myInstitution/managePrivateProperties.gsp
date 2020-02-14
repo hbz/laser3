@@ -50,7 +50,7 @@
                                     <th>${message(code:'default.name.label')}</th>
                                     <th>${message(code:'propertyDefinition.expl.label')}</th>
                                     <th>${message(code:'default.type.label')}</th>
-                                    <th>${message(code:'propertyDefinition.count.label', default:'Count in Use')}</th>
+                                    <th>${message(code:'propertyDefinition.count.label')}</th>
                                     <th class="la-action-info">${message(code:'default.actions.label')}</th>
                                 </tr>
                             </thead>

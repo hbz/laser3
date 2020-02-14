@@ -39,11 +39,11 @@
 
         <g:if test="${validationResult.success==true}">
             <div class="alert alert-success">
-                      <h2 class="ui header">${message(code:'onix.import.success', default:'Upload successful')}</h2>
+                      <h2 class="ui header">${message(code:'onix.import.success')}</h2>
 
                       ${message(code:'onix.import.file', args:[upload_filename,upload_mime_type])}</strong>
             <g:if test="${validationResult.license}">
-                ${message(code:'onix.import.assoc', default:'and associated with')}
+                ${message(code:'onix.import.assoc')}
                 <g:link action="show"
                         controller="license"
                         class="ui button"
