@@ -1785,7 +1785,7 @@ class SubscriptionController extends AbstractDebugController {
                                         PriceItem.executeUpdate("delete from PriceItem pi where pi.issueEntitlement.id in (:delList)", [delList: deleteIdList])
                                         IssueEntitlement.executeUpdate("delete from IssueEntitlement ie where ie.id in (:delList)", [delList: deleteIdList])
                                     }
-                                    SubscriptionPackage subPkg = SubscriptionPackage.findByPkgAndSubscription(result.package, result.subscription)
+                                    SubscriptionPackage subPkg = SubscriptionPackage.findByPkgAndSubscription(pkg, subChild)
                                     if (subPkg) {
                                         OrgAccessPointLink.executeUpdate("delete from OrgAccessPointLink oapl where oapl.subPkg=?", [subPkg])
                                         CostItem.findAllBySubPkg(subPkg).each { costItem ->
@@ -1803,7 +1803,7 @@ class SubscriptionController extends AbstractDebugController {
                                 }
                             } else {
 
-                                SubscriptionPackage subPkg = SubscriptionPackage.findByPkgAndSubscription(result.package, result.subscription)
+                                SubscriptionPackage subPkg = SubscriptionPackage.findByPkgAndSubscription(pkg, subChild)
                                 if (subPkg) {
                                     OrgAccessPointLink.executeUpdate("delete from OrgAccessPointLink oapl where oapl.subPkg=?", [subPkg])
                                     CostItem.findAllBySubPkg(subPkg).each { costItem ->

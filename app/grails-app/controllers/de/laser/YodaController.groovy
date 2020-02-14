@@ -579,11 +579,6 @@ class YodaController {
     @Secured(['ROLE_YODA'])
     def fullReset() {
 
-       log.debug("Delete all existing FT Control entries");
-       FTControl.withTransaction {
-            FTControl.executeUpdate("delete FTControl c")
-       }
-
        log.debug("Clear ES")
        dataloadService.clearDownAndInitES()
 
