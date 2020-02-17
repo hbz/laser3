@@ -22,7 +22,7 @@ class DataManagerController extends AbstractDebugController {
 
   @Secured(['ROLE_ADMIN'])
   def index() { 
-    def result =[:]
+    Map<String, Object> result = [:]
     def pending_change_pending_status = RefdataValue.getByValueAndCategory('Pending', RDConstants.PENDING_CHANGE_STATUS)
 
     result.pendingChanges = PendingChange.executeQuery("select pc from PendingChange as pc where pc.pkg is not null and ( pc.status is null or pc.status = ? ) order by ts desc", [pending_change_pending_status]);
@@ -33,7 +33,7 @@ class DataManagerController extends AbstractDebugController {
   @Secured(['ROLE_ADMIN'])
   def changeLog() { 
 
-    def result =[:]
+    Map<String, Object> result = [:]
     log.debug("changeLog ${params}");
     SimpleDateFormat formatter = DateUtil.getSDF_NoTime()
 
@@ -539,7 +539,7 @@ class DataManagerController extends AbstractDebugController {
 
   @Secured(['ROLE_ADMIN'])
   def listMailTemplates() {
-    def result =[:]
+    Map<String, Object> result = [:]
 
     result.mailTemplates = MailTemplate.getAll()
 
