@@ -4,7 +4,7 @@
 <html>
   <head>
     <meta name="layout" content="semanticUI">
-    <g:set var="entityName" value="${message(code: 'titleInstancePackagePlatform.label', default: 'TitleInstancePackagePlatform')}" />
+    <g:set var="entityName" value="${message(code: 'titleInstancePackagePlatform.label')}" />
     <title><g:message code="default.show.label" args="[entityName]" /></title>
   </head>
   <body>
@@ -20,21 +20,21 @@
 
               <g:if test="${titleInstancePackagePlatformInstance?.pkg}">
                   <dl>
-                      <dt><g:message code="package.label" default="Pkg" /></dt>
+                      <dt><g:message code="package.label" /></dt>
                       <dd><g:link controller="package" action="show" id="${titleInstancePackagePlatformInstance?.pkg?.id}">${titleInstancePackagePlatformInstance?.pkg?.name} (id: ${titleInstancePackagePlatformInstance?.pkg?.identifier})</g:link></dd>
                   </dl>
               </g:if>
 
               <g:if test="${titleInstancePackagePlatformInstance?.platform}">
                   <dl>
-                      <dt><g:message code="platform.label" default="Platform" /></dt>
+                      <dt><g:message code="platform.label" /></dt>
                       <dd><g:link controller="platform" action="show" id="${titleInstancePackagePlatformInstance?.platform?.id}">${titleInstancePackagePlatformInstance?.platform?.name}</g:link></dd>
                   </dl>
               </g:if>
 
               <g:if test="${titleInstancePackagePlatformInstance?.title}">
                   <dl>
-                      <dt><g:message code="title.label" default="Title" /></dt>
+                      <dt><g:message code="title.label" /></dt>
                       <dd><g:link controller="title" action="show" id="${titleInstancePackagePlatformInstance?.title?.id}">${titleInstancePackagePlatformInstance?.title?.title}</g:link></dd>
                   </dl>
               </g:if>
@@ -60,23 +60,23 @@
 
               <dl>
                   <g:each in="${titleInstancePackagePlatformInstance?.coverages}" var="covStmt">
-                      <dt><g:message code="tipp.startDate" default="Start Date" /></dt>
-                      <dd><g:formatDate format="${message(code:'default.date.format.notime', default:'yyyy-MM-dd')}" date="${covStmt.startDate}" /></dd>
-                      <dt><g:message code="tipp.startVolume" default="Start Volume" /></dt>
+                      <dt><g:message code="tipp.startDate" /></dt>
+                      <dd><g:formatDate format="${message(code:'default.date.format.notime')}" date="${covStmt.startDate}" /></dd>
+                      <dt><g:message code="tipp.startVolume" /></dt>
                       <dd><g:fieldValue bean="${covStmt}" field="startVolume"/></dd>
-                      <dt><g:message code="tipp.startIssue" default="Start Issue" /></dt>
+                      <dt><g:message code="tipp.startIssue" /></dt>
                       <dd><g:fieldValue bean="${covStmt}" field="startIssue"/></dd>
-                      <dt><g:message code="tipp.endDate" default="End Date" /></dt>
-                      <dd><g:formatDate format="${message(code:'default.date.format.notime', default:'yyyy-MM-dd')}" date="${covStmt.endDate}" /></dd>
-                      <dt><g:message code="tipp.endVolume" default="End Volume" /></dt>
+                      <dt><g:message code="tipp.endDate" /></dt>
+                      <dd><g:formatDate format="${message(code:'default.date.format.notime')}" date="${covStmt.endDate}" /></dd>
+                      <dt><g:message code="tipp.endVolume" /></dt>
                       <dd><g:fieldValue bean="${covStmt}" field="endVolume"/></dd>
-                      <dt><g:message code="tipp.endIssue" default="End Issue" /></dt>
+                      <dt><g:message code="tipp.endIssue" /></dt>
                       <dd><g:fieldValue bean="${covStmt}" field="endIssue"/></dd>
-                      <dt><g:message code="tipp.embargo" default="Embargo" /></dt>
+                      <dt><g:message code="tipp.embargo" /></dt>
                       <dd><g:fieldValue bean="${covStmt}" field="embargo"/></dd>
-                      <dt><g:message code="tipp.coverageDepth" default="Coverage Depth" /></dt>
+                      <dt><g:message code="tipp.coverageDepth" /></dt>
                       <dd><g:fieldValue bean="${covStmt}" field="coverageDepth"/></dd>
-                      <dt><g:message code="tipp.coverageNote" default="Coverage Note" /></dt>
+                      <dt><g:message code="tipp.coverageNote" /></dt>
                       <dd><g:fieldValue bean="${covStmt}" field="coverageNote"/></dd>
                   </g:each>
               </dl>

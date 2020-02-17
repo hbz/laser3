@@ -1,6 +1,6 @@
 <%@ page import="com.k_int.kbplus.JasperReportsController" %>
 <div class="well">
-    ${message(code:'jasper.reports.desc', default:'Report Description')}: ${reportdesc}
+    ${message(code:'jasper.reports.desc')}: ${reportdesc}
 
 </div>
 
@@ -11,12 +11,12 @@
         <thead>
         <tr>
             <th class="text-center" colspan="2">
-                ${message(code:'jasper.reports.params', default:'Report Parameters')}
+                ${message(code:'jasper.reports.params')}
             </th>
         </tr>
         <tr>
-            <th>${message(code:'default.description.label', default:'Description')}</th>
-            <th>${message(code:'default.value.label', default:'Value')}</th>
+            <th>${message(code:'default.description.label')}</th>
+            <th>${message(code:'default.value.label')}</th>
         </tr>
         </thead>
         <tbody>
@@ -50,5 +50,5 @@
         </tr>
         </tbody>
     </table>
-    <g:submitButton name="submit" class="ui button" value="${message(code:'jasper.generate.label', default:'Generate Report')}"/>
+    <g:submitButton name="submit" class="ui button" value="${message(code:'jasper.generate.label')}"/>
 </g:form>

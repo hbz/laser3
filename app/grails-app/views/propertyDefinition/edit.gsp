@@ -5,7 +5,7 @@
 <html>
 <head>
     <meta name="layout" content="semanticUI">
-    <g:set var="entityName" value="${message(code: 'propertyDefinition.label', default: 'PropertyDefinition')}"/>
+    <g:set var="entityName" value="${message(code: 'propertyDefinition.label')}"/>
     <title><g:message code="default.edit.label" args="[entityName]"/></title>
 </head>
 

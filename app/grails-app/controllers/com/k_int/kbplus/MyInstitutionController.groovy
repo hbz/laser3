@@ -1451,7 +1451,7 @@ from License as l where (
         if (baseLicense) {
             if (!baseLicense?.hasPerm("view", user)) {
                 log.debug("return 401....");
-                flash.error = message(code: 'myinst.newLicense.error', default: 'You do not have permission to view the selected license. Please request access on the profile page');
+                flash.error = message(code: 'myinst.newLicense.error')
                 response.sendError(401)
             }
             else {
@@ -1544,7 +1544,7 @@ from License as l where (
 
         if (! baseLicense?.hasPerm("view", user)) {
             log.debug("return 401....");
-            flash.error = message(code:'myinst.newLicense.error', default:'You do not have permission to view the selected license. Please request access on the profile page');
+            flash.error = message(code:'myinst.newLicense.error')
             response.sendError(401)
 
         }
@@ -1588,13 +1588,13 @@ from License as l where (
                 license.status = RefdataValue.getByValueAndCategory('Deleted', RDConstants.LICENSE_STATUS)
                 license.save(flush: true);
             } else {
-                flash.error = message(code:'myinst.deleteLicense.error', default:'Unable to delete - The selected license has attached subscriptions marked as Current')
+                flash.error = message(code:'myinst.deleteLicense.error')
                 redirect(url: request.getHeader('referer'))
                 return
             }
         } else {
             log.warn("Attempt by ${result.user} to delete license ${result.license} without perms")
-            flash.message = message(code: 'license.delete.norights', default: 'You do not have edit permission for the selected license.')
+            flash.message = message(code: 'license.delete.norights')
             redirect(url: request.getHeader('referer'))
             return
         }
@@ -2273,7 +2273,7 @@ AND EXISTS (
                 }
               }
             } else {
-                flash.error = message(code:'myinst.actionCurrentSubscriptions.error', default:'Unable to delete - The selected subscriptions has attached subscriptions')
+                flash.error = message(code:'myinst.actionCurrentSubscriptions.error')
             }
         } else {
             log.warn("${result.user} attempted to delete subscription ${result.subscription} without perms")
@@ -3512,9 +3512,15 @@ AND EXISTS (
             query += " and subT.type.id in (:subTypes) "
             qarams.put('subTypes', params.list('subTypes').collect { it -> Long.parseLong(it) })
         }
-        if (params.subRunTimeMultiYear) {
-            query += " and subT.isMultiYear = :subRunTimeMultiYear "
-            qarams.put('subRunTimeMultiYear', params.subRunTimeMultiYear ? true : false )
+        if (params.subRunTimeMultiYear || params.subRunTime) {
+
+            if (params.subRunTimeMultiYear && !params.subRunTime) {
+                query += " and subT.isMultiYear = :subRunTimeMultiYear "
+                qarams.put('subRunTimeMultiYear', true)
+            }else if (!params.subRunTimeMultiYear && params.subRunTime){
+                query += " and subT.isMultiYear = :subRunTimeMultiYear "
+                qarams.put('subRunTimeMultiYear', false)
+            }
         }
 
         String orderQuery = " order by roleT.org.sortname, subT.name"
@@ -4203,7 +4209,7 @@ AND EXISTS (
             def isEditable = license.isEditableBy(result.user)
 
             if (! (accessService.checkMinUserOrgRole(result.user, result.institution, 'INST_EDITOR'))) {
-                flash.error = message(code:'license.permissionInfo.noPerms', default: 'No User Permissions');
+                flash.error = message(code:'license.permissionInfo.noPerms')
                 response.sendError(401)
                 return;
             }
@@ -4218,7 +4224,7 @@ AND EXISTS (
                                                                                        'license.copyPrivateProperties': 'on',
                                                                                        'license.copyTasks'            : 'on']
             }else {
-                flash.error = message(code:'license.permissionInfo.noPerms', default: 'No User Permissions');
+                flash.error = message(code:'license.permissionInfo.noPerms')
                 response.sendError(401)
                 return;
             }

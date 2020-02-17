@@ -579,11 +579,6 @@ class YodaController {
     @Secured(['ROLE_YODA'])
     def fullReset() {
 
-       log.debug("Delete all existing FT Control entries");
-       FTControl.withTransaction {
-            FTControl.executeUpdate("delete FTControl c")
-       }
-
        log.debug("Clear ES")
        dataloadService.clearDownAndInitES()
 
@@ -1658,12 +1653,6 @@ class YodaController {
         result.candidates = [OrgPrivateProperty: opp, SubscriptionPrivateProperty: spp, LicensePrivateProperty: lpp, PersonPrivateProperty: ppp]
 
         render view: 'databaseMigration', model: result
-    }
-
-    @Secured(['ROLE_YODA'])
-    def frontend() {
-        Map<String, Object> result = [test:123]
-        result
     }
 
     @Secured(['ROLE_YODA'])

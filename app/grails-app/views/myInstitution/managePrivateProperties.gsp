@@ -4,7 +4,7 @@
 <html>
     <head>
         <meta name="layout" content="semanticUI">
-        <g:set var="entityName" value="${message(code: 'org.label', default: 'Org')}" />
+        <g:set var="entityName" value="${message(code: 'org.label')}" />
         <title>${message(code:'laser')} : ${message(code: 'menu.institutions.private_props')}</title>
     </head>
     <body>
@@ -50,7 +50,7 @@
                                     <th>${message(code:'default.name.label')}</th>
                                     <th>${message(code:'propertyDefinition.expl.label')}</th>
                                     <th>${message(code:'default.type.label')}</th>
-                                    <th>${message(code:'propertyDefinition.count.label', default:'Count in Use')}</th>
+                                    <th>${message(code:'propertyDefinition.count.label')}</th>
                                     <th class="la-action-info">${message(code:'default.actions.label')}</th>
                                 </tr>
                             </thead>
@@ -139,14 +139,14 @@
             </div>
 
             <div class="field">
-                <label class="property-label">${message(code:'propertyDefinition.expl.label', default:'Explanation')}</label>
+                <label class="property-label">${message(code:'propertyDefinition.expl.label')}</label>
                 <textarea name="pd_expl" id="pd_expl" class="ui textarea" rows="2"></textarea>
             </div>
 
             <div class="fields">
 
                 <div class="field six wide">
-                    <label class="property-label">${message(code:'propertyDefinition.descr.label', default:'Description')}</label>
+                    <label class="property-label">${message(code:'propertyDefinition.descr.label')}</label>
                     <%--<g:select name="pd_descr" from="${PropertyDefinition.AVAILABLE_PRIVATE_DESCR}"/>--%>
                     <select name="pd_descr" id="pd_descr" class="ui dropdown">
                         <g:each in="${PropertyDefinition.AVAILABLE_PRIVATE_DESCR}" var="pd">

@@ -2,7 +2,7 @@
 <html>
     <head>
         <meta name="layout" content="semanticUI"/>
-        <title>${message(code:'laser')} : ${institution.name} - ${message(code:'myinst.tipview.label', default:'Edit Core Titles')}</title>
+        <title>${message(code:'laser')} : ${institution.name} - ${message(code:'myinst.tipview.label')}</title>
     </head>
 
     <body>
@@ -19,10 +19,10 @@
             <g:set var="active_filter" value="${nparams.remove('filter')}"/>
 
             <li class="${(active_filter=='core' || active_filter == null)?'active':''}">
-                <g:link action="tipview" params="${nparams + [filter:'core']}">${message(code:'subscription.details.core', default:'Core')}</g:link>
+                <g:link action="tipview" params="${nparams + [filter:'core']}">${message(code:'subscription.details.core')}</g:link>
             </li>
-            <li class="${active_filter=='not'?'active':''}"><g:link action="tipview" params="${nparams + [filter:'not']}">${message(code:'myinst.tipview.notCore', default:'Not Core')}</g:link></li>
-            <li class="${active_filter=='all'?'active':''}"><g:link action="tipview" params="${nparams + [filter:'all']}">${message(code:'myinst.tipview.all', default:'All')}</g:link></li>
+            <li class="${active_filter=='not'?'active':''}"><g:link action="tipview" params="${nparams + [filter:'not']}">${message(code:'myinst.tipview.notCore')}</g:link></li>
+            <li class="${active_filter=='all'?'active':''}"><g:link action="tipview" params="${nparams + [filter:'all']}">${message(code:'myinst.tipview.all')}</g:link></li>
         </ul>
 
         <semui:messages data="${flash}" />
@@ -33,10 +33,10 @@
 
                 <div class="fields">
                     <div class="field">
-                        <label>${message(code:'title.search', default:'Search For')}</label>
+                        <label>${message(code:'title.search')}</label>
                         <select name="search_for">
-                            <option ${params.search_for=='title' ? 'selected' : ''} value="title">${message(code:'title.label', default:'Title')}</option>
-                            <option ${params.search_for=='provider' ? 'selected' : ''} value="provider">${message(code:'default.provider.label', default:'Provider')}</option>
+                            <option ${params.search_for=='title' ? 'selected' : ''} value="title">${message(code:'title.label')}</option>
+                            <option ${params.search_for=='provider' ? 'selected' : ''} value="provider">${message(code:'default.provider.label')}</option>
                         </select>
                     </div>
                     <div class="field">
@@ -46,21 +46,21 @@
                     <div class="field">
                         <label>${message(code:'default.sort.label', default:'Sort')}</label>
                         <select name="sort">
-                            <option ${params.sort=='title-title' ? 'selected' : ''} value="title-title">${message(code:'title.label', default:'Title')}</option>
-                            <option ${params.sort=='provider-name' ? 'selected' : ''} value="provider-name">${message(code:'default.provider.label', default:'Provider')}</option>
+                            <option ${params.sort=='title-title' ? 'selected' : ''} value="title-title">${message(code:'title.label')}</option>
+                            <option ${params.sort=='provider-name' ? 'selected' : ''} value="provider-name">${message(code:'default.provider.label')}</option>
                         </select>
                     </div>
                     <div class="field">
                         <label>${message(code:'default.order.label', default:'Order')}</label>
                         <select name="order" value="${params.order}">
-                            <option ${params.order=='asc' ? 'selected' : ''} value="asc">${message(code:'default.asc', default:'Ascending')}</option>
-                            <option ${params.order=='desc' ? 'selected' : ''} value="desc">${message(code:'default.desc', default:'Descending')}</option>
+                            <option ${params.order=='asc' ? 'selected' : ''} value="asc">${message(code:'default.asc')}</option>
+                            <option ${params.order=='desc' ? 'selected' : ''} value="desc">${message(code:'default.desc')}</option>
                         </select>
                         <input type="hidden" name="filter" value="${params.filter}"/>
                     </div>
                     <div class="field">
                         <label>&nbsp;</label>
-                        <button type="submit" class="ui secondary button" name="search">${message(code:'default.button.filter.label', default:'Filter')}</button>
+                        <button type="submit" class="ui secondary button" name="search">${message(code:'default.button.filter.label')}</button>
                     </div>
                 </div>
 
@@ -70,9 +70,9 @@
         <table class="ui celled la-table table">
           <thead>
             <tr>
-              <th>${message(code:'myinst.tipview.tip_tid', default:'Title in Package; Title Details')}</th>
-              <th>${message(code:'default.provider.label', default:'Provider')}</th>
-              <th>${message(code:'default.status.label', default:'Status')}</th>
+              <th>${message(code:'myinst.tipview.tip_tid')}</th>
+              <th>${message(code:'default.provider.label')}</th>
+              <th>${message(code:'default.status.label')}</th>
             </tr>
           </thead>
           <tbody>
@@ -81,8 +81,8 @@
 
               <td>
                   <semui:listIcon type="${tip?.title?.type?.value}"/>
-                  <strong><g:link controller="myInstitution" action="tip" id="${tip.id}">${tip?.title?.title} ${message(code:'default.via', default:'via')} ${tip?.provider?.name}</g:link></strong><br>
-                  <g:link controller="title" action="show" id="${tip?.title?.id}">${message(code:'myinst.tipview.link_to_title', default:'Link to Title Details')}</g:link>
+                  <strong><g:link controller="myInstitution" action="tip" id="${tip.id}">${tip?.title?.title} ${message(code:'default.via')} ${tip?.provider?.name}</g:link></strong><br>
+                  <g:link controller="title" action="show" id="${tip?.title?.id}">${message(code:'myinst.tipview.link_to_title')}</g:link>
               </td>
               <td>
               <g:link controller="organisation" action="show" id="${tip?.provider?.id}">${tip?.provider?.name}</g:link>

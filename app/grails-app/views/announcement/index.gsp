@@ -2,7 +2,7 @@
 <html>
     <head>
         <meta name="layout" content="semanticUI"/>
-        <title>${message(code:'laser')} ${message(code:'myinst.addLicense.label', default:'Data import explorer')}</title>
+        <title>${message(code:'laser')} ${message(code:'myinst.addLicense.label')}</title>
     </head>
 
     <body>
@@ -14,7 +14,7 @@
 
     <semui:messages data="${flash}" />
     <br>
-    <h2 class="ui left floated aligned header la-clear-before">${message(code:'announcement.create.label', default:'Create announcement')}</h2>
+    <h2 class="ui left floated aligned header la-clear-before">${message(code:'announcement.create.label')}</h2>
 
     <semui:form>
         <g:form action="createAnnouncement" class="ui form">
@@ -28,13 +28,13 @@
             </div>
             <div class="field">
                 <label>&nbsp;</label>
-                <input type="submit" class="ui button" value="${message(code:'announcement.create.button.label', default:'Create Announcement...')}" />
+                <input type="submit" class="ui button" value="${message(code:'announcement.create.button.label')}" />
             </div>
         </g:form>
     </semui:form>
 
 
-      <h2 class="ui  header la-clear-before">${message(code:'announcement.previous.label', default:'previous announcements')}</h2>
+      <h2 class="ui  header la-clear-before">${message(code:'announcement.previous.label')}</h2>
 
       <div class="ui divided relaxed list">
         <g:each in="${recentAnnouncements}" var="ra">
@@ -51,7 +51,7 @@
                 ${message(code:'default.on')} <g:formatDate date="${ra.dateCreated}" format="${message(code:'default.date.format')}"/>
             </g:if>
             <g:else>
-                ${message(code:'announcement.posted_auto.label', default:'posted automatically on')}
+                ${message(code:'announcement.posted_auto.label')}
                 <br />
                 <g:formatDate date="${ra.dateCreated}" format="${message(code:'default.date.format')}"/>
             </g:else>

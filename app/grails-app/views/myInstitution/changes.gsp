@@ -19,7 +19,7 @@
         </h1>
 
         <%--<g:if test="${changes != null}" >
-          <semui:paginate  action="todo" controller="myInstitution" params="${params}" next="${message(code:'default.paginate.next', default:'Next')}" prev="${message(code:'default.paginate.prev', default:'Prev')}" max="${max}" total="${num_todos}" />
+          <semui:paginate  action="todo" controller="myInstitution" params="${params}" next="${message(code:'default.paginate.next')}" prev="${message(code:'default.paginate.prev')}" max="${max}" total="${num_todos}" />
         </g:if>--%>
         <semui:msg class="info" header="${message(code: 'message.information')}" message="profile.dashboardItemsTimeWindow" args="${itemsTimeWindow}"/>
 
@@ -63,7 +63,7 @@
             </table>
 
         <%--<g:if test="${changes != null}" >
-          <semui:paginate action="change" controller="myInstitution" params="${params}" next="${message(code:'default.paginate.next', default:'Next')}" prev="${message(code:'default.paginate.prev', default:'Prev')}" max="${max}" total="${num_todos}" />
+          <semui:paginate action="change" controller="myInstitution" params="${params}" next="${message(code:'default.paginate.next')}" prev="${message(code:'default.paginate.prev')}" max="${max}" total="${num_todos}" />
         </g:if>--%>
 
   </body>

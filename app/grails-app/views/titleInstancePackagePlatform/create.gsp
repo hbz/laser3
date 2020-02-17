@@ -4,7 +4,7 @@
 <html>
 	<head>
 		<meta name="layout" content="semanticUI">
-		<g:set var="entityName" value="${message(code: 'titleInstancePackagePlatform.label', default: 'TitleInstancePackagePlatform')}" />
+		<g:set var="entityName" value="${message(code: 'titleInstancePackagePlatform.label')}" />
 		<title><g:message code="default.create.label" args="[entityName]" /></title>
 	</head>
 	<body>

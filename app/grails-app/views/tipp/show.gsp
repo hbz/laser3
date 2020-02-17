@@ -199,7 +199,7 @@
 <semui:form>
 
     <h4><g:message code="titleInstance.tipps.label"
-                   default="${message(code: 'titleInstance.tipps.label', default: 'Occurences of this title against Packages / Platforms')}"/>
+                   default="${message(code: 'titleInstance.tipps.label')}"/>
     </h4>
     <g:if test="${titleInstanceInstance?.tipps}">
 
@@ -210,7 +210,7 @@
 
                 <div class="fields">
                     <div class="field">
-                        <label for="filter">${message(code: 'tipp.show.filter_pkg', default: 'Filters - Package Name')}</label>
+                        <label for="filter">${message(code: 'tipp.show.filter_pkg')}</label>
                         <input id="filter" name="filter" value="${params.filter}"/>
                     </div>
 

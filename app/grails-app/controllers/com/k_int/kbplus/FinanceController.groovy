@@ -1141,6 +1141,8 @@ class FinanceController extends AbstractDebugController {
                               JSON json = [changeDoc:[OID:"${cci.class.name}:${cci.id}",prop:prop]] as JSON
                               String changeDoc = json.toString()
                               PendingChange change = new PendingChange(costItem: cci, owner: cci.owner,desc: diff, ts: new Date(), payload: changeDoc)
+                              change.workaroundForDatamigrate() // ERMS-2184
+
                               if(!change.save(flush: true))
                                   log.error(change.errors)
                           }

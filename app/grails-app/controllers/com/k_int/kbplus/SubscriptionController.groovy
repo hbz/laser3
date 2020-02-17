@@ -570,7 +570,7 @@ class SubscriptionController extends AbstractDebugController {
                 result.institutionName = contextService.getOrg().getName()
                 log.debug("FIND ORG NAME ${result.institutionName}")
             }
-            flash.message = message(code: 'subscription.compare.note', default: "Please select two subscriptions for comparison")
+            flash.message = message(code: 'subscription.compare.note')
         }
         */
     }
@@ -1280,11 +1280,22 @@ class SubscriptionController extends AbstractDebugController {
                 }
             }
             if (filteredSubscr) {
-                if (params.subRunTimeMultiYear) {
-                    if(sub?.isMultiYear) {
+                if (params.subRunTimeMultiYear || params.subRunTime) {
+
+                    if (params.subRunTimeMultiYear && !params.subRunTime) {
+                        if(sub?.isMultiYear) {
+                            result.filteredSubChilds << [sub: sub, orgs: filteredSubscr]
+                        }
+                    }else if (!params.subRunTimeMultiYear && params.subRunTime){
+                        if(!sub?.isMultiYear) {
+                            result.filteredSubChilds << [sub: sub, orgs: filteredSubscr]
+                        }
+                    }
+                    else {
                         result.filteredSubChilds << [sub: sub, orgs: filteredSubscr]
                     }
-                }else {
+                }
+                else {
                     result.filteredSubChilds << [sub: sub, orgs: filteredSubscr]
                 }
             }
@@ -1774,7 +1785,7 @@ class SubscriptionController extends AbstractDebugController {
                                         PriceItem.executeUpdate("delete from PriceItem pi where pi.issueEntitlement.id in (:delList)", [delList: deleteIdList])
                                         IssueEntitlement.executeUpdate("delete from IssueEntitlement ie where ie.id in (:delList)", [delList: deleteIdList])
                                     }
-                                    SubscriptionPackage subPkg = SubscriptionPackage.findByPkgAndSubscription(result.package, result.subscription)
+                                    SubscriptionPackage subPkg = SubscriptionPackage.findByPkgAndSubscription(pkg, subChild)
                                     if (subPkg) {
                                         OrgAccessPointLink.executeUpdate("delete from OrgAccessPointLink oapl where oapl.subPkg=?", [subPkg])
                                         CostItem.findAllBySubPkg(subPkg).each { costItem ->
@@ -1792,7 +1803,7 @@ class SubscriptionController extends AbstractDebugController {
                                 }
                             } else {
 
-                                SubscriptionPackage subPkg = SubscriptionPackage.findByPkgAndSubscription(result.package, result.subscription)
+                                SubscriptionPackage subPkg = SubscriptionPackage.findByPkgAndSubscription(pkg, subChild)
                                 if (subPkg) {
                                     OrgAccessPointLink.executeUpdate("delete from OrgAccessPointLink oapl where oapl.subPkg=?", [subPkg])
                                     CostItem.findAllBySubPkg(subPkg).each { costItem ->
@@ -2504,7 +2515,7 @@ class SubscriptionController extends AbstractDebugController {
                 }
 
             } else {
-                flash.error = message(code: 'myinst.actionCurrentSubscriptions.error', default: 'Unable to delete - The selected license has attached subscriptions')
+                flash.error = message(code: 'myinst.actionCurrentSubscriptions.error')
             }
         } else {
             log.warn("${result.user} attempted to delete subscription ${delSubscription} without perms")
@@ -4158,7 +4169,7 @@ class SubscriptionController extends AbstractDebugController {
 
                     ArrayList<Links> previousSubscriptions = Links.findAllByDestinationAndObjectTypeAndLinkType(baseSub.id, Subscription.class.name, LINKTYPE_FOLLOWS)
                     if (previousSubscriptions.size() > 0) {
-                        flash.error = message(code: 'subscription.renewSubExist', default: 'The Subscription is already renewed!')
+                        flash.error = message(code: 'subscription.renewSubExist')
                     } else {
 
 
@@ -4351,7 +4362,7 @@ class SubscriptionController extends AbstractDebugController {
 
         ArrayList<Links> previousSubscriptions = Links.findAllByDestinationAndObjectTypeAndLinkType(baseSub.id, Subscription.class.name, LINKTYPE_FOLLOWS)
         if (previousSubscriptions.size() > 0) {
-            flash.error = message(code: 'subscription.renewSubExist', default: 'The Subscription is already renewed!')
+            flash.error = message(code: 'subscription.renewSubExist')
         } else {
             def sub_startDate = params.subscription?.start_date ? parseDate(params.subscription?.start_date, possible_date_formats) : null
             def sub_endDate = params.subscription?.end_date ? parseDate(params.subscription?.end_date, possible_date_formats) : null

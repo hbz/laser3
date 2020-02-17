@@ -30,7 +30,7 @@
                         <f:all bean="${propertyName}"/>
                         <div class="ui form-actions">
                             <button type="submit" class="ui button">
-                                <i class="checkmark icon"></i>
+                                <i aria-hidden="true" class="checkmark icon"></i>
                                 <g:message code="default.button.create.label" />
                             </button>
                         </div>

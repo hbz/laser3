@@ -7,11 +7,11 @@
 
     <div class="sixteen wide column">
 
-        <h3 class="ui header">${message(code: 'task.myTasks.header', default:'Tasks assigned to me')} <semui:totalNumber total="${taskInstanceCount}"/></h3>
+        <h3 class="ui header">${message(code: 'task.myTasks.header')} <semui:totalNumber total="${taskInstanceCount}"/></h3>
 
         <%--
         <g:if test="${editable && controllerName != 'myInstitution'}">
-            <input type="button" class="ui button" value="${message(code:'task.create.new', default:'Add new Task')}" data-semui="modal" href="#modalCreateTask"/>
+            <input type="button" class="ui button" value="${message(code:'task.create.new')}" data-semui="modal" href="#modalCreateTask"/>
         </g:if>
         --%>
 

@@ -27,7 +27,7 @@
 
                 <div class="field">
                     <label for="q">Suche nach Name</label>
-                    <input type="text" id="q" name="q" placeholder="${message(code:'default.search.ph', default:'enter search term...')}" value="${params.q}" />
+                    <input type="text" id="q" name="q" placeholder="${message(code:'default.search.ph')}" value="${params.q}" />
                 </div>
 
                 <div class="field">

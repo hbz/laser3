@@ -4,7 +4,7 @@
 <html>
     <head>
         <meta name="layout" content="semanticUI">
-        <g:set var="entityName" value="${message(code: 'org.label', default: 'Org')}" />
+        <g:set var="entityName" value="${message(code: 'org.label')}" />
         <title>${message(code:'laser')} : ${message(code: 'menu.public.all_insts')}</title>
     </head>
     <body>
@@ -16,7 +16,7 @@
     <semui:controlButtons>
         <%--<semui:exportDropdown>
             <semui:exportDropdownItem>
-                <g:link class="item" action="addMembers" params="${params+[exportXLS:'yes']}">${message(code:'default.button.exports.xls', default:'XLS Export')}</g:link>
+                <g:link class="item" action="addMembers" params="${params+[exportXLS:'yes']}">${message(code:'default.button.exports.xls')}</g:link>
             </semui:exportDropdownItem>
         </semui:exportDropdown>--%>
 

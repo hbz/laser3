@@ -2,7 +2,7 @@
 <html>
   <head>
     <meta name="layout" content="semanticUI"/>
-    <title>${message(code:'laser')} ${message(code:'menu.datamanager.changelog', default:'Data Manager Change Log')}</title>
+    <title>${message(code:'laser')} ${message(code:'menu.datamanager.changelog')}</title>
   </head>
 
   <body>
@@ -12,16 +12,16 @@
       <semui:crumb message="menu.datamanager.changelog" class="active"/>
 
       <li class="dropdown la-float-right">
-        <a class="dropdown-toggle badge" id="export-menu" role="button" data-toggle="dropdown" data-target="#" href="">${message(code:'default.button.exports.label', default:'Exports')}<strong class="caret"></strong></a>
+        <a class="dropdown-toggle badge" id="export-menu" role="button" data-toggle="dropdown" data-target="#" href="">${message(code:'default.button.exports.label')}<strong class="caret"></strong></a>
         <ul class="dropdown-menu filtering-dropdown-menu" role="menu" aria-labelledby="export-menu">
-          <li><g:link controller="dataManager" action="changeLog" params="${params+[format:'csv']}">${message(code:'default.button.exports.csv', default:'CSV Export')}</g:link></li>
+          <li><g:link controller="dataManager" action="changeLog" params="${params+[format:'csv']}">${message(code:'default.button.exports.csv')}</g:link></li>
         </ul>
       </li>
     </semui:breadcrumbs>
 
     <semui:messages data="${flash}" />
 
-      <h2 class="ui header">${message(code:'menu.datamanager.changelog', default:'Data Manager Change Log')}</h2>
+      <h2 class="ui header">${message(code:'menu.datamanager.changelog')}</h2>
 
       <h6 class="ui header">${message(code:'menu.institutions.change_log')} <span class="la-float-right">${message(code:'datamanager.changeLog.num_changes', args:[num_hl])}</span></h6>
 
@@ -67,7 +67,7 @@
                 </div>
 
             <div class="field">
-                <input  class="ui button" type="submit" value="${message(code:'default.button.submit.label', default:'Submit')}"/>
+                <input  class="ui button" type="submit" value="${message(code:'default.button.submit.label')}"/>
             </div>
       </g:form>
       </semui:filter>
@@ -78,7 +78,7 @@
 
       <p>
             <g:link action="changeLog">
-                <input type="button" value="${message(code:'default.button.clear_search.label', default:'Clear Search')}" class="ui negative button" />
+                <input type="button" value="${message(code:'default.button.clear_search.label')}" class="ui negative button" />
             </g:link>
       </p>
 
@@ -114,7 +114,7 @@
         </table>
 
         <g:if test="${historyLines != null}" >
-          <semui:paginate  action="changeLog" controller="dataManager" params="${params}" next="${message(code:'default.paginate.next', default:'Next')}" prev="${message(code:'default.paginate.prev', default:'Prev')}" maxsteps="${max}" total="${num_hl}" />
+          <semui:paginate  action="changeLog" controller="dataManager" params="${params}" next="${message(code:'default.paginate.next')}" prev="${message(code:'default.paginate.prev')}" maxsteps="${max}" total="${num_hl}" />
         </g:if>
 
     </g:if>

@@ -56,7 +56,7 @@
                             <g:sortableColumn property="AccessMethod" title="${message(code: 'accessMethod.label')}" />
                             <g:sortableColumn property="validFrom" title="${message(code: 'accessMethod.valid_from')}" />
                             <g:sortableColumn property="validTo" title="${message(code: 'accessMethod.valid_to')}" />
-                            <th>${message(code: 'accessMethod.actions', default: 'Actions')}</th>
+                            <th>${message(code: 'accessMethod.actions')}</th>
                         </tr>
                 </thead>
                 <tbody>
@@ -104,7 +104,7 @@
                         </td>
                         <td>
                             <input type="hidden" name="platfId" value="${platformInstance.id}" />
-                            <input type="Submit" class="ui tiny button" value="${message(code:'accessMethod.button.add', default:'Add')}" onClick="this.form.submit()"/>
+                            <input type="Submit" class="ui tiny button" value="${message(code:'accessMethod.button.add')}" onClick="this.form.submit()"/>
                         </td>
                     </tr>
                 </tbody>

@@ -41,26 +41,26 @@
 
             <g:form action="updateProfile" class="ui form updateProfile">
                 <h4 class="ui dividing header">
-                    ${message(code: 'profile.user', default:'User Profile')}
+                    ${message(code: 'profile.user')}
                 </h4>
 
                 <div class="field">
-                    <label>${message(code: 'profile.username', default:'User Name')}</label>
+                    <label>${message(code: 'profile.username')}</label>
                     <input type="text" readonly="readonly" value="${user.username}"/>
                 </div>
 
                 <div class="field ">
-                    <label>${message(code: 'profile.display', default:'Display Name')}</label>
+                    <label>${message(code: 'profile.display')}</label>
                     <input type="text" name="userDispName" value="${user.display}"/>
                 </div>
 
                 <div class="field required">
-                    <label>${message(code: 'profile.email', default:'Email Address')}</label>
+                    <label>${message(code: 'profile.email')}</label>
                     <input type="text" id="email" name="email" value="${user.email}"/>
                 </div>
 
                 <div class="field">
-                    <label>${message(code: 'profile.dash', default:'Default Dashboard')}</label>
+                    <label>${message(code: 'profile.dash')}</label>
 
                     <select name="defaultDash" value="${user.getSettingsValue(UserSettings.KEYS.DASHBOARD)?.id}" class="ui fluid dropdown">
                         <option value=""></option>
@@ -75,7 +75,7 @@
                 --%>
 
                 <div class="field">
-                    <button type="submit" class="ui button">${message(code: 'profile.update.button', default:'Update Profile')}</button>
+                    <button type="submit" class="ui button">${message(code: 'profile.update.button')}</button>
                 </div>
 
             </g:form>
@@ -107,28 +107,28 @@
             <g:form action="updatePassword" class="ui form">
 
                 <h4 class="ui dividing header">
-                    ${message(code: 'profile.password.label', default:'Update Password')}
+                    ${message(code: 'profile.password.label')}
                 </h4>
 
                 <div class="field required">
-                    <label>${message(code: 'profile.password.current', default:'Current Password')}</label>
+                    <label>${message(code: 'profile.password.current')}</label>
                     <input type="password" name="passwordCurrent" required class="pw"/>
                 </div>
                 <div class="field required">
-                    <label>${message(code: 'profile.password.new', default:'New Password')}</label>
+                    <label>${message(code: 'profile.password.new')}</label>
                     <input type="password" name="passwordNew" required class="pw pwn"/>
                 </div>
                 <div class="field required">
-                    <label>${message(code: 'profile.password.new.repeat', default:'New Password (Repeat)')}</label>
+                    <label>${message(code: 'profile.password.new.repeat')}</label>
                     <input type="password" name="passwordNew2" required class="pw pwn"/>
                 </div>
                 <div class="field">
-                    <label>${message(code: 'profile.password.show', default:'Show Passwords')}</label>
+                    <label>${message(code: 'profile.password.show')}</label>
                     <input type="checkbox" name="showPasswords" id="passwordToggler">
                 </div>
                 <div class="field">
                     <label></label>
-                    <button type="submit" class="ui button" id="passwordSubmit">${message(code: 'profile.password.update.button', default:'Update Password')}</button>
+                    <button type="submit" class="ui button" id="passwordSubmit">${message(code: 'profile.password.update.button')}</button>
                 </div>
 
             </g:form>
@@ -319,7 +319,7 @@
         <div class="ui segment">
             <div class="ui form">
                 <h4 class="ui dividing header">
-                    ${message(code: 'profile.preferences', default:'Preferences')}
+                    ${message(code: 'profile.preferences')}
                 </h4>
                 <%-- TODO: check this
                 <div class="field">
@@ -369,12 +369,12 @@
                 </div>
 
                 <div class="field">
-                    <label>${message(code: 'profile.itemsTimeWindow', default:'Default Page Size')}</label>
+                    <label>${message(code: 'profile.itemsTimeWindow')}</label>
                     <semui:xEditable owner="${user.getSetting(UserSettings.KEYS.DASHBOARD_ITEMS_TIME_WINDOW, 14)}" field="strValue" />
                 </div>
 
                 <div class="field">
-                    <label>${message(code: 'profile.pagesize', default:'Default Page Size')}</label>
+                    <label>${message(code: 'profile.pagesize')}</label>
                     <semui:xEditable owner="${user.getSetting(UserSettings.KEYS.PAGE_SIZE, 10)}" field="strValue" />
                 </div>
 
@@ -455,7 +455,7 @@
 <div class="ui one column grid">
     <!--<div class="column wide sixteen">
                     <h4 class="ui dividing header">
-                        ${message(code: 'profile.membership', default:'Administrative memberships')}
+                        ${message(code: 'profile.membership')}
                     </h4>
                 </div>-->
 

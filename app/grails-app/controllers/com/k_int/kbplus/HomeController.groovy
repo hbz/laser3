@@ -21,7 +21,7 @@ class HomeController {
         if (result.user) {
 
             if (UserSettings.get(result.user, UserSettings.KEYS.DASHBOARD) == UserSettings.SETTING_NOT_FOUND) {
-                flash.message = message(code: 'profile.dash.not_set', default: 'Please select an institution to use as your default home dashboard')
+                flash.message = message(code: 'profile.dash.not_set')
                 redirect(controller: 'profile', action: 'index')
                 return
             }
