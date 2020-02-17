@@ -95,8 +95,8 @@ class OrgAccessPoint extends AbstractBaseDomain {
 
         def qryParams = [
             currentSubIds: currentSubIds,
-            pkgDeleted: RDStore.PACKAGE_DELETED,
-            platformDeleted: RDStore.PLATFORM_DELETED,
+            pkgDeleted: RDStore.PACKAGE_STATUS_DELETED,
+            platformDeleted: RDStore.PLATFORM_STATUS_DELETED,
             tippDeleted: RDStore.TIPP_STATUS_DELETED,
             orgAccessPoint: this
         ]

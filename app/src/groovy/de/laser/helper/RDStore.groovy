@@ -65,16 +65,12 @@ class RDStore {
 
     static final CURRENCY_EUR               = getRefdataValue('EUR', RDConstants.CURRENCY)
 
+    static final DOC_CTX_STATUS_DELETED     = getRefdataValue('Deleted', RDConstants.DOCUMENT_CONTEXT_STATUS)
     static final DOC_TYPE_ANNOUNCEMENT      = getRefdataValue('Announcement', RDConstants.DOCUMENT_TYPE)
 
-    static final IE_ACCEPT_STATUS_FIXED            = getRefdataValue('Fixed', RDConstants.IE_ACCEPT_STATUS)
-    static final IE_ACCEPT_STATUS_UNDER_NEGOTIATION = getRefdataValue('Under Negotiation', RDConstants.IE_ACCEPT_STATUS)
-    static final IE_ACCEPT_STATUS_UNDER_CONSIDERATION = getRefdataValue('Under Consideration', RDConstants.IE_ACCEPT_STATUS)
-
-    static final DOC_DELETED                = getRefdataValue('Deleted', RDConstants.DOCUMENT_CONTEXT_STATUS)
-    static final ORG_DELETED                = getRefdataValue('Deleted', RDConstants.ORG_STATUS)
-    static final PACKAGE_DELETED            = getRefdataValue('Deleted', RDConstants.PACKAGE_STATUS)
-    static final PLATFORM_DELETED           = getRefdataValue('Deleted', RDConstants.PLATFORM_STATUS)
+    static final IE_ACCEPT_STATUS_FIXED                 = getRefdataValue('Fixed', RDConstants.IE_ACCEPT_STATUS)
+    static final IE_ACCEPT_STATUS_UNDER_NEGOTIATION     = getRefdataValue('Under Negotiation', RDConstants.IE_ACCEPT_STATUS)
+    static final IE_ACCEPT_STATUS_UNDER_CONSIDERATION   = getRefdataValue('Under Consideration', RDConstants.IE_ACCEPT_STATUS)
 
     static final LICENSE_TYPE_TEMPLATE      = getRefdataValue('Template', RDConstants.LICENSE_TYPE)
     static final LICENSE_TYPE_ACTUAL        = getRefdataValue('Actual', RDConstants.LICENSE_TYPE)
@@ -85,6 +81,11 @@ class RDStore {
     static final LICENSE_IN_PROGRESS        = getRefdataValue('In Progress', RDConstants.LICENSE_STATUS)
 
     static final LINKTYPE_FOLLOWS           = getRefdataValue('follows', RDConstants.LINK_TYPE)
+
+    static final ORG_STATUS_DELETED         = getRefdataValue('Deleted', RDConstants.ORG_STATUS)
+
+    static final PACKAGE_STATUS_DELETED         = getRefdataValue('Deleted', RDConstants.PACKAGE_STATUS)
+    static final PLATFORM_STATUS_DELETED        = getRefdataValue('Deleted', RDConstants.PLATFORM_STATUS)
 
     static final PENDING_CHANGE_STATUS      = getRefdataValue('Pending', RDConstants.PENDING_CHANGE_STATUS)
 

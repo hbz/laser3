@@ -234,8 +234,8 @@ class MyInstitutionController extends AbstractDebugController {
 
             def qryParams3 = [
                     subIds         : idsCurrentSubscriptions,
-                    pkgDeleted     : RDStore.PACKAGE_DELETED,
-                    platformDeleted: RDStore.PLATFORM_DELETED,
+                    pkgDeleted     : RDStore.PACKAGE_STATUS_DELETED,
+                    platformDeleted: RDStore.PLATFORM_STATUS_DELETED,
                     tippDeleted    : RDStore.TIPP_STATUS_DELETED
             ]
 
@@ -1984,7 +1984,7 @@ from License as l where (
 
             def qryParams3 = [
                     currentSubIds  : currentSubIds,
-                    pkgDeleted     : RDStore.PACKAGE_DELETED,
+                    pkgDeleted     : RDStore.PACKAGE_STATUS_DELETED,
                     tippDeleted    : RDStore.TIPP_STATUS_DELETED
             ]
 
