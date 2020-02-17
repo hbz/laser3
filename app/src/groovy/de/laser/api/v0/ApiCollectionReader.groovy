@@ -220,7 +220,7 @@ class ApiCollectionReader {
         List<IssueEntitlement> ieList = IssueEntitlement.executeQuery(
                 'select ie from IssueEntitlement ie join ie.tipp tipp join ie.subscription sub join tipp.pkg pkg ' +
                         ' where sub = :sub and pkg = :pkg and tipp.status != :statusTipp and ie.status != :statusIe',
-                [sub: subPkg.subscription, pkg: subPkg.pkg, statusTipp: RDStore.TIPP_STATUS_DELETED, statusIe: RDStore.IE_DELETED ]
+                [sub: subPkg.subscription, pkg: subPkg.pkg, statusTipp: RDStore.TIPP_STATUS_DELETED, statusIe: RDStore.TIPP_STATUS_DELETED]
         )
         ieList.each{ ie ->
             result << ApiIssueEntitlement.getIssueEntitlementMap(ie, ignoreRelation, context) // com.k_int.kbplus.IssueEntitlement

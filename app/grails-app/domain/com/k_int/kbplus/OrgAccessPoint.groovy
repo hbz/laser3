@@ -97,7 +97,7 @@ class OrgAccessPoint extends AbstractBaseDomain {
             currentSubIds: currentSubIds,
             pkgDeleted: RDStore.PACKAGE_DELETED,
             platformDeleted: RDStore.PLATFORM_DELETED,
-            tippDeleted: RDStore.TIPP_DELETED,
+            tippDeleted: RDStore.TIPP_STATUS_DELETED,
             orgAccessPoint: this
         ]
 

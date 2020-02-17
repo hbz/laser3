@@ -214,7 +214,7 @@ class SubscriptionController extends AbstractDebugController {
         }
         else {
             base_qry += " and ie.status != :deleted "
-            qry_params.deleted = TIPP_DELETED
+            qry_params.deleted = TIPP_STATUS_DELETED
         }
 
         base_qry += " and ie.acceptStatus = :ieAcceptStatus "
@@ -701,7 +701,7 @@ class SubscriptionController extends AbstractDebugController {
                     }
                 } else if (params.bulkOperation == "remove") {
                     log.debug("Updating ie ${ie.id} status to deleted")
-                    def deleted_ie = TIPP_DELETED
+                    def deleted_ie = TIPP_STATUS_DELETED
                     ie.status = deleted_ie
                     if (!ie.save(flush: true)) {
                         log.error("Problem saving ${ie.errors}")
@@ -738,9 +738,9 @@ class SubscriptionController extends AbstractDebugController {
         result.max = params.max ? Integer.parseInt(params.max) : (Integer) request.user.getDefaultPageSizeTMP();
         result.offset = params.offset ? Integer.parseInt(params.offset) : 0;
 
-        RefdataValue tipp_deleted = TIPP_DELETED
+        RefdataValue tipp_deleted = TIPP_STATUS_DELETED
         RefdataValue tipp_current = TIPP_STATUS_CURRENT
-        RefdataValue ie_deleted = TIPP_DELETED
+        RefdataValue ie_deleted = TIPP_STATUS_DELETED
         RefdataValue ie_current = TIPP_STATUS_CURRENT
 
         log.debug("filter: \"${params.filter}\"");
@@ -2730,7 +2730,7 @@ class SubscriptionController extends AbstractDebugController {
     def removeEntitlement() {
         log.debug("removeEntitlement....");
         def ie = IssueEntitlement.get(params.ieid)
-        def deleted_ie = TIPP_DELETED
+        def deleted_ie = TIPP_STATUS_DELETED
         ie.status = deleted_ie;
 
         redirect action: 'index', id: params.sub
@@ -4014,7 +4014,7 @@ class SubscriptionController extends AbstractDebugController {
 
                             subMember.issueEntitlements?.each { ie ->
 
-                                if (ie.status != TIPP_DELETED) {
+                                if (ie.status != TIPP_STATUS_DELETED) {
                                     def ieProperties = ie.properties
                                     ieProperties.globalUID = null
 
@@ -4245,7 +4245,7 @@ class SubscriptionController extends AbstractDebugController {
 
                                 baseSub.issueEntitlements.each { ie ->
 
-                                    if (ie.status != TIPP_DELETED) {
+                                    if (ie.status != TIPP_STATUS_DELETED) {
                                         def properties = ie.properties
                                         properties.globalUID = null
 
@@ -5188,7 +5188,7 @@ class SubscriptionController extends AbstractDebugController {
 
                     baseSubscription.issueEntitlements.each { ie ->
 
-                        if (ie.status != TIPP_DELETED) {
+                        if (ie.status != TIPP_STATUS_DELETED) {
                             def properties = ie.properties
                             properties.globalUID = null
 

@@ -53,7 +53,7 @@ class ApiStatistic {
 
         if (orgs) {
             packages = com.k_int.kbplus.Package.executeQuery(
-                    "select pkg from SubscriptionPackage sp " +
+                    "select distinct(pkg) from SubscriptionPackage sp " +
                             "join sp.pkg pkg join sp.subscription s join s.orgRelations ogr join ogr.org o " +
                             "where o in (:orgs) and (pkg.packageStatus is null or pkg.packageStatus != :deleted)", [
                     orgs: orgs,
@@ -196,7 +196,7 @@ class ApiStatistic {
 
                 OrgRole.findAllBySub(subPkg.subscription).each { ogr ->
 
-                    if (ogr.roleType?.id in [RDStore.OR_SUBSCRIBER.id, RDStore.OR_SUBSCRIBER_CONS.id]) {
+                    if (ogr.roleType?.id in [RDStore.OR_SUBSCRIBER.id, RDStore.OR_SUBSCRIBER_CONS.id, RDStore.OR_SUBSCRIPTION_CONSORTIA.id]) {
                         if (ogr.org.id in accessibleOrgs.collect{ it.id }) {
 
                             if (ogr.org.status?.value == 'Deleted') {

@@ -43,15 +43,70 @@ class RDStore {
     static final O_STATUS_CURRENT           = getRefdataValue('Current', RDConstants.ORG_STATUS)
     static final O_STATUS_DELETED           = getRefdataValue('Deleted', RDConstants.ORG_STATUS)
 
+    static final CCT_EMAIL          = getRefdataValue('E-Mail', RDConstants.CONTACT_CONTENT_TYPE)
+    static final CCT_PHONE          = getRefdataValue('Phone', RDConstants.CONTACT_CONTENT_TYPE)
+    static final CCT_URL            = getRefdataValue('Url', RDConstants.CONTACT_CONTENT_TYPE)
+
+    static final CIEC_POSITIVE          = getRefdataValue('positive', RDConstants.COST_CONFIGURATION)
+    static final CIEC_NEGATIVE          = getRefdataValue('negative', RDConstants.COST_CONFIGURATION)
+    static final CIEC_NEUTRAL           = getRefdataValue('neutral', RDConstants.COST_CONFIGURATION)
+
+    static final COMBO_TYPE_CONSORTIUM      = getRefdataValue('Consortium', RDConstants.COMBO_TYPE)
+    static final COMBO_TYPE_DEPARTMENT      = getRefdataValue('Department', RDConstants.COMBO_TYPE)
+
+    static final COMBO_STATUS_ACTIVE        = getRefdataValue('Active', RDConstants.COMBO_STATUS)
+    static final COMBO_STATUS_INACTIVE      = getRefdataValue('Inactive', RDConstants.COMBO_STATUS)
+
+    static final CONTACT_TYPE_PERSONAL      = getRefdataValue('Personal Contact', RDConstants.PERSON_CONTACT_TYPE)
+    static final CONTACT_TYPE_FUNCTIONAL    = getRefdataValue('Functional Contact', RDConstants.PERSON_CONTACT_TYPE)
+
+    static final COST_ITEM_ACTUAL           = getRefdataValue('Actual', RDConstants.COST_ITEM_STATUS)
+    static final COST_ITEM_DELETED          = getRefdataValue('Deleted', RDConstants.COST_ITEM_STATUS)
+
+    static final CURRENCY_EUR               = getRefdataValue('EUR', RDConstants.CURRENCY)
+
     static final DOC_TYPE_ANNOUNCEMENT      = getRefdataValue('Announcement', RDConstants.DOCUMENT_TYPE)
 
+    static final IE_ACCEPT_STATUS_FIXED            = getRefdataValue('Fixed', RDConstants.IE_ACCEPT_STATUS)
+    static final IE_ACCEPT_STATUS_UNDER_NEGOTIATION = getRefdataValue('Under Negotiation', RDConstants.IE_ACCEPT_STATUS)
+    static final IE_ACCEPT_STATUS_UNDER_CONSIDERATION = getRefdataValue('Under Consideration', RDConstants.IE_ACCEPT_STATUS)
+
     static final DOC_DELETED                = getRefdataValue('Deleted', RDConstants.DOCUMENT_CONTEXT_STATUS)
-    @Deprecated
-    static final IE_DELETED                 = TIPP_DELETED
     static final ORG_DELETED                = getRefdataValue('Deleted', RDConstants.ORG_STATUS)
     static final PACKAGE_DELETED            = getRefdataValue('Deleted', RDConstants.PACKAGE_STATUS)
     static final PLATFORM_DELETED           = getRefdataValue('Deleted', RDConstants.PLATFORM_STATUS)
-    static final TIPP_DELETED               = getRefdataValue('Deleted',  RDConstants.TIPP_STATUS)
+
+    static final LICENSE_TYPE_TEMPLATE      = getRefdataValue('Template', RDConstants.LICENSE_TYPE)
+    static final LICENSE_TYPE_ACTUAL        = getRefdataValue('Actual', RDConstants.LICENSE_TYPE)
+
+    static final LICENSE_NO_STATUS          = getRefdataValue('Status not defined', RDConstants.LICENSE_STATUS)
+    static final LICENSE_CURRENT            = getRefdataValue('Current', RDConstants.LICENSE_STATUS)
+    static final LICENSE_INTENDED           = getRefdataValue('Intended', RDConstants.LICENSE_STATUS)
+    static final LICENSE_IN_PROGRESS        = getRefdataValue('In Progress', RDConstants.LICENSE_STATUS)
+
+    static final LINKTYPE_FOLLOWS           = getRefdataValue('follows', RDConstants.LINK_TYPE)
+
+    static final PENDING_CHANGE_STATUS      = getRefdataValue('Pending', RDConstants.PENDING_CHANGE_STATUS)
+
+    static final PERM_PERM_EXPL             = getRefdataValue('Permitted (explicit)', RDConstants.PERMISSIONS)
+    static final PERM_PERM_INTERP           = getRefdataValue('Permitted (interpreted)',RDConstants.PERMISSIONS)
+    static final PERM_PROH_EXPL             = getRefdataValue('Prohibited (explicit)', RDConstants.PERMISSIONS)
+    static final PERM_PROH_INTERP           = getRefdataValue('Prohibited (interpreted)', RDConstants.PERMISSIONS)
+    static final PERM_SILENT                = getRefdataValue('Silent', RDConstants.PERMISSIONS)
+    static final PERM_NOT_APPLICABLE        = getRefdataValue('Not applicable', RDConstants.PERMISSIONS)
+    static final PERM_UNKNOWN               = getRefdataValue('Unknown', RDConstants.PERMISSIONS)
+
+    static final PRS_FUNC_GENERAL_CONTACT_PRS   = getRefdataValue('General contact person', RDConstants.PERSON_FUNCTION)
+    static final PRS_FUNC_GASCO_CONTACT         = getRefdataValue('GASCO-Contact', RDConstants.PERSON_FUNCTION)
+
+    static final PRS_RESP_SPEC_SUB_EDITOR       = getRefdataValue('Specific subscription editor', RDConstants.PERSON_RESPONSIBILITY)
+    static final PRS_RESP_SPEC_LIC_EDITOR       = getRefdataValue('Specific license editor', RDConstants.PERSON_RESPONSIBILITY)
+
+    static final SHARE_CONF_ALL                 = getRefdataValue('everyone', RDConstants.SHARE_CONFIGURATION)
+    static final SHARE_CONF_CREATOR             = getRefdataValue('only for creator', RDConstants.SHARE_CONFIGURATION)
+    static final SHARE_CONF_UPLOADER_ORG        = getRefdataValue('only for author organisation', RDConstants.SHARE_CONFIGURATION) //maps to key, value is correct!
+    static final SHARE_CONF_UPLOADER_AND_TARGET = getRefdataValue('only for author and target organisation', RDConstants.SHARE_CONFIGURATION) //maps to key, value is correct!
+    static final SHARE_CONF_CONSORTIUM          = getRefdataValue('only for consortia members', RDConstants.SHARE_CONFIGURATION)
 
 //DO NOT USE THIS STATUS. Subs have no longer a deleted flag. They ARE deleted!
     @Deprecated
@@ -64,20 +119,16 @@ class RDStore {
     static final SUBSCRIPTION_INTENDED_PERENNIAL = getRefdataValue('IntendedPerennial', RDConstants.SUBSCRIPTION_STATUS)
     static final SUBSCRIPTION_EXPIRED_PERENNIAL = getRefdataValue('ExpiredPerennial', RDConstants.SUBSCRIPTION_STATUS)
 
-    static final SURVEY_READY               = getRefdataValue('Ready', RDConstants.SURVEY_STATUS)
-    static final SURVEY_IN_PROCESSING       = getRefdataValue('In Processing', RDConstants.SURVEY_STATUS)
-    static final SURVEY_IN_EVALUATION       = getRefdataValue('In Evaluation', RDConstants.SURVEY_STATUS)
-    static final SURVEY_COMPLETED           = getRefdataValue('Completed', RDConstants.SURVEY_STATUS)
-    static final SURVEY_SURVEY_STARTED      = getRefdataValue('Survey started', RDConstants.SURVEY_STATUS)
-    static final SURVEY_SURVEY_COMPLETED    = getRefdataValue('Survey completed', RDConstants.SURVEY_STATUS)
+    static final SURVEY_READY                   = getRefdataValue('Ready', RDConstants.SURVEY_STATUS)
+    static final SURVEY_IN_PROCESSING           = getRefdataValue('In Processing', RDConstants.SURVEY_STATUS)
+    static final SURVEY_IN_EVALUATION           = getRefdataValue('In Evaluation', RDConstants.SURVEY_STATUS)
+    static final SURVEY_COMPLETED               = getRefdataValue('Completed', RDConstants.SURVEY_STATUS)
+    static final SURVEY_SURVEY_STARTED          = getRefdataValue('Survey started', RDConstants.SURVEY_STATUS)
+    static final SURVEY_SURVEY_COMPLETED        = getRefdataValue('Survey completed', RDConstants.SURVEY_STATUS)
 
-    static final SURVEY_TYPE_RENEWAL        = getRefdataValue('renewal', RDConstants.SURVEY_TYPE)
-    static final SURVEY_TYPE_INTEREST       = getRefdataValue('interest', RDConstants.SURVEY_TYPE)
-    static final SURVEY_TYPE_TITLE_SELECTION= getRefdataValue('selection', RDConstants.SURVEY_TYPE)
-
-
-    static final COST_ITEM_ACTUAL           = getRefdataValue('Actual', RDConstants.COST_ITEM_STATUS)
-    static final COST_ITEM_DELETED          = getRefdataValue('Deleted', RDConstants.COST_ITEM_STATUS)
+    static final SURVEY_TYPE_RENEWAL                = getRefdataValue('renewal', RDConstants.SURVEY_TYPE)
+    static final SURVEY_TYPE_INTEREST               = getRefdataValue('interest', RDConstants.SURVEY_TYPE)
+    static final SURVEY_TYPE_TITLE_SELECTION        = getRefdataValue('selection', RDConstants.SURVEY_TYPE)
 
     static final SUBSCRIPTION_TYPE_LOCAL            = getRefdataValue('Local Licence', RDConstants.SUBSCRIPTION_TYPE)
     static final SUBSCRIPTION_TYPE_CONSORTIAL       = getRefdataValue('Consortial Licence', RDConstants.SUBSCRIPTION_TYPE)
@@ -86,35 +137,10 @@ class RDStore {
     static final SUBSCRIPTION_TYPE_NATIONAL   		= getRefdataValue('National Licence', RDConstants.SUBSCRIPTION_TYPE)
     //static final SUBSCRIPTION_TYPE_COLLECTIVE   	= getRefdataValue('Collective Subscription', RDConstants.SUBSCRIPTION_TYPE)
 
-    static final LICENSE_TYPE_TEMPLATE      = getRefdataValue('Template', RDConstants.LICENSE_TYPE)
-    static final LICENSE_TYPE_ACTUAL        = getRefdataValue('Actual', RDConstants.LICENSE_TYPE)
+    static final TASK_STATUS_OPEN       = getRefdataValue('Open', RDConstants.TASK_STATUS)
+    static final TASK_STATUS_DONE       = getRefdataValue('Done', RDConstants.TASK_STATUS)
 
-    static final LICENSE_NO_STATUS          = getRefdataValue('Status not defined', RDConstants.LICENSE_STATUS)
-    static final LICENSE_CURRENT            = getRefdataValue('Current', RDConstants.LICENSE_STATUS)
-    static final LICENSE_INTENDED           = getRefdataValue('Intended', RDConstants.LICENSE_STATUS)
-    static final LICENSE_IN_PROGRESS        = getRefdataValue('In Progress', RDConstants.LICENSE_STATUS)
-
-    static final LINKTYPE_FOLLOWS           = getRefdataValue('follows', RDConstants.LINK_TYPE)
-
-    static final YN_YES                     = getRefdataValue('Yes', RDConstants.Y_N)
-    static final YN_NO                      = getRefdataValue('No', RDConstants.Y_N)
-    static final YNO_YES                    = getRefdataValue('Yes', RDConstants.Y_N_O)
-    static final YNO_NO                     = getRefdataValue('No', RDConstants.Y_N_O)
-    static final YNO_OTHER                  = getRefdataValue('Other', RDConstants.Y_N_O)
-
-    static final CIEC_POSITIVE              = getRefdataValue('positive', RDConstants.COST_CONFIGURATION)
-    static final CIEC_NEGATIVE              = getRefdataValue('negative', RDConstants.COST_CONFIGURATION)
-    static final CIEC_NEUTRAL               = getRefdataValue('neutral', RDConstants.COST_CONFIGURATION)
-
-    static final CURRENCY_EUR               = getRefdataValue('EUR', RDConstants.CURRENCY)
-
-    static final PERM_PERM_EXPL             = getRefdataValue('Permitted (explicit)', RDConstants.PERMISSIONS)
-    static final PERM_PERM_INTERP           = getRefdataValue('Permitted (interpreted)',RDConstants.PERMISSIONS)
-    static final PERM_PROH_EXPL             = getRefdataValue('Prohibited (explicit)', RDConstants.PERMISSIONS)
-    static final PERM_PROH_INTERP           = getRefdataValue('Prohibited (interpreted)', RDConstants.PERMISSIONS)
-    static final PERM_SILENT                = getRefdataValue('Silent', RDConstants.PERMISSIONS)
-    static final PERM_NOT_APPLICABLE        = getRefdataValue('Not applicable', RDConstants.PERMISSIONS)
-    static final PERM_UNKNOWN               = getRefdataValue('Unknown', RDConstants.PERMISSIONS)
+    static final TAX_REVERSE_CHARGE         = getRefdataValue('reverse charge', RDConstants.TAX_TYPE)
 
     static final TITLE_TYPE_EBOOK           = getRefdataValue('EBook', RDConstants.TITLE_TYPE)
     static final TITLE_TYPE_JOURNAL         = getRefdataValue('Journal', RDConstants.TITLE_TYPE)
@@ -123,17 +149,6 @@ class RDStore {
     static final TITLE_STATUS_CURRENT       = getRefdataValue('Current', RDConstants.TITLE_STATUS)
     static final TITLE_STATUS_RETIRED       = getRefdataValue('Retired', RDConstants.TITLE_STATUS)
     static final TITLE_STATUS_DELETED       = getRefdataValue('Deleted', RDConstants.TITLE_STATUS)
-
-    static final TAX_REVERSE_CHARGE         = getRefdataValue('reverse charge', RDConstants.TAX_TYPE)
-
-    static final COMBO_TYPE_CONSORTIUM      = getRefdataValue('Consortium', RDConstants.COMBO_TYPE)
-    static final COMBO_TYPE_DEPARTMENT      = getRefdataValue('Department', RDConstants.COMBO_TYPE)
-
-    static final COMBO_STATUS_ACTIVE        = getRefdataValue('Active', RDConstants.COMBO_STATUS)
-    static final COMBO_STATUS_INACTIVE      = getRefdataValue('Inactive', RDConstants.COMBO_STATUS)
-
-    static final CONTACT_TYPE_PERSONAL      = getRefdataValue('Personal Contact', RDConstants.PERSON_CONTACT_TYPE)
-    static final CONTACT_TYPE_FUNCTIONAL    = getRefdataValue('Functional Contact', RDConstants.PERSON_CONTACT_TYPE)
 
     static final TIPP_PAYMENT_COMPLIMENTARY     = getRefdataValue('Complimentary', RDConstants.TIPP_PAYMENT_TYPE)
     static final TIPP_PAYMENT_LIMITED_PROMOTION = getRefdataValue('Limited Promotion', RDConstants.TIPP_PAYMENT_TYPE)
@@ -148,30 +163,13 @@ class RDStore {
     static final TIPP_STATUS_EXPECTED           = getRefdataValue('Expected', RDConstants.TIPP_STATUS)
     static final TIPP_STATUS_TRANSFERRED        = getRefdataValue('Transferred', RDConstants.TIPP_STATUS)
     static final TIPP_STATUS_UNKNOWN            = getRefdataValue('Unknown', RDConstants.TIPP_STATUS)
-    static final TIPP_STATUS_DELETED            = TIPP_DELETED
-    
-    static final IE_ACCEPT_STATUS_FIXED            = getRefdataValue('Fixed', RDConstants.IE_ACCEPT_STATUS)
-    static final IE_ACCEPT_STATUS_UNDER_NEGOTIATION = getRefdataValue('Under Negotiation', RDConstants.IE_ACCEPT_STATUS)
-    static final IE_ACCEPT_STATUS_UNDER_CONSIDERATION = getRefdataValue('Under Consideration', RDConstants.IE_ACCEPT_STATUS)
+    static final TIPP_STATUS_DELETED            = getRefdataValue('Deleted',  RDConstants.TIPP_STATUS)
 
-    static final PRS_FUNC_GENERAL_CONTACT_PRS   = getRefdataValue('General contact person', RDConstants.PERSON_FUNCTION)
-    static final PRS_FUNC_GASCO_CONTACT         = getRefdataValue('GASCO-Contact', RDConstants.PERSON_FUNCTION)
-    static final CCT_EMAIL                      = getRefdataValue('E-Mail', RDConstants.CONTACT_CONTENT_TYPE)
-    static final CCT_PHONE                      = getRefdataValue('Phone', RDConstants.CONTACT_CONTENT_TYPE)
-    static final CCT_URL                        = getRefdataValue('Url', RDConstants.CONTACT_CONTENT_TYPE)
-    static final PRS_RESP_SPEC_SUB_EDITOR       = getRefdataValue('Specific subscription editor', RDConstants.PERSON_RESPONSIBILITY)
-    static final PRS_RESP_SPEC_LIC_EDITOR       = getRefdataValue('Specific license editor', RDConstants.PERSON_RESPONSIBILITY)
-
-    static final PENDING_CHANGE_STATUS          = getRefdataValue('Pending', RDConstants.PENDING_CHANGE_STATUS)
-
-    static final TASK_STATUS_OPEN               = getRefdataValue('Open', RDConstants.TASK_STATUS)
-    static final TASK_STATUS_DONE               = getRefdataValue('Done', RDConstants.TASK_STATUS)
-
-    static final SHARE_CONF_ALL                 = getRefdataValue('everyone', RDConstants.SHARE_CONFIGURATION)
-    static final SHARE_CONF_CREATOR             = getRefdataValue('only for creator', RDConstants.SHARE_CONFIGURATION)
-    static final SHARE_CONF_UPLOADER_ORG        = getRefdataValue('only for author organisation', RDConstants.SHARE_CONFIGURATION) //maps to key, value is correct!
-    static final SHARE_CONF_UPLOADER_AND_TARGET = getRefdataValue('only for author and target organisation', RDConstants.SHARE_CONFIGURATION) //maps to key, value is correct!
-    static final SHARE_CONF_CONSORTIUM          = getRefdataValue('only for consortia members', RDConstants.SHARE_CONFIGURATION)
+    static final YN_YES         = getRefdataValue('Yes', RDConstants.Y_N)
+    static final YN_NO          = getRefdataValue('No', RDConstants.Y_N)
+    static final YNO_YES        = getRefdataValue('Yes', RDConstants.Y_N_O)
+    static final YNO_NO         = getRefdataValue('No', RDConstants.Y_N_O)
+    static final YNO_OTHER      = getRefdataValue('Other', RDConstants.Y_N_O)
 
     //Properties
 

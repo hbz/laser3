@@ -142,7 +142,7 @@ class SubscriptionService {
     List getIssueEntitlements(Subscription subscription) {
         List<IssueEntitlement> ies = subscription?
                 IssueEntitlement.executeQuery("select ie from IssueEntitlement as ie where ie.subscription = :sub and ie.status <> :del",
-                        [sub: subscription, del: TIPP_DELETED])
+                        [sub: subscription, del: TIPP_STATUS_DELETED])
                 : []
         ies.sort {it.tipp.title.title}
         ies
@@ -198,7 +198,7 @@ class SubscriptionService {
             }
             else {
                 base_qry += " and ie.status != :deleted "
-                qry_params.deleted = TIPP_DELETED
+                qry_params.deleted = TIPP_STATUS_DELETED
             }
 
             if(params.ieAcceptStatusFixed) {
@@ -343,7 +343,7 @@ class SubscriptionService {
 //        targetSub.issueEntitlements.each{ ie ->
         getIssueEntitlements(targetSub).each{ ie ->
             if (packagesToDelete.find { subPkg -> subPkg?.pkg?.id == ie?.tipp?.pkg?.id } ) {
-                ie.status = TIPP_DELETED
+                ie.status = TIPP_STATUS_DELETED
                 save(ie, flash)
             }
         }
@@ -400,7 +400,7 @@ class SubscriptionService {
 
     boolean deleteEntitlements(List<IssueEntitlement> entitlementsToDelete, Subscription targetSub, def flash) {
         entitlementsToDelete.each {
-            it.status = TIPP_DELETED
+            it.status = TIPP_STATUS_DELETED
             save(it, flash)
         }
 //        IssueEntitlement.executeUpdate(
@@ -411,8 +411,8 @@ class SubscriptionService {
 
     boolean copyEntitlements(List<IssueEntitlement> entitlementsToTake, Subscription targetSub, def flash) {
         entitlementsToTake.each { ieToTake ->
-            if (ieToTake.status != TIPP_DELETED) {
-                def list = getIssueEntitlements(targetSub).findAll{it.tipp.id == ieToTake.tipp.id && it.status != TIPP_DELETED}
+            if (ieToTake.status != TIPP_STATUS_DELETED) {
+                def list = getIssueEntitlements(targetSub).findAll{it.tipp.id == ieToTake.tipp.id && it.status != TIPP_STATUS_DELETED}
                 if (list?.size() > 0) {
                     // mich gibts schon! Fehlermeldung ausgeben!
                     Object[] args = [ieToTake.tipp.title.title]
@@ -980,7 +980,7 @@ class SubscriptionService {
             return false
         }
         else {
-            ie.status = TIPP_DELETED
+            ie.status = TIPP_STATUS_DELETED
             if(ie.save()) {
                 return true
             }
@@ -996,7 +996,7 @@ class SubscriptionService {
             return false
         }
         else {
-            ie.status = TIPP_DELETED
+            ie.status = TIPP_STATUS_DELETED
             if(ie.save()) {
                 return true
             }

@@ -144,7 +144,7 @@ ${message(code: 'subscription.details.renewalsConsortium.label')}: ${subscriptio
                     <th><g:checkBox name="subscription.takeEntitlements" value="${true}"/></th>
                     <th>${message(code: 'subscription.takeEntitlements', default: 'Take Current Entitlements from Subscription')}</th>
                     <td><b>${message(code: 'issueEntitlement.countSubscription')} </b> ${subscription.issueEntitlements.findAll {
-                        it.status != RDStore.TIPP_DELETED
+                        it.status != RDStore.TIPP_STATUS_DELETED
                     }.size()}
 
                         %{--                        <g:each in="${subscription.issueEntitlements.sort{it.tipp.title}}" var="ie">
