@@ -2,6 +2,10 @@
 
 **Ticket    Date    Branch      Author  Feature/Bug     Description/Keywords**
 
+2082    17.02.2020  hbz-dev     Anja    Feature     Sicherheitsabfrage ändern (Verknüpfungen aufheben)
+
+2156    14.02.2020  hbz-dev     Anja    Feature     Performance verbessern von _copyEmailaddresses
+
 2176    14.02.2020  hbz-dev     David   Feature     Admin-Sicht: Unterschiede zwischen Servern
 
 2184    14.02.2020  hbz-dev     David   Bug         Vererbung im hbz-dev defekt

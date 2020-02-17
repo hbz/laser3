@@ -16,7 +16,7 @@
       </td>
       <td class="right aligned">
         <g:if test="${editmode}">
-          EEEEEEE
+%{--_______________________________________--}%
           <%
               com.k_int.kbplus.Subscription subscription = subscriptionInstance
               com.k_int.kbplus.Package pkg = sp.pkg
@@ -54,7 +54,22 @@
 //              conflicts_list += conflict_item_oap
             }
           %>
-          %{--Anzeige: conflicts_list, each detail_item.link und detail_item.text, von letzterem nur die zahl--}%
+          NEU
+          <g:link controller="subscription"
+                    action="frontend"
+                    extaContentFlag="false"
+                    params=""
+                    data-content="Hier kommt der Tooltip rein"
+                    data-confirm-messageUrl="${createLink(controller:'subscription', action:'unlinkPackage', params:[subscription: sp?.subscription?.id, package: sp?.pkg?.id])}"
+                    data-confirm-tokenMsg="${message(code: "confirm.dialog.unlink.subscription.package", args: [sp?.pkg?.name])}"
+                    data-confirm-term-how="delete"
+                    class="ui icon negative button js-open-confirm-modal la-popup-tooltip la-delay"
+                    role="button">
+              <i aria-hidden="true" class="trash alternate icon"></i>
+            </g:link>
+
+
+        %{--Anzeige: conflicts_list, each detail_item.link und detail_item.text, von letzterem nur die zahl--}%
           <button class="ui icon negative button la-selectable-button" onclick="unlinkPackage(${sp.pkg.id})">
             <i class="unlink icon"></i>
           </button>
@@ -80,7 +95,7 @@
           %{-->--}%
             %{--<i class="trash alternate icon"></i>--}%
           %{--</laser:remoteLink>--}%
-          FFFFFFF
+%{--_______________________________________--}%
         </g:if>
       </td>
     </tr>

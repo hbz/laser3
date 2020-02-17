@@ -416,6 +416,8 @@ class SubscriptionController extends AbstractDebugController {
                 }
 
                 return render(template: "unlinkPackageModal", model: [pkg: result.package, subscription: result.subscription, conflicts_list: conflicts_list])
+//                render template: "/templates/ajax/${params.template}", model: [a: 1, b: 2, c: 3]
+//                render template: "/templates/ajax/abc", model: [a: 1, b: 2, c: 3]
             }
         } else {
             result.editable = false
