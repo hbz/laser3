@@ -375,21 +375,11 @@
     },
     "objectName": {
       "type": "text",
-      "fields": {
-        "keyword": {
-          "ignore_above": 256,
-          "type": "keyword"
-        }
-      }
+      "index": false
     },
     "objectClassName": {
       "type": "text",
-      "fields": {
-        "keyword": {
-          "ignore_above": 256,
-          "type": "keyword"
-        }
-      }
+      "index": false
     },
     "objectTypeId": {
       "type": "long",

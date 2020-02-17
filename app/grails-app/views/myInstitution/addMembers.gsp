@@ -4,7 +4,7 @@
 <html>
     <head>
         <meta name="layout" content="semanticUI">
-        <g:set var="entityName" value="${message(code: 'org.label', default: 'Org')}" />
+        <g:set var="entityName" value="${message(code: 'org.label')}" />
         <title>${message(code:'laser')} : ${message(code: 'menu.institutions.add_consortia_members')}</title>
     </head>
     <body>
@@ -73,7 +73,7 @@
                   ]"/>
 
         <br/>
-        <input type="submit" class="ui button" value="${message(code:'default.button.add.label', default:'Add')}" />
+        <input type="submit" class="ui button" value="${message(code:'default.button.add.label')}" />
     </g:form>
     </g:if>
     <g:else>

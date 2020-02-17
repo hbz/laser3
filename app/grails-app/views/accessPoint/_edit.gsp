@@ -4,7 +4,7 @@
 <html>
 <head>
     <meta name="layout" content="semanticUI">
-    <g:set var="entityName" value="${message(code: 'accessPoint.label', default: 'Access Point')}" />
+    <g:set var="entityName" value="${message(code: 'accessPoint.label')}" />
     <title><g:message code="default.edit.label" args="[entityName]" /></title>
     <g:javascript>
         $(function() {
@@ -108,7 +108,7 @@
 <g:hiddenField name="ipv6Format" value="${ipv6Format}" />
 <g:hiddenField name="accessMethod" value="${accessPoint.accessMethod}" />
 
-<h5>${message(code: 'accessPoint.ip.configuration', default: 'IP Configuration')}
+<h5>${message(code: 'accessPoint.ip.configuration')}
 <span class="la-long-tooltip la-popup-tooltip la-delay" data-html='${message(code:'accessPoint.permittedIpRanges')}'>
     <i class="question circle icon la-popup"></i>
 </span>
@@ -117,7 +117,7 @@
 <table  class="ui celled la-table table very compact">
     <thead>
     <tr>
-        <g:sortableColumn property="ipData" title="${message(code: 'accessPoint.ip.data', default: 'IP or IP Range')} "  />
+        <g:sortableColumn property="ipData" title="${message(code: 'accessPoint.ip.data')} "  />
         <th>${message(code: 'default.actions.label')}</th>
     </tr>
     </thead>
@@ -145,7 +145,7 @@
             </div>
         </td>
         <td class="center aligned">
-            <input type="Submit" class="ui tiny button" value="${message(code:'accessPoint.button.add', default:'Add')}" onClick="this.form.submit()" class="ui button"/>
+            <input type="Submit" class="ui tiny button" value="${message(code:'accessPoint.button.add')}" onClick="this.form.submit()" class="ui button"/>
         </td>
     </tr>
     </tbody>

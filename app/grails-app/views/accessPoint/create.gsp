@@ -3,7 +3,7 @@
 <html>
 	<head>
 		<meta name="layout" content="semanticUI">
-		<g:set var="entityName" value="${message(code: 'accessPoint.label', default: 'Access Point')}" />
+		<g:set var="entityName" value="${message(code: 'accessPoint.label')}" />
 		<title><g:message code="default.edit.label" args="[entityName]" /></title>
     <g:javascript>
       $(function() {

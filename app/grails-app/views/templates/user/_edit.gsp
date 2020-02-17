@@ -133,12 +133,12 @@
 
 
     <sec:ifAnyGranted roles="ROLE_ADMIN">
-      <h4 class="ui dividing header">${message(code:'user.role.plural', default:'Roles')}</h4>
+      <h4 class="ui dividing header">${message(code:'user.role.plural')}</h4>
 
           <table class="ui celled la-table la-table-small table">
             <thead>
               <tr>
-                <th>${message(code:'user.role', default:'Role')}</th>
+                <th>${message(code:'user.role')}</th>
                   <th class="la-action-info">${message(code:'default.actions.label')}</th>
               </tr>
             </thead>
@@ -166,7 +166,7 @@
                           <input type="hidden" name="__newObjectClass" value="com.k_int.kbplus.auth.UserRole"/>
                           <input type="hidden" name="__recip" value="user"/>
                           <input type="hidden" name="role" id="userRoleSelect"/>
-                          <input type="submit" class="ui button" value="${message(code:'user.role.add', default:'Add Role...')}"/>
+                          <input type="submit" class="ui button" value="${message(code:'user.role.add')}"/>
                       </g:form>
 
             <%-- TODO [ticket=1612] new identifier handling
@@ -197,10 +197,10 @@
                       $('.xEditableValue').editable();
 
                       $("#userRoleSelect").select2({
-                        placeholder: "${message(code:'user.role.search.ph', default:'Search for an role...')}",
+                        placeholder: "${message(code:'user.role.search.ph')}",
                         minimumInputLength: 0,
                         formatInputTooShort: function () {
-                            return "${message(code:'select2.minChars.note', default:'Please enter 1 or more character')}";
+                            return "${message(code:'select2.minChars.note')}";
                         },
                         ajax: { // instead of writing the function to execute the request we use Select2's convenient helper
                           url: "<g:createLink controller='ajax' action='lookup'/>",

@@ -54,7 +54,6 @@ class SubscriptionController extends AbstractDebugController {
     def addressbookService
     def taskService
     def genericOIDService
-    def transformerService
     def exportService
     GrailsApplication grailsApplication
     def pendingChangeService
@@ -140,38 +139,28 @@ class SubscriptionController extends AbstractDebugController {
 
         log.debug("subscription id:${params.id} format=${response.format}");
 
-        result.transforms = grailsApplication.config.subscriptionTransforms
-
         result.max = params.max ? Integer.parseInt(params.max) : ((response.format && response.format != "html" && response.format != "all") ? 10000 : result.user.getDefaultPageSizeTMP());
         result.offset = (params.offset && response.format && response.format != "html") ? Integer.parseInt(params.offset) : 0;
 
         log.debug("max = ${result.max}");
 
         def pending_change_pending_status = RefdataValue.getByValueAndCategory('Pending', RDConstants.PENDING_CHANGE_STATUS)
-        List<PendingChange> pendingChanges = PendingChange.executeQuery("select pc.id from PendingChange as pc where subscription=? and ( pc.status is null or pc.status = ? ) order by ts desc", [result.subscriptionInstance, pending_change_pending_status]);
+        List<PendingChange> pendingChanges = PendingChange.executeQuery("select pc from PendingChange as pc where subscription=? and ( pc.status is null or pc.status = ? ) order by ts desc", [result.subscriptionInstance, pending_change_pending_status]);
 
-        if (result.subscriptionInstance?.isSlaved && pendingChanges) {
+        if (result.subscriptionInstance?.isSlaved && ! pendingChanges.isEmpty()) {
             log.debug("Slaved subscription, auto-accept pending changes")
             def changesDesc = []
             pendingChanges.each { change ->
-                if (!pendingChangeService.performAccept(change, result.user)) {
+                if (!pendingChangeService.performAccept(change, (User) result.user)) {
                     log.debug("Auto-accepting pending change has failed.")
                 } else {
-                    changesDesc.add(PendingChange.get(change).desc)
+                    changesDesc.add(change.desc)
                 }
             }
             // ERMS-1844: Hotfix: Änderungsmitteilungen ausblenden
             // flash.message = changesDesc
         } else {
-            result.pendingChanges = pendingChanges.collect { PendingChange.get(it) }
-        }
-
-        // If transformer check user has access to it
-        if (params.transforms && !transformerService.hasTransformId(result.user, params.transforms)) {
-            flash.error = "It looks like you are trying to use an unvalid transformer or one you don't have access to!"
-            params.remove("transforms")
-            params.remove("format")
-            redirect action: 'currentTitles', params: params
+            result.pendingChanges = pendingChanges
         }
 
         if (params.mode == "advanced") {
@@ -301,13 +290,10 @@ class SubscriptionController extends AbstractDebugController {
                     def json = map as JSON
                     exportService.printDuration(starttime, "Create JSON")
 
-                    if (params.transforms) {
-                        transformerService.triggerTransform(result.user, filename, params.transforms, json, response)
-                    } else {
-                        response.setHeader("Content-disposition", "attachment; filename=\"${filename}.json\"")
-                        response.contentType = "application/json"
-                        render json
-                    }
+                    response.setHeader("Content-disposition", "attachment; filename=\"${filename}.json\"")
+                    response.contentType = "application/json"
+                    render json
+
                     exportService.printDuration(verystarttime, "Overall Time")
                 }
                 xml {
@@ -316,16 +302,12 @@ class SubscriptionController extends AbstractDebugController {
                     exportService.addSubIntoXML(doc, doc.getDocumentElement(), result.subscriptionInstance, result.entitlements)
                     exportService.printDuration(starttime, "Building XML Doc")
 
-                    if ((params.transformId) && (result.transforms[params.transformId] != null)) {
-                        String xml = exportService.streamOutXML(doc, new StringWriter()).getWriter().toString();
-                        transformerService.triggerTransform(result.user, filename, result.transforms[params.transformId], xml, response)
-                    } else {
-                        response.setHeader("Content-disposition", "attachment; filename=\"${filename}.xml\"")
-                        response.contentType = "text/xml"
-                        starttime = exportService.printStart("Sending XML")
-                        exportService.streamOutXML(doc, response.outputStream)
-                        exportService.printDuration(starttime, "Sending XML")
-                    }
+                    response.setHeader("Content-disposition", "attachment; filename=\"${filename}.xml\"")
+                    response.contentType = "text/xml"
+                    starttime = exportService.printStart("Sending XML")
+                    exportService.streamOutXML(doc, response.outputStream)
+                    exportService.printDuration(starttime, "Sending XML")
+
                     exportService.printDuration(verystarttime, "Overall Time")
                 }
             }
@@ -588,7 +570,7 @@ class SubscriptionController extends AbstractDebugController {
                 result.institutionName = contextService.getOrg().getName()
                 log.debug("FIND ORG NAME ${result.institutionName}")
             }
-            flash.message = message(code: 'subscription.compare.note', default: "Please select two subscriptions for comparison")
+            flash.message = message(code: 'subscription.compare.note')
         }
         */
     }
@@ -1298,11 +1280,22 @@ class SubscriptionController extends AbstractDebugController {
                 }
             }
             if (filteredSubscr) {
-                if (params.subRunTimeMultiYear) {
-                    if(sub?.isMultiYear) {
+                if (params.subRunTimeMultiYear || params.subRunTime) {
+
+                    if (params.subRunTimeMultiYear && !params.subRunTime) {
+                        if(sub?.isMultiYear) {
+                            result.filteredSubChilds << [sub: sub, orgs: filteredSubscr]
+                        }
+                    }else if (!params.subRunTimeMultiYear && params.subRunTime){
+                        if(!sub?.isMultiYear) {
+                            result.filteredSubChilds << [sub: sub, orgs: filteredSubscr]
+                        }
+                    }
+                    else {
                         result.filteredSubChilds << [sub: sub, orgs: filteredSubscr]
                     }
-                }else {
+                }
+                else {
                     result.filteredSubChilds << [sub: sub, orgs: filteredSubscr]
                 }
             }
@@ -1792,7 +1785,7 @@ class SubscriptionController extends AbstractDebugController {
                                         PriceItem.executeUpdate("delete from PriceItem pi where pi.issueEntitlement.id in (:delList)", [delList: deleteIdList])
                                         IssueEntitlement.executeUpdate("delete from IssueEntitlement ie where ie.id in (:delList)", [delList: deleteIdList])
                                     }
-                                    SubscriptionPackage subPkg = SubscriptionPackage.findByPkgAndSubscription(result.package, result.subscription)
+                                    SubscriptionPackage subPkg = SubscriptionPackage.findByPkgAndSubscription(pkg, subChild)
                                     if (subPkg) {
                                         OrgAccessPointLink.executeUpdate("delete from OrgAccessPointLink oapl where oapl.subPkg=?", [subPkg])
                                         CostItem.findAllBySubPkg(subPkg).each { costItem ->
@@ -1810,7 +1803,7 @@ class SubscriptionController extends AbstractDebugController {
                                 }
                             } else {
 
-                                SubscriptionPackage subPkg = SubscriptionPackage.findByPkgAndSubscription(result.package, result.subscription)
+                                SubscriptionPackage subPkg = SubscriptionPackage.findByPkgAndSubscription(pkg, subChild)
                                 if (subPkg) {
                                     OrgAccessPointLink.executeUpdate("delete from OrgAccessPointLink oapl where oapl.subPkg=?", [subPkg])
                                     CostItem.findAllBySubPkg(subPkg).each { costItem ->
@@ -2523,7 +2516,7 @@ class SubscriptionController extends AbstractDebugController {
                 }
 
             } else {
-                flash.error = message(code: 'myinst.actionCurrentSubscriptions.error', default: 'Unable to delete - The selected license has attached subscriptions')
+                flash.error = message(code: 'myinst.actionCurrentSubscriptions.error')
             }
         } else {
             log.warn("${result.user} attempted to delete subscription ${delSubscription} without perms")
@@ -2562,9 +2555,9 @@ class SubscriptionController extends AbstractDebugController {
                 result.processingpc = true
             } else {
                 def pending_change_pending_status = RefdataValue.getByValueAndCategory('Pending', RDConstants.PENDING_CHANGE_STATUS)
-                def pendingChanges = PendingChange.executeQuery("select pc.id from PendingChange as pc where subscription.id=? and ( pc.status is null or pc.status = ? ) order by pc.ts desc", [member.id, pending_change_pending_status])
+                List<PendingChange> pendingChanges = PendingChange.executeQuery("select pc from PendingChange as pc where subscription.id=? and ( pc.status is null or pc.status = ? ) order by pc.ts desc", [member.id, pending_change_pending_status])
 
-                result.pendingChanges << ["${member.id}": pendingChanges.collect { PendingChange.get(it) }]
+                result.pendingChanges << ["${member.id}": pendingChanges]
             }
         }
 
@@ -3596,24 +3589,24 @@ class SubscriptionController extends AbstractDebugController {
         } else {
 
             def pending_change_pending_status = RefdataValue.getByValueAndCategory('Pending', RDConstants.PENDING_CHANGE_STATUS)
-            List<PendingChange> pendingChanges = PendingChange.executeQuery("select pc.id from PendingChange as pc where subscription=? and ( pc.status is null or pc.status = ? ) order by pc.ts desc", [result.subscription, pending_change_pending_status])
+            List<PendingChange> pendingChanges = PendingChange.executeQuery("select pc from PendingChange as pc where subscription=? and ( pc.status is null or pc.status = ? ) order by pc.ts desc", [result.subscription, pending_change_pending_status])
 
             log.debug("pc result is ${result.pendingChanges}")
 
-            if (result.subscription.isSlaved && pendingChanges) {
+            if (result.subscription.isSlaved && ! pendingChanges.isEmpty()) {
                 log.debug("Slaved subscription, auto-accept pending changes")
                 def changesDesc = []
                 pendingChanges.each { change ->
-                    if (!pendingChangeService.performAccept(change, result.user)) {
+                    if (!pendingChangeService.performAccept(change, (User) result.user)) {
                         log.debug("Auto-accepting pending change has failed.")
                     } else {
-                        changesDesc.add(PendingChange.get(change).desc)
+                        changesDesc.add(change.desc)
                     }
                 }
                 //ERMS-1844 Hotfix: Änderungsmitteilungen ausblenden
                 //flash.message = changesDesc
             } else {
-                result.pendingChanges = pendingChanges.collect { PendingChange.get(it) }
+                result.pendingChanges = pendingChanges
             }
         }
 
@@ -4179,7 +4172,7 @@ class SubscriptionController extends AbstractDebugController {
 
                     ArrayList<Links> previousSubscriptions = Links.findAllByDestinationAndObjectTypeAndLinkType(baseSub.id, Subscription.class.name, LINKTYPE_FOLLOWS)
                     if (previousSubscriptions.size() > 0) {
-                        flash.error = message(code: 'subscription.renewSubExist', default: 'The Subscription is already renewed!')
+                        flash.error = message(code: 'subscription.renewSubExist')
                     } else {
 
 
@@ -4373,7 +4366,7 @@ class SubscriptionController extends AbstractDebugController {
 
         ArrayList<Links> previousSubscriptions = Links.findAllByDestinationAndObjectTypeAndLinkType(baseSub.id, Subscription.class.name, LINKTYPE_FOLLOWS)
         if (previousSubscriptions.size() > 0) {
-            flash.error = message(code: 'subscription.renewSubExist', default: 'The Subscription is already renewed!')
+            flash.error = message(code: 'subscription.renewSubExist')
         } else {
             def sub_startDate = params.subscription?.start_date ? parseDate(params.subscription?.start_date, possible_date_formats) : null
             def sub_endDate = params.subscription?.end_date ? parseDate(params.subscription?.end_date, possible_date_formats) : null
@@ -4910,10 +4903,10 @@ class SubscriptionController extends AbstractDebugController {
         }
         subsToCompare.each{ sub ->
             Map customProperties = result.customProperties
-            customProperties = comparisonService.buildComparisonTree(customProperties,sub,sub.customProperties)
+            customProperties = comparisonService.buildComparisonTree(customProperties,sub,sub.customProperties.sort{it.type.getI10n('name')})
             result.customProperties = customProperties
             Map privateProperties = result.privateProperties
-            privateProperties = comparisonService.buildComparisonTree(privateProperties,sub,sub.privateProperties)
+            privateProperties = comparisonService.buildComparisonTree(privateProperties,sub,sub.privateProperties.sort{it.type.getI10n('name')})
             result.privateProperties = privateProperties
         }
         result

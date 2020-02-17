@@ -16,7 +16,7 @@
 <html>
 <head>
     <meta name="layout" content="semanticUI">
-    <g:set var="entityName" value="${message(code: 'org.label', default: 'Org')}"/>
+    <g:set var="entityName" value="${message(code: 'org.label')}"/>
     <title>${message(code: 'laser')} : ${title}</title>
 </head>
 
@@ -119,7 +119,7 @@
 </g:else>
 
     <g:render template="../templates/copyEmailaddresses" model="[orgList: totalMembers]"/>
-    <semui:paginate action="manageMembers" controller="myInstitution" params="${params}" next="${message(code:'default.paginate.next', default:'Next')}" prev="${message(code:'default.paginate.prev', default:'Prev')}" max="${max}" total="${membersCount}" />
+    <semui:paginate action="manageMembers" controller="myInstitution" params="${params}" next="${message(code:'default.paginate.next')}" prev="${message(code:'default.paginate.prev')}" max="${max}" total="${membersCount}" />
 
     <semui:debugInfo>
         <g:render template="/templates/debug/benchMark" model="[debug: benchMark]" />

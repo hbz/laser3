@@ -9,7 +9,7 @@
     <g:render template="public_navbar" contextPath="/templates" model="['active': 'signup']"/>
 
     <div class="ui container">
-        <h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon />${message(code: 'public.signUp.label', default: 'How can institutions get involved?')}</h1>
+        <h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon />${message(code: 'public.signUp.label')}</h1>
 
         <div class="ui grid">
             <div class="twelve wide column">

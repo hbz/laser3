@@ -39,11 +39,11 @@
 
         <g:if test="${validationResult.success==true}">
             <div class="alert alert-success">
-                      <h2 class="ui header">${message(code:'onix.import.success', default:'Upload successful')}</h2>
+                      <h2 class="ui header">${message(code:'onix.import.success')}</h2>
 
                       ${message(code:'onix.import.file', args:[upload_filename,upload_mime_type])}</strong>
             <g:if test="${validationResult.license}">
-                ${message(code:'onix.import.assoc', default:'and associated with')}
+                ${message(code:'onix.import.assoc')}
                 <g:link action="show"
                         controller="license"
                         class="ui button"
@@ -75,9 +75,9 @@
                     <br/>
                     <br/>
                     <button name="replace_opl" id="replace_opl" value="replace"
-                            type="submit" class="ui negative button">${message(code:'default.button.replace.label', default:'Replace')}</button>
+                            type="submit" class="ui negative button">${message(code:'default.button.replace.label')}</button>
                     <button name="replace_opl" id="replace_opl" value="create"
-                            type="submit" class="ui button">${message(code:'default.button.create_new.label', default:'Create New')}</button>
+                            type="submit" class="ui button">${message(code:'default.button.create_new.label')}</button>
 
                     <g:hiddenField name="upload_title" value="${upload_title}" />
                     <g:hiddenField name="uploaded_file" value="${uploaded_file}" />
@@ -95,7 +95,7 @@
                     <input type="file" id="import_file" name="import_file" value="${import_file}"/>
                     <br/>
                     <br/>
-                    <button type="submit" class="ui button">${message(code:'onix.import.import', default:'Import license')}</button>
+                    <button type="submit" class="ui button">${message(code:'onix.import.import')}</button>
                 </g:else>
             </g:form>
         </g:else>

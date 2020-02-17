@@ -2,13 +2,13 @@
 <html>
 <head>
     <meta name="layout" content="semanticUI"/>
-    <title>${message(code:'laser')} : ${message(code:'myinstadmin.title', default:'Institutional Admin Dash')}</title>
+    <title>${message(code:'laser')} : ${message(code:'myinstadmin.title')}</title>
 </head>
 
 <body>
     <semui:breadcrumbs>
         <semui:crumb controller="myInstitution" action="dashboard" text="${institution?.getDesignation()}"/>
-        <semui:crumb text="${message(code:'myinstadmin.title', default:'Institutional Admin Dash')}" class="active" />
+        <semui:crumb text="${message(code:'myinstadmin.title')}" class="active" />
     </semui:breadcrumbs>
 
     <table class="ui celled la-table table">

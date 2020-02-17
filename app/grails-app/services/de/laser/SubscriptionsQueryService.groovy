@@ -141,7 +141,7 @@ class SubscriptionsQueryService {
             // identifier based
             else {
                 String tmpBaseQuery1 = "( exists ( select ident from Identifier ident"
-                String tmpBaseQuery2 = "ident.value = :identifier ) )"
+                String tmpBaseQuery2 = "and ident.value = :identifier ) )"
 
                 base_qry += "AND ("
                 base_qry += tmpBaseQuery1 + " where ident.sub = s.id " + tmpBaseQuery2 + " or "
@@ -279,10 +279,17 @@ class SubscriptionsQueryService {
             filterSet = true
         }
 
-        if (params.subRunTimeMultiYear) {
-            base_qry += "and s.isMultiYear = :subRunTimeMultiYear "
-            qry_params.put('subRunTimeMultiYear', params.subRunTimeMultiYear ? true : false )
-            filterSet = true
+        if (params.subRunTimeMultiYear || params.subRunTime) {
+
+            if (params.subRunTimeMultiYear && !params.subRunTime) {
+                base_qry += " and s.isMultiYear = :subRunTimeMultiYear "
+                qry_params.put('subRunTimeMultiYear', true)
+                filterSet = true
+            }else if (!params.subRunTimeMultiYear && params.subRunTime){
+                base_qry += " and s.isMultiYear = :subRunTimeMultiYear "
+                qry_params.put('subRunTimeMultiYear', false)
+                filterSet = true
+            }
         }
 
         //ERMS-584: the symbol "§" means that the given sort parameter should not be considered in base query

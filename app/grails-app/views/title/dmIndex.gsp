@@ -2,13 +2,13 @@
 <html>
   <head>
     <meta name="layout" content="semanticUI"/>
-    <title>${message(code:'laser')} ${message(code:'title.plural', default:'Titles')} - ${message(code:'default.search.label', default:'Search')}</title>
+    <title>${message(code:'laser')} ${message(code:'title.plural', default:'Titles')} - ${message(code:'default.search.label')}</title>
   </head>
 
   <body>
     <semui:breadcrumbs>
       <semui:crumb controller="title" action="list" message="menu.public.all_titles" />
-      <semui:crumb text="${message(code:'datamanager.titleView.label', default:'Data Manager Titles View')}" class="active"/>
+      <semui:crumb text="${message(code:'datamanager.titleView.label')}" class="active"/>
     </semui:breadcrumbs>
     <br>
     <h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon /><g:message code="datamanager.titleView.label"/>
@@ -20,11 +20,11 @@
         <input type="hidden" name="offset" value="${params.offset}"/>
         <div class="three fields">
           <div class="field">
-              <label for="q">${message(code:'title.label', default:'Title')} (${message(code:'datamanager.titleView.search.note', default:'Search on title text and identifiers')})</label>
-              <input id="q" name="q" placeholder="${message(code:'default.search_for.label', args:[message(code:'title.label')], default:'Search title')}" value="${params.q}"/>
+              <label for="q">${message(code:'title.label', default:'Title')} (${message(code:'datamanager.titleView.search.note')})</label>
+              <input id="q" name="q" placeholder="${message(code:'default.search_for.label', args:[message(code:'title.label')])}" value="${params.q}"/>
           </div>
           <div class="field">
-              <label for="status">${message(code:'default.status.label', default:'Status')}</label>
+              <label for="status">${message(code:'default.status.label')}</label>
               <g:select id="status" name="status"  class="ui dropdown"
                     from="${availableStatuses}"
                     optionKey="${{it.value}}"
@@ -34,7 +34,7 @@
           </div>
           <div class="field la-field-right-aligned">
               <a href="${request.forwardURI}" class="ui reset primary button">${message(code:'default.button.filterreset.label')}</a>
-              <button class="ui secondary button" type="submit" name="search" value="yes">${message(code:'default.button.filter.label', default:'Filter')}</button>
+              <button class="ui secondary button" type="submit" name="search" value="yes">${message(code:'default.button.filter.label')}</button>
           </div>
         </div>
       </g:form>
@@ -57,10 +57,10 @@
                   <table class="ui celled la-table table">
                     <thead>
                       <tr>
-                      <th style="white-space:nowrap">${message(code:'title.label', default:'Title')}</th>
-                      <th style="white-space:nowrap">${message(code:'title.publisher.label', default:'Publisher')}</th>
-                      <th style="white-space:nowrap">${message(code:'indentifier.plural', default:'Identifiers')}</th>
-                      <th style="white-space:nowrap">${message(code:'default.status.label', default:'Status')}</th>
+                      <th style="white-space:nowrap">${message(code:'title.label')}</th>
+                      <th style="white-space:nowrap">${message(code:'title.publisher.label')}</th>
+                      <th style="white-space:nowrap">${message(code:'indentifier.plural')}</th>
+                      <th style="white-space:nowrap">${message(code:'default.status.label')}</th>
                       </tr>
                     </thead>
                     <tbody>

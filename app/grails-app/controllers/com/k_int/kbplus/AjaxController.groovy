@@ -20,6 +20,7 @@ import de.laser.helper.SessionCacheWrapper
 import de.laser.interfaces.ShareSupport
 import grails.converters.JSON
 import grails.plugin.springsecurity.annotation.Secured
+import grails.util.Holders
 import org.codehaus.groovy.grails.orm.hibernate.cfg.GrailsHibernateUtil
 
 //import org.grails.orm.hibernate.cfg.GrailsHibernateUtil
@@ -119,6 +120,17 @@ class AjaxController {
             format:'map'
     ]
   ]
+
+    def genericDialogMessage() {
+
+        if (params.template) {
+            render template: "/templates/ajax/${params.template}", model: [a: 1, b: 2, c: 3]
+        }
+        else {
+            render '<p>invalid call</p>'
+        }
+    }
+
 
     def notifyProfiler() {
         Map<String, Object> result = [status:'failed']
@@ -1672,7 +1684,7 @@ class AjaxController {
                     // delete pending changes
                     // e.g. PendingChange.changeDoc = {changeTarget, changeType, changeDoc:{OID,  event}}
                     members.each { m ->
-                        def openPD = PendingChange.executeQuery("select pc from PendingChange as pc where pc.status is null and pc.costItem is null and pc.oid = :objectID",
+                        List<PendingChange> openPD = PendingChange.executeQuery("select pc from PendingChange as pc where pc.status is null and pc.costItem is null and pc.oid = :objectID",
                                 [objectID: "${m.class.name}:${m.id}"])
 
                         openPD?.each { pc ->
@@ -2281,6 +2293,53 @@ class AjaxController {
     }
     redirect(url: request.getHeader('referer'))    
   }
+
+    @Secured(['ROLE_USER'])
+    def getEmailAddresses() {
+        Set result = []
+        if (params.orgIdList){
+            List<Long> orgIds = params.orgIdList.split ','
+            List<Org> orgList = Org.findAllByIdInList(orgIds)
+            boolean showPrivateContactEmails = Boolean.valueOf(params.isPrivate)
+            boolean showPublicContactEmails = Boolean.valueOf(params.isPublic)
+
+            List<RefdataValue> selectedRoleTypes = null
+            if (params.selectedRoleTypIds) {
+                List<Long> selectedRoleTypIds = params.selectedRoleTypIds.split ','
+                selectedRoleTypes = RefdataValue.findAllByIdInList(selectedRoleTypIds)
+            }
+
+            String query = "select distinct p from Person as p inner join p.roleLinks pr where pr.org in (:orgs) "
+            Map queryParams = [orgs: orgList]
+
+            if (showPublicContactEmails && showPrivateContactEmails){
+                query += "and ( (p.isPublic = false and p.tenant = :ctx) or (p.isPublic = true) ) "
+                queryParams << [ctx: contextService.org]
+            } else {
+                if (showPublicContactEmails){
+                    query += "and p.isPublic = true "
+                } else if (showPrivateContactEmails){
+                    query += "and (p.isPublic = false and p.tenant = :ctx) "
+                    queryParams << [ctx: contextService.org]
+                }
+            }
+
+            if (selectedRoleTypes) {
+                query += "and pr.functionType in (:selectedRoleTypes) "
+                queryParams << [selectedRoleTypes: selectedRoleTypes]
+            }
+
+            List<Person> persons = Person.executeQuery(query, queryParams)
+
+            if (persons){
+                result = Contact.executeQuery("select c.content from Contact c where c.prs in (:persons) and c.contentType = :contentType",
+                        [persons: persons, contentType: RDStore.CCT_EMAIL])
+            }
+
+        }
+        render result as JSON
+    }
+
   def validationException(final grails.validation.ValidationException exception){
     log.error(exception)
     response.status = 400

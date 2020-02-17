@@ -7,7 +7,7 @@
     </head>
     <body>
         <semui:breadcrumbs>
-            <semui:crumb controller="package" action="index" text="${message(code:'package.show.all', default:'All Packages')}" />
+            <semui:crumb controller="package" action="index" text="${message(code:'package.show.all')}" />
             <semui:crumb text="${packageInstance.name}" id="${packageInstance.id}" class="active"/>
         </semui:breadcrumbs>
 
@@ -21,12 +21,6 @@
                 <semui:exportDropdownItem>
                     <g:link class="item" action="show" params="${params+[format:'xml']}">XML</g:link>
                 </semui:exportDropdownItem>
-
-                <g:each in="${transforms}" var="transkey,transval">
-                    <semui:exportDropdownItem>
-                        <g:link class="item" action="show" id="${params.id}" params="${[format:'xml', transformId:transkey, mode:params.mode]}"> ${transval.name}</g:link>
-                    </semui:exportDropdownItem>
-                </g:each>
             </semui:exportDropdown>
             <g:render template="actions" />
         </semui:controlButtons>
@@ -159,7 +153,7 @@
     </div>
 
           <g:if test="${titlesList}" >
-            <semui:paginate action="current" controller="package" params="${params}" next="${message(code:'default.paginate.next', default:'Next')}" prev="${message(code:'default.paginate.prev', default:'Prev')}" maxsteps="${max}" total="${num_tipp_rows}" />
+            <semui:paginate action="current" controller="package" params="${params}" next="${message(code:'default.paginate.next')}" prev="${message(code:'default.paginate.prev')}" maxsteps="${max}" total="${num_tipp_rows}" />
           </g:if>
 
 

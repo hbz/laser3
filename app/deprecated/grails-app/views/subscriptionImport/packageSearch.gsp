@@ -2,7 +2,7 @@
 <html>
     <head>
     <meta name="layout" content="semanticUI"/>
-    <title>${message(code:'laser', default:'LAS:eR')} - ${message(code:'menu.institutions.sub_work')}</title>
+    <title>${message(code:'laser')} - ${message(code:'menu.institutions.sub_work')}</title>
     </head>
 
     <body>
@@ -14,18 +14,18 @@
             <input type="hidden" name="offset" value="${params.offset}"/>
 
             <div class="field">
-              <label>${message(code:'package.show.pkg_name', default:'Package Name')}</label>
+              <label>${message(code:'package.show.pkg_name')}</label>
               <input name="pkgname" value="${params.pkgname}"/>
             </div>
             <div class="field">
-                <button class="ui button" type="submit" name="search" value="yes">${message(code:'default.button.filter.label', default:'Filter')}</button>
+                <button class="ui button" type="submit" name="search" value="yes">${message(code:'default.button.filter.label')}</button>
             </div>
             <div class="fields">
                 <div class="field">
-                    <button class="ui button" type="submit" name="clearBasket" value="yes">${message(code:'subscription.import.clearBasket', default:'Clear Basket')}</button>
+                    <button class="ui button" type="submit" name="clearBasket" value="yes">${message(code:'subscription.import.clearBasket')}</button>
                 </div>
                 <div class="field">
-                    <button class="ui button" type="submit" name="generate" value="yes">${message(code:'subscription.import.generate', default:'Generate Subscription Sheet')}</button>
+                    <button class="ui button" type="submit" name="generate" value="yes">${message(code:'subscription.import.generate')}</button>
                 </div>
             </div>
 
@@ -58,9 +58,9 @@
                           <table class="ui celled la-table table">
                             <thead>
                               <tr>
-                                  <th>${message(code:'package.show.pkg_name', default:'Package Name')}</th>
-                                  <th>${message(code:'consortium.label', default:'Consortium')}</th>
-                                  <th>${message(code:'default.permissionInfo.label', default:'Additional Info')}</th>
+                                  <th>${message(code:'package.show.pkg_name')}</th>
+                                  <th>${message(code:'consortium.label')}</th>
+                                  <th>${message(code:'default.permissionInfo.label')}</th>
                               </tr>
                             </thead>
                             <tbody>
@@ -68,7 +68,7 @@
                                 <tr>
                                   <td><g:link controller="package" action="show" id="${hit.getSource().dbId}">${hit.getSource().name}</g:link></td>
                                   <td>${hit.getSource().consortiaName}</td>
-                                  <td><button type="submit" class="ui button" name="addBtn" value="${hit.getSource().dbId}">${message(code:'myinst.renewalSearch.addBtn', default:'Add to<br/>basket')}</button></td>
+                                  <td><button type="submit" class="ui button" name="addBtn" value="${hit.getSource().dbId}">${message(code:'myinst.renewalSearch.addBtn')}</button></td>
                                 </tr>
                               </g:each>
                             </tbody>
@@ -90,7 +90,7 @@
 
                      <div class="paginateButtons" style="text-align:center">
                         <g:if test="${hits}" >
-                          <span><g:paginate controller="subscriptionImport" action="generateImportWorksheet" params="${params}" next="${message(code:'default.paginate.next', default:'Next')}" prev="${message(code:'default.paginate.prev', default:'Prev')}" maxsteps="10" total="${resultsTotal}" /></span>
+                          <span><g:paginate controller="subscriptionImport" action="generateImportWorksheet" params="${params}" next="${message(code:'default.paginate.next')}" prev="${message(code:'default.paginate.prev')}" maxsteps="10" total="${resultsTotal}" /></span>
                         </g:if>
                       </div>
                 </div>

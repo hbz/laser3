@@ -5,7 +5,7 @@
 <html>
 <head>
     <meta name="layout" content="semanticUI">
-    <g:set var="entityName" value="${message(code: 'org.label', default: 'Org')}"/>
+    <g:set var="entityName" value="${message(code: 'org.label')}"/>
     <title>${message(code: 'laser')} : ${message(code: 'menu.my.consortiaSubscriptions')}</title>
 </head>
 
@@ -173,11 +173,11 @@
                         </div>
                     </div>
                     <div class="inline field">
-                        %{--<div class="ui checkbox">
+                        <div class="ui checkbox">
                             <label for="checkSubRunTimeNoMultiYear">${message(code: 'myinst.currentSubscriptions.subscription.runTime.NoMultiYear')}</label>
-                            <input id="checkSubRunTimeNoMultiYear" name="subRunTime" type="checkbox" value="${params.subRunTime}"
+                            <input id="checkSubRunTimeNoMultiYear" name="subRunTime" type="checkbox" <g:if test="${params.subRunTime}">checked=""</g:if>
                                    tabindex="0">
-                        </div>--}%
+                        </div>
                     </div>
                 </div>
             </div>
@@ -191,7 +191,7 @@
                     <div class="field la-field-right-aligned">
                         <a href="${request.forwardURI}" class="ui reset primary button">${message(code:'default.button.reset.label')}</a>
                         <input name="filterSet" value="true" type="hidden">
-                        <input type="submit" class="ui secondary button" value="${message(code:'default.button.filter.label', default:'Filter')}">
+                        <input type="submit" class="ui secondary button" value="${message(code:'default.button.filter.label')}">
                     </div>
                 </div>
             </div>
@@ -426,8 +426,8 @@
 </g:else>
 
 <semui:paginate action="manageConsortiaSubscriptions" controller="myInstitution" params="${params}"
-                next="${message(code:'default.paginate.next', default:'Next')}"
-                prev="${message(code:'default.paginate.prev', default:'Prev')}"
+                next="${message(code:'default.paginate.next')}"
+                prev="${message(code:'default.paginate.prev')}"
                 max="${max}" total="${countCostItems}" />
 
 </body>

@@ -4,7 +4,7 @@
 <html>
   <head>
     <meta name="layout" content="semanticUI">
-    <g:set var="entityName" value="${message(code: 'titleInstancePackagePlatform.label', default: 'TitleInstancePackagePlatform')}" />
+    <g:set var="entityName" value="${message(code: 'titleInstancePackagePlatform.label')}" />
     <title><g:message code="default.list.label" args="[entityName]" /></title>
   </head>
   <body>
@@ -36,10 +36,10 @@
               <td><g:link controller="title" action="show" id="${tipp.title.id}">${fieldValue(bean: tipp, field: "title.title")}</g:link></td>
               <td><g:link controller="platform" action="show" id="${tipp.platform.id}">${fieldValue(bean: tipp, field: "platform.name")}</g:link></td>
               <td><g:link controller="package" action="show" id="${tipp.pkg.id}">${fieldValue(bean: tipp, field: "pkg.name")}</g:link></td>
-              <td><g:formatDate format="${message(code:'default.date.format.notime', default:'yyyy-MM-dd')}" date="${tipp.startDate}" /></td>
+              <td><g:formatDate format="${message(code:'default.date.format.notime')}" date="${tipp.startDate}" /></td>
               <td>${fieldValue(bean: tipp, field: "startVolume")}</td>
               <td>${fieldValue(bean: tipp, field: "startIssue")}</td>
-              <td><g:formatDate format="${message(code:'default.date.format.notime', default:'yyyy-MM-dd')}" date="${tipp.endDate}" /></td>
+              <td><g:formatDate format="${message(code:'default.date.format.notime')}" date="${tipp.endDate}" /></td>
               <td>${fieldValue(bean: tipp, field: "endVolume")}</td>
               <td>${fieldValue(bean: tipp, field: "endIssue")}</td>
               <td class="link">

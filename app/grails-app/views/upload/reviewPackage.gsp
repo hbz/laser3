@@ -8,7 +8,7 @@
   </head>
   <body>
 
-    <h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon />${message(code:'menu.datamanager.uploadPackage', default:'Upload New Package')}</h1>
+    <h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon />${message(code:'menu.datamanager.uploadPackage')}</h1>
 
     <semui:messages data="${flash}" />
 
@@ -20,7 +20,7 @@
             <div class="four fields">
 
               <div class="field" id="uploadPackage">
-                <label>${message(code:'package.upload.file', default:'Upload File')}</label>
+                <label>${message(code:'package.upload.file')}</label>
                 <div class="ui fluid action input">
                   <input type="text" readonly="readonly" placeholder="${message(code:'template.addDocument.selectFile')}">
                   <input type="file" id="soFile"  name="soFile"  style="display: none;">
@@ -43,8 +43,8 @@
               <div class="field">
                 <label>${message(code:'package.upload.docStyle', default:'Doc Style')}</label>
                 <select name="docstyle" class="ui dropdown">
-                  <option value="csv" selected>${message(code:'package.upload.docStyle.csv', default:'Comma Separated')}</option>
-                  <option value="tsv">${message(code:'package.upload.docStyle.tsv', default:'Tab Separated')}</option>
+                  <option value="csv" selected>${message(code:'package.upload.docStyle.csv')}</option>
+                  <option value="tsv">${message(code:'package.upload.docStyle.tsv')}</option>
                 </select>
               </div>
 
@@ -55,7 +55,7 @@
 
               <div class="field">
                 <label>&nbsp;</label>
-                <button type="submit" class="ui button">${message(code:'package.upload.upload', default:'Upload Package')}</button>
+                <button type="submit" class="ui button">${message(code:'package.upload.upload')}</button>
               </div>
             </div>
           </g:form>
@@ -64,7 +64,7 @@
 
         <g:if test="${validationResult}">
           <g:if test="${validationResult.stats != null}">
-            <h3 class="ui header">${message(code:'default.stats.label', default:'Stats')}</h3>
+            <h3 class="ui header">${message(code:'default.stats.label')}</h3>
             <ul>
               <g:each in="${validationResult?.stats}" var="msg">
                 <li>${msg.key} = ${msg.value}</li>

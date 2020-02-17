@@ -177,7 +177,7 @@
 
                                         <div class="fields">
                                             <div class="field">
-                                                <input name="value" id="value" type="text" class="ui" />
+                                                <input name="value" id="identifier" type="text" class="ui" />
                                             </div>
                                             <div class="field">
                                                 <button type="submit" class="ui button">Identifikator hinzufügen</button>
@@ -231,7 +231,7 @@
                             </dl>
                         </g:else>
                         <dl>
-                            <dt>${message(code: 'default.status.label', default: 'Status')}</dt>
+                            <dt>${message(code: 'default.status.label')}</dt>
 
                         <dd>
                             <g:if test="${isGrantedOrgRoleAdminOrOrgEditor}">
@@ -458,7 +458,7 @@
                                 </div>
                                 <g:if test="${((orgInstance.id == contextService.getOrg().id) || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN'))}">
                                     <input class="ui button"
-                                           value="${message(code: 'default.add.label', args: [message(code: 'contact.label', default: 'Contact')])}"
+                                           value="${message(code: 'default.add.label', args: [message(code: 'contact.label')])}"
                                            data-semui="modal"
                                            data-href="#contactFormModal"/>
                                     <g:render template="/contact/formModal" model="['orgId': orgInstance?.id]"/>

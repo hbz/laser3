@@ -307,6 +307,8 @@ class ChangeNotificationService extends AbstractLockableService {
             def jsonMsgParams = msgParams as JSON
             new_pending_change.msgParams = msgParams ? jsonMsgParams.toString() : null
 
+            new_pending_change.workaroundForDatamigrate() // ERMS-2184
+
             if (new_pending_change.save(failOnError: true)) {
                 return new_pending_change
             } else {

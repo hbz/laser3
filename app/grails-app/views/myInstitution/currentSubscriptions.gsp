@@ -7,7 +7,7 @@
 <html>
     <head>
         <meta name="layout" content="semanticUI" />
-        <title>${message(code:'laser')} : ${message(code:'myinst.currentSubscriptions.label', default:'Current Subscriptions')}</title>
+        <title>${message(code:'laser')} : ${message(code:'myinst.currentSubscriptions.label')}</title>
     </head>
     <body>
 
@@ -53,7 +53,7 @@
 
         <semui:messages data="${flash}"/>
 
-        <h1 class="ui left floated aligned icon header la-clear-before"><semui:headerIcon />${message(code:'myinst.currentSubscriptions.label', default:'Current Subscriptions')}
+        <h1 class="ui left floated aligned icon header la-clear-before"><semui:headerIcon />${message(code:'myinst.currentSubscriptions.label')}
             <semui:totalNumber total="${num_sub_rows}"/>
         </h1>
 
@@ -65,7 +65,7 @@
         %{--<div class="four fields">--}%
             <!-- 1-1 -->
             <div class="field">
-                <label for="search-title">${message(code: 'default.search.text', default: 'Search text')}
+                <label for="search-title">${message(code: 'default.search.text')}
                     <span data-position="right center" data-variation="tiny" class="la-popup-tooltip la-delay" data-content="${message(code:'default.search.tooltip.subscription')}">
                         <i class="question circle icon"></i>
                     </span>
@@ -73,7 +73,7 @@
 
                 <div class="ui input">
                     <input type="text" id="search-title" name="q"
-                           placeholder="${message(code: 'default.search.ph', default: 'enter search term...')}"
+                           placeholder="${message(code: 'default.search.ph')}"
                            value="${params.q}"/>
                 </div>
             </div>
@@ -258,11 +258,11 @@
                         </div>
                     </div>
                     <div class="inline field">
-                        %{--<div class="ui checkbox">
+                        <div class="ui checkbox">
                             <label for="checkSubRunTimeNoMultiYear">${message(code: 'myinst.currentSubscriptions.subscription.runTime.NoMultiYear')}</label>
-                            <input id="checkSubRunTimeNoMultiYear" name="subRunTime" type="checkbox" value="${params.subRunTime}"
+                            <input id="checkSubRunTimeNoMultiYear" name="subRunTime" type="checkbox" <g:if test="${params.subRunTime}">checked=""</g:if>
                                    tabindex="0">
-                        </div>--}%
+                        </div>
                     </div>
                 </div>
             </div>
@@ -282,7 +282,7 @@
             </g:if>
             <div class="field la-field-right-aligned">
                 <a href="${request.forwardURI}" class="ui reset primary button">${message(code:'default.button.reset.label')}</a>
-                <input type="submit" class="ui secondary button" value="${message(code:'default.button.filter.label', default:'Filter')}">
+                <input type="submit" class="ui secondary button" value="${message(code:'default.button.filter.label')}">
             </div>
 
 
@@ -317,14 +317,14 @@
             </g:elseif>
 
             <g:sortableColumn scope="col" params="${params}" property="orgRole§provider" title="${message(code: 'default.provider.label', default: 'Provider')} / ${message(code: 'default.agency.label', default: 'Agency')}" rowspan="2" />
-            <%--<th rowspan="2" >${message(code: 'default.provider.label', default: 'Provider')} / ${message(code: 'default.agency.label', default: 'Agency')}</th>--%>
+            <%--<th rowspan="2" >${message(code: 'default.provider.label')} / ${message(code: 'default.agency.label')}</th>--%>
 
             <%--
             <g:if test="${params.orgRole == 'Subscription Consortia'}">
-                <th>${message(code: 'consortium.subscriber', default: 'Subscriber')}</th>
+                <th>${message(code: 'consortium.subscriber')}</th>
             </g:if>
             --%>
-            <g:sortableColumn scope="col" class="la-smaller-table-head" params="${params}" property="s.startDate" title="${message(code: 'default.startDate.label', default: 'Start Date')}"/>
+            <g:sortableColumn scope="col" class="la-smaller-table-head" params="${params}" property="s.startDate" title="${message(code: 'default.startDate.label')}"/>
 
 
             <g:if test="${params.orgRole in ['Subscription Consortia','Subscription Collective']}">
@@ -348,7 +348,7 @@
         </tr>
 
         <tr>
-            <g:sortableColumn scope="col" class="la-smaller-table-head" params="${params}" property="s.endDate" title="${message(code: 'default.endDate.label', default: 'End Date')}"/>
+            <g:sortableColumn scope="col" class="la-smaller-table-head" params="${params}" property="s.endDate" title="${message(code: 'default.endDate.label')}"/>
         </tr>
         </thead>
         <g:each in="${subscriptions}" var="s" status="i">
@@ -362,7 +362,7 @@
                             ${s.name}
                         </g:if>
                         <g:else>
-                            -- ${message(code: 'myinst.currentSubscriptions.name_not_set', default: 'Name Not Set')}  --
+                            -- ${message(code: 'myinst.currentSubscriptions.name_not_set')}  --
                         </g:else>
                         <g:if test="${s.instanceOf}">
                             <g:if test="${s.consortia && s.consortia == institution}">
@@ -426,7 +426,7 @@
                         <g:link controller="organisation" action="show" id="${org.id}">${org.name}</g:link><br />
                     </g:each>
                     <g:each in="${s.agencies}" var="org">
-                        <g:link controller="organisation" action="show" id="${org.id}">${org.name} (${message(code: 'default.agency.label', default: 'Agency')})</g:link><br />
+                        <g:link controller="organisation" action="show" id="${org.id}">${org.name} (${message(code: 'default.agency.label')})</g:link><br />
                     </g:each>
                 </td>
                 <%--

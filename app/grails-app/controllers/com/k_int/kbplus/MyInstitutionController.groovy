@@ -43,7 +43,6 @@ class MyInstitutionController extends AbstractDebugController {
     def instAdmService
     def exportService
     def escapeService
-    def transformerService
     def institutionsService
     def docstoreService
     def addressbookService
@@ -311,8 +310,6 @@ class MyInstitutionController extends AbstractDebugController {
 		DebugUtil du = new DebugUtil()
 		du.setBenchmark('init')
 
-        result.transforms = grailsApplication.config.licenseTransforms
-
         result.is_inst_admin = accessService.checkMinUserOrgRole(result.user, result.institution, 'INST_ADM')
         result.editable      = accessService.checkMinUserOrgRole(result.user, result.institution, 'INST_EDITOR')
 
@@ -547,22 +544,9 @@ from License as l where (
             xml {
                 def doc = exportService.buildDocXML("Licences")
 
-                if ((params.transformId) && (result.transforms[params.transformId] != null)) {
-                    switch(params.transformId) {
-                      case "sub_ie":
-                        exportService.addLicenseSubPkgTitleXML(doc, doc.getDocumentElement(),result.licenses)
-                      break;
-                      case "sub_pkg":
-                        exportService.addLicenseSubPkgXML(doc, doc.getDocumentElement(),result.licenses)
-                        break;
-                    }
-                    String xml = exportService.streamOutXML(doc, new StringWriter()).getWriter().toString();
-                    transformerService.triggerTransform(result.user, filename, result.transforms[params.transformId], xml, response)
-                }else{
-                    response.setHeader("Content-disposition", "attachment; filename=\"${filename}.xml\"")
-                    response.contentType = "text/xml"
-                    exportService.streamOutXML(doc, response.outputStream)
-                }
+                response.setHeader("Content-disposition", "attachment; filename=\"${filename}.xml\"")
+                response.contentType = "text/xml"
+                exportService.streamOutXML(doc, response.outputStream)
             }
         }
     }
@@ -1480,7 +1464,7 @@ from License as l where (
         if (baseLicense) {
             if (!baseLicense?.hasPerm("view", user)) {
                 log.debug("return 401....");
-                flash.error = message(code: 'myinst.newLicense.error', default: 'You do not have permission to view the selected license. Please request access on the profile page');
+                flash.error = message(code: 'myinst.newLicense.error')
                 response.sendError(401)
             }
             else {
@@ -1573,7 +1557,7 @@ from License as l where (
 
         if (! baseLicense?.hasPerm("view", user)) {
             log.debug("return 401....");
-            flash.error = message(code:'myinst.newLicense.error', default:'You do not have permission to view the selected license. Please request access on the profile page');
+            flash.error = message(code:'myinst.newLicense.error')
             response.sendError(401)
 
         }
@@ -1617,13 +1601,13 @@ from License as l where (
                 license.status = RefdataValue.getByValueAndCategory('Deleted', RDConstants.LICENSE_STATUS)
                 license.save(flush: true);
             } else {
-                flash.error = message(code:'myinst.deleteLicense.error', default:'Unable to delete - The selected license has attached subscriptions marked as Current')
+                flash.error = message(code:'myinst.deleteLicense.error')
                 redirect(url: request.getHeader('referer'))
                 return
             }
         } else {
             log.warn("Attempt by ${result.user} to delete license ${result.license} without perms")
-            flash.message = message(code: 'license.delete.norights', default: 'You do not have edit permission for the selected license.')
+            flash.message = message(code: 'license.delete.norights')
             redirect(url: request.getHeader('referer'))
             return
         }
@@ -1707,8 +1691,6 @@ from License as l where (
         def result = setResultGenerics()
 		DebugUtil du = new DebugUtil()
 		du.setBenchmark('init')
-		
-        result.transforms = grailsApplication.config.titlelistTransforms
 
         result.availableConsortia = Combo.executeQuery("select c.toOrg from Combo as c where c.fromOrg = ?", [result.institution])
 
@@ -1953,14 +1935,9 @@ from License as l where (
                     def doc = exportService.buildDocXML("TitleList")
                     exportService.addTitleListXML(doc, doc.getDocumentElement(), result.titles)
 
-                    if ((params.transformId) && (result.transforms[params.transformId] != null)) {
-                        String xml = exportService.streamOutXML(doc, new StringWriter()).getWriter().toString();
-                        transformerService.triggerTransform(result.user, filename, result.transforms[params.transformId], xml, response)
-                    } else { // send the XML to the user
-                        response.setHeader("Content-disposition", "attachment; filename=\"${filename}.xml\"")
-                        response.contentType = "text/xml"
-                        exportService.streamOutXML(doc, response.outputStream)
-                    }
+                    response.setHeader("Content-disposition", "attachment; filename=\"${filename}.xml\"")
+                    response.contentType = "text/xml"
+                    exportService.streamOutXML(doc, response.outputStream)
                 }
             }
         }
@@ -2309,7 +2286,7 @@ AND EXISTS (
                 }
               }
             } else {
-                flash.error = message(code:'myinst.actionCurrentSubscriptions.error', default:'Unable to delete - The selected subscriptions has attached subscriptions')
+                flash.error = message(code:'myinst.actionCurrentSubscriptions.error')
             }
         } else {
             log.warn("${result.user} attempted to delete subscription ${result.subscription} without perms")
@@ -2456,7 +2433,7 @@ AND EXISTS (
 
         result.changes.addAll(result2)
 
-        List result3 = PendingChange.executeQuery("select pc from PendingChange pc join pc.costItem ci where pc.owner = :owner and pc.ts >= :tsCheck and pc.costItem is not null",[owner:result.institution,tsCheck:tsCheck],[max:result.max,offset:result.offset])
+        List<PendingChange> result3 = PendingChange.executeQuery("select pc from PendingChange pc join pc.costItem ci where pc.owner = :owner and pc.ts >= :tsCheck and pc.costItem is not null",[owner:result.institution,tsCheck:tsCheck],[max:result.max,offset:result.offset])
 
         //println result.changes
         result3.each { row ->
@@ -3548,9 +3525,15 @@ AND EXISTS (
             query += " and subT.type.id in (:subTypes) "
             qarams.put('subTypes', params.list('subTypes').collect { it -> Long.parseLong(it) })
         }
-        if (params.subRunTimeMultiYear) {
-            query += " and subT.isMultiYear = :subRunTimeMultiYear "
-            qarams.put('subRunTimeMultiYear', params.subRunTimeMultiYear ? true : false )
+        if (params.subRunTimeMultiYear || params.subRunTime) {
+
+            if (params.subRunTimeMultiYear && !params.subRunTime) {
+                query += " and subT.isMultiYear = :subRunTimeMultiYear "
+                qarams.put('subRunTimeMultiYear', true)
+            }else if (!params.subRunTimeMultiYear && params.subRunTime){
+                query += " and subT.isMultiYear = :subRunTimeMultiYear "
+                qarams.put('subRunTimeMultiYear', false)
+            }
         }
 
         String orderQuery = " order by roleT.org.sortname, subT.name"
@@ -4239,7 +4222,7 @@ AND EXISTS (
             def isEditable = license.isEditableBy(result.user)
 
             if (! (accessService.checkMinUserOrgRole(result.user, result.institution, 'INST_EDITOR'))) {
-                flash.error = message(code:'license.permissionInfo.noPerms', default: 'No User Permissions');
+                flash.error = message(code:'license.permissionInfo.noPerms')
                 response.sendError(401)
                 return;
             }
@@ -4254,7 +4237,7 @@ AND EXISTS (
                                                                                        'license.copyPrivateProperties': 'on',
                                                                                        'license.copyTasks'            : 'on']
             }else {
-                flash.error = message(code:'license.permissionInfo.noPerms', default: 'No User Permissions');
+                flash.error = message(code:'license.permissionInfo.noPerms')
                 response.sendError(401)
                 return;
             }
