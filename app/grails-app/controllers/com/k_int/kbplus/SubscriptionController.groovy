@@ -392,32 +392,46 @@ class SubscriptionController extends AbstractDebugController {
                 def numOfPCs = removePackagePendingChanges(result.package.id, result.subscription.id, params.confirmed)
 
                 def numOfIEs = IssueEntitlement.executeQuery("select ie.id ${query}", queryParams).size()
-                def conflict_item_pkg = [name: "${g.message(code: "subscription.details.unlink.linkedPackage")}", details: [['link': createLink(controller: 'package', action: 'show', id: result.package.id), 'text': result.package.name]], action: [actionRequired: false, text: "${g.message(code: "subscription.details.unlink.linkedPackage.action")}"]]
+                def conflict_item_pkg =
+                        [name: "${g.message(code: "subscription.details.unlink.linkedPackage")}",
+                         details: [['link': createLink(controller: 'package', action: 'show', id: result.package.id), 'text': result.package.name]],
+                         action: [actionRequired: false, text: "${g.message(code: "subscription.details.unlink.unlink")}"]
+                        ]
                 def conflicts_list = [conflict_item_pkg]
 
                 if (numOfIEs > 0) {
-                    def conflict_item_ie = [name: "${g.message(code: "subscription.details.unlink.packageIEs")}", details: [['text': "${g.message(code: "subscription.details.unlink.packageIEs.numbers")} " + numOfIEs]], action: [actionRequired: false, text: "${g.message(code: "subscription.details.unlink.packageIEs.action")}"]]
+                    def conflict_item_ie =
+                            [name: "${g.message(code: "subscription.details.unlink.packageIEs")}",
+                             details: [[number: numOfIEs,'text': "${g.message(code: "default.ie")}"]],
+                             action: [actionRequired: false, text: "${g.message(code: "subscription.details.unlink.delete")}"]
+                            ]
                     conflicts_list += conflict_item_ie
                 }
                 if (numOfPCs > 0) {
-                    def conflict_item_pc = [name: "${g.message(code: "subscription.details.unlink.pendingChanges")}", details: [['text': "${g.message(code: "subscription.details.unlink.pendingChanges.numbers")} " + numOfPCs]], action: [actionRequired: false, text: "${g.message(code: "subscription.details.unlink.pendingChanges.numbers.action")}"]]
+                    def conflict_item_pc =
+                            [name: "${g.message(code: "subscription.details.unlink.pendingChanges")}",
+                             details: [[number: numOfPCs, 'text': "${g.message(code: "default.pendingchanges")}"]],
+                             action: [actionRequired: false, text: "${g.message(code: "subscription.details.unlink.delete")}"]
+                            ]
                     conflicts_list += conflict_item_pc
                 }
 
                 SubscriptionPackage sp = SubscriptionPackage.findByPkgAndSubscription(result.package, result.subscription)
                 List accessPointLinks = []
                 if (sp.oapls){
-                    Map detailItem = ['text':"${g.message(code: "subscription.details.unlink.accessPoints.numbers")} ${sp.oapls.size()}"]
+                    Map detailItem = [number: sp.oapls.size(),'text':"${g.message(code: "default.accessPoints")}"]
                     accessPointLinks.add(detailItem)
                 }
                 if (accessPointLinks) {
-                    def conflict_item_oap = [name: "${g.message(code: "subscription.details.unlink.accessPoints")}", details: accessPointLinks, action: [actionRequired: false, text: "${g.message(code: "subscription.details.unlink.accessPoints.numbers.action")}"]]
+                    def conflict_item_oap =
+                            [name: "${g.message(code: "subscription.details.unlink.accessPoints")}",
+                             details: accessPointLinks,
+                             action: [actionRequired: false, text: "${g.message(code: "subscription.details.unlink.delete")}"]
+                            ]
                     conflicts_list += conflict_item_oap
                 }
 
                 return render(template: "unlinkPackageModal", model: [pkg: result.package, subscription: result.subscription, conflicts_list: conflicts_list])
-//                render template: "/templates/ajax/${params.template}", model: [a: 1, b: 2, c: 3]
-//                render template: "/templates/ajax/abc", model: [a: 1, b: 2, c: 3]
             }
         } else {
             result.editable = false

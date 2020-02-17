@@ -16,50 +16,11 @@
       </td>
       <td class="right aligned">
         <g:if test="${editmode}">
-%{--_______________________________________--}%
-          <%
-              com.k_int.kbplus.Subscription subscription = subscriptionInstance
-              com.k_int.kbplus.Package pkg = sp.pkg
-            String query = "from IssueEntitlement ie, Package pkg where ie.subscription =:sub and pkg.id =:pkg_id and ie.tipp in ( select tipp from TitleInstancePackagePlatform tipp where tipp.pkg.id = :pkg_id ) "
-            Map queryParams = [sub: subscription, pkg_id: pkg.id]
-              String conflictText = ''
-//            def numOfPCs = removePackagePendingChanges(pkg.id, subscription.id, params.confirmed)
-            def numOfPCs = 456
 
-            def numOfIEs = com.k_int.kbplus.IssueEntitlement.executeQuery("select ie.id ${query}", queryParams).size()
-//            def conflict_item_pkg = [name: "${g.message(code: "subscription.details.unlink.linkedPackage")}", details: [['link': createLink(controller: 'package', action: 'show', id: pkg.id), 'text': pkg.name]], action: [actionRequired: false, text: "${g.message(code: "subscription.details.unlink.linkedPackage.action")}"]]
-//            def conflicts_list = [conflict_item_pkg]
-
-            if (numOfIEs > 0) {
-              conflictTex += numOfIEs+' Bestand'
-//              def conflict_item_ie = [name: "${g.message(code: "subscription.details.unlink.packageIEs")}", details: [['text': "${g.message(code: "subscription.details.unlink.packageIEs.numbers")} " + numOfIEs]], action: [actionRequired: false, text: "${g.message(code: "subscription.details.unlink.packageIEs.action")}"]]
-//              conflicts_list += conflict_item_ie
-            }
-            if (numOfPCs > 0) {
-              conflictTex += numOfPCs+' Pending Changes'
-//              def conflict_item_pc = [name: "${g.message(code: "subscription.details.unlink.pendingChanges")}", details: [['text': "${g.message(code: "subscription.details.unlink.pendingChanges.numbers")} " + numOfPCs]], action: [actionRequired: false, text: "${g.message(code: "subscription.details.unlink.pendingChanges.numbers.action")}"]]
-//              conflicts_list += conflict_item_pc
-            }
-
-            SubscriptionPackage sp1 = com.k_int.kbplus.SubscriptionPackage.findByPkgAndSubscription(pkg, subscription)
-            List accessPointLinks = []
-            if (sp1.oapls){
-              conflictTex += sp.oapls+' verlinkte Zugangskonfigurationen'
-//              Map detailItem = ['text':"${g.message(code: "subscription.details.unlink.accessPoints.numbers")} ${sp1.oapls.size()}"]
-//              accessPointLinks.add(detailItem)
-            }
-            if (accessPointLinks) {
-              conflictTex += accessPointLinks+' verknüpfte Zugangskonfigurationen'
-//              def conflict_item_oap = [name: "${g.message(code: "subscription.details.unlink.accessPoints")}", details: accessPointLinks, action: [actionRequired: false, text: "${g.message(code: "subscription.details.unlink.accessPoints.numbers.action")}"]]
-//              conflicts_list += conflict_item_oap
-            }
-          %>
-          NEU
           <g:link controller="subscription"
-                    action="frontend"
+                    action="unlinkPackage"
                     extaContentFlag="false"
-                    params=""
-                    data-content="Hier kommt der Tooltip rein"
+                    params="${[subscription: sp?.subscription?.id, package: sp?.pkg?.id, confirmed: 'Y']}"
                     data-confirm-messageUrl="${createLink(controller:'subscription', action:'unlinkPackage', params:[subscription: sp?.subscription?.id, package: sp?.pkg?.id])}"
                     data-confirm-tokenMsg="${message(code: "confirm.dialog.unlink.subscription.package", args: [sp?.pkg?.name])}"
                     data-confirm-term-how="delete"
@@ -67,35 +28,6 @@
                     role="button">
               <i aria-hidden="true" class="trash alternate icon"></i>
             </g:link>
-
-
-        %{--Anzeige: conflicts_list, each detail_item.link und detail_item.text, von letzterem nur die zahl--}%
-          <button class="ui icon negative button la-selectable-button" onclick="unlinkPackage(${sp.pkg.id})">
-            <i class="unlink icon"></i>
-          </button>
-          <g:link action="unlinkPackage"
-                  params="[cmd:'delete', deleteIds: sp.pkg.id]"
-                  data-confirm-tokenMsg="${message(code: "confirm.dialog.unlink.subscription.package", args: [fieldValue(bean: sp.pkg?.contentProvider, field: "name"), conflictText])}"
-                  data-confirm-term-how="delete"
-                  class="ui icon negative button js-open-confirm-modal"
-                  role="button">
-                  %{--data-confirm-tokenMsg="${message(code: "confirm.dialog.unlink.subscription.package", args: [fieldValue(bean: sp.pkg?.contentProvider, field: "name"), 'Anzahl'])}"--}%
-            <i class="trash alternate icon"></i>
-          </g:link>
-          %{--<laser:remoteLink class="ui icon negative button js-open-confirm-modal"--}%
-                            %{--action="unlinkPackage"--}%
-                            %{--params="[cmd:'delete', deleteIds: sp.pkg.id]"--}%
-                            %{--id="${prop.id}"--}%
-                            %{--data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.property", args: [prop.type.getI10n('name')])}"--}%
-                            %{--data-confirm-term-how="delete"--}%
-                            %{--data-done="c3po.initProperties('${createLink(controller:'ajax', action:'lookup')}', '#${custom_props_div}', ${tenant?.id})"--}%
-                            %{--data-always="c3po.loadJsAfterAjax(); bb8.init('#${custom_props_div}')"--}%
-                            %{--data-update="${custom_props_div}"--}%
-                            %{--role="button"--}%
-          %{-->--}%
-            %{--<i class="trash alternate icon"></i>--}%
-          %{--</laser:remoteLink>--}%
-%{--_______________________________________--}%
         </g:if>
       </td>
     </tr>
