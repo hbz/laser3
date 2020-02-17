@@ -419,7 +419,7 @@ class PackageController extends AbstractDebugController {
             params.insrt = "Y"
             params.dlt = "Y"
             params.updt = "Y"
-            flash.message = message(code: 'package.compare.flash', default: "Please select two packages for comparison.")
+            flash.message = message(code: 'package.compare.flash')
             result
         }
 

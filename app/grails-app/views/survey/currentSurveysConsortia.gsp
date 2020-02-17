@@ -37,7 +37,7 @@
 
                 <div class="ui input">
                     <input type="text" id="name" name="name"
-                           placeholder="${message(code: 'default.search.ph', default: 'enter search term...')}"
+                           placeholder="${message(code: 'default.search.ph')}"
                            value="${params.name}"/>
                 </div>
             </div>
@@ -86,7 +86,7 @@
                 <g:link controller="survey" action="currentSurveysConsortia" params="[tab: params.tab]"
                    class="ui reset primary button">${message(code: 'default.button.reset.label')}</g:link>
                 <input type="submit" class="ui secondary button"
-                       value="${message(code: 'default.button.filter.label', default: 'Filter')}">
+                       value="${message(code: 'default.button.filter.label')}">
             </div>
 
         </div>
@@ -133,7 +133,7 @@
                                   title="${message(code: 'surveyInfo.slash.name')}" rowspan="2" scope="col"/>
                 <th rowspan="2" scope="col">${message(code: 'surveyInfo.type.label')}</th>
                 <g:sortableColumn scope="col" class="la-smaller-table-head" params="${params}" property="surInfo.startDate"
-                                  title="${message(code: 'default.startDate.label', default: 'Start Date')}"/>
+                                  title="${message(code: 'default.startDate.label')}"/>
                 <th rowspan="2" scope="col">${message(code: 'surveyProperty.plural.label')}</th>
 
                 <g:if test="${params.tab in ["created", "active"]}">
@@ -160,7 +160,7 @@
             </tr>
             <tr>
                 <g:sortableColumn scope="col" class="la-smaller-table-head" params="${params}" property="surInfo.endDate"
-                                  title="${message(code: 'default.endDate.label', default: 'End Date')}"/>
+                                  title="${message(code: 'default.endDate.label')}"/>
             </tr>
             </thead>
             <g:each in="${surveys}" var="survey" status="i">

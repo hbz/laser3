@@ -5,7 +5,7 @@
 <html>
 <head>
     <meta name="layout" content="semanticUI">
-    <g:set var="entityName" value="${message(code: 'org.label', default: 'Org')}"/>
+    <g:set var="entityName" value="${message(code: 'org.label')}"/>
     <title>${message(code: 'laser')} : ${message(code: 'menu.my.consortiaSubscriptions')}</title>
 </head>
 
@@ -191,7 +191,7 @@
                     <div class="field la-field-right-aligned">
                         <a href="${request.forwardURI}" class="ui reset primary button">${message(code:'default.button.reset.label')}</a>
                         <input name="filterSet" value="true" type="hidden">
-                        <input type="submit" class="ui secondary button" value="${message(code:'default.button.filter.label', default:'Filter')}">
+                        <input type="submit" class="ui secondary button" value="${message(code:'default.button.filter.label')}">
                     </div>
                 </div>
             </div>

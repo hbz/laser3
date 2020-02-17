@@ -9,10 +9,10 @@
 
     <semui:breadcrumbs>
       <semui:crumb controller="dataManager" action="index" text="${message(code:'menu.datamanager.dash')}" />
-      <semui:crumb text="${message(code:'datamanager.deletedOrgManagement.label', default:'Deleted Title management')}" class="active"/>
+      <semui:crumb text="${message(code:'datamanager.deletedOrgManagement.label')}" class="active"/>
     </semui:breadcrumbs>
     <br>
-    <h1 class="ui left floated aligned header la-clear-before">${message(code:'datamanager.deletedOrgManagement.label', default:'Deleted Title Management')} : ${orgTotal} </h1>
+    <h1 class="ui left floated aligned header la-clear-before">${message(code:'datamanager.deletedOrgManagement.label')} : ${orgTotal} </h1>
 
     <semui:messages data="${flash}" />
 

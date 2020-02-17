@@ -1,6 +1,6 @@
 <div class="ui card">
     <div class="content">
-        <div class="header">${message(code:'menu.user.login', default:'Login')}</div>
+        <div class="header">${message(code:'menu.user.login')}</div>
 
         <br />
         <p>

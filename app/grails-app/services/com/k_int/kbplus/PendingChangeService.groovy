@@ -288,7 +288,7 @@ class PendingChangeService extends AbstractLockableService {
                     pendingChange.status = RefdataValue.getByValueAndCategory("Accepted", RDConstants.PENDING_CHANGE_STATUS)
                     pendingChange.actionDate = new Date()
                     pendingChange.user = user
-                    pendingChange.save()
+                    //pendingChange.save()  // ERMS-2184 // called implicit somewhere
                     log.debug("Pending change accepted and saved")
                 }
             }

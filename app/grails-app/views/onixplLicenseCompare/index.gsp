@@ -5,7 +5,7 @@
 <html>
 <head>
 <meta name="layout" content="semanticUI" />
-<title>${message(code:'laser')} : ${message(code:'onixplLicense.compare.label', default:'ONIX-PL License Comparison')}</title>
+<title>${message(code:'laser')} : ${message(code:'onixplLicense.compare.label')}</title>
 
 </head>
 
@@ -22,7 +22,7 @@
 			<div class="span8">
 				<g:form id="compare" name="compare" action="matrix" method="post">
 					<div>
-						<label for="addIdentifierSelect">${message(code:'onixplLicense.compare.add_id.label', default:'Search license for comparison:')}</label>
+						<label for="addIdentifierSelect">${message(code:'onixplLicense.compare.add_id.label')}</label>
 
 		                <input type="hidden" name="selectedIdentifier" id="addIdentifierSelect"/>
 		                <button type="button" class="ui positive button" id="addToList" style="margin-top:10px">${message(code:'default.button.add.label')}</button>
@@ -76,10 +76,10 @@
 
 	      $("#addIdentifierSelect").select2({
   	        width: '90%',
-	        placeholder: "${message(code:'onixplLicense.compare.search.ph', default:'Search for a license...')}",
+	        placeholder: "${message(code:'onixplLicense.compare.search.ph')}",
 	        minimumInputLength: 1,
                 formatInputTooShort: function () {
-                    return "${message(code:'select2.minChars.note', default:'Please enter 1 or more character')}";
+                    return "${message(code:'select2.minChars.note')}";
                 },
 	        ajax: { // instead of writing the function to execute the request we use Select2's convenient helper
 	          url: "<g:createLink controller='ajax' action='lookup'/>",

@@ -7,7 +7,7 @@
 <html>
 <head>
     <meta name="layout" content="semanticUI"/>
-    <title>${message(code: 'laser')} : ${message(code: 'myinst.currentSubscriptions.label', default: 'Current Subscriptions')}</title>
+    <title>${message(code: 'laser')} : ${message(code: 'myinst.currentSubscriptions.label')}</title>
 </head>
 
 <body>
@@ -31,7 +31,7 @@
 </div>
 
 
-<h1 class="ui left floated aligned icon header la-clear-before"><semui:headerIcon/>${message(code: 'myinst.currentSubscriptions.label', default: 'Current Subscriptions')}
+<h1 class="ui left floated aligned icon header la-clear-before"><semui:headerIcon/>${message(code: 'myinst.currentSubscriptions.label')}
 <semui:totalNumber total="${num_sub_rows}"/>
 </h1>
 

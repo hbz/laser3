@@ -24,7 +24,7 @@
     <g:form action="processCreateGeneralSurvey" controller="survey" method="post" class="ui form">
 
         <div class="field required ">
-            <label>${message(code: 'surveyInfo.name.label', default: 'New Survey Name')}</label>
+            <label>${message(code: 'surveyInfo.name.label')}</label>
             <input type="text" name="name" placeholder="" value="${surveyInfo?.name}" required/>
         </div>
 

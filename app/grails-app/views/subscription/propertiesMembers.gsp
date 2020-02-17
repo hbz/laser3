@@ -94,8 +94,6 @@
         </div>
     </div>
 
-
-
     <g:set var="editableOld" value="${editable}"/>
 
 

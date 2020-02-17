@@ -1,6 +1,6 @@
 <semui:modal id="prsLinksModal" text="Neue Kontaktperson hinzufügen" hideSubmitButton="true">
 
-    <p>${message(code:'myinst.addressBook.visibleOnly', default:'Some persons are visible to you due your addressbook')}</p>
+    <p>${message(code:'myinst.addressBook.visibleOnly')}</p>
 
     <div class="field">
 

@@ -502,7 +502,7 @@ class SemanticUiTagLib {
         /*
 
         out << '<div class="ui tiny buttons">'
-        out << g.link( "${message(code:'profile.simpleView', default:'Basic')}",
+        out << g.link( "${message(code:'profile.simpleView')}",
                 controller: attrs.controller,
                 action: attrs.action,
                 params: attrs.params + ['mode':'basic'],
@@ -511,7 +511,7 @@ class SemanticUiTagLib {
 
         //out << '<div class="or"></div>'
 
-        out << g.link( "${message(code:'profile.advancedView', default:'Advanced')}",
+        out << g.link( "${message(code:'profile.advancedView')}",
                 controller: attrs.controller,
                 action: attrs.action,
                 params: attrs.params + ['mode':'advanced'],

@@ -176,7 +176,7 @@
 
 <div class="la-clear-before">
     <div>
-        %{--<span>${message(code: 'title.plural', default: 'Titles')} ( ${message(code: 'default.paginate.offset', args: [(offset + 1), (offset + (titles.size())), num_ti_rows])} )</span>--}%
+        %{--<span>${message(code: 'title.plural')} ( ${message(code: 'default.paginate.offset', args: [(offset + 1), (offset + (titles.size())), num_ti_rows])} )</span>--}%
 
         <div>
             <g:if test="${titles}">
@@ -305,7 +305,7 @@
                                             &nbsp;
                                             <br/>
                                             <g:link controller="issueEntitlement" action="show"
-                                                    id="${ie.id}">${message(code: 'myinst.currentTitles.full_ie', default: 'Full Issue Entitlement Details')}</g:link>
+                                                    id="${ie.id}">${message(code: 'myinst.currentTitles.full_ie')}</g:link>
                                             <br/>
                                         </div>
 
@@ -359,7 +359,7 @@
                                             <g:if test="${editable}">
                                                 <semui:xEditable owner="${ie}" type="date" field="accessStartDate"/>
                                                 <i class="grey question circle icon la-popup-tooltip la-delay"
-                                                   data-content="${message(code: 'subscription.details.access_start.note', default: 'Leave empty to default to sub start date')}"></i>
+                                                   data-content="${message(code: 'subscription.details.access_start.note')}"></i>
                                             </g:if>
                                             <g:else>
                                                 <g:formatDate format="${message(code: 'default.date.format.notime')}"
@@ -370,7 +370,7 @@
                                             <g:if test="${editable}">
                                                 <semui:xEditable owner="${ie}" type="date" field="accessEndDate"/>
                                                 <i class="grey question circle icon la-popup-tooltip la-delay"
-                                                   data-content="${message(code: 'subscription.details.access_end.note', default: 'Leave empty to default to sub end date')}"></i>
+                                                   data-content="${message(code: 'subscription.details.access_end.note')}"></i>
                                             </g:if>
                                             <g:else>
                                                 <g:formatDate format="${message(code: 'default.date.format.notime')}"

@@ -19,7 +19,7 @@
                                   optionKey="id"
                                   optionValue="value"
                                   value="${personInstance?.contactType?.id ?: RDStore.CONTACT_TYPE_PERSONAL.id}"
-                                  noSelection="['': '']"/>
+                                  noSelection="${['': message(code: 'default.select.choose.label')]}"/>
                 </div>
             </div>
         </div>
@@ -74,7 +74,7 @@
                                   optionKey="id"
                                   optionValue="value"
                                   value="${personInstance?.gender?.id}"
-                                  noSelection="['': '']"/>
+                                  noSelection="${['': message(code: 'default.select.choose.label')]}"/>
                 </div>
             </div>
         </div>

@@ -147,7 +147,7 @@
 
                                 <dl>
                                     <dt class="control-label">
-                                        ${message(code:'license.details.linktoLicense.pendingChange', default:'Automatically Accept Changes?')}
+                                        ${message(code:'license.details.linktoLicense.pendingChange')}
                                     </dt>
                                     <dd>
                                         <semui:xEditableBoolean owner="${subscriptionInstance}" field="isSlaved" />
@@ -267,7 +267,7 @@
                             <g:if test="${OrgRole.findAllByOrg(contextOrg)}">
                                 <div class="ui la-vertical buttons">
                                     <a class="ui button" data-semui="modal" href="#prsLinksModal">
-                                        ${message(code: 'default.add.label', args: [message(code: 'person.label', default: 'Person')])}
+                                        ${message(code: 'default.add.label', args: [message(code: 'person.label')])}
                                     </a>
                                 </div>
                                 <g:render template="/templates/links/prsResponsibilityModal"

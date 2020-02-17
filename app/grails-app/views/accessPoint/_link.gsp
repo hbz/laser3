@@ -1,4 +1,4 @@
-<h5>${message(code: 'accessPoint.link.with.platform', default: 'Link with Platform')}
+<h5>${message(code: 'accessPoint.link.with.platform')}
     <span class="la-long-tooltip la-popup-tooltip la-delay"
           data-content="${message(code:'accessPoint.platformHelp')}">
         <i class="question circle icon la-popup"></i>
@@ -15,7 +15,7 @@
                   noSelection="${['': message(code: 'default.select.choose.label')]}"/>
     </td>
     <td class="center aligned">
-        <input type="Submit" class="ui tiny button" value="${message(code:'accessPoint.button.linkPlatform', default:'Create link')}" onClick="this.form.submit()" class="ui button"/>
+        <input type="Submit" class="ui tiny button" value="${message(code:'accessPoint.button.linkPlatform')}" onClick="this.form.submit()" class="ui button"/>
     </td>
     </g:if>
 

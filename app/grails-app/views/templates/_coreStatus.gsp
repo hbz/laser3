@@ -10,5 +10,5 @@
                 update="magicArea">${ date_text }</g:remoteLink>
 </g:if>
 <g:else>
-  ${message(code:'subscription.details.core_status.no_provider', default:'Content Provider missing.  Add one as Org Link of the Package.')}
+  ${message(code:'subscription.details.core_status.no_provider')}
 </g:else>
