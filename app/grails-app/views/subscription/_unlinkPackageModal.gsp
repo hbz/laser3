@@ -29,14 +29,18 @@
     </ul>
 </g:each>
 
-%{--<div class="actions">--}%
-    %{--<g:form action="unlinkPackage"--}%
-            %{--onsubmit="return confirm('${message(code: 'subscription.details.unlink.confirm', default: 'Deletion of IEs and PendingChanges is NOT reversable. Continue?')}')"--}%
-            %{--method="POST">--}%
-        %{--<input type="hidden" name="package" value="${pkg.id}"/>--}%
-        %{--<input type="hidden" name="subscription" value="${subscription.id}"/>--}%
-        %{--<input type="hidden" name="confirmed" value="Y"/>--}%
-        %{--<button type="submit"--}%
-                %{--class="ui negative button">${message(code: 'default.button.confirm_delete.label')}</button>--}%
-    %{--</g:form>--}%
-%{--</div>--}%
+    %{--<div class="actions">--}%
+        %{--<g:form action="unlinkPackage"--}%
+                %{--method="POST">--}%
+            %{--<input type="hidden" name="package" value="${pkg.id}"/>--}%
+            %{--<input type="hidden" name="subscription" value="${subscription.id}"/>--}%
+            %{--<input type="hidden" name="confirmed" value="Y"/>--}%
+            %{--<button type="submit"--}%
+                    %{--class="ui negative button js-open-confirm-modal"--}%
+                %{--data-confirm-tokenMsg="${message(code: "subscription.details.unlink.confirm")}"--}%
+                %{--data-confirm-term-how="unlink">--}%
+                %{--${message(code: 'default.button.confirm_delete.label')}--}%
+            %{--</button>--}%
+        %{--</g:form>--}%
+    %{--</div>--}%
+%{--</div>  --}%

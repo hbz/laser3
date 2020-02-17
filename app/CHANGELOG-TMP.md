@@ -2,6 +2,11 @@
 
 **Ticket    Date    Branch      Author  Feature/Bug     Description/Keywords**
 
+
+2123   11.02.2020  hbz-dev     Moe     Feature      Pakete auch in Kindlizenzen entknüpfen
+
+2146    11.02.2020  hbz-dev     Moe     Feature     Bulk Prozesse bei Teilnehmerverwaltung ermöglichen
+
 2082    17.02.2020  hbz-dev     Anja    Feature     Sicherheitsabfrage ändern (Verknüpfungen aufheben)
 
 2156    14.02.2020  hbz-dev     Anja    Feature     Performance verbessern von _copyEmailaddresses
@@ -56,7 +61,7 @@
 
 2081    05.02.2020  hbz-dev     Anja    Feature     Fehlende Sicherheitsabfrage (Budgetcode löschen)
 
-2079    05.02.2020  hbz-dev     Anja    Feature     Fehlende Sicherheitsabfrage (Kontakt löschen)
+2079    05.02.2020 hbz-dev      Anja    Feature     Fehlende Sicherheitsabfrage (Kontakt löschen)
 
 1742    03.02.2020  hbz-dev     Anja    Feature     Vorgänger/Nachfolgerlizenz in TN-Übersicht
 
