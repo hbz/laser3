@@ -11,6 +11,8 @@
 
 2184    14.02.2020  hbz-dev     David   Bug         Vererbung im hbz-dev defekt
 
+2148    13.02.2020  hbz-dev     David   Feature     Individuelle Freigabe für API-Ausgabe für Lizenzen und Verträge
+
 --      12.02.2020  rc1.2       Andreas Bug         Sortierung nach Enddatum war bei eigenen Kosten innerhalb einer Lizenz nicht möglich
 
 2179    12.02.2020  rc1.2       Andreas Bug         Übernahme des Anbieternamens in Sync nachgeholt

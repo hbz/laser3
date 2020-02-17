@@ -214,7 +214,7 @@ class SubscriptionController extends AbstractDebugController {
         }
         else {
             base_qry += " and ie.status != :deleted "
-            qry_params.deleted = TIPP_DELETED
+            qry_params.deleted = TIPP_STATUS_DELETED
         }
 
         base_qry += " and ie.acceptStatus = :ieAcceptStatus "
@@ -717,7 +717,7 @@ class SubscriptionController extends AbstractDebugController {
                     }
                 } else if (params.bulkOperation == "remove") {
                     log.debug("Updating ie ${ie.id} status to deleted")
-                    def deleted_ie = TIPP_DELETED
+                    def deleted_ie = TIPP_STATUS_DELETED
                     ie.status = deleted_ie
                     if (!ie.save(flush: true)) {
                         log.error("Problem saving ${ie.errors}")
@@ -754,9 +754,9 @@ class SubscriptionController extends AbstractDebugController {
         result.max = params.max ? Integer.parseInt(params.max) : (Integer) request.user.getDefaultPageSizeTMP();
         result.offset = params.offset ? Integer.parseInt(params.offset) : 0;
 
-        RefdataValue tipp_deleted = TIPP_DELETED
+        RefdataValue tipp_deleted = TIPP_STATUS_DELETED
         RefdataValue tipp_current = TIPP_STATUS_CURRENT
-        RefdataValue ie_deleted = TIPP_DELETED
+        RefdataValue ie_deleted = TIPP_STATUS_DELETED
         RefdataValue ie_current = TIPP_STATUS_CURRENT
 
         log.debug("filter: \"${params.filter}\"");
@@ -2410,7 +2410,6 @@ class SubscriptionController extends AbstractDebugController {
                                 identifier: UUID.randomUUID().toString(),
                                 instanceOf: result.subscriptionInstance,
                                 isSlaved: true,
-                                isPublic: result.subscriptionInstance.isPublic,
                                 impId: UUID.randomUUID().toString(),
                                 owner: licenseCopy,
                                 resource: result.subscriptionInstance.resource ?: null,
@@ -2750,7 +2749,7 @@ class SubscriptionController extends AbstractDebugController {
     def removeEntitlement() {
         log.debug("removeEntitlement....");
         def ie = IssueEntitlement.get(params.ieid)
-        def deleted_ie = TIPP_DELETED
+        def deleted_ie = TIPP_STATUS_DELETED
         ie.status = deleted_ie;
 
         redirect action: 'index', id: params.sub
@@ -3885,7 +3884,6 @@ class SubscriptionController extends AbstractDebugController {
                 startDate: sub_startDate,
                 endDate: sub_endDate,
                 type: Subscription.get(old_subOID)?.type ?: null,
-                isPublic: false,
                 owner: params.subscription.copyLicense ? (Subscription.get(old_subOID)?.owner) : null,
                 resource: Subscription.get(old_subOID)?.resource ?: null,
                 form: Subscription.get(old_subOID)?.form ?: null
@@ -3969,7 +3967,6 @@ class SubscriptionController extends AbstractDebugController {
                                 instanceOf: newSubConsortia?.id,
                                 //previousSubscription: subMember?.id,
                                 isSlaved: subMember.isSlaved,
-                                isPublic: subMember.isPublic,
                                 impId: java.util.UUID.randomUUID().toString(),
                                 owner: newSubConsortia.owner?.id ? subMember.owner?.id : null,
                                 resource: newSubConsortia.resource ?: null,
@@ -4036,7 +4033,7 @@ class SubscriptionController extends AbstractDebugController {
 
                             subMember.issueEntitlements?.each { ie ->
 
-                                if (ie.status != TIPP_DELETED) {
+                                if (ie.status != TIPP_STATUS_DELETED) {
                                     def ieProperties = ie.properties
                                     ieProperties.globalUID = null
 
@@ -4201,7 +4198,6 @@ class SubscriptionController extends AbstractDebugController {
                                 endDate: result.newEndDate,
                                 //previousSubscription: baseSub.id, overhauled as ERMS-800/ERMS-892
                                 identifier: java.util.UUID.randomUUID().toString(),
-                                isPublic: baseSub.isPublic,
                                 isSlaved: baseSub.isSlaved,
                                 type: baseSub.type,
                                 status: RefdataValue.getByValueAndCategory('Intended', RDConstants.SUBSCRIPTION_STATUS),
@@ -4268,7 +4264,7 @@ class SubscriptionController extends AbstractDebugController {
 
                                 baseSub.issueEntitlements.each { ie ->
 
-                                    if (ie.status != TIPP_DELETED) {
+                                    if (ie.status != TIPP_STATUS_DELETED) {
                                         def properties = ie.properties
                                         properties.globalUID = null
 
@@ -4406,7 +4402,6 @@ class SubscriptionController extends AbstractDebugController {
                     endDate: sub_endDate,
                     manualCancellationDate: manualCancellationDate,
                     identifier: java.util.UUID.randomUUID().toString(),
-                    isPublic: baseSub?.isPublic,
                     isSlaved: baseSub?.isSlaved,
                     type: sub_type,
                     status: sub_status,
@@ -5079,7 +5074,6 @@ class SubscriptionController extends AbstractDebugController {
                     status: baseSubscription.status,
                     type: baseSubscription.type,
                     identifier: java.util.UUID.randomUUID().toString(),
-                    isPublic: baseSubscription.isPublic,
                     isSlaved: baseSubscription.isSlaved,
                     startDate: params.subscription.copyDates ? baseSubscription?.startDate : null,
                     endDate: params.subscription.copyDates ? baseSubscription?.endDate : null,
@@ -5213,7 +5207,7 @@ class SubscriptionController extends AbstractDebugController {
 
                     baseSubscription.issueEntitlements.each { ie ->
 
-                        if (ie.status != TIPP_DELETED) {
+                        if (ie.status != TIPP_STATUS_DELETED) {
                             def properties = ie.properties
                             properties.globalUID = null
 
@@ -5287,8 +5281,7 @@ class SubscriptionController extends AbstractDebugController {
                         type: genericOIDService.resolveOID(entry.type),
                         form: genericOIDService.resolveOID(entry.form),
                         resource: genericOIDService.resolveOID(entry.resource),
-                        identifier: UUID.randomUUID(),
-                        isPublic: YN_NO)
+                        identifier: UUID.randomUUID())
                 sub.startDate = entry.startDate ? databaseDateFormatParser.parse(entry.startDate) : null
                 sub.endDate = entry.endDate ? databaseDateFormatParser.parse(entry.endDate) : null
                 sub.manualCancellationDate = entry.manualCancellationDate ? databaseDateFormatParser.parse(entry.manualCancellationDate) : null

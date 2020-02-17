@@ -191,7 +191,7 @@ class GokbDiffEngine {
             {
 
                     //Temporary
-                    def localDuplicateTippEntries = TitleInstancePackagePlatform.executeQuery("from TitleInstancePackagePlatform as tipp where tipp.gokbId = :tippUuid and tipp.status != :status ", [tippUuid: tippnew.tippUuid, status: RDStore.TIPP_DELETED])
+                    def localDuplicateTippEntries = TitleInstancePackagePlatform.executeQuery("from TitleInstancePackagePlatform as tipp where tipp.gokbId = :tippUuid and tipp.status != :status ", [tippUuid: tippnew.tippUuid, status: RDStore.TIPP_STATUS_DELETED])
                     def newAuto_accept = (localDuplicateTippEntries.size() > 1) ? true : false
                     newAuto_accept = auto_accept ?: newAuto_accept
                     if(localDuplicateTippEntries.size() > 1 && tippnew.status != 'Deleted') {

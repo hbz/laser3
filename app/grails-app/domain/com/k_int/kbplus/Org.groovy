@@ -18,7 +18,6 @@ import org.apache.commons.lang3.StringUtils
 import org.apache.commons.logging.LogFactory
 import org.codehaus.groovy.grails.orm.hibernate.cfg.GrailsHibernateUtil
 
-import javax.persistence.Id
 import javax.persistence.Transient
 import java.text.SimpleDateFormat
 
@@ -230,7 +229,7 @@ class Org
 
     @Override
     boolean isDeleted() {
-        return RDStore.ORG_DELETED.id == status?.id
+        return RDStore.ORG_STATUS_DELETED.id == status?.id
     }
 
     @Override

@@ -236,7 +236,6 @@ static hasMany = [  tipps:     TitleInstancePackagePlatform,
                                    impId:java.util.UUID.randomUUID().toString(),
                                    startDate:startdate,
                                    endDate:enddate,
-                                   isPublic: false,
                                    type: RefdataValue.getByValue(subtype),
                                    isSlaved: (slaved == "Yes" || slaved == true))
 
@@ -568,7 +567,7 @@ static hasMany = [  tipps:     TitleInstancePackagePlatform,
 
     if(params.hideDeleted == 'true'){
         hqlString += " AND pkg.packageStatus != ?"
-        hqlParams += RDStore.PACKAGE_DELETED
+        hqlParams += RDStore.PACKAGE_STATUS_DELETED
     }
 
     def queryResults = Package.executeQuery(hqlString,hqlParams);
@@ -601,7 +600,7 @@ static hasMany = [  tipps:     TitleInstancePackagePlatform,
     this.tipps.each { tip ->
         println "Now processing TIPP ${tip}"
       //NO DELETED TIPPS because from only come no deleted tipps
-      if(tip.status?.id != RDStore.TIPP_DELETED.id){
+      if(tip.status?.id != RDStore.TIPP_STATUS_DELETED.id){
       // Title.ID needs to be the global identifier, so we need to pull out the global id for each title
       // and use that.
           println "getting identifier value of title ..."

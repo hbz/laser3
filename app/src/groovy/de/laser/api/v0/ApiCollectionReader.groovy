@@ -4,6 +4,7 @@ import com.k_int.kbplus.*
 import de.laser.api.v0.entities.ApiDoc
 import de.laser.api.v0.entities.ApiIssueEntitlement
 import de.laser.helper.Constants
+import de.laser.helper.RDStore
 import groovy.util.logging.Log4j
 
 @Log4j
@@ -12,10 +13,11 @@ class ApiCollectionReader {
     // ################### FULL OBJECTS ###################
 
     static Collection<Object> getAddressCollection(Collection<Address> list, allowedTypes) {
-        def result = []
+        Collection<Object> result = []
 
-        list?.each { it ->   // com.k_int.kbplus.Address
-            def tmp             = [:]
+        list.each { it ->   // com.k_int.kbplus.Address
+            Map<String, Object> tmp = [:]
+
             tmp.street1         = it.street_1
             tmp.street2         = it.street_2
             tmp.pob             = it.pob
@@ -43,10 +45,11 @@ class ApiCollectionReader {
     }
 
     static Collection<Object> getContactCollection(Collection<Contact> list, allowedTypes) {
-        def result = []
+        Collection<Object> result = []
 
-        list?.each { it ->       // com.k_int.kbplus.Contact
-            def tmp             = [:]
+        list.each { it ->       // com.k_int.kbplus.Contact
+            Map<String, Object> tmp = [:]
+
             tmp.content         = it.content
             tmp.lastUpdated     = it.lastUpdated
 
@@ -65,7 +68,7 @@ class ApiCollectionReader {
 
     // TODO: oaMonitor
     static Collection<Object> getCostItemCollection(Collection<CostItem> list) {
-        def result = []
+        Collection<Object> result = []
 
         list?.each { it ->               // com.k_int.kbplus.CostItem
 
@@ -73,7 +76,8 @@ class ApiCollectionReader {
             // TODO: finalCostRounding
             // TODO: budgetcodes
 
-            def tmp                     = [:]
+            Map<String, Object> tmp     = [:]
+
             tmp.globalUID               = it.globalUID
             tmp.costInBillingCurrency   = it.costInBillingCurrency
             tmp.costInLocalCurrency     = it.costInLocalCurrency
@@ -124,11 +128,11 @@ class ApiCollectionReader {
     }
 
     static Collection<Object> getCustomPropertyCollection(Collection<Object> list, def generic, Org context) {
-        def result = []
+        Collection<Object> result = []
 
         if (generic.metaClass.getMetaMethod("getCalculatedPropDefGroups")) {
             def groups = generic.getCalculatedPropDefGroups(context)
-            def tmp = []
+            List tmp = []
 
             // [PropertyDefinitionGroup, ..]
             groups.global?.each { it ->
@@ -157,8 +161,9 @@ class ApiCollectionReader {
             list = tmp.unique()
         }
 
-        list?.each { it ->       // com.k_int.kbplus.<x>CustomProperty
-            def tmp             = [:]
+        list.each { it ->       // com.k_int.kbplus.<x>CustomProperty
+            Map<String, Object> tmp = [:]
+
             tmp.name            = it.type?.name     // com.k_int.kbplus.PropertyDefinition.String
             tmp.description     = it.type?.descr    // com.k_int.kbplus.PropertyDefinition.String
             //tmp.explanation     = it.type?.expl     // com.k_int.kbplus.PropertyDefinition.String
@@ -182,17 +187,18 @@ class ApiCollectionReader {
     }
 
     static Collection<Object> getDocumentCollection(Collection<DocContext> list) {
-        def result = []
-        list?.each { it -> // com.k_int.kbplus.DocContext
+        Collection<Object> result = []
+        list.each { it -> // com.k_int.kbplus.DocContext
             result << ApiDoc.getDocumentMap(it.owner)
         }
         result
     }
 
     static Collection<Object> getIdentifierCollection(Collection<Identifier> list) {
-        def result = []
-        list?.each { it ->   // com.k_int.kbplus.IdentifierOccurrence
-            def tmp = [:]
+        Collection<Object> result = []
+        list.each { it ->   // com.k_int.kbplus.IdentifierOccurrence
+            Map<String, Object> tmp = [:]
+
             tmp.put( 'namespace', it.ns?.ns )
             tmp.put( 'value', it.value )
 
@@ -209,25 +215,16 @@ class ApiCollectionReader {
      * @return Collection<Object>
      */
     static Collection<Object> getIssueEntitlementCollection(SubscriptionPackage subPkg, ignoreRelation, Org context){
-        def result = []
+        Collection<Object> result = []
 
         List<IssueEntitlement> ieList = IssueEntitlement.executeQuery(
                 'select ie from IssueEntitlement ie join ie.tipp tipp join ie.subscription sub join tipp.pkg pkg ' +
-                        ' where sub = :sub and pkg = :pkg', [sub: subPkg.subscription, pkg: subPkg.pkg]
+                        ' where sub = :sub and pkg = :pkg and tipp.status != :statusTipp and ie.status != :statusIe',
+                [sub: subPkg.subscription, pkg: subPkg.pkg, statusTipp: RDStore.TIPP_STATUS_DELETED, statusIe: RDStore.TIPP_STATUS_DELETED]
         )
         ieList.each{ ie ->
             result << ApiIssueEntitlement.getIssueEntitlementMap(ie, ignoreRelation, context) // com.k_int.kbplus.IssueEntitlement
         }
-
-        /* 0.51
-        def tipps = TitleInstancePackagePlatform.findAllByPkg(subPkg.pkg)
-        tipps.each{ tipp ->
-            def ie = IssueEntitlement.findBySubscriptionAndTipp(subPkg.subscription, tipp)
-            if (ie) {
-                result << ApiCollectionReader.resolveIssueEntitlement(ie, ignoreRelation, context) // com.k_int.kbplus.IssueEntitlement
-            }
-        }
-        */
 
         return ApiToolkit.cleanUp(result, true, true)
     }
@@ -255,10 +252,10 @@ class ApiCollectionReader {
      * @return Collection<Object>
     */
     static Collection<Object> getPackageWithIssueEntitlementsCollection(Collection<SubscriptionPackage> list, Org context) {  // TODO - TODO - TODO
-        def result = []
+        Collection<Object> result = []
 
-        list?.each { subPkg ->
-            def pkg = ApiUnsecuredMapReader.getPackageStubMap(subPkg.pkg) // com.k_int.kbplus.Package
+        list.each { subPkg ->
+            Map<String, Object> pkg = ApiUnsecuredMapReader.getPackageStubMap(subPkg.pkg) // com.k_int.kbplus.Package
             result << pkg
 
             if (pkg != Constants.HTTP_FORBIDDEN) {
@@ -303,10 +300,11 @@ class ApiCollectionReader {
     */
 
     static Collection<Object> getOrgLinkCollection(Collection<OrgRole> list, ignoreRelationType, Org context) { // TODO
-        def result = []
+        Collection<Object> result = []
 
-        list?.each { it ->   // com.k_int.kbplus.OrgRole
-            def tmp         = [:]
+        list.each { it ->   // com.k_int.kbplus.OrgRole
+            Map<String, Object> tmp = [:]
+
             tmp.endDate     = it.endDate
             tmp.startDate   = it.startDate
 
@@ -366,12 +364,13 @@ class ApiCollectionReader {
      * Access rights due wrapping object
      */
     static Collection<Object> getPlatformTippCollection(Collection<PlatformTIPP> list) {
-        def result = []
+        Collection<Object> result = []
 
-        list?.each { it -> // com.k_int.kbplus.PlatformTIPP
-            def tmp = [:]
-            tmp.titleUrl = it.titleUrl
-            tmp.rel      = it.rel
+        list.each { it -> // com.k_int.kbplus.PlatformTIPP
+            Map<String, Object> tmp = [:]
+
+            tmp.titleUrl    = it.titleUrl
+            tmp.rel         = it.rel
 
             result << tmp
         }
@@ -380,12 +379,13 @@ class ApiCollectionReader {
     }
 
     static Collection<Object> getPrivatePropertyCollection(Collection list, Org context) {
-        def result = []
+        Collection<Object> result = []
 
-        list?.findAll{ it.owner.id == context.id || it.type.tenant?.id == context.id}?.each { it ->       // com.k_int.kbplus.<x>PrivateProperty
-            def tmp             = [:]
-            tmp.name            = it.type?.name     // com.k_int.kbplus.PropertyDefinition.String
-            tmp.description     = it.type?.descr    // com.k_int.kbplus.PropertyDefinition.String
+        list.findAll{ it.owner.id == context.id || it.type.tenant?.id == context.id}?.each { it ->       // com.k_int.kbplus.<x>PrivateProperty
+            Map<String, Object> tmp = [:]
+
+            tmp.name            = it.type.name     // com.k_int.kbplus.PropertyDefinition.String
+            tmp.description     = it.type.descr    // com.k_int.kbplus.PropertyDefinition.String
             //tmp.explanation     = it.type?.expl     // com.k_int.kbplus.PropertyDefinition.String
             //tmp.tenant          = ApiStubReader.resolveOrganisationStub(it.tenant, context) // com.k_int.kbplus.Org
             tmp.value           = (it.stringValue ?: (it.intValue ?: (it.decValue ?: (it.refValue?.value ?: (it.urlValue ?: (it.dateValue ?: null)))))) // RefdataValue
@@ -403,9 +403,9 @@ class ApiCollectionReader {
         result
     }
 
-    static getPropertyCollection(Object generic, Org context, def ignoreFlag) {
-        def cp = getCustomPropertyCollection(generic.customProperties, generic, context)
-        def pp = getPrivatePropertyCollection(generic.privateProperties, context)
+    static Collection<Object> getPropertyCollection(Object generic, Org context, def ignoreFlag) {
+        Collection<Object> cp = getCustomPropertyCollection(generic.customProperties, generic, context)
+        Collection<Object> pp = getPrivatePropertyCollection(generic.privateProperties, context)
 
         if (ignoreFlag == ApiReader.IGNORE_CUSTOM_PROPERTIES) {
             return pp
@@ -422,7 +422,7 @@ class ApiCollectionReader {
         List result = []
         List tmp = []
 
-        list?.each { it ->
+        list.each { it ->
 
             // nested prs
             if(it.prs) {
@@ -506,6 +506,7 @@ class ApiCollectionReader {
      */
     static Map<String, Object> getTippMap(TitleInstancePackagePlatform tipp, def ignoreRelation, Org context) {
         Map<String, Object> result = [:]
+
         if (! tipp) {
             return null
         }
@@ -567,9 +568,9 @@ class ApiCollectionReader {
      * @return Collection<Object>
      */
     static Collection<Object> getTippCollection(Collection<TitleInstancePackagePlatform> list, def ignoreRelation, Org context) {
-        def result = []
+        Collection<Object> result = []
 
-        list?.each { it -> // com.k_int.kbplus.TitleInstancePackagePlatform
+        list.each { it -> // com.k_int.kbplus.TitleInstancePackagePlatform
             result << getTippMap(it, ignoreRelation, context)
         }
 
@@ -612,13 +613,14 @@ class ApiCollectionReader {
     */
 
     static Collection<Object> getSubscriptionPackageStubCollection(Collection<SubscriptionPackage> list, def ignoreRelation, Org context) {
-        def result = []
+        Collection<Object> result = []
+
         if (! list) {
             return null
         }
 
-        list?.each { it -> // com.k_int.kbplus.SubscriptionPackage
-            result << requestSubscriptionPackageStubMixed(it, ignoreRelation, context)
+        list.each { it -> // com.k_int.kbplus.SubscriptionPackage
+            result << ApiStubReader.requestSubscriptionPackageStubMixed(it, ignoreRelation, context)
         }
         result
     }
