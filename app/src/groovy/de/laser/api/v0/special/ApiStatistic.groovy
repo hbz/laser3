@@ -214,26 +214,8 @@ class ApiStatistic {
                 if (orgList) {
                     sub.put('organisations', ApiToolkit.cleanUp(orgList, true, true))
 
-                    List ieList = []
+                    List ieList = ApiCollectionReader.getIssueEntitlementCollection(subPkg, ApiReader.IGNORE_SUBSCRIPTION_AND_PACKAGE, null)
 
-                    List<TitleInstancePackagePlatform> tipps = TitleInstancePackagePlatform.findAllByPkgAndSub(subPkg.pkg, subPkg.subscription)
-
-                    //println 'subPkg (' + subPkg.pkg?.id + " , " + subPkg.subscription?.id + ") > " + tipps
-
-                    tipps.each { tipp ->
-                        if (tipp.status?.value == 'Deleted') {
-                        }
-                        else {
-                            IssueEntitlement ie = IssueEntitlement.findBySubscriptionAndTipp(subPkg.subscription, tipp)
-                            if (ie) {
-                                if (ie.status?.value == 'Deleted') {
-                                }
-                                else {
-                                    ieList.addAll(ApiCollectionReader.getIssueEntitlementCollection(ie, ApiReader.IGNORE_SUBSCRIPTION_AND_PACKAGE, null))
-                                }
-                            }
-                        }
-                    }
                     if (ieList) {
                         sub.put('issueEntitlements', ApiToolkit.cleanUp(ieList, true, true))
                     }

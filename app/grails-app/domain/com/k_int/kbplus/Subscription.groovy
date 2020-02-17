@@ -137,7 +137,7 @@ class Subscription
         administrative          column:'sub_is_administrative'
         previousSubscription    column:'sub_previous_subscription_fk' //-> see Links, deleted as ERMS-800
         isSlaved        column:'sub_is_slaved'
-        isPublicForApi  column:'sub_is_public_for_api'
+        isPublicForApi  column:'sub_is_public_for_api', defaultValue: false
         noticePeriod    column:'sub_notice_period'
         isMultiYear column: 'sub_is_multi_year'
         pendingChanges  sort: 'ts', order: 'asc', batchSize: 10
@@ -179,7 +179,7 @@ class Subscription
         previousSubscription(nullable:true, blank:false) //-> see Links, deleted as ERMS-800
         isSlaved    (nullable:false, blank:false)
         noticePeriod(nullable:true, blank:true)
-        isPublicForApi (nullable:true, blank:true)
+        isPublicForApi (nullable:false, blank:false)
         cancellationAllowances(nullable:true, blank:true)
         lastUpdated(nullable: true, blank: true)
         isMultiYear(nullable: true, blank: false)
