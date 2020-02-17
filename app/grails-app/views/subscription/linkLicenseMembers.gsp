@@ -158,7 +158,7 @@
                     <td>
                         <g:if test="${sub?.owner?.id}">
                             <g:link controller="license" action="show"
-                                    id="${sub?.owner?.id}">${sub?.owner.reference}</g:link>
+                                    id="${sub.owner.id}">${sub.owner.reference}</g:link>
                         </g:if>
                     </td>
                     <td>
