@@ -2,11 +2,13 @@ package com.k_int.kbplus
 
 import de.laser.domain.AbstractBaseDomain
 import de.laser.domain.IssueEntitlementCoverage
+import de.laser.domain.PriceItem
 import de.laser.helper.RDConstants
 import de.laser.helper.RDStore
 import de.laser.helper.RefdataAnnotation
 import de.laser.interfaces.ShareSupport
 import de.laser.traits.ShareableTrait
+import grails.converters.JSON
 import org.apache.commons.logging.Log
 import org.apache.commons.logging.LogFactory
 
@@ -384,6 +386,95 @@ static hasMany = [  tipps:     TitleInstancePackagePlatform,
                     }
                 }
             }
+        }
+    }
+
+    @Transient
+    boolean unlinkFromSubscription(subscription, deleteEntitlements) {
+        SubscriptionPackage subPkg = SubscriptionPackage.findByPkgAndSubscription(this, subscription)
+
+        //Not Exist CostItem with Package
+        if(!CostItem.executeQuery('select ci from CostItem ci where ci.subPkg.subscription = :sub and ci.subPkg.pkg = :pkg',[pkg:this,sub:subscription])) {
+            def query = "from IssueEntitlement ie, Package pkg where ie.subscription =:sub and pkg.id =:pkg_id and ie.tipp in ( select tipp from TitleInstancePackagePlatform tipp where tipp.pkg.id = :pkg_id ) "
+            def queryParams = [sub: subscription, pkg_id: this.id]
+
+            if (deleteEntitlements) {
+                //delete matches
+                IssueEntitlement.withTransaction { status ->
+                    removePackagePendingChanges([subscription.id], deleteEntitlements)
+                    def deleteIdList = IssueEntitlement.executeQuery("select ie.id ${query}", queryParams)
+
+                    if (deleteIdList) {
+                        IssueEntitlementCoverage.executeUpdate("delete from IssueEntitlementCoverage ieCov where ieCov.issueEntitlement.id in (:delList)", [delList: deleteIdList])
+                        PriceItem.executeUpdate("delete from PriceItem pi where pi.issueEntitlement.id in (:delList)", [delList: deleteIdList])
+                        IssueEntitlement.executeUpdate("delete from IssueEntitlement ie where ie.id in (:delList)", [delList: deleteIdList])
+                    }
+
+                    if (subPkg) {
+                        OrgAccessPointLink.executeUpdate("delete from OrgAccessPointLink oapl where oapl.subPkg=?", [subPkg])
+                        CostItem.findAllBySubPkg(subPkg).each { costItem ->
+                            costItem.subPkg = null
+                            if (!costItem.sub) {
+                                costItem.sub = subPkg.subscription
+                            }
+                            costItem.save(flush: true)
+                        }
+                    }
+
+                    SubscriptionPackage.executeUpdate("delete from SubscriptionPackage sp where sp.pkg=? and sp.subscription=? ", [this, subscription])
+                    return true
+                }
+            } else {
+
+                if (subPkg) {
+                    OrgAccessPointLink.executeUpdate("delete from OrgAccessPointLink oapl where oapl.subPkg=?", [subPkg])
+                    CostItem.findAllBySubPkg(subPkg).each { costItem ->
+                        costItem.subPkg = null
+                        if (!costItem.sub) {
+                            costItem.sub = subPkg.subscription
+                        }
+                        costItem.save(flush: true)
+                    }
+                }
+
+                SubscriptionPackage.executeUpdate("delete from SubscriptionPackage sp where sp.pkg=? and sp.subscription=? ", [this, subscription])
+                return true
+            }
+        }else{
+            log.error("!!! unlinkFromSubscription fail: CostItems are still linked -> [pkg:${this},sub:${subscription}]!!!!")
+            return false
+        }
+    }
+    private def removePackagePendingChanges(List subIds, confirmed) {
+
+        def tipp_class = TitleInstancePackagePlatform.class.getName()
+        def tipp_id_query = "from TitleInstancePackagePlatform tipp where tipp.pkg.id = ?"
+        def change_doc_query = "from PendingChange pc where pc.subscription.id in (:subIds) "
+        def tipp_ids = TitleInstancePackagePlatform.executeQuery("select tipp.id ${tipp_id_query}", [this.id])
+        def pendingChanges = PendingChange.executeQuery("select pc.id, pc.payload ${change_doc_query}", [subIds: subIds])
+
+        def pc_to_delete = []
+        pendingChanges.each { pc ->
+            def payload = JSON.parse(pc[1])
+            if (payload.tippID) {
+                pc_to_delete += pc[0]
+            }else if (payload.tippId) {
+                pc_to_delete += pc[0]
+            } else if (payload.changeDoc) {
+                def (oid_class, ident) = payload.changeDoc.OID.split(":")
+                if (oid_class == tipp_class && tipp_ids.contains(ident.toLong())) {
+                    pc_to_delete += pc[0]
+                }
+            } else {
+                log.error("Could not decide if we should delete the pending change id:${pc[0]} - ${payload}")
+            }
+        }
+        if (confirmed && pc_to_delete) {
+            log.debug("Deleting Pending Changes: ${pc_to_delete}")
+            def del_pc_query = "delete from PendingChange where id in (:del_list) "
+            PendingChange.executeUpdate(del_pc_query, [del_list: pc_to_delete])
+        } else {
+            return pc_to_delete.size()
         }
     }
 

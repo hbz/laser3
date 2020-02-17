@@ -370,26 +370,31 @@ class SubscriptionController extends AbstractDebugController {
         if (result.subscription.isEditableBy(result.user)) {
             result.editable = true
             if (params.confirmed) {
-                //delete matches
-                IssueEntitlement.withTransaction { status ->
-                    removePackagePendingChanges(result.package.id, result.subscription.id, params.confirmed)
-                    def deleteIdList = IssueEntitlement.executeQuery("select ie.id ${query}", queryParams)
-                    if (deleteIdList) {
-                        IssueEntitlementCoverage.executeUpdate("delete from IssueEntitlementCoverage ieCov where ieCov.issueEntitlement.id in (:delList)",[delList: deleteIdList])
-                        PriceItem.executeUpdate("delete from PriceItem pi where pi.issueEntitlement.id in (:delList)",[delList: deleteIdList])
-                        IssueEntitlement.executeUpdate("delete from IssueEntitlement ie where ie.id in (:delList)", [delList: deleteIdList])
-                    }
-                    SubscriptionPackage subPkg = SubscriptionPackage.findByPkgAndSubscription(result.package, result.subscription)
-                    if (subPkg) {
-                        OrgAccessPointLink.executeUpdate("delete from OrgAccessPointLink oapl where oapl.subPkg=?", [subPkg])
-                    }
-                    SubscriptionPackage.executeUpdate("delete from SubscriptionPackage sp where sp.pkg=? and sp.subscription=? ", [result.package, result.subscription])
-
+                if(result.package.unlinkFromSubscription(result.subscription, true)){
                     flash.message = message(code: 'subscription.details.unlink.successfully')
+                }else {
+                    flash.error = message(code: 'subscription.details.unlink.notSuccessfully')
+                }
+
+                //Automatisch Paket entknüpfen, wenn das Paket in der Elternlizenz entknüpft wird
+                if(result.subscription.getCalculatedType() in [TemplateSupport.CALCULATED_TYPE_CONSORTIAL,TemplateSupport.CALCULATED_TYPE_COLLECTIVE,TemplateSupport.CALCULATED_TYPE_ADMINISTRATIVE] &&
+                        accessService.checkPerm("ORG_INST_COLLECTIVE,ORG_CONSORTIUM") && (result.subscription.instanceOf == null)) {
+
+                    List<Subscription> childSubs = Subscription.findAllByInstanceOf(result.subscription)
+
+                    childSubs.each {sub ->
+                        if(result.package.unlinkFromSubscription(sub, true)){
+                            flash.message = message(code: 'subscription.details.unlink.successfully')
+                        }else {
+                            flash.error = message(code: 'subscription.details.unlink.notSuccessfully')
+                        }
+                    }
 
                 }
+
             } else {
-                def numOfPCs = removePackagePendingChanges(result.package.id, result.subscription.id, params.confirmed)
+
+                def numOfPCs = result.package.removePackagePendingChanges([result.subscription.id], false)
 
                 def numOfIEs = IssueEntitlement.executeQuery("select ie.id ${query}", queryParams).size()
                 def conflict_item_pkg = [name: "${g.message(code: "subscription.details.unlink.linkedPackage")}", details: [['link': createLink(controller: 'package', action: 'show', id: result.package.id), 'text': result.package.name]], action: [actionRequired: false, text: "${g.message(code: "subscription.details.unlink.linkedPackage.action")}"]]
@@ -415,6 +420,50 @@ class SubscriptionController extends AbstractDebugController {
                     conflicts_list += conflict_item_oap
                 }
 
+
+                //Automatisch Paket entknüpfen, wenn das Paket in der Elternlizenz entknüpft wird
+                if(result.subscription.getCalculatedType() in [TemplateSupport.CALCULATED_TYPE_CONSORTIAL,TemplateSupport.CALCULATED_TYPE_COLLECTIVE,TemplateSupport.CALCULATED_TYPE_ADMINISTRATIVE] &&
+                        accessService.checkPerm("ORG_INST_COLLECTIVE,ORG_CONSORTIUM") && (result.subscription.instanceOf == null)){
+
+                    List<Subscription> childSubs = Subscription.findAllByInstanceOf(result.subscription)
+
+                    List<SubscriptionPackage> spChildSubs = SubscriptionPackage.findAllByPkgAndSubscriptionInList(result.package, childSubs)
+
+                    String queryChildSubs = "from IssueEntitlement ie, Package pkg where ie.subscription in (:sub) and pkg.id =:pkg_id and ie.tipp in ( select tipp from TitleInstancePackagePlatform tipp where tipp.pkg.id = :pkg_id ) "
+                    Map queryParamChildSubs = [sub: childSubs, pkg_id: result.package.id]
+
+                    def numOfPCsChildSubs = result.package.removePackagePendingChanges(childSubs.id, false)
+
+                    List numOfIEsChildSubs = IssueEntitlement.executeQuery("select ie.id ${queryChildSubs}", queryParamChildSubs).size()
+
+                    if(spChildSubs.size() > 0) {
+                        Map conflict_item_pkgChildSubs = [name: "${g.message(code: "subscription.details.unlink.linkedPackageSubChild")}", details: [['text': "${g.message(code: "subscription.details.unlink.linkedPackageSubChild.numbers")} " + spChildSubs.size()]], action: [actionRequired: false, text: "${g.message(code: "subscription.details.unlink.linkedPackage.action")}"]]
+                        conflicts_list += conflict_item_pkgChildSubs
+                    }
+
+                    if (numOfIEsChildSubs > 0) {
+                        Map conflict_item_ie = [name: "${g.message(code: "subscription.details.unlink.packageIEsSubChild")}", details: [['text': "${g.message(code: "subscription.details.unlink.packageIEsSubChild")} " + numOfIEsChildSubs]], action: [actionRequired: false, text: "${g.message(code: "subscription.details.unlink.packageIEs.action")}"]]
+                        conflicts_list += conflict_item_ie
+                    }
+                    if (numOfPCsChildSubs > 0) {
+                        Map conflict_item_pc = [name: "${g.message(code: "subscription.details.unlink.pendingChangesSubChild")}", details: [['text': "${g.message(code: "subscription.details.unlink.pendingChangesSubChild.numbers")} " + numOfPCsChildSubs]], action: [actionRequired: false, text: "${g.message(code: "subscription.details.unlink.pendingChanges.numbers.action")}"]]
+                        conflicts_list += conflict_item_pc
+                    }
+
+
+                    List accessPointLinksChildSubs = []
+                    if (spChildSubs.oapls){
+                        Map detailItem = ['text':"${g.message(code: "subscription.details.unlink.accessPoints.numbers")} ${spChildSubs.oapls.size()}"]
+                        accessPointLinksChildSubs.add(detailItem)
+                    }
+                    if (accessPointLinksChildSubs) {
+                        Map conflict_item_oap = [name: "${g.message(code: "subscription.details.unlink.accessPoints")}", details: accessPointLinksChildSubs, action: [actionRequired: false, text: "${g.message(code: "subscription.details.unlink.accessPoints.numbers.action")}"]]
+                        conflicts_list += conflict_item_oap
+                    }
+
+
+                }
+
                 return render(template: "unlinkPackageModal", model: [pkg: result.package, subscription: result.subscription, conflicts_list: conflicts_list])
             }
         } else {
@@ -424,39 +473,6 @@ class SubscriptionController extends AbstractDebugController {
 
         redirect(url: request.getHeader('referer'))
 
-    }
-
-    private def removePackagePendingChanges(pkg_id, sub_id, confirmed) {
-
-        def tipp_class = TitleInstancePackagePlatform.class.getName()
-        def tipp_id_query = "from TitleInstancePackagePlatform tipp where tipp.pkg.id = ?"
-        def change_doc_query = "from PendingChange pc where pc.subscription.id = ? "
-        def tipp_ids = TitleInstancePackagePlatform.executeQuery("select tipp.id ${tipp_id_query}", [pkg_id])
-        def pendingChanges = PendingChange.executeQuery("select pc.id, pc.payload ${change_doc_query}", [sub_id])
-
-        def pc_to_delete = []
-        pendingChanges.each { pc ->
-            def payload = JSON.parse(pc[1])
-            if (payload.tippID) {
-                pc_to_delete += pc[0]
-            }else if (payload.tippId) {
-                    pc_to_delete += pc[0]
-            } else if (payload.changeDoc) {
-                def (oid_class, ident) = payload.changeDoc.OID.split(":")
-                if (oid_class == tipp_class && tipp_ids.contains(ident.toLong())) {
-                    pc_to_delete += pc[0]
-                }
-            } else {
-                log.error("Could not decide if we should delete the pending change id:${pc[0]} - ${payload}")
-            }
-        }
-        if (confirmed && pc_to_delete) {
-            log.debug("Deleting Pending Changes: ${pc_to_delete}")
-            def del_pc_query = "delete from PendingChange where id in (:del_list) "
-            PendingChange.executeUpdate(del_pc_query, [del_list: pc_to_delete])
-        } else {
-            return pc_to_delete.size()
-        }
     }
 
     private def sortOnCoreStatus(result, params) {
@@ -1508,14 +1524,15 @@ class SubscriptionController extends AbstractDebugController {
 
         def validSubChilds = Subscription.findAllByInstanceOf(result.parentSub)
 
+        List selectedMembers = params.list("selectedMembers")
 
         def changeAccepted = []
-        if (params.license_All) {
+        if(selectedMembers && params.license_All){
             def lic = License.get(params.license_All)
-            validSubChilds.each { subChild ->
-                def sub = Subscription.get(subChild.id)
-                sub.owner = lic
-                if (sub.save(flush: true)) {
+            selectedMembers.each { subId ->
+                def subChild = Subscription.get(subId)
+                subChild.owner = (params.processOption == 'linkLicense') ? lic : ((params.processOption == 'unlinkLicense') ? null : subChild.owner)
+                if (subChild.save(flush: true)) {
                     changeAccepted << "${subChild?.name} (${message(code:'subscription.linkInstance.label')} ${subChild?.orgRelations.find { it.roleType in [OR_SUBSCRIBER_CONS,OR_SUBSCRIBER_COLLECTIVE] }.org.sortname})"
                 }
             }
@@ -1523,24 +1540,19 @@ class SubscriptionController extends AbstractDebugController {
                 flash.message = message(code: 'subscription.linkLicenseMembers.changeAcceptedAll', args: [changeAccepted.join(', ')])
             }
 
+            if (!changeAccepted) {
+                flash.error = message(code: 'subscription.linkLicenseMembers.noChanges')
+            }
+
 
         } else {
-            validSubChilds.each {
-                if (params."license_${it.id}") {
-                    def newLicense = License.get(params."license_${it.id}")
-                    if (it.owner != newLicense) {
-                        def sub = Subscription.get(it.id)
-                        sub.owner = newLicense
-                        if (sub.save(flush: true)) {
-                            changeAccepted << "${it?.name} (${message(code:'subscription.linkInstance.label')} ${it?.orgRelations.find { it.roleType in [OR_SUBSCRIBER_CONS,OR_SUBSCRIBER_COLLECTIVE] }.org.sortname})"
-                        }
-                    }
-                }
-            }
-            if (changeAccepted) {
-                flash.message = message(code: 'subscription.linkLicenseMembers.changeAcceptedAll', args: [changeAccepted.join('')])
+            if(!selectedMembers) {
+                flash.error = message(code: 'subscription.linkLicenseMembers.noSelectedMember')
             }
 
+            if(!params.license_All) {
+                flash.error = message(code: 'subscription.linkLicenseMembers.noSelectedLicense')
+            }
         }
 
 
@@ -1658,80 +1670,87 @@ class SubscriptionController extends AbstractDebugController {
 
         result.parentSub = result.subscriptionInstance.instanceOf ? result.subscriptionInstance.instanceOf : result.subscriptionInstance
 
-        result.parentPackages = result.parentSub.packages.sort { it.pkg.name }
-
-        def validSubChilds = Subscription.findAllByInstanceOf(result.parentSub)
-
-
         def changeAccepted = []
         def changeAcceptedwithIE = []
         def changeFailed = []
 
+        List selectedMembers = params.list("selectedMembers")
 
-        if (params.package_All) {
+        if(selectedMembers && params.package_All){
             def pkg_to_link = SubscriptionPackage.get(params.package_All).pkg
-
-            validSubChilds.each { subChild ->
-
-                if (!(pkg_to_link in subChild.packages.pkg)) {
-
-                    if (params.withIssueEntitlements) {
-
-                        pkg_to_link.addToSubscriptionCurrentStock(subChild, result.parentSub)
-                        changeAcceptedwithIE << "${subChild?.name} (${message(code:'subscription.linkInstance.label')} ${subChild?.orgRelations.find { it.roleType in [OR_SUBSCRIBER_CONS,OR_SUBSCRIBER_COLLECTIVE] }.org.sortname})"
-
-                    } else {
-                        pkg_to_link.addToSubscription(subChild, false)
-                        changeAccepted << "${subChild?.name} (${message(code:'subscription.linkInstance.label')} ${subChild?.orgRelations.find { it.roleType in [OR_SUBSCRIBER_CONS,OR_SUBSCRIBER_COLLECTIVE] }.org.sortname})"
-
-                    }
-                } else {
-                    changeFailed << "${subChild?.name} (${message(code:'subscription.linkInstance.label')} ${subChild?.orgRelations.find { it.roleType in [OR_SUBSCRIBER_CONS,OR_SUBSCRIBER_COLLECTIVE] }.org.sortname})"
-                }
-
-            }
-
-            if (changeAccepted) {
-                flash.message = message(code: 'subscription.linkPackagesMembers.changeAcceptedAll', args: [pkg_to_link.name, changeAccepted.join(", ")])
-            }
-            if (changeAcceptedwithIE) {
-                flash.message = message(code: 'subscription.linkPackagesMembers.changeAcceptedIEAll', args: [pkg_to_link.name, changeAcceptedwithIE.join(", ")])
-            }
-
-
-        } else {
-            validSubChilds.each { subChild ->
-
-                if (params."package_${subChild.id}") {
-                    def pkg_to_link = SubscriptionPackage.get(params."package_${subChild.id}").pkg
-
+            selectedMembers.each { id ->
+                def subChild = Subscription.get(Long.parseLong(id))
+                if (params.processOption == 'linkwithIE' || params.processOption == 'linkwithoutIE') {
                     if (!(pkg_to_link in subChild.packages.pkg)) {
 
-                        if (params.withIssueEntitlements) {
+                        if (params.processOption == 'linkwithIE') {
 
                             pkg_to_link.addToSubscriptionCurrentStock(subChild, result.parentSub)
-                            changeAcceptedwithIE << "${subChild?.name} (${message(code:'subscription.linkInstance.label')} ${subChild?.orgRelations.find { it.roleType in [OR_SUBSCRIBER_CONS,OR_SUBSCRIBER_COLLECTIVE] }.org.sortname})"
+                            changeAcceptedwithIE << "${subChild?.name} (${message(code: 'subscription.linkInstance.label')} ${subChild?.orgRelations.find { it.roleType in [OR_SUBSCRIBER_CONS, OR_SUBSCRIBER_COLLECTIVE] }.org.sortname})"
 
                         } else {
                             pkg_to_link.addToSubscription(subChild, false)
-                            changeAccepted << "${subChild?.name} (${message(code:'subscription.linkInstance.label')} ${subChild?.orgRelations.find { it.roleType in [OR_SUBSCRIBER_CONS,OR_SUBSCRIBER_COLLECTIVE] }.org.sortname})"
+                            changeAccepted << "${subChild?.name} (${message(code: 'subscription.linkInstance.label')} ${subChild?.orgRelations.find { it.roleType in [OR_SUBSCRIBER_CONS, OR_SUBSCRIBER_COLLECTIVE] }.org.sortname})"
 
                         }
                     } else {
-                        changeFailed << "${subChild?.name} (${message(code:'subscription.linkInstance.label')} ${subChild?.orgRelations.find { it.roleType in [OR_SUBSCRIBER_CONS,OR_SUBSCRIBER_COLLECTIVE] }.org.sortname})"
+                        changeFailed << "${subChild?.name} (${message(code: 'subscription.linkInstance.label')} ${subChild?.orgRelations.find { it.roleType in [OR_SUBSCRIBER_CONS, OR_SUBSCRIBER_COLLECTIVE] }.org.sortname})"
                     }
+
+                    if (changeAccepted) {
+                        flash.message = message(code: 'subscription.linkPackagesMembers.changeAcceptedAll', args: [pkg_to_link.name, changeAccepted.join(", ")])
+                    }
+                    if (changeAcceptedwithIE) {
+                        flash.message = message(code: 'subscription.linkPackagesMembers.changeAcceptedIEAll', args: [pkg_to_link.name, changeAcceptedwithIE.join(", ")])
+                    }
+
+                    if (!changeAccepted && !changeAcceptedwithIE){
+                        flash.error = message(code: 'subscription.linkPackagesMembers.noChanges')
+                    }
+
+                }
+
+                if (params.processOption == 'unlinkwithIE' || params.processOption == 'unlinkwithoutIE') {
+                    if (pkg_to_link in subChild.packages.pkg) {
+
+                        if (params.processOption == 'unlinkwithIE') {
+
+                            if(pkg_to_link.unlinkFromSubscription(subChild, true)) {
+                                changeAcceptedwithIE << "${subChild?.name} (${message(code: 'subscription.linkInstance.label')} ${subChild?.orgRelations.find { it.roleType in [OR_SUBSCRIBER_CONS, OR_SUBSCRIBER_COLLECTIVE] }.org.sortname})"
+                            }
+                        } else {
+                            if(pkg_to_link.unlinkFromSubscription(subChild, false)) {
+                                changeAccepted << "${subChild?.name} (${message(code: 'subscription.linkInstance.label')} ${subChild?.orgRelations.find { it.roleType in [OR_SUBSCRIBER_CONS, OR_SUBSCRIBER_COLLECTIVE] }.org.sortname})"
+                            }
+                        }
+                    } else {
+                        changeFailed << "${subChild?.name} (${message(code: 'subscription.linkInstance.label')} ${subChild?.orgRelations.find { it.roleType in [OR_SUBSCRIBER_CONS, OR_SUBSCRIBER_COLLECTIVE] }.org.sortname})"
+                    }
+
+                    if (changeAccepted) {
+                        flash.message = message(code: 'subscription.linkPackagesMembers.changeAcceptedUnlinkAll', args: [pkg_to_link.name, changeAccepted.join(", ")])
+                    }
+                    if (changeAcceptedwithIE) {
+                        flash.message = message(code: 'subscription.linkPackagesMembers.changeAcceptedUnlinkWithIEAll', args: [pkg_to_link.name, changeAcceptedwithIE.join(", ")])
+                    }
+
+                    if (!changeAccepted && !changeAcceptedwithIE){
+                        flash.error = message(code: 'subscription.linkPackagesMembers.noChanges')
+                    }
+
                 }
             }
-            if (changeAccepted) {
-                flash.message = message(code: 'subscription.linkPackagesMembers.changeAcceptedAll', args: [changeAccepted.join(" ")])
+
+        }else {
+            if(!selectedMembers) {
+                flash.error = message(code: 'subscription.linkPackagesMembers.noSelectedMember')
             }
-            if (changeAcceptedwithIE) {
-                flash.message = message(code: 'subscription.linkPackagesMembers.changeAcceptedIEAll', args: [changeAcceptedwithIE.join(" ")])
-            }
-            if (changeFailed) {
-                flash.error = message(code: 'subscription.linkPackagesMembers.changeFailedAll', args: [changeFailed.join(" ")])
+
+            if(!params.package_All) {
+                flash.error = message(code: 'subscription.linkPackagesMembers.noSelectedPackage')
             }
         }
+
 
 
         redirect(action: 'linkPackagesMembers', id: params.id)
@@ -1763,10 +1782,6 @@ class SubscriptionController extends AbstractDebugController {
 
             subChild.packages.pkg.each { pkg ->
 
-                def pkg_to_unlink = params.package_All ? SubscriptionPackage.get(params.package_All).pkg : null
-
-                if(pkg_to_unlink == null || pkg_to_unlink == pkg) {
-
                     if(!CostItem.executeQuery('select ci from CostItem ci where ci.subPkg.subscription = :sub and ci.subPkg.pkg = :pkg',[pkg:pkg,sub:subChild])) {
                         def query = "from IssueEntitlement ie, Package pkg where ie.subscription =:sub and pkg.id =:pkg_id and ie.tipp in ( select tipp from TitleInstancePackagePlatform tipp where tipp.pkg.id = :pkg_id ) "
                         def queryParams = [sub: subChild, pkg_id: pkg.id]
@@ -1775,49 +1790,17 @@ class SubscriptionController extends AbstractDebugController {
                         if (subChild.isEditableBy(result.user)) {
                             result.editable = true
                             if (params.withIE) {
-                                //delete matches
-                                IssueEntitlement.withTransaction { status ->
-                                    removePackagePendingChanges(pkg.id, subChild.id, params.withIE)
-                                    def deleteIdList = IssueEntitlement.executeQuery("select ie.id ${query}", queryParams)
-
-                                    if (deleteIdList) {
-                                        IssueEntitlementCoverage.executeUpdate("delete from IssueEntitlementCoverage ieCov where ieCov.issueEntitlement.id in (:delList)", [delList: deleteIdList])
-                                        PriceItem.executeUpdate("delete from PriceItem pi where pi.issueEntitlement.id in (:delList)", [delList: deleteIdList])
-                                        IssueEntitlement.executeUpdate("delete from IssueEntitlement ie where ie.id in (:delList)", [delList: deleteIdList])
-                                    }
-                                    SubscriptionPackage subPkg = SubscriptionPackage.findByPkgAndSubscription(pkg, subChild)
-                                    if (subPkg) {
-                                        OrgAccessPointLink.executeUpdate("delete from OrgAccessPointLink oapl where oapl.subPkg=?", [subPkg])
-                                        CostItem.findAllBySubPkg(subPkg).each { costItem ->
-                                            costItem.subPkg = null
-                                            if(!costItem.sub){
-                                                costItem.sub = subPkg.subscription
-                                            }
-                                            costItem.save(flush: true)
-                                        }
-                                    }
-
-                                    SubscriptionPackage.executeUpdate("delete from SubscriptionPackage sp where sp.pkg=? and sp.subscription=? ", [pkg, subChild])
-
+                                if(pkg.unlinkFromSubscription(subChild, true)){
                                     flash.message = message(code: 'subscription.linkPackagesMembers.unlinkInfo.withIE.successful')
+                                }else {
+                                    flash.error = message(code: 'subscription.linkPackagesMembers.unlinkInfo.withIE.fail')
                                 }
                             } else {
-
-                                SubscriptionPackage subPkg = SubscriptionPackage.findByPkgAndSubscription(pkg, subChild)
-                                if (subPkg) {
-                                    OrgAccessPointLink.executeUpdate("delete from OrgAccessPointLink oapl where oapl.subPkg=?", [subPkg])
-                                    CostItem.findAllBySubPkg(subPkg).each { costItem ->
-                                        costItem.subPkg = null
-                                        if(!costItem.sub){
-                                            costItem.sub = subPkg.subscription
-                                        }
-                                        costItem.save(flush: true)
-                                    }
+                                if(pkg.unlinkFromSubscription(subChild, false)){
+                                    flash.message = message(code: 'subscription.linkPackagesMembers.unlinkInfo.onlyPackage.successful')
+                                }else {
+                                    flash.error = message(code: 'subscription.linkPackagesMembers.unlinkInfo.onlyPackage.fail')
                                 }
-
-                                SubscriptionPackage.executeUpdate("delete from SubscriptionPackage sp where sp.pkg=? and sp.subscription=? ", [pkg, subChild])
-
-                                flash.message = message(code: 'subscription.linkPackagesMembers.unlinkInfo.onlyPackage.successful')
                             }
                         }
                     } else {
@@ -1825,9 +1808,6 @@ class SubscriptionController extends AbstractDebugController {
                         }
                 }
             }
-        }
-
-
         redirect(action: 'linkPackagesMembers', id: params.id)
     }
 
@@ -1981,7 +1961,6 @@ class SubscriptionController extends AbstractDebugController {
 
         result.parentSub = result.subscriptionInstance.instanceOf && result.subscription.getCalculatedType() != TemplateSupport.CALCULATED_TYPE_PARTICIPATION_AS_COLLECTIVE ? result.subscriptionInstance.instanceOf : result.subscriptionInstance
 
-        def validSubChilds = Subscription.findAllByInstanceOf(result.parentSub)
 
         if (params.filterPropDef && params.filterPropValue) {
 
@@ -1993,8 +1972,12 @@ class SubscriptionController extends AbstractDebugController {
             def changeProperties = 0
 
             if (propDef) {
-                validSubChilds.each { subChild ->
 
+                List selectedMembers = params.list("selectedMembers")
+
+                if(selectedMembers){
+                    selectedMembers.each { subId ->
+                        Subscription subChild = Subscription.get(subId)
                     if (propDef?.tenant != null) {
                         //private Property
                         def owner = subChild
@@ -2051,7 +2034,11 @@ class SubscriptionController extends AbstractDebugController {
                     }
 
                 }
-                flash.message = message(code: 'subscription.propertiesMembers.successful', args: [newProperties, changeProperties])
+                    flash.message = message(code: 'subscription.propertiesMembers.successful', args: [newProperties, changeProperties])
+                }else{
+                    flash.error = message(code: 'subscription.propertiesMembers.successful', args: [newProperties, changeProperties])
+                }
+
             }
 
         }
@@ -2076,58 +2063,90 @@ class SubscriptionController extends AbstractDebugController {
             redirect(url: request.getHeader('referer'))
         }
 
-        result.parentSub = result.subscriptionInstance.instanceOf && result.subscription.getCalculatedType() != TemplateSupport.CALCULATED_TYPE_PARTICIPATION_AS_COLLECTIVE ? result.subscriptionInstance.instanceOf : result.subscriptionInstance
+        List selectedMembers = params.list("selectedMembers")
 
-        def validSubChilds = Subscription.findAllByInstanceOf(result.parentSub)
-        def change = []
-                validSubChilds.each { subChild ->
+        if(selectedMembers){
+            def change = []
+            def noChange = []
+            selectedMembers.each { subID ->
 
-                    SimpleDateFormat sdf = DateUtil.getSDF_NoTime()
-                    def startDate = params.valid_from ? sdf.parse(params.valid_from) : null
-                    def endDate = params.valid_to ? sdf.parse(params.valid_to) : null
+                        Subscription subChild = Subscription.get(subID)
+
+                        SimpleDateFormat sdf = DateUtil.getSDF_NoTime()
+                        def startDate = params.valid_from ? sdf.parse(params.valid_from) : null
+                        def endDate = params.valid_to ? sdf.parse(params.valid_to) : null
 
 
-                    if(startDate && !auditService.getAuditConfig(subChild?.instanceOf, 'startDate'))
-                    {
-                        subChild?.startDate = startDate
-                        change << message(code: 'default.startDate.label')
+                        if(startDate && !auditService.getAuditConfig(subChild?.instanceOf, 'startDate'))
+                        {
+                            subChild?.startDate = startDate
+                            change << message(code: 'default.startDate.label')
+                        }
+
+                        if(startDate && auditService.getAuditConfig(subChild?.instanceOf, 'startDate'))
+                        {
+                            noChange << message(code: 'default.startDate.label')
+                        }
+
+                        if(endDate && !auditService.getAuditConfig(subChild?.instanceOf, 'endDate'))
+                        {
+                            subChild?.endDate = endDate
+                            change << message(code: 'default.endDate.label')
+                        }
+
+                        if(endDate && auditService.getAuditConfig(subChild?.instanceOf, 'endDate'))
+                        {
+                            noChange << message(code: 'default.endDate.label')
+                        }
+
+
+                        if(params.status && !auditService.getAuditConfig(subChild?.instanceOf, 'status'))
+                        {
+                            subChild?.status = RefdataValue.get(params.status) ?: subChild?.status
+                            change << message(code: 'subscription.status.label')
+                        }
+                        if(params.status && auditService.getAuditConfig(subChild?.instanceOf, 'status'))
+                        {
+                            noChange << message(code: 'subscription.status.label')
+                        }
+
+                        if(params.form && !auditService.getAuditConfig(subChild?.instanceOf, 'form'))
+                        {
+                            subChild?.form = RefdataValue.get(params.form) ?: subChild?.form
+                            change << message(code: 'subscription.form.label')
+                        }
+                        if(params.form && auditService.getAuditConfig(subChild?.instanceOf, 'form'))
+                        {
+                            noChange << message(code: 'subscription.form.label')
+                        }
+
+                        if(params.resource && !auditService.getAuditConfig(subChild?.instanceOf, 'resource'))
+                        {
+                            subChild?.resource = RefdataValue.get(params.resource) ?: subChild?.resource
+                            change << message(code: 'subscription.resource.label')
+                        }
+                        if(params.resource && auditService.getAuditConfig(subChild?.instanceOf, 'resource'))
+                        {
+                            noChange << message(code: 'subscription.resource.label')
+                        }
+
+                        if (subChild?.isDirty()) {
+                            subChild?.save(flush: true)
+                        }
                     }
 
-                    if(endDate && !auditService.getAuditConfig(subChild?.instanceOf, 'endDate'))
-                    {
-                        subChild?.endDate = endDate
-                        change << message(code: 'default.endDate.label')
+                    if(change){
+                        flash.message = message(code: 'subscription.subscriptionPropertiesMembers.changes', args: [change?.unique { a, b -> a <=> b }.join(', ').toString()])
                     }
 
-
-                    if(params.status && !auditService.getAuditConfig(subChild?.instanceOf, 'status'))
-                    {
-                        subChild?.status = RefdataValue.get(params.status) ?: subChild?.status
-                        change << message(code: 'subscription.status.label')
+                    if(noChange){
+                        flash.error = message(code: 'subscription.subscriptionPropertiesMembers.noChanges', args: [noChange?.unique { a, b -> a <=> b }.join(', ').toString()])
                     }
-
-                    if(params.form && !auditService.getAuditConfig(subChild?.instanceOf, 'form'))
-                    {
-                        subChild?.form = RefdataValue.get(params.form) ?: subChild?.form
-                        change << message(code: 'subscription.form.label')
-                    }
-
-                    if(params.resource && !auditService.getAuditConfig(subChild?.instanceOf, 'resource'))
-                    {
-                        subChild?.resource = RefdataValue.get(params.resource) ?: subChild?.resource
-                        change << message(code: 'subscription.resource.label')
-                    }
-
-                    if (subChild?.isDirty()) {
-                        subChild?.save(flush: true)
-                    }
-                }
-        if(change){
-            flash.message = message(code: 'subscription.subscriptionPropertiesMembers.changes', args: [change?.unique { a, b -> a <=> b }.join(', ').toString()])
+        }else {
+            flash.error = message(code: 'subscription.subscriptionPropertiesMembers.noSelectedMember')
         }
 
-        def id = params.id
-        redirect(action: 'subscriptionPropertiesMembers', id: id)
+        redirect(action: 'subscriptionPropertiesMembers', id: params.id)
     }
 
     @DebugAnnotation(perm = "ORG_INST_COLLECTIVE,ORG_CONSORTIUM", affil = "INST_EDITOR")
