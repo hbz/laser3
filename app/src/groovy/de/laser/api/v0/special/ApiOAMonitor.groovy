@@ -9,6 +9,7 @@ import de.laser.api.v0.ApiCollectionReader
 import de.laser.api.v0.ApiReader
 import de.laser.api.v0.ApiToolkit
 import de.laser.api.v0.ApiStubReader
+import de.laser.api.v0.ApiUnsecuredMapReader
 import de.laser.helper.Constants
 import de.laser.helper.RDConstants
 import de.laser.helper.RDStore
@@ -59,7 +60,7 @@ class ApiOAMonitor {
 
         List<Org> orgs = getAccessibleOrgs()
         orgs.each { o ->
-            result << ApiStubReaderUnsecured.getOrganisationStubMap(o)
+            result << ApiUnsecuredMapReader.getOrganisationStubMap(o)
         }
 
         return new JSON(result)
