@@ -40,7 +40,7 @@
         <g:message code="subscription.linkLicenseMembers.license" args="${args.superOrgType}"/>: <g:link
             controller="license"
             action="show"
-            id="${parentLicense?.id}">${parentLicense?.reference}</g:link>
+            id="${parentLicense.id}">${parentLicense.reference}</g:link>
     </g:if>
 </h4>
 

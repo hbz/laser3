@@ -326,7 +326,7 @@
                                 <tr>
                                     <th>${message(code: 'sidewide.number')}</th>
                                     <th>${message(code: 'default.sortname.label')}</th>
-                                    subscription.propertiesMembers.subscriber                             <th>${message(code: 'subscriptionDetails.members.members')}</th>
+                                    <th>${message(code: 'subscriptionDetails.members.members')}</th>
                                     <th></th>
                                     <th></th>
                                 </tr>

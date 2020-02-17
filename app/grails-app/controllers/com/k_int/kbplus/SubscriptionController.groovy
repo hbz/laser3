@@ -22,7 +22,6 @@ import grails.converters.JSON
 import grails.doc.internal.StringEscapeCategory
 import grails.plugin.springsecurity.annotation.Secured
 import groovy.time.TimeCategory
-import org.apache.lucene.index.DocIDMerger
 import org.apache.poi.POIXMLProperties
 import org.apache.poi.ss.usermodel.Cell
 import org.apache.poi.ss.usermodel.Row
@@ -430,24 +429,24 @@ class SubscriptionController extends AbstractDebugController {
 
                     List<SubscriptionPackage> spChildSubs = SubscriptionPackage.findAllByPkgAndSubscriptionInList(result.package, childSubs)
 
-                    def queryChildSubs = "from IssueEntitlement ie, Package pkg where ie.subscription in (:sub) and pkg.id =:pkg_id and ie.tipp in ( select tipp from TitleInstancePackagePlatform tipp where tipp.pkg.id = :pkg_id ) "
-                    def queryParamChildSubs = [sub: childSubs, pkg_id: result.package.id]
+                    String queryChildSubs = "from IssueEntitlement ie, Package pkg where ie.subscription in (:sub) and pkg.id =:pkg_id and ie.tipp in ( select tipp from TitleInstancePackagePlatform tipp where tipp.pkg.id = :pkg_id ) "
+                    Map queryParamChildSubs = [sub: childSubs, pkg_id: result.package.id]
 
                     def numOfPCsChildSubs = result.package.removePackagePendingChanges(childSubs.id, false)
 
-                    def numOfIEsChildSubs = IssueEntitlement.executeQuery("select ie.id ${queryChildSubs}", queryParamChildSubs).size()
+                    List numOfIEsChildSubs = IssueEntitlement.executeQuery("select ie.id ${queryChildSubs}", queryParamChildSubs).size()
 
                     if(spChildSubs.size() > 0) {
-                        def conflict_item_pkgChildSubs = [name: "${g.message(code: "subscription.details.unlink.linkedPackageSubChild")}", details: [['text': "${g.message(code: "subscription.details.unlink.linkedPackageSubChild.numbers")} " + spChildSubs?.size()]], action: [actionRequired: false, text: "${g.message(code: "subscription.details.unlink.linkedPackage.action")}"]]
+                        Map conflict_item_pkgChildSubs = [name: "${g.message(code: "subscription.details.unlink.linkedPackageSubChild")}", details: [['text': "${g.message(code: "subscription.details.unlink.linkedPackageSubChild.numbers")} " + spChildSubs.size()]], action: [actionRequired: false, text: "${g.message(code: "subscription.details.unlink.linkedPackage.action")}"]]
                         conflicts_list += conflict_item_pkgChildSubs
                     }
 
                     if (numOfIEsChildSubs > 0) {
-                        def conflict_item_ie = [name: "${g.message(code: "subscription.details.unlink.packageIEsSubChild")}", details: [['text': "${g.message(code: "subscription.details.unlink.packageIEsSubChild")} " + numOfIEsChildSubs]], action: [actionRequired: false, text: "${g.message(code: "subscription.details.unlink.packageIEs.action")}"]]
+                        Map conflict_item_ie = [name: "${g.message(code: "subscription.details.unlink.packageIEsSubChild")}", details: [['text': "${g.message(code: "subscription.details.unlink.packageIEsSubChild")} " + numOfIEsChildSubs]], action: [actionRequired: false, text: "${g.message(code: "subscription.details.unlink.packageIEs.action")}"]]
                         conflicts_list += conflict_item_ie
                     }
                     if (numOfPCsChildSubs > 0) {
-                        def conflict_item_pc = [name: "${g.message(code: "subscription.details.unlink.pendingChangesSubChild")}", details: [['text': "${g.message(code: "subscription.details.unlink.pendingChangesSubChild.numbers")} " + numOfPCsChildSubs]], action: [actionRequired: false, text: "${g.message(code: "subscription.details.unlink.pendingChanges.numbers.action")}"]]
+                        Map conflict_item_pc = [name: "${g.message(code: "subscription.details.unlink.pendingChangesSubChild")}", details: [['text': "${g.message(code: "subscription.details.unlink.pendingChangesSubChild.numbers")} " + numOfPCsChildSubs]], action: [actionRequired: false, text: "${g.message(code: "subscription.details.unlink.pendingChanges.numbers.action")}"]]
                         conflicts_list += conflict_item_pc
                     }
 
@@ -458,7 +457,7 @@ class SubscriptionController extends AbstractDebugController {
                         accessPointLinksChildSubs.add(detailItem)
                     }
                     if (accessPointLinksChildSubs) {
-                        def conflict_item_oap = [name: "${g.message(code: "subscription.details.unlink.accessPoints")}", details: accessPointLinksChildSubs, action: [actionRequired: false, text: "${g.message(code: "subscription.details.unlink.accessPoints.numbers.action")}"]]
+                        Map conflict_item_oap = [name: "${g.message(code: "subscription.details.unlink.accessPoints")}", details: accessPointLinksChildSubs, action: [actionRequired: false, text: "${g.message(code: "subscription.details.unlink.accessPoints.numbers.action")}"]]
                         conflicts_list += conflict_item_oap
                     }
 
