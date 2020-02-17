@@ -293,10 +293,6 @@ class PendingChangeService extends AbstractLockableService {
                 }
             }
             catch ( Exception e ) {
-                // org.springframework.dao.DuplicateKeyException:
-                // a different object with the same identifier value was already associated with the session: [com.k_int.kbplus.PendingChange#285954];
-                // nested exception is org.hibernate.NonUniqueObjectException: a different object with the same identifier value was already associated with the session: [com.k_int.kbplus.PendingChange#285954]
-
                 log.error("Problem accepting change",e)
                 result = false
             }

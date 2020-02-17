@@ -136,7 +136,7 @@ class ApiStatistic {
     }
 
     static private getPkgLicense(License lic) {
-        if (! lic || lic.status?.value == 'Deleted') {
+        if (! lic) {
             return null
         }
         else if (! lic.isPublicForApi) {
@@ -190,25 +190,19 @@ class ApiStatistic {
                 result.add(["NO_ACCESS" : ApiToolkit.NO_ACCESS_DUE_NOT_PUBLIC])
             }
             else {
-                def sub = [:]
-
-                if (subPkg.subscription.status?.value == 'Deleted') {
-                }
-                else {
-                    sub = ApiUnsecuredMapReader.getSubscriptionStubMap(subPkg.subscription)
-                }
+                Map<String, Object> sub = ApiUnsecuredMapReader.getSubscriptionStubMap(subPkg.subscription)
 
                 List<Org> orgList = []
 
                 OrgRole.findAllBySub(subPkg.subscription).each { ogr ->
 
                     if (ogr.roleType?.id in [RDStore.OR_SUBSCRIBER.id, RDStore.OR_SUBSCRIBER_CONS.id]) {
-                        if (ogr.org.id in accessibleOrgs.collect { it.id }) {
+                        if (ogr.org.id in accessibleOrgs.collect{ it.id }) {
 
                             if (ogr.org.status?.value == 'Deleted') {
                             }
                             else {
-                                def org = ApiUnsecuredMapReader.getOrganisationStubMap(ogr.org)
+                                Map<String, Object> org = ApiUnsecuredMapReader.getOrganisationStubMap(ogr.org)
                                 if (org) {
                                     orgList.add(ApiToolkit.cleanUp(org, true, true))
                                 }
@@ -220,21 +214,22 @@ class ApiStatistic {
                 if (orgList) {
                     sub.put('organisations', ApiToolkit.cleanUp(orgList, true, true))
 
-                    List<IssueEntitlement> ieList = []
+                    List ieList = []
 
-                    def tipps = TitleInstancePackagePlatform.findAllByPkgAndSub(subPkg.pkg, subPkg.subscription)
+                    List<TitleInstancePackagePlatform> tipps = TitleInstancePackagePlatform.findAllByPkgAndSub(subPkg.pkg, subPkg.subscription)
 
                     //println 'subPkg (' + subPkg.pkg?.id + " , " + subPkg.subscription?.id + ") > " + tipps
 
                     tipps.each { tipp ->
                         if (tipp.status?.value == 'Deleted') {
-                        } else {
-                            def ie = IssueEntitlement.findBySubscriptionAndTipp(subPkg.subscription, tipp)
+                        }
+                        else {
+                            IssueEntitlement ie = IssueEntitlement.findBySubscriptionAndTipp(subPkg.subscription, tipp)
                             if (ie) {
                                 if (ie.status?.value == 'Deleted') {
-
-                                } else {
-                                    ieList.add(ApiCollectionReader.getIssueEntitlementCollection(ie, ApiReader.IGNORE_SUBSCRIPTION_AND_PACKAGE, null))
+                                }
+                                else {
+                                    ieList.addAll(ApiCollectionReader.getIssueEntitlementCollection(ie, ApiReader.IGNORE_SUBSCRIPTION_AND_PACKAGE, null))
                                 }
                             }
                         }
