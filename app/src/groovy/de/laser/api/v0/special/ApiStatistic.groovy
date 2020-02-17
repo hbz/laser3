@@ -14,6 +14,9 @@ import groovy.util.logging.Log4j
 @Log4j
 class ApiStatistic {
 
+    /**
+     * checks implicit NATSTAT_SERVER_ACCESS
+     */
     static boolean calculateAccess(Package pkg) {
 
         if (pkg in getAccessiblePackages()) {
@@ -24,6 +27,9 @@ class ApiStatistic {
         }
     }
 
+    /**
+     * checks NATSTAT_SERVER_ACCESS
+     */
     static private List<Org> getAccessibleOrgs() {
 
         List<Org> orgs = OrgSettings.executeQuery(
@@ -37,6 +43,9 @@ class ApiStatistic {
         orgs
     }
 
+    /**
+     * checks implicit NATSTAT_SERVER_ACCESS
+     */
     static private List<Package> getAccessiblePackages() {
 
         List<Package> packages = []
@@ -57,7 +66,8 @@ class ApiStatistic {
     }
 
     /**
-     * Access checked via ApiManager.read()
+     * checks implicit NATSTAT_SERVER_ACCESS
+     *
      * @return JSON
      */
     static JSON getAllPackages() {
@@ -130,7 +140,7 @@ class ApiStatistic {
             return null
         }
         else if (! lic.isPublicForApi) {
-            return ['NOT_PUBLIC_FOR_API' : 'ACCESS_IS_BLOCKED']
+            return ["NO_ACCESS" : ApiToolkit.NO_ACCESS_DUE_NOT_PUBLIC]
         }
         def result = ApiUnsecuredMapReader.getLicenseStubMap(lic)
 
@@ -177,7 +187,7 @@ class ApiStatistic {
         subscriptionPackages.each { subPkg ->
 
             if (! subPkg.subscription.isPublicForApi) {
-                result.add(['NOT_PUBLIC_FOR_API': 'ACCESS_IS_BLOCKED'])
+                result.add(["NO_ACCESS" : ApiToolkit.NO_ACCESS_DUE_NOT_PUBLIC])
             }
             else {
                 def sub = [:]
@@ -241,7 +251,7 @@ class ApiStatistic {
                 }
                 else {
                     // result.add( ['NO_APPROVAL': subPkg.subscription.globalUID] )
-                    result.add( ['NO_APPROVAL': 'ACCESS_IS_BLOCKED'] )
+                    result.add( ["NO_ACCESS" : ApiToolkit.NO_ACCESS_DUE_NO_APPROVAL] )
                 }
             }
         }

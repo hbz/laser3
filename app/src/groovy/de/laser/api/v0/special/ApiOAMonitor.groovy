@@ -19,6 +19,9 @@ import org.codehaus.groovy.grails.orm.hibernate.cfg.GrailsHibernateUtil
 @Log4j
 class ApiOAMonitor {
 
+    /**
+     * checks implicit OAMONITOR_SERVER_ACCESS
+     */
     static boolean calculateAccess(Org org) {
 
         def resultSetting = OrgSettings.get(org, OrgSettings.KEYS.OAMONITOR_SERVER_ACCESS)
@@ -30,6 +33,9 @@ class ApiOAMonitor {
         }
     }
 
+    /**
+     * checks OAMONITOR_SERVER_ACCESS
+     */
     static private List<Org> getAccessibleOrgs() {
 
         List<Org> orgs = OrgSettings.executeQuery(
@@ -44,7 +50,8 @@ class ApiOAMonitor {
     }
 
     /**
-     * Access checked via ApiManager.read()
+     * checks implicit OAMONITOR_SERVER_ACCESS
+     *
      * @return JSON
      */
     static JSON getAllOrgs() {

@@ -15,6 +15,9 @@ class ApiToolkit {
     static final API_LEVEL_DATAMANAGER  = 'API_LEVEL_DATAMANAGER'
     static final API_LEVEL_INVOICETOOL  = 'API_LEVEL_INVOICETOOL'
 
+    static final NO_ACCESS_DUE_NO_APPROVAL  = 'NO_APPROVAL'
+    static final NO_ACCESS_DUE_NOT_PUBLIC   = 'NOT_PUBLIC'
+
     static List getAllApiLevels() {
         [API_LEVEL_READ, API_LEVEL_WRITE, API_LEVEL_DATAMANAGER, API_LEVEL_INVOICETOOL]
     }
