@@ -113,6 +113,7 @@ double t8 = 0L
                     <g:message code="task.linkto" /><g:message code="package.label" />
                 </label>
                 <g:select id="pkg" name="pkg" from="${validPackages}" optionKey="id" value="${ownobj?.id}"
+                          class="ui dropdown search many-to-one" required="" noSelection="[null: '']"/>
                           class="ui dropdown search many-to-one"
                           noSelection="${['' : message(code:'default.select.choose.label')]}"
                 />

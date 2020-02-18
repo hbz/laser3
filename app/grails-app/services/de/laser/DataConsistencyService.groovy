@@ -2,6 +2,7 @@ package de.laser
 
 import com.k_int.kbplus.*
 import de.laser.helper.DateUtil
+import de.laser.helper.SwissKnife
 import grails.util.Holders
 import org.codehaus.groovy.grails.plugins.web.taglib.ApplicationTagLib
 
@@ -9,6 +10,7 @@ import java.text.SimpleDateFormat
 
 class DataConsistencyService {
 
+    def grailsApplication
     def springSecurityService
     def deletionService
     def g = Holders.grailsApplication.mainContext.getBean(ApplicationTagLib)
@@ -191,5 +193,45 @@ class DataConsistencyService {
         }
 
         result
+    }
+
+    def checkBooleanFields() {
+
+        List<String> candidates = []
+        List<String> statements = []
+
+        grailsApplication.getArtefacts("Domain").toList().sort{ it.clazz.simpleName }.each { dc ->
+
+            Collection bools = dc.persistentProperties.findAll {it.type in [boolean, java.lang.Boolean]}
+
+            if (! bools.isEmpty()) {
+                Map<String, Boolean> props = [:]
+
+                bools.each { it ->
+                    props.put( "${it.name}", dc.constraints[ it.name ].isNullable() )
+                }
+
+                // println " " + dc.clazz.simpleName
+                props.each{ k,v ->
+                    // String ctrl = "select count(o) from ${dc.clazz.simpleName} o where o.${k} is null"
+                    // println "   nullable ? ${k} : ${v}, DB contains null values : " + Org.executeQuery(ctrl)
+
+                    if (v.equals(true)) {
+                        candidates.add( "${dc.clazz.simpleName}.${k} -> ${v}" )
+
+                        String tableName = SwissKnife.toSnakeCase(dc.clazz.simpleName)
+                        String columnName = SwissKnife.toSnakeCase(k)
+                        String sql = "update ${tableName} set ${columnName} = false where ${columnName} is null;"
+
+                        statements.add( sql )
+                    }
+                }
+            }
+        }
+
+        println "___ found candidates: "
+        candidates.each { println it }
+        println "___ generated pseudo statements: "
+        statements.each { println it }
     }
 }
