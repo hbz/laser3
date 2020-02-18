@@ -15,9 +15,7 @@ import grails.plugin.springsecurity.annotation.Secured
 import grails.util.Holders
 import grails.web.Action
 import groovy.xml.MarkupBuilder
-import junit.extensions.ActiveTestSuite
 import org.hibernate.SessionFactory
-import org.joda.time.LocalDate
 import org.quartz.JobKey
 import org.quartz.impl.matchers.GroupMatcher
 import org.springframework.transaction.TransactionStatus
@@ -579,11 +577,6 @@ class YodaController {
 
     @Secured(['ROLE_YODA'])
     def fullReset() {
-
-       log.debug("Delete all existing FT Control entries");
-       FTControl.withTransaction {
-            FTControl.executeUpdate("delete FTControl c")
-       }
 
        log.debug("Clear ES")
        dataloadService.clearDownAndInitES()
@@ -1658,12 +1651,6 @@ class YodaController {
         result.candidates = [OrgPrivateProperty: opp, SubscriptionPrivateProperty: spp, LicensePrivateProperty: lpp, PersonPrivateProperty: ppp]
 
         render view: 'databaseMigration', model: result
-    }
-
-    @Secured(['ROLE_YODA'])
-    def frontend() {
-        Map<String, Object> result = [test:123]
-        result
     }
 
     @Secured(['ROLE_YODA'])

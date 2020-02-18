@@ -18,6 +18,7 @@
 
         <g:select from="${availableOrgTypes}"
                   class="ui dropdown fluid"
+                    id="orgTypeSelection"
                   optionKey="id"
                   optionValue="${{ it?.getI10n('value') }}"
                   name="orgType"

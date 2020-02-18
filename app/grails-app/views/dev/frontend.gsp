@@ -379,9 +379,11 @@ if (customerType) {
 
         <g:link controller="yoda"
                 action="frontend"
+                extaContentFlag="false"
                 params=""
                 data-content="Hier kommt der Tooltip rein"
                 data-confirm-messageUrl="${createLink(controller:'ajax', action:'genericDialogMessage', params:[template:'abc'])}"
+                data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.function", args: ['Button auf der YODA/FRONTENDSEITE'])}"
                 data-confirm-term-how="delete"
                 class="ui icon negative button js-open-confirm-modal la-popup-tooltip la-delay"
                 role="button">
@@ -440,7 +442,7 @@ if (customerType) {
 
 <h1>Offene Fragen in Bezug auf WCAG</h1>
 <h2>Icons</h2>
-<h3>Dekorative Icon mit einer Dopplung der Semantik durch Text, der daneben steht oder ohne Linkfunktion</h3>
+<h3>Dekorative Icon mit einer Dopplung der Semantik durch Text, der daneben steht.</h3>
 
 <div class="ui icon info message">
     <i aria-hidden="true" class="exclamation triangle icon"></i>
@@ -467,12 +469,10 @@ if (customerType) {
         class="ui circular label la-js-filter-total hidden">0</span>
 </button>
 <h3>Icons in einem Link ohne zusätzlichen Text</h3>
-<g:link controller="yoda" action="frontend" params="" class="ui icon positive button">
-    <i  class="checkmark icon"></i>
+<g:link aria-label="Das ist eine Beschreibung für den Accessibility Tree" controller="yoda" action="frontend" params="" class="ui icon positive button">
+    <i aria-hidden="true" class="checkmark icon"></i>
 </g:link>
-<g:link controller="yoda" action="frontend" params="" class="ui icon negative button">
-    <i aria-hidden="true" class="times icon"></i>
-</g:link>
+
 <r:script>
 
     var data = {

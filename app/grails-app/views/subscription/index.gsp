@@ -46,21 +46,21 @@
             <g:if test="${entitlements?.size() > 0}">
                 ${message(code: 'subscription.entitlement.plural')} ${message(code: 'default.paginate.offset', args: [(offset + 1), (offset + (entitlements?.size())), num_sub_rows])}. (
                 <g:if test="${params.mode == 'advanced'}">
-                    ${message(code: 'subscription.details.advanced.note', default: 'Includes Expected or Expired entitlements, switch to')}
+                    ${message(code: 'subscription.details.advanced.note')}
                     <g:link controller="subscription" action="index"
                             params="${params + ['mode': 'basic']}">${message(code: 'default.basic')}</g:link>
-                    ${message(code: 'subscription.details.advanced.note.end', default: 'view to hide them')}
+                    ${message(code: 'subscription.details.advanced.note.end')}
                 </g:if>
                 <g:else>
-                    ${message(code: 'subscription.details.basic.note', default: 'Expected or Expired entitlements are filtered, use')}
+                    ${message(code: 'subscription.details.basic.note')}
                     <g:link controller="subscription" action="index" params="${params + ['mode': 'advanced']}"
                             type="button">${message(code: 'default.advanced')}</g:link>
-                    ${message(code: 'subscription.details.basic.note.end', default: 'view to see them')}
+                    ${message(code: 'subscription.details.basic.note.end')}
                 </g:else>
                 )
             </g:if>
             <g:else>
-                ${message(code: 'subscription.details.no_ents', default: 'No entitlements yet')}
+                ${message(code: 'subscription.details.no_ents')}
             </g:else>
 
         </div>
@@ -209,7 +209,7 @@
                             <th>
 
                                 <button data-position="top right"
-                                        data-content="${message(code: 'default.button.apply_batch.label', default: 'Apply Batch Changes')}"
+                                        data-content="${message(code: 'default.button.apply_batch.label')}"
                                         type="submit" onClick="return confirmSubmit()"
                                         class="ui icon button la-popup-tooltip la-delay"><i class="check icon"></i>
                                 </button>
@@ -287,7 +287,7 @@
                                     <g:if test="${editable}">
                                         <semui:xEditable owner="${ie}" type="date" field="accessStartDate"/>
                                         <i class="grey question circle icon la-popup-tooltip la-delay"
-                                           data-content="${message(code: 'subscription.details.access_start.note', default: 'Leave empty to default to sub start date')}"></i>
+                                           data-content="${message(code: 'subscription.details.access_start.note')}"></i>
                                     </g:if>
                                     <g:else>
                                         <g:formatDate format="${message(code: 'default.date.format.notime')}"
@@ -298,7 +298,7 @@
                                     <g:if test="${editable}">
                                         <semui:xEditable owner="${ie}" type="date" field="accessEndDate"/>
                                         <i class="grey question circle icon la-popup-tooltip la-delay"
-                                           data-content="${message(code: 'subscription.details.access_end.note', default: 'Leave empty to default to sub end date')}"></i>
+                                           data-content="${message(code: 'subscription.details.access_end.note')}"></i>
                                     </g:if>
                                     <g:else>
                                         <g:formatDate format="${message(code: 'default.date.format.notime')}"
@@ -369,7 +369,7 @@
 
     function confirmSubmit() {
       if ( $('#bulkOperationSelect').val() === 'remove' ) {
-        var agree=confirm('${message(code: 'default.continue.confirm', default: 'Are you sure you wish to continue?')}');
+        var agree=confirm('${message(code: 'default.continue.confirm')}');
           if (agree)
             return true ;
           else

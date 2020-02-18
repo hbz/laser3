@@ -309,10 +309,6 @@
           format: date-time
         instanceOf:
           $ref: "#/components/schemas/LicenseStub"
-        isPublic:
-          type: string #mapped to boolean
-          description: Mapping RefdataCategory "${RDConstants.Y_N}"
-          enum: <% printRefdataEnum(RDConstants.Y_N, 12) %>
         lastUpdated:
           type: string
           format: date-time

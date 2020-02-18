@@ -552,7 +552,7 @@ from Subscription as s where
                 delLicense.status = RefdataValue.getByValueAndCategory('Deleted', RDConstants.LICENSE_STATUS)
                 delLicense.save(flush: true)
             } else {
-                flash.error = message(code: 'myinst.actionCurrentLicense.error', default: 'Unable to delete - The selected license has attached licenses')
+                flash.error = message(code: 'myinst.actionCurrentLicense.error')
             }
         } else {
             log.warn("${result.user} attempted to delete license ${delLicense} without perms")

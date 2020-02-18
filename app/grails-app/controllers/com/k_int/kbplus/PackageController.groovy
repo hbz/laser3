@@ -421,7 +421,7 @@ class PackageController extends AbstractDebugController {
             params.insrt = "Y"
             params.dlt = "Y"
             params.updt = "Y"
-            flash.message = message(code: 'package.compare.flash', default: "Please select two packages for comparison.")
+            flash.message = message(code: 'package.compare.flash')
             result
         }
 
@@ -1154,7 +1154,7 @@ class PackageController extends AbstractDebugController {
         List<Package> pkgDuplicates = Package.executeQuery('select pkg from Package pkg where pkg.gokbId in (select p.gokbId from Package p group by p.gokbId having count(p.gokbId) > 1)')
         Map<String,List<Package>> result = [pkgDuplicates: pkgDuplicates]
         if(pkgDuplicates) {
-            List<Package> pkgDupsWithTipps = Package.executeQuery('select distinct(tipp.pkg) from TitleInstancePackagePlatform tipp where tipp.pkg in (:pkg) and tipp.status != :deleted',[pkg:pkgDuplicates,deleted:RDStore.TIPP_DELETED])
+            List<Package> pkgDupsWithTipps = Package.executeQuery('select distinct(tipp.pkg) from TitleInstancePackagePlatform tipp where tipp.pkg in (:pkg) and tipp.status != :deleted',[pkg:pkgDuplicates,deleted:RDStore.TIPP_STATUS_DELETED])
             List<Package> pkgDupsWithoutTipps = []
             pkgDuplicates.each { pkg ->
                 if(!pkgDupsWithTipps.contains(pkg))

@@ -14,7 +14,7 @@
     <semui:crumb controller="subscription" action="index" id="${subscriptionInstance.id}"
                  text="${subscriptionInstance.name}"/>
     <semui:crumb class="active"
-                 text="${message(code: 'subscription.details.linkPackage.heading', default: 'Link Subscription to Packages')}"/>
+                 text="${message(code: 'subscription.details.linkPackage.heading')}"/>
 </semui:breadcrumbs>
 
 <semui:controlButtons>
@@ -89,7 +89,7 @@
                             <g:sortableColumn property="platformName"
                                               title="${message(code: 'package.nominalPlatform')}"
                                               params="${params}"/>
-                            <th>${message(code: 'default.action.label', default: 'Action')}</th>
+                            <th>${message(code: 'default.action.label')}</th>
                         </tr>
                         </thead>
                         <tbody>
@@ -105,7 +105,7 @@
                                             <i title="GOKB Link" class="external alternate icon"></i>
                                         </a>
                                     </g:else>
-                                        <br><b>(${hit.titleCount ?: '0'} ${message(code: 'title.plural', default: 'Titles')})</b>
+                                        <br><b>(${hit.titleCount ?: '0'} ${message(code: 'title.plural')})</b>
                                     </td>
                                     <td>
                                         <g:if test="${com.k_int.kbplus.Org.findByGokbId(hit.providerUuid)}">
@@ -129,15 +129,15 @@ l
                                             <g:link action="linkPackage" class="ui mini button packageLinkWithoutIE"
                                                     id="${params.id}"
                                                     params="${[addUUID: hit.uuid, source: hit.url, addType: 'Without']}"
-                                                    style="white-space:nowrap;">${message(code: 'subscription.details.link.no_ents', default: 'Link (no Entitlements)')}</g:link>
+                                                    style="white-space:nowrap;">${message(code: 'subscription.details.link.no_ents')}</g:link>
                                             <br/><br/>
                                             <g:link action="linkPackage" class="ui mini button packageLink"
                                                     id="${params.id}"
                                                     params="${[addUUID: hit.uuid, source: hit.url, addType: 'With']}"
-                                                    style="white-space:nowrap;">${message(code: 'subscription.details.link.with_ents', default: 'Link (with Entitlements)')}</g:link>
+                                                    style="white-space:nowrap;">${message(code: 'subscription.details.link.with_ents')}</g:link>
                                         </g:if>
                                         <g:else>
-                                            <span><b>${message(code: 'subscription.details.linkPackage.currentPackage', default: 'This package is already linked to the license!')}</b>
+                                            <span><b>${message(code: 'subscription.details.linkPackage.currentPackage')}</b>
                                             </span>
                                             <g:set var="hasCostItems" value="${CostItem.executeQuery('select ci from CostItem ci where ci.subPkg.pkg.gokbId = :hit and ci.subPkg.subscription = :sub',[hit:hit.uuid,sub:subscriptionInstance])}" />
                                             <br>
@@ -189,7 +189,7 @@ l
     <div class="four wide column">
         <div class="ui card">
             <div class="content">
-                <div class="header">${message(code: 'subscription.details.linkPackage.current', default: 'Current Links', args: [subscriptionInstance.name])}</div>
+                <div class="header">${message(code: 'subscription.details.linkPackage.current', args: [subscriptionInstance.name])}</div>
             </div>
             <g:each in="${subscriptionInstance.packages.sort { it.pkg.name }}" var="sp">
                 <div class="content">
@@ -241,7 +241,7 @@ l
 
             evt.preventDefault();
 
-            var check = confirm('${message(code: 'subscription.details.link.with_ents.confirm', default: 'Are you sure you want to add with entitlements?')}');
+            var check = confirm('${message(code: 'subscription.details.link.with_ents.confirm')}');
             console.log(check)
             if (check == true) {
                 toggleAlert();
@@ -253,7 +253,7 @@ l
 
             evt.preventDefault();
 
-            var check = confirm('${message(code: 'subscription.details.link.no_ents.confirm', default: 'Are you sure you want to add with entitlements?')}');
+            var check = confirm('${message(code: 'subscription.details.link.no_ents.confirm')}');
             console.log(check)
             if (check == true) {
                 toggleAlert();

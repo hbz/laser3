@@ -2,6 +2,29 @@
 
 **Ticket    Date    Branch      Author  Feature/Bug     Description/Keywords**
 
+
+2123   11.02.2020  hbz-dev     Moe     Feature      Pakete auch in Kindlizenzen entknüpfen
+
+2146    11.02.2020  hbz-dev     Moe     Feature     Bulk Prozesse bei Teilnehmerverwaltung ermöglichen
+
+2176    14.02.2020  hbz-dev     David   Feature     Admin-Sicht: Unterschiede zwischen Servern
+
+2184    14.02.2020  hbz-dev     David   Bug         Vererbung im hbz-dev defekt
+
+2148    13.02.2020  hbz-dev     David   Feature     Individuelle Freigabe für API-Ausgabe für Lizenzen und Verträge
+
+--      12.02.2020  rc1.2       Andreas Bug         Sortierung nach Enddatum war bei eigenen Kosten innerhalb einer Lizenz nicht möglich
+
+2179    12.02.2020  rc1.2       Andreas Bug         Übernahme des Anbieternamens in Sync nachgeholt
+
+2180    12.02.2020  rc1.2       Moe     Bug         NullPointerException subscription/index 
+
+2181    12.02.2020  rc1.2       Moe     Bug         processUnLinkPackagesConsortia: Schlüssel wird noch auf org_access_point_link verwiesen
+
+2174    12.02.2020  rc1.2       Moe     Bug         title/list Cannot invoke method getI10n() on null object
+
+2173    12.02.2020  rc1.2       Moe     Bug         Unparseable date bei spotlightSearch
+
 2085    10.02.2020  hbz-dev     Moe     Feature     Sicherheitsabfrage Ent-/Verknüpfen von Konsorten
 
 2005    10.02.2020  hbz-dev     Moe     Feature     "Mehrjahreslaufzeit" auch für lokale Lizenzen?

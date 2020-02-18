@@ -203,7 +203,7 @@
 			<li><g:link controller="address" action="show" id="${a.id}">${a}</g:link></li>
 		</g:each>
 		<li class="add">
-			<g:link controller="address" action="create" params="['org.id': orgInstance?.id]">${message(code: 'default.add.label', args: [message(code: 'address.label', default: 'Address')])}</g:link>
+			<g:link controller="address" action="create" params="['org.id': orgInstance?.id]">${message(code: 'default.add.label', args: [message(code: 'address.label')])}</g:link>
 		</li>
 	</ul>
 </div>
@@ -233,7 +233,7 @@
 			<li><g:link controller="contact" action="show" id="${c.id}">${c}</g:link></li>
 		</g:each>
 		<li class="add">
-			<g:link controller="contact" action="create" params="['org.id': orgInstance?.id]">${message(code: 'default.add.label', args: [message(code: 'contact.label', default: 'Contact')])}</g:link>
+			<g:link controller="contact" action="create" params="['org.id': orgInstance?.id]">${message(code: 'default.add.label', args: [message(code: 'contact.label')])}</g:link>
 		</li>
 	</ul>
 </div>

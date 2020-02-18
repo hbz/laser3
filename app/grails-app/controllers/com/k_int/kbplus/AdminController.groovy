@@ -112,6 +112,12 @@ class AdminController extends AbstractDebugController {
     }
 
     @Secured(['ROLE_ADMIN'])
+    def serverDifferences() {
+      Map<String, Object> result = [:]
+      result
+    }
+
+    @Secured(['ROLE_ADMIN'])
     def updatePendingChanges() {
         //Find all pending changes with license FK and timestamp after summer 14
         // For those with changeType: CustomPropertyChange, change it to PropertyChange

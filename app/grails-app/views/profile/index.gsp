@@ -369,12 +369,12 @@
                 </div>
 
                 <div class="field">
-                    <label>${message(code: 'profile.itemsTimeWindow', default:'Default Page Size')}</label>
+                    <label>${message(code: 'profile.itemsTimeWindow')}</label>
                     <semui:xEditable owner="${user.getSetting(UserSettings.KEYS.DASHBOARD_ITEMS_TIME_WINDOW, 14)}" field="strValue" />
                 </div>
 
                 <div class="field">
-                    <label>${message(code: 'profile.pagesize', default:'Default Page Size')}</label>
+                    <label>${message(code: 'profile.pagesize')}</label>
                     <semui:xEditable owner="${user.getSetting(UserSettings.KEYS.PAGE_SIZE, 10)}" field="strValue" />
                 </div>
 
@@ -455,7 +455,7 @@
 <div class="ui one column grid">
     <!--<div class="column wide sixteen">
                     <h4 class="ui dividing header">
-                        ${message(code: 'profile.membership', default:'Administrative memberships')}
+                        ${message(code: 'profile.membership')}
                     </h4>
                 </div>-->
 

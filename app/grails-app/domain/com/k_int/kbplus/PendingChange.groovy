@@ -107,7 +107,7 @@ class PendingChange {
         dateCreated (nullable: true, blank: false)
     }
 
-    def beforeInsert() {
+    def workaroundForDatamigrate() {
         // workaround until refactoring is done
         if (payload) {
             JSONElement pl = getPayloadAsJSON()

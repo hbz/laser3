@@ -120,7 +120,7 @@
                       </g:if>
                       <g:if test="${i.sub}">
                         <g:link controller="subscription" action="index" id="${i.sub.id}">
-                          ${message(code:'default.subscription.label', default:'Subscription')}: ${i.sub.name} (${i.sub.status?.getI10n('value')})
+                          ${message(code:'default.subscription.label')}: ${i.sub.name} (${i.sub.status?.getI10n('value')})
                         </g:link>
                       </g:if>
                       <g:if test="${i.lic}">
@@ -130,7 +130,7 @@
                       </g:if>
                       <g:if test="${i.title}">
                         <g:link controller="title" action="show" id="${i.title.id}">
-                          ${message(code:'title.label', default:'Title')}: ${i.title.title} (${i.title.status?.getI10n('value')})
+                          ${message(code:'title.label')}: ${i.title.title} (${i.title.status?.getI10n('value')})
                         </g:link>
                       </g:if> 
                     </li>

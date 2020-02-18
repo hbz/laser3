@@ -2,7 +2,7 @@
 <html>
   <head>
     <meta name="layout" content="semanticUI"/>
-    <title>${message(code:'laser', default:'LAS:eR')} - ${message(code:'menu.institutions.imp_sub_work')}</title>
+    <title>${message(code:'laser')} - ${message(code:'menu.institutions.imp_sub_work')}</title>
   </head>
 
   <body>
@@ -45,17 +45,17 @@
           <table class="ui celled la-table table">
             <thead>
               <tr>
-                <th>${message(code:'title.label', default:'Title')}</th>
-                <th>${message(code:'subscription.details.from_pkg', default:'From Pkg')}</th>
+                <th>${message(code:'title.label')}</th>
+                <th>${message(code:'subscription.details.from_pkg')}</th>
                 <th>ISSN</th>
                 <th>eISSN</th>
-                <th>${message(code:'default.startDate.label', default:'Start Date')}</th>
-                <th>${message(code:'tipp.startVolume', default:'Start Volume')}</th>
-                <th>${message(code:'tipp.startIssue', default:'Start Issue')}</th>
-                <th>${message(code:'default.endDate.label', default:'End Date')}</th>
-                <th>${message(code:'tipp.endVolume', default:'End Volume')}</th>
-                <th>${message(code:'tipp.endIssue', default:'End Issue')}</th>
-                <th>${message(code:'subscription.details.core_medium', default:'Core Medium')}</th>
+                <th>${message(code:'default.startDate.label')}</th>
+                <th>${message(code:'tipp.startVolume')}</th>
+                <th>${message(code:'tipp.startIssue')}</th>
+                <th>${message(code:'default.endDate.label')}</th>
+                <th>${message(code:'tipp.endVolume')}</th>
+                <th>${message(code:'tipp.endIssue')}</th>
+                <th>${message(code:'subscription.details.core_medium')}</th>
               </tr>
             </thead>
             <tbody>
@@ -73,10 +73,10 @@
                   <td><g:link controller="package" action="show" id="${e.base_entitlement.pkg.id}">${e.base_entitlement.pkg.name}(${e.base_entitlement.pkg.id})</g:link></td>
                   <td>${e.base_entitlement.title.getIdentifierValue('ISSN')}</td>
                   <td>${e.base_entitlement.title.getIdentifierValue('eISSN')}</td>
-                  <td>${e.start_date} (Default:<g:formatDate format="${message(code:'default.date.format.notime', default:'yyyy-MM-dd')}" date="${e.base_entitlement.startDate}"/>)</td>
+                  <td>${e.start_date} (Default:<g:formatDate format="${message(code:'default.date.format.notime')}" date="${e.base_entitlement.startDate}"/>)</td>
                   <td>${e.base_entitlement.startVolume}</td>
                   <td>${e.base_entitlement.startIssue}</td>
-                  <td>${e.end_date} (Default:<g:formatDate format="${message(code:'default.date.format.notime', default:'yyyy-MM-dd')}" date="${e.base_entitlement.endDate}"/>)</td>
+                  <td>${e.end_date} (Default:<g:formatDate format="${message(code:'default.date.format.notime')}" date="${e.base_entitlement.endDate}"/>)</td>
                   <td>${e.base_entitlement.endVolume}</td>
                   <td>${e.base_entitlement.endIssue}</td>
                   <td>${e.core_status?:'N'}</td>

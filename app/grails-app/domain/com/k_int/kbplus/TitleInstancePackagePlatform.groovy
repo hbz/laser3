@@ -7,7 +7,6 @@ import de.laser.domain.TIPPCoverage
 import de.laser.helper.RDConstants
 import de.laser.helper.RDStore
 import de.laser.helper.RefdataAnnotation
-import de.laser.traits.AuditableTrait
 import groovy.time.TimeCategory
 import org.apache.commons.logging.Log
 import org.apache.commons.logging.LogFactory
@@ -315,7 +314,7 @@ class TitleInstancePackagePlatform extends AbstractBaseDomain /*implements Audit
     changeNotificationService.broadcastEvent("${this.class.name}:${this.id}", changeDocument)
     Locale locale = LocaleContextHolder.getLocale()
 
-    RefdataValue deleted_tipp_status = RDStore.TIPP_DELETED
+    RefdataValue deleted_tipp_status = RDStore.TIPP_STATUS_DELETED
     String deleted_tipp_status_oid = "com.k_int.kbplus.RefdataValue:${deleted_tipp_status.id}".toString()
     // Tipp Property Change Event.. notify any dependent IEs
     List<IssueEntitlement> dep_ies = IssueEntitlement.findAllByTipp(this)
@@ -539,7 +538,7 @@ class TitleInstancePackagePlatform extends AbstractBaseDomain /*implements Audit
   static def expunge(tipp_id) {
     try {
       static_logger.debug("  -> TIPPs");
-      def deleted_ie = RDStore.TIPP_DELETED
+      def deleted_ie = RDStore.TIPP_STATUS_DELETED
       IssueEntitlement.executeUpdate("delete from IssueEntitlement ie where ie.tipp.id=:tipp_id and ie.status=:ie_del",[tipp_id:tipp_id,ie_del:deleted_ie])
       TitleInstancePackagePlatform.executeUpdate('delete from TitleInstancePackagePlatform tipp where tipp.id = ?',[tipp_id])
     }

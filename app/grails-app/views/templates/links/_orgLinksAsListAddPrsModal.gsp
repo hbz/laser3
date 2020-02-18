@@ -1,6 +1,6 @@
 <semui:modal id="${cssId}" text="Neuen ${modalPrsLinkRole.getI10n("value")} hinzufügen" hideSubmitButton="true">
 
-    <p>${message(code:'myinst.addressBook.visibleOnly', default:'Some persons are visible to you due your addressbook')}</p>
+    <p>${message(code:'myinst.addressBook.visibleOnly')}</p>
 
     <div class="field">
         <table class="ui celled la-table la-table-small table">

@@ -9,7 +9,7 @@
         <div class="ui segment">
 
             <h3 class="ui header">
-                ${message(code:'template.pendingChanges', default:'There are pending change notifications')}
+                ${message(code:'template.pendingChanges')}
             </h3>
     </g:if>
 

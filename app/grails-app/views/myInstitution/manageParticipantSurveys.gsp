@@ -34,7 +34,7 @@
 
                 <div class="ui input">
                     <input type="text" id="name" name="name"
-                           placeholder="${message(code: 'default.search.ph', default: 'enter search term...')}"
+                           placeholder="${message(code: 'default.search.ph')}"
                            value="${params.name}"/>
                 </div>
             </div>

@@ -6,7 +6,7 @@
     List<DocContext> sharedItems = []
 
     ownobj.documents.sort{it.owner?.title}.each{ it ->
-        if (it.status != RDStore.DOC_DELETED){
+        if (it.status != RDStore.DOC_CTX_STATUS_DELETED){
             if (it.sharedFrom) {
                 sharedItems << it
             }

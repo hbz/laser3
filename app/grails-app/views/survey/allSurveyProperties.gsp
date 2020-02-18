@@ -7,7 +7,7 @@
 <html>
 <head>
     <meta name="layout" content="semanticUI"/>
-    <title>${message(code: 'laser')} : ${message(code: 'myinst.currentSubscriptions.label', default: 'Current Subscriptions')}</title>
+    <title>${message(code: 'laser')} : ${message(code: 'myinst.currentSubscriptions.label')}</title>
 </head>
 
 <body>
@@ -170,17 +170,17 @@
 
             <div class="three fields">
                 <div class="field six wide">
-                    <label class="property-label">${message(code: 'surveyProperty.expl.label', default: 'Explanation')}</label>
+                    <label class="property-label">${message(code: 'surveyProperty.expl.label')}</label>
                     <textarea name="expl" class="ui textarea"></textarea>
                 </div>
 
                 <div class="field six wide">
-                    <label class="property-label">${message(code: 'surveyProperty.introduction.label', default: 'Introduction')}</label>
+                    <label class="property-label">${message(code: 'surveyProperty.introduction.label')}</label>
                     <textarea name="introduction" class="ui textarea"></textarea>
                 </div>
 
                 <div class="field six wide">
-                    <label class="property-label">${message(code: 'surveyProperty.comment.label', default: 'Comment')}</label>
+                    <label class="property-label">${message(code: 'surveyProperty.comment.label')}</label>
                     <textarea name="comment" class="ui textarea"></textarea>
                 </div>
 
@@ -212,7 +212,7 @@
         minimumInputLength: 1,
 
         formatInputTooShort: function () {
-            return "${message(code: 'select2.minChars.note', default: 'Please enter 1 or more character')}";
+            return "${message(code: 'select2.minChars.note')}";
         },
         formatNoMatches: function() {
             return "${message(code: 'select2.noMatchesFound')}";

@@ -45,7 +45,7 @@ class ApiStubReader {
     static requestLicenseStub(License lic, Org context) {
         Map<String, Object> result = [:]
 
-        if (!lic) {
+        if (! lic) {
             return null
         }
         boolean hasAccess = ApiLicense.calculateAccess(lic, context)
@@ -63,7 +63,7 @@ class ApiStubReader {
     static requestSubscriptionStub(Subscription sub, Org context) {
         Map<String, Object> result = [:]
 
-        if (!sub) {
+        if (! sub) {
             return null
         }
         boolean hasAccess = ApiSubscription.calculateAccess(sub, context)

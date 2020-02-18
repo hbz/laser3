@@ -47,13 +47,13 @@ class License
 
     // AuditableTrait
     static auditable            = [ ignore: ['version', 'lastUpdated', 'pendingChanges'] ]
-    static controlledProperties = [ 'startDate', 'endDate', 'licenseUrl', 'status', 'type' ]
+    static controlledProperties = [ 'startDate', 'endDate', 'licenseUrl', 'status', 'type', 'isPublicForApi' ]
 
     License instanceOf
 
     // If a license is slaved then any changes to instanceOf will automatically be applied to this license
     boolean isSlaved
-    boolean isPublic
+    boolean isPublicForApi
 
     @RefdataAnnotation(cat = RDConstants.LICENSE_STATUS)
     RefdataValue status
@@ -119,7 +119,7 @@ class License
            noticePeriod column:'lic_notice_period'
              licenseUrl column:'lic_license_url'
              instanceOf column:'lic_parent_lic_fk', index:'lic_parent_idx'
-               isPublic column:'lic_is_public'
+         isPublicForApi column:'lic_is_public_for_api'
                isSlaved column:'lic_is_slaved'
             licenseType column:'lic_license_type_str'
           //licenseStatus column:'lic_license_status_str'
@@ -147,7 +147,7 @@ class License
         type(nullable:true, blank:false)
         reference(nullable:false, blank:false)
         sortableReference(nullable:true, blank:true) // !! because otherwise, the beforeInsert() method which generates a value is not executed
-        isPublic    (nullable:false, blank:false)
+        isPublicForApi (nullable:true, blank:true)
         noticePeriod(nullable:true, blank:true)
         licenseUrl(nullable:true, blank:true)
         instanceOf(nullable:true, blank:false)
@@ -378,9 +378,6 @@ class License
     }
 
     boolean hasPerm(perm, user) {
-        if (perm == 'view' && this.isPublic) {
-            return true
-        }
         def adm = Role.findByAuthority('ROLE_ADMIN')
         def yda = Role.findByAuthority('ROLE_YODA')
 
@@ -753,7 +750,7 @@ class License
 
       String INSTITUTIONAL_LICENSES_QUERY = """
  FROM License AS l WHERE
-( exists ( SELECT ol FROM OrgRole AS ol WHERE ol.lic = l AND ol.org.id =(:orgId) AND ol.roleType.id IN (:orgRoles)) OR l.isPublic = (:publicBool))
+( exists ( SELECT ol FROM OrgRole AS ol WHERE ol.lic = l AND ol.org.id =(:orgId) AND ol.roleType.id IN (:orgRoles)) )
 AND lower(l.reference) LIKE (:ref)
 """
       def result = []
@@ -767,15 +764,8 @@ AND lower(l.reference) LIKE (:ref)
           roleTypes << params.roleType?.toLong()
       }
 
-      boolean publicBool = false // ERMS-1562
-      if (params.isPublic) {
-          if (params.isPublic.toString() in ['1', 'Yes', 'yes', 'Ja', 'ja', 'true']) { // todo tmp fallback; remove later
-              publicBool = true
-          }
-      }
-
       ql = License.executeQuery("select l ${INSTITUTIONAL_LICENSES_QUERY}",
-        [orgId: params.inst?.toLong(), orgRoles: roleTypes, publicBool: publicBool, ref: "${params.q.toLowerCase()}"])
+        [orgId: params.inst?.toLong(), orgRoles: roleTypes, ref: "${params.q.toLowerCase()}"])
 
 
       if ( ql ) {
@@ -796,7 +786,6 @@ AND lower(l.reference) LIKE (:ref)
                 reference: reference,
                 sortableReference: sortableReference,
                 licenseCategory: licenseCategory, // fk
-                isPublic: isPublic,
                 noticePeriod: noticePeriod,
                 licenseUrl: licenseUrl,
                 licenseType: licenseType,

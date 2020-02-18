@@ -14,6 +14,9 @@ import groovy.util.logging.Log4j
 @Log4j
 class ApiStatistic {
 
+    /**
+     * checks implicit NATSTAT_SERVER_ACCESS
+     */
     static boolean calculateAccess(Package pkg) {
 
         if (pkg in getAccessiblePackages()) {
@@ -24,6 +27,9 @@ class ApiStatistic {
         }
     }
 
+    /**
+     * checks NATSTAT_SERVER_ACCESS
+     */
     static private List<Org> getAccessibleOrgs() {
 
         List<Org> orgs = OrgSettings.executeQuery(
@@ -37,6 +43,9 @@ class ApiStatistic {
         orgs
     }
 
+    /**
+     * checks implicit NATSTAT_SERVER_ACCESS
+     */
     static private List<Package> getAccessiblePackages() {
 
         List<Package> packages = []
@@ -44,7 +53,7 @@ class ApiStatistic {
 
         if (orgs) {
             packages = com.k_int.kbplus.Package.executeQuery(
-                    "select pkg from SubscriptionPackage sp " +
+                    "select distinct(pkg) from SubscriptionPackage sp " +
                             "join sp.pkg pkg join sp.subscription s join s.orgRelations ogr join ogr.org o " +
                             "where o in (:orgs) and (pkg.packageStatus is null or pkg.packageStatus != :deleted)", [
                     orgs: orgs,
@@ -57,7 +66,8 @@ class ApiStatistic {
     }
 
     /**
-     * Access checked via ApiManager.read()
+     * checks implicit NATSTAT_SERVER_ACCESS
+     *
      * @return JSON
      */
     static JSON getAllPackages() {
@@ -126,8 +136,11 @@ class ApiStatistic {
     }
 
     static private getPkgLicense(License lic) {
-        if (! lic || lic.status?.value == 'Deleted') {
+        if (! lic) {
             return null
+        }
+        else if (! lic.isPublicForApi) {
+            return ["NO_ACCESS" : ApiToolkit.NO_ACCESS_DUE_NOT_PUBLIC]
         }
         def result = ApiUnsecuredMapReader.getLicenseStubMap(lic)
 
@@ -173,69 +186,50 @@ class ApiStatistic {
         Collection<Object> result = []
         subscriptionPackages.each { subPkg ->
 
-            def sub = [:]
-
-            if (subPkg.subscription.status?.value == 'Deleted') {
+            if (! subPkg.subscription.isPublicForApi) {
+                result.add(["NO_ACCESS" : ApiToolkit.NO_ACCESS_DUE_NOT_PUBLIC])
             }
             else {
-                sub = ApiUnsecuredMapReader.getSubscriptionStubMap(subPkg.subscription)
-            }
+                Map<String, Object> sub = ApiUnsecuredMapReader.getSubscriptionStubMap(subPkg.subscription)
 
-            List<Org> orgList = []
+                List<Org> orgList = []
 
-            OrgRole.findAllBySub(subPkg.subscription).each { ogr ->
+                OrgRole.findAllBySub(subPkg.subscription).each { ogr ->
 
-                if (ogr.roleType?.id in [RDStore.OR_SUBSCRIBER.id, RDStore.OR_SUBSCRIBER_CONS.id]) {
-                    if (ogr.org.id in accessibleOrgs.collect { it.id }) {
+                    if (ogr.roleType?.id in [RDStore.OR_SUBSCRIBER.id, RDStore.OR_SUBSCRIBER_CONS.id, RDStore.OR_SUBSCRIPTION_CONSORTIA.id]) {
+                        if (ogr.org.id in accessibleOrgs.collect{ it.id }) {
 
-                        if (ogr.org.status?.value == 'Deleted') {
-                        }
-                        else {
-                            def org = ApiUnsecuredMapReader.getOrganisationStubMap(ogr.org)
-                            if (org) {
-                                orgList.add(ApiToolkit.cleanUp(org, true, true))
+                            if (ogr.org.status?.value == 'Deleted') {
+                            }
+                            else {
+                                Map<String, Object> org = ApiUnsecuredMapReader.getOrganisationStubMap(ogr.org)
+                                if (org) {
+                                    orgList.add(ApiToolkit.cleanUp(org, true, true))
+                                }
                             }
                         }
                     }
                 }
-            }
 
-            if (orgList) {
+                if (orgList) {
+                    sub.put('organisations', ApiToolkit.cleanUp(orgList, true, true))
 
-                sub.put('organisations', ApiToolkit.cleanUp(orgList, true, true))
+                    List ieList = ApiCollectionReader.getIssueEntitlementCollection(subPkg, ApiReader.IGNORE_SUBSCRIPTION_AND_PACKAGE, null)
 
-                List<IssueEntitlement> ieList = []
-
-                def tipps = TitleInstancePackagePlatform.findAllByPkgAndSub(subPkg.pkg, subPkg.subscription)
-
-                //println 'subPkg (' + subPkg.pkg?.id + " , " + subPkg.subscription?.id + ") > " + tipps
-
-                tipps.each { tipp ->
-                    if (tipp.status?.value == 'Deleted') {
-                    } else {
-                        def ie = IssueEntitlement.findBySubscriptionAndTipp(subPkg.subscription, tipp)
-                        if (ie) {
-                            if (ie.status?.value == 'Deleted') {
-
-                            } else {
-                                ieList.add(ApiCollectionReader.getIssueEntitlementCollection(ie, ApiReader.IGNORE_SUBSCRIPTION_AND_PACKAGE, null))
-                            }
-                        }
+                    if (ieList) {
+                        sub.put('issueEntitlements', ApiToolkit.cleanUp(ieList, true, true))
                     }
-                }
-                if (ieList) {
-                    sub.put('issueEntitlements', ApiToolkit.cleanUp(ieList, true, true))
-                }
 
-                //result.add( ApiStubReader.resolveSubscriptionStub(subPkg.subscription, null, true))
-                //result.add( ApiReader.exportIssueEntitlements(subPkg, ApiCollectionReader.IGNORE_TIPP, null))
+                    //result.add( ApiStubReader.resolveSubscriptionStub(subPkg.subscription, null, true))
+                    //result.add( ApiReader.exportIssueEntitlements(subPkg, ApiCollectionReader.IGNORE_TIPP, null))
 
-                // only add sub if orgList is not empty
-                result.add(sub)
-            }
-            else {
-                // result.add( ['NO_APPROVAL': subPkg.subscription.globalUID] )
-                result.add( ['NO_APPROVAL': 'ACCESS_IS_BLOCKED'] )
+                    // only add sub if orgList is not empty
+                    result.add(sub)
+                }
+                else {
+                    // result.add( ['NO_APPROVAL': subPkg.subscription.globalUID] )
+                    result.add( ["NO_ACCESS" : ApiToolkit.NO_ACCESS_DUE_NO_APPROVAL] )
+                }
             }
         }
 

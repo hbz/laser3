@@ -21,16 +21,19 @@
 
 </semui:breadcrumbs>
 <br>
+
 <h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon/>${subscriptionInstance.name}</h1>
 
-<semui:anualRings object="${subscriptionInstance}" controller="subscription" action="${actionName}" navNext="${navNextSubscription}" navPrev="${navPrevSubscription}"/>
+<semui:anualRings object="${subscriptionInstance}" controller="subscription" action="${actionName}"
+                  navNext="${navNextSubscription}" navPrev="${navPrevSubscription}"/>
 
 <g:render template="navSubscriberManagement"/>
 
 <semui:messages data="${flash}"/>
 
 <h4>
-    <g:message code="subscription"/>: <g:link controller="subscription" action="show" id="${parentSub.id}">${parentSub.name}</g:link>
+    <g:message code="subscription"/>: <g:link controller="subscription" action="show"
+                                              id="${parentSub.id}">${parentSub.name}</g:link>
     <br><br>
 
 </h4>
@@ -85,56 +88,8 @@
 
     <g:if test="${params.tab == 'generalProperties'}">
         <div class="ui bottom attached tab segment active">
-            <div class="ui segment">
-                <g:form action="processSubscriptionPropertiesMembers" method="post" class="ui form">
-                    <g:hiddenField name="id" value="${params.id}"/>
-
-                    <h4>${message(code: 'subscription.subscriptionPropertiesMembers.info', args: args.memberType)}</h4>
-
-                    <div class="two fields">
-                        <semui:datepicker label="subscription.startDate.label" id="valid_from" name="valid_from"/>
-
-                        <semui:datepicker label="subscription.endDate.label" id="valid_to" name="valid_to"/>
-                    </div>
-
-                    <div class="three fields">
-                        <div class="field">
-                            <label>${message(code: 'default.status.label')}</label>
-                            <%
-                                def fakeList = []
-                                fakeList.addAll(RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_STATUS))
-                                fakeList.remove(com.k_int.kbplus.RefdataValue.getByValueAndCategory('Deleted', RDConstants.SUBSCRIPTION_STATUS))
-                            %>
-                            <laser:select name="status" from="${fakeList}" optionKey="id" optionValue="value"
-                                          noSelection="${['': '']}"
-                                          value="${['': '']}"/>
-                        </div>
-
-                        <div class="field">
-                            <label>${message(code: 'subscription.form.label')}</label>
-                            <laser:select name="form" from="${RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_FORM)}"
-                                          optionKey="id" optionValue="value" noSelection="${['': '']}"
-                                          value="${['': '']}"/>
-                        </div>
-
-                        <div class="field">
-                            <label>${message(code: 'subscription.resource.label')}</label>
-                            <laser:select name="resource"
-                                          from="${RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_RESOURCE)}"
-                                          optionKey="id" optionValue="value" noSelection="${['': '']}"
-                                          value="${['': '']}"/>
-                        </div>
-
-                    </div>
-
-                    <button class="ui button" type="submit">${message(code: 'default.button.save_changes')}</button>
-                </g:form>
-            </div>
 
             <g:set var="editableOld" value="${editable}"/>
-
-
-            <div class="divider"></div>
 
             <div class="ui segment">
                 <h3><g:message code="subscription.propertiesMembers.subscription" args="${args.superOrgType}"/></h3>
@@ -185,103 +140,160 @@
                 </table>
             </div>
 
+            <div class="divider"></div>
+
             <div class="ui segment">
-                <h3>
-                    ${args.memberType[0]}
-                    <semui:totalNumber total="${filteredSubChilds?.size()}"/>
-                </h3>
-                <table class="ui celled la-table table">
-                    <thead>
-                    <tr>
-                        <th>${message(code: 'sidewide.number')}</th>
-                        <th>${message(code: 'default.sortname.label')}</th>
-                        <th>${message(code: 'subscriptionDetails.members.members')}</th>
-                        <th>${message(code: 'default.startDate.label')}</th>
-                        <th>${message(code: 'default.endDate.label')}</th>
-                        <th>${message(code: 'default.status.label')}</th>
-                        <th>${message(code: 'subscription.form.label')}</th>
-                        <th>${message(code: 'subscription.resource.label')}</th>
-                        <th class="la-no-uppercase">
-                            <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="bottom center"
-                                  data-content="${message(code: 'subscription.isMultiYear.consortial.label')}">
-                                <i class="map orange icon"></i>
-                            </span>
-                        </th>
-                        <th></th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    <g:each in="${filteredSubChilds}" status="i" var="zeile">
-                        <g:set var="sub" value="${zeile.sub}"/>
+                <g:form action="processSubscriptionPropertiesMembers" method="post" class="ui form">
+                    <g:hiddenField name="id" value="${params.id}"/>
+
+                    <h4>${message(code: 'subscription.subscriptionPropertiesMembers.info', args: args.memberType)}</h4>
+
+                    <div class="two fields">
+                        <semui:datepicker label="subscription.startDate.label" id="valid_from" name="valid_from"/>
+
+                        <semui:datepicker label="subscription.endDate.label" id="valid_to" name="valid_to"/>
+                    </div>
+
+                    <div class="three fields">
+                        <div class="field">
+                            <label>${message(code: 'default.status.label')}</label>
+                            <%
+                                def fakeList = []
+                                fakeList.addAll(RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_STATUS))
+                                fakeList.remove(com.k_int.kbplus.RefdataValue.getByValueAndCategory('Deleted', RDConstants.SUBSCRIPTION_STATUS))
+                            %>
+                            <laser:select name="status" from="${fakeList}" optionKey="id" optionValue="value"
+                                          noSelection="${['': '']}"
+                                          value="${['': '']}"/>
+                        </div>
+
+                        <div class="field">
+                            <label>${message(code: 'subscription.form.label')}</label>
+                            <laser:select name="form"
+                                          from="${RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_FORM)}"
+                                          optionKey="id" optionValue="value" noSelection="${['': '']}"
+                                          value="${['': '']}"/>
+                        </div>
+
+                        <div class="field">
+                            <label>${message(code: 'subscription.resource.label')}</label>
+                            <laser:select name="resource"
+                                          from="${RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_RESOURCE)}"
+                                          optionKey="id" optionValue="value" noSelection="${['': '']}"
+                                          value="${['': '']}"/>
+                        </div>
+
+                    </div>
+
+                    <button class="ui button" type="submit">${message(code: 'default.button.save_changes')}</button>
+
+
+                    <h3>
+                        ${message(code: 'subscription.propertiesMembers.subscriber')}
+                        <semui:totalNumber total="${filteredSubChilds?.size()}"/>
+                    </h3>
+                    <table class="ui celled la-table table">
+                        <thead>
                         <tr>
-                            <td>${i + 1}</td>
-                            <g:set var="filteredSubscribers" value="${zeile.orgs}"/>
-                            <g:each in="${filteredSubscribers}" var="subscr">
+                            <th>
+                                <g:checkBox name="membersListToggler" id="membersListToggler" checked="false"/>
+                            </th>
+                            <th>${message(code: 'sidewide.number')}</th>
+                            <th>${message(code: 'default.sortname.label')}</th>
+                            <th>${message(code: 'subscriptionDetails.members.members')}</th>
+                            <th>${message(code: 'default.startDate.label')}</th>
+                            <th>${message(code: 'default.endDate.label')}</th>
+                            <th>${message(code: 'default.status.label')}</th>
+                            <th>${message(code: 'subscription.form.label')}</th>
+                            <th>${message(code: 'subscription.resource.label')}</th>
+                            <th class="la-no-uppercase">
+                                <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="bottom center"
+                                      data-content="${message(code: 'subscription.isMultiYear.consortial.label')}">
+                                    <i class="map orange icon"></i>
+                                </span>
+                            </th>
+                            <th></th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <g:each in="${filteredSubChilds}" status="i" var="zeile">
+                            <g:set var="sub" value="${zeile.sub}"/>
+                            <tr>
                                 <td>
-                                    ${subscr.sortname}
+                                    <g:checkBox name="selectedMembers" value="${sub.id}" checked="false"/>
+                                </td>
+                                <td>${i + 1}</td>
+                                <g:set var="filteredSubscribers" value="${zeile.orgs}"/>
+                                <g:each in="${filteredSubscribers}" var="subscr">
+                                    <td>
+                                        ${subscr.sortname}
+                                    </td>
+                                    <td>
+                                        <g:link controller="organisation" action="show"
+                                                id="${subscr.id}">${subscr}</g:link>
+
+                                        <g:if test="${sub.isSlaved}">
+                                            <span data-position="top right"
+                                                  class="la-popup-tooltip la-delay"
+                                                  data-content="${message(code: 'license.details.isSlaved.tooltip')}">
+                                                <i class="thumbtack blue icon"></i>
+                                            </span>
+                                        </g:if>
+
+                                    </td>
+                                </g:each>
+                                <g:if test="${!sub.getAllSubscribers()}">
+                                    <td></td>
+                                    <td></td>
+                                </g:if>
+
+                                <td>
+                                    <semui:xEditable owner="${sub}" field="startDate" type="date"
+                                                     overwriteEditable="${editableOld}"/>
+                                    <semui:auditButton auditable="[sub, 'startDate']"/>
+                                </td>
+                                <td><semui:xEditable owner="${sub}" field="endDate" type="date"
+                                                     overwriteEditable="${editableOld}"/>
+                                <semui:auditButton auditable="[sub, 'endDate']"/>
                                 </td>
                                 <td>
-                                    <g:link controller="organisation" action="show"
-                                            id="${subscr.id}">${subscr}</g:link>
-
-                                    <g:if test="${sub.isSlaved}">
-                                        <span data-position="top right"
-                                              class="la-popup-tooltip la-delay"
-                                              data-content="${message(code: 'license.details.isSlaved.tooltip')}">
-                                            <i class="thumbtack blue icon"></i>
+                                    <semui:xEditableRefData owner="${sub}" field="status"
+                                                            config="${RDConstants.SUBSCRIPTION_STATUS}"
+                                                            constraint="removeValue_deleted"
+                                                            overwriteEditable="${editableOld}"/>
+                                    <semui:auditButton auditable="[sub, 'status']"/>
+                                </td>
+                                <td>
+                                    <semui:xEditableRefData owner="${sub}" field="form"
+                                                            config="${RDConstants.SUBSCRIPTION_FORM}"
+                                                            overwriteEditable="${editableOld}"/>
+                                    <semui:auditButton auditable="[sub, 'form']"/>
+                                </td>
+                                <td>
+                                    <semui:xEditableRefData owner="${sub}" field="resource"
+                                                            config="${RDConstants.SUBSCRIPTION_RESOURCE}"
+                                                            overwriteEditable="${editableOld}"/>
+                                    <semui:auditButton auditable="[sub, 'resource']"/>
+                                </td>
+                                <td>
+                                    <g:if test="${sub.isMultiYear}">
+                                        <span class="la-long-tooltip la-popup-tooltip la-delay"
+                                              data-position="bottom center"
+                                              data-content="${message(code: 'subscription.isMultiYear.consortial.label')}">
+                                            <i class="map orange icon"></i>
                                         </span>
                                     </g:if>
-
                                 </td>
-                            </g:each>
-                            <g:if test="${!sub.getAllSubscribers()}">
-                                <td></td>
-                                <td></td>
-                            </g:if>
-
-                            <td>
-                                <semui:xEditable owner="${sub}" field="startDate" type="date"
-                                                 overwriteEditable="${editableOld}"/>
-                                <semui:auditButton auditable="[sub, 'startDate']"/>
-                            </td>
-                            <td><semui:xEditable owner="${sub}" field="endDate" type="date"
-                                                 overwriteEditable="${editableOld}"/>
-                            <semui:auditButton auditable="[sub, 'endDate']"/>
-                            </td>
-                            <td>
-                                <semui:xEditableRefData owner="${sub}" field="status" config="${RDConstants.SUBSCRIPTION_STATUS}"
-                                                        constraint="removeValue_deleted"
-                                                        overwriteEditable="${editableOld}"/>
-                                <semui:auditButton auditable="[sub, 'status']"/>
-                            </td>
-                            <td>
-                                <semui:xEditableRefData owner="${sub}" field="form" config="${RDConstants.SUBSCRIPTION_FORM}"
-                                                        overwriteEditable="${editableOld}"/>
-                                <semui:auditButton auditable="[sub, 'form']"/>
-                            </td>
-                            <td>
-                                <semui:xEditableRefData owner="${sub}" field="resource" config="${RDConstants.SUBSCRIPTION_RESOURCE}"
-                                                        overwriteEditable="${editableOld}"/>
-                                <semui:auditButton auditable="[sub, 'resource']"/>
-                            </td>
-                            <td>
-                                <g:if test="${sub.isMultiYear}">
-                                    <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="bottom center"
-                                          data-content="${message(code: 'subscription.isMultiYear.consortial.label')}">
-                                        <i class="map orange icon"></i>
-                                    </span>
-                                </g:if>
-                            </td>
-                            <td class="x">
-                                <g:link controller="subscription" action="show" id="${sub.id}"
-                                        class="ui icon button"><i
-                                        class="write icon"></i></g:link>
-                            </td>
-                        </tr>
-                    </g:each>
-                    </tbody>
-                </table>
-
+                                <td class="x">
+                                    <g:link controller="subscription" action="show" id="${sub.id}"
+                                            class="ui icon button"><i
+                                            class="write icon"></i></g:link>
+                                </td>
+                            </tr>
+                        </g:each>
+                        </tbody>
+                    </table>
+                </g:form>
             </div>
         </div>
     </g:if>
@@ -301,7 +313,7 @@
                                                     roleObject   : parentSub,
                                                     roleRespValue: 'Specific subscription editor',
                                                     editmode     : editable,
-                                                    showPersons: false
+                                                    showPersons  : false
                                           ]}"/>
                             </div>
                         </div>
@@ -357,7 +369,7 @@
                                                                         roleObject   : sub,
                                                                         roleRespValue: 'Specific subscription editor',
                                                                         editmode     : editable,
-                                                                        showPersons: false
+                                                                        showPersons  : false
                                                               ]}"/>
                                                 </div>
                                             </div>
@@ -569,21 +581,20 @@
                                 <td></td>
                             </g:if>
                             <td>
-                                <semui:xEditable owner="${sub}" field="startDate" type="date"
-                                                 />
+                                <semui:xEditable owner="${sub}" field="startDate" type="date"/>
                                 <semui:auditButton auditable="[sub, 'startDate']"/>
                             </td>
-                            <td><semui:xEditable owner="${sub}" field="endDate" type="date"
-                                                 />
+                            <td><semui:xEditable owner="${sub}" field="endDate" type="date"/>
                             <semui:auditButton auditable="[sub, 'endDate']"/>
                             </td>
                             <td>
-                                <semui:xEditableRefData owner="${sub}" field="status" config="${RDConstants.SUBSCRIPTION_STATUS}"
-                                                        constraint="removeValue_deleted" />
+                                <semui:xEditableRefData owner="${sub}" field="status"
+                                                        config="${RDConstants.SUBSCRIPTION_STATUS}"
+                                                        constraint="removeValue_deleted"/>
                                 <semui:auditButton auditable="[sub, 'status']"/>
                             </td>
                             <td>
-                                <semui:xEditableBoolean owner="${sub}" field="isMultiYear" />
+                                <semui:xEditableBoolean owner="${sub}" field="isMultiYear"/>
                             </td>
                             <td class="x">
                                 <g:link controller="subscription" action="show" id="${sub.id}"
@@ -613,6 +624,14 @@
 <r:script>
     $(document).ready(function () {
         $('.tabular.menu .item').tab()
+    });
+
+    $('#membersListToggler').click(function () {
+        if ($(this).prop('checked')) {
+            $("tr[class!=disabled] input[name=selectedMembers]").prop('checked', true)
+        } else {
+            $("tr[class!=disabled] input[name=selectedMembers]").prop('checked', false)
+        }
     });
 </r:script>
 

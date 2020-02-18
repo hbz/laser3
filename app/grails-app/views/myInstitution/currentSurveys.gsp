@@ -7,7 +7,7 @@
 <html>
 <head>
     <meta name="layout" content="semanticUI"/>
-    <title>${message(code: 'laser')} : ${message(code: 'currentSurveys.label', default: 'Current Surveys')}</title>
+    <title>${message(code: 'laser')} : ${message(code: 'currentSurveys.label')}</title>
 </head>
 
 <body>
@@ -16,7 +16,7 @@
     <semui:crumb message="currentSurveys.label" class="active"/>
 </semui:breadcrumbs>
 <br>
-<h1 class="ui left floated aligned icon header la-clear-before"><semui:headerIcon/>${institution?.name} - ${message(code: 'currentSurveys.label', default: 'Current Surveys')}
+<h1 class="ui left floated aligned icon header la-clear-before"><semui:headerIcon/>${institution?.name} - ${message(code: 'currentSurveys.label')}
 <semui:totalNumber total="${countSurveys.values().sum { it }}"/>
 </h1>
 
@@ -32,7 +32,7 @@
 
                 <div class="ui input">
                     <input type="text" id="name" name="name"
-                           placeholder="${message(code: 'default.search.ph', default: 'enter search term...')}"
+                           placeholder="${message(code: 'default.search.ph')}"
                            value="${params.name}"/>
                 </div>
             </div>
@@ -81,7 +81,7 @@
                 <a href="${request.forwardURI}"
                    class="ui reset primary button">${message(code: 'default.button.reset.label')}</a>
                 <input type="submit" class="ui secondary button"
-                       value="${message(code: 'default.button.filter.label', default: 'Filter')}">
+                       value="${message(code: 'default.button.filter.label')}">
             </div>
 
         </div>
@@ -118,7 +118,7 @@
             <g:sortableColumn params="${params}" property="surInfo.type"
                               title="${message(code: 'surveyInfo.type.label')}"/>
             <g:sortableColumn params="${params}" property="surInfo.endDate"
-                              title="${message(code: 'default.endDate.label', default: 'End Date')}"/>
+                              title="${message(code: 'default.endDate.label')}"/>
             <g:sortableColumn params="${params}" property="surInfo.owner"
                               title="${message(code: 'surveyInfo.owner.label')}"/>
             <th><g:message code="surveyInfo.finished"/></th>

@@ -132,6 +132,12 @@
                                     </dl>
                                 </g:if>
 
+                                <dl>
+                                    <dt class="control-label">${message(code: 'license.isPublicForApi.label')}</dt>
+                                    <dd><semui:xEditableBoolean owner="${license}" field="isPublicForApi" /></dd>
+                                    <dd class="la-js-editmode-container"><semui:auditButton auditable="[license, 'isPublicForApi']"/></dd>
+                                </dl>
+
                             </div>
                         </div>
                     </div>

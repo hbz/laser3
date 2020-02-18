@@ -14,7 +14,7 @@ import java.nio.file.Path
 import java.util.zip.ZipEntry
 import java.util.zip.ZipOutputStream
 
-import static de.laser.helper.RDStore.DOC_DELETED
+import static de.laser.helper.RDStore.DOC_CTX_STATUS_DELETED
 
 class DocstoreService {
   
@@ -451,7 +451,7 @@ class DocstoreService {
                 log.debug("Looking up docctx ${docctx_to_delete} for delete")
 
                 def docctx = DocContext.get(docctx_to_delete)
-                docctx.status = DOC_DELETED
+                docctx.status = DOC_CTX_STATUS_DELETED
                 docctx.save(flush: true)
             }
             if (p.key.startsWith('_deleteflag"@.') ) { // PackageController
@@ -459,7 +459,7 @@ class DocstoreService {
                 log.debug("Looking up docctx ${docctx_to_delete} for delete")
 
                 def docctx = DocContext.get(docctx_to_delete)
-                docctx.status = DOC_DELETED
+                docctx.status = DOC_CTX_STATUS_DELETED
                 docctx.save(flush: true)
             }
         }
@@ -469,7 +469,7 @@ class DocstoreService {
             log.debug("Looking up docctx ${docctx_to_delete} for delete")
 
             def docctx = DocContext.get(docctx_to_delete)
-            docctx.status = DOC_DELETED
+            docctx.status = DOC_CTX_STATUS_DELETED
             docctx.save(flush: true)
         }
     }

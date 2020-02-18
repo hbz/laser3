@@ -26,7 +26,7 @@ class FilterService {
     Map<String, Object> getOrgQuery(Map params) {
         Map<String, Object> result = [:]
         ArrayList<String> query = ["(o.status is null or o.status != :orgStatus)"]
-        Map<String, Object> queryParams = ["orgStatus" : RDStore.ORG_DELETED]
+        Map<String, Object> queryParams = ["orgStatus" : RDStore.ORG_STATUS_DELETED]
 
         if (params.orgNameContains?.length() > 0) {
             query << "(genfunc_filter_matcher(o.name, :orgNameContains1) = true or genfunc_filter_matcher(o.shortname, :orgNameContains2) = true or genfunc_filter_matcher(o.sortname, :orgNameContains3) = true) "
@@ -100,7 +100,7 @@ class FilterService {
     Map<String, Object> getOrgComboQuery(Map params, Org org) {
         Map<String, Object> result = [:]
         ArrayList<String> query = ["(o.status is null or o.status != :orgStatus)"]
-        Map<String, Object> queryParams = ["orgStatus" : RDStore.ORG_DELETED]
+        Map<String, Object> queryParams = ["orgStatus" : RDStore.ORG_STATUS_DELETED]
 
         // ERMS-1592, ERMS-1596
         if (params.orgNameContains?.length() > 0) {
