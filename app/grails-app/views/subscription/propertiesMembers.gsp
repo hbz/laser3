@@ -334,11 +334,11 @@
                               from="${com.k_int.kbplus.RefdataCategory.getAllRefdataValues(filterPropDef.refdataCategory)}"
                               name="filterPropValue" value=""
                               required=""
-                              noSelection='["": "${message(code: 'default.select.choose.label', default: 'Please Choose...')}"]'/>
+                              noSelection='["": "${message(code: 'default.select.choose.label')}"]'/>
                 </g:if>
                 <g:else>
                     <input id="filterPropValue" type="text" name="filterPropValue"
-                           placeholder="${message(code: 'license.search.property.ph', default: 'property value')}"/>
+                           placeholder="${message(code: 'license.search.property.ph')}"/>
                 </g:else>
             </div>
 

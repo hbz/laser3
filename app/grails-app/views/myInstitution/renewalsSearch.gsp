@@ -170,7 +170,7 @@
                     </th>
                     <th><g:if test="${basket}">
                         <button class="ui icon basic negative button" type="submit" name="clearBasket"
-                                value="yes">${message(code: 'myinst.renewalSearch.clearBasket', default: 'all')}<i
+                                value="yes">${message(code: 'myinst.renewalSearch.clearBasket')}<i
                                 class="trash icon"></i></button>
                     </g:if></th>
                 </tr>

@@ -2520,7 +2520,7 @@ class SurveyController {
 
         ArrayList<Links> previousSubscriptions = Links.findAllByDestinationAndObjectTypeAndLinkType(baseSub?.id, Subscription.class.name, RDStore.LINKTYPE_FOLLOWS)
         if (previousSubscriptions.size() > 0) {
-            flash.error = message(code: 'subscription.renewSubExist', default: 'The Subscription is already renewed!')
+            flash.error = message(code: 'subscription.renewSubExist')
         } else {
             def sub_startDate = params.subscription?.start_date ? parseDate(params.subscription?.start_date, possible_date_formats) : null
             def sub_endDate = params.subscription?.end_date ? parseDate(params.subscription?.end_date, possible_date_formats) : null
