@@ -311,12 +311,13 @@
     <a  role="button" class="ui icon mini button la-audit-button la-popup-tooltip la-delay" href='https://www.spiegel.de' data-content="10 11 12">
         <i  class="icon thumbtack la-js-editmode-icon"></i>
     </a><br><br>
-    <h4 class="ui header">Funktions-Button, der ausgeschaltet werden kann, Icon verschwindet</h4>
+    <h4 class="ui header">Funktions-Button, der NICHT ausgeschaltet werden kann, Icon und Button verschwinden NICHT</h4>
     <div class="html ui top attached segment example">
         <ul>
             <li><code>role="button"</code>, <strong>wenn es ein Link ist</strong>
             <li><code>class="ui icon mini button </code>
             <li><code>class="la-popup-tooltip la-delay"</code> <strong> – für die Aktivierung des Tooltips mit Jvascript</strong>
+            <li><code>class="la-js-dont-hide-button"</code><strong> – für die Aktivierung des NICHTSAUSSCHALTENS MIT TOGGLE BUTTON mit Javascript</strong>
 
             </li>
 
@@ -359,8 +360,8 @@ if (customerType) {
     <h2 class="ui dividing header">Confimation Modal<a class="anchor" id="icons"></a></h2>
     <h4 class="ui header">Buttons, die Confirmation Modals haben</h4>
     <div class="html ui top attached segment example">
-        <div class="ui top attached label">Link, der als Button funktioniert (daß heiß, eine Aktion ausführt)</div>
-        <g:link controller="yoda"
+        <div class="ui top attached label">Link, der als Button funktioniert (daß heißt, dass er eine Aktion ausführt)</div>
+        <g:link controller="dev"
                 action="frontend"
                 params=""
                 data-content="Hier kommt der Tooltip rein"
@@ -377,7 +378,7 @@ if (customerType) {
     <div class="html ui top attached segment example">
         <div class="ui top attached label">Inhalt der Nachricht per Ajax: AjaxController.genericDialogMessage()</div>
 
-        <g:link controller="yoda"
+        <g:link controller="dev"
                 action="frontend"
                 extaContentFlag="false"
                 params=""
@@ -396,7 +397,7 @@ if (customerType) {
     <div class="html ui top attached segment example">
         <div class="ui top attached label">Link, der den AJAX-Contoler aufruft und  als Button funktioniert (daß heiß, eine Aktion ausführt)</div>
         <laser:remoteLink class="ui icon negative button js-open-confirm-modal la-popup-tooltip la-delay"
-                          controller="yoda"
+                          controller="dev"
                           action="frontend"
                           params=""
                           id=""
@@ -469,7 +470,7 @@ if (customerType) {
         class="ui circular label la-js-filter-total hidden">0</span>
 </button>
 <h3>Icons in einem Link ohne zusätzlichen Text</h3>
-<g:link aria-label="Das ist eine Beschreibung für den Accessibility Tree" controller="yoda" action="frontend" params="" class="ui icon positive button">
+<g:link aria-label="Das ist eine Beschreibung für den Accessibility Tree" controller="dev" action="frontend" params="" class="ui icon positive button">
     <i aria-hidden="true" class="checkmark icon"></i>
 </g:link>
 

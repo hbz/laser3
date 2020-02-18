@@ -86,7 +86,8 @@ double t8 = 0L
                           optionKey="${{it.optionKey}}"
                           optionValue="${{it.optionValue}}"
                           value="${ownobj?.id}"
-                          noSelection="[null: '']"/>
+                          noSelection="${['' : message(code:'default.select.choose.label')]}"
+                />
 
             </div>
             <% t2 = System.currentTimeMillis() %>
@@ -102,7 +103,8 @@ double t8 = 0L
                           optionValue="${{it.optionValue}}"
                           value="${ownobj?.id}"
                           class="ui dropdown search many-to-one"
-                          noSelection="[null: '']"/>
+                          noSelection="${['' : message(code:'default.select.choose.label')]}"
+                />
             </div>
             <% t3 = System.currentTimeMillis()%>
 
@@ -111,7 +113,9 @@ double t8 = 0L
                     <g:message code="task.linkto" /><g:message code="package.label" />
                 </label>
                 <g:select id="pkg" name="pkg" from="${validPackages}" optionKey="id" value="${ownobj?.id}"
-                          class="ui dropdown search many-to-one" noSelection="[null: '']"/>
+                          class="ui dropdown search many-to-one"
+                          noSelection="${['' : message(code:'default.select.choose.label')]}"
+                />
             </div>
             <% t4 = System.currentTimeMillis() %>
 
@@ -127,7 +131,8 @@ double t8 = 0L
                           optionKey="${{it.optionKey}}"
                           optionValue="${{it.optionValue}}"
                           value="${ownobj?.id}"
-                          noSelection="[null: '']"/>
+                          noSelection="${['' : message(code:'default.select.choose.label')]}"
+                />
 
             </div>
             <% t5 = System.currentTimeMillis() %>

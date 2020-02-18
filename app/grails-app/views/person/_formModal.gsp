@@ -39,7 +39,7 @@
                     <label for="title">
                         <g:message code="person.title.label" />
                     </label>
-                    <g:textField name="title" required="" value="${personInstance?.title}"/>
+                    <g:textField name="title" required="required" value="${personInstance?.title}"/>
                 </div>
 
             </div>
@@ -53,7 +53,7 @@
                     <label for="first_name">
                         <g:message code="person.first_name.label" />
                     </label>
-                    <g:textField name="first_name" required="" value="${personInstance?.first_name}"/>
+                    <g:textField name="first_name"  value="${personInstance?.first_name}"/>
                 </div>
 
                 <div id="person_middle_name"
@@ -103,7 +103,7 @@
                         </label>
 
                         ${isPublic ? RDStore.YN_YES.getI10n('value') : RDStore.YN_NO.getI10n('value')}
-                        <input id="isPublic" name="isPublic" type="hidden" value="${isPublic}"/>
+                        <input id="isPublic" name="isPublic" required="required" type="hidden" value="${isPublic}"/>
                     </div>
                 </div>
             </div>
