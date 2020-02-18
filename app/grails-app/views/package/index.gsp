@@ -207,7 +207,7 @@
                                     </g:else>
                                 </g:if>
                                 <g:else>
-                                    ${message(code: 'package.index.result.titles.unknown', default: 'Unknown number of TIPPs')}
+                                    ${message(code: 'package.index.result.titles.unknown')}
                                 </g:else>
                             </td>
                             <td><g:if test="${com.k_int.kbplus.Org.findByGokbId(record?.providerUuid)}"><g:link

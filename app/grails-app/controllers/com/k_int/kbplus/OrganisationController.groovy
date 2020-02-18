@@ -369,7 +369,7 @@ class OrganisationController extends AbstractDebugController {
     })
     def findProviderMatches() {
 
-        def result=[:]
+        Map<String, Object> result = [:]
         if ( params.proposedProvider ) {
 
             result.providerMatches= Org.executeQuery("from Org as o where exists (select roletype from o.orgType as roletype where roletype = :provider ) and (lower(o.name) like :searchName or lower(o.shortname) like :searchName or lower(o.sortname) like :searchName ) ",

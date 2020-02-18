@@ -27,7 +27,7 @@ class DataManagerController extends AbstractDebugController {
 
   @Secured(['ROLE_ADMIN'])
   def index() { 
-    def result =[:]
+    Map<String, Object> result = [:]
     def pending_change_pending_status = RefdataValue.getByValueAndCategory('Pending', RDConstants.PENDING_CHANGE_STATUS)
 
         result.pendingChanges = PendingChange.executeQuery("select pc from PendingChange as pc where pc.pkg is not null and ( pc.status is null or pc.status = ? ) order by ts desc", [pending_change_pending_status]);
@@ -38,7 +38,7 @@ class DataManagerController extends AbstractDebugController {
     @Secured(['ROLE_ADMIN'])
     def changeLog() {
 
-    def result =[:]
+    Map<String, Object> result = [:]
     log.debug("changeLog ${params}");
     SimpleDateFormat formatter = DateUtil.getSDF_NoTime()
 
@@ -56,21 +56,21 @@ class DataManagerController extends AbstractDebugController {
             result.offset = params.offset ? Integer.parseInt(params.offset) : 0;
         }
 
-        if ( params.startDate == null ) {
-            def cal = new java.util.GregorianCalendar()
-            cal.setTimeInMillis(System.currentTimeMillis())
-            cal.set(Calendar.DAY_OF_MONTH,1)
-            params.startDate=formatter.format(cal.getTime())
-        }
-        if ( params.endDate == null ) { params.endDate = formatter.format(new Date()) }
-        if ( ( params.creates == null ) && ( params.updates == null ) ) {
-            params.creates='Y'
-        }
-        if(params.startDate > params.endDate){
-            flash.error = message(code:'datamanager.changeLog.error.dates', default:'From Date cannot be after To Date.')
-            return
-        }
-        def base_query = "from org.codehaus.groovy.grails.plugins.orm.auditable.AuditLogEvent as e where e.className in (:l) AND e.lastUpdated >= :s AND e.lastUpdated <= :e AND e.eventName in (:t)"
+    if ( params.startDate == null ) {
+      def cal = new java.util.GregorianCalendar()
+      cal.setTimeInMillis(System.currentTimeMillis())
+      cal.set(Calendar.DAY_OF_MONTH,1)
+      params.startDate=formatter.format(cal.getTime())
+    }
+    if ( params.endDate == null ) { params.endDate = formatter.format(new Date()) }
+    if ( ( params.creates == null ) && ( params.updates == null ) ) {
+      params.creates='Y'
+    }
+    if(params.startDate > params.endDate){
+      flash.error = message(code:'datamanager.changeLog.error.dates')
+      return
+    }
+    def base_query = "from org.codehaus.groovy.grails.plugins.orm.auditable.AuditLogEvent as e where e.className in (:l) AND e.lastUpdated >= :s AND e.lastUpdated <= :e AND e.eventName in (:t)"
 
         def types_to_include = []
         if ( params.packages=="Y" ) types_to_include.add('com.k_int.kbplus.Package');
@@ -492,9 +492,9 @@ class DataManagerController extends AbstractDebugController {
         result
     }
 
-    @Secured(['ROLE_ADMIN'])
-    def listMailTemplates() {
-        def result =[:]
+  @Secured(['ROLE_ADMIN'])
+  def listMailTemplates() {
+    Map<String, Object> result = [:]
 
         result.mailTemplates = MailTemplate.getAll()
 

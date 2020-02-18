@@ -451,9 +451,9 @@ class AdminController extends AbstractDebugController {
         redirect(controller:'home')
     }
 
-    @Secured(['ROLE_ADMIN'])
-    def manageContentItems() {
-        def result=[:]
+  @Secured(['ROLE_ADMIN'])
+  def manageContentItems() {
+    Map<String, Object> result = [:]
 
         result.items = ContentItem.list()
 
@@ -506,10 +506,10 @@ class AdminController extends AbstractDebugController {
         result
     }
 
-    @Secured(['ROLE_ADMIN'])
-    def newContentItem() {
-        def result=[:]
-        if ( ( params.key != null ) && ( params.content != null ) && ( params.key.length() > 0 ) && ( params.content.length() > 0 ) ) {
+  @Secured(['ROLE_ADMIN'])
+  def newContentItem() {
+    Map<String, Object> result = [:]
+    if ( ( params.key != null ) && ( params.content != null ) && ( params.key.length() > 0 ) && ( params.content.length() > 0 ) ) {
 
             String locale = ( ( params.locale != null ) && ( params.locale.length() > 0 ) ) ? params.locale : ''
 
@@ -526,13 +526,13 @@ class AdminController extends AbstractDebugController {
         result
     }
 
-    @Secured(['ROLE_ADMIN'])
-    def editContentItem() {
-        def result=[:]
-        def idparts = params.id?.split(':')
-        if ( idparts.length > 0 ) {
-            def key = idparts[0]
-            String locale = idparts.length > 1 ? idparts[1] : ''
+  @Secured(['ROLE_ADMIN'])
+  def editContentItem() {
+    Map<String, Object> result = [:]
+    def idparts = params.id?.split(':')
+    if ( idparts.length > 0 ) {
+      def key = idparts[0]
+      String locale = idparts.length > 1 ? idparts[1] : ''
 
             ContentItem contentItem = ContentItem.findByKeyAndLocale(key,locale)
             if ( contentItem != null ) {
