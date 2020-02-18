@@ -197,7 +197,7 @@
         <p>Wenn Sie ein neues Element nicht finden, warten Sie etwa <strong>10 Minuten</strong>, bis sich der Index aktualisiert hat.</p>
     </div>
 </div>
-<h3 class="ui dividing header">Icon ohne Linkfunktion</h3>
+<h3 class="ui dividing header">Icons, die für assistive Tools keine Bedeutung haben müssen - zum Beispiel das Schließen von Meldungen</h3>
 <div class="ui icon info message">
     <i aria-hidden="true" class="close icon"></i>
     <div class="content">
@@ -215,7 +215,7 @@
 
 <h3 class="ui dividing header"></h3>
 <h2 class="ui dividing header">Modals</h2>
-<h3 class="ui dividing header ">Confimation Modal</h3>
+<h3 class="ui dividing header">Confimation Modal</h3>
 <p class="la-clear-before">
     <g:link controller="dev"
             action="frontend"
