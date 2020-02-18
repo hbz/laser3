@@ -1,5 +1,5 @@
 <%@ page import="java.sql.Timestamp; org.springframework.context.i18n.LocaleContextHolder; com.k_int.kbplus.Org; com.k_int.kbplus.License; com.k_int.kbplus.Subscription; com.k_int.kbplus.Task; org.codehaus.groovy.grails.orm.hibernate.cfg.GrailsHibernateUtil; de.laser.helper.RDStore;de.laser.helper.RDConstants" %>
-
+<laser:serviceInjection />
 <!doctype html>
 <html>
 <head>
@@ -213,7 +213,6 @@
         class="ui circular label la-js-filter-total hidden">0</span>
 </button>
 
-<h3 class="ui dividing header"></h3>
 <h2 class="ui dividing header">Modals</h2>
 <h3 class="ui dividing header">Confimation Modal</h3>
 <p class="la-clear-before">
@@ -229,43 +228,45 @@
     </g:link>
 </p>
 
-<h2 class="ui dividing header">Pagination</h2>
+%{--<h2 class="ui dividing header">Pagination</h2>--}%
 <h2 class="ui dividing header">Breadcrumb</h2>
-<h2 class="ui dividing header">Accordion</h2>
+<semui:breadcrumbs>
+    <semui:crumb message="myinst.currentSubscriptions.label" class="active" />
+</semui:breadcrumbs>
+%{--<h2 class="ui dividing header">Accordion</h2>--}%
 <h2 class="ui dividing header">Toggle Segment</h2>
-<button class="ui button la-inline-labeled la-js-filterButton la-clearfix blue">Filter
-    <i aria-hidden="true" class="filter icon"></i>
-    <span class="ui circular label la-js-filter-total hidden">0</span>
-</button>
-<div class="ui la-filter segment la-clear-before" >
-    <form class="ui form" autocomplete="off">
-        <div class="four fields">
-            <div class="field">
-                <label>Titel</label>
-                <div class="ui input">
-                    <input type="text" name="taskName" placeholder="Suchbegriff eingeben" value="">
+
+    <g:render template="../templates/filter/javascript" />
+    <semui:filter showFilterButton="true">
+        <form class="ui form" autocomplete="off">
+            <div class="four fields">
+                <div class="field">
+                    <label>Titel</label>
+                    <div class="ui input">
+                        <input type="text" name="taskName" placeholder="Suchbegriff eingeben" value="">
+                    </div>
+                </div>
+
+                <div class="field fieldcontain"><label for="endDateFrom">Fälligkeitsdatum (von)</label><div class="ui calendar datepicker"><div class="ui input left icon"><div class="ui popup calendar"><table class="ui celled center aligned unstackable table seven column day"><thead><tr><th colspan="7"><span class="link">Februar 2020</span><span class="prev link"><i class="chevron left icon"></i></span><span class="next link"><i class="chevron right icon"></i></span></th></tr><tr><th>Mo</th><th>Di</th><th>Mi</th><th>Do</th><th>Fr</th><th>Sa</th><th>So</th></tr></thead><tbody><tr><td class="link adjacent disabled">27</td><td class="link adjacent disabled">28</td><td class="link adjacent disabled">29</td><td class="link adjacent disabled">30</td><td class="link adjacent disabled">31</td><td class="link">1</td><td class="link">2</td></tr><tr><td class="link">3</td><td class="link">4</td><td class="link">5</td><td class="link">6</td><td class="link">7</td><td class="link">8</td><td class="link">9</td></tr><tr><td class="link">10</td><td class="link">11</td><td class="link">12</td><td class="link">13</td><td class="link">14</td><td class="link">15</td><td class="link">16</td></tr><tr><td class="link">17</td><td class="link today focus">18</td><td class="link">19</td><td class="link">20</td><td class="link">21</td><td class="link">22</td><td class="link">23</td></tr><tr><td class="link">24</td><td class="link">25</td><td class="link">26</td><td class="link">27</td><td class="link">28</td><td class="link">29</td><td class="link adjacent disabled">1</td></tr><tr><td class="link adjacent disabled">2</td><td class="link adjacent disabled">3</td><td class="link adjacent disabled">4</td><td class="link adjacent disabled">5</td><td class="link adjacent disabled">6</td><td class="link adjacent disabled">7</td><td class="link adjacent disabled">8</td></tr></tbody></table></div><i aria-hidden="true" class="calendar icon"></i><input class="" name="endDateFrom" id="endDateFrom" type="text" placeholder="Datum" value=""></div></div></div>
+
+                <div class="field fieldcontain"><label for="endDateTo">Fälligkeitsdatum (bis)</label><div class="ui calendar datepicker"><div class="ui input left icon"><div class="ui popup calendar"><table class="ui celled center aligned unstackable table seven column day"><thead><tr><th colspan="7"><span class="link">Februar 2020</span><span class="prev link"><i class="chevron left icon"></i></span><span class="next link"><i class="chevron right icon"></i></span></th></tr><tr><th>Mo</th><th>Di</th><th>Mi</th><th>Do</th><th>Fr</th><th>Sa</th><th>So</th></tr></thead><tbody><tr><td class="link adjacent disabled">27</td><td class="link adjacent disabled">28</td><td class="link adjacent disabled">29</td><td class="link adjacent disabled">30</td><td class="link adjacent disabled">31</td><td class="link">1</td><td class="link">2</td></tr><tr><td class="link">3</td><td class="link">4</td><td class="link">5</td><td class="link">6</td><td class="link">7</td><td class="link">8</td><td class="link">9</td></tr><tr><td class="link">10</td><td class="link">11</td><td class="link">12</td><td class="link">13</td><td class="link">14</td><td class="link">15</td><td class="link">16</td></tr><tr><td class="link">17</td><td class="link today focus">18</td><td class="link">19</td><td class="link">20</td><td class="link">21</td><td class="link">22</td><td class="link">23</td></tr><tr><td class="link">24</td><td class="link">25</td><td class="link">26</td><td class="link">27</td><td class="link">28</td><td class="link">29</td><td class="link adjacent disabled">1</td></tr><tr><td class="link adjacent disabled">2</td><td class="link adjacent disabled">3</td><td class="link adjacent disabled">4</td><td class="link adjacent disabled">5</td><td class="link adjacent disabled">6</td><td class="link adjacent disabled">7</td><td class="link adjacent disabled">8</td></tr></tbody></table></div><i aria-hidden="true" class="calendar icon"></i><input class="" name="endDateTo" id="endDateTo" type="text" placeholder="Datum" value=""></div></div></div>
+
+                <div class="field">
+                    <label>Aufgabenstatus</label>
+                    <div class="ui fluid dropdown selection" tabindex="0"><select name="taskStatus" id="taskStatus">
+                        <option value="">Alle</option>
+                        <option value="121">Erledigt</option>
+                        <option value="120">Offen</option>
+                        <option value="122">Zurückgestellt</option>
+                    </select><i class="dropdown icon"></i><div class="default text">Alle</div><div class="menu" tabindex="-1"><div class="item" data-value="121">Erledigt</div><div class="item" data-value="120">Offen</div><div class="item" data-value="122">Zurückgestellt</div></div></div>
                 </div>
             </div>
-
-            <div class="field fieldcontain"><label for="endDateFrom">Fälligkeitsdatum (von)</label><div class="ui calendar datepicker"><div class="ui input left icon"><div class="ui popup calendar"><table class="ui celled center aligned unstackable table seven column day"><thead><tr><th colspan="7"><span class="link">Februar 2020</span><span class="prev link"><i class="chevron left icon"></i></span><span class="next link"><i class="chevron right icon"></i></span></th></tr><tr><th>Mo</th><th>Di</th><th>Mi</th><th>Do</th><th>Fr</th><th>Sa</th><th>So</th></tr></thead><tbody><tr><td class="link adjacent disabled">27</td><td class="link adjacent disabled">28</td><td class="link adjacent disabled">29</td><td class="link adjacent disabled">30</td><td class="link adjacent disabled">31</td><td class="link">1</td><td class="link">2</td></tr><tr><td class="link">3</td><td class="link">4</td><td class="link">5</td><td class="link">6</td><td class="link">7</td><td class="link">8</td><td class="link">9</td></tr><tr><td class="link">10</td><td class="link">11</td><td class="link">12</td><td class="link">13</td><td class="link">14</td><td class="link">15</td><td class="link">16</td></tr><tr><td class="link">17</td><td class="link today focus">18</td><td class="link">19</td><td class="link">20</td><td class="link">21</td><td class="link">22</td><td class="link">23</td></tr><tr><td class="link">24</td><td class="link">25</td><td class="link">26</td><td class="link">27</td><td class="link">28</td><td class="link">29</td><td class="link adjacent disabled">1</td></tr><tr><td class="link adjacent disabled">2</td><td class="link adjacent disabled">3</td><td class="link adjacent disabled">4</td><td class="link adjacent disabled">5</td><td class="link adjacent disabled">6</td><td class="link adjacent disabled">7</td><td class="link adjacent disabled">8</td></tr></tbody></table></div><i aria-hidden="true" class="calendar icon"></i><input class="" name="endDateFrom" id="endDateFrom" type="text" placeholder="Datum" value=""></div></div></div>
-
-            <div class="field fieldcontain"><label for="endDateTo">Fälligkeitsdatum (bis)</label><div class="ui calendar datepicker"><div class="ui input left icon"><div class="ui popup calendar"><table class="ui celled center aligned unstackable table seven column day"><thead><tr><th colspan="7"><span class="link">Februar 2020</span><span class="prev link"><i class="chevron left icon"></i></span><span class="next link"><i class="chevron right icon"></i></span></th></tr><tr><th>Mo</th><th>Di</th><th>Mi</th><th>Do</th><th>Fr</th><th>Sa</th><th>So</th></tr></thead><tbody><tr><td class="link adjacent disabled">27</td><td class="link adjacent disabled">28</td><td class="link adjacent disabled">29</td><td class="link adjacent disabled">30</td><td class="link adjacent disabled">31</td><td class="link">1</td><td class="link">2</td></tr><tr><td class="link">3</td><td class="link">4</td><td class="link">5</td><td class="link">6</td><td class="link">7</td><td class="link">8</td><td class="link">9</td></tr><tr><td class="link">10</td><td class="link">11</td><td class="link">12</td><td class="link">13</td><td class="link">14</td><td class="link">15</td><td class="link">16</td></tr><tr><td class="link">17</td><td class="link today focus">18</td><td class="link">19</td><td class="link">20</td><td class="link">21</td><td class="link">22</td><td class="link">23</td></tr><tr><td class="link">24</td><td class="link">25</td><td class="link">26</td><td class="link">27</td><td class="link">28</td><td class="link">29</td><td class="link adjacent disabled">1</td></tr><tr><td class="link adjacent disabled">2</td><td class="link adjacent disabled">3</td><td class="link adjacent disabled">4</td><td class="link adjacent disabled">5</td><td class="link adjacent disabled">6</td><td class="link adjacent disabled">7</td><td class="link adjacent disabled">8</td></tr></tbody></table></div><i aria-hidden="true" class="calendar icon"></i><input class="" name="endDateTo" id="endDateTo" type="text" placeholder="Datum" value=""></div></div></div>
-
-            <div class="field">
-                <label>Aufgabenstatus</label>
-                <div class="ui fluid dropdown selection" tabindex="0"><select name="taskStatus" id="taskStatus">
-                    <option value="">Alle</option>
-                    <option value="121">Erledigt</option>
-                    <option value="120">Offen</option>
-                    <option value="122">Zurückgestellt</option>
-                </select><i class="dropdown icon"></i><div class="default text">Alle</div><div class="menu" tabindex="-1"><div class="item" data-value="121">Erledigt</div><div class="item" data-value="120">Offen</div><div class="item" data-value="122">Zurückgestellt</div></div></div>
+            <div class="field la-field-right-aligned">
+                <a href="/laser/myInstitution/tasks" class="ui reset primary button">Filter zurücksetzen</a>
+                <input type="submit" class="ui secondary button" value="Filtern">
             </div>
-        </div>
-        <div class="field la-field-right-aligned">
-            <a href="/laser/myInstitution/tasks" class="ui reset primary button">Filter zurücksetzen</a>
-            <input type="submit" class="ui secondary button" value="Filtern">
-        </div>
-    </form>
+        </form>
+    </semui:filter>
 </div>
 </body>
 </html>

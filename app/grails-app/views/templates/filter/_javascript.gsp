@@ -4,6 +4,9 @@
     $('.la-js-filterButton').on('click', function(){
         $( ".la-filter").toggle( "fast" );
         $(this).toggleClass("blue");
+        $(this).attr('aria-expanded', function(index, attr){
+            return attr == 'false' ? 'true' : 'false';
+        });
         $.ajax({
             url: '<g:createLink controller="ajax" action="updateSessionCache"/>',
             data: {

@@ -166,31 +166,31 @@
 .ui.input.error > input {
   background-color: #FFF6F6;
   border-color: #E0B4B4;
-  color: #9F3A38;
+  color: #1B1C1D;
   -webkit-box-shadow: none;
           box-shadow: none;
 }
 
 /* Error Placeholder */
 .ui.input.error > input::-webkit-input-placeholder {
-  color: #e7bdbc;
+  color: #7e8286;
 }
 .ui.input.error > input::-moz-placeholder {
-  color: #e7bdbc;
+  color: #7e8286;
 }
 .ui.input.error > input:-ms-input-placeholder {
-  color: #e7bdbc !important;
+  color: #7e8286 !important;
 }
 
 /* Focused Error Placeholder */
 .ui.input.error > input:focus::-webkit-input-placeholder {
-  color: #da9796;
+  color: #65696c;
 }
 .ui.input.error > input:focus::-moz-placeholder {
-  color: #da9796;
+  color: #65696c;
 }
 .ui.input.error > input:focus:-ms-input-placeholder {
-  color: #da9796 !important;
+  color: #65696c !important;
 }
 
 
@@ -505,3 +505,9 @@
 .ui.massive.input {
   font-size: 1.71428571em;
 }
+
+
+/*******************************
+         Theme Overrides
+*******************************/
+
