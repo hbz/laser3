@@ -57,7 +57,7 @@ class PendingChangeService extends AbstractLockableService {
 
     boolean performAccept(PendingChange pendingChange, User user) {
 
-        log.debug('performAccept()')
+        log.debug('performAccept(): ' + pendingChange + ', ' + user)
         boolean result = true
 
         PendingChange.withNewTransaction { TransactionStatus status ->
@@ -74,7 +74,7 @@ class PendingChangeService extends AbstractLockableService {
                         def tipp = genericOIDService.resolveOID(payload.tippId)
                         def ie_to_update = IssueEntitlement.findBySubscriptionAndTipp(sub_to_change,tipp)
                         if ( ie_to_update != null ) {
-                            ie_to_update.status = RDStore.TIPP_DELETED
+                            ie_to_update.status = RDStore.TIPP_STATUS_DELETED
 
                             if( ie_to_update.save()){
                                 saveWithoutError = true

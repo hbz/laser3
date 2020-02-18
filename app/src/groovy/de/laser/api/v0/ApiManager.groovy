@@ -16,7 +16,7 @@ import javax.servlet.http.HttpServletRequest
 @Log4j
 class ApiManager {
 
-    static final VERSION = '0.80'
+    static final VERSION = '0.81'
     static final NOT_SUPPORTED = false
 
     /**
@@ -128,14 +128,6 @@ class ApiManager {
 
             result = ApiOAMonitor.getAllOrgs()
         }
-        /* else if (NOT_SUPPORTED && 'onixpl'.equalsIgnoreCase(obj)) {
-
-            def lic = ApiLicense.findLicenseBy(query, value)
-
-            if (lic && !(lic in failureCodes)) {
-                result = ApiDoc.getOnixPlDocument((License) lic, contextOrg)
-            }
-        } */
         else if (resolve('organisation', ApiReader.SUPPORTED_FORMATS.organisation) == Constants.VALID_REQUEST) {
 
             result = ApiOrg.findOrganisationBy(query, value)

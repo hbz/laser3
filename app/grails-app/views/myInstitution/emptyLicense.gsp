@@ -36,7 +36,7 @@
             </g:if>
 
             <div class="field required">
-                <label>${message(code: 'myinst.emptyLicense.name', default: 'New License Name')}</label>
+                <label>${message(code: 'myinst.emptyLicense.name')}</label>
                 <input required type="text" name="licenseName" value="${params.licenseName}" placeholder=""/>
             </div>
 

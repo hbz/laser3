@@ -24,9 +24,9 @@
 						
 							<th class="header"><g:message code="creatorTitle.creator.label" default="Creator" /></th>
 						
-							<g:sortableColumn property="dateCreated" title="${message(code: 'creatorTitle.dateCreated.label', default: 'Date Created')}" />
+							<g:sortableColumn property="dateCreated" title="${message(code: 'default.dateCreated.label')}" />
 						
-							<g:sortableColumn property="lastUpdated" title="${message(code: 'creatorTitle.lastUpdated.label', default: 'Last Updated')}" />
+							<g:sortableColumn property="lastUpdated" title="${message(code: 'default.lastUpdated.label')}" />
 						
 							<th class="header"><g:message code="creatorTitle.role.label" default="Role" /></th>
 						

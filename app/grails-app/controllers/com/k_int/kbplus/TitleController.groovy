@@ -28,7 +28,7 @@ class TitleController extends AbstractDebugController {
 
         // TODO: copied from index() because no list() given | DB_QUERY
 
-        def result=[:]
+        Map<String, Object> result = [:]
 
         if (springSecurityService.isLoggedIn()) {
             params.rectype = ["EBookInstance", "JournalInstance", "BookInstance", "TitleInstance", "DatabaseInstance"] // Tells ESSearchService what to look for
@@ -75,7 +75,7 @@ class TitleController extends AbstractDebugController {
   @Secured(['ROLE_ADMIN'])
   def findTitleMatches() { 
     // find all titles by n_title proposedTitle
-    def result=[:]
+    Map<String, Object> result = [:]
     if ( params.proposedTitle ) {
       // def proposed_title_key = com.k_int.kbplus.TitleInstance.generateKeyTitle(params.proposedTitle)
       // result.titleMatches=com.k_int.kbplus.TitleInstance.findAllByKeyTitle(proposed_title_key)

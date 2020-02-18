@@ -9,6 +9,7 @@ import de.laser.api.v0.ApiCollectionReader
 import de.laser.api.v0.ApiReader
 import de.laser.api.v0.ApiToolkit
 import de.laser.api.v0.ApiStubReader
+import de.laser.api.v0.ApiUnsecuredMapReader
 import de.laser.helper.Constants
 import de.laser.helper.RDConstants
 import de.laser.helper.RDStore
@@ -19,6 +20,9 @@ import org.codehaus.groovy.grails.orm.hibernate.cfg.GrailsHibernateUtil
 @Log4j
 class ApiOAMonitor {
 
+    /**
+     * checks implicit OAMONITOR_SERVER_ACCESS
+     */
     static boolean calculateAccess(Org org) {
 
         def resultSetting = OrgSettings.get(org, OrgSettings.KEYS.OAMONITOR_SERVER_ACCESS)
@@ -30,6 +34,9 @@ class ApiOAMonitor {
         }
     }
 
+    /**
+     * checks OAMONITOR_SERVER_ACCESS
+     */
     static private List<Org> getAccessibleOrgs() {
 
         List<Org> orgs = OrgSettings.executeQuery(
@@ -44,7 +51,8 @@ class ApiOAMonitor {
     }
 
     /**
-     * Access checked via ApiManager.read()
+     * checks implicit OAMONITOR_SERVER_ACCESS
+     *
      * @return JSON
      */
     static JSON getAllOrgs() {
@@ -52,7 +60,7 @@ class ApiOAMonitor {
 
         List<Org> orgs = getAccessibleOrgs()
         orgs.each { o ->
-            result << ApiStubReaderUnsecured.getOrganisationStubMap(o)
+            result << ApiUnsecuredMapReader.getOrganisationStubMap(o)
         }
 
         return new JSON(result)

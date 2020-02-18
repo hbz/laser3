@@ -31,7 +31,7 @@
 </div>
 
 
-<h1 class="ui left floated aligned icon header la-clear-before"><semui:headerIcon/>${message(code: 'myinst.currentSubscriptions.label', default: 'Current Subscriptions')}
+<h1 class="ui left floated aligned icon header la-clear-before"><semui:headerIcon/>${message(code: 'myinst.currentSubscriptions.label')}
 <semui:totalNumber total="${num_sub_rows}"/>
 </h1>
 
@@ -154,16 +154,16 @@
                 </g:if>
 
                 <g:sortableColumn params="${params}" property="orgRole§provider"
-                                  title="${message(code: 'default.provider.label', default: 'Provider')} / ${message(code: 'default.agency.label')}"
+                                  title="${message(code: 'default.provider.label')} / ${message(code: 'default.agency.label')}"
                                   rowspan="2"/>
 
                 <g:sortableColumn class="la-smaller-table-head" params="${params}" property="s.startDate"
-                                  title="${message(code: 'default.startDate.label', default: 'Start Date')}"/>
+                                  title="${message(code: 'default.startDate.label')}"/>
 
 
                 <g:if test="${params.orgRole == 'Subscription Consortia'}">
-                    <th rowspan="2">${message(code: 'subscription.numberOfLicenses.label', default: 'Number of ChildLicenses')}</th>
-                    <th rowspan="2">${message(code: 'subscription.numberOfCostItems.label', default: 'Cost Items')}</th>
+                    <th rowspan="2">${message(code: 'subscription.numberOfLicenses.label')}</th>
+                    <th rowspan="2">${message(code: 'subscription.numberOfCostItems.label')}</th>
                 </g:if>
 
                 <th rowspan="2" class="two wide"></th>
@@ -172,7 +172,7 @@
 
             <tr>
                 <g:sortableColumn class="la-smaller-table-head" params="${params}" property="s.endDate"
-                                  title="${message(code: 'default.endDate.label', default: 'End Date')}"/>
+                                  title="${message(code: 'default.endDate.label')}"/>
             </tr>
             </thead>
             <g:each in="${subscriptions}" var="s" status="i">
@@ -240,7 +240,7 @@
                             </g:each>
                             <g:each in="${s.agencies}" var="org">
                                 <g:link controller="organisation" action="show"
-                                        id="${org.id}">${org.name} (${message(code: 'default.agency.label', default: 'Agency')})</g:link><br/>
+                                        id="${org.id}">${org.name} (${message(code: 'default.agency.label')})</g:link><br/>
                             </g:each>
                         </td>
                         <%--
