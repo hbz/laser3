@@ -2,9 +2,16 @@
 
 **Ticket    Date    Branch      Author  Feature/Bug     Description/Keywords**
 
+
+2123   11.02.2020  hbz-dev     Moe     Feature      Pakete auch in Kindlizenzen entknüpfen
+
+2146    11.02.2020  hbz-dev     Moe     Feature     Bulk Prozesse bei Teilnehmerverwaltung ermöglichen
+
 2176    14.02.2020  hbz-dev     David   Feature     Admin-Sicht: Unterschiede zwischen Servern
 
 2184    14.02.2020  hbz-dev     David   Bug         Vererbung im hbz-dev defekt
+
+2148    13.02.2020  hbz-dev     David   Feature     Individuelle Freigabe für API-Ausgabe für Lizenzen und Verträge
 
 --      12.02.2020  rc1.2       Andreas Bug         Sortierung nach Enddatum war bei eigenen Kosten innerhalb einer Lizenz nicht möglich
 

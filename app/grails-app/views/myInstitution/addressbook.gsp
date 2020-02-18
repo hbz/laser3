@@ -64,7 +64,7 @@ import="de.laser.helper.RDStore; de.laser.helper.RDConstants; com.k_int.kbplus.O
                     <div class="field la-field-right-aligned">
                         <label></label>
                         <a href="${request.forwardURI}" class="ui reset primary button">${message(code:'default.button.reset.label')}</a>
-                        <input type="submit" class="ui secondary button" value="${message(code:'default.button.filter.label', default:'Filter')}">
+                        <input type="submit" class="ui secondary button" value="${message(code:'default.button.filter.label')}">
                     </div>
                 </g:form>
             </semui:filter>

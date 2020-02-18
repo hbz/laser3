@@ -19,7 +19,7 @@
       <table  class="ui celled la-table table">
           <thead>
             <tr>
-              <th>${message(code:'license.history.todo.description', default:'ToDo Description')}</th>
+              <th>${message(code:'license.history.todo.description')}</th>
               <th>${message(code:'default.status.label')}</th>
               <th>${message(code:'default.date.label')}</th>
             </tr>

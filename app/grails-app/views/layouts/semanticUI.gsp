@@ -243,18 +243,18 @@
                         <div class="menu">
                             <sec:ifAnyGranted roles="ROLE_STATISTICS_EDITOR">
                                 <g:link class="item" controller="usage"
-                                        action="index">${message(code: 'menu.datamanager.manage_usage_stats', default: 'Manage Usage Stats')}</g:link>
+                                        action="index">${message(code: 'menu.datamanager.manage_usage_stats')}</g:link>
                             </sec:ifAnyGranted>
 
                             <sec:ifAnyGranted roles="ROLE_ADMIN">
                                 <g:link class="item" controller="dataManager" action="index">${message(code:'menu.datamanager.dash')}</g:link>
                                 <g:link class="item" controller="dataManager"
-                                        action="deletedTitles">${message(code: 'datamanager.deletedTitleManagement.label', default: 'Deleted Title management')}</g:link>
+                                        action="deletedTitles">${message(code: 'datamanager.deletedTitleManagement.label')}</g:link>
                             </sec:ifAnyGranted>
 
                             <sec:ifAnyGranted roles="ROLE_ORG_MANAGER,ROLE_ADMIN">
                                 <g:link class="item" controller="dataManager"
-                                        action="deletedOrgs">${message(code: 'datamanager.deletedOrgManagement.label', default: 'Deleted Org management')}</g:link>
+                                        action="deletedOrgs">${message(code: 'datamanager.deletedOrgManagement.label')}</g:link>
                             </sec:ifAnyGranted>
 
                             <sec:ifAnyGranted roles="ROLE_ADMIN">

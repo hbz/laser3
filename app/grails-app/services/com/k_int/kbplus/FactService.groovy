@@ -132,7 +132,7 @@ class FactService {
 
   def generateMonthlyUsageGrid(title_id, org_id, supplier_id) {
 
-    def result=[:]
+    Map<String, Object> result = [:]
 
     if ( title_id != null &&
          org_id != null &&
@@ -175,7 +175,7 @@ class FactService {
 
   def generateYearlyUsageGrid(title_id, org_id, supplier_id) {
 
-    def result=[:]
+    Map<String, Object> result = [:]
 
     if ( title_id != null &&
          org_id != null &&
@@ -451,7 +451,7 @@ class FactService {
 
   def generateExpandableMonthlyUsageGrid(title_id, org_id, supplier_id) {
 
-    def result=[:]
+    Map<String, Object> result = [:]
 
     if ( title_id != null &&
          org_id != null &&

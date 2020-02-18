@@ -36,7 +36,7 @@
             </g:if>
 
             <div class="field required">
-                <label>${message(code: 'myinst.emptyLicense.name', default: 'New License Name')}</label>
+                <label>${message(code: 'myinst.emptyLicense.name')}</label>
                 <input required type="text" name="licenseName" value="${params.licenseName}" placeholder=""/>
             </div>
 
@@ -111,12 +111,12 @@
             <thead>
             <tr>
                 <g:sortableColumn params="${params}" property="reference" title="${message(code: 'license.name')}"/>
-                <th>${message(code: 'license.licensor.label', default: 'Licensor')}</th>
+                <th>${message(code: 'license.licensor.label')}</th>
                 <g:sortableColumn params="${params}" property="startDate"
-                                  title="${message(code: 'default.startDate.label', default: 'Start Date')}"/>
+                                  title="${message(code: 'default.startDate.label')}"/>
                 <g:sortableColumn params="${params}" property="endDate"
-                                  title="${message(code: 'default.endDate.label', default: 'End Date')}"/>
-                <th>${message(code: 'default.actions.label', default: 'Action')}</th>
+                                  title="${message(code: 'default.endDate.label')}"/>
+                <th>${message(code: 'default.actions.label')}</th>
             </tr>
             </thead>
             <tbody>
@@ -138,7 +138,7 @@
                             </ul>
                         </g:if>
                         <g:else>
-                            <br/>${message(code: 'myinst.addLicense.no_results', default: 'No linked packages.')}
+                            <br/>${message(code: 'myinst.addLicense.no_results')}
                         </g:else>
                     </td>
                     <td>${l.licensor?.name}</td>
@@ -165,7 +165,7 @@
     </div>
 
 </g:if><g:else>
-    <br><b>${message(code: 'license.template.empty', default: 'Currently there are no contract templates available')}</b>
+    <br><b>${message(code: 'license.template.empty')}</b>
 </g:else>
 
 

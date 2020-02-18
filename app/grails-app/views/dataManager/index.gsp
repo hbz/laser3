@@ -21,7 +21,7 @@
         <table class="ui celled la-table table">
           <thead>
             <tr>
-              <th>${message(code:'default.info.label', default:'Info')}</th>
+              <th>${message(code:'default.info.label')}</th>
               <th class="la-action-info">${message(code:'default.actions.label')}</th>
             </tr>
           </thead>
@@ -43,7 +43,7 @@
     </g:if>
     <g:else>
       <div class="container alert-warn">
-        <h6 class="ui header">${message(code:'datamanager.none_pending.label', default:'No pending package changes')}</h6>
+        <h6 class="ui header">${message(code:'datamanager.none_pending.label')}</h6>
       </div>
     </g:else>
 

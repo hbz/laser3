@@ -2,7 +2,7 @@
 <html>
 <head>
     <meta name="layout" content="semanticUI">
-    <g:set var="entityName" value="${message(code: 'globalDataSync.label', default: 'Global Data Sync')}"/>
+    <g:set var="entityName" value="${message(code: 'globalDataSync.label')}"/>
     <title><g:message code="default.list.label" args="[entityName]"/></title>
 </head>
 
@@ -89,11 +89,11 @@
                 <g:if test="${item.globalRecordInfoStatus?.value != 'Current'}">
                     <td><g:link action="newCleanTracker" controller="globalDataSync" id="${item.id}"
                                 class="ui negative button"
-                                onclick="return confirm('${message(code: 'globalDataSync.trackingDeleted', default: 'Are you sure?')}')">
+                                onclick="return confirm('${message(code: 'globalDataSync.trackingDeleted')}')">
                         ${message(code: 'globalDataSync.track_new')}</g:link><hr>
                     <g:link action="selectLocalPackage" controller="globalDataSync" id="${item.id}"
                             class="ui negative button"
-                            onclick="return confirm('${message(code: 'globalDataSync.trackingDeleted', default: 'Are you sure?')}')">
+                            onclick="return confirm('${message(code: 'globalDataSync.trackingDeleted')}')">
                         ${message(code: 'globalDataSync.track_merge')}</g:link>
                     </td>
                 </g:if>

@@ -24,9 +24,9 @@
         <thead>
             <tr>
                 <%--<g:if test="${editable}"><th>${message(code:'default.select.label', default:'Select')}</th></g:if> : REMOVED BULK--%>
-                <th>${message(code:'license.docs.table.title', default:'Title')}</th>
-                <th>${message(code:'license.docs.table.fileName', default:'File Name')}</th>
-                <th>${message(code:'license.docs.table.type', default:'Type')}</th>
+                <th>${message(code:'license.docs.table.title')}</th>
+                <th>${message(code:'license.docs.table.fileName')}</th>
+                <th>${message(code:'license.docs.table.type')}</th>
                 <%--<th>${message(code:'org.docs.table.ownerOrg')}</th>--%>
                 <g:if test="${controllerName == 'myInstitution'}">
                     <th>${message(code:'org.docs.table.targetBy')}</th>
@@ -84,7 +84,7 @@
                             visible = true
                     }
                 %>
-                <g:if test="${(((docctx.owner?.contentType == 1) || (docctx.owner?.contentType == 3)) && visible && docctx.status != RDStore.DOC_DELETED)}">
+                <g:if test="${(((docctx.owner?.contentType == 1) || (docctx.owner?.contentType == 3)) && visible && docctx.status != RDStore.DOC_CTX_STATUS_DELETED)}">
                     <tr>
                         <td class="la-main-object" >
                             ${docctx.owner.title}

@@ -5,7 +5,7 @@
 <html>
 <head>
     <meta name="layout" content="semanticUI">
-    <g:set var="entityName" value="${message(code: 'org.label', default: 'Org')}"/>
+    <g:set var="entityName" value="${message(code: 'org.label')}"/>
     <title>${message(code: 'laser')} : ${message(code: 'menu.my.consortiaSubscriptions')}</title>
 </head>
 
@@ -65,14 +65,14 @@
         <div class="three fields">
             <div class="field">
                 <%--
-               <label>${message(code: 'default.search.text', default: 'Search text')}
+               <label>${message(code: 'default.search.text')}
                    <span data-position="right center" data-variation="tiny" data-content="${message(code:'default.search.tooltip.subscription')}">
                        <i class="question circle icon"></i>
                    </span>
                </label>
                <div class="ui input">
                    <input type="text" name="q"
-                          placeholder="${message(code: 'default.search.ph', default: 'enter search term...')}"
+                          placeholder="${message(code: 'default.search.ph')}"
                           value="${params.q}"/>
                </div>
                --%>
@@ -191,7 +191,7 @@
                     <div class="field la-field-right-aligned">
                         <a href="${request.forwardURI}" class="ui reset primary button">${message(code:'default.button.reset.label')}</a>
                         <input name="filterSet" value="true" type="hidden">
-                        <input type="submit" class="ui secondary button" value="${message(code:'default.button.filter.label', default:'Filter')}">
+                        <input type="submit" class="ui secondary button" value="${message(code:'default.button.filter.label')}">
                     </div>
                 </div>
             </div>

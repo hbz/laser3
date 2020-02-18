@@ -22,7 +22,7 @@ class DataManagerController extends AbstractDebugController {
 
   @Secured(['ROLE_ADMIN'])
   def index() { 
-    def result =[:]
+    Map<String, Object> result = [:]
     def pending_change_pending_status = RefdataValue.getByValueAndCategory('Pending', RDConstants.PENDING_CHANGE_STATUS)
 
     result.pendingChanges = PendingChange.executeQuery("select pc from PendingChange as pc where pc.pkg is not null and ( pc.status is null or pc.status = ? ) order by ts desc", [pending_change_pending_status]);
@@ -33,7 +33,7 @@ class DataManagerController extends AbstractDebugController {
   @Secured(['ROLE_ADMIN'])
   def changeLog() { 
 
-    def result =[:]
+    Map<String, Object> result = [:]
     log.debug("changeLog ${params}");
     SimpleDateFormat formatter = DateUtil.getSDF_NoTime()
 
@@ -62,7 +62,7 @@ class DataManagerController extends AbstractDebugController {
       params.creates='Y'
     }
     if(params.startDate > params.endDate){
-      flash.error = message(code:'datamanager.changeLog.error.dates', default:'From Date cannot be after To Date.')
+      flash.error = message(code:'datamanager.changeLog.error.dates')
       return
     }
     def base_query = "from org.codehaus.groovy.grails.plugins.orm.auditable.AuditLogEvent as e where e.className in (:l) AND e.lastUpdated >= :s AND e.lastUpdated <= :e AND e.eventName in (:t)"
@@ -539,7 +539,7 @@ class DataManagerController extends AbstractDebugController {
 
   @Secured(['ROLE_ADMIN'])
   def listMailTemplates() {
-    def result =[:]
+    Map<String, Object> result = [:]
 
     result.mailTemplates = MailTemplate.getAll()
 

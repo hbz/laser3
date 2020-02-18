@@ -1301,7 +1301,7 @@ class AjaxController {
                     newProp = PropertyDefinition.construct(map)
                 }
                 else {
-                    error = message(code: 'ajax.addCustPropertyType.error', default: 'Type creation failed. Please select a ref data type.')
+                    error = message(code: 'ajax.addCustPropertyType.error')
                 }
             }
             else {
@@ -1383,7 +1383,7 @@ class AjaxController {
           log.debug("New custom property created: " + newProp.type.name)
         }
       } else {
-        error = message(code: 'ajax.addCustomPropertyValue.error', default: 'A property of this type is already added')
+        error = message(code: 'ajax.addCustomPropertyValue.error')
       }
 
       owner.refresh()
@@ -1513,7 +1513,7 @@ class AjaxController {
               log.debug("New private property created: " + newProp.type.name)
             }
           } else {
-            error = message(code: 'ajax.addCustomPropertyValue.error', default: 'A property of this type is already added')
+            error = message(code: 'ajax.addCustomPropertyValue.error')
           }
         }
 
@@ -1948,11 +1948,11 @@ class AjaxController {
         def tip = TitleInstitutionProvider.get(tipID)
         log.debug("Extending tip ${tip.id} with start ${startDate} and end ${endDate}")
         tip.extendCoreExtent(startDate, endDate)
-        params.message = message(code:'ajax.coreExtend.success', default:'Core Dates extended')
+        params.message = message(code:'ajax.coreExtend.success')
       }
     }catch (Exception e){
         log.error("Error while extending core dates",e)
-        params.message = message(code:'ajax.coreExtend.error', default:'Extending of core date failed.')
+        params.message = message(code:'ajax.coreExtend.error')
     }
     redirect(action:'getTipCoreDates',controller:'ajax',params:params)
   }

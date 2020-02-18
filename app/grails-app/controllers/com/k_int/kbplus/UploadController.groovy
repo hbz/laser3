@@ -84,11 +84,11 @@ class UploadController extends AbstractDebugController {
     if ( content_provider_org == null ) {
       log.debug("content_provider_org is present and set to ${content_provider_org}");
       content_provider_org = new Org(name:upload.soProvider.value,impId:java.util.UUID.randomUUID().toString()).save();
-      incrementStatsCounter(upload, message(code:'package.upload.provider_created', default:'Content Provider Org Created'));
+      incrementStatsCounter(upload, message(code:'package.upload.provider_created'))
     }
     else {
       log.debug("Matched ${content_provider_org} using name ${upload.soProvider.value}");
-      incrementStatsCounter(upload, message(code:'package.upload.provider_matched', default:'Content Provider Org Matched'));
+      incrementStatsCounter(upload, message(code:'package.upload.provider_matched'))
     }
 
     RefdataValue pkg_type = RefdataValue.getByValueAndCategory('Unknown', RDConstants.PACKAGE_TYPE)
@@ -139,7 +139,7 @@ class UploadController extends AbstractDebugController {
       }
       else {
         log.error("Problem saving new package");
-        upload.messages.add(message(code:'package.upload.save.error', default:'Problem saving new package'));
+        upload.messages.add(message(code:'package.upload.save.error'))
         new_pkg.errors.each { pe ->
           log.error("Problem saving package: ${pe}");
           upload.messages.add(message(code:'package.upload.save.error_pkg', args:[pe]));
@@ -158,10 +158,10 @@ class UploadController extends AbstractDebugController {
         publisher = Org.findByName(tipp.publisher_name)
         if ( publisher == null ) {
           publisher = new Org(name:tipp.publisher_name).save();
-          incrementStatsCounter(upload, message(code:'package.upload.pub_created', default:'Publisher Org Created'));
+          incrementStatsCounter(upload, message(code:'package.upload.pub_created'))
         }
         else {
-          incrementStatsCounter(upload, message(code:'package.upload.pub_matched', default:'Publisher Org Matched'));
+          incrementStatsCounter(upload, message(code:'package.upload.pub_matched'))
         }
       }
 
@@ -188,7 +188,7 @@ class UploadController extends AbstractDebugController {
         // Got all the components we need to create a tipp
         def dbtipp = TitleInstancePackagePlatform.findByPkgAndPlatformAndTitle(new_pkg,tipp.host_platform,tipp.title_obj)
         if ( dbtipp == null ) {
-          incrementStatsCounter(upload, message(code:'package.upload.tipp_created', default:'TIPP Created'));
+          incrementStatsCounter(upload, message(code:'package.upload.tipp_created'))
 
           def hybrid_oa_status_value = null;
           if ( tipp.hybrid_oa != null ) {

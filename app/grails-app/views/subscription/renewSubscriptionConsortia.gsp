@@ -61,7 +61,7 @@ ${message(code: 'subscription.details.renewalsConsortium.label')}: ${subscriptio
             <g:hiddenField name="newSubscription" value="${newSub?.id}"/>
         </g:if>
         <div class="field ">
-            <label>${message(code: 'myinst.emptySubscription.name', default: 'New Subscription Name')}: ${subscription?.name}</label>
+            <label>${message(code: 'myinst.emptySubscription.name')}: ${subscription?.name}</label>
         %{--<input required type="text" name="sub_name" value="${subscription.name}" placeholder=""/>--}%
 
             <g:if test="${workFlowPart == 2}">
@@ -82,9 +82,9 @@ ${message(code: 'subscription.details.renewalsConsortium.label')}: ${subscriptio
             <tbody>
             <g:if test="${workFlowPart == 1}">
                 <tr>
-                    <th>${message(code: 'default.select.label', default: 'Select')}</th>
-                    <th>${message(code: 'subscription.property', default: 'Subscription Properties')}</th>
-                    <th>${message(code: 'default.value.label', default: 'Value')}</th>
+                    <th>${message(code: 'default.select.label')}</th>
+                    <th>${message(code: 'subscription.property')}</th>
+                    <th>${message(code: 'default.value.label')}</th>
                 </tr>
 
                 <tr>
@@ -144,7 +144,7 @@ ${message(code: 'subscription.details.renewalsConsortium.label')}: ${subscriptio
                     <th><g:checkBox name="subscription.takeEntitlements" value="${true}"/></th>
                     <th>${message(code: 'subscription.takeEntitlements', default: 'Take Current Entitlements from Subscription')}</th>
                     <td><b>${message(code: 'issueEntitlement.countSubscription')} </b> ${subscription.issueEntitlements.findAll {
-                        it.status != RDStore.TIPP_DELETED
+                        it.status != RDStore.TIPP_STATUS_DELETED
                     }.size()}
 
                         %{--                        <g:each in="${subscription.issueEntitlements.sort{it.tipp.title}}" var="ie">
@@ -160,9 +160,9 @@ ${message(code: 'subscription.details.renewalsConsortium.label')}: ${subscriptio
 
             <g:if test="${workFlowPart == 2}">
                 <tr>
-                    <th>${message(code: 'default.select.label', default: 'Select')}</th>
-                    <th>${message(code: 'subscription.property', default: 'Subscription Properties')}</th>
-                    <th>${message(code: 'default.value.label', default: 'Value')}</th>
+                    <th>${message(code: 'default.select.label')}</th>
+                    <th>${message(code: 'subscription.property')}</th>
+                    <th>${message(code: 'default.value.label')}</th>
                 </tr>
 
                 <g:each in="${subscription.documents.sort { it.owner?.title }}" var="docctx">
@@ -206,7 +206,7 @@ ${message(code: 'subscription.details.renewalsConsortium.label')}: ${subscriptio
 
                                 (${message(code: 'template.notes.created')}
                                 <g:formatDate
-                                        format="${message(code: 'default.date.format.notime', default: 'yyyy-MM-dd')}"
+                                        format="${message(code: 'default.date.format.notime')}"
                                         date="${docctx.owner.dateCreated}"/>)
 
                             </td></tr>
@@ -220,7 +220,7 @@ ${message(code: 'subscription.details.renewalsConsortium.label')}: ${subscriptio
 
                         <td>
                             <b>${tsk?.title}</b> (${message(code: 'task.endDate.label')}
-                        <g:formatDate format="${message(code: 'default.date.format.notime', default: 'yyyy-MM-dd')}"
+                        <g:formatDate format="${message(code: 'default.date.format.notime')}"
                                       date="${tsk.endDate}"/>)
 
                         </td></tr>

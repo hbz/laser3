@@ -45,7 +45,6 @@ class ApiWriter {
 
                 ['Yes','yes']
                 // RefdataValues
-                license.isPublic         = data.isPublic in ['Yes','yes']
                 license.licenseCategory  = RefdataValue.getByValueAndCategory(data.licenseCategory, RDConstants.LICENSE_CATEGORY)
                 license.status           = RefdataValue.getByValueAndCategory(data.status, RDConstants.LICENSE_STATUS)
                 license.type             = RefdataValue.getByValueAndCategory(data.type, RDConstants.LICENSE_TYPE)

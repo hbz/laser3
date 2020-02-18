@@ -7,7 +7,7 @@
 <html>
     <head>
         <meta name="layout" content="semanticUI" />
-        <title>${message(code:'laser')} : ${message(code:'myinst.currentSubscriptions.label', default:'Current Subscriptions')}</title>
+        <title>${message(code:'laser')} : ${message(code:'myinst.currentSubscriptions.label')}</title>
     </head>
     <body>
 
@@ -53,7 +53,7 @@
 
         <semui:messages data="${flash}"/>
 
-        <h1 class="ui left floated aligned icon header la-clear-before"><semui:headerIcon />${message(code:'myinst.currentSubscriptions.label', default:'Current Subscriptions')}
+        <h1 class="ui left floated aligned icon header la-clear-before"><semui:headerIcon />${message(code:'myinst.currentSubscriptions.label')}
             <semui:totalNumber total="${num_sub_rows}"/>
         </h1>
 
@@ -282,7 +282,7 @@
             </g:if>
             <div class="field la-field-right-aligned">
                 <a href="${request.forwardURI}" class="ui reset primary button">${message(code:'default.button.reset.label')}</a>
-                <input type="submit" class="ui secondary button" value="${message(code:'default.button.filter.label', default:'Filter')}">
+                <input type="submit" class="ui secondary button" value="${message(code:'default.button.filter.label')}">
             </div>
 
 
@@ -316,12 +316,12 @@
                 <th rowspan="2">${message(code:'org.institution.label')}</th>
             </g:elseif>
 
-            <g:sortableColumn scope="col" params="${params}" property="orgRole§provider" title="${message(code: 'default.provider.label', default: 'Provider')} / ${message(code: 'default.agency.label', default: 'Agency')}" rowspan="2" />
-            <%--<th rowspan="2" >${message(code: 'default.provider.label', default: 'Provider')} / ${message(code: 'default.agency.label', default: 'Agency')}</th>--%>
+            <g:sortableColumn scope="col" params="${params}" property="orgRole§provider" title="${message(code: 'default.provider.label')} / ${message(code: 'default.agency.label')}" rowspan="2" />
+            <%--<th rowspan="2" >${message(code: 'default.provider.label')} / ${message(code: 'default.agency.label')}</th>--%>
 
             <%--
             <g:if test="${params.orgRole == 'Subscription Consortia'}">
-                <th>${message(code: 'consortium.subscriber', default: 'Subscriber')}</th>
+                <th>${message(code: 'consortium.subscriber')}</th>
             </g:if>
             --%>
             <g:sortableColumn scope="col" class="la-smaller-table-head" params="${params}" property="s.startDate" title="${message(code: 'default.startDate.label')}"/>
@@ -362,7 +362,7 @@
                             ${s.name}
                         </g:if>
                         <g:else>
-                            -- ${message(code: 'myinst.currentSubscriptions.name_not_set', default: 'Name Not Set')}  --
+                            -- ${message(code: 'myinst.currentSubscriptions.name_not_set')}  --
                         </g:else>
                         <g:if test="${s.instanceOf}">
                             <g:if test="${s.consortia && s.consortia == institution}">
