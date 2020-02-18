@@ -177,15 +177,42 @@
     </r:script>
 <h2 class="ui dividing header">Buttons und Links</h2>
 <h3 class="ui dividing header">Button mit Icon und Tooltip</h3>
-<p >
-    <a  role="button" class="ui icon mini button la-audit-button la-popup-tooltip la-delay" href='https://www.spiegel.de' data-content="Das ist der Inhalt des Tooltips">
-        <i  class="icon thumbtack la-js-editmode-icon"></i>
-    </a>
-</p>
-<h2 class="ui dividing header">Icons</h2>
-<h3 class="ui dividing header">Icon mit Tooltip</h3>
+<a  role="button" class="ui icon mini button la-audit-button la-popup-tooltip la-delay" href='https://www.spiegel.de' data-content="Das ist der Inhalt des Tooltips">
+    <i  class="icon thumbtack la-js-editmode-icon"></i>
+</a>
+<h3 class="ui dividing header">Icons in einem Link ohne zusätzlichen Text</h3>
+<g:link aria-label="Das ist eine Beschreibung für den Accessibility Tree" controller="dev" action="frontend" params="" class="ui icon positive button">
+    <i aria-hidden="true" class="checkmark icon"></i>
+</g:link>
 
-</h3>
+<h2 class="ui dividing header">Icons</h2>
+<h3 class="ui dividing header">Dekorative Icon mit einer Dopplung der Semantik durch Text, der daneben steht.</h3>
+
+<div class="ui icon info message">
+    <i aria-hidden="true" class="exclamation triangle icon"></i>
+    <div class="content">
+        <div class="header">
+            Achtung
+        </div>
+        <p>Wenn Sie ein neues Element nicht finden, warten Sie etwa <strong>10 Minuten</strong>, bis sich der Index aktualisiert hat.</p>
+    </div>
+</div>
+<h3 class="ui dividing header">Icon ohne Linkfunktion</h3>
+<div class="ui icon info message">
+    <i aria-hidden="true" class="close icon"></i>
+    <div class="content">
+        <div class="header">
+            Achtung
+        </div>
+        <p>Wenn Sie ein neues Element nicht finden, warten Sie etwa <strong>10 Minuten</strong>, bis sich der Index aktualisiert hat.</p>
+    </div>
+</div>
+<h3 class="ui dividing header">Icons in einem Button, der eine Bezeichnung hat</h3>
+<button class="ui   button la-inline-labeled la-js-filterButton la-clearfix blue"> Filter <i
+        aria-hidden="true" class="filter icon"></i> <span
+        class="ui circular label la-js-filter-total hidden">0</span>
+</button>
+
 <h3 class="ui dividing header"></h3>
 <h2 class="ui dividing header">Modals</h2>
 <h3 class="ui dividing header ">Confimation Modal</h3>
