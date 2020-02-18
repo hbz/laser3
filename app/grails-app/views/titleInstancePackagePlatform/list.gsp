@@ -18,15 +18,15 @@
         
         <table class="ui sortable celled la-table table">
           <thead>
-              <g:sortableColumn property="title.title" title="${message(code: 'titleInstancePackagePlatform.title.label', default: 'Title')}" />
-              <g:sortableColumn property="platform.name" title="${message(code: 'titleInstancePackagePlatform.title.label', default: 'Platform')}" />
-              <g:sortableColumn property="pkg.name" title="${message(code: 'titleInstancePackagePlatform.title.label', default: 'Package')}" />
-              <g:sortableColumn property="startDate" title="${message(code: 'titleInstancePackagePlatform.startDate.label', default: 'Start Date')}" />
-              <g:sortableColumn property="startVolume" title="${message(code: 'titleInstancePackagePlatform.startVolume.label', default: 'Start Volume')}" />
-              <g:sortableColumn property="startIssue" title="${message(code: 'titleInstancePackagePlatform.startIssue.label', default: 'Start Issue')}" />
-              <g:sortableColumn property="endDate" title="${message(code: 'titleInstancePackagePlatform.endDate.label', default: 'End Date')}" />
-              <g:sortableColumn property="endVolume" title="${message(code: 'titleInstancePackagePlatform.endVolume.label', default: 'End Volume')}" />
-              <g:sortableColumn property="endIssue" title="${message(code: 'titleInstancePackagePlatform.endIssue.label', default: 'End Issue')}" />
+              <g:sortableColumn property="title.title" title="${message(code: 'title.label')}" />
+              <g:sortableColumn property="platform.name" title="${message(code: 'tipp.show.platformName')}" />
+              <g:sortableColumn property="pkg.name" title="${message(code: 'package.label')}" />
+              <g:sortableColumn property="startDate" title="${message(code: 'tipp.show.tippStartDate')}" />
+              <g:sortableColumn property="startVolume" title="${message(code: 'tipp.show.tippStartVol')}" />
+              <g:sortableColumn property="startIssue" title="${message(code: 'tipp.show.tippStartIss')}" />
+              <g:sortableColumn property="endDate" title="${message(code: 'tipp.show.tippEndDate')}" />
+              <g:sortableColumn property="endVolume" title="${message(code: 'tipp.show.tippEndVol')}" />
+              <g:sortableColumn property="endIssue" title="${message(code: 'tipp.show.tippEndIss')}" />
               <th></th>
             </tr>
           </thead>

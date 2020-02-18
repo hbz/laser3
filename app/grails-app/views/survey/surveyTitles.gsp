@@ -93,19 +93,19 @@
         <tr>
             <th rowspan="2" colspan="4"></th>
             <g:sortableColumn class="la-smaller-table-head" params="${params}" property="startDate"
-                              title="${message(code: 'default.from', default: 'Earliest date')}"/>
+                              title="${message(code: 'default.from')}"/>
             <g:sortableColumn class="la-smaller-table-head" params="${params}"
                               property="accessStartDate"
-                              title="${message(code: 'default.from', default: 'Earliest date')}"/>
+                              title="${message(code: 'default.from')}"/>
 
             <th rowspan="2" colspan="2"></th>
         </tr>
         <tr>
             <g:sortableColumn class="la-smaller-table-head" property="endDate"
-                              title="${message(code: 'default.to', default: 'Latest Date')}"/>
+                              title="${message(code: 'default.to')}"/>
             <g:sortableColumn class="la-smaller-table-head" params="${params}"
                               property="accessEndDate"
-                              title="${message(code: 'default.to', default: 'Latest Date')}"/>
+                              title="${message(code: 'default.to')}"/>
         </tr>
         <tr>
             <th colspan="9"></th>

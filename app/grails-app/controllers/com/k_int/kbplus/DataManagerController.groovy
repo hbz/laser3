@@ -62,7 +62,7 @@ class DataManagerController extends AbstractDebugController {
       params.creates='Y'
     }
     if(params.startDate > params.endDate){
-      flash.error = message(code:'datamanager.changeLog.error.dates', default:'From Date cannot be after To Date.')
+      flash.error = message(code:'datamanager.changeLog.error.dates')
       return
     }
     def base_query = "from org.codehaus.groovy.grails.plugins.orm.auditable.AuditLogEvent as e where e.className in (:l) AND e.lastUpdated >= :s AND e.lastUpdated <= :e AND e.eventName in (:t)"

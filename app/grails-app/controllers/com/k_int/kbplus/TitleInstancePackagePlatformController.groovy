@@ -52,7 +52,7 @@ class TitleInstancePackagePlatformController {
                   return
               }
 
-        flash.message = message(code: 'default.created.message', args: [message(code: 'titleInstancePackagePlatform.label', default: 'TitleInstancePackagePlatform'), titleInstancePackagePlatformInstance.id])
+        flash.message = message(code: 'default.created.message', args: [message(code: 'titleInstancePackagePlatform.label'), titleInstancePackagePlatformInstance.id])
               redirect action: 'show', id: titleInstancePackagePlatformInstance.id
           break
         }
@@ -116,7 +116,7 @@ class TitleInstancePackagePlatformController {
                   return
               }
 
-          flash.message = message(code: 'default.updated.message', args: [message(code: 'titleInstancePackagePlatform.label', default: 'TitleInstancePackagePlatform'), titleInstancePackagePlatformInstance.id])
+          flash.message = message(code: 'default.updated.message', args: [message(code: 'titleInstancePackagePlatform.label'), titleInstancePackagePlatformInstance.id])
               redirect action: 'show', id: titleInstancePackagePlatformInstance.id
           break
         }
