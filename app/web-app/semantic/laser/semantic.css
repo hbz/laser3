@@ -32433,8 +32433,6 @@ a.ui.card:hover,
 .ui.checkbox input:checked ~ .box:after,
 .ui.checkbox input:checked ~ label:after {
   content: '\e800';
-  color: #767676;
-  background-color: #d3dae3 !important;
 }
 
 /* Indeterminate */
@@ -32445,13 +32443,9 @@ a.ui.card:hover,
   content: '\e801';
 }
 
-/*  UTF Reference
-.check:before { content: '\e800'; }
-.dash:before  { content: '\e801'; }
-.plus:before { content: '\e802'; }
-*/
-
-/************* laser three toggle icon buttons ***************/
+/*---------------------------------------------
+        Laser 3 State Toggle Icon Buttons
+----------------------------------------------*/
 
 .radio,
 .checkbox.la-toggle-radio {

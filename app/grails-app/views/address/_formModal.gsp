@@ -33,7 +33,7 @@
                     <label for="street_1_${modalId}">
                         <g:message code="address.street_1.label" />
                     </label>
-                    <g:textField id="street_1_${modalId}" name="street_1" value="${addressInstance?.street_1}"/>
+                    <g:textField id="street_1_${modalId}" name="street_1" value="${addressInstance?.street_1}" required=""/>
                 </div>
 
                 <div class="field two wide fieldcontain ${hasErrors(bean: addressInstance, field: 'street_2', 'error')} ">
@@ -62,14 +62,14 @@
                     <label for="zipcode_${modalId}">
                         <g:message code="address.zipcode.label" />
                     </label>
-                    <g:textField id="zipcode_${modalId}" name="zipcode" value="${addressInstance?.zipcode}"/>
+                    <g:textField id="zipcode_${modalId}" name="zipcode" value="${addressInstance?.zipcode}" required=""/>
                 </div>
 
                 <div class="field required six wide fieldcontain ${hasErrors(bean: addressInstance, field: 'city', 'error')}">
                     <label for="city_${modalId}">
                         <g:message code="address.city.label" />
                     </label>
-                    <g:textField id="city_${modalId}" name="city" value="${addressInstance?.city}"/>
+                    <g:textField id="city_${modalId}" name="city" value="${addressInstance?.city}" required=""/>
                 </div>
 
                 <div class="field seven wide fieldcontain ${hasErrors(bean: addressInstance, field: 'country', 'error')}">
