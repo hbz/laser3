@@ -3185,7 +3185,6 @@ class SubscriptionController extends AbstractDebugController {
             GlobalRecordSource source = GlobalRecordSource.findByUri("${params.source}/gokb/oai/packages")
             log.debug("linkPackage. Global Record Source URL: " +source.baseUrl)
             globalSourceSyncService.source = source
-            //continue here: title type mismatch notification, single package sync
             String addType = params.addType
             GPathResult packageRecord = globalSourceSyncService.fetchRecord(source.uri,'packages',[verb:'GetRecord',metadataPrefix:'gokb',identifier:params.addUUID])
             executorService.submit({

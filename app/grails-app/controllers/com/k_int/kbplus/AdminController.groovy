@@ -9,13 +9,12 @@ import com.k_int.properties.PropertyDefinition
 import com.k_int.properties.PropertyDefinitionGroup
 import com.k_int.properties.PropertyDefinitionGroupItem
 import de.laser.ContextService
-import de.laser.GOKbService
 import de.laser.SystemEvent
 import de.laser.api.v0.ApiToolkit
 import de.laser.controller.AbstractDebugController
 import de.laser.domain.I10nTranslation
+import de.laser.exceptions.CleanupException
 import de.laser.helper.DebugAnnotation
-import de.laser.helper.RDConstants
 import de.laser.helper.RDStore
 import de.laser.helper.SessionCacheWrapper
 import grails.converters.JSON
@@ -24,10 +23,8 @@ import grails.plugin.springsecurity.annotation.Secured
 import grails.util.Holders
 import groovy.sql.Sql
 import groovy.util.slurpersupport.GPathResult
-import groovy.util.slurpersupport.NodeChildren
 import groovy.xml.MarkupBuilder
 import org.springframework.context.i18n.LocaleContextHolder
-import groovyx.net.http.HTTPBuilder
 import org.springframework.transaction.TransactionStatus
 
 import java.text.SimpleDateFormat
@@ -41,7 +38,7 @@ class AdminController extends AbstractDebugController {
     SubscriptionUpdateService subscriptionUpdateService
     def messageService
     def changeNotificationService
-    //def enrichmentService
+    def yodaService
     def sessionFactory
     def genericOIDService
     def deletionService
@@ -615,295 +612,36 @@ class AdminController extends AbstractDebugController {
     }
 
     @Secured(['ROLE_YODA'])
-    Map<String,Object> titleRemap() {
+    Map<String,Object> listDuplicateTitles() {
         SessionCacheWrapper sessionCache = contextService.getSessionCache()
         Map<String,Object> result = sessionCache.get("AdminController/titleRemap/result")
         if(!result) {
-            List rows = TitleInstance.executeQuery('select ti.gokbId,count(ti.gokbId) from TitleInstance ti group by ti.gokbId having count(ti.gokbId) > 1')
-            Map<String,List<TitleInstance>> duplicateRows = [:]
-            rows.each { row ->
-                duplicateRows << ["${row[0]}":TitleInstance.findAllByGokbId(row[0])]
-            }
-            result = checkTitleData(duplicateRows)
-            int phase = 2
-            if(result.nextPhase.size() > 0) {
-                log.debug("----------- passing on to phase ${phase} -----------")
-                log.debug("Titles in phase ${phase}: ${result.nextPhase}")
-                duplicateRows.putAll(result.nextPhase)
-                Map<String,Object> nextPhase = checkTitleData(result.nextPhase)
-                result.missingTitles.addAll(nextPhase.missingTitles)
-                result.mergingTitles.addAll(nextPhase.mergingTitles)
-                result.tippMergers.addAll(nextPhase.tippMergers)
-                result.remappingTitles.addAll(nextPhase.remappingTitles)
-                result.titlesWithoutTIPPs.addAll(nextPhase.titlesWithoutTIPPs)
-                while(nextPhase.nextPhase.size() > 0){
-                    phase++
-                    log.debug("----------- passing on to phase ${phase} -----------")
-                    log.debug("Titles in phase ${phase}: ${nextPhase.nextPhase}")
-                    duplicateRows.putAll(result.nextPhase)
-                    nextPhase = checkTitleData(nextPhase.nextPhase)
-                    result.missingTitles.addAll(nextPhase.missingTitles)
-                    result.mergingTitles.addAll(nextPhase.mergingTitles)
-                    result.tippMergers.addAll(nextPhase.tippMergers)
-                    result.remappingTitles.addAll(nextPhase.remappingTitles)
-                    result.titlesWithoutTIPPs.addAll(nextPhase.titlesWithoutTIPPs)
-                }
-            }
-            result.duplicateRows = duplicateRows
+            result = yodaService.listDuplicateTitles()
             sessionCache.put("AdminController/titleRemap/result",result)
         }
         result
     }
 
     @Secured(['ROLE_YODA'])
-    Map<String,Object> checkTitleData(duplicateRows) {
-        GlobalRecordSource grs = GlobalRecordSource.findAll().get(0)
-        globalSourceSyncService.setSource(grs)
-        List<String> missingTitles = [], titlesWithoutTIPPs = [], considered = []
-        List<Map<String,String>> mergingTitles = [], remappingTitles = [], tippMergers = []
-        Map<String,List<TitleInstance>> nextPhase = [:]
-        Map<String,GPathResult> oaiRecords = [:]
-        duplicateRows.eachWithIndex { String tiKey, List<TitleInstance> titleInstances, int ctr ->
-            boolean crossed = false
-            titleInstances.each { TitleInstance titleA ->
-                log.info("attempt get with link ${grs.uri}?verb=GetRecord&metadataPrefix=${grs.fullPrefix}&identifier=${titleA.gokbId} ...")
-                GPathResult titleB
-                GPathResult oaiRecord = oaiRecords.get(titleA.gokbId)
-                if(!oaiRecord) {
-                    oaiRecord = globalSourceSyncService.fetchRecord(grs.uri,'titles',[verb:'GetRecord',metadataPrefix:grs.fullPrefix,identifier:titleA.gokbId])
-                    oaiRecords.put(titleA.gokbId,oaiRecord)
-                }
-                if(oaiRecord.record.metadata.gokb.title) {
-                    titleB = oaiRecord.record.metadata.gokb.title
-                    log.info("processing record for #${ctr} (${createLink(controller:'title',action:'show',id:titleA.id)}), we crossed it already: ${crossed}, GOKb record name is ${titleB.name.text()}")
-                    if(titleA.title != titleB.name.text()) {
-                        crossed = true
-                        log.info("Title mismatch! ${titleA.title} vs. ${titleB.name.text()}! Get correct key for LAS:eR title!")
-                        if(titleA.tipps.size() > 0) {
-                            TitleInstancePackagePlatform referenceTIPP = titleA.tipps[0]
-                            GPathResult packageOAI = oaiRecords.get(referenceTIPP.pkg.gokbId)
-                            if(!packageOAI) {
-                                packageOAI = globalSourceSyncService.fetchRecord(grs.uri,'packages',[verb:'GetRecord',metadataPrefix:grs.fullPrefix,identifier:referenceTIPP.pkg.gokbId])
-                                oaiRecords.put(referenceTIPP.pkg.gokbId,packageOAI)
-                            }
-                            if(packageOAI.record.metadata.gokb.package) {
-                                GPathResult referenceGOKbTIPP = packageOAI.record.metadata.gokb.package.TIPPs.TIPP.find { tipp ->
-                                    tipp.@uuid.text() == referenceTIPP.gokbId
-                                }
-                                if(referenceGOKbTIPP) {
-                                    String guessedCorrectTitleKey = referenceGOKbTIPP.title.@uuid.text()
-                                    //check if titleB's key (NOT NECESSARILY the correct instance itself!) is not already existing in LAS:eR
-                                    TitleInstance titleC = TitleInstance.findByGokbId(guessedCorrectTitleKey)
-                                    //the KEY is already taken in LAS:eR! Do further check!
-                                    if(titleC) {
-                                        log.debug("GOKb key ${guessedCorrectTitleKey} already taken! Check if merge or remapping is necessary!")
-                                        boolean nameCriteria = titleB.name.text() == titleC.title
-                                        boolean idCriteria = false
-                                        titleB.identifiers.identifier.each { idA ->
-                                            log.debug("processing check of identifier: ${idA.@namespace.text()}:${idA.@value.text()}")
-                                            if(titleC.ids.find { idC -> idC.ns.ns == idA.@namespace.text() && idC.value == idA.@value.text() }) {
-                                                idCriteria = true
-                                            }
-                                        }
-                                        if(nameCriteria && idCriteria) {
-                                            log.debug("name and at least one identifier is matching --> merge!")
-                                            mergingTitles << [from:titleA.globalUID,to:titleC.globalUID]
-                                        }
-                                        else {
-                                            log.debug("the GOKb key may be mistaken, repeat checkup!")
-                                            nextPhase.put(titleC.gokbId,TitleInstance.findAllByGokbId(titleC.gokbId))
-                                        }
-                                    }
-                                    else {
-                                        remappingTitles << [target:titleA.globalUID,from:titleA.gokbId,to:guessedCorrectTitleKey]
-                                    }
-                                }
-                                else {
-                                    log.info("package lacks GOKb ID")
-                                }
-                            }
-                            else {
-                                log.info("package lacks title, probably ")
-                            }
-                        }
-                        else {
-                            log.info("${titleA.title} is without TIPPs, try other solutions")
-                            if(titleA.historyEvents) {
-                                Set<TitleInstance> otherTitlesConcerned = []
-                                titleA.historyEvents.each { thep ->
-                                    if(thep.event.fromTitles().contains(titleA))
-                                        otherTitlesConcerned.addAll(thep.event.toTitles())
-                                    else if(thep.event.toTitles().contains(titleA))
-                                        otherTitlesConcerned.addAll(thep.event.fromTitles())
-                                }
-                                GPathResult guessedTitle
-                                String guessedCorrectTitleKey
-                                otherTitlesConcerned.each { titleCandidate ->
-                                    GPathResult candidateRecord = oaiRecords.get(titleCandidate.gokbId)
-                                    log.info("attempt get with link ${grs.uri}?verb=GetRecord&metadataPrefix=${grs.fullPrefix}&identifier=${titleCandidate.gokbId} ...")
-                                    if(!candidateRecord) {
-                                        candidateRecord = globalSourceSyncService.fetchRecord(grs.uri,'titles',[verb:'GetRecord',metadataPrefix:grs.fullPrefix,identifier:titleCandidate.gokbId])
-                                        oaiRecords.put(titleCandidate.gokbId,candidateRecord)
-                                    }
-                                    if(candidateRecord.record.header.status == 'deleted') {
-                                        log.info("TitleInstance in GOKb is marked as deleted!")
-                                    }
-                                    else if(candidateRecord.record.metadata.gokb.title.size() > 0) {
-                                        GPathResult gokbTitleHistory = candidateRecord.record.metadata.gokb.title.history
-                                        guessedTitle = gokbTitleHistory.historyEvent.'**'.find { thep ->
-                                           thep.title.text() == titleA.title
-                                        }
-                                    }
-                                    else {
-                                        log.info("Title history participant not retrievable in GOKb!")
-                                    }
-                                }
-                                if(guessedTitle) {
-                                    guessedCorrectTitleKey = guessedTitle.uuid.text()
-                                    if(!guessedCorrectTitleKey) {
-                                        //check if titleCandidate's key (NOT NECESSARILY the correct instance itself!) is not already existing in LAS:eR
-                                        TitleInstance titleC = TitleInstance.findByGokbId(guessedCorrectTitleKey)
-                                        //the KEY is already taken in LAS:eR! Do further check!
-                                        if(titleC) {
-                                            log.debug("GOKb key ${guessedCorrectTitleKey} already taken! Check if merge or remapping is necessary!")
-                                            boolean nameCriteria = guessedTitle.name.text() == titleC.title
-                                            boolean idCriteria = false
-                                            guessedTitle.identifiers.identifier.each { idA ->
-                                                log.debug("processing check of identifier: ${idA.@namespace.text()}:${idA.@value.text()}")
-                                                if(titleC.ids.find { idC -> idC.ns.ns == idA.@namespace.text() && idC.value == idA.@value.text() }) {
-                                                    idCriteria = true
-                                                }
-                                            }
-                                            if(nameCriteria && idCriteria) {
-                                                log.debug("name and at least one identifier is matching --> merge!")
-                                                mergingTitles << [from:titleA.globalUID,to:titleC.globalUID]
-                                            }
-                                            else {
-                                                log.debug("the GOKb key may be mistaken, repeat checkup!")
-                                                nextPhase.put(titleC.gokbId,TitleInstance.findAllByGokbId(titleC.gokbId))
-                                            }
-                                        }
-                                        remappingTitles << [target:titleA.globalUID,from:titleA.gokbId,to:guessedCorrectTitleKey]
-                                    }
-                                    else {
-                                        log.info("Title history event not retrievable in GOKb! Someone has deleted an entry?!")
-                                        titlesWithoutTIPPs << titleA.globalUID
-                                    }
-                                }
-                                else
-                                    titlesWithoutTIPPs << titleA.globalUID
-                            }
-                            else {
-                                titlesWithoutTIPPs << titleA.globalUID
-                            }
-                        }
-                    }
-                    else if(!crossed){
-                        log.info("${titleA.title} and ${titleB.name.text()} are matching! Check GOKb record and TIPP data! Maybe a merger has to be done ...")
-                        List<TitleInstance> dupsWithSameName = titleInstances.findAll { instance -> instance.globalUID != titleA.globalUID && instance.title == titleA.title}
-                        if(!considered.contains(titleB.@uuid.text())) {
-                            considered << titleB.@uuid.text()
-                            Set<String> tippSetA = []
-                            tippSetA.addAll(titleA.tipps.collect{tipp->tipp.gokbId})
-                            dupsWithSameName.each { duplicate ->
-                                if(duplicate.tipps.size() > 0)
-                                    tippSetA.addAll(duplicate.tipps.collect{tipp->tipp.gokbId})
-                                else titlesWithoutTIPPs << duplicate.globalUID
-                            }
-                            Set<String> tippSetB = []
-                            titleB.TIPPs.TIPP.findAll().each { tipp ->
-                                if(Package.findByGokbId(tipp.package.@uuid.text()))
-                                    tippSetB << tipp.@uuid.text()
-                            }
-                            if(tippSetA.size() == 0) {
-                                log.info("${titleA.title} is without TIPPs")
-                                titlesWithoutTIPPs << titleA.globalUID
-                            }
-                            else if(tippSetB.containsAll(tippSetA)) {
-                                log.info("full match, unite TIPP sets")
-                                dupsWithSameName.remove(titleA)
-                                tippMergers << [from:titleA.globalUID,to:titleB,others:dupsWithSameName.collect {it.globalUID}]
-                            }
-                            else {
-                                tippMergers << [gokbLink:"${grs.uri}?verb=GetRecord&metadataPrefix=${grs.fullPrefix}&identifier=${titleA.gokbId}",tippKeysA:tippSetA,tippKeysB:tippSetB]
-                            }
-                        }
-                        else if(considered.contains(titleB.@uuid.text())) {
-                            log.info("Merger already done with gokbId ${titleB.@uuid.text()}!")
-                        }
-                        else {
-                            titlesWithoutTIPPs.addAll(titleInstances.findAll { instance -> instance.title == titleA.title && instance.tipps.size() == 0 }.collect { instance -> instance.globalUID })
-                        }
-                    }
-                }
-                else {
-                    log.info("UUID ${titleA.gokbId} does not exist in GOKb, mark everything dependent as deleted!")
-                    missingTitles << titleA.globalUID
-                }
-            }
-        }
-        [missingTitles:missingTitles,mergingTitles:mergingTitles,remappingTitles:remappingTitles,titlesWithoutTIPPs:titlesWithoutTIPPs,nextPhase:nextPhase,tippMergers:tippMergers]
-    }
-
-    @Secured(['ROLE_YODA'])
     def executeTiCleanup() {
         log.debug("WARNING: bulk deletion of title entries triggered! Start nuking!")
         SessionCacheWrapper sessionCache = contextService.getSessionCache()
-        /*
-        GlobalRecordSource grs = GlobalRecordSource.findAll().get(0)
-        globalSourceSyncService.setSource(grs)
-        Map<String,GPathResult> oaiRecords = [:]
-         */
         Map<String,Object> result = (Map<String,Object>) sessionCache.get("AdminController/titleRemap/result")
         if(result) {
-            List<TitleInstance> toDelete = []
-            toDelete.addAll(TitleInstance.findAllByGlobalUIDInList(result.titlesWithoutTIPPs))
-            TitleInstance.withTransaction { TransactionStatus status ->
-                try {
-                    result.remappingTitles.each { entry ->
-                        TitleInstance.executeUpdate('update TitleInstance ti set ti.gokbId = :to where ti.globalUID = :from',[from:entry.target,to:entry.to])
-                    }
-                    result.tippMergers.each { entry ->
-                        TitleInstance mergeTarget = TitleInstance.findByGlobalUID(entry.from)
-                        List tippsB = entry.to.TIPPs.TIPP.collect { tippB -> tippB.@uuid.text() }
-                        entry.others.each { otherKey ->
-                            TitleInstance other = TitleInstance.findByGlobalUID(otherKey)
-                            TitleInstancePackagePlatform.executeUpdate('update TitleInstancePackagePlatform tipp set tipp.title = :to where tipp.title = :from',[to:mergeTarget,from:other])
-                            Fact.executeUpdate('update Fact f set f.relatedTitle = :to where f.relatedTitle = :from',[to:mergeTarget,from:other])
-                            Identifier.executeUpdate('update Identifier id set id.ti = :to where id.ti = :from',[to:mergeTarget,from:other])
-                            //TitleInstitutionProvider.executeUpdate('update TitleInstitutionProvider tip set tip.title = :to where tip.title = :from',[to:mergeTarget,from:other])
-                            OrgRole.executeUpdate('update OrgRole oo set oo.title = :to where oo.title = :from',[to:mergeTarget,from:other])
-                            TitleHistoryEventParticipant.executeUpdate('update TitleHistoryEventParticipant thep set thep.participant = :to where thep.participant = :from',[to:mergeTarget,from:other])
-                            PersonRole.executeUpdate('update PersonRole pr set pr.title = :to where pr.title = :from',[to:mergeTarget,from:other])
-                            CreatorTitle.executeUpdate('update CreatorTitle ct set ct.title = :to where ct.title = :from',[to:mergeTarget,from:other])
-                            toDelete << other
-                        }
-                    }
-                    sessionCache.remove("AdminController/titleRemap/result")
-                    globalSourceSyncService.cleanUpGorm()
-                    if(toDelete) {
-                        Identifier.executeUpdate('delete from Identifier id where id.ti in :toDelete',[toDelete:toDelete])
-                        //TitleInstitutionProvider.executeUpdate('delete from TitleInstitutionProvider tip where tip.title in :toDelete',[toDelete:toDelete])
-                        OrgRole.executeUpdate('delete from OrgRole oo where oo.title in :toDelete',[toDelete:toDelete])
-                        TitleHistoryEventParticipant.executeUpdate('delete from TitleHistoryEventParticipant thep where thep.participant in :toDelete',[toDelete:toDelete])
-                        PersonRole.executeUpdate('delete from PersonRole pr where pr.title in :toDelete',[toDelete:toDelete])
-                        CreatorTitle.executeUpdate('delete from CreatorTitle ct where ct.title in :toDelete',[toDelete:toDelete])
-                        Fact.executeUpdate('delete from Fact f where f.relatedTitle in :toDelete',[toDelete:toDelete])
-                        TitleInstance.executeUpdate('delete from TitleInstance ti where ti in :toDelete',[toDelete:toDelete])
-                    }
-                    redirect(controller:'package',action: 'index')
-                }
-                catch (Exception e) {
-                    log.error("failure on merging titles ... rollback!")
-                    e.printStackTrace()
-                    status.setRollbackOnly()
-                    redirect(controller:'admin',action: 'titleRemap')
-                }
+            try {
+                yodaService.executeTiCleanup(result)
+                sessionCache.remove("AdminController/titleRemap/result")
+                redirect(controller:'package',action: 'index')
+            }
+            catch (CleanupException e) {
+                log.error("failure on merging titles ... rollback!")
+                e.printStackTrace()
+                redirect(controller:'admin',action: 'listDuplicateTitles')
             }
         }
         else {
             log.error("data missing, rebuilding data")
-            redirect(controller:'admin',action: 'titleRemap')
+            redirect(controller:'admin',action: 'listDuplicateTitles')
         }
     }
 

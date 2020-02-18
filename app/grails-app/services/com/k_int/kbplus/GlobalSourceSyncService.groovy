@@ -5,6 +5,7 @@ import de.laser.SystemEvent
 import de.laser.domain.IssueEntitlementCoverage
 import de.laser.domain.TIPPCoverage
 import de.laser.exceptions.SyncException
+import de.laser.helper.DateUtil
 import de.laser.helper.RDConstants
 import de.laser.helper.RDStore
 import de.laser.interfaces.AbstractLockableService
@@ -102,7 +103,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
                             log.info("got OAI record ${r.header.identifier} datestamp: ${r.header.datestamp} job: ${source.id} url: ${source.uri}")
                             //String recUUID = r.header.uuid.text() ?: '0'
                             //String recIdentifier = r.header.identifier.text()
-                            Date recordTimestamp = escapeService.parseDate(r.header.datestamp.text())
+                            Date recordTimestamp = DateUtil.parseDateGeneric(r.header.datestamp.text())
                             //leave out GlobalRecordInfo update, no need to reflect it twice since we keep the package structure internally
                             //jump to packageReconcile which includes packageConv - check if there is a package, otherwise, update package data
                             tippsToNotify << createOrUpdatePackage(r.metadata.gokb.package)
@@ -197,7 +198,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
         RefdataValue consistent = RefdataValue.getByValueAndCategory(packageData.consistent.text(),RDConstants.PACKAGE_CONSISTENT) //needed?
         RefdataValue fixed = RefdataValue.getByValueAndCategory(packageData.fixed.text(),RDConstants.PACKAGE_LIST_STATUS) //needed?
         RefdataValue contentType = RefdataValue.getByValueAndCategory(packageData.conentType.text(),RDConstants.PACKAGE_CONTENT_TYPE)
-        Date listVerifiedDate = packageData.listVerifiedDate.text() ? escapeService.parseDate(packageData.listVerifiedDate.text()) : null
+        Date listVerifiedDate = packageData.listVerifiedDate.text() ? DateUtil.parseDateGeneric(packageData.listVerifiedDate.text()) : null
         //result.global = packageData.global.text() needed? not used in packageReconcile
         //result.paymentType = packageData.paymentType.text() needed? not used in packageReconcile
         String providerUUID
@@ -235,7 +236,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
                             if(tippA) {
                                 //ex updatedTippClosure / tippUnchangedClosure
                                 RefdataValue status = RefdataValue.getByValueAndCategory(tippB.status,RDConstants.TIPP_STATUS)
-                                if(status == RDStore.TIPP_DELETED) {
+                                if(status == RDStore.TIPP_STATUS_DELETED) {
                                     log.info("TIPP with UUID ${tippA.gokbId} has been deleted from package ${result.gokbId}")
                                     tippA.status = status
                                     tippsToNotify << [event:"delete",target:tippA]
@@ -367,15 +368,15 @@ class GlobalSourceSyncService extends AbstractLockableService {
                 identifiers: [],
                 id: tipp.'@id'.text(),
                 uuid: tipp.'@uuid'.text(),
-                accessStartDate : tipp.access.'@start'.text() ? escapeService.parseDate(tipp.access.'@start'.text()) : null,
-                accessEndDate   : tipp.access.'@end'.text() ? escapeService.parseDate(tipp.access.'@end'.text()) : null,
+                accessStartDate : tipp.access.'@start'.text() ? DateUtil.parseDateGeneric(tipp.access.'@start'.text()) : null,
+                accessEndDate   : tipp.access.'@end'.text() ? DateUtil.parseDateGeneric(tipp.access.'@end'.text()) : null,
                 medium      : tipp.medium.text()
         ]
         updatedTIPP.identifiers.add([namespace: 'uri', value: tipp.'@id'.tippId])
         tipp.coverage.each { cov ->
             updatedTIPP.coverages << [
-                    startDate: cov.'@startDate'.text() ? escapeService.parseDate(cov.'@startDate'.text()) : null,
-                    endDate: cov.'@endDate'.text() ? escapeService.parseDate(cov.'@endDate'.text()) : null,
+                    startDate: cov.'@startDate'.text() ? DateUtil.parseDateGeneric(cov.'@startDate'.text()) : null,
+                    endDate: cov.'@endDate'.text() ? DateUtil.parseDateGeneric(cov.'@endDate'.text()) : null,
                     startVolume: cov.'@startVolume'.text() ?: '',
                     endVolume: cov.'@endVolume'.text() ?: '',
                     startIssue: cov.'@startIssue'.text() ?: '',
@@ -459,8 +460,8 @@ class GlobalSourceSyncService extends AbstractLockableService {
                             titleInstance.editionDifferentiator = titleRecord.editionDifferentiator.text() ?: null
                             titleInstance.editionStatement = titleRecord.editionStatement.text() ?: null
                             titleInstance.volume = titleRecord.volumeNumber.text() ?: null
-                            titleInstance.dateFirstInPrint = titleRecord.dateFirstInPrint ? escapeService.parseDate(titleRecord.dateFirstInPrint.text()) : null
-                            titleInstance.dateFirstOnline = titleRecord.dateFirstOnline ? escapeService.parseDate(titleRecord.dateFirstOnline.text()) : null
+                            titleInstance.dateFirstInPrint = titleRecord.dateFirstInPrint ? DateUtil.parseDateGeneric(titleRecord.dateFirstInPrint.text()) : null
+                            titleInstance.dateFirstOnline = titleRecord.dateFirstOnline ? DateUtil.parseDateGeneric(titleRecord.dateFirstOnline.text()) : null
                             titleInstance.firstAuthor = titleRecord.firstAuthor.text() ?: null
                             titleInstance.firstEditor = titleRecord.firstEditor.text() ?: null
                             break
@@ -501,9 +502,9 @@ class GlobalSourceSyncService extends AbstractLockableService {
                                 /*
                                 its usage / relevance for LAS:eR is unclear for the moment, must be clarified
                                 if(pubData.startDate)
-                                    titleLink.startDate = escapeService.parseDate(pubData.startDate.text())
+                                    titleLink.startDate = DateUtil.parseDateGeneric(pubData.startDate.text())
                                 if(pubData.endDate)
-                                    titleLink.endDate = escapeService.parseDate(pubData.endDate.text())
+                                    titleLink.endDate = DateUtil.parseDateGeneric(pubData.endDate.text())
                                 */
                                 if(!titleLink.save())
                                     throw new SyncException("Error on creating title link: ${titleLink.errors}")
@@ -529,7 +530,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
                                     to << createOrUpdateHistoryParticipant(toEv,titleInstance.class.name)
                                 }
                                 //does not work for any reason whatsoever, continue here
-                                Date eventDate = escapeService.parseDate(eventData.date.text())
+                                Date eventDate = DateUtil.parseDateGeneric(eventData.date.text())
                                 String baseQuery = "select the from TitleHistoryEvent the where the.eventDate = :eventDate"
                                 Map<String,Object> queryParams = [eventDate:eventDate]
                                 if(from) {
@@ -564,7 +565,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
                                 }
                             }
                             else {
-                                throw new SyncException("Title history event without date, that should not be, report history event with internal ID ${eventData.@id} to GOKb!")
+                                log.error("Title history event without date, that should not be, report history event with internal ID ${eventData.@id} to GOKb!")
                             }
                         }
                     }
@@ -625,21 +626,22 @@ class GlobalSourceSyncService extends AbstractLockableService {
      */
     void createOrUpdateProvider(String providerUUID) throws SyncException {
         //Org.lookupOrCreate2 simplified
-        GPathResult providerOAI = fetchRecord(source.uri,'orgs',[verb:'getRecord',metadataPrefix:source.fullPrefix,identifier:providerUUID])
+        GPathResult providerOAI = fetchRecord(source.uri,'orgs',[verb:'GetRecord',metadataPrefix:source.fullPrefix,identifier:providerUUID])
+        //check provider entry: for some reason, name has not been filled properly, crashed at record b8760baa-cc1b-4f39-b07d-d19b5bd86ea5
         if(providerOAI) {
             GPathResult providerRecord = providerOAI.record.metadata.gokb.org
             log.info("provider record loaded, converting XML record and reconciling title record for UUID ${providerUUID} ...")
             Org provider = Org.findByGokbId(providerUUID)
             if(provider) {
-                provider.name = providerRecord.name
-                provider.status = RefdataValue.getByValueAndCategory(providerRecord.status,RDConstants.ORG_STATUS)
+                provider.name = providerRecord.name.text()
+                provider.status = RefdataValue.getByValueAndCategory(providerRecord.status.text(),RDConstants.ORG_STATUS)
             }
             else {
                 provider = new Org(
-                        name: providerRecord.name,
+                        name: providerRecord.name.text(),
                         sector: RDStore.O_SECTOR_PUBLISHER,
                         type: [RDStore.OT_PROVIDER],
-                        status: RefdataValue.getByValueAndCategory(providerRecord.status,RDConstants.ORG_STATUS),
+                        status: RefdataValue.getByValueAndCategory(providerRecord.status.text(),RDConstants.ORG_STATUS),
                         gokbId: providerUUID
                 )
             }
@@ -832,7 +834,6 @@ class GlobalSourceSyncService extends AbstractLockableService {
         String defaultAcceptChange = messageSource.getMessage('default.accept.change.ie',null,locale)
         tippsToNotify.each { entry ->
             entry.each { notify ->
-                //continue here: check if pending changes are being attached properly
                 log.debug(notify)
                 TitleInstancePackagePlatform target = (TitleInstancePackagePlatform) notify.target
                 String titleLink = grailsLinkGenerator.link(controller: 'title', action: 'show', id: target.title.id)
@@ -841,6 +842,12 @@ class GlobalSourceSyncService extends AbstractLockableService {
                 if(notify.event == 'add') {
                     Set<IssueEntitlement> ieConcerned = IssueEntitlement.executeQuery('select ie from IssueEntitlement ie where ie.tipp.pkg = :pkg',[pkg:target.pkg])
                     ieConcerned.each { ie ->
+                        /*
+                            to implement here:
+                            - get PendingChangeConfigurationMap (if exists, otherwise, treat as prompt!)
+                            - if prompt: do as already implemented
+                            - else if accept: do not register pending change but generate notification that a change has been applied, apply change
+                         */
                         Object[] args = [pkgLink,target.pkg.name,titleLink,target.title.title,platformLink,target.platform.name,defaultAcceptChange]
                         String changeDesc = messageSource.getMessage('pendingChange.message_TP01',args,locale)
                         Map<String,Object> changeMap = [changeType:PendingChangeService.EVENT_TIPP_ADD,changeDoc:target]
@@ -850,6 +857,13 @@ class GlobalSourceSyncService extends AbstractLockableService {
                 else {
                     Set<IssueEntitlement> ieConcerned = IssueEntitlement.executeQuery('select ie from IssueEntitlement ie where ie.tipp = :tipp',[tipp:target])
                     ieConcerned.each { ie ->
+                        /*
+                            to implement here:
+                            - get PendingChangeConfigurationMap (if exists, otherwise, treat as prompt!)
+                            - if prompt: do as already implemented
+                            - else if accept: do not register pending change but generate notification that a change has been applied, apply change
+                         */
+
                         String changeDesc = ""
                         Map<String,Object> changeMap = [:]
                         switch(notify.event) {

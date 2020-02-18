@@ -3,14 +3,14 @@
 <html>
   <head>
     <meta name="layout" content="semanticUI"/>
-    <title>${message(code:'laser', default:'LAS:eR')} : Admin::Title Merge</title>
+    <title>${message(code:'laser')} : Admin::List title duplicates</title>
   </head>
 
   <body>
 
         <semui:breadcrumbs>
             <semui:crumb message="menu.admin.dash" controller="admin" action="index" />
-            <semui:crumb text="Title Merge" class="active"/>
+            <semui:crumb text="List Duplicate Titles" class="active"/>
         </semui:breadcrumbs>
         <br>
         <h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon />Title Merge</h1>

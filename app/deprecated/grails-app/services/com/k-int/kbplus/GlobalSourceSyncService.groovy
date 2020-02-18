@@ -467,7 +467,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
                             ie.tipp = new_tipp
                             ie.save()
                         }
-                        oldtipp.status = RDStore.TIPP_DELETED
+                        oldtipp.status = RDStore.TIPP_STATUS_DELETED
                         oldtipp.save()
                     }
                 }
@@ -564,7 +564,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
 
             if (db_tipp != null) {
 
-                def tippStatus = RDStore.TIPP_DELETED
+                def tippStatus = RDStore.TIPP_STATUS_DELETED
 
                 if (tipp.status == 'Current') {
                     tippStatus = RDStore.TIPP_STATUS_CURRENT

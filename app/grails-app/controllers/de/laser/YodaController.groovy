@@ -501,34 +501,19 @@ class YodaController {
     @Secured(['ROLE_YODA'])
     def getTIPPsWithoutGOKBId() {
         log.debug("delete TIPPs without GOKb-ID")
-        List<TitleInstancePackagePlatform> tippsWithoutGOKbID = TitleInstancePackagePlatform.findAllByGokbIdIsNull()
-        List<IssueEntitlement> issueEntitlementsAffected = IssueEntitlement.executeQuery('select ie from IssueEntitlement ie where ie.tipp in :tipps',[tipps:tippsWithoutGOKbID])
-        Map<TitleInstancePackagePlatform,Set<IssueEntitlement>> ieTippMap = [:]
-        issueEntitlementsAffected.each { IssueEntitlement ie ->
-            if (ieTippMap.get(ie.tipp)) {
-                ieTippMap[ie.tipp] << ie
-            } else {
-                Set<IssueEntitlement> ies = new TreeSet<IssueEntitlement>()
-                ies.add(ie)
-                ieTippMap[ie.tipp] = ies
-            }
-        }
-        [tipps: tippsWithoutGOKbID, issueEntitlements: ieTippMap]
+        yodaService.getTIPPsWithoutGOKBId()
     }
 
     @Secured(['ROLE_YODA'])
     def purgeTIPPsWithoutGOKBId() {
         def toDelete = JSON.parse(params.toDelete)
+        def toUUIDfy = JSON.parse(params.toUUIDfy)
         if(params.doIt == "true") {
-            toDelete.each { oldTippId, newTippId ->
-                TitleInstancePackagePlatform oldTipp = TitleInstancePackagePlatform.get(oldTippId)
-                TitleInstancePackagePlatform newTipp = TitleInstancePackagePlatform.get(newTippId)
-                deletionService.deleteTIPP(oldTipp,newTipp)
-            }
+            yodaService.purgeTIPPsWihtoutGOKBId(toDelete,toUUIDfy)
             redirect(url: request.getHeader('referer'))
         }
         else {
-            flash.message = "Betroffene TIPP-IDs wären vereinigt worden: ${toDelete}"
+            flash.message = "Betroffene TIPP-IDs wären vereinigt worden: ${toDelete} und folgende hätten einen fehlenden Wert erhalten: ${toUUIDfy}"
             redirect action: 'getTIPPsWithoutGOKBId'
         }
     }

@@ -7,15 +7,11 @@ import de.laser.controller.AbstractDebugController
 import de.laser.domain.MailTemplate
 import de.laser.helper.DateUtil
 import de.laser.helper.RDConstants
-import de.laser.helper.RDStore
 import de.laser.helper.SessionCacheWrapper
-import grails.plugin.springsecurity.SpringSecurityUtils
 import grails.plugin.springsecurity.annotation.Secured
-import groovy.util.slurpersupport.GPathResult
 import org.codehaus.groovy.grails.plugins.orm.auditable.AuditLogEvent
 import org.codehaus.groovy.grails.web.mapping.LinkGenerator
 import org.springframework.context.MessageSource
-import org.springframework.context.i18n.LocaleContextHolder
 
 import java.text.SimpleDateFormat
 
@@ -28,11 +24,6 @@ class DataManagerController extends AbstractDebugController {
     def genericOIDService
     YodaService yodaService
     ExportService exportService
-    DeletionService deletionService
-    GlobalSourceSyncService globalSourceSyncService
-    ChangeNotificationService changeNotificationService
-    MessageSource messageSource
-    LinkGenerator grailsLinkGenerator
 
   @Secured(['ROLE_ADMIN'])
   def index() { 
@@ -383,41 +374,29 @@ class DataManagerController extends AbstractDebugController {
     @Secured(['ROLE_YODA'])
     Map<String,Object> listPlatformDuplicates() {
         log.debug("listPlatformDuplicates ...")
-        Map<String, Object> result = [:]
-        Map<String, GPathResult> oaiRecords = [:]
-        result.platformsWithoutTIPPs = Platform.findAllByTippsIsEmpty().collect { plat -> plat.globalUID }
-        result.platformsWithoutGOKb = Platform.findAllByGokbIdIsNull().collect { plat -> plat.globalUID }
-        result.incorrectPlatformDups = []
-        GlobalRecordSource grs = GlobalRecordSource.findAll().get(0)
-        List duplicateKeys = Platform.executeQuery('select plat.gokbId,count(plat.gokbId) from Platform plat where plat.gokbId is not null group by plat.gokbId having count(plat.gokbId) > 1')
-        duplicateKeys.each { row ->
-            //get platform, get eventual TIPPs of platform, determine from package which platform key is correct, if it is correct: ignore, otherwise, add to result
-            List<Platform> platformDuplicates = Platform.findAllByGokbId(row[0])
-            platformDuplicates.each { Platform platform ->
-                //it ran too often into null pointer exceptions ... we set a tighter check!
-                if(platform.tipps.size() > 0) {
-                    TitleInstancePackagePlatform referenceTIPP = platform.tipps[0]
-                    GPathResult packageRecord = oaiRecords.get(referenceTIPP.pkg.gokbId)
-                    if(!packageRecord) {
-                        packageRecord = globalSourceSyncService.fetchRecord(grs.uri,'titles',[metadataPrefix:grs.fullPrefix,identifier:referenceTIPP.pkg.gokbId])
-                        oaiRecords.put(referenceTIPP.pkg.gokbId,packageRecord)
-                    }
-                    if(packageRecord.record.metadata.gokb.package) {
-                        GPathResult referenceGOKbTIPP = packageRecord.record.metadata.gokb.package.TIPPs.TIPP.find { tipp ->
-                            tipp.@uuid.text() == referenceTIPP.gokbId
-                        }
-                        if(referenceGOKbTIPP) {
-                            String guessedCorrectPlatformKey = referenceGOKbTIPP.platform.@uuid.text()
-                            if(platform.gokbId != guessedCorrectPlatformKey) {
-                                result.incorrectPlatformDups << platform.globalUID
-                            }
-                        }
-                    }
-                }
-            }
+        SessionCacheWrapper sessionCache = contextService.getSessionCache()
+        Map<String, Object> result = sessionCache.get("DataManagerController/listPlatformDuplicates/result")
+        if(!result){
+            result = yodaService.listPlatformDuplicates()
+            sessionCache.put("DataManagerController/listDeletedTIPPS/result",result)
         }
+
         log.debug("listPlatformDuplicates ... returning")
         result
+    }
+
+    @Secured(['ROLE_YODA'])
+    def executePlatformCleanup() {
+        log.debug("WARNING: bulk deletion of platforms triggered! Start nuking!")
+        SessionCacheWrapper sessionCache = contextService.getSessionCache()
+        Map<String,Object> result = (Map<String,Object>) sessionCache.get("DataManagerController/listDeletedTIPPS/result")
+        if(result) {
+            yodaService.executePlatformCleanup(result)
+        }
+        else {
+            log.warn("Data missing. Please rebuild data ...")
+        }
+        redirect(controller: 'platform',action: 'list')
     }
 
     @Secured(['ROLE_YODA'])
@@ -426,7 +405,7 @@ class DataManagerController extends AbstractDebugController {
         SessionCacheWrapper sessionCache = contextService.getSessionCache()
         Map<String,Object> result = sessionCache.get("DataManagerController/listDeletedTIPPS/result")
         if(!result){
-            result = yodaService.processDeletedTIPPs()
+            result = yodaService.listDeletedTIPPs()
             sessionCache.put("DataManagerController/listDeletedTIPPS/result",result)
         }
         log.debug("listDeletedTIPPS ... returning")
@@ -439,90 +418,10 @@ class DataManagerController extends AbstractDebugController {
         SessionCacheWrapper sessionCache = contextService.getSessionCache()
         Map<String,Object> result = (Map<String,Object>) sessionCache.get("DataManagerController/listDeletedTIPPS/result")
         if(result) {
-            //first: merge duplicate entries
-            result.mergingTIPPs.each { mergingTIPP ->
-                IssueEntitlement.withTransaction { status ->
-                    try {
-                        IssueEntitlement.executeUpdate('update IssueEntitlement ie set ie.tipp.id = :mergeTarget where ie.id in (:iesToMerge)',[mergeTarget:mergingTIPP.mergeTarget,iesToMerge:mergingTIPP.iesToMerge])
-                        status.flush()
-                    }
-                    catch (Exception e) {
-                        log.error("failure on merging TIPPs ... rollback!")
-                        status.setRollbackOnly()
-                    }
-                }
-            }
-            log.debug("remapping done, purge now duplicate entries ...")
-            globalSourceSyncService.cleanUpGorm()
-            List<String> colHeaders = ['Konsortium','Teilnehmer','Lizenz','Paket','Titel','Grund']
-            List<List<String>> reportRows = []
-            Map<RefdataValue,Set<String>> pendingChangeSetupMap = [:]
-            Set<String> alreadyProcessed = []
-
-            result.deletedWithoutGOKbRecord.each { entry ->
-                entry.each { delTIPP,issueEntitlements ->
-                    issueEntitlements.each { ieDetails ->
-                        IssueEntitlement ie = (IssueEntitlement) ieDetails.ie
-                        switch(ieDetails.action) {
-                            case "deleteCascade":
-                                //mark as deleted!
-                                log.debug("deletion cascade: deleting ${ie}, deleting ${ie.subscription}")
-                                deletionService.deleteSubscription(ie.subscription,false)
-                                break
-                            case "report": reportRows << [ieDetails.report.consortium,ieDetails.report.subscriber,ieDetails.report.subscription,ieDetails.report.package,ieDetails.report.title,ieDetails.report.cause]
-                                break
-                            case "remap": if(!alreadyProcessed.contains(delTIPP.gokbId)){
-                                //mark obsolete ones as deleted!
-                                deletionService.deleteTIPP(delTIPP,TitleInstancePackagePlatform.findByGokbId(ieDetails.target))
-                                alreadyProcessed << delTIPP.gokbId
-                                }
-                                break
-                        }
-                    }
-                }
-            }
-            result.deletedWithGOKbRecord.each { row ->
-                row.each { delTIPP, tippDetails ->
-                    Set<Long> tippsToUpdate = pendingChangeSetupMap[tippDetails.status]
-                    if(!tippsToUpdate)
-                        tippsToUpdate = []
-                    tippsToUpdate << delTIPP
-                    pendingChangeSetupMap[tippDetails.status] = tippsToUpdate
-                }
-            }
-            pendingChangeSetupMap.each { RefdataValue status, Set<String> tippsToUpdate ->
-                log.debug("updating ${tippsToUpdate} to status ${status}")
-                TitleInstancePackagePlatform.executeUpdate('update TitleInstancePackagePlatform tipp set tipp.status = :status where tipp.globalUID in :tippsToUpdate',[status:status,tippsToUpdate:tippsToUpdate])
-                //hook up pending changes
-                Locale locale = LocaleContextHolder.locale
-                String defaultAcceptChange = messageSource.getMessage('default.accept.change.ie',null,locale)
-                List<IssueEntitlement> iesToNotify = IssueEntitlement.executeQuery('select ie from IssueEntitlement ie where ie.tipp.globalUID in :tippKeys',[tippKeys:tippsToUpdate])
-                if(iesToNotify) {
-                    tippsToUpdate.each { tippKey ->
-                        TitleInstancePackagePlatform tipp = genericOIDService.resolveOID(tippKey)
-                        String titleLink = grailsLinkGenerator.link(controller: 'title', action: 'show', id: tipp.title.id)
-                        String pkgLink = grailsLinkGenerator.link(controller: 'package', action: 'show', id: tipp.pkg.id)
-                        iesToNotify.each { IssueEntitlement ie ->
-                            log.debug("notifying subscription ${ie.subscription}")
-                            String changeDesc = ""
-                            Map<String, Object> changeMap = [:]
-                            Object[] args = [titleLink,tipp.title.title,pkgLink,tipp.pkg.name,messageSource.getMessage("tipp.status",null,locale),ie.status,status,defaultAcceptChange]
-                            changeDesc = messageSource.getMessage('pendingChange.message_TP02',args,locale)
-                            changeMap.changeTarget = "${ie.class.name}:${ie.id}"
-                            changeMap.changeType = PendingChangeService.EVENT_PROPERTY_CHANGE
-                            changeMap.changeDoc = [prop: 'status', fieldType: RefdataValue.class.name, refdataCategory: RefdataCategory.TIPP_STATUS, 'new': status, 'old': ie.status]
-                            changeNotificationService.registerPendingChange(PendingChange.PROP_SUBSCRIPTION,ie.subscription,ie.subscription.getSubscriber(),changeMap,null,null,changeDesc)
-                        }
-                    }
-                }
-                else log.debug("no issue entitlements depending!")
-            }
-            Set<TitleInstancePackagePlatform> tippsToDelete = TitleInstancePackagePlatform.findAllByGokbIdInListAndIdNotInList(result.duplicateTIPPKeys,result.excludes)
-            //this is correct; only the duplicates should be deleted!
-            if(tippsToDelete)
-                deletionService.deleteTIPPsCascaded(tippsToDelete)
+            List<List<String>> reportRows = yodaService.executeTIPPCleanup(result)
             sessionCache.remove("DataManagerController/listDeletedTIPPS/result")
-            log.debug("Cleanup finished!")
+            List<String> colHeaders = ['Konsortium','Teilnehmer','Lizenz','Paket','Titel','Grund']
+            String csvTable = exportService.generateSeparatorTableString(colHeaders,reportRows,'\t')
             withFormat {
                 html {
 
@@ -530,7 +429,7 @@ class DataManagerController extends AbstractDebugController {
                 csv {
                     response.setHeader("Content-disposition","attachment; filename=\"Subscriptions_to_report.csv\"")
                     response.outputStream.withWriter { writer ->
-                        writer.write(exportService.generateSeparatorTableString(colHeaders,reportRows,'\t'))
+                        writer.write(csvTable)
                     }
                     response.outputStream.flush()
                     response.outputStream.close()

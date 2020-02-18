@@ -88,8 +88,7 @@ class TitleInstancePackagePlatform extends AbstractBaseDomain /*implements Audit
   static belongsTo = [
     pkg:Package,
     platform:Platform,
-    title:TitleInstance,
-    sub:Subscription
+    title:TitleInstance
   ]
 
   static mapping = {
@@ -109,7 +108,6 @@ class TitleInstancePackagePlatform extends AbstractBaseDomain /*implements Audit
            payment column:'tipp_payment_rv_fk'
             option column:'tipp_option_rv_fk'
    hostPlatformURL column:'tipp_host_platform_url', type: 'text'
-               sub column:'tipp_sub_fk'
        //derivedFrom column:'tipp_derived_from'
       accessStartDate column:'tipp_access_start_date'
       accessEndDate column:'tipp_access_end_date'
@@ -143,7 +141,6 @@ class TitleInstancePackagePlatform extends AbstractBaseDomain /*implements Audit
         statusReason(nullable:true, blank:false)
         payment(nullable:true, blank:false)
         option(nullable:true, blank:false)
-        sub(nullable:true, blank:false)
         hostPlatformURL(nullable:true, blank:true, maxSize:2048)
         //derivedFrom(nullable:true, blank:true)
         accessStartDate(nullable:true, blank:true)

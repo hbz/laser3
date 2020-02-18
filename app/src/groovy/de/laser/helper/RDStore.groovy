@@ -142,7 +142,7 @@ class RDStore {
 
     static final TAX_REVERSE_CHARGE         = getRefdataValue('reverse charge', RDConstants.TAX_TYPE)
 
-    static final TITLE_TYPE_EBOOK           = getRefdataValue('EBook', RDConstants.TITLE_MEDIUM)
+    static final TITLE_TYPE_EBOOK           = getRefdataValue('Book', RDConstants.TITLE_MEDIUM)
     static final TITLE_TYPE_JOURNAL         = getRefdataValue('Journal', RDConstants.TITLE_MEDIUM)
     static final TITLE_TYPE_DATABASE        = getRefdataValue('Database', RDConstants.TITLE_MEDIUM)
 

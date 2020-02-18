@@ -23,7 +23,7 @@ class PackageController extends AbstractDebugController {
 
     def springSecurityService
     def genericOIDService
-    def ESSearchService
+    def yodaService
     def exportService
     def institutionsService
     def executorWrapperService
@@ -1151,29 +1151,14 @@ class PackageController extends AbstractDebugController {
     //for that no accidental call may occur ... ROLE_YODA is correct!
     @Secured(['ROLE_YODA'])
     Map getDuplicatePackages() {
-        List<Package> pkgDuplicates = Package.executeQuery('select pkg from Package pkg where pkg.gokbId in (select p.gokbId from Package p group by p.gokbId having count(p.gokbId) > 1)')
-        Map<String,List<Package>> result = [pkgDuplicates: pkgDuplicates]
-        if(pkgDuplicates) {
-            List<Package> pkgDupsWithTipps = Package.executeQuery('select distinct(tipp.pkg) from TitleInstancePackagePlatform tipp where tipp.pkg in (:pkg) and tipp.status != :deleted',[pkg:pkgDuplicates,deleted:RDStore.TIPP_STATUS_DELETED])
-            List<Package> pkgDupsWithoutTipps = []
-            pkgDuplicates.each { pkg ->
-                if(!pkgDupsWithTipps.contains(pkg))
-                    pkgDupsWithoutTipps << pkg
-            }
-            result.pkgDupsWithTipps = pkgDupsWithTipps
-            result.pkgDupsWithoutTipps = pkgDupsWithoutTipps
-        }
-        result
+        yodaService.listDuplicatePackages()
     }
 
     @Secured(['ROLE_YODA'])
     def purgeDuplicatePackages() {
         List<Long> toDelete = (List<Long>) JSON.parse(params.toDelete)
         if(params.doIt == "true") {
-            toDelete.each { pkgId ->
-                Package pkg = Package.get(pkgId)
-                DeletionService.deletePackage(pkg)
-            }
+            yodaService.executePackageCleanup(toDelete)
             redirect action: 'index'
         }
         else {
