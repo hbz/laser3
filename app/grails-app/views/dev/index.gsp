@@ -186,7 +186,7 @@
 </g:link>
 
 <h2 class="ui dividing header">Icons</h2>
-<h3 class="ui dividing header">Dekorative Icon mit einer Dopplung der Semantik durch Text, der daneben steht.</h3>
+<h3 class="ui dividing header">Dekoratives Icon mit einer Dopplung der Semantik durch Text, der daneben steht.</h3>
 
 <div class="ui icon info message">
     <i aria-hidden="true" class="exclamation triangle icon"></i>
@@ -197,7 +197,7 @@
         <p>Wenn Sie ein neues Element nicht finden, warten Sie etwa <strong>10 Minuten</strong>, bis sich der Index aktualisiert hat.</p>
     </div>
 </div>
-<h3 class="ui dividing header">Icons, die für assistive Tools keine Bedeutung haben müssen - zum Beispiel das Schließen von Meldungen</h3>
+<h3 class="ui dividing header">Icon, das für assistive Tools keine Bedeutung haben muss - zum Beispiel das Schließen von Meldungen</h3>
 <div class="ui icon info message">
     <i aria-hidden="true" class="close icon"></i>
     <div class="content">
