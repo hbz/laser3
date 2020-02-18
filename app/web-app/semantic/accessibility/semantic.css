@@ -31921,7 +31921,7 @@ a.ui.card:hover,
   height: 17px;
   text-align: center;
   opacity: 0;
-  color: rgba(0, 0, 0, 0.6);
+  color: rgba(0, 0, 0, 0.87);
   -webkit-transition: border 0.1s ease, opacity 0.1s ease, -webkit-transform 0.1s ease, -webkit-box-shadow 0.1s ease;
   transition: border 0.1s ease, opacity 0.1s ease, -webkit-transform 0.1s ease, -webkit-box-shadow 0.1s ease;
   transition: border 0.1s ease, opacity 0.1s ease, transform 0.1s ease, box-shadow 0.1s ease;
@@ -31936,7 +31936,7 @@ a.ui.card:hover,
 
 .ui.checkbox label,
 .ui.checkbox + label {
-  color: rgba(0, 0, 0, 0.6);
+  color: rgba(0, 0, 0, 0.87);
   -webkit-transition: color 0.1s ease;
   transition: color 0.1s ease;
 }
@@ -32151,7 +32151,7 @@ a.ui.card:hover,
   border-radius: 500rem;
   -webkit-transform: scale(0.46666667);
   transform: scale(0.46666667);
-  background-color: rgba(0, 0, 0, 0.6);
+  background-color: rgba(0, 0, 0, 0.87);
 }
 
 /* Focus */
@@ -32254,8 +32254,8 @@ a.ui.card:hover,
   opacity: 1;
   z-index: 2;
   border: none;
-  -webkit-box-shadow: 0px 1px 2px 0 rgba(20, 20, 20, 0.3), 0px 0px 0px 1px #d3dae3 inset;
-  box-shadow: 0px 1px 2px 0 rgba(20, 20, 20, 0.3), 0px 0px 0px 1px #d3dae3 inset;
+  -webkit-box-shadow: 0px 1px 2px 0 rgba(20, 20, 20, 0.3), 0px 0px 0px 1px #004678 inset;
+  box-shadow: 0px 1px 2px 0 rgba(20, 20, 20, 0.3), 0px 0px 0px 1px #004678 inset;
   width: 1.5rem;
   height: 1.5rem;
   top: -0.25rem;
@@ -32296,7 +32296,7 @@ a.ui.card:hover,
 
 .ui.slider.checkbox input:checked ~ .box:before,
 .ui.slider.checkbox input:checked ~ label:before {
-  background-color: #d3dae3 !important;
+  background-color: #545454 !important;
 }
 
 .ui.slider.checkbox input:checked ~ .box:after,
@@ -32313,7 +32313,7 @@ a.ui.card:hover,
 
 .ui.slider.checkbox input:focus:checked ~ .box:before,
 .ui.slider.checkbox input:focus:checked ~ label:before {
-  background-color: #d3dae3 !important;
+  background-color: #000000 !important;
 }
 
 /*--------------
@@ -32337,7 +32337,7 @@ a.ui.card:hover,
 .ui.toggle.checkbox label {
   min-height: 1.5rem;
   padding-left: 4.5rem;
-  color: rgba(0, 0, 0, 0.6);
+  color: rgba(0, 0, 0, 0.87);
 }
 
 .ui.toggle.checkbox label {
@@ -32376,8 +32376,8 @@ a.ui.card:hover,
   opacity: 1;
   z-index: 2;
   border: none;
-  -webkit-box-shadow: 0px 1px 2px 0 rgba(20, 20, 20, 0.3), 0px 0px 0px 1px #d3dae3 inset;
-  box-shadow: 0px 1px 2px 0 rgba(20, 20, 20, 0.3), 0px 0px 0px 1px #d3dae3 inset;
+  -webkit-box-shadow: 0px 1px 2px 0 rgba(20, 20, 20, 0.3), 0px 0px 0px 1px #004678 inset;
+  box-shadow: 0px 1px 2px 0 rgba(20, 20, 20, 0.3), 0px 0px 0px 1px #004678 inset;
   width: 1.5rem;
   height: 1.5rem;
   top: 0rem;
@@ -32390,8 +32390,8 @@ a.ui.card:hover,
 .ui.toggle.checkbox input ~ .box:after,
 .ui.toggle.checkbox input ~ label:after {
   left: -0.05rem;
-  -webkit-box-shadow: 0px 1px 2px 0 rgba(20, 20, 20, 0.3), 0px 0px 0px 1px #d3dae3 inset;
-  box-shadow: 0px 1px 2px 0 rgba(20, 20, 20, 0.3), 0px 0px 0px 1px #d3dae3 inset;
+  -webkit-box-shadow: 0px 1px 2px 0 rgba(20, 20, 20, 0.3), 0px 0px 0px 1px #004678 inset;
+  box-shadow: 0px 1px 2px 0 rgba(20, 20, 20, 0.3), 0px 0px 0px 1px #004678 inset;
 }
 
 /* Focus */
@@ -32419,14 +32419,14 @@ a.ui.card:hover,
 
 .ui.toggle.checkbox input:checked ~ .box:before,
 .ui.toggle.checkbox input:checked ~ label:before {
-  background-color: #004678 !important;
+  background-color: #1B1C1D !important;
 }
 
 .ui.toggle.checkbox input:checked ~ .box:after,
 .ui.toggle.checkbox input:checked ~ label:after {
   left: 2.15rem;
-  -webkit-box-shadow: 0px 1px 2px 0 rgba(20, 20, 20, 0.3), 0px 0px 0px 1px #d3dae3 inset;
-  box-shadow: 0px 1px 2px 0 rgba(20, 20, 20, 0.3), 0px 0px 0px 1px #d3dae3 inset;
+  -webkit-box-shadow: 0px 1px 2px 0 rgba(20, 20, 20, 0.3), 0px 0px 0px 1px #004678 inset;
+  box-shadow: 0px 1px 2px 0 rgba(20, 20, 20, 0.3), 0px 0px 0px 1px #004678 inset;
 }
 
 /* Active Focus */
@@ -32438,7 +32438,7 @@ a.ui.card:hover,
 
 .ui.toggle.checkbox input:focus:checked ~ .box:before,
 .ui.toggle.checkbox input:focus:checked ~ label:before {
-  background-color: #002e4f !important;
+  background-color: #070808 !important;
 }
 
 /*******************************
@@ -32485,8 +32485,6 @@ a.ui.card:hover,
 .ui.checkbox input:checked ~ .box:after,
 .ui.checkbox input:checked ~ label:after {
   content: '\e800';
-  color: #767676;
-  background-color: #d3dae3 !important;
 }
 
 /* Indeterminate */
@@ -32497,13 +32495,154 @@ a.ui.card:hover,
   content: '\e801';
 }
 
-/*  UTF Reference
-.check:before { content: '\e800'; }
-.dash:before  { content: '\e801'; }
-.plus:before { content: '\e802'; }
-*/
+/*--------------
+     ONLY FOR FILTER
+---------------*/
 
-/************* laser three toggle icon buttons ***************/
+.la-filter {
+  /*--------------
+      Checkmark
+  ---------------*/
+  /*--------------
+        Label
+  ---------------*/
+  /* Inside */
+  /*******************************
+             States
+  *******************************/
+  /*--------------
+        Hover
+  ---------------*/
+  /*--------------
+        Down
+  ---------------*/
+  /*--------------
+       Focus
+  ---------------*/
+  /*--------------
+       Active
+  ---------------*/
+  /*--------------
+    Indeterminate
+  ---------------*/
+  /*--------------
+    Active Focus
+  ---------------*/
+  /*--------------
+       Disabled
+  ---------------*/
+  /* Legende */
+}
+
+.la-filter .ui.checkbox .box:after,
+.la-filter .ui.checkbox label:after {
+  color: rgba(0, 0, 0, 0.87);
+  -webkit-transition: border 0.1s ease, opacity 0.1s ease, -webkit-transform 0.1s ease, -webkit-box-shadow 0.1s ease;
+  transition: border 0.1s ease, opacity 0.1s ease, -webkit-transform 0.1s ease, -webkit-box-shadow 0.1s ease;
+  transition: border 0.1s ease, opacity 0.1s ease, transform 0.1s ease, box-shadow 0.1s ease;
+  transition: border 0.1s ease, opacity 0.1s ease, transform 0.1s ease, box-shadow 0.1s ease, -webkit-transform 0.1s ease, -webkit-box-shadow 0.1s ease;
+}
+
+.la-filter .ui.checkbox label,
+.la-filter .ui.checkbox + label {
+  color: #FFFFFF;
+}
+
+.la-filter .ui.checkbox .box:hover::before,
+.la-filter .ui.checkbox label:hover::before {
+  background: #FFFFFF;
+  border-color: rgba(34, 36, 38, 0.35);
+}
+
+.la-filter .ui.checkbox label:hover,
+.la-filter .ui.checkbox + label:hover {
+  color: #FFFFFF;
+}
+
+.la-filter .ui.checkbox .box:active::before,
+.la-filter .ui.checkbox label:active::before {
+  background: #f4f8f9;
+  border-color: rgba(34, 36, 38, 0.35);
+}
+
+.la-filter .ui.checkbox .box:active::after,
+.la-filter .ui.checkbox label:active::after {
+  color: rgba(0, 0, 0, 0.95);
+}
+
+.la-filter .ui.checkbox input:active ~ label {
+  color: #FFFFFF;
+}
+
+.la-filter .ui.checkbox input:focus ~ .box:before,
+.la-filter .ui.checkbox input:focus ~ label:before {
+  background: #FFFFFF;
+  border-color: #fa820a;
+}
+
+.la-filter .ui.checkbox input:focus ~ .box:after,
+.la-filter .ui.checkbox input:focus ~ label:after {
+  color: rgba(0, 0, 0, 0.95);
+}
+
+.la-filter .ui.checkbox input:focus ~ label {
+  color: rgba(0, 0, 0, 0.95);
+}
+
+.la-filter .ui.checkbox input:checked ~ .box:before,
+.la-filter .ui.checkbox input:checked ~ label:before {
+  background: #FFFFFF;
+  border-color: rgba(34, 36, 38, 0.35);
+}
+
+.la-filter .ui.checkbox input:checked ~ .box:after,
+.la-filter .ui.checkbox input:checked ~ label:after {
+  opacity: 1;
+  color: rgba(0, 0, 0, 0.95);
+}
+
+.la-filter .ui.checkbox input:not([type=radio]):indeterminate ~ .box:before,
+.la-filter .ui.checkbox input:not([type=radio]):indeterminate ~ label:before {
+  background: #FFFFFF;
+  border-color: rgba(34, 36, 38, 0.35);
+}
+
+.la-filter .ui.checkbox input:not([type=radio]):indeterminate ~ .box:after,
+.la-filter .ui.checkbox input:not([type=radio]):indeterminate ~ label:after {
+  opacity: 1;
+  color: rgba(0, 0, 0, 0.95);
+}
+
+.la-filter .ui.checkbox input:not([type=radio]):indeterminate:focus ~ .box:before,
+.la-filter .ui.checkbox input:not([type=radio]):indeterminate:focus ~ label:before,
+.la-filter .ui.checkbox input:checked:focus ~ .box:before,
+.la-filter .ui.checkbox input:checked:focus ~ label:before {
+  background: #FFFFFF;
+  border-color: #fa820a;
+}
+
+.la-filter .ui.checkbox input:not([type=radio]):indeterminate:focus ~ .box:after,
+.la-filter .ui.checkbox input:not([type=radio]):indeterminate:focus ~ label:after,
+.la-filter .ui.checkbox input:checked:focus ~ .box:after,
+.la-filter .ui.checkbox input:checked:focus ~ label:after {
+  color: rgba(0, 0, 0, 0.95);
+}
+
+.la-filter .ui.disabled.checkbox .box:after,
+.la-filter .ui.disabled.checkbox label,
+.la-filter .ui.checkbox input[disabled] ~ .box:after,
+.la-filter .ui.checkbox input[disabled] ~ label {
+  opacity: 0.5;
+  color: #000000;
+}
+
+.la-filter legend {
+  color: #FFFFFF;
+}
+
+/*---------------------------------------------
+        Laser 3 State Toggle Icon Buttons
+----------------------------------------------*/
 
 .radio,
 .checkbox.la-toggle-radio {
@@ -32516,7 +32655,7 @@ a.ui.card:hover,
   font-size: 1.7em;
   width: 40px;
   height: 40px;
-  color: rgba(0, 0, 0, 0.6);
+  color: rgba(0, 0, 0, 0.87);
 }
 
 .ui.checkbox.la-toggle-radio label:before {
@@ -32545,10 +32684,10 @@ a.ui.card:hover,
   -webkit-box-shadow: 0 2px 3px 0 #d3dae3;
   box-shadow: 0 2px 3px 0 #d3dae3;
   /*
-  content: "\f00c" !important;
-  font-family: Icons !important;
-  transform: scale(1.5);
-  */
+   content: "\f00c" !important;
+   font-family: Icons !important;
+   transform: scale(1.5);
+   */
 }
 
 /* REPLACE */
@@ -32991,9 +33130,9 @@ body.dimmable > .dimmer {
   font-size: 1em;
   text-shadow: none;
   text-align: left;
-  -webkit-box-shadow: 0px 2px 3px 0px #d3dae3;
-  box-shadow: 0px 2px 3px 0px #d3dae3;
-  border: 1px solid #d3dae3;
+  -webkit-box-shadow: 0px 2px 3px 0px #004678;
+  box-shadow: 0px 2px 3px 0px #004678;
+  border: 1px solid #004678;
   border-radius: 0;
   -webkit-transition: opacity 0.1s ease;
   transition: opacity 0.1s ease;
@@ -33316,7 +33455,7 @@ body.dimmable > .dimmer {
   color: rgba(0, 0, 0, 0.87);
   -webkit-box-shadow: none;
   box-shadow: none;
-  border: 1px solid #d3dae3;
+  border: 1px solid #004678;
   border-radius: 0;
   -webkit-transition: width 0.1s ease, -webkit-box-shadow 0.1s ease;
   transition: width 0.1s ease, -webkit-box-shadow 0.1s ease;
@@ -33332,7 +33471,7 @@ body.dimmable > .dimmer {
 select.ui.dropdown {
   height: 38px;
   padding: 0.5em;
-  border: 1px solid #d3dae3;
+  border: 1px solid #004678;
   visibility: visible;
 }
 
@@ -33375,8 +33514,8 @@ select.ui.dropdown {
   min-width: calc(100% +  2px );
   width: calc(100% +  2px );
   border-radius: 0em 0em 0 0;
-  -webkit-box-shadow: 0px 2px 3px 0px #d3dae3;
-  box-shadow: 0px 2px 3px 0px #d3dae3;
+  -webkit-box-shadow: 0px 2px 3px 0px #004678;
+  box-shadow: 0px 2px 3px 0px #004678;
   -webkit-transition: opacity 0.1s ease;
   transition: opacity 0.1s ease;
 }
@@ -33445,14 +33584,14 @@ select.ui.dropdown {
 
 .ui.selection.active.dropdown {
   border-color: #96C8DA;
-  -webkit-box-shadow: 0px 2px 3px 0px #d3dae3;
-  box-shadow: 0px 2px 3px 0px #d3dae3;
+  -webkit-box-shadow: 0px 2px 3px 0px #004678;
+  box-shadow: 0px 2px 3px 0px #004678;
 }
 
 .ui.selection.active.dropdown .menu {
   border-color: #96C8DA;
-  -webkit-box-shadow: 0px 2px 3px 0px #d3dae3;
-  box-shadow: 0px 2px 3px 0px #d3dae3;
+  -webkit-box-shadow: 0px 2px 3px 0px #004678;
+  box-shadow: 0px 2px 3px 0px #004678;
 }
 
 /* Focus */
@@ -33465,8 +33604,8 @@ select.ui.dropdown {
 
 .ui.selection.dropdown:focus .menu {
   border-color: #96C8DA;
-  -webkit-box-shadow: 0px 2px 3px 0px #d3dae3;
-  box-shadow: 0px 2px 3px 0px #d3dae3;
+  -webkit-box-shadow: 0px 2px 3px 0px #004678;
+  box-shadow: 0px 2px 3px 0px #004678;
 }
 
 /* Visible */
@@ -33480,14 +33619,14 @@ select.ui.dropdown {
 
 .ui.selection.active.dropdown:hover {
   border-color: #96C8DA;
-  -webkit-box-shadow: 0px 2px 3px 0px #d3dae3;
-  box-shadow: 0px 2px 3px 0px #d3dae3;
+  -webkit-box-shadow: 0px 2px 3px 0px #004678;
+  box-shadow: 0px 2px 3px 0px #004678;
 }
 
 .ui.selection.active.dropdown:hover .menu {
   border-color: #96C8DA;
-  -webkit-box-shadow: 0px 2px 3px 0px #d3dae3;
-  box-shadow: 0px 2px 3px 0px #d3dae3;
+  -webkit-box-shadow: 0px 2px 3px 0px #004678;
+  box-shadow: 0px 2px 3px 0px #004678;
 }
 
 /* Dropdown Icon */
@@ -33666,8 +33805,8 @@ select.ui.dropdown {
   font-size: 1em;
   padding: 0.35714286em 0.78571429em;
   margin: 0.14285714rem 0.28571429rem 0.14285714rem 0em;
-  -webkit-box-shadow: 0px 0px 0px 1px #d3dae3 inset;
-  box-shadow: 0px 0px 0px 1px #d3dae3 inset;
+  -webkit-box-shadow: 0px 0px 0px 1px #004678 inset;
+  box-shadow: 0px 0px 0px 1px #004678 inset;
 }
 
 /* Dropdown Icon */
@@ -34157,7 +34296,7 @@ select.ui.dropdown {
   margin: 0 !important;
   min-width: 100% !important;
   width: auto !important;
-  border-top: 1px solid #d3dae3;
+  border-top: 1px solid #004678;
 }
 
 .ui.scrolling.dropdown .menu .item.item.item,
@@ -34324,8 +34463,8 @@ select.ui.dropdown {
   transform: rotate(45deg);
   width: 0.5em;
   height: 0.5em;
-  -webkit-box-shadow: -1px -1px 0px 0px #d3dae3;
-  box-shadow: -1px -1px 0px 0px #d3dae3;
+  -webkit-box-shadow: -1px -1px 0px 0px #004678;
+  box-shadow: -1px -1px 0px 0px #004678;
   background: #FFFFFF;
   z-index: 2;
 }
@@ -34497,8 +34636,8 @@ select.ui.dropdown {
 .ui.top.pointing.upward.dropdown .menu:after {
   top: 100% !important;
   bottom: auto !important;
-  -webkit-box-shadow: 1px 1px 0px 0px #d3dae3;
-  box-shadow: 1px 1px 0px 0px #d3dae3;
+  -webkit-box-shadow: 1px 1px 0px 0px #004678;
+  box-shadow: 1px 1px 0px 0px #004678;
   margin: -0.25em 0em 0em;
 }
 
@@ -34514,8 +34653,8 @@ select.ui.dropdown {
   top: auto !important;
   bottom: 0 !important;
   margin: 0em 0em 1em 0em;
-  -webkit-box-shadow: -1px -1px 0px 0px #d3dae3;
-  box-shadow: -1px -1px 0px 0px #d3dae3;
+  -webkit-box-shadow: -1px -1px 0px 0px #004678;
+  box-shadow: -1px -1px 0px 0px #004678;
 }
 
 /* Left Pointing Upward */
@@ -34530,8 +34669,8 @@ select.ui.dropdown {
   top: auto !important;
   bottom: 0 !important;
   margin: 0em 0em 1em 0em;
-  -webkit-box-shadow: -1px -1px 0px 0px #d3dae3;
-  box-shadow: -1px -1px 0px 0px #d3dae3;
+  -webkit-box-shadow: -1px -1px 0px 0px #004678;
+  box-shadow: -1px -1px 0px 0px #004678;
 }
 
 /*******************************
@@ -34588,13 +34727,13 @@ select.ui.dropdown {
   content: "\f00d";
 }
 
-/* Icons for Reference (Subsetted in 2.4.0)
-  .dropdown.down:before { content: "\f0d7"; }
-  .dropdown.up:before { content: "\f0d8"; }
-  .dropdown.left:before { content: "\f0d9"; }
-  .dropdown.right:before { content: "\f0da"; }
-  .dropdown.close:before { content: "\f00d"; }
-*/
+.la-filter {
+  /* Hover */
+}
+
+.la-filter .ui.selection.dropdown:hover {
+  border-color: #FFFFFF;
+}
 /*!
  * # Semantic UI 2.3.1 - Video
  * http://github.com/semantic-org/semantic-ui/

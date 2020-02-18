@@ -187,7 +187,10 @@
   }
 
 }
-/************* laser three toggle icon buttons ***************/
+
+/*---------------------------------------------
+        Laser 3 State Toggle Icon Buttons
+----------------------------------------------*/
 
 .radio, .checkbox.la-toggle-radio {
   padding:0;

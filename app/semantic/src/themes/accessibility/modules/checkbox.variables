@@ -186,3 +186,8 @@
 @toggleOnFocusLaneColor: @primaryColorFocus;
 @toggleOnFocusLabelColor: @toggleOnLabelColor;
 
+/*---------------------------------------------
+        Laser 3 State Toggle Icon Buttons
+----------------------------------------------*/
+
+@backgroundColor:  #d3dae3;
