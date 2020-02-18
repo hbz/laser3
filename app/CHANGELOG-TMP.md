@@ -2,8 +2,9 @@
 
 **Ticket    Date    Branch      Author  Feature/Bug     Description/Keywords**
 
+2196    18.02.2020  hbz-dev     David   Feature     Persistente Bool-Attribute von Domainklassen überarbeiten
 
-2123   11.02.2020  hbz-dev     Moe     Feature      Pakete auch in Kindlizenzen entknüpfen
+2123    11.02.2020  hbz-dev     Moe     Feature     Pakete auch in Kindlizenzen entknüpfen
 
 2146    11.02.2020  hbz-dev     Moe     Feature     Bulk Prozesse bei Teilnehmerverwaltung ermöglichen
 
