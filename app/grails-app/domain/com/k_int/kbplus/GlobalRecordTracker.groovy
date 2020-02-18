@@ -35,11 +35,11 @@ class GlobalRecordTracker {
   static constraints = {
                          name(nullable:true, blank:false, maxSize:2048)
                      localOid(nullable:true, blank:false)
-       autoAcceptTippAddition(nullable:true, blank:false)
+       autoAcceptTippAddition(nullable:false, blank:false)
                          uuid(nullable:true, blank:false)
-         autoAcceptTippDelete(nullable:true, blank:false)
-         autoAcceptTippUpdate(nullable:true, blank:false)
-      autoAcceptPackageUpdate(nullable:true, blank:false)
+         autoAcceptTippDelete(nullable:false, blank:false)
+         autoAcceptTippUpdate(nullable:false, blank:false)
+      autoAcceptPackageUpdate(nullable:false, blank:false)
 
       // Nullable is true, because values are already in the database
       lastUpdated (nullable: true, blank: false)

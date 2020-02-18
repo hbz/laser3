@@ -89,27 +89,4 @@ update title_instance set date_created = '2018-01-01 00:00:0.000000' where date_
 	changeSet(author: "klober (generated)", id: "1581320763299-17") {
 		dropTable(tableName: "user_transforms")
 	}
-
-	changeSet(author: "klober (generated)", id: "1581320763299-18") {
-		addColumn(schemaName: "public", tableName: "license") {
-			column(name: "lic_is_public_for_api", type: "bool")
-		}
-	}
-
-	changeSet(author: "klober (generated)", id: "1581320763299-19") {
-		addColumn(schemaName: "public", tableName: "subscription") {
-			column(name: "sub_is_public_for_api", type: "bool")
-		}
-	}
-
-	changeSet(author: "kloberd (modified)", id: "1581320763299-20") {
-		grailsChange {
-			change {
-				sql.execute("update license set lic_is_public_for_api=false where lic_is_public_for_api is null;")
-				sql.execute("update subscription set sub_is_public_for_api=false where sub_is_public_for_api is null;")
-			}
-			rollback {
-			}
-		}
-	}
 }

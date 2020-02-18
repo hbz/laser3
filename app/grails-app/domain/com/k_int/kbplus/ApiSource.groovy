@@ -38,7 +38,7 @@ class ApiSource {
         typ(nullable:true, blank:false)
         principal(nullable:true, blank:false)
         credentials(nullable:true, blank:false)
-        active(nullable:true, blank:false)
+        active      (nullable:false, blank:false)
         apikey (nullable:true, blank:false)
         apisecret (nullable:true, blank:false)
     }
