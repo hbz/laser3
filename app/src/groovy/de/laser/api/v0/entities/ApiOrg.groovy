@@ -2,10 +2,12 @@ package de.laser.api.v0.entities
 
 import com.k_int.kbplus.Identifier
 import com.k_int.kbplus.Org
+import com.k_int.kbplus.Package
 import de.laser.api.v0.ApiCollectionReader
 import de.laser.api.v0.ApiReader
 import de.laser.api.v0.ApiToolkit
 import de.laser.helper.Constants
+import de.laser.helper.RDStore
 import grails.converters.JSON
 import groovy.util.logging.Log4j
 import org.codehaus.groovy.grails.orm.hibernate.cfg.GrailsHibernateUtil
@@ -14,7 +16,7 @@ import org.codehaus.groovy.grails.orm.hibernate.cfg.GrailsHibernateUtil
 class ApiOrg {
 
     /**
-     * @return Org | BAD_REQUEST | PRECONDITION_FAILED
+     * @return Org | BAD_REQUEST | PRECONDITION_FAILED | OBJECT_STATUS_DELETED
      */
     static findOrganisationBy(String query, String value) {
         def result
@@ -26,9 +28,9 @@ class ApiOrg {
             case 'globalUID':
                 result = Org.findAllWhere(globalUID: value)
                 break
-            case 'impId':
-                result = Org.findAllWhere(impId: value)
-                break
+//            case 'impId':
+//                result = Org.findAllWhere(impId: value)
+//                break
             case 'gokbId':
                 result = Org.findAllWhere(gokbId: value)
                 break
@@ -39,8 +41,12 @@ class ApiOrg {
                 return Constants.HTTP_BAD_REQUEST
                 break
         }
+        result = ApiToolkit.checkPreconditionFailed(result)
 
-        ApiToolkit.checkPreconditionFailed(result)
+        if (result instanceof Org && result.status == RDStore.ORG_STATUS_DELETED) {
+            result = Constants.OBJECT_STATUS_DELETED
+        }
+        result
     }
 
     /**

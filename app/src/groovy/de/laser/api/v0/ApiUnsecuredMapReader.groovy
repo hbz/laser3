@@ -34,7 +34,7 @@ class ApiUnsecuredMapReader {
         Map<String, Object> result = [:]
 
         result.globalUID        = lic.globalUID
-        result.impId            = lic.impId
+        //result.impId            = lic.impId
         result.reference        = lic.reference
         result.normReference    = lic.sortableReference
         result.calculatedType   = lic.getCalculatedType()
@@ -77,7 +77,7 @@ class ApiUnsecuredMapReader {
 
         result.globalUID    = pkg.globalUID
         result.name         = pkg.name
-        result.impId        = pkg.impId
+        //result.impId        = pkg.impId
         result.gokbId       = pkg.gokbId
 
         // References
@@ -96,7 +96,7 @@ class ApiUnsecuredMapReader {
         Map<String, Object> result = [:]
 
         result.globalUID    = pform.globalUID
-        result.impId        = pform.impId
+        //result.impId        = pform.impId
         result.gokbId       = pform.gokbId
         result.name         = pform.name
         result.normname     = pform.normname
@@ -116,7 +116,7 @@ class ApiUnsecuredMapReader {
 
         result.globalUID        = sub.globalUID
         result.name             = sub.name
-        result.impId            = sub.impId
+        //result.impId            = sub.impId
         result.calculatedType   = sub.getCalculatedType()
         result.startDate        = sub.startDate
         result.endDate          = sub.endDate
@@ -137,7 +137,7 @@ class ApiUnsecuredMapReader {
         Map<String, Object> result = [:]
 
         result.globalUID    = title.globalUID
-        result.impId        = title.impId
+        //result.impId        = title.impId
         result.gokbId       = title.gokbId
         result.title        = title.title
         result.normTitle    = title.normTitle
@@ -195,7 +195,7 @@ class ApiUnsecuredMapReader {
         Map<String, Object> result = [:]
 
         result.globalUID        = pform.globalUID
-        result.impId            = pform.impId
+        //result.impId            = pform.impId
         result.gokbId           = pform.gokbId
         result.name             = pform.name
         result.normName         = pform.normname
