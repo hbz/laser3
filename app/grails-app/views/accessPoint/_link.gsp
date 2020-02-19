@@ -54,7 +54,7 @@
         </g:each>
         </tbody>
     </table>
-    <h5>${message(code: 'accessPoint.link.with.subscription', default: 'Custom assignment to license')}
+    <h5>${message(code: 'accessPoint.link.with.subscription')}
         <span class="la-long-tooltip la-popup-tooltip la-delay"
               data-html='${message(code: "accessPoint.linkedSubscriptionHelp")}'>
             <i class="question circle icon la-popup"></i>

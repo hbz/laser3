@@ -3,14 +3,11 @@ package com.k_int.kbplus
 import com.k_int.kbplus.auth.User
 import de.laser.SystemEvent
 import de.laser.domain.TIPPCoverage
-import de.laser.helper.EhcacheWrapper
 import de.laser.helper.RDConstants
 import de.laser.helper.RDStore
 import de.laser.interfaces.AbstractLockableService
 import de.laser.oai.OaiClient
 import de.laser.oai.OaiClientLaser
-import net.sf.ehcache.Cache
-import org.springframework.context.i18n.LocaleContext
 import org.springframework.context.i18n.LocaleContextHolder
 import org.springframework.transaction.annotation.Propagation
 import org.springframework.transaction.annotation.Transactional
@@ -469,7 +466,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
                             ie.tipp = new_tipp
                             ie.save()
                         }
-                        oldtipp.status = RDStore.TIPP_DELETED
+                        oldtipp.status = RDStore.TIPP_STATUS_DELETED
                         oldtipp.save()
                     }
                 }
@@ -566,7 +563,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
 
             if (db_tipp != null) {
 
-                def tippStatus = RDStore.TIPP_DELETED
+                def tippStatus = RDStore.TIPP_STATUS_DELETED
 
                 if (tipp.status == 'Current') {
                     tippStatus = RDStore.TIPP_STATUS_CURRENT

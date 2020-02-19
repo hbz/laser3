@@ -21,9 +21,9 @@
 			<thead>
 					<tr>
 					
-						<g:sortableColumn property="definition" title="${message(code: 'cluster.definition.label', default: 'Definition')}" />
+						<g:sortableColumn property="definition" title="${message(code: 'default.definition.label')}" />
 					
-						<g:sortableColumn property="name" title="${message(code: 'cluster.name.label', default: 'Name')}" />
+						<g:sortableColumn property="name" title="${message(code: 'default.name.label')}" />
 					
 						<th>${com.k_int.kbplus.RefdataCategory.getByDesc(RDConstants.CLUSTER_TYPE).getI10n('desc')}</th>
 					

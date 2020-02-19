@@ -4,6 +4,7 @@ import com.k_int.kbplus.Identifier
 import com.k_int.kbplus.License
 import com.k_int.kbplus.Org
 import com.k_int.kbplus.OrgRole
+import com.k_int.kbplus.Subscription
 import de.laser.api.v0.ApiCollectionReader
 import de.laser.api.v0.ApiReader
 import de.laser.api.v0.ApiStubReader
@@ -30,9 +31,9 @@ class ApiLicense {
             case 'globalUID':
                 result = License.findAllWhere(globalUID: value)
                 break
-            case 'impId':
-                result = License.findAllWhere(impId: value)
-                break
+//            case 'impId':
+//                result = License.findAllWhere(impId: value)
+//                break
             case 'ns:identifier':
                 result = Identifier.lookupObjectsByIdentifierString(new License(), value)
                 break
@@ -40,8 +41,12 @@ class ApiLicense {
                 return Constants.HTTP_BAD_REQUEST
                 break
         }
+        result = ApiToolkit.checkPreconditionFailed(result)
 
-        ApiToolkit.checkPreconditionFailed(result)
+        //if (result instanceof License && result.status == RDStore.LICENSE_DELETED) {
+        //    result = Constants.OBJECT_STATUS_DELETED
+        //}
+        result
     }
 
 
@@ -52,7 +57,10 @@ class ApiLicense {
 
         boolean hasAccess = false
 
-        if (OrgRole.findByLicAndRoleTypeAndOrg(lic, RDStore.OR_LICENSING_CONSORTIUM, context)) {
+        if (! lic.isPublicForApi) {
+            hasAccess = false
+        }
+        else if (OrgRole.findByLicAndRoleTypeAndOrg(lic, RDStore.OR_LICENSING_CONSORTIUM, context)) {
             hasAccess = true
         }
         else if (OrgRole.findByLicAndRoleTypeAndOrg(lic, RDStore.OR_LICENSEE, context)) {
@@ -94,11 +102,7 @@ class ApiLicense {
         )
 
         available.each { lic ->
-            //if (calculateAccess(lic, context, hasAccess)) {
-                //println lic.id + ' ' + lic.reference
-                result.add(ApiStubReader.requestLicenseStub(lic, context))
-                //result.add([globalUID: lic.globalUID])
-            //}
+            result.add(ApiStubReader.requestLicenseStub(lic, context))
         }
 
         return (result ? new JSON(result) : null)
@@ -116,7 +120,7 @@ class ApiLicense {
         // removed - result.contact          = lic.contact
         result.dateCreated      = lic.dateCreated
         result.endDate          = lic.endDate
-        result.impId            = lic.impId
+        //result.impId            = lic.impId
         // result.lastmod          = lic.lastmod // legacy ?
         result.lastUpdated      = lic.lastUpdated
         // result.licenseUrl       = lic.licenseUrl
@@ -133,7 +137,6 @@ class ApiLicense {
 
         // RefdataValues
 
-        result.isPublic         = lic.isPublic ? 'Yes' : 'No'
         // result.licenseCategory  = lic.licenseCategory?.value // legacy
         result.status           = lic.status?.value
         // result.type             = lic.type?.value

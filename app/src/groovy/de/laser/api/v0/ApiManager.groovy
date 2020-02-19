@@ -16,7 +16,7 @@ import javax.servlet.http.HttpServletRequest
 @Log4j
 class ApiManager {
 
-    static final VERSION = '0.80'
+    static final VERSION = '0.82'
     static final NOT_SUPPORTED = false
 
     /**
@@ -29,7 +29,7 @@ class ApiManager {
     static read(String obj, String query, String value, Org contextOrg, String format) {
         def result
 
-        List failureCodes  = [Constants.HTTP_BAD_REQUEST, Constants.HTTP_PRECONDITION_FAILED]
+        List failureCodes  = [Constants.HTTP_BAD_REQUEST, Constants.HTTP_PRECONDITION_FAILED, Constants.OBJECT_STATUS_DELETED]
         boolean isDatamanager = ApiToolkit.isDataManager(contextOrg)
         boolean isInvoiceTool = ApiToolkit.isInvoiceTool(contextOrg)
 
@@ -128,14 +128,6 @@ class ApiManager {
 
             result = ApiOAMonitor.getAllOrgs()
         }
-        /* else if (NOT_SUPPORTED && 'onixpl'.equalsIgnoreCase(obj)) {
-
-            def lic = ApiLicense.findLicenseBy(query, value)
-
-            if (lic && !(lic in failureCodes)) {
-                result = ApiDoc.getOnixPlDocument((License) lic, contextOrg)
-            }
-        } */
         else if (resolve('organisation', ApiReader.SUPPORTED_FORMATS.organisation) == Constants.VALID_REQUEST) {
 
             result = ApiOrg.findOrganisationBy(query, value)
@@ -341,6 +333,12 @@ class ApiManager {
                                             "obj": obj, "q": query, "context": context,
                                             "status": HttpStatus.PRECONDITION_FAILED.value()]))
             response.status = HttpStatus.PRECONDITION_FAILED.value()
+        }
+        else if (Constants.OBJECT_STATUS_DELETED == result) {
+            response.json = new JSON( trimJson(["message": "result not found",
+                                                "obj": obj, "q": query, "v": value, "context": context,
+                                                "status": HttpStatus.NOT_FOUND.value()]))
+            response.status = HttpStatus.NOT_FOUND.value()
         }
         else if (! result) {
             response.json = new JSON( trimJson(["message": "result not found",

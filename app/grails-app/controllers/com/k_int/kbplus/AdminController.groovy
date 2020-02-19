@@ -451,7 +451,7 @@ class AdminController extends AbstractDebugController {
 
   @Secured(['ROLE_ADMIN'])
   def manageContentItems() {
-    def result=[:]
+    Map<String, Object> result = [:]
 
     result.items = ContentItem.list()
 
@@ -506,7 +506,7 @@ class AdminController extends AbstractDebugController {
 
   @Secured(['ROLE_ADMIN'])
   def newContentItem() {
-    def result=[:]
+    Map<String, Object> result = [:]
     if ( ( params.key != null ) && ( params.content != null ) && ( params.key.length() > 0 ) && ( params.content.length() > 0 ) ) {
 
       String locale = ( ( params.locale != null ) && ( params.locale.length() > 0 ) ) ? params.locale : ''
@@ -526,7 +526,7 @@ class AdminController extends AbstractDebugController {
 
   @Secured(['ROLE_ADMIN'])
   def editContentItem() {
-    def result=[:]
+    Map<String, Object> result = [:]
     def idparts = params.id?.split(':')
     if ( idparts.length > 0 ) {
       def key = idparts[0]
@@ -614,7 +614,7 @@ class AdminController extends AbstractDebugController {
 
     log.debug(params)
 
-    def result=[:]
+    Map<String, Object> result = [:]
 
     if ( ( params.titleIdToDeprecate != null ) &&
          ( params.titleIdToDeprecate.length() > 0 ) &&

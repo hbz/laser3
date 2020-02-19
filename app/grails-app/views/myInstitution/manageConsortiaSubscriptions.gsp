@@ -65,14 +65,14 @@
         <div class="three fields">
             <div class="field">
                 <%--
-               <label>${message(code: 'default.search.text', default: 'Search text')}
+               <label>${message(code: 'default.search.text')}
                    <span data-position="right center" data-variation="tiny" data-content="${message(code:'default.search.tooltip.subscription')}">
                        <i class="question circle icon"></i>
                    </span>
                </label>
                <div class="ui input">
                    <input type="text" name="q"
-                          placeholder="${message(code: 'default.search.ph', default: 'enter search term...')}"
+                          placeholder="${message(code: 'default.search.ph')}"
                           value="${params.q}"/>
                </div>
                --%>
