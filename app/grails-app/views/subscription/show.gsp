@@ -160,6 +160,17 @@
                                 <dd><semui:xEditableBoolean owner="${subscriptionInstance}" field="isPublicForApi" /></dd>
                                 <dd class="la-js-editmode-container"><semui:auditButton auditable="[subscriptionInstance, 'isPublicForApi']"/></dd>
                             </dl>
+                            <g:if test="${subscriptionInstance.getCalculatedType() in [de.laser.interfaces.TemplateSupport.CALCULATED_TYPE_CONSORTIAL,
+                                                                                       de.laser.interfaces.TemplateSupport.CALCULATED_TYPE_COLLECTIVE,
+                                                                                       de.laser.interfaces.TemplateSupport.CALCULATED_TYPE_PARTICIPATION,
+                                                                                       de.laser.interfaces.TemplateSupport.CALCULATED_TYPE_PARTICIPATION_AS_COLLECTIVE]}">
+                                <dl>
+                                    <dt class="control-label">${message(code: 'subscription.hasPerpetualAccess.label')}</dt>
+                                    <dd><semui:xEditableBoolean owner="${subscriptionInstance}" field="hasPerpetualAccess" /></dd>
+                                    <dd class="la-js-editmode-container"><semui:auditButton auditable="[subscriptionInstance, 'hasPerpetualAccess']"/></dd>
+                                </dl>
+                            </g:if>
+
                         </div>
                     </div>
                 </div>

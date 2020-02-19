@@ -2,6 +2,10 @@
 
 **Ticket    Date    Branch      Author  Feature/Bug     Description/Keywords**
 
+2153    19.02.2020  hbz-dev     Andreas Feature     Ausblenden und Sichern der Fehlermeldung
+
+2119    19.02.2020  hbz-dev     Andreas Feature     Lizenz-Flag "Dauerhafter Zugriff" ("perpetual access") implementiert
+
 2142    19.02.2020  hbz-dev     Ingrid   Feature    WCAG-conforme Icons 
 
 2196    18.02.2020  hbz-dev     David   Feature     Persistente Bool-Attribute von Domainklassen überarbeiten
