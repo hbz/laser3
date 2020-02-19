@@ -23,7 +23,7 @@ class SemanticUiNavigationTagLib {
     def breadcrumbs = { attrs, body ->
 
         out <<   '<nav class="ui breadcrumb">'
-        out <<     crumb([controller: 'home', text:'<i class="home icon"></i>'])
+        out <<     crumb([controller: 'home', ariaLabel:'Home', text:'<i class="home icon"></i>'])
         out <<     body()
         out <<   '</nav>'
     }
@@ -43,9 +43,11 @@ class SemanticUiNavigationTagLib {
                 linkBody = linkBody.encodeAsHTML()
             }
 
+
             out << g.link(
                     linkBody,
                     controller: attrs.controller,
+                    "aria-label": attrs.ariaLabel,
                     action: attrs.action,
                     params: attrs.params,
                     class: 'section' + (attrs.class ? " ${attrs.class}" : ''),

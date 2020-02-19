@@ -344,6 +344,7 @@
                                 <i class="dropdown icon"></i>
 
                                 <div class="menu">
+                                    <g:link class="item" controller="dev" action="index">Barrierefreiheits-Tests</g:link>
                                     <g:link class="item" controller="dev" action="frontend">Frontend</g:link>
                                 </div>
                             </div>
@@ -613,7 +614,7 @@
                         </g:if>
                     </div>
 
-                        <g:if test="${(controllerName=='yoda' && actionName=='frontend' ) || (controllerName=='subscription'|| controllerName=='license') && actionName=='show' && editable}">
+                        <g:if test="${(controllerName=='dev' && actionName=='frontend' ) || (controllerName=='subscription'|| controllerName=='license') && actionName=='show' && editable}">
                             <div class="item">
                                 <g:if test="${user?.getSettingsValue(UserSettings.KEYS.SHOW_EDIT_MODE, RefdataValue.getByValueAndCategory('Yes', RDConstants.Y_N))?.value=='Yes'}">
                                     <button class="ui icon toggle active  button la-toggle-controls la-popup-tooltip la-delay" data-content="${message(code:'statusbar.showButtons.tooltip')}" data-position="bottom right">
@@ -628,7 +629,7 @@
                             </div>
                         </g:if>
 
-                        <g:if test="${(controllerName=='yoda' && actionName=='frontend' ) || (controllerName=='subscription'|| controllerName=='license') && actionName=='show'}">
+                        <g:if test="${(controllerName=='dev' && actionName=='frontend' ) || (controllerName=='subscription'|| controllerName=='license') && actionName=='show'}">
 
                             <r:script>
                                 $(function(){
