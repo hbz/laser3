@@ -1,12 +1,12 @@
 <%@ page import="com.k_int.kbplus.SurveyConfig; de.laser.helper.RDStore; com.k_int.kbplus.RefdataValue; java.text.SimpleDateFormat;com.k_int.kbplus.DocContext;" %>
 <%
     def result = []
-    SimpleDateFormat sdf = de.laser.helper.DateUtil.getSDF_NoTime()
+    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'")
 
     hits.each { hit ->
 
-        String period = hit.getSourceAsMap().startDate ? sdf.format(new Date().parse("yyyy-MM-dd'T'HH:mm:ssZ", hit.getSourceAsMap().startDate))  : ''
-        period = hit.getSourceAsMap().endDate ? period + ' - ' + sdf.format(new Date().parse("yyyy-MM-dd'T'HH:mm:ssZ", hit.getSourceAsMap().endDate))  : ''
+        String period = hit.getSourceAsMap().startDate ? sdf.parse(hit.getSourceAsMap().startDate).format(message(code: 'default.date.format.notime'))  : ''
+        period = hit.getSourceAsMap().endDate ? period + ' - ' + sdf.parse(hit.getSourceAsMap().endDate).format(message(code: 'default.date.format.notime'))  : ''
         period = period ? '('+period+')' : ''
         String statusString = hit.getSourceAsMap().statusId ? RefdataValue.get(hit.getSourceAsMap().statusId).getI10n('value') : hit.getSourceAsMap().status
 
@@ -50,7 +50,7 @@
                 "description": "${statusString + ' ' +period}"
             ]
         }
-        else if (hit.getSourceAsMap().rectype == 'Title') {
+        else if (hit.getSourceAsMap().rectype == 'TitleInstance') {
             result << [
                 "title": "${hit.getSourceAsMap().name}",
                 "url":   g.createLink(controller:"title", action:"show", id:"${hit.getSourceAsMap().dbId}"),
@@ -59,14 +59,39 @@
                                         (hit.getSourceAsMap().typTitle == 'EBook') ? "${message(code: 'spotlight.ebooktitle')}" : "${message(code: 'spotlight.title')}",
                 "description": ""
             ]
-        }else if (hit.getSourceAsMap().rectype == 'ParticipantSurvey') {
+        }
+        else if (hit.getSourceAsMap().rectype == 'BookInstance') {
+            result << [
+                    "title": "${hit.getSourceAsMap().name}",
+                    "url":   g.createLink(controller:"title", action:"show", id:"${hit.getSourceAsMap().dbId}"),
+                    "category": "${message(code: 'spotlight.ebooktitle')}",
+                    "description": ""
+            ]
+        }
+        else if (hit.getSourceAsMap().rectype == 'DatabaseInstance') {
+            result << [
+                    "title": "${hit.getSourceAsMap().name}",
+                    "url":   g.createLink(controller:"title", action:"show", id:"${hit.getSourceAsMap().dbId}"),
+                    "category": "${message(code: 'spotlight.databasetitle')}",
+                    "description": ""
+            ]
+        }
+        else if (hit.getSourceAsMap().rectype == 'JournalInstance') {
+            result << [
+                    "title": "${hit.getSourceAsMap().name}",
+                    "url":   g.createLink(controller:"title", action:"show", id:"${hit.getSourceAsMap().dbId}"),
+                    "category":  "${message(code: 'spotlight.journaltitle')}",
+                    "description": ""
+            ]
+        }
+        else if (hit.getSourceAsMap().rectype == 'SurveyOrg') {
             result << [
                     "title": "${hit.getSourceAsMap().name}",
                     "url":   g.createLink(controller:"myInstitution", action:"surveyInfos", id:"${hit.getSourceAsMap().dbId}"),
                     "category": "${message(code: "spotlight.${hit.getSourceAsMap().rectype.toLowerCase()}")}",
                     "description": ""
             ]
-        }else if (hit.getSourceAsMap().rectype == 'Survey') {
+        }else if (hit.getSourceAsMap().rectype == 'SurveyConfig') {
             result << [
                     "title": "${hit.getSourceAsMap().name}",
                     "url":   g.createLink(controller:"survey", action:"show", id:"${SurveyConfig.get(hit.getSourceAsMap().dbId).surveyInfo.id}", params:"[surveyConfigID: ${hit.getSourceAsMap().dbId}]"),

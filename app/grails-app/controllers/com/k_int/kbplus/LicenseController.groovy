@@ -28,7 +28,6 @@ class LicenseController extends AbstractDebugController {
     def taskService
     def docstoreService
     def genericOIDService
-    def transformerService
     def exportService
     def escapeService
     def institutionsService
@@ -55,7 +54,6 @@ class LicenseController extends AbstractDebugController {
         }
 
         result.contextOrg = contextService.getOrg()
-        result.transforms = grailsApplication.config.licenseTransforms
 
         //used for showing/hiding the License Actions menus
         def admin_role = Role.findAllByAuthority("INST_ADM")
@@ -76,25 +74,25 @@ class LicenseController extends AbstractDebugController {
         } else {
 
             def pending_change_pending_status = RDStore.PENDING_CHANGE_STATUS
-            List<PendingChange> pendingChanges = PendingChange.executeQuery("select pc.id from PendingChange as pc where license=? and ( pc.status is null or pc.status = ? ) order by pc.ts desc", [result.license, pending_change_pending_status]);
+            List<PendingChange> pendingChanges = PendingChange.executeQuery("select pc from PendingChange as pc where license=? and ( pc.status is null or pc.status = ? ) order by pc.ts desc", [result.license, pending_change_pending_status]);
 
             log.debug("pc result is ${result.pendingChanges}");
             // refactoring: replace link table with instanceOf
             // if (result.license.incomingLinks.find { it?.isSlaved?.value == "Yes" } && pendingChanges) {
 
-            if (result.license.isSlaved && pendingChanges) {
+            if (result.license.isSlaved && ! pendingChanges.isEmpty()) {
                 log.debug("Slaved lincence, auto-accept pending changes")
                 def changesDesc = []
                 pendingChanges.each { change ->
-                    if (!pendingChangeService.performAccept(change, result.user)) {
+                    if (!pendingChangeService.performAccept(change, (User) result.user)) {
                         log.debug("Auto-accepting pending change has failed.")
                     } else {
-                        changesDesc.add(PendingChange.get(change).desc)
+                        changesDesc.add(change.desc)
                     }
                 }
                 flash.message = changesDesc
             } else {
-                result.pendingChanges = pendingChanges.collect { PendingChange.get(it) }
+                result.pendingChanges = pendingChanges
             }
         }
 
@@ -207,27 +205,12 @@ class LicenseController extends AbstractDebugController {
       }
       xml {
         def doc = exportService.buildDocXML("Licenses")
-            
 
-        if ((params.transformId) && (result.transforms[params.transformId] != null)) {
-            switch(params.transformId) {
-              case "sub_ie":
-                exportService.addLicenseSubPkgTitleXML(doc, doc.getDocumentElement(),[result.license])
-              break;
-              case "sub_pkg":
-                exportService.addLicenseSubPkgXML(doc, doc.getDocumentElement(),[result.license])
-                break;
-            }
-            String xml = exportService.streamOutXML(doc, new StringWriter()).getWriter().toString();
-            transformerService.triggerTransform(result.user, filename, result.transforms[params.transformId], xml, response)
-        }else{
-            exportService.addLicensesIntoXML(doc, doc.getDocumentElement(), [result.license])
-            
-            response.setHeader("Content-disposition", "attachment; filename=\"${filename}.xml\"")
-            response.contentType = "text/xml"
-            exportService.streamOutXML(doc, response.outputStream)
-        }
-        
+        exportService.addLicensesIntoXML(doc, doc.getDocumentElement(), [result.license])
+
+        response.setHeader("Content-disposition", "attachment; filename=\"${filename}.xml\"")
+        response.contentType = "text/xml"
+        exportService.streamOutXML(doc, response.outputStream)
       }
       /*
       csv {
@@ -569,7 +552,7 @@ from Subscription as s where
                 delLicense.status = RefdataValue.getByValueAndCategory('Deleted', RDConstants.LICENSE_STATUS)
                 delLicense.save(flush: true)
             } else {
-                flash.error = message(code: 'myinst.actionCurrentLicense.error', default: 'Unable to delete - The selected license has attached licenses')
+                flash.error = message(code: 'myinst.actionCurrentLicense.error')
             }
         } else {
             log.warn("${result.user} attempted to delete license ${delLicense} without perms")
@@ -604,9 +587,9 @@ from Subscription as s where
             }
             else {
                 def pending_change_pending_status = RDStore.PENDING_CHANGE_STATUS
-                def pendingChanges = PendingChange.executeQuery("select pc.id from PendingChange as pc where license.id=? and ( pc.status is null or pc.status = ? ) order by pc.ts desc", [member.id, pending_change_pending_status])
+                List<PendingChange> pendingChanges = PendingChange.executeQuery("select pc from PendingChange as pc where license.id=? and ( pc.status is null or pc.status = ? ) order by pc.ts desc", [member.id, pending_change_pending_status])
 
-                result.pendingChanges << ["${member.id}": pendingChanges.collect { PendingChange.get(it) }]
+                result.pendingChanges << ["${member.id}": pendingChanges]
             }
         }
 

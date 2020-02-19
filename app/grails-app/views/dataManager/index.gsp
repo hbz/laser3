@@ -2,7 +2,7 @@
 <html>
   <head>
     <meta name="layout" content="semanticUI"/>
-    <title>${message(code:'laser')} ${message(code:'menu.datamanager.dash', default:'Data Manager Dashboard')}</title>
+    <title>${message(code:'laser')} ${message(code:'menu.datamanager.dash')}</title>
   </head>
 
   <body>
@@ -11,7 +11,7 @@
       <semui:crumb message="menu.datamanager.dash" class="active"/>
     </semui:breadcrumbs>
     <br>
-    <h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon />${message(code:'menu.datamanager.dash', default:'Data Manager Dashboard')}</h1>
+    <h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon />${message(code:'menu.datamanager.dash')}</h1>
 
   <semui:messages data="${flash}" />
 
@@ -21,7 +21,7 @@
         <table class="ui celled la-table table">
           <thead>
             <tr>
-              <th>${message(code:'default.info.label', default:'Info')}</th>
+              <th>${message(code:'default.info.label')}</th>
               <th class="la-action-info">${message(code:'default.actions.label')}</th>
             </tr>
           </thead>
@@ -43,7 +43,7 @@
     </g:if>
     <g:else>
       <div class="container alert-warn">
-        <h6 class="ui header">${message(code:'datamanager.none_pending.label', default:'No pending package changes')}</h6>
+        <h6 class="ui header">${message(code:'datamanager.none_pending.label')}</h6>
       </div>
     </g:else>
 

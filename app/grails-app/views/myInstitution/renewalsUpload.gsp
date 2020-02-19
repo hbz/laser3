@@ -2,7 +2,7 @@
 <html>
   <head>
     <meta name="layout" content="semanticUI"/>
-    <title>${message(code:'laser')} ${message(code:'myinst.renewalUpload.label', default:'Renewals Upload')}</title>
+    <title>${message(code:'laser')} ${message(code:'myinst.renewalUpload.label')}</title>
   </head>
 
   <body>
@@ -16,7 +16,7 @@
     <semui:form>
       <g:form class="ui form" action="renewalsUpload" method="post" enctype="multipart/form-data" params="${params}">
           <input type="file" id="renewalsWorksheet" name="renewalsWorksheet"/><br/><br/>
-        <button type="submit" class="ui button">${message(code:'myinst.renewalUpload.upload', default:'Upload Renewals Worksheet')}</button>
+        <button type="submit" class="ui button">${message(code:'myinst.renewalUpload.upload')}</button>
       </g:form>
     </semui:form>
 
@@ -45,33 +45,33 @@
                     <input type="hidden" name="subscription.copy_docs" value="${permissionInfo?.sub_id}"/>
                     <input type="hidden" name="subscription.name" value="${permissionInfo?.sub_name}"/>
 
-                    <tr><th>${message(code:'default.select.label', default:'Select')}</th><th >${message(code:'myinst.renewalUpload.props', default:'Subscription Properties')}</th><th>${message(code:'default.value.label', default:'Value')}</th></tr>
+                    <tr><th>${message(code:'default.select.label')}</th><th >${message(code:'myinst.renewalUpload.props', default:'Subscription Properties')}</th><th>${message(code:'default.value.label')}</th></tr>
                     <tr>
                         <th><g:checkBox name="subscription.copyStart" value="${true}" /></th>
-                        <th>${message(code:'default.startDate.label', default:'Start Date')}</th>
+                        <th>${message(code:'default.startDate.label')}</th>
                         <td><semui:datepicker class="wide eight" id="subscription.start_date" name="subscription.start_date" placeholder="default.date.label" value="${permissionInfo?.sub_startDate}" required="" /></td>
                     </tr>
                     <tr>
                         <th><g:checkBox name="subscription.copyEnd" value="${true}" /></th>
-                        <th>${message(code:'default.endDate.label', default:'End Date')}</th>
+                        <th>${message(code:'default.endDate.label')}</th>
                         <td><semui:datepicker class="wide eight" id="subscription.end_date" name="subscription.end_date" placeholder="default.date.label" value="${permissionInfo?.sub_endDate}" /></td>
                     </tr>
                     <tr>
                         <th><g:checkBox name="subscription.copyDocs" value="${true}" /></th>
                         <th>${message(code:'myinst.renewalUpload.copy', default:'Copy Documents and Notes from Subscription')}</th>
-                        <td>${message(code: 'subscription', default:'Subscription')}: ${permissionInfo?.sub_name}</td>
+                        <td>${message(code: 'subscription')}: ${permissionInfo?.sub_name}</td>
                     </tr>
                     <tr>
                         <th><g:checkBox name="subscription.copyLicense" value="${permissionInfo?.sub_license ? true : false}"/></th>
                         <th>${message(code: 'myinst.renewalUpload.copyLiense', default: 'Copy License from Subscription')}</th>
-                        <td>${message(code: 'license', default:'License')}: ${permissionInfo?.sub_license?:message(code: 'myinst.renewalUpload.noLicensetoSub', default: 'No License in the Subscription!')}</td>
+                        <td>${message(code: 'license')}: ${permissionInfo?.sub_license?:message(code: 'myinst.renewalUpload.noLicensetoSub', default: 'No License in the Subscription!')}</td>
                     </tr>
                     </tbody>
                 </table>
 
                 <div class="la-float-right">
                     <g:if test="${entitlements}">
-                        <button type="submit" class="ui button">${message(code:'myinst.renewalUpload.accept', default:'Accept and Process')}</button>
+                        <button type="submit" class="ui button">${message(code:'myinst.renewalUpload.accept')}</button>
                     </g:if>
                 </div>
                 <br><hr/>
@@ -79,20 +79,20 @@
                     <thead>
                     <tr>
                         <th></th>
-                        <th>${message(code:'title.label', default:'Title')}</th>
-                        <th>${message(code:'subscription.details.from_pkg', default:'From Pkg')}</th>
+                        <th>${message(code:'title.label')}</th>
+                        <th>${message(code:'subscription.details.from_pkg')}</th>
                         <th>ISSN</th>
                         <th>eISSN</th>
-                        <th>${message(code:'default.startDate.label', default:'Start Date')}</th>
-                        <th>${message(code:'default.endDate.label', default:'End Date')}</th>
-                        <th>${message(code: 'tipp.startVolume', default: 'Start Volume')}</th>
-                        <th>${message(code:'tipp.endVolume', default:'End Volume')}</th>
-                        <th>${message(code: 'tipp.startIssue', default: 'Start Issue')}</th>
-                        <th>${message(code:'tipp.endIssue', default:'End Issue')}</th>
+                        <th>${message(code:'default.startDate.label')}</th>
+                        <th>${message(code:'default.endDate.label')}</th>
+                        <th>${message(code: 'tipp.startVolume')}</th>
+                        <th>${message(code:'tipp.endVolume')}</th>
+                        <th>${message(code: 'tipp.startIssue')}</th>
+                        <th>${message(code:'tipp.endIssue')}</th>
 
 
 
-                        <th>${message(code:'subscription.details.core_medium', default:'Core Medium')}</th>
+                        <th>${message(code:'subscription.details.core_medium')}</th>
                     </tr>
                     </thead>
                     <tbody>
@@ -125,7 +125,7 @@
 
           <div class="la-float-right">
               <g:if test="${entitlements}">
-                  <button type="submit" class="ui button">${message(code:'myinst.renewalUpload.accept', default:'Accept and Process')}</button>
+                  <button type="submit" class="ui button">${message(code:'myinst.renewalUpload.accept')}</button>
               </g:if>
           </div>
         </div>

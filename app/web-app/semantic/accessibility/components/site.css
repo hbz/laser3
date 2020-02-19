@@ -658,3 +658,172 @@ aside.ui.accordion .title:not(.ui) {
 .la-clear-before {
   clear: both;
 }
+
+/*--------------
+     ONLY FOR FILTER
+---------------*/
+
+.la-filter {
+  
+/*-------------------
+        States
+--------------------*/
+
+  
+/* Hover */
+  
+/* Pressed */
+  
+/* Focus */
+  
+/* Active */
+  
+/* Active Focus */
+  
+/* Indeterminate */
+  
+/* Disabled */
+  
+/*--------------
+        Checkmark
+    ---------------*/
+
+  
+/*--------------
+          Label
+    ---------------*/
+
+  
+/* Inside */
+  
+
+/*******************************
+               States
+    *******************************/
+
+  
+/*--------------
+          Hover
+    ---------------*/
+
+  
+/*--------------
+          Down
+    ---------------*/
+
+  
+/*--------------
+         Focus
+    ---------------*/
+
+  
+/*--------------
+         Active
+    ---------------*/
+
+  
+/*--------------
+      Indeterminate
+    ---------------*/
+
+  
+/*--------------
+      Active Focus
+    ---------------*/
+
+  
+/*--------------
+         Disabled
+    ---------------*/
+
+  
+/* Legende */
+}
+.la-filter .ui.checkbox .box:after,
+.la-filter .ui.checkbox label:after {
+  color: rgba(0, 0, 0, 0.87);
+  -webkit-transition: border 0.1s ease, opacity 0.1s ease, -webkit-transform 0.1s ease, -webkit-box-shadow 0.1s ease;
+  transition: border 0.1s ease, opacity 0.1s ease, -webkit-transform 0.1s ease, -webkit-box-shadow 0.1s ease;
+  transition: border 0.1s ease, opacity 0.1s ease, transform 0.1s ease, box-shadow 0.1s ease;
+  transition: border 0.1s ease, opacity 0.1s ease, transform 0.1s ease, box-shadow 0.1s ease, -webkit-transform 0.1s ease, -webkit-box-shadow 0.1s ease;
+}
+.la-filter .ui.checkbox label,
+.la-filter .ui.checkbox + label {
+  color: #FFFFFF;
+}
+.la-filter .ui.checkbox .box:hover::before,
+.la-filter .ui.checkbox label:hover::before {
+  background: #FFFFFF;
+  border-color: rgba(34, 36, 38, 0.35);
+}
+.la-filter .ui.checkbox label:hover,
+.la-filter .ui.checkbox + label:hover {
+  color: #d3dae3;
+}
+.la-filter .ui.checkbox .box:active::before,
+.la-filter .ui.checkbox label:active::before {
+  background: #FFFFFF;
+  border-color: rgba(34, 36, 38, 0.35);
+}
+.la-filter .ui.checkbox .box:active::after,
+.la-filter .ui.checkbox label:active::after {
+  color: rgba(0, 0, 0, 0.95);
+}
+.la-filter .ui.checkbox input:active ~ label {
+  color: #d3dae3;
+}
+.la-filter .ui.checkbox input:focus ~ .box:before,
+.la-filter .ui.checkbox input:focus ~ label:before {
+  background: #FFFFFF;
+  border-color: #96C8DA;
+}
+.la-filter .ui.checkbox input:focus ~ .box:after,
+.la-filter .ui.checkbox input:focus ~ label:after {
+  color: #fa820a;
+}
+.la-filter .ui.checkbox input:focus ~ label {
+  color: #fa820a;
+}
+.la-filter .ui.checkbox input:checked ~ .box:before,
+.la-filter .ui.checkbox input:checked ~ label:before {
+  background: #FFFFFF;
+  border-color: rgba(34, 36, 38, 0.35);
+}
+.la-filter .ui.checkbox input:checked ~ .box:after,
+.la-filter .ui.checkbox input:checked ~ label:after {
+  opacity: 1;
+  color: rgba(0, 0, 0, 0.95);
+}
+.la-filter .ui.checkbox input:not([type=radio]):indeterminate ~ .box:before,
+.la-filter .ui.checkbox input:not([type=radio]):indeterminate ~ label:before {
+  background: #FFFFFF;
+  border-color: rgba(34, 36, 38, 0.35);
+}
+.la-filter .ui.checkbox input:not([type=radio]):indeterminate ~ .box:after,
+.la-filter .ui.checkbox input:not([type=radio]):indeterminate ~ label:after {
+  opacity: 1;
+  color: rgba(0, 0, 0, 0.95);
+}
+.la-filter .ui.checkbox input:not([type=radio]):indeterminate:focus ~ .box:before,
+.la-filter .ui.checkbox input:not([type=radio]):indeterminate:focus ~ label:before,
+.la-filter .ui.checkbox input:checked:focus ~ .box:before,
+.la-filter .ui.checkbox input:checked:focus ~ label:before {
+  background: #FFFFFF;
+  border-color: #96C8DA;
+}
+.la-filter .ui.checkbox input:not([type=radio]):indeterminate:focus ~ .box:after,
+.la-filter .ui.checkbox input:not([type=radio]):indeterminate:focus ~ label:after,
+.la-filter .ui.checkbox input:checked:focus ~ .box:after,
+.la-filter .ui.checkbox input:checked:focus ~ label:after {
+  color: rgba(0, 0, 0, 0.95);
+}
+.la-filter .ui.disabled.checkbox .box:after,
+.la-filter .ui.disabled.checkbox label,
+.la-filter .ui.checkbox input[disabled] ~ .box:after,
+.la-filter .ui.checkbox input[disabled] ~ label {
+  opacity: 0.5;
+  color: #000000;
+}
+.la-filter legend {
+  color: #FFFFFF;
+}

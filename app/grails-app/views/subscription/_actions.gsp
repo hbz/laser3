@@ -36,22 +36,6 @@
                 <g:link class="item" action="index" id="${params.id}" params="${[exportKBart:true, mode: params.mode]}">KBART Export</g:link>
             </g:else>
         </semui:exportDropdownItem>
-        <g:each in="${transforms}" var="transkey,transval">
-            <semui:exportDropdownItem>
-                <g:if test="${params.filter || params.asAt}">
-                    <g:link  class="item js-open-confirm-modal"
-                            data-confirm-tokenMsg = "${message(code: 'confirmation.content.exportPartial')}"
-                            data-confirm-term-how="ok"
-                            action="index"
-                            id="${params.id}"
-                            params="${[format:'xml', transformId:transkey, mode: params.mode, filter: params.filter, asAt: params.asAt]}">${transval.name}
-                    </g:link>
-                </g:if>
-                <g:else>
-                    <g:link class="item" action="index" id="${params.id}" params="${[format:'xml', transformId:transkey, mode: params.mode]}">${transval.name}</g:link>
-                </g:else>
-            </semui:exportDropdownItem>
-        </g:each>
     </semui:exportDropdown>
 </g:if>
 <semui:actionsDropdown>
@@ -94,7 +78,7 @@
             <g:if test="${subscriptionInstance.instanceOf}">
                 <g:if test="${params.pkgfilter}">
                     <g:set var="pkg" value="${SubscriptionPackage.get(params.pkgfilter)}"/>
-                    <g:if test="${!pkg.finishDate}">
+                    <g:if test="${pkg && !pkg.finishDate}">
                         <semui:actionsDropdownItem controller="subscription" action="renewEntitlements" params="${[targetSubscriptionId:params.id,packageId:params.pkgfilter]}" message="subscription.details.renewEntitlements.label"/>
                     </g:if>
                     <g:else>

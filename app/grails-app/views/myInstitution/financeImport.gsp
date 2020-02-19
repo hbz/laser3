@@ -18,12 +18,12 @@
 
           <g:if test="${params.id}">
               <g:link action="generateFinanceImportWorksheet" params="${[id:params.id]}">
-                  <p>${message(code:'myinst.financeImport.template', default:'Template for bulk import.')}</p>
+                  <p>${message(code:'myinst.financeImport.template')}</p>
               </g:link>
           </g:if>
           <g:else>
               <a href="${resource(dir: 'resources/downloadFile', file: 'bulk_load_cost_item_records_template_02.csv')}" download="template_bulk_load_cost_item_records.csv">
-                  <p>${message(code:'myinst.financeImport.template', default:'Template for bulk import.')}</p>
+                  <p>${message(code:'myinst.financeImport.template')}</p>
               </a>
           </g:else>
          <table class="ui celled striped table la-table">
@@ -66,7 +66,7 @@
           <g:form action="processFinanceImport" method="post" enctype="multipart/form-data">
             <dl>
               <div class="field">
-                <dt>${message(code:'myinst.financeImport.upload', default:'Upload TSV File')}</dt>
+                <dt>${message(code:'myinst.financeImport.upload')}</dt>
                 <dd>
                   <input type="file" name="tsvFile" />
                 </dd>
@@ -78,7 +78,7 @@
                   <input class="ui button" type="checkbox" name="dryRun" checked value="true" />
                 </dd>
               </div> --%>
-              <button class="ui button" name="load" type="submit" value="Go">${message(code:"myinst.financeImport.upload", default:'Upload...')}</button>
+              <button class="ui button" name="load" type="submit" value="Go">${message(code:"myinst.financeImport.upload")}</button>
             </dl>
           </g:form>
 

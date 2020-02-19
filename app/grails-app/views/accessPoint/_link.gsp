@@ -1,4 +1,4 @@
-<h5>${message(code: 'accessPoint.link.with.platform', default: 'Link with Platform')}
+<h5>${message(code: 'accessPoint.link.with.platform')}
     <span class="la-long-tooltip la-popup-tooltip la-delay"
           data-content="${message(code:'accessPoint.platformHelp')}">
         <i class="question circle icon la-popup"></i>
@@ -15,7 +15,7 @@
                   noSelection="${['': message(code: 'default.select.choose.label')]}"/>
     </td>
     <td class="center aligned">
-        <input type="Submit" class="ui tiny button" value="${message(code:'accessPoint.button.linkPlatform', default:'Create link')}" onClick="this.form.submit()" class="ui button"/>
+        <input type="Submit" class="ui tiny button" value="${message(code:'accessPoint.button.linkPlatform')}" onClick="this.form.submit()" class="ui button"/>
     </td>
     </g:if>
 
@@ -24,10 +24,10 @@
     <table class="ui celled la-table table compact">
         <thead>
         <tr>
-            <g:sortableColumn property="platform" title="${message(code: "platform.label", default: "Platform")}" />
+            <g:sortableColumn property="platform" title="${message(code: "platform.label")}" />
     <g:if test="${ accessService.checkPermAffiliation('ORG_BASIC_MEMBER','INST_EDITOR') || (accessService.checkPermAffiliation('ORG_CONSORTIUM','INST_EDITOR') && inContextOrg)}">
-        <th>${message(code: "accessPoint.subscriptions.label", default: "Subscription")}</th>
-        <th>${message(code: 'accessPoint.platformLink.action', default: 'Action')}</th>
+        <th>${message(code: "accessPoint.subscriptions.label")}</th>
+        <th>${message(code: 'accessPoint.platformLink.action')}</th>
     </g:if>
         </tr>
         </thead>
@@ -54,7 +54,7 @@
         </g:each>
         </tbody>
     </table>
-    <h5>${message(code: 'accessPoint.link.with.subscription', default: 'Custom assignment to license')}
+    <h5>${message(code: 'accessPoint.link.with.subscription')}
         <span class="la-long-tooltip la-popup-tooltip la-delay"
               data-html='${message(code: "accessPoint.linkedSubscriptionHelp")}'>
             <i class="question circle icon la-popup"></i>
@@ -64,10 +64,9 @@
         <table class="ui celled la-table table compact">
             <thead>
             <tr>
-                <th>${message(code: "accessPoint.subscription.label", default: "Subscription")}</th>
-                <th>${message(code: "accessPoint.package.label", default: "Package")}</th>
-                <g:sortableColumn property="platform"
-                                  title="${message(code: "platform.label", default: "Platform")}"/>
+                <th>${message(code: "accessPoint.subscription.label")}</th>
+                <th>${message(code: "accessPoint.package.label")}</th>
+                <g:sortableColumn property="platform" title="${message(code: "platform.label")}"/>
             </tr>
             </thead>
             <tbody>

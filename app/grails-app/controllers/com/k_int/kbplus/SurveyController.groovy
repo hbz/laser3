@@ -2520,7 +2520,7 @@ class SurveyController {
 
         ArrayList<Links> previousSubscriptions = Links.findAllByDestinationAndObjectTypeAndLinkType(baseSub?.id, Subscription.class.name, RDStore.LINKTYPE_FOLLOWS)
         if (previousSubscriptions.size() > 0) {
-            flash.error = message(code: 'subscription.renewSubExist', default: 'The Subscription is already renewed!')
+            flash.error = message(code: 'subscription.renewSubExist')
         } else {
             def sub_startDate = params.subscription?.start_date ? parseDate(params.subscription?.start_date, possible_date_formats) : null
             def sub_endDate = params.subscription?.end_date ? parseDate(params.subscription?.end_date, possible_date_formats) : null
@@ -2541,7 +2541,6 @@ class SurveyController {
                     endDate: sub_endDate,
                     manualCancellationDate: manualCancellationDate,
                     identifier: java.util.UUID.randomUUID().toString(),
-                    isPublic: baseSub?.isPublic,
                     isSlaved: baseSub?.isSlaved,
                     type: sub_type,
                     status: sub_status,
@@ -2759,10 +2758,10 @@ class SurveyController {
         subsToCompare.each { sub ->
             Map customProperties = result.customProperties
             sub = GrailsHibernateUtil.unwrapIfProxy(sub)
-            customProperties = comparisonService.buildComparisonTree(customProperties, sub, sub.customProperties)
+            customProperties = comparisonService.buildComparisonTree(customProperties, sub, sub.customProperties.sort{it.type.getI10n('name')})
             result.customProperties = customProperties
             Map privateProperties = result.privateProperties
-            privateProperties = comparisonService.buildComparisonTree(privateProperties, sub, sub.privateProperties)
+            privateProperties = comparisonService.buildComparisonTree(privateProperties, sub, sub.privateProperties.sort{it.type.getI10n('name')})
             result.privateProperties = privateProperties
         }
         result
@@ -3884,7 +3883,6 @@ class SurveyController {
                             identifier: UUID.randomUUID().toString(),
                             instanceOf: newParentSub,
                             isSlaved: true,
-                            isPublic: newParentSub.isPublic,
                             impId: UUID.randomUUID().toString(),
                             owner: licenseCopy,
                             resource: newParentSub.resource ?: null,

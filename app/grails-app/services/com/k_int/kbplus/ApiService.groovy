@@ -36,7 +36,7 @@ class ApiService {
      * @return list with children of given object or object if no children
      */
     private List flattenToken(Object obj){
-        def result = []
+        List result = []
 
         obj?.token?.each{ token ->
             result << token
@@ -127,7 +127,7 @@ class ApiService {
 
             // simple attributes
 
-            def now = new Date()
+            Date now = new Date()
             org.importSource    = inst.source?.text() ?: org.importSource
             org.sortname        = inst.sortname?.text() ?: org.sortname
             org.shortname       = inst.shortname?.text() ?: org.shortname

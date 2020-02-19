@@ -2,17 +2,17 @@
 <html>
   <head>
     <meta name="layout" content="semanticUI"/>
-    <title>${message(code:'laser')} ${message(code:'menu.datamanager.dash', default:'Data Manager Dashboard')}</title>
+    <title>${message(code:'laser')} ${message(code:'menu.datamanager.dash')}</title>
   </head>
 
   <body>
 
     <semui:breadcrumbs>
-      <semui:crumb controller="dataManager" action="index" text="${message(code:'menu.datamanager.dash', default:'Data Manager Dashboard')}" />
-      <semui:crumb text="${message(code:'datamanager.deletedOrgManagement.label', default:'Deleted Title management')}" class="active"/>
+      <semui:crumb controller="dataManager" action="index" text="${message(code:'menu.datamanager.dash')}" />
+      <semui:crumb text="${message(code:'datamanager.deletedOrgManagement.label')}" class="active"/>
     </semui:breadcrumbs>
     <br>
-    <h1 class="ui left floated aligned header la-clear-before">${message(code:'datamanager.deletedOrgManagement.label', default:'Deleted Title Management')} : ${orgTotal} </h1>
+    <h1 class="ui left floated aligned header la-clear-before">${message(code:'datamanager.deletedOrgManagement.label')} : ${orgTotal} </h1>
 
     <semui:messages data="${flash}" />
 
@@ -38,7 +38,7 @@
     </table>
 
 
-        <semui:paginate action="deletedOrgs" controller="dataManager" params="${params}" next="${message(code:'default.paginate.next', default:'Next')}" prev="${message(code:'default.paginate.prev', default:'Prev')}" max="${max}" total="${titleInstanceTotal}" />
+        <semui:paginate action="deletedOrgs" controller="dataManager" params="${params}" next="${message(code:'default.paginate.next')}" prev="${message(code:'default.paginate.prev')}" max="${max}" total="${titleInstanceTotal}" />
 
   </body>
 </html>

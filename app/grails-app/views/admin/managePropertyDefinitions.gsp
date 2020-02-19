@@ -247,7 +247,7 @@
                             id="cust_prop_modal_select" />
                     </div>
                     <div class="field five wide">
-                        <label class="property-label">${message(code:'propertyDefinition.expl.label', default:'Explanation')}</label>
+                        <label class="property-label">${message(code:'propertyDefinition.expl.label')}</label>
                         <textarea name="cust_prop_expl" id="eust_prop_expl" class="ui textarea"></textarea>
                     </div>
 
@@ -290,7 +290,7 @@
                 minimumInputLength: 1,
 
                 formatInputTooShort: function () {
-                    return "${message(code:'select2.minChars.note', default:'Please enter 1 or more character')}";
+                    return "${message(code:'select2.minChars.note')}";
                 },
                 formatNoMatches: function() {
                     return "${message(code:'select2.noMatchesFound')}";

@@ -5,7 +5,7 @@
 <html>
 <head>
     <meta name="layout" content="semanticUI">
-    <g:set var="entityName" value="${message(code: 'org.label', default: 'Org')}"/>
+    <g:set var="entityName" value="${message(code: 'org.label')}"/>
     <title>${message(code: 'laser')} : ${message(code: 'menu.my.consortiaSubscriptions')}</title>
 </head>
 
@@ -65,14 +65,14 @@
         <div class="three fields">
             <div class="field">
                 <%--
-               <label>${message(code: 'default.search.text', default: 'Search text')}
+               <label>${message(code: 'default.search.text')}
                    <span data-position="right center" data-variation="tiny" data-content="${message(code:'default.search.tooltip.subscription')}">
                        <i class="question circle icon"></i>
                    </span>
                </label>
                <div class="ui input">
                    <input type="text" name="q"
-                          placeholder="${message(code: 'default.search.ph', default: 'enter search term...')}"
+                          placeholder="${message(code: 'default.search.ph')}"
                           value="${params.q}"/>
                </div>
                --%>
@@ -173,11 +173,11 @@
                         </div>
                     </div>
                     <div class="inline field">
-                        %{--<div class="ui checkbox">
+                        <div class="ui checkbox">
                             <label for="checkSubRunTimeNoMultiYear">${message(code: 'myinst.currentSubscriptions.subscription.runTime.NoMultiYear')}</label>
-                            <input id="checkSubRunTimeNoMultiYear" name="subRunTime" type="checkbox" value="${params.subRunTime}"
+                            <input id="checkSubRunTimeNoMultiYear" name="subRunTime" type="checkbox" <g:if test="${params.subRunTime}">checked=""</g:if>
                                    tabindex="0">
-                        </div>--}%
+                        </div>
                     </div>
                 </div>
             </div>
@@ -191,7 +191,7 @@
                     <div class="field la-field-right-aligned">
                         <a href="${request.forwardURI}" class="ui reset primary button">${message(code:'default.button.reset.label')}</a>
                         <input name="filterSet" value="true" type="hidden">
-                        <input type="submit" class="ui secondary button" value="${message(code:'default.button.filter.label', default:'Filter')}">
+                        <input type="submit" class="ui secondary button" value="${message(code:'default.button.filter.label')}">
                     </div>
                 </div>
             </div>
@@ -426,8 +426,8 @@
 </g:else>
 
 <semui:paginate action="manageConsortiaSubscriptions" controller="myInstitution" params="${params}"
-                next="${message(code:'default.paginate.next', default:'Next')}"
-                prev="${message(code:'default.paginate.prev', default:'Prev')}"
+                next="${message(code:'default.paginate.next')}"
+                prev="${message(code:'default.paginate.prev')}"
                 max="${max}" total="${countCostItems}" />
 
 </body>

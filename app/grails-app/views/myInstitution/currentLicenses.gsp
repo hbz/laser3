@@ -24,12 +24,6 @@
                   <g:link class="item js-open-confirm-modal" data-confirm-tokenMsg = "${message(code: 'confirmation.content.exportPartial')}"
                           data-confirm-term-how="ok" action="currentLicenses" params="${params+[exportXLS:true]}">${message(code:'default.button.exports.xls')}</g:link>
               </semui:exportDropdownItem>
-              <g:each in="${transforms}" var="transkey,transval">
-                  <semui:exportDropdownItem>
-                      <g:link class="item js-open-confirm-modal" data-confirm-tokenMsg = "${message(code: 'confirmation.content.exportPartial')}"
-                              data-confirm-term-how="ok" action="currentLicenses" params="${params+[format:'xml',transformId:transkey,format_content:'subie']}">${transval.name}</g:link>
-                  </semui:exportDropdownItem>
-              </g:each>
           </g:if>
           <g:else>
               <semui:exportDropdownItem>
@@ -38,11 +32,6 @@
               <semui:exportDropdownItem>
                   <g:link class="item" action="currentLicenses" params="${params+[exportXLS:true]}">${message(code:'default.button.exports.xls')}</g:link>
               </semui:exportDropdownItem>
-              <g:each in="${transforms}" var="transkey,transval">
-                  <semui:exportDropdownItem>
-                      <g:link class="item" action="currentLicenses" params="${params+[format:'xml',transformId:transkey,format_content:'subie']}">${transval.name}</g:link>
-                  </semui:exportDropdownItem>
-              </g:each>
           </g:else>
       </semui:exportDropdown>
 
@@ -67,8 +56,8 @@
             <div class="four fields">
 
                 <div class="field">
-                    <label>${message(code:'license.search.by_ref', default:'Search by Reference')}</label>
-                    <input type="text" name="keyword-search" placeholder="${message(code:'default.search.ph', default:'enter search term...')}" value="${params['keyword-search']?:''}" />
+                    <label>${message(code:'license.search.by_ref')}</label>
+                    <input type="text" name="keyword-search" placeholder="${message(code:'default.search.ph')}" value="${params['keyword-search']?:''}" />
                 </div>
 
                 <div class="field">
@@ -192,7 +181,7 @@
                             </g:each>
                         </g:if>
                         <g:else>
-                          <br/>${message(code:'myinst.currentLicenses.no_subs', default:'No linked subscriptions.')}
+                          <br/>${message(code:'myinst.currentLicenses.no_subs')}
                         </g:else>
                       </td>
 
@@ -256,7 +245,7 @@
         </g:else>
     </div>
 
-      <semui:paginate action="currentLicenses" controller="myInstitution" params="${params}" next="${message(code:'default.paginate.next', default:'Next')}" prev="${message(code:'default.paginate.prev', default:'Prev')}" max="${max}" total="${licenseCount}" />
+      <semui:paginate action="currentLicenses" controller="myInstitution" params="${params}" next="${message(code:'default.paginate.next')}" prev="${message(code:'default.paginate.prev')}" max="${max}" total="${licenseCount}" />
 
 <%--
 <r:script>
@@ -296,7 +285,7 @@
         });
       }else{
         //If we dont have RefdataValues,create a simple text input
-        $('#propertyFilter').replaceWith('<input id="propertyFilter" type="text" name="propertyFilter" placeholder="${message(code:'license.search.property.ph', default:'property value')}" />')
+        $('#propertyFilter').replaceWith('<input id="propertyFilter" type="text" name="propertyFilter" placeholder="${message(code:'license.search.property.ph')}" />')
       }
     }
 

@@ -19,7 +19,7 @@
       <table  class="ui celled la-table table">
           <thead>
             <tr>
-              <th>${message(code:'license.history.todo.description', default:'ToDo Description')}</th>
+              <th>${message(code:'license.history.todo.description')}</th>
               <th>${message(code:'default.status.label')}</th>
               <th>${message(code:'default.date.label')}</th>
             </tr>
@@ -58,7 +58,7 @@
         </g:if>
       </table>
 
-        <semui:paginate  action="todoHistory" controller="license" params="${params}" next="${message(code:'default.paginate.next', default:'Next')}" prev="${message(code:'default.paginate.prev', default:'Prev')}" max="${max}" total="${todoHistoryLinesTotal}" />
+        <semui:paginate  action="todoHistory" controller="license" params="${params}" next="${message(code:'default.paginate.next')}" prev="${message(code:'default.paginate.prev')}" max="${max}" total="${todoHistoryLinesTotal}" />
 
 
 </body>

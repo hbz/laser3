@@ -2,6 +2,42 @@
 
 **Ticket    Date    Branch      Author  Feature/Bug     Description/Keywords**
 
+2196    18.02.2020  hbz-dev     David   Feature     Persistente Bool-Attribute von Domainklassen überarbeiten
+
+2123    11.02.2020  hbz-dev     Moe     Feature     Pakete auch in Kindlizenzen entknüpfen
+
+2146    11.02.2020  hbz-dev     Moe     Feature     Bulk Prozesse bei Teilnehmerverwaltung ermöglichen
+
+2176    14.02.2020  hbz-dev     David   Feature     Admin-Sicht: Unterschiede zwischen Servern
+
+2184    14.02.2020  hbz-dev     David   Bug         Vererbung im hbz-dev defekt
+
+2148    13.02.2020  hbz-dev     David   Feature     Individuelle Freigabe für API-Ausgabe für Lizenzen und Verträge
+
+--      12.02.2020  rc1.2       Andreas Bug         Sortierung nach Enddatum war bei eigenen Kosten innerhalb einer Lizenz nicht möglich
+
+2179    12.02.2020  rc1.2       Andreas Bug         Übernahme des Anbieternamens in Sync nachgeholt
+
+2180    12.02.2020  rc1.2       Moe     Bug         NullPointerException subscription/index 
+
+2181    12.02.2020  rc1.2       Moe     Bug         processUnLinkPackagesConsortia: Schlüssel wird noch auf org_access_point_link verwiesen
+
+2174    12.02.2020  rc1.2       Moe     Bug         title/list Cannot invoke method getI10n() on null object
+
+2173    12.02.2020  rc1.2       Moe     Bug         Unparseable date bei spotlightSearch
+
+2085    10.02.2020  hbz-dev     Moe     Feature     Sicherheitsabfrage Ent-/Verknüpfen von Konsorten
+
+2005    10.02.2020  hbz-dev     Moe     Feature     "Mehrjahreslaufzeit" auch für lokale Lizenzen?
+
+2162    10.02.2020  hbz-dev     David   Feature     Legacy Konstrukt "Transforms" entfernen
+
+2160    10.02.2020  hbz-dev     David   Feature     Legacy "Reminder" entfernen
+
+1505    07.02.2020  rc1.2       Moe     Bug         Kopierfunktion für Konsortiallizenzen überarbeiten
+
+--      07.02.2020  rc1.2       Moe     Bug         ES Index enthält nicht alle Objekte 
+
 --      07.02.2020  hbz-dev     David   Feature     Modified confirm dialog; added ajax content loading
 
 2158    07.02.2020  rc1.2       David   Bug         Identifikatorensuche bei Lizenzen (fehlerhafte Query)
@@ -13,6 +49,12 @@
 2147    05.02.2020  hbz-dev     David   Feature     Refactoring: default-Werte bei message-Tags entfernen
 
 2014    05.02.2020  hbz-dev     David   Feature     Refactoring: Zugriff auf PropertyDefinitions nur über (name + descr)
+
+--      05.02.2020  hbz-dev     Moe     Feature     Improve License Compare View
+
+1917    05.02.2020  hbz-dev     Moe     Feature     Datenschutzerklärung etc. als eigene Seite statt als Modal
+
+2151    05.02.2020  rc1.2       Moe     Bug         Status bei Mehrjahreslizenzen von Kindlizenzen wird nicht richtig gesetzt
 
 2150    05.02.2020  hbz-dev     David   Bug         API: Referenzwerte mit Doppelpunkt werden als Map interpretiert
 
@@ -176,7 +218,7 @@
 
 2003    19.12.2019  rc1.2       Andreas Bug         creation of new orgs failed, NullPointerException fixed
 
---      18.12.2019  rc1.2       Moe   Bug           Unlink Package by linkPackagesMembers 
+--      18.12.2019  rc1.2       Moe     Bug         Unlink Package by linkPackagesMembers 
 
 --      18.12.2019  rc1.2       David   Bug         accessor for undeleted derived subscriptions
 
@@ -258,7 +300,7 @@
 
 1926    04.12.2019  rc1.1       David   Bug         Modaler Dialog: Funktions-/Personenkontakte funktioniert nicht
 
---      05.12.2019  hbz-dev     Moe      Feature    Workflow für Übertrag nach einer Umfrage-Verlängerung
+--      05.12.2019  hbz-dev     Moe     Feature     Workflow für Übertrag nach einer Umfrage-Verlängerung
 
 --      05.12.2019  hbz-dev     Moe/Ingrid  Feature Erweiterte Suche in der Menüleiste 
 

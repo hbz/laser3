@@ -182,7 +182,7 @@ ${message(code: 'survey.label')} -
 
                             <dl>
                                 <dt class="control-label">
-                                    ${message(code: 'license.details.linktoLicense.pendingChange', default: 'Automatically Accept Changes?')}
+                                    ${message(code: 'license.details.linktoLicense.pendingChange')}
                                 </dt>
                                 <dd>
                                     ${subscriptionInstance?.isSlaved ? RDStore.YN_YES.getI10n('value') : RDStore.YN_NO.getI10n('value')}

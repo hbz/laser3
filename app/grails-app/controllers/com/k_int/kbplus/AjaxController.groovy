@@ -20,6 +20,7 @@ import de.laser.helper.SessionCacheWrapper
 import de.laser.interfaces.ShareSupport
 import grails.converters.JSON
 import grails.plugin.springsecurity.annotation.Secured
+import grails.util.Holders
 import org.codehaus.groovy.grails.orm.hibernate.cfg.GrailsHibernateUtil
 
 //import org.grails.orm.hibernate.cfg.GrailsHibernateUtil
@@ -1300,7 +1301,7 @@ class AjaxController {
                     newProp = PropertyDefinition.construct(map)
                 }
                 else {
-                    error = message(code: 'ajax.addCustPropertyType.error', default: 'Type creation failed. Please select a ref data type.')
+                    error = message(code: 'ajax.addCustPropertyType.error')
                 }
             }
             else {
@@ -1382,7 +1383,7 @@ class AjaxController {
           log.debug("New custom property created: " + newProp.type.name)
         }
       } else {
-        error = message(code: 'ajax.addCustomPropertyValue.error', default: 'A property of this type is already added')
+        error = message(code: 'ajax.addCustomPropertyValue.error')
       }
 
       owner.refresh()
@@ -1512,7 +1513,7 @@ class AjaxController {
               log.debug("New private property created: " + newProp.type.name)
             }
           } else {
-            error = message(code: 'ajax.addCustomPropertyValue.error', default: 'A property of this type is already added')
+            error = message(code: 'ajax.addCustomPropertyValue.error')
           }
         }
 
@@ -1683,7 +1684,7 @@ class AjaxController {
                     // delete pending changes
                     // e.g. PendingChange.changeDoc = {changeTarget, changeType, changeDoc:{OID,  event}}
                     members.each { m ->
-                        def openPD = PendingChange.executeQuery("select pc from PendingChange as pc where pc.status is null and pc.costItem is null and pc.oid = :objectID",
+                        List<PendingChange> openPD = PendingChange.executeQuery("select pc from PendingChange as pc where pc.status is null and pc.costItem is null and pc.oid = :objectID",
                                 [objectID: "${m.class.name}:${m.id}"])
 
                         openPD?.each { pc ->
@@ -1947,11 +1948,11 @@ class AjaxController {
         def tip = TitleInstitutionProvider.get(tipID)
         log.debug("Extending tip ${tip.id} with start ${startDate} and end ${endDate}")
         tip.extendCoreExtent(startDate, endDate)
-        params.message = message(code:'ajax.coreExtend.success', default:'Core Dates extended')
+        params.message = message(code:'ajax.coreExtend.success')
       }
     }catch (Exception e){
         log.error("Error while extending core dates",e)
-        params.message = message(code:'ajax.coreExtend.error', default:'Extending of core date failed.')
+        params.message = message(code:'ajax.coreExtend.error')
     }
     redirect(action:'getTipCoreDates',controller:'ajax',params:params)
   }
@@ -2294,36 +2295,48 @@ class AjaxController {
   }
 
     @Secured(['ROLE_USER'])
-    def getEmailAddresses(){
-        def result
-        print 'getEmailAddresses'
-        def isPrivate = Boolean.valueOf(params.isPrivate)
-        def isPublic = Boolean.valueOf(params.isPublic)
-        def selectedRoleTypIds = params.selectedRoleTypIds
-        if (isPrivate){
-            if (isPublic){
-//                def erg = Contact.executeQuery("""select c from Contact c left join Person p on c.prs left join PersonRole pr on p.roleType
-//                where p.tenant=:tenant or p.tenant=:tenant_null
-//                and pr.id is in (:roleTypes)""",
-//                [tenant: contextService.org,
-//                tenant_null: null,
-//                roleTypes: selectedRoleTypIds])
-            } else {
+    def getEmailAddresses() {
+        Set result = []
+        if (params.orgIdList){
+            List<Long> orgIds = params.orgIdList.split ','
+            List<Org> orgList = Org.findAllByIdInList(orgIds)
+            boolean showPrivateContactEmails = Boolean.valueOf(params.isPrivate)
+            boolean showPublicContactEmails = Boolean.valueOf(params.isPublic)
+
+            List<RefdataValue> selectedRoleTypes = null
+            if (params.selectedRoleTypIds) {
+                List<Long> selectedRoleTypIds = params.selectedRoleTypIds.split ','
+                selectedRoleTypes = RefdataValue.findAllByIdInList(selectedRoleTypIds)
             }
-        } else if (isPublic){
+
+            String query = "select distinct p from Person as p inner join p.roleLinks pr where pr.org in (:orgs) "
+            Map queryParams = [orgs: orgList]
+
+            if (showPublicContactEmails && showPrivateContactEmails){
+                query += "and ( (p.isPublic = false and p.tenant = :ctx) or (p.isPublic = true) ) "
+                queryParams << [ctx: contextService.org]
+            } else {
+                if (showPublicContactEmails){
+                    query += "and p.isPublic = true "
+                } else if (showPrivateContactEmails){
+                    query += "and (p.isPublic = false and p.tenant = :ctx) "
+                    queryParams << [ctx: contextService.org]
+                }
+            }
+
+            if (selectedRoleTypes) {
+                query += "and pr.functionType in (:selectedRoleTypes) "
+                queryParams << [selectedRoleTypes: selectedRoleTypes]
+            }
+
+            List<Person> persons = Person.executeQuery(query, queryParams)
+
+            if (persons){
+                result = Contact.executeQuery("select c.content from Contact c where c.prs in (:persons) and c.contentType = :contentType",
+                        [persons: persons, contentType: RDStore.CCT_EMAIL])
+            }
 
         }
-        result = ["info@hbz-nrw.de", "hauptkontakt<@hbz-nrw.de", "admin<@hbz-nrw.de"]
-//        PersonRole.findAllByFunctionTypeAndOrg(prsFunction, org).prs.each { person ->
-//            if (person.isPublic) {
-//                Contact.findAllByPrsAndContentType(person, CCT_EMAIL).each { email ->
-//                    def emailPF = email?.content?.trim()
-//                    if (emailPF != null) {
-////                        result.add(emailPF)
-//                    }
-//                }
-//            }
-//        }
         render result as JSON
     }
 

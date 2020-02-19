@@ -31,18 +31,11 @@
             <semui:exportDropdownItem>
                 <g:link class="item" action="show" params="${params+[format:'xml']}">XML</g:link>
             </semui:exportDropdownItem>
-
-            <g:each in="${transforms}" var="transkey,transval">
-                <semui:exportDropdownItem>
-                    <g:link class="item" action="show" id="${params.id}" params="${[format:'xml', transformId:transkey, mode:params.mode]}"> ${transval.name}</g:link>
-                </semui:exportDropdownItem>
-            </g:each>
         </semui:exportDropdown>
         <g:render template="actions" />
     </semui:controlButtons>
 
       <h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon />
-        <g:if test="${params.asAt}">${message(code:'package.show.asAt', args:[params.asAt])}</g:if>
           <g:if test="${editable}"><span id="packageNameEdit"
                     class="xEditableValue"
                     data-type="textarea"
@@ -236,7 +229,7 @@
                                 <br/>
                                 <br/>
                                 <div class="ui checkbox">
-                                    <label>${message(code:'package.show.addEnt', default:'Create Entitlements in Subscription')}</label>
+                                    <label>${message(code:'package.show.addEnt')}</label>
                                     <input type="checkbox" id="addEntitlementsCheckbox" name="addEntitlements" value="true" class="hidden"/>
                                 </div>
 
@@ -286,11 +279,11 @@
             <input type="hidden" name="mode" value="${params.mode}">
             <div class="two fields">
                 <div class="field">
-                    <label>${message(code:'package.compare.filter.title', default:'Filters - Title')}</label>
+                    <label>${message(code:'package.compare.filter.title')}</label>
                     <input name="filter" value="${params.filter}"/>
                 </div>
                 <div class="field">
-                    <label>${message(code:'tipp.coverageNote', default:'Coverage note')}</label>
+                    <label>${message(code:'tipp.coverageNote')}</label>
                     <input name="coverageNoteFilter" value="${params.coverageNoteFilter}"/>
                 </div>
             </div>
@@ -309,7 +302,7 @@
               </g:if>
                 <div class="field">
                     <label>&nbsp;</label>
-                    <input type="submit" class="ui secondary button" value="${message(code:'package.compare.filter.submit.label', default:'Filter Results')}" />
+                    <input type="submit" class="ui secondary button" value="${message(code:'package.compare.filter.submit.label')}" />
                 </div>
             </div>
 
@@ -337,7 +330,7 @@
                 <g:if test="${editable}">
                   <select id="bulkOperationSelect" name="bulkOperation" class="input-xxlarge">
                     <option value="edit">${message(code:'package.show.batch.edit.label', default:'Batch Edit Selected Rows Using the following values')}</option>
-                    <option value="remove">${message(code:'package.show.batch.remove.label', default:'Batch Remove Selected Rows')}</option>
+                    <option value="remove">${message(code:'package.show.batch.remove.label')}</option>
                   </select>
                   <br/>
                   <table class="ui celled la-table table">
@@ -345,7 +338,7 @@
                         <td>
                             <semui:datepicker label="subscription.details.coverageStartDate"  id="bulk_start_date" name="bulk_start_date" value="${params.bulk_start_date}" />
 
-                            <i>${message(code:'default.or', default:'or')}</i>
+                            <i>${message(code:'default.or')}</i>
                             <input type="checkbox" name="clear_start_date" />
                             ${message(code:'package.show.checkToClear', default:'Check to clear')}
                         </td>
@@ -598,7 +591,7 @@
           
 
           <g:if test="${titlesList}" >
-            <semui:paginate  action="show" controller="package" params="${params}" next="${message(code:'default.paginate.next', default:'Next')}" prev="${message(code:'default.paginate.prev', default:'Prev')}" maxsteps="${max}" total="${num_tipp_rows}" />
+            <semui:paginate  action="show" controller="package" params="${params}" next="${message(code:'default.paginate.next')}" prev="${message(code:'default.paginate.prev')}" maxsteps="${max}" total="${num_tipp_rows}" />
           </g:if>
 
         <g:if test="${editable}">

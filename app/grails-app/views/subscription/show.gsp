@@ -147,13 +147,19 @@
 
                                 <dl>
                                     <dt class="control-label">
-                                        ${message(code:'license.details.linktoLicense.pendingChange', default:'Automatically Accept Changes?')}
+                                        ${message(code:'license.details.linktoLicense.pendingChange')}
                                     </dt>
                                     <dd>
                                         <semui:xEditableBoolean owner="${subscriptionInstance}" field="isSlaved" />
                                     </dd>
                                 </dl>
                             </g:if>
+
+                            <dl>
+                                <dt class="control-label">${message(code: 'subscription.isPublicForApi.label')}</dt>
+                                <dd><semui:xEditableBoolean owner="${subscriptionInstance}" field="isPublicForApi" /></dd>
+                                <dd class="la-js-editmode-container"><semui:auditButton auditable="[subscriptionInstance, 'isPublicForApi']"/></dd>
+                            </dl>
                         </div>
                     </div>
                 </div>
@@ -267,7 +273,7 @@
                             <g:if test="${OrgRole.findAllByOrg(contextOrg)}">
                                 <div class="ui la-vertical buttons">
                                     <a class="ui button" data-semui="modal" href="#prsLinksModal">
-                                        ${message(code: 'default.add.label', args: [message(code: 'person.label', default: 'Person')])}
+                                        ${message(code: 'default.add.label', args: [message(code: 'person.label')])}
                                     </a>
                                 </div>
                                 <g:render template="/templates/links/prsResponsibilityModal"

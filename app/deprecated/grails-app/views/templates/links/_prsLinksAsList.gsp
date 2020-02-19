@@ -51,7 +51,7 @@
         <dt></dt>
         <dd>
             <input class="ui button"
-                   value="${message(code: 'default.add.label', args: [message(code: 'person.label', default: 'Person')])}"
+                   value="${message(code: 'default.add.label', args: [message(code: 'person.label')])}"
                    data-semui="modal"
                    data-href="#prsLinksModal" />
         </dd>

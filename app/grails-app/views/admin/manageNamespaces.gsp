@@ -106,7 +106,7 @@
 									</label>
 									<g:select id="nsType" name="nsType"
 									        from="${IdentifierNamespace.getAVAILABLE_NSTYPES()}"
-									        noSelection="['': '']"/>
+									        noSelection="${['': message(code: 'default.select.choose.label')]}"/>
 								</div>
 
                                 <div class="field fieldcontain ${hasErrors(bean: identifierNamespaceInstance, field: 'validationRegex', 'error')} ">

@@ -4,7 +4,7 @@
 <html>
 	<head>
 		<meta name="layout" content="semanticUI">
-		<g:set var="entityName" value="${message(code: 'issueEntitlement.label', default: 'IssueEntitlement')}" />
+		<g:set var="entityName" value="${message(code: 'issueEntitlement.label')}" />
 		<title><g:message code="default.list.label" args="[entityName]" /></title>
 	</head>
 	<body>
@@ -20,13 +20,13 @@
 					<thead>
 						<tr>
 						
-							<th class="header"><g:message code="issueEntitlement.status.label" default="Status" /></th>
+							<th class="header"><g:message code="default.status.label" /></th>
 						
-							<th class="header"><g:message code="issueEntitlement.subscription.label" default="Subscription" /></th>
+							<th class="header"><g:message code="default.subscription.label" /></th>
 						
 							<th class="header"><g:message code="issueEntitlement.tipp.label" default="Tipp" /></th>
 						
-							<g:sortableColumn property="startDate" title="${message(code: 'issueEntitlement.startDate.label', default: 'Start Date')}" />
+							<g:sortableColumn property="startDate" title="${message(code: 'default.startDate.label')}" />
 						
 							<g:sortableColumn property="startVolume" title="${message(code: 'issueEntitlement.startVolume.label', default: 'Start Volume')}" />
 						

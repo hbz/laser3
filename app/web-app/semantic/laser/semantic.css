@@ -16029,6 +16029,35 @@ a.ui.basic.label:hover {
   text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.25);
 }
 
+.confirmation-content {
+  padding-top: 0!important;
+  padding-bottom: 0!important;
+}
+
+.confirmation-content li:nth-child(n+2) {
+  padding-top: 0.5rem;
+}
+
+.confirmation-content span {
+  min-width: 2em;
+  min-height: 2em;
+  padding: .5em!important;
+  text-align: center;
+  border-radius: 500rem;
+  display: inline-block;
+  line-height: 1em;
+  vertical-align: baseline;
+  margin: 0 .14285714em;
+  background-color: #e8e8e8;
+  background-image: none;
+  color: rgba(0, 0, 0, 0.6);
+  text-transform: none;
+  font-weight: 700;
+  border: 0 solid transparent;
+  -webkit-transition: background .1s ease;
+  transition: background .1s ease;
+}
+
 /*******************************
              Types
 *******************************/
@@ -32404,8 +32433,6 @@ a.ui.card:hover,
 .ui.checkbox input:checked ~ .box:after,
 .ui.checkbox input:checked ~ label:after {
   content: '\e800';
-  color: #767676;
-  background-color: #d3dae3 !important;
 }
 
 /* Indeterminate */
@@ -32416,13 +32443,9 @@ a.ui.card:hover,
   content: '\e801';
 }
 
-/*  UTF Reference
-.check:before { content: '\e800'; }
-.dash:before  { content: '\e801'; }
-.plus:before { content: '\e802'; }
-*/
-
-/************* laser three toggle icon buttons ***************/
+/*---------------------------------------------
+        Laser 3 State Toggle Icon Buttons
+----------------------------------------------*/
 
 .radio,
 .checkbox.la-toggle-radio {

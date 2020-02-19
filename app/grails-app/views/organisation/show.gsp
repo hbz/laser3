@@ -51,6 +51,10 @@
 
 <semui:objectStatus object="${orgInstance}" status="${orgInstance.status}"/>
 
+<g:if test="${departmentalView == false}">
+    <g:render template="/templates/meta/identifier" model="${[object: orgInstance, editable: editable]}"/>
+</g:if>
+
 <semui:messages data="${flash}"/>
 
 <div class="ui stackable grid">
@@ -146,6 +150,10 @@
                         <dl>
                             <dt>${message(code: 'default.status.label', default: 'Status')}</dt>
                             <dd>
+                            <dt>${message(code: 'default.status.label')}</dt>
+
+                        <dd>
+                            <g:if test="${isGrantedOrgRoleAdminOrOrgEditor}">
                                 <semui:xEditableRefData owner="${orgInstance}" field="status" config="${RDConstants.ORG_STATUS}"/>
                             </dd>
                         </dl>
@@ -349,7 +357,7 @@
                                 </div>
                                 <g:if test="${((orgInstance.id == contextService.getOrg().id) || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN'))}">
                                     <input class="ui button"
-                                           value="${message(code: 'default.add.label', args: [message(code: 'contact.label', default: 'Contact')])}"
+                                           value="${message(code: 'default.add.label', args: [message(code: 'contact.label')])}"
                                            data-semui="modal"
                                            data-href="#contactFormModal"/>
                                     <g:render template="/contact/formModal" model="['orgId': orgInstance?.id]"/>

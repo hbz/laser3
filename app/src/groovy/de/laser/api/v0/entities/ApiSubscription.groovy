@@ -18,7 +18,7 @@ import org.codehaus.groovy.grails.orm.hibernate.cfg.GrailsHibernateUtil
 class ApiSubscription {
 
     /**
-     * @return Subscription | BAD_REQUEST | PRECONDITION_FAILED
+     * @return Subscription | BAD_REQUEST | PRECONDITION_FAILED | OBJECT_STATUS_DELETED
      */
     static findSubscriptionBy(String query, String value) {
         def result
@@ -30,9 +30,9 @@ class ApiSubscription {
             case 'globalUID':
                 result = Subscription.findAllWhere(globalUID: value)
                 break
-            case 'impId':
-                result = Subscription.findAllWhere(impId: value)
-                break
+//            case 'impId':
+//                result = Subscription.findAllWhere(impId: value)
+//                break
             case 'ns:identifier':
                 result = Identifier.lookupObjectsByIdentifierString(new Subscription(), value)
                 break
@@ -40,8 +40,12 @@ class ApiSubscription {
                 return Constants.HTTP_BAD_REQUEST
                 break
         }
+		result = ApiToolkit.checkPreconditionFailed(result)
 
-        ApiToolkit.checkPreconditionFailed(result)
+		if (result instanceof Subscription && result.status == RDStore.SUBSCRIPTION_DELETED) {
+			result = Constants.OBJECT_STATUS_DELETED
+		}
+		result
     }
 
     /**
@@ -51,7 +55,10 @@ class ApiSubscription {
 
 		boolean hasAccess = false
 
-		if (OrgRole.findBySubAndRoleTypeAndOrg(sub, RDStore.OR_SUBSCRIPTION_CONSORTIA, context)) {
+		if (! sub.isPublicForApi) {
+			hasAccess = false
+		}
+		else if (OrgRole.findBySubAndRoleTypeAndOrg(sub, RDStore.OR_SUBSCRIPTION_CONSORTIA, context)) {
 			hasAccess = true
 		}
 		else if (OrgRole.findBySubAndRoleTypeAndOrg(sub, RDStore.OR_SUBSCRIBER, context)) {
@@ -95,11 +102,7 @@ class ApiSubscription {
 		println "${available.size()} available subscriptions found .."
 
         available.each { sub ->
-            //if (calculateAccess(sub, context, hasAccess)) {
-                println sub.id + ' ' + sub.name
-                result.add(ApiStubReader.requestSubscriptionStub(sub, context))
-                //result.add([globalUID: sub.globalUID])
-            //}
+			result.add(ApiStubReader.requestSubscriptionStub(sub, context))
         }
 
 		return (result ? new JSON(result) : null)
@@ -133,7 +136,6 @@ class ApiSubscription {
 		result.form         = sub.form?.value
 		result.isSlaved     = sub.isSlaved ? 'Yes' : 'No'
         result.isMultiYear  = sub.isMultiYear ? 'Yes' : 'No'
-		//result.isPublic     = sub.isPublic ? 'Yes' : 'No'
 		result.resource     = sub.resource?.value
 		result.status       = sub.status?.value
 		result.type         = sub.type?.value

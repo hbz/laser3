@@ -57,8 +57,8 @@
                     <table class="ui celled la-table la-table-small table la-ignore-fixed">
                         <thead>
                         <tr>
-                            <th>${message(code: 'default.authority.label', default: 'Authority')}</th>
-                            <th>${message(code: 'default.identifier.label', default: 'Identifier')}</th>
+                            <th>${message(code: 'default.authority.label')}</th>
+                            <th>${message(code: 'default.identifier.label')}</th>
                             <th>${message(code: 'default.actions.label')}</th>
                         </tr>
                         </thead>

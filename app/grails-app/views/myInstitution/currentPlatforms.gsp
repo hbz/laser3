@@ -39,7 +39,7 @@
     <thead>
     <tr>
         <th>${message(code:'sidewide.number')}</th>
-        <g:sortableColumn property="name" title="${message(code: 'default.name.label', default: 'Name')}" />
+        <g:sortableColumn property="name" title="${message(code: 'default.name.label')}" />
         <th>${message(code:'default.provider.label')}</th>
         <th>${message(code:'org.url.label')}</th>
         <th>${message(code:'accessPoint.plural')}</th>
@@ -99,8 +99,8 @@
 
 <%--
 <semui:paginate action="currentPlatforms" controller="myInstitution" params="${params}"
-                next="${message(code:'default.paginate.next', default:'Next')}"
-                prev="${message(code:'default.paginate.prev', default:'Prev')}"
+                next="${message(code:'default.paginate.next')}"
+                prev="${message(code:'default.paginate.prev')}"
                 max="${max}" total="${platformInstanceTotal}" />
 --%>
 

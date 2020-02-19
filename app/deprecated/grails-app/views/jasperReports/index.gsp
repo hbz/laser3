@@ -2,7 +2,7 @@
 <html>
 <r:require module="scaffolding" />
 <head>
-    <title>${message(code:'laser', default:'LAS:eR')} ${message(code:'jasper.reports.label', default:'Jasper Reports')}</title>
+    <title>${message(code:'laser')} ${message(code:'jasper.reports.label')}</title>
     <meta name="layout" content="semanticUI"/>
 </head>
 
@@ -19,13 +19,13 @@
 
         <div class="inline-lists">
             <dl>
-                <dt>${message(code:'jasper.reports.selected', default:'Selected Report')}:</dt>
+                <dt>${message(code:'jasper.reports.selected')}:</dt>
                 <dd>
                     <span>
                         <g:select id="available_reports" name="report_name" from="${available_reports}"/>
                     </span>
                 </dd>
-                <dt>${message(code:'jasper.reports.format', default:'Download Format')}:</dt>
+                <dt>${message(code:'jasper.reports.format')}:</dt>
                 <dd>
                     <span>
                         <g:select id="selectRepFormat" name="rep_format" from="${available_formats}"/>
@@ -76,7 +76,7 @@
     function createSelect2Search(objectId, className) {
         $(objectId).select2({
             width: "90%",
-            placeholder: "${message(code:'jasper.reports.search.ph', default:'Type name...')}",
+            placeholder: "${message(code:'jasper.reports.search.ph')}",
             minimumInputLength: 1,
             ajax: { 
                 url: '<g:createLink controller='ajax' action='lookup'/>',

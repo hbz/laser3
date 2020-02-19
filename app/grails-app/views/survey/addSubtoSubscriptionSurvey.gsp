@@ -24,7 +24,7 @@
     <g:form action="processCreateSubscriptionSurvey" controller="survey" method="post" class="ui form">
         <g:hiddenField name="sub" value="${subscription?.id}"/>
         <div class="field required ">
-            <label>${message(code: 'surveyInfo.name.label', default: 'New Survey Name')}</label>
+            <label>${message(code: 'surveyInfo.name.label')}</label>
             <input type="text" name="name" placeholder="" value="${subscription?.name}" required />
         </div>
 
@@ -62,7 +62,7 @@
         </g:if>
 
         <div class="field ">
-            <label>${message(code: 'surveyInfo.comment.label', default: 'New Survey Name')}</label>
+            <label>${message(code: 'surveyInfo.comment.label')}</label>
 
             <textarea name="comment"></textarea>
         </div>
@@ -71,7 +71,7 @@
 
 
         <input type="submit" class="ui button"
-               value="${message(code: 'createSubscriptionSurvey.create', default: 'Create')}"/>
+               value="${message(code: 'createSubscriptionSurvey.create')}"/>
 
     </g:form>
 </semui:form>

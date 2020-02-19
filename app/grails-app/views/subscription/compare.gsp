@@ -22,20 +22,20 @@
         <semui:messages data="${flash}" />
 
 				<g:form action="compare" controller="subscription" method="GET" class="ui form">
-					<g:set var="subs_message" value="${message(code:'subscription.plural', default:'Subscriptions')}" />
-					<g:set var="sub_message" value="${message(code:'default.subscription.label', default:'Subscription')}" />
+					<g:set var="subs_message" value="${message(code:'subscription.plural')}" />
+					<g:set var="sub_message" value="${message(code:'default.subscription.label')}" />
 
 					<table class="ui celled la-table table">
 						<thead>
 							<tr>
 								<th></th>
-								<th> ${message(code:'default.subscription.label', default:'Subscription')} A </th>
-								<th> ${message(code:'default.subscription.label', default:'Subscription')} B </th>
+								<th> ${message(code:'default.subscription.label')} A </th>
+								<th> ${message(code:'default.subscription.label')} B </th>
 							</tr>
 						</thead>
 						<tbody>
 							<tr>
-								<td> ${message(code:'subscription.compare.name', default:'Subscription name')} </td>
+								<td> ${message(code:'subscription.compare.name')} </td>
 								<td>${message(code:'default.compare.restrict.after', args:[subs_message] )}
 									<semui:simpleHiddenValue id="startA" name="startA" type="date" value="${params.startA}"/>
 									${message(code:'default.compare.restrict.before', default:'and/or ending before-')}
@@ -61,7 +61,7 @@
 								</td>
 							</tr>
 							<tr>
-								<td> ${message(code:'subscription.compare.snapshot', default:'Subscriptions on Date')}</td>
+								<td> ${message(code:'subscription.compare.snapshot')}</td>
 								<td>
 									<semui:datepicker id="dateA" name="dateA" placeholder ="default.date.label" value="${dateA ? dateA : ''}" >
 									</semui:datepicker>
@@ -72,7 +72,7 @@
 								</td>
 							</tr>
 								<tr>
-									<td> ${message(code:'default.compare.filter.add', default:'Add Filter')}</td>
+									<td> ${message(code:'default.compare.filter.add')}</td>
 									<td colspan="2">
 
 										<div class="ui checkbox">
@@ -114,29 +114,29 @@
 				<table class="ui celled la-table table">
 					<thead>
 						<tr>
-							<th>${message(code:'default.compare.overview.value', default:'Value')}</th>
+							<th>${message(code:'default.compare.overview.value')}</th>
 							<th>${subInsts.get(0).name}</th>
 							<th>${subInsts.get(1).name}</th>
 						</tr>
 					</thead>
 					<tbody>
 						<tr>
-							<td>${message(code:'default.dateCreated.label', default:'Date Created')}</td>
-							<td><g:formatDate format="${message(code:'default.date.format.notime', default:'yyyy-MM-dd')}" date="${subInsts.get(0).dateCreated}"/></td>
-							<td><g:formatDate format="${message(code:'default.date.format.notime', default:'yyyy-MM-dd')}" date="${subInsts.get(1).dateCreated}"/></td>
+							<td>${message(code:'default.dateCreated.label')}</td>
+							<td><g:formatDate format="${message(code:'default.date.format.notime')}" date="${subInsts.get(0).dateCreated}"/></td>
+							<td><g:formatDate format="${message(code:'default.date.format.notime')}" date="${subInsts.get(1).dateCreated}"/></td>
 						</tr>
 						<tr>
-							<td>${message(code:'default.startDate.label', default:'Start Date')}</td>
-							<td><g:formatDate format="${message(code:'default.date.format.notime', default:'yyyy-MM-dd')}" date="${subInsts.get(0).startDate}"/></td>
-							<td><g:formatDate format="${message(code:'default.date.format.notime', default:'yyyy-MM-dd')}" date="${subInsts.get(1).startDate}"/></td>
+							<td>${message(code:'default.startDate.label')}</td>
+							<td><g:formatDate format="${message(code:'default.date.format.notime')}" date="${subInsts.get(0).startDate}"/></td>
+							<td><g:formatDate format="${message(code:'default.date.format.notime')}" date="${subInsts.get(1).startDate}"/></td>
 						</tr>
 						<tr>
-							<td>${message(code:'default.endDate.label', default:'End Date')}</td>
-							<td><g:formatDate format="${message(code:'default.date.format.notime', default:'yyyy-MM-dd')}" date="${subInsts.get(0).endDate}"/></td>
-							<td><g:formatDate format="${message(code:'default.date.format.notime', default:'yyyy-MM-dd')}" date="${subInsts.get(1).endDate}"/></td>
+							<td>${message(code:'default.endDate.label')}</td>
+							<td><g:formatDate format="${message(code:'default.date.format.notime')}" date="${subInsts.get(0).endDate}"/></td>
+							<td><g:formatDate format="${message(code:'default.date.format.notime')}" date="${subInsts.get(1).endDate}"/></td>
 						</tr>
 						<tr>
-							<td>${message(code:'subscription.compare.overview.ies', default:'Number of IEs')}</td>
+							<td>${message(code:'subscription.compare.overview.ies')}</td>
 							<td>${params.countA}</td>
 							<td>${params.countB}</td>
 						</tr>
@@ -158,10 +158,10 @@
 					 <table class="ui celled la-table table">
 						<tr>
 							<td>
-								${message(code:'subscription.compare.filter.title', default:'Filters - Title')}: <input name="filter" value="${params.filter}">
+								${message(code:'subscription.compare.filter.title')}: <input name="filter" value="${params.filter}">
 							</td>
 							<td> <input type="submit" class="ui button" value="Filter Results" /> </td>
-							<td> <input id="resetFilters" type="submit" class="ui button" value="${message(code:'default.button.clear.label', default:'Clear')}" /> </td>
+							<td> <input id="resetFilters" type="submit" class="ui button" value="${message(code:'default.button.clear.label')}" /> </td>
 						</tr>
 					</table>
 				</g:form>
@@ -172,14 +172,14 @@
 				<table class="ui celled la-table table">
 					<thead>
 						<tr>
-							<th> ${message(code:'title.label', default:'Title')} </th>
-							<th> ${subInsts.get(0).name} ${message(code:'default.on', default:'on')} ${subDates.get(0)}</th>
-							<th> ${subInsts.get(1).name} ${message(code:'default.on', default:'on')} ${subDates.get(1)}</th>
+							<th> ${message(code:'title.label')} </th>
+							<th> ${subInsts.get(0).name} ${message(code:'default.on')} ${subDates.get(0)}</th>
+							<th> ${subInsts.get(1).name} ${message(code:'default.on')} ${subDates.get(1)}</th>
 						</tr>
 					</thead>
 					<tbody>
 						<tr>
-							<td><strong>${message(code:'subscription.compare.results.ies.total', default:'Total IEs for query')}</strong></td>
+							<td><strong>${message(code:'subscription.compare.results.ies.total')}</strong></td>
 							<td><strong>${listACount}</strong></td>
 							<td><strong>${listBCount}</strong></td>
 						<tr>

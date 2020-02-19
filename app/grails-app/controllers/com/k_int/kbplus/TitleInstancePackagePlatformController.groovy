@@ -25,7 +25,7 @@ class TitleInstancePackagePlatformController {
         redirect controller: 'tipp', action: 'list', params: params
         return // ----- deprecated
 
-        def result=[:]
+        Map<String, Object> result = [:]
         result.user = User.get(springSecurityService.principal.id)
 
         params.max = params.max ?: result.user?.getDefaultPageSizeTMP()
@@ -52,7 +52,7 @@ class TitleInstancePackagePlatformController {
                   return
               }
 
-        flash.message = message(code: 'default.created.message', args: [message(code: 'titleInstancePackagePlatform.label', default: 'TitleInstancePackagePlatform'), titleInstancePackagePlatformInstance.id])
+        flash.message = message(code: 'default.created.message', args: [message(code: 'titleInstancePackagePlatform.label'), titleInstancePackagePlatformInstance.id])
               redirect action: 'show', id: titleInstancePackagePlatformInstance.id
           break
         }
@@ -116,7 +116,7 @@ class TitleInstancePackagePlatformController {
                   return
               }
 
-          flash.message = message(code: 'default.updated.message', args: [message(code: 'titleInstancePackagePlatform.label', default: 'TitleInstancePackagePlatform'), titleInstancePackagePlatformInstance.id])
+          flash.message = message(code: 'default.updated.message', args: [message(code: 'titleInstancePackagePlatform.label'), titleInstancePackagePlatformInstance.id])
               redirect action: 'show', id: titleInstancePackagePlatformInstance.id
           break
         }

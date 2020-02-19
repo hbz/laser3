@@ -399,3 +399,51 @@ where rdv_id = i10n_reference_id and i10n_reference_class = 'com.k_int.kbplus.Re
 delete from i10n_translation
 where i10n_reference_class like 'com.k_int.kbplus.RefdataValue%' and i10n_reference_field = 'expl';
 
+
+-- 2020-02-07
+-- not all objects are loaded into ES Index because the objects have no date created value
+-- update doc_context set dc_date_created = '2018-01-01 00:00:0.000000' where dc_date_created is null;
+-- update issue_entitlement set ie_date_created = '2018-01-01 00:00:0.000000' where ie_date_created is null;
+-- update license set date_created = '2018-01-01 00:00:0.000000' where date_created is null;
+-- update license_custom_property set lcp_date_created = '2018-01-01 00:00:0.000000' where lcp_date_created is null;
+-- update license_private_property set lpp_date_created = '2018-01-01 00:00:0.000000' where lpp_date_created is null;
+-- update org set org_date_created = '2018-01-01 00:00:0.000000' where org_date_created is null;
+-- update package set date_created = '2018-01-01 00:00:0.000000' where date_created is null;
+-- update platform set date_created = '2018-01-01 00:00:0.000000' where date_created is null;
+-- update subscription set date_created = '2018-01-01 00:00:0.000000' where date_created is null;
+-- update subscription_custom_property set scp_date_created = '2018-01-01 00:00:0.000000' where scp_date_created is null;
+-- update subscription_private_property set spp_date_created = '2018-01-01 00:00:0.000000' where spp_date_created is null;
+-- update survey_config set surconf_date_created = '2018-01-01 00:00:0.000000' where surconf_date_created is null;
+-- update survey_org set surorg_date_created = '2018-01-01 00:00:0.000000' where surorg_date_created is null;
+-- update task set tsk_date_created = '2018-01-01 00:00:0.000000' where tsk_date_created is null;
+-- update title_instance set date_created = '2018-01-01 00:00:0.000000' where date_created is null;
+
+-- 2020-02-18
+-- ERMS-2148
+-- changesets in changelog-2020-02-18.groovy
+
+alter table license add lic_is_public_for_api boolean;
+alter table subscription add sub_is_public_for_api boolean;
+
+update license set lic_is_public_for_api=false where lic_is_public_for_api is null;
+update subscription set sub_is_public_for_api=false where sub_is_public_for_api is null;
+
+-- 2020-02-18
+-- ERMS-2196
+-- changesets in changelog-2020-02-18.groovy
+
+update api_source set as_active = false where as_active is null;
+update cost_item set ci_final_cost_rounding = false where ci_final_cost_rounding is null;
+update cost_item set ci_include_in_subscr = false where ci_include_in_subscr is null;
+update cost_item set ci_is_viewable = false where ci_is_viewable is null;
+update doc_context set dc_is_global = false where dc_is_global is null;
+update doc_context set dc_is_shared = false where dc_is_shared is null;
+update elasticsearch_source set ess_active = false where ess_active is null;
+update elasticsearch_source set ess_gokb_es = false where ess_gokb_es is null;
+update elasticsearch_source set ess_laser_es = false where ess_laser_es is null;
+update global_record_source set grs_active = false where grs_active is null;
+update global_record_tracker set grt_auto_pkg_update = false where grt_auto_pkg_update is null;
+update global_record_tracker set grt_auto_tipp_add = false where grt_auto_tipp_add is null;
+update global_record_tracker set grt_auto_tipp_del = false where grt_auto_tipp_del is null;
+update global_record_tracker set grt_auto_tipp_update = false where grt_auto_tipp_update is null;
+update org_role set or_is_shared = false where or_is_shared is null;

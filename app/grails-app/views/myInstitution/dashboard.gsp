@@ -37,7 +37,7 @@
                 <div class="column">
                     <div class="ui divided relaxed list">
                         <div class="item">
-                            <g:link controller="myInstitution" action="changes">${message(code: 'myinst.todo.label', default: 'To Do')}</g:link>
+                            <g:link controller="myInstitution" action="changes">${message(code: 'myinst.todo.label')}</g:link>
                         </div>
                         <semui:securedMainNavItem specRole="ROLE_ADMIN" controller="myInstitution" action="announcements" message="announcement.plural" />
                         <%--<div class="item">
@@ -408,14 +408,14 @@
     </g:javascript>
         <r:script>
             $(document).ready( function(){
-                $('.tabular.menu .item').tab()
-                $('.item .widget-content').readmore({
+                $('.tabular.menu .item').tab();
+                /* $('.item .widget-content').readmore({
                     speed: 250,
                     collapsedHeight: 21,
                     startOpen: false,
                     moreLink: '<a href="#">[ ${message(code:'default.button.show.label')} ]</a>',
                     lessLink: '<a href="#">[ ${message(code:'default.button.hide.label')} ]</a>'
-                });
+                }); */
                 $('.xEditableManyToOne').editable({
                 }).on('hidden', function() {
                         //location.reload();
@@ -424,13 +424,5 @@
 
             })
         </r:script>
-
-        <style>
-            .item .widget-content {
-                overflow: hidden;
-                line-height: 20px;
-            }
-        </style>
-
     </body>
 </html>

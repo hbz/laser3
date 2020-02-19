@@ -14,9 +14,7 @@ import grails.plugin.springsecurity.annotation.Secured
 import grails.util.Holders
 import grails.web.Action
 import groovy.xml.MarkupBuilder
-import junit.extensions.ActiveTestSuite
 import org.hibernate.SessionFactory
-import org.joda.time.LocalDate
 import org.quartz.JobKey
 import org.quartz.impl.matchers.GroupMatcher
 import org.springframework.transaction.TransactionStatus
@@ -51,6 +49,7 @@ class YodaController {
     def changeNotificationService
     def subscriptionService
     def exportService
+    def dataConsistencyService
 
     static boolean ftupdate_running = false
 
@@ -177,6 +176,8 @@ class YodaController {
         println test4.size() + ' Matches > ' + (System.currentTimeMillis() - t4)
 
         println "-----------------------------------------------------------------------------"
+
+        // dataConsistencyService.checkBooleanFields()
 
         result
     }
@@ -502,7 +503,7 @@ class YodaController {
     @Secured(['ROLE_YODA'])
     def getTIPPsWithoutGOKBId() {
         log.debug("delete TIPPs without GOKb-ID")
-        List<TitleInstancePackagePlatform> tippsWithoutGOKbID = TitleInstancePackagePlatform.findAllByGokbIdIsNullAndStatusNotEqual(RDStore.TIPP_DELETED)
+        List<TitleInstancePackagePlatform> tippsWithoutGOKbID = TitleInstancePackagePlatform.findAllByGokbIdIsNullAndStatusNotEqual(RDStore.TIPP_STATUS_DELETED)
         List<IssueEntitlement> issueEntitlementsAffected = IssueEntitlement.executeQuery('select ie from IssueEntitlement ie where ie.tipp in :tipps',[tipps:tippsWithoutGOKbID])
         Map<TitleInstancePackagePlatform,Set<IssueEntitlement>> ieTippMap = [:]
         issueEntitlementsAffected.each { IssueEntitlement ie ->
@@ -579,17 +580,21 @@ class YodaController {
     @Secured(['ROLE_YODA'])
     def fullReset() {
 
-       log.debug("Delete all existing FT Control entries");
-       FTControl.withTransaction {
-            FTControl.executeUpdate("delete FTControl c")
-       }
-
        log.debug("Clear ES")
        dataloadService.clearDownAndInitES()
 
         log.debug("redirecting to home ..")
 
         redirect controller:'home'
+    }
+
+    @Secured(['ROLE_YODA'])
+    def checkESElementswithDBElements() {
+        log.debug("checkESElementswithDBElements")
+        dataloadService.checkESElementswithDBElements()
+        log.debug("redirecting to home ..")
+
+        redirect controller: 'home'
     }
 
     @Secured(['ROLE_YODA'])
@@ -1649,12 +1654,6 @@ class YodaController {
         result.candidates = [OrgPrivateProperty: opp, SubscriptionPrivateProperty: spp, LicensePrivateProperty: lpp, PersonPrivateProperty: ppp]
 
         render view: 'databaseMigration', model: result
-    }
-
-    @Secured(['ROLE_YODA'])
-    def frontend() {
-        Map<String, Object> result = [test:123]
-        result
     }
 
     @Secured(['ROLE_YODA'])

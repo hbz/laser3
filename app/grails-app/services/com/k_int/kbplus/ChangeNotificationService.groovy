@@ -25,7 +25,7 @@ class ChangeNotificationService extends AbstractLockableService {
     def contextObject = genericOIDService.resolveOID(contextObjectOID);
 
     def jsonChangeDocument = changeDetailDocument as JSON
-    def new_queue_item = new ChangeNotificationQueueItem(oid:contextObjectOID, 
+      ChangeNotificationQueueItem new_queue_item = new ChangeNotificationQueueItem(oid:contextObjectOID,
                                                          changeDocument:jsonChangeDocument.toString(),
                                                          ts:new Date())
     if ( new_queue_item.save() ) {
@@ -109,7 +109,7 @@ class ChangeNotificationService extends AbstractLockableService {
               }
             }
 
-            def pc_delete_list = []
+            List pc_delete_list = []
 
             log.debug("TODO: Processing ${pendingChanges.size()} notifications for object ${poidc}")
 
@@ -117,7 +117,8 @@ class ChangeNotificationService extends AbstractLockableService {
           // log.debug("Process pending change ${pc}");    
             JSONElement parsed_event_info = JSON.parse(pc.changeDocument)
           log.debug("Event Info: ${parsed_event_info}")
-          def change_template = ContentItem.findByKey("ChangeNotification.${parsed_event_info.event}")
+
+            ContentItem change_template = ContentItem.findByKey("ChangeNotification.${parsed_event_info.event}")
           if ( change_template != null ) {
             // log.debug("Found change template... ${change_template.content}");
             // groovy.util.Eval.x(r, 'x.' + rh.property)
@@ -158,7 +159,7 @@ class ChangeNotificationService extends AbstractLockableService {
 
         if ( contextObject != null ) {
           if ( contextObject.metaClass.respondsTo(contextObject, 'getNotificationEndpoints') ) {
-            def announcement_content = sw.toString();
+            String announcement_content = sw.toString()
             // Does the objct have a zendesk URL, or any other comms URLs for that matter?
               // How do we decouple Same-As links? Only the object should know about what
             // notification services it's registered with? What about the case where we're adding
@@ -168,9 +169,9 @@ class ChangeNotificationService extends AbstractLockableService {
               switch ( ne.service ) {
 
                 case 'announcements':
-                  def announcement_type = RefdataValue.getByValueAndCategory('Announcement', RDConstants.DOCUMENT_TYPE)
+                    RefdataValue announcement_type = RefdataValue.getByValueAndCategory('Announcement', RDConstants.DOCUMENT_TYPE)
                   // result.recentAnnouncements = Doc.findAllByType(announcement_type,[max:10,sort:'dateCreated',order:'desc'])
-                  def newAnnouncement = new Doc(title:'Automated Announcement',
+                    Doc newAnnouncement = new Doc(title:'Automated Announcement',
                                                 type:announcement_type,
                                                 content:announcement_content,
                                                 dateCreated:new Date(),
@@ -306,6 +307,8 @@ class ChangeNotificationService extends AbstractLockableService {
 
             def jsonMsgParams = msgParams as JSON
             new_pending_change.msgParams = msgParams ? jsonMsgParams.toString() : null
+
+            new_pending_change.workaroundForDatamigrate() // ERMS-2184
 
             if (new_pending_change.save(failOnError: true)) {
                 return new_pending_change

@@ -23,12 +23,12 @@
         <div class="two fields">
             <!-- 1-1 -->
             <div class="field">
-                <label for="search-title">${message(code: 'default.search.text', default: 'Search text')}
+                <label for="search-title">${message(code: 'default.search.text')}
                 </label>
 
                 <div class="ui input">
                     <input type="text" id="search-title" name="q"
-                           placeholder="${message(code: 'default.search.ph', default: 'enter search term...')}"
+                           placeholder="${message(code: 'default.search.ph')}"
                            value="${params.pkg_q}"/>
                 </div>
             </div>
@@ -57,7 +57,7 @@
             </div>
             <div class="field la-field-right-aligned">
                 <a href="${request.forwardURI}" class="ui reset primary button">${message(code:'default.button.filterreset.label')}</a>
-                <input type="submit" class="ui secondary button" value="${message(code:'default.button.filter.label', default:'Filter')}" />
+                <input type="submit" class="ui secondary button" value="${message(code:'default.button.filter.label')}" />
             </div>
         </div>
     </g:form>
@@ -124,8 +124,8 @@
 
 <%--
 <semui:paginate action="currentPlatforms" controller="myInstitution" params="${params}"
-                next="${message(code:'default.paginate.next', default:'Next')}"
-                prev="${message(code:'default.paginate.prev', default:'Prev')}"
+                next="${message(code:'default.paginate.next')}"
+                prev="${message(code:'default.paginate.prev')}"
                 max="${max}" total="${packagesTotal}" />
 --%>
 

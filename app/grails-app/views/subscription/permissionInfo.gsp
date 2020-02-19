@@ -27,8 +27,8 @@
         <table  class="ui celled la-table table">
             <thead>
                 <tr>
-                    <th>${message(code:'org.label', default:'Organisation')}</th>
-                    <th>${message(code:'subscription.details.permissionInfo.roles_and_perm', default:'Roles and Permissions')}</th>
+                    <th>${message(code:'org.label')}</th>
+                    <th>${message(code:'subscription.details.permissionInfo.roles_and_perm')}</th>
                 </tr>
             </thead>
             <g:each in="${subscriptionInstance.orgRelations}" var="ol">
@@ -43,10 +43,10 @@
                         <g:each in="${ol.roleType?.sharedPermissions}" var="sp">
                           <li><g:message code="default.perm.${sp.perm.code}" />
                               <g:if test="${subscriptionInstance.checkPermissions(sp.perm.code,user)}">
-                                [${message(code:'default.perm.granted', default:'Granted')}]
+                                [${message(code:'default.perm.granted')}]
                               </g:if>
                               <g:else>
-                                [${message(code:'default.perm.not_granted', default:'Not granted')}]
+                                [${message(code:'default.perm.not_granted')}]
                               </g:else>
 
                           </li>
@@ -57,12 +57,12 @@
             </g:each>
         </table>
 
-      <h3 class="ui header">${message(code:'subscription.details.permissionInfo.user_perms', default:'Logged in user permissions')}</h3>
+      <h3 class="ui header">${message(code:'subscription.details.permissionInfo.user_perms')}</h3>
 
       <table  class="ui celled la-table table">
         <thead>
           <tr>
-            <th>${message(code:'subscription.details.permissionInfo.aff_via', default:'Affiliated via Role')}</th><th>${message(code:'default.permissions.label', default:'Permissions')}</th>
+            <th>${message(code:'subscription.details.permissionInfo.aff_via')}</th><th>${message(code:'default.permissions.label')}</th>
           </tr>
         </thead>
         <g:each in="${user.affiliations}" var="ol">

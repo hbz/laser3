@@ -35,7 +35,7 @@ class PendingChangeService extends AbstractLockableService {
     final static EVENT_PROPERTY_CHANGE = 'PropertyChange'
 
     boolean performMultipleAcceptsForJob(List<PendingChange> subscriptionChanges, List<PendingChange> licenseChanges, User user) {
-        log.debug('performMultipleAcceptsFromJob')
+        log.debug('performMultipleAcceptsFromJob()')
 
         if (!running) {
             running = true
@@ -57,7 +57,7 @@ class PendingChangeService extends AbstractLockableService {
 
     boolean performAccept(PendingChange pendingChange, User user) {
 
-        log.debug('performAccept')
+        log.debug('performAccept(): ' + pendingChange + ', ' + user)
         boolean result = true
 
         PendingChange.withNewTransaction { TransactionStatus status ->
@@ -74,7 +74,7 @@ class PendingChangeService extends AbstractLockableService {
                         def tipp = genericOIDService.resolveOID(payload.tippId)
                         def ie_to_update = IssueEntitlement.findBySubscriptionAndTipp(sub_to_change,tipp)
                         if ( ie_to_update != null ) {
-                            ie_to_update.status = RDStore.TIPP_DELETED
+                            ie_to_update.status = RDStore.TIPP_STATUS_DELETED
 
                             if( ie_to_update.save()){
                                 saveWithoutError = true
@@ -288,7 +288,7 @@ class PendingChangeService extends AbstractLockableService {
                     pendingChange.status = RefdataValue.getByValueAndCategory("Accepted", RDConstants.PENDING_CHANGE_STATUS)
                     pendingChange.actionDate = new Date()
                     pendingChange.user = user
-                    pendingChange.save()
+                    //pendingChange.save()  // ERMS-2184 // called implicit somewhere
                     log.debug("Pending change accepted and saved")
                 }
             }
