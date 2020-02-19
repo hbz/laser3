@@ -31,9 +31,9 @@ class ApiLicense {
             case 'globalUID':
                 result = License.findAllWhere(globalUID: value)
                 break
-            case 'impId':
-                result = License.findAllWhere(impId: value)
-                break
+//            case 'impId':
+//                result = License.findAllWhere(impId: value)
+//                break
             case 'ns:identifier':
                 result = Identifier.lookupObjectsByIdentifierString(new License(), value)
                 break
@@ -120,7 +120,7 @@ class ApiLicense {
         // removed - result.contact          = lic.contact
         result.dateCreated      = lic.dateCreated
         result.endDate          = lic.endDate
-        result.impId            = lic.impId
+        //result.impId            = lic.impId
         // result.lastmod          = lic.lastmod // legacy ?
         result.lastUpdated      = lic.lastUpdated
         // result.licenseUrl       = lic.licenseUrl
