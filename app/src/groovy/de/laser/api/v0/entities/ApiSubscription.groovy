@@ -18,7 +18,7 @@ import org.codehaus.groovy.grails.orm.hibernate.cfg.GrailsHibernateUtil
 class ApiSubscription {
 
     /**
-     * @return Subscription | BAD_REQUEST | PRECONDITION_FAILED
+     * @return Subscription | BAD_REQUEST | PRECONDITION_FAILED | OBJECT_STATUS_DELETED
      */
     static findSubscriptionBy(String query, String value) {
         def result
@@ -40,8 +40,12 @@ class ApiSubscription {
                 return Constants.HTTP_BAD_REQUEST
                 break
         }
+		result = ApiToolkit.checkPreconditionFailed(result)
 
-        ApiToolkit.checkPreconditionFailed(result)
+		if (result instanceof Subscription && result.status == RDStore.SUBSCRIPTION_DELETED) {
+			result = Constants.OBJECT_STATUS_DELETED
+		}
+		result
     }
 
     /**
