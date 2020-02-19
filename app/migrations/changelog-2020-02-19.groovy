@@ -19,5 +19,4 @@ databaseChangeLog = {
 	changeSet(author: "galffy (generated)", id: "1582099914868-3") {
 		addNotNullConstraint(columnDataType: "bool", columnName: "sub_has_perpetual_access", tableName: "subscription")
 	}
-
 }
