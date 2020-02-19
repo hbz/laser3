@@ -96,7 +96,7 @@
                         <g:each in="${hits}" var="hit">
                             <tr>
                                 <td>
-                                    <g:if test="${Package.findByGokbId(hit.uuid)}">
+                                    <g:if test="${com.k_int.kbplus.Package.findByGokbId(hit.uuid)}">
                                         <g:link controller="package" target="_blank" action="show" id="${com.k_int.kbplus.Package.findByGokbId(hit.uuid).id}">${hit.name}</g:link>
                                     </g:if>
                                     <g:else>

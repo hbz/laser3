@@ -85,11 +85,11 @@
                     <%-- fully qualified reference because we do not make imports for one occurrence --%>
                     <dd><semui:xEditableRefData owner="${issueEntitlementInstance}" field="coreStatus" config='${de.laser.helper.RDConstants.CORE_STATUS}'/> </dd>
                 </g:if>
-              <g:set var="iecorestatus" value="${issueEntitlementInstance.getTIP()?.coreStatus(null)}"/>
-<%--<dt>${message(code:'subscription.details.core_status', default:'Core Status')}</dt>
-<dd>
-  <g:render template="/templates/coreStatus" model="${['issueEntitlement': issueEntitlementInstance]}"/>
-</dd> --%>
+            <%--              <g:set var="iecorestatus" value="${issueEntitlementInstance.getTIP()?.coreStatus(null)}"/>
+        <%--<dt>${message(code:'subscription.details.core_status', default:'Core Status')}</dt>
+            <dd>
+              <g:render template="/templates/coreStatus" model="${['issueEntitlement': issueEntitlementInstance]}"/>
+            </dd> --%>
 
   <g:if test="${issueEntitlementInstance.tipp.hostPlatformURL}">
       <dt><g:message code="tipp.hostPlatformURL"/></dt>

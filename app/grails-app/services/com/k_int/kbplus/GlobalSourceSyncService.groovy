@@ -875,14 +875,14 @@ class GlobalSourceSyncService extends AbstractLockableService {
                                             case 'updated':
                                                 IssueEntitlementCoverage ieCov = (IssueEntitlementCoverage) tippCov.findEquivalent(ie.coverages)
                                                 String propLabel = messageSource.getMessage("tipp.${covDiff.field}",null, locale)
-                                                Object[] args = [titleLink,tippCov.tipp.title.title,pkgLink,tippCov.tipp.pkg.name,propLabel,covDiff.oldValue,covDiff.newValue]
+                                                Object[] args = [titleLink,tippCov.tipp.title.title,pkgLink,tippCov.tipp.pkg.name,propLabel,covDiff.oldValue,covDiff.newValue,defaultAcceptChange]
                                                 changeDesc = messageSource.getMessage('pendingChange.message_TC01',args,locale)
                                                 changeMap.changeTarget = "${ieCov.class.name}:${ieCov.id}"
                                                 changeMap.changeType = PendingChangeService.EVENT_COVERAGE_UPDATE
                                                 changeMap.changeDoc = covDiff
                                                 break
                                             case 'added':
-                                                Object[] args = [titleLink,tippCov.tipp.title.title,pkgLink,tippCov.tipp.pkg.name,tippCov.startDate,tippCov.startVolume,tippCov.startIssue,tippCov.endDate,tippCov.endVolume,tippCov.endIssue,tippCov.coverageDepth,tippCov.coverageNote,tippCov.embargo]
+                                                Object[] args = [titleLink,tippCov.tipp.title.title,pkgLink,tippCov.tipp.pkg.name,tippCov.startDate,tippCov.startVolume,tippCov.startIssue,tippCov.endDate,tippCov.endVolume,tippCov.endIssue,tippCov.coverageDepth,tippCov.coverageNote,tippCov.embargo,defaultAcceptChange]
                                                 changeDesc = messageSource.getMessage('pendingChange.message_TC02',args,locale)
                                                 changeMap.changeTarget = "${ie.class.name}:${ie.id}"
                                                 changeMap.changeType = PendingChangeService.EVENT_COVERAGE_ADD
@@ -890,7 +890,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
                                                 break
                                             case 'deleted':
                                                 IssueEntitlementCoverage ieCov = (IssueEntitlementCoverage) tippCov.findEquivalent(ie.coverages)
-                                                Object[] args = [titleLink,tippCov.tipp.title.title,pkgLink,tippCov.tipp.pkg.name,ieCov.startDate?.format(messageSource.getMessage('default.date.format.notime',null,locale)),ieCov.startVolume,ieCov.startIssue,ieCov.endDate?.format(messageSource.getMessage('default.date.format.notime',null,locale)),ieCov.endVolume,ieCov.endIssue]
+                                                Object[] args = [titleLink,tippCov.tipp.title.title,pkgLink,tippCov.tipp.pkg.name,ieCov.startDate?.format(messageSource.getMessage('default.date.format.notime',null,locale)),ieCov.startVolume,ieCov.startIssue,ieCov.endDate?.format(messageSource.getMessage('default.date.format.notime',null,locale)),ieCov.endVolume,ieCov.endIssue,defaultAcceptChange]
                                                 changeDesc = messageSource.getMessage('pendingChange.message_TC03',args,locale)
                                                 changeMap.changeTarget = "${ieCov.class.name}:${ieCov.id}"
                                                 changeMap.changeType = PendingChangeService.EVENT_COVERAGE_DELETE
@@ -908,7 +908,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
                                 }
                             }
                                 break
-                            case 'delete': Object[] args = [target.title.title]
+                            case 'delete': Object[] args = [target.title.title,defaultAcceptChange]
                                 changeDesc = messageSource.getMessage('pendingChange.message_TP03',args,locale)
                                 changeMap.changeType = PendingChangeService.EVENT_TIPP_DELETE
                                 changeMap.tippId = "${target.class.name}:${target.id}"
