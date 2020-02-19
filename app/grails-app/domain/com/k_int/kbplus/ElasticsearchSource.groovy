@@ -37,12 +37,12 @@ class ElasticsearchSource {
         identifier(nullable:true, blank:false)
         name(nullable:true, blank:false, maxSize:2048)
         host(nullable:true, blank:false)
-        active(nullable:true, blank:false)
+        active      (nullable:false, blank:false)
         port (nullable:true, blank:false)
         index (nullable:true, blank:false)
         cluster (nullable:true, blank:false)
-        laser_es (nullable:true, blank:false)
-        gokb_es (nullable:true, blank:false)
+        laser_es    (nullable:false, blank:false)
+        gokb_es     (nullable:false, blank:false)
         url (nullable:true, blank:false)
 
         // Nullable is true, because values are already in the database

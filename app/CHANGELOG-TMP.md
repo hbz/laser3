@@ -12,6 +12,8 @@
 
 1901    18.02.2020  hbz-dev     Andreas Feature     Synchronisationsprozess GOKb <-> LAS:eR entsprechend aktuellen Anforderungen umgebaut
 
+2196    18.02.2020  hbz-dev     David   Feature     Persistente Bool-Attribute von Domainklassen überarbeiten
+
 2176    14.02.2020  hbz-dev     David   Feature     Admin-Sicht: Unterschiede zwischen Servern
 
 2184    14.02.2020  hbz-dev     David   Bug         Vererbung im hbz-dev defekt

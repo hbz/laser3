@@ -50,6 +50,7 @@ class YodaController {
     def changeNotificationService
     def subscriptionService
     def exportService
+    def dataConsistencyService
 
     static boolean ftupdate_running = false
 
@@ -176,6 +177,8 @@ class YodaController {
         println test4.size() + ' Matches > ' + (System.currentTimeMillis() - t4)
 
         println "-----------------------------------------------------------------------------"
+
+        // dataConsistencyService.checkBooleanFields()
 
         result
     }
