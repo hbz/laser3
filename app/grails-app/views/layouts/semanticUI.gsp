@@ -567,7 +567,6 @@
 
                                 <g:link class="item" controller="profile" action="index">${message(code:'menu.user.profile')}</g:link>
                                 <g:link class="item" controller="profile" action="help">${message(code:'menu.user.help')}</g:link>
-                                <g:link class="item" controller="profile" action="errorReport">${message(code:'menu.user.errorReport')}</g:link>
                                 <g:link class="item" controller="profile" action="dsgvo">${message(code:'privacyNotice')}</g:link>
 
                                 <div class="divider"></div>
