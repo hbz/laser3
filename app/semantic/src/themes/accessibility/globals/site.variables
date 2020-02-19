@@ -388,29 +388,29 @@
 @positiveColor           : @green;
 @positiveBackgroundColor : #FCFFF5;
 @positiveBorderColor     : #A3C293;
-@positiveHeaderColor     : #1A531B;
-@positiveTextColor       : #2C662D;
+@positiveHeaderColor     : @black;
+@positiveTextColor       : @black;
 
 /* Negative */
 @negativeColor           : @red;
 @negativeBackgroundColor : #FFF6F6;
 @negativeBorderColor     : #E0B4B4;
-@negativeHeaderColor     : #912D2B;
-@negativeTextColor       : #9F3A38;
+@negativeHeaderColor     : @black;
+@negativeTextColor       : @black;
 
 /* Info */
 @infoColor              : #31CCEC;
 @infoBackgroundColor    : #F8FFFF;
 @infoBorderColor        : #A9D5DE;
-@infoHeaderColor        : #0E566C;
-@infoTextColor          : #276F86;
+@infoHeaderColor        : @black;
+@infoTextColor          : @black;
 
 /* Warning */
 @warningColor           : #F2C037;
 @warningBorderColor     : #C9BA9B;
 @warningBackgroundColor : #FFFAF3;
-@warningHeaderColor     : #794B02;
-@warningTextColor       : #573A08;
+@warningHeaderColor     : @black;
+@warningTextColor       : @black;
 
 /*-------------------
         Paths

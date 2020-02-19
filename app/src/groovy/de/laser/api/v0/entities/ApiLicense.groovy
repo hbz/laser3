@@ -4,6 +4,7 @@ import com.k_int.kbplus.Identifier
 import com.k_int.kbplus.License
 import com.k_int.kbplus.Org
 import com.k_int.kbplus.OrgRole
+import com.k_int.kbplus.Subscription
 import de.laser.api.v0.ApiCollectionReader
 import de.laser.api.v0.ApiReader
 import de.laser.api.v0.ApiStubReader
@@ -30,9 +31,9 @@ class ApiLicense {
             case 'globalUID':
                 result = License.findAllWhere(globalUID: value)
                 break
-            case 'impId':
-                result = License.findAllWhere(impId: value)
-                break
+//            case 'impId':
+//                result = License.findAllWhere(impId: value)
+//                break
             case 'ns:identifier':
                 result = Identifier.lookupObjectsByIdentifierString(new License(), value)
                 break
@@ -40,8 +41,12 @@ class ApiLicense {
                 return Constants.HTTP_BAD_REQUEST
                 break
         }
+        result = ApiToolkit.checkPreconditionFailed(result)
 
-        ApiToolkit.checkPreconditionFailed(result)
+        //if (result instanceof License && result.status == RDStore.LICENSE_DELETED) {
+        //    result = Constants.OBJECT_STATUS_DELETED
+        //}
+        result
     }
 
 
@@ -115,7 +120,7 @@ class ApiLicense {
         // removed - result.contact          = lic.contact
         result.dateCreated      = lic.dateCreated
         result.endDate          = lic.endDate
-        result.impId            = lic.impId
+        //result.impId            = lic.impId
         // result.lastmod          = lic.lastmod // legacy ?
         result.lastUpdated      = lic.lastUpdated
         // result.licenseUrl       = lic.licenseUrl

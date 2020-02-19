@@ -523,7 +523,7 @@ class ApiCollectionReader {
         //result.endVolume        = tipp.endVolume           // duplicate information in IE
         //result.endIssue         = tipp.endIssue            // duplicate information in IE
         result.hostPlatformURL  = tipp.hostPlatformURL
-        result.impId            = tipp.impId
+        //result.impId            = tipp.impId
         result.gokbId           = tipp.gokbId
         result.lastUpdated      = tipp.lastUpdated
         //result.rectype          = tipp.rectype    // legacy; not needed ?
@@ -589,7 +589,7 @@ class ApiCollectionReader {
         result.normTitle        = title.normTitle
         result.keyTitle         = title.keyTitle
         result.sortTitle        = title.sortTitle
-        result.impId            = title.impId
+        //result.impId            = title.impId
         result.dateCreated      = title.dateCreated
         result.lastUpdated      = title.lastUpdated
 

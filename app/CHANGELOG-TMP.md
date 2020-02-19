@@ -6,6 +6,8 @@
 
 2119    19.02.2020  hbz-dev     Andreas Feature     Lizenz-Flag "Dauerhafter Zugriff" ("perpetual access") implementiert
 
+2142    19.02.2020  hbz-dev     Ingrid   Feature    WCAG-conforme Icons 
+
 2196    18.02.2020  hbz-dev     David   Feature     Persistente Bool-Attribute von Domainklassen überarbeiten
 
 2123    11.02.2020  hbz-dev     Moe     Feature     Pakete auch in Kindlizenzen entknüpfen
@@ -30,11 +32,19 @@
 
 2173    12.02.2020  rc1.2       Moe     Bug         Unparseable date bei spotlightSearch
 
+2089    10.02.2020  hbz-dev     Ingrid  Bug         Filter bei Teilnehmer (Lizenz) lässt sich nicht einklappen
+
+1892    10.02.2020  hbz-dev     Ingrid  Feature     Nutzerfreundliche Anzeige von Vererbungs- und Geteilt-Info beim Verlängern einer Umfrage und beim Element in andere Lizenz kopieren
+
 2085    10.02.2020  hbz-dev     Moe     Feature     Sicherheitsabfrage Ent-/Verknüpfen von Konsorten
 
 2005    10.02.2020  hbz-dev     Moe     Feature     "Mehrjahreslaufzeit" auch für lokale Lizenzen?
 
 2162    10.02.2020  hbz-dev     David   Feature     Legacy Konstrukt "Transforms" entfernen
+
+2076    10.02.2020  hbz-dev     Ingrid  Feature     Erklärungstexte der Merkmale verbessern
+
+2058    10.02.2020  hbz-dev     Ingrid  Feature     Überarbeitung des Jahresringe-Navigation: Ausschalten der Pfeile, wenn keine weiter Lizenz vorhanden ist
 
 2160    10.02.2020  hbz-dev     David   Feature     Legacy "Reminder" entfernen
 
@@ -50,9 +60,15 @@
 
 2155    06.02.2020  rc1.2       David   Feature     SystemProfiler soll kontextabhängig alle Zugriffe erfassen
 
+2077    05.02.2020  hbz-dev     Ingrid  Feature     Fehlende Sicherheitsabfrage (Eigene Merkmale löschen)
+
+2078    05.02.2020  hbz-dev     Ingrid  Feature     Fehlende Sicherheitsabfrage hinzugefügt (Merkmalsgruppe löschen)
+
 2147    05.02.2020  hbz-dev     David   Feature     Refactoring: default-Werte bei message-Tags entfernen
 
 2014    05.02.2020  hbz-dev     David   Feature     Refactoring: Zugriff auf PropertyDefinitions nur über (name + descr)
+
+2149    05.02.2020  hbz-dev     Ingrid  Feature     View Kostenübersicht Eigende Kosten und Teilnehmerkosten: W3C valide
 
 --      05.02.2020  hbz-dev     Moe     Feature     Improve License Compare View
 
@@ -119,6 +135,8 @@
 1947    23.01.2020  hbz-dev     Anja    Feature     Meine Lizenzen: neuer Filter für Konsortialstelle sichtbar für Einrichtungen
 
 --      23.01.2020  hbz-dev     David   Feature     Importing Refdata and PropertyDefinitions via CSV
+
+2046    22.01.2020  rc1.2       Ingrid    Feature     Hotfix: Verweis auf Erklärung des hbz zur Barrierefreiheit auf Startseite
 
 1943    22.01.2020  hbz-dev     Anja    Feature     Subskription-Elemente kopieren: Identifikator lassen sich nun auch kopieren
 
