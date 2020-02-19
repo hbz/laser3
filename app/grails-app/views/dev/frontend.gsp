@@ -317,7 +317,7 @@
             <li><code>role="button"</code>, <strong>wenn es ein Link ist</strong>
             <li><code>class="ui icon mini button </code>
             <li><code>class="la-popup-tooltip la-delay"</code> <strong> – für die Aktivierung des Tooltips mit Jvascript</strong>
-            <li><code>class="la-js-dont-hide-button"</code><strong> – für die Aktivierung des NICHTSAUSSCHALTENS MIT TOGGLE BUTTON mit Javascript</strong>
+            <li><code>class="la-js-dont-hide-button"</code><strong> – für die Aktivierung des NICHTAUSSCHALTENS MIT TOGGLE BUTTON mit Javascript</strong>
 
             </li>
 
@@ -360,7 +360,7 @@ if (customerType) {
     <h2 class="ui dividing header">Confimation Modal<a class="anchor" id="icons"></a></h2>
     <h4 class="ui header">Buttons, die Confirmation Modals haben</h4>
     <div class="html ui top attached segment example">
-        <div class="ui top attached label">Link, der als Button funktioniert (daß heißt, dass er eine Aktion ausführt)</div>
+        <div class="ui top attached label">Link, der als Button funktioniert (das heißt, dass er eine Aktion ausführt)</div>
         <g:link controller="dev"
                 action="frontend"
                 params=""

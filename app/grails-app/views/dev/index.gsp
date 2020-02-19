@@ -10,7 +10,7 @@
 <body>
 <laser:serviceInjection/>
     <div id="modalCreateTask">
-        <h1 class="ui dividing  header">Übersicht über alle in Laser eingestzten Komponenten</h1>
+        <h1 class="ui dividing  header">Übersicht über alle in Laser eingesetzten Komponenten</h1>
         <h2 class="ui dividing  header">Formulare</h2>
         <g:form class="ui form" id="create_task" url="[controller: 'dev', action: 'index']" method="post">
 
@@ -146,7 +146,7 @@
                                 rules: [
                                     {
                                         type: 'empty',
-                                        prompt: '{name} <g:message code="validation.needsToBeFilledOut" default=" muss ausgefüllt werden" />'
+                                        prompt: '{name} <g:message code="validation.needsToBeFilledOut" />'
                                     }
                                 ]
                             },
@@ -156,7 +156,7 @@
                                 rules: [
                                     {
                                         type: 'empty',
-                                        prompt: '{name} <g:message code="validation.needsToBeFilledOut" default=" muss ausgefüllt werden" />'
+                                        prompt: '{name} <g:message code="validation.needsToBeFilledOut" />'
                                     }
                                 ]
                             },
@@ -165,7 +165,7 @@
                                 rules: [
                                     {
                                         type: 'empty',
-                                        prompt: '{name} <g:message code="validation.needsToBeFilledOut" default=" muss ausgefüllt werden" />'
+                                        prompt: '{name} <g:message code="validation.needsToBeFilledOut" />'
                                     }
                                 ]
                             },
