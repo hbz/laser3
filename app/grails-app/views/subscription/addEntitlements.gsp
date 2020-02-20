@@ -45,6 +45,12 @@ ${message(code: 'subscription.details.availableTitles')} ( ${message(code: 'defa
                 <label for="pkgfilter">${message(code: 'subscription.details.from_pkg')}</label>
                 <select id="pkgfilter" name="pkgfilter">
                     <option value="">${message(code: 'subscription.details.from_pkg.all')}</option>
+                    <g:if test="${params.packageLinkPreselect}">
+                        <option value="${params.packageLinkPreselect}" selected=selected>${params.preselectedName}</option>
+                    </g:if>
+                    <%--<g:elseif test="${!subscriptionInstance.packages.find { sp -> sp.pkg.gokbId == params.pkgFilter}}">
+                        <option value="${params.pkgFilter}" selected=selected>${params.preselectedName}</option>
+                    </g:elseif>--%>
                     <g:each in="${subscriptionInstance.packages}" var="sp">
                         <option value="${sp.pkg.gokbId}" ${sp.pkg.gokbId == params.pkgfilter ? 'selected=selected' : ''}>${sp.pkg.name}</option>
                     </g:each>

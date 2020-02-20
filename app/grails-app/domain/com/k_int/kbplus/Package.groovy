@@ -100,7 +100,7 @@ static hasMany = [  tipps:     TitleInstancePackagePlatform,
             //identifier column:'pkg_identifier'
                     name column:'pkg_name'
                 sortName column:'pkg_sort_name'
-                  gokbId column:'pkg_gokb_id', type:'text'
+                  gokbId column:'pkg_gokb_id'
          //originEditUrl column:'pkg_origin_edit_url'
              contentType column:'pkg_content_type_rv_fk'
            packageStatus column:'pkg_status_rv_fk'
@@ -144,7 +144,7 @@ static hasMany = [  tipps:     TitleInstancePackagePlatform,
                   isPublic(nullable:false, blank:false)
               packageScope(nullable:true, blank:false)
                    forumId(nullable:true, blank:false)
-                    gokbId(nullable:false, blank:false, unique: true)
+                    gokbId(nullable:false, blank:false, unique: true, maxSize: 511)
            //originEditUrl(nullable:true, blank:false)
                  vendorURL(nullable:true, blank:false)
     cancellationAllowances(nullable:true, blank:false)
@@ -153,7 +153,7 @@ static hasMany = [  tipps:     TitleInstancePackagePlatform,
   }
 
     def afterDelete() {
-        deletionService.deleteDocumentFromIndex(this.globalUID)
+        //deletionService.deleteDocumentFromIndex(this.globalUID) ES not connected, reactivate as soon as ES works again
     }
 
     boolean checkSharePreconditions(ShareableTrait sharedObject) {

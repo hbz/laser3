@@ -498,7 +498,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
                             //ex OrgRole.assertOrgTitleLink
                             OrgRole titleLink = OrgRole.findByTitleAndOrgAndRoleType(titleInstance,publisher,RDStore.OR_PUBLISHER)
                             if(!titleLink) {
-                                titleLink = new OrgRole(title:titleInstance,org:publisher,roleType:RDStore.OR_PUBLISHER)
+                                titleLink = new OrgRole(title:titleInstance,org:publisher,roleType:RDStore.OR_PUBLISHER,isShared:false)
                                 /*
                                 its usage / relevance for LAS:eR is unclear for the moment, must be clarified
                                 if(pubData.startDate)
@@ -728,7 +728,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
     void createOrUpdatePackageProvider(Org provider, Package pkg) throws SyncException {
         List<OrgRole> providerRoleCheck = OrgRole.executeQuery("select oo from OrgRole oo where oo.org = :provider and oo.pkg = :pkg",[provider:provider,pkg:pkg])
         if(!providerRoleCheck) {
-            OrgRole providerRole = new OrgRole(org:provider,pkg:pkg,roleType: RDStore.OT_PROVIDER)
+            OrgRole providerRole = new OrgRole(org:provider,pkg:pkg,roleType: RDStore.OT_PROVIDER, isShared: false)
             if(!providerRole.save()) {
                 throw new SyncException("Error on saving org role: ${providerRole.errors}")
             }

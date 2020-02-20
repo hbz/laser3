@@ -97,7 +97,7 @@ class TitleInstance extends AbstractBaseDomain /*implements AuditableTrait*/ {
         sortTitle(nullable:true, blank:false,maxSize:2048)
         keyTitle(nullable:true, blank:false,maxSize:2048)
         creators(nullable:true, blank:false)
-        gokbId (nullable:false, blank:false, unique: true)
+        gokbId (nullable:false, blank:false, unique: true, maxSize:511)
         //originEditUrl(nullable:true, blank:false)
     }
 

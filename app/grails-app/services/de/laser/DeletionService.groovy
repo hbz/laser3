@@ -10,6 +10,7 @@ import de.laser.domain.PriceItem
 import de.laser.domain.SystemProfiler
 import de.laser.domain.TIPPCoverage
 import de.laser.helper.RDConstants
+import de.laser.helper.RDStore
 import org.elasticsearch.action.delete.DeleteRequest
 import org.elasticsearch.action.delete.DeleteResponse
 import org.elasticsearch.client.*
@@ -777,14 +778,21 @@ class DeletionService {
         Package.withTransaction { status ->
             try {
                 //to be absolutely sure ...
-                List<Subscription> subsConcerned = Subscription.executeQuery('select ie.subscription from IssueEntitlement ie join ie.tipp tipp where tipp.pkg = :pkg',[pkg:pkg])
+                List<Subscription> subsConcerned = Subscription.executeQuery('select ie.subscription from IssueEntitlement ie join ie.tipp tipp where tipp.pkg = :pkg and ie.status != :deleted',[pkg:pkg,deleted: RDStore.TIPP_STATUS_DELETED])
                 if(subsConcerned) {
                     println 'issue entitlements detected on package to be deleted .. rollback'
                     status.setRollbackOnly()
                     return false
                 }
+                //deleting IECoverages and IssueEntitlements marked deleted
+                List<Long> iesConcerned = IssueEntitlement.executeQuery("select ie.id from IssueEntitlement ie join ie.tipp tipp where tipp.pkg = :pkg and ie.status = :deleted",[pkg:pkg,deleted: RDStore.TIPP_STATUS_DELETED])
+                IssueEntitlementCoverage.executeUpdate("delete from IssueEntitlementCoverage ic where ic.issueEntitlement.id in :toDelete",[toDelete:iesConcerned])
+                IssueEntitlement.executeUpdate("delete from IssueEntitlement ie where ie.id in :toDelete",[toDelete:iesConcerned])
                 //deleting tipps
-                TitleInstancePackagePlatform.findAllByPkg(pkg).each { tmp -> tmp.delete() }
+                List<Long> tippsConcerned = TitleInstancePackagePlatform.findAllByPkg(pkg).collect { tipp -> tipp.id }
+                TIPPCoverage.executeUpdate("delete from TIPPCoverage tc where tc.tipp.id in :toDelete",[toDelete:tippsConcerned])
+                Identifier.executeUpdate("delete from Identifier id where id.tipp.id in :toDelete",[toDelete:tippsConcerned])
+                TitleInstancePackagePlatform.executeUpdate("delete from TitleInstancePackagePlatform tipp where tipp.id in :toDelete",[toDelete:tippsConcerned])
                 //deleting pending changes
                 PendingChange.findAllByPkg(pkg).each { tmp -> tmp.delete() }
                 //deleting orgRoles
@@ -792,7 +800,7 @@ class DeletionService {
                 //deleting (empty) subscription packages
                 SubscriptionPackage.findAllByPkg(pkg).each { tmp -> tmp.delete() }
                 //deleting empty-running trackers
-                GlobalRecordTracker.findAllByLocalOid(pkg.class.name+':'+pkg.id).each { tmp -> tmp.delete() }
+                //GlobalRecordTracker.findAllByLocalOid(pkg.class.name+':'+pkg.id).each { tmp -> tmp.delete() }
                 pkg.delete()
                 status.flush()
                 return true

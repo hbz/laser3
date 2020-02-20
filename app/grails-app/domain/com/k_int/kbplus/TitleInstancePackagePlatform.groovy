@@ -99,7 +99,7 @@ class TitleInstancePackagePlatform extends AbstractBaseDomain /*implements Audit
                pkg column:'tipp_pkg_fk',    index: 'tipp_idx'
           platform column:'tipp_plat_fk',   index: 'tipp_idx'
              title column:'tipp_ti_fk',     index: 'tipp_idx'
-            gokbId column:'tipp_gokb_id',       type:'text'
+            gokbId column:'tipp_gokb_id'
      //originEditUrl column:'tipp_origin_edit_url'
             status column:'tipp_status_rv_fk'
          delayedOA column:'tipp_delayedoa_rv_fk'
@@ -133,7 +133,7 @@ class TitleInstancePackagePlatform extends AbstractBaseDomain /*implements Audit
 
     static constraints = {
         globalUID(nullable:true, blank:false, unique:true, maxSize:255)
-        gokbId (nullable:false, blank:false, unique: true)
+        gokbId (nullable:false, blank:false, unique: true, maxSize:511)
         //originEditUrl(nullable:true, blank:false)
         status(nullable:true, blank:false)
         delayedOA(nullable:true, blank:false)

@@ -2115,11 +2115,6 @@ class OrganisationService {
                                         throw new CreationException("Package data missing!")
                                     else {
                                         Package pkg = (Package) entry.pkg
-                                        GlobalRecordInfo gri = GlobalRecordInfo.findByUuid(pkg.gokbId)
-                                        GlobalRecordTracker grt = GlobalRecordTracker.findByOwner(gri)
-                                        //let's kill the server a bit ... that should keep some packages always up-to-date!! - to be activated as soon as ERMS-1177 is terminated
-                                        //globalSourceSyncService.initialiseTracker(grt)
-                                        //dataloadService.updateFTIndexes()
                                         if(entry.issueEntitlementISBNs) {
                                             pkg.addToSubscription(obj,false)
                                             List<TitleInstancePackagePlatform> tippSubset = TitleInstancePackagePlatform.executeQuery("select tipp from TitleInstancePackagePlatform tipp where tipp.pkg = :pkg and tipp.id in (select ident.ti from Identifier ident where ident.ns.ns = 'isbn' and ident.value in (:idSet))", [pkg:pkg,idSet:entry.issueEntitlementISBNs])

@@ -17,7 +17,7 @@ alter table title_instance drop column ti_imp_id;
 alter table title_instance_package_platform drop column tipp_imp_id;
 alter table title_instance rename ti_type_rv_fk to ti_medium_rv_fk;
 update refdata_value set rdv_value = 'Book' where rdv_value = 'EBook';
-update refdata_category set rdc_description = 'Title Medium' where rdc_description = 'Title Type';
+update refdata_category set rdc_description = 'title.medium' where rdc_description = 'title.type';
 
 -- 2019-12-10
 -- ERMS-1901 (ERMS-1500)
@@ -459,6 +459,18 @@ where i10n_reference_class like 'com.k_int.kbplus.RefdataValue%' and i10n_refere
 -- update survey_org set surorg_date_created = '2018-01-01 00:00:0.000000' where surorg_date_created is null;
 -- update task set tsk_date_created = '2018-01-01 00:00:0.000000' where tsk_date_created is null;
 -- update title_instance set date_created = '2018-01-01 00:00:0.000000' where date_created is null;
+
+-- 2020-02-14
+-- ERMS-1901 (ERMS-1957)
+-- manually set platform and package data to correct one, drop tables title_institution_platform and core_assertion, drop legacy tables
+update org_access_point_link set platform_id = 5 where platform_id = 27;
+update org_access_point_link set platform_id = 12 where platform_id in (30,59);
+update org_access_point_link set platform_id = 98 where platform_id = 1;
+update org_access_point_link set platform_id = 8 where platform_id = 62;
+drop table core_assertion;
+drop table title_institution_provider;
+drop table global_record_info;
+drop table global_record_tracker;
 
 -- 2020-02-18
 -- ERMS-2148

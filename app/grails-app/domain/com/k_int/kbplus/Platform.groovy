@@ -87,7 +87,7 @@ class Platform extends AbstractBaseDomain {
     status(nullable:true, blank:false)
     serviceProvider(nullable:true, blank:false)
     softwareProvider(nullable:true, blank:false)
-    gokbId (nullable:false, blank:false, unique: true)
+    gokbId (nullable:false, blank:false, unique: true, maxSize:511)
     org (nullable:true, blank:false)
   }
 

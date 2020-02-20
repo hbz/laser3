@@ -3221,7 +3221,7 @@ class SubscriptionController extends AbstractDebugController {
                     redirect action: 'index', params: [id: params.id, gokbId: params.addUUID]
                     break
                 case "Without": flash.message = message(code:'subscription.details.link.processingWithoutEntitlements')
-                    redirect action: 'addEntitlements', params: [id: params.id, gokbId: params.addUUID, pkgName: packageRecord.record.metadata.gokb.package.name] //TODO [ticket=1410,1807,1808,1819] impId -> gokbId
+                    redirect action: 'addEntitlements', params: [id: params.id, packageLinkPreselect: params.addUUID, preselectedName: packageRecord.record.metadata.gokb.package.name] //TODO [ticket=1410,1807,1808,1819] impId -> gokbId
                     break
             }
         }
