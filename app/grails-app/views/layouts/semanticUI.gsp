@@ -344,6 +344,7 @@
                                 <i class="dropdown icon"></i>
 
                                 <div class="menu">
+                                    <g:link class="item" controller="dev" action="index">Barrierefreiheits-Tests</g:link>
                                     <g:link class="item" controller="dev" action="frontend">Frontend</g:link>
                                 </div>
                             </div>
@@ -568,7 +569,6 @@
 
                                 <g:link class="item" controller="profile" action="index">${message(code:'menu.user.profile')}</g:link>
                                 <g:link class="item" controller="profile" action="help">${message(code:'menu.user.help')}</g:link>
-                                <g:link class="item" controller="profile" action="errorReport">${message(code:'menu.user.errorReport')}</g:link>
                                 <g:link class="item" controller="profile" action="dsgvo">${message(code:'privacyNotice')}</g:link>
 
                                 <div class="divider"></div>
@@ -614,7 +614,7 @@
                         </g:if>
                     </div>
 
-                        <g:if test="${(controllerName=='yoda' && actionName=='frontend' ) || (controllerName=='subscription'|| controllerName=='license') && actionName=='show' && editable}">
+                        <g:if test="${(controllerName=='dev' && actionName=='frontend' ) || (controllerName=='subscription'|| controllerName=='license') && actionName=='show' && editable}">
                             <div class="item">
                                 <g:if test="${user?.getSettingsValue(UserSettings.KEYS.SHOW_EDIT_MODE, RefdataValue.getByValueAndCategory('Yes', RDConstants.Y_N))?.value=='Yes'}">
                                     <button class="ui icon toggle active  button la-toggle-controls la-popup-tooltip la-delay" data-content="${message(code:'statusbar.showButtons.tooltip')}" data-position="bottom right">
@@ -629,7 +629,7 @@
                             </div>
                         </g:if>
 
-                        <g:if test="${(controllerName=='yoda' && actionName=='frontend' ) || (controllerName=='subscription'|| controllerName=='license') && actionName=='show'}">
+                        <g:if test="${(controllerName=='dev' && actionName=='frontend' ) || (controllerName=='subscription'|| controllerName=='license') && actionName=='show'}">
 
                             <r:script>
                                 $(function(){

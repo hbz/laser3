@@ -211,7 +211,7 @@
         - Objects
       summary: Retrieving packge by identifier
       description: >
-        Supported are queries by following identifiers: *globalUID*, *identifier*, *gokbId* and *ns:identifier*. *Ns:identifier* value has to be defined like this: _xyz:4711_
+        Supported are queries by following identifiers: *globalUID*, *identifier* and *ns:identifier*. *Ns:identifier* value has to be defined like this: _xyz:4711_
 
       parameters:
         - $ref: "#/components/parameters/q"

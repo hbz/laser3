@@ -916,7 +916,7 @@ select.ui.dropdown {
 .ui.dropdown.error,
 .ui.dropdown.error > .text,
 .ui.dropdown.error > .default.text {
-  color: #9F3A38;
+  color: #1B1C1D;
 }
 .ui.selection.dropdown.error {
   background: #FFF6F6;
@@ -930,7 +930,7 @@ select.ui.dropdown {
   border-color: #E0B4B4;
 }
 .ui.dropdown.error > .menu > .item {
-  color: #9F3A38;
+  color: #1B1C1D;
 }
 .ui.multiple.selection.error.dropdown > .label {
   border-color: #E0B4B4;

@@ -26,7 +26,7 @@ class Subscription
 
     // AuditableTrait
     static auditable            = [ ignore: ['version', 'lastUpdated', 'pendingChanges'] ]
-    static controlledProperties = [ 'name', 'startDate', 'endDate', 'manualCancellationDate', 'status', 'type', 'form', 'resource', 'isPublicForApi' ]
+    static controlledProperties = [ 'name', 'startDate', 'endDate', 'manualCancellationDate', 'status', 'type', 'form', 'resource', 'isPublicForApi', 'hasPerpetualAccess' ]
 
     @Transient
     def grailsApplication
@@ -62,7 +62,7 @@ class Subscription
     // If a subscription is slaved then any changes to instanceOf will automatically be applied to this subscription
     boolean isSlaved
 	boolean isPublicForApi
-
+    boolean hasPerpetualAccess
     boolean isMultiYear
 
   String name
@@ -135,6 +135,7 @@ class Subscription
         administrative          column:'sub_is_administrative'
         previousSubscription    column:'sub_previous_subscription_fk' //-> see Links, deleted as ERMS-800
         isSlaved        column:'sub_is_slaved'
+        hasPerpetualAccess column: 'sub_has_perpetual_access', defaultValue: false
         isPublicForApi  column:'sub_is_public_for_api', defaultValue: false
         noticePeriod    column:'sub_notice_period'
         isMultiYear column: 'sub_is_multi_year'
@@ -180,6 +181,7 @@ class Subscription
         cancellationAllowances(nullable:true, blank:true)
         lastUpdated(nullable: true, blank: true)
         isMultiYear(nullable: true, blank: false)
+        hasPerpetualAccess(nullable: false, blank: false)
     }
 
     def afterDelete() {

@@ -389,9 +389,6 @@
           type: integer
         fteStaff:
           type: integer --%>
-        gokbId:
-          type: string
-          example: "9ef8a0d4-a87c-4b39-71b9-c29b269f311b"
         lastUpdated:
           type: string
           format: date-time
@@ -1102,9 +1099,6 @@
         globalUID:
           type: string
           example: "license:7e1e667b-77f0-4495-a1dc-a45ab18c1410"
-        <%--impId:
-          type: string
-          example: "47bf5716-af45-7b7d-bfe1-189ab51f6c66"--%>
         identifiers: # mapping attr ids
           type: array
           items:
@@ -1138,9 +1132,6 @@
           type: array
           items:
             $ref: "#/components/schemas/Identifier"
-        gokbId:
-          type: string
-          example: "e6b41905-f1aa-4d0c-8533-e39f30220f65"
         name:
           type: string
         sortName:
@@ -1155,7 +1146,6 @@
           example: "platform:9d5c918a-55d0-4197-f22d-a418c14105ab"
         gokbId:
           type: string
-          example: "9d5c918a-851f-4639-a6a1-e2dd124c2e02"
         name:
           type: string
         normName:
@@ -1174,9 +1164,6 @@
           type: array
           items:
             $ref: "#/components/schemas/Identifier"
-        <%--impId:
-          type: string
-          example: "ff74dd15-e27f-48a2-b2d7-f02389e62639"--%>
         startDate:
           type: string
           format: date-time
@@ -1200,7 +1187,6 @@
           example: "titleinstancepackageplatform:9d5c918a-80b5-a121-a7f8-b05ac53004a"
         gokbId:
           type: string
-          example: "c920188c-a7f8-54f6-80b5-e0161df3d360"
         identifiers: # mapping attr ids
           type: array
           items:
@@ -1215,7 +1201,6 @@
           example: "title:eeb41a3b-a2c5-0e32-b7f8-3581d2ccf17f"
         gokbId:
           type: string
-          example: "daccb411-e7c6-4048-addf-1d2ccf35817f"
         identifiers: # mapping attr ids
           type: array
           items:

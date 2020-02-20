@@ -8,6 +8,7 @@ import de.laser.api.v0.ApiReader
 import de.laser.api.v0.ApiUnsecuredMapReader
 import de.laser.api.v0.ApiToolkit
 import de.laser.helper.Constants
+import de.laser.helper.RDStore
 import grails.converters.JSON
 import groovy.util.logging.Log4j
 import org.codehaus.groovy.grails.orm.hibernate.cfg.GrailsHibernateUtil
@@ -16,7 +17,7 @@ import org.codehaus.groovy.grails.orm.hibernate.cfg.GrailsHibernateUtil
 class ApiPkg {
 
     /**
-     * @return Package | BAD_REQUEST | PRECONDITION_FAILED
+     * @return Package | BAD_REQUEST | PRECONDITION_FAILED | OBJECT_STATUS_DELETED
      */
     static findPackageBy(String query, String value) {
         def result
@@ -28,9 +29,9 @@ class ApiPkg {
             case 'globalUID':
                 result = Package.findAllWhere(globalUID: value)
                 break
-            /*case 'impId':
-                result = Package.findAllWhere(impId: value)
-                break*/
+//            case 'impId':
+//                result = Package.findAllWhere(impId: value)
+//                break
             case 'gokbId':
                 result = Package.findAllWhere(gokbId: value)
                 break
@@ -41,8 +42,12 @@ class ApiPkg {
                 return Constants.HTTP_BAD_REQUEST
                 break
         }
+        result = ApiToolkit.checkPreconditionFailed(result)
 
-        ApiToolkit.checkPreconditionFailed(result)
+		if (result instanceof Package && result.packageStatus == RDStore.PACKAGE_STATUS_DELETED) {
+			result = Constants.OBJECT_STATUS_DELETED
+		}
+		result
     }
 
     /**
@@ -87,7 +92,7 @@ class ApiPkg {
 		// RefdataValues
 
 		result.packageListStatus 	= pkg.packageListStatus?.value
-		result.packageType      	= pkg.contentType?.value
+		result.packageType      	= pkg.packageType?.value
 		result.packageScope     	= pkg.packageScope?.value
 		result.packageStatus    	= pkg.packageStatus?.value
 		result.breakable        	= pkg.breakable?.value

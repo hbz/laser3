@@ -40,7 +40,7 @@ class ProfileController {
         result
     }
 
-    @Secured(['ROLE_USER'])
+    @Secured(['ROLE_ADMIN'])
     def errorReport() {
         Map<String, Object> result = [:]
         result.user = User.get(springSecurityService.principal.id)
@@ -66,7 +66,7 @@ class ProfileController {
         result
     }
 
-    @Secured(['ROLE_USER'])
+    @Secured(['ROLE_ADMIN'])
     def errorOverview() {
         Map<String, Object> result = [:]
         result.user = User.get(springSecurityService.principal.id)

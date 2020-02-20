@@ -591,7 +591,7 @@ class ApiCollectionReader {
         result.normTitle        = title.normTitle
         result.keyTitle         = title.keyTitle
         result.sortTitle        = title.sortTitle
-        result.impId            = title.impId
+        //result.impId            = title.impId
         result.dateCreated      = title.dateCreated
         result.lastUpdated      = title.lastUpdated
 
