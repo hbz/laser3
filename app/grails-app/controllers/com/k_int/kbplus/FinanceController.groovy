@@ -1089,7 +1089,9 @@ class FinanceController extends AbstractDebugController {
               newCostItem.financialYear = financialYear
               newCostItem.copyBase = params.copyBase ? genericOIDService.resolveOID(params.copyBase) : null
 
-              newCostItem.includeInSubscription = null //todo Discussion needed, nobody is quite sure of the functionality behind this...
+              //Discussion needed, nobody is quite sure of the functionality behind this...
+              //I am, it is completely legacy
+              //newCostItem.includeInSubscription = null
               newCostItem.reference = params.newReference ? params.newReference.trim() : null
 
 
