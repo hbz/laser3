@@ -19,8 +19,10 @@
 
     <semui:messages data="${flash}" />
 
-    <input class="ui button" value="${message(code:'menu.institutions.manage_props.create_new')}"
-           data-semui="modal" data-href="#addPropertyDefinitionModal" type="submit">
+    <g:if test="${editable}">
+        <input class="ui button" value="${message(code:'menu.institutions.manage_props.create_new')}"
+               data-semui="modal" data-href="#addPropertyDefinitionModal" type="submit">
+    </g:if>
 
     <g:if test="${propertyDefinitions}">
 
@@ -51,7 +53,9 @@
                                     <th>${message(code:'propertyDefinition.expl.label')}</th>
                                     <th>${message(code:'default.type.label')}</th>
                                     <th>${message(code:'propertyDefinition.count.label')}</th>
-                                    <th class="la-action-info">${message(code:'default.actions.label')}</th>
+                                    <g:if test="${editable}">
+                                        <th class="la-action-info">${message(code:'default.actions.label')}</th>
+                                    </g:if>
                                 </tr>
                             </thead>
                             <tbody>
@@ -105,18 +109,20 @@
                                         <td>
                                             <span class="ui circular label">${pd.countUsages()}</span>
                                         </td>
-                                        <td class="x">
-                                            <g:if test="${pd.countUsages()==0}">
-                                                <g:link action="managePrivateProperties"
-                                                        params="[cmd:'delete', deleteIds: pd?.id]"
-                                                        data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.property", args: [fieldValue(bean: pd, field: "name")])}"
-                                                        data-confirm-term-how="delete"
-                                                        class="ui icon negative button js-open-confirm-modal"
-                                                        role="button">
-                                                    <i class="trash alternate icon"></i>
-                                                </g:link>
-                                            </g:if>
-                                        </td>
+                                        <g:if test="${editable}">
+                                            <td class="x">
+                                                <g:if test="${pd.countUsages()==0}">
+                                                    <g:link action="managePrivateProperties"
+                                                            params="[cmd:'delete', deleteIds: pd?.id]"
+                                                            data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.property", args: [fieldValue(bean: pd, field: "name")])}"
+                                                            data-confirm-term-how="delete"
+                                                            class="ui icon negative button js-open-confirm-modal"
+                                                            role="button">
+                                                        <i class="trash alternate icon"></i>
+                                                    </g:link>
+                                                </g:if>
+                                            </td>
+                                        </g:if>
                                     </tr>
                                 </g:each>
                             </tbody>

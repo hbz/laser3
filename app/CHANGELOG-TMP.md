@@ -2,6 +2,12 @@
 
 **Ticket    Date    Branch      Author  Feature/Bug     Description/Keywords**
 
+2209    21.02.2020  hbz-dev     Andreas Bug         siehe ERMS-2207
+
+2207    21.02.2020  hbz-dev     Andreas Bug         OrgRole-Default-Wert für isPublic auf false gesetzt
+
+2132    21.02.2020  hbz-dev     Andreas Bug         Konzeptgemäße Abstufung auf INST_USER bei bestimmten Seiten
+
 2153    19.02.2020  hbz-dev     Andreas Feature     Ausblenden und Sichern der Fehlermeldung
 
 2119    19.02.2020  hbz-dev     Andreas Feature     Lizenz-Flag "Dauerhafter Zugriff" ("perpetual access") implementiert

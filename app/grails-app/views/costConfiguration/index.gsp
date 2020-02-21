@@ -17,21 +17,6 @@
 
          <semui:msg class="warning" header="${message(code: 'message.information')}" message="costConfiguration.preset" />
         <semui:messages data="${flash}"/>
-        <%--<div class="content ui form">
-            <div class="two fields wide">
-                <div class="field">
-                    <g:message code="costConfiguration.preset"/>
-                </div>
-                <div class="field">
-                    <g:if test="${editable}">
-                        <semui:xEditableRefData owner="${institution}" field="costConfigurationPreset" emptytext="${message(code:'financials.costItemConfiguration.notSet')}" config="Cost configuration"/>
-                    </g:if>
-                    <g:else>
-                        ${institution.costConfigurationPreset ? institution.costConfigurationPreset : message(code:'financials.costItemConfiguration.notSet')}
-                    </g:else>
-                </div>
-            </div>
-        </div>--%>
         <g:if test="${editable}">
             <div class="content ui form">
                 <div class="fields">
@@ -49,8 +34,10 @@
                     <tr>
                         <th><g:message code="financials.costItemElement"/></th>
                         <th><g:message code="financials.costItemConfiguration"/></th>
-                        <th><g:message code="financials.setAll"/></th>
-                        <th><g:message code="default.actions.label"/></th>
+                        <g:if test="${editable}">
+                            <th><g:message code="financials.setAll"/></th>
+                            <th><g:message code="default.actions.label"/></th>
+                        </g:if>
                     </tr>
                 </thead>
                 <tbody>
@@ -60,23 +47,23 @@
                             <td>
                                 <semui:xEditableRefData owner="${ciec}" field="elementSign" emptytext="${message(code:'financials.costItemConfiguration.notSet')}" config="${de.laser.helper.RDConstants.COST_CONFIGURATION}"/>
                             </td>
-                            <td>
-                                <g:link class="button js-open-confirm-modal"
+                            <g:if test="${editable}">
+                                <td>
+                                    <g:link class="button js-open-confirm-modal"
                                             data-confirm-tokenMsg="${message(code:'confirmation.content.bulkCostConfiguration')}"
                                             data-confirm-term-how="ok"
                                             action="setAllCostItems" params="${[cie:ciec.costItemElement.class.name+":"+ciec.costItemElement.id]}">
                                         ${message(code:'costConfiguration.configureAllCostItems')}
-                                </g:link>
-                            </td>
-                            <td>
-                                <g:link class="ui icon negative button js-open-confirm-modal"
-                                        data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.costItemElementConfiguration", args: [ciec.costItemElement.getI10n("value")])}"
-                                        data-confirm-term-how="delete"
-                                        controller="costConfiguration" action="deleteCostConfiguration"
-                                        params="${[ciec: ciec.id]}">
-                                    <i class="trash alternate icon"></i>
-                                </g:link>
-                            </td>
+                                    </g:link>
+                                    <g:link class="ui icon negative button js-open-confirm-modal"
+                                            data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.costItemElementConfiguration", args: [ciec.costItemElement.getI10n("value")])}"
+                                            data-confirm-term-how="delete"
+                                            controller="costConfiguration" action="deleteCostConfiguration"
+                                            params="${[ciec: ciec.id]}">
+                                        <i class="trash alternate icon"></i>
+                                    </g:link>
+                                </td>
+                            </g:if>
                         </tr>
                     </g:each>
                 </tbody>

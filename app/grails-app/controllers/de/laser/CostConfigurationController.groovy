@@ -13,31 +13,11 @@ class CostConfigurationController {
     def accessService
     def genericOIDService
 
-    private final def user_role = Role.findByAuthority('INST_EDITOR')
-
-    @DebugAnnotation(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_EDITOR", specRole="ROLE_ADMIN")
+    @DebugAnnotation(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_USER", specRole="ROLE_ADMIN")
     @Secured(closure = {
-        ctx.accessService.checkPermAffiliationX("ORG_INST,ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN")
+        ctx.accessService.checkPermAffiliationX("ORG_INST,ORG_CONSORTIUM", "INST_USER", "ROLE_ADMIN")
     })
-    def index() {
-        if(params) {
-            CostItemElementConfiguration ciec = new CostItemElementConfiguration()
-            ciec.costItemElement = genericOIDService.resolveOID(params.cie)
-            ciec.elementSign = genericOIDService.resolveOID(params.sign)
-            ciec.forOrganisation = (Org) contextService.getOrg()
-            if(!ciec.validate()) {
-                ciec.errors.allErrors.collect {
-                    log.error("Error occurred: ${it.properties.field} has erroneous value ${it.properties.rejectedValue}, error code: ${it.properties.code}")
-                }
-            }
-            else ciec.save(flush:true)
-        }
-        getCurrentConfigurations()
-    }
-
-    @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")')
-    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_EDITOR") })
-    def getCurrentConfigurations() {
+    Map<String, Object> index() {
         Map<String, Object> result = [:]
 
         Org org = contextService.getOrg()
@@ -52,7 +32,7 @@ class CostConfigurationController {
             }
         }
 
-        result.editable    =  accessService.checkMinUserOrgRole(user, org, user_role)
+        result.editable    =  accessService.checkMinUserOrgRole(user, org, "INST_EDITOR")
         result.costItemElementConfigurations = costItemElementConfigurations
         result.costItemElements = costItemElements
         result.institution = org
@@ -60,33 +40,54 @@ class CostConfigurationController {
         result
     }
 
-    @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")')
-    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_EDITOR") })
-    def createNewConfiguration() {
-        def result = [editable:true] //the user clicking here is already authenticated
-        def costItemElements = RefdataCategory.getAllRefdataValues(RDConstants.COST_ITEM_ELEMENT)
-        def elementsAlreadyTaken = []
+    @DebugAnnotation(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_EDITOR", specRole="ROLE_ADMIN")
+    @Secured(closure = {
+        ctx.accessService.checkPermAffiliationX("ORG_INST,ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN")
+    })
+    Object createNewConfiguration() {
+        Map<String, Object> result = [editable:true] //the user clicking here is already authenticated
+        Set<RefdataValue> costItemElements = RefdataCategory.getAllRefdataValues(RDConstants.COST_ITEM_ELEMENT)
+        Set<RefdataValue> elementsAlreadyTaken = []
         Org org = contextService.getOrg()
 
         costItemElements.each { cie ->
-            def currentSetting = CostItemElementConfiguration.findByCostItemElementAndForOrganisation(RefdataValue.getByValueAndCategory(cie.value, RDConstants.COST_ITEM_ELEMENT),org)
+            CostItemElementConfiguration currentSetting = CostItemElementConfiguration.findByCostItemElementAndForOrganisation(RefdataValue.getByValueAndCategory(cie.value, RDConstants.COST_ITEM_ELEMENT),org)
             if(currentSetting) {
                 elementsAlreadyTaken.add(cie)
             }
         }
         costItemElements.removeAll(elementsAlreadyTaken)
 
-        result.formUrl = g.createLink([controller:'costConfiguration',action:'index'])
+        result.formUrl = g.createLink([controller:'costConfiguration',action:'processConfigurationCreation'])
         result.costItemElements = costItemElements
         result.elementSigns = RefdataCategory.getAllRefdataValues(RDConstants.COST_CONFIGURATION)
         result.institution = org
 
         render template: '/templates/newCostItemElementConfiguration', model: result
-        return
     }
 
-    @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")')
-    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_EDITOR") })
+    @DebugAnnotation(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_EDITOR", specRole="ROLE_ADMIN")
+    @Secured(closure = {
+        ctx.accessService.checkPermAffiliationX("ORG_INST,ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN")
+    })
+    def processConfigurationCreation() {
+        CostItemElementConfiguration ciec = new CostItemElementConfiguration()
+        ciec.costItemElement = genericOIDService.resolveOID(params.cie)
+        ciec.elementSign = genericOIDService.resolveOID(params.sign)
+        ciec.forOrganisation = (Org) contextService.getOrg()
+        if(!ciec.validate()) {
+            ciec.errors.allErrors.collect {
+                log.error("Error occurred: ${it.properties.field} has erroneous value ${it.properties.rejectedValue}, error code: ${it.properties.code}")
+            }
+        }
+        else ciec.save()
+        redirect action: 'index'
+    }
+
+    @DebugAnnotation(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_EDITOR", specRole="ROLE_ADMIN")
+    @Secured(closure = {
+        ctx.accessService.checkPermAffiliationX("ORG_INST,ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN")
+    })
     def deleteCostConfiguration() {
         if(params.ciec) {
             CostItemElementConfiguration ciec = CostItemElementConfiguration.get(params.ciec)
@@ -99,8 +100,10 @@ class CostConfigurationController {
         redirect(url: request.getHeader('referer'))
     }
 
-    @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")')
-    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_EDITOR") })
+    @DebugAnnotation(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_EDITOR", specRole="ROLE_ADMIN")
+    @Secured(closure = {
+        ctx.accessService.checkPermAffiliationX("ORG_INST,ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN")
+    })
     def setAllCostItems() {
         def cie = genericOIDService.resolveOID(params.cie)
         Org org = contextService.org
