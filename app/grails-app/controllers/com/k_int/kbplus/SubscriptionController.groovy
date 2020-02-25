@@ -434,7 +434,7 @@ class SubscriptionController extends AbstractDebugController {
 
                     def numOfPCsChildSubs = result.package.removePackagePendingChanges(childSubs.id, false)
 
-                    List numOfIEsChildSubs = IssueEntitlement.executeQuery("select ie.id ${queryChildSubs}", queryParamChildSubs).size()
+                    Integer numOfIEsChildSubs = IssueEntitlement.executeQuery("select ie.id ${queryChildSubs}", queryParamChildSubs).size()
 
                     if(spChildSubs.size() > 0) {
                         Map conflict_item_pkgChildSubs = [name: "${g.message(code: "subscription.details.unlink.linkedPackageSubChild")}", details: [['text': "${g.message(code: "subscription.details.unlink.linkedPackageSubChild.numbers")} " + spChildSubs.size()]], action: [actionRequired: false, text: "${g.message(code: "subscription.details.unlink.linkedPackage.action")}"]]
