@@ -360,10 +360,6 @@
             <g:render template="/templates/tasks/card"
                       model="${[ownobj: surveyConfig, owntp: 'surveyConfig', css_class: '']}"/>
 
-            <div id="container-documents">
-                <g:render template="/survey/cardDocuments"
-                          model="${[ownobj: surveyConfig, owntp: 'surveyConfig', css_class: '']}"/>
-            </div>
 
             <div id="container-notes">
                 <g:render template="/templates/notes/card"
@@ -447,7 +443,7 @@
                                     com.k_int.kbplus.SurveyConfigProperties.findBySurveyConfigAndSurveyProperty(surveyConfig, surveyProperty?.surveyProperty)
                                     && (com.k_int.kbplus.SurveyProperty.findByName('Participation')?.id != surveyProperty?.surveyProperty?.id)}">
                                 <g:link class="ui icon negative button"
-                                        controller="survey" action="deleteSurveyPropfromSub"
+                                        controller="survey" action="deleteSurveyPropFromConfig"
                                         id="${surveyProperty?.id}">
                                     <i class="trash alternate icon"></i>
                                 </g:link>
@@ -460,7 +456,7 @@
                 <tr>
                     <g:if test="${editable}">
                         <td colspan="6">
-                            <g:form action="addSurveyConfig" controller="survey" method="post" class="ui form">
+                            <g:form action="addSurveyPropToConfig" controller="survey" method="post" class="ui form">
                                 <g:hiddenField name="id" value="${surveyInfo?.id}"/>
                                 <g:hiddenField name="surveyConfigID" value="${surveyConfig?.id}"/>
 
@@ -480,8 +476,6 @@
                                 <input type="submit" class="ui button"
                                        value="${message(code: 'surveyConfigsInfo.add.button')}"/>
 
-                                %{--<input type="submit" name="addtoallSubs" class="ui button"
-                                       value="${message(code: "surveyConfigsInfo.addtoallSubs.button")}"/>--}%
                             </g:form>
                         </td>
                     </g:if>

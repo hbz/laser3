@@ -253,7 +253,7 @@ ${message(code: 'subscriptionSurvey.label')} - ${surveyInfo.name}
 <g:if test="${surveyProperties.size() > 0}">
 
     <semui:form>
-        <h3 class="ui icon header la-clear-before la-noMargin-top">${message(code: 'surveyConfigs.list.propertys')} <semui:totalNumber
+        <h3 class="ui icon header la-clear-before la-noMargin-top">${message(code: 'surveyConfigs.list.properties')} <semui:totalNumber
                 total="${surveyProperties.size()}"/></h3>
         <table class="ui celled sortable table la-table">
             <thead>

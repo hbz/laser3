@@ -165,9 +165,9 @@
                     </td>
                     <td>
                         <div class="la-flexbox">
-                            <g:if test="${surveyConfig?.isSubscriptionSurveyFix}">
+                            <g:if test="${surveyConfig?.subSurveyUseForTransfer}">
                                 <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
-                                      data-content="${message(code: "surveyConfig.isSubscriptionSurveyFix.label.info2")}">
+                                      data-content="${message(code: "surveyConfig.subSurveyUseForTransfer.label.info2")}">
                                     <i class="yellow icon envelope large "></i>
                                 </span>
                             </g:if>

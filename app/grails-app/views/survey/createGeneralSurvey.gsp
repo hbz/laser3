@@ -36,20 +36,11 @@
                               value="${surveyInfo?.endDate}" required="" />
         </div>
 
-
-        <div class="field required ">
-            <label>${message(code: 'surveyInfo.type.label')}</label>
-            <g:if test="${surveyInfo?.type}">
-                <b>${surveyInfo?.type?.getI10n('value')}</b>
-            </g:if><g:else>
-            %{--Erstmal erst nur Verlängerungsumfragen --}%
-            <laser:select class="ui dropdown" name="type"
-                          from="${com.k_int.kbplus.RefdataValue.getByValueAndCategory('renewal', de.laser.helper.RDConstants.SURVEY_TYPE)}"
-                          optionKey="id"
-                          optionValue="value"
-                          value="${surveyInfo?.type?.id}"
-                          noSelection="${['': message(code: 'default.select.choose.label')]}" required=""/>
-        </g:else>
+        <div class="field required">
+            <label>${message(code: 'surveyInfo.isMandatory.label.info')}</label>
+            <div class="ui checkbox">
+                <input type="checkbox" name="mandatory" >
+            </div>
         </div>
 
         <div class="field ">

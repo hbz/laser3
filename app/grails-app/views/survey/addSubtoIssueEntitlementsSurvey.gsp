@@ -38,12 +38,6 @@
         </div>
 
 
-        <div class="field required ">
-            <label>${message(code: 'surveyInfo.type.label')}</label>
-            ${com.k_int.kbplus.RefdataValue.getByValueAndCategory('selection', de.laser.helper.RDConstants.SURVEY_TYPE).getI10n('value')}
-        </div>
-
-
         <div class="field ">
             <label>${message(code: 'surveyInfo.comment.label')}</label>
 

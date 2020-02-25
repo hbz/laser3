@@ -36,30 +36,21 @@
                               value="${surveyInfo?.endDate}" required="" />
         </div>
 
-
-        <div class="field required ">
-            <label>${message(code: 'surveyInfo.type.label')}</label>
-            <g:if test="${surveyInfo?.type}">
-                <b>${surveyInfo?.type?.getI10n('value')}</b>
-            </g:if><g:else>
-            %{--Erstmal erst nur Verlängerungsumfragen --}%
-            <laser:select class="ui dropdown" name="type"
-                          from="${com.k_int.kbplus.RefdataValue.getByValueAndCategory('renewal', de.laser.helper.RDConstants.SURVEY_TYPE)}"
-                          optionKey="id"
-                          optionValue="value"
-                          value="${surveyInfo?.type?.id}"
-                          noSelection="${['': message(code: 'default.select.choose.label')]}" required=""/>
-        </g:else>
-        </div>
-
-        <g:if test="${!(com.k_int.kbplus.SurveyConfig.findAllBySubscriptionAndIsSubscriptionSurveyFix(subscription, true))}">
+        <g:if test="${!(com.k_int.kbplus.SurveyConfig.findAllBySubscriptionAndSubSurveyUseForTransfer(subscription, true))}">
             <div class="field required">
-                <label>${message(code: 'surveyConfig.isSubscriptionSurveyFix.label.info')}</label>
-                <div class="ui checkbox">
-                    <input type="checkbox" name="isSubscriptionSurveyFix" ${disableIsSubscriptionSurveyFix}>
+                <label>${message(code: 'surveyConfig.subSurveyUseForTransfer.label.info')}</label>
+                <div>
+                    <input type="checkbox" id="subSurveyUseForTransfer" name="subSurveyUseForTransfer" ${disableSubSurveyUseForTransfer} >
                 </div>
             </div>
         </g:if>
+
+        <div class="field required">
+            <label>${message(code: 'surveyInfo.isMandatory.label.info')}</label>
+            <div>
+                <input type="checkbox" id="mandatory" name="mandatory" >
+            </div>
+        </div>
 
         <div class="field ">
             <label>${message(code: 'surveyInfo.comment.label')}</label>
@@ -75,6 +66,14 @@
 
     </g:form>
 </semui:form>
+
+<script language="JavaScript">
+        $('#subSurveyUseForTransfer').click(function () {
+            if ($(this).prop('checked')) {
+                $('#mandatory').prop('checked', true)
+            }
+        })
+</script>
 
 </body>
 </html>

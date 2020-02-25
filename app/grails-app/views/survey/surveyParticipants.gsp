@@ -81,7 +81,7 @@
                             controller="survey" action="surveyParticipants"
                             id="${surveyConfig?.surveyInfo?.id}"
                             params="[surveyConfigID: surveyConfig?.id, tab: 'consortiaMembers']">
-                        ${message(code: 'surveyParticipants.consortiaMembers')}
+                        ${surveyConfig?.type == 'Subscription'  ? message(code: 'surveyParticipants.consortiaMembers') : message(code: 'surveyParticipants.label')}
                         <div class="ui floating circular label">${consortiaMembers.size() ?: 0}</div>
                     </g:link>
                 </g:if>

@@ -3994,6 +3994,9 @@ AND EXISTS (
             Set<PropertyDefinition> itResult = PropertyDefinition.findAllByDescrAndTenant(it, result.institution, [sort: 'name']) // ONLY private properties!
             propDefs[it] = itResult
         }
+
+        propDefs << ["Survey Property": SurveyProperty.findAllByOwner(result.institution, [sort: 'name'])]
+
         result.propertyDefinitions = propDefs
 
         def (usedPdList, attrMap) = propertyService.getUsageDetails()
@@ -4018,11 +4021,13 @@ AND EXISTS (
             propDefs[it] = itResult
         }
 
+        propDefs << ["Survey Property": SurveyProperty.findAllByOwner(null, [sort: 'name'])]
+
         def (usedPdList, attrMap) = propertyService.getUsageDetails()
         result.editable = false
         result.propertyDefinitions = propDefs
-        result.attrMap = attrMap
-        result.usedPdList = usedPdList
+        //result.attrMap = attrMap
+        //result.usedPdList = usedPdList
 
         result.language = LocaleContextHolder.getLocale().toString()
         result.propertyType = 'custom'

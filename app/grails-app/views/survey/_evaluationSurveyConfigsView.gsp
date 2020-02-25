@@ -79,7 +79,7 @@
     </semui:form>
 </g:if>
 <g:else>
-    <h3 class="ui icon header la-clear-before la-noMargin-top">${message(code: 'surveyConfigs.list.propertys')} <semui:totalNumber
+    <h3 class="ui icon header la-clear-before la-noMargin-top">${message(code: 'surveyConfigs.list.properties')} <semui:totalNumber
             total="${surveyConfigs.findAll { it?.type == 'SurveyProperty' }.size()}"/></h3>
     <semui:form>
         <table class="ui celled sortable table la-table">
