@@ -65,6 +65,18 @@
                 <div class="ui divider"></div>
             </g:if>
 
+            <g:if test="${surveyInfo.isSubscriptionSurvey && surveyConfig && surveyConfig?.type == 'Subscription' && !surveyConfig?.pickAndChoose
+                    && surveyInfo.status?.id in [de.laser.helper.RDStore.SURVEY_IN_EVALUATION?.id, de.laser.helper.RDStore.SURVEY_COMPLETED?.id]}">
+                <semui:actionsDropdownItem controller="survey" action="renewalWithSurvey"
+                        params="[surveyConfigID: surveyConfig?.id, id: surveyInfo?.id]"
+                                           message="surveyInfo.renewal.action"/>
+                <div class="ui divider"></div>
+                <semui:actionsDropdownItem controller="survey" action="compareMembersOfTwoSubs"
+                                           params="[surveyConfigID: surveyConfig?.id, id: surveyInfo?.id]"
+                                           message="surveyInfo.transferOverView"/>
+                <div class="ui divider"></div>
+            </g:if>
+
             <g:if test="${surveyInfo && surveyInfo.status?.id == de.laser.helper.RDStore.SURVEY_SURVEY_COMPLETED?.id}">
                 <semui:actionsDropdownItem controller="survey" action="setInEvaluation" params="[id: params.id]"
                                            message="evaluateSurvey.button" tooltip=""/>
@@ -75,6 +87,8 @@
                 <semui:actionsDropdownItem controller="survey" action="setCompleteSurvey" params="[id: params.id]"
                                            message="completeSurvey.button" tooltip=""/>
                 <div class="ui divider"></div>
+
+
             </g:if>
 
             <g:if test="${!surveyConfig?.pickAndChoose}">
