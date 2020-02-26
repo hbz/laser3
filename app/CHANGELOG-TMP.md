@@ -2,6 +2,10 @@
 
 **Ticket    Date    Branch      Author  Feature/Bug     Description/Keywords**
 
+2204    26.02.2020  hbz-dev     Andreas Bug         Datumsausgabe in Export der Konsortialteilnehmer korrigiert
+
+2208    26.02.2020  hbz-dev     Andreas Bug         Bezeichnungen korrigiert
+
 2209    21.02.2020  hbz-dev     Andreas Bug         siehe ERMS-2207
 
 2207    21.02.2020  hbz-dev     Andreas Bug         OrgRole-Default-Wert für isPublic auf false gesetzt
