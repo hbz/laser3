@@ -70,8 +70,8 @@ class GOKbService {
                     pkg.name = (r.name != "null") ? r.name: ''
                     pkg.sortname = (r.sortname != "null") ? r.sortname: ''
                     //pkg.fixed = r.fixed
-                    pkg.platformName = (r.platformName != "null") ? r.platformName : ''
-                    pkg.platformUuid = r.platformUuid ?: ''
+                    pkg.platformName = (r.nominalPlatformName != "null") ? r.nominalPlatformName : ''
+                    pkg.platformUuid = r.nominalPlatformUuid ?: ''
                     //pkg.breakable = r.breakable
                     pkg.providerName = (r.cpname != "null") ? r.cpname : ''
                     pkg.provider = r.provider
@@ -132,8 +132,8 @@ class GOKbService {
                     pkg.name = (r.name != "null") ? r.name: ''
                     pkg.sortname = (r.sortname != "null") ? r.sortname: ''
                     //pkg.fixed = r.fixed
-                    pkg.platformName = (r.platformName != "null") ? r.platformName : ''
-                    pkg.platformUuid = r.platformUuid ?: ''
+                    pkg.platformName = (r.nominalPlatformName != "null") ? r.nominalPlatformName : ''
+                    pkg.platformUuid = r.nominalPlatformUuid ?: ''
                     //pkg.breakable = r.breakable
                     pkg.providerName = (r.cpname != "null") ? r.cpname : ''
                     pkg.provider = r.provider
@@ -277,8 +277,8 @@ class GOKbService {
                         pkg.name = (r.name != "null") ? r.name : ''
                         pkg.sortname = (r.sortname != "null") ? r.sortname : ''
                         //pkg.fixed = r.fixed
-                        pkg.platformName = (r.platformName != "null") ? r.platformName : ''
-                        pkg.platformUuid = r.platformUuid ?: ''
+                        pkg.platformName = (r.nominalPlatformName != "null") ? r.nominalPlatformName : ''
+                        pkg.platformUuid = r.nominalPlatformUuid ?: ''
                         //pkg.breakable = r.breakable
                         pkg.providerName = (r.cpname != "null") ? r.cpname : ''
                         pkg.provider = r.provider
@@ -338,8 +338,8 @@ class GOKbService {
                         pkg.name = (r.name != "null") ? r.name : ''
                         pkg.sortname = (r.sortname != "null") ? r.sortname : ''
                         //pkg.fixed = r.fixed
-                        pkg.platformName = (r.platformName != "null") ? r.platformName : ''
-                        pkg.platformUuid = r.platformUuid ?: ''
+                        pkg.platformName = (r.nominalPlatformName != "null") ? r.nominalPlatformName : ''
+                        pkg.platformUuid = r.nominalPlatformUuid ?: ''
                         //pkg.breakable = r.breakable
                         pkg.providerName = (r.cpname != "null") ? r.cpname : ''
                         pkg.provider = r.provider

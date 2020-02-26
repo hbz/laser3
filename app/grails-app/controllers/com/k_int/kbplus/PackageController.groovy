@@ -472,39 +472,25 @@ class PackageController extends AbstractDebugController {
 
     @Secured(['ROLE_USER'])
     def show() {
-        def verystarttime = exportService.printStart("Package show")
+        exportService.printStart("Package show")
 
         Map<String, Object> result = [:]
         boolean showDeletedTipps = false
 
-        //ask Daniel: downgrade to ROLE_DATAMANAGER?
-        if (SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN,ROLE_PACKAGE_EDITOR')) {
-            result.editable = true
-            showDeletedTipps = true
-        } else {
-            result.editable = false
-        }
-
         result.user = User.get(springSecurityService.principal.id)
-        def packageInstance = Package.get(params.id)
+        Package packageInstance = Package.get(params.id)
         if (!packageInstance) {
             flash.message = message(code: 'default.not.found.message', args: [message(code: 'package.label'), params.id])
             redirect action: 'list'
             return
         }
 
-        def pending_change_pending_status = RefdataValue.getByValueAndCategory('Pending', RDConstants.PENDING_CHANGE_STATUS)
-
-        result.pendingChanges = PendingChange.executeQuery("select pc from PendingChange as pc where pc.pkg=? and ( pc.status is null or pc.status = ? ) order by ts, payload", [packageInstance, pending_change_pending_status]);
-
-        log.debug("Package has ${result.pendingChanges?.size()} pending changes");
-
         result.pkg_link_str = "${grailsApplication.config.grails.serverURL}/package/show/${params.id}"
 
         // tasks
-        def contextOrg = contextService.getOrg()
+        Org contextOrg = contextService.getOrg()
         result.tasks = taskService.getTasksByResponsiblesAndObject(User.get(springSecurityService.principal.id), contextOrg, packageInstance)
-        def preCon = taskService.getPreconditionsWithoutTargets(contextOrg)
+        Map<String,Object> preCon = taskService.getPreconditionsWithoutTargets(contextOrg)
         result << preCon
 
         result.contextOrg = contextOrg
@@ -514,7 +500,7 @@ class PackageController extends AbstractDebugController {
 
         // restrict visible for templates/links/orgLinksAsList
         result.visibleOrgs = packageInstance.orgs
-        result.visibleOrgs.sort { it.org.sortname }
+        //result.visibleOrgs.sort { it.org.sortname }
 
         List<RefdataValue> roleTypes = [RDStore.OR_SUBSCRIBER]
         if(accessService.checkPerm('ORG_CONSORTIUM')) {
@@ -529,16 +515,15 @@ class PackageController extends AbstractDebugController {
 
         result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeTMP();
         params.max = result.max
-        def paginate_after = params.paginate_after ?: ((2 * result.max) - 1);
-        result.offset = params.offset ? Integer.parseInt(params.offset) : 0;
+        result.offset = params.offset ? Integer.parseInt(params.offset) : 0
 
-        def limits = (!params.format || params.format.equals("html")) ? [max: result.max, offset: result.offset] : [offset: 0]
+        Map<String,Object> limits = (!params.format || params.format.equals("html")) ? [max: result.max, offset: result.offset] : [offset: 0]
 
         // def base_qry = "from TitleInstancePackagePlatform as tipp where tipp.pkg = ? "
-        def qry_params = [pkgInstance: packageInstance]
+        Map<String,Object> qry_params = [pkgInstance: packageInstance]
 
         SimpleDateFormat sdf = DateUtil.getSDF_NoTime()
-        def today = new Date()
+        Date today = new Date()
         if (!params.asAt) {
             if (packageInstance.startDate > today) {
                 params.asAt = sdf.format(packageInstance.startDate)
@@ -546,7 +531,7 @@ class PackageController extends AbstractDebugController {
                 params.asAt = sdf.format(packageInstance.endDate)
             }
         }
-        def date_filter
+        Date date_filter
         if (params.mode == 'advanced') {
             date_filter = null
             params.asAt = null
@@ -556,7 +541,7 @@ class PackageController extends AbstractDebugController {
             date_filter = today
         }
 
-        def query = filterService.generateBasePackageQuery(params, qry_params, showDeletedTipps, date_filter,"Package")
+        Map<String,Object> query = filterService.generateBasePackageQuery(params, qry_params, showDeletedTipps, date_filter,"Package")
 
         // log.debug("Base qry: ${base_qry}, params: ${qry_params}, result:${result}");
         List<TitleInstancePackagePlatform> titlesList = TitleInstancePackagePlatform.executeQuery("select tipp " + query.base_qry, query.qry_params, limits)
@@ -564,7 +549,7 @@ class PackageController extends AbstractDebugController {
         result.unfiltered_num_tipp_rows = TitleInstancePackagePlatform.executeQuery(
                 "select tipp.id from TitleInstancePackagePlatform as tipp where tipp.pkg = ?", [packageInstance]).size()
 
-        result.lasttipp = result.offset + result.max > result.num_tipp_rows ? result.num_tipp_rows : result.offset + result.max;
+        result.lasttipp = result.offset + result.max > result.num_tipp_rows ? result.num_tipp_rows : result.offset + result.max
 
         if (OrgSettings.get(contextOrg, OrgSettings.KEYS.NATSTAT_SERVER_REQUESTOR_ID) instanceof OrgSettings){
             result.statsWibid = contextOrg.getIdentifierByType('wibid')?.value
@@ -573,13 +558,14 @@ class PackageController extends AbstractDebugController {
         }
 
         result.packageInstance = packageInstance
-        if (executorWrapperService.hasRunningProcess(packageInstance)) {
-            result.processingpc = true
-        }
 
+        /*
+        TODO [ticket=1142] matter of ERMS-1142
         def filename = "${escapeService.escapeString(result.packageInstance.name)}_asAt_${date_filter ? sdf.format(date_filter) : sdf.format(today)}"
+        */
         withFormat {
             html result
+            /*
             json {
                 def map = exportService.getPackageMap(packageInstance, result.titlesList)
 
@@ -599,6 +585,7 @@ class PackageController extends AbstractDebugController {
                 response.contentType = "text/xml"
                 exportService.streamOutXML(doc, response.outputStream)
             }
+        */
         }
     }
 

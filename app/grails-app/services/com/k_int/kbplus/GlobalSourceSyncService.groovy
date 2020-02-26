@@ -209,6 +209,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
         }
         if(packageData.nominalPlatform) {
             platformUUID = (String) packageData.nominalPlatform.'@uuid'.text()
+
         }
         //ex packageConv, processing TIPPs - conversion necessary because package may be not existent in LAS:eR; then, no comparison is needed any more
         List<Map<String,Object>> tipps = []
@@ -231,6 +232,9 @@ class GlobalSourceSyncService extends AbstractLockableService {
                     result.consistent = consistent //needed?
                     result.fixed = fixed //needed?
                     if(result.save()) {
+                        if(platformUUID) {
+                            result.nominalPlatform = Platform.findByGokbId(platformUUID)
+                        }
                         tipps.each { Map<String, Object> tippB ->
                             TitleInstancePackagePlatform tippA = result.tipps.find { TitleInstancePackagePlatform b -> b.gokbId == tippB.uuid } //we have to consider here TIPPs, too, which were deleted but have been reactivated
                             if(tippA) {
