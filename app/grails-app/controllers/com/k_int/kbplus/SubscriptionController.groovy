@@ -1277,16 +1277,16 @@ class SubscriptionController extends AbstractDebugController {
         result.propList = PropertyDefinition.findAllPublicAndPrivateOrgProp(contextService.org)
 
         //if (params.showDeleted == 'Y') {
-
-        def validSubChilds = Subscription.findAllByInstanceOf(result.subscriptionInstance)
-        //Sortieren
+        Set<RefdataValue> subscriberRoleTypes = [OR_SUBSCRIBER, OR_SUBSCRIBER_CONS, OR_SUBSCRIBER_CONS_HIDDEN, OR_SUBSCRIBER_COLLECTIVE]
+        result.validSubChilds = Subscription.executeQuery('select s from Subscription s join s.orgRelations oo where s.instanceOf = :parent and oo.roleType in :subscriberRoleTypes order by oo.org.sortname asc, oo.org.name asc',[parent:result.subscriptionInstance,subscriberRoleTypes:subscriberRoleTypes])
+        /*Sortieren --> an DB abgegeben
         result.validSubChilds = validSubChilds.sort { a, b ->
             def sa = a.getSubscriber()
             def sb = b.getSubscriber()
             (sa.sortname ?: sa.name).compareTo((sb.sortname ?: sb.name))
-        }
+        }*/
         ArrayList<Long> filteredOrgIds = getOrgIdsForFilter()
-        result.filteredSubChilds = new ArrayList<Subscription>()
+        result.filteredSubChilds = []
         result.validSubChilds.each { sub ->
             List<Org> subscr = sub.getAllSubscribers()
             def filteredSubscr = []
@@ -1337,9 +1337,9 @@ class SubscriptionController extends AbstractDebugController {
         result.filterSet = params.filterSet ? true : false
 
         SimpleDateFormat sdf = new SimpleDateFormat('yyyy-MM-dd')
-        def datetoday = sdf.format(new Date(System.currentTimeMillis()))
-        def message = escapeService.escapeString(result.subscription.name) + "_" + g.message(code: 'subscriptionDetails.members.members') + "_" + datetoday
-        def orgs = []
+        String datetoday = sdf.format(new Date(System.currentTimeMillis()))
+        String filename = escapeService.escapeString(result.subscription.name) + "_" + g.message(code: 'subscriptionDetails.members.members') + "_" + datetoday
+        Set<Map<String,Object>> orgs = []
         if (params.exportXLS || params.format) {
             Map allContacts = Person.getPublicAndPrivateEmailByFunc('General contact person',result.institution)
             Map publicContacts = allContacts.publicContacts
@@ -1347,7 +1347,7 @@ class SubscriptionController extends AbstractDebugController {
             result.filteredSubChilds.each { row ->
                 Subscription subChild = (Subscription) row.sub
                 row.orgs.each { subscr ->
-                    def org = [:]
+                    Map<String,Object> org = [:]
                     org.name = subscr.name
                     org.sortname = subscr.sortname
                     org.shortname = subscr.shortname
@@ -1356,8 +1356,8 @@ class SubscriptionController extends AbstractDebugController {
                     org.funderType = subscr.funderType
                     org.federalState = subscr.federalState
                     org.country = subscr.country
-                    org.startDate = subChild.startDate
-                    org.endDate = subChild.endDate
+                    org.startDate = subChild.startDate ? subChild.startDate.format(g.message(code:'default.date.format.notime')) : ''
+                    org.endDate = subChild.endDate ? subChild.endDate.format(g.message(code:'default.date.format.notime')) : ''
                     org.status = subChild.status
                     org.customProperties = subscr.customProperties
                     org.privateProperties = subscr.privateProperties
@@ -1373,7 +1373,7 @@ class SubscriptionController extends AbstractDebugController {
         }
 
         if (params.exportXLS) {
-            exportOrg(orgs, message, true, 'xlsx')
+            exportOrg(orgs, filename, true, 'xlsx')
             return
         } else {
             withFormat {
@@ -1381,11 +1381,11 @@ class SubscriptionController extends AbstractDebugController {
                     result
                 }
                 csv {
-                    response.setHeader("Content-disposition", "attachment; filename=\"${message}.csv\"")
+                    response.setHeader("Content-disposition", "attachment; filename=\"${filename}.csv\"")
                     response.contentType = "text/csv"
                     ServletOutputStream out = response.outputStream
                     out.withWriter { writer ->
-                        writer.write((String) exportOrg(orgs, message, true, "csv"))
+                        writer.write((String) exportOrg(orgs, filename, true, "csv"))
                     }
                     out.close()
                 }
@@ -5597,10 +5597,10 @@ class SubscriptionController extends AbstractDebugController {
                     }
 
                     cell = row.createCell(cellnum++)
-                    cell.setCellValue("${org.startDate ?: ''}")
+                    cell.setCellValue(org.startDate) //null check done already in calling method
 
                     cell = row.createCell(cellnum++)
-                    cell.setCellValue("${org.endDate ?: ''}")
+                    cell.setCellValue(org.endDate) //null check done already in calling method
 
                     cell = row.createCell(cellnum++)
                     cell.setCellValue(org.status?.getI10n('value') ?: ' ')
@@ -5687,9 +5687,9 @@ class SubscriptionController extends AbstractDebugController {
                         row.add(org.country?.getI10n('value') ?: ' ')
                     }
                     //startDate
-                    row.add(org.startDate ?: '')
+                    row.add(org.startDate) //null check already done in calling method
                     //endDate
-                    row.add(org.endDate ?: '')
+                    row.add(org.endDate) //null check already done in calling method
                     //status
                     row.add(org.status?.getI10n('value') ?: ' ')
                     //generalContacts
