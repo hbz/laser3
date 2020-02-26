@@ -1,4 +1,4 @@
-<%@ page import="com.k_int.kbplus.Person;com.k_int.kbplus.RefdataValue" %>
+<%@ page import="com.k_int.kbplus.Subscription; com.k_int.kbplus.SubscriptionPackage; com.k_int.kbplus.IssueEntitlement; com.k_int.kbplus.Person;com.k_int.kbplus.RefdataValue" %>
 <laser:serviceInjection/>
 
 <table class="ui three column table">
@@ -16,9 +16,18 @@
       </td>
       <td class="right aligned">
         <g:if test="${editmode}">
-          <button class="ui icon negative button la-selectable-button" onclick="unlinkPackage(${sp.pkg.id})">
-            <i class="unlink icon"></i>
-          </button>
+
+          <g:link controller="subscription"
+                    action="unlinkPackage"
+                    extaContentFlag="false"
+                    params="${[subscription: sp?.subscription?.id, package: sp?.pkg?.id, confirmed: 'Y']}"
+                    data-confirm-messageUrl="${createLink(controller:'subscription', action:'unlinkPackage', params:[subscription: sp?.subscription?.id, package: sp?.pkg?.id])}"
+                    data-confirm-tokenMsg="${message(code: "confirm.dialog.unlink.subscription.package", args: [sp?.pkg?.name])}"
+                    data-confirm-term-how="delete"
+                    class="ui icon negative button js-open-confirm-modal la-popup-tooltip la-delay"
+                    role="button">
+              <i aria-hidden="true" class="trash alternate icon"></i>
+            </g:link>
         </g:if>
       </td>
     </tr>
