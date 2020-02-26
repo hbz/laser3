@@ -2,6 +2,10 @@
 
 **Ticket    Date    Branch      Author  Feature/Bug     Description/Keywords**
 
+2204    26.02.2020  hbz-dev     Andreas Bug         Datumsausgabe in Export der Konsortialteilnehmer korrigiert
+
+2208    26.02.2020  hbz-dev     Andreas Bug         Bezeichnungen korrigiert
+
 2203    25.02.2020  hbz-dev     Moe     Feature     "Allgemeine Umfrage" erstellen
 
 2163    25.02.2020  hbz-dev     Moe     Feature     "Allgemeine Umfrage" erstellen
@@ -25,6 +29,10 @@
 2123    11.02.2020  hbz-dev     Moe     Feature     Pakete auch in Kindlizenzen entknüpfen
 
 2146    11.02.2020  hbz-dev     Moe     Feature     Bulk Prozesse bei Teilnehmerverwaltung ermöglichen
+
+2082    17.02.2020  hbz-dev     Anja    Feature     Sicherheitsabfrage ändern (Verknüpfungen aufheben)
+
+2156    14.02.2020  hbz-dev     Anja    Feature     Performance verbessern von _copyEmailaddresses
 
 2176    14.02.2020  hbz-dev     David   Feature     Admin-Sicht: Unterschiede zwischen Servern
 
@@ -90,9 +98,11 @@
 
 2150    05.02.2020  hbz-dev     David   Bug         API: Referenzwerte mit Doppelpunkt werden als Map interpretiert
 
-2081    05.02.2020 hbz-dev      Anja    Feature     Fehlende Sicherheitsabfrage (Budgetcode löschen)
+2081    05.02.2020  hbz-dev     Anja    Feature     Fehlende Sicherheitsabfrage (Budgetcode löschen)
 
 2079    05.02.2020 hbz-dev      Anja    Feature     Fehlende Sicherheitsabfrage (Kontakt löschen)
+
+1742    03.02.2020  hbz-dev     Anja    Feature     Vorgänger/Nachfolgerlizenz in TN-Übersicht
 
 --      04.02.2020  rc1.2       David   Bug         Filter ausblenden: "Meine Plattformen"
 
