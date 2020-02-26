@@ -38,7 +38,9 @@
                 <th><g:message code="propertyDefinitionGroup.table.header.properties"/></th>
                 <th><g:message code="default.type.label"/></th>
                 <th><g:message code="propertyDefinitionGroup.table.header.presetShow"/></th>
-                <th class="la-action-info">${message(code:'default.actions.label')}</th>
+                <g:if test="${editable}">
+                    <th class="la-action-info">${message(code:'default.actions.label')}</th>
+                </g:if>
             </tr>
         </thead>
         <tbody>
@@ -69,8 +71,8 @@
                     <td>
                         <semui:xEditableBoolean owner="${pdGroup}" field="isVisible" />
                     </td>
-                    <td class="x">
-                        <g:if test="${editable}">
+                    <g:if test="${editable}">
+                        <td class="x">
                             <g:set var="pdgOID" value="${pdGroup.class.name + ':' + pdGroup.id}" />
                             <g:link controller="myInstitution" action="managePropertyGroups" params="${[cmd:'edit', oid:pdgOID]}" class="ui icon button trigger-modal">
                                 <i class="write icon"></i>
@@ -84,8 +86,8 @@
                                     role="button">
                                 <i class="trash alternate icon"></i>
                             </g:link>
-                        </g:if>
-                    </td>
+                        </td>
+                    </g:if>
                 </tr>
             </g:each>
         </tbody>

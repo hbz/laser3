@@ -64,16 +64,17 @@ class SurveyController {
             new SimpleDateFormat('yyyy')
     ]
 
-    @DebugAnnotation(perm = "ORG_CONSORTIUM_SURVEY", affil = "INST_EDITOR", specRole = "ROLE_ADMIN")
+    //the customer type ORG_CONSORTIUM_SURVEY should be abandoned as said in kanban meeting of February 19th, '20.
+    @DebugAnnotation(perm = "ORG_CONSORTIUM", affil = "INST_USER", specRole = "ROLE_ADMIN")
     @Secured(closure = {
-        ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM_SURVEY", "INST_EDITOR", "ROLE_ADMIN")
+        ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM", "INST_USER", "ROLE_ADMIN")
     })
-    def currentSurveysConsortia() {
+    Map<String, Object> currentSurveysConsortia() {
         Map<String, Object> result = [:]
         result.institution = contextService.getOrg()
         result.user = User.get(springSecurityService.principal.id)
 
-        result.editable = accessService.checkPermAffiliationX("ORG_CONSORTIUM_SURVEY", "INST_EDITOR", "ROLE_ADMIN")
+        result.editable = accessService.checkPermAffiliationX("ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN")
 
         result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeTMP();
         result.offset = params.offset ? Integer.parseInt(params.offset) : 0;
@@ -3227,7 +3228,7 @@ class SurveyController {
                     newCostItem.startDate = startDate ?: null
                     newCostItem.endDate = endDate ?: null
 
-                    newCostItem.includeInSubscription = null
+                    //newCostItem.includeInSubscription = null
                     //todo Discussion needed, nobody is quite sure of the functionality behind this...
 
 

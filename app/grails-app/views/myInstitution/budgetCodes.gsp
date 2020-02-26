@@ -32,7 +32,9 @@
                 <th>${message(code: 'financials.budgetCode')}</th>
                 <th>${message(code: 'financials.budgetCode.description')}</th>
                 <th>${message(code: 'financials.budgetCode.usage')}</th>
-                <th class="la-action-info">${message(code:'default.actions.label')}</th>
+                <g:if test="${editable}">
+                    <th class="la-action-info">${message(code:'default.actions.label')}</th>
+                </g:if>
             </tr>
         </thead>
         <tbody>
@@ -67,9 +69,10 @@
                             </g:each>
                         </div>
                     </td>
-                    <td class="x">
+                    <g:if test="${editable}">
+                        <td class="x">
                         <%--
-                        disabled open finance view
+                        disabled open finance view, TODO: ask Daniel for eventual reactivation
                         <g:if test="${CostItemGroup.findAllByBudgetCode(bcode)}">
                             <g:link controller="myInstitution" action="finance"  class="ui icon button"
                                     params="[filterCIBudgetCode: bcode.value]">
@@ -77,17 +80,18 @@
                             </g:link>
                         </g:if>
                         --%>
-                        <g:if test="${editable && ! CostItemGroup.findAllByBudgetCode(bcode)}">
-                            <g:link controller="myInstitution"
-                                    action="budgetCodes"
-                                    params="${[cmd: 'deleteBudgetCode', bc: 'com.k_int.kbplus.BudgetCode:' + bcode.id]}"
-                                    data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.budgetcode", args: [fieldValue(bean: bcode, field: "value")])}"
-                                    data-confirm-term-how="delete"
-                                    class="ui icon negative button js-open-confirm-modal">
-                                <i class="trash alternate icon"></i>
-                            </g:link>
-                        </g:if>
-                    </td>
+                            <g:if test="${!CostItemGroup.findAllByBudgetCode(bcode)}">
+                                <g:link controller="myInstitution"
+                                        action="budgetCodes"
+                                        params="${[cmd: 'deleteBudgetCode', bc: 'com.k_int.kbplus.BudgetCode:' + bcode.id]}"
+                                        data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.budgetcode", args: [fieldValue(bean: bcode, field: "value")])}"
+                                        data-confirm-term-how="delete"
+                                        class="ui icon negative button js-open-confirm-modal">
+                                    <i class="trash alternate icon"></i>
+                                </g:link>
+                            </g:if>
+                        </td>
+                    </g:if>
                 </tr>
             </g:each>
         </tbody>

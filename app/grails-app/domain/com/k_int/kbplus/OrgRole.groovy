@@ -30,7 +30,7 @@ class OrgRole implements ShareableTrait {
     Date          endDate
 
     OrgRole sharedFrom
-    Boolean isShared
+    Boolean isShared = false //workaround, default value is not set!
 
     Date dateCreated
     Date lastUpdated

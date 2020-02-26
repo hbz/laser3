@@ -2,6 +2,12 @@
 
 **Ticket    Date    Branch      Author  Feature/Bug     Description/Keywords**
 
+2209    21.02.2020  hbz-dev     Andreas Bug         siehe ERMS-2207
+
+2207    21.02.2020  hbz-dev     Andreas Bug         OrgRole-Default-Wert für isPublic auf false gesetzt
+
+2132    21.02.2020  hbz-dev     Andreas Bug         Konzeptgemäße Abstufung auf INST_USER bei bestimmten Seiten
+
 2153    19.02.2020  hbz-dev     Andreas Feature     Ausblenden und Sichern der Fehlermeldung
 
 2119    19.02.2020  hbz-dev     Andreas Feature     Lizenz-Flag "Dauerhafter Zugriff" ("perpetual access") implementiert
@@ -19,6 +25,10 @@
 1901    18.02.2020  hbz-dev     Andreas Feature     Synchronisationsprozess GOKb <-> LAS:eR entsprechend aktuellen Anforderungen umgebaut
 
 2196    18.02.2020  hbz-dev     David   Feature     Persistente Bool-Attribute von Domainklassen überarbeiten
+
+2082    17.02.2020  hbz-dev     Anja    Feature     Sicherheitsabfrage ändern (Verknüpfungen aufheben)
+
+2156    14.02.2020  hbz-dev     Anja    Feature     Performance verbessern von _copyEmailaddresses
 
 2176    14.02.2020  hbz-dev     David   Feature     Admin-Sicht: Unterschiede zwischen Servern
 
@@ -88,9 +98,11 @@
 
 2150    05.02.2020  hbz-dev     David   Bug         API: Referenzwerte mit Doppelpunkt werden als Map interpretiert
 
-2081    05.02.2020 hbz-dev      Anja    Feature     Fehlende Sicherheitsabfrage (Budgetcode löschen)
+2081    05.02.2020  hbz-dev     Anja    Feature     Fehlende Sicherheitsabfrage (Budgetcode löschen)
 
 2079    05.02.2020 hbz-dev      Anja    Feature     Fehlende Sicherheitsabfrage (Kontakt löschen)
+
+1742    03.02.2020  hbz-dev     Anja    Feature     Vorgänger/Nachfolgerlizenz in TN-Übersicht
 
 --      04.02.2020  rc1.2       David   Bug         Filter ausblenden: "Meine Plattformen"
 

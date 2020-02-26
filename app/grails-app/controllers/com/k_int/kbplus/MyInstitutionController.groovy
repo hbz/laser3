@@ -3105,12 +3105,12 @@ AND EXISTS (
         result
       }
 
-    @DebugAnnotation(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_EDITOR", specRole="ROLE_ADMIN")
+    @DebugAnnotation(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_USER", specRole="ROLE_ADMIN")
     @Secured(closure = {
-        ctx.accessService.checkPermAffiliationX("ORG_INST,ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN")
+        ctx.accessService.checkPermAffiliationX("ORG_INST,ORG_CONSORTIUM", "INST_USER", "ROLE_ADMIN")
     })
-    def budgetCodes() {
-        def result = setResultGenerics()
+    Map<String, Object> budgetCodes() {
+        Map<String, Object> result = setResultGenerics()
 
         result.editable = accessService.checkMinUserOrgRole(result.user, contextService.getOrg(), 'INST_EDITOR') || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')
 
@@ -3397,11 +3397,11 @@ AND EXISTS (
         }
     }
 
-    @DebugAnnotation(perm="ORG_CONSORTIUM", affil="INST_EDITOR", specRole="ROLE_ADMIN")
-    @Secured(closure = { ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN") })
+    @DebugAnnotation(perm="ORG_CONSORTIUM", affil="INST_USER", specRole="ROLE_ADMIN")
+    @Secured(closure = { ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM", "INST_USER", "ROLE_ADMIN") })
     def manageConsortiaSubscriptions() {
 
-        def result = setResultGenerics()
+        Map<String,Object> result = setResultGenerics()
 
         DebugUtil du = new DebugUtil()
         du.setBenchmark('filterService')
@@ -3879,13 +3879,13 @@ AND EXISTS (
         result
     }
 
-    @DebugAnnotation(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_EDITOR")
+    @DebugAnnotation(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_USER")
     @Secured(closure = {
-        ctx.accessService.checkPermAffiliation("ORG_INST,ORG_CONSORTIUM", "INST_EDITOR")
+        ctx.accessService.checkPermAffiliation("ORG_INST,ORG_CONSORTIUM", "INST_USER")
     })
-    def managePropertyGroups() {
-        def result = setResultGenerics()
-        result.editable = true // true, because action is protected
+    Map<String,Object> managePropertyGroups() {
+        Map<String,Object> result = setResultGenerics()
+        //result.editable = true // true, because action is protected (is it? I doubt; INST_USERs have at least reading rights to this page!)
 
         if (params.cmd == 'new') {
             result.formUrl = g.createLink([controller: 'myInstitution', action: 'managePropertyGroups'])
@@ -3963,12 +3963,12 @@ AND EXISTS (
     /**
      * Display and manage PrivateProperties for this institution
      */
-    @DebugAnnotation(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_EDITOR")
+    @DebugAnnotation(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_USER")
     @Secured(closure = {
-        ctx.accessService.checkPermAffiliation("ORG_INST,ORG_CONSORTIUM", "INST_EDITOR")
+        ctx.accessService.checkPermAffiliation("ORG_INST,ORG_CONSORTIUM", "INST_USER")
     })
-    def managePrivateProperties() {
-        def result = setResultGenerics()
+    Map<String, Object> managePrivateProperties() {
+        Map<String, Object> result = setResultGenerics()
 
         if('add' == params.cmd) {
             flash.message = addPrivatePropertyDefinition(params)
@@ -3977,33 +3977,33 @@ AND EXISTS (
             flash.message = deletePrivatePropertyDefinition(params)
         }
 
-        def propDefs = [:]
+        Map<String, Set<PropertyDefinition>> propDefs = [:]
         PropertyDefinition.AVAILABLE_PRIVATE_DESCR.each { it ->
-            def itResult = PropertyDefinition.findAllByDescrAndTenant(it, result.institution, [sort: 'name']) // ONLY private properties!
-            propDefs << ["${it}": itResult]
+            Set<PropertyDefinition> itResult = PropertyDefinition.findAllByDescrAndTenant(it, result.institution, [sort: 'name']) // ONLY private properties!
+            propDefs[it] = itResult
         }
         result.propertyDefinitions = propDefs
 
         def (usedPdList, attrMap) = propertyService.getUsageDetails()
         result.usedPdList = usedPdList
         result.attrMap = attrMap
-        result.editable = true // true, because action is protected
+        //result.editable = true // true, because action is protected (it is not, cf. ERMS-2132! INST_USERs do have reading access to this page!)
         result.language = LocaleContextHolder.getLocale().toString()
         result.propertyType = 'private'
         result
     }
 
-    @DebugAnnotation(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_EDITOR")
+    @DebugAnnotation(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_USER")
     @Secured(closure = {
-        ctx.accessService.checkPermAffiliation("ORG_INST,ORG_CONSORTIUM", "INST_EDITOR")
+        ctx.accessService.checkPermAffiliation("ORG_INST,ORG_CONSORTIUM", "INST_USER")
     })
-    def managePropertyDefinitions() {
-        def result = setResultGenerics()
+    Object managePropertyDefinitions() {
+        Map<String,Object> result = setResultGenerics()
 
-        def propDefs = [:]
+        Map<String,Set<PropertyDefinition>> propDefs = [:]
         PropertyDefinition.AVAILABLE_CUSTOM_DESCR.each { it ->
-            def itResult = PropertyDefinition.findAllByDescrAndTenant(it, null, [sort: 'name']) // NO private properties!
-            propDefs << ["${it}": itResult]
+            Set<PropertyDefinition> itResult = PropertyDefinition.findAllByDescrAndTenant(it, null, [sort: 'name']) // NO private properties!
+            propDefs[it] = itResult
         }
 
         def (usedPdList, attrMap) = propertyService.getUsageDetails()
@@ -4124,7 +4124,7 @@ AND EXISTS (
         messages
     }
 
-    private setResultGenerics() {
+    private Map<String, Object> setResultGenerics() {
 
         Map<String, Object> result = [:]
         result.user         = contextService.getUser()
