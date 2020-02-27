@@ -453,3 +453,9 @@ update org_role set or_is_shared = false where or_is_shared is null;
 -- changesets in changelog-2020-02-19.groovy
 
 ALTER TABLE subscription ADD COLUMN sub_has_perpetual_access boolean NOT NULL DEFAULT false;
+
+-- 2020-02-27
+-- ERMS-2107
+
+update cost_item set ci_status_rv_fk = (select rdv_id from refdata_value where rdv_value = 'generic.null.value') where ci_status_rv_fk is null;
+ALTER TABLE public.cost_item ALTER COLUMN ci_status_rv_fk SET NOT NULL;

@@ -266,7 +266,7 @@
                             <td>
                                 <g:link mapping="subfinance" controller="finance" action="index"
                                         params="${[sub: s.id]}">
-                                    ${CostItem.findAllBySubInListAndOwner(Subscription.findAllByInstanceOf(s), institution)?.size()}
+                                    ${CostItem.findAllBySubInListAndOwnerAndCostItemStatusNotEqual(Subscription.findAllByInstanceOf(s), institution, RDStore.COST_ITEM_DELETED)?.size()}
                                 </g:link>
                             </td>
                         </g:if>

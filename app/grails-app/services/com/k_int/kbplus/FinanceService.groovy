@@ -1,13 +1,18 @@
 package com.k_int.kbplus
 
+import de.laser.AccessService
+import de.laser.ContextService
+import de.laser.EscapeService
 import de.laser.helper.DateUtil
-import de.laser.helper.RDConstants
 import grails.transaction.Transactional
+import org.springframework.context.MessageSource
 import org.springframework.web.multipart.commons.CommonsMultipartFile
+
 import java.text.ParseException
 import java.text.SimpleDateFormat
 import java.time.Year
 import static de.laser.helper.RDStore.*
+import static de.laser.helper.RDConstants.*
 import static de.laser.interfaces.TemplateSupport.*
 
 /**
@@ -18,11 +23,11 @@ import static de.laser.interfaces.TemplateSupport.*
 @Transactional
 class FinanceService {
 
-    def contextService
-    def genericOIDService
-    def messageSource
-    def accessService
-    def escapeService
+    ContextService contextService
+    GenericOIDService genericOIDService
+    MessageSource messageSource
+    AccessService accessService
+    EscapeService escapeService
 
     /**
      * Will replace the methods index and financialData methods in FinanceController class for a single subscription.
@@ -63,7 +68,7 @@ class FinanceService {
         else {
             ownSort = ""
         }
-        List ownCostItems = CostItem.executeQuery('select ci from CostItem ci where ci.owner = :owner and ci.surveyOrg = null and ci.sub = :sub '+filterOwnQuery[0]+ownSort,[owner:org,sub:sub]+filterOwnQuery[1])
+        List ownCostItems = CostItem.executeQuery('select ci from CostItem ci where ci.owner = :owner and ci.surveyOrg = null and ci.sub = :sub and ci.costItemStatus != :deleted '+filterOwnQuery[0]+ownSort,[owner:org,sub:sub,deleted:COST_ITEM_DELETED]+filterOwnQuery[1])
         result.own.costItems = []
         int limit = ownOffset+max
         if(limit > ownCostItems.size())
@@ -89,7 +94,7 @@ class FinanceService {
                     consSort = " order by ${params.sort} ${params.order}"
                 else
                     consSort = " order by sortname asc "
-                List consCostItems = CostItem.executeQuery("select ci, (select oo.org.sortname from OrgRole oo where ci.sub = oo.sub and oo.roleType in (:roleTypes)) as sortname from CostItem as ci where ci.owner = :owner and ci.surveyOrg = null and ci.sub in (select s from Subscription as s join s.orgRelations orgRoles where s.instanceOf = :sub "+filterConsQuery[0]+consSort,[owner:org,sub:sub,roleTypes:[OR_SUBSCRIBER_COLLECTIVE,OR_SUBSCRIBER_CONS,OR_SUBSCRIBER_CONS_HIDDEN]]+filterConsQuery[1])
+                List consCostItems = CostItem.executeQuery("select ci, (select oo.org.sortname from OrgRole oo where ci.sub = oo.sub and oo.roleType in (:roleTypes)) as sortname from CostItem as ci where ci.owner = :owner and ci.surveyOrg = null and ci.costItemStatus != :deleted and ci.sub in (select s from Subscription as s join s.orgRelations orgRoles where s.instanceOf = :sub "+filterConsQuery[0]+consSort,[owner:org,sub:sub,roleTypes:[OR_SUBSCRIBER_COLLECTIVE,OR_SUBSCRIBER_CONS,OR_SUBSCRIBER_CONS_HIDDEN],deleted:COST_ITEM_DELETED]+filterConsQuery[1])
                 result.cons.costItems = []
                 limit = consOffset+max
                 if(limit > consCostItems.size())
@@ -119,7 +124,7 @@ class FinanceService {
                     subscrSort = " order by ${params.sort} ${params.order}"
                 else
                     subscrSort = ""
-                List subscrCostItems = CostItem.executeQuery('select ci from CostItem as ci where ci.owner in :owner and ci.surveyOrg = null and ci.sub = :sub'+visibility+filterSubscrQuery[0]+subscrSort,[owner:[sub.getConsortia(),sub.getCollective()],sub:sub]+filterSubscrQuery[1])
+                List subscrCostItems = CostItem.executeQuery('select ci from CostItem as ci where ci.owner in :owner and ci.surveyOrg = null and ci.sub = :sub and ci.costItemStatus != :deleted'+visibility+filterSubscrQuery[0]+subscrSort,[owner:[sub.getConsortia(),sub.getCollective()],sub:sub,deleted:COST_ITEM_DELETED]+filterSubscrQuery[1])
                 List costItems = []
                 limit = subscrOffset+max
                 if(limit > subscrCostItems.size())
@@ -149,8 +154,8 @@ class FinanceService {
                     consSort = " order by ${params.sort} ${params.order}"
                 else
                     consSort = " order by sortname asc "
-                List consCostItems = CostItem.executeQuery("select ci, (select oo.org.sortname from OrgRole oo where ci.sub = oo.sub and oo.roleType in (:roleTypes)) as sortname from CostItem as ci where ci.owner = :owner and ci.surveyOrg = null and ci.sub in (select s from Subscription as s join s.orgRelations orgRoles where s.instanceOf = :sub "+filterConsQuery[0]+consSort,[owner:org,sub:sub.instanceOf,roleTypes:[OR_SUBSCRIBER_CONS,OR_SUBSCRIBER_CONS_HIDDEN]]+filterConsQuery[1])
-                List collCostItems = CostItem.executeQuery("select ci, (select oo.org.sortname from OrgRole oo where ci.sub = oo.sub and oo.roleType in (:roleTypes)) as sortname from CostItem as ci where ci.owner = :owner and ci.surveyOrg = null and ci.sub in (select s from Subscription as s join s.orgRelations orgRoles where s.instanceOf = :sub "+filterConsQuery[0]+consSort,[owner:org,sub:sub,roleTypes:[OR_SUBSCRIBER_COLLECTIVE]]+filterConsQuery[1])
+                List consCostItems = CostItem.executeQuery("select ci, (select oo.org.sortname from OrgRole oo where ci.sub = oo.sub and oo.roleType in (:roleTypes)) as sortname from CostItem as ci where ci.owner = :owner and ci.surveyOrg = null and ci.costItemStatus != :deleted and ci.sub in (select s from Subscription as s join s.orgRelations orgRoles where s.instanceOf = :sub "+filterConsQuery[0]+consSort,[owner:org,sub:sub.instanceOf,roleTypes:[OR_SUBSCRIBER_CONS,OR_SUBSCRIBER_CONS_HIDDEN],deleted:COST_ITEM_DELETED]+filterConsQuery[1])
+                List collCostItems = CostItem.executeQuery("select ci, (select oo.org.sortname from OrgRole oo where ci.sub = oo.sub and oo.roleType in (:roleTypes)) as sortname from CostItem as ci where ci.owner = :owner and ci.surveyOrg = null and ci.costItemStatus != :deleted and ci.sub in (select s from Subscription as s join s.orgRelations orgRoles where s.instanceOf = :sub "+filterConsQuery[0]+consSort,[owner:org,sub:sub,roleTypes:[OR_SUBSCRIBER_COLLECTIVE],deleted:COST_ITEM_DELETED]+filterConsQuery[1])
                 result.cons.costItems = consCostItems.collect{row -> row[0]}.drop(consOffset).take(max)
                 result.coll.costItems = collCostItems.collect{row -> row[0]}.drop(consOffset).take(max)
                 result.cons.count = consCostItems.size()
@@ -170,7 +175,7 @@ class FinanceService {
                     subscrSort = " order by ${params.sort} ${params.order}"
                 else
                     subscrSort = ""
-                List subscrCostItems = CostItem.executeQuery('select ci from CostItem as ci where ci.owner in :owner and ci.surveyOrg = null and ci.sub = :sub'+visibility+filterSubscrQuery[0]+subscrSort,[owner:[sub.getConsortia()],sub:sub]+filterSubscrQuery[1])
+                List subscrCostItems = CostItem.executeQuery('select ci from CostItem as ci where ci.owner in :owner and ci.surveyOrg = null and ci.sub = :sub and ci.costItemStatus != :deleted'+visibility+filterSubscrQuery[0]+subscrSort,[owner:[sub.getConsortia()],sub:sub,deleted:COST_ITEM_DELETED]+filterSubscrQuery[1])
                 List costItems = []
                 limit = subscrOffset+max
                 if(limit > subscrCostItems.size())
@@ -234,11 +239,11 @@ class FinanceService {
         }
         //get own costs
         List<CostItem> ownSubscriptionCostItems = CostItem.executeQuery('select ci from CostItem ci join ci.sub sub join sub.orgRelations orgRoles ' +
-                'where ci.owner = :org and orgRoles.org = :org and orgRoles.roleType in :consType and sub.instanceOf = null and ci.surveyOrg = null'+filterQueryOwn[0]+ownSort,
-                [org:org,consType:[OR_SUBSCRIPTION_CONSORTIA,OR_SUBSCRIPTION_COLLECTIVE]]+filterQueryOwn[1])
+                'where ci.owner = :org and orgRoles.org = :org and orgRoles.roleType in :consType and sub.instanceOf = null and ci.surveyOrg = null and ci.costItemStatus != :deleted'+filterQueryOwn[0]+ownSort,
+                [org:org,consType:[OR_SUBSCRIPTION_CONSORTIA,OR_SUBSCRIPTION_COLLECTIVE],deleted:COST_ITEM_DELETED]+filterQueryOwn[1])
         ownSubscriptionCostItems.addAll(CostItem.executeQuery('select ci from CostItem ci join ci.sub sub join sub.orgRelations orgRoles where ' +
-                'ci.owner = :org and orgRoles.org = :org and orgRoles.roleType in :nonConsTypes and ci.surveyOrg = null'+filterQueryOwn[0]+ownSort,
-                [org:org,nonConsTypes:[OR_SUBSCRIBER,OR_SUBSCRIBER_CONS,OR_SUBSCRIBER_COLLECTIVE]]+filterQueryOwn[1]))
+                'ci.owner = :org and orgRoles.org = :org and orgRoles.roleType in :nonConsTypes and ci.surveyOrg = null and ci.costItemStatus != :deleted'+filterQueryOwn[0]+ownSort,
+                [org:org,nonConsTypes:[OR_SUBSCRIBER,OR_SUBSCRIBER_CONS,OR_SUBSCRIBER_COLLECTIVE],deleted:COST_ITEM_DELETED]+filterQueryOwn[1]))
         ownSubscriptionCostItems.addAll(CostItem.executeQuery('select ci from CostItem ci where ci.owner = :org and ci.sub is null and ci.surveyOrg is null'+filterQueryOwn[0],[org:org]+filterQueryOwn[1]))
         result.own.costItems = []
         long limit = ownOffset+max
@@ -266,9 +271,9 @@ class FinanceService {
                     'join subC.orgRelations roleC ' +
                     'join sub.orgRelations roleMC ' +
                     'join sub.orgRelations orgRoles ' +
-                    'where orgC = :org and orgC = roleC.org and roleMC.roleType in :consortialType and orgRoles.roleType in (:subscrType) and ci.surveyOrg = null' +
+                    'where orgC = :org and orgC = roleC.org and roleMC.roleType in :consortialType and orgRoles.roleType in (:subscrType) and ci.surveyOrg = null and ci.costItemStatus != :deleted' +
                     filterQueryCons[0] + consSort,
-                    [org:org,consortialType:[OR_SUBSCRIPTION_CONSORTIA],subscrType:[OR_SUBSCRIBER_CONS,OR_SUBSCRIBER_CONS_HIDDEN]]+filterQueryCons[1])
+                    [org:org,consortialType:[OR_SUBSCRIPTION_CONSORTIA],subscrType:[OR_SUBSCRIBER_CONS,OR_SUBSCRIBER_CONS_HIDDEN],deleted:COST_ITEM_DELETED]+filterQueryCons[1])
             result.cons.costItems = []
             limit = consOffset+max
             if(limit > parentSubscriptionCostItems.size())
@@ -289,9 +294,9 @@ class FinanceService {
                     'join subC.orgRelations roleC ' +
                     'join sub.orgRelations roleMC ' +
                     'join sub.orgRelations orgRoles ' +
-                    'where orgC = :org and orgC = roleC.org and roleMC.roleType in :consortialType and orgRoles.roleType in (:subscrType) and ci.surveyOrg = null' +
+                    'where orgC = :org and orgC = roleC.org and roleMC.roleType in :consortialType and orgRoles.roleType in (:subscrType) and ci.surveyOrg = null and ci.costItemStatus != :deleted' +
                     filterQueryCons[0] + consSort,
-                    [org:org,consortialType:[OR_SUBSCRIPTION_COLLECTIVE],subscrType:[OR_SUBSCRIBER_COLLECTIVE]]+filterQueryCons[1])
+                    [org:org,consortialType:[OR_SUBSCRIPTION_COLLECTIVE],subscrType:[OR_SUBSCRIBER_COLLECTIVE],deleted:COST_ITEM_DELETED]+filterQueryCons[1])
             result.coll.costItems = []
             limit = consOffset+max
             if(limit > parentSubscriptionCostItems.size())
@@ -317,9 +322,9 @@ class FinanceService {
                 'join subC.orgRelations roleC ' +
                 'join sub.orgRelations orgRoles ' +
                 'join ci.owner orgC ' +
-                'where orgC = roleC.org and roleC.roleType in :consType and orgRoles.org = :org and orgRoles.roleType in :subscrType and ci.isVisibleForSubscriber = true and ci.surveyOrg = null'+
+                'where orgC = roleC.org and roleC.roleType in :consType and orgRoles.org = :org and orgRoles.roleType in :subscrType and ci.isVisibleForSubscriber = true and ci.surveyOrg = null and ci.costItemStatus != :deleted'+
                 filterQuerySubscr[0] + subscrSort,
-                [org:org,consType:[OR_SUBSCRIPTION_CONSORTIA,OR_SUBSCRIPTION_COLLECTIVE],subscrType:[OR_SUBSCRIBER_CONS,OR_SUBSCRIBER_COLLECTIVE]]+filterQuerySubscr[1])
+                [org:org,consType:[OR_SUBSCRIPTION_CONSORTIA,OR_SUBSCRIPTION_COLLECTIVE],subscrType:[OR_SUBSCRIBER_CONS,OR_SUBSCRIBER_COLLECTIVE],deleted:COST_ITEM_DELETED]+filterQuerySubscr[1])
         result.subscr.costItems = []
         limit = subscrOffset+max
         if(limit > consortialMemberSubscriptionCostItems.size())
@@ -1009,15 +1014,15 @@ class FinanceService {
                     else if(taxRate == 19)
                         taxKey = CostItem.TAX_TYPES.TAXABLE_19
                     else if(taxRate == 0) {
-                        RefdataValue taxType = RefdataValue.getByValueAndCategory(taxTypeKey, RDConstants.TAX_TYPE)
+                        RefdataValue taxType = RefdataValue.getByValueAndCategory(taxTypeKey, TAX_TYPE)
                         if(!taxType)
-                            taxType = RefdataValue.getByCategoryDescAndI10nValueDe(RDConstants.TAX_TYPE, taxTypeKey)
+                            taxType = RefdataValue.getByCategoryDescAndI10nValueDe(TAX_TYPE, taxTypeKey)
                         switch(taxType) {
-                            case RefdataValue.getByValueAndCategory('not taxable', RDConstants.TAX_TYPE): taxKey = CostItem.TAX_TYPES.TAX_NOT_TAXABLE
+                            case RefdataValue.getByValueAndCategory('not taxable', TAX_TYPE): taxKey = CostItem.TAX_TYPES.TAX_NOT_TAXABLE
                                 break
-                            case RefdataValue.getByValueAndCategory('not applicable', RDConstants.TAX_TYPE): taxKey = CostItem.TAX_TYPES.TAX_NOT_APPLICABLE
+                            case RefdataValue.getByValueAndCategory('not applicable', TAX_TYPE): taxKey = CostItem.TAX_TYPES.TAX_NOT_APPLICABLE
                                 break
-                            case RefdataValue.getByValueAndCategory('taxable tax-exempt', RDConstants.TAX_TYPE): taxKey = CostItem.TAX_TYPES.TAX_EXEMPT
+                            case RefdataValue.getByValueAndCategory('taxable tax-exempt', TAX_TYPE): taxKey = CostItem.TAX_TYPES.TAX_EXEMPT
                                 break
                             default: mappingErrorBag.invalidTaxType = true
                                 break
@@ -1051,9 +1056,9 @@ class FinanceService {
             if(colMap.status != null) {
                 String statusKey = cols[colMap.status]
                 if(statusKey) {
-                    RefdataValue status = RefdataValue.getByValueAndCategory(statusKey, RDConstants.COST_ITEM_STATUS)
+                    RefdataValue status = RefdataValue.getByValueAndCategory(statusKey, COST_ITEM_STATUS)
                     if(!status)
-                        status = RefdataValue.getByCategoryDescAndI10nValueDe(RDConstants.COST_ITEM_STATUS, statusKey)
+                        status = RefdataValue.getByCategoryDescAndI10nValueDe(COST_ITEM_STATUS, statusKey)
                     if(!status)
                         mappingErrorBag.noValidStatus = statusKey
                     costItem.costItemStatus = status
@@ -1063,9 +1068,9 @@ class FinanceService {
             if(colMap.element != null) {
                 String elementKey = cols[colMap.element]
                 if(elementKey) {
-                    RefdataValue element = RefdataValue.getByValueAndCategory(elementKey, RDConstants.COST_ITEM_ELEMENT)
+                    RefdataValue element = RefdataValue.getByValueAndCategory(elementKey, COST_ITEM_ELEMENT)
                     if(!element)
-                        element = RefdataValue.getByCategoryDescAndI10nValueDe(RDConstants.COST_ITEM_ELEMENT,elementKey)
+                        element = RefdataValue.getByCategoryDescAndI10nValueDe(COST_ITEM_ELEMENT,elementKey)
                     if(!element)
                         mappingErrorBag.noValidElement = elementKey
                     costItem.costItemElement = element
@@ -1075,9 +1080,9 @@ class FinanceService {
             if(colMap.costItemSign != null) {
                 String elementSign = cols[colMap.costItemSign]
                 if(elementSign) {
-                    RefdataValue ciec = RefdataValue.getByValueAndCategory(elementSign, RDConstants.COST_CONFIGURATION)
+                    RefdataValue ciec = RefdataValue.getByValueAndCategory(elementSign, COST_CONFIGURATION)
                     if(!ciec)
-                        ciec = RefdataValue.getByCategoryDescAndI10nValueDe(RDConstants.COST_CONFIGURATION, elementSign)
+                        ciec = RefdataValue.getByCategoryDescAndI10nValueDe(COST_CONFIGURATION, elementSign)
                     if(!ciec)
                         mappingErrorBag.noValidSign = elementSign
                     costItem.costItemElementConfiguration = ciec
@@ -1109,6 +1114,40 @@ class FinanceService {
         result.candidates = candidates
         result.budgetCodes = budgetCodes
         result
+    }
+
+    List<Map<String,Object>> orderedCurrency() {
+        //def all_currencies = RefdataValue.executeQuery('select rdv from RefdataValue as rdv where rdv.owner.desc=?', 'Currency')
+        // restrict only to new refdata values
+        // created in bootstrap.groovy with e.g. [key:'EUR']
+        // TODO: migrate old values to new ones
+        Set<RefdataValue> allCurrencies = []
+        List<String> staticOrder = grails.util.Holders.config?.financials?.currency?.split("[|]")
+
+        staticOrder.each { String important ->
+            allCurrencies << RefdataValue.getByValueAndCategory(important,CURRENCY)
+        }
+        allCurrencies.addAll(RefdataCategory.getAllRefdataValues(CURRENCY))
+
+        List<Map<String,Object>> result = [[id:0,text:messageSource.getMessage('financials.currency.none',null,Locale.getDefault())]] //is only provisorical, TODO [ticket=2107]
+        result.addAll(allCurrencies.collect { rdv ->
+            [id: rdv.id, text: rdv.getI10n('value')]
+        })
+
+        result
+    }
+
+    /**
+     * This method replaces the view (!!) _vars.gsp.
+     * @return basic parameters for manipulating cost items
+     */
+    Map<String,Object> setEditVars() {
+        [costItemStatus:RefdataCategory.getAllRefdataValues(COST_ITEM_STATUS)-COST_ITEM_DELETED,
+         costItemCategory:RefdataCategory.getAllRefdataValues(COST_ITEM_CATEGORY),
+         costItemElement:RefdataValue.executeQuery('select ciec.costItemElement from CostItemElementConfiguration ciec where ciec.forOrganisation = :org',[org:contextService.getOrg()]),
+         taxType:RefdataCategory.getAllRefdataValues(TAX_TYPE),
+         yn:RefdataCategory.getAllRefdataValues(Y_N),
+         currency:orderedCurrency()]
     }
 
 }

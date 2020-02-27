@@ -7,6 +7,7 @@ import de.laser.api.v0.ApiStubReader
 import de.laser.api.v0.ApiUnsecuredMapReader
 import de.laser.api.v0.ApiToolkit
 import de.laser.helper.Constants
+import de.laser.helper.RDStore
 import grails.converters.JSON
 import org.codehaus.groovy.grails.orm.hibernate.cfg.GrailsHibernateUtil
 
@@ -68,7 +69,7 @@ class ApiCostItem {
         }
         if (hasAccess) {
             // TODO
-            result = CostItem.findAllByOwner(owner).globalUID
+            result = CostItem.findAllByOwnerAndCostItemStatusNotEqual(owner, RDStore.COST_ITEM_DELETED).globalUID
             result = ApiToolkit.cleanUp(result, true, true)
         }
 
@@ -91,7 +92,7 @@ class ApiCostItem {
             Timestamp ts= new Timestamp(Long.parseLong(timestamp))
             Date apiDate= new Date(ts.getTime());
             def today = new Date()
-            result = CostItem.findAllByOwnerAndLastUpdatedBetween(owner, apiDate, today).globalUID
+            result = CostItem.findAllByOwnerAndLastUpdatedBetweenAndCostItemStatusNotEqual(owner, apiDate, today, RDStore.COST_ITEM_DELETED).globalUID
             result = ApiToolkit.cleanUp(result, true, true)
         }
 

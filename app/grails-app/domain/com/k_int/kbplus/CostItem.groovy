@@ -5,7 +5,6 @@ import de.laser.helper.RDConstants
 import de.laser.helper.RefdataAnnotation
 import de.laser.interfaces.DeleteFlag
 import de.laser.interfaces.TemplateSupport
-
 import javax.persistence.Transient
 import java.time.Year
 
@@ -162,7 +161,7 @@ class CostItem
         surveyOrg       (nullable: true, blank: false)
         order(nullable: true, blank: false)
         invoice(nullable: true, blank: false)
-        billingCurrency(nullable: true, blank: false)
+        billingCurrency(nullable: false, blank: false)
         costDescription(nullable: true, blank: false)
         costTitle(nullable: true, blank: false)
         costInBillingCurrency(nullable: true, blank: false)
@@ -178,7 +177,7 @@ class CostItem
         isVisibleForSubscriber  (nullable: false, blank: false)
         //includeInSubscription   (nullable: false, blank: false)
         costItemCategory(nullable: true, blank: false)
-        costItemStatus(nullable: true, blank: false)
+        costItemStatus(nullable: false, blank: false)
         costItemElement(nullable: true, blank: false)
         costItemElementConfiguration(nullable: true, blank: false)
         reference(nullable: true, blank: false)
@@ -238,41 +237,6 @@ class CostItem
         Double result = ( costInBillingCurrency ?: 0.0 ) * ( taxKey ? ((taxKey.taxRate/100) + 1) : 1.0 )
 
         finalCostRounding ? result.round(0) : result.round(2)
-    }
-
-    @Transient
-    static def orderedCurrency() {
-        //def all_currencies = RefdataValue.executeQuery('select rdv from RefdataValue as rdv where rdv.owner.desc=?', 'Currency')
-        // restrict only to new refdata values
-        // created in bootstrap.groovy with e.g. [key:'EUR']
-        // TODO: migrate old values to new ones
-        def all_currencies = RefdataValue.executeQuery('select rdv from RefdataValue as rdv where rdv.owner.desc=? and LENGTH(rdv.value) = 3', 'Currency')
-        def staticOrder    = grails.util.Holders.config?.financials?.currency?.split("[|]")
-
-        if (staticOrder) {
-            def currencyPriorityList = staticOrder.collect {
-
-                // ERMS-2016: RefdataCategory.lookupOrCreate('Currency', it)
-                // if value exists --> RefdataValue.getByValueAndCategory()
-
-                RefdataValue.construct([
-                        token   : it,
-                        rdc     : "Currency",
-                        hardData: false,
-                        i10n    : [value_en: it, value_de: it]
-                ])
-            }
-            if (currencyPriorityList) {
-                all_currencies.removeAll(currencyPriorityList)
-                all_currencies.addAll(0, currencyPriorityList)
-            }
-        }
-
-        def result = all_currencies.collect { rdv ->
-            [id: rdv.id, text: rdv.getI10n('value')]
-        }
-
-        result
     }
 
     Date getDerivedStartDate() {

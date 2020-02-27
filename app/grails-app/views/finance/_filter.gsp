@@ -169,7 +169,7 @@
                     <label for="filterCIStatus">${message(code:'default.status.label')}</label>
                     <laser:select id="filterCIStatus" class="ui dropdown selection search"
                                   name="filterCIStatus"
-                                  from="${RefdataCategory.getAllRefdataValues(RDConstants.COST_ITEM_STATUS)}"
+                                  from="${[de.laser.helper.RDStore.GENERIC_NULL_VALUE]+RefdataCategory.getAllRefdataValues(RDConstants.COST_ITEM_STATUS)-de.laser.helper.RDStore.COST_ITEM_DELETED}"
                                   optionKey="${{it.class.getName() + ":" + it.id}}"
                                   optionValue="value"
                                   value="${params.filterCIStatus}"

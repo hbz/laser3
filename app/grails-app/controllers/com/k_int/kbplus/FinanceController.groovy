@@ -44,8 +44,6 @@ class FinanceController extends AbstractDebugController {
     def escapeService
     def exportService
 
-    private final RefdataValue defaultCurrency = RefdataValue.getByValueAndCategory('EUR', RDConstants.CURRENCY)
-
     private final static MODE_OWNER          = 'MODE_OWNER'
     private final static MODE_CONS           = 'MODE_CONS'
     private final static MODE_CONS_AT_SUBSCR = 'MODE_CONS_AT_SUBSCR'
@@ -789,8 +787,8 @@ class FinanceController extends AbstractDebugController {
 
     @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_EDITOR") })
-    def editCostItem() {
-        Map<String, Object> result = [:]
+    Map<String,Object> editCostItem() {
+        Map<String, Object> result = financeService.setEditVars()
         def costItemElementConfigurations = []
         def orgConfigurations = []
         result.tab = params.tab
@@ -827,7 +825,8 @@ class FinanceController extends AbstractDebugController {
     @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_EDITOR") })
     def copyCostItem() {
-        Map<String, Object> result = [:]
+        //ex _vars.gsp
+        Map<String, Object> result = financeService.setEditVars()
 
         result.id = params.id
 
@@ -836,7 +835,7 @@ class FinanceController extends AbstractDebugController {
             result.sub = Subscription.get(Long.parseLong(params.sub))
         }
 
-        def ci = CostItem.findById(params.id)
+        CostItem ci = CostItem.findById(params.id)
         result.costItem = ci
         List costItemElementConfigurations = []
         List orgConfigurations = []
@@ -845,7 +844,7 @@ class FinanceController extends AbstractDebugController {
         ciecs.each { ciec ->
             costItemElementConfigurations.add([id:ciec.class.name+":"+ciec.id,value:ciec.getI10n('value')])
         }
-        def orgConf = CostItemElementConfiguration.findAllByForOrganisation(contextService.org)
+        Set<CostItemElementConfiguration> orgConf = CostItemElementConfiguration.findAllByForOrganisation(contextService.org)
         orgConf.each { oc ->
             orgConfigurations.add([id:oc.costItemElement.id,value:oc.elementSign.class.name+":"+oc.elementSign.id])
         }
@@ -861,14 +860,7 @@ class FinanceController extends AbstractDebugController {
     def deleteCostItem() {
         Map<String, Object> result = [:]
 
-        def user = User.get(springSecurityService.principal.id)
-        def institution = contextService.getOrg()
-        if (!accessService.checkMinUserOrgRole(user,institution,"INST_EDITOR")) {
-            response.sendError(403)
-            return
-        }
-
-        def ci = CostItem.findByIdAndOwner(params.id, institution)
+        CostItem ci = CostItem.get(params.id)
         if (ci) {
             def cigs = CostItemGroup.findAllByCostItem(ci)
 
@@ -877,9 +869,10 @@ class FinanceController extends AbstractDebugController {
                 log.debug("deleting CostItemGroup: " + item)
             }
             log.debug("deleting CostItem: " + ci)
-            ci.delete()
+            ci.costItemStatus = RDStore.COST_ITEM_DELETED
+            if(!ci.save())
+                log.error(ci.errors)
         }
-        //redirect(controller: 'myInstitution', action: 'finance')
 
         result.tab = params.tab
 
@@ -983,13 +976,7 @@ class FinanceController extends AbstractDebugController {
             }
         }
 
-        def billing_currency = null
-        if (params.long('newCostCurrency')) //GBP,etc
-        {
-            billing_currency = RefdataValue.get(params.newCostCurrency)
-            if (! billing_currency)
-                billing_currency = defaultCurrency
-        }
+        RefdataValue billing_currency = RefdataValue.get(params.newCostCurrency)
 
         //def tempCurrencyVal       = params.newCostCurrencyRate?      params.double('newCostCurrencyRate',1.00) : 1.00//def cost_local_currency   = params.newCostInLocalCurrency?   params.double('newCostInLocalCurrency', cost_billing_currency * tempCurrencyVal) : 0.00
           def cost_item_status      = params.newCostItemStatus ?       (RefdataValue.get(params.long('newCostItemStatus'))) : null;    //estimate, commitment, etc
@@ -1038,7 +1025,7 @@ class FinanceController extends AbstractDebugController {
           }
           def cost_item_element_configuration   = params.ciec ? genericOIDService.resolveOID(params.ciec) : null
 
-          def cost_item_isVisibleForSubscriber = (params.newIsVisibleForSubscriber ? (RefdataValue.get(params.newIsVisibleForSubscriber)?.value == 'Yes') : false)
+          boolean cost_item_isVisibleForSubscriber = (params.newIsVisibleForSubscriber ? (RefdataValue.get(params.newIsVisibleForSubscriber)?.value == 'Yes') : false)
 
           if (! subsToDo) {
               subsToDo << null // Fallback for editing cost items via myInstitution/finance // TODO: ugly
@@ -1050,7 +1037,7 @@ class FinanceController extends AbstractDebugController {
               if (params.oldCostItem && genericOIDService.resolveOID(params.oldCostItem)) {
                   newCostItem = (CostItem) genericOIDService.resolveOID(params.oldCostItem)
                   //get copied cost items
-                  copiedCostItems = CostItem.findAllByCopyBase(newCostItem)
+                  copiedCostItems = CostItem.findAllByCopyBaseAndCostItemStatusNotEqual(newCostItem, RDStore.COST_ITEM_DELETED)
               }
               else {
                   newCostItem = new CostItem()
@@ -1063,7 +1050,9 @@ class FinanceController extends AbstractDebugController {
               newCostItem.order = order
               newCostItem.invoice = invoice
               //continue here: test, if visibility is set to false, check visibility settings of other consortial subscriptions, check then the financial data query whether the costs will be displayed or not!
-              newCostItem.isVisibleForSubscriber = sub.getCalculatedType() == TemplateSupport.CALCULATED_TYPE_ADMINISTRATIVE ? false : cost_item_isVisibleForSubscriber
+              if(sub)
+                newCostItem.isVisibleForSubscriber = sub.getCalculatedType() == TemplateSupport.CALCULATED_TYPE_ADMINISTRATIVE ? false : cost_item_isVisibleForSubscriber
+              else newCostItem.isVisibleForSubscriber = false
               newCostItem.costItemCategory = cost_item_category
               newCostItem.costItemElement = cost_item_element
               newCostItem.costItemStatus = cost_item_status
@@ -1293,7 +1282,7 @@ class FinanceController extends AbstractDebugController {
         result
     }
 
-
+    @Deprecated
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
     def getRecentCostItems() {
@@ -1303,7 +1292,7 @@ class FinanceController extends AbstractDebugController {
         def  recentParams      = [max:10, order:'desc', sort:'lastUpdated']
         result.to              = new Date()
         result.from            = params.from? dateTimeFormat.parse(params.from): new Date()
-        result.recentlyUpdated = CostItem.findAllByOwnerAndLastUpdatedBetween(institution,result.from,result.to,recentParams)
+        result.recentlyUpdated = CostItem.findAllByOwnerAndLastUpdatedBetweenAndCostItemStatusNotEqual(institution,result.from,result.to,recentParams,RDStore.COST_ITEM_DELETED)
         result.from            = dateTimeFormat.format(result.from)
         result.to              = dateTimeFormat.format(result.to)
         log.debug("FinanceController - getRecentCostItems, rendering template with model: ${result}")
@@ -1311,7 +1300,7 @@ class FinanceController extends AbstractDebugController {
         render(template: "/finance/recentlyAddedModal", model: result)
     }
 
-
+    @Deprecated
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
     def newCostItemsPresent() {
@@ -1335,6 +1324,7 @@ class FinanceController extends AbstractDebugController {
         render(text: builder.toString(), contentType: "text/json", encoding: "UTF-8")
     }
 
+    @Deprecated
     @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_EDITOR") })
     def delete() {
@@ -1392,7 +1382,7 @@ class FinanceController extends AbstractDebugController {
         render results as JSON
     }
 
-
+    @Deprecated
     @Secured(['ROLE_USER'])
     def financialRef() {
         log.debug("Financials :: financialRef - Params: ${params}")
@@ -1458,6 +1448,7 @@ class FinanceController extends AbstractDebugController {
      * @param result - LinkedHashMap from financialRef
      * @return
      */
+    @Deprecated
     def private refReset(costItem, String fields, result) {
         log.debug("Attempting to reset a reference for cost item data ${costItem} for field(s) ${fields}")
         def wasResetCounter = 0
@@ -1486,6 +1477,7 @@ class FinanceController extends AbstractDebugController {
         return validFields && wasResetCounter == f.size()
     }
 
+    @Deprecated
     def private refData(String oid) {
         def result         = [:]
         result.create      = false
@@ -1577,8 +1569,8 @@ class FinanceController extends AbstractDebugController {
     }
 
     //ex SubscriptionDetailsController
-    private Map setResultGenerics() {
-        LinkedHashMap result = [:]
+    private Map<String,Object> setResultGenerics() {
+        LinkedHashMap<String,Object> result = [:]
         result.user         = User.get(springSecurityService.principal.id)
         result.subscription = Subscription.get(params.sub)
         if(params.sub)

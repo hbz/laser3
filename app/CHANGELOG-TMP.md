@@ -2,6 +2,10 @@
 
 **Ticket    Date    Branch      Author  Feature/Bug     Description/Keywords**
 
+2216    27.02.2020  hbz-dev     Andreas Feature     Aufhebung der Vorbelegung der Währung auf EUR bei Kosteneingabe
+
+2107    27.02.2020  hbz-dev     Andreas Bug         Löschroutine bei Kostenposten von hartes Löschen auf Löschmarkierung umgestellt
+
 2211    26.02.2020  hbz-dev     Andreas Feature     Bezeichnung Stammlizenz in Elternlizenz umgewandelt
 
 2204    26.02.2020  hbz-dev     Andreas Bug         Datumsausgabe in Export der Konsortialteilnehmer korrigiert

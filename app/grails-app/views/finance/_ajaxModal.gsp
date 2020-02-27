@@ -2,8 +2,6 @@
 <%@ page import="de.laser.helper.RDStore; de.laser.helper.RDConstants; com.k_int.kbplus.*;org.springframework.context.i18n.LocaleContextHolder; de.laser.interfaces.TemplateSupport" %>
 <laser:serviceInjection />
 
-<g:render template="vars" model="[org:contextService.getOrg()]"/><%-- setting vars --%>
-
 <g:set var="modalText" value="${message(code:'financials.addNewCost')}" />
 <g:set var="submitButtonLabel" value="${message(code:'default.button.create_new.label')}" />
 <g:set var="org" value="${contextService.getOrg()}" />
@@ -190,7 +188,7 @@
                                   from="${costItemStatus}"
                                   optionKey="id"
                                   optionValue="value"
-                                  noSelection="${['':'']}"
+                                  noSelection="${[(RDStore.GENERIC_NULL_VALUE.id):'']}"
                                   value="${costItem?.costItemStatus?.id}" />
                 </div><!-- .field -->
 
@@ -216,7 +214,7 @@
                         <g:select class="ui dropdown dk-width-auto" name="newCostCurrency" title="${g.message(code: 'financials.addNew.currencyType')}"
                                   from="${currency}"
                                   optionKey="id"
-                                  optionValue="${{(it.text.split('-')).first()}}"
+                                  optionValue="${{it.text.contains('-') ? it.text.split('-').first() : it.text}}"
                                   value="${costItem?.billingCurrency?.id}" />
                     </div><!-- .field -->
                     <div class="field">
@@ -569,18 +567,31 @@
 
             costElems.on('change', function(){
                 checkValues();
+                if($("[name='newCostCurrency']").val() != 0) {
+                    $("#newCostCurrency").parent(".field").removeClass("error");
+                }
+                else {
+                    $("#newCostCurrency").parent(".field").addClass("error");
+                }
             });
 
             $("#editCost").submit(function(e){
                 e.preventDefault();
-                var valuesCorrect = checkValues();
-                if(valuesCorrect) {
-                    if($("#newSubscription").hasClass('error') || $("#newPackage").hasClass('error') || $("#newIE").hasClass('error'))
-                        alert("${message(code:'financials.newCosts.entitlementError')}");
-                    else $(this).unbind('submit').submit();
+                if($("[name='newCostCurrency']").val() != 0) {
+                    var valuesCorrect = checkValues();
+                    if(valuesCorrect) {
+                        $("#newCostCurrency").parent(".field").removeClass("error");
+                        if($("#newSubscription").hasClass('error') || $("#newPackage").hasClass('error') || $("#newIE").hasClass('error'))
+                            alert("${message(code:'financials.newCosts.entitlementError')}");
+                        else $(this).unbind('submit').submit();
+                    }
+                    else {
+                        alert("${message(code:'financials.newCosts.calculationError')}");
+                    }
                 }
                 else {
-                    alert("${message(code:'financials.newCosts.calculationError')}");
+                    alert("${message(code:'financials.newCosts.noCurrencyPicked')}");
+                    $("#newCostCurrency").parent(".field").addClass("error");
                 }
             });
 

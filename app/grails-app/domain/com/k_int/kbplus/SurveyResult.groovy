@@ -2,7 +2,7 @@ package com.k_int.kbplus
 
 import com.k_int.kbplus.abstract_domain.AbstractProperty
 import com.k_int.kbplus.auth.User
-
+import de.laser.helper.RDStore
 
 
 class SurveyResult extends AbstractProperty {
@@ -105,7 +105,7 @@ class SurveyResult extends AbstractProperty {
     }
 
     CostItem getCostItem(){
-        return CostItem.findBySurveyOrg(SurveyOrg.findBySurveyConfigAndOrg(surveyConfig, participant))
+        return CostItem.findBySurveyOrgAndCostItemStatusNotEqual(SurveyOrg.findBySurveyConfigAndOrg(surveyConfig, participant), RDStore.COST_ITEM_DELETED)
     }
 
     def getResult()
