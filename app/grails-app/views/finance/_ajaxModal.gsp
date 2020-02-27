@@ -371,7 +371,7 @@
                             </g:if>
                             <g:else>
                                 <g:select name="newLicenseeTarget" id="newLicenseeTarget" class="ui dropdown search"
-                                          from="${[[id:'forConsortia', label:'Gilt für die Stammlizenz'], [id:'forAllSubscribers', label:'Für alle '+licenseeTargetLabel]] + validSubChilds.sort{it.getSubscriber().sortname}}"
+                                          from="${[[id:'forConsortia', label:'Gilt für die Eltern'], [id:'forAllSubscribers', label:'Für alle '+licenseeTargetLabel]] + validSubChilds.sort{it.getSubscriber().sortname}}"
                                           optionValue="${{it?.name ? it.getSubscriber().dropdownNamingConvention(org) : it.label}}"
                                           optionKey="${{"com.k_int.kbplus.Subscription:" + it?.id}}"
                                           noSelection="${['' : message(code:'default.select.choose.label')]}"
