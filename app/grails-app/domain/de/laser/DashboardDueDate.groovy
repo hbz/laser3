@@ -22,8 +22,8 @@ class DashboardDueDate {
     String oid
     User responsibleUser
     Org  responsibleOrg
-    boolean isDone
-    boolean isHidden
+    boolean isDone = false
+    boolean isHidden = false
     Date lastUpdated
 
     Date dateCreated

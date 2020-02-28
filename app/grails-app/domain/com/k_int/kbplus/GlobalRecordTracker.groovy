@@ -7,13 +7,13 @@ class GlobalRecordTracker {
   String identifier
   String uuid
   String name
-  Boolean autoAcceptTippAddition
-  Boolean autoAcceptTippDelete
-  Boolean autoAcceptTippUpdate
-  Boolean autoAcceptPackageUpdate
+    Boolean autoAcceptTippAddition = false
+    Boolean autoAcceptTippDelete = false
+    Boolean autoAcceptTippUpdate = false
+    Boolean autoAcceptPackageUpdate = false
 
-  Date dateCreated
-  Date lastUpdated
+    Date dateCreated
+    Date lastUpdated
 
   static mapping = {
                          id column:'grt_id'

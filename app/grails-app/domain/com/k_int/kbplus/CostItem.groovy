@@ -40,7 +40,7 @@ class CostItem
     Order order
     Invoice invoice
 
-    Boolean isVisibleForSubscriber
+    Boolean isVisibleForSubscriber = false
 
     @RefdataAnnotation(cat = RDConstants.COST_ITEM_TYPE)
     RefdataValue type
@@ -74,7 +74,7 @@ class CostItem
     //... this construct:
     TAX_TYPES taxKey
 
-    Boolean finalCostRounding
+    Boolean finalCostRounding = false
 
     @Transient
     Double costInLocalCurrencyAfterTax

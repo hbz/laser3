@@ -16,10 +16,10 @@ class GlobalRecordSource {
   String principal
   String credentials
   Long rectype
-  Boolean active
+    Boolean active = false
 
-  Date dateCreated
-  Date lastUpdated
+    Date dateCreated
+    Date lastUpdated
 
   static mapping = {
                    id column:'grs_id'

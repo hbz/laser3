@@ -24,7 +24,7 @@ class SurveyProperty extends AbstractI10nTranslatable {
     Date lastUpdated
 
     // indicates this object is created via current bootstrap
-    boolean isHardData
+    boolean isHardData = false
 
     @Transient
     static def validTypes = [

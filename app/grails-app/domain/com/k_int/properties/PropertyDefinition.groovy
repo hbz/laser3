@@ -95,13 +95,13 @@ class PropertyDefinition extends AbstractI10nOverride implements Serializable, C
     Org tenant
 
     // allows multiple occurences
-    boolean multipleOccurrence
+    boolean multipleOccurrence = false
     // mandatory
-    boolean mandatory
+    boolean mandatory = false
     // indicates this object is created via current bootstrap
-    boolean isHardData
+    boolean isHardData = false
     // indicates hard coded logic
-    boolean isUsedForLogic
+    boolean isUsedForLogic = false
 
     Date dateCreated
     Date lastUpdated

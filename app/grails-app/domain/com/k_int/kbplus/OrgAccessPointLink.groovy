@@ -7,7 +7,7 @@ class OrgAccessPointLink extends AbstractBaseDomain{
     OrgAccessPoint oap
     Platform platform
     SubscriptionPackage subPkg
-    Boolean active
+    Boolean active = false
     Date dateCreated
     Date lastUpdated
 
