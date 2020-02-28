@@ -159,7 +159,7 @@
                                     <input type="hidden" id="bulkOperationSelect" name="bulkOperation">
                                     <i class="dropdown icon"></i>
 
-                                    <div class="default text">Bitte auswählen</div>
+                                    <div class="default text">${message(code:'default.select.choose.label')}</div>
 
                                     <div class="menu">
                                         <div class="item"
@@ -235,12 +235,12 @@
                                     <g:link controller="issueEntitlement" id="${ie.id}"
                                             action="show"><strong>${ie.tipp?.title.title}</strong>
                                     </g:link>
-                                    <g:if test="${ie.tipp?.hostPlatformURL}">
+                                    <g:if test="${ie.tipp.hostPlatformURL}">
                                         <a class="ui icon tiny blue button la-js-dont-hide-button la-popup-tooltip la-delay"
                                         <%-- data-content="${message(code: 'tipp.tooltip.callUrl')}" --%>
-                                           data-content="${ie.tipp?.platform.name}"
+                                           data-content="${ie.tipp.platform.name}"
 
-                                           href="${ie.tipp?.hostPlatformURL.contains('http') ? ie.tipp?.hostPlatformURL : 'http://' + ie.tipp?.hostPlatformURL}"
+                                           href="${ie.tipp.hostPlatformURL?.contains('http') ? ie.tipp.hostPlatformURL : 'http://' + ie.tipp.hostPlatformURL}"
                                            target="_blank"><i class="cloud icon"></i></a>
                                     </g:if>
                                     <br>
@@ -254,7 +254,7 @@
                                     <semui:xEditableRefData owner="${ie}" field="medium" config="${RDConstants.IE_MEDIUM}"/>
                                 </td>
                                 <td class="coverageStatements la-tableCard" data-entitlement="${ie.id}">
-                                    <g:if test="${ie?.tipp?.title instanceof BookInstance}">
+                                    <g:if test="${ie.tipp.title instanceof BookInstance}">
 
                                         <i class="grey fitted la-books icon la-popup-tooltip la-delay"
                                            data-content="${message(code: 'title.dateFirstInPrint.label')}"></i>
@@ -266,7 +266,18 @@
                                                       date="${ie?.tipp?.title?.dateFirstOnline}"/>
 
                                     </g:if>
-                                    <g:else>
+                                    <g:elseif test="${ie.tipp.title instanceof com.k_int.kbplus.JournalInstance}">
+                                        <%
+                                            Map<String, Object> paramData = [issueEntitlement: ie.id]
+                                            if(params.sort && params.order) {
+                                                paramData.sort = params.sort
+                                                paramData.order = params.order
+                                            }
+                                            if(params.max && params.offset) {
+                                                paramData.max = params.max
+                                                paramData.offset = params.offset
+                                            }
+                                        %>
                                         <div class="ui cards">
                                         <g:each in="${ie.coverages}" var="covStmt">
                                             <div class="ui card">
@@ -276,9 +287,9 @@
                                         </div>
                                         <g:if test="${editable}">
                                             <br>
-                                            <g:link action="addCoverage" params="${[issueEntitlement: ie.id]}" class="ui compact icon button positive tiny"><i class="ui icon plus" data-content="Lizenzzeitraum hinzufügen"></i></g:link>
+                                            <g:link action="addCoverage" params="${paramData}" class="ui compact icon button positive tiny"><i class="ui icon plus" data-content="${message(code:'subscription.details.addCoverage')}"></i></g:link>
                                         </g:if>
-                                    </g:else>
+                                    </g:elseif>
 
 
                                 </td>

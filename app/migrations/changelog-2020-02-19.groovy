@@ -10,7 +10,27 @@ YodaService yodaService = Holders.grailsApplication.mainContext.getBean('yodaSer
 
 databaseChangeLog = {
 
-    changeSet(author: "galffy (hand-coded)", id: "1582107705616-1") {
+    changeSet(author: "galffy (generated)", id: "1582107705616-1") {
+        addColumn(schemaName: "public", tableName: "subscription") {
+            column(name: "sub_has_perpetual_access", type: "bool")
+        }
+    }
+
+    changeSet(author: "galffy (modified)", id: "1582107705616-2") {
+        grailsChange {
+            change {
+                sql.execute("update subscription set sub_has_perpetual_access=false where sub_has_perpetual_access is null;")
+            }
+            rollback {
+            }
+        }
+    }
+
+    changeSet(author: "galffy (generated)", id: "1582107705616-3") {
+        addNotNullConstraint(columnDataType: "bool", columnName: "sub_has_perpetual_access", tableName: "subscription")
+    }
+
+    changeSet(author: "galffy (hand-coded)", id: "1582107705616-4") {
         grailsChange {
             change {
                 //this changeset is HIGHLY EXPLOSIVE, TEST IT EXTENSIVELY BEFORE USE!!!!!!
@@ -37,83 +57,83 @@ databaseChangeLog = {
         }
     }
 
-    changeSet(author: "galffy (generated)", id: "1582107705616-2") {
+    changeSet(author: "galffy (generated)", id: "1582107705616-5") {
         dropForeignKeyConstraint(baseTableName: "core_assertion", baseTableSchemaName: "public", constraintName: "fke48406625ad1eb60")
     }
 
-    changeSet(author: "galffy (generated)", id: "1582107705616-3") {
+    changeSet(author: "galffy (generated)", id: "1582107705616-6") {
         dropForeignKeyConstraint(baseTableName: "global_record_info", baseTableSchemaName: "public", constraintName: "fkb057c1402753393f")
     }
 
-    changeSet(author: "galffy (generated)", id: "1582107705616-4") {
+    changeSet(author: "galffy (generated)", id: "1582107705616-7") {
         dropForeignKeyConstraint(baseTableName: "global_record_info", baseTableSchemaName: "public", constraintName: "fkb057c140e1ae5394")
     }
 
-    changeSet(author: "galffy (generated)", id: "1582107705616-5") {
+    changeSet(author: "galffy (generated)", id: "1582107705616-8") {
         dropForeignKeyConstraint(baseTableName: "global_record_info", baseTableSchemaName: "public", constraintName: "fkb057c14074d2c985")
     }
 
-    changeSet(author: "galffy (generated)", id: "1582107705616-6") {
+    changeSet(author: "galffy (generated)", id: "1582107705616-9") {
         dropForeignKeyConstraint(baseTableName: "global_record_tracker", baseTableSchemaName: "public", constraintName: "fk808f5966f6287f86")
     }
 
-    changeSet(author: "galffy (generated)", id: "1582107705616-7") {
+    changeSet(author: "galffy (generated)", id: "1582107705616-10") {
         dropForeignKeyConstraint(baseTableName: "package", baseTableSchemaName: "public", constraintName: "fkcfe5344692580d5f")
     }
 
-    changeSet(author: "galffy (generated)", id: "1582107705616-8") {
+    changeSet(author: "galffy (generated)", id: "1582107705616-11") {
         dropForeignKeyConstraint(baseTableName: "platformtipp", baseTableSchemaName: "public", constraintName: "fk9544a2810252c57")
     }
 
-    changeSet(author: "galffy (generated)", id: "1582107705616-9") {
+    changeSet(author: "galffy (generated)", id: "1582107705616-12") {
         dropForeignKeyConstraint(baseTableName: "platformtipp", baseTableSchemaName: "public", constraintName: "fk9544a28c581dd6e")
     }
 
-    changeSet(author: "galffy (generated)", id: "1582107705616-10") {
+    changeSet(author: "galffy (generated)", id: "1582107705616-13") {
         dropForeignKeyConstraint(baseTableName: "title_instance", baseTableSchemaName: "public", constraintName: "fkacc69c334e5d16")
     }
 
-    changeSet(author: "galffy (generated)", id: "1582107705616-11") {
+    changeSet(author: "galffy (generated)", id: "1582107705616-14") {
         dropForeignKeyConstraint(baseTableName: "title_instance_package_platform", baseTableSchemaName: "public", constraintName: "fke793fb8f80f6588")
     }
 
-    changeSet(author: "galffy (generated)", id: "1582107705616-12") {
+    changeSet(author: "galffy (generated)", id: "1582107705616-15") {
         dropForeignKeyConstraint(baseTableName: "title_institution_provider", baseTableSchemaName: "public", constraintName: "fk89a2e01f35702557")
     }
 
-    changeSet(author: "galffy (generated)", id: "1582107705616-13") {
+    changeSet(author: "galffy (generated)", id: "1582107705616-16") {
         dropForeignKeyConstraint(baseTableName: "title_institution_provider", baseTableSchemaName: "public", constraintName: "fk89a2e01f97876ad4")
     }
 
-    changeSet(author: "galffy (generated)", id: "1582107705616-14") {
+    changeSet(author: "galffy (generated)", id: "1582107705616-17") {
         dropForeignKeyConstraint(baseTableName: "title_institution_provider", baseTableSchemaName: "public", constraintName: "fk89a2e01f47b4bd3f")
     }
 
-    changeSet(author: "galffy (generated)", id: "1582107705616-15") {
+    changeSet(author: "galffy (generated)", id: "1582107705616-18") {
         dropIndex(indexName: "tiinp_idx", tableName: "title_institution_provider")
     }
 
-    changeSet(author: "galffy (generated)", id: "1582107705616-16") {
+    changeSet(author: "galffy (generated)", id: "1582107705616-19") {
         dropTable(tableName: "core_assertion")
     }
 
-    changeSet(author: "galffy (generated)", id: "1582107705616-17") {
+    changeSet(author: "galffy (generated)", id: "1582107705616-20") {
         dropTable(tableName: "global_record_info")
     }
 
-    changeSet(author: "galffy (generated)", id: "1582107705616-18") {
+    changeSet(author: "galffy (generated)", id: "1582107705616-21") {
         dropTable(tableName: "global_record_tracker")
     }
 
-    changeSet(author: "galffy (generated)", id: "1582107705616-19") {
+    changeSet(author: "galffy (generated)", id: "1582107705616-22") {
         dropTable(tableName: "platformtipp")
     }
 
-    changeSet(author: "galffy (generated)", id: "1582107705616-20") {
+    changeSet(author: "galffy (generated)", id: "1582107705616-23") {
         dropTable(tableName: "title_institution_provider")
     }
 
-    changeSet(author: "galffy (hand-coded)", id: "1582107705616-21") {
+    changeSet(author: "galffy (hand-coded)", id: "1582107705616-24") {
         grailsChange {
             change {
                 //2019-12-10
@@ -128,7 +148,7 @@ databaseChangeLog = {
         }
     }
 
-    changeSet(author: "galffy (hand-coded)", id: "1582107705616-22") {
+    changeSet(author: "galffy (hand-coded)", id: "1582107705616-25") {
         grailsChange {
             change {
                 //2020-02-14
@@ -152,7 +172,7 @@ databaseChangeLog = {
         }
     }
 
-    changeSet(author: "galffy (hand-coded)", id: "1582107705616-23") {
+    changeSet(author: "galffy (hand-coded)", id: "1582107705616-26") {
         grailsChange {
             change {
                 try {
@@ -176,7 +196,7 @@ databaseChangeLog = {
         }
     }
 
-    changeSet(author: "galffy (hand-coded)", id: "1582107705616-24") {
+    changeSet(author: "galffy (hand-coded)", id: "1582107705616-27") {
         grailsChange {
             change {
                 try {
@@ -192,7 +212,7 @@ databaseChangeLog = {
         }
     }
 
-    changeSet(author: "galffy (hand-coded)", id: "1582107705616-25") {
+    changeSet(author: "galffy (hand-coded)", id: "1582107705616-28") {
         grailsChange {
             change {
                 try {
@@ -208,7 +228,7 @@ databaseChangeLog = {
         }
     }
 
-    changeSet(author: "galffy (hand-coded)", id: "1582107705616-26") {
+    changeSet(author: "galffy (hand-coded)", id: "1582107705616-29") {
         grailsChange {
             change {
                 try {
@@ -224,7 +244,7 @@ databaseChangeLog = {
         }
     }
 
-    changeSet(author: "galffy (hand-coded)", id: "1582107705616-27") {
+    changeSet(author: "galffy (hand-coded)", id: "1582107705616-30") {
         grailsChange {
             change {
                 //2020-01-23
@@ -251,163 +271,141 @@ databaseChangeLog = {
         }
     }
 
-    changeSet(author: "galffy (generated)", id: "1582107705616-28") {
+    changeSet(author: "galffy (generated)", id: "1582107705616-31") {
         addNotNullConstraint(columnDataType: "varchar(255)", columnName: "org_name", tableName: "org")
     }
 
-    changeSet(author: "galffy (generated)", id: "1582107705616-29") {
+    changeSet(author: "galffy (generated)", id: "1582107705616-32") {
         modifyDataType(columnName: "pkg_gokb_id", newDataType: "varchar(511)", tableName: "package")
     }
 
-    changeSet(author: "galffy (generated)", id: "1582107705616-30") {
+    changeSet(author: "galffy (generated)", id: "1582107705616-33") {
         addNotNullConstraint(columnDataType: "varchar(511)", columnName: "pkg_gokb_id", tableName: "package")
     }
 
-    changeSet(author: "galffy (generated)", id: "1582107705616-31") {
+    changeSet(author: "galffy (generated)", id: "1582107705616-34") {
         modifyDataType(columnName: "plat_gokb_id", newDataType: "text", tableName: "platform")
     }
 
-    changeSet(author: "galffy (generated)", id: "1582107705616-32") {
+    changeSet(author: "galffy (generated)", id: "1582107705616-35") {
         addNotNullConstraint(columnDataType: "text", columnName: "plat_gokb_id", tableName: "platform")
     }
 
-    changeSet(author: "galffy (generated)", id: "1582107705616-33") {
+    changeSet(author: "galffy (generated)", id: "1582107705616-36") {
         modifyDataType(columnName: "ti_gokb_id", newDataType: "varchar(511)", tableName: "title_instance")
     }
 
-    changeSet(author: "galffy (generated)", id: "1582107705616-34") {
+    changeSet(author: "galffy (generated)", id: "1582107705616-37") {
         addNotNullConstraint(columnDataType: "varchar(511)", columnName: "ti_gokb_id", tableName: "title_instance")
     }
 
-    changeSet(author: "galffy (generated)", id: "1582107705616-35") {
+    changeSet(author: "galffy (generated)", id: "1582107705616-38") {
         addNotNullConstraint(columnDataType: "varchar(255)", columnName: "ti_guid", tableName: "title_instance")
     }
 
-    changeSet(author: "galffy (generated)", id: "1582107705616-36") {
+    changeSet(author: "galffy (generated)", id: "1582107705616-39") {
         modifyDataType(columnName: "tipp_gokb_id", newDataType: "varchar(511)", tableName: "title_instance_package_platform")
     }
 
-    changeSet(author: "galffy (generated)", id: "1582107705616-37") {
+    changeSet(author: "galffy (generated)", id: "1582107705616-40") {
         addNotNullConstraint(columnDataType: "varchar(511)", columnName: "tipp_gokb_id", tableName: "title_instance_package_platform")
     }
 
-    changeSet(author: "galffy (generated)", id: "1582107705616-38") {
+    changeSet(author: "galffy (generated)", id: "1582107705616-41") {
         dropIndex(indexName: "org_imp_id_idx", tableName: "org")
     }
 
-    changeSet(author: "galffy (generated)", id: "1582107705616-39") {
+    changeSet(author: "galffy (generated)", id: "1582107705616-42") {
         dropIndex(indexName: "pkg_imp_id_idx", tableName: "package")
     }
 
-    changeSet(author: "galffy (generated)", id: "1582107705616-40") {
+    changeSet(author: "galffy (generated)", id: "1582107705616-43") {
         dropIndex(indexName: "plat_imp_id_idx", tableName: "platform")
     }
 
-    changeSet(author: "galffy (generated)", id: "1582107705616-41") {
+    changeSet(author: "galffy (generated)", id: "1582107705616-44") {
         dropIndex(indexName: "sub_imp_id_idx", tableName: "subscription")
     }
 
-    changeSet(author: "galffy (generated)", id: "1582107705616-42") {
+    changeSet(author: "galffy (generated)", id: "1582107705616-45") {
         dropIndex(indexName: "ti_imp_id_idx", tableName: "title_instance")
     }
 
-    changeSet(author: "galffy (generated)", id: "1582107705616-43") {
+    changeSet(author: "galffy (generated)", id: "1582107705616-46") {
         dropIndex(indexName: "tipp_imp_id_idx", tableName: "title_instance_package_platform")
     }
 
-    changeSet(author: "galffy (generated)", id: "1582107705616-44") {
+    changeSet(author: "galffy (generated)", id: "1582107705616-47") {
         createIndex(indexName: "pkg_gokb_id_uniq_1582107700215", schemaName: "public", tableName: "package", unique: "true") {
             column(name: "pkg_gokb_id")
         }
     }
 
-    changeSet(author: "galffy (generated)", id: "1582107705616-45") {
+    changeSet(author: "galffy (generated)", id: "1582107705616-48") {
         createIndex(indexName: "plat_gokb_id_uniq_1582107700219", schemaName: "public", tableName: "platform", unique: "true") {
             column(name: "plat_gokb_id")
         }
     }
 
-    changeSet(author: "galffy (generated)", id: "1582107705616-46") {
+    changeSet(author: "galffy (generated)", id: "1582107705616-49") {
         createIndex(indexName: "ti_gokb_id_idx", schemaName: "public", tableName: "title_instance") {
             column(name: "ti_gokb_id")
         }
     }
 
-    changeSet(author: "galffy (generated)", id: "1582107705616-47") {
+    changeSet(author: "galffy (generated)", id: "1582107705616-50") {
         createIndex(indexName: "ti_gokb_id_uniq_1582107700241", schemaName: "public", tableName: "title_instance", unique: "true") {
             column(name: "ti_gokb_id")
         }
     }
 
-    changeSet(author: "galffy (generated)", id: "1582107705616-48") {
+    changeSet(author: "galffy (generated)", id: "1582107705616-51") {
         createIndex(indexName: "tipp_gokb_id_uniq_1582107700242", schemaName: "public", tableName: "title_instance_package_platform", unique: "true") {
             column(name: "tipp_gokb_id")
         }
     }
 
-    changeSet(author: "galffy (generated)", id: "1582107705616-49") {
+    changeSet(author: "galffy (generated)", id: "1582107705616-52") {
         dropColumn(columnName: "imp_id", tableName: "license")
     }
 
-    changeSet(author: "galffy (generated)", id: "1582107705616-50") {
+    changeSet(author: "galffy (generated)", id: "1582107705616-53") {
         dropColumn(columnName: "org_imp_id", tableName: "org")
     }
 
-    changeSet(author: "galffy (generated)", id: "1582107705616-51") {
+    changeSet(author: "galffy (generated)", id: "1582107705616-54") {
         dropColumn(columnName: "pkg_identifier", tableName: "package")
     }
 
-    changeSet(author: "galffy (generated)", id: "1582107705616-52") {
+    changeSet(author: "galffy (generated)", id: "1582107705616-55") {
         dropColumn(columnName: "pkg_imp_id", tableName: "package")
     }
 
-    changeSet(author: "galffy (generated)", id: "1582107705616-53") {
+    changeSet(author: "galffy (generated)", id: "1582107705616-56") {
         dropColumn(columnName: "plat_imp_id", tableName: "platform")
     }
 
-    changeSet(author: "galffy (generated)", id: "1582107705616-54") {
+    changeSet(author: "galffy (generated)", id: "1582107705616-57") {
         dropColumn(columnName: "sub_imp_id", tableName: "subscription")
     }
 
-    changeSet(author: "galffy (generated)", id: "1582107705616-55") {
+    changeSet(author: "galffy (generated)", id: "1582107705616-58") {
         dropColumn(columnName: "ti_imp_id", tableName: "title_instance")
     }
 
-    changeSet(author: "galffy (generated)", id: "1582107705616-56") {
+    changeSet(author: "galffy (generated)", id: "1582107705616-59") {
         dropColumn(columnName: "tipp_imp_id", tableName: "title_instance_package_platform")
     }
 
-    changeSet(author: "galffy (generated)", id: "1582107705616-57") {
+    changeSet(author: "galffy (generated)", id: "1582107705616-60") {
         dropColumn(columnName: "tipp_sub_fk", tableName: "title_instance_package_platform")
     }
 
-    changeSet(author: "galffy (generated)", id: "1582107705616-58") {
+    changeSet(author: "galffy (generated)", id: "1582107705616-61") {
         addForeignKeyConstraint(baseColumnNames: "pkg_content_type_rv_fk", baseTableName: "package", baseTableSchemaName: "public", constraintName: "FKCFE534465251D5E5", deferrable: "false", initiallyDeferred: "false", referencedColumnNames: "rdv_id", referencedTableName: "refdata_value", referencedTableSchemaName: "public", referencesUniqueColumn: "false")
     }
 
-    changeSet(author: "galffy (generated)", id: "1582107705616-59") {
+    changeSet(author: "galffy (generated)", id: "1582107705616-62") {
         dropTable(tableName: "delete_me")
     }
-}
-databaseChangeLog = {
-
-	changeSet(author: "galffy (generated)", id: "1582107705616-60") {
-		addColumn(schemaName: "public", tableName: "subscription") {
-			column(name: "sub_has_perpetual_access", type: "bool")
-		}
-	}
-
-	changeSet(author: "galffy (modified)", id: "1582107705616-61") {
-		grailsChange {
-			change {
-				sql.execute("update subscription set sub_has_perpetual_access=false where sub_has_perpetual_access is null;")
-			}
-			rollback {
-			}
-		}
-	}
-
-	changeSet(author: "galffy (generated)", id: "1582107705616-62") {
-		addNotNullConstraint(columnDataType: "bool", columnName: "sub_has_perpetual_access", tableName: "subscription")
-	}
 }

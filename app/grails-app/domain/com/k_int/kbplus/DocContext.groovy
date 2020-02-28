@@ -36,7 +36,7 @@ class DocContext implements ShareableTrait {
 
     Boolean globannounce = false
     DocContext sharedFrom
-    Boolean isShared
+    Boolean isShared = false
 
     Date dateCreated
     Date lastUpdated

@@ -60,10 +60,10 @@ class Subscription
     RefdataValue resource
 
     // If a subscription is slaved then any changes to instanceOf will automatically be applied to this subscription
-    boolean isSlaved
-	boolean isPublicForApi
-    boolean hasPerpetualAccess
-    boolean isMultiYear
+    boolean isSlaved = false
+	boolean isPublicForApi = false
+    boolean hasPerpetualAccess = false
+    boolean isMultiYear = false
 
   String name
   String identifier
@@ -76,7 +76,7 @@ class Subscription
   Subscription instanceOf
   Subscription previousSubscription //deleted as ERMS-800
   // If a subscription is administrative, subscription members will not see it resp. there is a toggle which en-/disables visibility
-  boolean administrative
+  boolean administrative = false
 
   String noticePeriod
   Date dateCreated

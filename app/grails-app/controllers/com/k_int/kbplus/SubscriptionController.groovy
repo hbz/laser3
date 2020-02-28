@@ -124,8 +124,8 @@ class SubscriptionController extends AbstractDebugController {
             response.sendError(401); return
         }
 
-        Set<Thread> threadSet = Thread.getAllStackTraces().keySet();
-        Thread[] threadArray = threadSet.toArray(new Thread[threadSet.size()]);
+        Set<Thread> threadSet = Thread.getAllStackTraces().keySet()
+        Thread[] threadArray = threadSet.toArray(new Thread[threadSet.size()])
 
         threadArray.each {
             if (it.name == 'PackageSync_'+result.subscriptionInstance?.id) {
@@ -136,15 +136,15 @@ class SubscriptionController extends AbstractDebugController {
         result.contextOrg = contextService.getOrg()
         def verystarttime = exportService.printStart("subscription")
 
-        log.debug("subscription id:${params.id} format=${response.format}");
+        log.debug("subscription id:${params.id} format=${response.format}")
 
-        result.max = params.max ? Integer.parseInt(params.max) : ((response.format && response.format != "html" && response.format != "all") ? 10000 : result.user.getDefaultPageSizeTMP());
-        result.offset = (params.offset && response.format && response.format != "html") ? Integer.parseInt(params.offset) : 0;
+        result.max = params.max ? Integer.parseInt(params.max) : ((response.format && response.format != "html" && response.format != "all") ? 10000 : result.user.getDefaultPageSizeTMP().toInteger())
+        result.offset = (params.offset && response.format && response.format != "html") ? Integer.parseInt(params.offset) : 0
 
-        log.debug("max = ${result.max}");
+        log.debug("max = ${result.max}")
 
         def pending_change_pending_status = RefdataValue.getByValueAndCategory('Pending', RDConstants.PENDING_CHANGE_STATUS)
-        List<PendingChange> pendingChanges = PendingChange.executeQuery("select pc from PendingChange as pc where subscription=? and ( pc.status is null or pc.status = ? ) order by ts desc", [result.subscriptionInstance, pending_change_pending_status]);
+        List<PendingChange> pendingChanges = PendingChange.executeQuery("select pc from PendingChange as pc where subscription=? and ( pc.status is null or pc.status = ? ) order by ts desc", [result.subscriptionInstance, pending_change_pending_status])
 
         if (result.subscriptionInstance?.isSlaved && ! pendingChanges.isEmpty()) {
             log.debug("Slaved subscription, auto-accept pending changes")
@@ -174,22 +174,22 @@ class SubscriptionController extends AbstractDebugController {
             SimpleDateFormat sdf = DateUtil.getSDF_NoTime()
             date_filter = sdf.parse(params.asAt)
             result.as_at_date = date_filter
-            result.editable = false;
+            result.editable = false
         } else {
             date_filter = new Date()
             result.as_at_date = date_filter
         }
         // We dont want this filter to reach SQL query as it will break it.
         def core_status_filter = params.sort == 'core_status'
-        if (core_status_filter) params.remove('sort');
+        if (core_status_filter) params.remove('sort')
 
         if (params.filter) {
-            base_qry = " from IssueEntitlement as ie where ie.subscription = :subscription "
+            base_qry = " from IssueEntitlement as ie join ie.coverages ic where ie.subscription = :subscription "
             if (params.mode != 'advanced') {
                 // If we are not in advanced mode, hide IEs that are not current, otherwise filter
                 // base_qry += "and ie.status <> ? and ( ? >= coalesce(ie.accessStartDate,subscription.startDate) ) and ( ( ? <= coalesce(ie.accessEndDate,subscription.endDate) ) OR ( ie.accessEndDate is null ) )  "
                 // qry_params.add(deleted_ie);
-                base_qry += "and (( :startDate >= coalesce(ie.accessStartDate,subscription.startDate) ) OR ( ie.accessStartDate is null )) and ( ( :endDate <= coalesce(ie.accessEndDate,subscription.endDate) ) OR ( ie.accessEndDate is null ) )  "
+                base_qry += "and (( :startDate >= coalesce(ie.accessStartDate,ie.subscription.startDate) ) OR ( ie.accessStartDate is null )) and ( ( :endDate <= coalesce(ie.accessEndDate,ie.subscription.endDate) ) OR ( ie.accessEndDate is null ) )  "
                 qry_params.startDate = date_filter
                 qry_params.endDate = date_filter
             }
@@ -197,11 +197,11 @@ class SubscriptionController extends AbstractDebugController {
             qry_params.title = "%${params.filter.trim().toLowerCase()}%"
             qry_params.identifier = "%${params.filter}%"
         } else {
-            base_qry = " from IssueEntitlement as ie where ie.subscription = :subscription "
+            base_qry = " from IssueEntitlement as ie join ie.coverages ic where ie.subscription = :subscription "
             if (params.mode != 'advanced') {
                 // If we are not in advanced mode, hide IEs that are not current, otherwise filter
 
-                base_qry += " and (( :startDate >= coalesce(ie.accessStartDate,subscription.startDate) ) OR ( ie.accessStartDate is null )) and ( ( :endDate <= coalesce(ie.accessEndDate,subscription.endDate) ) OR ( ie.accessEndDate is null ) ) "
+                base_qry += " and (( :startDate >= coalesce(ie.accessStartDate,ie.subscription.startDate) ) OR ( ie.accessStartDate is null )) and ( ( :endDate <= coalesce(ie.accessEndDate,ie.subscription.endDate) ) OR ( ie.accessEndDate is null ) ) "
                 qry_params.startDate = date_filter
                 qry_params.endDate = date_filter
             }
@@ -225,17 +225,22 @@ class SubscriptionController extends AbstractDebugController {
         }
 
         if ((params.sort != null) && (params.sort.length() > 0)) {
-            base_qry += "order by ie.${params.sort} ${params.order} "
+            if(params.sort == 'startDate')
+                base_qry += "order by ic.startDate ${params.order}, lower(ie.tipp.title.title) asc "
+            else if(params.sort == 'endDate')
+                base_qry += "order by ic.endDate ${params.order}, lower(ie.tipp.title.title) asc "
+            else
+                base_qry += "order by ie.${params.sort} ${params.order} "
         } else {
             base_qry += "order by lower(ie.tipp.title.title) asc"
         }
 
-        result.num_sub_rows = IssueEntitlement.executeQuery("select ie.id " + base_qry, qry_params).size()
+        Set<IssueEntitlement> entitlements = IssueEntitlement.executeQuery("select ie " + base_qry, qry_params)
+
+        result.num_sub_rows = entitlements.size()
 
         if ((params.format == 'html' || params.format == null) && !params.exportKBart) {
-            result.entitlements = IssueEntitlement.executeQuery("select ie " + base_qry, qry_params, [max: result.max, offset: result.offset])
-        } else {
-            result.entitlements = IssueEntitlement.executeQuery("select ie " + base_qry, qry_params)
+            result.entitlements = entitlements.drop(result.offset).take(result.max)
         }
 
         // Now we add back the sort so that the sortable column will recognize asc/desc
@@ -322,7 +327,7 @@ class SubscriptionController extends AbstractDebugController {
         if(base) {
             IssueEntitlementCoverage ieCoverage = new IssueEntitlementCoverage(issueEntitlement: base)
             if(ieCoverage.save())
-                redirect action: 'index', id: base.subscription.id
+                redirect action: 'index', id: base.subscription.id, params: params
             else log.error("Error on creation new coverage statement: ${ieCoverage.getErrors()}")
         }
         else log.error("Issue entitlement with ID ${params.issueEntitlement} could not be found")
@@ -335,7 +340,7 @@ class SubscriptionController extends AbstractDebugController {
         Long subId = ieCoverage.issueEntitlement.subscription.id
         if(ieCoverage) {
             ieCoverage.delete()
-            redirect action: 'index', id: subId
+            redirect action: 'index', id: subId, params: params
         }
         else log.error("Issue entitlement coverage with ID ${params.ieCoverage} could not be found")
     }
@@ -355,18 +360,17 @@ class SubscriptionController extends AbstractDebugController {
         result
     }
 
-    @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
-    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
+    @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")')
+    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_EDITOR") })
     def unlinkPackage() {
         log.debug("unlinkPackage :: ${params}")
         Map<String, Object> result = [:]
         result.user = User.get(springSecurityService.principal.id)
-        result.subscription = Subscription.get(params.subscription.toLong())
-        result.package = Package.get(params.package.toLong())
+        result.subscription = Subscription.get(params.subscription)
+        result.package = Package.get(params.package)
         def query = "from IssueEntitlement ie, Package pkg where ie.subscription =:sub and pkg.id =:pkg_id and ie.tipp in ( select tipp from TitleInstancePackagePlatform tipp where tipp.pkg.id = :pkg_id ) "
         def queryParams = [sub: result.subscription, pkg_id: result.package.id]
 
-        if (result.subscription.isEditableBy(result.user)) {
             result.editable = true
             if (params.confirmed) {
                 if(result.package.unlinkFromSubscription(result.subscription, true)){
@@ -494,12 +498,6 @@ class SubscriptionController extends AbstractDebugController {
 
                 return render(template: "unlinkPackageModal", model: [pkg: result.package, subscription: result.subscription, conflicts_list: conflicts_list])
             }
-        } else {
-            result.editable = false
-        }
-
-
-        redirect(url: request.getHeader('referer'))
 
     }
 

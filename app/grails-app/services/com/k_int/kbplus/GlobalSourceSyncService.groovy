@@ -236,7 +236,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
                             result.nominalPlatform = Platform.findByGokbId(platformUUID)
                         }
                         tipps.each { Map<String, Object> tippB ->
-                            TitleInstancePackagePlatform tippA = result.tipps.find { TitleInstancePackagePlatform b -> b.gokbId == tippB.uuid } //we have to consider here TIPPs, too, which were deleted but have been reactivated
+                            TitleInstancePackagePlatform tippA = result.tipps.find { TitleInstancePackagePlatform a -> a.gokbId == tippB.uuid } //we have to consider here TIPPs, too, which were deleted but have been reactivated
                             if(tippA) {
                                 //ex updatedTippClosure / tippUnchangedClosure
                                 RefdataValue status = RefdataValue.getByValueAndCategory(tippB.status,RDConstants.TIPP_STATUS)
@@ -377,20 +377,22 @@ class GlobalSourceSyncService extends AbstractLockableService {
                 medium      : tipp.medium.text()
         ]
         updatedTIPP.identifiers.add([namespace: 'uri', value: tipp.'@id'.tippId])
-        tipp.coverage.each { cov ->
-            updatedTIPP.coverages << [
-                    startDate: cov.'@startDate'.text() ? DateUtil.parseDateGeneric(cov.'@startDate'.text()) : null,
-                    endDate: cov.'@endDate'.text() ? DateUtil.parseDateGeneric(cov.'@endDate'.text()) : null,
-                    startVolume: cov.'@startVolume'.text() ?: '',
-                    endVolume: cov.'@endVolume'.text() ?: '',
-                    startIssue: cov.'@startIssue'.text() ?: '',
-                    endIssue: cov.'@endIssue'.text() ?: '',
-                    coverageDepth: cov.'@coverageDepth'.text() ?: '',
-                    coverageNote: cov.'@coverageNote'.text() ?: '',
-                    embargo: cov.'@embargo'.text() ?: ''
-            ]
+        if(tipp.title.type.text() == 'JournalInstance') {
+            tipp.coverage.each { cov ->
+                updatedTIPP.coverages << [
+                        startDate: cov.'@startDate'.text() ? DateUtil.parseDateGeneric(cov.'@startDate'.text()) : null,
+                        endDate: cov.'@endDate'.text() ? DateUtil.parseDateGeneric(cov.'@endDate'.text()) : null,
+                        startVolume: cov.'@startVolume'.text() ?: '',
+                        endVolume: cov.'@endVolume'.text() ?: '',
+                        startIssue: cov.'@startIssue'.text() ?: '',
+                        endIssue: cov.'@endIssue'.text() ?: '',
+                        coverageDepth: cov.'@coverageDepth'.text() ?: '',
+                        coverageNote: cov.'@coverageNote'.text() ?: '',
+                        embargo: cov.'@embargo'.text() ?: ''
+                ]
+            }
+            updatedTIPP.coverages = updatedTIPP.coverages.toSorted { a, b -> a.startDate <=> b.startDate }
         }
-        updatedTIPP.coverages = updatedTIPP.coverages.toSorted { a, b -> a.startDate <=> b.startDate }
         updatedTIPP
     }
 
@@ -754,7 +756,8 @@ class GlobalSourceSyncService extends AbstractLockableService {
         }
 
         // This is the boss enemy when refactoring coverage statements ... works so far, is going to be kept
-        if(tippa.coverages.size() > 0 && tippb.coverages.size() > 0){
+        // the question marks are necessary because only JournalInstance's TIPPs are supposed to have coverage statements
+        if(tippa.coverages?.size() > 0 && tippb.coverages?.size() > 0){
             Set<Map<String, Object>> coverageDiffs = getCoverageDiffs(tippa,(List<Map<String,Object>>) tippb.coverages)
             if(!coverageDiffs.isEmpty())
                 result.add([field: 'coverage', covDiffs: coverageDiffs])

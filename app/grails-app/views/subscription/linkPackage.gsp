@@ -123,7 +123,6 @@
                                             ${hit.platformName}
                                         </g:else>
                                     </td>
-l
                                     <td class="right aligned">
                                         <g:if test="${editable && (!pkgs || !(hit.uuid in pkgs))}">
                                             <g:link action="linkPackage" class="ui mini button packageLinkWithoutIE"

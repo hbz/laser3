@@ -52,8 +52,8 @@ class License
     License instanceOf
 
     // If a license is slaved then any changes to instanceOf will automatically be applied to this license
-    boolean isSlaved
-    boolean isPublicForApi
+    boolean isSlaved = false
+    boolean isPublicForApi = false
 
     @RefdataAnnotation(cat = RDConstants.LICENSE_STATUS)
     RefdataValue status

@@ -68,19 +68,19 @@
                             <dl>
                                 <dt>${message(code: 'package.show.start_date')}</dt>
                                 <dd>
-                                    <semui:xEditable owner="${packageInstance}" field="startDate" type="date"/>
+                                    ${packageInstance.startDate}
                                 </dd>
                             </dl>
                             <dl>
                                 <dt>${message(code: 'package.show.end_date')}</dt>
                                 <dd>
-                                    <semui:xEditable owner="${packageInstance}" field="endDate" type="date"/>
+                                    ${packageInstance.endDate}
                                 </dd>
                             </dl>
                             <dl>
                                 <dt>${message(code: 'package.listVerifiedDate.label')}</dt>
                                 <dd>
-                                    <semui:xEditable owner="${packageInstance}" field="listVerifiedDate" type="date"/>
+                                    ${packageInstance.listVerifiedDate}
                                 </dd>
                             </dl>
                         </div>
@@ -110,7 +110,11 @@
                     <div class="content">
                         <dl>
                             <dt>${message(code: 'package.nominalPlatform')}</dt>
-                            <dd><g:link controller="platform" action="show" id="${packageInstance.nominalPlatform.id}">${packageInstance.nominalPlatform.name}</g:link></dd>
+                            <dd>
+                                <g:if test="${packageInstance.nominalPlatform}">
+                                    <g:link controller="platform" action="show" id="${packageInstance.nominalPlatform.id}">${packageInstance.nominalPlatform.name}</g:link>
+                                </g:if>
+                            </dd>
 
                             <% /*
                             <dt>${message(code: 'license.is_public')}</dt>
