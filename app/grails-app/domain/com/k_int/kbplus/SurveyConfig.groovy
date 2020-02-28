@@ -42,11 +42,11 @@ class SurveyConfig {
     Date dateCreated
     Date lastUpdated
 
-    boolean pickAndChoose
-    boolean configFinish
-    boolean costItemsFinish
-    boolean evaluationFinish
-    boolean isSubscriptionSurveyFix
+    boolean pickAndChoose = false
+    boolean configFinish = false
+    boolean costItemsFinish = false
+    boolean evaluationFinish = false
+    boolean isSubscriptionSurveyFix = false
 
     String transferWorkflow
 

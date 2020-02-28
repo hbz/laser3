@@ -30,7 +30,7 @@ class SurveyInfo {
     Date dateCreated
     Date lastUpdated
 
-    boolean isSubscriptionSurvey
+    boolean isSubscriptionSurvey = false
 
     //List surveyConfigs
 
