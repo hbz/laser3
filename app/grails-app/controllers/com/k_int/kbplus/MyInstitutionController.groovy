@@ -2319,16 +2319,14 @@ AND EXISTS (
 
         def dcCheck = (new Date()).minus(periodInDays)
 
-        /*
         result.recentAnnouncements = Doc.executeQuery(
                 "select d from Doc d where d.type.value = :type and d.dateCreated >= :dcCheck",
-                [type: 'Announcement', dcCheck: dcCheck],
-                [max: result.max,offset: result.announcementOffset, sort: 'dateCreated', order: 'asc']
+                [type: 'system.announcement', dcCheck: dcCheck],
+                [max: result.max, offset: result.announcementOffset, sort: 'dateCreated', order: 'asc']
         )
         result.recentAnnouncementsCount = Doc.executeQuery(
                 "select d from Doc d where d.type.value = :type and d.dateCreated >= :dcCheck",
-                [type: 'Announcement', dcCheck: dcCheck]).size()
-        */
+                [type: 'system.announcement', dcCheck: dcCheck]).size()
 
         // tasks
 

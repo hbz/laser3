@@ -260,7 +260,6 @@
                             <sec:ifAnyGranted roles="ROLE_ADMIN">
                                 <div class="divider"></div>
 
-                                <g:link class="item" controller="announcement" action="index">${message(code:'menu.datamanager.ann')}</g:link>
                                 <g:link class="item" controller="package" action="list">${message(code:'menu.datamanager.searchPackages')}</g:link>
                                 <g:link class="item" controller="platform" action="list">${message(code:'menu.datamanager.searchPlatforms')}</g:link>
 
@@ -349,6 +348,7 @@
                                 </div>
                             </div>
 
+                            <g:link class="item" controller="announcement" action="index">${message(code:'menu.admin.announcements')}</g:link>
                             <g:link class="item" controller="admin" action="serverDifferences">${message(code:'menu.admin.serverDifferences')}</g:link>
 
                             <div class="divider"></div>

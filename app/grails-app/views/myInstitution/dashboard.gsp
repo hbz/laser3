@@ -73,12 +73,13 @@
         }
     %>
     <div class="ui secondary pointing tabular menu">
-        <a class="${US_DASHBOARD_TAB.getValue().value=='Due Dates' || US_DASHBOARD_TAB.getValue()=='Due Dates' ? 'active item':'item'}" data-tab="first">
+        <a class="${US_DASHBOARD_TAB.getValue().value=='Due Dates' || US_DASHBOARD_TAB.getValue()=='Due Dates' ? 'active item':'item'}" data-tab="duedates">
             <i class="checked alarm end icon large"></i>
             ${dueDatesCount}
             ${message(code:'myinst.dash.due_dates.label')}
         </a>
-        <a class="${US_DASHBOARD_TAB.getValue().value == 'Changes' || US_DASHBOARD_TAB.getValue() == 'Changes' ? 'active item':'item'}" data-tab="second">
+
+        <a class="${US_DASHBOARD_TAB.getValue().value == 'Changes' || US_DASHBOARD_TAB.getValue() == 'Changes' ? 'active item':'item'}" data-tab="changes">
             <i class="history icon large"></i>
             <%
                 def countChanges = 0
@@ -90,16 +91,8 @@
             ${message(code:'myinst.todo.label', default:'To Do')}
         </a>
 
-       %{-- <sec:ifAnyGranted roles="ROLE_ADMIN">
-        <a class="${US_DASHBOARD_TAB.getValue().value=='Announcements' || US_DASHBOARD_TAB.getValue() == 'Announcements' ? 'active item':'item'}" data-tab="third" id="jsFallbackAnnouncements">
-            <i class="warning circle icon large"></i>
-            ${recentAnnouncementsCount}
-            ${message(code:'announcement.plural', default:'Announcements')}
-        </a>
-        </sec:ifAnyGranted>--}%
-
         <g:if test="${accessService.checkPerm('ORG_INST,ORG_CONSORTIUM')}">
-            <a class="${US_DASHBOARD_TAB.getValue().value=='Tasks' || US_DASHBOARD_TAB.getValue()=='Tasks' ? 'active item':'item'}" data-tab="forth">
+            <a class="${US_DASHBOARD_TAB.getValue().value=='Tasks' || US_DASHBOARD_TAB.getValue()=='Tasks' ? 'active item':'item'}" data-tab="tasks">
                 <i class="checked calendar icon large"></i>
                 ${tasksCount}
                 ${message(code:'myinst.dash.task.label')}
@@ -109,13 +102,19 @@
         <g:if test="${accessService.checkPerm('ORG_BASIC_MEMBER')}">
 
             <g:if test="${grailsApplication.config.featureSurvey}">
-            <a class="${US_DASHBOARD_TAB.getValue().value=='Surveys' || US_DASHBOARD_TAB.getValue()=='Surveys' ? 'active item':'item'}" data-tab="fifth">
+            <a class="${US_DASHBOARD_TAB.getValue().value=='Surveys' || US_DASHBOARD_TAB.getValue()=='Surveys' ? 'active item':'item'}" data-tab="surveys">
                 <i class="checked tasks icon large"></i>
                 ${surveys?.size()}
                 ${message(code:'myinst.dash.survey.label')}
             </a>
             </g:if>
         </g:if>
+
+        <a class="${US_DASHBOARD_TAB.getValue().value=='Announcements' || US_DASHBOARD_TAB.getValue() == 'Announcements' ? 'active item':'item'}" data-tab="news" id="jsFallbackAnnouncements">
+            <i class="warning circle icon large"></i>
+            ${recentAnnouncementsCount}
+            ${message(code:'announcement.plural', default:'Announcements')}
+        </a>
 
        %{-- <g:if test="${accessService.checkPerm('ORG_CONSORTIUM')}">
             <a class="${US_DASHBOARD_TAB.getValue().value=='Surveys' || US_DASHBOARD_TAB.getValue()=='Surveys' ? 'active item':'item'}" data-tab="six">
@@ -128,14 +127,14 @@
 
     </div><!-- secondary -->
 
-        <div class="ui bottom attached tab ${US_DASHBOARD_TAB.getValue().value == 'Due Dates' || US_DASHBOARD_TAB.getValue()=='Due Dates' ? 'active':''}" data-tab="first">
+        <div class="ui bottom attached tab ${US_DASHBOARD_TAB.getValue().value == 'Due Dates' || US_DASHBOARD_TAB.getValue()=='Due Dates' ? 'active':''}" data-tab="duedates">
             <div>
                 <g:render template="/user/dueDatesView"
                           model="[user: user, dueDates: dueDates, dueDatesCount: dueDatesCount]"/>
             </div>
         </div>
 
-        <div class="ui bottom attached tab ${US_DASHBOARD_TAB.getValue().value == 'Changes' || US_DASHBOARD_TAB.getValue() == 'Changes' ? 'active':''}" data-tab="second">
+        <div class="ui bottom attached tab ${US_DASHBOARD_TAB.getValue().value == 'Changes' || US_DASHBOARD_TAB.getValue() == 'Changes' ? 'active':''}" data-tab="changes">
             <g:if test="${editable}">
                 <div class="la-float-right">
                     <g:link action="changes" class="ui button">${message(code:'myinst.todo.submit.label', default:'View To Do List')}</g:link>
@@ -209,13 +208,14 @@
             </div>
         </div>
 
-        %{--<sec:ifAnyGranted roles="ROLE_ADMIN">
-        <div class="ui bottom attached tab segment ${US_DASHBOARD_TAB.getValue().value=='Announcements' || US_DASHBOARD_TAB.getValue() == 'Announcements' ? 'active':''}" data-tab="third" style="border-top: 1px solid #d4d4d5; ">
+        <div class="ui bottom attached tab ${US_DASHBOARD_TAB.getValue().value=='Announcements' || US_DASHBOARD_TAB.getValue() == 'Announcements' ? 'active':''}" data-tab="news">
+            %{--
             <g:if test="${editable}">
                 <div class="la-float-right">
                     <g:link action="announcements" class="ui button">${message(code:'myinst.ann.view.label', default:'View All Announcements')}</g:link>
                 </div>
             </g:if>
+            --}%
 
             <g:message code="profile.dashboardItemsTimeWindow"
                        default="You see events from the last {0} days."
@@ -258,11 +258,10 @@
                 <semui:paginate offset="${announcementOffset ? announcementOffset : '0'}" max="${contextService.getUser().getDefaultPageSizeTMP()}" params="${[view:'announcementsView']}" total="${recentAnnouncementsCount}"/>
             </div>
         </div>
-        </sec:ifAnyGranted>--}%
 
         <g:if test="${accessService.checkPerm('ORG_INST,ORG_CONSORTIUM')}">
 
-        <div class="ui bottom attached tab ${US_DASHBOARD_TAB.getValue().value=='Tasks' || US_DASHBOARD_TAB.getValue() == 'Tasks' ? 'active':''}" data-tab="forth">
+        <div class="ui bottom attached tab ${US_DASHBOARD_TAB.getValue().value=='Tasks' || US_DASHBOARD_TAB.getValue() == 'Tasks' ? 'active':''}" data-tab="tasks">
 
             <g:if test="${editable}">
                 <div class="ui right aligned grid">
@@ -346,7 +345,7 @@
 
         <g:if test="${accessService.checkPerm('ORG_BASIC_MEMBER')}">
             <g:if test="${grailsApplication.config.featureSurvey}">
-            <div class="ui bottom attached tab segment ${US_DASHBOARD_TAB.getValue().value == 'Surveys' || US_DASHBOARD_TAB.getValue()=='Surveys' ? 'active':''}" data-tab="fifth" style="border-top: 1px solid #d4d4d5; ">
+            <div class="ui bottom attached tab segment ${US_DASHBOARD_TAB.getValue().value == 'Surveys' || US_DASHBOARD_TAB.getValue()=='Surveys' ? 'active':''}" data-tab="surveys" style="border-top: 1px solid #d4d4d5; ">
                 <div class="la-float-right">
                     <g:link action="currentSurveys" class="ui button">${message(code:'menu.my.surveys')}</g:link>
                 </div>
