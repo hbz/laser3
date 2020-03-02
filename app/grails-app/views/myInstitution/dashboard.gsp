@@ -1,4 +1,4 @@
-<%@ page import="de.laser.AccessService; de.laser.helper.SqlDateUtils; com.k_int.kbplus.*; com.k_int.kbplus.RefdataValue; com.k_int.kbplus.abstract_domain.AbstractProperty; com.k_int.kbplus.UserSettings; de.laser.DashboardDueDate" %>
+<%@ page import="de.laser.SystemAnnouncement; de.laser.AccessService; de.laser.helper.SqlDateUtils; de.laser.helper.RDConstants; com.k_int.kbplus.*; com.k_int.kbplus.RefdataValue; com.k_int.kbplus.abstract_domain.AbstractProperty; com.k_int.kbplus.UserSettings; de.laser.DashboardDueDate" %>
 <g:set var="simpleDateFormat" value="${new java.text.SimpleDateFormat("yyyyMMdd")}"/>
 <!doctype html>
 <html>
@@ -51,8 +51,7 @@
                     <div class="ui divided relaxed list">
                         <semui:securedMainNavItem orgPerm="ORG_INST,ORG_CONSORTIUM" controller="myInstitution" action="tasks" message="task.plural" />
                         <semui:securedMainNavItem orgPerm="ORG_INST,ORG_CONSORTIUM" controller="myInstitution" action="addressbook" message="menu.institutions.myAddressbook" />
-
-                        <semui:securedMainNavItem orgPerm="ORG_INST,ORG_CONSORTIUM" affiliation="INST_EDITOR" controller="myInstitution" action="managePrivateProperties" message="menu.institutions.manage_props" />
+                        <semui:securedMainNavItem orgPerm="ORG_INST,ORG_CONSORTIUM" controller="myInstitution" action="managePrivateProperties" message="menu.institutions.manage_props" />
                     </div>
                 </div>
             </div>
@@ -112,7 +111,7 @@
 
         <a class="${US_DASHBOARD_TAB.getValue().value=='Announcements' || US_DASHBOARD_TAB.getValue() == 'Announcements' ? 'active item':'item'}" data-tab="news" id="jsFallbackAnnouncements">
             <i class="warning circle icon large"></i>
-            ${recentAnnouncementsCount}
+            ${systemAnnouncements.size()}
             ${message(code:'announcement.plural', default:'Announcements')}
         </a>
 
@@ -209,6 +208,36 @@
         </div>
 
         <div class="ui bottom attached tab ${US_DASHBOARD_TAB.getValue().value=='Announcements' || US_DASHBOARD_TAB.getValue() == 'Announcements' ? 'active':''}" data-tab="news">
+
+            <div class="ui relaxed list" style="clear:both;padding-top:1rem;">
+                <g:each in="${systemAnnouncements}" var="sa">
+                    <div class="item">
+
+                        <div class="ui internally celled grid">
+                            <div class="row">
+                                <div class="two wide column">
+                                    <g:formatDate date="${sa.lastPublishingDate}" formatName="default.date.format.noZ"/>
+                                </div><!-- .column -->
+                                <div class="fourteen wide column">
+
+                                    <div class="header" style="margin:0 0 1em 0">
+                                        <g:set var="ann_nws" value="${sa.title?.replaceAll(' ', '')}"/>
+                                        ${message(code:"announcement.${ann_nws}", default:"${sa.title}")}
+                                    </div>
+                                    <div>
+                                        <div class="widget-content"><% print sa.content; /* avoid auto encodeAsHTML() */ %></div>
+                                    </div>
+
+                                </div><!-- .column -->
+                            </div><!-- .row -->
+                        </div><!-- .grid -->
+
+                    </div>
+                </g:each>
+            </div>
+        </div>
+
+        <%--<div class="ui bottom attached tab ${US_DASHBOARD_TAB.getValue().value=='Announcements' || US_DASHBOARD_TAB.getValue() == 'Announcements' ? 'active':''}" data-tab="news">
             %{--
             <g:if test="${editable}">
                 <div class="la-float-right">
@@ -257,7 +286,7 @@
             <div>
                 <semui:paginate offset="${announcementOffset ? announcementOffset : '0'}" max="${contextService.getUser().getDefaultPageSizeTMP()}" params="${[view:'announcementsView']}" total="${recentAnnouncementsCount}"/>
             </div>
-        </div>
+        </div>--%>
 
         <g:if test="${accessService.checkPerm('ORG_INST,ORG_CONSORTIUM')}">
 

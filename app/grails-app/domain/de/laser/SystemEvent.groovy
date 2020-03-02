@@ -63,6 +63,8 @@ class SystemEvent {
             'SURVEY_UPDATE_JOB_START'       : [category: CATEGORY.CRONJOB, relevance: RELEVANCE.INFO],
             'SURVEY_UPDATE_JOB_COMPLETE'    : [category: CATEGORY.CRONJOB, relevance: RELEVANCE.INFO],
             'SURVEY_UPDATE_SERVICE_PROCESSING' : [category: CATEGORY.SYSTEM, relevance: RELEVANCE.INFO],
+            'SYSANN_SENDING_OK'             : [category: CATEGORY.OTHER, relevance: RELEVANCE.INFO],
+            'SYSANN_SENDING_ERROR'          : [category: CATEGORY.OTHER, relevance: RELEVANCE.ERROR],
             'YODA_ES_RESET_START'           : [category: CATEGORY.OTHER, relevance: RELEVANCE.INFO],
             'YODA_ES_RESET_DROP_OK'         : [category: CATEGORY.OTHER, relevance: RELEVANCE.INFO],
             'YODA_ES_RESET_CREATE_OK'       : [category: CATEGORY.OTHER, relevance: RELEVANCE.INFO],
@@ -178,6 +180,6 @@ class SystemEvent {
         getInfoPart(1)
     }
     String getDescr() {
-        getInfoPart(3)
+        getInfoPart(2)
     }
 }

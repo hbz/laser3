@@ -36,44 +36,28 @@
 
     <h3 class="ui  header la-clear-before">${message(code:'announcement.previous.label')}</h3>
 
-    <div class="ui divided relaxed list">
+    <div>
         <g:each in="${recentAnnouncements}" var="ra">
-          <div class="item">
-            <strong>${ra.title}</strong> <br/>
-            <div class="ann-content">
-              <% print ra.content; /* avoid auto encodeAsHTML() */ %>
+            <div class="ui segment">
+                <h4 class="ui header">${ra.title}</h4>
+                <div class="ui divider"></div>
+                <div class="content">
+                    <% print ra.content; /* avoid auto encodeAsHTML() */ %>
+                </div>
+                <g:if test="${ra.user != null}">
+                    ${message(code:'announcement.posted_by.label')}
+                    <em><g:link controller="user" action="show" id="${ra.user?.id}">${(ra.user?.displayName)?:'Unknown'}</g:link></em>
+                    <br />
+                    ${message(code:'default.on')} <g:formatDate date="${ra.dateCreated}" format="${message(code:'default.date.format')}"/>
+                </g:if>
+                <g:else>
+                    ${message(code:'announcement.posted_auto.label')}
+                    <br />
+                    <g:formatDate date="${ra.dateCreated}" format="${message(code:'default.date.format')}"/>
+                </g:else>
             </div>
-              <br />
-            <g:if test="${ra.user != null}">
-              ${message(code:'announcement.posted_by.label', default:'posted by')}
-                <em><g:link controller="user" action="show" id="${ra.user?.id}">${(ra.user?.displayName)?:'Unknown'}</g:link></em>
-                <br />
-                ${message(code:'default.on', default:'on')} <g:formatDate date="${ra.dateCreated}" format="${message(code:'default.date.format')}"/>
-            </g:if>
-            <g:else>
-                ${message(code:'announcement.posted_auto.label', default:'posted automatically on')}
-                <br />
-                <g:formatDate date="${ra.dateCreated}" format="${message(code:'default.date.format')}"/>
-            </g:else>
-          </div>
         </g:each>
     </div>
 
-    <r:script language="JavaScript">
-        $('.ann-content').readmore({
-            speed: 250,
-            collapsedHeight: 21,
-            startOpen: false,
-            moreLink: '<a href="#">[ ${message(code:'default.button.show.label')} ]</a>',
-            lessLink: '<a href="#">[ ${message(code:'default.button.hide.label')} ]</a>'
-        })
-    </r:script>
-
-    <style>
-        .ann-content {
-            overflow: hidden;
-            line-height: 20px;
-        }
-    </style>
   </body>
 </html>

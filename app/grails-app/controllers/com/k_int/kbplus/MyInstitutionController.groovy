@@ -7,6 +7,8 @@ import com.k_int.properties.PropertyDefinition
 import com.k_int.properties.PropertyDefinitionGroup
 import com.k_int.properties.PropertyDefinitionGroupItem
 import de.laser.DashboardDueDate
+import de.laser.SystemAnnouncement
+
 //import de.laser.TaskService //unused for quite a long time
 import de.laser.controller.AbstractDebugController
 import de.laser.helper.*
@@ -2384,16 +2386,20 @@ AND EXISTS (
 
         // announcements
 
-        def dcCheck = (new Date()).minus(periodInDays)
+//        def dcCheck = (new Date()).minus(periodInDays)
+//
+//        result.recentAnnouncements = Doc.executeQuery(
+//                "select d from Doc d where d.type.value = :type and d.dateCreated >= :dcCheck",
+//                [type: 'system.announcement', dcCheck: dcCheck],
+//                [max: result.max, offset: result.announcementOffset, sort: 'dateCreated', order: 'asc']
+//        )
+//        result.recentAnnouncementsCount = Doc.executeQuery(
+//                "select d from Doc d where d.type.value = :type and d.dateCreated >= :dcCheck",
+//                [type: 'system.announcement', dcCheck: dcCheck]).size()
 
-        result.recentAnnouncements = Doc.executeQuery(
-                "select d from Doc d where d.type.value = :type and d.dateCreated >= :dcCheck",
-                [type: 'system.announcement', dcCheck: dcCheck],
-                [max: result.max, offset: result.announcementOffset, sort: 'dateCreated', order: 'asc']
-        )
-        result.recentAnnouncementsCount = Doc.executeQuery(
-                "select d from Doc d where d.type.value = :type and d.dateCreated >= :dcCheck",
-                [type: 'system.announcement', dcCheck: dcCheck]).size()
+        // systemAnnouncements
+
+        result.systemAnnouncements = SystemAnnouncement.getPublished(20)
 
         // tasks
 
