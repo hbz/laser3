@@ -3,9 +3,12 @@ package de.laser
 import com.k_int.kbplus.UserSettings
 import com.k_int.kbplus.auth.User
 import de.laser.helper.RDStore
-import de.laser.SystemEvent
+import grails.util.Holders
 
 class SystemAnnouncement {
+
+    def grailsApplication
+    def mailService
 
     User    user
     String  title
@@ -40,7 +43,6 @@ class SystemAnnouncement {
     }
 
     static List<SystemAnnouncement> getPublished(int max) {
-
         SystemAnnouncement.executeQuery(
                 'select sa from SystemAnnouncement sa where sa.isPublished = true order by sa.lastPublishingDate desc',
                 [max: max]
@@ -48,27 +50,88 @@ class SystemAnnouncement {
     }
 
     static List<User> getRecipients() {
-
         User.executeQuery(
-                'select u from UserSettings uss join uss.user u where uss.key = :ussKey and uss.rdValue = :ussValue',
+                'select u from UserSettings uss join uss.user u where uss.key = :ussKey and uss.rdValue = :ussValue order by u.id',
                 [ussKey: UserSettings.KEYS.IS_NOTIFICATION_FOR_SYSTEM_MESSAGES, ussValue: RDStore.YN_YES]
         )
     }
 
+    String getCleanTitle() {
+        title.replaceAll("\\<.*?>","")
+    }
+
+    String getCleanContent() {
+        content.replaceAll("\\<.*?>","")
+    }
+
     boolean publish() {
         List<User> reps = SystemAnnouncement.getRecipients()
+        List validUserIds = []
+        List failedUserIds = []
 
-        try {
-            lastPublishingDate = new Date()
-            isPublished = true
-            save()
-        }
-        catch (Exception e) {
-            SystemEvent.createEvent('SYSANN_SENDING_ERROR', ['count': reps.size()])
-            return false
+        lastPublishingDate = new Date()
+        isPublished = true
+        save()
+
+        reps.each { u ->
+            try {
+                sendMail(u)
+                validUserIds << u.id
+            }
+            catch (Exception e) {
+                log.error(e.getMessage())
+                log.error(e.getStackTrace())
+                failedUserIds << u.id
+            }
         }
 
-        SystemEvent.createEvent('SYSANN_SENDING_OK', ['count': reps.size()])
-        return true
+        if (validUserIds.size() > 0) {
+            SystemEvent.createEvent('SYSANN_SENDING_OK', ['count': validUserIds.size()])
+        }
+
+        if (failedUserIds.size() > 0) {
+            SystemEvent.createEvent('SYSANN_SENDING_ERROR', ['users': failedUserIds, 'count': failedUserIds.size()])
+        }
+
+        return failedUserIds.isEmpty()
+    }
+
+    private void sendMail(User user) throws Exception {
+
+        def messageSource = Holders.grailsApplication.mainContext.getBean('messageSource')
+        Locale locale = org.springframework.context.i18n.LocaleContextHolder.getLocale()
+
+        String currentServer = grailsApplication.config.getCurrentServer()
+        String subjectSystemPraefix = (currentServer == ContextService.SERVER_PROD) ? "LAS:eR - " : (grailsApplication.config.laserSystemId + " - ")
+        String mailSubject = subjectSystemPraefix + messageSource.getMessage('email.subject.sysAnnouncements', null, locale)
+
+        boolean isRemindCCbyEmail = user.getSetting(UserSettings.KEYS.IS_REMIND_CC_BY_EMAIL, RDStore.YN_NO)?.rdValue == RDStore.YN_YES
+        String ccAddress
+
+        if (isRemindCCbyEmail){
+            ccAddress = user.getSetting(UserSettings.KEYS.REMIND_CC_EMAILADDRESS, null)?.getValue()
+
+            println user.toString() + " : " + isRemindCCbyEmail + " : " + ccAddress
+        }
+
+        if (isRemindCCbyEmail && ccAddress) {
+            mailService.sendMail {
+                to      user.getEmail()
+                from    grailsApplication.config.notifications.email.from
+                cc      ccAddress
+                replyTo grailsApplication.config.notifications.email.replyTo
+                subject mailSubject
+                body    (view: "/mailTemplates/text/systemAnnouncement", model: [user: user, announcement: this])
+            }
+        }
+        else {
+            mailService.sendMail {
+                to      user.getEmail()
+                from    grailsApplication.config.notifications.email.from
+                replyTo grailsApplication.config.notifications.email.replyTo
+                subject mailSubject
+                body    (view: "/mailTemplates/text/systemAnnouncement", model: [user: user, announcement: this])
+            }
+        }
     }
 }
