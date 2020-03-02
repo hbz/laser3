@@ -23,7 +23,7 @@ class RefdataCategory extends AbstractI10nOverride {
     String desc_en
 
     // indicates this object is created via current bootstrap
-    boolean isHardData
+    boolean isHardData = false
 
     Date dateCreated
     Date lastUpdated

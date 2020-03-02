@@ -21,7 +21,7 @@ class ApiSource {
     String apikey
     String apisecret
 
-    Boolean active
+    Boolean active = false
     Date lastUpdatedwithApi
 
     Date dateCreated
@@ -39,8 +39,8 @@ class ApiSource {
         principal(nullable:true, blank:false)
         credentials(nullable:true, blank:false)
         active      (nullable:false, blank:false)
-        apikey (nullable:true, blank:false)
-        apisecret (nullable:true, blank:false)
+        apikey      (nullable:true, blank:false)
+        apisecret   (nullable:true, blank:false)
     }
 
     static mapping = {

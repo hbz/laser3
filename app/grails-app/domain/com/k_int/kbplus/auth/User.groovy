@@ -23,10 +23,10 @@ class User {
   Date dateCreated
   Date lastUpdated
 
-  boolean enabled
-  boolean accountExpired
-  boolean accountLocked
-  boolean passwordExpired
+  boolean enabled = false
+  boolean accountExpired = false
+  boolean accountLocked = false
+  boolean passwordExpired = false
 
   SortedSet affiliations
   SortedSet roles

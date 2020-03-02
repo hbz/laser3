@@ -20,7 +20,7 @@ class PropertyDefinitionGroup {
     Org    tenant
     String ownerType // PropertyDefinition.[LIC_PROP, SUB_PROP, ORG_PROP]
 
-    boolean isVisible // default value: will be overwritten by existing bindings
+    boolean isVisible = false // default value: will be overwritten by existing bindings
 
     Date dateCreated
     Date lastUpdated

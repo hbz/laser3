@@ -18,7 +18,7 @@ class Person extends AbstractBaseDomain {
     @RefdataAnnotation(cat = RDConstants.GENDER)
     RefdataValue gender
 
-    boolean isPublic
+    boolean isPublic = false
 
     @RefdataAnnotation(cat = RDConstants.PERSON_CONTACT_TYPE)
     RefdataValue contactType
