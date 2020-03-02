@@ -9,6 +9,7 @@ import com.k_int.properties.PropertyDefinition
 import com.k_int.properties.PropertyDefinitionGroup
 import com.k_int.properties.PropertyDefinitionGroupItem
 import de.laser.ContextService
+import de.laser.SystemAnnouncement
 import de.laser.SystemEvent
 import de.laser.api.v0.ApiToolkit
 import de.laser.controller.AbstractDebugController
@@ -21,7 +22,6 @@ import grails.plugin.springsecurity.SpringSecurityUtils
 import grails.plugin.springsecurity.annotation.Secured
 import grails.util.Holders
 import groovy.sql.Sql
-import groovy.util.slurpersupport.FilteredNodeChildren
 import groovy.util.slurpersupport.GPathResult
 import groovy.xml.MarkupBuilder
 import org.springframework.context.i18n.LocaleContextHolder
@@ -57,6 +57,63 @@ class AdminController extends AbstractDebugController {
     @Secured(['ROLE_ADMIN'])
     def index() { }
 
+
+    @Secured(['ROLE_ADMIN'])
+    def systemAnnouncements() {
+        Map<String, Object> result = [:]
+
+        if (params.id) {
+            SystemAnnouncement sa = SystemAnnouncement.get(params.long('id'))
+
+            if (sa) {
+                if (params.cmd == 'edit') {
+                    result.currentAnnouncement = sa
+                }
+                else if (params.cmd == 'publish') {
+                    sa.publish()
+                }
+                else if (params.cmd == 'undo') {
+                    sa.isPublished = false
+                    sa.save()
+                }
+                else if (params.cmd == 'delete') {
+                    sa.delete(flush: true)
+                }
+            }
+        }
+        result.announcements = SystemAnnouncement.list(sort: 'lastUpdated', order: 'desc')
+        result
+    }
+
+    @Secured(['ROLE_ADMIN'])
+    def createSystemAnnouncement() {
+        if (params.saTitle && params.saContent) {
+            SystemAnnouncement sa
+
+            if (params.saId) {
+                sa = SystemAnnouncement.get(params.long('saId'))
+            }
+            if (!sa) {
+                sa = new SystemAnnouncement()
+            }
+
+            sa.title = params.saTitle
+            sa.content = params.saContent
+            sa.user = User.get(springSecurityService.principal.id)
+            sa.isPublished = false
+
+            if (sa.save(flush: true)) {
+                flash.message = message(code: 'announcement.created')
+            }
+            else {
+                flash.error = message(code: 'default.error')
+            }
+        }
+        else {
+            flash.error = message(code: 'default.error')
+        }
+        redirect(action: 'systemAnnouncements')
+    }
 
     @Secured(['ROLE_ADMIN'])
     def manageDeletedObjects() {
