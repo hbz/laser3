@@ -233,7 +233,7 @@
                                 <td>
                                     <semui:listIcon type="${ie.tipp.title.class.name}"/>
                                     <g:link controller="issueEntitlement" id="${ie.id}"
-                                            action="show"><strong>${ie.tipp?.title.title}</strong>
+                                            action="show"><strong>${ie.tipp.title.title}</strong>
                                     </g:link>
                                     <g:if test="${ie.tipp.hostPlatformURL}">
                                         <a class="ui icon tiny blue button la-js-dont-hide-button la-popup-tooltip la-delay"
@@ -251,7 +251,7 @@
                                 </td>
 
                                 <td>
-                                    <semui:xEditableRefData owner="${ie}" field="medium" config="${RDConstants.IE_MEDIUM}"/>
+                                    ${ie.tipp.medium} <!-- may be subject of sync if issue entitlement medium and TIPP medium may differ -->
                                 </td>
                                 <td class="coverageStatements la-tableCard" data-entitlement="${ie.id}">
                                     <g:if test="${ie.tipp.title instanceof BookInstance}">

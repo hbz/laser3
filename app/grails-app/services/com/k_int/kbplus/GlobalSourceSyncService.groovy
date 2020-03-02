@@ -251,7 +251,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
                                         log.info("Got tipp diffs: ${diffs}")
                                         //process actual diffs
                                         diffs.each { diff ->
-                                            if(diff.field == 'coverage') {
+                                            if(diff.prop == 'coverage') {
                                                 diff.covDiffs.each { covDiff ->
                                                     switch(covDiff.event) {
                                                         case 'added':
@@ -260,7 +260,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
                                                             break
                                                         case 'deleted': tippA.coverages.remove(covDiff.target)
                                                             break
-                                                        case 'updated': covDiff.target[covDiff.field] = covDiff.newValue
+                                                        case 'updated': covDiff.target[covDiff.prop] = covDiff.newValue
                                                             if(!covDiff.target.save())
                                                                 throw new SyncException("Error on updating coverage statement for TIPP ${tippA.gokbId}: ${covDiff.target.errors}")
                                                             break
@@ -271,12 +271,12 @@ class GlobalSourceSyncService extends AbstractLockableService {
                                                 switch(diff.fieldType) {
                                                     case RefdataValue.class.name:
                                                         if(diff.refdataCategory)
-                                                            tippA[diff.field] = RefdataValue.getByValueAndCategory(tippB[diff.field],diff.refdataCategory)
+                                                            tippA[diff.prop] = RefdataValue.getByValueAndCategory(tippB[diff.prop],diff.refdataCategory)
                                                         else {
                                                             throw new SyncException("RefdataCategory missing!")
                                                         }
                                                         break
-                                                    default: tippA[diff.field] = tippB[diff.field]
+                                                    default: tippA[diff.prop] = tippB[diff.prop]
                                                         break
                                                 }
                                             }
@@ -752,7 +752,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
         Set<Map<String, Object>> result = []
 
         if (tippa.hostPlatformURL != tippb.hostPlatformURL) {
-            result.add([field: 'hostPlatformURL', new: tippb.hostPlatformURL, old: tippa.hostPlatformURL])
+            result.add([prop: 'hostPlatformURL', new: tippb.hostPlatformURL, old: tippa.hostPlatformURL])
         }
 
         // This is the boss enemy when refactoring coverage statements ... works so far, is going to be kept
@@ -760,19 +760,19 @@ class GlobalSourceSyncService extends AbstractLockableService {
         if(tippa.coverages?.size() > 0 && tippb.coverages?.size() > 0){
             Set<Map<String, Object>> coverageDiffs = getCoverageDiffs(tippa,(List<Map<String,Object>>) tippb.coverages)
             if(!coverageDiffs.isEmpty())
-                result.add([field: 'coverage', covDiffs: coverageDiffs])
+                result.add([prop: 'coverage', covDiffs: coverageDiffs])
         }
 
         if (tippa.accessStartDate != tippb.accessStartDate) {
-            result.add([field: 'accessStartDate', new: tippb.accessStartDate, old: tippa.accessStartDate])
+            result.add([prop: 'accessStartDate', new: tippb.accessStartDate, old: tippa.accessStartDate])
         }
 
         if (tippa.accessEndDate != tippb.accessEndDate) {
-            result.add([field: 'accessEndDate', new: tippb.accessEndDate, old: tippa.accessEndDate])
+            result.add([prop: 'accessEndDate', new: tippb.accessEndDate, old: tippa.accessEndDate])
         }
 
         if(tippa.status != RefdataValue.getByValueAndCategory(tippb.status,RDConstants.TIPP_STATUS)) {
-            result.add([field: 'status', fieldType: RefdataValue.class.name, refdataCategory: RDConstants.TIPP_STATUS, new: tippb.status, old: tippa.status])
+            result.add([prop: 'status', fieldType: RefdataValue.class.name, refdataCategory: RDConstants.TIPP_STATUS, new: tippb.status, old: tippa.status])
         }
 
         result
@@ -875,13 +875,13 @@ class GlobalSourceSyncService extends AbstractLockableService {
                         Map<String,Object> changeMap = [:]
                         switch(notify.event) {
                             case 'update': notify.diffs.each { diff ->
-                                if(diff.field == 'coverage') {
+                                if(diff.prop == 'coverage') {
                                     diff.covDiffs.each { covDiff ->
                                         TIPPCoverage tippCov = (TIPPCoverage) covDiff.target
                                         switch(covDiff.event) {
                                             case 'updated':
                                                 IssueEntitlementCoverage ieCov = (IssueEntitlementCoverage) tippCov.findEquivalent(ie.coverages)
-                                                String propLabel = messageSource.getMessage("tipp.${covDiff.field}",null, locale)
+                                                String propLabel = messageSource.getMessage("tipp.${covDiff.prop}",null, locale)
                                                 Object[] args = [titleLink,tippCov.tipp.title.title,pkgLink,tippCov.tipp.pkg.name,propLabel,covDiff.oldValue,covDiff.newValue,defaultAcceptChange]
                                                 changeDesc = messageSource.getMessage('pendingChange.message_TC01',args,locale)
                                                 changeMap.changeTarget = "${ieCov.class.name}:${ieCov.id}"
@@ -907,7 +907,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
                                     }
                                 }
                                 else {
-                                    Object[] args = [titleLink,target.title.title,pkgLink,target.pkg.name,messageSource.getMessage("tipp.${diff.field}",null,locale),diff.old,diff.new,defaultAcceptChange]
+                                    Object[] args = [titleLink,target.title.title,pkgLink,target.pkg.name,messageSource.getMessage("tipp.${diff.prop}",null,locale),diff.old,diff.new,defaultAcceptChange]
                                     changeDesc = messageSource.getMessage('pendingChange.message_TP02',args,locale)
                                     changeMap.changeTarget = "${ie.class.name}:${ie.id}"
                                     changeMap.changeType = PendingChangeService.EVENT_PROPERTY_CHANGE
