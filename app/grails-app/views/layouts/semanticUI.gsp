@@ -260,7 +260,6 @@
                             <sec:ifAnyGranted roles="ROLE_ADMIN">
                                 <div class="divider"></div>
 
-                                <g:link class="item" controller="announcement" action="index">${message(code:'menu.datamanager.ann')}</g:link>
                                 <g:link class="item" controller="package" action="list">${message(code:'menu.datamanager.searchPackages')}</g:link>
                                 <g:link class="item" controller="platform" action="list">${message(code:'menu.datamanager.searchPlatforms')}</g:link>
 
@@ -338,6 +337,19 @@
                                     <g:link class="item" controller="admin" action="dataCleanse" onclick="return confirm('${message(code:'confirm.start.DataCleaningNominalPlatforms')}')">Run Data Cleaning (Nominal Platforms)</g:link>
                                 </div>
                             </div>
+
+                            <div class="ui dropdown item">
+                                <i class="ui icon code branch"></i>Developer
+                                <i class="dropdown icon"></i>
+
+                                <div class="menu">
+                                    <g:link class="item" controller="dev" action="index">Barrierefreiheits-Tests</g:link>
+                                    <g:link class="item" controller="dev" action="frontend">Frontend</g:link>
+                                </div>
+                            </div>
+
+                            <g:link class="item" controller="announcement" action="index">${message(code:'menu.admin.announcements')}</g:link>
+                            <g:link class="item" controller="admin" action="serverDifferences">${message(code:'menu.admin.serverDifferences')}</g:link>
 
                             <div class="divider"></div>
 

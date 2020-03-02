@@ -2,18 +2,18 @@
 <html>
     <head>
         <meta name="layout" content="semanticUI"/>
-        <title>${message(code:'laser', default:'LAS:eR')} : ${message(code:'menu.datamanager.ann')}</title>
+        <title>${message(code:'laser')} : ${message(code:'menu.admin.announcements')}</title>
     </head>
 
     <body>
 
         <semui:breadcrumbs>
             <semui:crumb controller="myInstitution" action="dashboard" text="${institution?.getDesignation()}" />
-            <semui:crumb message="menu.datamanager.ann" class="active" />
+            <semui:crumb message="menu.admin.announcements" class="active" />
         </semui:breadcrumbs>
         <br>
         <h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon />
-            ${message(code:'menu.datamanager.ann')}
+            ${message(code:'menu.admin.announcements')}
         </h1>
 
         <g:message code="profile.dashboardItemsTimeWindow"
@@ -28,9 +28,9 @@
                   <td>
                       <strong>${ra.title}</strong> <br/>
                     <% print ra.content; /* avoid auto encodeAsHTML() */ %>
-                    <span class="la-float-right">${message(code:'announcement.posted_by.label', default:'posted by')}
+                    <span class="la-float-right">${message(code:'announcement.posted_by.label')}
                     <em><g:link controller="user" action="show" id="${ra.user?.id}">${ra.user?.displayName}</g:link></em>
-                    ${message(code:'default.on', default:'on')}
+                    ${message(code:'default.on')}
                     <g:formatDate date="${ra.dateCreated}" formatName="default.date.format.notime"/></span>
                   </td>
                 </tr>
