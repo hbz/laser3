@@ -14,7 +14,12 @@
 
     <semui:messages data="${flash}" />
     <br>
-    <h2 class="ui left floated aligned header la-clear-before">${message(code:'announcement.create.label')}</h2>
+    <g:if test="${currentAnnouncement}">
+        <h2 class="ui left floated aligned header la-clear-before">${message(code:'announcement.update.label')}</h2>
+    </g:if>
+    <g:else>
+        <h2 class="ui left floated aligned header la-clear-before">${message(code:'announcement.create.label')}</h2>
+    </g:else>
 
     <semui:form>
         <g:form action="createSystemAnnouncement" class="ui form">
@@ -24,9 +29,32 @@
                 <input type="text" id="saTitle" name="saTitle" value="${currentAnnouncement?.title}" />
             </div>
             <div class="field">
-                <label for="saContent"></label>
+                <label for="saContent">${message(code:'announcement.content.label')}</label>
                 <textarea id="saContent" name="saContent">${currentAnnouncement?.content}</textarea>
             </div>
+            <div class="ui field">
+                <label for="saPreview">${message(code:'announcement.preview.label')}</label>
+                <textarea id="saPreview" name="saPreview" readonly="readonly">${currentAnnouncement?.getCleanTitle()}
+
+${currentAnnouncement?.getCleanContent()}
+                </textarea>
+            </div>
+
+            <script>
+                updateSysAnnPreview = function() {
+                    $('#saPreview').text(
+                        $('form #saTitle').val().replace(/<.*?>/gm,"") + '\n\n' +
+                        $('form #saContent').val().replace(/<.*?>/gm,"")
+                    )
+                }
+                $('form #saTitle').on('change', function(){
+                    updateSysAnnPreview()
+                })
+                $('form #saContent').on('change', function(){
+                    updateSysAnnPreview()
+                })
+            </script>
+
             <div class="field">
                 <g:if test="${currentAnnouncement}">
                     <g:link controller="admin" action="systemAnnouncements" class="ui button">Formular zurücksetzen</g:link>
@@ -40,39 +68,46 @@
     </semui:form>
 
     <br />
-    <br />
     <h3 class="ui  header la-clear-before">${message(code:'announcement.previous.label')}</h3>
 
     <div>
         <g:each in="${announcements}" var="sa">
             <div class="ui segment">
-                <h4 class="ui header">${sa.title}</h4>
+                <h4 class="ui header"><% print sa.title; /* avoid auto encodeAsHTML() */ %></h4>
+                <g:if test="${sa.isPublished}">
+                    <div class="ui green ribbon label">${message(code:'announcement.published')}</div>
+                </g:if>
+
                 <div class="ui divider"></div>
                 <div class="content">
                     <% print sa.content; /* avoid auto encodeAsHTML() */ %>
                 </div>
+                <div class="ui divider"></div>
 
-                <br />
-                Erstellt am: <g:formatDate date="${sa.dateCreated}" format="${message(code:'default.date.format')}"/>
-                <br />
-                Von: <em><g:link controller="user" action="show" id="${sa.user?.id}">${(sa.user?.displayName)?:'Unknown'}</g:link></em>
+                ${message(code:'default.lastUpdated.label')}:
+                <g:formatDate date="${sa.lastUpdated}" format="${message(code:'default.date.format.noZ')}"/>
+                -
+                ${message(code:'default.dateCreated.label')}:
+                <g:formatDate date="${sa.dateCreated}" format="${message(code:'default.date.format.noZ')}"/>
+                -
+                ${message(code:'default.from')}:
+                <g:link controller="user" action="show" id="${sa.user?.id}">${(sa.user?.displayName)?:sa.user}</g:link>
                 <br />
                 <g:if test="${sa.lastPublishingDate}">
-                    <br />
-                    Zuletzt veröffentlicht am: <g:formatDate date="${sa.lastPublishingDate}" format="${message(code:'default.date.format')}"/>
+                    Zuletzt veröffentlicht: <g:formatDate date="${sa.lastPublishingDate}" format="${message(code:'default.date.format.noZ')}"/>
                     <br />
                 </g:if>
 
                 <div>
                     <g:if test="${sa.isPublished}">
                         <br />
-                        <g:link controller="admin" action="systemAnnouncements" id="${sa.id}" params="[cmd:'undo']" class="ui negative button">${message(code:'default.publish_undo.label')}</g:link>
+                        <g:link controller="admin" action="systemAnnouncements" id="${sa.id}" params="[cmd:'undo']" class="ui button">${message(code:'default.publish_undo.label')}</g:link>
                     </g:if>
                     <g:else>
                         <br />
-                        <g:link controller="admin" action="systemAnnouncements" id="${sa.id}" params="[cmd:'publish']" class="ui positive button">${message(code:'default.publish.label')}</g:link>
-                        <g:link controller="admin" action="systemAnnouncements" id="${sa.id}" params="[cmd:'delete']" class="ui button">${message(code:'default.button.delete.label')}</g:link>
-                        <g:link controller="admin" action="systemAnnouncements" id="${sa.id}" params="[cmd:'edit']" class="ui button">${message(code:'default.button.edit.label')}</g:link>
+                        <g:link controller="admin" action="systemAnnouncements" id="${sa.id}" params="[cmd:'delete']" class="ui negative icon button"><i class="trash alternate icon"></i></g:link>
+                        <g:link controller="admin" action="systemAnnouncements" id="${sa.id}" params="[cmd:'edit']" class="ui icon button"><i class="edit icon"></i></g:link>
+                        <g:link controller="admin" action="systemAnnouncements" id="${sa.id}" params="[cmd:'publish']" class="ui button">${message(code:'default.publish.label')}</g:link>
                     </g:else>
                 </div>
             </div>

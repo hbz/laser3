@@ -70,14 +70,29 @@ class AdminController extends AbstractDebugController {
                     result.currentAnnouncement = sa
                 }
                 else if (params.cmd == 'publish') {
-                    sa.publish()
+                    if (sa.publish()) {
+                        flash.message = message(code: 'announcement.published')
+                    }
+                    else {
+                        flash.error = message(code: 'announcement.published_error')
+                    }
                 }
                 else if (params.cmd == 'undo') {
                     sa.isPublished = false
-                    sa.save()
+                    if (sa.save()) {
+                        flash.message = message(code: 'announcement.undo')
+                    }
+                    else {
+                        flash.error = message(code: 'announcement.undo_error')
+                    }
                 }
                 else if (params.cmd == 'delete') {
-                    sa.delete(flush: true)
+                    if (sa.delete(flush: true)) {
+                        flash.message = message(code: 'default.success')
+                    }
+                    else {
+                        flash.error = message(code: 'default.delete.error.message')
+                    }
                 }
             }
         }
@@ -89,12 +104,14 @@ class AdminController extends AbstractDebugController {
     def createSystemAnnouncement() {
         if (params.saTitle && params.saContent) {
             SystemAnnouncement sa
+            boolean isNew = false
 
             if (params.saId) {
                 sa = SystemAnnouncement.get(params.long('saId'))
             }
             if (!sa) {
                 sa = new SystemAnnouncement()
+                isNew = true
             }
 
             sa.title = params.saTitle
@@ -103,10 +120,10 @@ class AdminController extends AbstractDebugController {
             sa.isPublished = false
 
             if (sa.save(flush: true)) {
-                flash.message = message(code: 'announcement.created')
+                flash.message = isNew ? message(code: 'announcement.created') : message(code: 'announcement.updated')
             }
             else {
-                flash.error = message(code: 'default.error')
+                flash.error = message(code: 'default.save.error.message', args: [sa])
             }
         }
         else {
