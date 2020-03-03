@@ -57,7 +57,7 @@ ${currentAnnouncement?.getCleanContent()}
 
             <div class="field">
                 <g:if test="${currentAnnouncement}">
-                    <g:link controller="admin" action="systemAnnouncements" class="ui button">Formular zurücksetzen</g:link>
+                    <g:link controller="admin" action="systemAnnouncements" role="button" class="ui button">Formular zurücksetzen</g:link>
                     <input type="submit" class="ui button" value="${message(code:'default.button.save_changes')}" />
                 </g:if>
                 <g:else>
@@ -101,13 +101,13 @@ ${currentAnnouncement?.getCleanContent()}
                 <div>
                     <g:if test="${sa.isPublished}">
                         <br />
-                        <g:link controller="admin" action="systemAnnouncements" id="${sa.id}" params="[cmd:'undo']" class="ui button">${message(code:'default.publish_undo.label')}</g:link>
+                        <g:link controller="admin" action="systemAnnouncements" id="${sa.id}" params="[cmd:'undo']" role="button" class="ui button">${message(code:'default.publish_undo.label')}</g:link>
                     </g:if>
                     <g:else>
                         <br />
-                        <g:link controller="admin" action="systemAnnouncements" id="${sa.id}" params="[cmd:'delete']" class="ui negative icon button"><i class="trash alternate icon"></i></g:link>
-                        <g:link controller="admin" action="systemAnnouncements" id="${sa.id}" params="[cmd:'edit']" class="ui icon button"><i class="edit icon"></i></g:link>
-                        <g:link controller="admin" action="systemAnnouncements" id="${sa.id}" params="[cmd:'publish']" class="ui button">${message(code:'default.publish.label')}</g:link>
+                        <g:link controller="admin" action="systemAnnouncements" id="${sa.id}" params="[cmd:'delete']" role="button" class="ui negative icon button"><i aria-hidden="true" class="trash alternate icon"></i></g:link>
+                        <g:link controller="admin" action="systemAnnouncements" id="${sa.id}" params="[cmd:'edit']" role="button" class="ui icon button"><i aria-hidden="true" class="edit icon"></i></g:link>
+                        <g:link controller="admin" action="systemAnnouncements" id="${sa.id}" params="[cmd:'publish']" role="button" class="ui button">${message(code:'default.publish.label')}</g:link>
                     </g:else>
                 </div>
             </div>
