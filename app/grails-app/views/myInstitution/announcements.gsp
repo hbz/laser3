@@ -2,18 +2,18 @@
 <html>
     <head>
         <meta name="layout" content="semanticUI"/>
-        <title>${message(code:'laser')} : ${message(code:'menu.admin.announcements')}</title>
+        <title>${message(code:'laser')} : ${message(code:'menu.datamanager.ann')}</title>
     </head>
 
     <body>
 
         <semui:breadcrumbs>
             <semui:crumb controller="myInstitution" action="dashboard" text="${institution?.getDesignation()}" />
-            <semui:crumb message="menu.admin.announcements" class="active" />
+            <semui:crumb message="menu.datamanager.ann" class="active" />
         </semui:breadcrumbs>
         <br>
         <h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon />
-            ${message(code:'menu.admin.announcements')}
+            ${message(code:'menu.datamanager.ann')}
         </h1>
 
         <g:message code="profile.dashboardItemsTimeWindow"
