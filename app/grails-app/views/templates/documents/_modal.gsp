@@ -80,8 +80,7 @@
                     <%
                         List notAvailable = [RefdataValue.getByValueAndCategory('ONIX-PL License', RDConstants.DOCUMENT_TYPE),
                                              RefdataValue.getByValueAndCategory('Note', RDConstants.DOCUMENT_TYPE),
-                                             RefdataValue.getByValueAndCategory('Announcement', RDConstants.DOCUMENT_TYPE),
-                                             RefdataValue.getByValueAndCategory('system.announcement', RDConstants.DOCUMENT_TYPE),
+                                             RefdataValue.getByValueAndCategory('Announcement', RDConstants.DOCUMENT_TYPE)
                         ]
                         List documentTypes = RefdataCategory.getAllRefdataValues(RDConstants.DOCUMENT_TYPE)-notAvailable
                     %>
