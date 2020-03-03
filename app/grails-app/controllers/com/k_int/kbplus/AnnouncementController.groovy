@@ -16,21 +16,21 @@ class AnnouncementController extends AbstractDebugController {
     def index() {
         Map<String, Object> result = [:]
         result.user = User.get(springSecurityService.principal.id)
-        def announcement_type = RefdataValue.getByValueAndCategory('system.announcement', RDConstants.DOCUMENT_TYPE)
-        result.recentAnnouncements = Doc.findAllByType(announcement_type, [sort: 'dateCreated', order: 'desc'])
+        def announcement_type = RefdataValue.getByValueAndCategory('Announcement', RDConstants.DOCUMENT_TYPE)
+        result.recentAnnouncements = Doc.findAllByType(announcement_type, [max: 10, sort: 'dateCreated', order: 'desc'])
 
         result
     }
 
     @Secured(['ROLE_ADMIN'])
-    def createSystemAnnouncement() {
+    def createAnnouncement() {
         Map<String, Object> result = [:]
         if (params.annTxt) {
             result.user = User.get(springSecurityService.principal.id)
             flash.message = message(code: 'announcement.created')
-            def announcement_type = RefdataValue.getByValueAndCategory('system.announcement', RDConstants.DOCUMENT_TYPE)
+            def announcement_type = RefdataValue.getByValueAndCategory('Announcement', RDConstants.DOCUMENT_TYPE)
 
-            new Doc(title: params.subjectTxt,
+            def new_announcement = new Doc(title: params.subjectTxt,
                     content: params.annTxt,
                     user: result.user,
                     type: announcement_type,
