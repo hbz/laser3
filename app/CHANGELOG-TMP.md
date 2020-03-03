@@ -2,6 +2,8 @@
 
 **Ticket    Date    Branch      Author  Feature/Bug     Description/Keywords**
 
+2231    03.03.2020  rc1.2       David   Feature     Performance: /myInstitution/currentProviders
+
 --      12.02.2020  rc1.2       Andreas Bug         Sortierung nach Enddatum war bei eigenen Kosten innerhalb einer Lizenz nicht möglich
 
 2179    12.02.2020  rc1.2       Andreas Bug         Übernahme des Anbieternamens in Sync nachgeholt
