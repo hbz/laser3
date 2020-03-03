@@ -56,12 +56,15 @@ class SystemAnnouncement {
         )
     }
 
+    static String cleanUp(String s) {
+        s.replaceAll("\\<.*?>","")
+    }
     String getCleanTitle() {
-        title.replaceAll("\\<.*?>","")
+        SystemAnnouncement.cleanUp(title)
     }
 
     String getCleanContent() {
-        content.replaceAll("\\<.*?>","")
+        SystemAnnouncement.cleanUp(content)
     }
 
     boolean publish() {

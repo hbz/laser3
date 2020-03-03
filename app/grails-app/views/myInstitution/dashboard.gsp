@@ -221,8 +221,7 @@
                                 <div class="fourteen wide column">
 
                                     <div class="header" style="margin:0 0 1em 0">
-                                        <g:set var="ann_nws" value="${sa.title?.replaceAll(' ', '')}"/>
-                                        ${message(code:"announcement.${ann_nws}", default:"${sa.title}")}
+                                        <% print sa.title; /* avoid auto encodeAsHTML() */ %>
                                     </div>
                                     <div>
                                         <div class="widget-content"><% print sa.content; /* avoid auto encodeAsHTML() */ %></div>
@@ -298,9 +297,6 @@
                         <a onclick="taskcreate();" class="ui icon button">
                             ${message(code:'task.create.new')}
                         </a>
-                        %{--<a onclick="taskedit(268);" class="ui icon button">--}%
-                            %{--TaskEdit 268--}%
-                        %{--</a>--}%
                     </div>
                 </div>
             </g:if>
