@@ -209,6 +209,9 @@
 
         <div class="ui bottom attached tab ${US_DASHBOARD_TAB.getValue().value=='Announcements' || US_DASHBOARD_TAB.getValue() == 'Announcements' ? 'active':''}" data-tab="news">
 
+            <g:message code="profile.dashboardSysAnnTimeWindow"
+                       args="${user.getSettingsValue(UserSettings.KEYS.DASHBOARD_ITEMS_TIME_WINDOW, 14)}" />
+
             <div class="ui relaxed list" style="clear:both;padding-top:1rem;">
                 <g:each in="${systemAnnouncements}" var="sa">
                     <div class="item">

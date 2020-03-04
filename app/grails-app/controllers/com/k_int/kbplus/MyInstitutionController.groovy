@@ -2399,7 +2399,7 @@ AND EXISTS (
 
         // systemAnnouncements
 
-        result.systemAnnouncements = SystemAnnouncement.getPublished(20)
+        result.systemAnnouncements = SystemAnnouncement.getPublished(periodInDays)
 
         // tasks
 
