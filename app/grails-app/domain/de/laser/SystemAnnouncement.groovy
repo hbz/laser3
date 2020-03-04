@@ -42,10 +42,13 @@ class SystemAnnouncement {
         lastUpdated (nullable:true, blank:false)
     }
 
-    static List<SystemAnnouncement> getPublished(int max) {
+    static List<SystemAnnouncement> getPublished(int periodInDays) {
+        def dcCheck = (new Date()).minus(periodInDays)
+
         SystemAnnouncement.executeQuery(
-                'select sa from SystemAnnouncement sa where sa.isPublished = true order by sa.lastPublishingDate desc',
-                [max: max]
+                'select sa from SystemAnnouncement sa ' +
+                'where sa.isPublished = true and sa.lastPublishingDate >= :dcCheck order by sa.lastPublishingDate desc',
+                [dcCheck: dcCheck]
         )
     }
 
