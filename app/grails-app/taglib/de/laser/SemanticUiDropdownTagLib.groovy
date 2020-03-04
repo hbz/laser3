@@ -97,26 +97,28 @@ class SemanticUiDropdownTagLib {
 
         def (text, message) = SwissKnife.getTextAndMessage(attrs)
         def linkBody  = (text && message) ? text + " - " + message : text + message
-        def aClass    = 'item'
+        def aClass    = attrs.class ? attrs.class + ' item' : 'item'
         def href      = attrs.href ? attrs.href : '#'
 
-        def tooltip = attrs.tooltip ?: ""
-
-        if(tooltip != "")
-        {
-            linkBody = '<div data-tooltip="'+tooltip+'" data-position="bottom center">'+linkBody+'</div>'
+        if (attrs.tooltip && attrs.tooltip != '') {
+            linkBody = '<div data-tooltip="' + attrs.tooltip +'" data-position="bottom center">' + linkBody + '</div>'
         }
-
         if (this.pageScope.variables?.actionName == attrs.action) {
-            aClass = 'item active'
+            aClass = aClass + ' active'
         }
+
+        def linkParams = [
+                class: aClass,
+                controller: attrs.controller,
+                action: attrs.action,
+                params: attrs.params
+        ]
+        if (attrs.onclick) {
+            linkParams.onclick = attrs.onclick
+        }
+
         if (attrs.controller) {
-            out << g.link(linkBody,
-                    class: aClass,
-                    controller: attrs.controller,
-                    action: attrs.action,
-                    params: attrs.params
-            )
+            out << g.link(linkParams, linkBody)
         }
         else {
             out << '<a href="' + href + '" class="item"'
