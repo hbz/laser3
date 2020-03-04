@@ -1,17 +1,13 @@
-
-<g:set var="participants" value="${params.tab == 'participantsViewAllFinish' ? participantsFinish : (params.tab == 'participantsViewAllNotFinish' ? participantsNotFinish : participants ) }"/>
-
-<h2 class="ui icon header la-clear-before la-noMargin-top"><g:message code="surveyEvaluation.participants"/><semui:totalNumber
-        total="${participants?.size()}"/></h2>
-<br>
+<g:set var="participants"
+       value="${params.tab == 'participantsViewAllFinish' ? participantsFinish : (params.tab == 'participantsViewAllNotFinish' ? participantsNotFinish : participants)}"/>
 
 <semui:form>
 
     <h4><g:message code="surveyParticipants.hasAccess"/></h4>
 
     <g:set var="surveyParticipantsHasAccess"
-           value="${participants?.findAll { it?.hasAccessOrg() }?.sort {
-               it?.sortname
+           value="${participants.findAll { it.hasAccessOrg() }.sort {
+               it.sortname
            }}"/>
 
     <div class="four wide column">
@@ -37,9 +33,6 @@
             <th>
                 ${message(code: 'default.name.label')}
             </th>
-            <th>
-                ${message(code: 'surveyInfo.finished')}
-            </th>
             <th></th>
         </tr>
         </thead>
@@ -50,8 +43,8 @@
                     ${i + 1}
                 </td>
                 <td>
-                    <g:link controller="myInstitution" action="manageParticipantSurveys" id="${participant?.id}">
-                        ${participant?.sortname}
+                    <g:link controller="myInstitution" action="manageParticipantSurveys" id="${participant.id}">
+                        ${participant.sortname}
                     </g:link>
                 </td>
                 <td>
@@ -59,32 +52,32 @@
                         ${fieldValue(bean: participant, field: "name")}
                     </g:link>
                 </td>
-               %{-- <td class="center aligned">
-                    <g:set var="finish" value="${surveyInfo?.checkSurveyInfoFinishByOrg(participant)}"/>
-                    <g:if test="${finish == com.k_int.kbplus.SurveyConfig.ALL_RESULTS_FINISH_BY_ORG}">
-                        <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
-                              data-content="${message(code: 'surveyConfig.allResultsFinishByOrg')}">
-                            <i class="circle green icon"></i>
-                        </span>
-                    </g:if>
-                    <g:elseif test="${finish == com.k_int.kbplus.SurveyConfig.ALL_RESULTS_HALF_FINISH_BY_ORG}">
-                        <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
-                              data-content="${message(code: 'surveyConfig.allResultsHalfFinishByOrg')}">
-                            <i class="circle yellow icon"></i>
-                        </span>
-                    </g:elseif>
-                    <g:else>
-                        <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
-                              data-content="${message(code: 'surveyConfig.allResultsNotFinishByOrg')}">
-                            <i class="circle red icon"></i>
-                        </span>
-                    </g:else>
-                </td>--}%
+                %{-- <td class="center aligned">
+                     <g:set var="finish" value="${surveyInfo?.checkSurveyInfoFinishByOrg(participant)}"/>
+                     <g:if test="${finish == com.k_int.kbplus.SurveyConfig.ALL_RESULTS_FINISH_BY_ORG}">
+                         <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
+                               data-content="${message(code: 'surveyConfig.allResultsFinishByOrg')}">
+                             <i class="circle green icon"></i>
+                         </span>
+                     </g:if>
+                     <g:elseif test="${finish == com.k_int.kbplus.SurveyConfig.ALL_RESULTS_HALF_FINISH_BY_ORG}">
+                         <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
+                               data-content="${message(code: 'surveyConfig.allResultsHalfFinishByOrg')}">
+                             <i class="circle yellow icon"></i>
+                         </span>
+                     </g:elseif>
+                     <g:else>
+                         <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
+                               data-content="${message(code: 'surveyConfig.allResultsNotFinishByOrg')}">
+                             <i class="circle red icon"></i>
+                         </span>
+                     </g:else>
+                 </td>--}%
                 <td>
 
-                    <g:link controller="survey" action="evaluationParticipantInfo" id="${surveyInfo.id}"
-                            params="[participant: participant?.id]" class="ui icon button"><i
-                            class="chart pie icon"></i></g:link>
+                <g:link controller="survey" action="evaluationParticipant"
+                        params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, participant: participant.id]" class="ui icon button"><i
+                        class="chart pie icon"></i></g:link>
 
                 </td>
 
@@ -96,7 +89,8 @@
 
     <h4><g:message code="surveyParticipants.hasNotAccess"/></h4>
 
-    <g:set var="surveyParticipantsHasNotAccess" value="${participants.findAll { !it?.hasAccessOrg() }.sort { it?.sortname }}"/>
+    <g:set var="surveyParticipantsHasNotAccess"
+           value="${participants.findAll { !it.hasAccessOrg() }.sort { it.sortname }}"/>
 
     <div class="four wide column">
         <g:link data-orgIdList="${(surveyParticipantsHasNotAccess?.id).join(',')}"
@@ -131,8 +125,8 @@
                     ${i + 1}
                 </td>
                 <td>
-                    <g:link controller="myInstitution" action="manageParticipantSurveys" id="${participant?.id}">
-                        ${participant?.sortname}
+                    <g:link controller="myInstitution" action="manageParticipantSurveys" id="${participant.id}">
+                        ${participant.sortname}
                     </g:link>
                 </td>
                 <td>
@@ -142,8 +136,8 @@
                 </td>
                 <td>
 
-                    <g:link controller="survey" action="evaluationParticipantInfo" id="${surveyInfo.id}"
-                            params="[participant: participant?.id]" class="ui icon button"><i
+                    <g:link controller="survey" action="evaluationParticipant"
+                            params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, participant: participant.id]" class="ui icon button"><i
                             class="chart pie icon"></i></g:link>
 
                 </td>

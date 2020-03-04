@@ -7,6 +7,8 @@ import com.k_int.properties.PropertyDefinition
 import com.k_int.properties.PropertyDefinitionGroup
 import com.k_int.properties.PropertyDefinitionGroupItem
 import de.laser.DashboardDueDate
+import de.laser.SystemAnnouncement
+
 //import de.laser.TaskService //unused for quite a long time
 import de.laser.controller.AbstractDebugController
 import de.laser.helper.*
@@ -2318,18 +2320,20 @@ AND EXISTS (
 
         // announcements
 
-        def dcCheck = (new Date()).minus(periodInDays)
+//        def dcCheck = (new Date()).minus(periodInDays)
+//
+//        result.recentAnnouncements = Doc.executeQuery(
+//                "select d from Doc d where d.type.value = :type and d.dateCreated >= :dcCheck",
+//                [type: 'system.announcement', dcCheck: dcCheck],
+//                [max: result.max, offset: result.announcementOffset, sort: 'dateCreated', order: 'asc']
+//        )
+//        result.recentAnnouncementsCount = Doc.executeQuery(
+//                "select d from Doc d where d.type.value = :type and d.dateCreated >= :dcCheck",
+//                [type: 'system.announcement', dcCheck: dcCheck]).size()
 
-        /*
-        result.recentAnnouncements = Doc.executeQuery(
-                "select d from Doc d where d.type.value = :type and d.dateCreated >= :dcCheck",
-                [type: 'Announcement', dcCheck: dcCheck],
-                [max: result.max,offset: result.announcementOffset, sort: 'dateCreated', order: 'asc']
-        )
-        result.recentAnnouncementsCount = Doc.executeQuery(
-                "select d from Doc d where d.type.value = :type and d.dateCreated >= :dcCheck",
-                [type: 'Announcement', dcCheck: dcCheck]).size()
-        */
+        // systemAnnouncements
+
+        result.systemAnnouncements = SystemAnnouncement.getPublished(periodInDays)
 
         // tasks
 
@@ -2704,7 +2708,7 @@ AND EXISTS (
         def surveyResults = SurveyResult.findAllByParticipantAndSurveyConfigInList(result.institution, result.surveyInfo.surveyConfigs).sort { it?.surveyConfig?.configOrder }
         result.editable = surveyService.isEditableSurvey(result.institution, result.surveyInfo)
 
-        result.surveyResults = surveyResults.groupBy {it?.surveyConfig?.id}
+        result.surveyResults = (result.surveyInfo.surveyConfigs[0].type == "GeneralSurvey") ? surveyResults : surveyResults.groupBy {it?.surveyConfig?.id}
 
         def tmpList = SurveyResult.findAllByParticipantAndSurveyConfigInList(result.institution, result.surveyInfo.surveyConfigs)
         if (tmpList) {
@@ -2777,7 +2781,7 @@ AND EXISTS (
         }
 
         result.editable = surveyService.isEditableSurvey(result.institution, result.surveyInfo)
-        result.consCostTransfer = true
+
 
         result
     }
@@ -2854,9 +2858,11 @@ AND EXISTS (
             redirect(url: request.getHeader('referer'))
         }
 
-        if(params.surveyConfigID && params.issueEntitlementsSurvey){
+        SurveyInfo surveyInfo = SurveyInfo.get(params.id)
+        SurveyConfig surveyConfig = SurveyConfig.get(params.surveyConfigID)
 
-            def surveyConfig = SurveyConfig.get(params.surveyConfigID)
+        if(surveyConfig && surveyConfig.pickAndChoose){
+
             def surveyOrg = SurveyOrg.findByOrgAndSurveyConfig(result.institution, surveyConfig)
 
             def ies = subscriptionService.getIssueEntitlementsUnderConsideration(surveyConfig.subscription?.getDerivedSubscriptionBySubscribers(result.institution))
@@ -2883,14 +2889,17 @@ AND EXISTS (
                 flash.error = message(code: 'renewEntitlementsWithSurvey.submitNotSuccessEmptyIEs')
             }
         }
-        if(params.subscriptionSurvey){
+        else{
             List<SurveyResult> surveyResults = SurveyResult.findAllByParticipantAndSurveyConfigInList(result.institution, SurveyInfo.get(params.id).surveyConfigs)
 
             boolean allResultHaveValue = true
-            surveyResults.each { surre ->
-                SurveyOrg surorg = SurveyOrg.findBySurveyConfigAndOrg(surre.surveyConfig, result.institution)
-                if (!surre.isResultProcessed() && !surorg.existsMultiYearTerm())
-                    allResultHaveValue = false
+            //Verbindlich??|
+            if(SurveyInfo.get(params.id).isMandatory) {
+                surveyResults.each { surre ->
+                    SurveyOrg surorg = SurveyOrg.findBySurveyConfigAndOrg(surre.surveyConfig, result.institution)
+                    if (!surre.isResultProcessed() && !surorg.existsMultiYearTerm())
+                        allResultHaveValue = false
+                }
             }
             if (allResultHaveValue) {
                 surveyResults.each {
@@ -3996,6 +4005,9 @@ AND EXISTS (
             Set<PropertyDefinition> itResult = PropertyDefinition.findAllByDescrAndTenant(it, result.institution, [sort: 'name']) // ONLY private properties!
             propDefs[it] = itResult
         }
+
+        propDefs << ["Survey Property": SurveyProperty.findAllByOwner(result.institution, [sort: 'name'])]
+
         result.propertyDefinitions = propDefs
 
         def (usedPdList, attrMap) = propertyService.getUsageDetails()
@@ -4020,11 +4032,13 @@ AND EXISTS (
             propDefs[it] = itResult
         }
 
+        propDefs << ["Survey Property": SurveyProperty.findAllByOwner(null, [sort: 'name'])]
+
         def (usedPdList, attrMap) = propertyService.getUsageDetails()
         result.editable = false
         result.propertyDefinitions = propDefs
-        result.attrMap = attrMap
-        result.usedPdList = usedPdList
+        //result.attrMap = attrMap
+        //result.usedPdList = usedPdList
 
         result.language = LocaleContextHolder.getLocale().toString()
         result.propertyType = 'custom'
@@ -4306,7 +4320,6 @@ AND EXISTS (
         }
 
         result.editable = surveyService.isEditableSurvey(result.institution, result.surveyInfo)
-        result.consCostTransfer = true
 
         result
     }

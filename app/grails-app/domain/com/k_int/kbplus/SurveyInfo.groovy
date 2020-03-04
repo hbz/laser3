@@ -30,9 +30,8 @@ class SurveyInfo {
     Date dateCreated
     Date lastUpdated
 
-    boolean isSubscriptionSurvey = false
-
-    //List surveyConfigs
+    boolean isSubscriptionSurvey
+    boolean isMandatory
 
     static hasMany = [
             surveyConfigs: SurveyConfig
@@ -44,6 +43,7 @@ class SurveyInfo {
         surveyConfigs (nullable:true, blank:false)
         comment (nullable:true, blank:true)
         isSubscriptionSurvey  (nullable:true, blank:true)
+        isMandatory (nullable:true, blank:true)
 
     }
 
@@ -64,6 +64,7 @@ class SurveyInfo {
         status column: 'surin_status_rv_fk'
 
         isSubscriptionSurvey column: 'surin_is_subscription_survey'
+        isMandatory column: 'surin_is_mandatory'
     }
 
 

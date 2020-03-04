@@ -382,7 +382,7 @@ ${surveyInfo.name}
                                     <g:each in="${costItemsSub}" var="costItemSub">
                                         ${costItemSub?.costItemElement?.getI10n('value')}
                                         <b><g:formatNumber
-                                                number="${consCostTransfer ? costItemSub?.costInBillingCurrencyAfterTax : costItemSub?.costInBillingCurrency}"
+                                                number="${costItemSub?.costInBillingCurrency}"
                                                 minFractionDigits="2" maxFractionDigits="2" type="number"/></b>
 
                                         ${(costItemSub?.billingCurrency?.getI10n('value').split('-')).first()}
@@ -398,7 +398,7 @@ ${surveyInfo.name}
                                     <g:if test="${costItem}">
                                         ${costItem?.costItemElement?.getI10n('value')}
                                         <b><g:formatNumber
-                                                number="${consCostTransfer ? costItem?.costInBillingCurrencyAfterTax : costItem?.costInBillingCurrency}"
+                                                number="${costItem?.costInBillingCurrency}"
                                                 minFractionDigits="2" maxFractionDigits="2" type="number"/></b>
 
                                         ${(costItem?.billingCurrency?.getI10n('value').split('-')).first()}

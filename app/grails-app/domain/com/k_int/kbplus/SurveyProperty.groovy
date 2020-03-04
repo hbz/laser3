@@ -124,7 +124,7 @@ class SurveyProperty extends AbstractI10nTranslatable {
         prop
     }
 
-    def getLocalizedType() {
+    String getLocalizedType() {
 
         def propertyType = this.getLocalizedValue(this.type)
         def refdataValues =[]

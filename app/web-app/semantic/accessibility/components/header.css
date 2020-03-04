@@ -863,4 +863,5 @@ body[class*="platform"] .ui.icon.header .circular.icon.la-object:before {
 }
 .ui.header.la-noMargin-top {
   margin-top: 0rem;
+  text-align: left;
 }

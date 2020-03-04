@@ -343,7 +343,7 @@ ${message(code: 'issueEntitlementsSurvey.label')} - ${surveyInfo.name}
                             data-confirm-term-how="concludeBinding"
                             controller="myInstitution" action="surveyInfoFinish"
                             id="${surveyInfo.id}"
-                            params="[surveyConfigID: surveyConfig?.id, issueEntitlementsSurvey: true]">
+                            params="[surveyConfigID: surveyConfig?.id]">
                         <g:message code="renewEntitlementsWithSurvey.submit"/>
                     </g:link>
                 </g:if>

@@ -10,7 +10,13 @@
 
 <body>
 
-<g:render template="breadcrumb" model="${[params: params]}"/>
+<semui:breadcrumbs>
+    <semui:crumb controller="survey" action="currentSurveysConsortia" text="${message(code:'menu.my.surveys')}" />
+    <g:if test="${surveyInfo}">
+        <semui:crumb controller="survey" action="show" id="${surveyInfo.id}" params="[surveyConfigID: surveyConfig]" text="${surveyConfig?.getConfigNameShort()}" />
+    </g:if>
+    <semui:crumb message="surveyEvaluation.label" class="active"/>
+</semui:breadcrumbs>
 
 <semui:controlButtons>
     <g:if test="${surveyInfo.status != de.laser.helper.RDStore.SURVEY_IN_PROCESSING}">
@@ -46,6 +52,19 @@
     <b>${message(code: 'surveyEvaluation.notOpenSurvey')}</b>
 </g:if>
 <g:else>
+    <h2 class="ui icon header la-clear-before la-noMargin-top">
+        <g:if test="${surveyConfig?.type == 'Subscription'}">
+            <i class="icon clipboard outline la-list-icon"></i>
+            <g:link controller="subscription" action="show" id="${surveyConfig?.subscription?.id}">
+                ${surveyConfig?.subscription?.name}
+            </g:link>
+        </g:if>
+        <g:else>
+            ${surveyConfig?.getConfigNameShort()}
+        </g:else>: ${message(code: 'surveyEvaluation.label')}
+    </h2>
+    <br>
+
     <div class="ui grid">
 
         <div class="sixteen wide stretched column">
@@ -53,32 +72,27 @@
 
                 <g:link class="item ${params.tab == 'surveyConfigsView' ? 'active' : ''}"
                         controller="survey" action="surveyEvaluation"
-                        id="${surveyInfo?.id}"
-                        params="[tab: 'surveyConfigsView']">
-                    ${message(code: 'surveyEvaluation.surveyConfigsView')}
-                    <div class="ui floating circular label">${surveyConfigs?.size() ?: 0}</div>
+                        params="[id: params.id, surveyConfigID: surveyConfig?.id, tab: 'surveyConfigsView']">
+                    ${message(code: 'surveyEvaluation.label')}
                 </g:link>
 
                 <g:link class="item ${params.tab == 'participantsViewAllFinish' ? 'active' : ''}"
                         controller="survey" action="surveyEvaluation"
-                        id="${surveyInfo?.id}"
-                        params="[tab: 'participantsViewAllFinish']">
+                        params="[id: params.id, surveyConfigID: surveyConfig?.id, tab: 'participantsViewAllFinish']">
                     ${message(code: 'surveyEvaluation.participantsViewAllFinish')}
                     <div class="ui floating circular label">${participantsFinish?.size() ?: 0}</div>
                 </g:link>
 
                 <g:link class="item ${params.tab == 'participantsViewAllNotFinish' ? 'active' : ''}"
                         controller="survey" action="surveyEvaluation"
-                        id="${surveyInfo?.id}"
-                        params="[tab: 'participantsViewAllNotFinish']">
+                        params="[id: params.id, surveyConfigID: surveyConfig?.id, tab: 'participantsViewAllNotFinish']">
                     ${message(code: 'surveyEvaluation.participantsViewAllNotFinish')}
                     <div class="ui floating circular label">${participantsNotFinish?.size() ?: 0}</div>
                 </g:link>
 
                 <g:link class="item ${params.tab == 'participantsView' ? 'active' : ''}"
                         controller="survey" action="surveyEvaluation"
-                        id="${surveyInfo?.id}"
-                        params="[tab: 'participantsView']">
+                        params="[id: params.id, surveyConfigID: surveyConfig?.id, tab: 'participantsView']">
                     ${message(code: 'surveyEvaluation.participantsView')}
                     <div class="ui floating circular label">${participants?.size() ?: 0}</div>
                 </g:link>
@@ -87,7 +101,20 @@
 
             <g:if test="${params.tab == 'surveyConfigsView'}">
                 <div class="ui bottom attached tab segment active">
-                    <g:render template="evaluationSurveyConfigsView"/>
+
+                    <g:if test="${surveyConfig}">
+
+                        <g:if test="${surveyConfig.type == "Subscription"}">
+
+                            <g:render template="evaluationSubscription" />
+                        </g:if>
+
+                        <g:if test="${surveyConfig.type == "GeneralSurvey"}">
+
+                            <g:render template="/templates/survey/generalSurvey" />
+                        </g:if>
+
+                    </g:if>
                 </div>
             </g:if>
 

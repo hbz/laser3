@@ -11,13 +11,9 @@
 <body>
 
 <semui:breadcrumbs>
-    <semui:crumb controller="myInstitution" action="dashboard" text="${contextService.getOrg()?.getDesignation()}" />
     <semui:crumb controller="survey" action="currentSurveysConsortia" text="${message(code:'menu.my.surveys')}" />
     <g:if test="${surveyInfo}">
-        <semui:crumb controller="survey" action="show" id="${surveyInfo.id}" text="${surveyInfo.name}" />
-    </g:if>
-    <g:if test="${surveyInfo}">
-        <semui:crumb controller="survey" action="surveyConfigsInfo" id="${surveyInfo.id}" params="[surveyConfigID: surveyConfig]" text="${surveyConfig?.getConfigNameShort()}" />
+        <semui:crumb controller="survey" action="show" id="${surveyInfo.id}" params="[surveyConfigID: surveyConfig]" text="${surveyConfig?.getConfigNameShort()}" />
     </g:if>
     <semui:crumb message="surveyParticipants.label" class="active"/>
 </semui:breadcrumbs>
@@ -73,7 +69,7 @@
                         controller="survey" action="surveyParticipants"
                         id="${surveyConfig?.surveyInfo?.id}"
                         params="[surveyConfigID: surveyConfig?.id, tab: 'selectedParticipants']">
-                    ${message(code: 'surveyParticipants.selectedParticipants')}
+                    ${surveyConfig?.type == 'Subscription' ? message(code: 'surveyParticipants.selectedParticipants') : message(code: 'surveyParticipants.label')}
                     <div class="ui floating circular label">${selectedParticipants.size() ?: 0}</div></g:link>
 
                 <g:if test="${editable}">
@@ -103,8 +99,7 @@
 
             <g:if test="${params.tab == 'consortiaMembers'}">
                 <div class="ui bottom attached tab segment active">
-                    <g:render template="consortiaMembers"
-                              model="${[showAddSubMembers: (SurveyConfig.get(params.surveyConfigID)?.type == 'Subscription') ? true : false]}"/>
+                    <g:render template="consortiaMembers"/>
 
                 </div>
             </g:if>

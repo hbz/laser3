@@ -110,7 +110,7 @@
                                name="newCostInBillingCurrency" id="newCostInBillingCurrency"
                                placeholder="${g.message(code: 'financials.invoice_total')}"
                                value="<g:formatNumber
-                                       number="${consCostTransfer ? costItem?.costInBillingCurrencyAfterTax : costItem?.costInBillingCurrency}"
+                                       number="${costItem?.costInBillingCurrency}"
                                        minFractionDigits="2" maxFractionDigits="2"/>"/>
 
                         <div class="ui icon button la-popup-tooltip la-delay" id="costButton3"
@@ -131,7 +131,7 @@
                         <input title="<g:message code="financials.newCosts.billingSum"/>" type="text" readonly="readonly"
                                name="newCostInBillingCurrencyAfterTax" id="newCostInBillingCurrencyAfterTax"
                                value="<g:formatNumber
-                                       number="${consCostTransfer ? 0.0 : costItem?.costInBillingCurrencyAfterTax}"
+                                       number="${costItem?.costInBillingCurrencyAfterTax}"
                                        minFractionDigits="2" maxFractionDigits="2"/>"/>
 
                     </div><!-- .field -->
@@ -183,7 +183,7 @@
                                name="newCostInLocalCurrency" id="newCostInLocalCurrency"
                                placeholder="${message(code: 'financials.newCosts.value')}"
                                value="<g:formatNumber
-                                       number="${consCostTransfer ? costItem?.costInLocalCurrencyAfterTax : costItem?.costInLocalCurrency}"
+                                       number="${costItem?.costInLocalCurrency}"
                                        minFractionDigits="2" maxFractionDigits="2"/>"/>
 
                         <div class="ui icon button la-popup-tooltip la-delay" id="costButton1"
@@ -197,7 +197,7 @@
                         <input title="<g:message code="financials.newCosts.finalSum"/>" type="text" readonly="readonly"
                                name="newCostInLocalCurrencyAfterTax" id="newCostInLocalCurrencyAfterTax"
                                value="<g:formatNumber
-                                       number="${consCostTransfer ? 0.0 : costItem?.costInLocalCurrencyAfterTax}"
+                                       number="${costItem?.costInLocalCurrencyAfterTax}"
                                        minFractionDigits="2" maxFractionDigits="2"/>"/>
                     </div><!-- .field -->
                 </div>
