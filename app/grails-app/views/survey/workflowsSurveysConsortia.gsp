@@ -265,23 +265,13 @@
 
                         <td class="center aligned">
 
-                            <g:if test="${surveyConfig}">
-                                <g:if test="${surveyConfig?.type == 'Subscription' && !surveyConfig?.pickAndChoose}">
-                                    <g:link controller="survey" action="surveyConfigsInfo" id="${surveyInfo?.id}"
+                            <g:if test="${surveyConfig && !surveyConfig.pickAndChoose}">
+                                    <g:link controller="survey" action="show" id="${surveyInfo?.id}"
                                             params="[surveyConfigID: surveyConfig?.id]" class="ui icon">
                                         <div class="ui circular ${surveyConfig?.configFinish ? "green" : ""} label">
                                             ${surveyConfig?.surveyProperties?.size() ?: 0}
                                         </div>
                                     </g:link>
-                                </g:if>
-                                <g:if test="${surveyConfig?.type == 'SurveyProperty'}">
-                                    <g:link controller="survey" action="surveyConfigsInfo" id="${surveyInfo?.id}"
-                                            params="[surveyConfigID: surveyConfig?.id]" class="ui icon">
-                                        <div class="ui circular ${surveyConfig?.configFinish ? "green" : ""} label">
-                                            ${surveyConfig?.surveyProperties ? surveyConfig?.surveyProperties?.size() + 1 : 0}
-                                        </div>
-                                    </g:link>
-                                </g:if>
                             </g:if>
 
                         </td>
@@ -311,7 +301,7 @@
 
 
                         <td class="center aligned">
-                            <g:if test="${surveyConfig && surveyConfig.type == 'Subscription' && !surveyConfig.pickAndChoose}">
+                            <g:if test="${surveyConfig && surveyConfig.type == 'Subscription' && !surveyConfig.pickAndChoose && surveyInfo.type == de.laser.helper.RDStore.SURVEY_TYPE_RENEWAL}">
                                 <g:link controller="survey" action="surveyCostItems" id="${surveyInfo?.id}"
                                         params="[surveyConfigID: surveyConfig?.id]" class="ui icon">
                                     <div class="ui circular ${surveyConfig?.costItemsFinish ? "green" : ""} label">
@@ -323,7 +313,7 @@
 
                         <td class="center aligned">
                             <g:if test="${surveyConfig && surveyConfig?.type == 'Subscription' && !surveyConfig?.pickAndChoose}">
-                                <g:link controller="survey" action="evaluationConfigsInfo" id="${surveyInfo?.id}"
+                                <g:link controller="survey" action="surveyEvaluation" id="${surveyInfo?.id}"
                                         params="[surveyConfigID: surveyConfig?.id]"
                                         class="ui icon">
                                     <div class="ui circular ${(participantsFinish?.size() == participantsTotal?.size()) ? "green" : (participantsFinish?.size() > 0) ? "yellow" : ""} label">

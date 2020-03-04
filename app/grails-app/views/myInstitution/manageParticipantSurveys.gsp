@@ -188,7 +188,7 @@
 
                         <g:if test="${surveyConfig && !surveyConfig?.pickAndChoose}">
                             <g:if test="${surveyConfig?.type == 'Subscription'}">
-                                <g:link controller="survey" action="surveyConfigsInfo" id="${surveyInfo?.id}"
+                                <g:link controller="survey" action="show" id="${surveyInfo?.id}"
                                         params="[surveyConfigID: surveyConfig?.id]" class="ui icon">
                                     <div class="ui circular label">
                                         ${surveyConfig?.surveyProperties?.size() ?: 0}

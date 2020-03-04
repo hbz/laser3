@@ -37,15 +37,11 @@
                               value="${surveyInfo?.endDate}" required="" />
         </div>
 
-
         <div class="field ">
             <label>${message(code: 'surveyInfo.comment.label')}</label>
 
             <textarea name="comment"></textarea>
         </div>
-
-        <br/>
-
 
         <input type="submit" class="ui button"
                value="${message(code: 'createIssueEntitlementsSurvey.create')}"/>

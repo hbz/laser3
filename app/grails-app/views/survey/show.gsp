@@ -160,7 +160,7 @@
 
                 <g:if test="${surveyConfig.type == "Subscription"}">
 
-                    <g:render template="subscriptionSurvey" model="[surveyConfig: surveyConfig,
+                    <g:render template="/templates/survey/subscriptionSurvey" model="[surveyConfig: surveyConfig,
                                                                 costItemSums: costItemSums,
                                                                 subscriptionInstance: surveyConfig.subscription,
                                                                 tasks: tasks,
@@ -170,7 +170,7 @@
 
                 <g:if test="${surveyConfig.type == "GeneralSurvey"}">
 
-                    <g:render template="generalSurvey" model="[surveyConfig: surveyConfig,
+                    <g:render template="/templates/survey/generalSurvey" model="[surveyConfig: surveyConfig,
                                                                     costItemSums: costItemSums,
                                                                     subscriptionInstance: surveyConfig.subscription,
                                                                     tasks: tasks,

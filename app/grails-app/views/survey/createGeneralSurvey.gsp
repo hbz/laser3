@@ -36,7 +36,7 @@
                               value="${surveyInfo?.endDate}" required="" />
         </div>
 
-        <div class="field required">
+        <div class="field ">
             <label>${message(code: 'surveyInfo.isMandatory.label.info')}</label>
             <div class="ui checkbox">
                 <input type="checkbox" name="mandatory" >

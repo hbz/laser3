@@ -137,7 +137,7 @@ class SurveyConfig {
         if (type == 'Subscription') {
             return subscription?.name
         } else {
-            return surveyProperty?.getI10n('name')
+            return surveyInfo?.name
         }
     }
 

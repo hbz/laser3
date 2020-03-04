@@ -37,7 +37,7 @@
         </div>
 
         <g:if test="${!(com.k_int.kbplus.SurveyConfig.findAllBySubscriptionAndSubSurveyUseForTransfer(subscription, true))}">
-            <div class="field required">
+            <div class="field">
                 <label>${message(code: 'surveyConfig.subSurveyUseForTransfer.label.info')}</label>
                 <div>
                     <input type="checkbox" id="subSurveyUseForTransfer" name="subSurveyUseForTransfer" ${disableSubSurveyUseForTransfer} >
@@ -45,7 +45,7 @@
             </div>
         </g:if>
 
-        <div class="field required">
+        <div class="field">
             <label>${message(code: 'surveyInfo.isMandatory.label.info')}</label>
             <div>
                 <input type="checkbox" id="mandatory" name="mandatory" >
@@ -57,9 +57,6 @@
 
             <textarea name="comment"></textarea>
         </div>
-
-        <br/>
-
 
         <input type="submit" class="ui button"
                value="${message(code: 'createSubscriptionSurvey.create')}"/>

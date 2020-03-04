@@ -121,6 +121,7 @@
                               title="${message(code: 'default.endDate.label')}"/>
             <g:sortableColumn params="${params}" property="surInfo.owner"
                               title="${message(code: 'surveyInfo.owner.label')}"/>
+            <th><g:message code="surveyInfo.isMandatory.label"/></th>
             <th><g:message code="surveyInfo.finished"/></th>
 
 
@@ -152,7 +153,6 @@
                                 <i class="yellow icon envelope large "></i>
                             </span>
                         </g:if>
-                        <i class="icon chart pie la-list-icon"></i>
 
                             <g:if test="${surveyInfo?.isSubscriptionSurvey}">
                                 <g:link controller="subscription" action="show" id="${surveyConfig?.subscription?.getDerivedSubscriptionBySubscribers(institution)?.id}"
@@ -176,6 +176,12 @@
 
                     ${surveyInfo?.owner}
 
+                </td>
+
+                <td class="center aligned">
+                    <g:if test="${surveyInfo.isMandatory}">
+                        <i class='check big green icon'></i>
+                    </g:if>
                 </td>
 
                 <td class="center aligned">

@@ -3,7 +3,7 @@
 <semui:subNav actionName="${actionName}">
 
     <g:set var="evalutionsViews"
-           value="['evaluationConfigsInfo', 'evaluationConfigResult', 'evaluationParticipantInfo', 'surveyEvaluation']"/>
+           value="['evaluationConfigResult', 'evaluationParticipant', 'surveyEvaluation']"/>
     <g:set var="surveyConfigsViews" value="['surveyConfigsInfo']"/>
 
 
@@ -24,13 +24,6 @@
                 </g:each>
             </semui:menuDropdownItems>
 
-            <semui:menuDropdownItems actionName="surveyConfigs" message="surveyConfigs.label">
-                <g:each in="${surveyInfo?.surveyConfigs.sort { it?.getConfigNameShort() }}" var="surveyConfig">
-                    <semui:menuDropdownItem controller="survey" action="surveyConfigs"
-                                                params="${[id: params.id, surveyConfigID: surveyConfig?.id]}"
-                                                text="${surveyConfig.getConfigNameShort()}"/>
-                </g:each>
-            </semui:menuDropdownItems>
 
             <semui:menuDropdownItems actionName="surveyConfigDocs" message="surveyConfigDocs.label">
                 <g:each in="${surveyInfo?.surveyConfigs.sort { it?.getConfigNameShort() }}" var="surveyConfig">
@@ -48,7 +41,7 @@
                 </g:each>
             </semui:menuDropdownItems>
 
-            <g:if test="${surveyInfo?.type == de.laser.helper.RDStore.SURVEY_TYPE_RENEWAL}">
+            <g:if test="${surveyInfo.type == de.laser.helper.RDStore.SURVEY_TYPE_RENEWAL}">
                 <semui:menuDropdownItems actionName="surveyCostItems" message="surveyCostItems.label">
                     <g:each in="${surveyInfo?.surveyConfigs.sort { it?.getConfigNameShort() }}" var="surveyConfig">
                         <semui:menuDropdownItem controller="survey" action="surveyCostItems"
@@ -70,10 +63,6 @@
         <g:else>
 
             <semui:subNavItem controller="survey" action="show" params="${[id: params.id]}" message="surveyShow.label"/>
-
-            <semui:subNavItem controller="survey" action="surveyConfigs"
-                              params="${[id: params.id, surveyConfigID: surveyConfig?.id]}" message="surveyConfigs.label"
-                              class="${(actionName in surveyConfigsViews) ? "active" : ""}"/>
 
             <semui:subNavItem controller="survey" disabled="${subNavDisable}" tooltip="${disableTooltip}" action="surveyConfigDocs"
                               params="${[id: params.id, surveyConfigID: surveyConfig?.id]}"
@@ -118,3 +107,12 @@
     </g:else>
 
 </semui:subNav>
+
+<g:javascript>
+    $(document).ready(function(){
+        $(document).on('click','.dropdown .item',function(e){
+            $('.ui .item').removeClass('active');
+            $(this).addClass('active');
+        });
+    });
+</g:javascript>

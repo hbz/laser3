@@ -22,41 +22,28 @@
         </g:if>
         <g:else>
 
-            <g:if test="${surveyInfo && surveyInfo.status?.id == de.laser.helper.RDStore.SURVEY_IN_PROCESSING?.id}">
-
-                <g:if test="${!surveyInfo?.isSubscriptionSurvey}">
-                    <semui:actionsDropdownItem controller="survey" action="allSurveyProperties"
-                                               params="[id: params.id, addSurveyConfigs: true]"
-                                               message="survey.SurveyProp.add.label"/>
-
-                    <div class="ui divider"></div>
-                </g:if>
-
-
-                <g:if test="${surveyInfo && surveyInfo.checkOpenSurvey() && (surveyInfo.status?.id == de.laser.helper.RDStore.SURVEY_IN_PROCESSING?.id)}">
-                    <semui:actionsDropdownItem controller="survey" action="processOpenSurvey" params="[id: params.id]"
-                                               message="openSurvey.button"
-                                               tooltip="${message(code: "openSurvey.button.info2")}"/>
-                    <semui:actionsDropdownItem controller="survey" action="processOpenSurveyNow"
-                                               params="[id: params.id]"
-                                               message="openSurveyNow.button"
-                                               tooltip="${message(code: "openSurveyNow.button.info2")}"/>
-                </g:if>
-                <g:else>
-                    <semui:actionsDropdownItemDisabled controller="survey" action="processOpenSurvey"
-                                                       params="[id: params.id]"
-                                                       message="openSurvey.button"
-                                                       tooltip="${message(code: "openSurvey.button.info")}"/>
-
-                    <semui:actionsDropdownItemDisabled controller="survey" action="processOpenSurveyNow"
-                                                       params="[id: params.id]"
-                                                       message="openSurveyNow.button"
-                                                       tooltip="${message(code: "openSurveyNow.button.info")}"/>
-                </g:else>
-
-
+            <g:if test="${surveyInfo && surveyInfo.checkOpenSurvey() && (surveyInfo.status?.id == de.laser.helper.RDStore.SURVEY_IN_PROCESSING?.id)}">
+                <semui:actionsDropdownItem controller="survey" action="processOpenSurvey" params="[id: params.id]"
+                                           message="openSurvey.button"
+                                           tooltip="${message(code: "openSurvey.button.info2")}"/>
+                <semui:actionsDropdownItem controller="survey" action="processOpenSurveyNow"
+                                           params="[id: params.id]"
+                                           message="openSurveyNow.button"
+                                           tooltip="${message(code: "openSurveyNow.button.info2")}"/>
                 <div class="ui divider"></div>
             </g:if>
+            <g:else>
+                <semui:actionsDropdownItemDisabled controller="survey" action="processOpenSurvey"
+                                                   params="[id: params.id]"
+                                                   message="openSurvey.button"
+                                                   tooltip="${message(code: "openSurvey.button.info")}"/>
+
+                <semui:actionsDropdownItemDisabled controller="survey" action="processOpenSurveyNow"
+                                                   params="[id: params.id]"
+                                                   message="openSurveyNow.button"
+                                                   tooltip="${message(code: "openSurveyNow.button.info")}"/>
+                <div class="ui divider"></div>
+            </g:else>
 
             <g:if test="${surveyInfo && surveyInfo.status?.id == de.laser.helper.RDStore.SURVEY_SURVEY_STARTED?.id}">
                 <semui:actionsDropdownItem controller="survey" action="processEndSurvey" params="[id: params.id]"
@@ -68,7 +55,7 @@
             <g:if test="${surveyInfo.isSubscriptionSurvey && surveyConfig && surveyConfig?.type == 'Subscription' && !surveyConfig?.pickAndChoose
                     && surveyInfo.status?.id in [de.laser.helper.RDStore.SURVEY_IN_EVALUATION?.id, de.laser.helper.RDStore.SURVEY_COMPLETED?.id]}">
                 <semui:actionsDropdownItem controller="survey" action="renewalWithSurvey"
-                        params="[surveyConfigID: surveyConfig?.id, id: surveyInfo?.id]"
+                                           params="[surveyConfigID: surveyConfig?.id, id: surveyInfo?.id]"
                                            message="surveyInfo.renewal.action"/>
                 <div class="ui divider"></div>
                 <semui:actionsDropdownItem controller="survey" action="compareMembersOfTwoSubs"
@@ -87,7 +74,6 @@
                 <semui:actionsDropdownItem controller="survey" action="setCompleteSurvey" params="[id: params.id]"
                                            message="completeSurvey.button" tooltip=""/>
                 <div class="ui divider"></div>
-
 
             </g:if>
 

@@ -2703,7 +2703,7 @@ AND EXISTS (
         def surveyResults = SurveyResult.findAllByParticipantAndSurveyConfigInList(result.institution, result.surveyInfo.surveyConfigs).sort { it?.surveyConfig?.configOrder }
         result.editable = surveyService.isEditableSurvey(result.institution, result.surveyInfo)
 
-        result.surveyResults = surveyResults.groupBy {it?.surveyConfig?.id}
+        result.surveyResults = (result.surveyInfo.surveyConfigs[0].type == "GeneralSurvey") ? surveyResults : surveyResults.groupBy {it?.surveyConfig?.id}
 
         def tmpList = SurveyResult.findAllByParticipantAndSurveyConfigInList(result.institution, result.surveyInfo.surveyConfigs)
         if (tmpList) {
@@ -2776,7 +2776,7 @@ AND EXISTS (
         }
 
         result.editable = surveyService.isEditableSurvey(result.institution, result.surveyInfo)
-        result.consCostTransfer = true
+
 
         result
     }
@@ -2853,9 +2853,11 @@ AND EXISTS (
             redirect(url: request.getHeader('referer'))
         }
 
-        if(params.surveyConfigID && params.issueEntitlementsSurvey){
+        SurveyInfo surveyInfo = SurveyInfo.get(params.id)
+        SurveyConfig surveyConfig = SurveyConfig.get(params.surveyConfigID)
 
-            def surveyConfig = SurveyConfig.get(params.surveyConfigID)
+        if(surveyConfig && surveyConfig.pickAndChoose){
+
             def surveyOrg = SurveyOrg.findByOrgAndSurveyConfig(result.institution, surveyConfig)
 
             def ies = subscriptionService.getIssueEntitlementsUnderConsideration(surveyConfig.subscription?.getDerivedSubscriptionBySubscribers(result.institution))
@@ -2882,14 +2884,17 @@ AND EXISTS (
                 flash.error = message(code: 'renewEntitlementsWithSurvey.submitNotSuccessEmptyIEs')
             }
         }
-        if(params.subscriptionSurvey){
+        else{
             List<SurveyResult> surveyResults = SurveyResult.findAllByParticipantAndSurveyConfigInList(result.institution, SurveyInfo.get(params.id).surveyConfigs)
 
             boolean allResultHaveValue = true
-            surveyResults.each { surre ->
-                SurveyOrg surorg = SurveyOrg.findBySurveyConfigAndOrg(surre.surveyConfig, result.institution)
-                if (!surre.isResultProcessed() && !surorg.existsMultiYearTerm())
-                    allResultHaveValue = false
+            //Verbindlich??|
+            if(SurveyInfo.get(params.id).isMandatory) {
+                surveyResults.each { surre ->
+                    SurveyOrg surorg = SurveyOrg.findBySurveyConfigAndOrg(surre.surveyConfig, result.institution)
+                    if (!surre.isResultProcessed() && !surorg.existsMultiYearTerm())
+                        allResultHaveValue = false
+                }
             }
             if (allResultHaveValue) {
                 surveyResults.each {
@@ -4309,7 +4314,6 @@ AND EXISTS (
         }
 
         result.editable = surveyService.isEditableSurvey(result.institution, result.surveyInfo)
-        result.consCostTransfer = true
 
         result
     }
