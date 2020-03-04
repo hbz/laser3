@@ -1751,7 +1751,7 @@ class SurveyController {
             response.sendError(401); return
         }
 
-        result.editable = (result.surveyInfo?.status == RDStore.SURVEY_IN_PROCESSING) ? true : false
+        result.editable = (result.surveyInfo?.status == RDStore.SURVEY_IN_PROCESSING)
 
         if (result.editable) {
 
