@@ -140,7 +140,6 @@
                             </g:if>
                         </td>
                     </tr>
-                    surveyParticipants
                 </g:each>
                 </tbody>
             </table>
