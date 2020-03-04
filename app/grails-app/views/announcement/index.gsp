@@ -2,7 +2,7 @@
 <html>
     <head>
         <meta name="layout" content="semanticUI"/>
-        <title>${message(code:'laser')} ${message(code:'myinst.addLicense.label')}</title>
+        <title>${message(code:'laser')} : ${message(code:'menu.datamanager.ann')}</title>
     </head>
 
     <body>
