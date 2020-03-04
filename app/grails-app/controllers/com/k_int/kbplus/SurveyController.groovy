@@ -1987,7 +1987,7 @@ class SurveyController {
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_EDITOR") })
     def editSurveyCostItem() {
         def result = setResultGenericsAndCheckAccess()
-        result.putAll(financeService.setEditVars())
+        result.putAll(financeService.setEditVars(result.institution))
         if (!result.editable) {
             response.sendError(401); return
         }
@@ -2020,7 +2020,7 @@ class SurveyController {
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_EDITOR") })
     def addForAllSurveyCostItem() {
         def result = setResultGenericsAndCheckAccess()
-        result.putAll(financeService.setEditVars())
+        result.putAll(financeService.setEditVars(result.institution))
         if (!result.editable) {
             response.sendError(401); return
         }

@@ -2,6 +2,12 @@
 
 **Ticket    Date    Branch      Author  Feature/Bug     Description/Keywords**
 
+2224    02.03.2020  hbz-dev     Andreas Bug         Überprüfung zur Darstellung der Kostensichtbarkeit korrigiert
+
+2223    02.03.2020  hbz-dev     Andreas Feature     Lizenzbezug muss bei Kostenposten bestehen (ausgenommen Umfragekosten), Vorauswahl bei Kosnortien
+
+2218    27.02.2020  hbz-dev     Andreas Feature     Menüpunkt "Einrichtung erstellen" aus "Meine Konsorten" entfernt
+
 2216    27.02.2020  hbz-dev     Andreas Feature     Aufhebung der Vorbelegung der Währung auf EUR bei Kosteneingabe
 
 2107    27.02.2020  hbz-dev     Andreas Bug         Löschroutine bei Kostenposten von hartes Löschen auf Löschmarkierung umgestellt

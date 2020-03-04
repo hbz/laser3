@@ -25,7 +25,7 @@
                         </label>
                         <g:select id="filterSubMembers" name="filterSubMembers" multiple="" value="${filterPreset?.filterSubMembers}"
                                   class="ui fluid search dropdown" from="${subscriptionParticipants}" optionKey="id" optionValue="name"
-                                  noSelection="${['':'Alle ..']}"
+                                  noSelection="${['':message(code:'default.select.all.label')]}"
                         />
                     </div>
                 </g:if>
@@ -35,10 +35,10 @@
                         <input type="hidden" name="filterSubProviders" value="${params.filterSubProviders}">
                         <i class="dropdown icon"></i>
                         <input type="text" class="search">
-                        <div class="default text">Alle ...</div>
+                        <div class="default text"><g:message code="default.select.all.label"/></div>
                     </div>
                     <%--<g:select id="filterSubProviders" from="" name="filterSubProviders" multiple="" value="${params.filterSubProviders}"
-                        class="ui fluid search dropdown" optionKey="id" optionValue="name" noSelection="${['' : 'Alle ..']}"
+                        class="ui fluid search dropdown" optionKey="id" optionValue="name" noSelection="${['' : message(code:'default.select.all.label')]}"
                     />--%>
                 </div>
                 <g:if test="${!fixedSubscription}">
@@ -49,7 +49,7 @@
                                       optionKey="id"
                                       optionValue="value"
                                       value="${params.filterSubStatus}"
-                                      noSelection="${['' : 'Alle ..']}"
+                                      noSelection="${['' : message(code:'default.select.all.label')]}"
                             onchange="setupDropdowns()"
                         />
                     </div>
@@ -68,7 +68,7 @@
                             <input type="hidden" name="filterCISub" value="${params.filterCISub}">
                             <i class="dropdown icon"></i>
                             <input type="text" class="search">
-                            <div class="default text">Alle ...</div>
+                            <div class="default text"><g:message code="default.select.all.label"/></div>
                         </div>
                     </div>
                 </g:if>
@@ -78,14 +78,14 @@
                         <input type="hidden" name="filterCISPkg" value="${params.filterCISPkg}">
                         <i class="dropdown icon"></i>
                         <input type="text" class="search">
-                        <div class="default text">Alle ...</div>
+                        <div class="default text"><g:message code="default.select.all.label"/></div>
                     </div>
                     <%--<g:select id="filterCISPkg" class="ui fluid search dropdown" multiple=""
                               name="filterCISPkg"
                               from=""
                               optionValue="text"
                               optionKey="id"
-                              noSelection="['':'Alle ..']"
+                              noSelection="['':message(code:'default.select.all.label')]"
                               value="${params.filterCISPkg}" />--%>
                 </div>
             </div><!-- .three -->
@@ -97,14 +97,14 @@
                         <input type="hidden" name="filterCIBudgetCode" value="${params.filterCIBudgetCode}">
                         <i class="dropdown icon"></i>
                         <input type="text" class="search">
-                        <div class="default text">Alle ...</div>
+                        <div class="default text"><g:message code="default.select.all.label"/></div>
                     </div>
                     <%--<g:select id="filterCIBudgetCode" class="ui dropdown search selection"
                               name="filterCIBudgetCode"
                               from=""
                               optionKey="id" optionValue="value"
                               value="${params.filterCIBudgetCode}"
-                              noSelection="${['':'Alle ..']}" /> --%>
+                              noSelection="${['':message(code:'default.select.all.label')]}" /> --%>
                 </div>
 
                 <div class="field">
@@ -113,13 +113,13 @@
                         <input type="hidden" name="filterCIInvoiceNumber" value="${params.filterCIInvoiceNumber}">
                         <i class="dropdown icon"></i>
                         <input type="text" class="search">
-                        <div class="default text">Alle ...</div>
+                        <div class="default text"><g:message code="default.select.all.label"/></div>
                     </div>
                     <%--<g:select id="filterCIInvoiceNumber" class="ui dropdown search selection"
                               name="filterCIInvoiceNumber"
                               from=""
                               value="${params.filterCIInvoiceNumber}"
-                              noSelection="${['':'Alle ..']}" />--%>
+                              noSelection="${['':message(code:'default.select.all.label')]}" />--%>
                 </div>
 
                 <div class="field">
@@ -128,13 +128,13 @@
                         <input type="hidden" name="filterCIOrderNumber" value="${params.filterCIOrderNumber}">
                         <i class="dropdown icon"></i>
                         <input type="text" class="search">
-                        <div class="default text">Alle ...</div>
+                        <div class="default text"><g:message code="default.select.all.label"/></div>
                     </div>
                     <%--<g:select id="filterCIOrderNumber" class="ui dropdown search selection"
                               name="filterCIOrderNumber"
                               from=""
                               value="${params.filterCIOrderNumber}"
-                              noSelection="${['':'Alle ..']}" />--%>
+                              noSelection="${['':message(code:'default.select.all.label')]}" />--%>
                 </div>
             </div><!-- .three -->
 
@@ -145,13 +145,13 @@
                         <input type="hidden" name="filterCIReference" value="${params.filterCIReference}">
                         <i class="dropdown icon"></i>
                         <input type="text" class="search">
-                        <div class="default text">Alle ...</div>
+                        <div class="default text"><g:message code="default.select.all.label"/></div>
                     </div>
                     <%--<g:select id="filterCIReference" class="ui dropdown search selection"
                               name="filterCIReference"
                               from=""
                               value="${params.filterCIReference}"
-                              noSelection="${['':'Alle ..']}" />--%>
+                              noSelection="${['':message(code:'default.select.all.label')]}" />--%>
                 </div>
 
                 <div class="field fieldcontain">
@@ -162,7 +162,7 @@
                                   optionKey="${{it.class.getName() + ":" + it.id}}"
                                   optionValue="value"
                                   value="${params.filterCIElement}"
-                                  noSelection="${['':'Alle ..']}"/>
+                                  noSelection="${['':message(code:'default.select.all.label')]}"/>
                 </div>
 
                 <div class="field fieldcontain">
@@ -173,7 +173,7 @@
                                   optionKey="${{it.class.getName() + ":" + it.id}}"
                                   optionValue="value"
                                   value="${params.filterCIStatus}"
-                                  noSelection="${['':'Alle ..']}"/>
+                                  noSelection="${['':message(code:'default.select.all.label')]}"/>
                 </div>
             </div><!-- .three -->
 
@@ -221,7 +221,7 @@
                               optionKey="${{it.class.getName() + ":" + it.id}}"
                               optionValue="value"
                               value="${params.filterCICategory}"
-                              noSelection="${['':'Alle ..']}"/>
+                              noSelection="${['':message(code:'default.select.all.label')]}"/>
                 --%>
                     <label for="filterCITaxType">${message(code:'financials.newCosts.taxTypeAndRate')}</label>
                     <%
@@ -239,7 +239,7 @@
                               optionKey="${{it.key}}"
                               optionValue="${{it.value}}"
                               value="${params.filterCITaxType}"
-                              noSelection="${['':'Alle ..']}"/>
+                              noSelection="${['':message(code:'default.select.all.label')]}"/>
                 </div>
                 <div class="field"></div>
                 <div class="field la-field-right-aligned">
@@ -248,7 +248,7 @@
                 </div>
             </div>
 
-            <g:hiddenField name="orgId" value="${contextService.getOrg()?.id}"/>
+            <%--<g:hiddenField name="orgId" value="${institution.id}"/>--%>
         </g:form>
     </semui:filter>
 

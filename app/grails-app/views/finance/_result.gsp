@@ -1,161 +1,108 @@
 <%@ page import="de.laser.helper.RDStore" %>
-
     <semui:messages data="${flash}" />
-
-    <g:if test="${editable}">
-        <%--
-        <button class="ui left floated  button la-clear-before" value="" data-href="#addBudgetCodeModal" data-semui="modal">${message(code:'budgetCode.create_new.label')}</button>
-        --%>
-        <semui:modal id="addBudgetCodeModal" message="budgetCode.create_new.label">
-
-            <g:form class="ui form" url="[controller: 'myInstitution', action: 'budgetCodes']" method="POST">
-                <input type="hidden" name="cmd" value="newBudgetCode"/>
-                <input type="hidden" name="redirect" value="redirect"/>
-
-                <div class="field">
-                    <label>${message(code:'financials.budgetCode.description')}</label>
-                    <input type="text" name="bc"/>
-                </div>
-
-                <div class="field">
-                    <label>${message(code:'financials.budgetCode.usage')}</label>
-                    <textarea name="descr"></textarea>
-                </div>
-
-            </g:form>
-        </semui:modal>
-
-    </g:if>
-
-
-
-            <%--<button class="ui button" type="submit" data-semui="modal" href="#recentlyAdded_modal" id="showHideRecent">${message(code:'financials.recentCosts')}</button>--%>
-
-            <g:if test="${editable}">
-                <%--<button class="ui button la-float-right" type="submit" id="BatchSelectedBtn" title="${g.message(code: 'financials.filtersearch.deleteAll')}" value="remove">Remove Selected</button>--%>
-
-                <script>
-                    var isClicked = false;
-                    $('#btnAddNewCostItem').on('click', function(event) {
-                        event.preventDefault();
-
-                        // prevent 2 Clicks open 2 Modals
-                        if (!isClicked) {
-                            isClicked = true;
-                            $('.ui.dimmer.modals > #costItem_ajaxModal').remove();
-                            $('#dynamicModalContainer').empty()
-
-                            $.ajax({
-                                url: "<g:createLink controller='finance' action='editCostItem'/>",
-                                data: {
-                                    sub: "${fixedSubscription?.id}",
-                                    tab: "${showView}"
-                                }
-                            }).done(function (data) {
-                                $('#dynamicModalContainer').html(data);
-
-                                $('#dynamicModalContainer .ui.modal').modal({
-                                    onVisible: function () {
-                                        r2d2.initDynamicSemuiStuff('#costItem_ajaxModal');
-                                        r2d2.initDynamicXEditableStuff('#costItem_ajaxModal');
-
-                                        ajaxPostFunc();
-                                        setupCalendar();
-                                    },
-                                    detachable: true,
-                                    closable: false,
-                                    transition: 'scale',
-                                    onApprove: function () {
-                                        $(this).find('.ui.form').submit();
-                                        return false;
-                                    }
-                                }).modal('show');
-                            })
-                            setTimeout(function () {
-                                isClicked = false;
-                            }, 800);
-                        }
-                    })
-                </script>
-
-            </g:if>
-
-
-        <%--<g:render template="recentlyAddedModal" />--%>
-
-
-                <div id="filterTemplateWrapper" class="wrapper">
-                    <div id="filterTemplate">
-                        <%--${financialData}--%>
-                        <g:render template="filter" model="[filterPreset:filterPresets,fixedSubscription:fixedSubscription]"/>
-                        <div id="financeFilterData" class="ui top attached tabular menu" data-current="${showView}">
-                            <g:if test="${(!showView.equals("consAtSubscr") || showView.equals("own")) && accessService.checkPerm("ORG_INST,ORG_CONSORTIUM")}">
-                                <div class="item" data-tab="own">${message(code:'financials.tab.ownCosts')}</div>
-                            </g:if>
-                            <g:if test="${showView.equals("cons") || (showView.equals("consAtSubscr") && accessService.checkPerm("ORG_CONSORTIUM"))}">
-                                <div class="item" data-tab="cons">
-                                    <g:message code="financials.tab.consCosts"/>
-                                </div>
-                            </g:if>
-                            <g:elseif test="${showView in ["coll","collAsSubscr"] || (showView.equals("consAtSubscr") && accessService.checkPerm("ORG_INST_COLLECTIVE"))}">
-                                <div class="item" data-tab="subscr">
-                                    ${message(code:'financials.tab.subscrCosts')}
-                                </div>
-                                <div class="item" data-tab="coll">
-                                    <g:message code="financials.tab.collCosts"/>
-                                </div>
-                            </g:elseif>
-                            <g:if test="${showView.equals("subscr")}">
-                                <div class="item" data-tab="subscr">${message(code:'financials.tab.subscrCosts')}</div>
-                            </g:if>
+    <div id="filterTemplateWrapper" class="wrapper">
+        <div id="filterTemplate">
+            <g:render template="filter" model="[filterPreset:filterPresets,fixedSubscription:fixedSubscription]"/>
+            <div id="financeFilterData" class="ui top attached tabular menu" data-current="${showView}">
+                <g:each in="${dataToDisplay}" var="view">
+                    <g:if test="${view == 'own'}">
+                        <div class="item" data-tab="own">
+                            <g:message code="financials.tab.ownCosts"/>
                         </div>
-                        <g:if test="${(!showView.equals("consAtSubscr") || showView.equals("own")) && accessService.checkPerm("ORG_INST,ORG_CONSORTIUM")}">
-                            <!-- OWNER -->
-                            <div data-tab="own" class="ui bottom attached tab">
-                                <br />
-                                <g:render template="result_tab_owner" model="[fixedSubscription: fixedSubscription, editable: editable, data: own, customerType: 'OWNER']"/>
-                            </div><!-- OWNER -->
-                        </g:if>
-                        <g:if test="${showView.equals("cons") || (showView.equals("consAtSubscr") && accessService.checkPerm("ORG_CONSORTIUM"))}">
-                            <div data-tab="cons" class="ui bottom attached tab">
-                                <br />
-                                <g:render template="result_tab_cons" model="[fixedSubscription: fixedSubscription, editable: editable, data: cons, orgRoles: financialData.consSubscribers, customerType: 'CONS']"/>
-                            </div>
-                        </g:if>
-                        <g:elseif test="${showView in ["coll","collAsSubscr"] || (showView.equals("consAtSubscr") && accessService.checkPerm("ORG_INST_COLLECTIVE"))}">
-                            <div data-tab="subscr" class="ui bottom attached tab">
-                                <br />
-                                <g:render template="result_tab_subscr" model="[fixedSubscription: fixedSubscription, editable: editable, data:subscr]"/>
-                            </div>
-                            <div data-tab="coll" class="ui bottom attached tab">
-                                <br />
-                                <g:render template="result_tab_cons" model="[fixedSubscription: fixedSubscription, editable: editable, data: coll, orgRoles: financialData.consSubscribers, customerType: 'COLL']"/>
-                            </div>
-                        </g:elseif>
-                        <g:if test="${showView.equals("subscr")}">
-                            <div data-tab="subscr" class="ui bottom attached tab">
-                                <br />
-                                <g:render template="result_tab_subscr" model="[fixedSubscription: fixedSubscription, editable: editable, data:subscr]"/>
-                            </div>
-                        </g:if>
+                    </g:if>
+                    <g:if test="${view in ['cons','consAtSubscr']}">
+                        <div class="item" data-tab="cons">
+                            <g:message code="financials.tab.consCosts"/>
+                        </div>
+                    </g:if>
+                    <g:if test="${view == 'subscr'}">
+                        <div class="item" data-tab="subscr">
+                            <g:message code="financials.tab.subscrCosts"/>
+                        </div>
+                    </g:if>
+                    <g:if test="${view in ['coll','collAtSubscr']}">
+                        <div class="item" data-tab="coll">
+                            <g:message code="financials.tab.collCosts"/>
+                        </div>
+                    </g:if>
+                </g:each>
+            </div>
+            <g:each in="${dataToDisplay}" var="view">
+                <g:if test="${view == 'own'}">
+                    <div data-tab="own" class="ui bottom attached tab">
+                        <g:render template="result_tab_owner" model="[fixedSubscription: fixedSubscription, editable: editable, data: own, customerType: 'OWNER', showView: view, offset: offsets.ownOffset]"/>
                     </div>
-                </div>
+                </g:if>
+                <g:if test="${view in ['cons','consAtSubscr']}">
+                    <div data-tab="cons" class="ui bottom attached tab">
+                        <g:render template="result_tab_cons" model="[fixedSubscription: fixedSubscription, editable: editable, data: cons, customerType: 'CONS', showView: view, offset: offsets.consOffset]"/>
+                    </div>
+                </g:if>
+                <g:if test="${view in ['coll','collAtSubscr']}">
+                    <div data-tab="coll" class="ui bottom attached tab">
+                        <g:render template="result_tab_cons" model="[fixedSubscription: fixedSubscription, editable: editable, data: coll, customerType: 'COLL', showView: view, offset: offsets.collOffset]"/>
+                    </div>
+                </g:if>
+                <g:if test="${view == 'subscr'}">
+                    <div data-tab="subscr" class="ui bottom attached tab">
+                        <g:render template="result_tab_subscr" model="[fixedSubscription: fixedSubscription, editable: editable, data:subscr, showView: view, offset: offsets.subscrOffset]"/>
+                    </div>
+                </g:if>
+            </g:each>
+        </div>
 
-
-        <r:script>
+    </div>
+    <r:script>
             $(document).ready(function() {
-                var tab = "${view}";
+                var tab = "${showView}";
                 var rawHref = $(".exportCSV").attr("href");
+                var isClicked = false;
                 $("[data-tab='"+tab+"']").addClass("active");
                 $(".exportCSV").attr("href",rawHref+"&showView="+tab);
-                if(tab === "consAtSubscr")
-                    $("[data-tab='cons']").addClass("active");
 
                 $('#financeFilterData .item').tab({
                     onVisible: function(tabPath) {
                         $('#financeFilterData').attr('data-current', tabPath);
                         //console.log(tabPath);
                         $(".exportCSV").attr("href",rawHref+"&showView="+tabPath);
+                    }
+                });
+
+                $('#btnAddNewCostItem').on('click', function(event) {
+                    event.preventDefault();
+
+                    // prevent 2 Clicks open 2 Modals
+                    if (!isClicked) {
+                        isClicked = true;
+                        $('.ui.dimmer.modals > #costItem_ajaxModal').remove();
+                        $('#dynamicModalContainer').empty();
+                        $.ajax({
+                               url: "<g:createLink controller='finance' action='newCostItem'/>",
+                               data: {
+                                   sub: "${fixedSubscription?.id}",
+                                   showView: "${showView}"
+                               }
+                        }).done(function (data) {
+                            $('#dynamicModalContainer').html(data);
+                            $('#dynamicModalContainer .ui.modal').modal({
+                                   onVisible: function () {
+                                       r2d2.initDynamicSemuiStuff('#costItem_ajaxModal');
+                                       r2d2.initDynamicXEditableStuff('#costItem_ajaxModal');
+                                       ajaxPostFunc();
+                                       setupCalendar();
+                                       },
+                                   detachable: true,
+                                   closable: false,
+                                   transition: 'scale',
+                                   onApprove: function () {
+                                       $(this).find('.ui.form').submit();
+                                       return false;
+                                   }
+                            }).modal('show');
+                        });
+                        setTimeout(function () {
+                            isClicked = false;
+                            }, 800);
                     }
                 });
 

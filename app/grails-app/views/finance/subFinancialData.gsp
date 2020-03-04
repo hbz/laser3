@@ -23,7 +23,7 @@
         </semui:breadcrumbs>
         <semui:controlButtons>
             <semui:exportDropdown>
-                <g:if test="${params.submit || params.filterSubStatus}">
+                <g:if test="${filterSet}">
                     <semui:exportDropdownItem>
                         <g:link  class="item js-open-confirm-modal"
                                  data-confirm-tokenMsg = "${message(code: 'confirmation.content.exportPartial')}"
@@ -57,64 +57,42 @@
                         </g:link>
                     </semui:exportDropdownItem>
                 </g:else>
-            <%--
-            <semui:exportDropdownItem>
-                <a data-mode="sub" class="disabled export" style="cursor: pointer">CSV Costs by Subscription</a>
-            </semui:exportDropdownItem>
-            <semui:exportDropdownItem>
-                <a data-mode="code" class="disabled export" style="cursor: pointer">CSV Costs by Code</a>
-            </semui:exportDropdownItem>
-            --%>
             </semui:exportDropdown>
 
             <g:if test="${editable}">
                 <semui:actionsDropdown>
                     <semui:actionsDropdownItem id="btnAddNewCostItem" message="financials.addNewCost" />
-                <%--<semui:actionsDropdownItemDisabled message="financials.action.financeImport" />--%>
-                    <semui:actionsDropdownItem controller="myInstitution" action="financeImport" params="${[id:subscription.id]}" message="financials.action.financeImport" />
                 </semui:actionsDropdown>
             </g:if>
         </semui:controlButtons>
 
-        <g:if test="${showView.equals("cons")}">
-            <g:set var="showConsortiaFunctions" value="true"/>
-            <g:set var="totalString" value="${own.count ? own.count : 0} ${message(code:'financials.header.ownCosts')} / ${cons.count} ${message(code:'financials.header.consortialCosts')}"/>
-        </g:if>
-        <g:elseif test="${showView.equals("coll")}">
-            <g:set var="showCollectiveFunctions" value="true"/>
-            <g:set var="totalString" value="${own.count ? own.count : 0} ${message(code:'financials.header.ownCosts')} / ${cons.count} ${message(code:'financials.header.collectiveCosts')}"/>
-        </g:elseif>
-        <g:elseif test="${showView.equals("collAsSubscr")}">
-            <g:set var="showCollectiveFunctions" value="true"/>
-            <g:set var="totalString" value="${own.count ? own.count : 0} ${message(code:'financials.header.ownCosts')} / ${subscr.count} ${message(code:'financials.header.subscriptionCosts')} / ${coll.count} ${message(code:'financials.header.collectiveCosts')}"/>
-        </g:elseif>
-        <g:elseif test="${showView.equals("consAtSubscr")}">
-            <g:if test="${accessService.checkPerm("ORG_CONSORTIUM")}">
-                <g:set var="totalString" value="${cons.count ? cons.count : 0} ${message(code:'financials.header.consortialCosts')}"/>
-            </g:if>
-            <g:elseif test="${accessService.checkPerm("ORG_INST_COLLECTIVE")}">
-                <g:set var="totalString" value="${coll.count ? coll.count : 0} ${message(code:'financials.header.collectiveCosts')}"/>
-            </g:elseif>
-        </g:elseif>
-        <g:elseif test="${showView.equals("subscr") && accessService.checkPermAffiliation("ORG_INST,ORG_CONSORTIUM","INST_USER")}">
-            <g:set var="totalString" value="${own.count ? own.count : 0} ${message(code:'financials.header.ownCosts')} / ${subscr.count} ${message(code:'financials.header.subscriptionCosts')}"/>
-        </g:elseif>
-        <g:elseif test="${accessService.checkPermAffiliation("ORG_INST,ORG_CONSORTIUM","INST_USER")}">
-            <g:set var="totalString" value="${own.count ? own.count : 0} ${message(code:'financials.header.ownCosts')}"/>
-        </g:elseif>
-        <g:else>
-            <g:set var="totalString" value="${subscr.count} ${message(code:'financials.header.subscriptionCosts')}"/>
-        </g:else>
+        <%
+            List<GString> total = []
+            dataToDisplay.each { view ->
+                switch(view) {
+                    case 'own': total << "${own.count} ${message(code:'financials.header.ownCosts')}"
+                        break
+                    case 'cons':
+                    case 'consAtSubscr': total << "${cons.count} ${message(code:'financials.header.consortialCosts')}"
+                        break
+                    case 'coll':
+                    case 'collAtSubscr': total << "${coll.count} ${message(code:'financials.header.collectiveCosts')}"
+                        break
+                    case 'subscr': total << "${subscr.count} ${message(code:'financials.header.subscriptionCosts')}"
+                        break
+                }
+            }
+        %>
 
         <h1 class="ui icon header la-noMargin-top">
-            <semui:headerIcon />${message(code:'subscription.details.financials.label')} ${message(code:'default.for')} ${subscription} <semui:totalNumber total="${totalString}"/>
+            <semui:headerIcon />${message(code:'subscription.details.financials.label')} ${message(code:'default.for')} ${subscription} <semui:totalNumber total="${total.join(' / ')}"/>
         </h1>
         <semui:anualRings mapping="subfinance" object="${subscription}" controller="finance" action="index" navNext="${navNextSubscription}" navPrev="${navPrevSubscription}"/>
 
 
         <g:render template="../subscription/nav" model="${[subscriptionInstance:subscription, params:(params << [id:subscription.id,showConsortiaFunctions:showConsortiaFunctions,showCollectiveFunctions:showCollectiveFunctions])]}"/>
 
-        <g:if test="${params.orgBasicMemberView || showView.equals("consAtSubscr")}">
+        <g:if test="${dataToDisplay.stream().anyMatch(['collAtSubscr','consAtSubscr'].&contains) || params.orgBasicMemberView}">
             <g:render template="../subscription/message" model="${[contextOrg: institution, subscriptionInstance: subscription]}"/>
         </g:if>
 

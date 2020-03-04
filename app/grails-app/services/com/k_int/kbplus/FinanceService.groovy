@@ -1,10 +1,15 @@
 package com.k_int.kbplus
 
+import com.k_int.kbplus.auth.User
 import de.laser.AccessService
 import de.laser.ContextService
 import de.laser.EscapeService
+import de.laser.exceptions.FinancialDataException
 import de.laser.helper.DateUtil
+import grails.converters.JSON
+import grails.plugin.springsecurity.SpringSecurityService
 import grails.transaction.Transactional
+import org.codehaus.groovy.grails.web.servlet.mvc.GrailsParameterMap
 import org.springframework.context.MessageSource
 import org.springframework.web.multipart.commons.CommonsMultipartFile
 
@@ -28,6 +33,9 @@ class FinanceService {
     MessageSource messageSource
     AccessService accessService
     EscapeService escapeService
+    SpringSecurityService springSecurityService
+    String genericExcludes = ' and ci.surveyOrg = null and ci.costItemStatus != :deleted '
+    Map<String,RefdataValue> genericExcludeParams = [deleted:COST_ITEM_DELETED]
 
     /**
      * Will replace the methods index and financialData methods in FinanceController class for a single subscription.
@@ -36,171 +44,97 @@ class FinanceService {
      * @param subscription - the subscription for which the financial data is retrieved. Its type determines the views displayed on return.
      * @return a LinkedHashMap with the cost items for each tab to display
      */
-    Map getCostItemsForSubscription(Subscription sub,params,int max,int offset) {
-        Org org = contextService.org
-        LinkedHashMap result = [own:[:],cons:[:],coll:[:],subscr:[:]]
-        int ownOffset = 0
-        int consOffset = 0
-        int subscrOffset = 0
-        switch(params.view) {
-            case "own": ownOffset = offset
-                if(params.max) max = Integer.parseInt(params.max)
-                break
-            case "cons":
-            case "coll":
-            case "consAtSubscr": consOffset = offset
-                if(params.max) max =  Integer.parseInt(params.max)
-                break
-            case "subscr": subscrOffset = offset
-                if(params.max) max = Integer.parseInt(params.max)
-                break
-            default: log.info("unhandled view: ${params.view}")
-                break
+    Map getCostItemsForSubscription(GrailsParameterMap params,Map configMap) throws FinancialDataException {
+        if(configMap.subscription) {
+            Subscription sub = (Subscription) configMap.subscription
+            Org org = (Org) configMap.institution
+            Map<String,Object> filterQuery = processFilterParams(params), result = [filterPresets:filterQuery.filterData]
+            if(filterQuery.subFilter || filterQuery.ciFilter)
+                result.filterSet = true
+            configMap.dataToDisplay.each { String dataToDisplay ->
+                switch(dataToDisplay) {
+                    case "own":
+                        List<CostItem> ownCostItems = CostItem.executeQuery(
+                                'select ci from CostItem ci where ci.owner = :owner and ci.sub = :sub '+
+                                        genericExcludes + filterQuery.subFilter + filterQuery.ciFilter +
+                                        ' order by '+configMap.sortConfig.ownSort+' '+configMap.sortConfig.ownOrder,
+                                [owner:org,sub:sub]+genericExcludeParams+filterQuery.filterData)
+                        result.own = [count:ownCostItems.size()]
+                        if(ownCostItems){
+                            result.own.costItems = ownCostItems.drop(configMap.offsets.ownOffset).take(configMap.max)
+                            result.own.sums = calculateResults(ownCostItems)
+                        }
+                        break
+                    case "cons":
+                        List consCostRows = CostItem.executeQuery(
+                                'select ci, ' +
+                                        '(select oo.org.sortname from OrgRole oo where ci.sub = oo.sub and oo.roleType in (:roleTypes)) as sortname ' +
+                                'from CostItem as ci where ci.owner = :owner and ci.sub in (select sub from Subscription as sub join sub.orgRelations orgRoles where sub.instanceOf = :sub '+
+                                filterQuery.subFilter + ')' + genericExcludes + filterQuery.ciFilter +
+                                ' order by '+configMap.sortConfig.consSort+' '+configMap.sortConfig.consOrder,
+                                [owner:org,sub:sub,roleTypes:[OR_SUBSCRIBER_CONS,OR_SUBSCRIBER_CONS_HIDDEN]]+genericExcludeParams+filterQuery.filterData)
+                        result.cons = [count:consCostRows.size()]
+                        if(consCostRows) {
+                            List<CostItem> consCostItems = consCostRows.collect { row -> row[0]}
+                            result.cons.costItems = consCostItems.drop(configMap.offsets.consOffset).take(configMap.max)
+                            result.cons.sums = calculateResults(consCostItems)
+                        }
+                        break
+                    case "consAtSubscr": List<CostItem> consCostItems = CostItem.executeQuery('select ci from CostItem as ci join ci.sub sub where ci.owner = :owner and sub = :sub'+
+                            filterQuery.subFilter + genericExcludes + filterQuery.ciFilter +
+                            ' order by '+configMap.sortConfig.consSort+' '+configMap.sortConfig.consOrder,
+                            [owner:org,sub:sub]+genericExcludeParams+filterQuery.filterData)
+                        result.cons = [count:consCostItems.size()]
+                        if(consCostItems) {
+                            result.cons.costItems = consCostItems.drop(configMap.offsets.consOffset).take(configMap.max)
+                            result.cons.sums = calculateResults(consCostItems)
+                        }
+                        break
+                    case "coll":
+                        List collCostRows = CostItem.executeQuery(
+                                'select ci, ' +
+                                        '(select oo.org.sortname from OrgRole oo where ci.sub = oo.sub and oo.roleType = :roleType) as sortname ' +
+                                'from CostItem as ci where ci.owner = :owner and ci.sub in (select sub from Subscription as sub join sub.orgRelations orgRoles where sub.instanceOf = :sub '+
+                                filterQuery.subFilter + ')' + genericExcludes + filterQuery.ciFilter +
+                                ' order by '+configMap.sortConfig.collSort+' '+configMap.sortConfig.collOrder,
+                                [owner:org,sub:sub,roleType:OR_SUBSCRIBER_COLLECTIVE]+genericExcludeParams+filterQuery.filterData)
+                        result.coll = [count:0]
+                        if(collCostRows) {
+                            Set<CostItem> collCostItems = collCostRows.collect { row -> row[0]}
+                            result.coll.count = collCostItems.size()
+                            result.coll.costItems = collCostItems.drop(configMap.offsets.collOffset).take(configMap.max)
+                            result.coll.sums = calculateResults(collCostItems)
+                        }
+                        break
+                    case "collAtSubscr": List<CostItem> collCostItems = CostItem.executeQuery('select ci from CostItem as ci join ci.sub sub where ci.owner = :owner and sub = :sub'+
+                            filterQuery.subFilter + genericExcludes + filterQuery.ciFilter +
+                                    ' order by '+configMap.sortConfig.collSort+' '+configMap.sortConfig.collOrder,
+                            [owner:org,sub:sub]+genericExcludeParams+filterQuery.filterData)
+                        result.coll = [count:collCostItems.size()]
+                        if(collCostItems) {
+                            result.coll.costItems = collCostItems.drop(configMap.offsets.collOffset).take(configMap.max)
+                            result.coll.sums = calculateResults(collCostItems)
+                        }
+                        break
+                    case "subscr":
+                        List<CostItem> subscrCostItems = CostItem.executeQuery(
+                                'select ci from CostItem as ci join ci.sub sub where ci.owner in :owner and sub = :sub and ci.isVisibleForSubscriber = true'+
+                                 genericExcludes + filterQuery.subFilter + filterQuery.ciFilter +
+                                 ' order by '+configMap.sortConfig.subscrSort+' '+configMap.sortConfig.subscrOrder,
+                                 [owner:[sub.getConsortia(),sub.getCollective()],sub:sub]+genericExcludeParams+filterQuery.filterData)
+                        result.subscr = [count:subscrCostItems.size()]
+                        if(subscrCostItems) {
+                            result.subscr.costItems = subscrCostItems.drop(configMap.offsets.subscrOffset).take(configMap.max)
+                            result.subscr.sums = calculateResults(subscrCostItems)
+                        }
+                        break
+                }
+            }
+            result
         }
-        List filterOwnQuery = processFilterParams(params,"own",true)
-        List filterConsQuery = processFilterParams(params,"cons",true)
-        List filterSubscrQuery = processFilterParams(params,"subscr",true)
-        result.filterPresets = filterConsQuery[1]
-        String ownSort
-        if(params.ownSort) {
-            ownSort = " order by ${params.sort} ${params.order}"
+        else if(!configMap.subscription) {
+            throw new FinancialDataException("Method called without valid subscription data!")
         }
-        else {
-            ownSort = ""
-        }
-        List ownCostItems = CostItem.executeQuery('select ci from CostItem ci where ci.owner = :owner and ci.surveyOrg = null and ci.sub = :sub and ci.costItemStatus != :deleted '+filterOwnQuery[0]+ownSort,[owner:org,sub:sub,deleted:COST_ITEM_DELETED]+filterOwnQuery[1])
-        result.own.costItems = []
-        int limit = ownOffset+max
-        if(limit > ownCostItems.size())
-            limit = ownCostItems.size()
-        for(int i = ownOffset;i < limit;i++) {
-            result.own.costItems.add(ownCostItems[i])
-        }
-        result.own.count = ownCostItems.size()
-        if(result.own.count > 0) {
-            result.own.sums = calculateResults(ownCostItems)
-        }
-        switch(sub.getCalculatedType()) {
-        /*
-            own costs, consortial costs
-            that is: a) owner = contextOrg and sub = contextSub
-            b) owner = contextOrg (which is consortium) and sub.instanceOf = contextSub
-         */
-            case CALCULATED_TYPE_CONSORTIAL:
-            case CALCULATED_TYPE_ADMINISTRATIVE:
-            case CALCULATED_TYPE_COLLECTIVE:
-                String consSort
-                if(params.consSort)
-                    consSort = " order by ${params.sort} ${params.order}"
-                else
-                    consSort = " order by sortname asc "
-                List consCostItems = CostItem.executeQuery("select ci, (select oo.org.sortname from OrgRole oo where ci.sub = oo.sub and oo.roleType in (:roleTypes)) as sortname from CostItem as ci where ci.owner = :owner and ci.surveyOrg = null and ci.costItemStatus != :deleted and ci.sub in (select s from Subscription as s join s.orgRelations orgRoles where s.instanceOf = :sub "+filterConsQuery[0]+consSort,[owner:org,sub:sub,roleTypes:[OR_SUBSCRIBER_COLLECTIVE,OR_SUBSCRIBER_CONS,OR_SUBSCRIBER_CONS_HIDDEN],deleted:COST_ITEM_DELETED]+filterConsQuery[1])
-                result.cons.costItems = []
-                limit = consOffset+max
-                if(limit > consCostItems.size())
-                    limit = consCostItems.size()
-                for(int i = consOffset;i < limit;i++) {
-                    result.cons.costItems.add(consCostItems[i][0])
-                }
-                result.cons.count = consCostItems.size()
-                if(result.cons.count > 0){
-                    result.cons.sums = calculateResults(consCostItems.collect { row -> row[0]})
-                }
-                if(accessService.checkPerm("ORG_INST_COLLECTIVE"))
-                    result.coll = result.cons
-                break
-        /*
-            own costs, consortial participation costs
-            that is: a) owner = contextOrg and sub = contextSub
-            b) owner = consortium and sub = contextSub and visibleForSubscriber
-         */
-            case CALCULATED_TYPE_PARTICIPATION:
-                String visibility = ""
-                if(!(org.id in [sub.getConsortia()?.id,sub.getCollective()?.id])) {
-                    visibility = " and ci.isVisibleForSubscriber = true"
-                }
-                String subscrSort
-                if(params.subscrSort)
-                    subscrSort = " order by ${params.sort} ${params.order}"
-                else
-                    subscrSort = ""
-                List subscrCostItems = CostItem.executeQuery('select ci from CostItem as ci where ci.owner in :owner and ci.surveyOrg = null and ci.sub = :sub and ci.costItemStatus != :deleted'+visibility+filterSubscrQuery[0]+subscrSort,[owner:[sub.getConsortia(),sub.getCollective()],sub:sub,deleted:COST_ITEM_DELETED]+filterSubscrQuery[1])
-                List costItems = []
-                limit = subscrOffset+max
-                if(limit > subscrCostItems.size())
-                    limit = subscrCostItems.size()
-                for(int i = subscrOffset;i < limit;i++) {
-                    costItems.add(subscrCostItems[i])
-                }
-                int count = subscrCostItems.size()
-                Map sums = [:]
-                if(count > 0) {
-                    sums = calculateResults(subscrCostItems)
-                }
-                if(params.view.equals("subscr") || !params.view) {
-                    result.subscr.costItems = costItems
-                    result.subscr.count = count
-                    result.subscr.sums = sums
-                }
-                else if(params.view.equals("consAtSubscr")) {
-                    result.cons.costItems = costItems
-                    result.cons.count = count
-                    result.cons.sums = sums
-                }
-                break
-            case CALCULATED_TYPE_PARTICIPATION_AS_COLLECTIVE:
-                String consSort
-                if(params.consSort)
-                    consSort = " order by ${params.sort} ${params.order}"
-                else
-                    consSort = " order by sortname asc "
-                List consCostItems = CostItem.executeQuery("select ci, (select oo.org.sortname from OrgRole oo where ci.sub = oo.sub and oo.roleType in (:roleTypes)) as sortname from CostItem as ci where ci.owner = :owner and ci.surveyOrg = null and ci.costItemStatus != :deleted and ci.sub in (select s from Subscription as s join s.orgRelations orgRoles where s.instanceOf = :sub "+filterConsQuery[0]+consSort,[owner:org,sub:sub.instanceOf,roleTypes:[OR_SUBSCRIBER_CONS,OR_SUBSCRIBER_CONS_HIDDEN],deleted:COST_ITEM_DELETED]+filterConsQuery[1])
-                List collCostItems = CostItem.executeQuery("select ci, (select oo.org.sortname from OrgRole oo where ci.sub = oo.sub and oo.roleType in (:roleTypes)) as sortname from CostItem as ci where ci.owner = :owner and ci.surveyOrg = null and ci.costItemStatus != :deleted and ci.sub in (select s from Subscription as s join s.orgRelations orgRoles where s.instanceOf = :sub "+filterConsQuery[0]+consSort,[owner:org,sub:sub,roleTypes:[OR_SUBSCRIBER_COLLECTIVE],deleted:COST_ITEM_DELETED]+filterConsQuery[1])
-                result.cons.costItems = consCostItems.collect{row -> row[0]}.drop(consOffset).take(max)
-                result.coll.costItems = collCostItems.collect{row -> row[0]}.drop(consOffset).take(max)
-                result.cons.count = consCostItems.size()
-                result.coll.count = collCostItems.size()
-                if(result.cons.count > 0){
-                    result.cons.sums = calculateResults(consCostItems.collect { row -> row[0]})
-                }
-                if(result.coll.count > 0){
-                    result.coll.sums = calculateResults(collCostItems.collect { row -> row[0]})
-                }
-                String visibility = ""
-                if(org.id != sub.getCollective()?.id) {
-                    visibility = " and ci.isVisibleForSubscriber = true"
-                }
-                String subscrSort
-                if(params.subscrSort)
-                    subscrSort = " order by ${params.sort} ${params.order}"
-                else
-                    subscrSort = ""
-                List subscrCostItems = CostItem.executeQuery('select ci from CostItem as ci where ci.owner in :owner and ci.surveyOrg = null and ci.sub = :sub and ci.costItemStatus != :deleted'+visibility+filterSubscrQuery[0]+subscrSort,[owner:[sub.getConsortia()],sub:sub,deleted:COST_ITEM_DELETED]+filterSubscrQuery[1])
-                List costItems = []
-                limit = subscrOffset+max
-                if(limit > subscrCostItems.size())
-                    limit = subscrCostItems.size()
-                for(int i = subscrOffset;i < limit;i++) {
-                    costItems.add(subscrCostItems[i])
-                }
-                int count = subscrCostItems.size()
-                Map sums = [:]
-                if(count > 0) {
-                    sums = calculateResults(subscrCostItems)
-                }
-                if(params.view in ["subscr","collAsSubscr"] || !params.view) {
-                    result.subscr.costItems = costItems
-                    result.subscr.count = count
-                    result.subscr.sums = sums
-                }
-                else if(params.view.equals("consAtSubscr")) {
-                    result.coll.costItems = costItems
-                    result.coll.count = count
-                    result.coll.sums = sums
-                }
-                break
-        }
-        result
     }
 
     /**
@@ -209,134 +143,92 @@ class FinanceService {
      *
      * @return a LinkedHashMap with the cost items for each tab to display
      */
-    Map getCostItems(params,long max) {
-        LinkedHashMap result = [own:[:],cons:[:],coll:[:],subscr:[:]]
-        Org org = contextService.org
-        List filterQueryOwn = processFilterParams(params,"own",false)
-        List filterQueryCons = processFilterParams(params,"cons",false)
-        List filterQuerySubscr = processFilterParams(params,"subscr",false)
-        int ownOffset = 0
-        int consOffset = 0
-        int subscrOffset = 0
-        switch(params.view) {
-            case "own": ownOffset = params.offset ? Integer.parseInt(params.offset) : 0
-                break
-            case "cons":
-            case "coll":
-                consOffset = params.offset ? Integer.parseInt(params.offset) : 0
-                break
-            case "subscr": subscrOffset = params.offset ? Integer.parseInt(params.offset) : 0
-                break
-            default: log.info("unhandled view: ${params.view}")
-                break
-        }
-        String ownSort
-        if(params.ownSort) {
-            ownSort = " order by ${params.sort} ${params.order}"
-        }
-        else {
-            ownSort = " order by sub.name asc"
-        }
-        //get own costs
-        List<CostItem> ownSubscriptionCostItems = CostItem.executeQuery('select ci from CostItem ci join ci.sub sub join sub.orgRelations orgRoles ' +
-                'where ci.owner = :org and orgRoles.org = :org and orgRoles.roleType in :consType and sub.instanceOf = null and ci.surveyOrg = null and ci.costItemStatus != :deleted'+filterQueryOwn[0]+ownSort,
-                [org:org,consType:[OR_SUBSCRIPTION_CONSORTIA,OR_SUBSCRIPTION_COLLECTIVE],deleted:COST_ITEM_DELETED]+filterQueryOwn[1])
-        ownSubscriptionCostItems.addAll(CostItem.executeQuery('select ci from CostItem ci join ci.sub sub join sub.orgRelations orgRoles where ' +
-                'ci.owner = :org and orgRoles.org = :org and orgRoles.roleType in :nonConsTypes and ci.surveyOrg = null and ci.costItemStatus != :deleted'+filterQueryOwn[0]+ownSort,
-                [org:org,nonConsTypes:[OR_SUBSCRIBER,OR_SUBSCRIBER_CONS,OR_SUBSCRIBER_COLLECTIVE],deleted:COST_ITEM_DELETED]+filterQueryOwn[1]))
-        ownSubscriptionCostItems.addAll(CostItem.executeQuery('select ci from CostItem ci where ci.owner = :org and ci.sub is null and ci.surveyOrg is null'+filterQueryOwn[0],[org:org]+filterQueryOwn[1]))
-        result.own.costItems = []
-        long limit = ownOffset+max
-        if(limit > ownSubscriptionCostItems.size())
-            limit = ownSubscriptionCostItems.size()
-        for(int i = ownOffset;i < limit;i++) {
-            result.own.costItems.add(ownSubscriptionCostItems[i])
-        }
-        result.own.count = ownSubscriptionCostItems.size()
-        if(result.own.count > 0) {
-            result.own.sums = calculateResults(ownSubscriptionCostItems)
-        }
-        //get consortial costs
-        String consSort
-        if(params.consSort)
-            consSort = " order by ${params.sort} ${params.order}"
-        else
-            consSort = " order by orgRoles.org.sortname asc "
-        List<CostItem> parentSubscriptionCostItems
-        if(accessService.checkPerm("ORG_CONSORTIUM")) {
-            parentSubscriptionCostItems = CostItem.executeQuery('select ci from CostItem ci ' +
-                    'join ci.owner orgC ' +
-                    'join ci.sub sub ' +
-                    'join sub.instanceOf subC ' +
-                    'join subC.orgRelations roleC ' +
-                    'join sub.orgRelations roleMC ' +
-                    'join sub.orgRelations orgRoles ' +
-                    'where orgC = :org and orgC = roleC.org and roleMC.roleType in :consortialType and orgRoles.roleType in (:subscrType) and ci.surveyOrg = null and ci.costItemStatus != :deleted' +
-                    filterQueryCons[0] + consSort,
-                    [org:org,consortialType:[OR_SUBSCRIPTION_CONSORTIA],subscrType:[OR_SUBSCRIBER_CONS,OR_SUBSCRIBER_CONS_HIDDEN],deleted:COST_ITEM_DELETED]+filterQueryCons[1])
-            result.cons.costItems = []
-            limit = consOffset+max
-            if(limit > parentSubscriptionCostItems.size())
-                limit = parentSubscriptionCostItems.size()
-            for(int i = consOffset;i < limit;i++){
-                result.cons.costItems.add(parentSubscriptionCostItems[i])
-            }
-            result.cons.count = parentSubscriptionCostItems.size()
-            if(result.cons.count > 0) {
-                result.cons.sums = calculateResults(parentSubscriptionCostItems)
-            }
-        }
-        else if(accessService.checkPerm("ORG_INST_COLLECTIVE")) {
-            parentSubscriptionCostItems = CostItem.executeQuery('select ci from CostItem ci ' +
-                    'join ci.owner orgC ' +
-                    'join ci.sub sub ' +
-                    'join sub.instanceOf subC ' +
-                    'join subC.orgRelations roleC ' +
-                    'join sub.orgRelations roleMC ' +
-                    'join sub.orgRelations orgRoles ' +
-                    'where orgC = :org and orgC = roleC.org and roleMC.roleType in :consortialType and orgRoles.roleType in (:subscrType) and ci.surveyOrg = null and ci.costItemStatus != :deleted' +
-                    filterQueryCons[0] + consSort,
-                    [org:org,consortialType:[OR_SUBSCRIPTION_COLLECTIVE],subscrType:[OR_SUBSCRIBER_COLLECTIVE],deleted:COST_ITEM_DELETED]+filterQueryCons[1])
-            result.coll.costItems = []
-            limit = consOffset+max
-            if(limit > parentSubscriptionCostItems.size())
-                limit = parentSubscriptionCostItems.size()
-            for(int i = consOffset;i < limit;i++){
-                result.coll.costItems.add(parentSubscriptionCostItems[i])
-            }
-            result.coll.count = parentSubscriptionCostItems.size()
-            if(result.coll.count > 0) {
-                result.coll.sums = calculateResults(parentSubscriptionCostItems)
+    Map<String,Object> getCostItems(GrailsParameterMap params, Map configMap) throws FinancialDataException {
+        Map<String,Object> filterQuery = processFilterParams(params), result = [filterPresets:filterQuery.filterData]
+        if(filterQuery.subFilter || filterQuery.ciFilter)
+            result.filterSet = true
+        Org org = (Org) configMap.institution
+        configMap.dataToDisplay.each { String dataToDisplay ->
+            switch(dataToDisplay) {
+                //get own costs
+                case "own":
+                    //exclude double listing of cost items belonging to member subscriptions
+                    String instanceFilter = ""
+                    if(org.hasPerm("ORG_INST_COLLECTIVE,ORG_CONSORTIUM")) {
+                        instanceFilter = " and sub.instanceOf = null "
+                    }
+                    String subJoin = filterQuery.subFilter || instanceFilter ? "join ci.sub sub " : ""
+                    String queryStringBase = "select ci from CostItem ci ${subJoin}" +
+                        "where ci.owner = :org ${genericExcludes+filterQuery.subFilter+instanceFilter+filterQuery.ciFilter} "+
+                        "order by "+configMap.sortConfig.ownSort+" "+configMap.sortConfig.ownOrder
+                    List<CostItem> ownSubscriptionCostItems = CostItem.executeQuery(queryStringBase,[org:org]+genericExcludeParams+filterQuery.filterData)
+                    result.own = [count:ownSubscriptionCostItems.size()]
+                    if(ownSubscriptionCostItems) {
+                        result.own.costItems = ownSubscriptionCostItems.drop(configMap.offsets.ownOffset).take(configMap.max)
+                        result.own.sums = calculateResults(ownSubscriptionCostItems)
+                    }
+                        break
+                //get consortial costs
+                case "cons": List consortialCostRows = CostItem.executeQuery('select ci, orgRoles.org.sortname as sortname from CostItem ci ' +
+                        'join ci.owner orgC ' +
+                        'join ci.sub sub ' +
+                        'join sub.instanceOf subC ' +
+                        'join subC.orgRelations roleC ' +
+                        'join sub.orgRelations roleMC ' +
+                        'join sub.orgRelations orgRoles ' +
+                        'where orgC = :org and orgC = roleC.org and roleMC.roleType in :consortialType and orgRoles.roleType in (:subscrType)'+
+                        genericExcludes+filterQuery.subFilter+filterQuery.ciFilter+
+                        ' order by '+configMap.sortConfig.consSort+' '+configMap.sortConfig.consOrder,
+                        [org:org,consortialType:[OR_SUBSCRIPTION_CONSORTIA],subscrType:[OR_SUBSCRIBER_CONS,OR_SUBSCRIBER_CONS_HIDDEN]]+genericExcludeParams+filterQuery.filterData)
+                    result.cons = [count:consortialCostRows.size()]
+                    if(consortialCostRows) {
+                        List<CostItem> consortialCostItems = consortialCostRows.collect { row -> row[0] }
+                        result.cons.costItems = consortialCostItems.drop(configMap.offsets.consOffset).take(configMap.max)
+                        result.cons.sums = calculateResults(consortialCostItems)
+                    }
+                    break
+                //get collective costs
+                case "coll": List collectiveCostRows = CostItem.executeQuery('select ci, orgRoles.org.name as sortname from CostItem ci ' +
+                        'join ci.owner orgC ' +
+                        'join ci.sub sub ' +
+                        'join sub.instanceOf subC ' +
+                        'join subC.orgRelations roleC ' +
+                        'join sub.orgRelations roleMC ' +
+                        'join sub.orgRelations orgRoles ' +
+                        'where orgC = :org and orgC = roleC.org and roleMC.roleType in :collectiveType and orgRoles.roleType in (:subscrType)'+
+                        genericExcludes + filterQuery.subFilter + filterQuery.ciFilter +
+                        ' order by '+configMap.sortConfig.collSort+' '+configMap.sortConfig.collOrder,
+                        [org:org,collectiveType:[OR_SUBSCRIPTION_COLLECTIVE],subscrType:[OR_SUBSCRIBER_COLLECTIVE]]+genericExcludeParams+filterQuery.filterData)
+                    result.coll = [count:0]
+                    if(collectiveCostRows) {
+                        Set<CostItem> collectiveCostItems = collectiveCostRows.collect { row -> row[0] }
+                        result.coll.count = collectiveCostItems.size()
+                        result.coll.costItems = collectiveCostItems.drop(configMap.offsets.collOffset).take(configMap.max)
+                        result.coll.sums = calculateResults(collectiveCostItems)
+                    }
+                    break
+                //get membership costs
+                case "subscr": List<CostItem> consortialMemberSubscriptionCostItems = CostItem.executeQuery('select ci from CostItem ci '+
+                        'join ci.sub sub ' +
+                        'left join ci.subPkg subPkg ' +
+                        'join sub.instanceOf subC ' +
+                        'join subC.orgRelations roleC ' +
+                        'join sub.orgRelations orgRoles ' +
+                        'join ci.owner orgC ' +
+                        'where orgC = roleC.org and roleC.roleType in :consType and orgRoles.org = :org and orgRoles.roleType in :subscrType and ci.isVisibleForSubscriber = true'+
+                        genericExcludes + filterQuery.subFilter + filterQuery.ciFilter +
+                        ' order by '+configMap.sortConfig.subscrSort+' '+configMap.sortConfig.subscrOrder,
+                        [org:org,consType:[OR_SUBSCRIPTION_CONSORTIA,OR_SUBSCRIPTION_COLLECTIVE],subscrType:[OR_SUBSCRIBER_CONS,OR_SUBSCRIBER_COLLECTIVE]]+genericExcludeParams+filterQuery.filterData)
+                    result.subscr = [count:consortialMemberSubscriptionCostItems.size()]
+                    if(consortialMemberSubscriptionCostItems) {
+                        result.subscr.sums = calculateResults(consortialMemberSubscriptionCostItems)
+                        result.subscr.costItems = consortialMemberSubscriptionCostItems.drop(configMap.offsets.subscrOffset).take(configMap.max)
+                    }
+                    break
+                default: log.info("display call ${dataToDisplay} not handled here ... skipping ...")
+                    break
             }
         }
-        //get membership costs
-        String subscrSort
-        if(params.subscrSort)
-            subscrSort = " order by ${params.sort} ${params.order}"
-        else
-            subscrSort = " order by sub.name asc"
-        List<CostItem> consortialMemberSubscriptionCostItems = CostItem.executeQuery('select ci from CostItem ci '+
-                'join ci.sub sub ' +
-                'left join ci.subPkg subPkg ' +
-                'join sub.instanceOf subC ' +
-                'join subC.orgRelations roleC ' +
-                'join sub.orgRelations orgRoles ' +
-                'join ci.owner orgC ' +
-                'where orgC = roleC.org and roleC.roleType in :consType and orgRoles.org = :org and orgRoles.roleType in :subscrType and ci.isVisibleForSubscriber = true and ci.surveyOrg = null and ci.costItemStatus != :deleted'+
-                filterQuerySubscr[0] + subscrSort,
-                [org:org,consType:[OR_SUBSCRIPTION_CONSORTIA,OR_SUBSCRIPTION_COLLECTIVE],subscrType:[OR_SUBSCRIBER_CONS,OR_SUBSCRIBER_COLLECTIVE],deleted:COST_ITEM_DELETED]+filterQuerySubscr[1])
-        result.subscr.costItems = []
-        limit = subscrOffset+max
-        if(limit > consortialMemberSubscriptionCostItems.size())
-            limit = consortialMemberSubscriptionCostItems.size()
-        for(int i = subscrOffset;i < limit;i++) {
-            result.subscr.costItems.add(consortialMemberSubscriptionCostItems[i])
-        }
-        result.subscr.count = consortialMemberSubscriptionCostItems.size()
-        if(result.subscr.count > 0) {
-            result.subscr.sums = calculateResults(consortialMemberSubscriptionCostItems)
-        }
-        result.filterPresets = filterQueryCons[1]
         result
     }
 
@@ -346,14 +238,14 @@ class FinanceService {
      * @param params - a GrailsParameterMap containing parameters to be processed
      * @return an array with the filter string on position 0 and the filter parameter map on position 1
      */
-    List processFilterParams(params,String filterView,boolean forSingleSubscription) {
-        String filterQuery = ""
+    Map<String,Object> processFilterParams(GrailsParameterMap params) {
+        String subFilterQuery = "", costItemFilterQuery = ""
         LinkedHashMap queryParams = [:]
         SimpleDateFormat sdf = DateUtil.getSDF_NoTime()
         //subscription filter settings
         //subscription members
-        if(params.filterSubMembers && filterView.equals("cons")) {
-            filterQuery += " and orgRoles.org in (:filterSubMembers) "
+        if(params.filterSubMembers) {
+            subFilterQuery += " and orgRoles.org in (:filterSubMembers) "
             List<Org> filterSubMembers = []
             String[] subMembers = params.list("filterSubMembers")
             subMembers.each { subMember ->
@@ -364,7 +256,7 @@ class FinanceService {
         }
         //providers
         if(params.filterSubProviders) {
-            filterQuery += " and sub in (select oo.sub from OrgRole as oo where oo.org in (:filterSubProviders)) "
+            subFilterQuery += " and sub in (select oo.sub from OrgRole as oo where oo.org in (:filterSubProviders)) "
             List<Org> filterSubProviders = []
             String[] subProviders = params.list("filterSubProviders")
             subProviders.each { subProvider ->
@@ -374,36 +266,29 @@ class FinanceService {
             log.info(queryParams.filterSubProviders)
         }
         //subscription status
+        //we have to distinct between not existent and present but zero length
         if(params.filterSubStatus) {
-            if(params.filterSubStatus == RefdataValue.getByValueAndCategory('subscription.status.no.status.set.but.null','filter.fake.values')) {
-                filterQuery += " and sub.status is null "
-            }
-            else {
-                filterQuery += " and sub.status = :filterSubStatus "
-                queryParams.filterSubStatus = RefdataValue.get(Long.parseLong(params.filterSubStatus))
-            }
+            subFilterQuery += " and sub.status = :filterSubStatus "
+            queryParams.filterSubStatus = RefdataValue.get(Long.parseLong(params.filterSubStatus))
             log.info(queryParams.filterSubStatus)
         }
-        else if(!params.submit && !forSingleSubscription) {
-            filterQuery += " and sub.status = :filterSubStatus "
+        //!params.filterSubStatus is insufficient because it checks also the presence of a value - but the absence of a value is a valid setting (= all status except deleted; that is captured by the genericExcludes field)
+        else if(!params.subscription && !params.containsKey('filterSubStatus')) {
+            subFilterQuery += " and sub.status = :filterSubStatus "
             queryParams.filterSubStatus = SUBSCRIPTION_CURRENT
             params.filterSubStatus = SUBSCRIPTION_CURRENT.id.toString()
-        }
-        //the bracket from the subquery has to be closed when in subscription mode and for single subscription
-        if(filterView.equals("cons") && forSingleSubscription) {
-            filterQuery += ") "
         }
         //cost item filter settings
         //cost item title
         if(params.filterCITitle) {
-            filterQuery += " and (ci.costTitle like :filterCITitle or ci.costTitle like :ciTitleLowerCase) "
+            costItemFilterQuery += " and (ci.costTitle like :filterCITitle or ci.costTitle like :ciTitleLowerCase) "
             queryParams.filterCITitle = "%${params.filterCITitle}%"
             queryParams.ciTitleLowerCase = "%${params.filterCITitle.toLowerCase()}%"
             log.info(queryParams.filterCITitle)
         }
         //cost item subscription
         if(params.filterCISub) {
-            filterQuery += " and sub in (:filterCISub) "
+            costItemFilterQuery += " and sub in (:filterCISub) "
             List<Subscription> filterSubs = []
             String[] subscriptions = params.filterCISub.split(',')
             subscriptions.each { sub ->
@@ -414,7 +299,7 @@ class FinanceService {
         }
         //subscription package
         if(params.filterCISPkg) {
-            filterQuery += " and ci.subPkg in (:filterCISPkg) "
+            costItemFilterQuery += " and ci.subPkg in (:filterCISPkg) "
             List<SubscriptionPackage> filterSubPackages = []
             String[] subscriptionPackages = params."filterCISPkg".split(',')
             subscriptionPackages.each { subPkg ->
@@ -425,7 +310,7 @@ class FinanceService {
         }
         //budget code
         if(params.filterCIBudgetCode) {
-            filterQuery += " and ci in (select cig.costItem from CostItemGroup cig where cig.budgetCode in (:filterCIBudgetCode)) "
+            costItemFilterQuery += " and ci in (select cig.costItem from CostItemGroup cig where cig.budgetCode in (:filterCIBudgetCode)) "
             List<BudgetCode> filterBudgetCodes = []
             String[] budgetCodes = params."filterCIBudgetCode".split(',')
             budgetCodes.each { bc ->
@@ -436,14 +321,14 @@ class FinanceService {
         }
         //reference/code
         if(params.filterCIReference) {
-            filterQuery += " and ci.reference in (:filterCIReference) "
+            costItemFilterQuery += " and ci.reference in (:filterCIReference) "
             List<String> filterReferences = params."filterCIReference".split(',')
             queryParams.filterCIReference = filterReferences
             log.info(queryParams.filterCIReference)
         }
         //invoice number
         if(params.filterCIInvoiceNumber) {
-            filterQuery += " and ci.invoice.invoiceNumber in (:filterCIInvoiceNumber) "
+            costItemFilterQuery += " and ci.invoice.invoiceNumber in (:filterCIInvoiceNumber) "
             List<String> filterInvoiceNumbers = []
             String[] invoiceNumbers = params."filterCIInvoiceNumber".split(',')
             invoiceNumbers.each { invNum ->
@@ -454,7 +339,7 @@ class FinanceService {
         }
         //order number
         if(params.filterCIOrderNumber) {
-            filterQuery += " and ci.order.orderNumber in (:filterCIOrderNumber) "
+            costItemFilterQuery += " and ci.order.orderNumber in (:filterCIOrderNumber) "
             List<String> filterOrderNumbers = []
             String[] orderNumbers = params."filterCIOrderNumber".split(',')
             orderNumbers.each { orderNum ->
@@ -465,7 +350,7 @@ class FinanceService {
         }
         //cost item element
         if(params.filterCIElement) {
-            filterQuery += " and ci.costItemElement in (:filterCIElement) "
+            costItemFilterQuery += " and ci.costItemElement in (:filterCIElement) "
             List<RefdataValue> filterElements = []
             String[] costItemElements = params."filterCIElement".split(',')
             costItemElements.each { cie ->
@@ -476,7 +361,7 @@ class FinanceService {
         }
         //cost item status
         if(params.filterCIStatus) {
-            filterQuery += " and ci.costItemStatus in (:filterCIStatus) "
+            costItemFilterQuery += " and ci.costItemStatus in (:filterCIStatus) "
             List<RefdataValue> filterStatus = []
             String[] costItemStatus = params."filterCIStatus".split(',')
             costItemStatus.each { cis ->
@@ -488,57 +373,57 @@ class FinanceService {
         //tax type
         if(params.filterCITaxType) {
             if(params.filterCITaxType == 'null') {
-                filterQuery += " and ci.taxKey = null"
+                costItemFilterQuery += " and ci.taxKey = null"
             }
             else {
-                filterQuery += " and ci.taxKey = :filterCITaxType "
+                costItemFilterQuery += " and ci.taxKey = :filterCITaxType "
                 queryParams.filterCITaxType = CostItem.TAX_TYPES.valueOf(params.filterCITaxType)
             }
             log.info(params.filterCITaxType)
         }
         //financial year
         if(params.filterCIFinancialYear) {
-            filterQuery += " and ci.financialYear = :filterCIFinancialYear "
+            costItemFilterQuery += " and ci.financialYear = :filterCIFinancialYear "
             Year financialYear = Year.parse(params.filterCIFinancialYear)
             queryParams.filterCIFinancialYear = financialYear
             log.info(queryParams.filterCIFinancialYear)
         }
         //invoice from
         if(params.filterCIInvoiceFrom) {
-            filterQuery += " and (ci.invoiceDate >= :filterCIInvoiceFrom AND ci.invoiceDate is not null) "
+            costItemFilterQuery += " and (ci.invoiceDate >= :filterCIInvoiceFrom AND ci.invoiceDate is not null) "
             Date invoiceFrom = sdf.parse(params.filterCIInvoiceFrom)
             queryParams.filterCIInvoiceFrom = invoiceFrom
             log.info(queryParams.filterCIInvoiceFrom)
         }
         //invoice to
         if(params.filterCIInvoiceTo) {
-            filterQuery += " and (ci.invoiceDate <= :filterCIInvoiceTo AND ci.invoiceDate is not null) "
+            costItemFilterQuery += " and (ci.invoiceDate <= :filterCIInvoiceTo AND ci.invoiceDate is not null) "
             Date invoiceTo = sdf.parse(params.filterCIInvoiceTo)
             queryParams.filterCIInvoiceTo = invoiceTo
             log.info(queryParams.filterCIInvoiceTo)
         }
         //valid on
         if(params.filterCIValidOn) {
-            filterQuery += " and (ci.startDate <= :filterCIValidOn OR ci.startDate is null) and (ci.endDate >= :filterCIValidOn OR ci.endDate is null) "
+            costItemFilterQuery += " and (ci.startDate <= :filterCIValidOn OR ci.startDate is null) and (ci.endDate >= :filterCIValidOn OR ci.endDate is null) "
             Date validOn = sdf.parse(params.filterCIValidOn)
             queryParams.filterCIValidOn = validOn
             log.info(queryParams.filterCIValidOn)
         }
         //paid from
         if(params.filterCIPaidFrom) {
-            filterQuery += " and (ci.datePaid >= :filterCIPaidFrom AND ci.datePaid is not null) "
+            costItemFilterQuery += " and (ci.datePaid >= :filterCIPaidFrom AND ci.datePaid is not null) "
             Date invoiceFrom = sdf.parse(params.filterCIPaidFrom)
             queryParams.filterCIPaidFrom = invoiceFrom
             log.info(queryParams.filterCIPaidFrom)
         }
         //paid to
         if(params.filterCIPaidTo) {
-            filterQuery += " and (ci.datePaid <= :filterCIPaidTo AND ci.datePaid is not null) "
+            costItemFilterQuery += " and (ci.datePaid <= :filterCIPaidTo AND ci.datePaid is not null) "
             Date invoiceTo = sdf.parse(params.filterCIPaidTo)
             queryParams.filterCIPaidTo = invoiceTo
             log.info(queryParams.filterCIPaidTo)
         }
-        return [filterQuery,queryParams]
+        return [subFilter:subFilterQuery,ciFilter:costItemFilterQuery,filterData:queryParams]
     }
 
     /**
@@ -559,7 +444,7 @@ class FinanceService {
      * }
      *
      */
-    Map calculateResults(List<CostItem> costItems) {
+    Map calculateResults(Collection<CostItem> costItems) {
         //List<Map> billingSumsPositive = CostItem.executeQuery("select NEW map(ci.billingCurrency.value as currency,sum(ci.costInBillingCurrency) as billingSum,sum(ci.costInBillingCurrency * ((ci.taxKey.taxRate/100.0) + 1)) as billingSumAfterTax) from CostItem ci where ci in :costItems and ci.costItemElementConfiguration.value = 'positive' group by ci.billingCurrency.value",[costItems:costItems])
         List<Map> billingSumsPositive = CostItem.executeQuery("select NEW map(ci.billingCurrency.value as currency,sum(ci.costInBillingCurrency) as billingSum,sum(ci.costInBillingCurrency * (((case when ci.taxKey = :tax7 then 7 when ci.taxKey = :tax19 then 19 else 0 end)/100.0) + 1)) as billingSumAfterTax,ci.billingCurrency.order as ciOrder) from CostItem ci where ci in :costItems and ci.costItemElementConfiguration.value = 'positive' group by ci.billingCurrency.value, ci.billingCurrency.order order by ciOrder",[costItems:costItems,tax7:CostItem.TAX_TYPES.TAXABLE_7,tax19:CostItem.TAX_TYPES.TAXABLE_19])
         List<Map> billingSumsNegative = CostItem.executeQuery("select NEW map(ci.billingCurrency.value as currency,sum(ci.costInBillingCurrency) as billingSum,sum(ci.costInBillingCurrency * (((case when ci.taxKey = :tax7 then 7 when ci.taxKey = :tax19 then 19 else 0 end)/100.0) + 1)) as billingSumAfterTax,ci.billingCurrency.order as ciOrder) from CostItem ci where ci in :costItems and ci.costItemElementConfiguration.value = 'negative' group by ci.billingCurrency.value, ci.billingCurrency.order order by ciOrder",[costItems:costItems,tax7:CostItem.TAX_TYPES.TAXABLE_7,tax19:CostItem.TAX_TYPES.TAXABLE_19])
@@ -1141,13 +1026,185 @@ class FinanceService {
      * This method replaces the view (!!) _vars.gsp.
      * @return basic parameters for manipulating cost items
      */
-    Map<String,Object> setEditVars() {
+    Map<String,Object> setEditVars(Org org) {
         [costItemStatus:RefdataCategory.getAllRefdataValues(COST_ITEM_STATUS)-COST_ITEM_DELETED,
          costItemCategory:RefdataCategory.getAllRefdataValues(COST_ITEM_CATEGORY),
-         costItemElement:RefdataValue.executeQuery('select ciec.costItemElement from CostItemElementConfiguration ciec where ciec.forOrganisation = :org',[org:contextService.getOrg()]),
+         costItemSigns:RefdataCategory.getAllRefdataValues(COST_CONFIGURATION),
+         costItemElements:CostItemElementConfiguration.findAllByForOrganisation(org),
          taxType:RefdataCategory.getAllRefdataValues(TAX_TYPE),
          yn:RefdataCategory.getAllRefdataValues(Y_N),
+         budgetCodes:BudgetCode.findAllByOwner(org),
          currency:orderedCurrency()]
+    }
+
+    //ex SubscriptionDetailsController
+    Map<String,Object> setResultGenerics(GrailsParameterMap params) throws FinancialDataException {
+        Map<String,Object> result = [user: User.get(springSecurityService.principal.id),
+                                     offsets:[collOffset:0,consOffset:0,subscrOffset:0,ownOffset:0],
+                                     sortConfig:[collSort:'sortname',collOrder:'asc',
+                                                 consSort:'sortname',consOrder:'asc',
+                                                 subscrSort:'sub.name',subscrOrder:'asc',
+                                                 ownSort:'ci.costTitle',ownOrder:'asc'],
+                                     institution:contextService.getOrg(),
+                                     editConf:[:]]
+        Map<Long,Object> orgConfigurations = [:]
+        result.costItemElements.each { oc ->
+            orgConfigurations.put(oc.costItemElement.id,oc.elementSign.id)
+        }
+        result.orgConfigurations = orgConfigurations as JSON
+        if(params.forExport) {
+            result.max = 'all'
+            result.offsets = 'all'
+        }
+        else {
+            result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeTMP().toInteger()
+        }
+        if(!(result.user instanceof User))
+            throw new FinancialDataException("Context user not loaded successfully!")
+        if(!(result.institution instanceof Org))
+            throw new FinancialDataException("Context org not loaded successfully!")
+        result.putAll(setEditVars(result.institution))
+        if(params.sub || params.id) {
+            String subId
+            if(params.sub)
+                subId = params.sub
+            else if(params.id)
+                subId = params.id
+            result.subscription = Subscription.get(subId)
+            if(!(result.subscription instanceof Subscription))
+                throw new FinancialDataException("Invalid or no subscription found!")
+            else result.editable = result.subscription.isEditableBy(result.user)
+        }
+        else
+            result.editable = accessService.checkMinUserOrgRole(result.user, result.institution, 'INST_EDITOR')
+        /*
+            Decision tree
+            We may see this view from the perspective of:
+            1. consortia: parent subscription (show own and consortial tabs) (level 1)
+            2. consortia: child subscription (show consortial tab) (level 2)
+            3. consortia: child subscription preview (show subscriber tab) (level 2)
+            4. collective user: own subscription (show own and collective tabs)
+            5. collective user: child subscription of own (show collective tab) (level 2)
+            6. collective user: child subscription preview of own (show subscriber tab) (level 2)
+            7. collective user: child subscription of consortia (show own, collective and subscriber tabs) (level 2)
+            8. collective user: child subscription of child (show collective tab) (level 3)
+            9. collective user: child subscription preview of child (show subscriber tab) (level 3)
+            10. single user: own subscription (show own tab) (level 1)
+            11. single user: child subscription (show own and subscriber tab) (level 2)
+            12. basic member or department: child subscription (show subscriber tab) (level 2 or 3)
+         */
+        List<String> dataToDisplay = []
+        //Determine own org belonging, then, in which relationship I am to the given subscription instance
+        switch(result.institution.getCustomerType()) {
+        //cases one to three
+            case 'ORG_CONSORTIUM':
+            case 'ORG_CONSORTIUM_SURVEY':
+                if(result.subscription) {
+                    //cases two and three: child subscription
+                    if(result.subscription.instanceOf) {
+                        //case three: child subscription preview
+                        if(params.orgBasicMemberView) {
+                            dataToDisplay << 'subscr'
+                            result.showView = 'subscr'
+                        }
+                        //case two: child subscription, consortial view
+                        else {
+                            dataToDisplay << 'consAtSubscr'
+                            result.showView = 'cons'
+                            result.editConf.showVisibilitySettings = true
+                            result.sortConfig.consSort = 'ci.costTitle'
+                        }
+                    }
+                    //case one: parent subscription
+                    else {
+                        dataToDisplay.addAll(['own','cons'])
+                        result.showView = 'cons'
+                        result.editConf.showVisibilitySettings = true
+                    }
+                }
+                //case one for all subscriptions
+                else {
+                    dataToDisplay.addAll(['own','cons'])
+                    result.showView = 'cons'
+                    result.editConf.showVisibilitySettings = true
+                }
+                break
+        //cases four to nine
+            case 'ORG_INST_COLLECTIVE':
+                if(result.subscription) {
+                    //cases five to nine: subscription has a parent
+                    if(result.subscription.instanceOf) {
+                        //case five, six, eight and nine: child of local subscription or of consortial subscription, department level
+                        if(result.subscription.getCalculatedType() == CALCULATED_TYPE_PARTICIPATION){
+                            //cases six and nine: department subscription preview
+                            if(params.orgBasicMemberView) {
+                                dataToDisplay << 'subscr'
+                                result.showView = 'subscr'
+                            }
+                            //cases five and eight: department subscription
+                            else {
+                                dataToDisplay << 'collAtSubscr'
+                                result.showView = 'coll'
+                                result.sortConfig.collSort = 'ci.costTitle'
+                                result.editConf.showVisibilitySettings = true
+                            }
+                        }
+                        //case seven: child of consortial subscription, collective level
+                        else if(result.subscription.getCalculatedType() == CALCULATED_TYPE_PARTICIPATION_AS_COLLECTIVE){
+                            dataToDisplay.addAll(['own','subscr','coll'])
+                            result.showView = 'subscr'
+                            result.editConf.showVisibilitySettings = true
+                        }
+                    }
+                    //case four: local parent subscription
+                    else {
+                        dataToDisplay.addAll(['own','coll'])
+                        result.showView = 'coll'
+                        result.editConf.showVisibilitySettings = true
+                    }
+                }
+                //case seven summing up everything what the collective user may have subscribed
+                else {
+                    dataToDisplay.addAll(['own','subscr','coll'])
+                    result.showView = 'subscr'
+                    result.editConf.showVisibilitySettings = true
+                }
+                break
+        //cases ten and eleven
+            case 'ORG_INST':
+                if(result.subscription) {
+                    //case eleven: child subscription
+                    if(result.subscription.instanceOf) {
+                        dataToDisplay.addAll(['own','subscr'])
+                        result.showView = 'subscr'
+                    }
+                    //case ten: local subscription
+                    else {
+                        dataToDisplay << 'own'
+                        result.showView = 'own'
+                    }
+                }
+                //case eleven for all subscriptions
+                else {
+                    dataToDisplay.addAll(['own','subscr'])
+                    result.showView = 'subscr'
+                }
+                break
+        //cases twelve: basic member
+            case 'ORG_BASIC_MEMBER':
+                dataToDisplay << 'subscr'
+                result.showView = 'subscr'
+                break
+        }
+        result.dataToDisplay = dataToDisplay
+        //override default view to show if checked by pagination or from elsewhere
+        if(params.showView){
+            result.showView = params.showView
+            if(params.offset)
+                result.offsets["${params.showView}Offset"] = Integer.parseInt(params.offset)
+        }
+
+        result
     }
 
 }
