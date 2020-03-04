@@ -16,7 +16,7 @@
             <g:if test="${!( license.instanceOf && ! license.hasTemplate())}">
                 <div class="divider"></div>
 
-                <semui:actionsDropdownItem controller="license" action="addMembers" params="${[id:license?.id]}" message="myinst.emptyLicense.child" />
+                <semui:actionsDropdownItem controller="license" action="processAddMembers" params="${[id:license?.id, cmd:'generate']}" message="myinst.emptyLicense.child" />
             </g:if>
         </g:if>
 
