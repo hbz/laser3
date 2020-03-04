@@ -29,7 +29,6 @@ document.type,Dokumenttyp,Document Type
 existence,Vorliegen,Existence
 fact.metric,FactMetric,FactMetric
 fact.type,FactType,FactType
-federal.state,Bundesland,Federal State
 filter.fake.values,filter.fake.values,filter.fake.values
 funder.type,Trägerschaft,Funder Type
 funder.hsk.type,Trägerschaft,Funder Type HSK
@@ -93,13 +92,16 @@ person.function,Funktion,Person Function
 person.position,Position,Person Position
 person.responsibility,Verantwortlich,Person Responsibility
 platform.status,Platform Status,Platform Status
-region.de,Region in Deutschland,Region of Germany
+regions.at, Österreichische Länder, States of Austria
+regions.de, Bundesländer Deutschlands, Federal States of Germany
+regions.ch, Kantone der Schweiz, Cantons of Switzerland
 reminder.method,ReminderMethod,ReminderMethod
 reminder.trigger,ReminderTrigger,ReminderTrigger
 reminder.unit,ReminderUnit,ReminderUnit
 semester,Semester,Semester
 share.configuration,Share Configuration,Share Configuration
 sim.user.number,Sim User Zahl,Sim-User Number
+subjectGroup, Fächergruppe, Subject Group
 subscription.form,Lizenzform,Subscription Form
 subscription.resource,Ressourcentyp,Resource type
 subscription.status,Lizenzstatus,Subscription Status

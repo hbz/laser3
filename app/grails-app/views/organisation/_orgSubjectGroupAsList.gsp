@@ -1,19 +1,19 @@
-<g:if test="${orgTypes}">
+<g:if test="${orgSubjectGroups}">
     <div class="ui divided middle aligned selection list la-flex-list">
-        <% List availableOrgTypeIds = availableOrgTypes.collect{ it.id } %>
-        <g:each in="${orgTypes.sort { it?.getI10n("value") }}" var="type">
+        <% List availableSubjectGroupIds = availableSubjectGroups.collect{ it.id }%>
+        <g:each in="${orgSubjectGroups.sort { it?.subjectGroup?.getI10n("value") }}" var="subjectGroup">
             <div class="ui item">
                 <div class="content la-space-right">
-                    <strong>${type?.getI10n("value")}</strong>
+                    <strong>${subjectGroup.subjectGroup?.getI10n("value")}</strong>
                 </div>
                 <g:if test="${editable}">
-                    <g:if test="${type.id in availableOrgTypeIds}">
+                    <g:if test="${subjectGroup.subjectGroup.id in availableSubjectGroupIds}">
                         <div class="content la-space-right">
                             <div class="ui mini icon buttons">
                                 <g:link class="ui negative button js-open-confirm-modal"
-                                        data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.organisationtype.organisation", args: [type?.getI10n('value')])}"
+                                        data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.organisationtype.organisation", args: [subjectGroup?.subjectGroup?.getI10n('value')])}"
                                         data-confirm-term-how="delete"
-                                        controller="organisation" action="deleteOrgType" params="[org: org.id, removeOrgType: type.id]">
+                                        controller="organisation" action="deleteOrgSubjectGroup" params="[org: org.id, removeOrgSubjectType: subjectGroup.id]">
                                     <i class="trash alternate icon"></i>
                                 </g:link>
                             </div>

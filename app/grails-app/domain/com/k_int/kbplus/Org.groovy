@@ -26,6 +26,29 @@ class Org
         extends AbstractBaseDomain
         implements DeleteFlag {
 
+//    static enum REGION {
+//        REGIONS_DE_BADEN_WURTEMBERG     (RefdataCategory.findByDescIlike('regions.de'),
+//                                        RefdataValue.getByValueAndCategory('Baden-Wurttemberg', 'regions.de')),
+//        REGIONS_DE_BAVARIA              (RefdataCategory.findByDescIlike('regions.de'),
+//                                        RefdataValue.getByValueAndCategory('Bavaria', 'regions.de')),
+//        REGIONS_DE_BERLIN               (RefdataCategory.findByDescIlike('regions.de'),
+//                                        RefdataValue.getByValueAndCategory('Berlin', 'regions.de')),
+//
+//        REGIONS_CH_AG                   (RefdataCategory.findByDescIlike('regions.ch'),
+//                                        RefdataValue.getByValueAndCategory('AG', 'regions.ch')),
+//
+//        REGIONS_AT_LOWER_AUSTRIA        (RefdataCategory.findByDescIlike('regions.at'),
+//                                        RefdataValue.getByValueAndCategory('lower.austria', 'regions.at'))
+//
+//        REGION(RefdataCategory country, RefdataValue region) {
+//            this.country = country
+//            this.region = region
+//        }
+//
+//        public RefdataCategory country
+//        public RefdataValue region
+//    }
+
     @Transient
     def sessionFactory // TODO: ugliest HOTFIX ever
     @Transient
@@ -42,6 +65,7 @@ class Org
     String shortname
     String shortcode            // Used to generate friendly semantic URLs
     String sortname
+    String legalPatronName
     String url
     String urlGov
     //URL originEditUrl
@@ -72,8 +96,9 @@ class Org
     @RefdataAnnotation(cat = RDConstants.COUNTRY)
     RefdataValue country
 
-    @RefdataAnnotation(cat = RDConstants.REGION_DE)
-    RefdataValue regionDe
+    @RefdataAnnotation(cat = '?')
+    RefdataValue region
+//    REGION region
 
     @RefdataAnnotation(cat = RDConstants.FEDERAL_STATE)
     RefdataValue federalState
@@ -113,6 +138,7 @@ class Org
 
     static hasMany = [
         ids:                Identifier,
+        subjectGroup:       OrgSubjectGroup,
         outgoingCombos:     Combo,
         incomingCombos:     Combo,
         links:              OrgRole,
@@ -139,8 +165,10 @@ class Org
               name          column:'org_name',      index:'org_name_idx'
          shortname          column:'org_shortname', index:'org_shortname_idx'
           sortname          column:'org_sortname',  index:'org_sortname_idx'
+   legalPatronName          column:'org_legal_patronname'
                url          column:'org_url'
             urlGov          column:'org_url_gov'
+      subjectGroup          column:'org_subject_group'
    //originEditUrl          column:'org_origin_edit_url'
            comment          column:'org_comment'
            ipRange          column:'org_ip_range'
@@ -152,7 +180,7 @@ class Org
             status          column:'org_status_rv_fk'
         membership          column:'org_membership'
            country          column:'org_country_rv_fk'
-          regionDe          column:'org_region_de_rv_fk'
+            region          column:'org_region_rv_fk'
       federalState          column:'org_federal_state_rv_fk'
     libraryNetwork          column:'org_library_network_rv_fk'
         funderType          column:'org_funder_type_rv_fk'
@@ -191,8 +219,10 @@ class Org
                 name(nullable:true, blank:false, maxSize:255)
            shortname(nullable:true, blank:true, maxSize:255)
             sortname(nullable:true, blank:true, maxSize:255)
+     legalPatronName(nullable:true, blank:true, maxSize:255)
                  url(nullable:true, blank:true, maxSize:512)
               urlGov(nullable:true, blank:true, maxSize:512)
+        subjectGroup(nullable:true, blank: true)
      //originEditUrl(nullable:true, blank:false)
                impId(nullable:true, blank:true, maxSize:255)
              comment(nullable:true, blank:true, maxSize:2048)
@@ -204,7 +234,13 @@ class Org
               status(nullable:true, blank:true)
           membership(nullable:true, blank:true, maxSize:128)
              country(nullable:true, blank:true)
-            regionDe(nullable:true, blank:true)
+              region(nullable:true, blank:true)
+//        , validator: {RefdataValue val, Org obj, errors ->
+//                  if ( ! val.owner.desc.endsWith(obj.country.toString().toLowerCase())){
+//                      errors.rejectValue('region', 'regionDoesNotBelongToSelectedCountry')
+//                      return false
+//                  }
+//              })
         federalState(nullable:true, blank:true)
       libraryNetwork(nullable:true, blank:true)
           funderType(nullable:true, blank:true)

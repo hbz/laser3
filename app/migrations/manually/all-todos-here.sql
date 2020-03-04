@@ -447,3 +447,11 @@ update global_record_tracker set grt_auto_tipp_add = false where grt_auto_tipp_a
 update global_record_tracker set grt_auto_tipp_del = false where grt_auto_tipp_del is null;
 update global_record_tracker set grt_auto_tipp_update = false where grt_auto_tipp_update is null;
 update org_role set or_is_shared = false where or_is_shared is null;
+
+-- 2020-02-19
+-- ERMS-1973
+update refdata_category set rdc_description = 'regions.de' where rdc_description = 'federal.state';
+update refdata_category set rdc_description_de = 'Bundesländer Deutschlands', rdc_description_en = 'Federal States of Germany' where rdc_description = 'regions.de';
+
+-- Ist das wirklich nötig? Wofür???
+-- update property_definition set pd_rdc = 'regions.de' where pd_rdc = 'federal.state';

@@ -1,15 +1,5 @@
 <%@ page import="java.sql.Timestamp; org.springframework.context.i18n.LocaleContextHolder; com.k_int.kbplus.Org; com.k_int.kbplus.License; com.k_int.kbplus.Subscription; com.k_int.kbplus.Task; org.codehaus.groovy.grails.orm.hibernate.cfg.GrailsHibernateUtil; de.laser.helper.RDStore;de.laser.helper.RDConstants" %>
 <laser:serviceInjection />
-<% double start = System.currentTimeMillis()
-double t1 = 0L
-double t2 = 0L
-double t3 = 0L
-double t4 = 0L
-double t5 = 0L
-double t6 = 0L
-double t7 = 0L
-double t8 = 0L
-%>
 <semui:modal id="modalCreateTask" message="task.create.new">
 
     <g:form class="ui form" id="create_task" url="[controller: 'task', action: 'create']" method="post">
@@ -72,7 +62,6 @@ double t8 = 0L
                     </div>
                 </fieldset>
             </div>
-            <% t1 = System.currentTimeMillis() %>
 
             <div id="licensediv"
                  class="field fieldcontain ${hasErrors(bean: taskInstance, field: 'license', 'error')} required">
@@ -89,7 +78,6 @@ double t8 = 0L
                           noSelection="[null: '']"/>
 
             </div>
-            <% t2 = System.currentTimeMillis() %>
 
             <div id="orgdiv" class="field fieldcontain ${hasErrors(bean: taskInstance, field: 'org', 'error')} required">
             <label for="org">
@@ -104,7 +92,6 @@ double t8 = 0L
                           class="ui dropdown search many-to-one"
                           noSelection="[null: '']"/>
             </div>
-            <% t3 = System.currentTimeMillis()%>
 
             <div id="pkgdiv" class="field fieldcontain ${hasErrors(bean: taskInstance, field: 'pkg', 'error')} required">
                 <label for="pkg">
@@ -113,7 +100,6 @@ double t8 = 0L
                 <g:select id="pkg" name="pkg" from="${validPackages}" optionKey="id" value="${ownobj?.id}"
                           class="ui dropdown search many-to-one" required="" noSelection="[null: '']"/>
             </div>
-            <% t4 = System.currentTimeMillis() %>
 
             <div id="subscriptiondiv"
                  class="field fieldcontain ${hasErrors(bean: taskInstance, field: 'subscription', 'error')} required">
@@ -130,12 +116,10 @@ double t8 = 0L
                           noSelection="[null: '']"/>
 
             </div>
-            <% t5 = System.currentTimeMillis() %>
 
         </g:if>
 
 
-        <% t6 = System.currentTimeMillis()%>
         <div class="field">
             <div class="two fields">
 
@@ -158,7 +142,6 @@ double t8 = 0L
 
             </div>
         </div>
-        <% t7 = System.currentTimeMillis() %>
 
         <div class="field" id="radioGroup">
             <div class="two fields">
@@ -200,33 +183,9 @@ double t8 = 0L
                     />
                 </div>
             </div>
-            <% t8 = System.currentTimeMillis()%>
         </div>
 
     </g:form>
-    %{--controllerName ${controllerName}<br>--}%
-    %{--validLicensesDropdown ${validLicensesDropdown?.size()}<br>--}%
-    %{--validOrgsDropdown ${validOrgsDropdown?.size()}<br>--}%
-    %{--validPackages ${validPackages?.size()}<br>--}%
-    %{--validSubscriptionsDropdown ${validSubscriptionsDropdown?.size()}<br>--}%
-    %{--validResponsibleUsers ${validResponsibleUsers?.size()}<br><br>--}%
-    %{--Zeiten:<br/>--}%
-    %{--<% java.text.DecimalFormat myFormatter = new java.text.DecimalFormat("###,###"); %>--}%
-    %{--t1 ${myFormatter.format(t1-start)}<br>--}%
-    %{--t2 ${myFormatter.format(t2-t1)}<br>--}%
-    %{--t3 ${myFormatter.format(t3-t2)}<br>--}%
-    %{--t4 ${myFormatter.format(t4-t3)}<br>--}%
-    %{--t5 ${myFormatter.format(t5-t4)}<br>--}%
-    %{--t6 ${myFormatter.format(t6-t5)}<br>--}%
-    %{--t7 ${myFormatter.format(t7-t6)}<br>--}%
-    %{--t8 ${myFormatter.format(t8-t7)}<br>--}%
-
-    %{--<% def ende = System.currentTimeMillis()--}%
-        %{--def dauerBackFrontend = backendStart ? ende-backendStart : 0L--}%
-        %{--def dauerFrontend = ende-start--}%
-    %{--%>--}%
-    %{--****************** Backend + Frontend DAUER: ${backendStart? myFormatter.format(dauerBackFrontend) : 'n/a'} ******************<br>--}%
-    %{--****************** Frontend           DAUER: ${myFormatter.format(dauerFrontend)} ******************--}%
     <g:if test="${controllerName == 'myInstitution' || controllerName == 'ajax'}">
         <script>
             // initial side call

@@ -1,4 +1,4 @@
-<%@ page import="de.laser.helper.RDStore; de.laser.helper.RDConstants; com.k_int.kbplus.PersonRole; com.k_int.kbplus.Org; com.k_int.kbplus.RefdataCategory; com.k_int.properties.PropertyDefinition; com.k_int.properties.PropertyDefinitionGroup; com.k_int.kbplus.OrgSettings" %>
+<%@ page import="com.k_int.kbplus.OrgSubjectGroup; com.k_int.kbplus.RefdataValue; de.laser.helper.RDStore; de.laser.helper.RDConstants; com.k_int.kbplus.PersonRole; com.k_int.kbplus.Org; com.k_int.kbplus.RefdataCategory; com.k_int.properties.PropertyDefinition; com.k_int.properties.PropertyDefinitionGroup; com.k_int.kbplus.OrgSettings" %>
 <%@ page import="com.k_int.kbplus.Combo;grails.plugin.springsecurity.SpringSecurityUtils" %>
 <laser:serviceInjection/>
 
@@ -107,15 +107,14 @@
                     </dl>
                     <dl>
                         <dt>
-                            <g:message code="org.nameGov.label" />
+                            <g:message code="org.legalPatronName.label" />
                             <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
-                                  data-content="${message(code: 'org.nameGov.expl')}">
+                                  data-content="${message(code: 'org.legalPatronName.expl')}">
                                 <i class="question circle icon"></i>
                             </span>
                         </dt>
                         <dd>
-                            ??? TODO
-                            %{--<semui:xEditable owner="${orgInstance}" field="sortname"/>--}%
+                            <semui:xEditable owner="${orgInstance}" field="legalPatronName"/>
                         </dd>
                     </dl>
                     <g:if test="${!departmentalView}">
@@ -148,13 +147,12 @@
                             </dd>
                         </dl>
                         <dl>
-                            <dt>${message(code: 'default.status.label', default: 'Status')}</dt>
-                            <dd>
                             <dt>${message(code: 'default.status.label')}</dt>
 
-                        <dd>
-                            <g:if test="${isGrantedOrgRoleAdminOrOrgEditor}">
-                                <semui:xEditableRefData owner="${orgInstance}" field="status" config="${RDConstants.ORG_STATUS}"/>
+                            <dd>
+                                <g:if test="${isGrantedOrgRoleAdminOrOrgEditor}">
+                                    <semui:xEditableRefData owner="${orgInstance}" field="status" config="${RDConstants.ORG_STATUS}"/>
+                                </g:if>
                             </dd>
                         </dl>
                     </div>
@@ -216,9 +214,14 @@
                                     %{--</span>--}%
                                 </dt>
                                 <dd>
-                                    ??? TODO
-                                    %{--<semui:xEditableRefData owner="${orgInstance}" field="libraryType"--}%
-                                                            %{--config="${RDConstants.LIBRARY_TYPE}"/>--}%
+                                    <%
+                                        def subjectGroups = RefdataCategory.getAllRefdataValues(RDConstants.SUBJECT_GROUP)
+                                    %>
+                                    <g:render template="orgSubjectGroupAsList"
+                                              model="${[org: orgInstance, orgSubjectGroups: orgInstance.subjectGroup, availableSubjectGroups: subjectGroups, editable: true]}"/>
+
+                                    <g:render template="orgSubjectGroupModal"
+                                              model="${[org: orgInstance, availableSubjectGroups: subjectGroups, editable: true]}"/>
                                 </dd>
                             </dl>
                             <dl>
@@ -260,31 +263,39 @@
                             </dl>
                             <dl>
                                 <dt>
-                                    <g:message code="org.region.label" />
+                                    <g:message code="org.regions.label" />
                                     <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
-                                          data-content="${message(code: 'org.region.expl')}">
+                                          data-content="${message(code: 'org.regions.expl')}">
                                         <i class="question circle icon"></i>
                                     </span>
                                 </dt>
                                 <dd>
-                                    <semui:xEditableRefData owner="${orgInstance}" field="country" config="${RDConstants.COUNTRY}"/>
+                                    <semui:xEditableRefData id="country" owner="${orgInstance}" field="country" config="${RDConstants.COUNTRY}" />
                                 </dd>
                                 <dd>
-                                    <semui:xEditableRefData owner="${orgInstance}" field="regionDe" config="${RDConstants.REGION_DE}"/>
+                                    <semui:xEditableRefData id="regions_${de.laser.helper.RDStore.COUNTRY_DE.id}" owner="${orgInstance}" field="region" config="${RDConstants.REGIONS_DE}"/>
+                                    <semui:xEditableRefData id="regions_${de.laser.helper.RDStore.COUNTRY_AT.id}" owner="${orgInstance}" field="region" config="${RDConstants.REGIONS_AT}"/>
+                                    <semui:xEditableRefData id="regions_${de.laser.helper.RDStore.COUNTRY_CH.id}" owner="${orgInstance}" field="region" config="${RDConstants.REGIONS_CH}"/>
+                                    %{--<g:fieldError bean="${orgInstance}" field="region" />--}%
+                                    %{--<g:select class="ui search dropdown" name="region"--}%
+                                              %{--from="${Org.REGION.values()}"--}%
+                                              %{--optionValue="${{((com.k_int.kbplus.RefdataValue)it.region).value_de}}"--}%
+                                              %{--value="${orgInstance?.region}"--}%
+                                              %{--noSelection="${['null§0':'']}"/>--}%
                                 </dd>
                             </dl>
-                            <dl>
-                                <dt>
-                                    <g:message code="org.country.label" />
-                                    <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
-                                          data-content="${message(code: 'org.country.expl')}">
-                                        <i class="question circle icon"></i>
-                                    </span>
-                                </dt>
-                                <dd>
-                                    <semui:xEditableRefData owner="${orgInstance}" field="country" config="${RDConstants.COUNTRY}"/>
-                                </dd>
-                            </dl>
+                            %{--<dl>--}%
+                                %{--<dt>--}%
+                                    %{--<g:message code="org.country.label" />--}%
+                                    %{--<span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"--}%
+                                          %{--data-content="${message(code: 'org.country.expl')}">--}%
+                                        %{--<i class="question circle icon"></i>--}%
+                                    %{--</span>--}%
+                                %{--</dt>--}%
+                                %{--<dd>--}%
+                                    %{--<semui:xEditableRefData owner="${orgInstance}" field="country" config="${RDConstants.COUNTRY}"/>--}%
+                                %{--</dd>--}%
+                            %{--</dl>--}%
                         </div>
                 </div><!-- .card -->
             </g:if>
@@ -398,7 +409,7 @@
                     </div>
                 </div><!-- .card -->
 
-                <g:if test="${contextService.getUser().isAdmin() || contextService.getOrg().getCustomerType() in ['ORG_CONSORTIUM', 'ORG_CONSORTIUM_SURVEY']}">
+                <g:if test="${(contextService.getUser().isAdmin() || contextService.getOrg().getCustomerType() in ['ORG_CONSORTIUM', 'ORG_CONSORTIUM_SURVEY']) && (contextService.getOrg() != orgInstance)}">
                     <g:if test="${orgInstance.createdBy || orgInstance.legallyObligedBy}">
                         <div class="ui card">
                             <div class="content">
@@ -480,3 +491,23 @@
 </div>
 </body>
 </html>
+<r:script>
+    $('#country').on('save', function(e, params) {
+        showRegionsdropdown(params.newValue);
+    });
+
+    function showRegionsdropdown(newValue) {
+        var id = newValue.split(':')[1]
+         $("*[id^=regions_]").hide();
+         $("#regions_" + id).show();
+         $("#regions_" + id).editable('setValue', null);
+    };
+
+    $(document).ready(function(){
+        var country = $("#country").editable('getValue', true);
+        var id = country.split(':')[1]
+        $("*[id^=regions_]").hide();
+        $("#regions_" + id).show();
+        // $("#regions_" + id).editable('setValue', null);
+    });
+</r:script>
