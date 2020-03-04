@@ -2546,7 +2546,8 @@ class SurveyController {
                     type: sub_type,
                     status: sub_status,
                     resource: sub_resource,
-                    form: sub_form
+                    form: sub_form,
+                    hasPerpetualAccess: baseSub?.hasPerpetualAccess
             )
 
             if (!newSub.save(flush: true)) {

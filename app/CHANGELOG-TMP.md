@@ -2,6 +2,10 @@
 
 **Ticket    Date    Branch      Author  Feature/Bug     Description/Keywords**
 
+2228    04.03.2020  hbz-dev     Andreas Feature     Einbau der Flags für Datenfreigabe und dauerhaften Zugriff in verschiedene Ausgaben
+
+2119    04.03.2020  hbz-dev     Andreas Feature     Einbau des Flags für dauerhaften Zugriff
+
 2211    26.02.2020  hbz-dev     Andreas Feature     Bezeichnung Stammlizenz in Elternlizenz umgewandelt
 
 2204    26.02.2020  hbz-dev     Andreas Bug         Datumsausgabe in Export der Konsortialteilnehmer korrigiert
