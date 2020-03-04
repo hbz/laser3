@@ -105,7 +105,7 @@ ${surveyInfo?.name}
 
 
     <h3 class="ui left aligned icon header la-clear-before">
-        <g:link action="evaluationConfigsInfo" id="${surveyInfo?.id}"
+        <g:link action="surveyEvaluation" id="${surveyInfo?.id}"
                 params="[surveyConfigID: surveyConfig?.id]">${message(code: 'survey.label')} ${message(code: 'surveyParticipants.label')}</g:link>
         <semui:totalNumber total="${surveyParticipants}"/>
         <br>

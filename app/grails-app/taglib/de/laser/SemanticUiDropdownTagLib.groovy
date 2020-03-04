@@ -179,7 +179,11 @@ class SemanticUiDropdownTagLib {
     def menuDropdownItems = { attrs, body ->
         def (text, message) = SwissKnife.getTextAndMessage(attrs)
         def textMessage     = (text && message) ? text + " - " + message : text + message
-        out << '<div class="ui pointing dropdown link item">'
+        //def aClass = ((this.pageScope.variables?.actionName == attrs.actionName) ? 'item active' : 'item') + (attrs.class ? ' ' + attrs.class : '')
+
+        out << '<div class="ui pointing dropdown link item '
+        //out << aClass
+        out << '">'
         out << textMessage
         out << '<i class="dropdown icon"></i> '
         out <<  '<div class="menu">'

@@ -17,7 +17,6 @@
 
     <g:if test="${surveyInfo}">
         <semui:crumb controller="survey" action="show" id="${surveyInfo.id}" text="${surveyInfo.name}"/>
-        <semui:crumb controller="survey" action="surveyConfigs" id="${surveyInfo.id}" message="surveyConfigs.label"/>
     </g:if>
     <semui:crumb message="myinst.currentSubscriptions.label" class="active"/>
 </semui:breadcrumbs>

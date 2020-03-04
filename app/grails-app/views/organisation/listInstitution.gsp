@@ -28,7 +28,9 @@
         </g:if>
     </semui:controlButtons>
     
-    <h1 class="ui left floated aligned icon header la-clear-before"><semui:headerIcon />${message(code: 'menu.public.all_insts')}</h1>
+    <h1 class="ui left floated aligned icon header la-clear-before"><semui:headerIcon />${message(code: 'menu.public.all_insts')}
+        <semui:totalNumber total="${consortiaMemberTotal}"/>
+    </h1>
 
     <semui:messages data="${flash}" />
 

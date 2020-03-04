@@ -75,14 +75,33 @@
                             </dd>
 
                         </dl>
+                        <dl>
+                            <dt class="control-label">${message(code: 'surveyInfo.isMandatory.label')}</dt>
+                            <dd>
+                                ${surveyInfo.isMandatory ? message(code: 'refdata.Yes') : message(code: 'refdata.No')}
+                            </dd>
+
+                        </dl>
+
+                        <g:if test="${surveyInfo.isSubscriptionSurvey && surveyInfo.surveyConfigs.size() >= 1}">
+                            <dl>
+                                <dt class="control-label">${message(code: 'surveyConfig.subSurveyUseForTransfer.label')}</dt>
+                                <dd>
+                                    ${surveyInfo.surveyConfigs[0].subSurveyUseForTransfer ? message(code: 'refdata.Yes') : message(code: 'refdata.No')}
+                                </dd>
+
+                            </dl>
+
+                        </g:if>
+
                     </div>
                 </div>
             </div>
             <g:if test="${surveyInfo?.type == de.laser.helper.RDStore.SURVEY_TYPE_TITLE_SELECTION}">
                 <g:set var="finish"
-                       value="${com.k_int.kbplus.SurveyOrg.findAllByFinishDateIsNotNullAndSurveyConfigInList(surveyInfo?.surveyConfigs).size()}"/>
+                       value="${com.k_int.kbplus.SurveyOrg.findAllByFinishDateIsNotNullAndSurveyConfig(surveyConfig).size()}"/>
                 <g:set var="total"
-                       value="${com.k_int.kbplus.SurveyOrg.findAllBySurveyConfigInList(surveyInfo?.surveyConfigs).size()}"/>
+                       value="${com.k_int.kbplus.SurveyOrg.findAllBySurveyConfig(surveyConfig).size()}"/>
 
                 <g:set var="finishProcess" value="${(finish != 0 && total != 0) ? (finish / total) * 100 : 0}"/>
                 <g:if test="${finishProcess > 0 || surveyInfo?.status?.id == de.laser.helper.RDStore.SURVEY_SURVEY_STARTED.id}">
@@ -108,9 +127,9 @@
             </g:if>
             <g:else>
                 <g:set var="finish"
-                       value="${com.k_int.kbplus.SurveyResult.findAllBySurveyConfigInListAndFinishDateIsNotNull(surveyInfo?.surveyConfigs).size()}"/>
+                       value="${com.k_int.kbplus.SurveyResult.findAllBySurveyConfigAndFinishDateIsNotNull(surveyConfig).size()}"/>
                 <g:set var="total"
-                       value="${com.k_int.kbplus.SurveyResult.findAllBySurveyConfigInList(surveyInfo?.surveyConfigs).size()}"/>
+                       value="${com.k_int.kbplus.SurveyResult.findAllBySurveyConfig(surveyConfig).size()}"/>
 
                 <g:set var="finishProcess" value="${(finish != 0 && total != 0) ? (finish / total) * 100 : 0}"/>
                 <g:if test="${finishProcess > 0 || surveyInfo?.status?.id == de.laser.helper.RDStore.SURVEY_SURVEY_STARTED.id}">
@@ -137,167 +156,28 @@
             </g:else>
 
             <br>
-            <g:if test="${surveyConfigs}">
-                <div class="ui styled fluid accordion">
+            <g:if test="${surveyConfig}">
 
-                    <g:each in="${surveyConfigs}" var="config" status="i">
+                <g:if test="${surveyConfig.type == "Subscription"}">
 
-                        <div class="title active"><i
-                            class="dropdown icon ${(config?.configFinish && config?.costItemsFinish) ? 'green' : ''}"></i>
+                    <g:render template="/templates/survey/subscriptionSurvey" model="[surveyConfig: surveyConfig,
+                                                                costItemSums: costItemSums,
+                                                                subscriptionInstance: surveyConfig.subscription,
+                                                                tasks: tasks,
+                                                                visibleOrgRelations: visibleOrgRelations,
+                                                                properties: properties]"/>
+                </g:if>
 
-                        ${config?.getConfigName()}
+                <g:if test="${surveyConfig.type == "GeneralSurvey"}">
 
-                        <div class="ui label circular ${(config?.type == 'Subscription') ? 'black' : 'blue'}">${com.k_int.kbplus.SurveyConfig.getLocalizedValue(config?.type)}</div>
+                    <g:render template="/templates/survey/generalSurvey" model="[surveyConfig: surveyConfig,
+                                                                    costItemSums: costItemSums,
+                                                                    subscriptionInstance: surveyConfig.subscription,
+                                                                    tasks: tasks,
+                                                                    visibleOrgRelations: visibleOrgRelations,
+                                                                    properties: properties]"/>
+                </g:if>
 
-                        <g:if test="${config?.type != 'Subscription'}">
-                            ${message(code: 'default.type.label')}: ${config?.surveyProperty?.getLocalizedType()}</br>
-
-                        </g:if>
-
-                        </div>
-
-                        <div class="content active">
-                            <div class="accordion transition visible"
-                                 style="display: block !important;">
-
-                                <div class="title"><i
-                                        class="dropdown icon"></i>${message(code: 'surveyConfig.documents.label')}
-
-                                    <div class="ui circular label">${config?.documents.size() ?: 0}</div>
-                                </div>
-
-                                <div class="content">
-                                    <g:if test="${config?.documents}">
-                                        <table class="ui celled la-table table license-documents">
-                                            <thead>
-                                            <tr>
-                                                <th></th>
-                                                <th>${message(code: 'surveyConfigDocs.docs.table.title', default: 'Title')}</th>
-                                                <th>${message(code: 'surveyConfigDocs.docs.table.fileName', default: 'File Name')}</th>
-                                                <th>${message(code: 'surveyConfigDocs.docs.table.type', default: 'Type')}</th>
-                                                <th>${message(code: 'default.actions.label')}</th>
-                                            </tr>
-                                            </thead>
-                                            <tbody>
-                                            <g:each in="${config?.getCurrentDocs()}" var="docctx" status="s">
-                                                <tr>
-                                                    <td>${s + 1}</td>
-                                                    <td>
-                                                        ${docctx.owner.title}
-                                                    </td>
-                                                    <td>
-                                                        ${docctx.owner.filename}
-                                                    </td>
-                                                    <td>
-                                                        ${docctx.owner?.type?.getI10n('value')}
-                                                    </td>
-
-                                                    <td class="x">
-                                                        %{--//Vorerst alle Umfrage Dokumente als geteilt nur Kennzeichen--}%
-                                                        <span class="la-popup-tooltip la-delay"
-                                                              data-content="${message(code: 'property.share.tooltip.on')}">
-                                                            <i class="green alternate share icon"></i>
-                                                        </span>
-                                                        <g:if test="${((docctx.owner?.contentType == 1) || (docctx.owner?.contentType == 3))}">
-
-                                                            <g:link controller="docstore" id="${docctx.owner.uuid}"
-                                                                    class="ui icon button"><i
-                                                                    class="download icon"></i></g:link>
-                                                        </g:if>
-                                                    </td>
-                                                </tr>
-
-                                            </g:each>
-                                            </tbody>
-                                        </table>
-                                    </g:if>
-
-                                </div>
-                                <g:if test="${config?.type == 'SurveyProperty'}">
-                                    <div class="title"><i
-                                            class="dropdown icon"></i>${message(code: 'surveyParticipants.label')}
-
-                                        <div class="ui circular label ${config?.configFinish ? 'green' : ''}">${config?.orgs?.size() ?: 0}</div>
-                                    </div>
-
-                                    <div class="content">
-                                        <g:render template="allParticipants" model="[surveyConfig: config]"/>
-                                    </div>
-                                </g:if>
-
-                                <g:if test="${config?.type == 'Subscription'}">
-
-                                    <div class="title"><i
-                                            class="dropdown icon"></i>${message(code: 'surveyParticipants.label')}
-
-                                        <div class="ui circular label ${config?.costItemsFinish ? 'green' : ''}">${config?.orgs?.size() ?: 0}</div>
-                                    </div>
-
-                                    <div class="content compact">
-
-                                        <g:render template="/templates/filter/orgFilterTable"
-                                                  model="[orgList       : config?.orgs.org.sort { it?.sortname },
-                                                          tmplConfigShow: ['lineNumber', 'sortname', 'name', config?.pickAndChoose ? '' : 'surveyCostItem'],
-                                                          tableID       : 'costTable',
-                                                          surveyConfig  : config,
-                                                          editable      : false
-                                                  ]"/>
-                                    </div>
-
-                                    <g:if test="${!config?.pickAndChoose}">
-                                        <div class="title"><i
-                                                class="dropdown icon"></i>${message(code: 'surveyProperty.plural.label')}
-
-                                            <div class="ui circular label ${config?.configFinish ? 'green' : ''}">${config?.surveyProperties?.size() ?: 0}</div>
-                                        </div>
-
-                                        <div class="content">
-
-                                            <g:if test="${config?.surveyProperties}">
-                                                <table class="ui celled sortable table la-table">
-                                                    <thead>
-                                                    <tr>
-                                                        <th>${message(code: 'surveyProperty.name')}</th>
-                                                        <th>${message(code: 'default.type.label')}</th>
-                                                    </tr>
-
-                                                    </thead>
-                                                    <g:each in="${config?.surveyProperties.sort {
-                                                        it?.surveyProperty?.getI10n('name')
-                                                    }}" var="prop" status="x">
-                                                        <tr>
-
-                                                            <td>
-                                                                ${prop?.surveyProperty?.getI10n('name')}
-
-                                                                <g:if test="${prop?.surveyProperty?.getI10n('expl')}">
-                                                                    <span class="la-long-tooltip la-popup-tooltip la-delay"
-                                                                          data-position="right center"
-                                                                          data-content="${prop?.surveyProperty?.getI10n('expl')}">
-                                                                        <i class="question circle icon"></i>
-                                                                    </span>
-                                                                </g:if>
-
-                                                            </td>
-                                                            <td>
-                                                                ${message(code: 'surveyConfigs.surveyPropToSub')}
-                                                                <br>
-                                                                <b>${message(code: 'default.type.label')}: ${prop?.surveyProperty?.getLocalizedType()}</b>
-
-                                                            </td>
-                                                        </tr>
-                                                    </g:each>
-                                                </table>
-                                            </g:if>
-
-                                        </div>
-                                    </g:if>
-                                </g:if>
-                            </div>
-                        </div>
-
-                    </g:each>
-                </div>
             </g:if>
             <g:else>
                 <p><b>${message(code: 'surveyConfigs.noConfigList')}</b></p>

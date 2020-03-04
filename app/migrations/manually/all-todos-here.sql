@@ -442,6 +442,12 @@
 -- update global_record_tracker set grt_auto_tipp_update = false where grt_auto_tipp_update is null;
 -- update org_role set or_is_shared = false where or_is_shared is null;
 
+-- 2020-02-18
+-- Add new Column to SurveyInfo
+alter table survey_info add surin_is_mandatory boolean;
+update survey_info set surin_is_mandatory = true where surin_is_mandatory is null and surin_is_subscription_survey = true;
+
+
 -- 2020-02-19
 -- ERMS-2119
 -- changesets in changelog-2020-02-19.groovy
