@@ -24,7 +24,7 @@ class SurveyResult extends AbstractProperty {
     SurveyConfig surveyConfig
     ArrayList resultValues
 
-    boolean isRequired
+    boolean isRequired = false
 
     static constraints = {
         importFrom AbstractProperty
@@ -36,7 +36,7 @@ class SurveyResult extends AbstractProperty {
         endDate (nullable:true, blank:false)
         participantComment (nullable:true, blank:false)
         ownerComment (nullable:true, blank:false)
-        isRequired (nullable:true, blank:false)
+        isRequired (nullable:false, blank:false)
     }
 
     static mapping = {

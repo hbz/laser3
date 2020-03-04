@@ -11,7 +11,7 @@ class MailTemplate {
     Org owner
     String subject
 
-    boolean sentBySystem
+    boolean sentBySystem = false
 
     RefdataValue type
     RefdataValue language

@@ -10,8 +10,8 @@ import groovy.util.logging.Log4j
 @Log4j
 class PropertyDefinitionGroupBinding {
 
-    boolean isVisible // default value: will overwrite existing groups
-    boolean isVisibleForConsortiaMembers  // Subscriber_Consortial, Licensee_Consortial
+    boolean isVisible = false // default value: will overwrite existing groups
+    boolean isVisibleForConsortiaMembers = false // Subscriber_Consortial, Licensee_Consortial
 
     Date dateCreated
     Date lastUpdated

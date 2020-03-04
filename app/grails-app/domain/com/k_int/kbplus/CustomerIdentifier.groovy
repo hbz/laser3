@@ -13,7 +13,7 @@ class CustomerIdentifier {
     Platform platform   // target platform
 
     Org owner           // owner
-    boolean isPublic    // true = visible only for owner
+    boolean isPublic = false    // true = visible only for owner
 
     static mapping = {
                 id column:'cid_id'

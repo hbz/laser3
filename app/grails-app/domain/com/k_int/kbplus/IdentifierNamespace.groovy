@@ -30,10 +30,10 @@ class IdentifierNamespace {
 
     String ns
     String nsType
-    Boolean isHidden
+    Boolean isHidden = false
     String validationRegex
     String family
-    Boolean isUnique
+    Boolean isUnique = false
 
     Date dateCreated
     Date lastUpdated

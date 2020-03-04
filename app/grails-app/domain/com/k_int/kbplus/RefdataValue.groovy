@@ -32,7 +32,7 @@ class RefdataValue extends AbstractI10nOverride implements Comparable<RefdataVal
     String group
 
     // indicates this object is created via current bootstrap
-    boolean isHardData
+    boolean isHardData = false
 
     // if manual ordering is wanted
     Long order
