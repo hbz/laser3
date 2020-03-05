@@ -307,7 +307,7 @@ class AjaxController {
       if ( params.value == '' ) {
         // Allow user to set a rel to null be calling set rel ''
         target[params.name] = null
-          if ( ! target.save(flush: true)){
+          if ( ! target.save()){
               Map r = [status:"error", msg: message(code: 'default.save.error.general.message')]
               render r as JSON
               return

@@ -75,7 +75,6 @@ class Org
 
     @RefdataAnnotation(cat = '?')
     RefdataValue region
-//    REGION region
 
     @RefdataAnnotation(cat = RDConstants.FEDERAL_STATE)
     RefdataValue federalState

@@ -1,13 +1,8 @@
 <g:if test="${editable}">
-    %{--<dl>--}%
-        %{--<dt></dt>--}%
-        %{--<dd>--}%
-            %{--<br/>--}%
-            <a class="ui button" data-semui="modal" href="#subjectGroup">
-                <g:message code="org.subjectGroup.add.label"/>
-            </a>
-        %{--</dd>--}%
-    %{--</dl>--}%
+    <a class="ui button" data-semui="modal" href="#subjectGroup">
+        <g:message code="org.subjectGroup.add.label"/>
+    </a>
+
     <semui:modal id="subjectGroup" message="org.subjectGroup.add.label">
         <g:form class="ui form" url="[controller: 'organisation', action: 'addSubjectGroup']" method="post">
             <input type="hidden" name="org" value="${org.id}"/>
