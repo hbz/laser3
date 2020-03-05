@@ -6,8 +6,10 @@ import org.hibernate.criterion.CriteriaSpecification
 
 class FactService {
 
+  def dataSource
   def sessionFactory
   def contextService
+
 
 
     // TODO make this configurable
@@ -433,6 +435,59 @@ class FactService {
       result.usage = generateUsageMDList(factList, y_axis_labels, x_axis_labels)
       result.x_axis_labels = x_axis_labels
       result.y_axis_labels = y_axis_labels
+    }
+    result
+  }
+
+  def getMissingMonths(supplier, customerOrg, subscription) {
+    def usageRanges = getUsageRanges(supplier, customerOrg)
+  }
+
+  private def getUsageRanges(supplier, org) {
+    def customer = org.getIdentifierByType('wibid').value
+    /*def hql = 'select distinct stc.titleId, stc.factType.value from StatsTripleCursor stc where stc.supplierId=:supplierId and stc.customerId=:customerId'
+    def stc = StatsTripleCursor.executeQuery(hql, [
+        supplierId: supplier,
+        customerId: customer,
+      ]
+    )*/
+    def factTypes = StatsTripleCursor.findAllByCustomerIdAndSupplierId(customer, supplier).factType.unique()
+
+    def titleRangesHql = "select stc from StatsTripleCursor as stc where " +
+        "stc.factType=:factType and stc.supplierId=:supplierId and stc.customerId=:customerId " +
+        "order by stc.titleId, stc.factType, stc.availFrom"
+    def rangesPerFactType = [:]
+    factTypes.each { it ->
+      def rangeList = []
+      def ranges = StatsTripleCursor.executeQuery(titleRangesHql, [
+          supplierId : supplier,
+          customerId : customer,
+          factType : it
+      ])
+      def months = []
+      ranges.each(){
+        getMonthsOfDateRange(it.availFrom, it.availTo).each { m ->
+          if (! months.contains(m))
+            months.add(m)
+        }
+      }
+      def min = ranges*.availFrom.min()
+      def max = ranges*.availFrom.max()
+      def completeList = getMonthsOfDateRange(min, max)
+      // not working yet, 2019-01 and 2019-02 should not be in the list, check max and result of getMonthsOfDateRange
+      def missingMonths = ((completeList - months) + (months - completeList))
+    }
+
+  }
+
+  def getMonthsOfDateRange(begin, end){
+    def result = []
+    java.time.YearMonth from = java.time.YearMonth.parse(begin.toString().substring(0,7))
+    java.time.YearMonth to = java.time.YearMonth.parse(end.toString().substring(0,7))
+    while (from<to)
+    {
+      result.add(from)
+      from = from.plusMonths(1)
     }
     result
   }
