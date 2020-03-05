@@ -12,6 +12,12 @@
 
 2208    26.02.2020  hbz-dev     Andreas Bug         Bezeichnungen korrigiert
 
+2203    25.02.2020  hbz-dev     Moe     Feature     "Allgemeine Umfrage" erstellen
+
+2163    25.02.2020  hbz-dev     Moe     Feature     "Allgemeine Umfrage" erstellen
+
+--      25.02.2020  hbz-dev     Moe     Feature     Überarbeitung Umfrage
+
 2209    21.02.2020  hbz-dev     Andreas Bug         siehe ERMS-2207
 
 2207    21.02.2020  hbz-dev     Andreas Bug         OrgRole-Default-Wert für isPublic auf false gesetzt

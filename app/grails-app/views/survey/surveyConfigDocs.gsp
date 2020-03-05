@@ -14,10 +14,7 @@
     <semui:crumb controller="myInstitution" action="dashboard" text="${contextService.getOrg()?.getDesignation()}"/>
     <semui:crumb controller="survey" action="currentSurveysConsortia" text="${message(code: 'menu.my.surveys')}"/>
     <g:if test="${surveyInfo}">
-        <semui:crumb controller="survey" action="show" id="${surveyInfo.id}" text="${surveyInfo.name}"/>
-    </g:if>
-    <g:if test="${surveyInfo}">
-        <semui:crumb controller="survey" action="surveyConfigsInfo" id="${surveyInfo.id}"
+        <semui:crumb controller="survey" action="show" id="${surveyInfo.id}"
                      params="[surveyConfigID: surveyConfig]" text="${surveyConfig?.getConfigNameShort()}"/>
     </g:if>
     <semui:crumb message="surveyConfigDocs.label" class="active"/>
@@ -52,13 +49,12 @@
     </g:if>
     <g:else>
         ${surveyConfig?.getConfigNameShort()}
-    </g:else>
-    : ${message(code: 'surveyConfigDocs.label')}
+    </g:else>: ${message(code: 'surveyConfigDocs.label')}
 </h2>
 <br>
 
-<p><b>${message(code: 'surveyConfigDocs.info')}</b></p>
-<br>
+%{--<p><b>${message(code: 'surveyConfigDocs.info')}</b></p>
+<br>--}%
 
 
 <g:if test="${surveyConfig}">
@@ -144,7 +140,6 @@
                             </g:if>
                         </td>
                     </tr>
-
                 </g:each>
                 </tbody>
             </table>

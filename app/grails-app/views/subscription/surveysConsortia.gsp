@@ -73,43 +73,18 @@
                 <td class="center aligned">
                     ${(params.int('offset') ?: 0) + i + 1}
                 </td>
-                <td><g:if test="${editable}">
-                    <g:if test="${surveyConfig?.type == 'Subscription'}">
-                        <i class="icon clipboard outline la-list-icon"></i>
-                        <g:link controller="survey" action="surveyConfigsInfo" id="${surveyInfo?.id}"
-                                params="[surveyConfigID: surveyConfig?.id]" class="ui ">
-                            ${surveyConfig?.subscription?.name}
-                        </g:link>
-                    </g:if>
-                    <g:else>
-                        <g:link controller="survey" action="show" id="${surveyInfo?.id}" class="ui ">
-                            ${surveyConfig?.getConfigNameShort()}
-                        </g:link>
-                    </g:else>
-                </g:if>
-                    <g:else>
-                        <g:if test="${surveyConfig?.type == 'Subscription'}">
-                            <i class="icon clipboard outline la-list-icon"></i>
-                            ${surveyConfig?.subscription?.name}
-                        </g:if>
-                        <g:else>
-                            <i class="icon chart pie la-list-icon"></i>
-                            ${surveyConfig?.getConfigNameShort()}
-                        </g:else>
-                    </g:else>
+                <td>
                     <div class="la-flexbox">
-
-                        <g:if test="${surveyConfig?.isSubscriptionSurveyFix}">
+                        <g:if test="${surveyConfig?.subSurveyUseForTransfer}">
                             <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
-                                  data-content="${message(code: "surveyConfig.isSubscriptionSurveyFix.label.info2")}">
+                                  data-content="${message(code: "surveyConfig.subSurveyUseForTransfer.label.info2")}">
                                 <i class="yellow icon envelope large "></i>
                             </span>
                         </g:if>
                         <i class="icon chart pie la-list-icon"></i>
                         <g:link controller="survey" action="show" id="${surveyInfo?.id}" class="ui ">
-                            ${surveyInfo?.name}
+                            ${surveyConfig?.getConfigNameShort()}
                         </g:link>
-
                     </div>
                 </td>
                 <td>
@@ -129,14 +104,12 @@
                 <td class="center aligned">
 
                     <g:if test="${surveyConfig && !surveyConfig.pickAndChoose}">
-                        <g:if test="${surveyConfig?.type == 'Subscription'}">
-                            <g:link controller="survey" action="surveyConfigsInfo" id="${surveyInfo?.id}"
+                            <g:link controller="survey" action="show" id="${surveyInfo?.id}"
                                     params="[surveyConfigID: surveyConfig?.id]" class="ui icon">
                                 <div class="ui circular ${surveyConfig?.configFinish ? "green" : ""} label">
                                     ${surveyConfig?.surveyProperties?.size() ?: 0}
                                 </div>
                             </g:link>
-                        </g:if>
                     </g:if>
 
                 </td>
@@ -164,7 +137,7 @@
 
 
                 <td class="center aligned">
-                    <g:if test="${surveyConfig && !surveyConfig.pickAndChoose}">
+                    <g:if test="${surveyConfig && !surveyConfig.pickAndChoose && surveyInfo.type == de.laser.helper.RDStore.SURVEY_TYPE_RENEWAL}">
                         <g:link controller="survey" action="surveyCostItems" id="${surveyInfo?.id}"
                                 params="[surveyConfigID: surveyConfig?.id]" class="ui icon">
                             <div class="ui circular ${surveyConfig?.costItemsFinish ? "green" : ""} label">
@@ -176,7 +149,7 @@
 
                 <td class="center aligned">
                     <g:if test="${surveyConfig && !surveyConfig.pickAndChoose}">
-                        <g:link controller="survey" action="evaluationConfigsInfo" id="${surveyInfo?.id}"
+                        <g:link controller="survey" action="surveyEvaluation" id="${surveyInfo?.id}"
                                 params="[surveyConfigID: surveyConfig?.id]"
                                 class="ui icon">
                             <div class="ui circular ${(participantsFinish?.size() == participantsTotal?.size()) ? "green" : (participantsFinish?.size() > 0) ? "yellow" : ""} label">
@@ -218,7 +191,7 @@
                     <g:if test="${surveyConfig && !surveyConfig.pickAndChoose}">
                         <span class="la-popup-tooltip la-delay"
                               data-content="${message(code: 'surveyInfo.toSurveyInfos')}">
-                            <g:link controller="survey" action="evaluationConfigsInfo" id="${surveyInfo?.id}"
+                            <g:link controller="survey" action="surveyEvaluation" id="${surveyInfo?.id}"
                                     params="[surveyConfigID: surveyConfig?.id]"
                                     class="ui button icon">
                                 <i class="write icon"></i>

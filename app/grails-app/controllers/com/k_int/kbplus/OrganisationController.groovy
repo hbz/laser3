@@ -233,6 +233,9 @@ class OrganisationController extends AbstractDebugController {
         ).each { cmb ->
             result.consortiaMemberIds << cmb.fromOrg.id
         }
+
+        result.consortiaMemberTotal = result.consortiaMemberIds.size()
+
         result
     }
 
