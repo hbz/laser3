@@ -2,15 +2,16 @@ package com.k_int.kbplus
 
 
 import com.k_int.kbplus.auth.User
+import de.laser.CacheService
 import de.laser.controller.AbstractDebugController
 import de.laser.exceptions.FinancialDataException
 import de.laser.helper.DateUtil
 import de.laser.helper.DebugAnnotation
+import de.laser.helper.EhcacheWrapper
 import de.laser.helper.RDStore
 import de.laser.interfaces.TemplateSupport
 import grails.converters.JSON
 import grails.plugin.springsecurity.annotation.Secured
-import org.apache.commons.lang.StringUtils
 import org.apache.poi.POIXMLProperties
 import org.apache.poi.ss.usermodel.Cell
 import org.apache.poi.ss.usermodel.FillPatternType
@@ -40,7 +41,7 @@ class FinanceController extends AbstractDebugController {
     def contextService
     def genericOIDService
     def navigationGenerationService
-    def filterService
+    CacheService cacheService
     def financeService
     def escapeService
     def exportService
@@ -88,7 +89,7 @@ class FinanceController extends AbstractDebugController {
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
     def financialsExport()  {
         log.debug("Financial Export :: ${params}")
-        Map<String, Object> result = financeService.setResultGenerics(params)
+        Map<String, Object> result = financeService.setResultGenerics(params+[forExport:true])
         if (!accessService.checkMinUserOrgRole(result.user,result.institution,"INST_USER")) {
             flash.error=message(code: 'financials.permission.unauthorised', args: [result.institution? result.institution.name : 'N/A'])
             response.sendError(403)
@@ -709,6 +710,7 @@ class FinanceController extends AbstractDebugController {
             result.licenseeLabel = message(code:'collective.member')
             result.licenseeTargetLabel = message(code:'financials.newCosts.collective.licenseeTargetLabel')
         }
+        result.putAll(financeService.setAdditionalGenericEditResults(result))
         result.formUrl = g.createLink(controller:'finance', action:'createOrUpdateCostItem', params:[showView: params.showView])
         render(template: "/finance/ajaxModal", model: result)
     }
@@ -728,9 +730,10 @@ class FinanceController extends AbstractDebugController {
             result.licenseeLabel = message(code:'collective.member')
             result.licenseeTargetLabel = message(code:'financials.newCosts.collective.licenseeTargetLabel')
         }
+        result.putAll(financeService.setAdditionalGenericEditResults(result))
         if(!result.dataToDisplay.contains('subscr')) {
-            if(costItem.taxKey)
-                result.taxKey = costItem.taxKey
+            if(result.costItem.taxKey)
+                result.taxKey = result.costItem.taxKey
         }
         result.modalText = message(code: 'financials.editCost')
         result.submitButtonLabel = message(code:'default.button.save.label')
@@ -746,6 +749,11 @@ class FinanceController extends AbstractDebugController {
         result.putAll(financeService.setAdditionalGenericEditResults(result))
         result.modalText = message(code: 'financials.costItem.copy.tooltip')
         result.submitButtonLabel = message(code:'default.button.copy.label')
+        if(result.dataToDisplay.stream().anyMatch(['coll','collAtSubscr'])) {
+            result.licenseeLabel = message(code:'collective.member')
+            result.licenseeTargetLabel = message(code:'financials.newCosts.collective.licenseeTargetLabel')
+        }
+        result.putAll(financeService.setAdditionalGenericEditResults(result))
         result.copyCostsFromConsortia = result.costItem.owner == result.costItem.subscription?.getConsortia()
         result.formUrl = createLink(controller:"finance",action:"createOrUpdateCostItem",params:[tab:result.tab, mode:"copy"])
         result.mode = "copy"
@@ -755,7 +763,7 @@ class FinanceController extends AbstractDebugController {
     @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_EDITOR") })
     def deleteCostItem() {
-        Map<String, Object> result = [:]
+        Map<String, Object> result = [showView:params.showView]
 
         CostItem ci = CostItem.get(params.id)
         if (ci) {
@@ -771,9 +779,7 @@ class FinanceController extends AbstractDebugController {
                 log.error(ci.errors)
         }
 
-        result.tab = params.tab
-
-        redirect(uri: request.getHeader('referer').replaceAll('(#|\\?).*', ''), params: [tab: result.tab])
+        redirect(uri: request.getHeader('referer').replaceAll('(#|\\?).*', ''), params: [showView: result.showView])
     }
 
     @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")')
@@ -781,8 +787,7 @@ class FinanceController extends AbstractDebugController {
     def createOrUpdateCostItem() {
 
         SimpleDateFormat dateFormat = DateUtil.getSDF_NoTime()
-
-        def result =  [showView:params.tab]
+        Map<String,Object> result = financeService.setResultGenerics(params)
         CostItem newCostItem = null
 
       if(params.newSubscription) {
@@ -790,24 +795,17 @@ class FinanceController extends AbstractDebugController {
               log.debug("FinanceController::newCostItem() ${params}");
 
               result.institution  =  contextService.getOrg()
-              def user            =  User.get(springSecurityService.principal.id)
               result.error        =  [] as List
 
-              if (!accessService.checkMinUserOrgRole(user,result.institution,"INST_EDITOR"))
-              {
-                  result.error=message(code: 'financials.permission.unauthorised', args: [result.institution? result.institution.name : 'N/A'])
-                  response.sendError(403)
-              }
-
-              def order = null
+              Order order = null
               if (params.newOrderNumber)
                   order = Order.findByOrderNumberAndOwner(params.newOrderNumber, result.institution) ?: new Order(orderNumber: params.newOrderNumber, owner: result.institution).save(flush: true);
 
-              def invoice = null
+              Invoice invoice = null
               if (params.newInvoiceNumber)
                   invoice = Invoice.findByInvoiceNumberAndOwner(params.newInvoiceNumber, result.institution) ?: new Invoice(invoiceNumber: params.newInvoiceNumber, owner: result.institution).save(flush: true);
 
-              def subsToDo = []
+              Set<Subscription> subsToDo = []
               if (params.newSubscription.contains("com.k_int.kbplus.Subscription:"))
               {
                   try {
@@ -819,7 +817,7 @@ class FinanceController extends AbstractDebugController {
 
               switch (params.newLicenseeTarget) {
 
-                  case 'com.k_int.kbplus.Subscription:forConsortia':
+                  case 'com.k_int.kbplus.Subscription:forParent':
                       // keep current
                       break
                   case 'com.k_int.kbplus.Subscription:forAllSubscribers':
@@ -831,12 +829,12 @@ class FinanceController extends AbstractDebugController {
                       break
                   default:
                       if (params.newLicenseeTarget) {
-                          subsToDo = genericOIDService.resolveOID(params.newLicenseeTarget)
+                          subsToDo << genericOIDService.resolveOID(params.newLicenseeTarget)
                       }
                       break
               }
 
-              def pkg = null;
+              SubscriptionPackage pkg
               if (params.newPackage?.contains("com.k_int.kbplus.SubscriptionPackage:"))
               {
                   try {
@@ -858,13 +856,13 @@ class FinanceController extends AbstractDebugController {
                   date
               }
 
-              def datePaid    = newDate(params.newDatePaid,  dateFormat.toPattern())
-              def startDate   = newDate(params.newStartDate, dateFormat.toPattern())
-              def endDate     = newDate(params.newEndDate,   dateFormat.toPattern())
-              def invoiceDate = newDate(params.newInvoiceDate,    dateFormat.toPattern())
+              Date datePaid    = newDate(params.newDatePaid,  dateFormat.toPattern())
+              Date startDate   = newDate(params.newStartDate, dateFormat.toPattern())
+              Date endDate     = newDate(params.newEndDate,   dateFormat.toPattern())
+              Date invoiceDate = newDate(params.newInvoiceDate,    dateFormat.toPattern())
               Year financialYear = params.newFinancialYear ? Year.parse(params.newFinancialYear) : null
 
-              def ie = null
+              IssueEntitlement ie = null
               if(params.newIE)
               {
                   try {
@@ -921,7 +919,7 @@ class FinanceController extends AbstractDebugController {
                           break
                   }
               }
-              def cost_item_element_configuration   = params.ciec ? genericOIDService.resolveOID(params.ciec) : null
+              RefdataValue elementSign   = params.ciec ? RefdataValue.get(Long.parseLong(params.ciec)) : null
 
               boolean cost_item_isVisibleForSubscriber = (params.newIsVisibleForSubscriber ? (RefdataValue.get(params.newIsVisibleForSubscriber)?.value == 'Yes') : false)
 
@@ -932,8 +930,8 @@ class FinanceController extends AbstractDebugController {
 
                   List<CostItem> copiedCostItems = []
 
-                  if (params.oldCostItem && genericOIDService.resolveOID(params.oldCostItem)) {
-                      newCostItem = (CostItem) genericOIDService.resolveOID(params.oldCostItem)
+                  if (params.costItemId) {
+                      newCostItem = CostItem.get(Long.parseLong(params.costItemId))
                       //get copied cost items
                       copiedCostItems = CostItem.findAllByCopyBaseAndCostItemStatusNotEqual(newCostItem, RDStore.COST_ITEM_DELETED)
                   }
@@ -967,7 +965,7 @@ class FinanceController extends AbstractDebugController {
                   newCostItem.currencyRate = cost_currency_rate as Double
                   //newCostItem.taxRate = new_tax_rate as Integer -> to taxKey
                   newCostItem.taxKey = tax_key
-                  newCostItem.costItemElementConfiguration = cost_item_element_configuration
+                  newCostItem.costItemElementConfiguration = elementSign
 
                   newCostItem.datePaid = datePaid
                   newCostItem.startDate = startDate
@@ -981,17 +979,7 @@ class FinanceController extends AbstractDebugController {
                   //newCostItem.includeInSubscription = null
                   newCostItem.reference = params.newReference ? params.newReference.trim() : null
 
-
-                  if (! newCostItem.validate())
-                  {
-                      result.error = newCostItem.errors.allErrors.collect {
-                          log.error("Field: ${it.properties.field}, user input: ${it.properties.rejectedValue}, Reason! ${it.properties.code}")
-                          message(code:'finance.addNew.error', args:[it.properties.field])
-                      }
-                  }
-                  else
-                  {
-                      if (newCostItem.save(flush: true)) {
+                  if (newCostItem.save()) {
                           def newBcObjs = []
 
                           params.list('newBudgetCodes')?.each { newbc ->
@@ -999,7 +987,7 @@ class FinanceController extends AbstractDebugController {
                               if (bc) {
                                   newBcObjs << bc
                                   if (! CostItemGroup.findByCostItemAndBudgetCode( newCostItem, bc )) {
-                                      new CostItemGroup(costItem: newCostItem, budgetCode: bc).save(flush: true)
+                                      new CostItemGroup(costItem: newCostItem, budgetCode: bc).save()
                                   }
                               }
                           }
@@ -1032,13 +1020,15 @@ class FinanceController extends AbstractDebugController {
                                   PendingChange change = new PendingChange(costItem: cci, owner: cci.owner,desc: diff, ts: new Date(), payload: changeDoc)
                                   change.workaroundForDatamigrate() // ERMS-2184
 
-                                  if(!change.save(flush: true))
+                                  if(!change.save())
                                       log.error(change.errors)
                               }
                           }
-
-                      } else {
-                          result.error = "Unable to save!"
+                   }
+                  else {
+                      result.error = newCostItem.errors.allErrors.collect {
+                          log.error("Field: ${it.properties.field}, user input: ${it.properties.rejectedValue}, Reason! ${it.properties.code}")
+                          message(code:'finance.addNew.error', args:[it.properties.field])
                       }
                   }
               } // subsToDo.each
@@ -1056,7 +1046,7 @@ class FinanceController extends AbstractDebugController {
       // render ([newCostItem:newCostItem.id, error:result.error]) as JSON
 
 
-        redirect(uri: request.getHeader('referer').replaceAll('(#|\\?).*', ''), params: [view: result.showView])
+        redirect(uri: request.getHeader('referer').replaceAll('(#|\\?).*', ''), params: [showView: result.showView])
     }
 
     @DebugAnnotation(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_EDITOR", specRole="ROLE_ADMIN")

@@ -92,7 +92,7 @@
 
         <g:render template="../subscription/nav" model="${[subscriptionInstance:subscription, params:(params << [id:subscription.id,showConsortiaFunctions:showConsortiaFunctions,showCollectiveFunctions:showCollectiveFunctions])]}"/>
 
-        <g:if test="${dataToDisplay.stream().anyMatch(['collAtSubscr','consAtSubscr'].&contains) || params.orgBasicMemberView}">
+        <g:if test="${showConsortiaFunctions || showCollectiveFunctions || params.orgBasicMemberView}">
             <g:render template="../subscription/message" model="${[contextOrg: institution, subscriptionInstance: subscription]}"/>
         </g:if>
 

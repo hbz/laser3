@@ -32,12 +32,15 @@
         </div>
     </g:if>
     <g:form class="ui small form" id="editCost" url="${formUrl}">
+        <g:if test="${costItem}">
+            <g:hiddenField name="costItemId" value="${costItem.id}"/>
+        </g:if>
         <g:if test="${copyCostsfromConsortia}">
             <g:hiddenField name="copyBase" value="${costItem.class.getName()}:${costItem.id}" />
         </g:if>
         <div class="fields">
             <div class="nine wide field">
-                <g:if test="${editConf.showVisiblitySettings}">
+                <g:if test="${editConf.showVisibilitySettings}">
                     <div class="two fields la-fields-no-margin-button">
                         <div class="field">
                             <label><g:message code="financials.newCosts.costTitle"/></label>
@@ -234,7 +237,7 @@
                                    value="${subscription.getName()}" />
                             <input name="newSubscription" id="pickedSubscription"
                                    type="hidden"
-                                   value="${sub.id}" />
+                                   value="${'com.k_int.kbplus.Subscription:'+subscription.id}" />
                         </g:if>
                         <g:else>
                             <div class="ui search selection dropdown newCISelect" id="newSubscription">
@@ -255,11 +258,11 @@
                         </g:if>
                         <g:else>
                             <g:select name="newLicenseeTarget" id="newLicenseeTarget" class="ui dropdown search"
-                                      from="${[[id:'forConsortia', label:message(code:'financials.newCosts.forParentSubscription')], [id:'forAllSubscribers', label:licenseeTargetLabel]] + validSubChilds.sort{it.getSubscriber().sortname}}"
+                                      from="${validSubChilds}"
                                       optionValue="${{it.name ? it.getSubscriber().dropdownNamingConvention(institution) : it.label}}"
                                       optionKey="${{"com.k_int.kbplus.Subscription:" + it.id}}"
                                       noSelection="${['' : message(code:'default.select.choose.label')]}"
-                                      value="${'com.k_int.kbplus.Subscription:' + contextSub.id}"
+                                      value="${'com.k_int.kbplus.Subscription:' + costItem?.sub?.id}"
                                       onchange="onSubscriptionUpdate()"
                             />
                         </g:else>
@@ -466,7 +469,12 @@
                             if($("[name='newLicenseeTarget']").length > 0 && $("[name='newLicenseeTarget']").val() === '') {
                                 alert("${message(code:'financials.newCosts.noSubscriptionError')}") //continue here: a confirm if the consortial user wants really to attach cost items to the parent subscription
                             }
-                            else $(this).unbind('submit').submit();
+                            else {
+                                if($("[name='newLicenseeTarget").val().indexOf('forParent') > -1) {
+                                    if(confirm("${message(code:'financials.newCosts.confirmForParent')}")) $(this).unbind('submit').submit();
+                                }
+                                else $(this).unbind('submit').submit();
+                            }
                         }
                     }
                     else {

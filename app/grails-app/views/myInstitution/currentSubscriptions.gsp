@@ -448,7 +448,12 @@
                     </td>
                     <td>
                         <g:link mapping="subfinance" controller="finance" action="index" params="${[sub:s.id]}">
-                            ${CostItem.findAllBySubInListAndOwnerAndCostItemStatusNotEqual(Subscription.findAllByInstanceOf(s), institution, RDStore.COST_ITEM_DELETED)?.size()}
+                            <g:if test="${contextService.getOrg().getCustomerType() in ['ORG_CONSORTIUM', 'ORG_CONSORTIUM_SURVEY']}">
+                                ${CostItem.findAllBySubInListAndOwnerAndCostItemStatusNotEqual(Subscription.findAllByInstanceOf(s), institution, RDStore.COST_ITEM_DELETED)?.size()}
+                            </g:if>
+                            <g:elseif test="${contextService.getOrg().getCustomerType() == 'ORG_INST_COLLECTIVE'}">
+                                ${CostItem.findAllBySubInListAndOwnerAndCostItemStatusNotEqualAndIsVisibleForSubscriber(Subscription.findAllByInstanceOf(s), institution, RDStore.COST_ITEM_DELETED,true)?.size()}
+                            </g:elseif>
                         </g:link>
                     </td>
                 </g:if>

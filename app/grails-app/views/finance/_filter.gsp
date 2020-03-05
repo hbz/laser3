@@ -7,7 +7,7 @@
     <g:render template="../templates/filter/javascript" />
     <semui:filter showFilterButton="true">
         <%
-            def formUrl = [controller: 'myInstitution', action: 'finance']
+            Map<String,Object> formUrl = [controller: 'myInstitution', action: 'finance']
             SimpleDateFormat sdf = de.laser.helper.DateUtil.getSDF_NoTime()
             if (fixedSubscription) {
                 formUrl = [mapping: 'subfinance', params: [sub: "${fixedSubscription?.id}"]]
@@ -18,13 +18,13 @@
 
             <div class="three fields">
                 <%-- this test includes the check if the filter is called for a subscription consortia --%>
-                <g:if test="${subscriptionParticipants && !showView.equals("consAtSubscr")}">
+                <g:if test="${subMembers}">
                     <div class="field">
                         <label for="filterSubMembers">
-                            <g:message code="${subMembersLabel}"/>
+                            <g:message code="${subMemberLabel}"/>
                         </label>
-                        <g:select id="filterSubMembers" name="filterSubMembers" multiple="" value="${filterPreset?.filterSubMembers}"
-                                  class="ui fluid search dropdown" from="${subscriptionParticipants}" optionKey="id" optionValue="name"
+                        <g:select id="filterSubMembers" name="filterSubMembers" multiple="" value="${filterPresets?.filterSubMembers}"
+                                  class="ui fluid search dropdown" from="${subMembers}" optionKey="id" optionValue="${{it.getSubscriber().dropdownNamingConvention(institution)}}"
                                   noSelection="${['':message(code:'default.select.all.label')]}"
                         />
                     </div>
@@ -32,7 +32,7 @@
                 <div class="field">
                     <label>${message(code:'default.myProvider.label')}</label>
                     <div class="ui multiple search selection dropdown newFilter" id="filterSubProviders">
-                        <input type="hidden" name="filterSubProviders" value="${params.filterSubProviders}">
+                        <input type="hidden" name="filterSubProviders" value="${filterPresets?.filterSubProviders}">
                         <i class="dropdown icon"></i>
                         <input type="text" class="search">
                         <div class="default text"><g:message code="default.select.all.label"/></div>
@@ -48,7 +48,7 @@
                                       from="${ RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_STATUS) }"
                                       optionKey="id"
                                       optionValue="value"
-                                      value="${params.filterSubStatus}"
+                                      value="${filerPresets?.filterSubStatus}"
                                       noSelection="${['' : message(code:'default.select.all.label')]}"
                             onchange="setupDropdowns()"
                         />
@@ -59,13 +59,13 @@
             <div class="three fields">
                 <div class="field">
                     <label for="filterCITitle">${message(code:'financials.newCosts.costTitle')}</label>
-                    <input id="filterCITitle" name="filterCITitle" type="text" value="${params.filterCITitle}"/>
+                    <input id="filterCITitle" name="filterCITitle" type="text" value="${filterPresets?.filterCITitle}"/>
                 </div>
                 <g:if test="${!fixedSubscription}">
                     <div class="field fieldcontain"><!--NEW -->
                         <label>${message(code:'default.subscription.label')}</label>
                         <div class="ui search selection multiple dropdown newFilter" id="filterCISub">
-                            <input type="hidden" name="filterCISub" value="${params.filterCISub}">
+                            <input type="hidden" name="filterCISub" value="${filterPresets?.filterCISub}">
                             <i class="dropdown icon"></i>
                             <input type="text" class="search">
                             <div class="default text"><g:message code="default.select.all.label"/></div>
@@ -75,7 +75,7 @@
                 <div class="field fieldcontain"><!--NEW -->
                     <label>${message(code:'package.label')}</label>
                     <div class="ui search selection multiple dropdown newFilter" id="filterCISPkg">
-                        <input type="hidden" name="filterCISPkg" value="${params.filterCISPkg}">
+                        <input type="hidden" name="filterCISPkg" value="${filterPresets?.filterCISPkg}">
                         <i class="dropdown icon"></i>
                         <input type="text" class="search">
                         <div class="default text"><g:message code="default.select.all.label"/></div>
@@ -86,7 +86,7 @@
                               optionValue="text"
                               optionKey="id"
                               noSelection="['':message(code:'default.select.all.label')]"
-                              value="${params.filterCISPkg}" />--%>
+                              value="${filterPresets?.filterCISPkg}" />--%>
                 </div>
             </div><!-- .three -->
 
@@ -94,7 +94,7 @@
                 <div class="field">
                     <label>${message(code:'financials.budgetCode')}</label>
                     <div class="ui search selection multiple dropdown newFilter" id="filterCIBudgetCode">
-                        <input type="hidden" name="filterCIBudgetCode" value="${params.filterCIBudgetCode}">
+                        <input type="hidden" name="filterCIBudgetCode" value="${filterPresets?.filterCIBudgetCode}">
                         <i class="dropdown icon"></i>
                         <input type="text" class="search">
                         <div class="default text"><g:message code="default.select.all.label"/></div>
@@ -103,14 +103,14 @@
                               name="filterCIBudgetCode"
                               from=""
                               optionKey="id" optionValue="value"
-                              value="${params.filterCIBudgetCode}"
+                              value="${filterPresets?.filterCIBudgetCode}"
                               noSelection="${['':message(code:'default.select.all.label')]}" /> --%>
                 </div>
 
                 <div class="field">
                     <label>${message(code:'financials.invoice_number')}</label>
                     <div class="ui search selection dropdown newFilter" id="filterCIInvoiceNumber">
-                        <input type="hidden" name="filterCIInvoiceNumber" value="${params.filterCIInvoiceNumber}">
+                        <input type="hidden" name="filterCIInvoiceNumber" value="${filterPresets?.filterCIInvoiceNumber}">
                         <i class="dropdown icon"></i>
                         <input type="text" class="search">
                         <div class="default text"><g:message code="default.select.all.label"/></div>
@@ -118,14 +118,14 @@
                     <%--<g:select id="filterCIInvoiceNumber" class="ui dropdown search selection"
                               name="filterCIInvoiceNumber"
                               from=""
-                              value="${params.filterCIInvoiceNumber}"
+                              value="${filterPresets?.filterCIInvoiceNumber}"
                               noSelection="${['':message(code:'default.select.all.label')]}" />--%>
                 </div>
 
                 <div class="field">
                     <label>${message(code:'financials.order_number')}</label>
                     <div class="ui search selection dropdown newFilter" id="filterCIOrderNumber">
-                        <input type="hidden" name="filterCIOrderNumber" value="${params.filterCIOrderNumber}">
+                        <input type="hidden" name="filterCIOrderNumber" value="${filterPresets?.filterCIOrderNumber}">
                         <i class="dropdown icon"></i>
                         <input type="text" class="search">
                         <div class="default text"><g:message code="default.select.all.label"/></div>
@@ -133,7 +133,7 @@
                     <%--<g:select id="filterCIOrderNumber" class="ui dropdown search selection"
                               name="filterCIOrderNumber"
                               from=""
-                              value="${params.filterCIOrderNumber}"
+                              value="${filterPresets?.filterCIOrderNumber}"
                               noSelection="${['':message(code:'default.select.all.label')]}" />--%>
                 </div>
             </div><!-- .three -->
@@ -142,7 +142,7 @@
                 <div class="field fieldcontain">
                     <label>${message(code:'financials.referenceCodes')}</label>
                     <div class="ui search selection dropdown newFilter" id="filterCIReference">
-                        <input type="hidden" name="filterCIReference" value="${params.filterCIReference}">
+                        <input type="hidden" name="filterCIReference" value="${filterPresets?.filterCIReference}">
                         <i class="dropdown icon"></i>
                         <input type="text" class="search">
                         <div class="default text"><g:message code="default.select.all.label"/></div>
@@ -150,7 +150,7 @@
                     <%--<g:select id="filterCIReference" class="ui dropdown search selection"
                               name="filterCIReference"
                               from=""
-                              value="${params.filterCIReference}"
+                              value="${filterPresets?.filterCIReference}"
                               noSelection="${['':message(code:'default.select.all.label')]}" />--%>
                 </div>
 
@@ -161,7 +161,7 @@
                                   from="${RefdataCategory.getAllRefdataValues(RDConstants.COST_ITEM_ELEMENT)}"
                                   optionKey="${{it.class.getName() + ":" + it.id}}"
                                   optionValue="value"
-                                  value="${params.filterCIElement}"
+                                  value="${filterPresets?.filterCIElement}"
                                   noSelection="${['':message(code:'default.select.all.label')]}"/>
                 </div>
 
@@ -172,7 +172,7 @@
                                   from="${[de.laser.helper.RDStore.GENERIC_NULL_VALUE]+RefdataCategory.getAllRefdataValues(RDConstants.COST_ITEM_STATUS)-de.laser.helper.RDStore.COST_ITEM_DELETED}"
                                   optionKey="${{it.class.getName() + ":" + it.id}}"
                                   optionValue="value"
-                                  value="${params.filterCIStatus}"
+                                  value="${filterPresets?.filterCIStatus}"
                                   noSelection="${['':message(code:'default.select.all.label')]}"/>
                 </div>
             </div><!-- .three -->
@@ -180,34 +180,34 @@
             <div class="three fields">
                 <div class="field">
                     <semui:datepicker label="financials.financialYear" id="filterCIFinancialYear" name="filterCIFinancialYear" placeholder="filter.placeholder"
-                                      value="${params.filterCIFinancialYear}"/>
+                                      value="${filterPresets?.filterCIFinancialYear}"/>
                 </div>
 
                 <div class="field">
                     <semui:datepicker label="financials.invoice_from" id="filterCIInvoiceFrom" name="filterCIInvoiceFrom" placeholder="filter.placeholder"
-                                      value="${params.filterCIInvoiceFrom}"/>
+                                      value="${filterPresets?.filterCIInvoiceFrom}"/>
                 </div>
 
                 <div class="field">
                     <semui:datepicker label="financials.invoice_to" id="filterCIInvoiceTo" name="filterCIInvoiceTo" placeholder="filter.placeholder"
-                                      value="${params.filterCIInvoiceTo}"/>
+                                      value="${filterPresets?.filterCIInvoiceTo}"/>
                 </div>
             </div>
 
             <div class="three fields">
                 <div class="field">
                     <semui:datepicker label="default.valid_on.label" id="filterCIValidOn" name="filterCIValidOn" placeholder="filter.placeholder"
-                                      value="${params.filterCIValidOn}"/>
+                                      value="${filterPresets?.filterCIValidOn}"/>
                 </div>
 
                 <div class="field">
                     <semui:datepicker label="financials.paid_from" id="filterCIPaidFrom" name="filterCIPaidFrom" placeholder="filter.placeholder"
-                                      value="${params.filterCIPaidFrom}"/>
+                                      value="${filterPresets?.filterCIPaidFrom}"/>
                 </div>
 
                 <div class="field">
                     <semui:datepicker label="financials.paid_to" id="filterCIPaidTo" name="filterCIPaidTo" placeholder="filter.placeholder"
-                                      value="${params.filterCIPaidTo}"/>
+                                      value="${filterPresets?.filterCIPaidTo}"/>
                 </div>
             </div>
 
@@ -220,7 +220,7 @@
                               from="${costItemCategory}"
                               optionKey="${{it.class.getName() + ":" + it.id}}"
                               optionValue="value"
-                              value="${params.filterCICategory}"
+                              value="${filterPresets?.filterCICategory}"
                               noSelection="${['':message(code:'default.select.all.label')]}"/>
                 --%>
                     <label for="filterCITaxType">${message(code:'financials.newCosts.taxTypeAndRate')}</label>
@@ -238,12 +238,12 @@
                               from="${taxTypesList}"
                               optionKey="${{it.key}}"
                               optionValue="${{it.value}}"
-                              value="${params.filterCITaxType}"
+                              value="${filterPresets?.filterCITaxType}"
                               noSelection="${['':message(code:'default.select.all.label')]}"/>
                 </div>
                 <div class="field"></div>
                 <div class="field la-field-right-aligned">
-                    <a href="${request.forwardURI}" class="ui reset primary button">${message(code:'default.button.reset.label')}</a>
+                    <a href="${request.forwardURI}?reset=true" class="ui reset primary button">${message(code:'default.button.reset.label')}</a>
                     <input type="submit" name="submit" class="ui secondary button" value="${message(code:'default.button.filter.label')}">
                 </div>
             </div>
