@@ -44,7 +44,6 @@ class AjaxController {
     def controlledListService
     def dataConsistencyService
     def accessService
-    def messageSource
     def debugService
 
     def refdata_config = [
@@ -309,7 +308,7 @@ class AjaxController {
         // Allow user to set a rel to null be calling set rel ''
         target[params.name] = null
           if ( ! target.save(flush: true)){
-              Map r = [status:"error", msg: message(code: 'default.save.error.message')]
+              Map r = [status:"error", msg: message(code: 'default.save.error.general.message')]
               render r as JSON
               return
           }

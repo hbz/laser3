@@ -26,29 +26,6 @@ class Org
         extends AbstractBaseDomain
         implements DeleteFlag {
 
-//    static enum REGION {
-//        REGIONS_DE_BADEN_WURTEMBERG     (RefdataCategory.findByDescIlike('regions.de'),
-//                                        RefdataValue.getByValueAndCategory('Baden-Wurttemberg', 'regions.de')),
-//        REGIONS_DE_BAVARIA              (RefdataCategory.findByDescIlike('regions.de'),
-//                                        RefdataValue.getByValueAndCategory('Bavaria', 'regions.de')),
-//        REGIONS_DE_BERLIN               (RefdataCategory.findByDescIlike('regions.de'),
-//                                        RefdataValue.getByValueAndCategory('Berlin', 'regions.de')),
-//
-//        REGIONS_CH_AG                   (RefdataCategory.findByDescIlike('regions.ch'),
-//                                        RefdataValue.getByValueAndCategory('AG', 'regions.ch')),
-//
-//        REGIONS_AT_LOWER_AUSTRIA        (RefdataCategory.findByDescIlike('regions.at'),
-//                                        RefdataValue.getByValueAndCategory('lower.austria', 'regions.at'))
-//
-//        REGION(RefdataCategory country, RefdataValue region) {
-//            this.country = country
-//            this.region = region
-//        }
-//
-//        public RefdataCategory country
-//        public RefdataValue region
-//    }
-
     @Transient
     def sessionFactory // TODO: ugliest HOTFIX ever
     @Transient
