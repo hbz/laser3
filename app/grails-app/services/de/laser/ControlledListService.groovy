@@ -141,7 +141,6 @@ class ControlledListService {
      */
     Map getIssueEntitlements(Map params) {
         Org org = contextService.getOrg()
-        SimpleDateFormat sdf = DateUtil.getSDF_NoTime()
         LinkedHashMap issueEntitlements = [results:[]]
         //build up set of subscriptions which are owned by the current organisation or instances of such - or filter for a given subscription
         String filter = 'in (select distinct o.sub from OrgRole as o where o.org = :org and o.roleType in ( :orgRoles ) and o.sub.status = :current ) '
@@ -209,7 +208,6 @@ class ControlledListService {
      * @return a map containing a sorted list of issue entitlements, an empty one if no issue entitlements match the filter
      */
     Map getSubscriptionPackages(Map params) {
-        SimpleDateFormat sdf = DateUtil.getSDF_NoTime()
         Org org = contextService.getOrg()
         LinkedHashMap result = [results:[]]
         String queryString = 'select distinct s, orgRoles.org.sortname from Subscription s join s.orgRelations orgRoles where orgRoles.org = :org and orgRoles.roleType in ( :orgRoles )'

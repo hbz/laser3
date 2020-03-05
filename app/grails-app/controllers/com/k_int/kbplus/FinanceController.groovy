@@ -696,28 +696,9 @@ class FinanceController extends AbstractDebugController {
 
     @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_EDITOR") })
-    Object editCostItem() {
-        Map<String, Object> result = financeService.setResultGenerics(params)
-        result.costItem = CostItem.get(params.id)
-
-        if(result.dataToDisplay.stream().anyMatch(['cons','consAtSubscr'].&contains)) {
-            result.licenseeLabel = message(code: 'consortium.member')
-            result.licenseeTargetLabel = message(code:'financials.newCosts.consortia.licenseeTargetLabel')
-        }
-        else if(result.dataToDisplay.stream().anyMatch(['coll','collAtSubscr'])) {
-            result.licenseeLabel = message(code:'collective.member')
-            result.licenseeTargetLabel = message(code:'financials.newCosts.collective.licenseeTargetLabel')
-        }
-        result.modalText = message(code: 'financials.editCost')
-        result.submitButtonLabel = message(code:'default.button.save.label')
-        result.formUrl = g.createLink(controller:'finance', action:'createOrUpdateCostItem', params:[showView: params.showView])
-        render(template: "/finance/ajaxModal", model: result)
-    }
-
-    @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")')
-    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_EDITOR") })
     Object newCostItem() {
         Map<String, Object> result = financeService.setResultGenerics(params)
+        result.putAll(financeService.setAdditionalGenericEditResults(result))
         result.modalText = message(code:'financials.addNewCost')
         result.submitButtonLabel = message(code:'default.button.create_new.label')
         if(result.dataToDisplay.stream().anyMatch(['cons','consAtSubscr'].&contains)) {
@@ -734,9 +715,35 @@ class FinanceController extends AbstractDebugController {
 
     @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_EDITOR") })
+    Object editCostItem() {
+        Map<String, Object> result = financeService.setResultGenerics(params)
+        result.costItem = CostItem.get(params.id)
+        result.putAll(financeService.setAdditionalGenericEditResults(result))
+
+        if(result.dataToDisplay.stream().anyMatch(['cons','consAtSubscr'].&contains)) {
+            result.licenseeLabel = message(code: 'consortium.member')
+            result.licenseeTargetLabel = message(code:'financials.newCosts.consortia.licenseeTargetLabel')
+        }
+        else if(result.dataToDisplay.stream().anyMatch(['coll','collAtSubscr'])) {
+            result.licenseeLabel = message(code:'collective.member')
+            result.licenseeTargetLabel = message(code:'financials.newCosts.collective.licenseeTargetLabel')
+        }
+        if(!result.dataToDisplay.contains('subscr')) {
+            if(costItem.taxKey)
+                result.taxKey = costItem.taxKey
+        }
+        result.modalText = message(code: 'financials.editCost')
+        result.submitButtonLabel = message(code:'default.button.save.label')
+        result.formUrl = g.createLink(controller:'finance', action:'createOrUpdateCostItem', params:[showView: params.showView])
+        render(template: "/finance/ajaxModal", model: result)
+    }
+
+    @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")')
+    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_EDITOR") })
     Object copyCostItem() {
         Map<String, Object> result = financeService.setResultGenerics(params)
         result.costItem = CostItem.get(params.id)
+        result.putAll(financeService.setAdditionalGenericEditResults(result))
         result.modalText = message(code: 'financials.costItem.copy.tooltip')
         result.submitButtonLabel = message(code:'default.button.copy.label')
         result.copyCostsFromConsortia = result.costItem.owner == result.costItem.subscription?.getConsortia()

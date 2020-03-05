@@ -1063,7 +1063,6 @@ class FinanceService {
             throw new FinancialDataException("Context user not loaded successfully!")
         if(!(result.institution instanceof Org))
             throw new FinancialDataException("Context org not loaded successfully!")
-        result.putAll(setEditVars(result.institution))
         if(params.sub || params.id) {
             String subId
             if(params.sub)
@@ -1202,6 +1201,24 @@ class FinanceService {
             result.showView = params.showView
             if(params.offset)
                 result.offsets["${params.showView}Offset"] = Integer.parseInt(params.offset)
+        }
+
+        result
+    }
+
+    Map<String,Object> setAdditionalGenericEditResults(Map configMap) {
+        Map<String,Object> result = setEditVars(configMap.institution)
+        Subscription contextSub
+        if(configMap.costItem?.sub instanceof Subscription)
+            contextSub = (Subscription) configMap.costItem.sub
+        else if(configMap.subscription instanceof Subscription)
+            contextSub = (Subscription) configMap.subscription
+        if(contextSub) {
+            result.contextSub = contextSub
+            if(configMap.showView in ["cons","coll"]){
+                //department subscriptions
+                result.validSubChilds = Subscription.findAllByInstanceOf(contextSub)
+            }
         }
 
         result

@@ -147,7 +147,7 @@
                         <label><g:message code="financials.newCosts.totalAmount"/></label>
                         <input title="${g.message(code:'financials.newCosts.totalAmount')}" type="text" readonly="readonly"
                                name="newCostInBillingCurrencyAfterTax" id="newCostInBillingCurrencyAfterTax"
-                               value="<g:formatNumber number="${fromConsortia ? 0.0 : costItem?.costInBillingCurrencyAfterTax}" minFractionDigits="2" maxFractionDigits="2" />" />
+                               value="<g:formatNumber number="${copyCostsFromConsortia ? 0.0 : costItem?.costInBillingCurrencyAfterTax}" minFractionDigits="2" maxFractionDigits="2" />" />
 
                     </div><!-- .field -->
                     <!-- TODO -->
@@ -173,11 +173,6 @@
                     </div><!-- .field -->
                     <div class="field">
                         <label>${message(code:'financials.newCosts.taxTypeAndRate')}</label>
-                        <%
-                            CostItem.TAX_TYPES taxKey
-                            if(costItem?.taxKey && tab != "subscr")
-                                taxKey = costItem.taxKey
-                        %>
                         <g:select class="ui dropdown calc" name="newTaxRate" title="TaxRate"
                               from="${CostItem.TAX_TYPES}"
                               optionKey="${{it.taxType.class.name+":"+it.taxType.id+"§"+it.taxRate}}"
@@ -233,13 +228,13 @@
                                value="${'com.k_int.kbplus.Subscription:' + costItem.sub.id}" />
                     </g:if>
                     <g:else>
-                        <g:if test="${sub}">
+                        <g:if test="${subscription}">
                             <input class="la-full-width"
                                    readonly='readonly'
-                                   value="${sub.getName()}" />
+                                   value="${subscription.getName()}" />
                             <input name="newSubscription" id="pickedSubscription"
                                    type="hidden"
-                                   value="${'com.k_int.kbplus.Subscription:' + sub.id}" />
+                                   value="${sub.id}" />
                         </g:if>
                         <g:else>
                             <div class="ui search selection dropdown newCISelect" id="newSubscription">
@@ -248,51 +243,26 @@
                                 <input type="text" class="search">
                                 <div class="default text">${message(code:'financials.newCosts.newLicence')}</div>
                             </div>
-                            <%--<input name="newSubscription" id="newSubscription" class="la-full-width"
-                                   data-subfilter=""
-                                   placeholder="${message(code:'financials.newCosts.newLicence')}" />--%>
                         </g:else>
                     </g:else>
                 </div><!-- .field -->
 
                 <div class="field">
-
-                    <g:if test="${(sub || (costItem && costItem.sub))}">
-                        <%
-                            def validSubChilds
-                            Subscription contextSub
-                            if(costItem && costItem.sub) contextSub = costItem.sub
-                            else if(sub) contextSub = sub
-                            if(tab == "cons" && contextSub.instanceOf) {
-                                //consortia member subscriptions
-                                validSubChilds = Subscription.findAllByInstanceOf(contextSub.instanceOf)
-                            }
-                            else if(tab in ["cons","coll","collAsSubscr"]){
-                                //department subscriptions
-                                validSubChilds = Subscription.findAllByInstanceOf(contextSub)
-                            }
-                            else if(tab == "subscr" && contextSub.getCollective()?.id == org.id) {
-                                //consortial member subscription for collective
-                                validSubChilds = Subscription.findAllByInstanceOf(contextSub)
-                            }
-                        %>
-
-                        <g:if test="${validSubChilds}">
-                            <label>${licenseeLabel}</label>
-                            <g:if test="${contextSub && contextSub.instanceOf()}">
-                                <input class="la-full-width" readonly="readonly" value="${modalText}" />
-                            </g:if>
-                            <g:else>
-                                <g:select name="newLicenseeTarget" id="newLicenseeTarget" class="ui dropdown search"
-                                          from="${[[id:'forConsortia', label:message(code:'financials.newCosts.forParentSubscription')], [id:'forAllSubscribers', label:licenseeTargetLabel]] + validSubChilds.sort{it.getSubscriber().sortname}}"
-                                          optionValue="${{it?.name ? it.getSubscriber().dropdownNamingConvention(org) : it.label}}"
-                                          optionKey="${{"com.k_int.kbplus.Subscription:" + it?.id}}"
-                                          noSelection="${['' : message(code:'default.select.choose.label')]}"
-                                          value="${'com.k_int.kbplus.Subscription:' + contextSub.id}"
-                                          onchange="onSubscriptionUpdate()"
-                                />
-                            </g:else>
+                    <g:if test="${validSubChilds}">
+                        <label>${licenseeLabel}</label>
+                        <g:if test="${contextSub && contextSub.instanceOf()}">
+                            <input class="la-full-width" readonly="readonly" value="${contextSub.getSubscriber().sortname}" />
                         </g:if>
+                        <g:else>
+                            <g:select name="newLicenseeTarget" id="newLicenseeTarget" class="ui dropdown search"
+                                      from="${[[id:'forConsortia', label:message(code:'financials.newCosts.forParentSubscription')], [id:'forAllSubscribers', label:licenseeTargetLabel]] + validSubChilds.sort{it.getSubscriber().sortname}}"
+                                      optionValue="${{it.name ? it.getSubscriber().dropdownNamingConvention(institution) : it.label}}"
+                                      optionKey="${{"com.k_int.kbplus.Subscription:" + it.id}}"
+                                      noSelection="${['' : message(code:'default.select.choose.label')]}"
+                                      value="${'com.k_int.kbplus.Subscription:' + contextSub.id}"
+                                      onchange="onSubscriptionUpdate()"
+                            />
+                        </g:else>
                     </g:if>
 
                 </div><!-- .field -->
@@ -303,7 +273,7 @@
                         <g:if test="${costItem?.sub}">
                             <g:select name="newPackage" id="newPackage" class="ui dropdown search"
                                       from="${[{}] + costItem?.sub?.packages}"
-                                      optionValue="${{it?.pkg?.name ?: 'Keine Verknüpfung'}}"
+                                      optionValue="${{it?.pkg?.name ?: message(code:'financials.newCosts.noPackageLink')}}"
                                       optionKey="${{"com.k_int.kbplus.SubscriptionPackage:" + it?.id}}"
                                       noSelection="${['' : message(code:'default.select.choose.label')]}"
                                       value="${'com.k_int.kbplus.SubscriptionPackage:' + costItem?.subPkg?.id}" />
