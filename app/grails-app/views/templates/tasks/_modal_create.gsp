@@ -75,7 +75,8 @@
                           optionKey="${{it.optionKey}}"
                           optionValue="${{it.optionValue}}"
                           value="${ownobj?.id}"
-                          noSelection="[null: '']"/>
+                          noSelection="${['' : message(code:'default.select.choose.label')]}"
+                />
 
             </div>
 
@@ -90,7 +91,8 @@
                           optionValue="${{it.optionValue}}"
                           value="${ownobj?.id}"
                           class="ui dropdown search many-to-one"
-                          noSelection="[null: '']"/>
+                          noSelection="${['' : message(code:'default.select.choose.label')]}"
+                />
             </div>
 
             <div id="pkgdiv" class="field fieldcontain ${hasErrors(bean: taskInstance, field: 'pkg', 'error')} required">
@@ -98,7 +100,10 @@
                     <g:message code="task.linkto" /><g:message code="package.label" />
                 </label>
                 <g:select id="pkg" name="pkg" from="${validPackages}" optionKey="id" value="${ownobj?.id}"
-                          class="ui dropdown search many-to-one" required="" noSelection="[null: '']"/>
+                          class="ui dropdown search many-to-one"
+                          required=""
+                          noSelection="${['' : message(code:'default.select.choose.label')]}"
+                />
             </div>
 
             <div id="subscriptiondiv"
@@ -113,7 +118,8 @@
                           optionKey="${{it.optionKey}}"
                           optionValue="${{it.optionValue}}"
                           value="${ownobj?.id}"
-                          noSelection="[null: '']"/>
+                          noSelection="${['' : message(code:'default.select.choose.label')]}"
+                />
 
             </div>
 

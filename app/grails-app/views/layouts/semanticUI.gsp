@@ -140,28 +140,28 @@
                     <g:if test="${accessService.checkPerm('ORG_BASIC_MEMBER')}">
                         <div class="divider"></div>
                         <g:if test="${grailsApplication.config.featureSurvey}">
-                        <semui:securedMainNavItem affiliation="INST_EDITOR" controller="myInstitution" action="currentSurveys" message="menu.my.surveys" />
+                        <semui:securedMainNavItem affiliation="INST_USER" controller="myInstitution" action="currentSurveys" message="menu.my.surveys" />
                         </g:if>
                         <g:else>
-                            <semui:securedMainNavItem orgPerm="FAKE" affiliation="INST_EDITOR" controller="myInstitution" action="" message="menu.my.surveys" />
+                            <semui:securedMainNavItem orgPerm="FAKE" affiliation="INST_USER" controller="myInstitution" action="" message="menu.my.surveys" />
                         </g:else>
                     </g:if>
 
                             <g:if test="${accessService.checkPerm('ORG_CONSORTIUM')}">
                                 <g:if test="${grailsApplication.config.featureSurvey}">
                                 <div class="divider"></div>
-                                <semui:securedMainNavItem affiliation="INST_EDITOR" controller="survey" action="currentSurveysConsortia" message="menu.my.surveys" />
+                                <semui:securedMainNavItem affiliation="INST_USER" controller="survey" action="currentSurveysConsortia" message="menu.my.surveys" />
                                 </g:if>
                                 <g:else>
                                 <div class="divider"></div>
-                                <semui:securedMainNavItem orgPerm="FAKE" affiliation="INST_EDITOR" controller="myInstitution" action="" message="menu.my.surveys" />
+                                <semui:securedMainNavItem orgPerm="FAKE" affiliation="INST_USER" controller="myInstitution" action="" message="menu.my.surveys" />
                                 </g:else>
 
                                 <div class="divider"></div>
 
                                 <semui:securedMainNavItem affiliation="INST_USER" controller="myInstitution" specRole="ROLE_ADMIN,ROLE_ORG_EDITOR" action="manageMembers" message="menu.my.consortia" />
 
-                                <semui:securedMainNavItem affiliation="INST_EDITOR" controller="myInstitution" specRole="ROLE_ADMIN" action="manageConsortiaSubscriptions" message="menu.my.consortiaSubscriptions" />
+                                <semui:securedMainNavItem affiliation="INST_USER" controller="myInstitution" specRole="ROLE_ADMIN" action="manageConsortiaSubscriptions" message="menu.my.consortiaSubscriptions" />
                             </g:if>
                             <g:elseif test="${accessService.checkPerm('ORG_INST_COLLECTIVE')}">
                                 <div class="divider"></div>
@@ -211,12 +211,12 @@
 
                             <semui:securedMainNavItem affiliation="INST_USER" controller="myInstitution" action="changes" message="menu.institutions.todo" />
 
-                            <semui:securedMainNavItem orgPerm="ORG_INST,ORG_CONSORTIUM" affiliation="INST_EDITOR" controller="myInstitution" action="managePrivateProperties" message="menu.institutions.manage_props" />
+                            <semui:securedMainNavItem orgPerm="ORG_INST,ORG_CONSORTIUM" affiliation="INST_USER" controller="myInstitution" action="managePrivateProperties" message="menu.institutions.manage_props" />
 
                             <semui:securedMainNavItem affiliation="INST_USER" controller="myInstitution" action="finance" message="menu.institutions.finance" />
 
-                            <semui:securedMainNavItem orgPerm="ORG_INST,ORG_CONSORTIUM" affiliation="INST_EDITOR" specRole="ROLE_ADMIN" controller="myInstitution" action="budgetCodes" message="menu.institutions.budgetCodes" />
-                            <semui:securedMainNavItem orgPerm="ORG_INST,ORG_CONSORTIUM" affiliation="INST_EDITOR" specRole="ROLE_ADMIN" controller="costConfiguration" action="index" message="menu.institutions.costConfiguration" />
+                            <semui:securedMainNavItem orgPerm="ORG_INST,ORG_CONSORTIUM" affiliation="INST_USER" specRole="ROLE_ADMIN" controller="myInstitution" action="budgetCodes" message="menu.institutions.budgetCodes" />
+                            <semui:securedMainNavItem orgPerm="ORG_INST,ORG_CONSORTIUM" affiliation="INST_USER" specRole="ROLE_ADMIN" controller="costConfiguration" action="index" message="menu.institutions.costConfiguration" />
                             <%--<semui:securedMainNavItemDisabled message="menu.institutions.financeImport" />--%>
                             <semui:securedMainNavItem orgPerm="ORG_INST,ORG_CONSORTIUM" affiliation="INST_EDITOR" specRole="ROLE_ADMIN" controller="myInstitution" action="financeImport" message="menu.institutions.financeImport" />
 
@@ -260,7 +260,6 @@
                             <sec:ifAnyGranted roles="ROLE_ADMIN">
                                 <div class="divider"></div>
 
-                                <g:link class="item" controller="announcement" action="index">${message(code:'menu.datamanager.ann')}</g:link>
                                 <g:link class="item" controller="package" action="list">${message(code:'menu.datamanager.searchPackages')}</g:link>
                                 <g:link class="item" controller="platform" action="list">${message(code:'menu.datamanager.searchPlatforms')}</g:link>
 
@@ -344,10 +343,12 @@
                                 <i class="dropdown icon"></i>
 
                                 <div class="menu">
+                                    <g:link class="item" controller="dev" action="index">Barrierefreiheits-Tests</g:link>
                                     <g:link class="item" controller="dev" action="frontend">Frontend</g:link>
                                 </div>
                             </div>
 
+                            <g:link class="item" controller="admin" action="systemAnnouncements">${message(code:'menu.admin.announcements')}</g:link>
                             <g:link class="item" controller="admin" action="serverDifferences">${message(code:'menu.admin.serverDifferences')}</g:link>
 
                             <div class="divider"></div>
@@ -567,7 +568,6 @@
 
                                 <g:link class="item" controller="profile" action="index">${message(code:'menu.user.profile')}</g:link>
                                 <g:link class="item" controller="profile" action="help">${message(code:'menu.user.help')}</g:link>
-                                <g:link class="item" controller="profile" action="errorReport">${message(code:'menu.user.errorReport')}</g:link>
                                 <g:link class="item" controller="profile" action="dsgvo">${message(code:'privacyNotice')}</g:link>
 
                                 <div class="divider"></div>
@@ -613,7 +613,7 @@
                         </g:if>
                     </div>
 
-                        <g:if test="${(controllerName=='yoda' && actionName=='frontend' ) || (controllerName=='subscription'|| controllerName=='license') && actionName=='show' && editable}">
+                        <g:if test="${(controllerName=='dev' && actionName=='frontend' ) || (controllerName=='subscription'|| controllerName=='license') && actionName=='show' && editable}">
                             <div class="item">
                                 <g:if test="${user?.getSettingsValue(UserSettings.KEYS.SHOW_EDIT_MODE, RefdataValue.getByValueAndCategory('Yes', RDConstants.Y_N))?.value=='Yes'}">
                                     <button class="ui icon toggle active  button la-toggle-controls la-popup-tooltip la-delay" data-content="${message(code:'statusbar.showButtons.tooltip')}" data-position="bottom right">
@@ -628,7 +628,7 @@
                             </div>
                         </g:if>
 
-                        <g:if test="${(controllerName=='yoda' && actionName=='frontend' ) || (controllerName=='subscription'|| controllerName=='license') && actionName=='show'}">
+                        <g:if test="${(controllerName=='dev' && actionName=='frontend' ) || (controllerName=='subscription'|| controllerName=='license') && actionName=='show'}">
 
                             <r:script>
                                 $(function(){

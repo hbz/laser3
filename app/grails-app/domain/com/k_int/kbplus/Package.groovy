@@ -60,7 +60,7 @@ class Package
     @RefdataAnnotation(cat = RDConstants.PACKAGE_FIXED)
     RefdataValue fixed
 
-    boolean isPublic
+    boolean isPublic = false
 
     @RefdataAnnotation(cat = RDConstants.PACKAGE_SCOPE)
     RefdataValue packageScope

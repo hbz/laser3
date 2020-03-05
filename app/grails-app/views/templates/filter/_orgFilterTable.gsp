@@ -135,7 +135,7 @@
                 </g:form>
             </th>
         </g:if>
-        <g:if test="${tmplConfigItem.equalsIgnoreCase('surveyCostItem')}">
+        <g:if test="${tmplConfigItem.equalsIgnoreCase('surveyCostItem') && surveyInfo.type == de.laser.helper.RDStore.SURVEY_TYPE_RENEWAL }">
             <th>
                 ${message(code: 'surveyCostItems.label')}
             </th>
@@ -609,7 +609,7 @@
 
             </td>
         </g:if>
-        <g:if test="${tmplConfigItem.equalsIgnoreCase('surveyCostItem')}">
+        <g:if test="${tmplConfigItem.equalsIgnoreCase('surveyCostItem') && surveyInfo.type == de.laser.helper.RDStore.SURVEY_TYPE_RENEWAL}">
             <td class="x">
 
                 <g:if test="${orgSub?.isCurrentMultiYearSubscriptionNew()}">
@@ -630,7 +630,7 @@
                         (<g:formatNumber number="${costItem?.costInBillingCurrency}" minFractionDigits="2"
                                          maxFractionDigits="2" type="number"/>)
 
-                        ${(costItem?.billingCurrency?.getI10n('value')?.split('-')).first()}
+                            ${(costItem?.billingCurrency?.getI10n('value')?.split('-')).first()}
 
                             <br>
                         <g:if test="${costItem?.startDate || costItem?.endDate}">
@@ -701,7 +701,7 @@
     </script>
 
 </g:if>
-<g:if test="${tmplConfigShow?.contains('surveyCostItem')}">
+<g:if test="${tmplConfigShow?.contains('surveyCostItem') && surveyInfo.type == de.laser.helper.RDStore.SURVEY_TYPE_RENEWAL}">
     <r:script>
    $('table[id^=costTable] .x .trigger-modal').on('click', function(e) {
                     e.preventDefault();

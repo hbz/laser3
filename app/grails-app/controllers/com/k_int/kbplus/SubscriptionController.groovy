@@ -394,29 +394,45 @@ class SubscriptionController extends AbstractDebugController {
 
             } else {
 
-                def numOfPCs = result.package.removePackagePendingChanges([result.subscription.id], false)
+                int numOfPCs = result.package.removePackagePendingChanges([result.subscription.id], false)
 
-                def numOfIEs = IssueEntitlement.executeQuery("select ie.id ${query}", queryParams).size()
-                def conflict_item_pkg = [name: "${g.message(code: "subscription.details.unlink.linkedPackage")}", details: [['link': createLink(controller: 'package', action: 'show', id: result.package.id), 'text': result.package.name]], action: [actionRequired: false, text: "${g.message(code: "subscription.details.unlink.linkedPackage.action")}"]]
+                int numOfIEs = IssueEntitlement.executeQuery("select ie.id ${query}", queryParams).size()
+                def conflict_item_pkg =
+                        [name: "${g.message(code: "subscription.details.unlink.linkedPackage")}",
+                         details: [['link': createLink(controller: 'package', action: 'show', id: result.package.id), 'text': result.package.name]],
+                         action: [actionRequired: false, text: "${g.message(code: "subscription.details.unlink.unlink.singular")}"]
+                        ]
                 def conflicts_list = [conflict_item_pkg]
 
                 if (numOfIEs > 0) {
-                    def conflict_item_ie = [name: "${g.message(code: "subscription.details.unlink.packageIEs")}", details: [['text': "${g.message(code: "subscription.details.unlink.packageIEs.numbers")} " + numOfIEs]], action: [actionRequired: false, text: "${g.message(code: "subscription.details.unlink.packageIEs.action")}"]]
+                    def conflict_item_ie =
+                            [name: "${g.message(code: "subscription.details.unlink.packageIEs")}",
+                             details: [[number: numOfIEs,'text': "${g.message(code: "default.ie")}"]],
+                             action: [actionRequired: false, text: "${g.message(code: "subscription.details.unlink.delete.plural")}"]
+                            ]
                     conflicts_list += conflict_item_ie
                 }
                 if (numOfPCs > 0) {
-                    def conflict_item_pc = [name: "${g.message(code: "subscription.details.unlink.pendingChanges")}", details: [['text': "${g.message(code: "subscription.details.unlink.pendingChanges.numbers")} " + numOfPCs]], action: [actionRequired: false, text: "${g.message(code: "subscription.details.unlink.pendingChanges.numbers.action")}"]]
+                    def conflict_item_pc =
+                            [name: "${g.message(code: "subscription.details.unlink.pendingChanges")}",
+                             details: [[number: numOfPCs, 'text': "${g.message(code: "default.pendingchanges")}"]],
+                             action: [actionRequired: false, text: "${g.message(code: "subscription.details.unlink.delete.plural")}"]
+                            ]
                     conflicts_list += conflict_item_pc
                 }
 
                 SubscriptionPackage sp = SubscriptionPackage.findByPkgAndSubscription(result.package, result.subscription)
                 List accessPointLinks = []
                 if (sp.oapls){
-                    Map detailItem = ['text':"${g.message(code: "subscription.details.unlink.accessPoints.numbers")} ${sp.oapls.size()}"]
+                    Map detailItem = [number: sp.oapls.size(),'text':"${g.message(code: "default.accessPoints")}"]
                     accessPointLinks.add(detailItem)
                 }
                 if (accessPointLinks) {
-                    def conflict_item_oap = [name: "${g.message(code: "subscription.details.unlink.accessPoints")}", details: accessPointLinks, action: [actionRequired: false, text: "${g.message(code: "subscription.details.unlink.accessPoints.numbers.action")}"]]
+                    def conflict_item_oap =
+                            [name: "${g.message(code: "subscription.details.unlink.accessPoints")}",
+                             details: accessPointLinks,
+                             action: [actionRequired: false, text: "${g.message(code: "subscription.details.unlink.delete.plural")}"]
+                            ]
                     conflicts_list += conflict_item_oap
                 }
 
@@ -426,41 +442,54 @@ class SubscriptionController extends AbstractDebugController {
                         accessService.checkPerm("ORG_INST_COLLECTIVE,ORG_CONSORTIUM") && (result.subscription.instanceOf == null)){
 
                     List<Subscription> childSubs = Subscription.findAllByInstanceOf(result.subscription)
+                    if (childSubs) {
 
-                    List<SubscriptionPackage> spChildSubs = SubscriptionPackage.findAllByPkgAndSubscriptionInList(result.package, childSubs)
+                        List<SubscriptionPackage> spChildSubs = SubscriptionPackage.findAllByPkgAndSubscriptionInList(result.package, childSubs)
 
-                    String queryChildSubs = "from IssueEntitlement ie, Package pkg where ie.subscription in (:sub) and pkg.id =:pkg_id and ie.tipp in ( select tipp from TitleInstancePackagePlatform tipp where tipp.pkg.id = :pkg_id ) "
-                    Map queryParamChildSubs = [sub: childSubs, pkg_id: result.package.id]
+                        String queryChildSubs = "from IssueEntitlement ie, Package pkg where ie.subscription in (:sub) and pkg.id =:pkg_id and ie.tipp in ( select tipp from TitleInstancePackagePlatform tipp where tipp.pkg.id = :pkg_id ) "
+                        Map queryParamChildSubs = [sub: childSubs, pkg_id: result.package.id]
 
-                    def numOfPCsChildSubs = result.package.removePackagePendingChanges(childSubs.id, false)
+                        int numOfPCsChildSubs = result.package.removePackagePendingChanges(childSubs.id, false)
 
-                    List numOfIEsChildSubs = IssueEntitlement.executeQuery("select ie.id ${queryChildSubs}", queryParamChildSubs).size()
+                        int numOfIEsChildSubs = IssueEntitlement.executeQuery("select ie.id ${queryChildSubs}", queryParamChildSubs).size()
 
-                    if(spChildSubs.size() > 0) {
-                        Map conflict_item_pkgChildSubs = [name: "${g.message(code: "subscription.details.unlink.linkedPackageSubChild")}", details: [['text': "${g.message(code: "subscription.details.unlink.linkedPackageSubChild.numbers")} " + spChildSubs.size()]], action: [actionRequired: false, text: "${g.message(code: "subscription.details.unlink.linkedPackage.action")}"]]
-                        conflicts_list += conflict_item_pkgChildSubs
+                        if (spChildSubs.size() > 0) {
+                            Map conflict_item_pkgChildSubs = [
+                                    name   : "${g.message(code: "subscription.details.unlink.linkedPackageSubChild")}",
+                                    details: [[number: spChildSubs.size(), 'text': "${g.message(code: "subscription.details.unlink.linkedPackageSubChild")} "]],
+                                    action : [actionRequired: false, text: "${g.message(code: "subscription.details.unlink.delete.plural")}"]]
+                            conflicts_list += conflict_item_pkgChildSubs
+                        }
+
+                        if (numOfIEsChildSubs > 0) {
+                            Map conflict_item_ie = [
+                                    name   : "${g.message(code: "subscription.details.unlink.packageIEsSubChild")}",
+                                    details: [[number: numOfIEsChildSubs, 'text': "${g.message(code: "subscription.details.unlink.packageIEsSubChild")} "]],
+                                    action : [actionRequired: false, text: "${g.message(code: "subscription.details.unlink.delete.plural")}"]]
+                            conflicts_list += conflict_item_ie
+                        }
+                        if (numOfPCsChildSubs > 0) {
+                            Map conflict_item_pc = [
+                                    name   : "${g.message(code: "subscription.details.unlink.pendingChangesSubChild")}",
+                                    details: [[number: numOfPCsChildSubs, 'text': "${g.message(code: "subscription.details.unlink.pendingChangesSubChild")} "]],
+                                    action : [actionRequired: false, text: "${g.message(code: "subscription.details.unlink.delete.plural")}"]]
+                            conflicts_list += conflict_item_pc
+                        }
+
+
+                        List accessPointLinksChildSubs = []
+                        if (spChildSubs.oapls) {
+                            Map detailItem = [number: spChildSubs.oapls.size(), 'text': "${g.message(code: "subscription.details.unlink.accessPoints")} "]
+                            accessPointLinksChildSubs.add(detailItem)
+                        }
+                        if (accessPointLinksChildSubs) {
+                            Map conflict_item_oap = [
+                                    name   : "${g.message(code: "subscription.details.unlink.accessPoints")}",
+                                    details: accessPointLinksChildSubs,
+                                    action : [actionRequired: false, text: "${g.message(code: "subscription.details.unlink.delete.plural")}"]]
+                            conflicts_list += conflict_item_oap
+                        }
                     }
-
-                    if (numOfIEsChildSubs > 0) {
-                        Map conflict_item_ie = [name: "${g.message(code: "subscription.details.unlink.packageIEsSubChild")}", details: [['text': "${g.message(code: "subscription.details.unlink.packageIEsSubChild")} " + numOfIEsChildSubs]], action: [actionRequired: false, text: "${g.message(code: "subscription.details.unlink.packageIEs.action")}"]]
-                        conflicts_list += conflict_item_ie
-                    }
-                    if (numOfPCsChildSubs > 0) {
-                        Map conflict_item_pc = [name: "${g.message(code: "subscription.details.unlink.pendingChangesSubChild")}", details: [['text': "${g.message(code: "subscription.details.unlink.pendingChangesSubChild.numbers")} " + numOfPCsChildSubs]], action: [actionRequired: false, text: "${g.message(code: "subscription.details.unlink.pendingChanges.numbers.action")}"]]
-                        conflicts_list += conflict_item_pc
-                    }
-
-
-                    List accessPointLinksChildSubs = []
-                    if (spChildSubs.oapls){
-                        Map detailItem = ['text':"${g.message(code: "subscription.details.unlink.accessPoints.numbers")} ${spChildSubs.oapls.size()}"]
-                        accessPointLinksChildSubs.add(detailItem)
-                    }
-                    if (accessPointLinksChildSubs) {
-                        Map conflict_item_oap = [name: "${g.message(code: "subscription.details.unlink.accessPoints")}", details: accessPointLinksChildSubs, action: [actionRequired: false, text: "${g.message(code: "subscription.details.unlink.accessPoints.numbers.action")}"]]
-                        conflicts_list += conflict_item_oap
-                    }
-
 
                 }
 
@@ -1277,16 +1306,16 @@ class SubscriptionController extends AbstractDebugController {
         result.propList = PropertyDefinition.findAllPublicAndPrivateOrgProp(contextService.org)
 
         //if (params.showDeleted == 'Y') {
-
-        def validSubChilds = Subscription.findAllByInstanceOf(result.subscriptionInstance)
-        //Sortieren
+        Set<RefdataValue> subscriberRoleTypes = [OR_SUBSCRIBER, OR_SUBSCRIBER_CONS, OR_SUBSCRIBER_CONS_HIDDEN, OR_SUBSCRIBER_COLLECTIVE]
+        result.validSubChilds = Subscription.executeQuery('select s from Subscription s join s.orgRelations oo where s.instanceOf = :parent and oo.roleType in :subscriberRoleTypes order by oo.org.sortname asc, oo.org.name asc',[parent:result.subscriptionInstance,subscriberRoleTypes:subscriberRoleTypes])
+        /*Sortieren --> an DB abgegeben
         result.validSubChilds = validSubChilds.sort { a, b ->
             def sa = a.getSubscriber()
             def sb = b.getSubscriber()
             (sa.sortname ?: sa.name).compareTo((sb.sortname ?: sb.name))
-        }
+        }*/
         ArrayList<Long> filteredOrgIds = getOrgIdsForFilter()
-        result.filteredSubChilds = new ArrayList<Subscription>()
+        result.filteredSubChilds = []
         result.validSubChilds.each { sub ->
             List<Org> subscr = sub.getAllSubscribers()
             def filteredSubscr = []
@@ -1337,9 +1366,9 @@ class SubscriptionController extends AbstractDebugController {
         result.filterSet = params.filterSet ? true : false
 
         SimpleDateFormat sdf = new SimpleDateFormat('yyyy-MM-dd')
-        def datetoday = sdf.format(new Date(System.currentTimeMillis()))
-        def message = escapeService.escapeString(result.subscription.name) + "_" + g.message(code: 'subscriptionDetails.members.members') + "_" + datetoday
-        def orgs = []
+        String datetoday = sdf.format(new Date(System.currentTimeMillis()))
+        String filename = escapeService.escapeString(result.subscription.name) + "_" + g.message(code: 'subscriptionDetails.members.members') + "_" + datetoday
+        Set<Map<String,Object>> orgs = []
         if (params.exportXLS || params.format) {
             Map allContacts = Person.getPublicAndPrivateEmailByFunc('General contact person',result.institution)
             Map publicContacts = allContacts.publicContacts
@@ -1347,7 +1376,7 @@ class SubscriptionController extends AbstractDebugController {
             result.filteredSubChilds.each { row ->
                 Subscription subChild = (Subscription) row.sub
                 row.orgs.each { subscr ->
-                    def org = [:]
+                    Map<String,Object> org = [:]
                     org.name = subscr.name
                     org.sortname = subscr.sortname
                     org.shortname = subscr.shortname
@@ -1356,8 +1385,8 @@ class SubscriptionController extends AbstractDebugController {
                     org.funderType = subscr.funderType
                     org.federalState = subscr.federalState
                     org.country = subscr.country
-                    org.startDate = subChild.startDate
-                    org.endDate = subChild.endDate
+                    org.startDate = subChild.startDate ? subChild.startDate.format(g.message(code:'default.date.format.notime')) : ''
+                    org.endDate = subChild.endDate ? subChild.endDate.format(g.message(code:'default.date.format.notime')) : ''
                     org.status = subChild.status
                     org.customProperties = subscr.customProperties
                     org.privateProperties = subscr.privateProperties
@@ -1373,7 +1402,7 @@ class SubscriptionController extends AbstractDebugController {
         }
 
         if (params.exportXLS) {
-            exportOrg(orgs, message, true, 'xlsx')
+            exportOrg(orgs, filename, true, 'xlsx')
             return
         } else {
             withFormat {
@@ -1381,11 +1410,11 @@ class SubscriptionController extends AbstractDebugController {
                     result
                 }
                 csv {
-                    response.setHeader("Content-disposition", "attachment; filename=\"${message}.csv\"")
+                    response.setHeader("Content-disposition", "attachment; filename=\"${filename}.csv\"")
                     response.contentType = "text/csv"
                     ServletOutputStream out = response.outputStream
                     out.withWriter { writer ->
-                        writer.write((String) exportOrg(orgs, message, true, "csv"))
+                        writer.write((String) exportOrg(orgs, filename, true, "csv"))
                     }
                     out.close()
                 }
@@ -1415,8 +1444,10 @@ class SubscriptionController extends AbstractDebugController {
        result
     }
 
-    @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
-    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
+    @DebugAnnotation(perm = "ORG_CONSORTIUM", affil = "INST_EDITOR")
+    @Secured(closure = {
+        ctx.accessService.checkPermAffiliation("ORG_CONSORTIUM", "INST_EDITOR")
+    })
     def surveysConsortia() {
         def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
         if (!result) {
@@ -5597,10 +5628,10 @@ class SubscriptionController extends AbstractDebugController {
                     }
 
                     cell = row.createCell(cellnum++)
-                    cell.setCellValue("${org.startDate ?: ''}")
+                    cell.setCellValue(org.startDate) //null check done already in calling method
 
                     cell = row.createCell(cellnum++)
-                    cell.setCellValue("${org.endDate ?: ''}")
+                    cell.setCellValue(org.endDate) //null check done already in calling method
 
                     cell = row.createCell(cellnum++)
                     cell.setCellValue(org.status?.getI10n('value') ?: ' ')
@@ -5687,9 +5718,9 @@ class SubscriptionController extends AbstractDebugController {
                         row.add(org.country?.getI10n('value') ?: ' ')
                     }
                     //startDate
-                    row.add(org.startDate ?: '')
+                    row.add(org.startDate) //null check already done in calling method
                     //endDate
-                    row.add(org.endDate ?: '')
+                    row.add(org.endDate) //null check already done in calling method
                     //status
                     row.add(org.status?.getI10n('value') ?: ' ')
                     //generalContacts

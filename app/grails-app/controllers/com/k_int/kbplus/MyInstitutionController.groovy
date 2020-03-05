@@ -7,6 +7,8 @@ import com.k_int.properties.PropertyDefinition
 import com.k_int.properties.PropertyDefinitionGroup
 import com.k_int.properties.PropertyDefinitionGroupItem
 import de.laser.DashboardDueDate
+import de.laser.SystemAnnouncement
+
 //import de.laser.TaskService //unused for quite a long time
 import de.laser.controller.AbstractDebugController
 import de.laser.helper.*
@@ -2317,18 +2319,20 @@ AND EXISTS (
 
         // announcements
 
-        def dcCheck = (new Date()).minus(periodInDays)
+//        def dcCheck = (new Date()).minus(periodInDays)
+//
+//        result.recentAnnouncements = Doc.executeQuery(
+//                "select d from Doc d where d.type.value = :type and d.dateCreated >= :dcCheck",
+//                [type: 'system.announcement', dcCheck: dcCheck],
+//                [max: result.max, offset: result.announcementOffset, sort: 'dateCreated', order: 'asc']
+//        )
+//        result.recentAnnouncementsCount = Doc.executeQuery(
+//                "select d from Doc d where d.type.value = :type and d.dateCreated >= :dcCheck",
+//                [type: 'system.announcement', dcCheck: dcCheck]).size()
 
-        /*
-        result.recentAnnouncements = Doc.executeQuery(
-                "select d from Doc d where d.type.value = :type and d.dateCreated >= :dcCheck",
-                [type: 'Announcement', dcCheck: dcCheck],
-                [max: result.max,offset: result.announcementOffset, sort: 'dateCreated', order: 'asc']
-        )
-        result.recentAnnouncementsCount = Doc.executeQuery(
-                "select d from Doc d where d.type.value = :type and d.dateCreated >= :dcCheck",
-                [type: 'Announcement', dcCheck: dcCheck]).size()
-        */
+        // systemAnnouncements
+
+        result.systemAnnouncements = SystemAnnouncement.getPublished(periodInDays)
 
         // tasks
 
@@ -2703,7 +2707,7 @@ AND EXISTS (
         def surveyResults = SurveyResult.findAllByParticipantAndSurveyConfigInList(result.institution, result.surveyInfo.surveyConfigs).sort { it?.surveyConfig?.configOrder }
         result.editable = surveyService.isEditableSurvey(result.institution, result.surveyInfo)
 
-        result.surveyResults = surveyResults.groupBy {it?.surveyConfig?.id}
+        result.surveyResults = (result.surveyInfo.surveyConfigs[0].type == "GeneralSurvey") ? surveyResults : surveyResults.groupBy {it?.surveyConfig?.id}
 
         def tmpList = SurveyResult.findAllByParticipantAndSurveyConfigInList(result.institution, result.surveyInfo.surveyConfigs)
         if (tmpList) {
@@ -2776,7 +2780,7 @@ AND EXISTS (
         }
 
         result.editable = surveyService.isEditableSurvey(result.institution, result.surveyInfo)
-        result.consCostTransfer = true
+
 
         result
     }
@@ -2853,9 +2857,11 @@ AND EXISTS (
             redirect(url: request.getHeader('referer'))
         }
 
-        if(params.surveyConfigID && params.issueEntitlementsSurvey){
+        SurveyInfo surveyInfo = SurveyInfo.get(params.id)
+        SurveyConfig surveyConfig = SurveyConfig.get(params.surveyConfigID)
 
-            def surveyConfig = SurveyConfig.get(params.surveyConfigID)
+        if(surveyConfig && surveyConfig.pickAndChoose){
+
             def surveyOrg = SurveyOrg.findByOrgAndSurveyConfig(result.institution, surveyConfig)
 
             def ies = subscriptionService.getIssueEntitlementsUnderConsideration(surveyConfig.subscription?.getDerivedSubscriptionBySubscribers(result.institution))
@@ -2882,14 +2888,17 @@ AND EXISTS (
                 flash.error = message(code: 'renewEntitlementsWithSurvey.submitNotSuccessEmptyIEs')
             }
         }
-        if(params.subscriptionSurvey){
+        else{
             List<SurveyResult> surveyResults = SurveyResult.findAllByParticipantAndSurveyConfigInList(result.institution, SurveyInfo.get(params.id).surveyConfigs)
 
             boolean allResultHaveValue = true
-            surveyResults.each { surre ->
-                SurveyOrg surorg = SurveyOrg.findBySurveyConfigAndOrg(surre.surveyConfig, result.institution)
-                if (!surre.isResultProcessed() && !surorg.existsMultiYearTerm())
-                    allResultHaveValue = false
+            //Verbindlich??|
+            if(SurveyInfo.get(params.id).isMandatory) {
+                surveyResults.each { surre ->
+                    SurveyOrg surorg = SurveyOrg.findBySurveyConfigAndOrg(surre.surveyConfig, result.institution)
+                    if (!surre.isResultProcessed() && !surorg.existsMultiYearTerm())
+                        allResultHaveValue = false
+                }
             }
             if (allResultHaveValue) {
                 surveyResults.each {
@@ -3117,12 +3126,12 @@ AND EXISTS (
         result
       }
 
-    @DebugAnnotation(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_EDITOR", specRole="ROLE_ADMIN")
+    @DebugAnnotation(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_USER", specRole="ROLE_ADMIN")
     @Secured(closure = {
-        ctx.accessService.checkPermAffiliationX("ORG_INST,ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN")
+        ctx.accessService.checkPermAffiliationX("ORG_INST,ORG_CONSORTIUM", "INST_USER", "ROLE_ADMIN")
     })
-    def budgetCodes() {
-        def result = setResultGenerics()
+    Map<String, Object> budgetCodes() {
+        Map<String, Object> result = setResultGenerics()
 
         result.editable = accessService.checkMinUserOrgRole(result.user, contextService.getOrg(), 'INST_EDITOR') || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')
 
@@ -3409,11 +3418,11 @@ AND EXISTS (
         }
     }
 
-    @DebugAnnotation(perm="ORG_CONSORTIUM", affil="INST_EDITOR", specRole="ROLE_ADMIN")
-    @Secured(closure = { ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN") })
+    @DebugAnnotation(perm="ORG_CONSORTIUM", affil="INST_USER", specRole="ROLE_ADMIN")
+    @Secured(closure = { ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM", "INST_USER", "ROLE_ADMIN") })
     def manageConsortiaSubscriptions() {
 
-        def result = setResultGenerics()
+        Map<String,Object> result = setResultGenerics()
 
         DebugUtil du = new DebugUtil()
         du.setBenchmark('filterService')
@@ -3891,13 +3900,13 @@ AND EXISTS (
         result
     }
 
-    @DebugAnnotation(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_EDITOR")
+    @DebugAnnotation(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_USER")
     @Secured(closure = {
-        ctx.accessService.checkPermAffiliation("ORG_INST,ORG_CONSORTIUM", "INST_EDITOR")
+        ctx.accessService.checkPermAffiliation("ORG_INST,ORG_CONSORTIUM", "INST_USER")
     })
-    def managePropertyGroups() {
-        def result = setResultGenerics()
-        result.editable = true // true, because action is protected
+    Map<String,Object> managePropertyGroups() {
+        Map<String,Object> result = setResultGenerics()
+        //result.editable = true // true, because action is protected (is it? I doubt; INST_USERs have at least reading rights to this page!)
 
         if (params.cmd == 'new') {
             result.formUrl = g.createLink([controller: 'myInstitution', action: 'managePropertyGroups'])
@@ -3975,12 +3984,12 @@ AND EXISTS (
     /**
      * Display and manage PrivateProperties for this institution
      */
-    @DebugAnnotation(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_EDITOR")
+    @DebugAnnotation(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_USER")
     @Secured(closure = {
-        ctx.accessService.checkPermAffiliation("ORG_INST,ORG_CONSORTIUM", "INST_EDITOR")
+        ctx.accessService.checkPermAffiliation("ORG_INST,ORG_CONSORTIUM", "INST_USER")
     })
-    def managePrivateProperties() {
-        def result = setResultGenerics()
+    Map<String, Object> managePrivateProperties() {
+        Map<String, Object> result = setResultGenerics()
 
         if('add' == params.cmd) {
             flash.message = addPrivatePropertyDefinition(params)
@@ -3989,40 +3998,45 @@ AND EXISTS (
             flash.message = deletePrivatePropertyDefinition(params)
         }
 
-        def propDefs = [:]
+        Map<String, Set<PropertyDefinition>> propDefs = [:]
         PropertyDefinition.AVAILABLE_PRIVATE_DESCR.each { it ->
-            def itResult = PropertyDefinition.findAllByDescrAndTenant(it, result.institution, [sort: 'name']) // ONLY private properties!
-            propDefs << ["${it}": itResult]
+            Set<PropertyDefinition> itResult = PropertyDefinition.findAllByDescrAndTenant(it, result.institution, [sort: 'name']) // ONLY private properties!
+            propDefs[it] = itResult
         }
+
+        propDefs << ["Survey Property": SurveyProperty.findAllByOwner(result.institution, [sort: 'name'])]
+
         result.propertyDefinitions = propDefs
 
         def (usedPdList, attrMap) = propertyService.getUsageDetails()
         result.usedPdList = usedPdList
         result.attrMap = attrMap
-        result.editable = true // true, because action is protected
+        //result.editable = true // true, because action is protected (it is not, cf. ERMS-2132! INST_USERs do have reading access to this page!)
         result.language = LocaleContextHolder.getLocale().toString()
         result.propertyType = 'private'
         result
     }
 
-    @DebugAnnotation(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_EDITOR")
+    @DebugAnnotation(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_USER")
     @Secured(closure = {
-        ctx.accessService.checkPermAffiliation("ORG_INST,ORG_CONSORTIUM", "INST_EDITOR")
+        ctx.accessService.checkPermAffiliation("ORG_INST,ORG_CONSORTIUM", "INST_USER")
     })
-    def managePropertyDefinitions() {
-        def result = setResultGenerics()
+    Object managePropertyDefinitions() {
+        Map<String,Object> result = setResultGenerics()
 
-        def propDefs = [:]
+        Map<String,Set<PropertyDefinition>> propDefs = [:]
         PropertyDefinition.AVAILABLE_CUSTOM_DESCR.each { it ->
-            def itResult = PropertyDefinition.findAllByDescrAndTenant(it, null, [sort: 'name']) // NO private properties!
-            propDefs << ["${it}": itResult]
+            Set<PropertyDefinition> itResult = PropertyDefinition.findAllByDescrAndTenant(it, null, [sort: 'name']) // NO private properties!
+            propDefs[it] = itResult
         }
+
+        propDefs << ["Survey Property": SurveyProperty.findAllByOwner(null, [sort: 'name'])]
 
         def (usedPdList, attrMap) = propertyService.getUsageDetails()
         result.editable = false
         result.propertyDefinitions = propDefs
-        result.attrMap = attrMap
-        result.usedPdList = usedPdList
+        //result.attrMap = attrMap
+        //result.usedPdList = usedPdList
 
         result.language = LocaleContextHolder.getLocale().toString()
         result.propertyType = 'custom'
@@ -4136,7 +4150,7 @@ AND EXISTS (
         messages
     }
 
-    private setResultGenerics() {
+    private Map<String, Object> setResultGenerics() {
 
         Map<String, Object> result = [:]
         result.user         = contextService.getUser()
@@ -4304,7 +4318,6 @@ AND EXISTS (
         }
 
         result.editable = surveyService.isEditableSurvey(result.institution, result.surveyInfo)
-        result.consCostTransfer = true
 
         result
     }

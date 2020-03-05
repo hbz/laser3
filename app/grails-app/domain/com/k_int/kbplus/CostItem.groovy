@@ -40,7 +40,7 @@ class CostItem
     Order order
     Invoice invoice
 
-    Boolean isVisibleForSubscriber
+    Boolean isVisibleForSubscriber = false
 
     @RefdataAnnotation(cat = RDConstants.COST_ITEM_TYPE)
     RefdataValue type
@@ -63,7 +63,7 @@ class CostItem
     @RefdataAnnotation(cat = RDConstants.CURRENCY)
     RefdataValue billingCurrency
 
-    Boolean includeInSubscription //include in sub details page
+    //Boolean includeInSubscription include in sub details page - is in fact always true
 
     Double costInBillingCurrency   //The actual amount - new cost ex tax
     Double costInLocalCurrency     //local amount entered
@@ -74,7 +74,7 @@ class CostItem
     //... this construct:
     TAX_TYPES taxKey
 
-    Boolean finalCostRounding
+    Boolean finalCostRounding = false
 
     @Transient
     Double costInLocalCurrencyAfterTax
@@ -133,7 +133,7 @@ class CostItem
         invoiceDate                     column: 'ci_invoice_date'
         financialYear                   column: 'ci_financial_year'
         isVisibleForSubscriber          column: 'ci_is_viewable'
-        includeInSubscription column: 'ci_include_in_subscr'
+        //includeInSubscription column: 'ci_include_in_subscr'
         costItemCategory    column: 'ci_cat_rv_fk'
         costItemElement     column: 'ci_element_rv_fk'
         costItemElementConfiguration column: 'ci_element_configuration_rv_fk'
@@ -176,7 +176,7 @@ class CostItem
         invoiceDate(nullable: true, blank: false)
         financialYear(nullable: true, blank: false)
         isVisibleForSubscriber  (nullable: false, blank: false)
-        includeInSubscription   (nullable: false, blank: false)
+        //includeInSubscription   (nullable: false, blank: false)
         costItemCategory(nullable: true, blank: false)
         costItemStatus(nullable: true, blank: false)
         costItemElement(nullable: true, blank: false)

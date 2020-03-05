@@ -46,7 +46,7 @@ class SurveyConfig {
     boolean configFinish
     boolean costItemsFinish
     boolean evaluationFinish
-    boolean isSubscriptionSurveyFix
+    boolean subSurveyUseForTransfer
 
     String transferWorkflow
 
@@ -72,7 +72,7 @@ class SurveyConfig {
         scheduledEndDate (nullable: true, blank: false)
         internalComment(nullable: true, blank: false)
         evaluationFinish (nullable: true, blank: false)
-        isSubscriptionSurveyFix (nullable: true, blank: false)
+        subSurveyUseForTransfer (nullable: true, blank: false)
         surResults(nullable: true, blank: false)
         transferWorkflow (nullable: true, blank: false)
     }
@@ -89,7 +89,7 @@ class SurveyConfig {
         configFinish column: 'surconf_config_finish'
         costItemsFinish column: 'surconf_costitems_finish'
         evaluationFinish column: 'surconf_evaluation_finish'
-        isSubscriptionSurveyFix column: 'surconf_is_subscription_survey_fix'
+        subSurveyUseForTransfer column: 'surconf_is_subscription_survey_fix'
 
         scheduledStartDate column: 'surconf_scheduled_startdate'
         scheduledEndDate column: 'surconf_scheduled_enddate'

@@ -2,11 +2,39 @@
 
 **Ticket    Date    Branch      Author  Feature/Bug     Description/Keywords**
 
+2211    26.02.2020  hbz-dev     Andreas Feature     Bezeichnung Stammlizenz in Elternlizenz umgewandelt
+
+2204    26.02.2020  hbz-dev     Andreas Bug         Datumsausgabe in Export der Konsortialteilnehmer korrigiert
+
+2208    26.02.2020  hbz-dev     Andreas Bug         Bezeichnungen korrigiert
+
+2203    25.02.2020  hbz-dev     Moe     Feature     "Allgemeine Umfrage" erstellen
+
+2163    25.02.2020  hbz-dev     Moe     Feature     "Allgemeine Umfrage" erstellen
+
+--      25.02.2020  hbz-dev     Moe     Feature     Überarbeitung Umfrage
+
+2209    21.02.2020  hbz-dev     Andreas Bug         siehe ERMS-2207
+
+2207    21.02.2020  hbz-dev     Andreas Bug         OrgRole-Default-Wert für isPublic auf false gesetzt
+
+2132    21.02.2020  hbz-dev     Andreas Bug         Konzeptgemäße Abstufung auf INST_USER bei bestimmten Seiten
+
+2153    19.02.2020  hbz-dev     Andreas Feature     Ausblenden und Sichern der Fehlermeldung
+
+2119    19.02.2020  hbz-dev     Andreas Feature     Lizenz-Flag "Dauerhafter Zugriff" ("perpetual access") implementiert
+
+2142    19.02.2020  hbz-dev     Ingrid   Feature    WCAG-conforme Icons 
+
 2196    18.02.2020  hbz-dev     David   Feature     Persistente Bool-Attribute von Domainklassen überarbeiten
 
 2123    11.02.2020  hbz-dev     Moe     Feature     Pakete auch in Kindlizenzen entknüpfen
 
 2146    11.02.2020  hbz-dev     Moe     Feature     Bulk Prozesse bei Teilnehmerverwaltung ermöglichen
+
+2082    17.02.2020  hbz-dev     Anja    Feature     Sicherheitsabfrage ändern (Verknüpfungen aufheben)
+
+2156    14.02.2020  hbz-dev     Anja    Feature     Performance verbessern von _copyEmailaddresses
 
 2176    14.02.2020  hbz-dev     David   Feature     Admin-Sicht: Unterschiede zwischen Servern
 
@@ -26,11 +54,19 @@
 
 2173    12.02.2020  rc1.2       Moe     Bug         Unparseable date bei spotlightSearch
 
+2089    10.02.2020  hbz-dev     Ingrid  Bug         Filter bei Teilnehmer (Lizenz) lässt sich nicht einklappen
+
+1892    10.02.2020  hbz-dev     Ingrid  Feature     Nutzerfreundliche Anzeige von Vererbungs- und Geteilt-Info beim Verlängern einer Umfrage und beim Element in andere Lizenz kopieren
+
 2085    10.02.2020  hbz-dev     Moe     Feature     Sicherheitsabfrage Ent-/Verknüpfen von Konsorten
 
 2005    10.02.2020  hbz-dev     Moe     Feature     "Mehrjahreslaufzeit" auch für lokale Lizenzen?
 
 2162    10.02.2020  hbz-dev     David   Feature     Legacy Konstrukt "Transforms" entfernen
+
+2076    10.02.2020  hbz-dev     Ingrid  Feature     Erklärungstexte der Merkmale verbessern
+
+2058    10.02.2020  hbz-dev     Ingrid  Feature     Überarbeitung des Jahresringe-Navigation: Ausschalten der Pfeile, wenn keine weiter Lizenz vorhanden ist
 
 2160    10.02.2020  hbz-dev     David   Feature     Legacy "Reminder" entfernen
 
@@ -46,9 +82,15 @@
 
 2155    06.02.2020  rc1.2       David   Feature     SystemProfiler soll kontextabhängig alle Zugriffe erfassen
 
+2077    05.02.2020  hbz-dev     Ingrid  Feature     Fehlende Sicherheitsabfrage (Eigene Merkmale löschen)
+
+2078    05.02.2020  hbz-dev     Ingrid  Feature     Fehlende Sicherheitsabfrage hinzugefügt (Merkmalsgruppe löschen)
+
 2147    05.02.2020  hbz-dev     David   Feature     Refactoring: default-Werte bei message-Tags entfernen
 
 2014    05.02.2020  hbz-dev     David   Feature     Refactoring: Zugriff auf PropertyDefinitions nur über (name + descr)
+
+2149    05.02.2020  hbz-dev     Ingrid  Feature     View Kostenübersicht Eigende Kosten und Teilnehmerkosten: W3C valide
 
 --      05.02.2020  hbz-dev     Moe     Feature     Improve License Compare View
 
@@ -58,9 +100,11 @@
 
 2150    05.02.2020  hbz-dev     David   Bug         API: Referenzwerte mit Doppelpunkt werden als Map interpretiert
 
-2081    05.02.2020 hbz-dev      Anja    Feature     Fehlende Sicherheitsabfrage (Budgetcode löschen)
+2081    05.02.2020  hbz-dev     Anja    Feature     Fehlende Sicherheitsabfrage (Budgetcode löschen)
 
 2079    05.02.2020 hbz-dev      Anja    Feature     Fehlende Sicherheitsabfrage (Kontakt löschen)
+
+1742    03.02.2020  hbz-dev     Anja    Feature     Vorgänger/Nachfolgerlizenz in TN-Übersicht
 
 --      04.02.2020  rc1.2       David   Bug         Filter ausblenden: "Meine Plattformen"
 
@@ -115,6 +159,8 @@
 1947    23.01.2020  hbz-dev     Anja    Feature     Meine Lizenzen: neuer Filter für Konsortialstelle sichtbar für Einrichtungen
 
 --      23.01.2020  hbz-dev     David   Feature     Importing Refdata and PropertyDefinitions via CSV
+
+2046    22.01.2020  rc1.2       Ingrid    Feature     Hotfix: Verweis auf Erklärung des hbz zur Barrierefreiheit auf Startseite
 
 1943    22.01.2020  hbz-dev     Anja    Feature     Subskription-Elemente kopieren: Identifikator lassen sich nun auch kopieren
 

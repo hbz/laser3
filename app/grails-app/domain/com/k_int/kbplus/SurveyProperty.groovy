@@ -24,7 +24,7 @@ class SurveyProperty extends AbstractI10nTranslatable {
     Date lastUpdated
 
     // indicates this object is created via current bootstrap
-    boolean isHardData
+    boolean isHardData = false
 
     @Transient
     static def validTypes = [
@@ -124,7 +124,7 @@ class SurveyProperty extends AbstractI10nTranslatable {
         prop
     }
 
-    def getLocalizedType() {
+    String getLocalizedType() {
 
         def propertyType = this.getLocalizedValue(this.type)
         def refdataValues =[]

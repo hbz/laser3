@@ -343,9 +343,33 @@ class FilterService {
             params.filterSet = true
         }
 
+        if(params.mandatory) {
+            query << "surInfo.isMandatory = :mandatory"
+            queryParams << [mandatory: true]
+            params.filterSet = true
+        }
+
         if (params.provider) {
             query << "exists (select orgRole from OrgRole orgRole where orgRole.sub = surConfig.subscription and orgRole.org = :provider)"
             queryParams << [provider : Org.get(params.provider)]
+            params.filterSet = true
+        }
+
+        if (params.list('filterSub')) {
+            query << " surConfig.subscription.name in (:subs) "
+            queryParams << [subs : params.list('filterSub')]
+            params.filterSet = true
+        }
+
+        if (params.filterStatus != "" && params.list('filterStatus')) {
+            query << " surInfo.status.id in (:filterStatus) "
+            queryParams << [filterStatus : params.list('filterStatus').collect { Long.parseLong(it) }]
+            params.filterSet = true
+        }
+
+        if (params.filterPvd != "" && params.list('filterPvd')) {
+            query << "exists (select orgRole from OrgRole orgRole where orgRole.sub = surConfig.subscription and orgRole.org.id in (:filterPvd))"
+            queryParams << [filterPvd : params.list('filterPvd').collect { Long.parseLong(it) }]
             params.filterSet = true
         }
 

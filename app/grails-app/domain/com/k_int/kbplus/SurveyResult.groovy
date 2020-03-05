@@ -1,7 +1,6 @@
 package com.k_int.kbplus
 
 import com.k_int.kbplus.abstract_domain.AbstractProperty
-import com.k_int.kbplus.auth.User
 
 
 
@@ -12,7 +11,6 @@ class SurveyResult extends AbstractProperty {
 
     Org owner
     Org participant
-    User user
 
     Date finishDate
     Date startDate
@@ -26,20 +24,19 @@ class SurveyResult extends AbstractProperty {
     SurveyConfig surveyConfig
     ArrayList resultValues
 
-    boolean isRequired
+    boolean isRequired = false
 
     static constraints = {
         importFrom AbstractProperty
 
         finishDate (nullable:true, blank:false)
-        user (nullable:true, blank:false)
         comment (nullable:true, blank:false)
         resultValues (nullable:true, blank:false)
         startDate  (nullable:true, blank:false)
         endDate (nullable:true, blank:false)
         participantComment (nullable:true, blank:false)
         ownerComment (nullable:true, blank:false)
-        isRequired (nullable:true, blank:false)
+        isRequired (nullable:false, blank:false)
     }
 
     static mapping = {
@@ -60,7 +57,6 @@ class SurveyResult extends AbstractProperty {
 
         owner column: 'surre_owner_fk'
         participant column: 'surre_participant_fk'
-        user column: 'surre_user_fk'
 
         type column: 'surre_type_fk'
         surveyConfig column: 'surre_survey_config_fk'
