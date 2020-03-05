@@ -338,26 +338,34 @@ class LicenseController extends AbstractDebugController {
                     members << Combo.executeQuery("select c.fromOrg from Combo as c where c.toOrg = ? and c.fromOrg = ?", [result.institution, fo])
                 }
 
-                members.each { cm ->
+                Map<String, Object> copyParams = [
+                        lic_name: "${result.license.reference}",
+                        isSlaved: params.isSlaved,
+                        asOrgType: orgType,
+                        copyStartEnd: true
+                ]
 
+                if (params.cmd == 'generate') {
+                    copyParams['lic_name'] = copyParams['lic_name'] + " (Teilnehmervertrag)"
+
+                    licenseCopy = institutionsService.copyLicense(
+                            result.license, copyParams, InstitutionsService.CUSTOM_PROPERTIES_ONLY_INHERITED)
+                }
+
+                members.each { cm ->
                     def postfix = (members.size() > 1) ? 'Teilnehmervertrag' : (cm.get(0).shortname ?: cm.get(0).name)
 
                     if (result.license) {
-                        def licenseParams = [
-                                lic_name: "${result.license.reference} (${postfix})",
-                                isSlaved: params.isSlaved,
-                                asOrgType: orgType,
-                                copyStartEnd: true
-                        ]
+                        copyParams['lic_name'] = copyParams['lic_name'] + " (${postfix})"
 
                         if (params.generateSlavedLics == 'explicit') {
                             licenseCopy = institutionsService.copyLicense(
-                                    result.license, licenseParams, InstitutionsService.CUSTOM_PROPERTIES_ONLY_INHERITED)
+                                    result.license, copyParams, InstitutionsService.CUSTOM_PROPERTIES_ONLY_INHERITED)
                             // licenseCopy.sortableReference = subLicense.sortableReference
                         }
                         else if (params.generateSlavedLics == 'shared' && ! licenseCopy) {
                             licenseCopy = institutionsService.copyLicense(
-                                    result.license, licenseParams, InstitutionsService.CUSTOM_PROPERTIES_ONLY_INHERITED)
+                                    result.license, copyParams, InstitutionsService.CUSTOM_PROPERTIES_ONLY_INHERITED)
                         }
                         else if (params.generateSlavedLics == 'reference' && ! licenseCopy) {
                             licenseCopy = genericOIDService.resolveOID(params.generateSlavedLicsReference)
