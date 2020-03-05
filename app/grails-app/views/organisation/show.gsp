@@ -508,6 +508,5 @@
         var id = country.split(':')[1]
         $("*[id^=regions_]").hide();
         $("#regions_" + id).show();
-        // $("#regions_" + id).editable('setValue', null);
     });
 </r:script>
