@@ -711,10 +711,20 @@ from License as l where (
             log.debug('orgIds from cache')
         }
         else {
-            List<Org> providers = orgTypeService.getCurrentProviders( contextService.getOrg())
-            List<Org> agencies   = orgTypeService.getCurrentAgencies( contextService.getOrg())
-            providers.addAll(agencies)
-            orgIds = providers.collect{ it.id }.unique()
+
+            List<Org> matches = Org.executeQuery("""
+select distinct(or_pa.org) from OrgRole or_pa 
+join or_pa.sub sub 
+join sub.orgRelations or_sub where
+    ( sub = or_sub.sub and or_sub.org = :subOrg ) and
+    ( or_sub.roleType in (:subRoleTypes) ) and
+        ( or_pa.roleType in (:paRoleTypes) )
+""", [
+        subOrg:       contextService.getOrg(),
+        subRoleTypes: [RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIPTION_CONSORTIA, RDStore.OR_SUBSCRIBER_COLLECTIVE, RDStore.OR_SUBSCRIPTION_COLLECTIVE],
+        paRoleTypes:  [RDStore.OR_PROVIDER, RDStore.OR_AGENCY]
+    ])
+            orgIds = matches.collect{ it.id }
 
             cache.put('orgIds', orgIds)
         }
@@ -722,7 +732,6 @@ from License as l where (
         result.orgRoles    = [RDStore.OR_PROVIDER, RDStore.OR_AGENCY]
         result.propList    = PropertyDefinition.findAllPublicAndPrivateOrgProp(contextService.getOrg())
 
-//        result.user = User.get(springSecurityService.principal.id)
         params.sort = params.sort ?: " LOWER(o.shortname), LOWER(o.name)"
 		result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeTMP()
 		result.offset = params.offset ? Integer.parseInt(params.offset) : 0
