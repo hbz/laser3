@@ -1311,7 +1311,33 @@ class OrganisationController extends AbstractDebugController {
             redirect action: 'show', id: orgInstance.id
         }
     }
+    def addSubjectGroup()
+    {
+        Map<String, Object> result = [:]
+        result.user = User.get(springSecurityService.principal.id)
+        Org orgInstance = Org.get(params.org)
 
+        if (!orgInstance) {
+            flash.message = message(code: 'default.not.found.message', args: [message(code: 'org.label'), params.id])
+            redirect action: 'list'
+            return
+        }
+
+        if ( SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN,ROLE_ORG_EDITOR') ) {
+            result.editable = true
+        }
+        else {
+            result.editable = accessService.checkMinUserOrgRole(result.user, orgInstance, 'INST_ADM')
+        }
+
+        if(result.editable)
+        {
+            orgInstance.addToSubjectGroup(subjectGroup:  RefdataValue.get(params.subjectGroup))
+            orgInstance.save(flush: true)
+            flash.message = message(code: 'default.updated.message', args: [message(code: 'org.label'), orgInstance.name])
+            redirect action: 'show', id: orgInstance.id
+        }
+    }
     private Map setResultGenericsAndCheckAccess(params) {
         User user = User.get(springSecurityService.principal.id)
         Org org = contextService.org

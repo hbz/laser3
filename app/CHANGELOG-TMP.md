@@ -2,6 +2,12 @@
 
 **Ticket    Date    Branch      Author  Feature/Bug     Description/Keywords**
 
+1973    05.03.2020  hbz-dev     Anja    Feature     Überarbeitung des Einrichtungsprofils
+
+2231    03.03.2020  rc1.2       David   Feature     Performance: /myInstitution/currentProviders
+
+2230    03.03.2020  rc1.2       David   Bug         "Teilnehmervertrag erstellen" kann bei fehlenden Teilnehmern nicht angelegt werden
+
 2211    26.02.2020  hbz-dev     Andreas Feature     Bezeichnung Stammlizenz in Elternlizenz umgewandelt
 
 2204    26.02.2020  hbz-dev     Andreas Bug         Datumsausgabe in Export der Konsortialteilnehmer korrigiert

@@ -42,6 +42,7 @@ class Org
     String shortname
     String shortcode            // Used to generate friendly semantic URLs
     String sortname
+    String legalPatronName
     String url
     String urlGov
     //URL originEditUrl
@@ -72,6 +73,9 @@ class Org
     @RefdataAnnotation(cat = RDConstants.COUNTRY)
     RefdataValue country
 
+    @RefdataAnnotation(cat = '?')
+    RefdataValue region
+
     @RefdataAnnotation(cat = RDConstants.FEDERAL_STATE)
     RefdataValue federalState
 
@@ -80,6 +84,9 @@ class Org
 
     @RefdataAnnotation(cat = RDConstants.FUNDER_TYPE)
     RefdataValue funderType
+
+    @RefdataAnnotation(cat = RDConstants.FUNDER_HSK_TYPE)
+    RefdataValue funderHskType
 
     @RefdataAnnotation(cat = RDConstants.LIBRARY_TYPE)
     RefdataValue libraryType
@@ -107,6 +114,7 @@ class Org
 
     static hasMany = [
         ids:                Identifier,
+        subjectGroup:       OrgSubjectGroup,
         outgoingCombos:     Combo,
         incomingCombos:     Combo,
         links:              OrgRole,
@@ -133,8 +141,10 @@ class Org
               name          column:'org_name',      index:'org_name_idx'
          shortname          column:'org_shortname', index:'org_shortname_idx'
           sortname          column:'org_sortname',  index:'org_sortname_idx'
+   legalPatronName          column:'org_legal_patronname'
                url          column:'org_url'
             urlGov          column:'org_url_gov'
+      subjectGroup          column:'org_subject_group'
    //originEditUrl          column:'org_origin_edit_url'
            comment          column:'org_comment'
            ipRange          column:'org_ip_range'
@@ -146,9 +156,11 @@ class Org
             status          column:'org_status_rv_fk'
         membership          column:'org_membership'
            country          column:'org_country_rv_fk'
+            region          column:'org_region_rv_fk'
       federalState          column:'org_federal_state_rv_fk'
     libraryNetwork          column:'org_library_network_rv_fk'
         funderType          column:'org_funder_type_rv_fk'
+     funderHskType          column:'org_funder_hsk_type_rv_fk'
        libraryType          column:'org_library_type_rv_fk'
       importSource          column:'org_import_source'
     lastImportDate          column:'org_last_import_date'
@@ -183,8 +195,10 @@ class Org
                 name(nullable:true, blank:false, maxSize:255)
            shortname(nullable:true, blank:true, maxSize:255)
             sortname(nullable:true, blank:true, maxSize:255)
+     legalPatronName(nullable:true, blank:true, maxSize:255)
                  url(nullable:true, blank:true, maxSize:512)
               urlGov(nullable:true, blank:true, maxSize:512)
+        subjectGroup(nullable:true, blank: true)
      //originEditUrl(nullable:true, blank:false)
                impId(nullable:true, blank:true, maxSize:255)
              comment(nullable:true, blank:true, maxSize:2048)
@@ -196,9 +210,17 @@ class Org
               status(nullable:true, blank:true)
           membership(nullable:true, blank:true, maxSize:128)
              country(nullable:true, blank:true)
+              region(nullable:true, blank:true)
+//        , validator: {RefdataValue val, Org obj, errors ->
+//                  if ( ! val.owner.desc.endsWith(obj.country.toString().toLowerCase())){
+//                      errors.rejectValue('region', 'regionDoesNotBelongToSelectedCountry')
+//                      return false
+//                  }
+//              })
         federalState(nullable:true, blank:true)
       libraryNetwork(nullable:true, blank:true)
           funderType(nullable:true, blank:true)
+       funderHskType(nullable:true, blank:true)
          libraryType(nullable:true, blank:true)
         importSource(nullable:true, blank:true)
       lastImportDate(nullable:true, blank:true)

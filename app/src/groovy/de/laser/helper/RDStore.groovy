@@ -60,6 +60,10 @@ class RDStore {
     static final CONTACT_TYPE_PERSONAL      = getRefdataValue('Personal Contact', RDConstants.PERSON_CONTACT_TYPE)
     static final CONTACT_TYPE_FUNCTIONAL    = getRefdataValue('Functional Contact', RDConstants.PERSON_CONTACT_TYPE)
 
+    static final COUNTRY_DE                 = getRefdataValue('DE', RDConstants.COUNTRY)
+    static final COUNTRY_AT                 = getRefdataValue('AT', RDConstants.COUNTRY)
+    static final COUNTRY_CH                 = getRefdataValue('CH', RDConstants.COUNTRY)
+
     static final COST_ITEM_ACTUAL           = getRefdataValue('Actual', RDConstants.COST_ITEM_STATUS)
     static final COST_ITEM_DELETED          = getRefdataValue('Deleted', RDConstants.COST_ITEM_STATUS)
 
@@ -165,6 +169,10 @@ class RDStore {
     static final TIPP_STATUS_TRANSFERRED        = getRefdataValue('Transferred', RDConstants.TIPP_STATUS)
     static final TIPP_STATUS_UNKNOWN            = getRefdataValue('Unknown', RDConstants.TIPP_STATUS)
     static final TIPP_STATUS_DELETED            = getRefdataValue('Deleted',  RDConstants.TIPP_STATUS)
+
+    static final PRS_FUNC_RESPONSIBLE_ADMIN     = getRefdataValue('Responsible Admin', RDConstants.PERSON_FUNCTION)
+    static final PRS_FUNC_FUNC_BILLING_ADDRESS  = getRefdataValue('Functional Contact Billing Adress', RDConstants.PERSON_FUNCTION)
+    static final PRS_FUNC_TECHNICAL_SUPPORT     = getRefdataValue('Technichal Support', RDConstants.PERSON_FUNCTION)
 
     static final YN_YES         = getRefdataValue('Yes', RDConstants.Y_N)
     static final YN_NO          = getRefdataValue('No', RDConstants.Y_N)

@@ -30,8 +30,8 @@ class SurveyInfo {
     Date dateCreated
     Date lastUpdated
 
-    boolean isSubscriptionSurvey
-    boolean isMandatory
+    boolean isSubscriptionSurvey = false
+    boolean isMandatory = false
 
     static hasMany = [
             surveyConfigs: SurveyConfig
@@ -42,8 +42,8 @@ class SurveyInfo {
         endDate (nullable:true, blank:false)
         surveyConfigs (nullable:true, blank:false)
         comment (nullable:true, blank:true)
-        isSubscriptionSurvey  (nullable:true, blank:true)
-        isMandatory (nullable:true, blank:true)
+        isSubscriptionSurvey  (nullable:false, blank:false)
+        isMandatory           (nullable:false, blank:false)
 
     }
 
