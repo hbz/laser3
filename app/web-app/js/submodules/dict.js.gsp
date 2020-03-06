@@ -12,6 +12,9 @@
         'default.informations',
         'default.actions.label',
         'property.select.placeholder',
+        'property.select.searching',
+        'property.select.loadMore',
+        'property.select.noMatches',
         'confirm.dialog.delete',
         'confirm.dialog.unlink',
         'confirm.dialog.share',
@@ -23,6 +26,7 @@
     ]
 
 println """
+
 dict = {
     get: function (key, lang) {
         return dict[key][lang]

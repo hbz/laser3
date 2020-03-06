@@ -63,6 +63,8 @@
         </g:else>
         <semui:actionsDropdownItem controller="subscription" action="copyElementsIntoSubscription" params="${[id: params.id]}" message="myinst.copyElementsIntoSubscription" />
 
+        <div class="divider"></div>
+
         <g:if test="${editable}">
             <semui:actionsDropdownItem controller="subscription" action="linkPackage" params="${[id:params.id]}" message="subscription.details.linkPackage.label" />
             <g:if test="${subscriptionInstance.packages}">
@@ -91,9 +93,7 @@
             </g:if>
         </sec:ifAnyGranted>
 
-        <g:if test="${showConsortiaFunctions || showCollectiveFunctions || subscriptionInstance.administrative}">
-            <semui:actionsDropdownItem controller="subscription" action="addMembers" params="${[id:params.id]}" text="${message(code:'subscription.details.addMembers.label',args:menuArgs)}" />
-        </g:if>
+
 
         <g:set var="previousSubscriptions" value="${Links.findByLinkTypeAndObjectTypeAndDestination(RDStore.LINKTYPE_FOLLOWS,Subscription.class.name,subscriptionInstance.id)}"/>
         %{--<sec:ifAnyGranted roles="ROLE_ADMIN, ROLE_YODA">--}%
@@ -113,13 +113,14 @@
         %{--</sec:ifAnyGranted>--}%
 
         <g:if test="${subscriptionInstance.getCalculatedType() in [TemplateSupport.CALCULATED_TYPE_CONSORTIAL,TemplateSupport.CALCULATED_TYPE_COLLECTIVE,TemplateSupport.CALCULATED_TYPE_ADMINISTRATIVE] && accessService.checkPerm("ORG_INST_COLLECTIVE,ORG_CONSORTIUM")}">
+            <div class="divider"></div>
             <g:if test="${previousSubscriptions}">
                 <semui:actionsDropdownItemDisabled controller="subscription" action="renewSubscription_Consortia"
-                                                   params="${[id: params.id]}" tooltip="${message(code: 'subscription.details.renewals.isAlreadyRenewed')}" message="subscription.details.renewals.label"/>
+                                                   params="${[id: params.id]}" tooltip="${message(code: 'subscription.details.renewals.isAlreadyRenewed')}" message="subscription.details.renewalsConsortium.label"/>
             </g:if>
             <g:else>
                 <semui:actionsDropdownItem controller="subscription" action="renewSubscription_Consortia"
-                                       params="${[id: params.id]}" message="subscription.details.renewals.label"/>
+                                       params="${[id: params.id]}" message="subscription.details.renewalsConsortium.label"/>
             </g:else>
         </g:if>
         <g:if test ="${subscriptionInstance.getCalculatedType() == TemplateSupport.CALCULATED_TYPE_LOCAL}">
@@ -133,7 +134,17 @@
             </g:else>
         </g:if>
 
-          <g:if test="${subscriptionInstance.getCalculatedType() in [TemplateSupport.CALCULATED_TYPE_CONSORTIAL,TemplateSupport.CALCULATED_TYPE_COLLECTIVE,TemplateSupport.CALCULATED_TYPE_PARTICIPATION_AS_COLLECTIVE] && accessService.checkPerm("ORG_INST_COLLECTIVE,ORG_CONSORTIUM")}">
+        <g:if test="${accessService.checkPerm("ORG_CONSORTIUM_SURVEY") && showConsortiaFunctions && subscriptionInstance.instanceOf == null }">
+                <semui:actionsDropdownItem controller="survey" action="addSubtoSubscriptionSurvey"
+                                           params="${[sub:params.id]}" text="${message(code:'createSubscriptionSurvey.label')}" />
+        </g:if>
+
+
+        <g:if test="${showConsortiaFunctions || showCollectiveFunctions || subscriptionInstance.administrative}">
+            <semui:actionsDropdownItem controller="subscription" action="addMembers" params="${[id:params.id]}" text="${message(code:'subscription.details.addMembers.label',args:menuArgs)}" />
+        </g:if>
+
+        <g:if test="${subscriptionInstance.getCalculatedType() in [TemplateSupport.CALCULATED_TYPE_CONSORTIAL,TemplateSupport.CALCULATED_TYPE_COLLECTIVE,TemplateSupport.CALCULATED_TYPE_PARTICIPATION_AS_COLLECTIVE] && accessService.checkPerm("ORG_INST_COLLECTIVE,ORG_CONSORTIUM")}">
 
               <semui:actionsDropdownItem controller="subscription" action="linkLicenseMembers"
                                          params="${[id: params.id]}"

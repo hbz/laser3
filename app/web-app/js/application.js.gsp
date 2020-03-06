@@ -277,7 +277,10 @@ r2d2 = {
         });
 
         $(ctxSel + ' .xEditableManyToOne').editable({
-            tpl: '<select class="ui dropdown"></select>'
+            tpl: '<select class="ui dropdown"></select>',
+            success: function(response, newValue) {
+                if(response.status == 'error') return response.msg; //msg will be shown in editable form
+            }
         }).on('shown', function() {
             $(".table").trigger('reflow');
             $('.ui.dropdown')
@@ -459,7 +462,6 @@ r2d2 = {
             apiSettings: {
                 cache: false
             }
-            //showOnFocus: false
         });
 
         $(ctxSel + ' form').attr('autocomplete', 'off');
@@ -661,4 +663,5 @@ $(document).ready(function() {
     r2d2.go();
     bb8.go();
     tooltip.go();
+    a11yMenu.go();
 })

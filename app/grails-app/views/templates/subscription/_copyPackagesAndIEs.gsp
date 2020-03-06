@@ -139,7 +139,7 @@
         <g:if test="${controllerName == 'survey'}">
         <div class="two fields">
             <div class="eight wide field" style="text-align: left;">
-                <g:set var="surveyConfig" value="${com.k_int.kbplus.SurveyConfig.findBySubscriptionAndIsSubscriptionSurveyFix(Subscription.get(sourceSubscriptionId), true)}" />
+                <g:set var="surveyConfig" value="${com.k_int.kbplus.SurveyConfig.findBySubscriptionAndSubSurveyUseForTransfer(Subscription.get(sourceSubscriptionId), true)}" />
                 <g:link action="renewalWithSurvey" id="${surveyConfig?.surveyInfo?.id}" params="[surveyConfigID: surveyConfig?.id]" class="ui button js-click-control">
                     <g:message code="renewalWithSurvey.back"/>
                 </g:link>

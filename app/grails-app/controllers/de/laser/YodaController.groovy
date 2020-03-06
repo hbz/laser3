@@ -315,30 +315,68 @@ class YodaController {
 
         Map<String, Object> activity = [:]
 
-        List<Timestamp> dayDates = ActivityProfiler.executeQuery("select date_trunc('day', dateCreated) as day from ActivityProfiler group by date_trunc('day', dateCreated), dateCreated order by dateCreated desc")
-        dayDates.unique().each { it ->
+        // gathering data
+
+        List<Timestamp> dayDates = ActivityProfiler.executeQuery(
+                "select date_trunc('day', dateCreated) as day from ActivityProfiler group by date_trunc('day', dateCreated), dateCreated order by dateCreated desc"
+        )
+        dayDates.unique().take(30).each { it ->
             List<Timestamp, Timestamp, Timestamp, Integer, Integer, Double> slots = ActivityProfiler.executeQuery(
                     "select date_trunc('hour', dateCreated), min(dateCreated), max(dateCreated), min(userCount), max(userCount), avg(userCount) " +
                             "  from ActivityProfiler where date_trunc('day', dateCreated) = :day " +
                             " group by date_trunc('hour', dateCreated) order by min(dateCreated), max(dateCreated)",
                     [day: it])
 
-            String key = (DateUtil.getSDF_NoTime()).format(new Date(it.getTime()))
-            activity.put(key, [])
+            String dayKey = (DateUtil.getSDF_NoTime()).format(new Date(it.getTime()))
+            activity.put(dayKey, [])
 
             slots.each { hour ->
-                activity[key].add([
-                        (DateUtil.getSDF_OnlyTime()).format(new Date(hour[0].getTime())),
-                        (DateUtil.getSDF_OnlyTime()).format(new Date(hour[1].getTime())),
-                        (DateUtil.getSDF_OnlyTime()).format(new Date(hour[2].getTime())),
-                        hour[3],
-                        hour[4],
-                        hour[5]
+                activity[dayKey].add([
+                        (DateUtil.getSDF_OnlyTime()).format(new Date(hour[0].getTime())),   // time.start
+                        (DateUtil.getSDF_OnlyTime()).format(new Date(hour[1].getTime())),   // time.min
+                        (DateUtil.getSDF_OnlyTime()).format(new Date(hour[2].getTime())),   // time.max
+                        hour[3],    // user.min
+                        hour[4],    // user.max
+                        hour[5]     // user.avg
                 ])
             }
         }
 
-        result.activity = activity
+        // precalc
+
+        Map<String, Object> activityMatrix = [:]
+        activityMatrix.put('Ø', null)
+
+        List averages = (0..23).collect{ 0 }
+        List labels   = (0..23).collect{ "${it < 10 ? '0' + it : it}:00:00" }
+
+        activity.each{ dayKey, values ->
+            List series1 = (0..23).collect{ 0 }
+            List series2 = (0..23).collect{ 0 }
+
+            values.each { val ->
+                int indexOf = labels.findIndexOf{it == val[0]}
+                if (indexOf >= 0) {
+                    series1.putAt(indexOf, val[3])
+                    series2.putAt(indexOf, val[4]- val[3]) // stackBars: true
+
+                    averages[indexOf] = averages[indexOf] + val[5]
+                }
+            }
+            activityMatrix.put(dayKey, [series1, series2])
+        }
+
+        // averages
+
+        for(int i=0; i<averages.size(); i++) {
+            averages[i] = (averages[i]/activity.size())
+        }
+
+        activityMatrix.putAt('Ø', [(0..23).collect{ 0 }, averages])
+
+        result.labels = labels
+        result.activity = activityMatrix
+
         result
     }
 

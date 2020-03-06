@@ -9,6 +9,7 @@ import com.k_int.properties.PropertyDefinition
 import com.k_int.properties.PropertyDefinitionGroup
 import com.k_int.properties.PropertyDefinitionGroupItem
 import de.laser.ContextService
+import de.laser.SystemAnnouncement
 import de.laser.SystemEvent
 import de.laser.api.v0.ApiToolkit
 import de.laser.controller.AbstractDebugController
@@ -59,6 +60,80 @@ class AdminController extends AbstractDebugController {
     @Secured(['ROLE_ADMIN'])
     def index() { }
 
+
+    @Secured(['ROLE_ADMIN'])
+    def systemAnnouncements() {
+        Map<String, Object> result = [:]
+
+        if (params.id) {
+            SystemAnnouncement sa = SystemAnnouncement.get(params.long('id'))
+
+            if (sa) {
+                if (params.cmd == 'edit') {
+                    result.currentAnnouncement = sa
+                }
+                else if (params.cmd == 'publish') {
+                    if (sa.publish()) {
+                        flash.message = message(code: 'announcement.published')
+                    }
+                    else {
+                        flash.error = message(code: 'announcement.published_error')
+                    }
+                }
+                else if (params.cmd == 'undo') {
+                    sa.isPublished = false
+                    if (sa.save()) {
+                        flash.message = message(code: 'announcement.undo')
+                    }
+                    else {
+                        flash.error = message(code: 'announcement.undo_error')
+                    }
+                }
+                else if (params.cmd == 'delete') {
+                    if (sa.delete(flush: true)) {
+                        flash.message = message(code: 'default.success')
+                    }
+                    else {
+                        flash.error = message(code: 'default.delete.error.message')
+                    }
+                }
+            }
+        }
+        result.announcements = SystemAnnouncement.list(sort: 'lastUpdated', order: 'desc')
+        result
+    }
+
+    @Secured(['ROLE_ADMIN'])
+    def createSystemAnnouncement() {
+        if (params.saTitle && params.saContent) {
+            SystemAnnouncement sa
+            boolean isNew = false
+
+            if (params.saId) {
+                sa = SystemAnnouncement.get(params.long('saId'))
+            }
+            if (!sa) {
+                sa = new SystemAnnouncement()
+                isNew = true
+            }
+
+            sa.title = params.saTitle
+            sa.content = params.saContent
+            sa.user = User.get(springSecurityService.principal.id)
+            sa.isPublished = false
+
+            if (sa.save(flush: true)) {
+                flash.message = isNew ? message(code: 'announcement.created') : message(code: 'announcement.updated')
+            }
+            else {
+                flash.error = message(code: 'default.save.error.message', args: [sa])
+            }
+        }
+        else {
+            flash.error = message(code: 'default.error')
+        }
+        redirect(action: 'systemAnnouncements')
+    }
 
     @Secured(['ROLE_ADMIN'])
     def manageDeletedObjects() {

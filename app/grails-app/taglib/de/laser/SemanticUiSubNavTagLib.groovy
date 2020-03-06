@@ -48,6 +48,12 @@ class SemanticUiSubNavTagLib {
         def linkBody  = (text && message) ? text + " - " + message : text + message
         def aClass    = ((this.pageScope.variables?.actionName == attrs.action) ? 'item active' : 'item') + (attrs.class ? ' ' + attrs.class : '')
 
+        def tooltip = attrs.tooltip ?: ""
+
+        if(tooltip != "")
+        {
+            linkBody = '<div data-tooltip="'+tooltip+'" data-position="bottom center">'+linkBody+'</div>'
+        }
 
         if (attrs.disabled) {
             out << '<div class="item disabled">' + linkBody + '</div>'
@@ -93,6 +99,13 @@ class SemanticUiSubNavTagLib {
             if (attrs.affiliation && attrs.affiliationOrg && check) {
                 check = contextService.getUser()?.hasAffiliationForForeignOrg(attrs.affiliation, attrs.affiliationOrg)
             }
+        }
+
+        def tooltip = attrs.tooltip ?: ""
+
+        if(tooltip != "")
+        {
+            linkBody = '<div data-tooltip="'+tooltip+'" data-position="bottom center">'+linkBody+'</div>'
         }
 
         if (check) {

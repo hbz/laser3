@@ -1,4 +1,4 @@
-<%@ page import="de.laser.helper.RDStore; de.laser.helper.RDConstants; com.k_int.kbplus.PersonRole; com.k_int.kbplus.Org; com.k_int.kbplus.RefdataValue; com.k_int.kbplus.RefdataCategory; com.k_int.properties.PropertyDefinition; com.k_int.properties.PropertyDefinitionGroup; com.k_int.kbplus.OrgSettings" %>
+<%@ page import="com.k_int.kbplus.OrgSubjectGroup; com.k_int.kbplus.RefdataValue; de.laser.helper.RDStore; de.laser.helper.RDConstants; com.k_int.kbplus.PersonRole; com.k_int.kbplus.Org; com.k_int.kbplus.RefdataCategory; com.k_int.properties.PropertyDefinition; com.k_int.properties.PropertyDefinitionGroup; com.k_int.kbplus.OrgSettings" %>
 <%@ page import="com.k_int.kbplus.Combo;grails.plugin.springsecurity.SpringSecurityUtils" %>
 <laser:serviceInjection/>
 
@@ -7,9 +7,11 @@
 <head>
     <meta name="layout" content="semanticUI">
     <g:set var="allOrgTypeIds" value="${orgInstance.getallOrgTypeIds()}" />
+    <g:set var="isProvider" value="${RDStore.OT_PROVIDER.id in allOrgTypeIds}" />
     <g:set var="isGrantedOrgRoleAdminOrOrgEditor" value="${SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN,ROLE_ORG_EDITOR')}" />
+    <g:set var="isGrantedOrgRoleAdmin" value="${SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')}" />
 
-    <g:if test="${RDStore.OT_PROVIDER.id in allOrgTypeIds}">
+    <g:if test="${isProvider}">
         <g:set var="entityName" value="${message(code: 'default.provider.label')}"/>
     </g:if>
     <g:elseif test="${institutionalView}">
@@ -83,14 +85,10 @@
                                 </dd>
                             </dl>
                         </g:if>
-                        <g:if test="${!(RDStore.OT_PROVIDER.id in allOrgTypeIds)}">
+                        <g:if test="${!isProvider}">
                             <dl>
                                 <dt>
                                     <g:message code="org.sortname.label" />
-                                    <g:if test="${departmentalView == false}">
-                                        <br>
-                                        <g:message code="org.sortname.onlyForLibraries.label"/>
-                                    </g:if>
                                 </dt>
                                 <dd>
                                     <semui:xEditable owner="${orgInstance}" field="sortname"/>
@@ -98,28 +96,40 @@
                             </dl>
                         </g:if>
                     </g:if>
-                </div>
-            </div><!-- .card -->
-
-
-            <div class="ui card">
-                <div class="content">
                     <dl>
                         <dt><g:message code="org.url.label"/></dt>
                         <dd>
-                            <semui:xEditable owner="${orgInstance}" field="url"/>
+                            <semui:xEditable owner="${orgInstance}" type="url" field="url" overwriteEditable="${true}" class="la-overflow la-ellipsis" />
                             <g:if test="${orgInstance.url}">
-                                <semui:linkIcon href="${orgInstance.url}"/>
+                                <semui:linkIcon href="${orgInstance.url}" />
                             </g:if>
+                        </dd>
+                    </dl>
+                    <dl>
+                        <dt>
+                            <g:message code="org.legalPatronName.label" />
+                            <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
+                                  data-content="${message(code: 'org.legalPatronName.expl')}">
+                                <i class="question circle icon"></i>
+                            </span>
+                        </dt>
+                        <dd>
+                            <semui:xEditable owner="${orgInstance}" field="legalPatronName"/>
                         </dd>
                     </dl>
                     <g:if test="${!departmentalView}">
                         <dl>
-                            <dt><g:message code="org.urlGov.label"/></dt>
+                            <dt>
+                                <g:message code="org.urlGov.label"/>
+                                <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
+                                      data-content="${message(code: 'org.urlGov.expl')}">
+                                    <i class="question circle icon"></i>
+                                </span>
+                            </dt>
                             <dd>
-                                <semui:xEditable owner="${orgInstance}" field="urlGov"/>
+                                <semui:xEditable owner="${orgInstance}" type="url" field="urlGov" overwriteEditable="${true}" class="la-overflow la-ellipsis" />
                                 <g:if test="${orgInstance.urlGov}">
-                                    <semui:linkIcon href="${orgInstance.urlGov}"/>
+                                    <semui:linkIcon href="${orgInstance.urlGov}" />
                                 </g:if>
                             </dd>
                         </dl>
@@ -127,124 +137,27 @@
                 </div>
             </div><!-- .card -->
 
-            <%-- orgInstance.hasPerm("ORG_INST,ORG_CONSORTIUM") && ((!fromCreate) || isGrantedOrgRoleAdminOrOrgEditor) --%>
-            <g:if test="${departmentalView == false}">
+            <g:if test="${isGrantedOrgRoleAdmin}">
                 <div class="ui card">
-                    <div class="content">
-                        <div class="header"><g:message code="default.identifiers.label"/></div>
-                    </div>
-
                     <div class="content">
                         <dl>
-                            <dt>ISIL</dt>
+                            <dt><g:message code="org.sector.label" /></dt>
                             <dd>
-                                <g:set var="isils"
-                                       value="${orgInstance.ids.findAll { it?.ns?.ns == 'ISIL' }}"/>
-                                <g:if test="${isils}">
-                                    <div class="ui divided middle aligned selection list la-flex-list">
-                                        <g:each in="${isils}" var="isil">
-                                            <div class="ui item">
-
-                                                <div class="content la-space-right">
-                                                    <semui:xEditable owner="${isil}" field="value"/>
-                                                </div>
-
-                                                <div class="content">
-                                                    <g:if test="${editable}">
-                                                    <%-- TODO [ticket=1612] new identifier handling
-                                                        <g:link class="ui mini negative button" controller="ajax"
-                                                                action="deleteThrough"
-                                                                params='${[contextOid: "${orgInstance.class.name}:${orgInstance.id}", contextProperty: "ids", targetOid: "${isil.class.name}:${isil.id}"]}'>
-                                                            <i class="trash alternate icon"></i></g:link>
-                                                    --%>
-                                                        <g:link controller="ajax" action="deleteIdentifier" class="ui icon mini negative button"
-                                                                params='${[owner: "${orgInstance.class.name}:${orgInstance.id}", target: "${isil.class.name}:${isil.id}"]}'>
-                                                            <i class="trash alternate icon"></i></g:link>
-                                                    </g:if>
-                                                </div>
-
-                                            </div>
-                                        </g:each>
-
-                                    </div>
-
-                                </g:if>
-                                <g:if test="${editable}">
-                                    <%-- TODO [ticket=1612] new identifier handling --%>
-                                    <g:form controller="ajax" action="addIdentifier" class="ui form">
-                                        <input name="owner" type="hidden" value="${orgInstance.class.name}:${orgInstance.id}" />
-                                        <input name="namespace" type="hidden" value="com.k_int.kbplus.IdentifierNamespace:${com.k_int.kbplus.IdentifierNamespace.findByNs('ISIL').id}" />
-
-                                        <div class="fields">
-                                            <div class="field">
-                                                <input name="value" id="identifier" type="text" class="ui" />
-                                            </div>
-                                            <div class="field">
-                                                <button type="submit" class="ui button">Identifikator hinzufügen</button>
-                                            </div>
-                                        </div>
-                                    </g:form>
-                            </g:if>
-                        </dd>
-
-                    </dl>
-
-                    <dl>
-                        <dt>WIB-ID</dt>
-                        <dd>
-                            <g:set var="wibid" value="${orgInstance.ids.find { it?.ns?.ns == 'wibid' }}"/>
-                            <g:if test="${wibid}">
-                                <semui:xEditable owner="${wibid}" field="value"/>
-                            </g:if>
-                        </dd>
-                    </dl>
-                    <dl>
-                        <dt>EZB-ID</dt>
-                        <dd>
-                            <g:set var="ezb" value="${orgInstance.ids.find { it?.ns?.ns == 'ezb' }}"/>
-                            <g:if test="${ezb}">
-                                <semui:xEditable owner="${ezb}" field="value"/>
-                            </g:if>
-                        </dd>
-                    </dl>
-                </div>
-            </div><!-- .card -->
-        </g:if>
-
-            <g:if test="${isGrantedOrgRoleAdminOrOrgEditor}">
-                <div class="ui card">
-                    <div class="content">
-                        <g:if test="${orgInstance.hasPerm("ORG_INST") || isGrantedOrgRoleAdminOrOrgEditor}">
-                            <dl>
-                                <dt><g:message code="org.sector.label" /></dt>
-                                <dd>
-                                    <semui:xEditableRefData owner="${orgInstance}" field="sector" config="${RDConstants.ORG_SECTOR}" overwriteEditable="${isGrantedOrgRoleAdminOrOrgEditor}"/>
-                                </dd>
-                            </dl>
-                        </g:if>
-                        <g:else>
-                            <dl>
-                                <dt><g:message code="org.sector.label" /></dt>
-                                <dd>
-                                    ${orgInstance.sector?.getI10n('value')}
-                                </dd>
-                            </dl>
-                        </g:else>
+                                <semui:xEditableRefData owner="${orgInstance}" field="sector" config="${RDConstants.ORG_SECTOR}" overwriteEditable="${isGrantedOrgRoleAdminOrOrgEditor}"/>
+                            </dd>
+                        </dl>
                         <dl>
                             <dt>${message(code: 'default.status.label')}</dt>
 
-                        <dd>
-                            <g:if test="${isGrantedOrgRoleAdminOrOrgEditor}">
-                                <semui:xEditableRefData owner="${orgInstance}" field="status" config="${RDConstants.ORG_STATUS}"/>
-                            </g:if>
-                            <g:else>
-                                ${orgInstance.status?.getI10n('value')}
-                            </g:else>
-                        </dd>
-                    </dl>
-                </div>
-            </div><!-- .card -->
-        </g:if>
+                            <dd>
+                                <g:if test="${isGrantedOrgRoleAdminOrOrgEditor}">
+                                    <semui:xEditableRefData owner="${orgInstance}" field="status" config="${RDConstants.ORG_STATUS}"/>
+                                </g:if>
+                            </dd>
+                        </dl>
+                    </div>
+                </div><!-- .card -->
+            </g:if>
 
             <g:if test="${isGrantedOrgRoleAdminOrOrgEditor}">
                 <div class="ui card">
@@ -276,7 +189,7 @@
                 </div>
             </g:if>
 
-            <g:if test="${departmentalView == false && !(RDStore.OT_PROVIDER.id in allOrgTypeIds)}">
+            <g:if test="${departmentalView == false && !isProvider}">
                 <div class="ui card">
                     <div class="content">
                             <dl>
@@ -290,6 +203,25 @@
                                 <dd>
                                     <semui:xEditableRefData owner="${orgInstance}" field="libraryType"
                                                             config="${RDConstants.LIBRARY_TYPE}"/>
+                                </dd>
+                            </dl>
+                            <dl>
+                                <dt>
+                                    <g:message code="org.subjectGroup.label" />
+                                    %{--<span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"--}%
+                                          %{--data-content="${message(code: 'org.libraryType.expl')}">--}%
+                                        %{--<i class="question circle icon"></i>--}%
+                                    %{--</span>--}%
+                                </dt>
+                                <dd>
+                                    <%
+                                        def subjectGroups = RefdataCategory.getAllRefdataValues(RDConstants.SUBJECT_GROUP)
+                                    %>
+                                    <g:render template="orgSubjectGroupAsList"
+                                              model="${[org: orgInstance, orgSubjectGroups: orgInstance.subjectGroup, availableSubjectGroups: subjectGroups, editable: true]}"/>
+
+                                    <g:render template="orgSubjectGroupModal"
+                                              model="${[org: orgInstance, availableSubjectGroups: subjectGroups, editable: true]}"/>
                                 </dd>
                             </dl>
                             <dl>
@@ -319,35 +251,57 @@
                             </dl>
                             <dl>
                                 <dt>
-                                    <g:message code="org.federalState.label" />
+                                    <g:message code="org.funderHSK.label" />
                                     <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
-                                          data-content="${message(code: 'org.federalState.expl')}">
+                                          data-content="${message(code: 'org.funderHSK.expl')}">
                                         <i class="question circle icon"></i>
                                     </span>
                                 </dt>
                                 <dd>
-                                    <semui:xEditableRefData owner="${orgInstance}" field="federalState"
-                                                            config="${RDConstants.FEDERAL_STATE}"/>
+                                    <semui:xEditableRefData owner="${orgInstance}" field="funderHskType" config="${RDConstants.FUNDER_HSK_TYPE}"/>
                                 </dd>
                             </dl>
                             <dl>
                                 <dt>
-                                    <g:message code="org.country.label" />
+                                    <g:message code="org.regions.label" />
                                     <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
-                                          data-content="${message(code: 'org.country.expl')}">
+                                          data-content="${message(code: 'org.regions.expl')}">
                                         <i class="question circle icon"></i>
                                     </span>
                                 </dt>
                                 <dd>
-                                    <semui:xEditableRefData owner="${orgInstance}" field="country" config="${RDConstants.COUNTRY}"/>
+                                    <semui:xEditableRefData id="country" owner="${orgInstance}" field="country" config="${RDConstants.COUNTRY}" />
+                                </dd>
+                                <dd>
+                                    <semui:xEditableRefData id="regions_${de.laser.helper.RDStore.COUNTRY_DE.id}" owner="${orgInstance}" field="region" config="${RDConstants.REGIONS_DE}"/>
+                                    <semui:xEditableRefData id="regions_${de.laser.helper.RDStore.COUNTRY_AT.id}" owner="${orgInstance}" field="region" config="${RDConstants.REGIONS_AT}"/>
+                                    <semui:xEditableRefData id="regions_${de.laser.helper.RDStore.COUNTRY_CH.id}" owner="${orgInstance}" field="region" config="${RDConstants.REGIONS_CH}"/>
+                                    %{--<g:fieldError bean="${orgInstance}" field="region" />--}%
+                                    %{--<g:select class="ui search dropdown" name="region"--}%
+                                              %{--from="${Org.REGION.values()}"--}%
+                                              %{--optionValue="${{((com.k_int.kbplus.RefdataValue)it.region).value_de}}"--}%
+                                              %{--value="${orgInstance?.region}"--}%
+                                              %{--noSelection="${['null§0':'']}"/>--}%
                                 </dd>
                             </dl>
+                            %{--<dl>--}%
+                                %{--<dt>--}%
+                                    %{--<g:message code="org.country.label" />--}%
+                                    %{--<span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"--}%
+                                          %{--data-content="${message(code: 'org.country.expl')}">--}%
+                                        %{--<i class="question circle icon"></i>--}%
+                                    %{--</span>--}%
+                                %{--</dt>--}%
+                                %{--<dd>--}%
+                                    %{--<semui:xEditableRefData owner="${orgInstance}" field="country" config="${RDConstants.COUNTRY}"/>--}%
+                                %{--</dd>--}%
+                            %{--</dl>--}%
                         </div>
                 </div><!-- .card -->
             </g:if>
 
 
-            <g:if test="${(RDStore.OT_PROVIDER.id in allOrgTypeIds)}">
+            <g:if test="${isProvider}">
                 <div class="ui card">
                     <div class="content">
                         <dl>
@@ -376,12 +330,6 @@
                     <div class="content">
                         <dl>
                             <dt><g:message code="org.addresses.label" />
-
-                                <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
-                                      data-content="${message(code: 'adressFormModal.info')}">
-                                    <i class="question circle icon"></i>
-                                </span>
-
                             </dt>
                             <dd>
                                 <div class="ui divided middle aligned selection list la-flex-list">
@@ -398,44 +346,6 @@
                                         </g:if>
                                     </g:each>
                                 </div>
-                                <g:if test="${((((orgInstance.id == contextService.getOrg().id) || Combo.findByFromOrgAndToOrgAndType(orgInstance,contextService.getOrg(),RDStore.COMBO_TYPE_DEPARTMENT)) && user.hasAffiliation('INST_EDITOR')) || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN'))}">
-
-                                    <div class="ui list">
-                                        <div class="item">
-                                            <input class="ui button" size="35"
-                                                   value="${message(code: 'default.add.label', args: [message(code: 'addressFormModalPostalAddress')])}"
-                                                   data-semui="modal"
-                                                   data-href="#addressFormModalPostalAddress"/>
-                                            <g:render template="/address/formModal"
-                                                      model="['orgId': orgInstance?.id, 'redirect': '.', modalId: 'addressFormModalPostalAddress', hideType: true]"/>
-
-                                            <input class="ui button" size="35"
-                                                   value="${message(code: 'default.add.label', args: [message(code: 'addressFormModalBillingAddress')])}"
-                                                   data-semui="modal"
-                                                   data-href="#addressFormModalBillingAddress"/>
-                                            <g:render template="/address/formModal"
-                                                      model="['orgId': orgInstance?.id, 'redirect': '.', modalId: 'addressFormModalBillingAddress', hideType: true]"/>
-                                        </div>
-
-                                        <div class="item">
-
-                                            <input class="ui button" size="35"
-                                                   value="${message(code: 'default.add.label', args: [message(code: 'addressFormModalLegalPatronAddress')])}"
-                                                   data-semui="modal"
-                                                   data-href="#addressFormModalLegalPatronAddress"/>
-                                            <g:render template="/address/formModal"
-                                                      model="['orgId': orgInstance?.id, 'redirect': '.', modalId: 'addressFormModalLegalPatronAddress', hideType: true]"/>
-
-                                           %{-- <input class="ui button" size="35"
-                                                   value="${message(code: 'default.add.label', args: [message(code: 'address.otherAddress')])}"
-                                                   data-semui="modal"
-                                                   data-href="#addressFormModal"/>
-                                            <g:render template="/address/formModal"
-                                                      model="['orgId': orgInstance?.id, 'redirect': '.']"/>--}%
-                                        </div>
-                                    </div>
-
-                                </g:if>
                             </dd>
                         </dl>
                         %{--ERMS:1236
@@ -467,18 +377,14 @@
                         </dl>--}%
                         <dl>
                             <dt><g:message code="org.prsLinks.label" />
-
-                                <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
-                                      data-content="${message(code: 'personFormModal.info')}">
-                                    <i class="question circle icon"></i>
-                                </span>
-
                             </dt>
                             <dd>
 
                             <%-- <div class="ui divided middle aligned selection list la-flex-list"> --%>
                                 <g:each in="${PersonRole.executeQuery("select distinct(prs) from PersonRole pr join pr.prs prs join pr.org oo where oo = :org and prs.isPublic = true", [org: orgInstance])}" var="prs">
+                                    <%
 
+                                    %>
                                     <g:render template="/templates/cpa/person_full_details" model="${[
                                             person              : prs,
                                             personContext       : orgInstance,
@@ -498,87 +404,12 @@
 
                                 </g:each>
                             <%-- </div> --%>
-                                <g:if test="${(((orgInstance.id == contextService.getOrg().id || Combo.findByFromOrgAndToOrgAndType(orgInstance,contextService.getOrg(),RDStore.COMBO_TYPE_DEPARTMENT)) && user.hasAffiliation('INST_EDITOR')) || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN'))}">
-                                    <div class="ui list">
-                                        <div class="item">
-
-                                            <input class="ui button" size="35"
-                                                   value="${message(code: 'personFormModalGeneralContactPerson')}"
-                                                   data-semui="modal"
-                                                   data-href="#personFormModalGeneralContactPerson"/>
-
-                                            <g:render template="/person/formModal"
-                                                      model="[tenant                           : contextOrg,
-                                                              org                              : orgInstance,
-                                                              isPublic                         : true,
-                                                              presetFunctionType               : RefdataValue.getByValueAndCategory('General contact person', RDConstants.PERSON_FUNCTION),
-                                                              modalId                          : 'personFormModalGeneralContactPerson',
-                                                              tmplHideFunctions: true]"/>
-
-                                            <input class="ui button" size="35"
-                                                   value="${message(code: 'personFormModalResponsibleContact')}"
-                                                   data-semui="modal"
-                                                   data-href="#personFormModalResponsibleContact"/>
-
-                                            <g:render template="/person/formModal"
-                                                      model="[tenant                           : contextOrg,
-                                                              org                              : orgInstance,
-                                                              isPublic                         : true,
-                                                              presetFunctionType               : RefdataValue.getByValueAndCategory('Responsible Admin', RDConstants.PERSON_FUNCTION),
-                                                              modalId                          : 'personFormModalResponsibleContact',
-                                                              tmplHideFunctions: true]"/>
-
-                                        </div>
-
-                                        <div class="item">
-
-                                            <input class="ui button" size="35"
-                                                   value="${message(code: 'personFormModalBillingContact')}"
-                                                   data-semui="modal"
-                                                   data-href="#personFormModalBillingContact"/>
-
-                                            <g:render template="/person/formModal"
-                                                      model="[tenant                           : contextOrg,
-                                                              org                              : orgInstance,
-                                                              isPublic                         : true,
-                                                              presetFunctionType               : RefdataValue.getByValueAndCategory('Functional Contact Billing Adress', RDConstants.PERSON_FUNCTION),
-                                                              modalId                          : 'personFormModalBillingContact',
-                                                              tmplHideFunctions: true]"/>
-
-                                            <input class="ui button" size="35"
-                                                   value="${message(code: 'personFormModalTechnichalSupport')}"
-                                                   data-semui="modal"
-                                                   data-href="#personFormModalTechnichalSupport"/>
-
-                                            <g:render template="/person/formModal"
-                                                      model="[tenant                           : contextOrg,
-                                                              org                              : orgInstance,
-                                                              isPublic                         : true,
-                                                              presetFunctionType               : RefdataValue.getByValueAndCategory('Technichal Support', RDConstants.PERSON_FUNCTION),
-                                                              modalId                          : 'personFormModalTechnichalSupport',
-                                                              tmplHideFunctions: true]"/>
-
-                                            %{--<input class="ui button" size="35"
-                                                   value="${message(code: 'personFormModalOtherContact')}"
-                                                   data-semui="modal"
-                                                   data-href="#personFormModal"/>
-
-                                            <g:render template="/person/formModal"
-                                                      model="['tenant'            : contextOrg,
-                                                              'org'               : orgInstance,
-                                                              'isPublic'          : true,
-                                                              'presetFunctionType': RefdataValue.getByValueAndCategory('General contact person', RDConstants.PERSON_FUNCTION)]"/>--}%
-
-                                        </div>
-                                    </div>
-
-                                </g:if>
                             </dd>
                         </dl>
                     </div>
                 </div><!-- .card -->
 
-                <g:if test="${contextService.getUser().isAdmin() || contextService.getOrg().getCustomerType() in ['ORG_CONSORTIUM', 'ORG_CONSORTIUM_SURVEY']}">
+                <g:if test="${(contextService.getUser().isAdmin() || contextService.getOrg().getCustomerType() in ['ORG_CONSORTIUM', 'ORG_CONSORTIUM_SURVEY']) && (contextService.getOrg() != orgInstance)}">
                     <g:if test="${orgInstance.createdBy || orgInstance.legallyObligedBy}">
                         <div class="ui card">
                             <div class="content">
@@ -660,3 +491,22 @@
 </div>
 </body>
 </html>
+<r:script>
+    $('#country').on('save', function(e, params) {
+        showRegionsdropdown(params.newValue);
+    });
+
+    function showRegionsdropdown(newValue) {
+        var id = newValue.split(':')[1]
+         $("*[id^=regions_]").hide();
+         $("#regions_" + id).show();
+         $("#regions_" + id).editable('setValue', null);
+    };
+
+    $(document).ready(function(){
+        var country = $("#country").editable('getValue', true);
+        var id = country.split(':')[1]
+        $("*[id^=regions_]").hide();
+        $("#regions_" + id).show();
+    });
+</r:script>

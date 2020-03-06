@@ -1441,8 +1441,10 @@ class SubscriptionController extends AbstractDebugController {
        result
     }
 
-    @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
-    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
+    @DebugAnnotation(perm = "ORG_CONSORTIUM", affil = "INST_EDITOR")
+    @Secured(closure = {
+        ctx.accessService.checkPermAffiliation("ORG_CONSORTIUM", "INST_EDITOR")
+    })
     def surveysConsortia() {
         def result = setResultGenericsAndCheckAccess(accessService.CHECK_VIEW)
         if (!result) {

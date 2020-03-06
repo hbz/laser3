@@ -21,6 +21,8 @@ import de.laser.interfaces.ShareSupport
 import grails.converters.JSON
 import grails.plugin.springsecurity.annotation.Secured
 import grails.util.Holders
+import grails.validation.ValidationErrors
+import org.apache.http.HttpStatus
 import org.codehaus.groovy.grails.orm.hibernate.cfg.GrailsHibernateUtil
 
 //import org.grails.orm.hibernate.cfg.GrailsHibernateUtil
@@ -28,6 +30,7 @@ import org.codehaus.groovy.grails.orm.hibernate.cfg.GrailsHibernateUtil
 import org.springframework.web.servlet.LocaleResolver
 import org.springframework.web.servlet.support.RequestContextUtils
 
+import javax.validation.Valid
 import java.text.SimpleDateFormat
 import java.util.regex.Matcher
 import java.util.regex.Pattern
@@ -304,7 +307,11 @@ class AjaxController {
       if ( params.value == '' ) {
         // Allow user to set a rel to null be calling set rel ''
         target[params.name] = null
-        target.save(flush:true);
+          if ( ! target.save()){
+              Map r = [status:"error", msg: message(code: 'default.save.error.general.message')]
+              render r as JSON
+              return
+          }
       }
       else {
         String[] value_components = params.value.split(":");
@@ -325,7 +332,11 @@ class AjaxController {
                 //}
             }
 
-            target.save();
+            if ( ! target.save()){
+                Map r = [status:"error", msg: message(code: 'default.save.error.general.message')]
+                render r as JSON
+                return
+            }
             if (target instanceof SurveyResult) {
 
                 Org org = contextService.getOrg()

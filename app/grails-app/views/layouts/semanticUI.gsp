@@ -77,7 +77,7 @@
             <sec:ifAnyGranted roles="ROLE_USER">
 
                 <g:if test="${contextOrg}">
-                    <div class="ui simple dropdown item">
+                    <div class="ui dropdown item" aria-haspopup="true">
                         ${message(code:'menu.public')}
                         <i class="dropdown icon"></i>
 
@@ -116,7 +116,7 @@
                         </div>
                     </div>
 
-                    <div class="ui simple dropdown item">
+                    <div class="ui dropdown item" aria-haspopup="true">
                         ${message(code:'menu.my')}
                         <i class="dropdown icon"></i>
 
@@ -196,7 +196,7 @@
                     </div>
 
 
-                    <div class="ui simple dropdown item">
+                    <div class="ui dropdown item" aria-haspopup="true">
                         ${message(code:'menu.institutions.myInst')}
                         <i class="dropdown icon"></i>
 
@@ -236,7 +236,7 @@
                 </g:if>
 
                 <sec:ifAnyGranted roles="ROLE_ORG_MANAGER,ROLE_ADMIN,ROLE_GLOBAL_DATA,ROLE_STATISTICS_EDITOR">
-                    <div class="ui simple dropdown item">
+                    <div class="ui dropdown item" aria-haspopup="true">
                         ${message(code:'menu.datamanager')}
                         <i class="dropdown icon"></i>
 
@@ -260,7 +260,6 @@
                             <sec:ifAnyGranted roles="ROLE_ADMIN">
                                 <div class="divider"></div>
 
-                                <g:link class="item" controller="announcement" action="index">${message(code:'menu.datamanager.ann')}</g:link>
                                 <g:link class="item" controller="package" action="list">${message(code:'menu.datamanager.searchPackages')}</g:link>
                                 <g:link class="item" controller="platform" action="list">${message(code:'menu.datamanager.searchPlatforms')}</g:link>
 
@@ -297,7 +296,7 @@
                 </sec:ifAnyGranted>
 
                 <sec:ifAnyGranted roles="ROLE_ADMIN">
-                    <div class="ui simple dropdown item">
+                    <div class="ui dropdown item" aria-haspopup="true">
                         ${message(code:'menu.admin')}
                         <i class="dropdown icon"></i>
 
@@ -323,7 +322,7 @@
                                 </g:if>
                             </g:link>
 
-                            <div class="ui dropdown item">
+                            <div class="item" aria-haspopup="true">
                                 ${message(code:'menu.admin.sysAdmin')}
                                 <i class="dropdown icon"></i>
 
@@ -338,9 +337,9 @@
                                     <g:link class="item" controller="admin" action="dataCleanse" onclick="return confirm('${message(code:'confirm.start.DataCleaningNominalPlatforms')}')">Run Data Cleaning (Nominal Platforms)</g:link>
                                 </div>
                             </div>
-
-                            <div class="ui dropdown item">
-                                <i class="ui icon code branch"></i>Developer
+                            <div class="item">
+                                <i class="ui icon code branch"></i>
+                                <span class="text">Developer</span>
                                 <i class="dropdown icon"></i>
 
                                 <div class="menu">
@@ -349,11 +348,12 @@
                                 </div>
                             </div>
 
+                            <g:link class="item" controller="admin" action="systemAnnouncements">${message(code:'menu.admin.announcements')}</g:link>
                             <g:link class="item" controller="admin" action="serverDifferences">${message(code:'menu.admin.serverDifferences')}</g:link>
 
                             <div class="divider"></div>
 
-                            <div class="ui dropdown item">
+                            <div class="item">
                                 ${message(code:'org.plural.label')}
                                 <i class="dropdown icon"></i>
 
@@ -372,7 +372,7 @@
 
                             <div class="divider"></div>
 
-                            <div class="ui dropdown item">
+                            <div class="item">
                                 ${message(code:'menu.admin.bulkOps')}
                                <i class="dropdown icon"></i>
 
@@ -401,7 +401,7 @@
                 </sec:ifAnyGranted>
 
                 <sec:ifAnyGranted roles="ROLE_YODA">
-                    <div class="ui simple dropdown item">
+                    <div class="ui dropdown item" aria-haspopup="true">
                         ${message(code:'menu.yoda')}
                         <i class="dropdown icon"></i>
 
@@ -409,7 +409,7 @@
 
                             <g:link class="item" controller="yoda" action="dashboard">Dashboard</g:link>
 
-                            <div class="ui dropdown item">
+                            <div class="item">
                                 <i class="ui icon keyboard outline"></i>${message(code:'menu.yoda.engine')}
                                 <i class="dropdown icon"></i>
 
@@ -435,7 +435,7 @@
 
                             <div class="divider"></div>
 
-                            <div class="ui dropdown item">
+                            <div class="item">
                                 Fällige Termine
                                 <i class="dropdown icon"></i>
                                 <div class="menu">
@@ -446,7 +446,7 @@
 
                             <div class="divider"></div>
 
-                            <div class="ui dropdown item">
+                            <div class="item">
                                 ${message(code:'menu.admin.dataManagement')}
                                 <i class="dropdown icon"></i>
 
@@ -465,7 +465,7 @@
                                 </div>
                             </div>
 
-                            <div class="ui dropdown item">
+                            <div class="item">
                                 ${message(code:'menu.admin.syncManagement')}
                                 <i class="dropdown icon"></i>
                                 <div class="menu">
@@ -488,7 +488,7 @@
 
                             <div class="divider"></div>
 
-                            <div class="ui dropdown item">
+                            <div class="item">
                                 ${message(code:'menu.admin.dataMigration')}
                                 <i class="dropdown icon"></i>
                                 <div class="menu">
@@ -545,7 +545,7 @@
                     </g:link>
 
                     <g:if test="${contextUser}">
-                        <div class="ui simple dropdown item la-noBorder">
+                        <div class="ui dropdown item la-noBorder">
                             ${contextUser.displayName}
                             <i class="dropdown icon"></i>
 

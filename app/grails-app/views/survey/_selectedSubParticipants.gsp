@@ -75,7 +75,7 @@
     <br/>
 
     <g:if test="${selectedSubParticipants && editable}">
-        <input type="submit" class="ui button"
+        <input type="submit" class="ui negative button"
                value="${message(code: 'default.button.delete.label')}"/>
     </g:if>
 
