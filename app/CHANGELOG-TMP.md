@@ -4,6 +4,8 @@
 
 2234    05.03.2020  hbz-dev     Christian   Bug     Überarbeitung Statistikabruf
 
+1973    05.03.2020  hbz-dev     Anja    Feature     Überarbeitung des Einrichtungsprofils
+
 2231    03.03.2020  rc1.2       David   Feature     Performance: /myInstitution/currentProviders
 
 2230    03.03.2020  rc1.2       David   Bug         "Teilnehmervertrag erstellen" kann bei fehlenden Teilnehmern nicht angelegt werden

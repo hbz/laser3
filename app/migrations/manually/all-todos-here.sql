@@ -426,6 +426,7 @@
 -- ERMS-2196
 -- changesets in changelog-2020-02-18.groovy
 
+
 -- update api_source set as_active = false where as_active is null;
 -- update cost_item set ci_final_cost_rounding = false where ci_final_cost_rounding is null;
 -- update cost_item set ci_include_in_subscr = false where ci_include_in_subscr is null;
