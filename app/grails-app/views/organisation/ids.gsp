@@ -56,7 +56,7 @@
 <semui:messages data="${flash}"/>
 
 <div class="ui stackable grid">
-    <div class="twelve wide column">
+    <div class="sixteen wide column">
 
         <div class="la-inline-lists">
 
@@ -142,7 +142,7 @@
 </div>
 %{---------------IDENTIFIERS-----------------------}%
 <div class="ui stackable grid">
-    <div class="twelve wide column">
+    <div class="sixteen wide column">
 
         <div class="la-inline-lists">
 

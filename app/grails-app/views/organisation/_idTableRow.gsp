@@ -4,7 +4,7 @@
             <tr>
                 <td>${tableRowNr}</td>
                 <td>${namespace}</td>
-                <td>-${id.value}- <a href="<g:createLink url="" />" target="_blank"><i class="external alternate icon"></i></a></td>
+                <td>${id.value} <a href="<g:createLink url="" />" target="_blank"><i class="external alternate icon"></i></a></td>
                 <td>${id.note}</td>
                 <td>
                     <g:if test="${editable}">
