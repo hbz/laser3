@@ -79,7 +79,7 @@
                 <g:if test="${contextOrg}">
                     <div class="ui dropdown item" role="menuitem" aria-haspopup="true">
                         ${message(code:'menu.public')}
-                        <i class="dropdown icon"></i>
+                        <i aria-hidden="true" class="dropdown icon"></i>
 
                         <div class="menu">
                                 <g:link class="item" role="menuitem" controller="package" action="index">${message(code:'menu.public.all_pkg')}</g:link>
@@ -88,7 +88,7 @@
 
                                 <g:if test="${grailsApplication.config.feature.eBooks}">
                                     <a class="item" role="menuitem" href="http://gokb.k-int.com/gokbLabs">${message(code:'menu.institutions.ebooks')}</a>
-                                    <div class="divider"></div>
+                                    <div c          lass="divider"></div>
                                 </g:if>
 
                                 <sec:ifAnyGranted roles="ROLE_ADMIN,ROLE_ORG_EDITOR">
@@ -118,7 +118,7 @@
 
                     <div class="ui dropdown item" role="menuitem" aria-haspopup="true">
                         ${message(code:'menu.my')}
-                        <i class="dropdown icon"></i>
+                        <i aria-hidden="true" class="dropdown icon"></i>
 
                         <div class="menu">
 
@@ -198,7 +198,7 @@
 
                     <div class="ui dropdown item" role="menuitem" aria-haspopup="true">
                         ${message(code:'menu.institutions.myInst')}
-                        <i class="dropdown icon"></i>
+                        <i aria-hidden="true" class="dropdown icon"></i>
 
                         <div class="menu">
                             <semui:securedMainNavItem role="menuitem" affiliation="INST_USER" controller="myInstitution" action="dashboard" message="menu.institutions.dash" />
@@ -238,7 +238,7 @@
                 <sec:ifAnyGranted roles="ROLE_ORG_MANAGER,ROLE_ADMIN,ROLE_GLOBAL_DATA,ROLE_STATISTICS_EDITOR">
                     <div class="ui dropdown item" role="menuitem" aria-haspopup="true">
                         ${message(code:'menu.datamanager')}
-                        <i class="dropdown icon"></i>
+                        <i aria-hidden="true" class="dropdown icon"></i>
 
                         <div class="menu">
                             <sec:ifAnyGranted roles="ROLE_STATISTICS_EDITOR">
@@ -298,7 +298,7 @@
                 <sec:ifAnyGranted roles="ROLE_ADMIN">
                     <div class="ui dropdown item" role="menuitem" aria-haspopup="true">
                         ${message(code:'menu.admin')}
-                        <i class="dropdown icon"></i>
+                        <i aria-hidden="true" class="dropdown icon"></i>
 
                         <div class="menu">
                             <g:link class="item" role="menuitem" controller="profile" action="errorOverview">
@@ -324,7 +324,7 @@
 
                             <div class="item" role="menuitem" aria-haspopup="true">
                                 ${message(code:'menu.admin.sysAdmin')}
-                                <i class="dropdown icon"></i>
+                                <i aria-hidden="true" class="dropdown icon"></i>
 
                                 <div class="menu">
                                     <g:link class="item" role="menuitem" controller="yoda" action="appInfo">${message(code:'menu.admin.appInfo')}</g:link>
@@ -340,7 +340,7 @@
                             <div class="item" role="menuitem" aria-haspopup="true">
                                 <i class="ui icon code branch"></i>
                                 <span class="text">Developer</span>
-                                <i class="dropdown icon"></i>
+                                <i aria-hidden="true" class="dropdown icon"></i>
 
                                 <div class="menu">
                                     <g:link class="item" role="menuitem" controller="dev" action="index">Barrierefreiheits-Tests</g:link>
@@ -355,7 +355,7 @@
 
                             <div class="item" role="menuitem" aria-haspopup="true">
                                 ${message(code:'org.plural.label')}
-                                <i class="dropdown icon"></i>
+                                <i aria-hidden="true" class="dropdown icon"></i>
 
                                 <div class="menu">
                                     <g:link class="item" role="menuitem" controller="organisation" action="index">${message(code:'menu.admin.allOrganisations')}</g:link>
@@ -372,7 +372,7 @@
 
                             <div class="item" role="menuitem" aria-haspopup="true">
                                 ${message(code:'menu.admin.dataManagement')}
-                                <i class="dropdown icon"></i>
+                                <i aria-hidden="true" class="dropdown icon"></i>
 
                                 <div class="menu">
                                     <g:link class="item" role="menuitem" controller="dataManager" action="expungeDeletedTitles" onclick="return confirm('${message(code:'confirm.expunge.deleted.titles')}')">Expunge Deleted Titles</g:link>
@@ -392,7 +392,7 @@
 
                             <div class="item" role="menuitem" aria-haspopup="true">
                                 ${message(code:'menu.admin.bulkOps')}
-                               <i class="dropdown icon"></i>
+                               <i aria-hidden="true" class="dropdown icon"></i>
 
                                <div class="menu">
                                     <g:link class="item" role="menuitem" controller="admin" action="orgsExport">${message(code:'menu.admin.bulkOps.orgsExport')}</g:link>
@@ -422,7 +422,7 @@
                 <sec:ifAnyGranted roles="ROLE_YODA">
                     <div class="ui dropdown item" role="menuitem" aria-haspopup="true">
                         ${message(code:'menu.yoda')}
-                        <i class="dropdown icon"></i>
+                        <i aria-hidden="true" class="dropdown icon"></i>
 
                         <div class="menu">
 
@@ -430,7 +430,7 @@
 
                             <div class="item" role="menuitem" aria-haspopup="true">
                                 <i class="ui icon keyboard outline"></i>${message(code:'menu.yoda.engine')}
-                                <i class="dropdown icon"></i>
+                                <i aria-hidden="true" class="dropdown icon"></i>
 
                                 <div class="menu">
 
@@ -456,7 +456,7 @@
 
                             <div class="item" role="menuitem" aria-haspopup="true">
                                 Fällige Termine
-                                <i class="dropdown icon"></i>
+                                <i aria-hidden="true" class="dropdown icon"></i>
                                 <div class="menu">
                                     <g:link class="item" role="menuitem" controller="yoda" action="dueDates_updateDashboardDB">${message(code:'menu.admin.updateDashboardTable')}</g:link>
                                     <g:link class="item" role="menuitem" controller="yoda" action="dueDates_sendAllEmails">${message(code:'menu.admin.sendEmailsForDueDates')}</g:link>
@@ -467,7 +467,7 @@
 
                             <div class="item" role="menuitem" aria-haspopup="true">
                                 ${message(code:'menu.admin.syncManagement')}
-                                <i class="dropdown icon"></i>
+                                <i aria-hidden="true" class="dropdown icon"></i>
                                 <div class="menu">
                                     <g:link class="item" role="menuitem" controller="yoda" action="globalSync" onclick="return confirm('${message(code:'confirm.start.globalDataSync')}')">${message(code:'menu.yoda.globalDataSync')}</g:link>
                                     <g:link class="item" role="menuitem" controller="yoda" action="manageGlobalSources">${message(code:'menu.yoda.manageGlobalSources')}</g:link>
@@ -489,7 +489,7 @@
 
                             <div class="item" role="menuitem" aria-haspopup="true">
                                 ${message(code:'menu.admin.dataMigration')}
-                                <i class="dropdown icon"></i>
+                                <i aria-hidden="true" class="dropdown icon"></i>
                                 <div class="menu">
                                     <g:link class="item" role="menuitem" controller="yoda" action="migrateCollectiveSubscriptions">Migrate Collective Subscriptions (0.20)</g:link>
                                     <g:link class="item" role="menuitem" controller="yoda" action="migrateNatStatSettings">Migrate NatStat Settings (0.20)</g:link>
@@ -546,7 +546,7 @@
                     <g:if test="${contextUser}">
                         <div class="ui dropdown item la-noBorder" role="menuitem" aria-haspopup="true">
                             ${contextUser.displayName}
-                            <i class="dropdown icon"></i>
+                            <i aria-hidden="true" class="dropdown icon"></i>
 
                             <div class="menu">
 

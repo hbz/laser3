@@ -7,7 +7,7 @@
 
             <div class="ui dropdown item" role="menuitem" aria-haspopup="true">
                 Alle
-                <i class="dropdown icon"></i>
+                <i aria-hidden="true" class="dropdown icon"></i>
 
                 <div class="menu">
                     <a href="https://www.w3.org" class="item"  role="menuitem">Alle Pakete</a>
@@ -41,7 +41,7 @@
 
             <div class="ui dropdown item" role="menuitem" aria-haspopup="true">
                 Meine Objekte
-                <i class="dropdown icon"></i>
+                <i aria-hidden="true" class="dropdown icon"></i>
 
                 <div class="menu">
 
@@ -88,7 +88,7 @@
 
             <div class="ui dropdown item" role="menuitem" aria-haspopup="true">
                 Meine Einrichtung
-                <i class="dropdown icon"></i>
+                <i aria-hidden="true" class="dropdown icon"></i>
 
                 <div class="menu">
                     <a href="https://www.w3.org" class="item" role="menuitem" >Dashboard</a>
@@ -141,7 +141,7 @@
 
                 <div class="ui dropdown item la-noBorder" role="menuitem" aria-haspopup="true">
                     Ingrid Bluoss
-                    <i class="dropdown icon"></i>
+                    <i aria-hidden="true" class="dropdown icon"></i>
 
                     <div class="menu">
 

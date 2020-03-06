@@ -168,7 +168,7 @@
             <td colspan="8">
                 <div class="ui fluid accordion">
                     <div class="title">
-                        <i class="dropdown icon"></i>
+                        <i aria-hidden="true" class="dropdown icon" ></i>
                         <strong>${message(code: 'financials.calculationBase')}</strong>
                     </div>
                     <div class="content">
