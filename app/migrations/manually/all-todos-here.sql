@@ -426,6 +426,12 @@
 -- ERMS-2196
 -- changesets in changelog-2020-02-18.groovy
 
+-- 2020-02-19
+-- ERMS-1973
+update refdata_category set rdc_description = 'regions.de' where rdc_description = 'federal.state';
+update refdata_category set rdc_description_de = 'Bundesländer Deutschlands', rdc_description_en = 'Federal States of Germany' where rdc_description = 'regions.de';
+-- update property_definition set pd_rdc = 'regions.de' where pd_rdc = 'federal.state';
+
 -- update api_source set as_active = false where as_active is null;
 -- update cost_item set ci_final_cost_rounding = false where ci_final_cost_rounding is null;
 -- update cost_item set ci_include_in_subscr = false where ci_include_in_subscr is null;
