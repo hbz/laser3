@@ -43,6 +43,7 @@ bb8 = {
                 $(update).empty()
                 $(update).html(data)
                 tooltip.go();
+                a11yMenu.go();
 
                 if (done) {
                     eval(done)

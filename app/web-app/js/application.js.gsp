@@ -462,7 +462,6 @@ r2d2 = {
             apiSettings: {
                 cache: false
             }
-            //showOnFocus: false
         });
 
         $(ctxSel + ' form').attr('autocomplete', 'off');
@@ -661,4 +660,5 @@ $(document).ready(function() {
     r2d2.go();
     bb8.go();
     tooltip.go();
+    a11yMenu.go();
 })
