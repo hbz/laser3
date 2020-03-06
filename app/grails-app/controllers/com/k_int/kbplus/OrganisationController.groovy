@@ -672,6 +672,247 @@ class OrganisationController extends AbstractDebugController {
         result
     }
 
+    @Secured(['ROLE_USER'])
+    def ids() {
+
+        User user = User.get(springSecurityService.principal.id)
+        Org org   = Org.get(params.id)
+        DebugUtil du = new DebugUtil()
+        du.setBenchmark('this-n-that')
+
+        Map result = setResultGenericsAndCheckAccess(params)
+        if(!result) {
+            response.sendError(401)
+            return
+        }
+
+        //this is a flag to check whether the page has been called directly after creation
+        result.fromCreate = params.fromCreate ? true : false
+
+        //def link_vals = RefdataCategory.getAllRefdataValues(RDConstants.ORGANISATIONAL_ROLE)
+        //def sorted_links = [:]
+        //def offsets = [:]
+
+        du.setBenchmark('orgRoles')
+
+        du.setBenchmark('editable')
+
+
+        def orgSector = O_SECTOR_PUBLISHER
+        def orgType = OT_PROVIDER
+
+        //IF ORG is a Provider
+        if(result.orgInstance.sector == orgSector || orgType?.id in result.orgInstance?.getallOrgTypeIds()) {
+            du.setBenchmark('editable2')
+            result.editable = accessService.checkMinUserOrgRole(result.user, result.orgInstance, 'INST_EDITOR') ||
+                    accessService.checkPermAffiliationX("ORG_INST,ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN,ROLE_ORG_EDITOR")
+        }
+        else {
+            du.setBenchmark('editable2')
+            if(accessService.checkPerm("ORG_CONSORTIUM")) {
+                List<Long> consortia = Combo.findAllByTypeAndFromOrg(COMBO_TYPE_CONSORTIUM,result.orgInstance).collect { it ->
+                    it.toOrg.id
+                }
+                if(consortia.size() == 1 && consortia.contains(result.institution.id) && accessService.checkMinUserOrgRole(result.user,result.institution,'INST_EDITOR'))
+                    result.editable = true
+            }
+            else if(accessService.checkPerm("ORG_INST_COLLECTIVE")) {
+                List<Long> department = Combo.findAllByTypeAndFromOrg(COMBO_TYPE_DEPARTMENT,result.orgInstance).collect { it ->
+                    it.toOrg.id
+                }
+                if (department.contains(result.institution.id) && accessService.checkMinUserOrgRole(result.user, result.institution, 'INST_EDITOR'))
+                    result.editable = true
+            }
+            else
+                result.editable = accessService.checkMinUserOrgRole(result.user, result.orgInstance, 'INST_EDITOR') || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN,ROLE_ORG_EDITOR')
+        }
+
+      if (!result.orgInstance) {
+        flash.message = message(code: 'default.not.found.message', args: [message(code: 'org.label'), params.id])
+        redirect action: 'list'
+        return
+      }
+
+        du.setBenchmark('properties')
+
+
+        List bm = du.stopBenchmark()
+        result.benchMark = bm
+
+        // TODO: experimental asynchronous task
+        //waitAll(task_orgRoles, task_properties)
+
+        if(!Combo.findByFromOrgAndType(result.orgInstance,COMBO_TYPE_DEPARTMENT) && !(OT_PROVIDER.id in result.orgInstance.getallOrgTypeIds())){
+
+            boolean foundIsil = false
+            boolean foundWibid = false
+            boolean foundEZB = false
+            boolean foundGRID = false
+            boolean foundDBS = false
+            boolean foundGND = false
+
+            result.orgInstance.ids.each {ident ->
+                if(ident.ns?.ns == 'ISIL') {
+                    foundIsil = true
+                }
+                if(ident.ns?.ns == 'wibid') {
+                    foundWibid = true
+                }
+                if(ident.ns?.ns == 'ezb') {
+                    foundEZB = true
+                }
+                if(ident.ns?.ns == 'gridid') {
+                    foundGRID = true
+                }
+                if(ident.ns?.ns == 'dbsid') {
+                    foundDBS = true
+                }
+                if(ident.ns?.ns == 'gndnr') {
+                    foundGND = true
+                }
+            }
+
+            if(!foundIsil) {
+                result.orgInstance.addOnlySpecialIdentifiers('ISIL', 'Unknown')
+            }
+            if(!foundWibid) {
+                result.orgInstance.addOnlySpecialIdentifiers('wibid', 'Unknown')
+            }
+            if(!foundEZB) {
+                result.orgInstance.addOnlySpecialIdentifiers('ezb', 'Unknown')
+            }
+            if(!foundGRID) {
+                result.orgInstance.addOnlySpecialIdentifiers('gridid', 'Unknown')
+            }
+            if(!foundDBS) {
+                result.orgInstance.addOnlySpecialIdentifiers('dbsid', 'Unknown')
+            }
+            if(!foundGND) {
+                result.orgInstance.addOnlySpecialIdentifiers('gndnr', 'Unknown')
+            }
+            if(!foundIsil || !foundWibid || !foundEZB)
+                result.orgInstance.refresh()
+        }
+
+//        if (result.orgInstance.createdBy) {
+//			result.createdByOrgGeneralContacts = PersonRole.executeQuery(
+//					"select distinct(prs) from PersonRole pr join pr.prs prs join pr.org oo " +
+//							"where oo = :org and pr.functionType = :ft and prs.isPublic = true",
+//					[org: result.orgInstance.createdBy, ft: RDStore.PRS_FUNC_GENERAL_CONTACT_PRS]
+//			)
+//        }
+//		if (result.orgInstance.legallyObligedBy) {
+//			result.legallyObligedByOrgGeneralContacts = PersonRole.executeQuery(
+//					"select distinct(prs) from PersonRole pr join pr.prs prs join pr.org oo " +
+//							"where oo = :org and pr.functionType = :ft and prs.isPublic = true",
+//					[org: result.orgInstance.legallyObligedBy, ft: RDStore.PRS_FUNC_GENERAL_CONTACT_PRS]
+//			)
+//		}
+//------------------------orgSettings --------------------
+        Boolean inContextOrg = contextService.getOrg().id == org.id
+        Boolean isComboRelated = Combo.findByFromOrgAndToOrg(org, contextService.getOrg())
+
+        Boolean hasAccess = (inContextOrg && accessService.checkMinUserOrgRole(user, org, 'INST_ADM')) ||
+                (isComboRelated && accessService.checkMinUserOrgRole(user, contextService.getOrg(), 'INST_ADM')) ||
+                SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN,ROLE_ORG_EDITOR')
+
+        // forbidden access
+        if (! hasAccess) {
+            redirect controller: 'organisation', action: 'show', id: org.id
+        }
+
+//        Map result = [
+//                user:           user,
+//                orgInstance:    org,
+//                editable:   	SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN,ROLE_ORG_EDITOR'),
+//                inContextOrg:   inContextOrg
+//        ]
+        result.user = user
+        result.orgInstance = org
+        result.editable = SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN,ROLE_ORG_EDITOR')
+        result.inContextOrg = inContextOrg
+        result.editable = result.editable || (inContextOrg && accessService.checkMinUserOrgRole(user, org, 'INST_ADM'))
+        result.isComboRelated = isComboRelated
+
+        if (params.deleteCI) {
+            CustomerIdentifier ci = genericOIDService.resolveOID(params.deleteCI)
+            if (ci && ci.owner == org) {
+                ci.delete()
+            }
+        }
+        if (params.addCIPlatform) {
+            Platform plt = genericOIDService.resolveOID(params.addCIPlatform)
+            if (plt) {
+                CustomerIdentifier ci = new CustomerIdentifier(
+                        customer: org,
+                        platform: plt,
+                        value: params.addCIValue?.trim(),
+                        note: params.addCINote?.trim(),
+                        owner: contextService.getOrg(),
+                        isPublic: true,
+                        type: RefdataValue.getByValueAndCategory('Default', RDConstants.CUSTOMER_IDENTIFIER_TYPE)
+                )
+                ci.save()
+            }
+        }
+
+        // adding default settings
+        organisationService.initMandatorySettings(org)
+
+        // collecting visible settings by customer type, role and/or combo
+        List<OrgSettings> allSettings = OrgSettings.findAllByOrg(org)
+
+        List<OrgSettings.KEYS> ownerSet = [
+                OrgSettings.KEYS.API_LEVEL,
+                OrgSettings.KEYS.API_KEY,
+                OrgSettings.KEYS.API_PASSWORD,
+                OrgSettings.KEYS.CUSTOMER_TYPE,
+                OrgSettings.KEYS.GASCO_ENTRY
+        ]
+        List<OrgSettings.KEYS> accessSet = [
+                OrgSettings.KEYS.OAMONITOR_SERVER_ACCESS,
+                OrgSettings.KEYS.NATSTAT_SERVER_ACCESS
+        ]
+        List<OrgSettings.KEYS> credentialsSet = [
+                OrgSettings.KEYS.NATSTAT_SERVER_API_KEY,
+                OrgSettings.KEYS.NATSTAT_SERVER_REQUESTOR_ID
+        ]
+
+        result.settings = []
+
+        if (SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN,ROLE_ORG_EDITOR')) {
+            result.settings.addAll(allSettings.findAll { it.key in ownerSet })
+            result.settings.addAll(allSettings.findAll { it.key in accessSet })
+            result.settings.addAll(allSettings.findAll { it.key in credentialsSet })
+            result.customerIdentifier = CustomerIdentifier.findAllByCustomer(org)
+        }
+        else if (inContextOrg) {
+            log.debug( 'settings for own org')
+            result.settings.addAll(allSettings.findAll { it.key in ownerSet })
+
+            if (org.hasPerm('ORG_CONSORTIUM,ORG_INST')) {
+                result.settings.addAll(allSettings.findAll { it.key in accessSet })
+                result.settings.addAll(allSettings.findAll { it.key in credentialsSet })
+                result.customerIdentifier = CustomerIdentifier.findAllByCustomer(org)
+            }
+            else if (['ORG_BASIC_MEMBER'].contains(org.getCustomerType())) {
+                result.settings.addAll(allSettings.findAll { it.key == OrgSettings.KEYS.NATSTAT_SERVER_ACCESS })
+                result.customerIdentifier = CustomerIdentifier.findAllByCustomer(org)
+            }
+            else if (['FAKE'].contains(org.getCustomerType())) {
+                result.settings.addAll(allSettings.findAll { it.key == OrgSettings.KEYS.NATSTAT_SERVER_ACCESS })
+            }
+        }
+        else if (isComboRelated){
+            log.debug( 'settings for combo related org: consortia or collective')
+            result.customerIdentifier = CustomerIdentifier.findAllByCustomer(org)
+        }
+
+        result.allPlatforms = Platform.executeQuery('select p from Platform p join p.org o where p.org is not null order by o.name, o.sortname, p.name')
+
+        result
+    }
+
     @DebugAnnotation(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_USER")
     @Secured(closure = {
         ctx.accessService.checkPermAffiliation("ORG_INST,ORG_CONSORTIUM", "INST_USER")
