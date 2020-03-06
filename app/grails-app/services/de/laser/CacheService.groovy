@@ -9,7 +9,6 @@ import grails.plugin.springsecurity.SpringSecurityService
 import net.sf.ehcache.Cache
 import net.sf.ehcache.CacheManager
 import net.sf.ehcache.Element
-import net.sf.ehcache.Status
 import org.springframework.context.ApplicationContext
 import org.springframework.context.ApplicationContextAware
 

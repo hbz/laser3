@@ -2,16 +2,14 @@ package de.laser
 
 import com.k_int.kbplus.Org
 import com.k_int.kbplus.RefdataValue
+import com.k_int.kbplus.UserSettings
 import com.k_int.kbplus.auth.Role
 import com.k_int.kbplus.auth.User
 import com.k_int.kbplus.auth.UserOrg
 import com.k_int.kbplus.auth.UserRole
 import de.laser.helper.RDConstants
 import de.laser.helper.RDStore
-import org.codehaus.groovy.grails.commons.GrailsApplication
-import com.k_int.kbplus.UserSettings
 import org.codehaus.groovy.grails.web.servlet.FlashScope
-import org.springframework.context.MessageSource
 import org.springframework.context.i18n.LocaleContextHolder
 import org.springframework.validation.FieldError
 

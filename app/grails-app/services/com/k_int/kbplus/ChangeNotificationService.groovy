@@ -1,8 +1,6 @@
 package com.k_int.kbplus
 
-
 import com.k_int.kbplus.auth.User
-import de.laser.helper.EhcacheWrapper
 import de.laser.helper.RDConstants
 import de.laser.interfaces.AbstractLockableService
 import grails.converters.JSON

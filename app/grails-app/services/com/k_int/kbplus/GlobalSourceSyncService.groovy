@@ -9,9 +9,9 @@ import de.laser.interfaces.AbstractLockableService
 import de.laser.oai.OaiClient
 import de.laser.oai.OaiClientLaser
 import org.springframework.context.i18n.LocaleContextHolder
+import org.springframework.dao.DuplicateKeyException
 import org.springframework.transaction.annotation.Propagation
 import org.springframework.transaction.annotation.Transactional
-import org.springframework.dao.DuplicateKeyException
 
 import java.text.SimpleDateFormat
 

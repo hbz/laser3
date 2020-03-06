@@ -2,7 +2,6 @@ package de.laser
 
 import com.k_int.kbplus.Org
 import com.k_int.kbplus.SurveyInfo
-import com.k_int.kbplus.SurveyOrg
 import com.k_int.kbplus.UserSettings
 import com.k_int.kbplus.auth.User
 import com.k_int.kbplus.auth.UserOrg
@@ -10,7 +9,6 @@ import de.laser.helper.RDStore
 import de.laser.interfaces.AbstractLockableService
 import grails.transaction.Transactional
 import grails.util.Holders
-
 
 @Transactional
 class SurveyUpdateService extends AbstractLockableService {

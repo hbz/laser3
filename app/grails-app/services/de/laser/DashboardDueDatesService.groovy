@@ -4,13 +4,13 @@ import com.k_int.kbplus.Org
 import com.k_int.kbplus.Subscription
 import com.k_int.kbplus.UserSettings
 import com.k_int.kbplus.auth.User
+import de.laser.helper.SqlDateUtils
 import grails.plugin.mail.MailService
+import grails.util.Holders
 import org.codehaus.groovy.grails.commons.GrailsApplication
 
-import static de.laser.helper.RDStore.*
-import de.laser.helper.SqlDateUtils
 import static com.k_int.kbplus.UserSettings.DEFAULT_REMINDER_PERIOD
-import grails.util.Holders
+import static de.laser.helper.RDStore.*
 
 class DashboardDueDatesService {
 
