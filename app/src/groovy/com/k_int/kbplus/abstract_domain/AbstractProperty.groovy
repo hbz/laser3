@@ -1,6 +1,6 @@
 package com.k_int.kbplus.abstract_domain
 
-import com.k_int.kbplus.RefdataCategory
+
 import com.k_int.kbplus.RefdataValue
 import de.laser.helper.DateUtil
 

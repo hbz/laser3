@@ -1,6 +1,7 @@
 package de.laser.helper
 
 import org.springframework.web.context.request.RequestContextHolder
+
 import javax.servlet.http.HttpSession
 
 class SessionCacheWrapper {
