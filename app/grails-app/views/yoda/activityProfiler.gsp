@@ -14,8 +14,6 @@
 <br>
     <h2 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon />${message(code:'menu.yoda.activityProfiler')}</h2>
 
-    <h3 class="ui header">Aktivität</h3>
-
     <table class="ui celled la-table la-table-small table">
         <thead>
             <tr class="center aligned">
@@ -62,6 +60,8 @@
             </g:each>
         </tbody>
     </table>
-
+    <style>
+        #ct-chart-0 .ct-series-b .ct-bar { stroke: forestgreen; }
+    </style>
 </body>
 </html>
