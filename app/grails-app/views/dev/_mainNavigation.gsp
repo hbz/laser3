@@ -1,6 +1,6 @@
 <div class="ui main container">
     <nav id="mainMenueTest" class="ui inverted stackable menu" role="menubar" aria-label="${message(code:'aria-label.mainNavigation')}">
-        <div class="ui container">
+        <div class="ui container" aria-hidden="true">
             <a href="https://www.w3.org" aria-label="Start" class="header item la-logo-item">
                 <img alt="Logo Laser" class="logo" src="${resource(dir: 'images', file: 'laser.svg')}"/>
             </a>

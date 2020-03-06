@@ -69,7 +69,7 @@
     </g:if>
     <g:set var="visibilityContextOrgMenu" value="la-hide-context-orgMenu"></g:set>
     <nav id="mainMenue" class="ui fixed inverted stackable menu" role="menubar" aria-label="${message(code:'aria-label.mainNavigation')}">
-        <div class="ui container">
+        <div class="ui container" role="none">
             <g:link controller="home" action="index" aria-label="${message(code:'default.home.label')}" class="header item la-logo-item">
                 <img alt="Logo Laser" class="logo" src="${resource(dir: 'images', file: 'laser.svg')}"/>
             </g:link>
