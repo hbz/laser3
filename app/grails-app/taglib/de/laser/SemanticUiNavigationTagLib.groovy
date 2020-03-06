@@ -267,7 +267,8 @@ class SemanticUiNavigationTagLib {
                 action: attrs.action,
                 params: attrs.params,
                 class: 'item' + (attrs.class ? " ${attrs.class}" : ''),
-                id: attrs.id
+                id: attrs.id,
+                role: attrs.role
         )
     }
 
@@ -303,11 +304,13 @@ class SemanticUiNavigationTagLib {
                     action: attrs.action,
                     params: attrs.params,
                     class: 'item' + (attrs.class ? " ${attrs.class}" : ''),
-                    id: attrs.id
+                    id: attrs.id,
+                    role: attrs.role
+
             )
         }
         else {
-            out << '<div class="item disabled">' + linkBody + '</div>'
+            out << '<div class="item disabled" role="menuitem">' + linkBody + '</div>'
         }
     }
 

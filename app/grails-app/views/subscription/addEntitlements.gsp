@@ -263,7 +263,7 @@ ${message(code: 'subscription.details.availableTitles')} ( ${message(code: 'defa
                 </g:if>
                 <g:else>${message(code: 'default.unknown')}</g:else>
                 <g:if test="${tipp?.platform.name}">
-                    <g:link class="ui icon mini  button la-url-button la-popup-tooltip la-delay"
+                    <g:link role="button" class="ui icon mini  button la-url-button la-popup-tooltip la-delay"
                             data-content="${message(code: 'tipp.tooltip.changePlattform')}"
                             controller="platform" action="show" id="${tipp?.platform.id}">
                         <i class="pencil alternate icon"></i>
@@ -347,7 +347,7 @@ ${message(code: 'subscription.details.availableTitles')} ( ${message(code: 'defa
                 </td>
             </g:if>
             <td>
-                <g:link class="ui icon positive button la-popup-tooltip la-delay" action="processAddEntitlements"
+                <g:link role="button" class="ui icon positive button la-popup-tooltip la-delay" action="processAddEntitlements"
                         params="${[id: subscriptionInstance.id, singleTitle: tipp.gokbId, uploadPriceInfo: uploadPriceInfo, preselectCoverageDates: preselectCoverageDates]}"
                         data-content="${message(code: 'subscription.details.addEntitlements.add_now')}">
                     <i class="plus icon"></i>
