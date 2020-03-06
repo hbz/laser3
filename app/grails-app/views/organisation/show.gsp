@@ -152,7 +152,7 @@
                                                 <div class="content">
                                                     <g:if test="${editable}">
                                                     <%-- TODO [ticket=1612] new identifier handling
-                                                        <g:link class="ui mini negative button" controller="ajax"
+                                                        <g:link role="button" class="ui mini negative button" controller="ajax"
                                                                 action="deleteThrough"
                                                                 params='${[contextOid: "${orgInstance.class.name}:${orgInstance.id}", contextProperty: "ids", targetOid: "${isil.class.name}:${isil.id}"]}'>
                                                             <i class="trash alternate icon"></i></g:link>

@@ -346,7 +346,7 @@
                             <i class="pencil icon"></i>
                         </g:link>
                         %{--<g:if test="${surveyInfo.status in [RDStore.SURVEY_IN_PROCESSING]}">
-                            <g:link class="ui icon negative button js-open-confirm-modal"
+                            <g:link role="button" class="ui icon negative button js-open-confirm-modal"
                                     data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.survey", args: [surveyConfig?.getSurveyName()])}"
                                     data-confirm-term-how="delete"
                                     controller="survey" action="deleteSurveyInfo"

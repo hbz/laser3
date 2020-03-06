@@ -130,7 +130,7 @@
 
                     <g:if test="${tipp?.id}">
                         <div class="la-title">${message(code: 'default.details.label')}</div>
-                        <g:link class="ui icon tiny blue button la-js-dont-hide-button la-popup-tooltip la-delay"
+                        <g:link role="button" class="ui icon tiny blue button la-js-dont-hide-button la-popup-tooltip la-delay"
                                 data-content="${message(code: 'laser')}"
                                 href="${tipp?.hostPlatformURL.contains('http') ? tipp?.hostPlatformURL : 'http://' + tipp?.hostPlatformURL}"
                                 target="_blank"

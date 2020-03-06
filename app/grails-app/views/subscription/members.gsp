@@ -219,14 +219,14 @@
                             <g:if test="${sub.getCalculatedType() in [TemplateSupport.CALCULATED_TYPE_PARTICIPATION, TemplateSupport.CALCULATED_TYPE_PARTICIPATION_AS_COLLECTIVE] && sub.instanceOf.getCalculatedType() == TemplateSupport.CALCULATED_TYPE_ADMINISTRATIVE}">
                                 <g:if test="${sub.orgRelations.find{it.roleType == RDStore.OR_SUBSCRIBER_CONS_HIDDEN}}">
                                     <span  class="la-popup-tooltip la-delay" data-content="${message(code:'subscription.details.hiddenForSubscriber')}">
-                                        <g:link class="ui icon button" controller="ajax" action="toggleOrgRole" params="${[id:sub.id]}">
+                                        <g:link role="button" class="ui icon button" controller="ajax" action="toggleOrgRole" params="${[id:sub.id]}">
                                             <i class="eye orange icon"></i>
                                         </g:link>
                                     </span>
                                 </g:if>
                                 <g:else>
                                     <span  class="la-popup-tooltip la-delay" data-content="${message(code:'subscription.details.hideToSubscriber')}">
-                                        <g:link class="ui icon orange button" controller="ajax" action="toggleOrgRole" params="${[id:sub.id]}">
+                                        <g:link role="button" class="ui icon orange button" controller="ajax" action="toggleOrgRole" params="${[id:sub.id]}">
                                             <i class="eye icon"></i>
                                         </g:link>
                                     </span>
@@ -234,7 +234,7 @@
                             </g:if>
                             <g:set var="hasCostItems" value="${CostItem.executeQuery('select ci from CostItem ci where ci.sub = :sub',[sub:sub])}"/>
                             <g:if test="${!hasCostItems}">
-                                <g:link class="ui icon negative button" controller="subscription" action="delete" params="${[id:sub.id]}">
+                                <g:link role="button" class="ui icon negative button" controller="subscription" action="delete" params="${[id:sub.id]}">
                                     <i class="trash alternate icon"></i>
                                 </g:link>
                             </g:if>

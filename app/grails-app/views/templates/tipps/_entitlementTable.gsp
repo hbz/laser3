@@ -210,7 +210,7 @@
 
                                 <g:if test="${tipp?.id}">
                                     <div class="la-title">${message(code: 'default.details.label')}</div>
-                                    <g:link class="ui icon tiny blue button la-js-dont-hide-button la-popup-tooltip la-delay"
+                                    <g:link role="button" class="ui icon tiny blue button la-js-dont-hide-button la-popup-tooltip la-delay"
                                             data-content="${message(code: 'laser')}"
                                             href="${tipp?.hostPlatformURL.contains('http') ? tipp?.hostPlatformURL : 'http://' + tipp?.hostPlatformURL}"
                                             target="_blank"
@@ -260,14 +260,14 @@
 
                             <g:if test="${surveyFunction}">
                                 <g:if test="${side == 'target' && isContainedByTarget && targetIE?.acceptStatus == de.laser.helper.RDStore.IE_ACCEPT_STATUS_UNDER_CONSIDERATION && editable}">
-                                    <g:link class="ui icon negative button la-popup-tooltip la-delay" action="processRemoveIssueEntitlementsSurvey"
+                                    <g:link role="button" class="ui icon negative button la-popup-tooltip la-delay" action="processRemoveIssueEntitlementsSurvey"
                                             params="${[id: subscriptionInstance.id, singleTitle: isContainedByTarget.id, packageId: packageId, surveyConfigID: surveyConfig?.id]}"
                                             data-content="${message(code: 'subscription.details.addEntitlements.remove_now')}">
                                         <i class="minus icon"></i>
                                     </g:link>
                                 </g:if>
                                 <g:elseif test="${side == 'source' && !isContainedByTarget && editable}">
-                                    <g:link class="ui icon positive button la-popup-tooltip la-delay" action="processAddIssueEntitlementsSurvey"
+                                    <g:link role="button" class="ui icon positive button la-popup-tooltip la-delay" action="processAddIssueEntitlementsSurvey"
                                             params="${[id: subscriptionInstance.id, singleTitle: ie.id, surveyConfigID: surveyConfig?.id]}"
                                             data-content="${message(code: 'subscription.details.addEntitlements.add_now')}">
                                         <i class="plus icon"></i>
@@ -276,14 +276,14 @@
                             </g:if>
                             <g:else>
                                 <g:if test="${side == 'target' && isContainedByTarget && targetIE?.acceptStatus == de.laser.helper.RDStore.IE_ACCEPT_STATUS_UNDER_CONSIDERATION && editable}">
-                                    <g:link class="ui icon negative button la-popup-tooltip la-delay" action="processRemoveEntitlements"
+                                    <g:link role="button" class="ui icon negative button la-popup-tooltip la-delay" action="processRemoveEntitlements"
                                             params="${[id: subscriptionInstance.id, singleTitle: tipp.gokbId, packageId: packageId]}"
                                             data-content="${message(code: 'subscription.details.addEntitlements.remove_now')}">
                                         <i class="minus icon"></i>
                                     </g:link>
                                 </g:if>
                                 <g:elseif test="${side == 'source' && !isContainedByTarget && editable}">
-                                    <g:link class="ui icon positive button la-popup-tooltip la-delay" action="processAddEntitlements"
+                                    <g:link role="button" class="ui icon positive button la-popup-tooltip la-delay" action="processAddEntitlements"
                                             params="${[id: subscriptionInstance.id, singleTitle: tipp.gokbId]}"
                                             data-content="${message(code: 'subscription.details.addEntitlements.add_now')}">
                                         <i class="plus icon"></i>

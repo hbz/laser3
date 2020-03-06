@@ -162,7 +162,7 @@
                                                 <td class="right aligned">
                                                     <g:if test="${editable}">
                                                         <div class="ui icon negative buttons">
-                                                            <g:link class="ui button la-selectable-button js-open-confirm-modal" name="unlinkSubscription"
+                                                            <g:link role="button" class="ui button la-selectable-button js-open-confirm-modal" name="unlinkSubscription"
                                                                     controller="license" action="unlinkSubscription"
                                                                     params="['license':license.id, 'subscription':sub.id]"
                                                                     data-confirm-tokenMsg="${message(code: "confirm.dialog.unlink.licence.subscription", args:[sub.name])}"
@@ -235,7 +235,7 @@
                                             <g:if test="${editable}">
 
                                                 <div class="ui mini icon buttons">
-                                                    <g:link class="ui button" controller="license" action="unlinkLicense" params="[license_id: license.id, opl_id: onixplLicense.id]">
+                                                    <g:link role="button" class="ui button" controller="license" action="unlinkLicense" params="[license_id: license.id, opl_id: onixplLicense.id]">
                                                         <i class="unlink icon"> </i>${message(code:'default.button.unlink.label')}
                                                     </g:link>
                                                 </div>
@@ -243,7 +243,7 @@
                                             </g:if>
                                         </g:if>
                                         <g:else>
-                                            <g:link class="ui positive button" controller='licenseImport' action='doImport' params='[license_id: license.id]'>${message(code:'license.importONIX-PLlicense', default:'Import an ONIX-PL license')}</g:link>
+                                            <g:link role="button" class="ui positive button" controller='licenseImport' action='doImport' params='[license_id: license.id]'>${message(code:'license.importONIX-PLlicense', default:'Import an ONIX-PL license')}</g:link>
                                         </g:else>
                                     </dd>
 

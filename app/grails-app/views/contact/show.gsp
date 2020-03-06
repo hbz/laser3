@@ -64,7 +64,7 @@
 					<g:form>
 						<g:hiddenField name="id" value="${contactInstance?.id}" />
 						<div class="ui form-actions">
-							<g:link class="ui button" action="edit" id="${contactInstance?.id}">
+							<g:link role="button" class="ui button" action="edit" id="${contactInstance?.id}">
 								<i class="write icon"></i>
 								<g:message code="default.button.edit.label" />
 							</g:link>

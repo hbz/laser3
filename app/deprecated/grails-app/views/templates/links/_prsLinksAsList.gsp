@@ -35,7 +35,7 @@
                 </div>
                 <g:if test="${editable}">
                     <div class="ui icon negative buttons">
-                        <g:link class="ui button" controller="ajax" action="delPrsRole" id="${pr.id}"
+                        <g:link role="button" class="ui button" controller="ajax" action="delPrsRole" id="${pr.id}"
                             onclick="return confirm('${message(code:'template.orgLinks.delete.warn')}')">
                             <i class="unlink icon"></i>
                         </g:link>

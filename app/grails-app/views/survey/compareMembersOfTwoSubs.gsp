@@ -397,7 +397,7 @@ ${surveyInfo?.name}
 </semui:form>
 
 <div class="sixteen wide field" style="text-align: center;">
-    <g:link class="ui button" controller="survey" action="copyProperties"
+    <g:link role="button" class="ui button" controller="survey" action="copyProperties"
             params="[id: surveyInfo?.id, surveyConfigID: surveyConfig?.id, tab: 'surveyProperties']">
         ${message(code: 'copySurveyCostItems.workFlowSteps.nextStep')}
     </g:link>

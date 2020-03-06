@@ -80,12 +80,12 @@
         <h4>${message(code: 'subscription.linkPackagesMembers.unlinkInfo')}</h4>
 
         <div class="ui buttons">
-            <g:link class="ui button negative js-open-confirm-modal"
+            <g:link role="button" class="ui button negative js-open-confirm-modal"
                     data-confirm-tokenMsg="${message(code: 'subscription.linkPackagesMembers.unlinkInfo.onlyPackage.confirm')}"
                     data-confirm-term-how="ok" action="processUnLinkPackagesConsortia" id="${params.id}"
                     params="[withIE: false]">${message(code: 'subscription.linkPackagesMembers.unlinkInfo.onlyPackage')}</g:link>
             <div class="or"></div>
-            <g:link class="ui button negative js-open-confirm-modal"
+            <g:link role="button" class="ui button negative js-open-confirm-modal"
                     data-confirm-tokenMsg="${message(code: 'subscription.linkPackagesMembers.unlinkInfo.withIE.confirm')}"
                     data-confirm-term-how="ok" action="processUnLinkPackagesConsortia" id="${params.id}"
                     params="[withIE: true]">${message(code: 'subscription.linkPackagesMembers.unlinkInfo.withIE')}</g:link>

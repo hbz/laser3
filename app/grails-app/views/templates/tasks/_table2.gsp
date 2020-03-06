@@ -62,7 +62,7 @@
                         <a onclick="taskedit(${taskInstance.id});" class="ui icon button">
                             <i class="write icon"></i>
                         </a>
-                        <g:link class="ui icon negative button js-open-confirm-modal"
+                        <g:link role="button" class="ui icon negative button js-open-confirm-modal"
                                 data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.task")}"
                                 data-confirm-term-how="delete"
                                 controller="myInstitution" action="tasks" params="[deleteId:taskInstance.id]" >

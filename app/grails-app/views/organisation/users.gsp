@@ -159,7 +159,7 @@
                             </g:link>
                         </g:if>
 
-                        <g:link class="ui icon negative button js-open-confirm-modal la-popup-tooltip la-delay"
+                        <g:link role="button" class="ui icon negative button js-open-confirm-modal la-popup-tooltip la-delay"
                                 data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.user.organisation", args: [uo.user.displayName,uo.user.getSettingsValue(UserSettings.KEYS.DASHBOARD)?.name ])}"
                                 data-confirm-term-how="delete"
                                 controller="organisation"

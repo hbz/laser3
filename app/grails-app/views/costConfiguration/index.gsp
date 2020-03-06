@@ -55,7 +55,7 @@
                                             action="setAllCostItems" params="${[cie:ciec.costItemElement.class.name+":"+ciec.costItemElement.id]}">
                                         ${message(code:'costConfiguration.configureAllCostItems')}
                                     </g:link>
-                                    <g:link class="ui icon negative button js-open-confirm-modal"
+                                    <g:link role="button" class="ui icon negative button js-open-confirm-modal"
                                             data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.costItemElementConfiguration", args: [ciec.costItemElement.getI10n("value")])}"
                                             data-confirm-term-how="delete"
                                             controller="costConfiguration" action="deleteCostConfiguration"

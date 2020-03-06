@@ -535,7 +535,7 @@
                                 </span>
                             </g:if>
                             <g:else>
-                                <g:link class="ui icon negative button js-open-confirm-modal"
+                                <g:link role="button" class="ui icon negative button js-open-confirm-modal"
                                         data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.subscription", args: [s.name])}"
                                         data-confirm-term-how="delete"
                                         controller="myInstitution" action="actionCurrentSubscriptions"

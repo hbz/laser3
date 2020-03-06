@@ -442,7 +442,7 @@
                       </g:if>
                       <g:if test="${t?.id}">
                           <div class="la-title">${message(code: 'default.details.label')}</div>
-                          <g:link class="ui icon tiny blue button la-js-dont-hide-button la-popup-tooltip la-delay"
+                          <g:link role="button" class="ui icon tiny blue button la-js-dont-hide-button la-popup-tooltip la-delay"
                                   data-content="${message(code: 'laser')}"
                                   target="_blank"
                                   controller="tipp" action="show"

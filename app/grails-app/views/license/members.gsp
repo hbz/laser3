@@ -74,7 +74,7 @@
                 </td>
                 <td class="x">
                     <g:if test="${editable}">
-                        <g:link class="ui icon negative button" controller="license" action="delete" params="${[id:lic.id]}">
+                        <g:link role="button" class="ui icon negative button" controller="license" action="delete" params="${[id:lic.id]}">
                             <i class="trash alternate icon"></i>
                         </g:link>
                     </g:if>

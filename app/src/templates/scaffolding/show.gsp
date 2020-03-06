@@ -46,7 +46,7 @@
 				<g:form class="ui form">
 					<g:hiddenField name="id" value="\${${propertyName}?.id}" />
 					<div class="ui form-actions">
-						<g:link class="ui button" action="edit" id="\${${propertyName}?.id}">
+						<g:link role="button" class="ui button" action="edit" id="\${${propertyName}?.id}">
 							<i aria-hidden="true" class="write icon"></i>
 							<g:message code="default.button.edit.label" />
 						</g:link>

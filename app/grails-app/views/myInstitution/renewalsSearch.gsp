@@ -54,12 +54,12 @@
 
 <div class="field">
     <g:if test="${com.k_int.kbplus.Subscription.get(sub_id).packages}">
-    <g:link class="ui button" controller="myInstitution" params="${[sub_id: sub_id]}"
+    <g:link role="button" class="ui button" controller="myInstitution" params="${[sub_id: sub_id]}"
             action="renewalsnoPackageChange">${message(code: 'myinst.renewalSearch.uploadnopackageschange', default: 'Import Renewals with packages')}</g:link>
     </g:if>
-        <g:link class="ui button" controller="myInstitution" params="${[sub_id: sub_id]}"
+        <g:link role="button" class="ui button" controller="myInstitution" params="${[sub_id: sub_id]}"
                     action="renewalswithoutPackage">${message(code: 'myinst.renewalSearch.uploadwithoutpackage', default: 'Import Renewals without packages')}</g:link>
-    <g:link class="ui button" controller="myInstitution"
+    <g:link role="button" class="ui button" controller="myInstitution"
             action="renewalsUpload">${message(code: 'menu.institutions.imp_renew', default: 'Import Renewals')}</g:link>
 
 </div>

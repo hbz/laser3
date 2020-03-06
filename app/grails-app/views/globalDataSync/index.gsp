@@ -31,7 +31,7 @@
     <g:form action="index" method="get" class="ui form">
         <div class="fields">
             <div class="field">
-                <g:link class="ui secondary button" params="[sort: 'ts', max: max, offset: offset, order: order]"><g:message
+                <g:link role="button" class="ui secondary button" params="[sort: 'ts', max: max, offset: offset, order: order]"><g:message
                         code="globalDataSync.updated"/></g:link>
             </div>
         </div>

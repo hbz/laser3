@@ -159,7 +159,7 @@ ${personInstance}
                                                         <g:set var="oid" value="${link.class.name}:${link.id}" />
                                                         <g:if test="${personInstance.roleLinks?.size() > 1}">
                                                             <div class="ui mini icon buttons">
-                                                                <g:link class="ui negative button js-open-confirm-modal"
+                                                                <g:link role="button" class="ui negative button js-open-confirm-modal"
                                                                         data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.function", args: [link.functionType?.getI10n('value')])}"
                                                                         data-confirm-term-how="delete"
                                                                         controller="person" action="deletePersonRole" id="${personInstance.id}"  params="[oid: oid]">
@@ -169,7 +169,7 @@ ${personInstance}
                                                         </g:if>
                                                         <g:else>
                                                             <div class="ui mini icon buttons">
-                                                                <g:link class="ui negative button js-open-confirm-modal"
+                                                                <g:link role="button" class="ui negative button js-open-confirm-modal"
                                                                         controller="person"
                                                                         action="_delete"
                                                                         id="${personInstance?.id}"
@@ -224,7 +224,7 @@ ${personInstance}
                                                         <g:set var="oid" value="${link.class.name}:${link.id}" />
                                                         <g:if test="${personInstance.roleLinks?.size() > 1}">
                                                             <div class="ui mini icon buttons">
-                                                                <g:link class="ui negative button js-open-confirm-modal"
+                                                                <g:link role="button" class="ui negative button js-open-confirm-modal"
                                                                         data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.function", args: [link.positionType?.getI10n('value')])}"
                                                                         data-confirm-term-how="unlink"
                                                                         controller="person" action="deletePersonRole" id="${personInstance.id}"  params="[oid: oid]">
@@ -234,7 +234,7 @@ ${personInstance}
                                                         </g:if>
                                                         <g:else>K
                                                             <div class="ui mini icon buttons">
-                                                                <g:link class="ui negative button js-open-confirm-modal"
+                                                                <g:link role="button" class="ui negative button js-open-confirm-modal"
                                                                         controller="person"
                                                                         action="_delete"
                                                                         id="${personInstance?.id}"
@@ -328,7 +328,7 @@ ${personInstance}
                                                     <g:if test="${editable}">
                                                         <div class="ui mini icon buttons">
                                                             <g:set var="oid" value="${link.class.name}:${link.id}" />
-                                                            <g:link class="ui negative button" controller="person" action="deletePersonRole" id="${personInstance.id}" params="[oid: oid]">
+                                                            <g:link role="button" class="ui negative button" controller="person" action="deletePersonRole" id="${personInstance.id}" params="[oid: oid]">
                                                                 <i class="trash alternate icon"></i>
                                                             </g:link>
                                                         </div>
