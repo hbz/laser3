@@ -77,9 +77,13 @@ c3po = {
         }
 
         $(cssId + " .customPropSelect").select2({
-            placeholder: dict.get('property.select.placeholder',currLanguage),
+            placeholder: dict.get('property.select.placeholder', currLanguage),
             minimumInputLength: 0,
             width: 300,
+            formatSearching: function ()           { return dict.get('property.select.searching', currLanguage); },
+            formatLoadMore:  function (pageNumber) { return dict.get('property.select.loadMore', currLanguage); },
+            formatNoMatches: function ()           { return dict.get('property.select.noMatches', currLanguage); },
+
             ajax: { // instead of writing the function to execute the request we use Select2's convenient helper
                 url: ajaxurl,
                 dataType: 'json',
