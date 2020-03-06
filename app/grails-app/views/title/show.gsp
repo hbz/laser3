@@ -394,7 +394,7 @@
                       <g:link controller="package" action="show" id="${t?.pkg?.id}">${t?.pkg?.name}</g:link>
                   </div>
                   <g:if test="${t.hostPlatformURL}">
-                      <a class="ui icon tiny blue button la-js-dont-hide-button la-popup-tooltip la-delay"
+                      <a role="button" class="ui icon tiny blue button la-js-dont-hide-button la-popup-tooltip la-delay"
                          data-content="${t.platform.name}"
                          href="${t.hostPlatformURL.contains('http') ? t.hostPlatformURL :'http://'+t.hostPlatformURL}"
                          target="_blank">
@@ -454,7 +454,7 @@
                       <g:each in="${com.k_int.kbplus.ApiSource.findAllByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true)}"
                               var="gokbAPI">
                           <g:if test="${t?.gokbId}">
-                              <a class="ui icon tiny blue button la-js-dont-hide-button la-popup-tooltip la-delay"
+                              <a role="button" class="ui icon tiny blue button la-js-dont-hide-button la-popup-tooltip la-delay"
                                  data-content="${message(code: 'gokb')}"
                                  href="${gokbAPI.editUrl ? gokbAPI.editUrl + '/gokb/resource/show/' + t?.gokbId : '#'}"
                                  target="_blank"><i class="la-gokb  icon"></i>

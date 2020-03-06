@@ -10,77 +10,70 @@
 <body>
 <laser:serviceInjection/>
     <div id="modalCreateTask">
-        <h1 class="ui dividing  header">Übersicht über alle in Laser eingesetzten Komponenten</h1>
+        <h1 class="ui dividing  header">Komponenten zur Überprüfung der Barrierefreiheit</h1>
 
         <h2 class="ui dividing  header">Einfache Datentabelle</h2>
         <g:render template="simpleTable" />
 
+        <h2 class="ui dividing header">Brotkrumennavigation</h2>
+        <semui:breadcrumbs>
+            <semui:crumb message="myinst.currentSubscriptions.label" class="active" />
+        </semui:breadcrumbs>
+
+
         <h2 class="ui dividing  header">Hauptnavigation</h2>
         <g:render template="mainNavigation" />
 
+        <h2 class="ui dividing header">Buttons</h2>
+        <g:render template="button" />
 
         <h2 class="ui dividing  header">Formulare</h2>
         <g:render template="form" />
 
-        <h2 class="ui dividing header">Buttons und Links</h2>
-        <h3 class="ui dividing header">Link funktioniert als Button mit Tooltip</h3>
-        <a  role="button" class="ui icon mini button la-audit-button la-popup-tooltip la-delay" href='https://www.spiegel.de' data-content="Das ist der Inhalt des Tooltips">
-            <i  class="icon thumbtack la-js-editmode-icon"></i>
-        </a>
-        <h3 class="ui dividing header">Link funktioniert als Button ohne Tooltip</h3>
-        <g:link role="button" aria-label="Das ist eine Beschreibung für den Accessibility Tree" controller="dev" action="frontend" params="" class="ui icon positive button">
-            <i aria-hidden="true" class="checkmark icon"></i>
+
+
+
+
+    <h2 class="ui dividing header">Icons</h2>
+    <h3 class="ui dividing header">Dekoratives Icon mit einer Dopplung der Semantik durch Text, der daneben steht.</h3>
+
+    <div class="ui icon info message">
+        <i aria-hidden="true" class="exclamation triangle icon"></i>
+        <div class="content">
+            <div class="header">
+                Achtung
+            </div>
+            <p>Wenn Sie ein neues Element nicht finden, warten Sie etwa <strong>10 Minuten</strong>, bis sich der Index aktualisiert hat.</p>
+        </div>
+    </div>
+    <h3 class="ui dividing header">Icon, das für assistive Tools keine Bedeutung haben muss - zum Beispiel das Schließen von Meldungen</h3>
+    <div class="ui icon info message">
+        <i aria-hidden="true" class="close icon"></i>
+        <div class="content">
+            <div class="header">
+                Achtung
+            </div>
+            <p>Wenn Sie ein neues Element nicht finden, warten Sie etwa <strong>10 Minuten</strong>, bis sich der Index aktualisiert hat.</p>
+        </div>
+    </div>
+
+
+    <h2 class="ui dividing header">Modals</h2>
+    <h3 class="ui dividing header">Confimation Modal</h3>
+    <p class="la-clear-before">
+        <g:link controller="dev"
+                action="frontend"
+                params=""
+                data-content="Hier kommt der Tooltip rein"
+                data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.function", args: ['Button auf der YODA/FRONTENDSEITE'])}"
+                data-confirm-term-how="delete"
+                class="ui icon negative button js-open-confirm-modal la-popup-tooltip la-delay"
+                role="button">
+            <i aria-hidden="true" class="trash alternate icon"></i>
         </g:link>
+    </p>
 
-        <h2 class="ui dividing header">Icons</h2>
-        <h3 class="ui dividing header">Dekoratives Icon mit einer Dopplung der Semantik durch Text, der daneben steht.</h3>
 
-        <div class="ui icon info message">
-            <i aria-hidden="true" class="exclamation triangle icon"></i>
-            <div class="content">
-                <div class="header">
-                    Achtung
-                </div>
-                <p>Wenn Sie ein neues Element nicht finden, warten Sie etwa <strong>10 Minuten</strong>, bis sich der Index aktualisiert hat.</p>
-            </div>
-        </div>
-        <h3 class="ui dividing header">Icon, das für assistive Tools keine Bedeutung haben muss - zum Beispiel das Schließen von Meldungen</h3>
-        <div class="ui icon info message">
-            <i aria-hidden="true" class="close icon"></i>
-            <div class="content">
-                <div class="header">
-                    Achtung
-                </div>
-                <p>Wenn Sie ein neues Element nicht finden, warten Sie etwa <strong>10 Minuten</strong>, bis sich der Index aktualisiert hat.</p>
-            </div>
-        </div>
-        <h3 class="ui dividing header">Icons in einem Button, der eine Bezeichnung hat</h3>
-        <button class="ui   button la-inline-labeled la-js-filterButton la-clearfix blue"> Filter <i
-                aria-hidden="true" class="filter icon"></i> <span
-                class="ui circular label la-js-filter-total hidden">0</span>
-        </button>
-
-        <h2 class="ui dividing header">Modals</h2>
-        <h3 class="ui dividing header">Confimation Modal</h3>
-        <p class="la-clear-before">
-            <g:link controller="dev"
-                    action="frontend"
-                    params=""
-                    data-content="Hier kommt der Tooltip rein"
-                    data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.function", args: ['Button auf der YODA/FRONTENDSEITE'])}"
-                    data-confirm-term-how="delete"
-                    class="ui icon negative button js-open-confirm-modal la-popup-tooltip la-delay"
-                    role="button">
-                <i aria-hidden="true" class="trash alternate icon"></i>
-            </g:link>
-        </p>
-
-        %{--<h2 class="ui dividing header">Pagination</h2>--}%
-        <h2 class="ui dividing header">Breadcrumb</h2>
-        <semui:breadcrumbs>
-            <semui:crumb message="myinst.currentSubscriptions.label" class="active" />
-        </semui:breadcrumbs>
-        %{--<h2 class="ui dividing header">Accordion</h2>--}%
         <h2 class="ui dividing header">Toggle Segment</h2>
 
             <g:render template="../templates/filter/javascript" />

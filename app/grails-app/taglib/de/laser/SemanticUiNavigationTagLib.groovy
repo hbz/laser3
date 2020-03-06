@@ -58,7 +58,7 @@ class SemanticUiNavigationTagLib {
             out << linkBody.encodeAsHTML()
         }
         if (! "active".equalsIgnoreCase(attrs.class.toString())) {
-            out << ' <div class="divider">/</div> '
+            out << ' <div aria-hidden="true" class="divider">/</div> '
         }
     }
 

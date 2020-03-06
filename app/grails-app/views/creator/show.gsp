@@ -86,7 +86,7 @@
                             <dl>
                                 <dt></dt>
                                 <dd>
-                                    <a class="ui button" data-semui="modal"
+                                    <a role="button" class="ui button" data-semui="modal"
                                        href="#creatorTitle_add_modal">Titel hinzufügen</a>
                                     <g:render template="creatorTitleModal"
                                               model="${[creatorInstance: creatorInstance,

@@ -3,7 +3,7 @@
         <dt></dt>
         <dd>
             <br/>
-            <a class="ui button" data-semui="modal" href="#orgType">
+            <a role="button" class="ui button" data-semui="modal" href="#orgType">
                 <g:message code="org.orgType.add.label" default="Add new Organisation Type"/>
             </a>
         </dd>
