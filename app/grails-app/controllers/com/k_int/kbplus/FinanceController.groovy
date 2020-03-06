@@ -1,10 +1,10 @@
 package com.k_int.kbplus
 
-
 import com.k_int.kbplus.auth.User
 import de.laser.controller.AbstractDebugController
 import de.laser.helper.DateUtil
 import de.laser.helper.DebugAnnotation
+import de.laser.helper.RDConstants
 import de.laser.helper.RDStore
 import de.laser.interfaces.TemplateSupport
 import grails.converters.JSON
@@ -20,7 +20,6 @@ import org.apache.poi.xssf.usermodel.XSSFCellStyle
 import org.apache.poi.xssf.usermodel.XSSFColor
 import org.apache.poi.xssf.usermodel.XSSFWorkbook
 import org.springframework.context.i18n.LocaleContextHolder
-import de.laser.helper.RDConstants
 
 import javax.servlet.ServletOutputStream
 import java.awt.*

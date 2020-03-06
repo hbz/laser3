@@ -1,12 +1,10 @@
 package com.k_int.kbplus
 
-
 import com.k_int.kbplus.auth.User
 import de.laser.ContextService
 import de.laser.api.v0.ApiManager
 import de.laser.api.v0.ApiReader
 import de.laser.api.v0.ApiToolkit
-import de.laser.controller.AbstractDebugController
 import de.laser.helper.Constants
 import grails.converters.JSON
 import grails.plugin.springsecurity.annotation.Secured

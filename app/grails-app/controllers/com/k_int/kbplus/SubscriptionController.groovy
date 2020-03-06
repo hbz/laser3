@@ -10,13 +10,9 @@ import de.laser.controller.AbstractDebugController
 import de.laser.domain.IssueEntitlementCoverage
 import de.laser.domain.PriceItem
 import de.laser.exceptions.EntitlementCreationException
-import de.laser.helper.DateUtil
-import de.laser.helper.DebugAnnotation
-import de.laser.helper.DebugUtil
-import de.laser.helper.EhcacheWrapper
-import de.laser.helper.RDConstants
-import de.laser.helper.RDStore
-import de.laser.interfaces.*
+import de.laser.helper.*
+import de.laser.interfaces.ShareSupport
+import de.laser.interfaces.TemplateSupport
 import de.laser.oai.OaiClientLaser
 import grails.converters.JSON
 import grails.doc.internal.StringEscapeCategory
