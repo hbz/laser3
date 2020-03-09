@@ -62,6 +62,19 @@ databaseChangeLog = {
 	changeSet(author: "djebeniani (modified)", id: "1583759022240-5") {
 		grailsChange {
 			change {
+
+				sql.execute("UPDATE subscription SET sub_status_rv_fk = (SELECT rdv_id FROM refdata_value WHERE\n" +
+						"        rdv_owner = (SELECT rdc_id FROM refdata_category as rdc WHERE rdc.rdc_description = 'subscription.status')\n" +
+						"                                                                             AND rdv_value = 'Expired')\n" +
+						"WHERE sub_status_rv_fk = (SELECT rdv_id FROM refdata_value WHERE rdv_owner = (SELECT rdc_id FROM refdata_category as rdc WHERE rdc.rdc_description = 'subscription.status')\n" +
+						"                                                           AND rdv_value = 'ExpiredPerennial');")
+
+				sql.execute("UPDATE subscription SET sub_status_rv_fk = (SELECT rdv_id FROM refdata_value WHERE\n" +
+						"        rdv_owner = (SELECT rdc_id FROM refdata_category as rdc WHERE rdc.rdc_description = 'subscription.status')\n" +
+						"                                                                             AND rdv_value = 'Intended')\n" +
+						"WHERE sub_status_rv_fk = (SELECT rdv_id FROM refdata_value WHERE rdv_owner = (SELECT rdc_id FROM refdata_category as rdc WHERE rdc.rdc_description = 'subscription.status')\n" +
+						"                                                           AND rdv_value = 'IntendedPerennial');")
+
 				sql.execute("DELETE FROM refdata_value WHERE rdv_owner = (SELECT rdc_id FROM refdata_category as rdc WHERE rdc.rdc_description = 'subscription.status') AND rdv_value = 'ExpiredPerennial';")
 
 				sql.execute("DELETE FROM refdata_value WHERE rdv_owner = (SELECT rdc_id FROM refdata_category as rdc WHERE rdc.rdc_description = 'subscription.status') AND rdv_value = 'IntendedPerennial';")
