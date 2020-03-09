@@ -2,6 +2,8 @@
 
 **Ticket    Date    Branch      Author  Feature/Bug     Description/Keywords**
 
+2235    06.03.2020  rc1.2       Andreas Bug         Teilnehmer verwalten: Vertragsverknüpfung erzeugt jetzt auch OrgRole-Einträge
+
 2235    06.03.2020  rc1.2       David   Bug         Meine Verträge: Teilnehmerverträge werden angezeigt
 
 2231    03.03.2020  rc1.2       David   Feature     Performance: /myInstitution/currentProviders
