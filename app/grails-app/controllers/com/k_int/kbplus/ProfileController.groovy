@@ -108,8 +108,8 @@ class ProfileController {
     @Secured(['ROLE_USER'])
     def processCancelRequest() {
         log.debug("processCancelRequest(${params}) userOrg with id ${params.assoc}")
-        def user        = User.get(springSecurityService.principal.id)
-        def userOrg     = UserOrg.findByUserAndId(user, params.assoc)
+        User user        = User.get(springSecurityService.principal.id)
+        UserOrg userOrg  = UserOrg.findByUserAndId(user, params.assoc)
 
         if (userOrg) {
             userOrg.delete(flush:true)
@@ -151,7 +151,7 @@ class ProfileController {
 
   @Secured(['ROLE_USER'])
   def updateProfile() {
-    def user = User.get(springSecurityService.principal.id)
+    User user = User.get(springSecurityService.principal.id)
 
     flash.message=""
 
@@ -210,7 +210,7 @@ class ProfileController {
 
   @Secured(['ROLE_USER'])
   def updateReminderSettings() {
-    def user = User.get(springSecurityService.principal.id)
+    User user = User.get(springSecurityService.principal.id)
 
     flash.message = ""
     flash.error = ""
@@ -268,7 +268,7 @@ class ProfileController {
   }
     @Secured(['ROLE_USER'])
     def updateNotificationSettings() {
-        def user = User.get(springSecurityService.principal.id)
+        User user = User.get(springSecurityService.principal.id)
 
         flash.message = ""
         flash.error = ""
@@ -347,7 +347,7 @@ class ProfileController {
 
     @Secured(['ROLE_USER'])
     def updateIsRemindByEmail() {
-        def user1 = User.get(springSecurityService.principal.id)
+        User user1 = User.get(springSecurityService.principal.id)
 
         flash.message=""
         def was_isRemindByEmail = user1.getSetting(UserSettings.KEYS.IS_REMIND_BY_EMAIL, RDStore.YN_NO)
@@ -365,7 +365,7 @@ class ProfileController {
 
     @Secured(['ROLE_USER'])
     def updatePassword() {
-        def user = User.get(springSecurityService.principal.id)
+        User user = User.get(springSecurityService.principal.id)
         flash.message = ""
 
         if (passwordEncoder.isPasswordValid(user.password, params.passwordCurrent, null)) {

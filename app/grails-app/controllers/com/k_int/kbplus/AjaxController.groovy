@@ -1,6 +1,7 @@
 package com.k_int.kbplus
 
 import com.k_int.kbplus.abstract_domain.AbstractProperty
+import com.k_int.kbplus.auth.Role
 import com.k_int.kbplus.auth.User
 import com.k_int.properties.PropertyDefinition
 import com.k_int.properties.PropertyDefinitionGroup
@@ -425,7 +426,7 @@ class AjaxController {
     Map<String, Object> result = [:]
     result.response = false;
     if( params.id ) {
-      def p = Package.findByIdentifier(params.id)
+        Package p = Package.findByIdentifier(params.id)
       if ( !p ) {
         result.response = true
       }
@@ -2099,7 +2100,7 @@ class AjaxController {
     def toggleEditMode() {
         log.debug ('toggleEditMode()')
 
-        def user = contextService.getUser()
+        User user = contextService.getUser()
         def show = params.showEditMode
 
         if (show) {
@@ -2473,8 +2474,8 @@ class AjaxController {
 
     @Secured(['ROLE_USER'])
     def removeUserRole() {
-        def user = resolveOID2(params.user);
-        def role = resolveOID2(params.role);
+        User user = resolveOID2(params.user);
+        Role role = resolveOID2(params.role);
         if (user && role) {
             com.k_int.kbplus.auth.UserRole.remove(user,role,true);
         }

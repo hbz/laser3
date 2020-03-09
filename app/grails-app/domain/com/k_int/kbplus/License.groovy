@@ -359,8 +359,8 @@ class License
     else {
       log.debug("Create new note...");
       if ( ( note_content ) && ( note_content.trim().length() > 0 ) ) {
-        def doc = new Doc(content:note_content, lastUpdated:new Date(), dateCreated: new Date())
-        def newctx = new DocContext(license: this, owner: doc, domain:domain)
+          Doc doc = new Doc(content:note_content, lastUpdated:new Date(), dateCreated: new Date())
+          DocContext newctx = new DocContext(license: this, owner: doc, domain:domain)
         doc.save();
         newctx.save(flush:true);
       }
@@ -380,8 +380,8 @@ class License
     }
 
     boolean hasPerm(perm, user) {
-        def adm = Role.findByAuthority('ROLE_ADMIN')
-        def yda = Role.findByAuthority('ROLE_YODA')
+        Role adm = Role.findByAuthority('ROLE_ADMIN')
+        Role yda = Role.findByAuthority('ROLE_YODA')
 
         if (user.getAuthorities().contains(adm) || user.getAuthorities().contains(yda)) {
             return true

@@ -5,11 +5,11 @@ class InplaceTagLib {
   def refdataValue = { attrs, body ->
     log.debug("refdataValue ${attrs}");
     if ( attrs.cat ) {
-      def category = RefdataCategory.getByDesc(attrs.cat)
+      RefdataCategory category = RefdataCategory.getByDesc(attrs.cat)
       if ( category ) {
-        def value = RefdataValue.getByValueAndCategory(attrs.val, attrs.cat)
+        RefdataValue value = RefdataValue.getByValueAndCategory(attrs.val, attrs.cat)
 
-        def id = "${attrs.domain}:${attrs.pk}:${attrs.field}:${attrs.cat}:${attrs.id}"
+        String id = "${attrs.domain}:${attrs.pk}:${attrs.field}:${attrs.cat}:${attrs.id}"
         if ( value ) {
           //  out << "<span class=\"select-icon ${value?.icon}\">&nbsp;</span><span id=\"${id}\" class=\"${attrs.class}\">"
           out << "<span id=\"${id}\" class=\"${attrs.class}\">"
@@ -35,7 +35,7 @@ class InplaceTagLib {
   }
 
   def inPlaceEdit = { attrs, body ->
-    def data_link = createLink(controller:'ajax', action: 'editableSetValue')
+    String data_link = createLink(controller:'ajax', action: 'editableSetValue')
     out << "<span id=\"${attrs.domain}:${attrs.pk}:${attrs.field}:${attrs.id}\" class=\"xEditableValue ${attrs.class?:''}\" data-type=\"textarea\" data-pk=\"${attrs.domain}:${attrs.pk}\" data-name=\"${attrs.field}\" data-url=\"${data_link}\">"
     if ( body ) {
       out << body()

@@ -17,7 +17,7 @@ class DocWidgetController extends AbstractDebugController {
     @Secured(['ROLE_USER'])
     def createNote() {
         log.debug("Create note referer was ${request.getHeader('referer')} or ${request.request.RequestURL}");
-        def user = User.get(springSecurityService.principal.id)
+        User user = User.get(springSecurityService.principal.id)
         def domain_class = grailsApplication.getArtefact('Domain', params.ownerclass)
 
         if (domain_class) {
@@ -63,7 +63,7 @@ class DocWidgetController extends AbstractDebugController {
         def input_stream = input_file?.inputStream
         def original_filename = request.getFile("upload_file")?.originalFilename
 
-        def user = User.get(springSecurityService.principal.id)
+        User user = User.get(springSecurityService.principal.id)
         def domain_class = grailsApplication.getArtefact('Domain', params.ownerclass)
 
         if (domain_class) {

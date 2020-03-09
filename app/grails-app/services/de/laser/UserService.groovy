@@ -104,7 +104,7 @@ class UserService {
 
         log.debug("created new user: " + user)
 
-        def defaultRole = new UserRole(user: user, role: Role.findByAuthority('ROLE_USER'))
+        UserRole defaultRole = new UserRole(user: user, role: Role.findByAuthority('ROLE_USER'))
         defaultRole.save()
 
         if (params.org && params.formalRole) {

@@ -52,8 +52,8 @@ class InstAdmService {
         result
     }
     boolean isLastAdminForOrg(Org orgToCheck, User usertoCheck){
-        def role = Role.findByAuthority("INST_ADM")
-        def userOrgs = UserOrg.findAllByOrgAndFormalRoleAndStatus(orgToCheck, role, UserOrg.STATUS_APPROVED)
+        Role role = Role.findByAuthority("INST_ADM")
+        UserOrg userOrgs = UserOrg.findAllByOrgAndFormalRoleAndStatus(orgToCheck, role, UserOrg.STATUS_APPROVED)
         if(userOrgs && userOrgs.size() == 1 && userOrgs[0].user == usertoCheck)
         {
             return  true

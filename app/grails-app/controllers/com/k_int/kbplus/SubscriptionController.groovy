@@ -667,7 +667,7 @@ class SubscriptionController extends AbstractDebugController {
 
         if (params.startsBefore && params.startsBefore.length() > 0) {
             SimpleDateFormat sdf = DateUtil.getSDF_NoTime()
-            def d = sdf.parse(params.startsBefore)
+            Date d = sdf.parse(params.startsBefore)
             base_qry += " and (select min(ic.startDate) from IssueEntitlementCoverage ic where ic.ie = ie) <= ?"
             qry_params.add(d)
         }
@@ -809,14 +809,14 @@ class SubscriptionController extends AbstractDebugController {
 
             if (params.endsAfter && params.endsAfter.length() > 0) {
                 SimpleDateFormat sdf = DateUtil.getSDF_NoTime()
-                def d = sdf.parse(params.endsAfter)
+                Date d = sdf.parse(params.endsAfter)
                 basequery += " and (select max(tc.endDate) from TIPPCoverage tc where tc.tipp = tipp) >= ?"
                 qry_params.add(d)
             }
 
             if (params.startsBefore && params.startsBefore.length() > 0) {
                 SimpleDateFormat sdf = DateUtil.getSDF_NoTime()
-                def d = sdf.parse(params.startsBefore)
+                Date d = sdf.parse(params.startsBefore)
                 basequery += " and (select min(tc.startDate) from TIPPCoverage tc where tc.tipp = tipp) <= ?"
                 qry_params.add(d)
             }

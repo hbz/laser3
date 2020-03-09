@@ -605,7 +605,7 @@ class YodaController {
     def appLogfile() {
         return // TODO
 
-        def f = new File("${Holders.config.log_location}")
+        File f = new File("${Holders.config.log_location}")
         return [file: "${f.canonicalPath}"]
     }
 
