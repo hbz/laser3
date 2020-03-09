@@ -2,6 +2,9 @@
 
 **Ticket    Date    Branch      Author  Feature/Bug     Description/Keywords**
 
+
+2145    09.03.2020  hbz-dev     Moe     Feature     Überarbeitung des Lizenztyps
+
 2227    06.03.2020  hbz-dev     David   Bug         Merkmale Auswahl Lizenzebene 
 
 2234    05.03.2020  hbz-dev     Christian   Bug     Überarbeitung Statistikabruf
