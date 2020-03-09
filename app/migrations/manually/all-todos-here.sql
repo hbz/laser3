@@ -25,36 +25,31 @@ update survey_info set surin_is_mandatory = true where surin_is_mandatory is nul
 
 alter table cost_item drop column ci_include_in_subscr;
 
--- 2020-03-
+-- 2020-03-09
 -- ERMS-2145
-alter table subscription add sub_kind_rv_fk bigint;
-
-UPDATE subscription SET sub_kind_rv_fk = (SELECT rdv_id FROM refdata_value WHERE
-rdv_owner = (SELECT rdc_id FROM refdata_category as rdc WHERE rdc.rdc_description = 'subscription.kind')
-                                                                            AND rdv_value = 'Alliance Licence')
-WHERE sub_type_rv_fk = (SELECT rdv_id FROM refdata_value WHERE rdv_owner = (SELECT rdc_id FROM refdata_category as rdc WHERE rdc.rdc_description = 'subscription.type')
-AND rdv_value = 'Alliance Licence');
-
-UPDATE subscription SET sub_kind_rv_fk = (SELECT rdv_id FROM refdata_value WHERE
-        rdv_owner = (SELECT rdc_id FROM refdata_category as rdc WHERE rdc.rdc_description = 'subscription.kind')
-                                                                             AND rdv_value = 'National Licence')
-WHERE sub_type_rv_fk = (SELECT rdv_id FROM refdata_value WHERE rdv_owner = (SELECT rdc_id FROM refdata_category as rdc WHERE rdc.rdc_description = 'subscription.type')
-                                                           AND rdv_value = 'National Licence');
-
-UPDATE subscription SET sub_kind_rv_fk = (SELECT rdv_id FROM refdata_value WHERE
-        rdv_owner = (SELECT rdc_id FROM refdata_category as rdc WHERE rdc.rdc_description = 'subscription.kind')
-                                                                             AND rdv_value = 'Consortial Licence')
-WHERE sub_type_rv_fk = (SELECT rdv_id FROM refdata_value WHERE rdv_owner = (SELECT rdc_id FROM refdata_category as rdc WHERE rdc.rdc_description = 'subscription.type')
-                                                           AND rdv_value = 'Consortial Licence');
-
-UPDATE subscription SET sub_type_rv_fk = (SELECT rdv_id FROM refdata_value WHERE
-        rdv_owner = (SELECT rdc_id FROM refdata_category as rdc WHERE rdc.rdc_description = 'subscription.type')
-                                                                             AND rdv_value = 'Consortial Licence')
-WHERE sub_type_rv_fk = (SELECT rdv_id FROM refdata_value WHERE rdv_owner = (SELECT rdc_id FROM refdata_category as rdc WHERE rdc.rdc_description = 'subscription.type')
-                                                           AND rdv_value = 'National Licence');
-
-UPDATE subscription SET sub_type_rv_fk = (SELECT rdv_id FROM refdata_value WHERE
-        rdv_owner = (SELECT rdc_id FROM refdata_category as rdc WHERE rdc.rdc_description = 'subscription.type')
-                                                                             AND rdv_value = 'Consortial Licence')
-WHERE sub_type_rv_fk = (SELECT rdv_id FROM refdata_value WHERE rdv_owner = (SELECT rdc_id FROM refdata_category as rdc WHERE rdc.rdc_description = 'subscription.type')
-                                                           AND rdv_value = 'Alliance Licence');
+--alter table subscription add sub_kind_rv_fk bigint;
+--UPDATE subscription SET sub_kind_rv_fk = (SELECT rdv_id FROM refdata_value WHERE
+--rdv_owner = (SELECT rdc_id FROM refdata_category as rdc WHERE rdc.rdc_description = 'subscription.kind')
+--                                                                            AND rdv_value = 'Alliance Licence')
+--WHERE sub_type_rv_fk = (SELECT rdv_id FROM refdata_value WHERE rdv_owner = (SELECT rdc_id FROM refdata_category as rdc WHERE rdc.rdc_description = 'subscription.type')
+--AND rdv_value = 'Alliance Licence');
+--UPDATE subscription SET sub_kind_rv_fk = (SELECT rdv_id FROM refdata_value WHERE
+--        rdv_owner = (SELECT rdc_id FROM refdata_category as rdc WHERE rdc.rdc_description = 'subscription.kind')
+--                                                                             AND rdv_value = 'National Licence')
+--WHERE sub_type_rv_fk = (SELECT rdv_id FROM refdata_value WHERE rdv_owner = (SELECT rdc_id FROM refdata_category as rdc WHERE rdc.rdc_description = 'subscription.type')
+--                                                           AND rdv_value = 'National Licence');
+--UPDATE subscription SET sub_kind_rv_fk = (SELECT rdv_id FROM refdata_value WHERE
+--        rdv_owner = (SELECT rdc_id FROM refdata_category as rdc WHERE rdc.rdc_description = 'subscription.kind')
+--                                                                             AND rdv_value = 'Consortial Licence')
+--WHERE sub_type_rv_fk = (SELECT rdv_id FROM refdata_value WHERE rdv_owner = (SELECT rdc_id FROM refdata_category as rdc WHERE rdc.rdc_description = 'subscription.type')
+--                                                         AND rdv_value = 'Consortial Licence');
+--UPDATE subscription SET sub_type_rv_fk = (SELECT rdv_id FROM refdata_value WHERE
+--        rdv_owner = (SELECT rdc_id FROM refdata_category as rdc WHERE rdc.rdc_description = 'subscription.type')
+--                                                                             AND rdv_value = 'Consortial Licence')
+--WHERE sub_type_rv_fk = (SELECT rdv_id FROM refdata_value WHERE rdv_owner = (SELECT rdc_id FROM refdata_category as rdc WHERE rdc.rdc_description = 'subscription.type')
+--                                                         AND rdv_value = 'National Licence');
+--UPDATE subscription SET sub_type_rv_fk = (SELECT rdv_id FROM refdata_value WHERE
+--        rdv_owner = (SELECT rdc_id FROM refdata_category as rdc WHERE rdc.rdc_description = 'subscription.type')
+--                                                                             AND rdv_value = 'Consortial Licence')
+--WHERE sub_type_rv_fk = (SELECT rdv_id FROM refdata_value WHERE rdv_owner = (SELECT rdc_id FROM refdata_category as rdc WHERE rdc.rdc_description = 'subscription.type')
+--                                                           AND rdv_value = 'Alliance Licence');
