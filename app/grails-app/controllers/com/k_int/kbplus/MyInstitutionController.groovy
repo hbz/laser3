@@ -371,6 +371,7 @@ from License as l where (
     exists ( select o from l.orgLinks as o where ( 
             ( o.roleType = :roleTypeC 
                 AND o.org = :lic_org 
+                AND l.instanceOf is null
                 AND NOT exists (
                     select o2 from l.orgLinks as o2 where o2.roleType = :roleTypeL
                 )
