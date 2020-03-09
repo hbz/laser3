@@ -139,6 +139,8 @@ class ApiSubscription {
 		result.resource     = sub.resource?.value
 		result.status       = sub.status?.value
 		result.type         = sub.type?.value
+		result.isPublicForApi = sub.isPublicForApi ? 'Yes' : 'No'
+		result.hasPerpetualAccess = sub.hasPerpetualAccess ? 'Yes' : 'No'
 
 		// References
 

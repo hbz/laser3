@@ -1387,6 +1387,8 @@ class SubscriptionController extends AbstractDebugController {
                     org.country = subscr.country
                     org.startDate = subChild.startDate ? subChild.startDate.format(g.message(code:'default.date.format.notime')) : ''
                     org.endDate = subChild.endDate ? subChild.endDate.format(g.message(code:'default.date.format.notime')) : ''
+                    org.isPublicForApi = subChild.isPublicForApi ? RDStore.YN_YES.getI10n("value") : RDStore.YN_NO.getI10n("value")
+                    org.hasPerpetualAccess = subChild.hasPerpetualAccess ? RDStore.YN_YES.getI10n("value") : RDStore.YN_NO.getI10n("value")
                     org.status = subChild.status
                     org.customProperties = subscr.customProperties
                     org.privateProperties = subscr.privateProperties
@@ -2159,6 +2161,26 @@ class SubscriptionController extends AbstractDebugController {
                         if(params.resource && auditService.getAuditConfig(subChild?.instanceOf, 'resource'))
                         {
                             noChange << message(code: 'subscription.resource.label')
+                        }
+
+                        if(params.isPublicForApi && !auditService.getAuditConfig(subChild?.instanceOf, 'isPublicForApi'))
+                        {
+                            subChild?.isPublicForApi = RefdataValue.get(params.isPublicForApi) == RDStore.YN_YES
+                            change << message(code: 'subscription.isPublicForApi.label')
+                        }
+                        if(params.isPublicForApi && auditService.getAuditConfig(subChild?.instanceOf, 'isPublicForApi'))
+                        {
+                            noChange << message(code: 'subscription.isPublicForApi.label')
+                        }
+
+                        if(params.hasPerpetualAccess && !auditService.getAuditConfig(subChild?.instanceOf, 'hasPerpetualAccess'))
+                        {
+                            subChild?.hasPerpetualAccess = RefdataValue.get(params.hasPerpetualAccess) == RDStore.YN_YES
+                            change << message(code: 'subscription.hasPerpetualAccess.label')
+                        }
+                        if(params.hasPerpetuaLAccess && auditService.getAuditConfig(subChild?.instanceOf, 'hasPerpetualAccess'))
+                        {
+                            noChange << message(code: 'subscription.hasPerpetualAccess.label')
                         }
 
                         if (subChild?.isDirty()) {
@@ -5544,6 +5566,8 @@ class SubscriptionController extends AbstractDebugController {
 
         titles.add(g.message(code: 'subscription.details.startDate'))
         titles.add(g.message(code: 'subscription.details.endDate'))
+        titles.add(g.message(code: 'subscription.isPublicForApi.label'))
+        titles.add(g.message(code: 'subscription.hasPerpetualAccess.label'))
         titles.add(g.message(code: 'default.status.label'))
         titles.add(RefdataValue.getByValueAndCategory('General contact person', RDConstants.PERSON_FUNCTION).getI10n('value'))
         //titles.add(RefdataValue.getByValueAndCategory('Functional contact', RDConstants.PERSON_CONTACT_TYPE).getI10n('value'))
@@ -5634,6 +5658,12 @@ class SubscriptionController extends AbstractDebugController {
                     cell.setCellValue(org.endDate) //null check done already in calling method
 
                     cell = row.createCell(cellnum++)
+                    cell.setCellValue(org.isPublicForApi)
+
+                    cell = row.createCell(cellnum++)
+                    cell.setCellValue(org.hasPerpetualAccess)
+
+                    cell = row.createCell(cellnum++)
                     cell.setCellValue(org.status?.getI10n('value') ?: ' ')
 
                     cell = row.createCell(cellnum++)
@@ -5721,6 +5751,10 @@ class SubscriptionController extends AbstractDebugController {
                     row.add(org.startDate) //null check already done in calling method
                     //endDate
                     row.add(org.endDate) //null check already done in calling method
+                    //isPublicForApi
+                    row.add(org.isPublicForApi) //null check already done in calling method
+                    //hasPerpetualAccess
+                    row.add(org.hasPerpetualAccess) //null check already done in calling method
                     //status
                     row.add(org.status?.getI10n('value') ?: ' ')
                     //generalContacts

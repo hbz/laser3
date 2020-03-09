@@ -904,7 +904,9 @@ join sub.orgRelations or_sub where
                        g.message(code: 'default.status.label'),
                        g.message(code: 'default.type.label'),
                        g.message(code: 'subscription.form.label'),
-                       g.message(code: 'subscription.resource.label')]
+                       g.message(code: 'subscription.resource.label'),
+                       g.message(code: 'subscription.isPublicForApi.label'),
+                       g.message(code: 'subscription.hasPerpetualAccess.label')]
         boolean asCons = false
         if(accessService.checkPerm('ORG_INST_COLLECTIVE, ORG_CONSORTIUM')) {
             asCons = true
@@ -980,6 +982,8 @@ join sub.orgRelations or_sub where
                     row.add([field: sub.type?.getI10n("value"), style: null])
                     row.add([field: sub.form?.getI10n("value") ?: '', style: null])
                     row.add([field: sub.resource?.getI10n("value") ?: '', style: null])
+                    row.add([field: sub.isPublicForApi ? RDStore.YN_YES.getI10n("value") : RDStore.YN_NO.getI10n("value"), style: null])
+                    row.add([field: sub.hasPerpetualAccess ? RDStore.YN_YES.getI10n("value") : RDStore.YN_NO.getI10n("value"), style: null])
                     if(asCons) {
                         row.add([field: subscriptionMembers.get(sub.id) ?: 0, style: null])
                         row.add([field: costItemCounts.get(sub.id) ?: 0, style: null])
@@ -1007,9 +1011,11 @@ join sub.orgRelations or_sub where
                     row.add(sub.type?.getI10n("value"))
                     row.add(sub.form?.getI10n("value"))
                     row.add(sub.resource?.getI10n("value"))
+                    row.add(sub.isPublicForApi ? RDStore.YN_YES.getI10n("value") : RDStore.YN_NO.getI10n("value"))
+                    row.add(sub.hasPerpetualAccess ? RDStore.YN_YES.getI10n("value") : RDStore.YN_NO.getI10n("value"))
                     if(asCons) {
-                        row.add(subscriptionMembers.get(sub.id))
-                        row.add(costItemCounts.get(sub.id))
+                        row.add(subscriptionMembers.get(sub.id) ?: 0)
+                        row.add(costItemCounts.get(sub.id) ?: 0)
                     }
                     subscriptionData.add(row)
                     break
@@ -1040,6 +1046,8 @@ join sub.orgRelations or_sub where
                        g.message(code: 'default.type.label'),
                        g.message(code: 'subscription.form.label'),
                        g.message(code: 'subscription.resource.label'),
+                       g.message(code: 'subscription.isPublicForApi.label'),
+                       g.message(code: 'subscription.hasPerpetualAccess.label'),
 
                        g.message(code: 'surveyConfigsInfo.newPrice'),
                        g.message(code: 'surveyConfigsInfo.newPrice.comment'),
@@ -1078,6 +1086,8 @@ join sub.orgRelations or_sub where
                     row.add([field: sub?.type?.getI10n("value") ?: '', style: null])
                     row.add([field: sub?.form?.getI10n("value") ?: '', style: null])
                     row.add([field: sub?.resource?.getI10n("value") ?: '', style: null])
+                    row.add([field: sub?.isPublicForApi ? RDStore.YN_YES.getI10n("value") : RDStore.YN_NO.getI10n("value"), style: null])
+                    row.add([field: sub?.hasPerpetualAccess ? RDStore.YN_YES.getI10n("value") : RDStore.YN_NO.getI10n("value"), style: null])
 
                     row.add([field: surveyCostItem?.costInBillingCurrencyAfterTax ? g.formatNumber(number: surveyCostItem?.costInBillingCurrencyAfterTax, minFractionDigits:"2", maxFractionDigits:"2", type:"number") : '', style: null])
 
@@ -3631,6 +3641,7 @@ AND EXISTS (
             headerRow.setHeightInPoints(16.75f)
             List titles = [message(code:'sidewide.number'),message(code:'myinst.consortiaSubscriptions.member'),message(code:'myinst.consortiaSubscriptions.subscription'),message(code:'license.label'),
                            message(code:'myinst.consortiaSubscriptions.packages'),message(code:'myinst.consortiaSubscriptions.provider'),message(code:'myinst.consortiaSubscriptions.runningTimes'),
+                           message(code:'subscription.isPublicForApi.label'),message(code:'subscription.hasPerpetualAccess.label'),
                            message(code:'financials.amountFinal'),"${message(code:'financials.isVisibleForSubscriber')} / ${message(code:'financials.costItemConfiguration')}"]
             titles.eachWithIndex{ titleName, int i ->
                 Cell cell = headerRow.createCell(i)
@@ -3640,8 +3651,8 @@ AND EXISTS (
             Row row
             Cell cell
             int rownum = 1
-            int sumcell = 7
-            int sumTitleCell = 6
+            int sumcell = 9
+            int sumTitleCell = 8
             result.costItems.eachWithIndex { entry, int sidewideNumber ->
                 log.debug("processing entry ${sidewideNumber} ...")
                 CostItem ci = (CostItem) entry[0] ?: new CostItem()
@@ -3701,6 +3712,14 @@ AND EXISTS (
                     if(ci.getDerivedEndDate()) dateString += " - ${sdf.format(ci.getDerivedEndDate())}"
                 }
                 cell.setCellValue(dateString)
+                //is public for api
+                log.debug("insert api flag")
+                cell = row.createCell(cellnum++)
+                cell.setCellValue(ci.sub?.isPublicForApi ? RDStore.YN_YES.getI10n("value") : RDStore.YN_NO.getI10n("value"))
+                //has perpetual access
+                log.debug("insert perpetual access flag")
+                cell = row.createCell(cellnum++)
+                cell.setCellValue(ci.sub?.hasPerpetualAccess ? RDStore.YN_YES.getI10n("value") : RDStore.YN_NO.getI10n("value"))
                 //final sum
                 log.debug("insert final sum")
                 cell = row.createCell(cellnum++)
@@ -3771,6 +3790,7 @@ AND EXISTS (
                 csv {
                     List titles = [message(code:'sidewide.number'),message(code:'myinst.consortiaSubscriptions.member'),message(code:'myinst.consortiaSubscriptions.subscription'),message(code:'license.label'),
                                    message(code:'myinst.consortiaSubscriptions.packages'),message(code:'myinst.consortiaSubscriptions.provider'),message(code:'myinst.consortiaSubscriptions.runningTimes'),
+                                   message(code:'subscription.isPublicForApi.label'),message(code:'subscription.hasPerpetualAccess.label'),
                                    message(code:'financials.amountFinal'),"${message(code:'financials.isVisibleForSubscriber')} / ${message(code:'financials.costItemConfiguration')}"]
                     List columnData = []
                     List row
@@ -3832,6 +3852,14 @@ AND EXISTS (
                             if(ci.getDerivedEndDate()) dateString += " - ${sdf.format(ci.getDerivedEndDate())}"
                         }
                         row.add(dateString)
+                        //is public for api
+                        log.debug("insert api flag")
+                        cellnum++
+                        row.add(ci.sub?.isPublicForApi ? RDStore.YN_YES.getI10n("value") : RDStore.YN_NO.getI10n("value"))
+                        //has perpetual access
+                        log.debug("insert perpetual access flag")
+                        cellnum++
+                        row.add(ci.sub?.hasPerpetualAccess ? RDStore.YN_YES.getI10n("value") : RDStore.YN_NO.getI10n("value"))
                         //final sum
                         log.debug("insert final sum")
                         cellnum++
@@ -3859,9 +3887,9 @@ AND EXISTS (
                     columnData.add([])
                     columnData.add([])
                     row = []
-                    //sumcell = 7
-                    //sumTitleCell = 6
-                    for(int h = 0;h < 6;h++) {
+                    //sumcell = 9
+                    //sumTitleCell = 8
+                    for(int h = 0;h < 8;h++) {
                         row.add(" ")
                     }
                     row.add(message(code:'financials.export.sums'))
@@ -3869,7 +3897,7 @@ AND EXISTS (
                     columnData.add([])
                     result.finances.each { entry ->
                         row = []
-                        for(int h = 0;h < 6;h++) {
+                        for(int h = 0;h < 8;h++) {
                             row.add(" ")
                         }
                         row.add("${message(code:'financials.sum.billing')} ${entry.key}")

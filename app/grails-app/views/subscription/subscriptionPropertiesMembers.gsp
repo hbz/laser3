@@ -102,6 +102,8 @@
                         <th>${message(code: 'default.status.label')}</th>
                         <th>${message(code: 'subscription.form.label')}</th>
                         <th>${message(code: 'subscription.resource.label')}</th>
+                        <th>${message(code: 'subscription.isPublicForApi.label')}</th>
+                        <th>${message(code: 'subscription.hasPerpetualAccess.label')}</th>
                         <th></th>
                     </tr>
                     </thead>
@@ -128,6 +130,14 @@
                     <td>
                         ${parentSub.resource?.getI10n('value')}
                         <semui:auditButton auditable="[parentSub, 'resource']"/>
+                    </td>
+                    <td>
+                        ${parentSub.isPublicForApi ? RDStore.YN_YES.getI10n('value') : RDStore.YN_NO.getI10n('value')}
+                        <semui:auditButton auditable="[parentSub, 'isPublicForApi']"/>
+                    </td>
+                    <td>
+                        ${parentSub.hasPerpetualAccess ? RDStore.YN_YES.getI10n('value') : RDStore.YN_NO.getI10n('value')}
+                        <semui:auditButton auditable="[parentSub, 'hasPerpetualAccess']"/>
                     </td>
 
                     <td class="x">
@@ -183,6 +193,22 @@
                                           value="${['': '']}"/>
                         </div>
 
+                        <div class="field">
+                            <label>${message(code: 'subscription.isPublicForApi.label')}</label>
+                            <laser:select name="isPublicForApi"
+                                          from="${RefdataCategory.getAllRefdataValues(RDConstants.Y_N)}"
+                                          optionKey="id" optionValue="value" noSelection="${['': '']}"
+                                          value="${['': '']}"/>
+                        </div>
+
+                        <div class="field">
+                            <label>${message(code: 'subscription.hasPerpetualAccess.label')}</label>
+                            <laser:select name="hasPerpetualAccess"
+                                          from="${RefdataCategory.getAllRefdataValues(RDConstants.Y_N)}"
+                                          optionKey="id" optionValue="value" noSelection="${['': '']}"
+                                          value="${['': '']}"/>
+                        </div>
+
                     </div>
 
                     <button class="ui button" type="submit">${message(code: 'default.button.save_changes')}</button>
@@ -206,6 +232,8 @@
                             <th>${message(code: 'default.status.label')}</th>
                             <th>${message(code: 'subscription.form.label')}</th>
                             <th>${message(code: 'subscription.resource.label')}</th>
+                            <th>${message(code: 'subscription.isPublicForApi.label')}</th>
+                            <th>${message(code: 'subscription.hasPerpetualAccess.label')}</th>
                             <th class="la-no-uppercase">
                                 <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="bottom center"
                                       data-content="${message(code: 'subscription.isMultiYear.consortial.label')}">
@@ -272,6 +300,16 @@
                                 <td>
                                     <semui:xEditableRefData owner="${sub}" field="resource"
                                                             config="${RDConstants.SUBSCRIPTION_RESOURCE}"
+                                                            overwriteEditable="${editableOld}"/>
+                                    <semui:auditButton auditable="[sub, 'resource']"/>
+                                </td>
+                                <td>
+                                    <semui:xEditableBoolean owner="${sub}" field="isPublicForApi"
+                                                            overwriteEditable="${editableOld}"/>
+                                    <semui:auditButton auditable="[sub, 'form']"/>
+                                </td>
+                                <td>
+                                    <semui:xEditableBoolean owner="${sub}" field="hasPerpetualAccess"
                                                             overwriteEditable="${editableOld}"/>
                                     <semui:auditButton auditable="[sub, 'resource']"/>
                                 </td>
