@@ -58,7 +58,7 @@ class PublicController {
         )
 
 
-        if (! params.subKindes && ! params.consortia && ! params.q) {
+        if (! params.subKinds && ! params.consortia && ! params.q) {
             // init filter with checkboxes checked
             result.initQuery = 'true'
         }
