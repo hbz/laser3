@@ -5,7 +5,6 @@ import com.k_int.properties.PropertyDefinition
 import de.laser.controller.AbstractDebugController
 import de.laser.helper.DebugAnnotation
 import de.laser.helper.RDConstants
-import de.laser.helper.RDStore
 import grails.converters.JSON
 import grails.plugin.springsecurity.SpringSecurityUtils
 import grails.plugin.springsecurity.annotation.Secured
@@ -29,7 +28,7 @@ class PersonController extends AbstractDebugController {
     @DebugAnnotation(test='hasAffiliation("INST_EDITOR")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_EDITOR") })
     def create() {
-        def userMemberships = User.get(springSecurityService.principal.id).authorizedOrgs
+        User userMemberships = User.get(springSecurityService.principal.id).authorizedOrgs
         
         switch (request.method) {
 		case 'GET':
@@ -116,8 +115,8 @@ class PersonController extends AbstractDebugController {
         redirect controller: 'person', action: 'show', params: params
         return // ----- deprecated
 
-        def userMemberships = User.get(springSecurityService.principal.id).authorizedOrgs
-        def personInstance = Person.get(params.id)
+        User userMemberships = User.get(springSecurityService.principal.id).authorizedOrgs
+        Person personInstance = Person.get(params.id)
 
         if (! personInstance) {
             flash.message = message(code: 'default.not.found.message', args: [message(code: 'person.label'), params.id])

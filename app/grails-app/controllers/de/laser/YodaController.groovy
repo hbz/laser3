@@ -1,7 +1,10 @@
 package de.laser
 
 import com.k_int.kbplus.*
-import com.k_int.kbplus.auth.*
+import com.k_int.kbplus.auth.Role
+import com.k_int.kbplus.auth.User
+import com.k_int.kbplus.auth.UserOrg
+import com.k_int.kbplus.auth.UserRole
 import com.k_int.properties.PropertyDefinition
 import de.laser.domain.ActivityProfiler
 import de.laser.domain.SystemProfiler
@@ -13,12 +16,12 @@ import grails.converters.JSON
 import grails.plugin.springsecurity.annotation.Secured
 import grails.util.Holders
 import grails.web.Action
+import groovy.json.JsonOutput
 import groovy.xml.MarkupBuilder
 import org.hibernate.SessionFactory
 import org.quartz.JobKey
 import org.quartz.impl.matchers.GroupMatcher
 import org.springframework.transaction.TransactionStatus
-import groovy.json.JsonOutput
 import org.springframework.web.multipart.commons.CommonsMultipartFile
 
 import javax.servlet.ServletOutputStream
@@ -602,7 +605,7 @@ class YodaController {
     def appLogfile() {
         return // TODO
 
-        def f = new File("${Holders.config.log_location}")
+        File f = new File("${Holders.config.log_location}")
         return [file: "${f.canonicalPath}"]
     }
 

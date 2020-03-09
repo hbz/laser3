@@ -165,7 +165,7 @@ class TitleController extends AbstractDebugController {
   def batchUpdate() {
     log.debug(params);
         SimpleDateFormat formatter = DateUtil.getSDF_NoTime()
-    def user = User.get(springSecurityService.principal.id)
+        User user = User.get(springSecurityService.principal.id)
 
       params.each { p ->
       if ( p.key.startsWith('_bulkflag.')&& (p.value=='on'))  {
@@ -226,7 +226,7 @@ class TitleController extends AbstractDebugController {
       result.offset = 0
     }
     else {
-      def user = User.get(springSecurityService.principal.id)
+        User user = User.get(springSecurityService.principal.id)
       result.max = params.max ? Integer.parseInt(params.max) : user.getDefaultPageSizeTMP()
       params.max = result.max
       result.offset = params.offset ? Integer.parseInt(params.offset) : 0;
@@ -302,7 +302,7 @@ class TitleController extends AbstractDebugController {
       params.offset = 0
       params.remove("search")
     }
-    def user = User.get(springSecurityService.principal.id)
+      User user = User.get(springSecurityService.principal.id)
     Map<String, Object> result = [:]
     result.max = params.max ? Integer.parseInt(params.max) : user.getDefaultPageSizeTMP()
     result.offset = params.offset ? Integer.parseInt(params.offset) : 0;

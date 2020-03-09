@@ -1,6 +1,7 @@
 package com.k_int.kbplus
 
 import com.k_int.kbplus.abstract_domain.AbstractProperty
+import com.k_int.kbplus.auth.Role
 import com.k_int.kbplus.auth.User
 import com.k_int.properties.PropertyDefinition
 import com.k_int.properties.PropertyDefinitionGroup
@@ -10,27 +11,17 @@ import de.laser.DashboardDueDate
 import de.laser.domain.AbstractI10nOverride
 import de.laser.domain.AbstractI10nTranslatable
 import de.laser.domain.SystemProfiler
-import de.laser.helper.DateUtil
-import de.laser.helper.DebugAnnotation
-import de.laser.helper.DebugUtil
-import de.laser.helper.EhcacheWrapper
-import de.laser.helper.RDConstants
-import de.laser.helper.RDStore
-import de.laser.helper.SessionCacheWrapper
+import de.laser.helper.*
 import de.laser.interfaces.ShareSupport
 import grails.converters.JSON
 import grails.plugin.springsecurity.annotation.Secured
-import grails.util.Holders
-import grails.validation.ValidationErrors
-import org.apache.http.HttpStatus
 import org.codehaus.groovy.grails.orm.hibernate.cfg.GrailsHibernateUtil
+import org.springframework.web.servlet.LocaleResolver
 
 //import org.grails.orm.hibernate.cfg.GrailsHibernateUtil
 
-import org.springframework.web.servlet.LocaleResolver
 import org.springframework.web.servlet.support.RequestContextUtils
 
-import javax.validation.Valid
 import java.text.SimpleDateFormat
 import java.util.regex.Matcher
 import java.util.regex.Pattern
@@ -435,7 +426,7 @@ class AjaxController {
     Map<String, Object> result = [:]
     result.response = false;
     if( params.id ) {
-      def p = Package.findByIdentifier(params.id)
+        Package p = Package.findByIdentifier(params.id)
       if ( !p ) {
         result.response = true
       }
@@ -2109,7 +2100,7 @@ class AjaxController {
     def toggleEditMode() {
         log.debug ('toggleEditMode()')
 
-        def user = contextService.getUser()
+        User user = contextService.getUser()
         def show = params.showEditMode
 
         if (show) {
@@ -2483,8 +2474,8 @@ class AjaxController {
 
     @Secured(['ROLE_USER'])
     def removeUserRole() {
-        def user = resolveOID2(params.user);
-        def role = resolveOID2(params.role);
+        User user = resolveOID2(params.user);
+        Role role = resolveOID2(params.role);
         if (user && role) {
             com.k_int.kbplus.auth.UserRole.remove(user,role,true);
         }

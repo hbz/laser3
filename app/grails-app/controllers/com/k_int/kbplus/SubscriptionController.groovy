@@ -10,13 +10,9 @@ import de.laser.controller.AbstractDebugController
 import de.laser.domain.IssueEntitlementCoverage
 import de.laser.domain.PriceItem
 import de.laser.exceptions.EntitlementCreationException
-import de.laser.helper.DateUtil
-import de.laser.helper.DebugAnnotation
-import de.laser.helper.DebugUtil
-import de.laser.helper.EhcacheWrapper
-import de.laser.helper.RDConstants
-import de.laser.helper.RDStore
-import de.laser.interfaces.*
+import de.laser.helper.*
+import de.laser.interfaces.ShareSupport
+import de.laser.interfaces.TemplateSupport
 import de.laser.oai.OaiClientLaser
 import grails.converters.JSON
 import grails.doc.internal.StringEscapeCategory
@@ -40,6 +36,7 @@ import java.text.NumberFormat
 import java.text.SimpleDateFormat
 
 import static de.laser.helper.RDStore.*
+import static de.laser.helper.RDStore.OR_LICENSEE_CONS
 
 // 2.0
 
@@ -671,7 +668,7 @@ class SubscriptionController extends AbstractDebugController {
 
         if (params.startsBefore && params.startsBefore.length() > 0) {
             SimpleDateFormat sdf = DateUtil.getSDF_NoTime()
-            def d = sdf.parse(params.startsBefore)
+            Date d = sdf.parse(params.startsBefore)
             base_qry += " and (select min(ic.startDate) from IssueEntitlementCoverage ic where ic.ie = ie) <= ?"
             qry_params.add(d)
         }
@@ -813,14 +810,14 @@ class SubscriptionController extends AbstractDebugController {
 
             if (params.endsAfter && params.endsAfter.length() > 0) {
                 SimpleDateFormat sdf = DateUtil.getSDF_NoTime()
-                def d = sdf.parse(params.endsAfter)
+                Date d = sdf.parse(params.endsAfter)
                 basequery += " and (select max(tc.endDate) from TIPPCoverage tc where tc.tipp = tipp) >= ?"
                 qry_params.add(d)
             }
 
             if (params.startsBefore && params.startsBefore.length() > 0) {
                 SimpleDateFormat sdf = DateUtil.getSDF_NoTime()
-                def d = sdf.parse(params.startsBefore)
+                Date d = sdf.parse(params.startsBefore)
                 basequery += " and (select min(tc.startDate) from TIPPCoverage tc where tc.tipp = tipp) <= ?"
                 qry_params.add(d)
             }
@@ -1491,9 +1488,6 @@ class SubscriptionController extends AbstractDebugController {
         result.parentLicense = result.parentSub.owner
 
         result.validLicenses = []
-        if(result.parentLicense) {
-            result.validLicenses << result.parentLicense
-        }
 
         def childLicenses = License.where {
             instanceOf == result.parentLicense
@@ -1540,7 +1534,7 @@ class SubscriptionController extends AbstractDebugController {
         ctx.accessService.checkPermAffiliation("ORG_INST_COLLECTIVE,ORG_CONSORTIUM", "INST_EDITOR")
     })
     def processLinkLicenseMembers() {
-        def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
+        Map<String,Object> result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
         if (!result) {
             response.sendError(401); return
         }
@@ -1553,20 +1547,27 @@ class SubscriptionController extends AbstractDebugController {
 
         result.parentSub = result.subscriptionInstance.instanceOf && result.subscriptionInstance.getCalculatedType() != TemplateSupport.CALCULATED_TYPE_PARTICIPATION_AS_COLLECTIVE ? result.subscriptionInstance.instanceOf : result.subscriptionInstance
 
+        RefdataValue licenseeRoleType = OR_LICENSEE_CONS
+        if(result.subscriptionInstance.getCalculatedType() == TemplateSupport.CALCULATED_TYPE_PARTICIPATION_AS_COLLECTIVE)
+            licenseeRoleType = OR_LICENSEE_COLL
+
         result.parentLicense = result.parentSub.owner
 
-        def validSubChilds = Subscription.findAllByInstanceOf(result.parentSub)
+        Set<Subscription> validSubChilds = Subscription.findAllByInstanceOf(result.parentSub)
 
         List selectedMembers = params.list("selectedMembers")
 
-        def changeAccepted = []
-        if(selectedMembers && params.license_All){
-            def lic = License.get(params.license_All)
-            selectedMembers.each { subId ->
-                def subChild = Subscription.get(subId)
-                subChild.owner = (params.processOption == 'linkLicense') ? lic : ((params.processOption == 'unlinkLicense') ? null : subChild.owner)
-                if (subChild.save(flush: true)) {
-                    changeAccepted << "${subChild?.name} (${message(code:'subscription.linkInstance.label')} ${subChild?.orgRelations.find { it.roleType in [OR_SUBSCRIBER_CONS,OR_SUBSCRIBER_COLLECTIVE] }.org.sortname})"
+        List<GString> changeAccepted = []
+        if (params.license_All) {
+            License lic = License.get(params.license_All)
+            validSubChilds.each { subChild ->
+                Subscription sub = Subscription.get(subChild.id)
+                sub.owner = lic
+
+                if (sub.save()) {
+                    OrgRole licenseeRole = new OrgRole(org:sub.getSubscriber(),lic:lic,roleType:licenseeRoleType)
+                    if(licenseeRole.save())
+                        changeAccepted << "${subChild.name} (${message(code:'subscription.linkInstance.label')} ${subChild.getSubscriber().sortname})"
                 }
             }
             if (changeAccepted) {
@@ -1579,12 +1580,23 @@ class SubscriptionController extends AbstractDebugController {
 
 
         } else {
-            if(!selectedMembers) {
-                flash.error = message(code: 'subscription.linkLicenseMembers.noSelectedMember')
-            }
+            validSubChilds.each { subChild ->
+                if (params."license_${subChild.id}") {
+                    License newLicense = License.get(params."license_${subChild.id}")
+                    if (subChild.owner != newLicense) {
+                        def sub = Subscription.get(subChild.id)
+                        sub.owner = newLicense
 
-            if(!params.license_All) {
-                flash.error = message(code: 'subscription.linkLicenseMembers.noSelectedLicense')
+                        if (sub.save()) {
+                            OrgRole licenseeRole = new OrgRole(org:sub.getSubscriber(),lic:newLicense,roleType:licenseeRoleType)
+                            if(licenseeRole.save())
+                                changeAccepted << "${subChild.name} (${message(code:'subscription.linkInstance.label')} ${subChild.getSubscriber().sortname})"
+                        }
+                    }
+                }
+            }
+            if (changeAccepted) {
+                flash.message = message(code: 'subscription.linkLicenseMembers.changeAcceptedAll', args: [changeAccepted.join(', ')])
             }
         }
 
@@ -1615,15 +1627,18 @@ class SubscriptionController extends AbstractDebugController {
 
         def removeLic = []
         validSubChilds.each { subChild ->
-                def sub = Subscription.get(subChild.id)
-                sub.owner = null
-                if (sub.save(flush: true)) {
-                    removeLic << "${subChild?.name} (${message(code:'subscription.linkInstance.label')} ${subChild?.orgRelations.find { it.roleType in [OR_SUBSCRIBER_CONS,OR_SUBSCRIBER_COLLECTIVE] }.org.sortname})"
-                }
+            def sub = Subscription.get(subChild.id)
+            //keep it, I need to ask Daniel for that
+            //OrgRole toDelete = OrgRole.findByOrgAndLic(sub.getSubscriber(),sub.owner)
+            sub.owner = null
+            if (sub.save()) {
+                //toDelete.delete()
+                removeLic << "${subChild.name} (${message(code:'subscription.linkInstance.label')} ${subChild.getSubscriber().org.sortname})"
             }
-            if (removeLic) {
-                flash.message = message(code: 'subscription.linkLicenseMembers.removeAcceptedAll', args: [removeLic.join(', ')])
-            }
+        }
+        if (removeLic) {
+            flash.message = message(code: 'subscription.linkLicenseMembers.removeAcceptedAll', args: [removeLic.join(', ')])
+        }
 
 
         redirect(action: 'linkLicenseMembers', id: params.id)
@@ -2145,7 +2160,7 @@ class SubscriptionController extends AbstractDebugController {
 
                         if(params.kind && !auditService.getAuditConfig(subChild?.instanceOf, 'kind'))
                         {
-                            subChild?.ind = RefdataValue.get(params.kind) ?: subChild?.kind
+                            subChild?.kind = RefdataValue.get(params.kind) ?: subChild?.kind
                             change << message(code: 'subscription.kind.label')
                         }
                         if(params.kind && auditService.getAuditConfig(subChild?.instanceOf, 'kind'))
@@ -5486,7 +5501,7 @@ class SubscriptionController extends AbstractDebugController {
         prop.save()
     }
 
-    private LinkedHashMap setResultGenericsAndCheckAccess(checkOption) {
+    private Map<String,Object> setResultGenericsAndCheckAccess(checkOption) {
         Map<String, Object> result = [:]
         result.user = contextService.user
         result.subscriptionInstance = Subscription.get(params.id)

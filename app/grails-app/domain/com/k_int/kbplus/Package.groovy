@@ -230,7 +230,7 @@ static hasMany = [  tipps:     TitleInstancePackagePlatform,
                          add_entitlements,slaved) {
     // Create the header
     log.debug("Package: createSubscription called")
-    def result = new Subscription( name:subname,
+      Subscription result = new Subscription( name:subname,
                                    status:RefdataValue.getByValueAndCategory('Current', RDConstants.SUBSCRIPTION_STATUS),
                                    identifier:subidentifier,
                                    impId:java.util.UUID.randomUUID().toString(),
@@ -241,8 +241,8 @@ static hasMany = [  tipps:     TitleInstancePackagePlatform,
 
     if ( result.save(flush:true) ) {
       if ( consortium_org ) {
-        def sc_role = RefdataValue.getByValueAndCategory(org_role, RDConstants.ORGANISATIONAL_ROLE)
-        def or = new OrgRole(org: consortium_org, sub:result, roleType:sc_role).save();
+          RefdataValue sc_role = RefdataValue.getByValueAndCategory(org_role, RDConstants.ORGANISATIONAL_ROLE)
+          OrgRole or = new OrgRole(org: consortium_org, sub:result, roleType:sc_role).save();
         log.debug("Create Org role ${or}")
       }
       addToSubscription(result, add_entitlements)

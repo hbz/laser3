@@ -2,9 +2,9 @@ package de.laser.domain
 
 import com.k_int.kbplus.IssueEntitlement
 import com.k_int.kbplus.RefdataValue
+import de.laser.domain.AbstractBaseDomain
 import de.laser.helper.RDConstants
 import de.laser.helper.RefdataAnnotation
-import de.laser.domain.AbstractBaseDomain
 
 class PriceItem extends AbstractBaseDomain {
 

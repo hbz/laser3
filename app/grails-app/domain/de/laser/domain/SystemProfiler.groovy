@@ -4,8 +4,6 @@ import com.k_int.kbplus.Org
 import de.laser.ContextService
 import grails.util.Holders
 
-import javax.persistence.Transient
-
 class SystemProfiler {
 
     final static long THRESHOLD_MS = 1000

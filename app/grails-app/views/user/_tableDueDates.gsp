@@ -28,7 +28,7 @@
                     </g:else>
                 </td>
                 <td>
-                    <g:formatDate format="${message(code:'default.date.format.notime', default:'yyyy-MM-dd')}" date="${dashDueDate.date}"/>
+                    <g:formatDate format="${message(code:'default.date.format.notime')}" date="${dashDueDate.date}"/>
                     <g:if test="${SqlDateUtils.isToday(dashDueDate.date)}">
                         <span  class="la-popup-tooltip la-delay" data-content="${message(code:'myinst.dash.due_date.enddate.isDueToday.label')}" data-position="top right">
                             <i class="icon yellow exclamation"></i>

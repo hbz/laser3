@@ -3,7 +3,6 @@ package com.k_int.kbplus
 import com.k_int.kbplus.auth.User
 import de.laser.controller.AbstractDebugController
 import de.laser.helper.RDConstants
-import de.laser.helper.RDStore
 import de.uni_freiburg.ub.IpRange
 import grails.plugin.springsecurity.annotation.Secured
 import groovy.json.JsonOutput

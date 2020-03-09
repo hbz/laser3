@@ -7,12 +7,11 @@ import com.k_int.properties.PropertyDefinition
 import de.laser.helper.EhcacheWrapper
 import de.laser.helper.RDConstants
 import de.laser.helper.RDStore
-import grails.converters.JSON
 import grails.plugin.springsecurity.SpringSecurityUtils
 import grails.plugin.springsecurity.annotation.Secured
 
-import static com.k_int.kbplus.UserSettings.KEYS.*
 import static com.k_int.kbplus.UserSettings.DEFAULT_REMINDER_PERIOD
+import static com.k_int.kbplus.UserSettings.KEYS.*
 import static de.laser.helper.RDStore.*
 
 @Secured(['IS_AUTHENTICATED_FULLY'])
@@ -109,8 +108,8 @@ class ProfileController {
     @Secured(['ROLE_USER'])
     def processCancelRequest() {
         log.debug("processCancelRequest(${params}) userOrg with id ${params.assoc}")
-        def user        = User.get(springSecurityService.principal.id)
-        def userOrg     = UserOrg.findByUserAndId(user, params.assoc)
+        User user        = User.get(springSecurityService.principal.id)
+        UserOrg userOrg  = UserOrg.findByUserAndId(user, params.assoc)
 
         if (userOrg) {
             userOrg.delete(flush:true)
@@ -152,7 +151,7 @@ class ProfileController {
 
   @Secured(['ROLE_USER'])
   def updateProfile() {
-    def user = User.get(springSecurityService.principal.id)
+    User user = User.get(springSecurityService.principal.id)
 
     flash.message=""
 
@@ -211,7 +210,7 @@ class ProfileController {
 
   @Secured(['ROLE_USER'])
   def updateReminderSettings() {
-    def user = User.get(springSecurityService.principal.id)
+    User user = User.get(springSecurityService.principal.id)
 
     flash.message = ""
     flash.error = ""
@@ -269,7 +268,7 @@ class ProfileController {
   }
     @Secured(['ROLE_USER'])
     def updateNotificationSettings() {
-        def user = User.get(springSecurityService.principal.id)
+        User user = User.get(springSecurityService.principal.id)
 
         flash.message = ""
         flash.error = ""
@@ -348,7 +347,7 @@ class ProfileController {
 
     @Secured(['ROLE_USER'])
     def updateIsRemindByEmail() {
-        def user1 = User.get(springSecurityService.principal.id)
+        User user1 = User.get(springSecurityService.principal.id)
 
         flash.message=""
         def was_isRemindByEmail = user1.getSetting(UserSettings.KEYS.IS_REMIND_BY_EMAIL, RDStore.YN_NO)
@@ -366,7 +365,7 @@ class ProfileController {
 
     @Secured(['ROLE_USER'])
     def updatePassword() {
-        def user = User.get(springSecurityService.principal.id)
+        User user = User.get(springSecurityService.principal.id)
         flash.message = ""
 
         if (passwordEncoder.isPasswordValid(user.password, params.passwordCurrent, null)) {
