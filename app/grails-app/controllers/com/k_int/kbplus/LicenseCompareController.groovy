@@ -5,7 +5,6 @@ import com.k_int.properties.PropertyDefinitionGroup
 import com.k_int.properties.PropertyDefinitionGroupBinding
 import de.laser.controller.AbstractDebugController
 import de.laser.helper.DebugAnnotation
-import de.laser.helper.RDStore
 import grails.plugin.springsecurity.annotation.Secured
 
 @Secured(['IS_AUTHENTICATED_FULLY'])
@@ -73,7 +72,7 @@ class LicenseCompareController extends AbstractDebugController {
           ...
         }
       */
-      def allPropDefGroups = lic.getCalculatedPropDefGroups(org)
+      Map<String, Object> allPropDefGroups = lic.getCalculatedPropDefGroups(org)
       allPropDefGroups.entrySet().each { propDefGroupWrapper ->
         /*
           group group level

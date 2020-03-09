@@ -10,8 +10,8 @@ import de.laser.helper.RDConstants
 import org.codehaus.groovy.grails.commons.GrailsApplication
 import org.elasticsearch.action.delete.DeleteRequest
 import org.elasticsearch.action.delete.DeleteResponse
+import org.elasticsearch.client.RequestOptions
 import org.elasticsearch.client.RestHighLevelClient
-import org.elasticsearch.client.*
 
 //@CompileStatic
 class DeletionService {

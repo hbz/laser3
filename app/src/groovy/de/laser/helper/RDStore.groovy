@@ -1,9 +1,7 @@
 package de.laser.helper
 
-
 import com.k_int.kbplus.RefdataValue
 import com.k_int.kbplus.SurveyProperty
-import groovy.transform.CompileStatic
 import org.codehaus.groovy.grails.orm.hibernate.cfg.GrailsHibernateUtil
 
 //@CompileStatic
@@ -121,9 +119,6 @@ class RDStore {
     static final SUBSCRIPTION_EXPIRED       = getRefdataValue('Expired', RDConstants.SUBSCRIPTION_STATUS)
     static final SUBSCRIPTION_NO_STATUS     = getRefdataValue('Status not defined', RDConstants.SUBSCRIPTION_STATUS)
 
-    static final SUBSCRIPTION_INTENDED_PERENNIAL = getRefdataValue('IntendedPerennial', RDConstants.SUBSCRIPTION_STATUS)
-    static final SUBSCRIPTION_EXPIRED_PERENNIAL = getRefdataValue('ExpiredPerennial', RDConstants.SUBSCRIPTION_STATUS)
-
     static final SURVEY_READY                   = getRefdataValue('Ready', RDConstants.SURVEY_STATUS)
     static final SURVEY_IN_PROCESSING           = getRefdataValue('In Processing', RDConstants.SURVEY_STATUS)
     static final SURVEY_IN_EVALUATION           = getRefdataValue('In Evaluation', RDConstants.SURVEY_STATUS)
@@ -138,8 +133,7 @@ class RDStore {
     static final SUBSCRIPTION_TYPE_LOCAL            = getRefdataValue('Local Licence', RDConstants.SUBSCRIPTION_TYPE)
     static final SUBSCRIPTION_TYPE_CONSORTIAL       = getRefdataValue('Consortial Licence', RDConstants.SUBSCRIPTION_TYPE)
     static final SUBSCRIPTION_TYPE_ADMINISTRATIVE   = getRefdataValue('Administrative Subscription', RDConstants.SUBSCRIPTION_TYPE)
-    //static final SUBSCRIPTION_TYPE_ALLIANCE   		= getRefdataValue('Alliance Licence', RDConstants.SUBSCRIPTION_TYPE)
-    //static final SUBSCRIPTION_TYPE_NATIONAL   		= getRefdataValue('National Licence', RDConstants.SUBSCRIPTION_TYPE)
+
     //static final SUBSCRIPTION_TYPE_COLLECTIVE   	= getRefdataValue('Collective Subscription', RDConstants.SUBSCRIPTION_TYPE)
 
     static final SUBSCRIPTION_KIND_CONSORTIAL       = getRefdataValue('Consortial Licence', RDConstants.SUBSCRIPTION_KIND)

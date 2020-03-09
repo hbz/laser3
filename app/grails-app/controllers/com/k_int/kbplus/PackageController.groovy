@@ -121,7 +121,7 @@ class PackageController extends AbstractDebugController {
 
         // TODO: filter by status in frontend
         // TODO: use elastic search
-        def base_qry = " from Package as p where ( (p.packageStatus is null ) OR ( p.packageStatus is not null ) ) "
+        String base_qry = " from Package as p where ( (p.packageStatus is null ) OR ( p.packageStatus is not null ) ) "
         //def base_qry = " from Package as p where ( (p.packageStatus is null ) OR ( p.packageStatus = ? ) ) "
 
         if (params.q?.length() > 0) {
@@ -276,7 +276,7 @@ class PackageController extends AbstractDebugController {
 
     @Secured(['ROLE_ADMIN'])
     def create() {
-        def user = User.get(springSecurityService.principal.id)
+        User user = User.get(springSecurityService.principal.id)
 
         switch (request.method) {
             case 'GET':
@@ -700,11 +700,12 @@ class PackageController extends AbstractDebugController {
 
         def qry_params = [packageInstance, RDStore.TIPP_STATUS_DELETED]
 
-        def base_qry = "from TitleInstancePackagePlatform as tipp where tipp.pkg = ? and tipp.status != ? "
+        String base_qry = "from TitleInstancePackagePlatform as tipp where tipp.pkg = ? and tipp.status != ? "
 
         if (func == "expected") {
             base_qry += " and ( coalesce(tipp.accessStartDate, tipp.pkg.startDate) >= ? ) "
-        } else {
+        }
+        else {
             base_qry += " and ( tipp.accessEndDate <= ? ) "
         }
         qry_params.add(new Date());
@@ -1055,7 +1056,7 @@ class PackageController extends AbstractDebugController {
             params.max = 9999999
             result.offset = 0
         } else {
-            def user = User.get(springSecurityService.principal.id)
+            User user = User.get(springSecurityService.principal.id)
             result.max = params.max ? Integer.parseInt(params.max) : user.getDefaultPageSizeTMP()
             params.max = result.max
             result.offset = params.offset ? Integer.parseInt(params.offset) : 0;
@@ -1067,13 +1068,13 @@ class PackageController extends AbstractDebugController {
       def limits = (!params.format||params.format.equals("html"))?[max:result.max, offset:result.offset]:[offset:0]
 
         // postgresql migration
-        def subQuery = 'select cast(id as string) from TitleInstancePackagePlatform as tipp where tipp.pkg = cast(:pkgid as int)'
+        String subQuery = 'select cast(id as string) from TitleInstancePackagePlatform as tipp where tipp.pkg = cast(:pkgid as int)'
         def subQueryResult = AuditLogEvent.executeQuery(subQuery, [pkgid: params.id])
 
         //def base_query = 'from org.codehaus.groovy.grails.plugins.orm.auditable.AuditLogEvent as e where ( e.className = :pkgcls and e.persistedObjectId = cast(:pkgid as string)) or ( e.className = :tippcls and e.persistedObjectId in ( select id from TitleInstancePackagePlatform as tipp where tipp.pkg = :pkgid ) )'
         //def query_params = [ pkgcls:'com.k_int.kbplus.Package', tippcls:'com.k_int.kbplus.TitleInstancePackagePlatform', pkgid:params.id, subQueryResult:subQueryResult]
 
-        def base_query   = 'from org.codehaus.groovy.grails.plugins.orm.auditable.AuditLogEvent as e where ( e.className = :pkgcls and e.persistedObjectId = cast(:pkgid as string))'
+        String base_query   = 'from org.codehaus.groovy.grails.plugins.orm.auditable.AuditLogEvent as e where ( e.className = :pkgcls and e.persistedObjectId = cast(:pkgid as string))'
         def query_params = [ pkgcls:'com.k_int.kbplus.Package', pkgid:params.id]
 
       // postgresql migration

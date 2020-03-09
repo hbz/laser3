@@ -26,9 +26,9 @@
         ${message(code:'myinst.changeLog.showing', args:[num_changes])}<br/>
         <semui:paginate  action="changeLog" controller="myInstitution" params="${params}" next="Next" prev="Prev" max="${max}" total="${num_changes}" /> <br/>
         <g:form method="get" action="changeLog" params="${params}">
-          ${message(code:'myinst.changeLog.restrictTo', default:'Restrict to')}:
+          ${message(code:'myinst.changeLog.restrictTo')}:
           <select class="ui dropdown" name="restrict" onchange="this.form.submit()">
-            <option value="${message(code:'myinst.changelog.all', default:'ALL')}">${message(code:'myinst.changelog.all', default:'ALL')}</option>
+            <option value="${message(code:'myinst.changelog.all')}">${message(code:'myinst.changelog.all')}</option>
             <g:each in="${institutional_objects}" var="io">
               <option value="${io[0]}" ${(params.restrict?.equals(io[0]) ? 'selected' : '')}>${io[1]}</option>
             </g:each>

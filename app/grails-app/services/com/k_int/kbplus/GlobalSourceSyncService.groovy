@@ -9,9 +9,9 @@ import de.laser.interfaces.AbstractLockableService
 import de.laser.oai.OaiClient
 import de.laser.oai.OaiClientLaser
 import org.springframework.context.i18n.LocaleContextHolder
+import org.springframework.dao.DuplicateKeyException
 import org.springframework.transaction.annotation.Propagation
 import org.springframework.transaction.annotation.Transactional
-import org.springframework.dao.DuplicateKeyException
 
 import java.text.SimpleDateFormat
 
@@ -96,18 +96,18 @@ class GlobalSourceSyncService extends AbstractLockableService {
             def toset = []
 
             historyEvent.from.each { he ->
-                def participant = TitleInstance.lookupOrCreate(he.ids, he.title, newtitle.titleType, he.uuid)
+                TitleInstance participant = TitleInstance.lookupOrCreate(he.ids, he.title, newtitle.titleType, he.uuid)
                 fromset.add(participant)
             }
 
             historyEvent.to.each { he ->
-                def participant = TitleInstance.lookupOrCreate(he.ids, he.title, newtitle.titleType, he.uuid)
+                TitleInstance participant = TitleInstance.lookupOrCreate(he.ids, he.title, newtitle.titleType, he.uuid)
                 toset.add(participant)
             }
 
             // Now - See if we can find a title history event for data and these particiapnts.
             // Title History Events are IMMUTABLE - so we delete them rather than updating them.
-            def base_query = "select the from TitleHistoryEvent as the where"
+            String base_query = "select the from TitleHistoryEvent as the where"
             // Need to parse date...
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
             def query_params = []
@@ -1587,7 +1587,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
                 // Title History Events are IMMUTABLE - so we delete them rather than updating them.
                 // parse only history events WITH date - according to Moritz Horn and as of May 23rd, 2019, this field should be MANDATORY!
                 if (historyEvent.date && historyEvent.date.trim().length() > 0) {
-                    def base_query = "select the from TitleHistoryEvent as the where the.eventDate = :eventDate "
+                    String base_query = "select the from TitleHistoryEvent as the where the.eventDate = :eventDate "
                     // Need to parse date...
                     SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
                     def query_params = [eventDate: sdf.parse(historyEvent.date)]

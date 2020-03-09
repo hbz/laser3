@@ -593,7 +593,7 @@ auditLog {
       return request.applicationContext.springSecurityService.principal
     }
 
-    def username = request.applicationContext.springSecurityService.principal?.username
+    String username = request.applicationContext.springSecurityService.principal?.username
 
     if (SpringSecurityUtils.isSwitched()){
       username = SpringSecurityUtils.switchedUserOriginalUsername+" AS "+username

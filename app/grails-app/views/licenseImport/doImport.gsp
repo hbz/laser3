@@ -12,7 +12,7 @@
         <g:unless test="${validationResult?.success}">
             <h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon />${message(code:'onix.import.license')}
             <g:if test="${license}"> ${message(code:'onix.import.for_license', args:[license.reference])}</g:if>
-            <g:else> ${message(code:'onix.import.unspec', default:'for unspecified license')}</g:else>
+            <g:else> ${message(code:'onix.import.unspec')}</g:else>
             </h1>
             <br>
         </g:unless>

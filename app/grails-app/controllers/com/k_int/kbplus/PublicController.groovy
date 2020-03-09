@@ -1,6 +1,6 @@
 package com.k_int.kbplus
 
-
+import com.k_int.kbplus.auth.UserOrg
 import com.k_int.properties.PropertyDefinition
 import de.laser.helper.RDStore
 import grails.plugin.cache.Cacheable
@@ -58,7 +58,7 @@ class PublicController {
         )
 
 
-        if (! params.subKindes && ! params.consortia && ! params.q) {
+        if (! params.subKinds && ! params.consortia && ! params.q) {
             // init filter with checkboxes checked
             result.initQuery = 'true'
         }
@@ -220,10 +220,10 @@ class PublicController {
         }
 
         if (params.id) {
-            def sp  = SubscriptionPackage.get(params.long('id'))
+            SubscriptionPackage sp  = SubscriptionPackage.get(params.long('id'))
             def sub = sp?.subscription
             def pkg = sp?.pkg
-            def scp = SubscriptionCustomProperty.findByOwnerAndTypeAndRefValue(
+            SubscriptionCustomProperty scp = SubscriptionCustomProperty.findByOwnerAndTypeAndRefValue(
                     sub,
                     PropertyDefinition.getByNameAndDescr('GASCO Entry', PropertyDefinition.SUB_PROP),
                     RDStore.YN_YES
@@ -232,13 +232,13 @@ class PublicController {
             if (scp) {
                 result.subscription = sub
 
-                def base_query = " FROM IssueEntitlement as ie WHERE ie.subscription = :sub and (ie.status.value != 'Deleted' and ie.status.value != 'Retired')"+
+                String base_query = " FROM IssueEntitlement as ie WHERE ie.subscription = :sub and (ie.status.value != 'Deleted' and ie.status.value != 'Retired')"+
                         " and exists (SELECT tipp FROM TitleInstancePackagePlatform as tipp WHERE ie.tipp = tipp and tipp.pkg = :pkg )"
                 def queryParams = [sub: sub, pkg: pkg]
 
                 result.issueEntitlementsCount = IssueEntitlement.executeQuery("select ie.id " + base_query, queryParams).size()
 
-                def query = "SELECT ie " + base_query
+                String query = "SELECT ie " + base_query
 
                 def q = params.q?.trim()
                 if (q) {
@@ -279,10 +279,10 @@ class PublicController {
     if(org_access_rights.contains("public")) return true;
     if(org_access_rights == []){
       //When no rights specified, users affiliated with the org should have access
-      if(com.k_int.kbplus.auth.UserOrg.findAllByUserAndOrg(user,org)) return true;
+      if(UserOrg.findAllByUserAndOrg(user,org)) return true;
     }
     if(user){
-      def userRole = com.k_int.kbplus.auth.UserOrg.findAllByUserAndOrg(user,org)
+      def userRole = UserOrg.findAllByUserAndOrg(user,org)
       hasAccess = userRole.any{
         if(org_access_rights.contains(it.formalRole.authority.toLowerCase()) || org_access_rights.contains(it.formalRole.roleType.toLowerCase())) {
           return true;
@@ -296,7 +296,7 @@ class PublicController {
   private def generateIELicenseMap(ies, result) {
     log.debug("generateIELicenseMap")
     def comparisonMap = [:]
-    def licIEMap = new TreeMap()
+      TreeMap licIEMap = new TreeMap()
     //See if we got IEs under the same license, and list them together
     ies.each{ ie->
       def lic = ie.subscription.owner

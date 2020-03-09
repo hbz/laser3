@@ -11,14 +11,14 @@ import de.laser.helper.DateUtil
 import de.laser.helper.DebugAnnotation
 import de.laser.helper.DebugUtil
 import de.laser.helper.RDStore
-
-import java.text.SimpleDateFormat
-
-import static de.laser.helper.RDStore.*
 import grails.converters.JSON
 import grails.plugin.springsecurity.annotation.Secured
 import org.codehaus.groovy.grails.plugins.orm.auditable.AuditLogEvent
 import org.codehaus.groovy.runtime.InvokerHelper
+
+import java.text.SimpleDateFormat
+
+import static de.laser.helper.RDStore.*
 
 @Mixin(com.k_int.kbplus.mixins.PendingChangeMixin)
 @Secured(['IS_AUTHENTICATED_FULLY'])
@@ -409,13 +409,13 @@ from Subscription as s where
     return subscriptions
   }
 
-    @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
-    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
+    @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")')
+    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_EDITOR") })
   def linkToSubscription(){
     log.debug("linkToSubscription :: ${params}")
     if(params.subscription && params.license){
-      def sub = genericOIDService.resolveOID(params.subscription)
-      def owner = License.get(params.license)
+      Subscription sub = genericOIDService.resolveOID(params.subscription)
+      License owner = License.get(params.license)
         // owner.addToSubscriptions(sub) // GORM problem
         // owner.save()
         sub.setOwner(owner)
@@ -426,15 +426,15 @@ from Subscription as s where
 
   }
 
-    @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
-    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
+    @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")')
+    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_EDITOR") })
     def unlinkSubscription(){
         log.debug("unlinkSubscription :: ${params}")
         if(params.subscription && params.license){
             def sub = Subscription.get(params.subscription)
             if (sub.owner == License.get(params.license)) {
                 sub.owner = null
-                sub.save(flush:true)
+                sub.save()
             }
         }
         redirect controller:'license', action:'show', params: [id:params.license]
@@ -619,13 +619,13 @@ from Subscription as s where
     result.offset = params.offset ?: 0;
 
         // postgresql migration
-        def subQuery = 'select cast(lp.id as string) from LicenseCustomProperty as lp where lp.owner = :owner'
+        String subQuery = 'select cast(lp.id as string) from LicenseCustomProperty as lp where lp.owner = :owner'
         def subQueryResult = LicenseCustomProperty.executeQuery(subQuery, [owner: result.license])
 
         //def qry_params = [licClass:result.license.class.name, prop:LicenseCustomProperty.class.name,owner:result.license, licId:"${result.license.id}"]
         //result.historyLines = AuditLogEvent.executeQuery("select e from AuditLogEvent as e where (( className=:licClass and persistedObjectId=:licId ) or (className = :prop and persistedObjectId in (select lp.id from LicenseCustomProperty as lp where lp.owner=:owner))) order by e.dateCreated desc", qry_params, [max:result.max, offset:result.offset]);
 
-        def base_query = "select e from AuditLogEvent as e where ( (className=:licClass and persistedObjectId = cast(:licId as string))"
+        String base_query = "select e from AuditLogEvent as e where ( (className=:licClass and persistedObjectId = cast(:licId as string))"
         def query_params = [licClass:result.license.class.name, licId:"${result.license.id}"]
 
         // postgresql migration
@@ -931,13 +931,13 @@ from Subscription as s where
             response.sendError(401); return
         }
 
-        def baseLicense = com.k_int.kbplus.License.get(params.baseLicense)
+        License baseLicense = License.get(params.baseLicense)
 
         if (baseLicense) {
 
             def lic_name = params.lic_name ?: "Kopie von ${baseLicense.reference}"
 
-            def licenseInstance = new License(
+            License licenseInstance = new License(
                     reference: lic_name,
                     status: baseLicense.status,
                     type: baseLicense.type,

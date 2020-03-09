@@ -34,7 +34,7 @@ class AddressController extends AbstractDebugController {
 				[addressInstance: new Address(params)]
 				break
 			case 'POST':
-				def addressInstance = new Address(params)
+                Address addressInstance = new Address(params)
 				if (! addressInstance.save(flush: true)) {
 					if (params.redirect) {
 						redirect(url: request.getHeader('referer'), params: params)
@@ -57,7 +57,7 @@ class AddressController extends AbstractDebugController {
 
     @Secured(['ROLE_USER'])
     def show() {
-        def addressInstance = Address.get(params.id)
+        Address addressInstance = Address.get(params.id)
         if (! addressInstance) {
 			flash.message = message(code: 'default.not.found.message', args: [message(code: 'address.label'), params.id])
             redirect action: 'list'
@@ -77,7 +77,7 @@ class AddressController extends AbstractDebugController {
         redirect controller: 'address', action: 'show', params: params
         return // ----- deprecated
 
-        def addressInstance = Address.get(params.id)
+        Address addressInstance = Address.get(params.id)
         if (! addressInstance) {
             flash.message = message(code: 'default.not.found.message', args: [message(code: 'address.label'), params.id])
             redirect action: 'list'
@@ -120,7 +120,7 @@ class AddressController extends AbstractDebugController {
     @DebugAnnotation(test='hasAffiliation("INST_EDITOR")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_EDITOR") })
     def delete() {
-        def addressInstance = Address.get(params.id)
+        Address addressInstance = Address.get(params.id)
         if (! addressInstance) {
 			flash.message = message(code: 'default.not.found.message', args: [message(code: 'address.label'), params.id])
             redirect action: 'list'

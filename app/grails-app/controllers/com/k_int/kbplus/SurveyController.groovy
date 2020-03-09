@@ -2330,7 +2330,7 @@ class SurveyController {
             response.sendError(401); return
         }
 
-        def baseSub = Subscription.get(params.parentSub ?: null)
+        Subscription baseSub = Subscription.get(params.parentSub ?: null)
 
         ArrayList<Links> previousSubscriptions = Links.findAllByDestinationAndObjectTypeAndLinkType(baseSub?.id, Subscription.class.name, RDStore.LINKTYPE_FOLLOWS)
         if (previousSubscriptions.size() > 0) {
@@ -2889,7 +2889,7 @@ class SurveyController {
             log.debug("SurveyController::newCostItem() ${params}");
 
             result.institution = contextService.getOrg()
-            def user = User.get(springSecurityService.principal.id)
+            User user = User.get(springSecurityService.principal.id)
             result.error = [] as List
 
             if (!accessService.checkMinUserOrgRole(user, result.institution, "INST_EDITOR")) {
@@ -3617,7 +3617,7 @@ class SurveyController {
 
         def institution = contextService.getOrg()
 
-        RefdataValue subStatus = multiYear ? RDStore.SUBSCRIPTION_INTENDED_PERENNIAL : RDStore.SUBSCRIPTION_INTENDED
+        RefdataValue subStatus = RDStore.SUBSCRIPTION_INTENDED
 
         RefdataValue role_sub = RDStore.OR_SUBSCRIBER_CONS
         RefdataValue role_sub_cons = RDStore.OR_SUBSCRIPTION_CONSORTIA

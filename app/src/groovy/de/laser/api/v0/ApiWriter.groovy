@@ -1,10 +1,6 @@
 package de.laser.api.v0
 
-import com.k_int.kbplus.License
-import com.k_int.kbplus.Org
-import com.k_int.kbplus.Person
-import com.k_int.kbplus.RefdataValue
-import com.k_int.kbplus.Subscription
+import com.k_int.kbplus.*
 import de.laser.helper.Constants
 import de.laser.helper.RDConstants
 import groovy.util.logging.Log4j

@@ -40,7 +40,7 @@ databaseChangeLog = {
 		}
 	}
 
-	changeSet(author: "kloberd (generated)", id: "1583394967979-3") {
+	changeSet(author: "kloberd (modified)", id: "1583394967979-3") {
 		grailsChange {
 			change {
 				sql.execute("update survey_info set surin_is_mandatory = true where surin_is_mandatory is null and surin_is_subscription_survey = true;")
@@ -51,7 +51,7 @@ databaseChangeLog = {
 		}
 	}
 
-	changeSet(author: "kloberd (modified)", id: "1583394967979-4") {
+	changeSet(author: "kloberd (generated)", id: "1583394967979-4") {
 		addNotNullConstraint(columnDataType: "bool", columnName: "surin_is_mandatory", tableName: "survey_info")
 	}
 

@@ -1,6 +1,5 @@
 package com.k_int.kbplus
 
-
 import com.k_int.kbplus.auth.Role
 import com.k_int.kbplus.auth.User
 import com.k_int.properties.PropertyDefinitionGroup
@@ -10,7 +9,9 @@ import de.laser.helper.DateUtil
 import de.laser.helper.RDConstants
 import de.laser.helper.RDStore
 import de.laser.helper.RefdataAnnotation
-import de.laser.interfaces.*
+import de.laser.interfaces.Permissions
+import de.laser.interfaces.ShareSupport
+import de.laser.interfaces.TemplateSupport
 import de.laser.traits.AuditableTrait
 import de.laser.traits.ShareableTrait
 import grails.util.Holders

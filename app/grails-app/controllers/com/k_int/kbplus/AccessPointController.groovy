@@ -3,7 +3,6 @@ package com.k_int.kbplus
 import com.k_int.kbplus.auth.User
 import de.laser.controller.AbstractDebugController
 import de.laser.helper.RDConstants
-import de.laser.helper.RDStore
 import de.uni_freiburg.ub.IpRange
 import grails.plugin.springsecurity.annotation.Secured
 import groovy.json.JsonOutput
@@ -69,7 +68,7 @@ class AccessPointController extends AbstractDebugController {
                     endValue  : ipRange.upperLimit.toHexString()]
             )
 
-            def accessPointData = new AccessPointData(params)
+            AccessPointData accessPointData = new AccessPointData(params)
             accessPointData.orgAccessPoint = orgAccessPoint
             accessPointData.datatype = 'ip' + ipRange.getIpVersion()
             accessPointData.data = jsonData
@@ -145,7 +144,7 @@ class AccessPointController extends AbstractDebugController {
         params.availableIpOptions = availableIPOptions()
 
         if (params.template) {
-            def accessMethod = RefdataValue.getByValue(params.template)
+            RefdataValue accessMethod = RefdataValue.getByValue(params.template)
             return render(template: 'create_' + accessMethod, model: [accessMethod: accessMethod, availableIpOptions : params.availableIpOptions])
         } else {
             if (!params.accessMethod) {

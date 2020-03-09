@@ -1,14 +1,6 @@
 package de.laser
 
-import com.k_int.kbplus.Org
-import com.k_int.kbplus.Subscription
-import com.k_int.kbplus.SubscriptionCustomProperty
-import com.k_int.kbplus.SubscriptionPrivateProperty
-import com.k_int.kbplus.SurveyConfig
-import com.k_int.kbplus.SurveyInfo
-import com.k_int.kbplus.SurveyOrg
-import com.k_int.kbplus.SurveyProperty
-import com.k_int.kbplus.SurveyResult
+import com.k_int.kbplus.*
 import com.k_int.kbplus.abstract_domain.AbstractProperty
 import com.k_int.kbplus.abstract_domain.CustomProperty
 import com.k_int.kbplus.abstract_domain.PrivateProperty

@@ -36,7 +36,7 @@ class TippController extends AbstractDebugController {
     result.max = params.max
     result.offset = params.offset ? Integer.parseInt(params.offset) : 0;
 
-    def base_qry = "from TitleInstancePackagePlatform as tipp where tipp.title = ? and tipp.status != ? "
+    String base_qry = "from TitleInstancePackagePlatform as tipp where tipp.title = ? and tipp.status != ? "
     def qry_params = [result.titleInstanceInstance, RDStore.TIPP_STATUS_DELETED]
 
     if ( params.filter ) {
@@ -46,14 +46,14 @@ class TippController extends AbstractDebugController {
 
     if ( params.endsAfter && params.endsAfter.length() > 0 ) {
       SimpleDateFormat sdf = DateUtil.getSDF_NoTime()
-      def d = sdf.parse(params.endsAfter)
+      Date d = sdf.parse(params.endsAfter)
       base_qry += " and (select max(tc.endDate) from TIPPCoverage tc where tc.tipp = tipp) >= ?"
       qry_params.add(d)
     }
 
     if ( params.startsBefore && params.startsBefore.length() > 0 ) {
       SimpleDateFormat sdf = DateUtil.getSDF_NoTime()
-      def d = sdf.parse(params.startsBefore)
+      Date d = sdf.parse(params.startsBefore)
       base_qry += " and (select min(tc.startDate) from TIPPCoverage tc where tc.tipp = tipp) <= ?"
       qry_params.add(d)
     }
