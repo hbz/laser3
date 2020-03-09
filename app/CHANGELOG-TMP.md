@@ -2,9 +2,15 @@
 
 **Ticket    Date    Branch      Author  Feature/Bug     Description/Keywords**
 
+2227    06.03.2020  hbz-dev     David   Bug         Merkmale Auswahl Lizenzebene 
+
 2234    05.03.2020  hbz-dev     Christian   Bug     Überarbeitung Statistikabruf
 
 1973    05.03.2020  hbz-dev     Anja    Feature     Überarbeitung des Einrichtungsprofils
+
+2228    04.03.2020  hbz-dev     Andreas Feature     Einbau der Flags für Datenfreigabe und dauerhaften Zugriff in verschiedene Ausgaben
+
+2119    04.03.2020  hbz-dev     Andreas Feature     Einbau des Flags für dauerhaften Zugriff
 
 2231    03.03.2020  rc1.2       David   Feature     Performance: /myInstitution/currentProviders
 
