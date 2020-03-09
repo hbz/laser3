@@ -1432,7 +1432,7 @@ class AjaxController {
 
         def ownobj              = genericOIDService.resolveOID(params.ownobj)
         def propDefGroup        = genericOIDService.resolveOID(params.propDefGroup)
-        def availPropDefGroups  = PropertyDefinitionGroup.getAvailableGroups(contextService.getOrg(), ownobj.class.name)
+        List<PropertyDefinitionGroup> availPropDefGroups  = PropertyDefinitionGroup.getAvailableGroups(contextService.getOrg(), ownobj.class.name)
 
         if (ownobj && propDefGroup) {
             if (params.isVisible in ['Yes', 'No']) {
@@ -1469,7 +1469,7 @@ class AjaxController {
         def ownobj              = genericOIDService.resolveOID(params.ownobj)
         def propDefGroup        = genericOIDService.resolveOID(params.propDefGroup)
         def binding             = genericOIDService.resolveOID(params.propDefGroupBinding)
-        def availPropDefGroups  = PropertyDefinitionGroup.getAvailableGroups(contextService.getOrg(), ownobj.class.name)
+        List<PropertyDefinitionGroup> availPropDefGroups  = PropertyDefinitionGroup.getAvailableGroups(contextService.getOrg(), ownobj.class.name)
 
         if (ownobj && propDefGroup && binding) {
             binding.delete(flush:true)
@@ -1493,9 +1493,9 @@ class AjaxController {
       if(params.propIdent.length() > 0) {
         def error
         def newProp
-        def tenant = Org.get(params.tenantId)
+        Org tenant = Org.get(params.tenantId)
         def owner  = grailsApplication.getArtefact("Domain", params.ownerClass.replace("class ",""))?.getClazz()?.get(params.ownerId)
-        def type   = PropertyDefinition.get(params.propIdent.toLong())
+          PropertyDefinition type   = PropertyDefinition.get(params.propIdent.toLong())
 
         if (! type) { // new property via select2; tmp deactivated
           error = message(code:'propertyDefinition.private.deactivated')

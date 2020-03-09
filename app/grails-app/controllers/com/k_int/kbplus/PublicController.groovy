@@ -220,10 +220,10 @@ class PublicController {
         }
 
         if (params.id) {
-            def sp  = SubscriptionPackage.get(params.long('id'))
+            SubscriptionPackage sp  = SubscriptionPackage.get(params.long('id'))
             def sub = sp?.subscription
             def pkg = sp?.pkg
-            def scp = SubscriptionCustomProperty.findByOwnerAndTypeAndRefValue(
+            SubscriptionCustomProperty scp = SubscriptionCustomProperty.findByOwnerAndTypeAndRefValue(
                     sub,
                     PropertyDefinition.getByNameAndDescr('GASCO Entry', PropertyDefinition.SUB_PROP),
                     RDStore.YN_YES
@@ -232,13 +232,13 @@ class PublicController {
             if (scp) {
                 result.subscription = sub
 
-                def base_query = " FROM IssueEntitlement as ie WHERE ie.subscription = :sub and (ie.status.value != 'Deleted' and ie.status.value != 'Retired')"+
+                String base_query = " FROM IssueEntitlement as ie WHERE ie.subscription = :sub and (ie.status.value != 'Deleted' and ie.status.value != 'Retired')"+
                         " and exists (SELECT tipp FROM TitleInstancePackagePlatform as tipp WHERE ie.tipp = tipp and tipp.pkg = :pkg )"
                 def queryParams = [sub: sub, pkg: pkg]
 
                 result.issueEntitlementsCount = IssueEntitlement.executeQuery("select ie.id " + base_query, queryParams).size()
 
-                def query = "SELECT ie " + base_query
+                String query = "SELECT ie " + base_query
 
                 def q = params.q?.trim()
                 if (q) {

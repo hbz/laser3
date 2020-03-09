@@ -72,7 +72,7 @@ class LicenseCompareController extends AbstractDebugController {
           ...
         }
       */
-      def allPropDefGroups = lic.getCalculatedPropDefGroups(org)
+      Map<String, Object> allPropDefGroups = lic.getCalculatedPropDefGroups(org)
       allPropDefGroups.entrySet().each { propDefGroupWrapper ->
         /*
           group group level

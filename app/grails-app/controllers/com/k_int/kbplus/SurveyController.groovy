@@ -2330,7 +2330,7 @@ class SurveyController {
             response.sendError(401); return
         }
 
-        def baseSub = Subscription.get(params.parentSub ?: null)
+        Subscription baseSub = Subscription.get(params.parentSub ?: null)
 
         ArrayList<Links> previousSubscriptions = Links.findAllByDestinationAndObjectTypeAndLinkType(baseSub?.id, Subscription.class.name, RDStore.LINKTYPE_FOLLOWS)
         if (previousSubscriptions.size() > 0) {

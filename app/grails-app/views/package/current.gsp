@@ -54,7 +54,7 @@
             <div class="column">
                 ${message(code:'title.search.offset.text', args:[offset+1,lasttipp,num_tipp_rows])} -
                 <g:if test="${params.mode=='advanced'}">${message(code:'package.show.switchView.basic')} <g:link controller="package" action="current" params="${params+['mode':'basic']}">${message(code:'default.basic')}</g:link></g:if>
-                    <g:else>${message(code:'package.show.switchView.advanced')} <g:link controller="package" action="current" params="${params+['mode':'advanced']}" button type="button" >${message(code:'default.advanced'}</g:link></g:else>
+                    <g:else>${message(code:'package.show.switchView.advanced')} <g:link controller="package" action="current" params="${params+['mode':'advanced']}" type="button" >${message(code:'default.advanced')}</g:link></g:else>
             </div>
         </div>
         <div class="row">

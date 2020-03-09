@@ -36,7 +36,7 @@ class TippController extends AbstractDebugController {
     result.max = params.max
     result.offset = params.offset ? Integer.parseInt(params.offset) : 0;
 
-    def base_qry = "from TitleInstancePackagePlatform as tipp where tipp.title = ? and tipp.status != ? "
+    String base_qry = "from TitleInstancePackagePlatform as tipp where tipp.title = ? and tipp.status != ? "
     def qry_params = [result.titleInstanceInstance, RDStore.TIPP_STATUS_DELETED]
 
     if ( params.filter ) {
