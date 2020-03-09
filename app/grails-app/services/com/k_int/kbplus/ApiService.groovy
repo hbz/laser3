@@ -185,7 +185,7 @@ class ApiService {
 
                 def tmp2 = resolveStreet(billing_address.street?.text())
 
-                def billingAddress = Address.lookupOrCreate( // name, street1, street2, zipcode, city, state, country, postbox, pobZipcode, pobCity, type, person, organisation
+                Address billingAddress = Address.lookupOrCreate( // name, street1, street2, zipcode, city, state, country, postbox, pobZipcode, pobCity, type, person, organisation
                         inst.billing_address.name.text() ? normString("${billing_address.name}") : normString("${inst.name}"),
                         normString("${tmp2.street1}"),
                         normString("${tmp2.street2}"),
@@ -216,7 +216,7 @@ class ApiService {
 
                 def tmp3 = resolveStreet(legal_address.street?.text())
 
-                def legalAddress = Address.lookupOrCreate( // name, street1, street2, zipcode, city, state, country, postbox, pobZipcode, pobCity, type, person, organisation
+                Address legalAddress = Address.lookupOrCreate( // name, street1, street2, zipcode, city, state, country, postbox, pobZipcode, pobCity, type, person, organisation
                         legal_address.name.text() ? normString("${legal_address.name}") : normString("${inst.name}"),
                         normString("${tmp3.street1}"),
                         normString("${tmp3.street2}"),
@@ -239,9 +239,9 @@ class ApiService {
             }
 
             inst.private_property.children().each { pp ->
-                def name = pp.name().replace('_', ' ').toLowerCase()
+                String name = pp.name().replace('_', ' ').toLowerCase()
 
-                def type = PropertyDefinition.findWhere(
+                PropertyDefinition type = PropertyDefinition.findWhere(
                         name: name,
                         type: 'class ' + RefdataValue.class.name,
                         descr:  PropertyDefinition.ORG_PROP,
@@ -257,8 +257,8 @@ class ApiService {
                 }
 
                 if (type) {
-                    def opp
-                    def check = "private property: " + name + " : " + pp.text()
+                    OrgPrivateProperty opp
+                    String check = "private property: " + name + " : " + pp.text()
 
                     if (type.refdataCategory) {
                         def rdv = RefdataValue.getByCategoryDescAndI10nValueDe(type.refdataCategory, pp.text())
@@ -291,8 +291,8 @@ class ApiService {
 
             // persons
 
-            def rdvContactPerson = RefdataValue.getByValueAndCategory('General contact person', RDConstants.PERSON_FUNCTION)
-            def rdvJobRelated    = RefdataValue.getByValueAndCategory('Job-related', RDConstants.CONTACT_TYPE)
+            RefdataValue rdvContactPerson = RefdataValue.getByValueAndCategory('General contact person', RDConstants.PERSON_FUNCTION)
+            RefdataValue rdvJobRelated    = RefdataValue.getByValueAndCategory('Job-related', RDConstants.CONTACT_TYPE)
 
             inst.person?.children().each { p ->
 
@@ -301,7 +301,7 @@ class ApiService {
                 if( ! p.first_name.text() ) {
                     rdvContactType = RDStore.CONTACT_TYPE_FUNCTIONAL
                 }
-                def person = Person.lookup( // firstName, lastName, tenant, isPublic, contactType, org, functionType
+                Person person = Person.lookup( // firstName, lastName, tenant, isPublic, contactType, org, functionType
                         p.first_name.text() ? normString("${p.first_name}") : null,
                         p.last_name.text() ? normString("${p.last_name}") : null,
                         tenant,
@@ -337,9 +337,9 @@ class ApiService {
                         pr.save()
 
                         p.function.children().each { func ->
-                            def rdv = RefdataValue.getByCategoryDescAndI10nValueDe(RDConstants.PERSON_FUNCTION, func.text())
+                            RefdataValue rdv = RefdataValue.getByCategoryDescAndI10nValueDe(RDConstants.PERSON_FUNCTION, func.text())
                             if (rdv) {
-                                def pf = new PersonRole(
+                                PersonRole pf = new PersonRole(
                                         prs: person,
                                         org: org,
                                         functionType: rdv
@@ -397,8 +397,8 @@ class ApiService {
         log.debug("importing ${count} items")
 
         xml.subscription.each { sub ->
-            def strName = sub.name.text()
-            def rdvType = RefdataValue.getByValueAndCategory(type.name.text(), RDConstants.SUBSCRIPTION_TYPE)
+            String strName = sub.name.text()
+            RefdataValue rdvType = RefdataValue.getByValueAndCategory(type.name.text(), RDConstants.SUBSCRIPTION_TYPE)
 
             log.debug("processing ${strName} / ${rdvType.getI10n('value')}")
         }

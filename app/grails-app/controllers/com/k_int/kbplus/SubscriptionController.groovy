@@ -653,7 +653,7 @@ class SubscriptionController extends AbstractDebugController {
 
     private def generateIEQuery(params, qry_params, showDeletedTipps, asAt) {
 
-        def base_qry = "from IssueEntitlement as ie where ie.subscription = ? and ie.tipp.title.status.value != 'Deleted' "
+        String base_qry = "from IssueEntitlement as ie where ie.subscription = ? and ie.tipp.title.status.value != 'Deleted' "
 
         if (showDeletedTipps == false) {
             base_qry += "and ie.tipp.status != ? "
@@ -2692,9 +2692,9 @@ class SubscriptionController extends AbstractDebugController {
         def limits = (!params.format || params.format.equals("html")) ? [max: result.max, offset: result.offset] : [offset: 0]
 
         def qry_params = [result.subscriptionInstance]
-        def date_filter = new Date();
+        Date date_filter = new Date()
 
-        def base_qry = "from IssueEntitlement as ie where ie.subscription = ? "
+        String base_qry = "from IssueEntitlement as ie where ie.subscription = ? "
         base_qry += "and ie.status.value != 'Deleted' "
         if (date_filter != null) {
             if (screen.equals('previous')) {
@@ -3529,7 +3529,7 @@ class SubscriptionController extends AbstractDebugController {
         result.max = params.max ?: result.user.getDefaultPageSizeTMP();
         result.offset = params.offset ?: 0;
 
-        def baseQuery = "select pc from PendingChange as pc where pc.subscription = :sub and pc.status.value in (:stats)"
+        String baseQuery = "select pc from PendingChange as pc where pc.subscription = :sub and pc.status.value in (:stats)"
         def baseParams = [sub: result.subscription, stats: ['Accepted', 'Rejected']]
 
         result.todoHistoryLines = PendingChange.executeQuery(
@@ -4005,7 +4005,7 @@ class SubscriptionController extends AbstractDebugController {
         }
 
         if (accessService.checkPerm("ORG_CONSORTIUM")) {
-            def baseSub = Subscription.get(params.baseSubscription ?: params.id)
+            Subscription baseSub = Subscription.get(params.baseSubscription ?: params.id)
 
             use(TimeCategory) {
                 result.newStartDate = baseSub.startDate ? baseSub.startDate + 1.year : null
@@ -4014,7 +4014,7 @@ class SubscriptionController extends AbstractDebugController {
 
             if (params.workFlowPart == '3') {
 
-                def newSubConsortia = Subscription.get(params.newSubscription)
+                Subscription newSubConsortia = Subscription.get(params.newSubscription)
 
                 def subMembers = []
 
@@ -4025,7 +4025,7 @@ class SubscriptionController extends AbstractDebugController {
 
                 subMembers.each { sub ->
 
-                    def subMember = Subscription.findById(sub)
+                    Subscription subMember = Subscription.findById(sub)
 
                     //ChildSub Exist
                     ArrayList<Links> prevLinks = Links.findAllByDestinationAndLinkTypeAndObjectType(subMember.id, LINKTYPE_FOLLOWS, Subscription.class.name)
@@ -4034,7 +4034,7 @@ class SubscriptionController extends AbstractDebugController {
                         /* Subscription.executeQuery("select s from Subscription as s join s.orgRelations as sor where s.instanceOf = ? and sor.org.id = ?",
                             [result.subscriptionInstance, it.id])*/
 
-                        def newSubscription = new Subscription(
+                        Subscription newSubscription = new Subscription(
                                 type: subMember.type,
                                 kind: subMember.kind,
                                 status: newSubConsortia.status,
@@ -4064,7 +4064,7 @@ class SubscriptionController extends AbstractDebugController {
                         if (subMember.customProperties) {
                             //customProperties
                             for (prop in subMember.customProperties) {
-                                def copiedProp = new SubscriptionCustomProperty(type: prop.type, owner: newSubscription)
+                                SubscriptionCustomProperty copiedProp = new SubscriptionCustomProperty(type: prop.type, owner: newSubscription)
                                 copiedProp = prop.copyInto(copiedProp)
                                 copiedProp.instanceOf = null
                                 copiedProp.save(flush: true)
@@ -4079,7 +4079,7 @@ class SubscriptionController extends AbstractDebugController {
                             }
                             subMember.privateProperties?.each { prop ->
                                 if (tenantOrgs.indexOf(prop.type?.tenant?.id) > -1) {
-                                    def copiedProp = new SubscriptionPrivateProperty(type: prop.type, owner: newSubscription)
+                                    SubscriptionPrivateProperty copiedProp = new SubscriptionPrivateProperty(type: prop.type, owner: newSubscription)
                                     copiedProp = prop.copyInto(copiedProp)
                                     copiedProp.save(flush: true)
                                     //newSubscription.addToPrivateProperties(copiedProp)  // ERROR Hibernate: Found two representations of same collection
@@ -4458,7 +4458,7 @@ class SubscriptionController extends AbstractDebugController {
             response.sendError(401); return
         }
 
-        def baseSub = Subscription.get(params.baseSubscription ?: params.id)
+        Subscription baseSub = Subscription.get(params.baseSubscription ?: params.id)
 
         ArrayList<Links> previousSubscriptions = Links.findAllByDestinationAndObjectTypeAndLinkType(baseSub.id, Subscription.class.name, LINKTYPE_FOLLOWS)
         if (previousSubscriptions.size() > 0) {
@@ -4477,7 +4477,7 @@ class SubscriptionController extends AbstractDebugController {
             use(TimeCategory) {
                 manualCancellationDate =  baseSub?.manualCancellationDate ? (baseSub?.manualCancellationDate + 1.year) : null
             }
-            def newSub = new Subscription(
+            Subscription newSub = new Subscription(
                     name: new_subname,
                     startDate: sub_startDate,
                     endDate: sub_endDate,

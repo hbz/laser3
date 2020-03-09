@@ -1676,7 +1676,7 @@ join sub.orgRelations or_sub where
 
         if (basePackage) {
             //
-            def add_entitlements = (params.createSubAction == 'copy' ? true : false)
+            boolean add_entitlements = (params.createSubAction == 'copy' ? true : false)
 
             def new_sub = basePackage.createSubscription("Subscription Taken",
                     "A New subscription....",
@@ -2434,7 +2434,7 @@ AND EXISTS (
 
         def baseParams = [owner: result.institution, tsCheck: tsCheck, stats: ['Accepted']]
 
-        def baseQuery1 = "select distinct sub, count(sub.id) from PendingChange as pc join pc.subscription as sub where pc.owner = :owner and pc.ts >= :tsCheck " +
+        String baseQuery1 = "select distinct sub, count(sub.id) from PendingChange as pc join pc.subscription as sub where pc.owner = :owner and pc.ts >= :tsCheck " +
                 " and pc.subscription is not NULL and pc.status.value in (:stats) group by sub.id"
 
         def result1 = PendingChange.executeQuery(
@@ -2444,7 +2444,7 @@ AND EXISTS (
         )
         result.changes.addAll(result1)
 
-        def baseQuery2 = "select distinct lic, count(lic.id) from PendingChange as pc join pc.license as lic where pc.owner = :owner and pc.ts >= :tsCheck" +
+        String baseQuery2 = "select distinct lic, count(lic.id) from PendingChange as pc join pc.license as lic where pc.owner = :owner and pc.ts >= :tsCheck" +
                 " and pc.license is not NULL and pc.status.value in (:stats) group by lic.id"
 
         def result2 = PendingChange.executeQuery(
@@ -2527,7 +2527,7 @@ AND EXISTS (
         if ( params.restrict == 'ALL' )
           params.restrict=null
 
-        def base_query = " from PendingChange as pc where owner = ?";
+        String base_query = " from PendingChange as pc where owner = ?";
         def qry_params = [result.institution]
         if ( ( params.restrict != null ) && ( params.restrict.trim().length() > 0 ) ) {
           def o =  genericOIDService.resolveOID(params.restrict)

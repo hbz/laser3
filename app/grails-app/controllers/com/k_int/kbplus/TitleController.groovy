@@ -233,7 +233,7 @@ class TitleController extends AbstractDebugController {
     }
 
     result.titleInstance = TitleInstance.get(params.id)
-    def base_query = 'from org.codehaus.groovy.grails.plugins.orm.auditable.AuditLogEvent as e where ( e.className = :instCls and e.persistedObjectId = :instId )'
+    String base_query = 'from org.codehaus.groovy.grails.plugins.orm.auditable.AuditLogEvent as e where ( e.className = :instCls and e.persistedObjectId = :instId )'
 
     def limits = (!params.format||params.format.equals("html"))?[max:result.max, offset:result.offset]:[offset:0]
 
@@ -253,7 +253,7 @@ class TitleController extends AbstractDebugController {
 
         switch(hl.className) {
           case 'com.k_int.kbplus.TitleInstance':
-            def instance_obj = TitleInstance.get(hl.persistedObjectId);
+              TitleInstance instance_obj = TitleInstance.get(hl.persistedObjectId);
             line_to_add = [ link: createLink(controller:'title', action: 'show', id:hl.persistedObjectId),
                             name: instance_obj.title,
                             lastUpdated: hl.lastUpdated,

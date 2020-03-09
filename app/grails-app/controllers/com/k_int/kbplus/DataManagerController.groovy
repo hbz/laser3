@@ -320,7 +320,7 @@ class DataManagerController extends AbstractDebugController {
     def deleted_title_status =  RefdataValue.getByValueAndCategory('Deleted', RDConstants.TITLE_STATUS)
     def qry_params = [deleted_title_status]
 
-    def base_qry = " from TitleInstance as t where ( t.status = ? )"
+    String base_qry = " from TitleInstance as t where ( t.status = ? )"
 
       if (params.sort?.length() > 0) {
           base_qry += " order by " + params.sort
@@ -350,7 +350,7 @@ class DataManagerController extends AbstractDebugController {
         def delStatus =  RefdataValue.getByValueAndCategory('Deleted', RDConstants.ORG_STATUS)
 
         def qry_params = [delStatus]
-        def query = " from Org as o where ( o.status = ? )"
+        String query = " from Org as o where ( o.status = ? )"
 
         if (params.sort?.length() > 0) {
             query += " order by " + params.sort
