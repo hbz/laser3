@@ -10,7 +10,7 @@ databaseChangeLog = {
 		addForeignKeyConstraint(baseColumnNames: "sub_kind_rv_fk", baseTableName: "subscription", baseTableSchemaName: "public", constraintName: "FK1456591D8312F145", deferrable: "false", initiallyDeferred: "false", referencedColumnNames: "rdv_id", referencedTableName: "refdata_value", referencedTableSchemaName: "public", referencesUniqueColumn: "false")
 	}
 
-	changeSet(author: "djebeniani (generated)", id: "1583759022240-3") {
+	changeSet(author: "djebeniani (modified)", id: "1583759022240-3") {
 		grailsChange {
 			change {
 				sql.execute("UPDATE subscription SET sub_kind_rv_fk = (SELECT rdv_id FROM refdata_value WHERE\n" +
@@ -47,7 +47,7 @@ databaseChangeLog = {
 			}
 		}
 	}
-	changeSet(author: "djebeniani (generated)", id: "1583759022240-4") {
+	changeSet(author: "djebeniani (modified)", id: "1583759022240-4") {
 		grailsChange {
 			change {
 				sql.execute("DELETE FROM refdata_value WHERE rdv_owner = (SELECT rdc_id FROM refdata_category as rdc WHERE rdc.rdc_description = 'subscription.type') AND rdv_value = 'Alliance Licence';")
@@ -59,7 +59,7 @@ databaseChangeLog = {
 		}
 	}
 
-	changeSet(author: "djebeniani (generated)", id: "1583759022240-5") {
+	changeSet(author: "djebeniani (modified)", id: "1583759022240-5") {
 		grailsChange {
 			change {
 				sql.execute("DELETE FROM refdata_value WHERE rdv_owner = (SELECT rdc_id FROM refdata_category as rdc WHERE rdc.rdc_description = 'subscription.status') AND rdv_value = 'ExpiredPerennial';")
