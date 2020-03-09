@@ -715,7 +715,7 @@
         kind:
           type: string
           description: Mapping RefdataCategory "${RDConstants.SUBSCRIPTION_KIND}"
-                  enum: <% printRefdataEnum(RDConstants.SUBSCRIPTION_KIND, 12) %>
+          enum: <% printRefdataEnum(RDConstants.SUBSCRIPTION_KIND, 12) %>
 
 
     TitleInstancePackagePlatform:
