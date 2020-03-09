@@ -2145,7 +2145,7 @@ class SubscriptionController extends AbstractDebugController {
 
                         if(params.kind && !auditService.getAuditConfig(subChild?.instanceOf, 'kind'))
                         {
-                            subChild?.ind = RefdataValue.get(params.kind) ?: subChild?.kind
+                            subChild?.kind = RefdataValue.get(params.kind) ?: subChild?.kind
                             change << message(code: 'subscription.kind.label')
                         }
                         if(params.kind && auditService.getAuditConfig(subChild?.instanceOf, 'kind'))
