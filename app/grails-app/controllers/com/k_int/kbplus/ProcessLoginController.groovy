@@ -1,7 +1,9 @@
 package com.k_int.kbplus
 
 import com.k_int.kbplus.auth.Role
+import com.k_int.kbplus.auth.User
 import com.k_int.kbplus.auth.UserOrg
+import com.k_int.kbplus.auth.UserRole
 import grails.plugin.springsecurity.annotation.Secured
 import org.codehaus.groovy.grails.commons.GrailsApplication
 
@@ -57,10 +59,10 @@ class ProcessLoginController {
 
       if ( ( map.eduPersonTargetedID != null ) && ( map.eduPersonTargetedID.length() > 0 ) ) {
   
-        def user = com.k_int.kbplus.auth.User.findByUsername(map.eduPersonTargetedID)
+        User user = User.findByUsername(map.eduPersonTargetedID)
         if ( !user ) {
           log.debug("Creating user");
-          user = new com.k_int.kbplus.auth.User(username:map.eduPersonTargetedID,
+          user = new User(username:map.eduPersonTargetedID,
                                                 password:'**',
                                                 enabled:true,
                                                 accountExpired:false,
@@ -71,11 +73,11 @@ class ProcessLoginController {
   
           if ( user.save(flush:true) ) {
             log.debug("Created user, allocating user role");
-            def userRole = com.k_int.kbplus.auth.Role.findByAuthority('ROLE_USER')
+            Role userRole = Role.findByAuthority('ROLE_USER')
   
             if ( userRole ) {
               log.debug("looked up user role: ${userRole}");
-              def new_role_allocation = new com.k_int.kbplus.auth.UserRole(user:user,role:userRole);
+              UserRole new_role_allocation = new UserRole(user:user,role:userRole);
     
               if ( new_role_allocation.save(flush:true) ) {
                 log.debug("New role created...");
@@ -110,7 +112,7 @@ class ProcessLoginController {
         // log.debug("Auth set, isAuthenticated = ${securityContext.authentication.isAuthenticated()}, name=${securityContext.authentication.getName()}");
         // log.debug("ea_context=${map.ea_context}");
   
-        def tok = java.util.UUID.randomUUID().toString()
+        String tok = java.util.UUID.randomUUID().toString()
         ediAuthTokenMap[tok] = map.eduPersonTargetedID
   
         log.debug("Setting entry in ediAuthTokenMap to ${tok} = ${map.eduPersonTargetedID}");

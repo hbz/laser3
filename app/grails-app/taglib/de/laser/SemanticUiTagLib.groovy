@@ -492,7 +492,7 @@ class SemanticUiTagLib {
 
         def mode = (attrs.params.mode == 'basic') ? 'basic' : ((attrs.params.mode == 'advanced') ? 'advanced' : null)
         if (!mode) {
-            def user = User.get(springSecurityService.principal.id)
+            User user = User.get(springSecurityService.principal.id)
             mode = (user.getSettingsValue(UserSettings.KEYS.SHOW_SIMPLE_VIEWS)?.value == 'No') ? 'advanced' : 'basic'
 
             // CAUTION: inject default mode

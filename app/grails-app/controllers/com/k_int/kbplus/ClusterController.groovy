@@ -34,7 +34,7 @@ class ClusterController extends AbstractDebugController {
         	[clusterInstance: new Cluster(params)]
 			break
 		case 'POST':
-	        def clusterInstance = new Cluster(params)
+                Cluster clusterInstance = new Cluster(params)
 	        if (!clusterInstance.save(flush: true)) {
 	            render view: 'create', model: [clusterInstance: clusterInstance]
 	            return
@@ -48,7 +48,7 @@ class ClusterController extends AbstractDebugController {
 
     @Secured(['ROLE_USER'])
     def show() {
-        def clusterInstance = Cluster.get(params.id)
+        Cluster clusterInstance = Cluster.get(params.id)
         if (!clusterInstance) {
 			flash.message = message(code: 'default.not.found.message', args: [message(code: 'cluster.label'), params.id])
             redirect action: 'list'
@@ -63,7 +63,7 @@ class ClusterController extends AbstractDebugController {
     def edit() {
 		switch (request.method) {
 		case 'GET':
-	        def clusterInstance = Cluster.get(params.id)
+            Cluster clusterInstance = Cluster.get(params.id)
 	        if (!clusterInstance) {
 	            flash.message = message(code: 'default.not.found.message', args: [message(code: 'cluster.label'), params.id])
 	            redirect action: 'list'
@@ -73,7 +73,7 @@ class ClusterController extends AbstractDebugController {
 	        [clusterInstance: clusterInstance]
 			break
 		case 'POST':
-	        def clusterInstance = Cluster.get(params.id)
+                Cluster clusterInstance = Cluster.get(params.id)
 	        if (!clusterInstance) {
 	            flash.message = message(code: 'default.not.found.message', args: [message(code: 'cluster.label'), params.id])
 	            redirect action: 'list'
@@ -107,7 +107,7 @@ class ClusterController extends AbstractDebugController {
     @DebugAnnotation(test='hasAffiliation("INST_EDITOR")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_EDITOR") })
     def delete() {
-        def clusterInstance = Cluster.get(params.id)
+        Cluster clusterInstance = Cluster.get(params.id)
         if (!clusterInstance) {
 			flash.message = message(code: 'default.not.found.message', args: [message(code: 'cluster.label'), params.id])
             redirect action: 'list'
@@ -181,8 +181,8 @@ class ClusterController extends AbstractDebugController {
             log.debug("ignoring to add OrgRole because of existing duplicate")
         }
         else {
-                
-            def newOrgRole = new OrgRole(org:org, roleType:role, cluster: x)
+
+            OrgRole newOrgRole = new OrgRole(org:org, roleType:role, cluster: x)
             if ( newOrgRole.save(flush:true) ) {
                 log.debug("adding OrgRole [ ${x}, ${org}, ${role}]")
             } else {

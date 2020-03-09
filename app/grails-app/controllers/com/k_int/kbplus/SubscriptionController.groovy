@@ -10,13 +10,9 @@ import de.laser.controller.AbstractDebugController
 import de.laser.domain.IssueEntitlementCoverage
 import de.laser.domain.PriceItem
 import de.laser.exceptions.EntitlementCreationException
-import de.laser.helper.DateUtil
-import de.laser.helper.DebugAnnotation
-import de.laser.helper.DebugUtil
-import de.laser.helper.EhcacheWrapper
-import de.laser.helper.RDConstants
-import de.laser.helper.RDStore
-import de.laser.interfaces.*
+import de.laser.helper.*
+import de.laser.interfaces.ShareSupport
+import de.laser.interfaces.TemplateSupport
 import de.laser.oai.OaiClientLaser
 import grails.converters.JSON
 import grails.doc.internal.StringEscapeCategory
@@ -672,7 +668,7 @@ class SubscriptionController extends AbstractDebugController {
 
         if (params.startsBefore && params.startsBefore.length() > 0) {
             SimpleDateFormat sdf = DateUtil.getSDF_NoTime()
-            def d = sdf.parse(params.startsBefore)
+            Date d = sdf.parse(params.startsBefore)
             base_qry += " and (select min(ic.startDate) from IssueEntitlementCoverage ic where ic.ie = ie) <= ?"
             qry_params.add(d)
         }
@@ -814,14 +810,14 @@ class SubscriptionController extends AbstractDebugController {
 
             if (params.endsAfter && params.endsAfter.length() > 0) {
                 SimpleDateFormat sdf = DateUtil.getSDF_NoTime()
-                def d = sdf.parse(params.endsAfter)
+                Date d = sdf.parse(params.endsAfter)
                 basequery += " and (select max(tc.endDate) from TIPPCoverage tc where tc.tipp = tipp) >= ?"
                 qry_params.add(d)
             }
 
             if (params.startsBefore && params.startsBefore.length() > 0) {
                 SimpleDateFormat sdf = DateUtil.getSDF_NoTime()
-                def d = sdf.parse(params.startsBefore)
+                Date d = sdf.parse(params.startsBefore)
                 basequery += " and (select min(tc.startDate) from TIPPCoverage tc where tc.tipp = tipp) <= ?"
                 qry_params.add(d)
             }

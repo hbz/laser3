@@ -2887,7 +2887,7 @@ class SurveyController {
             log.debug("SurveyController::newCostItem() ${params}");
 
             result.institution = contextService.getOrg()
-            def user = User.get(springSecurityService.principal.id)
+            User user = User.get(springSecurityService.principal.id)
             result.error = [] as List
 
             if (!accessService.checkMinUserOrgRole(user, result.institution, "INST_EDITOR")) {

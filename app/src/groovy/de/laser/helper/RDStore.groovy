@@ -1,9 +1,7 @@
 package de.laser.helper
 
-
 import com.k_int.kbplus.RefdataValue
 import com.k_int.kbplus.SurveyProperty
-import groovy.transform.CompileStatic
 import org.codehaus.groovy.grails.orm.hibernate.cfg.GrailsHibernateUtil
 
 //@CompileStatic

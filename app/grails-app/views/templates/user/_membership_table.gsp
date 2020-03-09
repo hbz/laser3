@@ -6,10 +6,10 @@
     <table class="ui celled la-table table">
         <thead>
         <tr>
-            <th>${message(code: 'profile.membership.org', default:'Organisation')}</th>
-            <th>${message(code: 'profile.membership.role', default:'Role')}</th>
-            <th>${message(code: 'default.status.label', default:'Status')}</th>
-            <th>${message(code: 'profile.membership.date', default:'Date Requested / Actioned')}</th>
+            <th>${message(code: 'profile.membership.org')}</th>
+            <th>${message(code: 'profile.membership.role')}</th>
+            <th>${message(code: 'default.status.label')}</th>
+            <th>${message(code: 'profile.membership.date')}</th>
             <g:if test="${tmplUserEdit}">
                 <th class="la-action-info">${message(code:'default.actions.label')}</th>
             </g:if>
@@ -41,9 +41,9 @@
                         <g:message code="cv.membership.status.${aff.status}"/>
                     </td>
                     <td>
-                        <g:formatDate format="${message(code:'default.date.format.notime', default:'yyyy-MM-dd')}" date="${aff.dateRequested}"/>
+                        <g:formatDate format="${message(code:'default.date.format.notime')}" date="${aff.dateRequested}"/>
                         /
-                        <g:formatDate format="${message(code:'default.date.format.notime', default:'yyyy-MM-dd')}" date="${aff.dateActioned}"/>
+                        <g:formatDate format="${message(code:'default.date.format.notime')}" date="${aff.dateActioned}"/>
                     </td>
 
                         %{--<g:if test="${tmplProfile}">

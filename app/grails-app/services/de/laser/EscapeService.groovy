@@ -2,7 +2,6 @@ package de.laser
 
 import grails.transaction.Transactional
 import org.apache.commons.lang.StringUtils
-import java.text.SimpleDateFormat
 
 @Transactional
 class EscapeService {

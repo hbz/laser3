@@ -11,14 +11,14 @@ import de.laser.helper.DateUtil
 import de.laser.helper.DebugAnnotation
 import de.laser.helper.DebugUtil
 import de.laser.helper.RDStore
-
-import java.text.SimpleDateFormat
-
-import static de.laser.helper.RDStore.*
 import grails.converters.JSON
 import grails.plugin.springsecurity.annotation.Secured
 import org.codehaus.groovy.grails.plugins.orm.auditable.AuditLogEvent
 import org.codehaus.groovy.runtime.InvokerHelper
+
+import java.text.SimpleDateFormat
+
+import static de.laser.helper.RDStore.*
 
 @Mixin(com.k_int.kbplus.mixins.PendingChangeMixin)
 @Secured(['IS_AUTHENTICATED_FULLY'])

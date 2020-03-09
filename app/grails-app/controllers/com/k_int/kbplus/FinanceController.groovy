@@ -1,10 +1,10 @@
 package com.k_int.kbplus
 
-
 import com.k_int.kbplus.auth.User
 import de.laser.controller.AbstractDebugController
 import de.laser.helper.DateUtil
 import de.laser.helper.DebugAnnotation
+import de.laser.helper.RDConstants
 import de.laser.helper.RDStore
 import de.laser.interfaces.TemplateSupport
 import grails.converters.JSON
@@ -20,7 +20,6 @@ import org.apache.poi.xssf.usermodel.XSSFCellStyle
 import org.apache.poi.xssf.usermodel.XSSFColor
 import org.apache.poi.xssf.usermodel.XSSFWorkbook
 import org.springframework.context.i18n.LocaleContextHolder
-import de.laser.helper.RDConstants
 
 import javax.servlet.ServletOutputStream
 import java.awt.*
@@ -861,8 +860,8 @@ class FinanceController extends AbstractDebugController {
     def deleteCostItem() {
         Map<String, Object> result = [:]
 
-        def user = User.get(springSecurityService.principal.id)
-        def institution = contextService.getOrg()
+        User user = User.get(springSecurityService.principal.id)
+        Org institution = contextService.getOrg()
         if (!accessService.checkMinUserOrgRole(user,institution,"INST_EDITOR")) {
             response.sendError(403)
             return
@@ -899,7 +898,7 @@ class FinanceController extends AbstractDebugController {
         log.debug("FinanceController::newCostItem() ${params}");
 
         result.institution  =  contextService.getOrg()
-        def user            =  User.get(springSecurityService.principal.id)
+        User user            =  User.get(springSecurityService.principal.id)
         result.error        =  [] as List
 
         if (!accessService.checkMinUserOrgRole(user,result.institution,"INST_EDITOR"))
@@ -1345,8 +1344,9 @@ class FinanceController extends AbstractDebugController {
         results.failures   =  []
         results.message    =  null
         results.sentIDs    =  JSON.parse(params.del) //comma seperated list
-        def user           =  User.get(springSecurityService.principal.id)
-        def institution    =  contextService.getOrg()
+        User user           =  User.get(springSecurityService.principal.id)
+        Org institution    =  contextService.getOrg()
+
         if (!accessService.checkMinUserOrgRole(user,institution,"INST_EDITOR"))
         {
             response.sendError(403)
@@ -1510,8 +1510,8 @@ class FinanceController extends AbstractDebugController {
         log.debug("Financials :: remove budget code - Params: ${params}")
         def result      = [:]
         result.success  = [status:  "Success: Deleted code", msg: "Deleted instance of the budget code for the specified cost item"]
-        def user        = User.get(springSecurityService.principal.id)
-        def institution = contextService.getOrg()
+        User user        = User.get(springSecurityService.principal.id)
+        Org institution  = contextService.getOrg()
 
         if (!user.getAuthorizedOrgs().id.contains(institution.id))
         {
@@ -1547,8 +1547,8 @@ class FinanceController extends AbstractDebugController {
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_EDITOR") })
     def createCode() {
         def result      = [:]
-        def user        = springSecurityService.currentUser
-        def institution = contextService.getOrg()
+        User user        = springSecurityService.currentUser
+        Org institution  = contextService.getOrg()
 
         if (! userCertified(user, institution))
         {
