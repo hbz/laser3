@@ -107,6 +107,7 @@ subscription.form,Lizenzform,Subscription Form
 subscription.resource,Ressourcentyp,Resource type
 subscription.status,Lizenzstatus,Subscription Status
 subscription.type,Subscription Type,Subscription Type
+subscription.kind,Lizenzart,Subscription Kind
 survey.status,Umfrage-Status,Survey Status
 survey.type,Umfrage-Typ,Survey Type
 task.priority,Aufgabenpriorität,Task Priority

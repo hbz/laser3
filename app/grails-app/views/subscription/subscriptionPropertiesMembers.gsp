@@ -100,6 +100,7 @@
                         <th>${message(code: 'default.startDate.label')}</th>
                         <th>${message(code: 'default.endDate.label')}</th>
                         <th>${message(code: 'default.status.label')}</th>
+                        <th>${message(code: 'subscription.kind.label')}</th>
                         <th>${message(code: 'subscription.form.label')}</th>
                         <th>${message(code: 'subscription.resource.label')}</th>
                         <th>${message(code: 'subscription.isPublicForApi.label')}</th>
@@ -122,6 +123,10 @@
                     <td>
                         ${parentSub.status.getI10n('value')}
                         <semui:auditButton auditable="[parentSub, 'status']"/>
+                    </td>
+                    <td>
+                        ${parentSub.kind?.getI10n('value')}
+                        <semui:auditButton auditable="[parentSub, 'kind']"/>
                     </td>
                     <td>
                         ${parentSub.form?.getI10n('value')}
@@ -178,9 +183,9 @@
                         </div>
 
                         <div class="field">
-                            <label>${message(code: 'subscription.form.label')}</label>
-                            <laser:select name="form"
-                                          from="${RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_FORM)}"
+                            <label>${message(code: 'subscription.kind.label')}</label>
+                            <laser:select name="kind"
+                                          from="${RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_KIND)}"
                                           optionKey="id" optionValue="value" noSelection="${['': '']}"
                                           value="${['': '']}"/>
                         </div>
@@ -230,6 +235,7 @@
                             <th>${message(code: 'default.startDate.label')}</th>
                             <th>${message(code: 'default.endDate.label')}</th>
                             <th>${message(code: 'default.status.label')}</th>
+                            <th>${message(code: 'subscription.kind.label')}</th>
                             <th>${message(code: 'subscription.form.label')}</th>
                             <th>${message(code: 'subscription.resource.label')}</th>
                             <th>${message(code: 'subscription.isPublicForApi.label')}</th>
@@ -290,6 +296,12 @@
                                                             constraint="removeValue_deleted"
                                                             overwriteEditable="${editableOld}"/>
                                     <semui:auditButton auditable="[sub, 'status']"/>
+                                </td>
+                                <td>
+                                    <semui:xEditableRefData owner="${sub}" field="kind"
+                                                            config="${RDConstants.SUBSCRIPTION_KIND}"
+                                                            overwriteEditable="${editableOld}"/>
+                                    <semui:auditButton auditable="[sub, 'kind']"/>
                                 </td>
                                 <td>
                                     <semui:xEditableRefData owner="${sub}" field="form"

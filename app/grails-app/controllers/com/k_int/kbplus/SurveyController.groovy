@@ -2340,6 +2340,7 @@ class SurveyController {
             def sub_endDate = params.subscription?.end_date ? parseDate(params.subscription?.end_date, possible_date_formats) : null
             def sub_status = params.subStatus
             def sub_type = params.subType
+            def sub_kind = params.subKind
             def sub_form = params.subForm
             def sub_resource = params.subResource
             def old_subOID = params.subscription.old_subid
@@ -2357,6 +2358,7 @@ class SurveyController {
                     identifier: java.util.UUID.randomUUID().toString(),
                     isSlaved: baseSub?.isSlaved,
                     type: sub_type,
+                    kind: sub_kind,
                     status: sub_status,
                     resource: sub_resource,
                     form: sub_form,
@@ -3615,7 +3617,7 @@ class SurveyController {
 
         def institution = contextService.getOrg()
 
-        RefdataValue subStatus = multiYear ? RDStore.SUBSCRIPTION_INTENDED_PERENNIAL : RDStore.SUBSCRIPTION_INTENDED
+        RefdataValue subStatus = RDStore.SUBSCRIPTION_INTENDED
 
         RefdataValue role_sub = RDStore.OR_SUBSCRIBER_CONS
         RefdataValue role_sub_cons = RDStore.OR_SUBSCRIPTION_CONSORTIA
@@ -3689,6 +3691,7 @@ class SurveyController {
 
                     Subscription memberSub = new Subscription(
                             type: newParentSub.type ?: null,
+                            kind: newParentSub.kind ?: null,
                             status: subStatus,
                             name: newParentSub.name,
                             startDate: startDate,
@@ -3883,6 +3886,7 @@ class SurveyController {
                        g.message(code: 'subscription.packages.label'),
                        g.message(code: 'default.status.label'),
                        g.message(code: 'default.type.label'),
+                       g.message(code: 'subscription.kind.label'),
                        g.message(code: 'subscription.form.label'),
                        g.message(code: 'subscription.resource.label'),
 
@@ -3923,6 +3927,7 @@ class SurveyController {
                     row.add([field: packageNames ? packageNames.join(", ") : '', style: null])
                     row.add([field: sub?.status?.getI10n("value") ?: '', style: null])
                     row.add([field: sub?.type?.getI10n("value") ?: '', style: null])
+                    row.add([field: sub?.kind?.getI10n("value") ?: '', style: null])
                     row.add([field: sub?.form?.getI10n("value") ?: '', style: null])
                     row.add([field: sub?.resource?.getI10n("value") ?: '', style: null])
 

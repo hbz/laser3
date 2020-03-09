@@ -907,6 +907,7 @@ join sub.orgRelations or_sub where
                        g.message(code: 'default.identifiers.label'),
                        g.message(code: 'default.status.label'),
                        g.message(code: 'default.type.label'),
+                       g.message(code: 'subscription.kind.label'),
                        g.message(code: 'subscription.form.label'),
                        g.message(code: 'subscription.resource.label'),
                        g.message(code: 'subscription.isPublicForApi.label'),
@@ -984,6 +985,7 @@ join sub.orgRelations or_sub where
                     row.add([field: identifiers.get(sub) ? identifiers.get(sub).join(", ") : '',style: null])
                     row.add([field: sub.status?.getI10n("value"), style: null])
                     row.add([field: sub.type?.getI10n("value"), style: null])
+                    row.add([field: sub.kind?.getI10n("value") ?: '', style: null])
                     row.add([field: sub.form?.getI10n("value") ?: '', style: null])
                     row.add([field: sub.resource?.getI10n("value") ?: '', style: null])
                     row.add([field: sub.isPublicForApi ? RDStore.YN_YES.getI10n("value") : RDStore.YN_NO.getI10n("value"), style: null])
@@ -1279,8 +1281,6 @@ join sub.orgRelations or_sub where
         switch(subType) {
             case RDStore.SUBSCRIPTION_TYPE_CONSORTIAL:
             case RDStore.SUBSCRIPTION_TYPE_ADMINISTRATIVE:
-            case RDStore.SUBSCRIPTION_TYPE_NATIONAL:
-            case RDStore.SUBSCRIPTION_TYPE_ALLIANCE:
 				orgRole = role_cons
                 memberRole = role_sub_cons
                 break
@@ -1311,6 +1311,7 @@ join sub.orgRelations or_sub where
 
             def new_sub = new Subscription(
                     type: subType,
+                    kind: (subType == RDStore.SUBSCRIPTION_TYPE_CONSORTIAL) ? RDStore.SUBSCRIPTION_KIND_CONSORTIAL : null,
                     name: params.newEmptySubName,
                     startDate: startDate,
                     endDate: endDate,
@@ -1350,6 +1351,7 @@ join sub.orgRelations or_sub where
                         Subscription cons_sub = new Subscription(
                                             // type: RefdataValue.getByValue("Subscription Taken"),
                                           type: subType,
+                                          kind: (subType == RDStore.SUBSCRIPTION_TYPE_CONSORTIAL) ? RDStore.SUBSCRIPTION_KIND_CONSORTIAL : null,
                                           name: params.newEmptySubName,
                                           // name: params.newEmptySubName + " (${postfix})",
                                           startDate: startDate,

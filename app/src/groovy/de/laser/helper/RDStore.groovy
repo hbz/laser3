@@ -119,9 +119,6 @@ class RDStore {
     static final SUBSCRIPTION_EXPIRED       = getRefdataValue('Expired', RDConstants.SUBSCRIPTION_STATUS)
     static final SUBSCRIPTION_NO_STATUS     = getRefdataValue('Status not defined', RDConstants.SUBSCRIPTION_STATUS)
 
-    static final SUBSCRIPTION_INTENDED_PERENNIAL = getRefdataValue('IntendedPerennial', RDConstants.SUBSCRIPTION_STATUS)
-    static final SUBSCRIPTION_EXPIRED_PERENNIAL = getRefdataValue('ExpiredPerennial', RDConstants.SUBSCRIPTION_STATUS)
-
     static final SURVEY_READY                   = getRefdataValue('Ready', RDConstants.SURVEY_STATUS)
     static final SURVEY_IN_PROCESSING           = getRefdataValue('In Processing', RDConstants.SURVEY_STATUS)
     static final SURVEY_IN_EVALUATION           = getRefdataValue('In Evaluation', RDConstants.SURVEY_STATUS)
@@ -136,9 +133,12 @@ class RDStore {
     static final SUBSCRIPTION_TYPE_LOCAL            = getRefdataValue('Local Licence', RDConstants.SUBSCRIPTION_TYPE)
     static final SUBSCRIPTION_TYPE_CONSORTIAL       = getRefdataValue('Consortial Licence', RDConstants.SUBSCRIPTION_TYPE)
     static final SUBSCRIPTION_TYPE_ADMINISTRATIVE   = getRefdataValue('Administrative Subscription', RDConstants.SUBSCRIPTION_TYPE)
-    static final SUBSCRIPTION_TYPE_ALLIANCE   		= getRefdataValue('Alliance Licence', RDConstants.SUBSCRIPTION_TYPE)
-    static final SUBSCRIPTION_TYPE_NATIONAL   		= getRefdataValue('National Licence', RDConstants.SUBSCRIPTION_TYPE)
+
     //static final SUBSCRIPTION_TYPE_COLLECTIVE   	= getRefdataValue('Collective Subscription', RDConstants.SUBSCRIPTION_TYPE)
+
+    static final SUBSCRIPTION_KIND_CONSORTIAL       = getRefdataValue('Consortial Licence', RDConstants.SUBSCRIPTION_KIND)
+    static final SUBSCRIPTION_KIND_ALLIANCE   		= getRefdataValue('Alliance Licence', RDConstants.SUBSCRIPTION_KIND)
+    static final SUBSCRIPTION_KIND_NATIONAL   		= getRefdataValue('National Licence', RDConstants.SUBSCRIPTION_KIND)
 
     static final TASK_STATUS_OPEN       = getRefdataValue('Open', RDConstants.TASK_STATUS)
     static final TASK_STATUS_DONE       = getRefdataValue('Done', RDConstants.TASK_STATUS)

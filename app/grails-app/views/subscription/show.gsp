@@ -107,7 +107,7 @@
                             <dl>
                                 <dt class="control-label">${message(code: 'default.type.label')}</dt>
                                 <dd>
-                                    <%-- TODO: subscribers may not edit type, but admins and yoda --%>
+                                    %{--<%-- TODO: subscribers may not edit type, but admins and yoda --%>
                                     <%
                                         //does not work for some reason, proceed to IDs
                                         Set<Long> subscriberIDs = []
@@ -123,9 +123,15 @@
                                                                 config="${RDConstants.SUBSCRIPTION_TYPE}"
                                                                 constraint="removeValue_administrativeSubscription,removeValue_localSubscription"
                                         />
-                                    </g:else>
+                                    </g:else>--}%
+                                    ${subscriptionInstance.type?.getI10n('value')}
                                 </dd>
                                 <dd class="la-js-editmode-container"><semui:auditButton auditable="[subscriptionInstance, 'type']"/></dd>
+                            </dl>
+                            <dl>
+                                <dt class="control-label">${message(code: 'subscription.kind.label')}</dt>
+                                <dd><semui:xEditableRefData owner="${subscriptionInstance}" field="kind" config="${RDConstants.SUBSCRIPTION_KIND}"/></dd>
+                                <dd class="la-js-editmode-container"><semui:auditButton auditable="[subscriptionInstance, 'kind']"/></dd>
                             </dl>
                             <dl>
                                 <dt class="control-label">${message(code: 'subscription.form.label')}</dt>

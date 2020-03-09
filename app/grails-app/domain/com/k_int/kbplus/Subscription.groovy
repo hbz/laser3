@@ -27,7 +27,7 @@ class Subscription
 
     // AuditableTrait
     static auditable            = [ ignore: ['version', 'lastUpdated', 'pendingChanges'] ]
-    static controlledProperties = [ 'name', 'startDate', 'endDate', 'manualCancellationDate', 'status', 'type', 'form', 'resource', 'isPublicForApi', 'hasPerpetualAccess' ]
+    static controlledProperties = [ 'name', 'startDate', 'endDate', 'manualCancellationDate', 'status', 'type', 'kind', 'form', 'resource', 'isPublicForApi', 'hasPerpetualAccess' ]
 
     @Transient
     def grailsApplication
@@ -53,6 +53,9 @@ class Subscription
 
     @RefdataAnnotation(cat = RDConstants.SUBSCRIPTION_TYPE)
     RefdataValue type
+
+    @RefdataAnnotation(cat = RDConstants.SUBSCRIPTION_KIND)
+    RefdataValue kind
 
     @RefdataAnnotation(cat = RDConstants.SUBSCRIPTION_FORM)
     RefdataValue form
@@ -124,6 +127,7 @@ class Subscription
         globalUID   column:'sub_guid'
         status      column:'sub_status_rv_fk'
         type        column:'sub_type_rv_fk',        index: 'sub_type_idx'
+        kind        column:'sub_kind_rv_fk'
         owner       column:'sub_owner_license_fk',  index: 'sub_owner_idx'
         form        column:'sub_form_fk'
         resource    column:'sub_resource_fk'
@@ -160,6 +164,7 @@ class Subscription
         globalUID(nullable:true, blank:false, unique:true, maxSize:255)
         status(nullable:false, blank:false)
         type(nullable:true, blank:false)
+        kind(nullable:true, blank:false)
         owner(nullable:true, blank:false)
         form        (nullable:true, blank:false)
         resource    (nullable:true, blank:false)
