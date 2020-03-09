@@ -178,32 +178,49 @@
 
         </div>
 
-        <div class="field">
-            <fieldset id="subscritionType">
-                    <legend >${message(code: 'myinst.currentSubscriptions.subscription_type')}</legend>
-                    <div class="inline fields la-filter-inline">
-                        <%
-                            List subTypes = RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_TYPE)
+        <div class="two fields">
 
-                            if(accessService.checkPermAffiliation("ORG_CONSORTIUM","INST_USER")) {
-                                subTypes -= RDStore.SUBSCRIPTION_TYPE_LOCAL
-                            }
-                            if(!accessService.checkPermAffiliation("ORG_CONSORTIUM","INST_USER")) {
-                                subTypes -= RDStore.SUBSCRIPTION_TYPE_ADMINISTRATIVE
-                            }
-                        %>
-                        <g:each in="${subTypes}" var="subType">
-                            <div class="inline field">
-                                <div class="ui checkbox">
-                                    <label for="checkSubType-${subType.id}">${subType.getI10n('value')}</label>
-                                    <input id="checkSubType-${subType.id}" name="subTypes" type="checkbox" value="${subType.id}"
-                                        <g:if test="${params.list('subTypes').contains(subType.id.toString())}"> checked="" </g:if>
-                                           tabindex="0">
+            <div class="field">
+                <fieldset id="subscritionType">
+                        <legend >${message(code: 'myinst.currentSubscriptions.subscription_type')}</legend>
+                        <div class="inline fields la-filter-inline">
+                            <%
+                                List subTypes = RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_TYPE)
+
+                                if(accessService.checkPermAffiliation("ORG_CONSORTIUM","INST_USER")) {
+                                    subTypes -= RDStore.SUBSCRIPTION_TYPE_LOCAL
+                                }
+                                if(!accessService.checkPermAffiliation("ORG_CONSORTIUM","INST_USER")) {
+                                    subTypes -= RDStore.SUBSCRIPTION_TYPE_ADMINISTRATIVE
+                                }
+                            %>
+                            <g:each in="${subTypes}" var="subType">
+                                <div class="inline field">
+                                    <div class="ui checkbox">
+                                        <label for="checkSubType-${subType.id}">${subType.getI10n('value')}</label>
+                                        <input id="checkSubType-${subType.id}" name="subTypes" type="checkbox" value="${subType.id}"
+                                            <g:if test="${params.list('subTypes').contains(subType.id.toString())}"> checked="" </g:if>
+                                               tabindex="0">
+                                    </div>
                                 </div>
-                            </div>
-                        </g:each>
-                    </div>
-                </fieldset>
+                            </g:each>
+                        </div>
+                    </fieldset>
+            </div>
+            <div class="field">
+                <legend >${message(code: 'myinst.currentSubscriptions.subscription_kind')}</legend>
+                <select id="subKinds" name="subKinds" multiple="" class="ui search selection fluid dropdown">
+                    <option value="">${message(code: 'default.select.choose.label')}</option>
+
+                    <g:each in="${RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_KIND).sort{it.getI10n('value')}}" var="subKind">
+                        <option <%=(params.list('subKinds').contains(subKind.id.toString())) ? 'selected="selected"' : ''%>
+                        value="${subKind.id}" ">
+                        ${subKind.getI10n('value')}
+                        </option>
+                    </g:each>
+                </select>
+
+            </div>
         </div>
 
         <g:if test="${accessService.checkPerm("ORG_INST")}">

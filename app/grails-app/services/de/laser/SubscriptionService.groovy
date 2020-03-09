@@ -471,6 +471,7 @@ class SubscriptionService {
                     def newSubscription = new Subscription(
                             isMultiYear: subMember.isMultiYear,
                             type: subMember.type,
+                            kind: subMember.kind,
                             status: targetSub.status,
                             name: subMember.name,
                             startDate: subMember.isMultiYear ? subMember.startDate : targetSub.startDate,

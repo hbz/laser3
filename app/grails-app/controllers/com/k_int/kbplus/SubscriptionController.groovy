@@ -2143,6 +2143,16 @@ class SubscriptionController extends AbstractDebugController {
                             noChange << message(code: 'subscription.status.label')
                         }
 
+                        if(params.kind && !auditService.getAuditConfig(subChild?.instanceOf, 'kind'))
+                        {
+                            subChild?.ind = RefdataValue.get(params.kind) ?: subChild?.kind
+                            change << message(code: 'subscription.kind.label')
+                        }
+                        if(params.kind && auditService.getAuditConfig(subChild?.instanceOf, 'kind'))
+                        {
+                            noChange << message(code: 'subscription.kind.label')
+                        }
+
                         if(params.form && !auditService.getAuditConfig(subChild?.instanceOf, 'form'))
                         {
                             subChild?.form = RefdataValue.get(params.form) ?: subChild?.form
@@ -2452,6 +2462,7 @@ class SubscriptionController extends AbstractDebugController {
 
                         Subscription memberSub = new Subscription(
                                 type: result.subscriptionInstance.type ?: null,
+                                kind: result.subscriptionInstance.kind ?: null,
                                 status: subStatus,
                                 name: result.subscriptionInstance.name,
                                 //name: result.subscriptionInstance.name + " (" + (cm.get(0).shortname ?: cm.get(0).name) + ")",
@@ -4010,6 +4021,7 @@ class SubscriptionController extends AbstractDebugController {
 
                         def newSubscription = new Subscription(
                                 type: subMember.type,
+                                kind: subMember.kind,
                                 status: newSubConsortia.status,
                                 name: subMember.name,
                                 startDate: newSubConsortia.startDate,
@@ -4253,6 +4265,7 @@ class SubscriptionController extends AbstractDebugController {
                                 identifier: java.util.UUID.randomUUID().toString(),
                                 isSlaved: baseSub.isSlaved,
                                 type: baseSub.type,
+                                kind: baseSub.kind,
                                 status: RefdataValue.getByValueAndCategory('Intended', RDConstants.SUBSCRIPTION_STATUS),
                                 resource: baseSub.resource ?: null,
                                 form: baseSub.form ?: null
@@ -4604,9 +4617,7 @@ class SubscriptionController extends AbstractDebugController {
         result.allSubscriptions_writeRights = subscriptionService.getMySubscriptions_writeRights()
 
         List<String> subTypSubscriberVisible = [SUBSCRIPTION_TYPE_CONSORTIAL,
-                                                SUBSCRIPTION_TYPE_ADMINISTRATIVE,
-                                                SUBSCRIPTION_TYPE_ALLIANCE,
-                                                SUBSCRIPTION_TYPE_NATIONAL]
+                                                SUBSCRIPTION_TYPE_ADMINISTRATIVE]
         result.isSubscriberVisible =
                 result.sourceSubscription &&
                 result.targetSubscription &&
@@ -5126,6 +5137,7 @@ class SubscriptionController extends AbstractDebugController {
                     name: sub_name,
                     status: baseSubscription.status,
                     type: baseSubscription.type,
+                    kind: baseSubscription.kind,
                     identifier: java.util.UUID.randomUUID().toString(),
                     isSlaved: baseSubscription.isSlaved,
                     startDate: params.subscription.copyDates ? baseSubscription?.startDate : null,
@@ -5352,8 +5364,6 @@ class SubscriptionController extends AbstractDebugController {
                     RefdataValue parentRoleType, memberRoleType
                     switch(sub.type) {
                         case SUBSCRIPTION_TYPE_CONSORTIAL:
-                        case SUBSCRIPTION_TYPE_NATIONAL:
-                        case SUBSCRIPTION_TYPE_ALLIANCE:
                             parentRoleType = OR_SUBSCRIPTION_CONSORTIA
                             memberRoleType = OR_SUBSCRIBER_CONS
                             break

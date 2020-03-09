@@ -254,6 +254,12 @@ class SubscriptionsQueryService {
             filterSet = true
         }
 
+        if (params.containsKey('subKinds')) {
+            base_qry += " and s.kind.id in (:subKinds) "
+            qry_params.put('subKinds', params.list('subKinds').collect { Long.parseLong(it) })
+            filterSet = true
+        }
+
         if (params.status) {
 
             if (params.status == 'FETCH_ALL') {

@@ -664,6 +664,10 @@
           type: string #mapped to boolean
           description: Mapping RefdataCategory "${RDConstants.Y_N}"
           enum: <% printRefdataEnum(RDConstants.Y_N, 12) %>
+        isPublicForApi:
+          type: string #mapped to boolean
+          description: Mapping RefdataCategory "${RDConstants.Y_N}"
+          enum: <% printRefdataEnum(RDConstants.Y_N, 12) %>
         lastUpdated:
           type: string
           format: date-time
@@ -708,6 +712,10 @@
           type: string
           description: Mapping RefdataCategory "${RDConstants.SUBSCRIPTION_TYPE}"
           enum: <% printRefdataEnum(RDConstants.SUBSCRIPTION_TYPE, 12) %>
+        kind:
+          type: string
+          description: Mapping RefdataCategory "${RDConstants.SUBSCRIPTION_KIND}"
+                  enum: <% printRefdataEnum(RDConstants.SUBSCRIPTION_KIND, 12) %>
 
 
     TitleInstancePackagePlatform:

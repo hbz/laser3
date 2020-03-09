@@ -58,7 +58,7 @@ class PublicController {
         )
 
 
-        if (! params.subTypes && ! params.consortia && ! params.q) {
+        if (! params.subKindes && ! params.consortia && ! params.q) {
             // init filter with checkboxes checked
             result.initQuery = 'true'
         }
@@ -111,14 +111,14 @@ class PublicController {
                 queryParams.put('consortia', consortia)
             }
 
-            def subTypes = []
-            if (params.containsKey('subTypes')) {
-                params.list('subTypes').each{
-                    subTypes.add(Long.parseLong(it))
+            def subKinds = []
+            if (params.containsKey('subKinds')) {
+                params.list('subKinds').each{
+                    subKinds.add(Long.parseLong(it))
                 }
-                if (subTypes) {
-                    query += " and s.type.id in (:subTypes) "
-                    queryParams.put('subTypes', subTypes)
+                if (subKinds) {
+                    query += " and s.kind.id in (:subKinds) "
+                    queryParams.put('subKinds', subKinds)
                 }
             }
 
@@ -138,7 +138,7 @@ class PublicController {
 */
             result.subscriptions = []
 
-            if (result.allConsortia && (q || consortia || subTypes)) {
+            if (result.allConsortia && (q || consortia || subKinds)) {
                 result.subscriptions = Subscription.executeQuery("select s ${query} order by lower(s.name) asc", queryParams)
             }
             result.subscriptionsCount = result.subscriptions.size()
