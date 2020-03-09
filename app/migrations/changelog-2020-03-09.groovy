@@ -47,5 +47,28 @@ databaseChangeLog = {
 			}
 		}
 	}
+	changeSet(author: "djebeniani (generated)", id: "1583759022240-4") {
+		grailsChange {
+			change {
+				sql.execute("DELETE FROM refdata_value WHERE rdv_owner = (SELECT rdc_id FROM refdata_category as rdc WHERE rdc.rdc_description = 'subscription.type') AND rdv_value = 'Alliance Licence';")
+
+				sql.execute("DELETE FROM refdata_value WHERE rdv_owner = (SELECT rdc_id FROM refdata_category as rdc WHERE rdc.rdc_description = 'subscription.type') AND rdv_value = 'National Licence';")
+			}
+			rollback {
+			}
+		}
+	}
+
+	changeSet(author: "djebeniani (generated)", id: "1583759022240-5") {
+		grailsChange {
+			change {
+				sql.execute("DELETE FROM refdata_value WHERE rdv_owner = (SELECT rdc_id FROM refdata_category as rdc WHERE rdc.rdc_description = 'subscription.status') AND rdv_value = 'ExpiredPerennial';")
+
+				sql.execute("DELETE FROM refdata_value WHERE rdv_owner = (SELECT rdc_id FROM refdata_category as rdc WHERE rdc.rdc_description = 'subscription.status') AND rdv_value = 'IntendedPerennial';")
+			}
+			rollback {
+			}
+		}
+	}
 
 }

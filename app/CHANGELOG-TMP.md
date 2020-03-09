@@ -2,6 +2,8 @@
 
 **Ticket    Date    Branch      Author  Feature/Bug     Description/Keywords**
 
+2159    09.03.2020  hbz-dev     Moe     Feature     Mehrjahres Stati löschen auf normale Stati umstellen
+
 2227    06.03.2020  hbz-dev     David   Bug         Merkmale Auswahl Lizenzebene 
 
 2234    05.03.2020  hbz-dev     Christian   Bug     Überarbeitung Statistikabruf

@@ -53,3 +53,19 @@ alter table cost_item drop column ci_include_in_subscr;
 --                                                                             AND rdv_value = 'Consortial Licence')
 --WHERE sub_type_rv_fk = (SELECT rdv_id FROM refdata_value WHERE rdv_owner = (SELECT rdc_id FROM refdata_category as rdc WHERE rdc.rdc_description = 'subscription.type')
 --                                                           AND rdv_value = 'Alliance Licence');
+--DELETE FROM refdata_value WHERE
+--        rdv_owner = (SELECT rdc_id FROM refdata_category as rdc WHERE rdc.rdc_description = 'subscription.type')
+--                            AND rdv_value = 'Alliance Licence';
+
+--DELETE FROM refdata_value WHERE
+--        rdv_owner = (SELECT rdc_id FROM refdata_category as rdc WHERE rdc.rdc_description = 'subscription.type')
+--                           AND rdv_value = 'National Licence';
+
+-- 2020-03-09
+-- ERMS-2159
+--DELETE FROM refdata_value WHERE
+--        rdv_owner = (SELECT rdc_id FROM refdata_category as rdc WHERE rdc.rdc_description = 'subscription.status')
+--                           AND rdv_value = 'ExpiredPerennial';
+--DELETE FROM refdata_value WHERE
+--        rdv_owner = (SELECT rdc_id FROM refdata_category as rdc WHERE rdc.rdc_description = 'subscription.status')
+--                           AND rdv_value = 'IntendedPerennial';
