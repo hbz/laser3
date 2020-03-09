@@ -68,7 +68,7 @@ class AccessPointController extends AbstractDebugController {
                     endValue  : ipRange.upperLimit.toHexString()]
             )
 
-            def accessPointData = new AccessPointData(params)
+            AccessPointData accessPointData = new AccessPointData(params)
             accessPointData.orgAccessPoint = orgAccessPoint
             accessPointData.datatype = 'ip' + ipRange.getIpVersion()
             accessPointData.data = jsonData
@@ -144,7 +144,7 @@ class AccessPointController extends AbstractDebugController {
         params.availableIpOptions = availableIPOptions()
 
         if (params.template) {
-            def accessMethod = RefdataValue.getByValue(params.template)
+            RefdataValue accessMethod = RefdataValue.getByValue(params.template)
             return render(template: 'create_' + accessMethod, model: [accessMethod: accessMethod, availableIpOptions : params.availableIpOptions])
         } else {
             if (!params.accessMethod) {

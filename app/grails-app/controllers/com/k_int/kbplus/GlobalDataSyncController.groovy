@@ -31,7 +31,7 @@ class GlobalDataSyncController {
     }
 
 
-    def base_qry = " from GlobalRecordInfo as r where lower(r.name) like ? and r.source.rectype = ${result.rectype} "
+    String base_qry = " from GlobalRecordInfo as r where lower(r.name) like ? and r.source.rectype = ${result.rectype} "
 
     def qry_params = []
     if (params.q?.length() > 0) {

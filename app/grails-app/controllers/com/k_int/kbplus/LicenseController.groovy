@@ -619,13 +619,13 @@ from Subscription as s where
     result.offset = params.offset ?: 0;
 
         // postgresql migration
-        def subQuery = 'select cast(lp.id as string) from LicenseCustomProperty as lp where lp.owner = :owner'
+        String subQuery = 'select cast(lp.id as string) from LicenseCustomProperty as lp where lp.owner = :owner'
         def subQueryResult = LicenseCustomProperty.executeQuery(subQuery, [owner: result.license])
 
         //def qry_params = [licClass:result.license.class.name, prop:LicenseCustomProperty.class.name,owner:result.license, licId:"${result.license.id}"]
         //result.historyLines = AuditLogEvent.executeQuery("select e from AuditLogEvent as e where (( className=:licClass and persistedObjectId=:licId ) or (className = :prop and persistedObjectId in (select lp.id from LicenseCustomProperty as lp where lp.owner=:owner))) order by e.dateCreated desc", qry_params, [max:result.max, offset:result.offset]);
 
-        def base_query = "select e from AuditLogEvent as e where ( (className=:licClass and persistedObjectId = cast(:licId as string))"
+        String base_query = "select e from AuditLogEvent as e where ( (className=:licClass and persistedObjectId = cast(:licId as string))"
         def query_params = [licClass:result.license.class.name, licId:"${result.license.id}"]
 
         // postgresql migration
@@ -931,13 +931,13 @@ from Subscription as s where
             response.sendError(401); return
         }
 
-        def baseLicense = com.k_int.kbplus.License.get(params.baseLicense)
+        License baseLicense = License.get(params.baseLicense)
 
         if (baseLicense) {
 
             def lic_name = params.lic_name ?: "Kopie von ${baseLicense.reference}"
 
-            def licenseInstance = new License(
+            License licenseInstance = new License(
                     reference: lic_name,
                     status: baseLicense.status,
                     type: baseLicense.type,

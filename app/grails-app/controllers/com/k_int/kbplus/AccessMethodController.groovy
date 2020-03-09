@@ -29,7 +29,7 @@ class AccessMethodController extends AbstractDebugController {
         } else {
             //params.validTo =sdf.parse(new Date().format( 'dd.MM.yyyy' ));
         }
-        def accessMethod = new PlatformAccessMethod(params)
+        PlatformAccessMethod accessMethod = new PlatformAccessMethod(params)
 
         if (params.validTo && params.validFrom && params.validTo.before(params.validFrom)) {
             flash.error = message(code: 'accessMethod.dateValidationError', args: [message(code: 'accessMethod.label'), accessMethod.accessMethod])
@@ -57,7 +57,7 @@ class AccessMethodController extends AbstractDebugController {
     
     @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
     def delete() {
-         def accessMethod = PlatformAccessMethod.get(params.id)
+        PlatformAccessMethod accessMethod = PlatformAccessMethod.get(params.id)
         
         def platform = accessMethod.platf
         def platformId = platform.id
@@ -76,7 +76,7 @@ class AccessMethodController extends AbstractDebugController {
 
     @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
     def edit() {
-        def accessMethod= PlatformAccessMethod.get(params.id)
+        PlatformAccessMethod accessMethod= PlatformAccessMethod.get(params.id)
         def platf = accessMethod.getPlatf()
 
         [accessMethod: accessMethod, platfId: platf.id]
@@ -85,7 +85,7 @@ class AccessMethodController extends AbstractDebugController {
 
     @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
     def update() {
-        def accessMethod= PlatformAccessMethod.get(params.id)
+        PlatformAccessMethod accessMethod= PlatformAccessMethod.get(params.id)
         def platf = accessMethod.getPlatf()
 
 

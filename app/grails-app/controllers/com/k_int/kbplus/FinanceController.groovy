@@ -9,6 +9,7 @@ import de.laser.helper.RDStore
 import de.laser.interfaces.TemplateSupport
 import grails.converters.JSON
 import grails.plugin.springsecurity.annotation.Secured
+import groovy.json.JsonBuilder
 import org.apache.commons.lang.StringUtils
 import org.apache.poi.POIXMLProperties
 import org.apache.poi.ss.usermodel.Cell
@@ -1325,7 +1326,7 @@ class FinanceController extends AbstractDebugController {
         }
         int counter     = CostItem.countByOwnerAndLastUpdatedGreaterThan(institution, dateTo)
 
-        def builder = new groovy.json.JsonBuilder()
+        JsonBuilder builder = new JsonBuilder()
         def root    = builder {
             count counter
             to dateTimeFormat.format(dateTo)
@@ -1522,9 +1523,9 @@ class FinanceController extends AbstractDebugController {
         def ids = params.bcci ? params.bcci.split("_")[1..2] : null
         if (ids && ids.size()==2)
         {
-            def bc  = BudgetCode.get(ids[0])
-            def ci  = CostItem.get(ids[1])
-            def cig = CostItemGroup.findByBudgetCodeAndCostItem(bc, ci)
+            BudgetCode bc  = BudgetCode.get(ids[0])
+            CostItem ci  = CostItem.get(ids[1])
+            CostItemGroup cig = CostItemGroup.findByBudgetCodeAndCostItem(bc, ci)
 
             if (bc && ci && cig)
             {

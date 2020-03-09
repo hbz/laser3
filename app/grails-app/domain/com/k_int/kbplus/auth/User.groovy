@@ -122,16 +122,11 @@ class User {
   }
 
     @Transient List<Org> getAuthorizedOrgs() {
-        // def result = Org.find(
-        String qry = "select o from Org as o where exists ( select uo from UserOrg as uo where uo.org = o and uo.user = ? and ( uo.status=1 or uo.status=3)) order by o.name"
-        def o = Org.executeQuery(qry, [this]);
-        o
+        String qry = "select distinct(o) from Org as o where exists ( select uo from UserOrg as uo where uo.org = o and uo.user = ? and ( uo.status=1 or uo.status=3)) order by o.name"
+        Org.executeQuery(qry, [this]);
     }
     @Transient def getAuthorizedOrgsIds() {
-        // def result = Org.find(
-        String qry = "select o.id from Org as o where exists ( select uo from UserOrg as uo where uo.org = o and uo.user = ? and ( uo.status=1 or uo.status=3)) order by o.name"
-        def o = Org.executeQuery(qry, [this]);
-        o
+        getAuthorizedOrgs().collect{ it.id }
     }
 
     boolean hasRole(String roleName) {
