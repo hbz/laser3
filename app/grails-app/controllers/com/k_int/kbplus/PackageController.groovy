@@ -276,7 +276,7 @@ class PackageController extends AbstractDebugController {
 
     @Secured(['ROLE_ADMIN'])
     def create() {
-        def user = User.get(springSecurityService.principal.id)
+        User user = User.get(springSecurityService.principal.id)
 
         switch (request.method) {
             case 'GET':
@@ -1055,7 +1055,7 @@ class PackageController extends AbstractDebugController {
             params.max = 9999999
             result.offset = 0
         } else {
-            def user = User.get(springSecurityService.principal.id)
+            User user = User.get(springSecurityService.principal.id)
             result.max = params.max ? Integer.parseInt(params.max) : user.getDefaultPageSizeTMP()
             params.max = result.max
             result.offset = params.offset ? Integer.parseInt(params.offset) : 0;

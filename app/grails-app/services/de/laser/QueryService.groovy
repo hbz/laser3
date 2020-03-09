@@ -7,8 +7,8 @@ import de.laser.helper.RDStore
 import de.laser.helper.SqlDateUtils
 import de.laser.interfaces.TemplateSupport
 
-import static com.k_int.kbplus.UserSettings.KEYS.*
 import static com.k_int.kbplus.UserSettings.DEFAULT_REMINDER_PERIOD
+import static com.k_int.kbplus.UserSettings.KEYS.*
 import static de.laser.helper.RDStore.*
 
 class QueryService {

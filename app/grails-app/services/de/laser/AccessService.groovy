@@ -232,7 +232,7 @@ class AccessService {
         }
 
         rolesToCheck.each{ rot ->
-            def userOrg = UserOrg.findByUserAndOrgAndFormalRole(user, org, rot)
+            UserOrg userOrg = UserOrg.findByUserAndOrgAndFormalRole(user, org, rot)
             if (userOrg && userOrg.status == UserOrg.STATUS_APPROVED) {
                 result = true
             }

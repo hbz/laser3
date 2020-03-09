@@ -2,11 +2,9 @@ package de.laser
 
 import com.k_int.kbplus.Fact
 import com.k_int.kbplus.Org
-import com.k_int.kbplus.OrgCustomProperty
 import com.k_int.kbplus.Platform
 import com.k_int.kbplus.Subscription
 import com.k_int.kbplus.auth.User
-import com.k_int.properties.PropertyDefinition
 import de.laser.controller.AbstractDebugController
 import de.laser.domain.StatsTripleCursor
 import grails.plugin.springsecurity.annotation.Secured

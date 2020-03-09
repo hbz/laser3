@@ -6,6 +6,10 @@
 
 2159    09.03.2020  hbz-dev     Moe     Feature     Mehrjahres Stati löschen auf normale Stati umstellen
 
+2235    06.03.2020  rc1.2       Andreas Bug         Teilnehmer verwalten: Vertragsverknüpfung erzeugt jetzt auch OrgRole-Einträge
+
+2235    06.03.2020  rc1.2       David   Bug         Meine Verträge: Teilnehmerverträge werden angezeigt
+
 2227    06.03.2020  hbz-dev     David   Bug         Merkmale Auswahl Lizenzebene 
 
 2234    05.03.2020  hbz-dev     Christian   Bug     Überarbeitung Statistikabruf

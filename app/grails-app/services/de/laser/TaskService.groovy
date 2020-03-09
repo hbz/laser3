@@ -2,15 +2,9 @@ package de.laser
 
 import com.k_int.kbplus.*
 import com.k_int.kbplus.auth.User
-import com.k_int.kbplus.OrgRole
 import de.laser.helper.RDStore
-import de.laser.interfaces.TemplateSupport
 import grails.transaction.Transactional
-import org.apache.tools.ant.taskdefs.Pack
 import org.springframework.context.i18n.LocaleContextHolder
-
-import static com.k_int.kbplus.MyInstitutionController.INSTITUTIONAL_LICENSES_QUERY
-import static com.k_int.kbplus.MyInstitutionController.INSTITUTIONAL_SUBSCRIPTION_QUERY
 
 @Transactional
 class TaskService {

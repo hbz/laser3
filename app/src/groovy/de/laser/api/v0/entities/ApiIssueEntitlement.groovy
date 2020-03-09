@@ -2,16 +2,11 @@ package de.laser.api.v0.entities
 
 import com.k_int.kbplus.IssueEntitlement
 import com.k_int.kbplus.Org
-import com.k_int.kbplus.Package
-import com.k_int.kbplus.Subscription
-import com.k_int.kbplus.SubscriptionPackage
 import de.laser.api.v0.ApiCollectionReader
 import de.laser.api.v0.ApiReader
 import de.laser.api.v0.ApiStubReader
 import de.laser.api.v0.ApiToolkit
 import de.laser.domain.IssueEntitlementCoverage
-import de.laser.helper.Constants
-import grails.converters.JSON
 import groovy.util.logging.Log4j
 
 @Log4j

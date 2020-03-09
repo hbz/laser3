@@ -50,7 +50,7 @@ class UserOrg implements Comparable {
     }
 
     int hashCode() {
-        def builder = new HashCodeBuilder()
+        HashCodeBuilder builder = new HashCodeBuilder()
 
         if (user) {
             builder.append(user.id)

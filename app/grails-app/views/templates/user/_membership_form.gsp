@@ -26,7 +26,7 @@
 
         <div class="field">
             <label></label>
-            <button id="submitARForm" data-complete-text="Request Membership" type="submit" class="ui button">${message(code: 'profile.membership.request.button', default:'Request Membership')}</button>
+            <button id="submitARForm" data-complete-text="Request Membership" type="submit" class="ui button">${message(code: 'profile.membership.request.button')}</button>
         </div>
     </g:form>
 </g:if>

@@ -20,7 +20,7 @@
               </div>
               <div class="field la-field-right-aligned">
                 <a href="${request.forwardURI}" class="ui reset primary button">${message(code:'default.button.searchreset.label')}</a>
-                <input type="submit" value="${message(code:'default.button.search.label', default:'Filter')}" class="ui secondary button">
+                <input type="submit" value="${message(code:'default.button.search.label')}" class="ui secondary button">
               </div>
             </semui:searchSegment>
 
@@ -31,10 +31,10 @@
                 <table class="ui celled la-table table">
                   <thead>
                     <tr>
-                      <th>${message(code:'title.label', default:'Title')}</th>
-                      <th>${message(code:'indentifier.plural', default:'Identifiers')}</th>
+                      <th>${message(code:'title.label')}</th>
+                      <th>${message(code:'indentifier.plural')}</th>
                       <th>${message(code:'org.plural', default:'Orgs')}</th>
-                      <th>${message(code:'default.key.label', default:'Key')}</th>
+                      <th>${message(code:'default.key.label')}</th>
                     </tr>
                   </thead>
                   <tbody>
