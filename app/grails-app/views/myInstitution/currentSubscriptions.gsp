@@ -178,7 +178,7 @@
 
         </div>
 
-        <div class="two fields">
+        <div class="three fields">
 
             <div class="field">
                 <fieldset id="subscritionType">
@@ -221,49 +221,7 @@
                 </select>
 
             </div>
-        </div>
 
-        <g:if test="${accessService.checkPerm("ORG_INST")}">
-            <div class="four fields">
-        </g:if>
-        <g:else>
-            <div class="three fields">
-        </g:else>
-            <div class="field">
-                <g:if test="${accessService.checkPerm("ORG_CONSORTIUM")}">
-                <%--
-                <g:if test="${params.orgRole == 'Subscriber'}">
-                    <input id="radioSubscriber" type="hidden" value="Subscriber" name="orgRole" tabindex="0" class="hidden">
-                </g:if>
-                <g:if test="${params.orgRole == 'Subscription Consortia'}">
-                    <input id="radioKonsortium" type="hidden" value="Subscription Consortia" name="orgRole" tabindex="0" class="hidden">
-                </g:if>
-                --%>
-
-                <label>${message(code: 'myinst.currentSubscriptions.filter.filterForRole.label')}</label>
-
-                <div class="inline fields la-filter-inline">
-                    <div class="field">
-                        <div class="ui radio checkbox">
-                            <input id="radioSubscriber" type="radio" value="Subscriber" name="orgRole" tabindex="0" class="hidden"
-                                   <g:if test="${params.orgRole == 'Subscriber'}">checked=""</g:if>
-                                >
-                            <label for="radioSubscriber">
-                                <g:message code="subscription.details.consortiaMembers.label"/>
-                            </label>
-                        </div>
-                    </div>
-                    <div class="field">
-                        <div class="ui radio checkbox">
-                            <input id="radioKonsortium" type="radio" value="Subscription Consortia" name="orgRole" tabindex="0" class="hidden"
-                                   <g:if test="${params.orgRole == 'Subscription Consortia'}">checked=""</g:if>
-                            >
-                            <label for="radioKonsortium">${message(code: 'myinst.currentSubscriptions.filter.consortium.label')}</label>
-                        </div>
-                    </div>
-                </div>
-                </g:if>
-            </div>
             <div class="field">
                 <label>${message(code: 'myinst.currentSubscriptions.subscription.runTime')}</label>
                 <div class="inline fields la-filter-inline">
@@ -283,6 +241,34 @@
                     </div>
                 </div>
             </div>
+
+        </div>
+
+        <g:if test="${accessService.checkPerm("ORG_INST")}">
+            <div class="four fields">
+        </g:if>
+        <g:else>
+            <div class="three fields">
+        </g:else>
+            <div class="field">
+                <label>${message(code:'subscription.isPublicForApi.label')}</label>
+                <laser:select class="ui fluid dropdown" name="isPublicForApi"
+                              from="${RefdataCategory.getAllRefdataValues(RDConstants.Y_N)}"
+                              optionKey="id"
+                              optionValue="value"
+                              value="${params.isPublicForApi}"
+                              noSelection="${['' : message(code:'default.select.choose.label')]}"/>
+            </div>
+            <div class="field">
+                <label>${message(code:'subscription.hasPerpetualAccess.label')}</label>
+                <laser:select class="ui fluid dropdown" name="hasPerpetualAccess"
+                              from="${RefdataCategory.getAllRefdataValues(RDConstants.Y_N)}"
+                              optionKey="id"
+                              optionValue="value"
+                              value="${params.hasPerpetualAccess}"
+                              noSelection="${['' : message(code:'default.select.choose.label')]}"/>
+            </div>
+
             <g:if test="${accessService.checkPerm("ORG_INST")}">
             <div class="field">
                 <fieldset>
@@ -301,7 +287,6 @@
                 <a href="${request.forwardURI}" class="ui reset primary button">${message(code:'default.button.reset.label')}</a>
                 <input type="submit" class="ui secondary button" value="${message(code:'default.button.filter.label')}">
             </div>
-
 
         </div>
 
