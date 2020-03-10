@@ -285,6 +285,18 @@ class SubscriptionsQueryService {
             filterSet = true
         }
 
+        if (params.isPublicForApi) {
+            base_qry += "and s.isPublicForApi = :isPublicForApi "
+            qry_params.put('isPublicForApi', (params.isPublicForApi == RDStore.YN_YES.id.toString()) ? true : false)
+            filterSet = true
+        }
+
+        if (params.hasPerpetualAccess) {
+            base_qry += "and s.hasPerpetualAccess = :hasPerpetualAccess "
+            qry_params.put('hasPerpetualAccess', (params.hasPerpetualAccess == RDStore.YN_YES.id.toString()) ? true : false)
+            filterSet = true
+        }
+
         if (params.subRunTimeMultiYear || params.subRunTime) {
 
             if (params.subRunTimeMultiYear && !params.subRunTime) {

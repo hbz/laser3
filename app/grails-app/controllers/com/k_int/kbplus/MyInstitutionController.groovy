@@ -3553,6 +3553,22 @@ AND EXISTS (
             query += " and subT.type.id in (:subTypes) "
             qarams.put('subTypes', params.list('subTypes').collect { it -> Long.parseLong(it) })
         }
+
+        if (params.containsKey('subKinds')) {
+            query += " and s.kind.id in (:subKinds) "
+            params.put('subKinds', params.list('subKinds').collect { Long.parseLong(it) })
+        }
+
+        if (params.isPublicForApi) {
+            query += "and s.isPublicForApi = :isPublicForApi "
+            params.put('isPublicForApi', (params.isPublicForApi == RDStore.YN_YES.id.toString()) ? true : false)
+        }
+
+        if (params.hasPerpetualAccess) {
+            query += "and s.hasPerpetualAccess = :hasPerpetualAccess "
+            params.put('hasPerpetualAccess', (params.hasPerpetualAccess == RDStore.YN_YES.id.toString()) ? true : false)
+        }
+
         if (params.subRunTimeMultiYear || params.subRunTime) {
 
             if (params.subRunTimeMultiYear && !params.subRunTime) {
@@ -3563,6 +3579,8 @@ AND EXISTS (
                 qarams.put('subRunTimeMultiYear', false)
             }
         }
+
+
 
         String orderQuery = " order by roleT.org.sortname, subT.name"
         if (params.sort?.size() > 0) {
