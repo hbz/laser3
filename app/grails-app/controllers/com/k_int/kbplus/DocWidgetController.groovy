@@ -25,7 +25,7 @@ class DocWidgetController extends AbstractDebugController {
             if (instance) {
                 log.debug("Got owner instance ${instance}");
 
-                def doc_content = new Doc(contentType: Doc.CONTENT_TYPE_STRING,
+                Doc doc_content = new Doc(contentType: Doc.CONTENT_TYPE_STRING,
                         title: params.licenseNoteTitle,
                         content: params.licenseNote,
                         type: RefdataValue.getByValueAndCategory('Note', RDConstants.DOCUMENT_TYPE),
@@ -34,7 +34,7 @@ class DocWidgetController extends AbstractDebugController {
 
 
                 log.debug("Setting new context type to ${params.ownertp}..");
-                def doc_context = new DocContext("${params.ownertp}": instance,
+                Doc doc_context = new DocContext("${params.ownertp}": instance,
                         owner: doc_content,
                         doctype: RefdataValue.getByValueAndCategory('Note', RDConstants.DOCUMENT_TYPE)).save(flush: true)
             } else {
@@ -144,7 +144,7 @@ class DocWidgetController extends AbstractDebugController {
                                         folder.mkdirs()
                                     }
 
-                                    def dst = new File("${fPath}/${fName}")
+                                    File dst = new File("${fPath}/${fName}")
                                     dst << new_File.text
                                 }
                                 catch (Exception e) {

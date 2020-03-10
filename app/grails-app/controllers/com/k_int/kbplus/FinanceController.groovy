@@ -967,10 +967,10 @@ class FinanceController extends AbstractDebugController {
             date
         }
 
-        def datePaid    = newDate(params.newDatePaid,  dateFormat.toPattern())
-        def startDate   = newDate(params.newStartDate, dateFormat.toPattern())
-        def endDate     = newDate(params.newEndDate,   dateFormat.toPattern())
-        def invoiceDate = newDate(params.newInvoiceDate,    dateFormat.toPattern())
+          Date datePaid    = newDate(params.newDatePaid,  dateFormat.toPattern())
+          Date startDate   = newDate(params.newStartDate, dateFormat.toPattern())
+          Date endDate     = newDate(params.newEndDate,   dateFormat.toPattern())
+          Date invoiceDate = newDate(params.newInvoiceDate,    dateFormat.toPattern())
         Year financialYear = params.newFinancialYear ? Year.parse(params.newFinancialYear) : null
 
         def ie = null

@@ -251,7 +251,7 @@ class ChangeNotificationService extends AbstractLockableService {
     PendingChange registerPendingChange(String prop, def target, def objowner, def changeMap, String msgToken, def msgParams, String legacyDesc) {
         log.debug("Register pending change ${prop} ${target.class.name}:${target.id}")
 
-        def desc = legacyDesc?.toString() // freeze string before altering referenced values
+        String desc = legacyDesc?.toString() // freeze string before altering referenced values
 
         // WTF !?
 

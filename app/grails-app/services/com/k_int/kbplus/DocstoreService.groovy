@@ -400,7 +400,7 @@ class DocstoreService {
     def docstore_docs = Doc.executeQuery("select id from Doc where contentType=1");
 
     docstore_docs.each { dsd_id ->
-      def dsd = Doc.get(dsd_id);
+      Doc dsd = Doc.get(dsd_id);
   
       try {
         log.debug("Migrate document ${dsd.id}, ${dsd.uuid}");
@@ -446,28 +446,28 @@ class DocstoreService {
 
         params.each { p ->
             if (p.key.startsWith('_deleteflag.') ) {
-                def docctx_to_delete = p.key.substring(12)
+                String docctx_to_delete = p.key.substring(12)
                 log.debug("Looking up docctx ${docctx_to_delete} for delete")
 
-                def docctx = DocContext.get(docctx_to_delete)
+                DocContext docctx = DocContext.get(docctx_to_delete)
                 docctx.status = DOC_CTX_STATUS_DELETED
                 docctx.save(flush: true)
             }
             if (p.key.startsWith('_deleteflag"@.') ) { // PackageController
-                def docctx_to_delete = p.key.substring(12);
+                String docctx_to_delete = p.key.substring(12);
                 log.debug("Looking up docctx ${docctx_to_delete} for delete")
 
-                def docctx = DocContext.get(docctx_to_delete)
+                DocContext docctx = DocContext.get(docctx_to_delete)
                 docctx.status = DOC_CTX_STATUS_DELETED
                 docctx.save(flush: true)
             }
         }
 
         if (params.deleteId) {
-            def docctx_to_delete = params.deleteId
+            String docctx_to_delete = params.deleteId
             log.debug("Looking up docctx ${docctx_to_delete} for delete")
 
-            def docctx = DocContext.get(docctx_to_delete)
+            DocContext docctx = DocContext.get(docctx_to_delete)
             docctx.status = DOC_CTX_STATUS_DELETED
             docctx.save(flush: true)
         }

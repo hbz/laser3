@@ -516,7 +516,7 @@ class OnixPLService {
       'GeneralTermRelatedPlace':{return true},
       'UsageRelatedPlace': {node -> 
         //Based on 5.0 spec, UsageRelatedPlace with TargetResource should result to new row
-        def deleteNode = true
+        boolean deleteNode = true
         def available_content = node?.'UsagePlaceRelator'?.'_content'
         if(available_content.contains(["onixPL:TargetResource"])){
           deleteNode = false
@@ -538,7 +538,7 @@ class OnixPLService {
       'UsageCondition' : {return true},
       'UsageRelatedResource' : {node ->
         //Based on 5.0 spec, UsageResourceRelator with TargetResource should result to new row
-        def deleteNode = true
+        boolean deleteNode = true
         def available_content = node?.'UsageResourceRelator'?.'_content'
         if(available_content.contains(["onixPL:TargetResource"])){
           deleteNode = false

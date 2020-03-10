@@ -592,7 +592,7 @@ class SurveyController {
                 }
             }
 
-            def contextOrg = contextService.getOrg()
+            Org contextOrg = contextService.getOrg()
             result.tasks = taskService.getTasksByResponsiblesAndObject(result.user, contextOrg,  result.surveyConfig)
             def preCon = taskService.getPreconditionsWithoutTargets(contextOrg)
             result << preCon
@@ -2017,7 +2017,7 @@ class SurveyController {
 
         }
 
-        def lateCommersProperty = PropertyDefinition.getByNameAndDescr("Späteinsteiger", PropertyDefinition.SUB_PROP)
+        PropertyDefinition lateCommersProperty = PropertyDefinition.getByNameAndDescr("Späteinsteiger", PropertyDefinition.SUB_PROP)
         def currentParticipantIDs = []
         result.orgsWithMultiYearTermSub = []
         result.orgsLateCommers = []
@@ -3615,23 +3615,24 @@ class SurveyController {
             orgType = [RDStore.OT_CONSORTIUM.id.toString()]
         }
 
-        def institution = contextService.getOrg()
+        Org institution = contextService.getOrg()
 
         RefdataValue subStatus = RDStore.SUBSCRIPTION_INTENDED
 
-        RefdataValue role_sub = RDStore.OR_SUBSCRIBER_CONS
-        RefdataValue role_sub_cons = RDStore.OR_SUBSCRIPTION_CONSORTIA
-        RefdataValue role_coll = RDStore.OR_SUBSCRIBER_COLLECTIVE
-        RefdataValue role_sub_coll = RDStore.OR_SUBSCRIPTION_COLLECTIVE
+        RefdataValue role_sub       = RDStore.OR_SUBSCRIBER_CONS
+        RefdataValue role_sub_cons  = RDStore.OR_SUBSCRIPTION_CONSORTIA
+        RefdataValue role_coll      = RDStore.OR_SUBSCRIBER_COLLECTIVE
+        RefdataValue role_sub_coll  = RDStore.OR_SUBSCRIPTION_COLLECTIVE
         RefdataValue role_sub_hidden = RDStore.OR_SUBSCRIBER_CONS_HIDDEN
-        RefdataValue role_lic = RDStore.OR_LICENSEE_CONS
+        RefdataValue role_lic       = RDStore.OR_LICENSEE_CONS
+
         if(accessService.checkPerm("ORG_INST_COLLECTIVE")) {
             role_lic = RDStore.OR_LICENSEE_COLL
         }
-        RefdataValue role_lic_cons = RDStore.OR_LICENSING_CONSORTIUM
+        RefdataValue role_lic_cons  = RDStore.OR_LICENSING_CONSORTIUM
 
-        RefdataValue role_provider = RDStore.OR_PROVIDER
-        RefdataValue role_agency = RDStore.OR_AGENCY
+        RefdataValue role_provider  = RDStore.OR_PROVIDER
+        RefdataValue role_agency    = RDStore.OR_AGENCY
 
         if (accessService.checkPerm("ORG_INST_COLLECTIVE,ORG_CONSORTIUM")) {
 
@@ -4413,7 +4414,7 @@ class SurveyController {
     private def getSurveyConfigCounts() {
         Map<String, Object> result = [:]
 
-        def contextOrg = contextService.getOrg()
+        Org contextOrg = contextService.getOrg()
 
         result.created = SurveyConfig.executeQuery("from SurveyInfo surInfo left join surInfo.surveyConfigs surConfig where surInfo.owner = :contextOrg and (surInfo.status = :status or surInfo.status = :status2)",
                 [contextOrg: contextOrg, status: RDStore.SURVEY_READY, status2: RDStore.SURVEY_IN_PROCESSING]).size()

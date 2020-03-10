@@ -1,5 +1,6 @@
 package com.k_int.kbplus
 
+import com.k_int.kbplus.auth.Role
 import com.k_int.kbplus.auth.User
 import de.laser.controller.AbstractDebugController
 import de.laser.domain.MailTemplate
@@ -88,7 +89,7 @@ class DataManagerController extends AbstractDebugController {
     // Get a distinct list of actors
     def auditActors = AuditLogEvent.executeQuery('select distinct(al.actor) from AuditLogEvent as al where al.className in ( :l  )',[l:all_types])
 
-    def formal_role = com.k_int.kbplus.auth.Role.findByAuthority('INST_ADM')
+    Role formal_role = Role.findByAuthority('INST_ADM')
      
     // From the list of users, extract and who have the INST_ADM role
     def rolesMa = []
@@ -317,7 +318,7 @@ class DataManagerController extends AbstractDebugController {
     def paginate_after = params.paginate_after ?: ( (2*result.max)-1);
     result.offset = params.offset ? Integer.parseInt(params.offset) : 0;
 
-    def deleted_title_status =  RefdataValue.getByValueAndCategory('Deleted', RDConstants.TITLE_STATUS)
+    RefdataValue deleted_title_status =  RefdataValue.getByValueAndCategory('Deleted', RDConstants.TITLE_STATUS)
     def qry_params = [deleted_title_status]
 
     String base_qry = " from TitleInstance as t where ( t.status = ? )"
@@ -347,7 +348,7 @@ class DataManagerController extends AbstractDebugController {
         def paginate_after = params.paginate_after ?: ( (2*result.max)-1);
         result.offset = params.offset ? Integer.parseInt(params.offset) : 0;
 
-        def delStatus =  RefdataValue.getByValueAndCategory('Deleted', RDConstants.ORG_STATUS)
+        RefdataValue delStatus =  RefdataValue.getByValueAndCategory('Deleted', RDConstants.ORG_STATUS)
 
         def qry_params = [delStatus]
         String query = " from Org as o where ( o.status = ? )"

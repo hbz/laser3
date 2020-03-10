@@ -1193,7 +1193,7 @@ class AdminController extends AbstractDebugController {
       CSVReader r = new CSVReader( new InputStreamReader(input_stream, java.nio.charset.Charset.forName('UTF-8') ) )
       String[] nl;
       String[] cols;
-      def first = true
+      boolean first = true
       while ((nl = r.readNext()) != null) {
         if ( first ) {
           first = false; // Skip header

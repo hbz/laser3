@@ -287,13 +287,13 @@ class PersonController extends AbstractDebugController {
             
             if(person){
                 if('func' == roleType){
-                    def rdc = RefdataCategory.getByDesc(RDConstants.PERSON_FUNCTION)
-                    def hqlPart = "from PersonRole as PR where PR.prs = ${person?.id} and PR.functionType.owner = ${rdc.id}"  
+                    RefdataCategory rdc = RefdataCategory.getByDesc(RDConstants.PERSON_FUNCTION)
+                    String hqlPart = "from PersonRole as PR where PR.prs = ${person?.id} and PR.functionType.owner = ${rdc.id}"
                     existingPrsLinks = PersonRole.findAll(hqlPart) 
                 }
                 else if('resp' == roleType){
-                    def rdc = RefdataCategory.getByDesc(RDConstants.PERSON_RESPONSIBILITY)
-                    def hqlPart = "from PersonRole as PR where PR.prs = ${person?.id} and PR.responsibilityType.owner = ${rdc.id}"  
+                    RefdataCategory rdc = RefdataCategory.getByDesc(RDConstants.PERSON_RESPONSIBILITY)
+                    String hqlPart = "from PersonRole as PR where PR.prs = ${person?.id} and PR.responsibilityType.owner = ${rdc.id}"
                     existingPrsLinks = PersonRole.findAll(hqlPart)
                 }
 
@@ -438,8 +438,8 @@ class PersonController extends AbstractDebugController {
         if (params.functionType) {
             def result
 
-            def functionRdv = RefdataValue.get(params.functionType) ?: RefdataValue.getByValueAndCategory('General contact person', RDConstants.PERSON_FUNCTION)
-            def functionOrg = Org.get(params.functionOrg)
+            RefdataValue functionRdv = RefdataValue.get(params.functionType) ?: RefdataValue.getByValueAndCategory('General contact person', RDConstants.PERSON_FUNCTION)
+            Org functionOrg = Org.get(params.functionOrg)
 
             if (functionRdv && functionOrg) {
                 result = new PersonRole(prs: prs, functionType: functionRdv, org: functionOrg)

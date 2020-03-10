@@ -61,7 +61,7 @@ class LicenseController extends AbstractDebugController {
 
         def license_reference_str = result.license.reference ?: 'NO_LIC_REF_FOR_ID_' + params.id
 
-        def filename = "license_${escapeService.escapeString(license_reference_str)}"
+        String filename = "license_${escapeService.escapeString(license_reference_str)}"
         result.onixplLicense = result.license.onixplLicense;
 
         // ---- pendingChanges : start
@@ -393,10 +393,10 @@ class LicenseController extends AbstractDebugController {
 
     def subscriptions = null
     if(licenseInstitutions){
-      SimpleDateFormat sdf = DateUtil.getSDF_NoTime()
-      def date_restriction =  new Date(System.currentTimeMillis())
+        SimpleDateFormat sdf = DateUtil.getSDF_NoTime()
+        Date date_restriction =  new Date(System.currentTimeMillis())
 
-      def base_qry = """
+        String base_qry = """
 from Subscription as s where 
   ( ( exists ( select o from s.orgRelations as o where (o.roleType.value = 'Subscriber' or o.roleType.value = 'Subscriber_Consortial') and o.org in (:orgs) ) ) ) 
   AND (s.owner = null) 
@@ -711,7 +711,7 @@ from Subscription as s where
         }
 
         if (params.deleteId) {
-            def dTask = Task.get(params.deleteId)
+            Task dTask = Task.get(params.deleteId)
             if (dTask && dTask.creator.id == result.user.id) {
                 try {
                     flash.message = message(code: 'default.deleted.message', args: [message(code: 'task.label'), dTask.title])
@@ -911,7 +911,7 @@ from Subscription as s where
         }
         result.visibleOrgLinks.sort{ it.org.sortname }
 
-        def contextOrg = contextService.getOrg()
+        Org contextOrg = contextService.getOrg()
         result.tasks = taskService.getTasksByResponsiblesAndObject(result.user, contextOrg, result.license)
         def preCon = taskService.getPreconditionsWithoutTargets(contextOrg)
         result << preCon
@@ -1041,7 +1041,7 @@ from Subscription as s where
                     if(params.license.copyCustomProperties) {
                         //customProperties
                         for (prop in baseLicense.customProperties) {
-                            def copiedProp = new LicenseCustomProperty(type: prop.type, owner: licenseInstance)
+                            LicenseCustomProperty copiedProp = new LicenseCustomProperty(type: prop.type, owner: licenseInstance)
                             copiedProp = prop.copyInto(copiedProp)
                             copiedProp.instanceOf = null
                             copiedProp.save(flush: true)
@@ -1050,12 +1050,12 @@ from Subscription as s where
                     }
                     if(params.license.copyPrivateProperties){
                         //privatProperties
-                        def contextOrg = contextService.getOrg()
+                        Org contextOrg = contextService.getOrg()
 
                         baseLicense.privateProperties.each { prop ->
                             if(prop.type?.tenant?.id == contextOrg?.id)
                             {
-                                def copiedProp = new LicensePrivateProperty(type: prop.type, owner: licenseInstance)
+                                LicensePrivateProperty copiedProp = new LicensePrivateProperty(type: prop.type, owner: licenseInstance)
                                 copiedProp = prop.copyInto(copiedProp)
                                 copiedProp.save(flush: true)
                                 //licenseInstance.addToPrivateProperties(copiedProp) // ERROR Hibernate: Found two representations of same collection

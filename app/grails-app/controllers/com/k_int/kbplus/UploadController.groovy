@@ -186,7 +186,7 @@ class UploadController extends AbstractDebugController {
 
       if ( tipp.title_obj && tipp.host_platform && new_pkg ) {
         // Got all the components we need to create a tipp
-        def dbtipp = TitleInstancePackagePlatform.findByPkgAndPlatformAndTitle(new_pkg,tipp.host_platform,tipp.title_obj)
+        TitleInstancePackagePlatform dbtipp = TitleInstancePackagePlatform.findByPkgAndPlatformAndTitle(new_pkg,tipp.host_platform,tipp.title_obj)
         if ( dbtipp == null ) {
           incrementStatsCounter(upload, message(code:'package.upload.tipp_created'))
 
@@ -747,8 +747,8 @@ class UploadController extends AbstractDebugController {
 
   private def checkTitleFingerprintMatch(matched_title_id, title_from_import_file, tipp, upload) {
     // log.debug("checkTitleFingerprintMatch ${matched_title_id}, ${title_from_import_file}");
-    def title_instance = TitleInstance.get(matched_title_id)
-    def generated_key_title = TitleInstance.generateKeyTitle(title_from_import_file)
+    TitleInstance title_instance = TitleInstance.get(matched_title_id)
+    String generated_key_title = TitleInstance.generateKeyTitle(title_from_import_file)
     // log.debug("checkTitleFingerprintMatch ${matched_title_id}, ${title_from_import_file} == ${generated_key_title}");
 
     if ( ! title_instance.keyTitle.equals(generated_key_title) ) {

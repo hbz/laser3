@@ -101,7 +101,7 @@ class LicenseCustomProperty extends CustomProperty implements AuditableTrait  {
                 description = contentItemDesc.content
             }
             else {
-                def defaultMsg = ContentItem.findByKeyAndLocale("kbplus.change.subscription.default", locale.toString())
+                ContentItem defaultMsg = ContentItem.findByKeyAndLocale("kbplus.change.subscription.default", locale.toString())
                 if( defaultMsg)
                     description = defaultMsg.content
             }
