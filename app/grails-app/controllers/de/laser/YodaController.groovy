@@ -421,6 +421,40 @@ class YodaController {
         result
     }
 
+    @Secured(['ROLE_YODA'])
+    def timelineProfiler() {
+        Map<String, Object> result = [:]
+
+        List<String> allUri = SystemProfiler.executeQuery('select distinct(uri) from SystemProfiler')
+
+        result.globalTimeline           = [:]
+        result.globalTimelineStartDate  = (new Date()).minus(30)
+        result.globalTimelineDates      = (30..0).collect{ (DateUtil.getSDF_NoTime()).format( (new Date()).minus(it) ) }
+
+        Map<String, Integer> ordered = [:]
+
+        allUri.each { uri ->
+            result.globalTimeline[uri] = (30..0).collect { 0 }
+
+            String sql = "select to_char(sp.dateCreated, 'dd.mm.yyyy'), count(*) from SystemProfiler sp where sp.uri = :uri and sp.dateCreated >= :dCheck group by to_char(sp.dateCreated, 'dd.mm.yyyy')"
+            List hits = SystemProfiler.executeQuery(sql, [uri: uri, dCheck: result.globalTimelineStartDate])
+
+            int count = 0
+            hits.each { hit ->
+                int indexOf = result.globalTimelineDates.findIndexOf { it == hit[0] }
+                if (indexOf >= 0) {
+                    result.globalTimeline[uri][indexOf] = hit[1]
+                    count = count + hit[1]
+                }
+            }
+
+            ordered[uri] = count
+        }
+        result.globalTimelineOrder = ordered.sort{ e,f -> f.value <=> e.value }
+
+        result
+    }
+
     //@Cacheable('message')
     @Secured(['ROLE_ADMIN'])
     def appInfo() {

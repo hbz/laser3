@@ -439,8 +439,10 @@
                                     <g:link class="item" controller="yoda" action="appConfig">${message(code:'menu.yoda.appConfig')}</g:link>
                                     <g:link class="item" controller="yoda" action="appThreads">${message(code:'menu.yoda.appThreads')}</g:link>
 
-                                    <g:link class="item" controller="yoda" action="systemProfiler">${message(code:'menu.yoda.systemProfiler')}</g:link>
-                                    <g:link class="item" controller="yoda" action="activityProfiler">${message(code:'menu.yoda.activityProfiler')}</g:link>
+                                    <g:link class="item" controller="yoda" action="systemProfiler"><i class="stopwatch icon"></i>${message(code:'menu.yoda.systemProfiler')}</g:link>
+                                    <g:link class="item" controller="yoda" action="activityProfiler"><i class="stopwatch icon"></i>${message(code:'menu.yoda.activityProfiler')}</g:link>
+                                    <g:link class="item" controller="yoda" action="timelineProfiler"><i class="stopwatch icon"></i>${message(code:'menu.yoda.timelineProfiler')}</g:link>
+
                                     <g:link class="item" controller="yoda" action="quartzInfo">${message(code:'menu.yoda.quartzInfo')}</g:link>
                                     <g:link class="item" controller="yoda" action="cacheInfo">${message(code:'menu.yoda.cacheInfo')}</g:link>
 

@@ -3,31 +3,31 @@
 <html>
 <head>
     <meta name="layout" content="semanticUI">
-    <title>${message(code:'laser')} : ${message(code:'menu.yoda.activityProfiler')}</title>
+    <title>${message(code:'laser')} : ${message(code:'menu.yoda.timelineProfiler')}</title>
 </head>
 <body>
 
 <semui:breadcrumbs>
     <semui:crumb message="menu.yoda.dash" controller="yoda" action="index"/>
-    <semui:crumb message="menu.yoda.activityProfiler" class="active"/>
+    <semui:crumb message="menu.yoda.timelineProfiler" class="active"/>
 </semui:breadcrumbs>
 <br>
-    <h2 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon />${message(code:'menu.yoda.activityProfiler')}</h2>
+    <h2 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon />${message(code:'menu.yoda.timelineProfiler')}</h2>
 
     <table class="ui celled la-table la-table-small table">
         <thead>
             <tr class="center aligned">
-                <th>Zeitraum</th>
-                <th colspan="4">Benutzer online (min/max)</th>
+                <th>Timeline</th>
             </tr>
         </thead>
         <tbody>
-            <g:each in="${activity}" var="itemKey,itemValue" status="index">
+            <g:each in="${globalTimelineOrder}" var="ik,iv" status="index">
+                <g:set var="itemValue" value="${globalTimeline[ik]}" />
+
                 <tr>
-                    <td class="center aligned">
-                        ${itemKey}
-                    </td>
-                    <td colspan="4">
+                    <td>
+                        <strong>${ik}</strong> (${iv}) <br/>
+
                         <div id="ct-chart-${index}"></div>
 
                         <script>
@@ -35,11 +35,10 @@
 
                                 var chartData = {
                                     labels: [
-                                        <% println '"' + labels.collect{ it.length() ? it.substring(0,3) + '00' : it }.join('","') + '"' %>
+                                        <% println '"' + globalTimelineDates.collect{ it.length() ? it.substring(0,5) : it }.join('","') + '"' %>
                                     ],
                                     series: [
-                                        [<% println '"' + itemValue[0].join('","') + '"' %>],
-                                        [<% println '"' + itemValue[1].join('","') + '"' %>]
+                                        [<% println '"' + itemValue.join('","') + '"' %>]
                                     ]
                                 };
 
@@ -52,7 +51,15 @@
                                     axisY: {
                                         onlyInteger: true
                                     }
-                                }, {});
+                                }, {}).on('draw', function(data) {
+                                    if (data.value && data.value.y > 0) {
+                                        data.group.append(new Chartist.Svg('circle', {
+                                            cx: data.x2,
+                                            cy: data.y2,
+                                            r: Math.abs(Chartist.getMultiValue(data.value)) * 2 + 5
+                                        }, 'ct-slice-pie'));
+                                    }
+                                });
                             })
                         </script>
                     </td>
@@ -61,13 +68,8 @@
         </tbody>
     </table>
     <style>
-        #ct-chart-0 .ct-series-b .ct-bar { stroke: #bb1600; }
-        #ct-chart-0 .ct-series-b .ct-slice-pie { fill: #bb1600; }
-
         .ct-series-a .ct-bar { stroke: #98b500; }
         .ct-series-a .ct-slice-pie { fill: #98b500; }
-        .ct-series-b .ct-bar { stroke: orange; }
-        .ct-series-b .ct-slice-pie { fill: orange; }
     </style>
 </body>
 </html>

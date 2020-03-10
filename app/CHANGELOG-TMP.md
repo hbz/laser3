@@ -2,6 +2,8 @@
 
 **Ticket    Date    Branch      Author  Feature/Bug     Description/Keywords**
 
+2239    10.03.2020  hbz-dev     David   Feature     Profiler: URL-abhängige Timeline implementieren
+
 2145    09.03.2020  hbz-dev     Moe     Feature     Überarbeitung des Lizenztyps
 
 2159    09.03.2020  hbz-dev     Moe     Feature     Mehrjahres Stati löschen auf normale Stati umstellen
