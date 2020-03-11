@@ -48,10 +48,8 @@
     </g:if>
     <g:if test="${actionName == 'ids'}">
         <sec:ifAnyGranted roles="ROLE_ORG_EDITOR,ROLE_ADMIN">
-            %{--<semui:actionsDropdownItem controller="organisation" action="createIdentifier" params="[id: orgInstance.id]" message="identifier.create.new"/>--}%
-            %{--<semui:actionsDropdownItem controller="identifier" action="create" params="[id: orgInstance.id]" message="identifier.create.new"/>--}%
             <a class="item" onclick="createIdentifier(${orgInstance.id});">${message(code: 'identifier.create.new')}</a>
-            <a class="item" onclick="createCustomerIdentifier(${orgInstance.id});">${message(code: 'org.customerIdentifier.create.new')}</a>
+            %{--<a class="item" onclick="createCustomerIdentifier(${orgInstance.id});">${message(code: 'org.customerIdentifier.create.new')}</a>--}%
         </sec:ifAnyGranted>
     </g:if>
 </semui:actionsDropdown>
