@@ -810,7 +810,7 @@ class Subscription
   def hasPlatformWithUsageSupplierId() {
       boolean hasUsageSupplier = false
       packages.each { it ->
-          def hql="select count(distinct sp) from SubscriptionPackage sp "+
+          String hql="select count(distinct sp) from SubscriptionPackage sp "+
               "join sp.subscription.orgRelations as or "+
               "join sp.pkg.tipps as tipps "+
               "where sp.id=:sp_id "
@@ -824,7 +824,7 @@ class Subscription
   }
 
   def deduplicatedAccessPointsForOrgAndPlatform(org, platform) {
-      def hql = """
+      String hql = """
 select distinct oap from OrgAccessPoint oap 
     join oap.oapp as oapl
     join oapl.subPkg as subPkg

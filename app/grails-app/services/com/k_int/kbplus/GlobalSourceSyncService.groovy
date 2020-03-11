@@ -139,7 +139,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
 
             if (existing_title_history_event.size() == 0) {
                 log.debug("Create new history event");
-                def he = new TitleHistoryEvent(eventDate: query_params[0]).save()
+                TitleHistoryEvent he = new TitleHistoryEvent(eventDate: query_params[0]).save()
                 fromset.each {
                     new TitleHistoryEventParticipant(event: he, participant: it, participantRole: 'from').save()
                 }
@@ -1610,7 +1610,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
 
                     if (existing_title_history_event.size() == 0) {
                         log.debug("Create new history event");
-                        def he = new TitleHistoryEvent(eventDate: query_params[0]).save()
+                        TitleHistoryEvent he = new TitleHistoryEvent(eventDate: query_params[0]).save()
                         fromset.each {
                             new TitleHistoryEventParticipant(event: he, participant: it, participantRole: 'from').save()
                         }

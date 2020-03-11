@@ -148,7 +148,7 @@ class ProcessLoginController {
     return
 
     if ( ( authInstitutionName ) && ( authInstitutionName.length() > 0 ) ) {
-      def candidate = authInstitutionName.trim().replaceAll(" ","_")
+      String candidate = authInstitutionName.trim().replaceAll(" ","_")
       Org org = com.k_int.kbplus.Org.findByScope(shibbScope)
 
       // If we didn't match by scope, try matching by normalised name

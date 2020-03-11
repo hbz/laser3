@@ -126,7 +126,7 @@ class SurveyService {
     }
 
     boolean copyProperties(List<AbstractProperty> properties, Subscription targetSub, boolean isRenewSub, def flash, List auditProperties){
-        def contextOrg = contextService.getOrg()
+        Org contextOrg = contextService.getOrg()
         def targetProp
 
 

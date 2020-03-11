@@ -909,12 +909,12 @@ class OrganisationController extends AbstractDebugController {
     @Secured(['ROLE_USER'])
     def addOrgCombo(Org fromOrg, Org toOrg) {
       //def comboType = RefdataCategory.lookupOrCreate(RDConstants.ORGANISATIONAL_ROLE, 'Package Consortia')
-      def comboType = RefdataValue.get(params.comboTypeTo)
+        RefdataValue comboType = RefdataValue.get(params.comboTypeTo)
       log.debug("Processing combo creation between ${fromOrg} AND ${toOrg} with type ${comboType}")
       def dupe = Combo.executeQuery("from Combo as c where c.fromOrg = ? and c.toOrg = ?", [fromOrg, toOrg])
       
       if (! dupe) {
-        def consLink = new Combo(fromOrg:fromOrg,
+          Combo consLink = new Combo(fromOrg:fromOrg,
                                  toOrg:toOrg,
                                  status:null,
                                  type:comboType)
@@ -1145,7 +1145,7 @@ class OrganisationController extends AbstractDebugController {
                         fromOrg: Org.get(params.fromOrg),
                         type: RefdataValue.getByValueAndCategory('Consortium', RDConstants.COMBO_TYPE)]
                 if (! Combo.findWhere(map)) {
-                    def cmb = new Combo(map)
+                    Combo cmb = new Combo(map)
                     cmb.save()
                 }
                 break

@@ -244,10 +244,10 @@ class AjaxController {
         else {
           if ( params.dt == 'date' ) {
             // log.debug("Special date processing, idf=${params.idf}");
-            def formatter = new java.text.SimpleDateFormat(params.idf)
+              SimpleDateFormat formatter = new SimpleDateFormat(params.idf)
             value = formatter.parse(params.value)
             if ( params.odf ) {
-              def of = new java.text.SimpleDateFormat(params.odf)
+                SimpleDateFormat of = new SimpleDateFormat(params.odf)
               result=of.format(value);
             }
             else {
@@ -1436,7 +1436,7 @@ class AjaxController {
 
         if (ownobj && propDefGroup) {
             if (params.isVisible in ['Yes', 'No']) {
-                def gb = new PropertyDefinitionGroupBinding(
+                PropertyDefinitionGroupBinding gb = new PropertyDefinitionGroupBinding(
                         propDefGroup: propDefGroup,
                         isVisible: (params.isVisible == 'Yes')
                 )
@@ -2530,7 +2530,7 @@ class AjaxController {
 
     @Secured(['ROLE_USER'])
     def TaskEdit() {
-        def contextOrg = contextService.getOrg()
+        Org contextOrg = contextService.getOrg()
         def result     = taskService.getPreconditionsWithoutTargets(contextOrg)
         result.params = params
         result.taskInstance = Task.get(params.id)
@@ -2541,7 +2541,7 @@ class AjaxController {
     @Secured(['ROLE_USER'])
     def TaskCreate() {
         long backendStart = System.currentTimeMillis()
-        def contextOrg = contextService.getOrg()
+        Org contextOrg = contextService.getOrg()
         def result     = taskService.getPreconditions(contextOrg)
         result.backendStart = backendStart
 

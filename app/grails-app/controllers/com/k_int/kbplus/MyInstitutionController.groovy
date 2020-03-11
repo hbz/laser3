@@ -334,10 +334,10 @@ class MyInstitutionController extends AbstractDebugController {
         result.max      = params.format ? 10000 : result.max
         result.offset   = params.format? 0 : result.offset
 
-        def licensee_role           = RDStore.OR_LICENSEE
-        def licensee_cons_role      = RDStore.OR_LICENSEE_CONS
-        def lic_cons_role           = RDStore.OR_LICENSING_CONSORTIUM
-        def template_license_type   = RDStore.LICENSE_TYPE_TEMPLATE
+        RefdataValue licensee_role           = RDStore.OR_LICENSEE
+        RefdataValue licensee_cons_role      = RDStore.OR_LICENSEE_CONS
+        RefdataValue lic_cons_role           = RDStore.OR_LICENSING_CONSORTIUM
+        RefdataValue template_license_type   = RDStore.LICENSE_TYPE_TEMPLATE
 
         def base_qry
         def qry_params
@@ -441,7 +441,7 @@ from License as l where (
 		List bm = du.stopBenchmark()
 		result.benchMark = bm
 
-        def filename = "${g.message(code: 'export.my.currentLicenses')}_${sdf.format(new Date(System.currentTimeMillis()))}"
+        String filename = "${g.message(code: 'export.my.currentLicenses')}_${sdf.format(new Date(System.currentTimeMillis()))}"
         if(params.exportXLS) {
             response.setHeader("Content-disposition", "attachment; filename=\"${filename}.xlsx\"")
             response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
@@ -1517,7 +1517,7 @@ join sub.orgRelations or_sub where
             }
         }
 
-        def license_type = RDStore.LICENSE_TYPE_ACTUAL
+        RefdataValue license_type = RDStore.LICENSE_TYPE_ACTUAL
 
         License licenseInstance = new License(type: license_type, reference: params.licenseName,
                 startDate:params.licenseStartDate ? DateUtil.parseDateGeneric(params.licenseStartDate) : null,
@@ -1532,8 +1532,8 @@ join sub.orgRelations or_sub where
         }
         else {
             log.debug("Save ok");
-            def licensee_role = RDStore.OR_LICENSEE
-            def lic_cons_role = RDStore.OR_LICENSING_CONSORTIUM
+            RefdataValue licensee_role = RDStore.OR_LICENSEE
+            RefdataValue lic_cons_role = RDStore.OR_LICENSING_CONSORTIUM
 
             log.debug("adding org link to new license");
 
@@ -2244,8 +2244,8 @@ AND EXISTS (
             return;
         }
 
-        def licensee_role =  RDStore.OR_LICENSEE
-        def licensee_cons_role = RDStore.OR_LICENSEE_CONS
+        RefdataValue licensee_role      = RDStore.OR_LICENSEE
+        RefdataValue licensee_cons_role = RDStore.OR_LICENSEE_CONS
 
         // Find all licenses for this institution...
         Map<String, Object> result = [:]
