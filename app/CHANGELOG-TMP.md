@@ -2,6 +2,8 @@
 
 **Ticket    Date    Branch      Author  Feature/Bug     Description/Keywords**
 
+2185    11.03.2020  hbz-dev     Christian   Feature Zugangskonfigurationen: nur aktive Lizenzen anzeigen
+
 2202    11.03.2020  rc1.2       David   Feature     Cherrypicked ERMS-2202 from hbz-dev and improved
 
 2239    10.03.2020  hbz-dev     David   Feature     Profiler: URL-abhängige Timeline implementieren
