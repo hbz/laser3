@@ -4,6 +4,7 @@ import com.k_int.kbplus.UserSettings
 import com.k_int.kbplus.auth.User
 import de.laser.helper.RDStore
 import grails.util.Holders
+import net.sf.json.JSON
 
 class SystemAnnouncement {
 
@@ -13,6 +14,7 @@ class SystemAnnouncement {
     User    user
     String  title
     String  content
+    String  status
 
     boolean isPublished = false
 
@@ -26,6 +28,7 @@ class SystemAnnouncement {
         user            column: 'sa_user_fk'
         title           column: 'sa_title'
         content         column: 'sa_content', type: 'text'
+        status          column: 'sa_status', type: 'text'
         isPublished     column: 'sa_is_published'
         lastPublishingDate column: 'sa_last_publishing_date'
         dateCreated     column: 'sa_date_created'
@@ -36,6 +39,7 @@ class SystemAnnouncement {
         user        (nullable:false, blank:false)
         title       (nullable:false, blank:false)
         content     (nullable:false, blank:false)
+        status      (nullable:true,  blank:false)
         isPublished (nullable:false, blank:false)
         lastPublishingDate (nullable:true, blank:false)
         dateCreated (nullable:true, blank:false)
@@ -91,6 +95,13 @@ class SystemAnnouncement {
             }
         }
 
+        status = ([
+            validUserIds : validUserIds,
+            failedUserIds: failedUserIds
+        ] as JSON).toString()
+
+        save()
+
         if (validUserIds.size() > 0) {
             SystemEvent.createEvent('SYSANN_SENDING_OK', ['count': validUserIds.size()])
         }
@@ -109,7 +120,7 @@ class SystemAnnouncement {
 
         String currentServer = grailsApplication.config.getCurrentServer()
         String subjectSystemPraefix = (currentServer == ContextService.SERVER_PROD) ? "LAS:eR - " : (grailsApplication.config.laserSystemId + " - ")
-        String mailSubject = subjectSystemPraefix + messageSource.getMessage('email.subject.sysAnnouncements', null, locale)
+        String mailSubject = subjectSystemPraefix + messageSource.getMessage('email.subject.sysAnnouncement', null, locale)
 
         boolean isRemindCCbyEmail = user.getSetting(UserSettings.KEYS.IS_REMIND_CC_BY_EMAIL, RDStore.YN_NO)?.rdValue == RDStore.YN_YES
         String ccAddress

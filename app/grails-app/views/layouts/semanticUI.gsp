@@ -351,6 +351,18 @@
                             <g:link class="item" controller="admin" action="systemAnnouncements">${message(code:'menu.admin.announcements')}</g:link>
                             <g:link class="item" controller="admin" action="serverDifferences">${message(code:'menu.admin.serverDifferences')}</g:link>
 
+                            <div class="ui dropdown item">
+                                <i class="ui icon code branch"></i>Developer
+                                <i class="dropdown icon"></i>
+
+                                <div class="menu">
+                                    <g:link class="item" controller="dev" action="index">Barrierefreiheits-Tests</g:link>
+                                    <g:link class="item" controller="dev" action="frontend">Frontend</g:link>
+                                </div>
+                            </div>
+
+                            <g:link class="item" controller="admin" action="systemAnnouncements">${message(code:'menu.admin.announcements')}</g:link>
+
                             <div class="divider"></div>
 
                             <div class="item">
