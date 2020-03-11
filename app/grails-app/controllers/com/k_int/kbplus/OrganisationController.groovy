@@ -304,6 +304,103 @@ class OrganisationController extends AbstractDebugController {
             }
         }
     }
+    def createIdentifier(){
+        Org org   = params.id? Org.get(params.id) : null
+        Identifier identifier = Identifier.get(params.identifierId)
+
+        if (! org) {
+            flash.message = message(code: 'default.not.found.message', args: [message(code: 'org.label'), params.id])
+            redirect(url: request.getHeader('referer'))
+            return
+        }
+
+        render template: '/templates/identifier/modal_create_identifier', model: [orgInstance: org, identifier: identifier]
+    }
+
+    def editIdentifier(){
+        Identifier identifier = Identifier.get(params.identifier)
+        Org org = identifier?.org
+
+        if (! org) {
+            flash.message = message(code: 'default.not.found.message', args: [message(code: 'default.search.identifier'), params.id])
+            redirect(url: request.getHeader('referer'))
+            return
+        }
+
+        render template: '/templates/identifier/modal_create_identifier', model: [orgInstance: org, identifier: identifier]
+    }
+
+    def processCreateIdentifier(){
+        log.debug("OrganisationController::processCreateIdentifier ${params}")
+        Org org   = params.orgid ? Org.get(params.orgid) : null
+        if ( ! (org && params.ns.id && params.value)){
+            flash.message = message(code: 'default.not.found.message', args: [message(code: 'identifier.namespace.label'), params.namespace])
+            redirect(url: request.getHeader('referer'))
+            return
+        }
+        IdentifierNamespace namespace   = IdentifierNamespace.get(params.ns.id)
+        if (!namespace){
+            flash.message = message(code: 'default.not.found.message', args: [message(code: 'identifier.namespace.label'), params.namespace])
+            redirect(url: request.getHeader('referer'))
+            return
+        }
+        String value = params.value.trim()
+        String note = params.note?.trim()
+        Identifier id = Identifier.construct([value: value, reference: org, namespace: namespace])
+        id.note = note
+        id.save()
+
+        redirect(url: request.getHeader('referer'))
+    }
+
+    def processEditIdentifier(){
+        log.debug("OrganisationController::processEditIdentifier ${params}")
+        Org org   = params.orgid ? Org.get(params.orgid) : null
+        Identifier identifier   = Identifier.get(params.identifierId)
+        if ( ! (org && identifier)){
+            flash.message = message(code: 'default.not.found.message', args: [message(code: 'identifier.namespace.label'), params.namespace])
+            redirect(url: request.getHeader('referer'))
+            return
+        }
+        IdentifierNamespace namespace   = IdentifierNamespace.get(params.ns.id)
+        if (!namespace){
+            flash.message = message(code: 'default.not.found.message', args: [message(code: 'identifier.namespace.label'), params.namespace])
+            redirect(url: request.getHeader('referer'))
+            return
+        }
+        if (params.value) {
+            identifier.value = params.value
+        }
+        identifier.note = params.note?.trim()
+        identifier.save()
+
+        redirect(url: request.getHeader('referer'))
+    }
+
+    def createCustomerIdentifier(){
+        Org org   = Org.get(params.id)
+        Identifier identifier = Identifier.get(params.identifierId)
+
+        if (! org) {
+            flash.message = message(code: 'default.not.found.message', args: [message(code: 'org.label'), params.id])
+//            redirect action: 'list'
+            return
+        }
+
+        render template: '/templates/identifier/modal_create_customeridentifier', model: [orgInstance: org]
+    }
+    def editCustomerIdentifier(){
+        Identifier identifier = Identifier.get(params.customeridentifier)
+        Org org = identifier?.org
+
+        if (! org) {
+            flash.message = message(code: 'default.not.found.message', args: [message(code: 'default.search.identifier'), params.id])
+            redirect(url: request.getHeader('referer'))
+            return
+        }
+
+        render template: '/templates/customerIdentifier/modal_create', model: [orgInstance: org, customeridentifier: customeridentifier]
+    }
 
     @Secured(['ROLE_ADMIN','ROLE_ORG_EDITOR'])
     def create() {

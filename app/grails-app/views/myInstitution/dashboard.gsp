@@ -392,26 +392,6 @@
     </g:if>
 --}%
     <g:javascript>
-        function taskcreate() {
-
-            $.ajax({
-                url: '<g:createLink controller="ajax" action="TaskCreate"/>',
-                success: function(result){
-                    $("#dynamicModalContainer").empty();
-                    $("#modalCreateTask").remove();
-
-                    $("#dynamicModalContainer").html(result);
-                    $("#dynamicModalContainer .ui.modal").modal({
-                        onVisible: function () {
-                            r2d2.initDynamicSemuiStuff('#modalCreateTask');
-                            r2d2.initDynamicXEditableStuff('#modalCreateTask');
-
-                            ajaxPostFunc()
-                        }
-                    }).modal('show');
-                }
-            });
-        }
         function taskedit(id) {
 
             $.ajax({

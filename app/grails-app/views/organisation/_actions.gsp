@@ -46,7 +46,55 @@
             <g:link class="item" action="_delete" id="${params.id}"><i class="trash alternate icon"></i> ${message(code:'deletion.org')}</g:link>
         </sec:ifAnyGranted>
     </g:if>
+    <g:if test="${actionName == 'ids'}">
+        <sec:ifAnyGranted roles="ROLE_ORG_EDITOR,ROLE_ADMIN">
+            %{--<semui:actionsDropdownItem controller="organisation" action="createIdentifier" params="[id: orgInstance.id]" message="identifier.create.new"/>--}%
+            %{--<semui:actionsDropdownItem controller="identifier" action="create" params="[id: orgInstance.id]" message="identifier.create.new"/>--}%
+            <a class="item" onclick="createIdentifier(${orgInstance.id});">${message(code: 'identifier.create.new')}</a>
+            <a class="item" onclick="createCustomerIdentifier(${orgInstance.id});">${message(code: 'org.customerIdentifier.create.new')}</a>
+        </sec:ifAnyGranted>
+    </g:if>
 </semui:actionsDropdown>
 <g:if test="${editable || accessService.checkPermAffiliation('ORG_INST,ORG_CONSORTIUM','INST_EDITOR')}">
     <g:render template="/templates/documents/modal" model="${[ownobj: orgInstance, institution: contextService.org, owntp: 'org']}"/>
 </g:if>
+<g:javascript>
+        function createIdentifier(id) {
+            $.ajax({
+                url: '<g:createLink controller="organisation" action="createIdentifier" />?id='+id,
+                success: function(result){
+                    $("#dynamicModalContainer").empty();
+                    $("#modalCreateIdentifier").remove();
+
+                    $("#dynamicModalContainer").html(result);
+                    $("#dynamicModalContainer .ui.modal").modal({
+                        onVisible: function () {
+                            r2d2.initDynamicSemuiStuff('#modalCreateIdentifier');
+                            r2d2.initDynamicXEditableStuff('#modalCreateIdentifier');
+
+                            // ajaxPostFunc()
+                        }
+                    }).modal('show');
+                }
+            });
+        }
+        function createCustomerIdentifier(id) {
+            $.ajax({
+                url: '<g:createLink controller="organisation" action="createCustomerIdentifier" />?id='+id,
+                success: function(result){
+                    $("#dynamicModalContainer").empty();
+                    $("#modalCreateIdentifier").remove();
+
+                    $("#dynamicModalContainer").html(result);
+                    $("#dynamicModalContainer .ui.modal").modal({
+                        onVisible: function () {
+                            r2d2.initDynamicSemuiStuff('#modalCreateIdentifier');
+                            r2d2.initDynamicXEditableStuff('#modalCreateIdentifier');
+
+                            // ajaxPostFunc()
+                        }
+                    }).modal('show');
+                }
+            });
+        }
+</g:javascript>
