@@ -93,6 +93,7 @@ class AdminController extends AbstractDebugController {
                 }
             }
         }
+        result.numberOfCurrentRecipients = SystemAnnouncement.getRecipients().size()
         result.announcements = SystemAnnouncement.list(sort: 'lastUpdated', order: 'desc')
         result
     }

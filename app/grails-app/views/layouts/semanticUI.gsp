@@ -349,7 +349,6 @@
                             </div>
 
                             <g:link class="item" controller="admin" action="systemAnnouncements">${message(code:'menu.admin.announcements')}</g:link>
-                            <g:link class="item" controller="admin" action="serverDifferences">${message(code:'menu.admin.serverDifferences')}</g:link>
 
                             <div class="divider"></div>
 
