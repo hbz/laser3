@@ -25,19 +25,19 @@
                         </div>
                     </div>
                     <div class="field">
-                        <fieldset id="subscritionType">
-                            <legend>${message(code: 'myinst.currentSubscriptions.subscription_type')}</legend>
+                        <fieldset id="subscritionKind">
+                            <legend>${message(code: 'myinst.currentSubscriptions.subscription_kind')}</legend>
                             <div class="inline fields la-filter-inline">
 
-                                <g:each in="${RefdataCategory.getAllRefdataValues(de.laser.helper.RDConstants.SUBSCRIPTION_TYPE)}" var="subType">
-                                    <g:if test="${!(subType.value in ['Local Licence','Administrative Subscription','Collective Subscription'])}">
-                                        <g:if test="${subType.value == 'National Licence'}">
+                                <g:each in="${RefdataCategory.getAllRefdataValues(de.laser.helper.RDConstants.SUBSCRIPTION_KIND)}" var="subKind">
+
+                                        <g:if test="${subKind.value == 'National Licence'}">
                                             <div class="inline field js-nationallicence">
                                         </g:if>
-                                        <g:elseif test="${subType.value == 'Alliance Licence'}">
+                                        <g:elseif test="${subKind.value == 'Alliance Licence'}">
                                             <div class="inline field js-alliancelicence">
                                         </g:elseif>
-                                        <g:elseif test="${subType.value == 'Consortial Licence'}">
+                                        <g:elseif test="${subKind.value == 'Consortial Licence'}">
                                             <div class="inline field js-consortiallicence">
                                         </g:elseif>
                                         <g:else>
@@ -45,15 +45,15 @@
                                         </g:else>
 
                                             <div class="ui checkbox">
-                                                <label for="checkSubType-${subType.id}">${subType.getI10n('value')}</label>
-                                                <input id="checkSubType-${subType.id}" name="subTypes" type="checkbox" value="${subType.id}"
-                                                    <g:if test="${params.list('subTypes').contains(subType.id.toString())}"> checked="" </g:if>
+                                                <label for="checkSubType-${subKind.id}">${subKind.getI10n('value')}</label>
+                                                <input id="checkSubType-${subKind.id}" name="subKinds" type="checkbox" value="${subKind.id}"
+                                                    <g:if test="${params.list('subKinds').contains(subKind.id.toString())}"> checked="" </g:if>
                                                     <g:if test="${initQuery}"> checked="" </g:if>
                                                        tabindex="0">
 
                                             </div>
                                         </div>
-                                    </g:if>
+
                                 </g:each>
 
                             </div>

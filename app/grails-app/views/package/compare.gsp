@@ -265,10 +265,10 @@
 
       $("#packageSelect"+filter).select2({
       	width: "90%",
-        placeholder: "${message(code:'package.compare.search.ph', default:'Type package name...')}",
+        placeholder: "${message(code:'package.compare.search.ph')}",
         minimumInputLength: 1,
         formatInputTooShort: function () {
-            return "${message(code:'select2.minChars.note', default:'Please enter 1 or more character')}";
+            return "${message(code:'select2.minChars.note')}";
         },
         ajax: { 
             url: '<g:createLink controller='ajax' action='lookup'/>',

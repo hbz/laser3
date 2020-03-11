@@ -13,7 +13,7 @@ class OnixplLicenseController extends AbstractDebugController {
 
     @Secured(['ROLE_ADMIN'])
     def index() {
-        def user = User.get(springSecurityService.principal.id)
+        User user = User.get(springSecurityService.principal.id)
         // def onixplLicense = OnixplLicense.get(params.id)
 //        if ( ! onixplLicense.hasPerm("view",user) ) {
 //            log.debug("return 401....");
@@ -29,7 +29,7 @@ class OnixplLicenseController extends AbstractDebugController {
     @Secured(['ROLE_ADMIN'])
     def notes() {
         log.debug("license id:${params.id}");
-        def user = User.get(springSecurityService.principal.id)
+        User user = User.get(springSecurityService.principal.id)
         def onixplLicense = OnixplLicense.get(params.id)
 //        if ( ! onixplLicense.hasPerm("view",user) ) {
 //            response.sendError(401);
@@ -41,7 +41,7 @@ class OnixplLicenseController extends AbstractDebugController {
     @Secured(['ROLE_ADMIN'])
     def documents() {
         log.debug("license id:${params.id}");
-        def user = User.get(springSecurityService.principal.id)
+        User user = User.get(springSecurityService.principal.id)
         def onixplLicense = OnixplLicense.get(params.id)
 //        if ( ! onixplLicense.hasPerm("view",user) ) {
 //            response.sendError(401);
@@ -53,7 +53,7 @@ class OnixplLicenseController extends AbstractDebugController {
     @Secured(['ROLE_ADMIN'])
     def history() {
         log.debug("license id:${params.id}");
-        def user = User.get(springSecurityService.principal.id)
+        User user = User.get(springSecurityService.principal.id)
         def onixplLicense = OnixplLicense.get(params.id)
 
 //        if ( ! onixplLicense.hasPerm("view",user) ) {
@@ -71,8 +71,8 @@ class OnixplLicenseController extends AbstractDebugController {
 
     @Secured(['ROLE_ADMIN'])
     def permissionInfo() {
-        def user = User.get(springSecurityService.principal.id)
-        def onixplLicense = OnixplLicense.get(params.id)
+        User user = User.get(springSecurityService.principal.id)
+        OnixplLicense onixplLicense = OnixplLicense.get(params.id)
         [onixplLicense: onixplLicense, user: user]
     }
 

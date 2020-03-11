@@ -118,8 +118,8 @@ class PendingChangeService extends AbstractLockableService {
                                     log.debug("Date processing.... parse \"${payload.changeDoc.new}\"");
                                     if ( ( payload.changeDoc.new != null ) && ( payload.changeDoc.new.toString() != 'null' ) ) {
                                         //if ( ( parsed_change_info.changeDoc.new != null ) && ( parsed_change_info.changeDoc.new != 'null' ) ) {
-                                        def df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'"); // yyyy-MM-dd'T'HH:mm:ss.SSSZ 2013-08-31T23:00:00Z
-                                        def d = df.parse(payload.changeDoc.new)
+                                        SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'"); // yyyy-MM-dd'T'HH:mm:ss.SSSZ 2013-08-31T23:00:00Z
+                                        Date d = df.parse(payload.changeDoc.new)
                                         target_object[payload.changeDoc.prop] = d
                                     }
                                     else {

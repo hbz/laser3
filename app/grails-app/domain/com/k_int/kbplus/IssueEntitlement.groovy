@@ -156,8 +156,8 @@ class IssueEntitlement extends AbstractBaseDomain implements Comparable {
     // If StartDate <= as_at <= EndDate - Current
     // if Date < StartDate - Expected
     // if Date > EndDate - Expired
-    def ie_access_start_date = getDerivedAccessStartDate()
-    def ie_access_end_date = getDerivedAccessEndDate()
+    Date ie_access_start_date = getDerivedAccessStartDate()
+    Date ie_access_end_date = getDerivedAccessEndDate()
 
     result = RefdataValue.getByValueAndCategory('Current', RDConstants.IE_ACCESS_STATUS)
 
@@ -207,7 +207,7 @@ class IssueEntitlement extends AbstractBaseDomain implements Comparable {
 
     def result = [];
     def hqlParams = []
-    def hqlString = "select ie from IssueEntitlement as ie"
+    String hqlString = "select ie from IssueEntitlement as ie"
 
     if ( params.subFilter ) {
       hqlString += ' where ie.subscription.id = ?'

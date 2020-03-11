@@ -68,11 +68,11 @@ class ErrorReportService {
             post.setHeader(k, v)
         }
 
-        def jb = new JsonBuilder(data)
+        JsonBuilder jb = new JsonBuilder(data)
         SimpleDateFormat sdf = new SimpleDateFormat('yMMdd:HHmmss')
-        def dd  = sdf.format(new Date())
+        Date dd = sdf.format(new Date())
 
-        def filename = (grailsApplication.config.laserSystemId ?: 'Quelle unbekannt') + " - ${springSecurityService.getCurrentUser().email} - ${dd}"
+        String filename = (grailsApplication.config.laserSystemId ?: 'Quelle unbekannt') + " - ${springSecurityService.getCurrentUser().email} - ${dd}"
 
         MultipartEntityBuilder meb = MultipartEntityBuilder.create()
         meb.addPart('file', new ByteArrayBody( jb.toPrettyString().getBytes(), filename.replace('/', '') ))
@@ -111,7 +111,7 @@ class ErrorReportService {
         ]
         ticket.meta = (new JsonBuilder(meta)).toString()
 
-        def date = new Date()
+        Date date = new Date()
         ticket.dateCreated = date
         ticket.lastUpdated = date
 

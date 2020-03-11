@@ -1,7 +1,6 @@
 package com.k_int.kbplus
 
 import de.laser.controller.AbstractDebugController
-import grails.plugin.springsecurity.SpringSecurityUtils
 import grails.plugin.springsecurity.annotation.Secured
 
 @Secured(['IS_AUTHENTICATED_FULLY'])

@@ -2,9 +2,7 @@ package com.k_int.kbplus
 
 import com.k_int.ClassUtils
 import de.laser.domain.AbstractI10nOverride
-import de.laser.domain.AbstractI10nTranslatable
 import de.laser.domain.I10nTranslation
-import groovy.transform.NotYetImplemented
 import org.apache.commons.logging.Log
 import org.apache.commons.logging.LogFactory
 import org.springframework.context.i18n.LocaleContextHolder

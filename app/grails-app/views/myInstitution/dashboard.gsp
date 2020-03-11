@@ -87,7 +87,7 @@
                 }
             %>
             ${countChanges}
-            ${message(code:'myinst.todo.label', default:'To Do')}
+            ${message(code:'myinst.todo.label')}
         </a>
 
         <g:if test="${accessService.checkPerm('ORG_INST,ORG_CONSORTIUM')}">
@@ -112,7 +112,7 @@
         <a class="${US_DASHBOARD_TAB.getValue().value=='Announcements' || US_DASHBOARD_TAB.getValue() == 'Announcements' ? 'active item':'item'}" data-tab="news" id="jsFallbackAnnouncements">
             <i class="warning circle icon large"></i>
             ${systemAnnouncements.size()}
-            ${message(code:'announcement.plural', default:'Announcements')}
+            ${message(code:'announcement.plural')}
         </a>
 
        %{-- <g:if test="${accessService.checkPerm('ORG_CONSORTIUM')}">
@@ -319,7 +319,7 @@
 
                         <div class="content">
                             <div class="meta">
-                                <div class="">Fällig: <strong><g:formatDate format="${message(code:'default.date.format.notime', default:'yyyy-MM-dd')}" date="${tsk?.endDate}"/></strong></div>
+                                <div class="">Fällig: <strong><g:formatDate format="${message(code:'default.date.format.notime')}" date="${tsk?.endDate}"/></strong></div>
                             </div>
                             <a class="header" onclick="taskedit(${tsk?.id});">${tsk?.title}</a>
 

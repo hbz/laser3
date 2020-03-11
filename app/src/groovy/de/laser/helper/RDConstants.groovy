@@ -126,6 +126,7 @@ class RDConstants {
     public static final String SUBSCRIPTION_RESOURCE  = 'subscription.resource'
     public static final String SUBSCRIPTION_STATUS    = 'subscription.status'
     public static final String SUBSCRIPTION_TYPE      = 'subscription.type'
+    public static final String SUBSCRIPTION_KIND      = 'subscription.kind'
     public static final String SURVEY_STATUS          = 'survey.status'
     public static final String SURVEY_TYPE            = 'survey.type'
 

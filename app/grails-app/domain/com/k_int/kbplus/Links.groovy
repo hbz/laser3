@@ -54,7 +54,7 @@ class Links {
 
     def beforeInsert() {
 
-        def user = springSecurityService.getCurrentUser()
+        User user = springSecurityService.getCurrentUser()
         if (user) {
             createdBy     = user
             lastUpdatedBy = user
@@ -64,7 +64,7 @@ class Links {
 
     def beforeUpdate() {
 
-        def user = springSecurityService.getCurrentUser()
+        User user = springSecurityService.getCurrentUser()
         if (user)
             lastUpdatedBy = user
         else

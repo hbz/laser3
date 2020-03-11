@@ -1,12 +1,10 @@
 package com.k_int.kbplus
 
-
 import com.k_int.kbplus.auth.User
 import de.laser.ContextService
 import de.laser.api.v0.ApiManager
 import de.laser.api.v0.ApiReader
 import de.laser.api.v0.ApiToolkit
-import de.laser.controller.AbstractDebugController
 import de.laser.helper.Constants
 import grails.converters.JSON
 import grails.plugin.springsecurity.annotation.Secured
@@ -94,7 +92,7 @@ class ApiController {
                 }
                 if (candidate_identifiers.size() > 0) {
                     log.debug("Lookup using ${candidate_identifiers}");
-                    def title = TitleInstance.findByIdentifier(candidate_identifiers)
+                    TitleInstance title = TitleInstance.findByIdentifier(candidate_identifiers)
                     if (title != null) {
                         log.debug("Located title ${title}  Current identifiers: ${title.ids}");
                         result.matchedTitleId = title.id
@@ -141,8 +139,8 @@ class ApiController {
         Map<String, Object> result = [:]
         if (request.getRemoteAddr() == '127.0.0.1') {
             if ((params.inst?.length() > 0) && (params.title?.length() > 0)) {
-                def inst = Org.lookupByIdentifierString(params.inst);
-                def title = TitleInstance.lookupByIdentifierString(params.title);
+                Org inst = Org.lookupByIdentifierString(params.inst);
+                TitleInstance title = TitleInstance.lookupByIdentifierString(params.title);
                 def provider = params.provider ? Org.lookupByIdentifierString(params.provider) : null;
                 def year = params.year?.trim()
 
@@ -161,15 +159,15 @@ where tipp.title = ? and orl.roleType.value=?''', [title, 'Content Provider']);
 
                         providers.each {
                             log.debug("Title ${title} is provided by ${it}");
-                            def tiinp = TitleInstitutionProvider.findByTitleAndInstitutionAndprovider(title, inst, it)
+                            TitleInstitutionProvider tiinp = TitleInstitutionProvider.findByTitleAndInstitutionAndprovider(title, inst, it)
                             if (tiinp == null) {
                                 log.debug("Creating new TitleInstitutionProvider");
                                 tiinp = new TitleInstitutionProvider(title: title, institution: inst, provider: it).save(flush: true, failOnError: true)
                             }
 
                             log.debug("Got tiinp:: ${tiinp}");
-                            def startDate = sdf.parse("${year}-01-01T00:00:00");
-                            def endDate = sdf.parse("${year}-12-31T23:59:59");
+                            Date startDate = sdf.parse("${year}-01-01T00:00:00");
+                            Date endDate = sdf.parse("${year}-12-31T23:59:59");
                             tiinp.extendCoreExtent(startDate, endDate);
                         }
                     }

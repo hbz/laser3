@@ -6,17 +6,15 @@ import com.k_int.kbplus.auth.UserOrg
 import com.k_int.properties.PropertyDefinition
 import de.laser.DeletionService
 import de.laser.controller.AbstractDebugController
-import de.laser.helper.DateUtil
-import de.laser.helper.DebugAnnotation
-import de.laser.helper.DebugUtil
-import de.laser.helper.RDConstants
-import de.laser.helper.RDStore
-import org.apache.poi.xssf.streaming.SXSSFWorkbook
-import grails.plugin.springsecurity.annotation.Secured
+import de.laser.helper.*
 import grails.plugin.springsecurity.SpringSecurityUtils
-import static de.laser.helper.RDStore.*
+import grails.plugin.springsecurity.annotation.Secured
+import org.apache.poi.xssf.streaming.SXSSFWorkbook
+
 import javax.servlet.ServletOutputStream
 import java.text.SimpleDateFormat
+
+import static de.laser.helper.RDStore.*
 
 @Secured(['IS_AUTHENTICATED_FULLY'])
 class OrganisationController extends AbstractDebugController {
@@ -1249,12 +1247,12 @@ class OrganisationController extends AbstractDebugController {
     @Secured(['ROLE_USER'])
     def addOrgCombo(Org fromOrg, Org toOrg) {
       //def comboType = RefdataCategory.lookupOrCreate(RDConstants.ORGANISATIONAL_ROLE, 'Package Consortia')
-      def comboType = RefdataValue.get(params.comboTypeTo)
+        RefdataValue comboType = RefdataValue.get(params.comboTypeTo)
       log.debug("Processing combo creation between ${fromOrg} AND ${toOrg} with type ${comboType}")
       def dupe = Combo.executeQuery("from Combo as c where c.fromOrg = ? and c.toOrg = ?", [fromOrg, toOrg])
       
       if (! dupe) {
-        def consLink = new Combo(fromOrg:fromOrg,
+          Combo consLink = new Combo(fromOrg:fromOrg,
                                  toOrg:toOrg,
                                  status:null,
                                  type:comboType)
@@ -1485,7 +1483,7 @@ class OrganisationController extends AbstractDebugController {
                         fromOrg: Org.get(params.fromOrg),
                         type: RefdataValue.getByValueAndCategory('Consortium', RDConstants.COMBO_TYPE)]
                 if (! Combo.findWhere(map)) {
-                    def cmb = new Combo(map)
+                    Combo cmb = new Combo(map)
                     cmb.save()
                 }
                 break

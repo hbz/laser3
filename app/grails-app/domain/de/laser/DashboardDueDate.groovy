@@ -9,9 +9,6 @@ import com.k_int.kbplus.auth.User
 import grails.util.Holders
 import groovy.util.logging.Log4j
 
-import java.sql.Timestamp
-
-
 @Log4j
 class DashboardDueDate {
     String attribute_value_de

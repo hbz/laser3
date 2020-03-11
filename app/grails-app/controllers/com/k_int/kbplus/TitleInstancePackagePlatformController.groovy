@@ -46,7 +46,7 @@ class TitleInstancePackagePlatformController {
               [titleInstancePackagePlatformInstance: new TitleInstancePackagePlatform(params)]
           break
         case 'POST':
-              def titleInstancePackagePlatformInstance = new TitleInstancePackagePlatform(params)
+                TitleInstancePackagePlatform titleInstancePackagePlatformInstance = new TitleInstancePackagePlatform(params)
               if (! titleInstancePackagePlatformInstance.save(flush: true)) {
                   render view: 'create', model: [titleInstancePackagePlatformInstance: titleInstancePackagePlatformInstance]
                   return
@@ -63,7 +63,7 @@ class TitleInstancePackagePlatformController {
         redirect controller: 'tipp', action: 'show', params: params
         return // ----- deprecated
 
-        def titleInstancePackagePlatformInstance = TitleInstancePackagePlatform.get(params.id)
+        TitleInstancePackagePlatform titleInstancePackagePlatformInstance = TitleInstancePackagePlatform.get(params.id)
         if (! titleInstancePackagePlatformInstance) {
             flash.message = message(code: 'default.not.found.message', args: [message(code: 'titleInstancePackagePlatform.label'), params.id])
             redirect action: 'list'
@@ -81,7 +81,7 @@ class TitleInstancePackagePlatformController {
 
         switch (request.method) {
         case 'GET':
-              def titleInstancePackagePlatformInstance = TitleInstancePackagePlatform.get(params.id)
+            TitleInstancePackagePlatform titleInstancePackagePlatformInstance = TitleInstancePackagePlatform.get(params.id)
               if (! titleInstancePackagePlatformInstance) {
                   flash.message = message(code: 'default.not.found.message', args: [message(code: 'titleInstancePackagePlatform.label'), params.id])
                   redirect action: 'list'
@@ -91,7 +91,7 @@ class TitleInstancePackagePlatformController {
               [titleInstancePackagePlatformInstance: titleInstancePackagePlatformInstance]
           break
         case 'POST':
-              def titleInstancePackagePlatformInstance = TitleInstancePackagePlatform.get(params.id)
+                TitleInstancePackagePlatform titleInstancePackagePlatformInstance = TitleInstancePackagePlatform.get(params.id)
               if (! titleInstancePackagePlatformInstance) {
                   flash.message = message(code: 'default.not.found.message', args: [message(code: 'titleInstancePackagePlatform.label'), params.id])
                   redirect action: 'list'
@@ -128,7 +128,7 @@ class TitleInstancePackagePlatformController {
         redirect controller: 'tipp', action: 'delete', params: params
         return // ----- deprecated
 
-        def titleInstancePackagePlatformInstance = TitleInstancePackagePlatform.get(params.id)
+        TitleInstancePackagePlatform titleInstancePackagePlatformInstance = TitleInstancePackagePlatform.get(params.id)
         if (!titleInstancePackagePlatformInstance) {
           flash.message = message(code: 'default.not.found.message', args: [message(code: 'titleInstancePackagePlatform.label'), params.id])
           redirect action: 'list'

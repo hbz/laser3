@@ -2,7 +2,7 @@
 <html>
   <head>
     <meta name="layout" content="semanticUI"/>
-    <title>${message(code:'laser')} ${message(code:'title.plural', default:'Titles')} - ${message(code:'default.search.label')}</title>
+    <title>${message(code:'laser')} ${message(code:'title.plural')} - ${message(code:'default.search.label')}</title>
   </head>
 
   <body>
@@ -20,7 +20,7 @@
         <input type="hidden" name="offset" value="${params.offset}"/>
         <div class="three fields">
           <div class="field">
-              <label for="q">${message(code:'title.label', default:'Title')} (${message(code:'datamanager.titleView.search.note')})</label>
+              <label for="q">${message(code:'title.label')} (${message(code:'datamanager.titleView.search.note')})</label>
               <input id="q" name="q" placeholder="${message(code:'default.search_for.label', args:[message(code:'title.label')])}" value="${params.q}"/>
           </div>
           <div class="field">

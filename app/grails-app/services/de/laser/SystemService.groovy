@@ -1,7 +1,8 @@
 package de.laser
 
-import com.k_int.kbplus.ApiService
-import com.k_int.kbplus.*
+
+import com.k_int.kbplus.ApiSource
+import com.k_int.kbplus.GlobalRecordSource
 import grails.plugin.springsecurity.SpringSecurityUtils
 import grails.transaction.Transactional
 

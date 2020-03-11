@@ -254,6 +254,12 @@ class SubscriptionsQueryService {
             filterSet = true
         }
 
+        if (params.containsKey('subKinds')) {
+            base_qry += " and s.kind.id in (:subKinds) "
+            qry_params.put('subKinds', params.list('subKinds').collect { Long.parseLong(it) })
+            filterSet = true
+        }
+
         if (params.status) {
 
             if (params.status == 'FETCH_ALL') {
@@ -276,6 +282,18 @@ class SubscriptionsQueryService {
         if (params.resource) {
           base_qry += "and s.resource.id = :resource "
           qry_params.put('resource', (params.resource as Long))
+            filterSet = true
+        }
+
+        if (params.isPublicForApi) {
+            base_qry += "and s.isPublicForApi = :isPublicForApi "
+            qry_params.put('isPublicForApi', (params.isPublicForApi == RDStore.YN_YES.id.toString()) ? true : false)
+            filterSet = true
+        }
+
+        if (params.hasPerpetualAccess) {
+            base_qry += "and s.hasPerpetualAccess = :hasPerpetualAccess "
+            qry_params.put('hasPerpetualAccess', (params.hasPerpetualAccess == RDStore.YN_YES.id.toString()) ? true : false)
             filterSet = true
         }
 
