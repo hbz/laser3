@@ -120,7 +120,7 @@ class SystemAnnouncement {
 
         String currentServer = grailsApplication.config.getCurrentServer()
         String subjectSystemPraefix = (currentServer == ContextService.SERVER_PROD) ? "LAS:eR - " : (grailsApplication.config.laserSystemId + " - ")
-        String mailSubject = subjectSystemPraefix + messageSource.getMessage('email.subject.sysAnnouncements', null, locale)
+        String mailSubject = subjectSystemPraefix + messageSource.getMessage('email.subject.sysAnnouncement', null, locale)
 
         boolean isRemindCCbyEmail = user.getSetting(UserSettings.KEYS.IS_REMIND_CC_BY_EMAIL, RDStore.YN_NO)?.rdValue == RDStore.YN_YES
         String ccAddress
