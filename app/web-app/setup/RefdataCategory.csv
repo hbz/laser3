@@ -102,7 +102,7 @@ reminder.unit,ReminderUnit,ReminderUnit
 semester,Semester,Semester
 share.configuration,Share Configuration,Share Configuration
 sim.user.number,Sim User Zahl,Sim-User Number
-subjectGroup,Fächergruppe,Subject Group
+subjectgroup,Fächergruppe,Subject Group
 subscription.form,Lizenzform,Subscription Form
 subscription.resource,Ressourcentyp,Resource type
 subscription.status,Lizenzstatus,Subscription Status
