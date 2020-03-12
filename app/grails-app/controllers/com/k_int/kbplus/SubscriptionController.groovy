@@ -3831,27 +3831,20 @@ class SubscriptionController extends AbstractDebugController {
 
         du.setBenchmark('costs')
 
-        //determine org role
-        if (result.subscription.getCalculatedType().equals(TemplateSupport.CALCULATED_TYPE_CONSORTIAL))
-            params.view = "cons"
-        else if (result.subscription.getCalculatedType().equals(TemplateSupport.CALCULATED_TYPE_PARTICIPATION) && result.subscription.getConsortia().equals(result.institution))
-            params.view = "consAtSubscr"
-        else if (result.subscription.getCalculatedType().equals(TemplateSupport.CALCULATED_TYPE_PARTICIPATION) && !result.subscription.getConsortia().equals(result.institution))
-            params.view = "subscr"
         //cost items
         //params.forExport = true
-        LinkedHashMap costItems = financeService.getCostItemsForSubscription(result.subscription, params, 10, 0)
+        LinkedHashMap costItems = financeService.getCostItemsForSubscription(params, financeService.setResultGenerics(params))
         result.costItemSums = [:]
-        if (costItems.own.count > 0) {
+        if (costItems.own) {
             result.costItemSums.ownCosts = costItems.own.sums
         }
-        if (costItems.cons.count > 0 && accessService.checkPerm("ORG_CONSORTIUM")) {
+        if (costItems.cons) {
             result.costItemSums.consCosts = costItems.cons.sums
         }
-        else if(costItems.coll.count > 0 && accessService.checkPerm("ORG_INST_COLLECTIVE")) {
+        if(costItems.coll) {
             result.costItemSums.collCosts = costItems.coll.sums
         }
-        if (costItems.subscr.count > 0) {
+        if (costItems.subscr) {
             result.costItemSums.subscrCosts = costItems.subscr.sums
         }
 

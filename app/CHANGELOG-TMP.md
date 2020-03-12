@@ -36,7 +36,17 @@
 
 2230    03.03.2020  rc1.2       David   Bug         "Teilnehmervertrag erstellen" kann bei fehlenden Teilnehmern nicht angelegt werden
 
+2224    02.03.2020  hbz-dev     Andreas Bug         Überprüfung zur Darstellung der Kostensichtbarkeit korrigiert
+
+2223    02.03.2020  hbz-dev     Andreas Feature     Lizenzbezug muss bei Kostenposten bestehen (ausgenommen Umfragekosten), Vorauswahl bei Kosnortien
+
 2215    28.02.2020  hbz-dev     David   Bug         DocContext wird nicht mehr erstellt (isShared, globannounce)
+
+2218    27.02.2020  hbz-dev     Andreas Feature     Menüpunkt "Einrichtung erstellen" aus "Meine Konsorten" entfernt
+
+2216    27.02.2020  hbz-dev     Andreas Feature     Aufhebung der Vorbelegung der Währung auf EUR bei Kosteneingabe
+
+2107    27.02.2020  hbz-dev     Andreas Bug         Löschroutine bei Kostenposten von hartes Löschen auf Löschmarkierung umgestellt
 
 2211    26.02.2020  hbz-dev     Andreas Feature     Bezeichnung Stammlizenz in Elternlizenz umgewandelt
 

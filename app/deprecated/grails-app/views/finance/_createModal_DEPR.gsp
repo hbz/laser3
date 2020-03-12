@@ -2,7 +2,7 @@
 <laser:serviceInjection />
 
 <semui:modal id="costItem_create_modal" text="${message(code:'financials.addNewCost')}">
-    <g:form class="ui small form" id="createCost" url="[controller:'finance', action:'newCostItem']">
+    <g:form class="ui small form" id="createCost" url="[controller:'finance', action:'createOrUpdateCostItem']">
 
         <g:hiddenField name="shortcode" value="${contextService.getOrg()?.shortcode}"></g:hiddenField>
 

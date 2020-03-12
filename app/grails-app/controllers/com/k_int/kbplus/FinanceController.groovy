@@ -1,10 +1,13 @@
 package com.k_int.kbplus
 
 import com.k_int.kbplus.auth.User
+import de.laser.CacheService
 import de.laser.controller.AbstractDebugController
+import de.laser.exceptions.FinancialDataException
 import de.laser.helper.DateUtil
 import de.laser.helper.DebugAnnotation
 import de.laser.helper.RDConstants
+import de.laser.helper.EhcacheWrapper
 import de.laser.helper.RDStore
 import de.laser.interfaces.TemplateSupport
 import grails.converters.JSON
@@ -39,163 +42,69 @@ class FinanceController extends AbstractDebugController {
     def contextService
     def genericOIDService
     def navigationGenerationService
-    def filterService
+    CacheService cacheService
     def financeService
     def escapeService
     def exportService
-
-    private final RefdataValue defaultCurrency = RefdataValue.getByValueAndCategory('EUR', RDConstants.CURRENCY)
-
-    private final static MODE_OWNER          = 'MODE_OWNER'
-    private final static MODE_CONS           = 'MODE_CONS'
-    private final static MODE_CONS_AT_SUBSCR = 'MODE_CONS_AT_SUBSCR'
-    private final static MODE_SUBSCR         = 'MODE_SUBSCR'
 
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
     def index() {
         log.debug("FinanceController::index() ${params}")
-        LinkedHashMap result = setResultGenerics()
-        result.editable = accessService.checkPermAffiliationX('ORG_INST,ORG_CONSORTIUM','INST_EDITOR','ROLE_ADMIN')
-        result.max = params.max ? Long.parseLong(params.max) : result.user.getDefaultPageSizeTMP()
-        result.offset = params.offset ? Integer.parseInt(params.offset) : 0
-        switch(params.view) {
-            case "own": result.ownOffset = result.offset
-                break
-            case "cons":
-            case "coll": result.consOffset = result.offset
-                break
-            case "subscr": result.subscrOffset = result.offset
-                break
-            default: log.info("unhandled view: ${params.view}")
-                break
+        try {
+            Map<String,Object> result = financeService.setResultGenerics(params)
+            result.financialData = financeService.getCostItems(params,result)
+            result.filterPresets = result.financialData.filterPresets
+            result.filterSet = result.financialData.filterSet
+            result.allCIElements = CostItemElementConfiguration.executeQuery('select ciec.costItemElement from CostItemElementConfiguration ciec where ciec.forOrganisation = :org',[org:result.institution])
+            result
         }
-        result.financialData = financeService.getCostItems(params,result.max)
-        //replaces the mode check MODE_CONS vs. MODE_SUBSCR
-        if(accessService.checkPerm("ORG_CONSORTIUM")) {
-            result.showView = "cons"
-            params.comboType = 'Consortium'
-            def fsq = filterService.getOrgComboQuery(params,result.institution)
-            result.subscriptionParticipants = OrgRole.executeQuery(fsq.query,fsq.queryParams)
-            result.subMembersLabel = 'subscription.details.consortiaMembers.label'
+        catch(FinancialDataException e) {
+            flash.error = e.getMessage()
+            redirect controller: "home"
         }
-        else if(accessService.checkPerm("ORG_INST_COLLECTIVE")) {
-            result.showView = "coll"
-            params.comboType = 'Department'
-            def fsq = filterService.getOrgComboQuery(params,result.institution)
-            result.subscriptionParticipants = OrgRole.executeQuery(fsq.query,fsq.queryParams)
-            result.subMembersLabel = 'subscription.details.collectiveMembers.label'
-        }
-        else result.showView = "subscr"
-        if(params.ownSort)
-            result.view = "own"
-        else if(params.consSort) {
-            if(accessService.checkPerm("ORG_CONSORTIUM"))
-                result.view = "cons"
-            else if(accessService.checkPerm("ORG_INST_COLLECTIVE"))
-                result.view = "coll"
-        }
-        else if(params.subscrSort)
-            result.view = "subscr"
-        else result.view = params.view ? params.view : result.showView
-        result.filterPresets = result.financialData.filterPresets
-        result.allCIElements = CostItemElementConfiguration.executeQuery('select ciec.costItemElement from CostItemElementConfiguration ciec where ciec.forOrganisation = :org',[org:result.institution])
-        result
     }
 
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
     def subFinancialData() {
         log.debug("FinanceController::subFinancialData() ${params}")
-        LinkedHashMap result = setResultGenerics()
-        result.editable = accessService.checkPermAffiliationX('ORG_INST,ORG_CONSORTIUM','INST_EDITOR','ROLE_ADMIN')
-        result.max = params.max ? Long.parseLong(params.max) : result.user.getDefaultPageSizeTMP()
-        result.offset = params.offset ? Integer.parseInt(params.offset) : 0
-        if(!params.orgBasicMemberView && result.subscription.instanceOf && result.institution.id in [result.subscription.getConsortia()?.id,result.subscription.getCollective()?.id]) {
-            if(result.institution.id == result.subscription.getConsortia()?.id)
-                params.view = "consAtSubscr"
+        try {
+            Map<String,Object> result = financeService.setResultGenerics(params)
+            result.financialData = financeService.getCostItemsForSubscription(params,result)
+            result.filterPresets = result.financialData.filterPresets
+            result.filterSet = result.financialData.filterSet
+            result.allCIElements = CostItemElementConfiguration.executeQuery('select ciec.costItemElement from CostItemElementConfiguration ciec where ciec.forOrganisation = :org',[org:result.institution])
+            Map navigation = navigationGenerationService.generateNavigation(Subscription.class.name,result.subscription.id)
+            result.navNextSubscription = navigation.nextLink
+            result.navPrevSubscription = navigation.prevLink
+            result
         }
-        switch(params.view) {
-            case "own": result.ownOffset = result.offset
-                break
-            case "cons":
-            case "coll":
-            case "consAtSubscr": result.consOffset = result.offset
-                break
-            case "subscr": result.subscrOffset = result.offset
-                break
-            default: log.info("unhandled view: ${params.view}")
-                break
+        catch (FinancialDataException e) {
+            flash.error = e.getMessage()
+            redirect controller: 'myInstitution', action: 'currentSubscriptions'
         }
-        result.financialData = financeService.getCostItemsForSubscription(result.subscription,params,result.max.toInteger(),result.offset.toInteger())
-        if(!params.orgBasicMemberView && OrgRole.findBySubAndOrgAndRoleType(result.subscription,result.institution,RDStore.OR_SUBSCRIPTION_CONSORTIA)) {
-            result.showView = "cons"
-            if(params.view.equals("consAtSubscr"))
-                result.showView = "consAtSubscr"
-            params.comboType = "Consortium"
-            Map fsq = filterService.getOrgComboQuery(params,result.institution)
-            result.subscriptionParticipants = OrgRole.executeQuery(fsq.query,fsq.queryParams)
-            result.subMembersLabel = 'subscription.details.consortiaMembers.label'
-        }
-        else if(OrgRole.findBySubAndOrgAndRoleType(result.subscription,result.institution,RDStore.OR_SUBSCRIPTION_COLLECTIVE)) {
-            if(result.subscription.getCalculatedType() == TemplateSupport.CALCULATED_TYPE_COLLECTIVE)
-                result.showView = "coll"
-            else if(result.subscription.getCalculatedType() == TemplateSupport.CALCULATED_TYPE_PARTICIPATION_AS_COLLECTIVE)
-                result.showView = "collAsSubscr"
-            if(params.view.equals("consAtSubscr"))
-                result.showView = "consAtSubscr"
-            params.comboType = "Department"
-            Map fsq = filterService.getOrgComboQuery(params,result.institution)
-            result.subscriptionParticipants = OrgRole.executeQuery(fsq.query,fsq.queryParams)
-            result.subMembersLabel = 'subscription.details.collectiveMembers.label'
-        }
-        else if(params.orgBasicMemberView || OrgRole.findBySubAndOrgAndRoleTypeInList(result.subscription,result.institution,[RDStore.OR_SUBSCRIBER_CONS,RDStore.OR_SUBSCRIBER_COLLECTIVE]))
-            result.showView = "subscr"
-        else if(accessService.checkPermAffiliation("ORG_INST,ORG_CONSORTIUM","INST_USER"))
-            result.showView = "own"
-        if(params.ownSort)
-            result.view = "own"
-        else if(params.consSort) {
-            if(accessService.checkPerm("ORG_CONSORTIUM"))
-                result.view = "cons"
-            else if(accessService.checkPerm("ORG_INST_COLLECTIVE"))
-                result.view = "coll"
-            if(params.view == "consAtSubscr")
-                result.view = "consAtSubscr"
-        }
-        else if(params.subscrSort || result.showView == "collAsSubscr")
-            result.view = "subscr"
-        else result.view = params.view ? params.view : result.showView
-        result.filterPresets = result.financialData.filterPresets
-        result.allCIElements = CostItemElementConfiguration.executeQuery('select ciec.costItemElement from CostItemElementConfiguration ciec where ciec.forOrganisation = :org',[org:result.institution])
-        Map navigation = navigationGenerationService.generateNavigation(Subscription.class.name,result.subscription.id)
-        result.navNextSubscription = navigation.nextLink
-        result.navPrevSubscription = navigation.prevLink
-        result
     }
 
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
     def financialsExport()  {
         log.debug("Financial Export :: ${params}")
-        Map result = setResultGenerics()
+        Map<String, Object> result = financeService.setResultGenerics(params+[forExport:true])
         if (!accessService.checkMinUserOrgRole(result.user,result.institution,"INST_USER")) {
             flash.error=message(code: 'financials.permission.unauthorised', args: [result.institution? result.institution.name : 'N/A'])
             response.sendError(403)
             return
         }
-        // I need the consortial data as well ...
-        def orgRoleCons = accessService.checkPerm('ORG_INST_COLLECTIVE,ORG_CONSORTIUM')
-        def orgRoleSubscr = OrgRole.findByRoleTypeInList([RDStore.OR_SUBSCRIBER_CONS,RDStore.OR_SUBSCRIBER_COLLECTIVE])
-        Map financialData = result.subscription ? financeService.getCostItemsForSubscription(result.subscription,params,Integer.MAX_VALUE,0) : financeService.getCostItems(params,Long.MAX_VALUE)
+        Map financialData = result.subscription ? financeService.getCostItemsForSubscription(params,result) : financeService.getCostItems(params,result)
         result.cost_item_tabs = [:]
-        if(accessService.checkPerm('ORG_INST,ORG_CONSORTIUM')) {
+        if(result.dataToDisplay.contains("own")) {
             result.cost_item_tabs["own"] = financialData.own
         }
-        if(orgRoleCons) {
+        if(result.dataToDisplay.contains("cons")) {
             result.cost_item_tabs["cons"] = financialData.cons
         }
-        else if(orgRoleSubscr) {
+        if(result.dataToDisplay.contains(["subscr","consAtSubscr","collAtSubscr"])) {
             result.cost_item_tabs["subscr"] = financialData.subscr
         }
         SimpleDateFormat sdf = DateUtil.getSDF_NoTimeNoPoint()
@@ -789,69 +698,65 @@ class FinanceController extends AbstractDebugController {
 
     @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_EDITOR") })
-    def editCostItem() {
-        Map<String, Object> result = [:]
-        def costItemElementConfigurations = []
-        def orgConfigurations = []
-        result.tab = params.tab
-
-        if(!params.sub.isEmpty() && StringUtils.isNumeric(params.sub)){
-            result.sub = Subscription.get(Long.parseLong(params.sub))
-            if(contextService.org.id == result.sub.getConsortia()?.id) {
-                result.licenseeLabel = message(code: 'consortium.member')
-                result.licenseeTargetLabel = message(code:'consortium.member.plural')
-            }
-            else if(contextService.org.id == result.sub.getCollective()?.id) {
-                result.licenseeLabel = message(code:'collective.member')
-                result.licenseeTargetLabel = message(code:'collective.member.plural')
-            }
+    Object newCostItem() {
+        Map<String, Object> result = financeService.setResultGenerics(params)
+        result.putAll(financeService.setAdditionalGenericEditResults(result))
+        result.modalText = message(code:'financials.addNewCost')
+        result.submitButtonLabel = message(code:'default.button.create_new.label')
+        if(result.dataToDisplay.stream().anyMatch(['cons','consAtSubscr'].&contains)) {
+            result.licenseeLabel = message(code: 'consortium.member')
+            result.licenseeTargetLabel = message(code:'financials.newCosts.consortia.licenseeTargetLabel')
         }
-        result.costItem = CostItem.findById(params.id)
-        //format for dropdown: (o)id:value
-        List<RefdataValue> ciecs = RefdataCategory.getAllRefdataValues(RDConstants.COST_CONFIGURATION)
-        ciecs.each { ciec ->
-            costItemElementConfigurations.add([id:ciec.class.name+":"+ciec.id,value:ciec.getI10n('value')])
+        else if(result.dataToDisplay.stream().anyMatch(['coll','collAtSubscr'])) {
+            result.licenseeLabel = message(code:'collective.member')
+            result.licenseeTargetLabel = message(code:'financials.newCosts.collective.licenseeTargetLabel')
         }
-        def orgConf = CostItemElementConfiguration.findAllByForOrganisation(contextService.org)
-        orgConf.each { oc ->
-            orgConfigurations.add([id:oc.costItemElement.id,value:oc.elementSign.class.name+":"+oc.elementSign.id])
-        }
-
-        result.costItemElementConfigurations = costItemElementConfigurations
-        result.orgConfigurations = orgConfigurations
-        result.formUrl = g.createLink(controller:'finance', action:'newCostItem', params:[tab:result.tab,mode:"edit"])
-        result.mode = "edit"
+        result.putAll(financeService.setAdditionalGenericEditResults(result))
+        result.formUrl = g.createLink(controller:'finance', action:'createOrUpdateCostItem', params:[showView: params.showView])
         render(template: "/finance/ajaxModal", model: result)
     }
 
     @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_EDITOR") })
-    def copyCostItem() {
-        Map<String, Object> result = [:]
+    Object editCostItem() {
+        Map<String, Object> result = financeService.setResultGenerics(params)
+        result.costItem = CostItem.get(params.id)
+        result.putAll(financeService.setAdditionalGenericEditResults(result))
 
-        result.id = params.id
+        if(result.dataToDisplay.stream().anyMatch(['cons','consAtSubscr'].&contains)) {
+            result.licenseeLabel = message(code: 'consortium.member')
+            result.licenseeTargetLabel = message(code:'financials.newCosts.consortia.licenseeTargetLabel')
+        }
+        else if(result.dataToDisplay.stream().anyMatch(['coll','collAtSubscr'])) {
+            result.licenseeLabel = message(code:'collective.member')
+            result.licenseeTargetLabel = message(code:'financials.newCosts.collective.licenseeTargetLabel')
+        }
+        result.putAll(financeService.setAdditionalGenericEditResults(result))
+        if(!result.dataToDisplay.contains('subscr')) {
+            if(result.costItem.taxKey)
+                result.taxKey = result.costItem.taxKey
+        }
+        result.modalText = message(code: 'financials.editCost')
+        result.submitButtonLabel = message(code:'default.button.save.label')
+        result.formUrl = g.createLink(controller:'finance', action:'createOrUpdateCostItem', params:[showView: params.showView])
+        render(template: "/finance/ajaxModal", model: result)
+    }
 
-        result.tab = params.tab
-        if(params.sub != null && StringUtils.isNumeric(params.sub)) {
-            result.sub = Subscription.get(Long.parseLong(params.sub))
+    @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")')
+    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_EDITOR") })
+    Object copyCostItem() {
+        Map<String, Object> result = financeService.setResultGenerics(params)
+        result.costItem = CostItem.get(params.id)
+        result.putAll(financeService.setAdditionalGenericEditResults(result))
+        result.modalText = message(code: 'financials.costItem.copy.tooltip')
+        result.submitButtonLabel = message(code:'default.button.copy.label')
+        if(result.dataToDisplay.stream().anyMatch(['coll','collAtSubscr'])) {
+            result.licenseeLabel = message(code:'collective.member')
+            result.licenseeTargetLabel = message(code:'financials.newCosts.collective.licenseeTargetLabel')
         }
-
-        def ci = CostItem.findById(params.id)
-        result.costItem = ci
-        List costItemElementConfigurations = []
-        List orgConfigurations = []
-        //format for dropdown: (o)id:value
-        List<RefdataValue> ciecs = RefdataCategory.getAllRefdataValues(RDConstants.COST_CONFIGURATION)
-        ciecs.each { ciec ->
-            costItemElementConfigurations.add([id:ciec.class.name+":"+ciec.id,value:ciec.getI10n('value')])
-        }
-        def orgConf = CostItemElementConfiguration.findAllByForOrganisation(contextService.org)
-        orgConf.each { oc ->
-            orgConfigurations.add([id:oc.costItemElement.id,value:oc.elementSign.class.name+":"+oc.elementSign.id])
-        }
-        result.costItemElementConfigurations = costItemElementConfigurations
-        result.orgConfigurations = orgConfigurations
-        result.formUrl = g.createLink(controller:"finance",action:"newCostItem",params:[tab:result.tab,mode:"copy"])
+        result.putAll(financeService.setAdditionalGenericEditResults(result))
+        result.copyCostsFromConsortia = result.costItem.owner == result.costItem.subscription?.getConsortia()
+        result.formUrl = createLink(controller:"finance",action:"createOrUpdateCostItem",params:[tab:result.tab, mode:"copy"])
         result.mode = "copy"
         render(template: "/finance/ajaxModal", model: result)
     }
@@ -859,16 +764,9 @@ class FinanceController extends AbstractDebugController {
     @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_EDITOR") })
     def deleteCostItem() {
-        Map<String, Object> result = [:]
+        Map<String, Object> result = [showView:params.showView]
 
-        User user = User.get(springSecurityService.principal.id)
-        Org institution = contextService.getOrg()
-        if (!accessService.checkMinUserOrgRole(user,institution,"INST_EDITOR")) {
-            response.sendError(403)
-            return
-        }
-
-        def ci = CostItem.findByIdAndOwner(params.id, institution)
+        CostItem ci = CostItem.get(params.id)
         if (ci) {
             def cigs = CostItemGroup.findAllByCostItem(ci)
 
@@ -877,304 +775,286 @@ class FinanceController extends AbstractDebugController {
                 log.debug("deleting CostItemGroup: " + item)
             }
             log.debug("deleting CostItem: " + ci)
-            ci.delete()
+            ci.costItemStatus = RDStore.COST_ITEM_DELETED
+            if(!ci.save())
+                log.error(ci.errors)
         }
-        //redirect(controller: 'myInstitution', action: 'finance')
 
-        result.tab = params.tab
-
-        redirect(uri: request.getHeader('referer').replaceAll('(#|\\?).*', ''), params: [tab: result.tab])
+        redirect(uri: request.getHeader('referer').replaceAll('(#|\\?).*', ''), params: [showView: result.showView])
     }
 
     @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_EDITOR") })
-    def newCostItem() {
+    def createOrUpdateCostItem() {
 
         SimpleDateFormat dateFormat = DateUtil.getSDF_NoTime()
-
-        def result =  [showView:params.tab]
+        Map<String,Object> result = financeService.setResultGenerics(params)
         CostItem newCostItem = null
 
-      try {
-        log.debug("FinanceController::newCostItem() ${params}");
+      if(params.newSubscription) {
+          try {
+              log.debug("FinanceController::newCostItem() ${params}");
 
-        result.institution  =  contextService.getOrg()
-        User user            =  User.get(springSecurityService.principal.id)
-        result.error        =  [] as List
+              result.institution  =  contextService.getOrg()
+              result.error        =  [] as List
 
-        if (!accessService.checkMinUserOrgRole(user,result.institution,"INST_EDITOR"))
-        {
-            result.error=message(code: 'financials.permission.unauthorised', args: [result.institution? result.institution.name : 'N/A'])
-            response.sendError(403)
-        }
+              Order order = null
+              if (params.newOrderNumber)
+                  order = Order.findByOrderNumberAndOwner(params.newOrderNumber, result.institution) ?: new Order(orderNumber: params.newOrderNumber, owner: result.institution).save(flush: true);
 
-        def order = null
-        if (params.newOrderNumber)
-            order = Order.findByOrderNumberAndOwner(params.newOrderNumber, result.institution) ?: new Order(orderNumber: params.newOrderNumber, owner: result.institution).save(flush: true);
+              Invoice invoice = null
+              if (params.newInvoiceNumber)
+                  invoice = Invoice.findByInvoiceNumberAndOwner(params.newInvoiceNumber, result.institution) ?: new Invoice(invoiceNumber: params.newInvoiceNumber, owner: result.institution).save(flush: true);
 
-        def invoice = null
-        if (params.newInvoiceNumber)
-            invoice = Invoice.findByInvoiceNumberAndOwner(params.newInvoiceNumber, result.institution) ?: new Invoice(invoiceNumber: params.newInvoiceNumber, owner: result.institution).save(flush: true);
-
-        def subsToDo = []
-        if (params.newSubscription?.contains("com.k_int.kbplus.Subscription:"))
-        {
-            try {
-                subsToDo << genericOIDService.resolveOID(params.newSubscription)
-            } catch (Exception e) {
-                log.error("Non-valid subscription sent ${params.newSubscription}",e)
-            }
-        }
-
-          switch (params.newLicenseeTarget) {
-
-              case 'com.k_int.kbplus.Subscription:forConsortia':
-                  // keep current
-                  break
-              case 'com.k_int.kbplus.Subscription:forAllSubscribers':
-                  // iterate over members
-                  subsToDo = Subscription.findAllByInstanceOfAndStatusNotEqual(
-                          genericOIDService.resolveOID(params.newSubscription),
-                          RefdataValue.getByValueAndCategory('Deleted', RDConstants.SUBSCRIPTION_STATUS)
-                  )
-                  break
-              default:
-                  if (params.newLicenseeTarget) {
-                      subsToDo = genericOIDService.resolveOID(params.newLicenseeTarget)
+              Set<Subscription> subsToDo = []
+              if (params.newSubscription.contains("com.k_int.kbplus.Subscription:"))
+              {
+                  try {
+                      subsToDo << genericOIDService.resolveOID(params.newSubscription)
+                  } catch (Exception e) {
+                      log.error("Non-valid subscription sent ${params.newSubscription}",e)
                   }
-                  break
-          }
+              }
 
-        def pkg = null;
-        if (params.newPackage?.contains("com.k_int.kbplus.SubscriptionPackage:"))
-        {
-            try {
-                if (params.newPackage.split(":")[1] != 'null') {
-                    pkg = SubscriptionPackage.load(params.newPackage.split(":")[1])
-                }
-            } catch (Exception e) {
-                log.error("Non-valid sub-package sent ${params.newPackage}",e)
-            }
-        }
+              switch (params.newLicenseeTarget) {
 
-        Closure newDate = { param, format ->
-            Date date
-            try {
-                date = dateFormat.parse(param)
-            } catch (Exception e) {
-                log.debug("Unable to parse date : ${param} in format ${format}")
-            }
-            date
-        }
-
-          Date datePaid    = newDate(params.newDatePaid,  dateFormat.toPattern())
-          Date startDate   = newDate(params.newStartDate, dateFormat.toPattern())
-          Date endDate     = newDate(params.newEndDate,   dateFormat.toPattern())
-          Date invoiceDate = newDate(params.newInvoiceDate,    dateFormat.toPattern())
-        Year financialYear = params.newFinancialYear ? Year.parse(params.newFinancialYear) : null
-
-        def ie = null
-        if(params.newIE)
-        {
-            try {
-                ie = IssueEntitlement.load(params.newIE.split(":")[1])
-            } catch (Exception e) {
-                log.error("Non-valid IssueEntitlement sent ${params.newIE}",e)
-            }
-        }
-
-        def billing_currency = null
-        if (params.long('newCostCurrency')) //GBP,etc
-        {
-            billing_currency = RefdataValue.get(params.newCostCurrency)
-            if (! billing_currency)
-                billing_currency = defaultCurrency
-        }
-
-        //def tempCurrencyVal       = params.newCostCurrencyRate?      params.double('newCostCurrencyRate',1.00) : 1.00//def cost_local_currency   = params.newCostInLocalCurrency?   params.double('newCostInLocalCurrency', cost_billing_currency * tempCurrencyVal) : 0.00
-          def cost_item_status      = params.newCostItemStatus ?       (RefdataValue.get(params.long('newCostItemStatus'))) : null;    //estimate, commitment, etc
-          def cost_item_element     = params.newCostItemElement ?      (RefdataValue.get(params.long('newCostItemElement'))): null    //admin fee, platform, etc
-          //moved to TAX_TYPES
-          //def cost_tax_type         = params.newCostTaxType ?          (RefdataValue.get(params.long('newCostTaxType'))) : null           //on invoice, self declared, etc
-
-          def cost_item_category    = params.newCostItemCategory ?     (RefdataValue.get(params.long('newCostItemCategory'))): null  //price, bank charge, etc
-
-          NumberFormat format = NumberFormat.getInstance(LocaleContextHolder.getLocale())
-          def cost_billing_currency = params.newCostInBillingCurrency? format.parse(params.newCostInBillingCurrency).doubleValue() : 0.00
-          def cost_currency_rate    = params.newCostCurrencyRate?      params.double('newCostCurrencyRate', 1.00) : 1.00
-          def cost_local_currency   = params.newCostInLocalCurrency?   format.parse(params.newCostInLocalCurrency).doubleValue() : 0.00
-
-          def cost_billing_currency_after_tax   = params.newCostInBillingCurrencyAfterTax ? format.parse(params.newCostInBillingCurrencyAfterTax).doubleValue() : cost_billing_currency
-          def cost_local_currency_after_tax     = params.newCostInLocalCurrencyAfterTax ? format.parse(params.newCostInLocalCurrencyAfterTax).doubleValue() : cost_local_currency
-          //moved to TAX_TYPES
-          //def new_tax_rate                      = params.newTaxRate ? params.int( 'newTaxRate' ) : 0
-          def tax_key = null
-          if(!params.newTaxRate.contains("null")) {
-              String[] newTaxRate = params.newTaxRate.split("§")
-              RefdataValue taxType = genericOIDService.resolveOID(newTaxRate[0])
-              int taxRate = Integer.parseInt(newTaxRate[1])
-              switch(taxType.id) {
-                  case RefdataValue.getByValueAndCategory("taxable", RDConstants.TAX_TYPE).id:
-                      switch(taxRate) {
-                          case 7: tax_key = CostItem.TAX_TYPES.TAXABLE_7
-                              break
-                          case 19: tax_key = CostItem.TAX_TYPES.TAXABLE_19
-                              break
+                  case 'com.k_int.kbplus.Subscription:forParent':
+                      // keep current
+                      break
+                  case 'com.k_int.kbplus.Subscription:forAllSubscribers':
+                      // iterate over members
+                      subsToDo = Subscription.findAllByInstanceOfAndStatusNotEqual(
+                              genericOIDService.resolveOID(params.newSubscription),
+                              RefdataValue.getByValueAndCategory('Deleted', RDConstants.SUBSCRIPTION_STATUS)
+                      )
+                      break
+                  default:
+                      if (params.newLicenseeTarget) {
+                          subsToDo << genericOIDService.resolveOID(params.newLicenseeTarget)
                       }
                       break
-                  case RefdataValue.getByValueAndCategory("taxable tax-exempt",RDConstants.TAX_TYPE).id:
-                      tax_key = CostItem.TAX_TYPES.TAX_EXEMPT
-                      break
-                  case RefdataValue.getByValueAndCategory("not taxable",RDConstants.TAX_TYPE).id:
-                      tax_key = CostItem.TAX_TYPES.TAX_NOT_TAXABLE
-                      break
-                  case RefdataValue.getByValueAndCategory("not applicable",RDConstants.TAX_TYPE).id:
-                      tax_key = CostItem.TAX_TYPES.TAX_NOT_APPLICABLE
-                      break
-                  case RefdataValue.getByValueAndCategory("reverse charge",RDConstants.TAX_TYPE).id:
-                      tax_key = CostItem.TAX_TYPES.TAX_REVERSE_CHARGE
-                      break
-              }
-          }
-          def cost_item_element_configuration   = params.ciec ? genericOIDService.resolveOID(params.ciec) : null
-
-          def cost_item_isVisibleForSubscriber = (params.newIsVisibleForSubscriber ? (RefdataValue.get(params.newIsVisibleForSubscriber)?.value == 'Yes') : false)
-
-          if (! subsToDo) {
-              subsToDo << null // Fallback for editing cost items via myInstitution/finance // TODO: ugly
-          }
-          subsToDo.each { sub ->
-
-              List<CostItem> copiedCostItems = []
-
-              if (params.oldCostItem && genericOIDService.resolveOID(params.oldCostItem)) {
-                  newCostItem = (CostItem) genericOIDService.resolveOID(params.oldCostItem)
-                  //get copied cost items
-                  copiedCostItems = CostItem.findAllByCopyBase(newCostItem)
-              }
-              else {
-                  newCostItem = new CostItem()
               }
 
-              newCostItem.owner = result.institution
-              newCostItem.sub = sub
-              newCostItem.subPkg = SubscriptionPackage.findBySubscriptionAndPkg(sub,pkg?.pkg) ?: null
-              newCostItem.issueEntitlement = IssueEntitlement.findBySubscriptionAndTipp(sub,ie?.tipp) ?: null
-              newCostItem.order = order
-              newCostItem.invoice = invoice
-              //continue here: test, if visibility is set to false, check visibility settings of other consortial subscriptions, check then the financial data query whether the costs will be displayed or not!
-              newCostItem.isVisibleForSubscriber = sub.getCalculatedType() == TemplateSupport.CALCULATED_TYPE_ADMINISTRATIVE ? false : cost_item_isVisibleForSubscriber
-              newCostItem.costItemCategory = cost_item_category
-              newCostItem.costItemElement = cost_item_element
-              newCostItem.costItemStatus = cost_item_status
-              newCostItem.billingCurrency = billing_currency //Not specified default to GDP
-              //newCostItem.taxCode = cost_tax_type -> to taxKey
-              newCostItem.costDescription = params.newDescription ? params.newDescription.trim() : null
-              newCostItem.costTitle = params.newCostTitle ?: null
-              newCostItem.costInBillingCurrency = cost_billing_currency as Double
-              newCostItem.costInLocalCurrency = cost_local_currency as Double
-
-              newCostItem.finalCostRounding = params.newFinalCostRounding ? true : false
-              newCostItem.costInBillingCurrencyAfterTax = cost_billing_currency_after_tax as Double
-              newCostItem.costInLocalCurrencyAfterTax = cost_local_currency_after_tax as Double
-              newCostItem.currencyRate = cost_currency_rate as Double
-              //newCostItem.taxRate = new_tax_rate as Integer -> to taxKey
-              newCostItem.taxKey = tax_key
-              newCostItem.costItemElementConfiguration = cost_item_element_configuration
-
-              newCostItem.datePaid = datePaid
-              newCostItem.startDate = startDate
-              newCostItem.endDate = endDate
-              newCostItem.invoiceDate = invoiceDate
-              newCostItem.financialYear = financialYear
-              newCostItem.copyBase = params.copyBase ? genericOIDService.resolveOID(params.copyBase) : null
-
-              //Discussion needed, nobody is quite sure of the functionality behind this...
-              //I am, it is completely legacy
-              //newCostItem.includeInSubscription = null
-              newCostItem.reference = params.newReference ? params.newReference.trim() : null
-
-
-              if (! newCostItem.validate())
+              SubscriptionPackage pkg
+              if (params.newPackage?.contains("com.k_int.kbplus.SubscriptionPackage:"))
               {
-                  result.error = newCostItem.errors.allErrors.collect {
-                      log.error("Field: ${it.properties.field}, user input: ${it.properties.rejectedValue}, Reason! ${it.properties.code}")
-                      message(code:'finance.addNew.error', args:[it.properties.field])
+                  try {
+                      if (params.newPackage.split(":")[1] != 'null') {
+                          pkg = SubscriptionPackage.load(params.newPackage.split(":")[1])
+                      }
+                  } catch (Exception e) {
+                      log.error("Non-valid sub-package sent ${params.newPackage}",e)
                   }
               }
-              else
-              {
-                  if (newCostItem.save(flush: true)) {
-                      def newBcObjs = []
 
-                      params.list('newBudgetCodes')?.each { newbc ->
-                          def bc = genericOIDService.resolveOID(newbc)
-                          if (bc) {
-                              newBcObjs << bc
-                              if (! CostItemGroup.findByCostItemAndBudgetCode( newCostItem, bc )) {
-                                  new CostItemGroup(costItem: newCostItem, budgetCode: bc).save(flush: true)
+              Closure newDate = { param, format ->
+                  Date date
+                  try {
+                      date = dateFormat.parse(param)
+                  } catch (Exception e) {
+                      log.debug("Unable to parse date : ${param} in format ${format}")
+                  }
+                  date
+              }
+
+              Date datePaid    = newDate(params.newDatePaid,  dateFormat.toPattern())
+              Date startDate   = newDate(params.newStartDate, dateFormat.toPattern())
+              Date endDate     = newDate(params.newEndDate,   dateFormat.toPattern())
+              Date invoiceDate = newDate(params.newInvoiceDate,    dateFormat.toPattern())
+              Year financialYear = params.newFinancialYear ? Year.parse(params.newFinancialYear) : null
+
+              IssueEntitlement ie = null
+              if(params.newIE)
+              {
+                  try {
+                      ie = IssueEntitlement.load(params.newIE.split(":")[1])
+                  } catch (Exception e) {
+                      log.error("Non-valid IssueEntitlement sent ${params.newIE}",e)
+                  }
+              }
+
+              RefdataValue billing_currency = RefdataValue.get(params.newCostCurrency)
+
+              //def tempCurrencyVal       = params.newCostCurrencyRate?      params.double('newCostCurrencyRate',1.00) : 1.00//def cost_local_currency   = params.newCostInLocalCurrency?   params.double('newCostInLocalCurrency', cost_billing_currency * tempCurrencyVal) : 0.00
+              def cost_item_status      = params.newCostItemStatus ?       (RefdataValue.get(params.long('newCostItemStatus'))) : null;    //estimate, commitment, etc
+              def cost_item_element     = params.newCostItemElement ?      (RefdataValue.get(params.long('newCostItemElement'))): null    //admin fee, platform, etc
+              //moved to TAX_TYPES
+              //def cost_tax_type         = params.newCostTaxType ?          (RefdataValue.get(params.long('newCostTaxType'))) : null           //on invoice, self declared, etc
+
+              def cost_item_category    = params.newCostItemCategory ?     (RefdataValue.get(params.long('newCostItemCategory'))): null  //price, bank charge, etc
+
+              NumberFormat format = NumberFormat.getInstance(LocaleContextHolder.getLocale())
+              def cost_billing_currency = params.newCostInBillingCurrency? format.parse(params.newCostInBillingCurrency).doubleValue() : 0.00
+              def cost_currency_rate    = params.newCostCurrencyRate?      params.double('newCostCurrencyRate', 1.00) : 1.00
+              def cost_local_currency   = params.newCostInLocalCurrency?   format.parse(params.newCostInLocalCurrency).doubleValue() : 0.00
+
+              def cost_billing_currency_after_tax   = params.newCostInBillingCurrencyAfterTax ? format.parse(params.newCostInBillingCurrencyAfterTax).doubleValue() : cost_billing_currency
+              def cost_local_currency_after_tax     = params.newCostInLocalCurrencyAfterTax ? format.parse(params.newCostInLocalCurrencyAfterTax).doubleValue() : cost_local_currency
+              //moved to TAX_TYPES
+              //def new_tax_rate                      = params.newTaxRate ? params.int( 'newTaxRate' ) : 0
+              def tax_key = null
+              if(!params.newTaxRate.contains("null")) {
+                  String[] newTaxRate = params.newTaxRate.split("§")
+                  RefdataValue taxType = genericOIDService.resolveOID(newTaxRate[0])
+                  int taxRate = Integer.parseInt(newTaxRate[1])
+                  switch(taxType.id) {
+                      case RefdataValue.getByValueAndCategory("taxable", RDConstants.TAX_TYPE).id:
+                          switch(taxRate) {
+                              case 7: tax_key = CostItem.TAX_TYPES.TAXABLE_7
+                                  break
+                              case 19: tax_key = CostItem.TAX_TYPES.TAXABLE_19
+                                  break
+                          }
+                          break
+                      case RefdataValue.getByValueAndCategory("taxable tax-exempt",RDConstants.TAX_TYPE).id:
+                          tax_key = CostItem.TAX_TYPES.TAX_EXEMPT
+                          break
+                      case RefdataValue.getByValueAndCategory("not taxable",RDConstants.TAX_TYPE).id:
+                          tax_key = CostItem.TAX_TYPES.TAX_NOT_TAXABLE
+                          break
+                      case RefdataValue.getByValueAndCategory("not applicable",RDConstants.TAX_TYPE).id:
+                          tax_key = CostItem.TAX_TYPES.TAX_NOT_APPLICABLE
+                          break
+                      case RefdataValue.getByValueAndCategory("reverse charge",RDConstants.TAX_TYPE).id:
+                          tax_key = CostItem.TAX_TYPES.TAX_REVERSE_CHARGE
+                          break
+                  }
+              }
+              RefdataValue elementSign   = params.ciec ? RefdataValue.get(Long.parseLong(params.ciec)) : null
+
+              boolean cost_item_isVisibleForSubscriber = (params.newIsVisibleForSubscriber ? (RefdataValue.get(params.newIsVisibleForSubscriber)?.value == 'Yes') : false)
+
+              if (! subsToDo) {
+                  subsToDo << null // Fallback for editing cost items via myInstitution/finance // TODO: ugly
+              }
+              subsToDo.each { sub ->
+
+                  List<CostItem> copiedCostItems = []
+
+                  if (params.costItemId) {
+                      newCostItem = CostItem.get(Long.parseLong(params.costItemId))
+                      //get copied cost items
+                      copiedCostItems = CostItem.findAllByCopyBaseAndCostItemStatusNotEqual(newCostItem, RDStore.COST_ITEM_DELETED)
+                  }
+                  else {
+                      newCostItem = new CostItem()
+                  }
+
+                  newCostItem.owner = result.institution
+                  newCostItem.sub = sub
+                  newCostItem.subPkg = SubscriptionPackage.findBySubscriptionAndPkg(sub,pkg?.pkg) ?: null
+                  newCostItem.issueEntitlement = IssueEntitlement.findBySubscriptionAndTipp(sub,ie?.tipp) ?: null
+                  newCostItem.order = order
+                  newCostItem.invoice = invoice
+                  //continue here: test, if visibility is set to false, check visibility settings of other consortial subscriptions, check then the financial data query whether the costs will be displayed or not!
+                  if(sub)
+                      newCostItem.isVisibleForSubscriber = sub.getCalculatedType() == TemplateSupport.CALCULATED_TYPE_ADMINISTRATIVE ? false : cost_item_isVisibleForSubscriber
+                  else newCostItem.isVisibleForSubscriber = false
+                  newCostItem.costItemCategory = cost_item_category
+                  newCostItem.costItemElement = cost_item_element
+                  newCostItem.costItemStatus = cost_item_status
+                  newCostItem.billingCurrency = billing_currency //Not specified default to GDP
+                  //newCostItem.taxCode = cost_tax_type -> to taxKey
+                  newCostItem.costDescription = params.newDescription ? params.newDescription.trim() : null
+                  newCostItem.costTitle = params.newCostTitle ?: null
+                  newCostItem.costInBillingCurrency = cost_billing_currency as Double
+                  newCostItem.costInLocalCurrency = cost_local_currency as Double
+
+                  newCostItem.finalCostRounding = params.newFinalCostRounding ? true : false
+                  newCostItem.costInBillingCurrencyAfterTax = cost_billing_currency_after_tax as Double
+                  newCostItem.costInLocalCurrencyAfterTax = cost_local_currency_after_tax as Double
+                  newCostItem.currencyRate = cost_currency_rate as Double
+                  //newCostItem.taxRate = new_tax_rate as Integer -> to taxKey
+                  newCostItem.taxKey = tax_key
+                  newCostItem.costItemElementConfiguration = elementSign
+
+                  newCostItem.datePaid = datePaid
+                  newCostItem.startDate = startDate
+                  newCostItem.endDate = endDate
+                  newCostItem.invoiceDate = invoiceDate
+                  newCostItem.financialYear = financialYear
+                  newCostItem.copyBase = params.copyBase ? genericOIDService.resolveOID(params.copyBase) : null
+
+                  //Discussion needed, nobody is quite sure of the functionality behind this...
+                  //I am, it is completely legacy
+                  //newCostItem.includeInSubscription = null
+                  newCostItem.reference = params.newReference ? params.newReference.trim() : null
+
+                  if (newCostItem.save()) {
+                          def newBcObjs = []
+
+                          params.list('newBudgetCodes')?.each { newbc ->
+                              def bc = genericOIDService.resolveOID(newbc)
+                              if (bc) {
+                                  newBcObjs << bc
+                                  if (! CostItemGroup.findByCostItemAndBudgetCode( newCostItem, bc )) {
+                                      new CostItemGroup(costItem: newCostItem, budgetCode: bc).save()
+                                  }
                               }
                           }
+
+                          def toDelete = newCostItem.getBudgetcodes().minus(newBcObjs)
+                          toDelete.each{ bc ->
+                              def cig = CostItemGroup.findByCostItemAndBudgetCode( newCostItem, bc )
+                              if (cig) {
+                                  log.debug('deleting ' + cig)
+                                  cig.delete()
+                              }
+                          }
+
+                          //notify cost items copied from this cost item
+                          copiedCostItems.each { cci ->
+                              List diffs = []
+                              String costTitle = cci.costTitle ?: ''
+                              String prop
+                              if(newCostItem.costInBillingCurrencyAfterTax != cci.costInBillingCurrency) {
+                                  prop = 'billingCurrency'
+                                  diffs.add(message(code:'pendingChange.message_CI01',args:[costTitle,g.createLink(mapping:'subfinance',controller:'subscription',action:'index',params:[sub:cci.sub.id]),cci.sub.name,cci.costInBillingCurrency,newCostItem.costInBillingCurrencyAfterTax]))
+                              }
+                              if(newCostItem.costInLocalCurrencyAfterTax != cci.costInLocalCurrency) {
+                                  prop = 'localCurrency'
+                                  diffs.add(message(code:'pendingChange.message_CI02',args:[costTitle,g.createLink(mapping:'subfinance',controller:'subscription',action:'index',params:[sub:cci.sub.id]),cci.sub.name,cci.costInLocalCurrency,newCostItem.costInLocalCurrencyAfterTax]))
+                              }
+                              diffs.each { diff ->
+                                  JSON json = [changeDoc:[OID:"${cci.class.name}:${cci.id}",prop:prop]] as JSON
+                                  String changeDoc = json.toString()
+                                  PendingChange change = new PendingChange(costItem: cci, owner: cci.owner,desc: diff, ts: new Date(), payload: changeDoc)
+                                  change.workaroundForDatamigrate() // ERMS-2184
+
+                                  if(!change.save())
+                                      log.error(change.errors)
+                              }
+                          }
+                   }
+                  else {
+                      result.error = newCostItem.errors.allErrors.collect {
+                          log.error("Field: ${it.properties.field}, user input: ${it.properties.rejectedValue}, Reason! ${it.properties.code}")
+                          message(code:'finance.addNew.error', args:[it.properties.field])
                       }
-
-                      def toDelete = newCostItem.getBudgetcodes().minus(newBcObjs)
-                      toDelete.each{ bc ->
-                          def cig = CostItemGroup.findByCostItemAndBudgetCode( newCostItem, bc )
-                          if (cig) {
-                              log.debug('deleting ' + cig)
-                              cig.delete()
-                          }
-                      }
-
-                      //notify cost items copied from this cost item
-                      copiedCostItems.each { cci ->
-                          List diffs = []
-                          String costTitle = cci.costTitle ?: ''
-                          String prop
-                          if(newCostItem.costInBillingCurrencyAfterTax != cci.costInBillingCurrency) {
-                              prop = 'billingCurrency'
-                              diffs.add(message(code:'pendingChange.message_CI01',args:[costTitle,g.createLink(mapping:'subfinance',controller:'subscription',action:'index',params:[sub:cci.sub.id]),cci.sub.name,cci.costInBillingCurrency,newCostItem.costInBillingCurrencyAfterTax]))
-                          }
-                          if(newCostItem.costInLocalCurrencyAfterTax != cci.costInLocalCurrency) {
-                              prop = 'localCurrency'
-                              diffs.add(message(code:'pendingChange.message_CI02',args:[costTitle,g.createLink(mapping:'subfinance',controller:'subscription',action:'index',params:[sub:cci.sub.id]),cci.sub.name,cci.costInLocalCurrency,newCostItem.costInLocalCurrencyAfterTax]))
-                          }
-                          diffs.each { diff ->
-                              JSON json = [changeDoc:[OID:"${cci.class.name}:${cci.id}",prop:prop]] as JSON
-                              String changeDoc = json.toString()
-                              PendingChange change = new PendingChange(costItem: cci, owner: cci.owner,desc: diff, ts: new Date(), payload: changeDoc)
-                              change.workaroundForDatamigrate() // ERMS-2184
-
-                              if(!change.save(flush: true))
-                                  log.error(change.errors)
-                          }
-                      }
-
-                  } else {
-                      result.error = "Unable to save!"
                   }
-              }
-          } // subsToDo.each
+              } // subsToDo.each
 
 
 
+          }
+          catch ( Exception e ) {
+              log.error("Problem in add cost item", e);
+          }
       }
-      catch ( Exception e ) {
-        log.error("Problem in add cost item", e);
-      }
+
 
       params.remove("Add")
       // render ([newCostItem:newCostItem.id, error:result.error]) as JSON
 
 
-        redirect(uri: request.getHeader('referer').replaceAll('(#|\\?).*', ''), params: [view: result.showView])
+        redirect(uri: request.getHeader('referer').replaceAll('(#|\\?).*', ''), params: [showView: result.showView])
     }
 
     @DebugAnnotation(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_EDITOR", specRole="ROLE_ADMIN")
     @Secured(closure = {
         ctx.accessService.checkPermAffiliationX("ORG_INST,ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN")
     })
-    def addCostItems() {
+    def importCostItems() {
         boolean withErrors = false
         Org contextOrg = contextService.org
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'")
@@ -1293,7 +1173,7 @@ class FinanceController extends AbstractDebugController {
         result
     }
 
-
+    @Deprecated
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
     def getRecentCostItems() {
@@ -1303,7 +1183,7 @@ class FinanceController extends AbstractDebugController {
         def  recentParams      = [max:10, order:'desc', sort:'lastUpdated']
         result.to              = new Date()
         result.from            = params.from? dateTimeFormat.parse(params.from): new Date()
-        result.recentlyUpdated = CostItem.findAllByOwnerAndLastUpdatedBetween(institution,result.from,result.to,recentParams)
+        result.recentlyUpdated = CostItem.findAllByOwnerAndLastUpdatedBetweenAndCostItemStatusNotEqual(institution,result.from,result.to,recentParams,RDStore.COST_ITEM_DELETED)
         result.from            = dateTimeFormat.format(result.from)
         result.to              = dateTimeFormat.format(result.to)
         log.debug("FinanceController - getRecentCostItems, rendering template with model: ${result}")
@@ -1311,7 +1191,7 @@ class FinanceController extends AbstractDebugController {
         render(template: "/finance/recentlyAddedModal", model: result)
     }
 
-
+    @Deprecated
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
     def newCostItemsPresent() {
@@ -1335,6 +1215,7 @@ class FinanceController extends AbstractDebugController {
         render(text: builder.toString(), contentType: "text/json", encoding: "UTF-8")
     }
 
+    @Deprecated
     @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_EDITOR") })
     def delete() {
@@ -1393,7 +1274,7 @@ class FinanceController extends AbstractDebugController {
         render results as JSON
     }
 
-
+    @Deprecated
     @Secured(['ROLE_USER'])
     def financialRef() {
         log.debug("Financials :: financialRef - Params: ${params}")
@@ -1459,6 +1340,7 @@ class FinanceController extends AbstractDebugController {
      * @param result - LinkedHashMap from financialRef
      * @return
      */
+    @Deprecated
     def private refReset(costItem, String fields, result) {
         log.debug("Attempting to reset a reference for cost item data ${costItem} for field(s) ${fields}")
         def wasResetCounter = 0
@@ -1487,6 +1369,7 @@ class FinanceController extends AbstractDebugController {
         return validFields && wasResetCounter == f.size()
     }
 
+    @Deprecated
     def private refData(String oid) {
         def result         = [:]
         result.create      = false
@@ -1505,6 +1388,7 @@ class FinanceController extends AbstractDebugController {
         result
     }
 
+    @Deprecated
     @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_EDITOR") })
     def removeBC() {
@@ -1575,24 +1459,6 @@ class FinanceController extends AbstractDebugController {
             result.error = "Invalid data received for code creation"
 
         render result as JSON
-    }
-
-    //ex SubscriptionDetailsController
-    private Map setResultGenerics() {
-        LinkedHashMap result = [:]
-        result.user         = User.get(springSecurityService.principal.id)
-        result.subscription = Subscription.get(params.sub)
-        if(params.sub)
-            result.editable = result.subscription.isEditableBy(result.user)
-        else
-            result.editable = accessService.checkMinUserOrgRole(result.user, result.institution, 'INST_EDITOR')
-        result.institution  = contextService.getOrg()
-
-        if(params.orgBasicMemberView){
-            result.editable = false
-        }
-
-        result
     }
 
 }

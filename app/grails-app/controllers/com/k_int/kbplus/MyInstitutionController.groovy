@@ -1075,7 +1075,7 @@ join sub.orgRelations or_sub where
 
                     def sub = result.surveyConfig.subscription.getDerivedSubscriptionBySubscribers(org)
 
-                    def surveyCostItem = CostItem.findBySurveyOrg(SurveyOrg.findBySurveyConfigAndOrg(result?.surveyConfig, org))
+                    def surveyCostItem = CostItem.findBySurveyOrgAndCostItemStatusNotEqual(SurveyOrg.findBySurveyConfigAndOrg(result?.surveyConfig, org),RDStore.COST_ITEM_DELETED)
 
                     row.add([field: result?.owner?.name ?: '', style: null])
                     row.add([field: result?.surveyConfig?.comment ?: '', style: null])
@@ -2284,6 +2284,7 @@ AND EXISTS (
         if (subscription.hasPerm("edit", result.user)) {
             Subscription derived_subs = Subscription.findByInstanceOf(subscription)
 
+            //this is matter of discussion!
             if (CostItem.findBySub(subscription)) {
                 flash.error = message(code: 'subscription.delete.existingCostItems')
 
@@ -3495,13 +3496,14 @@ AND EXISTS (
                 " where roleK.org = :org and roleK.roleType = :rdvCons " +
                 " and roleTK.org = :org and roleTK.roleType = :rdvCons " +
                 " and ( roleT.roleType = :rdvSubscr or roleT.roleType = :rdvSubscrHidden ) " +
-                " and ( ci is null or ci.owner = :org )"
+                " and ( ci is null or (ci.owner = :org and ci.costItemStatus != :deleted) )"
 
 
         Map qarams = [org      : result.institution,
                       rdvCons  : RDStore.OR_SUBSCRIPTION_CONSORTIA,
                       rdvSubscr: RDStore.OR_SUBSCRIBER_CONS,
-                      rdvSubscrHidden: RDStore.OR_SUBSCRIBER_CONS_HIDDEN
+                      rdvSubscrHidden: RDStore.OR_SUBSCRIBER_CONS_HIDDEN,
+                      deleted  : RDStore.COST_ITEM_DELETED
         ]
 
         if (params.member?.size() > 0) {

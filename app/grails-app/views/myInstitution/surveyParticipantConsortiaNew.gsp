@@ -350,7 +350,7 @@ ${surveyInfo.name}
                         <g:set var="surveyOrg"
                                value="${com.k_int.kbplus.SurveyOrg.findBySurveyConfigAndOrg(surveyConfig, participant)}"/>
                         <g:set var="costItem"
-                               value="${com.k_int.kbplus.CostItem.findBySurveyOrg(com.k_int.kbplus.SurveyOrg.findBySurveyConfigAndOrg(surveyConfig, participant))}"/>
+                               value="${com.k_int.kbplus.CostItem.findBySurveyOrgAndCostItemStatusNotEqual(com.k_int.kbplus.SurveyOrg.findBySurveyConfigAndOrg(surveyConfig, participant),RDStore.COST_ITEM_DELETED)}"/>
                         <g:set var="costItemsSub"
                                value="${subscriptionInstance?.costItems.findAll {
                                    it?.costItemElement?.id == costItem?.costItemElement?.id
