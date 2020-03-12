@@ -70,7 +70,14 @@ ${currentAnnouncement?.getCleanContent()}
     <br />
     <h3 class="ui  header la-clear-before">${message(code:'announcement.previous.label')}</h3>
 
-    <semui:msg class="info" header="Hinweis" text="${message(code:'announcement.recipient.count.info', args:[numberOfCurrentRecipients])}" />
+
+    <g:if test="${mailDisabled}">
+        <semui:msg class="warning" header="${message(code:'default.hint.label')}" text="${message(code:'system.config.mail.disabled')}" />
+    </g:if>
+    <g:else>
+        <semui:msg class="info" header="${message(code:'default.hint.label')}" text="${message(code:'announcement.recipient.count.info', args:[numberOfCurrentRecipients])}" />
+    </g:else>
+
     <div>
         <g:each in="${announcements}" var="sa">
             <div class="ui segment">
@@ -153,9 +160,15 @@ ${currentAnnouncement?.getCleanContent()}
                         <g:link controller="admin" action="systemAnnouncements" id="${sa.id}" params="[cmd:'delete']" role="button" class="ui negative icon button"><i aria-hidden="true" class="trash alternate icon"></i></g:link>
                         <g:link controller="admin" action="systemAnnouncements" id="${sa.id}" params="[cmd:'edit']" role="button" class="ui icon button"><i aria-hidden="true" class="edit icon"></i></g:link>
 
-                        <g:link controller="admin" action="systemAnnouncements" id="${sa.id}" params="[cmd:'publish']" role="button"
-                                class="ui button" onclick="return confirm('${message(code:'announcement.publish.confirm')}')">${message(code:'default.publish.label')}</g:link>
-                    </g:else>
+                        <g:if test="${mailDisabled}">
+                            <button class="ui button" disabled="disabled">${message(code:'default.publish.label')}</button>
+                        </g:if>
+                        <g:else>
+                            <g:link controller="admin" action="systemAnnouncements" id="${sa.id}" params="[cmd:'publish']" role="button"
+                                    class="ui button" onclick="return confirm('${message(code:'announcement.publish.confirm')}')">${message(code:'default.publish.label')}</g:link>
+
+                        </g:else>
+                     </g:else>
                 </div>
             </div>
         </g:each>
