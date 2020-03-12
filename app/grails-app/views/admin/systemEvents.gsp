@@ -73,7 +73,7 @@
             <g:sortableColumn property="relevance" title="Relevance"/>
             <th>Source</th>
             <th>Event</th>
-            <th>Message</th>
+            <%--<th>Message</th>--%>
             <th>Payload</th>
             <g:sortableColumn property="created" title="Date"/>
         </tr>
@@ -97,11 +97,11 @@
                 <td class="table-td-${el.relevance?.value?.toLowerCase()}">
                     ${el.event}
                 </td>
-                <td class="table-td-${el.relevance?.value?.toLowerCase()}">
+                <%--<td class="table-td-${el.relevance?.value?.toLowerCase()}">
                     ${el.descr}
-                </td>
+                </td>--%>
                 <td class="table-td-${el.relevance?.value?.toLowerCase()}">
-                    ${el.payload}
+                    ${el.payload?.replaceAll(',', ', ')}
                 </td>
                 <td class="table-td-${el.relevance?.value?.toLowerCase()}">
                     <g:formatDate date="${el.created}" format="${message(code:'default.date.format.noZ')}" />

@@ -2,7 +2,7 @@
 <html>
     <head>
         <meta name="layout" content="semanticUI"/>
-        <title>${message(code:'laser', default:'LAS:eR')} ${message(code:'myinst.addLicense.label', default:'Data import explorer')}</title>
+        <title>${message(code:'laser')} : ${message(code:'menu.datamanager.ann')}</title>
     </head>
 
     <body>
@@ -34,7 +34,7 @@
     </semui:form>
 
 
-      <h2 class="ui  header la-clear-before">${message(code:'announcement.previous.label', default:'previous announcements')}</h2>
+      <h2 class="ui  header la-clear-before">${message(code:'announcement.previous.label')}</h2>
 
       <div class="ui divided relaxed list">
         <g:each in="${recentAnnouncements}" var="ra">
@@ -45,13 +45,13 @@
             </div>
               <br />
             <g:if test="${ra.user != null}">
-              ${message(code:'announcement.posted_by.label', default:'posted by')}
+              ${message(code:'announcement.posted_by.label')}
                 <em><g:link controller="user" action="show" id="${ra.user?.id}">${(ra.user?.displayName)?:'Unknown'}</g:link></em>
                 <br />
-                ${message(code:'default.on', default:'on')} <g:formatDate date="${ra.dateCreated}" format="${message(code:'default.date.format')}"/>
+                ${message(code:'default.on')} <g:formatDate date="${ra.dateCreated}" format="${message(code:'default.date.format')}"/>
             </g:if>
             <g:else>
-                ${message(code:'announcement.posted_auto.label', default:'posted automatically on')}
+                ${message(code:'announcement.posted_auto.label')}
                 <br />
                 <g:formatDate date="${ra.dateCreated}" format="${message(code:'default.date.format')}"/>
             </g:else>
