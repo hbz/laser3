@@ -101,7 +101,7 @@ class LicenseCustomProperty extends CustomProperty implements AuditableTrait  {
                 description = contentItemDesc.content
             }
             else {
-                def defaultMsg = ContentItem.findByKeyAndLocale("kbplus.change.subscription.default", locale.toString())
+                ContentItem defaultMsg = ContentItem.findByKeyAndLocale("kbplus.change.subscription.default", locale.toString())
                 if( defaultMsg)
                     description = defaultMsg.content
             }
@@ -122,7 +122,7 @@ class LicenseCustomProperty extends CustomProperty implements AuditableTrait  {
             def depedingProps = LicenseCustomProperty.findAllByInstanceOf( this )
             depedingProps.each{ lcp ->
 
-                def definedType = 'text'
+                String definedType = 'text'
                 if (lcp.type.type == RefdataValue.class.toString()) {
                     definedType = 'rdv'
                 }

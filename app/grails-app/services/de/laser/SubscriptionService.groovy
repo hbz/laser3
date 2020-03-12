@@ -14,17 +14,16 @@ import de.laser.exceptions.EntitlementCreationException
 import de.laser.helper.DateUtil
 import de.laser.helper.FactoryResult
 import de.laser.helper.RDConstants
-import org.springframework.web.multipart.commons.CommonsMultipartFile
 import de.laser.helper.RDStore
+import grails.util.Holders
+import org.codehaus.groovy.runtime.InvokerHelper
+import org.springframework.web.multipart.commons.CommonsMultipartFile
 
-import java.nio.file.Path
 import java.nio.file.Files
+import java.nio.file.Path
 import java.text.SimpleDateFormat
 
 import static de.laser.helper.RDStore.*
-
-import grails.util.Holders
-import org.codehaus.groovy.runtime.InvokerHelper
 
 class SubscriptionService {
     def genericOIDService
@@ -472,6 +471,7 @@ class SubscriptionService {
                     def newSubscription = new Subscription(
                             isMultiYear: subMember.isMultiYear,
                             type: subMember.type,
+                            kind: subMember.kind,
                             status: targetSub.status,
                             name: subMember.name,
                             startDate: subMember.isMultiYear ? subMember.startDate : targetSub.startDate,
@@ -595,7 +595,7 @@ class SubscriptionService {
         boolean isInstAdm = contextService.getUser().hasAffiliation("INST_ADM")
         def userId = contextService.user.id
         toDeleteTasks.each { deleteTaskId ->
-            def dTask = Task.get(deleteTaskId)
+            Task dTask = Task.get(deleteTaskId)
             if (dTask) {
                 if (dTask.creator.id == userId || isInstAdm) {
                     delete(dTask, flash)
@@ -730,6 +730,7 @@ class SubscriptionService {
                         Doc newDoc = new Doc()
                         InvokerHelper.setProperties(newDoc, dctx.owner.properties)
                         save(newDoc, flash)
+
                         DocContext newDocContext = new DocContext()
                         InvokerHelper.setProperties(newDocContext, dctx.properties)
                         newDocContext.subscription = targetSub
@@ -753,7 +754,7 @@ class SubscriptionService {
 
 
     boolean copyProperties(List<AbstractProperty> properties, Subscription targetSub, boolean isRenewSub, def flash, List auditProperties){
-        def contextOrg = contextService.getOrg()
+        Org contextOrg = contextService.getOrg()
         def targetProp
 
 

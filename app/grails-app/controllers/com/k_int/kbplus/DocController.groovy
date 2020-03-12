@@ -40,7 +40,7 @@ class DocController extends AbstractDebugController {
 				[docInstance: new Doc(params)]
 				break
 			case 'POST':
-				def docInstance = new Doc(params)
+				Doc docInstance = new Doc(params)
 				if (!docInstance.save(flush: true)) {
 					render view: 'create', model: [docInstance: docInstance]
 					return
@@ -55,7 +55,7 @@ class DocController extends AbstractDebugController {
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
     def show() {
-        def docInstance = Doc.get(params.id)
+		Doc docInstance = Doc.get(params.id)
         if (!docInstance) {
 			flash.message = message(code: 'default.not.found.message', args: [message(code: 'doc.label'), params.id])
             redirect action: 'list'
@@ -70,7 +70,7 @@ class DocController extends AbstractDebugController {
     def edit() {
 		switch (request.method) {
 		case 'GET':
-	        def docInstance = Doc.get(params.id)
+			Doc docInstance = Doc.get(params.id)
 	        if (!docInstance) {
 	            flash.message = message(code: 'default.not.found.message', args: [message(code: 'doc.label'), params.id])
 	            redirect action: 'list'
@@ -80,7 +80,7 @@ class DocController extends AbstractDebugController {
 	        [docInstance: docInstance]
 			break
 		case 'POST':
-	        def docInstance = Doc.get(params.id)
+				Doc docInstance = Doc.get(params.id)
 	        if (!docInstance) {
 	            flash.message = message(code: 'default.not.found.message', args: [message(code: 'doc.label'), params.id])
 	            redirect action: 'list'
@@ -127,7 +127,7 @@ class DocController extends AbstractDebugController {
 	        [docInstance: docInstance]
 			break*/
 			case 'POST':
-				def docInstance = Doc.get(params.id)
+				Doc docInstance = Doc.get(params.id)
 				if (!docInstance) {
 					flash.message = message(code: 'default.not.found.message', args: [message(code: 'default.note.label'), params.id])
 					//redirect action: 'list'
@@ -167,7 +167,7 @@ class DocController extends AbstractDebugController {
 	@DebugAnnotation(test='hasAffiliation("INST_EDITOR")')
 	@Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_EDITOR") })
     def delete() {
-        def docInstance = Doc.get(params.id)
+		Doc docInstance = Doc.get(params.id)
         if (!docInstance) {
 			flash.message = message(code: 'default.not.found.message', args: [message(code: 'doc.label'), params.id])
             redirect action: 'list'

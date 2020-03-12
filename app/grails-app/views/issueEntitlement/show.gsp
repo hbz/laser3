@@ -264,7 +264,7 @@
 
           <div class="fields three">
               <div class="field">
-                  <label for="filter">${message(code:'tipp.show.filter_pkg', default:'Filters - Package Name')}</label>
+                  <label for="filter">${message(code:'tipp.show.filter_pkg')}</label>
                   <input id="filter" name="filter" value="${params.filter}"/>
               </div>
               <div class="field">
@@ -334,7 +334,7 @@ $("[name='coreAssertionEdit']").modal('hide');
 }
 function showCoreAssertionModal(){
 $("input.datepicker-class").datepicker({
-format:"${message(code:'default.date.format.notime', default:'yyyy-MM-dd').toLowerCase()}",
+format:"${message(code:'default.date.format.notime').toLowerCase()}",
 language:"${message(code:'default.locale.label', default:'en')}",
 autoclose:true
 });

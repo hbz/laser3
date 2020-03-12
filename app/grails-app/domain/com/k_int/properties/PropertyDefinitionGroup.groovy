@@ -2,11 +2,9 @@ package com.k_int.properties
 
 import com.k_int.kbplus.GenericOIDService
 import com.k_int.kbplus.Org
-import com.k_int.kbplus.RefdataValue
 import de.laser.CacheService
 import de.laser.domain.I10nTranslation
 import de.laser.helper.EhcacheWrapper
-import de.laser.helper.RefdataAnnotation
 import grails.util.Holders
 import groovy.util.logging.Log4j
 import org.codehaus.groovy.grails.orm.hibernate.cfg.GrailsHibernateUtil

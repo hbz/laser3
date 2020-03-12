@@ -40,7 +40,7 @@ databaseChangeLog = {
 		}
 	}
 
-	changeSet(author: "kloberd (generated)", id: "1583394967979-3") {
+	changeSet(author: "kloberd (modified)", id: "1583394967979-3") {
 		grailsChange {
 			change {
 				sql.execute("update survey_info set surin_is_mandatory = true where surin_is_mandatory is null and surin_is_subscription_survey = true;")
@@ -51,7 +51,7 @@ databaseChangeLog = {
 		}
 	}
 
-	changeSet(author: "kloberd (modified)", id: "1583394967979-4") {
+	changeSet(author: "kloberd (generated)", id: "1583394967979-4") {
 		addNotNullConstraint(columnDataType: "bool", columnName: "surin_is_mandatory", tableName: "survey_info")
 	}
 
@@ -123,5 +123,11 @@ databaseChangeLog = {
 
 	changeSet(author: "kloberd (generated)", id: "1583394967979-15") {
 		addForeignKeyConstraint(baseColumnNames: "osg_subject_group", baseTableName: "org_subject_group", baseTableSchemaName: "public", constraintName: "FK7F97BF9158CB3321", deferrable: "false", initiallyDeferred: "false", referencedColumnNames: "rdv_id", referencedTableName: "refdata_value", referencedTableSchemaName: "public", referencesUniqueColumn: "false")
+	}
+
+	changeSet(author: "kloberd (generated)", id: "1583394967979-16") {
+		addColumn(schemaName: "public", tableName: "system_announcement") {
+			column(name: "sa_status", type: "text")
+		}
 	}
 }

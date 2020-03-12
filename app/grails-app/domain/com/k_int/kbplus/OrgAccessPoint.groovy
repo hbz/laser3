@@ -108,7 +108,7 @@ class OrgAccessPoint extends AbstractBaseDomain {
 
     def getNotLinkedSubscriptions()
     {
-        def notAllowedSubscriptionStatusList  = ['Deleted', 'Expired', 'Terminated', 'No longer usable', 'Rejected', 'ExpiredPerennial']
+        def notAllowedSubscriptionStatusList  = ['Deleted', 'Expired', 'Terminated', 'No longer usable', 'Rejected']
         def statusList = []
         notAllowedSubscriptionStatusList.each { statusList += RDStore.getRefdataValue(it, RDConstants.SUBSCRIPTION_STATUS)}
         // Get not active subscriptions for the access point org

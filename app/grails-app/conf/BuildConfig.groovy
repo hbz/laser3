@@ -20,9 +20,9 @@ grails.project.dependency.resolution = {
     log "warn" // log level of Ivy resolver, either 'error', 'warn', 'info', 'debug' or 'verbose'
     checksums true // Whether to verify checksums on resolve
 
-    def gebVersion = "0.12.2" // '1.0' // "0.12.2"
-    def seleniumVersion = "2.41.0" // '2.45.0' // "2.53.0"
-    def seleniumHtmlunitDriverVersion = "2.41.0" // '2.45.0' // "2.52.0"
+    String gebVersion = "0.12.2" // '1.0' // "0.12.2"
+    String seleniumVersion = "2.41.0" // '2.45.0' // "2.53.0"
+    String seleniumHtmlunitDriverVersion = "2.41.0" // '2.45.0' // "2.52.0"
 
 
     repositories {

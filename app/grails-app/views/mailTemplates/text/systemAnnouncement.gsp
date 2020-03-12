@@ -1,13 +1,10 @@
-Sehr geehrte/r Damen und Herren,
-
-folgende Ankündigung wurde von einem Administrator veröffentlicht:
-
+Wichtige LAS:eR-Wartungs- und Systemmeldung: ${announcement.getCleanTitle()}
+--------------------------------------------------
 
 ${announcement.getCleanTitle()}
 
 ${announcement.getCleanContent()}
 
-
-
-
-<g:render template="/mailTemplates/text/signature" />
+--------------------------------------------------
+Sie erhalten diese Meldung aufgrund der Benachrichtigungseinstellungen
+in Ihrem LAS:eR-Nutzerprofil unter <g:createLink controller="profile" action="index" absolute="true" />

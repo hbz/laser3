@@ -99,6 +99,7 @@ class AdminController extends AbstractDebugController {
                 }
             }
         }
+        result.numberOfCurrentRecipients = SystemAnnouncement.getRecipients().size()
         result.announcements = SystemAnnouncement.list(sort: 'lastUpdated', order: 'desc')
         result
     }
@@ -189,20 +190,20 @@ class AdminController extends AbstractDebugController {
       result
     }
 
-    @Secured(['ROLE_ADMIN'])
-    def updatePendingChanges() {
-        //Find all pending changes with license FK and timestamp after summer 14
-        // For those with changeType: CustomPropertyChange, change it to PropertyChange
-        // on changeDoc add value propertyOID with the value of OID
-        String theDate = "01/05/2014 00:00:00";
-        def summer_date = new Date().parse("d/M/yyyy H:m:s", theDate)
-        def criteria = PendingChange.createCriteria()
-        def changes = criteria.list{
-            isNotNull("license")
-            ge("ts",summer_date)
-            like("changeDoc","%changeType\":\"CustomPropertyChange\",%")
-        }
-        log.debug("Starting PendingChange Update. Found:${changes.size()}")
+  @Secured(['ROLE_ADMIN'])
+  def updatePendingChanges() {
+  //Find all pending changes with license FK and timestamp after summer 14
+  // For those with changeType: CustomPropertyChange, change it to PropertyChange
+  // on changeDoc add value propertyOID with the value of OID
+    String theDate = "01/05/2014 00:00:00";
+    Date summer_date = new Date().parse("d/M/yyyy H:m:s", theDate)
+    def criteria = PendingChange.createCriteria()
+    def changes = criteria.list{
+      isNotNull("license")
+      ge("ts",summer_date)
+      like("changeDoc","%changeType\":\"CustomPropertyChange\",%")
+    }
+    log.debug("Starting PendingChange Update. Found:${changes.size()}")
 
         changes.each{
             def parsed_change_info = JSON.parse(it.payload)
@@ -217,32 +218,33 @@ class AdminController extends AbstractDebugController {
 
     }
 
-    @Secured(['ROLE_ADMIN'])
-    def actionAffiliationRequest() {
-        log.debug("actionMembershipRequest");
-        def req = UserOrg.get(params.req);
-        def user = User.get(springSecurityService.principal.id)
-        if ( req != null ) {
-            switch(params.act) {
-                case 'approve':
-                    req.status = UserOrg.STATUS_APPROVED
-                    break;
-                case 'deny':
-                    req.status = UserOrg.STATUS_REJECTED
-                    break;
-                default:
-                    log.error("FLASH UNKNOWN CODE");
-                    break;
-            }
-            // req.actionedBy = user
-            req.dateActioned = System.currentTimeMillis();
-            req.save(flush:true);
-        }
-        else {
-            log.error("FLASH");
-        }
-        redirect(action: "manageAffiliationRequests")
+  @Secured(['ROLE_ADMIN'])
+  def actionAffiliationRequest() {
+      log.debug("actionMembershipRequest");
+      UserOrg req = UserOrg.get(params.req);
+      User user = User.get(springSecurityService.principal.id)
+
+    if ( req != null ) {
+      switch(params.act) {
+        case 'approve':
+          req.status = UserOrg.STATUS_APPROVED
+          break;
+        case 'deny':
+          req.status = UserOrg.STATUS_REJECTED
+          break;
+        default:
+          log.error("FLASH UNKNOWN CODE");
+          break;
+      }
+      // req.actionedBy = user
+      req.dateActioned = System.currentTimeMillis();
+      req.save(flush:true);
     }
+    else {
+      log.error("FLASH");
+    }
+    redirect(action: "manageAffiliationRequests")
+  }
 
     @Secured(['ROLE_ADMIN'])
     def hardDeletePkgs(){
@@ -256,45 +258,46 @@ class AdminController extends AbstractDebugController {
         result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeTMP();
         result.offset = params.offset ? Integer.parseInt(params.offset) : 0;
 
-        if(params.id){
-            def pkg = Package.get(params.id)
-            def conflicts_list = []
-            if(pkg.documents){
-                def document_map = [:]
-                document_map.name = "Documents"
-                document_map.details = []
-                pkg.documents.each{
-                    document_map.details += ['text':it.owner.title]
-                }
-                document_map.action = ['actionRequired':false,'text':"References will be deleted"]
-                conflicts_list += document_map
-            }
-            if(pkg.subscriptions){
-                def subscription_map = [:]
-                subscription_map.name = "Subscriptions"
-                subscription_map.details = []
-                pkg.subscriptions.each{
-                    subscription_map.details += ['link':createLink(controller:'subscription', action: 'show', id:it.subscription.id), 'text': it.subscription.name]
-                }
-                subscription_map.action = ['actionRequired':true,'text':"Unlink subscriptions. (IEs will be removed as well)"]
-                if(subscription_map.details){
-                    conflicts_list += subscription_map
-                }
-            }
-            if(pkg.tipps){
-                def tipp_map = [:]
-                tipp_map.name = "TIPPs"
-                def totalIE = 0
-                pkg.tipps.each{
-                    totalIE += IssueEntitlement.countByTipp(it)
-                }
-                tipp_map.details = [['text':"Number of TIPPs: ${pkg.tipps.size()}"],
-                                    ['text':"Number of IEs: ${totalIE}"]]
-                tipp_map.action = ['actionRequired':false,'text':"TIPPs and IEs will be deleted"]
-                conflicts_list += tipp_map
-            }
-            result.conflicts_list = conflicts_list
-            result.pkg = pkg
+    if(params.id){
+        Package pkg = Package.get(params.id)
+      def conflicts_list = []
+
+      if(pkg.documents){
+        def document_map = [:]
+        document_map.name = "Documents"
+        document_map.details = []
+        pkg.documents.each{
+          document_map.details += ['text':it.owner.title]
+        }
+        document_map.action = ['actionRequired':false,'text':"References will be deleted"]
+        conflicts_list += document_map
+      }
+      if(pkg.subscriptions){
+        def subscription_map = [:]
+        subscription_map.name = "Subscriptions"
+        subscription_map.details = []
+        pkg.subscriptions.each{
+          subscription_map.details += ['link':createLink(controller:'subscription', action: 'show', id:it.subscription.id), 'text': it.subscription.name]
+        }
+        subscription_map.action = ['actionRequired':true,'text':"Unlink subscriptions. (IEs will be removed as well)"]
+        if(subscription_map.details){
+          conflicts_list += subscription_map
+        }
+      }
+      if(pkg.tipps){
+        def tipp_map = [:]
+        tipp_map.name = "TIPPs"
+        def totalIE = 0
+        pkg.tipps.each{
+          totalIE += IssueEntitlement.countByTipp(it)
+        }
+        tipp_map.details = [['text':"Number of TIPPs: ${pkg.tipps.size()}"],
+                ['text':"Number of IEs: ${totalIE}"]]
+        tipp_map.action = ['actionRequired':false,'text':"TIPPs and IEs will be deleted"]
+        conflicts_list += tipp_map
+      }
+      result.conflicts_list = conflicts_list
+      result.pkg = pkg
 
             render(template: "hardDeleteDetails",model:result)
         }else{
@@ -311,22 +314,22 @@ class AdminController extends AbstractDebugController {
         result
     }
 
-    @Secured(['ROLE_ADMIN'])
-    def performPackageDelete(){
-        if (request.method == 'POST'){
-            def pkg = Package.get(params.id)
-            Package.withTransaction { status ->
-                log.info("Deleting Package ")
-                log.info("${pkg.id}::${pkg}")
-                pkg.pendingChanges.each{
-                    it.delete()
-                }
-                pkg.documents.each{
-                    it.delete()
-                }
-                pkg.orgs.each{
-                    it.delete()
-                }
+  @Secured(['ROLE_ADMIN'])
+  def performPackageDelete(){
+   if (request.method == 'POST'){
+      Package pkg = Package.get(params.id)
+      Package.withTransaction { status ->
+        log.info("Deleting Package ")
+        log.info("${pkg.id}::${pkg}")
+        pkg.pendingChanges.each{
+          it.delete()
+        }
+        pkg.documents.each{
+          it.delete()
+        }
+        pkg.orgs.each{
+          it.delete()
+        }
 
                 pkg.subscriptions.each{
                     it.delete()
@@ -353,8 +356,8 @@ class AdminController extends AbstractDebugController {
             switch (request.method) {
                 case 'GET':
                     if(usrMrgId && usrKeepId ){
-                        def usrMrg = User.get(usrMrgId)
-                        def usrKeep =  User.get(usrKeepId)
+                        User usrMrg = User.get(usrMrgId)
+                        User usrKeep =  User.get(usrKeepId)
                         log.debug("Selected users : ${usrMrg}, ${usrKeep}");
                         result.userRoles = usrMrg.getAuthorities()
                         result.userAffiliations =  usrMrg.getAuthorizedAffiliations()
@@ -396,15 +399,15 @@ class AdminController extends AbstractDebugController {
                     break;
             }
 
-            log.debug("Get all users");
-            result.usersAll = User.list(sort:"display", order:"asc")
-            log.debug("Get active users");
-            def activeHQL = " from User as usr where usr.enabled=true or usr.enabled=null order by display asc"
-            result.usersActive = User.executeQuery(activeHQL)
-        }
-        catch ( Exception e ) {
-            log.error("Problem in user merge",e);
-        }
+       log.debug("Get all users");
+       result.usersAll = User.list(sort:"display", order:"asc")
+       log.debug("Get active users");
+       String activeHQL = " from User as usr where usr.enabled=true or usr.enabled=null order by display asc"
+       result.usersActive = User.executeQuery(activeHQL)
+    }
+    catch ( Exception e ) {
+      log.error("Problem in user merge",e);
+    }
 
         log.debug("Returning ${result}");
         result
@@ -429,29 +432,29 @@ class AdminController extends AbstractDebugController {
                 // We should check that the new role does not already exist
                 def existing_affil_check = UserOrg.findByOrgAndUserAndFormalRole(affil.org,usrKeep,affil.formalRole);
 
-                if ( existing_affil_check == null ) {
-                    log.debug("No existing affiliation");
-                    def newAffil = new UserOrg(org:affil.org,user:usrKeep,formalRole:affil.formalRole,status:affil.status)
-                    if(!newAffil.save(flush:true,failOnError:true)){
-                        log.error("Probem saving user roles");
-                        newAffil.errors.each { e ->
-                            log.error(e);
-                        }
-                        return false
-                    }
-                }
-                else {
-                    if (affil.status != existing_affil_check.status) {
-                        existing_affil_check.status = affil.status
-                        existing_affil_check.save()
-                    }
-                    log.debug("Affiliation already present - skipping ${existing_affil_check}");
-                }
+        if ( existing_affil_check == null ) {
+            log.debug("No existing affiliation");
+            UserOrg newAffil = new UserOrg(org:affil.org,user:usrKeep,formalRole:affil.formalRole,status:affil.status)
+          if(!newAffil.save(flush:true,failOnError:true)){
+            log.error("Probem saving user roles");
+            newAffil.errors.each { e ->
+              log.error(e);
             }
+            return false
+          }
         }
-        log.debug("copyUserRoles returning true");
-        return true
+        else {
+          if (affil.status != existing_affil_check.status) {
+            existing_affil_check.status = affil.status
+            existing_affil_check.save()
+          }
+          log.debug("Affiliation already present - skipping ${existing_affil_check}");
+        }
+      }
     }
+    log.debug("copyUserRoles returning true");
+    return true
+  }
 
     @Secured(['ROLE_ADMIN'])
     def showAffiliations() {
@@ -540,7 +543,7 @@ class AdminController extends AbstractDebugController {
         Map<String, Object> result = [:]
 
         def dataSource = Holders.grailsApplication.mainContext.getBean('dataSource')
-        def sql = new Sql(dataSource)
+        Sql sql = new Sql(dataSource)
         result.statistic = sql.rows("select * from count_rows_for_all_tables('public')")
 
         result
@@ -644,23 +647,23 @@ class AdminController extends AbstractDebugController {
         Map<String, Object> result = [:]
         result.error = []
 
-        if(params.sourceTIPP && params.targetTI){
-            def ti = TitleInstance.get(params.long("targetTI"))
-            def tipp = TitleInstancePackagePlatform.get(params.long("sourceTIPP"))
-            if(ti && tipp){
-                tipp.title = ti
-                try{
-                    tipp.save(flush:true,failOnError:true)
-                    result.success = true
-                }catch(Exception e){
-                    log.error(e)
-                    result.error += "An error occured while saving the changes."
-                }
-            }else{
-                if(!ti) result.error += "No TitleInstance found with identifier: ${params.targetTI}."
-                if(!tipp) result.error += "No TIPP found with identifier: ${params.sourceTIPP}"
-            }
+    if(params.sourceTIPP && params.targetTI){
+        TitleInstance ti = TitleInstance.get(params.long("targetTI"))
+        TitleInstancePackagePlatform tipp = TitleInstancePackagePlatform.get(params.long("sourceTIPP"))
+      if(ti && tipp){
+        tipp.title = ti
+        try{
+          tipp.save(flush:true,failOnError:true)
+          result.success = true
+        }catch(Exception e){
+          log.error(e)
+          result.error += "An error occured while saving the changes."
         }
+      }else{
+        if(!ti) result.error += "No TitleInstance found with identifier: ${params.targetTI}."
+        if(!tipp) result.error += "No TIPP found with identifier: ${params.sourceTIPP}" 
+      }
+    }
 
         result
     }
@@ -1197,47 +1200,49 @@ class AdminController extends AbstractDebugController {
             def upload_filename = request.getFile("titles_file")?.getOriginalFilename()
             def input_stream = request.getFile("titles_file")?.inputStream
 
-            CSVReader r = new CSVReader( new InputStreamReader(input_stream, java.nio.charset.Charset.forName('UTF-8') ) )
-            String[] nl;
-            String[] cols;
-            def first = true
-            while ((nl = r.readNext()) != null) {
-                if ( first ) {
-                    first = false; // Skip header
-                    cols=nl;
+      CSVReader r = new CSVReader( new InputStreamReader(input_stream, java.nio.charset.Charset.forName('UTF-8') ) )
+      String[] nl;
+      String[] cols;
+      boolean first = true
+      while ((nl = r.readNext()) != null) {
+        if ( first ) {
+          first = false; // Skip header
+          cols=nl;
 
-                    // Make sure that there is at least one valid identifier column
-                }
-                else {
-                    def title = null;
-                    def bindvars = []
-                    // Set up base_query
-                    def q = "Select distinct(t) from TitleInstance as t "
-                    def joinclause = ''
-                    def whereclause = ' where ';
-                    def i = 0;
-                    def disjunction_ctr = 0;
-                    cols.each { cn ->
-                        if ( cn == 'title.id' ) {
-                            if ( disjunction_ctr++ > 0 ) { whereclause += ' OR ' }
-                            whereclause += 't.id = ?'
-                            bindvars.add(new Long(nl[i]));
-                        }
-                        else if ( cn == 'title.title' ) {
-                            title = nl[i]
-                        }
-                        else if ( cn.startsWith('title.id.' ) ) {
-                            // Namespace and value
-                            if ( nl[i].trim().length() > 0 ) {
-                                if ( disjunction_ctr++ > 0 ) { whereclause += ' OR ' }
-                                joinclause = " join t.ids as id "
-                                whereclause += " ( id.ns.ns = ? AND id.value = ? ) "
-                                bindvars.add(cn.substring(9))
-                                bindvars.add(nl[i])
-                            }
-                        }
-                        i++;
-                    }
+          // Make sure that there is at least one valid identifier column
+        }
+        else {
+          def title = null;
+          def bindvars = []
+
+            // Set up base_query
+            String q = "Select distinct(t) from TitleInstance as t "
+            String joinclause = ''
+            String whereclause = ' where '
+
+          def i = 0;
+          def disjunction_ctr = 0;
+          cols.each { cn ->
+            if ( cn == 'title.id' ) {
+              if ( disjunction_ctr++ > 0 ) { whereclause += ' OR ' }
+              whereclause += 't.id = ?'
+              bindvars.add(new Long(nl[i]));
+            }
+            else if ( cn == 'title.title' ) {
+              title = nl[i]
+            }
+            else if ( cn.startsWith('title.id.' ) ) {
+              // Namespace and value
+              if ( nl[i].trim().length() > 0 ) {
+                if ( disjunction_ctr++ > 0 ) { whereclause += ' OR ' }
+                joinclause = " join t.ids as id "
+                whereclause += " ( id.ns.ns = ? AND id.value = ? ) "
+                bindvars.add(cn.substring(9))
+                bindvars.add(nl[i])
+              }
+            }
+            i++;
+          }
 
                     log.debug("\n\n");
                     log.debug(q);

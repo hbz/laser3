@@ -2,7 +2,6 @@ package de.laser
 
 import com.k_int.kbplus.Identifier
 import com.k_int.kbplus.IssueEntitlement
-import de.laser.domain.IssueEntitlementCoverage
 import de.laser.helper.RDStore
 import grails.transaction.Transactional
 

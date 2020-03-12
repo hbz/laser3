@@ -60,7 +60,7 @@
                         </tr>
                         </thead>
                         <tbody>
-                            <g:each in="${entry.value}" var="pd">
+                            <g:each in="${entry.value.sort{it."name_${SUBSTITUTE}".toLowerCase()}}" var="pd">
                                 <tr>
                                     <td>
                                         <g:if test="${pd.isHardData}">

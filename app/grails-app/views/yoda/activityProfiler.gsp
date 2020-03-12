@@ -61,7 +61,13 @@
         </tbody>
     </table>
     <style>
-        #ct-chart-0 .ct-series-b .ct-bar { stroke: forestgreen; }
+        #ct-chart-0 .ct-series-b .ct-bar { stroke: #bb1600; }
+        #ct-chart-0 .ct-series-b .ct-slice-pie { fill: #bb1600; }
+
+        .ct-series-a .ct-bar { stroke: #98b500; }
+        .ct-series-a .ct-slice-pie { fill: #98b500; }
+        .ct-series-b .ct-bar { stroke: orange; }
+        .ct-series-b .ct-slice-pie { fill: orange; }
     </style>
 </body>
 </html>

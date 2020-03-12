@@ -9,13 +9,10 @@ import de.laser.controller.AbstractDebugController
 import de.laser.domain.IssueEntitlementCoverage
 import de.laser.domain.PriceItem
 import de.laser.exceptions.EntitlementCreationException
-import de.laser.helper.DateUtil
-import de.laser.helper.DebugAnnotation
-import de.laser.helper.DebugUtil
-import de.laser.helper.EhcacheWrapper
-import de.laser.helper.RDConstants
-import de.laser.helper.RDStore
-import de.laser.interfaces.*
+import de.laser.helper.*
+import de.laser.interfaces.ShareSupport
+import de.laser.interfaces.TemplateSupport
+import de.laser.oai.OaiClientLaser
 import grails.converters.JSON
 import grails.doc.internal.StringEscapeCategory
 import grails.plugin.springsecurity.annotation.Secured
@@ -41,6 +38,7 @@ import java.util.concurrent.Callable
 import java.util.concurrent.ExecutorService
 
 import static de.laser.helper.RDStore.*
+import static de.laser.helper.RDStore.OR_LICENSEE_CONS
 
 // 2.0
 
@@ -253,7 +251,7 @@ class SubscriptionController extends AbstractDebugController {
         exportService.printDuration(verystarttime, "Querying")
 
         log.debug("subscriptionInstance returning... ${result.num_sub_rows} rows ");
-        def filename = "subscription_${escapeService.escapeString(result.subscriptionInstance.dropdownNamingConvention())}"
+        String filename = "subscription_${escapeService.escapeString(result.subscriptionInstance.dropdownNamingConvention())}"
 
 
         if (executorWrapperService.hasRunningProcess(result.subscriptionInstance)) {
@@ -630,10 +628,10 @@ class SubscriptionController extends AbstractDebugController {
     def createCompareList(sub, dateStr, params, result) {
         def returnVals = [:]
         SimpleDateFormat sdf = DateUtil.getSDF_NoTime()
-        def date = dateStr ? sdf.parse(dateStr) : new Date()
-        def subId = sub.substring(sub.indexOf(":") + 1)
+        Date date = dateStr ? sdf.parse(dateStr) : new Date()
+        String subId = sub.substring(sub.indexOf(":") + 1)
 
-        def subInst = Subscription.get(subId)
+        Subscription subInst = Subscription.get(subId)
         if (subInst.startDate > date || subInst.endDate < date) {
             def errorMsg = "${subInst.name} start date is: ${sdf.format(subInst.startDate)} and end date is: ${sdf.format(subInst.endDate)}. You have selected to compare it on date ${sdf.format(date)}."
             throw new IllegalArgumentException(errorMsg)
@@ -653,7 +651,7 @@ class SubscriptionController extends AbstractDebugController {
 
     private def generateIEQuery(params, qry_params, showDeletedTipps, asAt) {
 
-        def base_qry = "from IssueEntitlement as ie where ie.subscription = ? and ie.tipp.title.status.value != 'Deleted' "
+        String base_qry = "from IssueEntitlement as ie where ie.subscription = ? and ie.tipp.title.status.value != 'Deleted' "
 
         if (showDeletedTipps == false) {
             base_qry += "and ie.tipp.status != ? "
@@ -668,7 +666,7 @@ class SubscriptionController extends AbstractDebugController {
 
         if (params.startsBefore && params.startsBefore.length() > 0) {
             SimpleDateFormat sdf = DateUtil.getSDF_NoTime()
-            def d = sdf.parse(params.startsBefore)
+            Date d = sdf.parse(params.startsBefore)
             base_qry += " and (select min(ic.startDate) from IssueEntitlementCoverage ic where ic.ie = ie) <= ?"
             qry_params.add(d)
         }
@@ -810,14 +808,14 @@ class SubscriptionController extends AbstractDebugController {
 
             if (params.endsAfter && params.endsAfter.length() > 0) {
                 SimpleDateFormat sdf = DateUtil.getSDF_NoTime()
-                def d = sdf.parse(params.endsAfter)
+                Date d = sdf.parse(params.endsAfter)
                 basequery += " and (select max(tc.endDate) from TIPPCoverage tc where tc.tipp = tipp) >= ?"
                 qry_params.add(d)
             }
 
             if (params.startsBefore && params.startsBefore.length() > 0) {
                 SimpleDateFormat sdf = DateUtil.getSDF_NoTime()
-                def d = sdf.parse(params.startsBefore)
+                Date d = sdf.parse(params.startsBefore)
                 basequery += " and (select min(tc.startDate) from TIPPCoverage tc where tc.tipp = tipp) <= ?"
                 qry_params.add(d)
             }
@@ -1113,7 +1111,7 @@ class SubscriptionController extends AbstractDebugController {
         result.subscriber = result.newSub.getSubscriber()
         result.editable = surveyService.isEditableIssueEntitlementsSurvey(result.institution, result.surveyConfig)
 
-        def filename = "${escapeService.escapeString(message(code:'renewEntitlementsWithSurvey.selectableTitles')+'_'+result.newSub.dropdownNamingConvention())}"
+        String filename = "${escapeService.escapeString(message(code:'renewEntitlementsWithSurvey.selectableTitles')+'_'+result.newSub.dropdownNamingConvention())}"
 
         if (params.exportKBart) {
             response.setHeader("Content-disposition", "attachment; filename=${filename}.tsv")
@@ -1202,7 +1200,7 @@ class SubscriptionController extends AbstractDebugController {
 
         result.ies = subscriptionService.getCurrentIssueEntitlements(result.surveyConfig.subscription?.getDerivedSubscriptionBySubscribers(result.institution))
 
-        def filename = "renewEntitlements_${escapeService.escapeString(result.subscriptionInstance.dropdownNamingConvention())}"
+        String filename = "renewEntitlements_${escapeService.escapeString(result.subscriptionInstance.dropdownNamingConvention())}"
 
         if (params.exportKBart) {
             response.setHeader("Content-disposition", "attachment; filename=${filename}.tsv")
@@ -1384,6 +1382,8 @@ class SubscriptionController extends AbstractDebugController {
                     org.country = subscr.country
                     org.startDate = subChild.startDate ? subChild.startDate.format(g.message(code:'default.date.format.notime')) : ''
                     org.endDate = subChild.endDate ? subChild.endDate.format(g.message(code:'default.date.format.notime')) : ''
+                    org.isPublicForApi = subChild.isPublicForApi ? RDStore.YN_YES.getI10n("value") : RDStore.YN_NO.getI10n("value")
+                    org.hasPerpetualAccess = subChild.hasPerpetualAccess ? RDStore.YN_YES.getI10n("value") : RDStore.YN_NO.getI10n("value")
                     org.status = subChild.status
                     org.customProperties = subscr.customProperties
                     org.privateProperties = subscr.privateProperties
@@ -1486,9 +1486,6 @@ class SubscriptionController extends AbstractDebugController {
         result.parentLicense = result.parentSub.owner
 
         result.validLicenses = []
-        if(result.parentLicense) {
-            result.validLicenses << result.parentLicense
-        }
 
         def childLicenses = License.where {
             instanceOf == result.parentLicense
@@ -1535,7 +1532,7 @@ class SubscriptionController extends AbstractDebugController {
         ctx.accessService.checkPermAffiliation("ORG_INST_COLLECTIVE,ORG_CONSORTIUM", "INST_EDITOR")
     })
     def processLinkLicenseMembers() {
-        def result = setResultGenericsAndCheckAccess(accessService.CHECK_VIEW)
+        Map<String,Object> result = setResultGenericsAndCheckAccess(accessService.CHECK_VIEW)
         if (!result) {
             response.sendError(401); return
         }
@@ -1548,20 +1545,27 @@ class SubscriptionController extends AbstractDebugController {
 
         result.parentSub = result.subscriptionInstance.instanceOf && result.subscriptionInstance.getCalculatedType() != TemplateSupport.CALCULATED_TYPE_PARTICIPATION_AS_COLLECTIVE ? result.subscriptionInstance.instanceOf : result.subscriptionInstance
 
+        RefdataValue licenseeRoleType = OR_LICENSEE_CONS
+        if(result.subscriptionInstance.getCalculatedType() == TemplateSupport.CALCULATED_TYPE_PARTICIPATION_AS_COLLECTIVE)
+            licenseeRoleType = OR_LICENSEE_COLL
+
         result.parentLicense = result.parentSub.owner
 
-        def validSubChilds = Subscription.findAllByInstanceOf(result.parentSub)
+        Set<Subscription> validSubChilds = Subscription.findAllByInstanceOf(result.parentSub)
 
         List selectedMembers = params.list("selectedMembers")
 
-        def changeAccepted = []
-        if(selectedMembers && params.license_All){
-            def lic = License.get(params.license_All)
-            selectedMembers.each { subId ->
-                def subChild = Subscription.get(subId)
-                subChild.owner = (params.processOption == 'linkLicense') ? lic : ((params.processOption == 'unlinkLicense') ? null : subChild.owner)
-                if (subChild.save(flush: true)) {
-                    changeAccepted << "${subChild?.name} (${message(code:'subscription.linkInstance.label')} ${subChild?.orgRelations.find { it.roleType in [OR_SUBSCRIBER_CONS,OR_SUBSCRIBER_COLLECTIVE] }.org.sortname})"
+        List<GString> changeAccepted = []
+        if (params.license_All) {
+            License lic = License.get(params.license_All)
+            validSubChilds.each { subChild ->
+                Subscription sub = Subscription.get(subChild.id)
+                sub.owner = lic
+
+                if (sub.save()) {
+                    OrgRole licenseeRole = new OrgRole(org:sub.getSubscriber(),lic:lic,roleType:licenseeRoleType)
+                    if(licenseeRole.save())
+                        changeAccepted << "${subChild.name} (${message(code:'subscription.linkInstance.label')} ${subChild.getSubscriber().sortname})"
                 }
             }
             if (changeAccepted) {
@@ -1574,12 +1578,23 @@ class SubscriptionController extends AbstractDebugController {
 
 
         } else {
-            if(!selectedMembers) {
-                flash.error = message(code: 'subscription.linkLicenseMembers.noSelectedMember')
-            }
+            validSubChilds.each { subChild ->
+                if (params."license_${subChild.id}") {
+                    License newLicense = License.get(params."license_${subChild.id}")
+                    if (subChild.owner != newLicense) {
+                        def sub = Subscription.get(subChild.id)
+                        sub.owner = newLicense
 
-            if(!params.license_All) {
-                flash.error = message(code: 'subscription.linkLicenseMembers.noSelectedLicense')
+                        if (sub.save()) {
+                            OrgRole licenseeRole = new OrgRole(org:sub.getSubscriber(),lic:newLicense,roleType:licenseeRoleType)
+                            if(licenseeRole.save())
+                                changeAccepted << "${subChild.name} (${message(code:'subscription.linkInstance.label')} ${subChild.getSubscriber().sortname})"
+                        }
+                    }
+                }
+            }
+            if (changeAccepted) {
+                flash.message = message(code: 'subscription.linkLicenseMembers.changeAcceptedAll', args: [changeAccepted.join(', ')])
             }
         }
 
@@ -1610,15 +1625,18 @@ class SubscriptionController extends AbstractDebugController {
 
         def removeLic = []
         validSubChilds.each { subChild ->
-                def sub = Subscription.get(subChild.id)
-                sub.owner = null
-                if (sub.save(flush: true)) {
-                    removeLic << "${subChild?.name} (${message(code:'subscription.linkInstance.label')} ${subChild?.orgRelations.find { it.roleType in [OR_SUBSCRIBER_CONS,OR_SUBSCRIBER_COLLECTIVE] }.org.sortname})"
-                }
+            def sub = Subscription.get(subChild.id)
+            //keep it, I need to ask Daniel for that
+            //OrgRole toDelete = OrgRole.findByOrgAndLic(sub.getSubscriber(),sub.owner)
+            sub.owner = null
+            if (sub.save()) {
+                //toDelete.delete()
+                removeLic << "${subChild.name} (${message(code:'subscription.linkInstance.label')} ${subChild.getSubscriber().org.sortname})"
             }
-            if (removeLic) {
-                flash.message = message(code: 'subscription.linkLicenseMembers.removeAcceptedAll', args: [removeLic.join(', ')])
-            }
+        }
+        if (removeLic) {
+            flash.message = message(code: 'subscription.linkLicenseMembers.removeAcceptedAll', args: [removeLic.join(', ')])
+        }
 
 
         redirect(action: 'linkLicenseMembers', id: params.id)
@@ -2054,7 +2072,7 @@ class SubscriptionController extends AbstractDebugController {
                         }
 
                         if (existingProp){
-                            def customProp = SubscriptionCustomProperty.get(existingProp.id)
+                            SubscriptionCustomProperty customProp = SubscriptionCustomProperty.get(existingProp.id)
                             changeProperties++
                             def prop = setProperty(customProp, params.filterPropValue)
 
@@ -2138,6 +2156,16 @@ class SubscriptionController extends AbstractDebugController {
                             noChange << message(code: 'subscription.status.label')
                         }
 
+                        if(params.kind && !auditService.getAuditConfig(subChild?.instanceOf, 'kind'))
+                        {
+                            subChild?.kind = RefdataValue.get(params.kind) ?: subChild?.kind
+                            change << message(code: 'subscription.kind.label')
+                        }
+                        if(params.kind && auditService.getAuditConfig(subChild?.instanceOf, 'kind'))
+                        {
+                            noChange << message(code: 'subscription.kind.label')
+                        }
+
                         if(params.form && !auditService.getAuditConfig(subChild?.instanceOf, 'form'))
                         {
                             subChild?.form = RefdataValue.get(params.form) ?: subChild?.form
@@ -2156,6 +2184,26 @@ class SubscriptionController extends AbstractDebugController {
                         if(params.resource && auditService.getAuditConfig(subChild?.instanceOf, 'resource'))
                         {
                             noChange << message(code: 'subscription.resource.label')
+                        }
+
+                        if(params.isPublicForApi && !auditService.getAuditConfig(subChild?.instanceOf, 'isPublicForApi'))
+                        {
+                            subChild?.isPublicForApi = RefdataValue.get(params.isPublicForApi) == RDStore.YN_YES
+                            change << message(code: 'subscription.isPublicForApi.label')
+                        }
+                        if(params.isPublicForApi && auditService.getAuditConfig(subChild?.instanceOf, 'isPublicForApi'))
+                        {
+                            noChange << message(code: 'subscription.isPublicForApi.label')
+                        }
+
+                        if(params.hasPerpetualAccess && !auditService.getAuditConfig(subChild?.instanceOf, 'hasPerpetualAccess'))
+                        {
+                            subChild?.hasPerpetualAccess = RefdataValue.get(params.hasPerpetualAccess) == RDStore.YN_YES
+                            change << message(code: 'subscription.hasPerpetualAccess.label')
+                        }
+                        if(params.hasPerpetuaLAccess && auditService.getAuditConfig(subChild?.instanceOf, 'hasPerpetualAccess'))
+                        {
+                            noChange << message(code: 'subscription.hasPerpetualAccess.label')
                         }
 
                         if (subChild?.isDirty()) {
@@ -2243,7 +2291,7 @@ class SubscriptionController extends AbstractDebugController {
 
 
                         if (existingProp && !(existingProp.hasProperty('instanceOf') && existingProp.instanceOf && AuditConfig.getConfig(existingProp.instanceOf))){
-                            def customProp = SubscriptionCustomProperty.get(existingProp.id)
+                            SubscriptionCustomProperty customProp = SubscriptionCustomProperty.get(existingProp.id)
 
                             try {
                                 customProp?.owner = null
@@ -2425,6 +2473,7 @@ class SubscriptionController extends AbstractDebugController {
 
                         Subscription memberSub = new Subscription(
                                 type: result.subscriptionInstance.type ?: null,
+                                kind: result.subscriptionInstance.kind ?: null,
                                 status: subStatus,
                                 name: result.subscriptionInstance.name,
                                 //name: result.subscriptionInstance.name + " (" + (cm.get(0).shortname ?: cm.get(0).name) + ")",
@@ -2638,9 +2687,9 @@ class SubscriptionController extends AbstractDebugController {
         def limits = (!params.format || params.format.equals("html")) ? [max: result.max, offset: result.offset] : [offset: 0]
 
         def qry_params = [result.subscriptionInstance]
-        def date_filter = new Date();
+        Date date_filter = new Date()
 
-        def base_qry = "from IssueEntitlement as ie where ie.subscription = ? "
+        String base_qry = "from IssueEntitlement as ie where ie.subscription = ? "
         base_qry += "and ie.status.value != 'Deleted' "
         if (date_filter != null) {
             if (screen.equals('previous')) {
@@ -2749,7 +2798,7 @@ class SubscriptionController extends AbstractDebugController {
         def addTitlesCount = 0
         if (result.subscriptionInstance) {
             if(params.singleTitle) {
-                def ie = IssueEntitlement.get(params.singleTitle)
+                IssueEntitlement ie = IssueEntitlement.get(params.singleTitle)
                 def tipp = ie.tipp
                 try {
 
@@ -2773,7 +2822,7 @@ class SubscriptionController extends AbstractDebugController {
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_EDITOR") })
     def removeEntitlement() {
         log.debug("removeEntitlement....");
-        def ie = IssueEntitlement.get(params.ieid)
+        IssueEntitlement ie = IssueEntitlement.get(params.ieid)
         def deleted_ie = TIPP_STATUS_DELETED
         ie.status = deleted_ie;
 
@@ -2895,7 +2944,7 @@ class SubscriptionController extends AbstractDebugController {
 
         if(result.subscriptionInstance) {
             iesToAdd.each { ieID ->
-                def ie = IssueEntitlement.findById(ieID)
+                IssueEntitlement ie = IssueEntitlement.findById(ieID)
                 def tipp = ie.tipp
 
                 try {
@@ -3004,7 +3053,7 @@ class SubscriptionController extends AbstractDebugController {
         result.contextOrg = contextService.getOrg()
 
         if (params.deleteId) {
-            def dTask = Task.get(params.deleteId)
+            Task dTask = Task.get(params.deleteId)
             if (dTask && dTask.creator.id == result.user.id) {
                 try {
                     flash.message = message(code: 'default.deleted.message', args: [message(code: 'task.label'), dTask.title])
@@ -3392,7 +3441,7 @@ class SubscriptionController extends AbstractDebugController {
         result.max = params.max ?: result.user.getDefaultPageSizeTMP();
         result.offset = params.offset ?: 0;
 
-        def baseQuery = "select pc from PendingChange as pc where pc.subscription = :sub and pc.status.value in (:stats)"
+        String baseQuery = "select pc from PendingChange as pc where pc.subscription = :sub and pc.status.value in (:stats)"
         def baseParams = [sub: result.subscription, stats: ['Accepted', 'Rejected']]
 
         result.todoHistoryLines = PendingChange.executeQuery(
@@ -3579,7 +3628,7 @@ class SubscriptionController extends AbstractDebugController {
 
             // tasks
 
-            def contextOrg = contextService.getOrg()
+            Org contextOrg = contextService.getOrg()
             result.tasks = taskService.getTasksByResponsiblesAndObject(result.user, contextOrg, result.subscriptionInstance)
             def preCon = taskService.getPreconditionsWithoutTargets(contextOrg)
             result << preCon
@@ -3867,7 +3916,7 @@ class SubscriptionController extends AbstractDebugController {
         }
 
         if (accessService.checkPerm("ORG_CONSORTIUM")) {
-            def baseSub = Subscription.get(params.baseSubscription ?: params.id)
+            Subscription baseSub = Subscription.get(params.baseSubscription ?: params.id)
 
             use(TimeCategory) {
                 result.newStartDate = baseSub.startDate ? baseSub.startDate + 1.year : null
@@ -3876,7 +3925,7 @@ class SubscriptionController extends AbstractDebugController {
 
             if (params.workFlowPart == '3') {
 
-                def newSubConsortia = Subscription.get(params.newSubscription)
+                Subscription newSubConsortia = Subscription.get(params.newSubscription)
 
                 def subMembers = []
 
@@ -3887,7 +3936,7 @@ class SubscriptionController extends AbstractDebugController {
 
                 subMembers.each { sub ->
 
-                    def subMember = Subscription.findById(sub)
+                    Subscription subMember = Subscription.findById(sub)
 
                     //ChildSub Exist
                     ArrayList<Links> prevLinks = Links.findAllByDestinationAndLinkTypeAndObjectType(subMember.id, LINKTYPE_FOLLOWS, Subscription.class.name)
@@ -3896,8 +3945,9 @@ class SubscriptionController extends AbstractDebugController {
                         /* Subscription.executeQuery("select s from Subscription as s join s.orgRelations as sor where s.instanceOf = ? and sor.org.id = ?",
                             [result.subscriptionInstance, it.id])*/
 
-                        def newSubscription = new Subscription(
+                        Subscription newSubscription = new Subscription(
                                 type: subMember.type,
+                                kind: subMember.kind,
                                 status: newSubConsortia.status,
                                 name: subMember.name,
                                 startDate: newSubConsortia.startDate,
@@ -3924,7 +3974,7 @@ class SubscriptionController extends AbstractDebugController {
                         if (subMember.customProperties) {
                             //customProperties
                             for (prop in subMember.customProperties) {
-                                def copiedProp = new SubscriptionCustomProperty(type: prop.type, owner: newSubscription)
+                                SubscriptionCustomProperty copiedProp = new SubscriptionCustomProperty(type: prop.type, owner: newSubscription)
                                 copiedProp = prop.copyInto(copiedProp)
                                 copiedProp.instanceOf = null
                                 copiedProp.save(flush: true)
@@ -3939,7 +3989,7 @@ class SubscriptionController extends AbstractDebugController {
                             }
                             subMember.privateProperties?.each { prop ->
                                 if (tenantOrgs.indexOf(prop.type?.tenant?.id) > -1) {
-                                    def copiedProp = new SubscriptionPrivateProperty(type: prop.type, owner: newSubscription)
+                                    SubscriptionPrivateProperty copiedProp = new SubscriptionPrivateProperty(type: prop.type, owner: newSubscription)
                                     copiedProp = prop.copyInto(copiedProp)
                                     copiedProp.save(flush: true)
                                     //newSubscription.addToPrivateProperties(copiedProp)  // ERROR Hibernate: Found two representations of same collection
@@ -4140,6 +4190,7 @@ class SubscriptionController extends AbstractDebugController {
                                 identifier: java.util.UUID.randomUUID().toString(),
                                 isSlaved: baseSub.isSlaved,
                                 type: baseSub.type,
+                                kind: baseSub.kind,
                                 status: RefdataValue.getByValueAndCategory('Intended', RDConstants.SUBSCRIPTION_STATUS),
                                 resource: baseSub.resource ?: null,
                                 form: baseSub.form ?: null
@@ -4241,7 +4292,7 @@ class SubscriptionController extends AbstractDebugController {
                             }
                             if (params.subscription.takePrivateProperties) {
                                 //privatProperties
-                                def contextOrg = contextService.getOrg()
+                                Org contextOrg = contextService.getOrg()
 
                                 baseSub.privateProperties.each { prop ->
                                     if (prop.type?.tenant?.id == contextOrg?.id) {
@@ -4266,7 +4317,7 @@ class SubscriptionController extends AbstractDebugController {
             result.navNextSubscription = links.nextLink
 
             // tasks
-            def contextOrg = contextService.getOrg()
+            Org contextOrg = contextService.getOrg()
             result.tasks = taskService.getTasksByResponsiblesAndObject(result.user, contextOrg, result.subscriptionInstance)
 
             result.contextOrg = contextOrg
@@ -4317,7 +4368,7 @@ class SubscriptionController extends AbstractDebugController {
             response.sendError(401); return
         }
 
-        def baseSub = Subscription.get(params.baseSubscription ?: params.id)
+        Subscription baseSub = Subscription.get(params.baseSubscription ?: params.id)
 
         ArrayList<Links> previousSubscriptions = Links.findAllByDestinationAndObjectTypeAndLinkType(baseSub.id, Subscription.class.name, LINKTYPE_FOLLOWS)
         if (previousSubscriptions.size() > 0) {
@@ -4336,7 +4387,7 @@ class SubscriptionController extends AbstractDebugController {
             use(TimeCategory) {
                 manualCancellationDate =  baseSub?.manualCancellationDate ? (baseSub?.manualCancellationDate + 1.year) : null
             }
-            def newSub = new Subscription(
+            Subscription newSub = new Subscription(
                     name: new_subname,
                     startDate: sub_startDate,
                     endDate: sub_endDate,
@@ -4491,9 +4542,7 @@ class SubscriptionController extends AbstractDebugController {
         result.allSubscriptions_writeRights = subscriptionService.getMySubscriptions_writeRights()
 
         List<String> subTypSubscriberVisible = [SUBSCRIPTION_TYPE_CONSORTIAL,
-                                                SUBSCRIPTION_TYPE_ADMINISTRATIVE,
-                                                SUBSCRIPTION_TYPE_ALLIANCE,
-                                                SUBSCRIPTION_TYPE_NATIONAL]
+                                                SUBSCRIPTION_TYPE_ADMINISTRATIVE]
         result.isSubscriberVisible =
                 result.sourceSubscription &&
                 result.targetSubscription &&
@@ -4930,7 +4979,7 @@ class SubscriptionController extends AbstractDebugController {
         }
 
         // tasks
-        def contextOrg = contextService.getOrg()
+        Org contextOrg = contextService.getOrg()
         result.tasks = taskService.getTasksByResponsiblesAndObject(result.user, contextOrg, result.subscriptionInstance)
         def preCon = taskService.getPreconditionsWithoutTargets(contextOrg)
         result << preCon
@@ -5013,6 +5062,7 @@ class SubscriptionController extends AbstractDebugController {
                     name: sub_name,
                     status: baseSubscription.status,
                     type: baseSubscription.type,
+                    kind: baseSubscription.kind,
                     identifier: java.util.UUID.randomUUID().toString(),
                     isSlaved: baseSubscription.isSlaved,
                     startDate: params.subscription.copyDates ? baseSubscription?.startDate : null,
@@ -5183,7 +5233,7 @@ class SubscriptionController extends AbstractDebugController {
                 }
                 if (params.subscription.copyPrivateProperties) {
                     //privatProperties
-                    def contextOrg = contextService.getOrg()
+                    Org contextOrg = contextService.getOrg()
 
                     baseSubscription.privateProperties.each { prop ->
                         if (prop.type?.tenant?.id == contextOrg?.id) {
@@ -5239,8 +5289,6 @@ class SubscriptionController extends AbstractDebugController {
                     RefdataValue parentRoleType, memberRoleType
                     switch(sub.type) {
                         case SUBSCRIPTION_TYPE_CONSORTIAL:
-                        case SUBSCRIPTION_TYPE_NATIONAL:
-                        case SUBSCRIPTION_TYPE_ALLIANCE:
                             parentRoleType = OR_SUBSCRIPTION_CONSORTIA
                             memberRoleType = OR_SUBSCRIBER_CONS
                             break
@@ -5363,7 +5411,7 @@ class SubscriptionController extends AbstractDebugController {
         prop.save()
     }
 
-    private LinkedHashMap setResultGenericsAndCheckAccess(checkOption) {
+    private Map<String,Object> setResultGenericsAndCheckAccess(checkOption) {
         Map<String, Object> result = [:]
         result.user = contextService.user
         result.subscriptionInstance = Subscription.get(params.id)
@@ -5453,6 +5501,8 @@ class SubscriptionController extends AbstractDebugController {
 
         titles.add(g.message(code: 'subscription.details.startDate'))
         titles.add(g.message(code: 'subscription.details.endDate'))
+        titles.add(g.message(code: 'subscription.isPublicForApi.label'))
+        titles.add(g.message(code: 'subscription.hasPerpetualAccess.label'))
         titles.add(g.message(code: 'default.status.label'))
         titles.add(RefdataValue.getByValueAndCategory('General contact person', RDConstants.PERSON_FUNCTION).getI10n('value'))
         //titles.add(RefdataValue.getByValueAndCategory('Functional contact', RDConstants.PERSON_CONTACT_TYPE).getI10n('value'))
@@ -5543,6 +5593,12 @@ class SubscriptionController extends AbstractDebugController {
                     cell.setCellValue(org.endDate) //null check done already in calling method
 
                     cell = row.createCell(cellnum++)
+                    cell.setCellValue(org.isPublicForApi)
+
+                    cell = row.createCell(cellnum++)
+                    cell.setCellValue(org.hasPerpetualAccess)
+
+                    cell = row.createCell(cellnum++)
                     cell.setCellValue(org.status?.getI10n('value') ?: ' ')
 
                     cell = row.createCell(cellnum++)
@@ -5630,6 +5686,10 @@ class SubscriptionController extends AbstractDebugController {
                     row.add(org.startDate) //null check already done in calling method
                     //endDate
                     row.add(org.endDate) //null check already done in calling method
+                    //isPublicForApi
+                    row.add(org.isPublicForApi) //null check already done in calling method
+                    //hasPerpetualAccess
+                    row.add(org.hasPerpetualAccess) //null check already done in calling method
                     //status
                     row.add(org.status?.getI10n('value') ?: ' ')
                     //generalContacts

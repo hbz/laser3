@@ -2,15 +2,13 @@ package com.k_int.kbplus
 
 import org.elasticsearch.action.search.SearchRequest
 import org.elasticsearch.action.search.SearchResponse
-import org.elasticsearch.search.aggregations.bucket.terms.TermsAggregationBuilder
+import org.elasticsearch.client.RequestOptions
+import org.elasticsearch.client.RestHighLevelClient
+import org.elasticsearch.index.query.QueryBuilders
+import org.elasticsearch.search.aggregations.AggregationBuilders
 import org.elasticsearch.search.builder.SearchSourceBuilder
 import org.elasticsearch.search.sort.FieldSortBuilder
-import org.elasticsearch.search.sort.SortOrder;
-import org.elasticsearch.action.search.SearchRequestBuilder;
-import org.elasticsearch.client.*
-import org.elasticsearch.index.query.QueryBuilders;
-import org.elasticsearch.search.aggregations.AggregationBuilders;
-
+import org.elasticsearch.search.sort.SortOrder
 
 class ESSearchService{
 // Map the parameter names we use in the webapp with the ES fields

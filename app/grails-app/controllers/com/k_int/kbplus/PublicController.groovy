@@ -1,6 +1,6 @@
 package com.k_int.kbplus
 
-
+import com.k_int.kbplus.auth.UserOrg
 import com.k_int.properties.PropertyDefinition
 import de.laser.helper.RDStore
 import grails.plugin.cache.Cacheable
@@ -58,7 +58,7 @@ class PublicController {
         )
 
 
-        if (! params.subTypes && ! params.consortia && ! params.q) {
+        if (! params.subKinds && ! params.consortia && ! params.q) {
             // init filter with checkboxes checked
             result.initQuery = 'true'
         }
@@ -111,14 +111,14 @@ class PublicController {
                 queryParams.put('consortia', consortia)
             }
 
-            def subTypes = []
-            if (params.containsKey('subTypes')) {
-                params.list('subTypes').each{
-                    subTypes.add(Long.parseLong(it))
+            def subKinds = []
+            if (params.containsKey('subKinds')) {
+                params.list('subKinds').each{
+                    subKinds.add(Long.parseLong(it))
                 }
-                if (subTypes) {
-                    query += " and s.type.id in (:subTypes) "
-                    queryParams.put('subTypes', subTypes)
+                if (subKinds) {
+                    query += " and s.kind.id in (:subKinds) "
+                    queryParams.put('subKinds', subKinds)
                 }
             }
 
@@ -138,7 +138,7 @@ class PublicController {
 */
             result.subscriptions = []
 
-            if (result.allConsortia && (q || consortia || subTypes)) {
+            if (result.allConsortia && (q || consortia || subKinds)) {
                 result.subscriptions = Subscription.executeQuery("select s ${query} order by lower(s.name) asc", queryParams)
             }
             result.subscriptionsCount = result.subscriptions.size()
@@ -220,10 +220,10 @@ class PublicController {
         }
 
         if (params.id) {
-            def sp  = SubscriptionPackage.get(params.long('id'))
+            SubscriptionPackage sp  = SubscriptionPackage.get(params.long('id'))
             def sub = sp?.subscription
             def pkg = sp?.pkg
-            def scp = SubscriptionCustomProperty.findByOwnerAndTypeAndRefValue(
+            SubscriptionCustomProperty scp = SubscriptionCustomProperty.findByOwnerAndTypeAndRefValue(
                     sub,
                     PropertyDefinition.getByNameAndDescr('GASCO Entry', PropertyDefinition.SUB_PROP),
                     RDStore.YN_YES
@@ -232,13 +232,13 @@ class PublicController {
             if (scp) {
                 result.subscription = sub
 
-                def base_query = " FROM IssueEntitlement as ie WHERE ie.subscription = :sub and (ie.status.value != 'Deleted' and ie.status.value != 'Retired')"+
+                String base_query = " FROM IssueEntitlement as ie WHERE ie.subscription = :sub and (ie.status.value != 'Deleted' and ie.status.value != 'Retired')"+
                         " and exists (SELECT tipp FROM TitleInstancePackagePlatform as tipp WHERE ie.tipp = tipp and tipp.pkg = :pkg )"
                 def queryParams = [sub: sub, pkg: pkg]
 
                 result.issueEntitlementsCount = IssueEntitlement.executeQuery("select ie.id " + base_query, queryParams).size()
 
-                def query = "SELECT ie " + base_query
+                String query = "SELECT ie " + base_query
 
                 def q = params.q?.trim()
                 if (q) {
@@ -279,10 +279,10 @@ class PublicController {
     if(org_access_rights.contains("public")) return true;
     if(org_access_rights == []){
       //When no rights specified, users affiliated with the org should have access
-      if(com.k_int.kbplus.auth.UserOrg.findAllByUserAndOrg(user,org)) return true;
+      if(UserOrg.findAllByUserAndOrg(user,org)) return true;
     }
     if(user){
-      def userRole = com.k_int.kbplus.auth.UserOrg.findAllByUserAndOrg(user,org)
+      def userRole = UserOrg.findAllByUserAndOrg(user,org)
       hasAccess = userRole.any{
         if(org_access_rights.contains(it.formalRole.authority.toLowerCase()) || org_access_rights.contains(it.formalRole.roleType.toLowerCase())) {
           return true;
@@ -296,7 +296,7 @@ class PublicController {
   private def generateIELicenseMap(ies, result) {
     log.debug("generateIELicenseMap")
     def comparisonMap = [:]
-    def licIEMap = new TreeMap()
+      TreeMap licIEMap = new TreeMap()
     //See if we got IEs under the same license, and list them together
     ies.each{ ie->
       def lic = ie.subscription.owner
@@ -330,7 +330,7 @@ class PublicController {
     log.debug("retrieveIssueEntitlements")
     def issueEntitlements = []
     def deleted_ie = RDStore.TIPP_STATUS_DELETED
-    def today = new Date()
+    Date today = new Date()
 
     String ie_query = "select ie from IssueEntitlement as ie join ie.subscription as sub where ie.tipp.title=(:journal) and exists ( select orgs from sub.orgRelations orgs where orgs.org = (:org) AND orgs.roleType.value = 'Subscriber' ) and ie.status != (:deleted_ie) and ie.subscription.owner is not null"
     ti.each{

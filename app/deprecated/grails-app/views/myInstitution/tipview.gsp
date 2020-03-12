@@ -40,18 +40,18 @@
                         </select>
                     </div>
                     <div class="field">
-                        <label>${message(code:'default.name.label', default:'Name')}</label>
+                        <label>${message(code:'default.name.label')}</label>
                         <input name="search_str" style="padding-left:8px" placeholder="${message(code:'myinst.tipview.search.ph', default:'Partial terms accepted')}" value="${params.search_str}"/>
                     </div>
                     <div class="field">
-                        <label>${message(code:'default.sort.label', default:'Sort')}</label>
+                        <label>${message(code:'default.sort.label')}</label>
                         <select name="sort">
                             <option ${params.sort=='title-title' ? 'selected' : ''} value="title-title">${message(code:'title.label')}</option>
                             <option ${params.sort=='provider-name' ? 'selected' : ''} value="provider-name">${message(code:'default.provider.label')}</option>
                         </select>
                     </div>
                     <div class="field">
-                        <label>${message(code:'default.order.label', default:'Order')}</label>
+                        <label>${message(code:'default.order.label')}</label>
                         <select name="order" value="${params.order}">
                             <option ${params.order=='asc' ? 'selected' : ''} value="asc">${message(code:'default.asc')}</option>
                             <option ${params.order=='desc' ? 'selected' : ''} value="desc">${message(code:'default.desc')}</option>

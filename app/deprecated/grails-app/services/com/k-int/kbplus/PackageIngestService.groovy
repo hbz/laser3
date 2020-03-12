@@ -150,7 +150,7 @@ public class PackageIngestService {
       
       if ( tipp.title_obj && tipp.host_platform && new_pkg ) {
         // Got all the components we need to create a tipp
-        def dbtipp = TitleInstancePackagePlatform.findByPkgAndPlatformAndTitle(new_pkg,tipp.host_platform,tipp.title_obj)
+        TitleInstancePackagePlatform dbtipp = TitleInstancePackagePlatform.findByPkgAndPlatformAndTitle(new_pkg,tipp.host_platform,tipp.title_obj)
         if ( dbtipp == null ) {
           incrementStatsCounter(upload,'TIPP Created');
            

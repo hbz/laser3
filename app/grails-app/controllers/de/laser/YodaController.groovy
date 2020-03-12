@@ -1,7 +1,10 @@
 package de.laser
 
 import com.k_int.kbplus.*
-import com.k_int.kbplus.auth.*
+import com.k_int.kbplus.auth.Role
+import com.k_int.kbplus.auth.User
+import com.k_int.kbplus.auth.UserOrg
+import com.k_int.kbplus.auth.UserRole
 import com.k_int.properties.PropertyDefinition
 import de.laser.SystemEvent
 import de.laser.domain.ActivityProfiler
@@ -14,12 +17,12 @@ import grails.converters.JSON
 import grails.plugin.springsecurity.annotation.Secured
 import grails.util.Holders
 import grails.web.Action
+import groovy.json.JsonOutput
 import groovy.xml.MarkupBuilder
 import org.hibernate.SessionFactory
 import org.quartz.JobKey
 import org.quartz.impl.matchers.GroupMatcher
 import org.springframework.transaction.TransactionStatus
-import groovy.json.JsonOutput
 import org.springframework.web.multipart.commons.CommonsMultipartFile
 
 import javax.servlet.ServletOutputStream
@@ -419,6 +422,40 @@ class YodaController {
         result
     }
 
+    @Secured(['ROLE_YODA'])
+    def timelineProfiler() {
+        Map<String, Object> result = [:]
+
+        List<String> allUri = SystemProfiler.executeQuery('select distinct(uri) from SystemProfiler')
+
+        result.globalTimeline           = [:]
+        result.globalTimelineStartDate  = (new Date()).minus(30)
+        result.globalTimelineDates      = (30..0).collect{ (DateUtil.getSDF_NoTime()).format( (new Date()).minus(it) ) }
+
+        Map<String, Integer> ordered = [:]
+
+        allUri.each { uri ->
+            result.globalTimeline[uri] = (30..0).collect { 0 }
+
+            String sql = "select to_char(sp.dateCreated, 'dd.mm.yyyy'), count(*) from SystemProfiler sp where sp.uri = :uri and sp.dateCreated >= :dCheck group by to_char(sp.dateCreated, 'dd.mm.yyyy')"
+            List hits = SystemProfiler.executeQuery(sql, [uri: uri, dCheck: result.globalTimelineStartDate])
+
+            int count = 0
+            hits.each { hit ->
+                int indexOf = result.globalTimelineDates.findIndexOf { it == hit[0] }
+                if (indexOf >= 0) {
+                    result.globalTimeline[uri][indexOf] = hit[1]
+                    count = count + hit[1]
+                }
+            }
+
+            ordered[uri] = count
+        }
+        result.globalTimelineOrder = ordered.sort{ e,f -> f.value <=> e.value }
+
+        result
+    }
+
     //@Cacheable('message')
     @Secured(['ROLE_ADMIN'])
     def appInfo() {
@@ -588,7 +625,7 @@ class YodaController {
     def appLogfile() {
         return // TODO
 
-        def f = new File("${Holders.config.log_location}")
+        File f = new File("${Holders.config.log_location}")
         return [file: "${f.canonicalPath}"]
     }
 

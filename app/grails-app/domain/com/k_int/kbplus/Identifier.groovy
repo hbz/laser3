@@ -1,8 +1,7 @@
 package com.k_int.kbplus
 
-import com.sun.xml.internal.ws.commons.xmlutil.Converter
+
 import de.laser.helper.FactoryResult
-import grails.util.Holders
 import org.apache.commons.logging.Log
 import org.apache.commons.logging.LogFactory
 

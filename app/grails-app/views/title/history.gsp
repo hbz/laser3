@@ -29,12 +29,12 @@
         <table class="ui celled la-table table">
           <thead>
             <tr>
-              <th>${message(code:'event.component', default:'Name')}</th>
-              <th>${message(code:'event.actor', default:'Actor')}</th>
-              <th>${message(code:'event.name', default:'Event name')}</th>
-              <th>${message(code:'event.property', default:'Property')}</th>
-              <th>${message(code:'event.old', default:'Old')}</th>
-              <th>${message(code:'event.new', default:'New')}</th>
+              <th>${message(code:'event.component')}</th>
+              <th>${message(code:'event.actor')}</th>
+              <th>${message(code:'event.name')}</th>
+              <th>${message(code:'event.property')}</th>
+              <th>${message(code:'event.old')}</th>
+              <th>${message(code:'event.new')}</th>
               <th>${message(code:'default.date.label')}</th>
             </tr>
           </thead>
@@ -49,7 +49,7 @@
                 <td>${hl.propertyName}</td>
                 <td>${hl.oldValue}</td>
                 <td>${hl.newValue}</td>
-                <td><g:formatDate format="${message(code:'default.date.format.notime', default:'yyyy-MM-dd')}" date="${hl.lastUpdated}"/></td>
+                <td><g:formatDate format="${message(code:'default.date.format.notime')}" date="${hl.lastUpdated}"/></td>
               </tr>
             </g:each>
           </tbody>

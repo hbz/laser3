@@ -5,7 +5,7 @@
         <div class="fields">
             <g:set var="sdf" value="${de.laser.helper.DateUtil.getSDF_NoTime()}"/>
             <div class="field">
-                <label for="availableLicenses">${message(code:'onixplLicense.compare.add_id.label', default:'Search licenses for comparison:')}</label>
+                <label for="availableLicenses">${message(code:'onixplLicense.compare.add_id.label')}</label>
                 <div class="ui multiple search selection dropdown" id="availableLicenses">
                     <input type="hidden" name="availableLicenses">
                     <i class="dropdown icon"></i>

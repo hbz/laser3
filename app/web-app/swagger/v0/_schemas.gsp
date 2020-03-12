@@ -650,6 +650,10 @@
           type: string
           description: Mapping RefdataCategory "${RDConstants.SUBSCRIPTION_FORM}"
           enum: <% printRefdataEnum(RDConstants.SUBSCRIPTION_FORM, 12) %>
+        hasPerpetualAccess:
+          type: string #mapped to boolean
+          description: Mapping RefdataCategory "${RDConstants.Y_N}"
+          enum: <% printRefdataEnum(RDConstants.Y_N, 12) %>
         instanceOf:
           $ref: "#/components/schemas/SubscriptionStub"
         isSlaved:
@@ -657,6 +661,10 @@
           description: Mapping RefdataCategory "${RDConstants.Y_N}"
           enum: <% printRefdataEnum(RDConstants.Y_N, 12) %>
         isMultiYear:
+          type: string #mapped to boolean
+          description: Mapping RefdataCategory "${RDConstants.Y_N}"
+          enum: <% printRefdataEnum(RDConstants.Y_N, 12) %>
+        isPublicForApi:
           type: string #mapped to boolean
           description: Mapping RefdataCategory "${RDConstants.Y_N}"
           enum: <% printRefdataEnum(RDConstants.Y_N, 12) %>
@@ -704,6 +712,10 @@
           type: string
           description: Mapping RefdataCategory "${RDConstants.SUBSCRIPTION_TYPE}"
           enum: <% printRefdataEnum(RDConstants.SUBSCRIPTION_TYPE, 12) %>
+        kind:
+          type: string
+          description: Mapping RefdataCategory "${RDConstants.SUBSCRIPTION_KIND}"
+          enum: <% printRefdataEnum(RDConstants.SUBSCRIPTION_KIND, 12) %>
 
 
     TitleInstancePackagePlatform:

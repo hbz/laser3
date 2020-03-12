@@ -592,7 +592,7 @@ class SurveyController {
                 }
             }
 
-            def contextOrg = contextService.getOrg()
+            Org contextOrg = contextService.getOrg()
             result.tasks = taskService.getTasksByResponsiblesAndObject(result.user, contextOrg,  result.surveyConfig)
             def preCon = taskService.getPreconditionsWithoutTargets(contextOrg)
             result << preCon
@@ -2017,7 +2017,7 @@ class SurveyController {
 
         }
 
-        def lateCommersProperty = PropertyDefinition.getByNameAndDescr("Späteinsteiger", PropertyDefinition.SUB_PROP)
+        PropertyDefinition lateCommersProperty = PropertyDefinition.getByNameAndDescr("Späteinsteiger", PropertyDefinition.SUB_PROP)
         def currentParticipantIDs = []
         result.orgsWithMultiYearTermSub = []
         result.orgsLateCommers = []
@@ -2330,7 +2330,7 @@ class SurveyController {
             response.sendError(401); return
         }
 
-        def baseSub = Subscription.get(params.parentSub ?: null)
+        Subscription baseSub = Subscription.get(params.parentSub ?: null)
 
         ArrayList<Links> previousSubscriptions = Links.findAllByDestinationAndObjectTypeAndLinkType(baseSub?.id, Subscription.class.name, RDStore.LINKTYPE_FOLLOWS)
         if (previousSubscriptions.size() > 0) {
@@ -2340,6 +2340,7 @@ class SurveyController {
             def sub_endDate = params.subscription?.end_date ? parseDate(params.subscription?.end_date, possible_date_formats) : null
             def sub_status = params.subStatus
             def sub_type = params.subType
+            def sub_kind = params.subKind
             def sub_form = params.subForm
             def sub_resource = params.subResource
             def old_subOID = params.subscription.old_subid
@@ -2357,9 +2358,11 @@ class SurveyController {
                     identifier: java.util.UUID.randomUUID().toString(),
                     isSlaved: baseSub?.isSlaved,
                     type: sub_type,
+                    kind: sub_kind,
                     status: sub_status,
                     resource: sub_resource,
-                    form: sub_form
+                    form: sub_form,
+                    hasPerpetualAccess: baseSub?.hasPerpetualAccess
             )
 
             if (!newSub.save(flush: true)) {
@@ -2886,7 +2889,7 @@ class SurveyController {
             log.debug("SurveyController::newCostItem() ${params}");
 
             result.institution = contextService.getOrg()
-            def user = User.get(springSecurityService.principal.id)
+            User user = User.get(springSecurityService.principal.id)
             result.error = [] as List
 
             if (!accessService.checkMinUserOrgRole(user, result.institution, "INST_EDITOR")) {
@@ -3612,23 +3615,24 @@ class SurveyController {
             orgType = [RDStore.OT_CONSORTIUM.id.toString()]
         }
 
-        def institution = contextService.getOrg()
+        Org institution = contextService.getOrg()
 
-        RefdataValue subStatus = multiYear ? RDStore.SUBSCRIPTION_INTENDED_PERENNIAL : RDStore.SUBSCRIPTION_INTENDED
+        RefdataValue subStatus = RDStore.SUBSCRIPTION_INTENDED
 
-        RefdataValue role_sub = RDStore.OR_SUBSCRIBER_CONS
-        RefdataValue role_sub_cons = RDStore.OR_SUBSCRIPTION_CONSORTIA
-        RefdataValue role_coll = RDStore.OR_SUBSCRIBER_COLLECTIVE
-        RefdataValue role_sub_coll = RDStore.OR_SUBSCRIPTION_COLLECTIVE
+        RefdataValue role_sub       = RDStore.OR_SUBSCRIBER_CONS
+        RefdataValue role_sub_cons  = RDStore.OR_SUBSCRIPTION_CONSORTIA
+        RefdataValue role_coll      = RDStore.OR_SUBSCRIBER_COLLECTIVE
+        RefdataValue role_sub_coll  = RDStore.OR_SUBSCRIPTION_COLLECTIVE
         RefdataValue role_sub_hidden = RDStore.OR_SUBSCRIBER_CONS_HIDDEN
-        RefdataValue role_lic = RDStore.OR_LICENSEE_CONS
+        RefdataValue role_lic       = RDStore.OR_LICENSEE_CONS
+
         if(accessService.checkPerm("ORG_INST_COLLECTIVE")) {
             role_lic = RDStore.OR_LICENSEE_COLL
         }
-        RefdataValue role_lic_cons = RDStore.OR_LICENSING_CONSORTIUM
+        RefdataValue role_lic_cons  = RDStore.OR_LICENSING_CONSORTIUM
 
-        RefdataValue role_provider = RDStore.OR_PROVIDER
-        RefdataValue role_agency = RDStore.OR_AGENCY
+        RefdataValue role_provider  = RDStore.OR_PROVIDER
+        RefdataValue role_agency    = RDStore.OR_AGENCY
 
         if (accessService.checkPerm("ORG_INST_COLLECTIVE,ORG_CONSORTIUM")) {
 
@@ -3688,6 +3692,7 @@ class SurveyController {
 
                     Subscription memberSub = new Subscription(
                             type: newParentSub.type ?: null,
+                            kind: newParentSub.kind ?: null,
                             status: subStatus,
                             name: newParentSub.name,
                             startDate: startDate,
@@ -3881,6 +3886,7 @@ class SurveyController {
                        g.message(code: 'subscription.packages.label'),
                        g.message(code: 'default.status.label'),
                        g.message(code: 'default.type.label'),
+                       g.message(code: 'subscription.kind.label'),
                        g.message(code: 'subscription.form.label'),
                        g.message(code: 'subscription.resource.label'),
 
@@ -3921,6 +3927,7 @@ class SurveyController {
                     row.add([field: packageNames ? packageNames.join(", ") : '', style: null])
                     row.add([field: sub?.status?.getI10n("value") ?: '', style: null])
                     row.add([field: sub?.type?.getI10n("value") ?: '', style: null])
+                    row.add([field: sub?.kind?.getI10n("value") ?: '', style: null])
                     row.add([field: sub?.form?.getI10n("value") ?: '', style: null])
                     row.add([field: sub?.resource?.getI10n("value") ?: '', style: null])
 
@@ -4406,7 +4413,7 @@ class SurveyController {
     private def getSurveyConfigCounts() {
         Map<String, Object> result = [:]
 
-        def contextOrg = contextService.getOrg()
+        Org contextOrg = contextService.getOrg()
 
         result.created = SurveyConfig.executeQuery("from SurveyInfo surInfo left join surInfo.surveyConfigs surConfig where surInfo.owner = :contextOrg and (surInfo.status = :status or surInfo.status = :status2)",
                 [contextOrg: contextOrg, status: RDStore.SURVEY_READY, status2: RDStore.SURVEY_IN_PROCESSING]).size()

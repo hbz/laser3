@@ -36,7 +36,7 @@ import java.util.List
  * @author agalffy
  */
 class ExportService {
-	def formatter = new SimpleDateFormat("yyyy-MM-dd")
+	SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd")
 	def messageSource
 
 	/**

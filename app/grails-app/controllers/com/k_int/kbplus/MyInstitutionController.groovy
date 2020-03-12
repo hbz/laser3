@@ -11,6 +11,9 @@ import de.laser.SystemAnnouncement
 
 //import de.laser.TaskService //unused for quite a long time
 import de.laser.controller.AbstractDebugController
+
+//import de.laser.TaskService //unused for quite a long time
+
 import de.laser.helper.*
 import grails.converters.JSON
 import grails.plugin.springsecurity.SpringSecurityUtils
@@ -19,7 +22,9 @@ import groovy.sql.Sql
 import org.apache.commons.collections.BidiMap
 import org.apache.commons.collections.bidimap.DualHashBidiMap
 import org.apache.poi.POIXMLProperties
-import org.apache.poi.ss.usermodel.*
+import org.apache.poi.ss.usermodel.Cell
+import org.apache.poi.ss.usermodel.FillPatternType
+import org.apache.poi.ss.usermodel.Row
 import org.apache.poi.xssf.streaming.SXSSFSheet
 import org.apache.poi.xssf.streaming.SXSSFWorkbook
 import org.apache.poi.xssf.usermodel.XSSFCellStyle
@@ -83,7 +88,7 @@ class MyInstitutionController extends AbstractDebugController {
         Map<String, Object> result = [:]
         result.institution  = contextService.getOrg()
         result.user = User.get(springSecurityService.principal.id)
-        def currentOrg = contextService.getOrg()
+        Org currentOrg = contextService.getOrg()
         log.debug("index for user with id ${springSecurityService.principal.id} :: ${result.user}");
 
         if ( result.user ) {
@@ -108,7 +113,7 @@ class MyInstitutionController extends AbstractDebugController {
         result.user = User.get(springSecurityService.principal.id)
         result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeTMP();
         result.offset = params.offset ? Integer.parseInt(params.offset) : 0;
-        def current_inst = contextService.getOrg()
+        Org current_inst = contextService.getOrg()
         //if(params.shortcode) current_inst = Org.findByShortcode(params.shortcode);
         //Parameters needed for criteria searching
         def (tip_property, property_field) = (params.sort ?: 'title-title').split("-")
@@ -333,10 +338,10 @@ class MyInstitutionController extends AbstractDebugController {
         result.max      = params.format ? 10000 : result.max
         result.offset   = params.format? 0 : result.offset
 
-        def licensee_role           = RDStore.OR_LICENSEE
-        def licensee_cons_role      = RDStore.OR_LICENSEE_CONS
-        def lic_cons_role           = RDStore.OR_LICENSING_CONSORTIUM
-        def template_license_type   = RDStore.LICENSE_TYPE_TEMPLATE
+        RefdataValue licensee_role           = RDStore.OR_LICENSEE
+        RefdataValue licensee_cons_role      = RDStore.OR_LICENSEE_CONS
+        RefdataValue lic_cons_role           = RDStore.OR_LICENSING_CONSORTIUM
+        RefdataValue template_license_type   = RDStore.LICENSE_TYPE_TEMPLATE
 
         def base_qry
         def qry_params
@@ -373,6 +378,7 @@ from License as l where (
     exists ( select o from l.orgLinks as o where ( 
             ( o.roleType = :roleTypeC 
                 AND o.org = :lic_org 
+                AND l.instanceOf is null
                 AND NOT exists (
                     select o2 from l.orgLinks as o2 where o2.roleType = :roleTypeL
                 )
@@ -439,7 +445,7 @@ from License as l where (
 		List bm = du.stopBenchmark()
 		result.benchMark = bm
 
-        def filename = "${g.message(code: 'export.my.currentLicenses')}_${sdf.format(new Date(System.currentTimeMillis()))}"
+        String filename = "${g.message(code: 'export.my.currentLicenses')}_${sdf.format(new Date(System.currentTimeMillis()))}"
         if(params.exportXLS) {
             response.setHeader("Content-disposition", "attachment; filename=\"${filename}.xlsx\"")
             response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
@@ -905,8 +911,11 @@ join sub.orgRelations or_sub where
                        g.message(code: 'default.identifiers.label'),
                        g.message(code: 'default.status.label'),
                        g.message(code: 'default.type.label'),
+                       g.message(code: 'subscription.kind.label'),
                        g.message(code: 'subscription.form.label'),
-                       g.message(code: 'subscription.resource.label')]
+                       g.message(code: 'subscription.resource.label'),
+                       g.message(code: 'subscription.isPublicForApi.label'),
+                       g.message(code: 'subscription.hasPerpetualAccess.label')]
         boolean asCons = false
         if(accessService.checkPerm('ORG_INST_COLLECTIVE, ORG_CONSORTIUM')) {
             asCons = true
@@ -980,8 +989,11 @@ join sub.orgRelations or_sub where
                     row.add([field: identifiers.get(sub) ? identifiers.get(sub).join(", ") : '',style: null])
                     row.add([field: sub.status?.getI10n("value"), style: null])
                     row.add([field: sub.type?.getI10n("value"), style: null])
+                    row.add([field: sub.kind?.getI10n("value") ?: '', style: null])
                     row.add([field: sub.form?.getI10n("value") ?: '', style: null])
                     row.add([field: sub.resource?.getI10n("value") ?: '', style: null])
+                    row.add([field: sub.isPublicForApi ? RDStore.YN_YES.getI10n("value") : RDStore.YN_NO.getI10n("value"), style: null])
+                    row.add([field: sub.hasPerpetualAccess ? RDStore.YN_YES.getI10n("value") : RDStore.YN_NO.getI10n("value"), style: null])
                     if(asCons) {
                         row.add([field: subscriptionMembers.get(sub.id) ?: 0, style: null])
                         row.add([field: costItemCounts.get(sub.id) ?: 0, style: null])
@@ -1009,9 +1021,11 @@ join sub.orgRelations or_sub where
                     row.add(sub.type?.getI10n("value"))
                     row.add(sub.form?.getI10n("value"))
                     row.add(sub.resource?.getI10n("value"))
+                    row.add(sub.isPublicForApi ? RDStore.YN_YES.getI10n("value") : RDStore.YN_NO.getI10n("value"))
+                    row.add(sub.hasPerpetualAccess ? RDStore.YN_YES.getI10n("value") : RDStore.YN_NO.getI10n("value"))
                     if(asCons) {
-                        row.add(subscriptionMembers.get(sub.id))
-                        row.add(costItemCounts.get(sub.id))
+                        row.add(subscriptionMembers.get(sub.id) ?: 0)
+                        row.add(costItemCounts.get(sub.id) ?: 0)
                     }
                     subscriptionData.add(row)
                     break
@@ -1042,6 +1056,8 @@ join sub.orgRelations or_sub where
                        g.message(code: 'default.type.label'),
                        g.message(code: 'subscription.form.label'),
                        g.message(code: 'subscription.resource.label'),
+                       g.message(code: 'subscription.isPublicForApi.label'),
+                       g.message(code: 'subscription.hasPerpetualAccess.label'),
 
                        g.message(code: 'surveyConfigsInfo.newPrice'),
                        g.message(code: 'surveyConfigsInfo.newPrice.comment'),
@@ -1080,6 +1096,8 @@ join sub.orgRelations or_sub where
                     row.add([field: sub?.type?.getI10n("value") ?: '', style: null])
                     row.add([field: sub?.form?.getI10n("value") ?: '', style: null])
                     row.add([field: sub?.resource?.getI10n("value") ?: '', style: null])
+                    row.add([field: sub?.isPublicForApi ? RDStore.YN_YES.getI10n("value") : RDStore.YN_NO.getI10n("value"), style: null])
+                    row.add([field: sub?.hasPerpetualAccess ? RDStore.YN_YES.getI10n("value") : RDStore.YN_NO.getI10n("value"), style: null])
 
                     row.add([field: surveyCostItem?.costInBillingCurrencyAfterTax ? g.formatNumber(number: surveyCostItem?.costInBillingCurrencyAfterTax, minFractionDigits:"2", maxFractionDigits:"2", type:"number") : '', style: null])
 
@@ -1173,7 +1191,7 @@ join sub.orgRelations or_sub where
 
         // def base_qry = " from Subscription as s where s.type.value = 'Subscription Offered' and s.isPublic=?"
         def qry_params = []
-        def base_qry = " from Package as p where lower(p.name) like ?"
+        String base_qry = " from Package as p where lower(p.name) like ?"
 
         if (params.q == null) {
             qry_params.add("%");
@@ -1267,8 +1285,6 @@ join sub.orgRelations or_sub where
         switch(subType) {
             case RDStore.SUBSCRIPTION_TYPE_CONSORTIAL:
             case RDStore.SUBSCRIPTION_TYPE_ADMINISTRATIVE:
-            case RDStore.SUBSCRIPTION_TYPE_NATIONAL:
-            case RDStore.SUBSCRIPTION_TYPE_ALLIANCE:
 				orgRole = role_cons
                 memberRole = role_sub_cons
                 break
@@ -1299,6 +1315,7 @@ join sub.orgRelations or_sub where
 
             def new_sub = new Subscription(
                     type: subType,
+                    kind: (subType == RDStore.SUBSCRIPTION_TYPE_CONSORTIAL) ? RDStore.SUBSCRIPTION_KIND_CONSORTIAL : null,
                     name: params.newEmptySubName,
                     startDate: startDate,
                     endDate: endDate,
@@ -1307,7 +1324,7 @@ join sub.orgRelations or_sub where
                     identifier: params.newEmptySubId)
 
             if (new_sub.save()) {
-                def new_sub_link = new OrgRole(org: result.institution,
+                OrgRole new_sub_link = new OrgRole(org: result.institution,
                         sub: new_sub,
                         roleType: orgRole).save();
                         
@@ -1320,7 +1337,7 @@ join sub.orgRelations or_sub where
                     def cons_members = []
 
                     params.list('selectedOrgs').each{ it ->
-                        def fo =  Org.findById(Long.valueOf(it))
+                        Org fo =  Org.findById(Long.valueOf(it))
                         cons_members << Combo.executeQuery(
                                 "select c.fromOrg from Combo as c where c.toOrg = ? and c.fromOrg = ?",
                                 [result.institution, fo] )
@@ -1334,9 +1351,10 @@ join sub.orgRelations or_sub where
                         log.debug("Generating seperate slaved instances for consortia members")
                         def postfix = cm.get(0).shortname ?: cm.get(0).name
 
-                        def cons_sub = new Subscription(
+                        Subscription cons_sub = new Subscription(
                                             // type: RefdataValue.getByValue("Subscription Taken"),
                                           type: subType,
+                                          kind: (subType == RDStore.SUBSCRIPTION_TYPE_CONSORTIAL) ? RDStore.SUBSCRIPTION_KIND_CONSORTIAL : null,
                                           name: params.newEmptySubName,
                                           // name: params.newEmptySubName + " (${postfix})",
                                           startDate: startDate,
@@ -1490,7 +1508,7 @@ join sub.orgRelations or_sub where
                     }
 
                     if( params.sub) {
-                        def subInstance = Subscription.get(params.sub)
+                        Subscription subInstance = Subscription.get(params.sub)
                         subInstance.owner = copyLicense
                         subInstance.save(flush: true)
                     }
@@ -1501,9 +1519,9 @@ join sub.orgRelations or_sub where
             }
         }
 
-        def license_type = RDStore.LICENSE_TYPE_ACTUAL
+        RefdataValue license_type = RDStore.LICENSE_TYPE_ACTUAL
 
-        def licenseInstance = new License(type: license_type, reference: params.licenseName,
+        License licenseInstance = new License(type: license_type, reference: params.licenseName,
                 startDate:params.licenseStartDate ? DateUtil.parseDateGeneric(params.licenseStartDate) : null,
                 endDate: params.licenseEndDate ? DateUtil.parseDateGeneric(params.licenseEndDate) : null,
                 status: RefdataValue.get(params.status)
@@ -1516,8 +1534,8 @@ join sub.orgRelations or_sub where
         }
         else {
             log.debug("Save ok");
-            def licensee_role = RDStore.OR_LICENSEE
-            def lic_cons_role = RDStore.OR_LICENSING_CONSORTIUM
+            RefdataValue licensee_role = RDStore.OR_LICENSEE
+            RefdataValue lic_cons_role = RDStore.OR_LICENSING_CONSORTIUM
 
             log.debug("adding org link to new license");
 
@@ -1534,7 +1552,7 @@ join sub.orgRelations or_sub where
                 log.error("Problem saving org links to license ${org.errors}");
             }
             if(params.sub) {
-                def subInstance = Subscription.get(params.sub)
+                Subscription subInstance = Subscription.get(params.sub)
                 subInstance.owner = licenseInstance
                 subInstance.save(flush: true)
             }
@@ -1644,8 +1662,8 @@ join sub.orgRelations or_sub where
     @Secured(['ROLE_ADMIN'])
     def processAddSubscription() {
 
-        def user = User.get(springSecurityService.principal.id)
-        def institution = contextService.getOrg()
+        User user = User.get(springSecurityService.principal.id)
+        Org institution = contextService.getOrg()
 
         if (! accessService.checkUserIsMember(user, institution)) {
             flash.error = message(code:'myinst.error.noMember', args:[result.institution.name]);
@@ -1656,11 +1674,11 @@ join sub.orgRelations or_sub where
 
         log.debug("processAddSubscription ${params}");
 
-        def basePackage = Package.get(params.packageId);
+        Package basePackage = Package.get(params.packageId);
 
         if (basePackage) {
             //
-            def add_entitlements = (params.createSubAction == 'copy' ? true : false)
+            boolean add_entitlements = (params.createSubAction == 'copy' ? true : false)
 
             def new_sub = basePackage.createSubscription("Subscription Taken",
                     "A New subscription....",
@@ -1670,7 +1688,7 @@ join sub.orgRelations or_sub where
                     basePackage.getConsortia(),
                     add_entitlements)
 
-            def new_sub_link = new OrgRole(
+            OrgRole new_sub_link = new OrgRole(
                     org: institution,
                     sub: new_sub,
                     roleType: RDStore.OR_SUBSCRIBER
@@ -2205,8 +2223,8 @@ AND EXISTS (
         // OrgRole.findAllByOrgAndRoleType(result.institution, licensee_role).collect { it.lic }
 
 
-        def user = User.get(springSecurityService.principal.id)
-        def institution = contextService.getOrg()
+        User user = User.get(springSecurityService.principal.id)
+        Org institution = contextService.getOrg()
 
         if (! accessService.checkUserIsMember(user, institution)) {
             flash.error = message(code:'myinst.error.noMember', args:[institution.name]);
@@ -2215,8 +2233,8 @@ AND EXISTS (
             return;
         }
 
-        def licensee_role =  RDStore.OR_LICENSEE
-        def licensee_cons_role = RDStore.OR_LICENSEE_CONS
+        RefdataValue licensee_role      = RDStore.OR_LICENSEE
+        RefdataValue licensee_cons_role = RDStore.OR_LICENSEE_CONS
 
         // Find all licenses for this institution...
         Map<String, Object> result = [:]
@@ -2246,12 +2264,12 @@ AND EXISTS (
     def actionCurrentSubscriptions() {
         Map<String, Object> result = [:]
         result.user = User.get(springSecurityService.principal.id)
-        def subscription = Subscription.get(params.basesubscription)
-        def inst = Org.get(params.curInst)
+        Subscription subscription = Subscription.get(params.basesubscription)
+        Org inst = Org.get(params.curInst)
         def deletedStatus = RDStore.SUBSCRIPTION_DELETED
 
         if (subscription.hasPerm("edit", result.user)) {
-            def derived_subs = Subscription.findByInstanceOf(subscription)
+            Subscription derived_subs = Subscription.findByInstanceOf(subscription)
 
             if (CostItem.findBySub(subscription)) {
                 flash.error = message(code: 'subscription.delete.existingCostItems')
@@ -2342,7 +2360,7 @@ AND EXISTS (
         SimpleDateFormat sdFormat    = DateUtil.getSDF_NoTime()
         params.taskStatus = 'not done'
         def query       = filterService.getTaskQuery(params << [sort: 't.endDate', order: 'asc'], sdFormat)
-        def contextOrg  = contextService.getOrg()
+        Org contextOrg  = contextService.getOrg()
         result.tasks    = taskService.getTasksByResponsibles(springSecurityService.getCurrentUser(), contextOrg, query)
         result.tasksCount    = result.tasks.size()
         result.enableMyInstFormFields = true // enable special form fields
@@ -2405,7 +2423,7 @@ AND EXISTS (
 
         def baseParams = [owner: result.institution, tsCheck: tsCheck, stats: ['Accepted']]
 
-        def baseQuery1 = "select distinct sub, count(sub.id) from PendingChange as pc join pc.subscription as sub where pc.owner = :owner and pc.ts >= :tsCheck " +
+        String baseQuery1 = "select distinct sub, count(sub.id) from PendingChange as pc join pc.subscription as sub where pc.owner = :owner and pc.ts >= :tsCheck " +
                 " and pc.subscription is not NULL and pc.status.value in (:stats) group by sub.id"
 
         def result1 = PendingChange.executeQuery(
@@ -2415,7 +2433,7 @@ AND EXISTS (
         )
         result.changes.addAll(result1)
 
-        def baseQuery2 = "select distinct lic, count(lic.id) from PendingChange as pc join pc.license as lic where pc.owner = :owner and pc.ts >= :tsCheck" +
+        String baseQuery2 = "select distinct lic, count(lic.id) from PendingChange as pc join pc.license as lic where pc.owner = :owner and pc.ts >= :tsCheck" +
                 " and pc.license is not NULL and pc.status.value in (:stats) group by lic.id"
 
         def result2 = PendingChange.executeQuery(
@@ -2498,7 +2516,7 @@ AND EXISTS (
         if ( params.restrict == 'ALL' )
           params.restrict=null
 
-        def base_query = " from PendingChange as pc where owner = ?";
+        String base_query = " from PendingChange as pc where owner = ?";
         def qry_params = [result.institution]
         if ( ( params.restrict != null ) && ( params.restrict.trim().length() > 0 ) ) {
           def o =  genericOIDService.resolveOID(params.restrict)
@@ -2964,10 +2982,10 @@ AND EXISTS (
       if (request.method == 'POST' && result.tip ){
         log.debug("Add usage ${params}")
           SimpleDateFormat sdf = DateUtil.getSDF_NoTime()
-        def usageDate = sdf.parse(params.usageDate);
-        def cal = new GregorianCalendar()
-        cal.setTime(usageDate)
-        def fact = new Fact(
+          Date usageDate = sdf.parse(params.usageDate);
+          GregorianCalendar cal = new GregorianCalendar()
+          cal.setTime(usageDate)
+        Fact fact = new Fact(
           relatedTitle:result.tip.title,
           supplier:result.tip.provider,
           inst:result.tip.institution,
@@ -3146,7 +3164,7 @@ AND EXISTS (
 
             if (params.cmd == "newBudgetCode") {
                 if (params.bc) {
-                    def bc = new BudgetCode(
+                    BudgetCode bc = new BudgetCode(
                             owner: result.institution,
                             value: params.bc,
                             descr: params.descr
@@ -3182,7 +3200,7 @@ AND EXISTS (
         def result = setResultGenerics()
 
         if (params.deleteId) {
-            def dTask = Task.get(params.deleteId)
+            Task dTask = Task.get(params.deleteId)
             if (dTask && (dTask.creator.id == result.user.id || contextService.getUser().hasAffiliation("INST_ADM"))) {
                 try {
                     dTask.delete(flush: true)
@@ -3246,7 +3264,7 @@ AND EXISTS (
                         type: RefdataValue.getByValueAndCategory(result.comboType,'Combo Type')
                 ]
                 if (! Combo.findWhere(map)) {
-                    def cmb = new Combo(map)
+                    Combo cmb = new Combo(map)
                     cmb.save()
                 }
             }
@@ -3525,6 +3543,22 @@ AND EXISTS (
             query += " and subT.type.id in (:subTypes) "
             qarams.put('subTypes', params.list('subTypes').collect { it -> Long.parseLong(it) })
         }
+
+        if (params.containsKey('subKinds')) {
+            query += " and s.kind.id in (:subKinds) "
+            params.put('subKinds', params.list('subKinds').collect { Long.parseLong(it) })
+        }
+
+        if (params.isPublicForApi) {
+            query += "and s.isPublicForApi = :isPublicForApi "
+            params.put('isPublicForApi', (params.isPublicForApi == RDStore.YN_YES.id.toString()) ? true : false)
+        }
+
+        if (params.hasPerpetualAccess) {
+            query += "and s.hasPerpetualAccess = :hasPerpetualAccess "
+            params.put('hasPerpetualAccess', (params.hasPerpetualAccess == RDStore.YN_YES.id.toString()) ? true : false)
+        }
+
         if (params.subRunTimeMultiYear || params.subRunTime) {
 
             if (params.subRunTimeMultiYear && !params.subRunTime) {
@@ -3535,6 +3569,8 @@ AND EXISTS (
                 qarams.put('subRunTimeMultiYear', false)
             }
         }
+
+
 
         String orderQuery = " order by roleT.org.sortname, subT.name"
         if (params.sort?.size() > 0) {
@@ -3619,6 +3655,7 @@ AND EXISTS (
             headerRow.setHeightInPoints(16.75f)
             List titles = [message(code:'sidewide.number'),message(code:'myinst.consortiaSubscriptions.member'),message(code:'myinst.consortiaSubscriptions.subscription'),message(code:'license.label'),
                            message(code:'myinst.consortiaSubscriptions.packages'),message(code:'myinst.consortiaSubscriptions.provider'),message(code:'myinst.consortiaSubscriptions.runningTimes'),
+                           message(code:'subscription.isPublicForApi.label'),message(code:'subscription.hasPerpetualAccess.label'),
                            message(code:'financials.amountFinal'),"${message(code:'financials.isVisibleForSubscriber')} / ${message(code:'financials.costItemConfiguration')}"]
             titles.eachWithIndex{ titleName, int i ->
                 Cell cell = headerRow.createCell(i)
@@ -3628,8 +3665,8 @@ AND EXISTS (
             Row row
             Cell cell
             int rownum = 1
-            int sumcell = 7
-            int sumTitleCell = 6
+            int sumcell = 9
+            int sumTitleCell = 8
             result.costItems.eachWithIndex { entry, int sidewideNumber ->
                 log.debug("processing entry ${sidewideNumber} ...")
                 CostItem ci = (CostItem) entry[0] ?: new CostItem()
@@ -3689,6 +3726,14 @@ AND EXISTS (
                     if(ci.getDerivedEndDate()) dateString += " - ${sdf.format(ci.getDerivedEndDate())}"
                 }
                 cell.setCellValue(dateString)
+                //is public for api
+                log.debug("insert api flag")
+                cell = row.createCell(cellnum++)
+                cell.setCellValue(ci.sub?.isPublicForApi ? RDStore.YN_YES.getI10n("value") : RDStore.YN_NO.getI10n("value"))
+                //has perpetual access
+                log.debug("insert perpetual access flag")
+                cell = row.createCell(cellnum++)
+                cell.setCellValue(ci.sub?.hasPerpetualAccess ? RDStore.YN_YES.getI10n("value") : RDStore.YN_NO.getI10n("value"))
                 //final sum
                 log.debug("insert final sum")
                 cell = row.createCell(cellnum++)
@@ -3759,6 +3804,7 @@ AND EXISTS (
                 csv {
                     List titles = [message(code:'sidewide.number'),message(code:'myinst.consortiaSubscriptions.member'),message(code:'myinst.consortiaSubscriptions.subscription'),message(code:'license.label'),
                                    message(code:'myinst.consortiaSubscriptions.packages'),message(code:'myinst.consortiaSubscriptions.provider'),message(code:'myinst.consortiaSubscriptions.runningTimes'),
+                                   message(code:'subscription.isPublicForApi.label'),message(code:'subscription.hasPerpetualAccess.label'),
                                    message(code:'financials.amountFinal'),"${message(code:'financials.isVisibleForSubscriber')} / ${message(code:'financials.costItemConfiguration')}"]
                     List columnData = []
                     List row
@@ -3820,6 +3866,14 @@ AND EXISTS (
                             if(ci.getDerivedEndDate()) dateString += " - ${sdf.format(ci.getDerivedEndDate())}"
                         }
                         row.add(dateString)
+                        //is public for api
+                        log.debug("insert api flag")
+                        cellnum++
+                        row.add(ci.sub?.isPublicForApi ? RDStore.YN_YES.getI10n("value") : RDStore.YN_NO.getI10n("value"))
+                        //has perpetual access
+                        log.debug("insert perpetual access flag")
+                        cellnum++
+                        row.add(ci.sub?.hasPerpetualAccess ? RDStore.YN_YES.getI10n("value") : RDStore.YN_NO.getI10n("value"))
                         //final sum
                         log.debug("insert final sum")
                         cellnum++
@@ -3847,9 +3901,9 @@ AND EXISTS (
                     columnData.add([])
                     columnData.add([])
                     row = []
-                    //sumcell = 7
-                    //sumTitleCell = 6
-                    for(int h = 0;h < 6;h++) {
+                    //sumcell = 9
+                    //sumTitleCell = 8
+                    for(int h = 0;h < 8;h++) {
                         row.add(" ")
                     }
                     row.add(message(code:'financials.export.sums'))
@@ -3857,7 +3911,7 @@ AND EXISTS (
                     columnData.add([])
                     result.finances.each { entry ->
                         row = []
-                        for(int h = 0;h < 6;h++) {
+                        for(int h = 0;h < 8;h++) {
                             row.add(" ")
                         }
                         row.add("${message(code:'financials.sum.billing')} ${entry.key}")
@@ -4192,9 +4246,9 @@ AND EXISTS (
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_ADM") })
     def actionAffiliationRequestOrg() {
         log.debug("actionMembershipRequestOrg");
-        def req = UserOrg.get(params.req);
-        def user = User.get(springSecurityService.principal.id)
-        def currentOrg = contextService.getOrg()
+        UserOrg req = UserOrg.get(params.req);
+        User user = User.get(springSecurityService.principal.id)
+        Org currentOrg = contextService.getOrg()
         if ( req != null && req.org == currentOrg) {
             switch(params.act) {
                 case 'approve':
@@ -4223,8 +4277,8 @@ AND EXISTS (
 
         if(params.id)
         {
-            def license = License.get(params.id)
-            def isEditable = license.isEditableBy(result.user)
+            License license = License.get(params.id)
+            boolean isEditable = license.isEditableBy(result.user)
 
             if (! (accessService.checkMinUserOrgRole(result.user, result.institution, 'INST_EDITOR'))) {
                 flash.error = message(code:'license.permissionInfo.noPerms')

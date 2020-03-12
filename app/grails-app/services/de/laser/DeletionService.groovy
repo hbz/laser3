@@ -13,7 +13,8 @@ import de.laser.helper.RDConstants
 import de.laser.helper.RDStore
 import org.elasticsearch.action.delete.DeleteRequest
 import org.elasticsearch.action.delete.DeleteResponse
-import org.elasticsearch.client.*
+import org.elasticsearch.client.RequestOptions
+import org.elasticsearch.client.RestHighLevelClient
 
 //@CompileStatic
 class DeletionService {

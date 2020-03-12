@@ -98,7 +98,7 @@ class InstitutionsService {
             else if (option == InstitutionsService.CUSTOM_PROPERTIES_COPY_HARD) {
 
                 for (prop in base.customProperties) {
-                    def copiedProp = new LicenseCustomProperty(type: prop.type, owner: licenseInstance)
+                    LicenseCustomProperty copiedProp = new LicenseCustomProperty(type: prop.type, owner: licenseInstance)
                     copiedProp = prop.copyInto(copiedProp)
                     copiedProp.instanceOf = null
                     copiedProp.save(flush: true)
@@ -132,8 +132,8 @@ class InstitutionsService {
                 }
             }
 
-            def licensee_role = RDStore.OR_LICENSEE
-            def lic_cons_role = RDStore.OR_LICENSING_CONSORTIUM
+            RefdataValue licensee_role = RDStore.OR_LICENSEE
+            RefdataValue lic_cons_role = RDStore.OR_LICENSING_CONSORTIUM
 
             log.debug("adding org link to new license");
 
@@ -148,7 +148,7 @@ class InstitutionsService {
             }
             else if (base.licensor) {
                 // legacy
-                def licensor_role = RefdataValue.getByValueAndCategory('Licensor', RDConstants.ORGANISATIONAL_ROLE)
+                RefdataValue licensor_role = RefdataValue.getByValueAndCategory('Licensor', RDConstants.ORGANISATIONAL_ROLE)
                 new OrgRole(lic: licenseInstance, org: base.licensor, roleType: licensor_role).save(flush: true)
             }
 
@@ -172,7 +172,7 @@ class InstitutionsService {
             }
         }
 
-        def licenseInstance = new License(reference: lic_name,
+        License licenseInstance = new License(reference: lic_name,
                 status: license_status,
                 type: license_type,
                 noticePeriod: baseLicense?.noticePeriod,

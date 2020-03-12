@@ -169,7 +169,7 @@ class TitleController extends AbstractDebugController {
   def batchUpdate() {
     log.debug(params);
         SimpleDateFormat formatter = DateUtil.getSDF_NoTime()
-    def user = User.get(springSecurityService.principal.id)
+        User user = User.get(springSecurityService.principal.id)
 
       params.each { p ->
       if ( p.key.startsWith('_bulkflag.')&& (p.value=='on'))  {
@@ -230,14 +230,14 @@ class TitleController extends AbstractDebugController {
       result.offset = 0
     }
     else {
-      def user = User.get(springSecurityService.principal.id)
+        User user = User.get(springSecurityService.principal.id)
       result.max = params.max ? Integer.parseInt(params.max) : user.getDefaultPageSizeTMP()
       params.max = result.max
       result.offset = params.offset ? Integer.parseInt(params.offset) : 0;
     }
 
     result.titleInstance = TitleInstance.get(params.id)
-    def base_query = 'from org.codehaus.groovy.grails.plugins.orm.auditable.AuditLogEvent as e where ( e.className = :instCls and e.persistedObjectId = :instId )'
+    String base_query = 'from org.codehaus.groovy.grails.plugins.orm.auditable.AuditLogEvent as e where ( e.className = :instCls and e.persistedObjectId = :instId )'
 
     def limits = (!params.format||params.format.equals("html"))?[max:result.max, offset:result.offset]:[offset:0]
 
@@ -257,7 +257,7 @@ class TitleController extends AbstractDebugController {
 
         switch(hl.className) {
           case 'com.k_int.kbplus.TitleInstance':
-            def instance_obj = TitleInstance.get(hl.persistedObjectId);
+              TitleInstance instance_obj = TitleInstance.get(hl.persistedObjectId);
             line_to_add = [ link: createLink(controller:'title', action: 'show', id:hl.persistedObjectId),
                             name: instance_obj.title,
                             lastUpdated: hl.lastUpdated,
@@ -306,7 +306,7 @@ class TitleController extends AbstractDebugController {
       params.offset = 0
       params.remove("search")
     }
-    def user = User.get(springSecurityService.principal.id)
+      User user = User.get(springSecurityService.principal.id)
     Map<String, Object> result = [:]
     result.max = params.max ? Integer.parseInt(params.max) : user.getDefaultPageSizeTMP()
     result.offset = params.offset ? Integer.parseInt(params.offset) : 0;

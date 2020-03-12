@@ -231,7 +231,7 @@ static hasMany = [  tipps:     TitleInstancePackagePlatform,
                          add_entitlements,slaved) {
     // Create the header
     log.debug("Package: createSubscription called")
-    def result = new Subscription( name:subname,
+      Subscription result = new Subscription( name:subname,
                                    status:RefdataValue.getByValueAndCategory('Current', RDConstants.SUBSCRIPTION_STATUS),
                                    identifier:subidentifier,
                                    startDate:startdate,
@@ -241,8 +241,8 @@ static hasMany = [  tipps:     TitleInstancePackagePlatform,
 
     if ( result.save(flush:true) ) {
       if ( consortium_org ) {
-        def sc_role = RefdataValue.getByValueAndCategory(org_role, RDConstants.ORGANISATIONAL_ROLE)
-        def or = new OrgRole(org: consortium_org, sub:result, roleType:sc_role).save();
+          RefdataValue sc_role = RefdataValue.getByValueAndCategory(org_role, RDConstants.ORGANISATIONAL_ROLE)
+          OrgRole or = new OrgRole(org: consortium_org, sub:result, roleType:sc_role).save();
         log.debug("Create Org role ${or}")
       }
       addToSubscription(result, add_entitlements)
@@ -471,7 +471,7 @@ static hasMany = [  tipps:     TitleInstancePackagePlatform,
         }
         if (confirmed && pc_to_delete) {
             log.debug("Deleting Pending Changes: ${pc_to_delete}")
-            def del_pc_query = "delete from PendingChange where id in (:del_list) "
+            String del_pc_query = "delete from PendingChange where id in (:del_list) "
             PendingChange.executeUpdate(del_pc_query, [del_list: pc_to_delete])
         } else {
             return pc_to_delete.size()

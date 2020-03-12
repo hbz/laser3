@@ -2,9 +2,7 @@ package com.k_int.properties
 
 import com.k_int.kbplus.License
 import com.k_int.kbplus.Org
-import com.k_int.kbplus.RefdataValue
 import com.k_int.kbplus.Subscription
-import de.laser.helper.RefdataAnnotation
 import groovy.util.logging.Log4j
 
 @Log4j

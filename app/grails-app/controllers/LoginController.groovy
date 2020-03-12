@@ -17,8 +17,6 @@ import javax.servlet.http.HttpServletResponse
 
 //import org.springframework.security.web.authentication.AbstractProcessingFilter
 
-import java.security.MessageDigest
-
 @Secured('permitAll')
 class LoginController {
 

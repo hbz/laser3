@@ -84,7 +84,7 @@ class FilterService {
              queryParams << [constraint_orgIds : params.constraint_orgIds]
         }
 
-        def defaultOrder = " order by " + (params.sort ?: " LOWER(o.name)") + " " + (params.order ?: "asc")
+        String defaultOrder = " order by " + (params.sort ?: " LOWER(o.name)") + " " + (params.order ?: "asc")
 
         if (query.size() > 0) {
             result.query = "from Org o where " + query.join(" and ") + defaultOrder
@@ -299,7 +299,7 @@ class FilterService {
             queryParams << [participant : params.participant]
         }
 
-        def defaultOrder = " order by " + (params.sort ?: " LOWER(si.name)") + " " + (params.order ?: "asc")
+        String defaultOrder = " order by " + (params.sort ?: " LOWER(si.name)") + " " + (params.order ?: "asc")
 
         if (query.size() > 0) {
             result.query = "from SurveyInfo si where si.owner = :contextOrg and " + query.join(" and ") + defaultOrder
@@ -405,7 +405,7 @@ class FilterService {
             queryParams << [status: RDStore.SURVEY_COMPLETED]
         }
 
-        def defaultOrder = " order by " + (params.sort ?: " surInfo.endDate DESC") + " " + (params.order ?: "asc")
+        String defaultOrder = " order by " + (params.sort ?: " surInfo.endDate DESC") + " " + (params.order ?: "asc")
 
         /*if (query.size() > 0) {
             result.query = "select surConfig from SurveyConfig surConfig left join surConfig.surveyInfo surInfo where surInfo.owner = :contextOrg and " + query.join(" and ") + defaultOrder
@@ -506,7 +506,7 @@ class FilterService {
         }
 
 
-        def defaultOrder = " order by " + (params.sort ?: " LOWER(surResult.surveyConfig.surveyInfo.name)") + " " + (params.order ?: "asc")
+        String defaultOrder = " order by " + (params.sort ?: " LOWER(surResult.surveyConfig.surveyInfo.name)") + " " + (params.order ?: "asc")
 
         if (query.size() > 0) {
             result.query = "from SurveyInfo surInfo left join surInfo.surveyConfigs surConfig left join surConfig.surResults surResult  where (surResult.participant = :org)  and " + query.join(" and ") + defaultOrder
@@ -604,7 +604,7 @@ class FilterService {
         }
 
 
-        def defaultOrder = " order by " + (params.sort ?: " LOWER(surInfo.name)") + " " + (params.order ?: "asc")
+        String defaultOrder = " order by " + (params.sort ?: " LOWER(surInfo.name)") + " " + (params.order ?: "asc")
 
         if (query.size() > 0) {
             result.query = "from SurveyInfo surInfo left join surInfo.surveyConfigs surConfig where " + query.join(" and ") + defaultOrder

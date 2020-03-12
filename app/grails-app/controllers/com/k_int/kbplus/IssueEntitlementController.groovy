@@ -41,7 +41,7 @@ class IssueEntitlementController extends AbstractDebugController {
           [issueEntitlementInstance: new IssueEntitlement(params)]
       break
     case 'POST':
-          def issueEntitlementInstance = new IssueEntitlement(params)
+            IssueEntitlement issueEntitlementInstance = new IssueEntitlement(params)
           if (!issueEntitlementInstance.save(flush: true)) {
               render view: 'create', model: [issueEntitlementInstance: issueEntitlementInstance]
               return
@@ -103,7 +103,7 @@ class IssueEntitlementController extends AbstractDebugController {
         return
       }
 
-      def base_qry = "from TitleInstancePackagePlatform as tipp where tipp.title = ? and tipp.status != ?"
+      String base_qry = "from TitleInstancePackagePlatform as tipp where tipp.title = ? and tipp.status != ?"
       def qry_params = [result.issueEntitlementInstance.tipp.title, RDStore.TIPP_STATUS_DELETED]
 
       if ( params.filter ) {
@@ -113,14 +113,14 @@ class IssueEntitlementController extends AbstractDebugController {
 
       if ( params.endsAfter && params.endsAfter.length() > 0 ) {
         SimpleDateFormat sdf = DateUtil.getSDF_NoTime()
-        def d = sdf.parse(params.endsAfter)
+        Date d = sdf.parse(params.endsAfter)
         base_qry += " and (select max(tc.endDate) from TIPPCoverage tc where tc.tipp = tipp) >= ?"
         qry_params.add(d)
       }
 
       if ( params.startsBefore && params.startsBefore.length() > 0 ) {
           SimpleDateFormat sdf = DateUtil.getSDF_NoTime()
-        def d = sdf.parse(params.startsBefore)
+          Date d = sdf.parse(params.startsBefore)
         base_qry += " and (select min(tc.startDate) from TIPPCoverage tc where tc.tipp = tipp) <= ?"
         qry_params.add(d)
       }
@@ -147,7 +147,7 @@ class IssueEntitlementController extends AbstractDebugController {
     def edit() {
     switch (request.method) {
     case 'GET':
-          def issueEntitlementInstance = IssueEntitlement.get(params.id)
+        IssueEntitlement issueEntitlementInstance = IssueEntitlement.get(params.id)
           if (!issueEntitlementInstance) {
               flash.message = message(code: 'default.not.found.message', args: [message(code: 'issueEntitlement.label'), params.id])
               redirect action: 'list'
@@ -157,7 +157,7 @@ class IssueEntitlementController extends AbstractDebugController {
           [issueEntitlementInstance: issueEntitlementInstance]
       break
     case 'POST':
-          def issueEntitlementInstance = IssueEntitlement.get(params.id)
+        IssueEntitlement issueEntitlementInstance = IssueEntitlement.get(params.id)
           if (!issueEntitlementInstance) {
               flash.message = message(code: 'default.not.found.message', args: [message(code: 'issueEntitlement.label'), params.id])
               redirect action: 'list'
@@ -191,7 +191,7 @@ class IssueEntitlementController extends AbstractDebugController {
     @DebugAnnotation(test='hasAffiliation("INST_EDITOR")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_EDITOR") })
   def delete() {
-    def issueEntitlementInstance = IssueEntitlement.get(params.id)
+        IssueEntitlement issueEntitlementInstance = IssueEntitlement.get(params.id)
     if (!issueEntitlementInstance) {
     flash.message = message(code: 'default.not.found.message', args: [message(code: 'issueEntitlement.label'), params.id])
         redirect action: 'list'

@@ -13,7 +13,7 @@ class DocstoreController extends AbstractDebugController {
 
     @Secured(['ROLE_USER'])
     def index() {
-        def doc = Doc.findByUuid(params.id)
+        Doc doc = Doc.findByUuid(params.id)
         if (doc) {
 
             def filename = doc.filename ?: messageSource.getMessage(
