@@ -168,7 +168,7 @@
                     <label>&nbsp;</label>
                     <g:submitToRemote data-action="create" onSuccess="Finance.updateResults('create');Finance.clearCreate()"
                                       onFailure="errorHandling(textStatus,'create',errorThrown)"
-                                      url="[controller:'finance', action: 'newCostItem']" type="submit"
+                                      url="[controller:'finance', action: 'createOrUpdateCostItem']" type="submit"
                                       name="Add" value="${message(code:'default.button.create_new.label')}"
                                       class="ui button">
                     </g:submitToRemote>

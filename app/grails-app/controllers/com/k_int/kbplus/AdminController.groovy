@@ -62,6 +62,8 @@ class AdminController extends AbstractDebugController {
     def systemAnnouncements() {
         Map<String, Object> result = [:]
 
+        result.mailDisabled = grailsApplication.config.grails.mail.disabled
+
         if (params.id) {
             SystemAnnouncement sa = SystemAnnouncement.get(params.long('id'))
 
@@ -70,7 +72,10 @@ class AdminController extends AbstractDebugController {
                     result.currentAnnouncement = sa
                 }
                 else if (params.cmd == 'publish') {
-                    if (sa.publish()) {
+                    if (result.mailDisabled) {
+                        flash.error = message(code: 'system.config.mail.disabled')
+                    }
+                    else if (sa.publish()) {
                         flash.message = message(code: 'announcement.published')
                     }
                     else {

@@ -4,6 +4,7 @@ import com.k_int.kbplus.*
 import com.k_int.kbplus.auth.User
 import de.laser.helper.DebugAnnotation
 import de.laser.helper.RDConstants
+import de.laser.helper.RDStore
 import grails.plugin.springsecurity.annotation.Secured
 
 class CostConfigurationController {
@@ -106,7 +107,7 @@ class CostConfigurationController {
     def setAllCostItems() {
         def cie = genericOIDService.resolveOID(params.cie)
         Org org = contextService.org
-        def concernedCostItems = CostItem.findAllByOwnerAndCostItemElementAndCostItemElementConfiguration(org,cie,null).collect {it.id}
+        def concernedCostItems = CostItem.findAllByOwnerAndCostItemElementAndCostItemElementConfigurationAndCostItemStatusNotEqual(org,cie,null, RDStore.COST_ITEM_DELETED).collect {it.id}
         def ciec = CostItemElementConfiguration.findByCostItemElementAndForOrganisation(cie,org)
         if(concernedCostItems) {
             CostItem.executeUpdate('UPDATE CostItem ci SET ci.costItemElementConfiguration = :ciec WHERE ci.id IN (:cci)',[ciec:ciec.elementSign,cci:concernedCostItems])
