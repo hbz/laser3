@@ -778,33 +778,42 @@ class DeletionService {
         println "processing package #${pkg.id}"
         Package.withTransaction { status ->
             try {
-                //to be absolutely sure ...
-                List<Subscription> subsConcerned = Subscription.executeQuery('select ie.subscription from IssueEntitlement ie join ie.tipp tipp where tipp.pkg = :pkg and ie.status != :deleted',[pkg:pkg,deleted: RDStore.TIPP_STATUS_DELETED])
-                if(subsConcerned) {
-                    println 'issue entitlements detected on package to be deleted .. rollback'
-                    status.setRollbackOnly()
-                    return false
+                if(!pkg.name) {
+                    //deleting IECoverages and IssueEntitlements marked deleted or where package data has disappeared
+                    List<Long> iesConcerned = IssueEntitlement.executeQuery("select ie.id from IssueEntitlement ie join ie.tipp tipp where tipp.pkg = :pkg and (ie.status = :deleted or tipp.pkg.name = '')",[pkg:pkg,deleted: RDStore.TIPP_STATUS_DELETED])
+                    IssueEntitlementCoverage.executeUpdate("delete from IssueEntitlementCoverage ic where ic.issueEntitlement.id in :toDelete",[toDelete:iesConcerned])
+                    PriceItem.executeUpdate("delete from PriceItem pc where pc.issueEntitlement.id in :toDelete",[toDelete:iesConcerned])
+                    CostItem.executeUpdate("delete from CostItem ci where ci.issueEntitlement.id in :toDelete",[toDelete:iesConcerned])
+                    IssueEntitlement.executeUpdate("delete from IssueEntitlement ie where ie.id in :toDelete",[toDelete:iesConcerned])
+                    //deleting tipps
+                    List<Long> tippsConcerned = TitleInstancePackagePlatform.findAllByPkg(pkg).collect { tipp -> tipp.id }
+                    TIPPCoverage.executeUpdate("delete from TIPPCoverage tc where tc.tipp.id in :toDelete",[toDelete:tippsConcerned])
+                    Identifier.executeUpdate("delete from Identifier id where id.tipp.id in :toDelete",[toDelete:tippsConcerned])
+                    TitleInstancePackagePlatform.executeUpdate("delete from TitleInstancePackagePlatform tipp where tipp.id in :toDelete",[toDelete:tippsConcerned])
+                    //deleting pending changes
+                    PendingChange.findAllByPkg(pkg).each { tmp -> tmp.delete() }
+                    //deleting orgRoles
+                    OrgRole.findAllByPkg(pkg).each { tmp -> tmp.delete() }
+                    //deleting (empty) subscription packages
+                    SubscriptionPackage.findAllByPkg(pkg).each { tmp ->
+                        CostItem.executeUpdate("delete from CostItem ci where ci.subPkg = :sp",[sp:tmp])
+                        tmp.delete()
+                    }
+                    //deleting empty-running trackers
+                    //GlobalRecordTracker.findAllByLocalOid(pkg.class.name+':'+pkg.id).each { tmp -> tmp.delete() }
+                    pkg.delete()
+                    status.flush()
+                    return true
                 }
-                //deleting IECoverages and IssueEntitlements marked deleted
-                List<Long> iesConcerned = IssueEntitlement.executeQuery("select ie.id from IssueEntitlement ie join ie.tipp tipp where tipp.pkg = :pkg and ie.status = :deleted",[pkg:pkg,deleted: RDStore.TIPP_STATUS_DELETED])
-                IssueEntitlementCoverage.executeUpdate("delete from IssueEntitlementCoverage ic where ic.issueEntitlement.id in :toDelete",[toDelete:iesConcerned])
-                IssueEntitlement.executeUpdate("delete from IssueEntitlement ie where ie.id in :toDelete",[toDelete:iesConcerned])
-                //deleting tipps
-                List<Long> tippsConcerned = TitleInstancePackagePlatform.findAllByPkg(pkg).collect { tipp -> tipp.id }
-                TIPPCoverage.executeUpdate("delete from TIPPCoverage tc where tc.tipp.id in :toDelete",[toDelete:tippsConcerned])
-                Identifier.executeUpdate("delete from Identifier id where id.tipp.id in :toDelete",[toDelete:tippsConcerned])
-                TitleInstancePackagePlatform.executeUpdate("delete from TitleInstancePackagePlatform tipp where tipp.id in :toDelete",[toDelete:tippsConcerned])
-                //deleting pending changes
-                PendingChange.findAllByPkg(pkg).each { tmp -> tmp.delete() }
-                //deleting orgRoles
-                OrgRole.findAllByPkg(pkg).each { tmp -> tmp.delete() }
-                //deleting (empty) subscription packages
-                SubscriptionPackage.findAllByPkg(pkg).each { tmp -> tmp.delete() }
-                //deleting empty-running trackers
-                //GlobalRecordTracker.findAllByLocalOid(pkg.class.name+':'+pkg.id).each { tmp -> tmp.delete() }
-                pkg.delete()
-                status.flush()
-                return true
+                else {
+                    //to be absolutely sure ...
+                    List<Subscription> subsConcerned = Subscription.executeQuery('select ie.subscription from IssueEntitlement ie join ie.tipp tipp where tipp.pkg = :pkg and ie.status != :deleted',[pkg:pkg,deleted: RDStore.TIPP_STATUS_DELETED])
+                    if(subsConcerned) {
+                        println "issue entitlements detected on package to be deleted: ${subsConcerned} .. rollback"
+                        status.setRollbackOnly()
+                        return false
+                    }
+                }
             }
             catch(Exception e) {
                 println 'error while deleting package ' + pkg.id + ' .. rollback'

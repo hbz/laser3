@@ -84,13 +84,20 @@
                         <g:each in="${tippMergers}" var="merging">
                             <tr>
                                 <td>
-                                    <p>From: <g:link controller="title" action="show" id="${TitleInstance.findByGlobalUID(merging.from).id}">${merging.from}</g:link></p>
-                                    <p>To: ${merging.to}</p>
-                                    <p>Other concerned:
+                                    <g:if test="${merging.from}">
+                                        <p>From: <g:link controller="title" action="show" id="${TitleInstance.findByGlobalUID(merging.from).id}">${merging.from}</g:link></p>
+                                        <p>To: ${merging.to}</p>
+                                        <p>Other concerned:
                                         <g:each in="${merging.others}" var="other">
                                             <g:link controller="title" action="show" id="${TitleInstance.findByGlobalUID(other).id}">${other}</g:link>
                                         </g:each>
-                                    </p>
+                                        </p>
+                                    </g:if>
+                                    <g:else>
+                                        <p><a href="${merging.gokbLink}">GOKb entry</a></p>
+                                        <p>${merging.tippSetA}</p>
+                                        <p>${merging.tippSetB}</p>
+                                    </g:else>
                                 </td>
                             </tr>
                         </g:each>
