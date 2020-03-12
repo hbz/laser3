@@ -75,6 +75,11 @@ class SystemAnnouncement {
     }
 
     boolean publish() {
+        if (grailsApplication.config.grails.mail.disabled == true) {
+            println 'SystemAnnouncement.publish() failed due grailsApplication.config.grails.mail.disabled = true'
+            return false
+        }
+
         List<User> reps = SystemAnnouncement.getRecipients()
         List validUserIds = []
         List failedUserIds = []
@@ -127,8 +132,7 @@ class SystemAnnouncement {
 
         if (isRemindCCbyEmail){
             ccAddress = user.getSetting(UserSettings.KEYS.REMIND_CC_EMAILADDRESS, null)?.getValue()
-
-            println user.toString() + " : " + isRemindCCbyEmail + " : " + ccAddress
+            // println user.toString() + " : " + isRemindCCbyEmail + " : " + ccAddress
         }
 
         if (isRemindCCbyEmail && ccAddress) {
