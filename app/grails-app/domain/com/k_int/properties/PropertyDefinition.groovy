@@ -1,29 +1,24 @@
 package com.k_int.properties
 
 import com.k_int.kbplus.GenericOIDService
-import com.k_int.kbplus.Identifier
 import com.k_int.kbplus.Org
-import com.k_int.kbplus.RefdataCategory
 import com.k_int.kbplus.RefdataValue
 import com.k_int.kbplus.abstract_domain.AbstractProperty
-import de.laser.CacheService
 import de.laser.ContextService
 import de.laser.domain.AbstractI10nOverride
-import de.laser.domain.AbstractI10nTranslatable
 import de.laser.domain.I10nTranslation
 import de.laser.helper.SwissKnife
 import grails.util.Holders
-import groovy.transform.NotYetImplemented
 import groovy.util.logging.Log4j
 import org.apache.commons.logging.Log
 import org.apache.commons.logging.LogFactory
 import org.codehaus.groovy.grails.orm.hibernate.cfg.GrailsHibernateUtil
-
-//import org.grails.orm.hibernate.cfg.GrailsHibernateUtil
-
 import org.springframework.context.i18n.LocaleContextHolder
 
 import javax.persistence.Transient
+
+//import org.grails.orm.hibernate.cfg.GrailsHibernateUtil
+
 import javax.validation.UnexpectedTypeException
 
 @Log4j

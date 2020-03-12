@@ -97,8 +97,8 @@ class Doc {
         def contentLength
 
         try {
-            def fPath = grailsApplication.config.documentStorageLocation ?: '/tmp/laser'
-            def file = new File("${fPath}/${uuid}")
+            String fPath = grailsApplication.config.documentStorageLocation ?: '/tmp/laser'
+            File file = new File("${fPath}/${uuid}")
             output = file.getBytes()
             contentLength = output.length
         } catch(Exception e) {

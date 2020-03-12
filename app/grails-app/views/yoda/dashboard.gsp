@@ -49,7 +49,7 @@
                         <g:link controller="yoda" action="activityProfiler" target="_blank">${message(code:'menu.yoda.activityProfiler')}</g:link>
                     </div>
                     <div class="item">
-                        <g:link controller="yoda" action="cacheInfo" target="_blank">${message(code:'menu.yoda.cacheInfo')}</g:link>
+                        <g:link controller="yoda" action="timelineProfiler" target="_blank">${message(code:'menu.yoda.timelineProfiler')}</g:link>
                     </div>
                     <div class="item">
                         <g:link controller="yoda" action="quartzInfo" target="_blank">${message(code:'menu.yoda.quartzInfo')}</g:link>
@@ -70,6 +70,9 @@
                     </div>
                     <div class="item">
                         <g:link class="item" controller="admin" action="manageDeletedObjects" target="_blank">${message(code: "menu.admin.deletedObjects")}</g:link>
+                    </div>
+                    <div class="item">
+                        <g:link controller="yoda" action="cacheInfo" target="_blank">${message(code:'menu.yoda.cacheInfo')}</g:link>
                     </div>
                 </div>
             </div>

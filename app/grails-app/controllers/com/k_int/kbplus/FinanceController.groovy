@@ -1,17 +1,19 @@
 package com.k_int.kbplus
 
-
 import com.k_int.kbplus.auth.User
 import de.laser.CacheService
 import de.laser.controller.AbstractDebugController
 import de.laser.exceptions.FinancialDataException
 import de.laser.helper.DateUtil
 import de.laser.helper.DebugAnnotation
+import de.laser.helper.RDConstants
 import de.laser.helper.EhcacheWrapper
 import de.laser.helper.RDStore
 import de.laser.interfaces.TemplateSupport
 import grails.converters.JSON
 import grails.plugin.springsecurity.annotation.Secured
+import groovy.json.JsonBuilder
+import org.apache.commons.lang.StringUtils
 import org.apache.poi.POIXMLProperties
 import org.apache.poi.ss.usermodel.Cell
 import org.apache.poi.ss.usermodel.FillPatternType
@@ -22,7 +24,6 @@ import org.apache.poi.xssf.usermodel.XSSFCellStyle
 import org.apache.poi.xssf.usermodel.XSSFColor
 import org.apache.poi.xssf.usermodel.XSSFWorkbook
 import org.springframework.context.i18n.LocaleContextHolder
-import de.laser.helper.RDConstants
 
 import javax.servlet.ServletOutputStream
 import java.awt.*
@@ -1205,7 +1206,7 @@ class FinanceController extends AbstractDebugController {
         }
         int counter     = CostItem.countByOwnerAndLastUpdatedGreaterThan(institution, dateTo)
 
-        def builder = new groovy.json.JsonBuilder()
+        JsonBuilder builder = new JsonBuilder()
         def root    = builder {
             count counter
             to dateTimeFormat.format(dateTo)
@@ -1225,8 +1226,9 @@ class FinanceController extends AbstractDebugController {
         results.failures   =  []
         results.message    =  null
         results.sentIDs    =  JSON.parse(params.del) //comma seperated list
-        def user           =  User.get(springSecurityService.principal.id)
-        def institution    =  contextService.getOrg()
+        User user           =  User.get(springSecurityService.principal.id)
+        Org institution    =  contextService.getOrg()
+
         if (!accessService.checkMinUserOrgRole(user,institution,"INST_EDITOR"))
         {
             response.sendError(403)
@@ -1393,8 +1395,8 @@ class FinanceController extends AbstractDebugController {
         log.debug("Financials :: remove budget code - Params: ${params}")
         def result      = [:]
         result.success  = [status:  "Success: Deleted code", msg: "Deleted instance of the budget code for the specified cost item"]
-        def user        = User.get(springSecurityService.principal.id)
-        def institution = contextService.getOrg()
+        User user        = User.get(springSecurityService.principal.id)
+        Org institution  = contextService.getOrg()
 
         if (!user.getAuthorizedOrgs().id.contains(institution.id))
         {
@@ -1405,9 +1407,9 @@ class FinanceController extends AbstractDebugController {
         def ids = params.bcci ? params.bcci.split("_")[1..2] : null
         if (ids && ids.size()==2)
         {
-            def bc  = BudgetCode.get(ids[0])
-            def ci  = CostItem.get(ids[1])
-            def cig = CostItemGroup.findByBudgetCodeAndCostItem(bc, ci)
+            BudgetCode bc  = BudgetCode.get(ids[0])
+            CostItem ci  = CostItem.get(ids[1])
+            CostItemGroup cig = CostItemGroup.findByBudgetCodeAndCostItem(bc, ci)
 
             if (bc && ci && cig)
             {
@@ -1430,8 +1432,8 @@ class FinanceController extends AbstractDebugController {
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_EDITOR") })
     def createCode() {
         def result      = [:]
-        def user        = springSecurityService.currentUser
-        def institution = contextService.getOrg()
+        User user        = springSecurityService.currentUser
+        Org institution  = contextService.getOrg()
 
         if (! userCertified(user, institution))
         {

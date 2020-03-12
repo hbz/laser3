@@ -44,7 +44,7 @@
             </tr>
         </thead>
         <tbody>
-            <g:each in="${propDefGroups}" var="pdGroup">
+            <g:each in="${propDefGroups.sort{it.name.toLowerCase()}}" var="pdGroup">
                 <tr>
                     <td>
                         <semui:xEditable owner="${pdGroup}" field="name" />

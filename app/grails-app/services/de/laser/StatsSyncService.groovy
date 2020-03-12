@@ -3,11 +3,12 @@ package de.laser
 import com.k_int.kbplus.*
 import de.laser.domain.StatsTripleCursor
 import de.laser.helper.RDConstants
+import de.laser.helper.RDStore
 import de.laser.usage.StatsSyncServiceOptions
 import de.laser.usage.SushiClient
 import groovy.json.JsonOutput
-import groovy.time.TimeCategory
 import groovyx.gpars.GParsPool
+import groovyx.net.http.HttpResponseDecorator
 import groovyx.net.http.RESTClient
 import groovyx.net.http.URIBuilder
 
@@ -28,7 +29,7 @@ class StatsSyncService {
     def propertyInstanceMap = org.codehaus.groovy.grails.plugins.DomainClassGrailsPlugin.PROPERTY_INSTANCE_MAP
     def queryParams = [:]
     def errors = []
-    def availableReportCache = [:]
+    Map<String,List> availableReportCache = [:]
 
 
     static int submitCount=0
@@ -46,7 +47,7 @@ class StatsSyncService {
 
     def initSync() {
         log.debug("StatsSyncService::doSync ${this.hashCode()}")
-        if ( this.running == true ) {
+        if (running) {
             log.debug("Skipping sync.. task already running")
         }
         log.debug("Mark StatsSyncTask as running...")
@@ -66,12 +67,13 @@ class StatsSyncService {
 
     private String getTitleInstancesForUsageQuery() {
         // Distinct list of titles ids, the platform, subscribing organisation and the zdbid
-        def hql =  "select distinct ie.tipp.title.id, pf.id, orgrel.org.id, titleIdentifier.id from IssueEntitlement as ie " +
+        String hql =  "select distinct ie.tipp.title.id, pf.id, orgrel.org.id, titleIdentifier.id from IssueEntitlement as ie " +
             "join ie.tipp.platform as pf " +
             "join ie.tipp.pkg.orgs as po " +
             "join ie.subscription.orgRelations as orgrel "+
             "join ie.tipp.title.ids as titleIdentifier "+
             "where titleIdentifier.ns.ns in ('zdb','doi') "+
+            "and ie.status.value <> '${RDStore.TIPP_STATUS_DELETED}' " +
             "and po.roleType.value='Content Provider' "+
             "and exists (select cp from pf.customProperties as cp where cp.type.name = 'NatStat Supplier ID')" +
             "and (orgrel.roleType.value = 'Subscriber_Consortial' or orgrel.roleType.value = 'Subscriber') " +
@@ -85,7 +87,7 @@ class StatsSyncService {
         return hql
     }
 
-    def addFilters(params) {
+    void addFilters(params) {
         queryParams = [:]
         if (params.supplier != 'null'){
             queryParams['supplier'] = params.supplier as long
@@ -95,24 +97,24 @@ class StatsSyncService {
         }
     }
 
-    def doSync() {
+    void doSync() {
         initSync()
         executorService.submit({ internalDoSync() } as java.util.concurrent.Callable)
     }
 
-    def internalDoSync() {
+    void internalDoSync() {
         try {
             log.debug("create thread pool")
-            def statsApi = grailsApplication.config.statsApiUrl ?: ''
+            String statsApi = grailsApplication.config.statsApiUrl ?: ''
             if (statsApi == '') {
                 log.error("Stats API URL not set in config")
                 errors.add("Stats API URL not set in config")
                 return
             }
-            def mostRecentClosedPeriod = getMostRecentClosedPeriod()
-            def start_time = System.currentTimeMillis()
+            String mostRecentClosedPeriod = getMostRecentClosedPeriod()
+            Long start_time = System.currentTimeMillis()
             log.debug("STATS Sync Task - Running query ${getTitleInstancesForUsageQuery()}")
-            def titleList = IssueEntitlement.executeQuery(getTitleInstancesForUsageQuery(), queryParams)
+            List titleList = IssueEntitlement.executeQuery(getTitleInstancesForUsageQuery(), queryParams)
             queryTime = System.currentTimeMillis() - start_time
 
             GParsPool.withPool(THREAD_POOL_SIZE) { pool ->
@@ -134,7 +136,7 @@ class StatsSyncService {
         }
     }
 
-    def generateMD5(String s) {
+    String generateMD5(String s) {
         MessageDigest digest = MessageDigest.getInstance("MD5")
         digest.update(s.bytes)
         new BigInteger(1, digest.digest()).toString(16).padLeft(32, '0')
@@ -143,22 +145,22 @@ class StatsSyncService {
     /**
      * Query NatStat v5 reports endpoint to get the available reports for a supplier
      * @param queryParams
-     * @return Map Available reports for supplier
+     * @return List Available reports for supplier
      */
-    def getAvailableReportsForPlatform(queryParams) {
+    List getAvailableReportsForPlatform(Map<String,String> queryParams) {
 
-        def queryParamsHash = generateMD5(queryParams.apiKey.toString() + queryParams.requestor.toString() + queryParams.customer + queryParams.platform)
+        String queryParamsHash = generateMD5(queryParams.apiKey.toString() + queryParams.requestor.toString() + queryParams.customer + queryParams.platform)
         if (availableReportCache[queryParamsHash]) {
             log.debug('Return available NatStat reports from cache')
             return availableReportCache[queryParamsHash]
         }
         try {
-            def uri = new URIBuilder(grailsApplication.config.statsApiUrl)
-            def baseUrl = uri.getScheme() + "://" + uri.getHost()
-            def basePath = uri.getPath().endsWith('/') ? uri.getPath() : uri.getPath() + '/'
-            def path = basePath + 'Sushiservice/reports'
+            URIBuilder uri = new URIBuilder(grailsApplication.config.statsApiUrl)
+            String baseUrl = uri.getScheme() + "://" + uri.getHost()
+            String basePath = uri.getPath().endsWith('/') ? uri.getPath() : uri.getPath() + '/'
+            String path = basePath + 'Sushiservice/reports'
 
-            def v5Endpoint = new RESTClient(baseUrl)
+            RESTClient v5Endpoint = new RESTClient(baseUrl)
             def result = v5Endpoint.get(
                 path: path,
                 headers: ["Accept": "application/json"],
@@ -168,7 +170,7 @@ class StatsSyncService {
                     customer_id : queryParams.customer,
                     platform    : queryParams.platform,
                 ])
-            def reportList = []
+            List reportList = []
             result.getData().each {it ->
                 if (it.code) {
                     errors.add("SUSHI Error for ${queryParams.customer}|${queryParams.requestor}|${queryParams.platform}: ${it.code}-${it.message}\n")
@@ -180,7 +182,7 @@ class StatsSyncService {
             }
             availableReportCache[queryParamsHash] = reportList
         } catch (Exception e) {
-            def message = "Error getting available Reports from NatStat API"
+            String message = "Error getting available Reports from NatStat API"
             log.error(message)
             errors.add(message)
             log.error(e.message)
@@ -196,31 +198,31 @@ class StatsSyncService {
         ]
     }
 
-    def getRelevantReportList(queryParams) {
+    List<RefdataValue> getRelevantReportList(Map<String,String> queryParams) {
         List<RefdataValue> reports = RefdataCategory.getAllRefdataValues(RDConstants.FACT_TYPE)
-        def availableReports = getAvailableReportsForPlatform(queryParams)
+        List availableReports = getAvailableReportsForPlatform(queryParams)
         reports.removeAll {
             if (it.value.startsWith('STATS') || (it.value.startsWith('JUSP'))){
                 //log.warn('STATS/JUSP prefix deprecated please remove Refdatavalues')
             }
-            def reportInAvailableReport = it.value in availableReports
+            Boolean reportInAvailableReport = it.value in availableReports
             (it.value.startsWith('STATS') || it.value.startsWith('JUSP') || !reportInAvailableReport)
         }
         return reports
     }
 
     StatsSyncServiceOptions initializeStatsSyncServiceOptions(listItem, mostRecentClosedPeriod) {
-        def options = new StatsSyncServiceOptions()
-        def itemObjects = getObjectsForItem(listItem)
+        StatsSyncServiceOptions options = new StatsSyncServiceOptions()
+        List itemObjects = getObjectsForItem(listItem)
         options.setItemObjects(itemObjects)
         options.setBasicQueryParams()
         options.mostRecentClosedPeriod = mostRecentClosedPeriod
         return options
     }
 
-    def getCursor(options) {
+    StatsTripleCursor getCursor(StatsSyncServiceOptions options) {
         // There could be more than one (if we have gaps in usage), get the newest one
-        def csr = StatsTripleCursor.findByTitleIdAndSupplierIdAndCustomerIdAndFactType(
+        StatsTripleCursor csr = StatsTripleCursor.findByTitleIdAndSupplierIdAndCustomerIdAndFactType(
             options.statsTitleIdentifier, options.platform, options.customer, options.factType,
             [sort: "availTo", order: "desc"])
         if (csr == null) {
@@ -238,22 +240,22 @@ class StatsSyncService {
         return csr
     }
 
-    def processListItem(listItem, mostRecentClosedPeriod) {
-        def sushiClient = new SushiClient()
-        def start_time = System.currentTimeMillis()
+    void processListItem(Object listItem, String mostRecentClosedPeriod) {
+        SushiClient sushiClient = new SushiClient()
+        Long start_time = System.currentTimeMillis()
 
         Fact.withNewTransaction { status ->
             StatsSyncServiceOptions options = initializeStatsSyncServiceOptions(listItem, mostRecentClosedPeriod)
-            def reports = getRelevantReportList(options.getBasicQueryParams())
+            List<RefdataValue> reports = getRelevantReportList(options.getBasicQueryParams())
             StatsTripleCursor csr = null
 
             reports.each { statsReport ->
                 options.setReportSpecificQueryParams(statsReport)
                 // we could use a more complex structure, e.g. to try to seperate the SUSHI Exceptions from API
                 // for now use a list of error messages
-                def jsonErrors = []
+                List jsonErrors = []
                 csr = getCursor(options)
-                def mostRecentClosedDate = new SimpleDateFormat("yyyy-MM-dd").parse(options.mostRecentClosedPeriod)
+                Date mostRecentClosedDate = new SimpleDateFormat("yyyy-MM-dd").parse(options.mostRecentClosedPeriod)
                 if (options.identifierTypeAllowedForAPICall() &&
                     ((csr.availTo == null) || (csr.availTo < mostRecentClosedDate))) {
                     options.from = getNextFromPeriod(csr)
@@ -287,9 +289,9 @@ class StatsSyncService {
         }
     }
 
-    def writeUsageRecords(xml, options, csr) {
+    void writeUsageRecords(xml, options, csr) {
         checkStatsTitleCount(xml)
-        def itemPerformances = xml.depthFirst().findAll {
+        List itemPerformances = xml.depthFirst().findAll {
             it.name() == 'ItemPerformance'
         }
         if (itemPerformances.size()>0) {
@@ -297,27 +299,42 @@ class StatsSyncService {
                 it.Period.Begin.text()
             }
         }
-        // 3030 Exception, no usage data for fetched report
+        // 3030 Exception or single title query without ItemPerformance, no usage data for fetched report
         if (itemPerformances.empty) {
-            csr.availTo = new SimpleDateFormat('yyyy-MM').parse(options.mostRecentClosedPeriod)
-            csr.save(flush: true)
+            csr.availTo = new SimpleDateFormat('yyyy-MM-dd').parse(options.mostRecentClosedPeriod)
+            // We get a new month with no usage for a single title
+            if (! isNoUsageAvailableException(xml)) {
+                List notProcessedMonths = getNotProcessedMonths(xml)
+                if (! notProcessedMonths.empty) {
+                    List followingRanges = actualRangePlusFollowingNoUsageRanges(options, notProcessedMonths, csr.availFrom.format('yyyy-MM'))
+                    followingRanges.each {
+                        if (it == followingRanges.first()){
+                            csr.availTo = new SimpleDateFormat('yyyy-MM-dd').parse(getDateForLastDayOfMonth(it['end']))
+                            csr.save(flush: true)
+                        } else {
+                            writeNewCsr(0, it['begin'],it['end'],options)
+                        }
+                    }
+                }
+            } else {
+                // 3030 Exception
+                csr.save(flush: true)
+            }
             return
         }
-        def usageRanges = getUsageRanges(itemPerformances, options, getNotProcessedMonths(xml))
-        def cal = new GregorianCalendar()
+        List usageRanges = getUsageRanges(itemPerformances, options, getNotProcessedMonths(xml))
+        GregorianCalendar cal = new GregorianCalendar()
         usageRanges.each {
-            def factCount = 0
-            def itemPerformancesForRange = getItemPerformancesForRange(itemPerformances, it)
-            // should only happen on first sync if there is a range without usage before the first ItemPerformance, e.g. if
-            // we want to get usage for 2012ff from NatStat, but we cannot get usage this early
+            Integer factCount = 0
+            List itemPerformancesForRange = getItemPerformancesForRange(itemPerformances, it)
+            // should only happen if there is a range without usage before the first ItemPerformance or
+            // if there is a usage range after the last ItemPerformance (zero usage)
             if (itemPerformancesForRange.empty) {
-                csr.availFrom = new SimpleDateFormat('yyyy-MM').parse(it['begin'])
-                csr.availTo = new SimpleDateFormat('yyyy-MM-dd').parse(getDateForLastDayOfMonth(it['end']))
-                csr.save(flush: true)
+                csr = writeNewCsr(factCount, it['begin'],it['end'],options)
             } else {
-                def usageMap = getPeriodUsageMap(itemPerformancesForRange)
+                Map usageMap = getPeriodUsageMap(itemPerformancesForRange)
                 usageMap.each { key, countPerMetric ->
-                    def fact = [:]
+                    Map fact = [:]
                     countPerMetric.each { metric, count ->
                         fact.from = new SimpleDateFormat('yyyy-MM-dd').parse(key)
                         fact.to = new SimpleDateFormat('yyyy-MM-dd').parse(getDateForLastDayOfMonth(key))
@@ -334,7 +351,6 @@ class StatsSyncService {
                         if (factService.registerFact(fact)) {
                             ++factCount
                             ++newFactCount
-                            DateTimeFormatter formatter = DateTimeFormatter.ofPattern('yyyy-MM-dd')
                         }
                     }
                 }
@@ -347,37 +363,48 @@ class StatsSyncService {
 
                 } else {
                     def newFromPeriod = getNextFromPeriod(csr).substring(0,7)
-                    if (newFromPeriod != it.begin) { // gap for new range
+                    if (newFromPeriod != it.begin) { // gap for new range, create new csr
                         log.warn("usage data gap found before ${it.begin}")
+                        csr = writeNewCsr(factCount, it['begin'], it['end'], options)
+                    } else {
+                        // There is no gap, just update csr with new availTo value
+                        csr.availTo = new SimpleDateFormat('yyyy-MM-dd').parse(getDateForLastDayOfMonth(it.end))
+                        csr.numFacts = csr.numFacts + factCount
+                        csr.save(flush: true)
                     }
-                    csr = new StatsTripleCursor()
-                    csr.availFrom = new SimpleDateFormat('yyyy-MM').parse(it.begin) // update
-                    csr.availTo = new SimpleDateFormat('yyyy-MM-dd').parse(getDateForLastDayOfMonth(it['end'])) // update to last month for that range
-                    csr.customerId = options.customer
-                    csr.numFacts = factCount
-                    csr.titleId = options.statsTitleIdentifier
-                    csr.supplierId = options.platform
-                    csr.factType = options.factType
-                    csr.identifierType = options.identifier.ns
-                    csr.save(flush: true)
+
                 }
             }
         }
     }
 
-    def getItemPerformancesForRange(itemPerformances, range) {
+    private StatsTripleCursor writeNewCsr(factCount, begin, end, options){
+        StatsTripleCursor csr = new StatsTripleCursor()
+        csr.availFrom = new SimpleDateFormat('yyyy-MM').parse(begin)
+        csr.availTo = new SimpleDateFormat('yyyy-MM-dd').parse(getDateForLastDayOfMonth(end))
+        csr.customerId = options.customer
+        csr.numFacts = factCount
+        csr.titleId = options.statsTitleIdentifier
+        csr.supplierId = options.platform
+        csr.factType = options.factType
+        csr.identifierType = options.identifier.ns
+        csr.save(flush: true)
+        return csr
+    }
+
+    List getItemPerformancesForRange(itemPerformances, range) {
         itemPerformances.findAll {
             it.Period.Begin.text().substring(0,7) >= range["begin"] &&
                 it.Period.End.text().substring(0,7) <= range["end"]
         }
     }
 
-    def getRangeBeforeFirstItemPerformanceElement(itemPerformances, options, notProcessedMonths) {
-        def rangeMap = [:]
-        def firstItemPerformanceBeginPeriod = itemPerformances.first().Period.Begin.text().substring(0,7)
-        def lastItemPerformanceBeginPeriod = itemPerformances.last().Period.Begin.text().substring(0,7)
-        def firstProcessedMonth = null
-        def monthsWithoutNatStatTasksBeforeFirstItemPerformancePeriod = notProcessedMonths.findAll {
+    Map<String,String> getRangeBeforeFirstItemPerformanceElement(List itemPerformances, StatsSyncServiceOptions options, List<String> notProcessedMonths) {
+        Map<String,String> rangeMap = [:]
+        String firstItemPerformanceBeginPeriod = itemPerformances.first().Period.Begin.text().substring(0,7)
+        String lastItemPerformanceBeginPeriod = itemPerformances.last().Period.Begin.text().substring(0,7)
+        String firstProcessedMonth = null
+        List<String> monthsWithoutNatStatTasksBeforeFirstItemPerformancePeriod = notProcessedMonths.findAll {
             firstItemPerformanceBeginPeriod > it
         }
         if (monthsWithoutNatStatTasksBeforeFirstItemPerformancePeriod) {
@@ -395,14 +422,14 @@ class StatsSyncService {
         return rangeMap
     }
 
-    def getUsageRanges(ArrayList itemPerformances, options, notProcessedMonths) {
+    List<Map> getUsageRanges(List itemPerformances, StatsSyncServiceOptions options, List<String> notProcessedMonths) {
         log.debug('Get Usage ranges for API call from/to Period')
-        def ranges = []
-        // Add begin end period for zero usage before first ItemPerformance and filter out months not available before that.
+        List ranges = []
+        // Add begin and end period for zero usage before first ItemPerformance and filter out months not available before that.
         // At the moment we begin SYNC_STATS_FROM. We would have to extend the NatStat API to improve that (i.e.
         // get csr.availfrom for the first period via API call
-        def rangeMap = [:]
-        def rangeBeforeFirstItemPerformanceElement = getRangeBeforeFirstItemPerformanceElement(itemPerformances,
+        Map<String,String> rangeMap = [:]
+        Map rangeBeforeFirstItemPerformanceElement = getRangeBeforeFirstItemPerformanceElement(itemPerformances,
             options, notProcessedMonths)
 
         if (rangeBeforeFirstItemPerformanceElement.size() != 0) {
@@ -412,10 +439,10 @@ class StatsSyncService {
             log.debug('Found months between not processed months (SUSHI 3031) and first ItemPerformance Period')
         } else {
             // use next from period which was used to query the SUSHI service
-            rangeMap['begin'] = options.from
+            rangeMap['begin'] = options.from.substring(0,7)
             // Case when we have only not processed (3031) Months before first ItemPerformance
-            // we have to set rangeMap['begin'] to +1 month after (last not processed month before first ItemPerformance month)
-            def lastNotProcessedMonthBeforeItemPerformances = notProcessedMonths.findAll() {
+            // we have to set rangeMap['begin'] to +1 month after last not processed month before first ItemPerformance month
+            List<String> lastNotProcessedMonthBeforeItemPerformances = notProcessedMonths.findAll() {
                 it < itemPerformances.first().Period.Begin.text().substring(0,7)
             }.sort()
             if (lastNotProcessedMonthBeforeItemPerformances.size() != 0) {
@@ -434,11 +461,11 @@ class StatsSyncService {
         notProcessedMonths.removeAll {
             it < rangeMap['begin']
         }
-        def itemPerformanceRangeList = [] //temp list
+        List itemPerformanceRangeList = [] //temp list
         itemPerformances.each { performance ->
-            def performanceMonth = performance.Period.Begin.text().substring(0,7)
+            String performanceMonth = performance.Period.Begin.text().substring(0,7)
             // we have a gap if there is a month in our list < the actual processed ItemPerformance month
-            def gap = notProcessedMonths.find { month ->
+             String gap = notProcessedMonths.find { month ->
                  performanceMonth > month
             }
 
@@ -462,10 +489,78 @@ class StatsSyncService {
                 itemPerformanceRangeList.add(performance)
             }
         }
-        rangeMap['end'] = itemPerformanceRangeList.last().Period.Begin.text().substring(0,7)
-        ranges.add(rangeMap)
+        List followingRanges = actualRangePlusFollowingNoUsageRanges(options, notProcessedMonths, rangeMap['begin'])
+        return ranges + followingRanges
+    }
 
+    private List<Map> actualRangePlusFollowingNoUsageRanges(StatsSyncServiceOptions options, List<String> notProcessedMonths, String begin)
+    {
+        List<Map> ranges = []
+        Map rangeMap = [:]
+        rangeMap['begin'] = begin
+        // if there are months between last ItemPerformance and end date of SUSHI Call, there has to be zero usage for
+        // that title
+        if (notProcessedMonths.empty){
+            // not matter if there are further months without usage or not, mostRecentClosedPeriod should be correct here
+            rangeMap['end'] = options.mostRecentClosedPeriod.substring(0,7)
+            ranges.add(rangeMap)
+        } else {
+            // close old range: range end is notProcessed - 1 Month
+            rangeMap['end'] = minusMonths(notProcessedMonths.first(),1)
+            ranges.add(rangeMap)
+            rangeMap = [:]
+            if (notProcessedMonths.first() == options.mostRecentClosedPeriod.substring(0, 7)){
+                // do nothing more if it's the end month of the SUSHI call
+                notProcessedMonths = []
+            }
+
+            // Here we can have further gaps in between zero usage months without ItemPerformances
+            // it gets even more complicated and we also have to exclude the case where the notProcessedMonths are at the end, that
+            // can happen very often, if new months cannot yet be loaded in NatStat. We also would have no Facts to connect
+            // to the csr.
+            // Take the following example:
+            // ItemPerformances without gaps from [2012-01] - [2019-04]
+            // notProcessedMonths 2019-06, 2019-12=End months of API call (mostRecentClosedPeriod)
+            // => Leads to rangeMap: 2012-01 - 2019-05, 2019-07 - 2019-11
+
+            // collate example: [2019-06,2019-11,2019-12]
+            // => [[2019-06,2019-11],[2019-11,2019-12],[2019-12]]
+
+            // get Pairs of Elements, keep the remainder
+            List<List<String>> notProcessedMonthPairs = notProcessedMonths.collate(2,1)
+            notProcessedMonthPairs.each {
+                rangeMap['begin'] = plusMonths(it[0],1)
+                if (it.size() == 1) {
+                    // remainder, last not processed month, but only add a range if the notProcessedMonth
+                    // ist not the SUSHI call end month
+                    if (rangeMap['begin'] < options.mostRecentClosedPeriod.substring(0, 7)) {
+                        rangeMap['end'] = options.mostRecentClosedPeriod.substring(0, 7)
+                        ranges.add(rangeMap)
+                        rangeMap = [:]
+                    }
+                } else {
+                    // do not processed Months directly following one another (would be =)
+                    if (rangeMap['begin'] < it[1]) {
+                        rangeMap['end'] = minusMonths(it[1], 1)
+                        ranges.add(rangeMap)
+                        rangeMap = [:]
+                    }
+                }
+            }
+        }
         return ranges
+    }
+
+    private String plusMonths(CharSequence baseMonth, Long count) {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern('yyyy-MM')
+        YearMonth localDate = YearMonth.parse(baseMonth, formatter)
+        return localDate.plusMonths(count).toString()
+    }
+
+    private String minusMonths(CharSequence baseMonth, Long count) {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern('yyyy-MM')
+        YearMonth localDate = YearMonth.parse(baseMonth, formatter)
+        return localDate.minusMonths(count).toString()
     }
 
     /**
@@ -473,7 +568,7 @@ class StatsSyncService {
      * @param xml
      * @return
      */
-    def getNotProcessedMonths(xml) {
+    List getNotProcessedMonths(xml) {
         if (xml.Exception.isEmpty() == false && xml.Exception.Number == '3031') {
             def exceptionData = xml.Exception.Data
             def matcher = exceptionData =~ /\d{4}-\d{2}/
@@ -487,8 +582,8 @@ class StatsSyncService {
     }
 
 
-    def checkStatsTitleCount(xml) {
-        def statsTitles = xml.depthFirst().findAll {
+    void checkStatsTitleCount(xml) {
+        List statsTitles = xml.depthFirst().findAll {
             it.name() == 'ItemName'
         }
         if (statsTitles.size() > 1) {
@@ -498,14 +593,16 @@ class StatsSyncService {
         }
     }
 
-    def getNextFromPeriod(csr) {
-        def acceptedFormat = "yyyy-MM-dd"
-        def fromPeriodForAPICall
-        // Latest stored month + 1
+    String getNextFromPeriod(StatsTripleCursor csr) {
+        String acceptedFormat = "yyyy-MM-dd"
+        Date fromPeriodForAPICall
+        // If availTo is set, get first day of next month
         if (csr.availTo) {
-            use(TimeCategory) {
-                fromPeriodForAPICall = csr.availTo + 1.month
-            }
+            Calendar cal = Calendar.getInstance();
+            cal.setTime(csr.availTo);
+            cal.add(Calendar.MONTH, 1);
+            cal.set(Calendar.DAY_OF_MONTH, cal.getActualMinimum(Calendar.DAY_OF_MONTH));
+            fromPeriodForAPICall = cal.getTime()
         } else {
             if (!csr.availFrom){
                 return SYNC_STATS_FROM
@@ -523,7 +620,7 @@ class StatsSyncService {
         return cal.format('yyyy-MM-dd')
     }
 
-    private isAllowedMetric(metric) {
+    private Boolean isAllowedMetric(metric) {
         if (metric in ['ft_total', 'search_reg', 'search_fed', 'record_view', 'result_click']) {
             return true
         }
@@ -531,21 +628,21 @@ class StatsSyncService {
     }
 
     // period=>[metric1=>value,metric2=>value...]
-    private Map getPeriodUsageMap(ArrayList itemPerformances) {
-        def map = [:]
+    private Map<String,Map> getPeriodUsageMap(ArrayList itemPerformances) {
+        Map map = [:]
         // every ItemPerformance can have several Instances (DB/PR Reports up to 2, JR1 up to 3...)
         itemPerformances.each {
-            def begin = it.Period.Begin.text()
+            String begin = it.Period.Begin.text()
             if (! map[begin]){
                 map[begin] = [:]
             }
-            def instances = it.depthFirst().findAll { node ->
+            List instances = it.depthFirst().findAll { node ->
                 node.name() == 'Instance'
             }
             instances.each {
-                def metric = it.MetricType.text()
+                String metric = it.MetricType.text()
                 if (isAllowedMetric(metric)) {
-                    def usage = it.Count.text().toInteger()
+                    Integer usage = it.Count.text().toInteger()
                     if (!map[begin][metric]){
                         map[begin][metric] = usage
                     } else {
@@ -561,7 +658,7 @@ class StatsSyncService {
 
     private String getDateForLastDayOfMonth(yearMonthString) {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM")
-        def cal = new GregorianCalendar()
+        GregorianCalendar cal = new GregorianCalendar()
         cal.setTime(sdf.parse(yearMonthString))
         cal.set(Calendar.DAY_OF_MONTH, cal.getActualMaximum(Calendar.DAY_OF_MONTH))
         return "${cal.get(Calendar.YEAR)}-${String.format('%02d',cal.get(Calendar.MONTH)+1)}-${cal.get(Calendar.DAY_OF_MONTH)}"
@@ -578,30 +675,49 @@ class StatsSyncService {
         return false
     }
 
-    private Boolean responseHasUsageData(xml, titleId) {
-        // TODO maybe better check for usage first
-        // What if we get a 3030 Exception? We return true here (report is processed in NatStat, usage data = 0)
+    private Boolean isNoUsageAvailableException(xml)
+    {
+        return (xml.Exception.isEmpty() == false && xml.Exception.Number == '3030')
+    }
 
-        // Do we need to handle the 3031 Exceptions and kind of flag periods which are mentioned in the XML data element?
-        // Or store 0 values for 3030 Exceptions, which allows us to mark missing/errorneous months, but would increase
-        // the number of facts significantly
-        if (xml.Exception.isEmpty() == false && xml.Exception.Number == '3030'){
+    private Boolean isEmptyReport(xml)
+    {
+        return (xml.Report.Report.isEmpty() == true || xml.Report.isEmpty() == true)
+    }
+
+    private Boolean isOtherExceptionWithoutUsageData(xml)
+    {
+        return (xml.Exception.isEmpty() == false && xml.Exception.Number != '3031')
+    }
+
+    private Boolean isEmptyReportWithoutCustomer(xml)
+    {
+        return (xml.Report.Report.Customer.isEmpty() == true)
+    }
+
+    private Boolean responseHasUsageData(xml, titleId) {
+        // 3030 Exception-> Zero usage
+        if (isNoUsageAvailableException(xml)){
             return true
         }
-        if (xml.Exception.isEmpty() == false && xml.Exception.Number != '3031') {
+        // SUSHI Exceptions which prevent from further processing and storing records in usage tables
+        if (isOtherExceptionWithoutUsageData(xml)) {
             log.debug('SUSHI Exception Number ' + xml.Exception.Number + ' : ' + xml.Exception.Message)
             return false
-        } else if (xml.Report.Report.isEmpty == true) {
+        } else if (isEmptyReport(xml)) {
+            // 3031 Exception but no usage data, e.g. all fetched Months are not available, or we call the last month which is
+            // not yet available
             log.debug('XML response has 3031 Exception with no usage data')
             return false
-        } else if (xml.Report.Report.Customer.isEmpty() == true) {
+        } else if (isEmptyReportWithoutCustomer(xml)) {
+            // there are processed months but no usage data. This can happen with queries for single titles. If we had no usage
+            // for all titles we would get a 3030 Exception for all titles.
             log.debug('No result found for title with ID ' + titleId)
-            return false
+            return true
         } else {
             return true
         }
     }
-
 
     def cleanUpGorm() {
         log.debug("Clean up GORM")
@@ -628,4 +744,3 @@ class StatsSyncService {
     }
 
 }
-

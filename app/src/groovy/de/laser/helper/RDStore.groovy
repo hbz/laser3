@@ -1,9 +1,7 @@
 package de.laser.helper
 
-
 import com.k_int.kbplus.RefdataValue
 import com.k_int.kbplus.SurveyProperty
-import groovy.transform.CompileStatic
 import org.codehaus.groovy.grails.orm.hibernate.cfg.GrailsHibernateUtil
 
 //@CompileStatic
@@ -59,6 +57,10 @@ class RDStore {
 
     static final CONTACT_TYPE_PERSONAL      = getRefdataValue('Personal Contact', RDConstants.PERSON_CONTACT_TYPE)
     static final CONTACT_TYPE_FUNCTIONAL    = getRefdataValue('Functional Contact', RDConstants.PERSON_CONTACT_TYPE)
+
+    static final COUNTRY_DE                 = getRefdataValue('DE', RDConstants.COUNTRY)
+    static final COUNTRY_AT                 = getRefdataValue('AT', RDConstants.COUNTRY)
+    static final COUNTRY_CH                 = getRefdataValue('CH', RDConstants.COUNTRY)
 
     static final COST_ITEM_ACTUAL           = getRefdataValue('Actual', RDConstants.COST_ITEM_STATUS)
     static final COST_ITEM_DELETED          = getRefdataValue('Deleted', RDConstants.COST_ITEM_STATUS)
@@ -117,9 +119,6 @@ class RDStore {
     static final SUBSCRIPTION_EXPIRED       = getRefdataValue('Expired', RDConstants.SUBSCRIPTION_STATUS)
     static final SUBSCRIPTION_NO_STATUS     = getRefdataValue('Status not defined', RDConstants.SUBSCRIPTION_STATUS)
 
-    static final SUBSCRIPTION_INTENDED_PERENNIAL = getRefdataValue('IntendedPerennial', RDConstants.SUBSCRIPTION_STATUS)
-    static final SUBSCRIPTION_EXPIRED_PERENNIAL = getRefdataValue('ExpiredPerennial', RDConstants.SUBSCRIPTION_STATUS)
-
     static final SURVEY_READY                   = getRefdataValue('Ready', RDConstants.SURVEY_STATUS)
     static final SURVEY_IN_PROCESSING           = getRefdataValue('In Processing', RDConstants.SURVEY_STATUS)
     static final SURVEY_IN_EVALUATION           = getRefdataValue('In Evaluation', RDConstants.SURVEY_STATUS)
@@ -134,9 +133,12 @@ class RDStore {
     static final SUBSCRIPTION_TYPE_LOCAL            = getRefdataValue('Local Licence', RDConstants.SUBSCRIPTION_TYPE)
     static final SUBSCRIPTION_TYPE_CONSORTIAL       = getRefdataValue('Consortial Licence', RDConstants.SUBSCRIPTION_TYPE)
     static final SUBSCRIPTION_TYPE_ADMINISTRATIVE   = getRefdataValue('Administrative Subscription', RDConstants.SUBSCRIPTION_TYPE)
-    static final SUBSCRIPTION_TYPE_ALLIANCE   		= getRefdataValue('Alliance Licence', RDConstants.SUBSCRIPTION_TYPE)
-    static final SUBSCRIPTION_TYPE_NATIONAL   		= getRefdataValue('National Licence', RDConstants.SUBSCRIPTION_TYPE)
+
     //static final SUBSCRIPTION_TYPE_COLLECTIVE   	= getRefdataValue('Collective Subscription', RDConstants.SUBSCRIPTION_TYPE)
+
+    static final SUBSCRIPTION_KIND_CONSORTIAL       = getRefdataValue('Consortial Licence', RDConstants.SUBSCRIPTION_KIND)
+    static final SUBSCRIPTION_KIND_ALLIANCE   		= getRefdataValue('Alliance Licence', RDConstants.SUBSCRIPTION_KIND)
+    static final SUBSCRIPTION_KIND_NATIONAL   		= getRefdataValue('National Licence', RDConstants.SUBSCRIPTION_KIND)
 
     static final TASK_STATUS_OPEN       = getRefdataValue('Open', RDConstants.TASK_STATUS)
     static final TASK_STATUS_DONE       = getRefdataValue('Done', RDConstants.TASK_STATUS)
@@ -165,6 +167,10 @@ class RDStore {
     static final TIPP_STATUS_TRANSFERRED        = getRefdataValue('Transferred', RDConstants.TIPP_STATUS)
     static final TIPP_STATUS_UNKNOWN            = getRefdataValue('Unknown', RDConstants.TIPP_STATUS)
     static final TIPP_STATUS_DELETED            = getRefdataValue('Deleted',  RDConstants.TIPP_STATUS)
+
+    static final PRS_FUNC_RESPONSIBLE_ADMIN     = getRefdataValue('Responsible Admin', RDConstants.PERSON_FUNCTION)
+    static final PRS_FUNC_FUNC_BILLING_ADDRESS  = getRefdataValue('Functional Contact Billing Adress', RDConstants.PERSON_FUNCTION)
+    static final PRS_FUNC_TECHNICAL_SUPPORT     = getRefdataValue('Technichal Support', RDConstants.PERSON_FUNCTION)
 
     static final YN_YES         = getRefdataValue('Yes', RDConstants.Y_N)
     static final YN_NO          = getRefdataValue('No', RDConstants.Y_N)

@@ -1,5 +1,6 @@
 package com.k_int.kbplus
 
+import com.k_int.kbplus.auth.Role
 import com.k_int.kbplus.auth.User
 import de.laser.controller.AbstractDebugController
 import de.laser.domain.MailTemplate
@@ -45,14 +46,14 @@ class DataManagerController extends AbstractDebugController {
       result.offset = 0
     }
     else {
-      def user = User.get(springSecurityService.principal.id)
+      User user = User.get(springSecurityService.principal.id)
       result.max = params.max ?: user.getDefaultPageSizeTMP()
       params.max = result.max
       result.offset = params.offset ? Integer.parseInt(params.offset) : 0;
     }
 
     if ( params.startDate == null ) {
-      def cal = new java.util.GregorianCalendar()
+      GregorianCalendar cal = new java.util.GregorianCalendar()
       cal.setTimeInMillis(System.currentTimeMillis())
       cal.set(Calendar.DAY_OF_MONTH,1)
       params.startDate=formatter.format(cal.getTime())
@@ -65,7 +66,7 @@ class DataManagerController extends AbstractDebugController {
       flash.error = message(code:'datamanager.changeLog.error.dates')
       return
     }
-    def base_query = "from org.codehaus.groovy.grails.plugins.orm.auditable.AuditLogEvent as e where e.className in (:l) AND e.lastUpdated >= :s AND e.lastUpdated <= :e AND e.eventName in (:t)"
+    String base_query = "from org.codehaus.groovy.grails.plugins.orm.auditable.AuditLogEvent as e where e.className in (:l) AND e.lastUpdated >= :s AND e.lastUpdated <= :e AND e.eventName in (:t)"
 
     def types_to_include = []
     if ( params.packages=="Y" ) types_to_include.add('com.k_int.kbplus.Package');
@@ -88,7 +89,7 @@ class DataManagerController extends AbstractDebugController {
     // Get a distinct list of actors
     def auditActors = AuditLogEvent.executeQuery('select distinct(al.actor) from AuditLogEvent as al where al.className in ( :l  )',[l:all_types])
 
-    def formal_role = com.k_int.kbplus.auth.Role.findByAuthority('INST_ADM')
+    Role formal_role = Role.findByAuthority('INST_ADM')
      
     // From the list of users, extract and who have the INST_ADM role
     def rolesMa = []
@@ -99,7 +100,7 @@ class DataManagerController extends AbstractDebugController {
         [formal_role:formal_role,actors:auditActors])
 
     auditActors.each {
-      def u = User.findByUsername(it)
+      User u = User.findByUsername(it)
       
       if ( u != null ) {
         if(rolesMa.contains(it)){
@@ -124,8 +125,8 @@ class DataManagerController extends AbstractDebugController {
       params.packages="Y"
     }
 
-    def start_date = formatter.parse(params.startDate)
-    def end_date = formatter.parse(params.endDate)
+    Date start_date = formatter.parse(params.startDate)
+    Date end_date = formatter.parse(params.endDate)
 
     final long hoursInMillis = 60L * 60L * 1000L;
     end_date = new Date(end_date.getTime() + (24L * hoursInMillis - 2000L)); 
@@ -138,7 +139,7 @@ class DataManagerController extends AbstractDebugController {
 
     if(filterActors) {
       boolean multipleActors = false
-      def condition = "AND ( "
+      String condition = "AND ( "
       filterActors.each{        
           if (multipleActors) {
             condition = "OR"
@@ -179,7 +180,7 @@ class DataManagerController extends AbstractDebugController {
 
         switch(hl.className) {
           case 'com.k_int.kbplus.License':
-            def license_object = License.get(hl.persistedObjectId);
+            License license_object = License.get(hl.persistedObjectId);
             if (license_object) {
                 def license_name = license_object.licenseType ? license_object.licenseType+': ' : ''
                 license_name += license_object.reference ?: '**No reference**'
@@ -191,7 +192,7 @@ class DataManagerController extends AbstractDebugController {
           case 'com.k_int.kbplus.Subscription':
             break;
           case 'com.k_int.kbplus.Package':
-            def package_object = Package.get(hl.persistedObjectId);
+            Package package_object = Package.get(hl.persistedObjectId);
             if (package_object) {
                 line_to_add.link = createLink(controller:'package', action: 'show', id:hl.persistedObjectId)
                 line_to_add.name = package_object.name
@@ -199,7 +200,7 @@ class DataManagerController extends AbstractDebugController {
             linetype = 'Package'
             break;
           case 'com.k_int.kbplus.TitleInstancePackagePlatform':
-            def tipp_object = TitleInstancePackagePlatform.get(hl.persistedObjectId);
+            TitleInstancePackagePlatform tipp_object = TitleInstancePackagePlatform.get(hl.persistedObjectId);
             if ( tipp_object != null ) {
                 line_to_add.link = createLink(controller:'tipp', action: 'show', id:hl.persistedObjectId)
                 line_to_add.name = tipp_object.title?.title + ' / ' + tipp_object.pkg?.name
@@ -207,7 +208,7 @@ class DataManagerController extends AbstractDebugController {
             linetype = 'TIPP'
             break;
           case 'com.k_int.kbplus.TitleInstance':
-            def title_object = TitleInstance.get(hl.persistedObjectId);
+            TitleInstance title_object = TitleInstance.get(hl.persistedObjectId);
             if (title_object) {
                 line_to_add.link = createLink(controller:'title', action: 'show', id:hl.persistedObjectId)
                 line_to_add.name = title_object.title
@@ -297,7 +298,7 @@ class DataManagerController extends AbstractDebugController {
           if(it != 'change_actor_ALL' && it != 'change_actor_PEOPLE') {
             def paramKey = it.replaceAll("[^A-Za-z]", "")//remove things that can cause problems in sql
             def username = it.split("change_actor_")[1]
-            def user = User.findByUsername(username)
+            User user = User.findByUsername(username)
             if (user){
               actors += user.displayName
             }
@@ -317,10 +318,10 @@ class DataManagerController extends AbstractDebugController {
     def paginate_after = params.paginate_after ?: ( (2*result.max)-1);
     result.offset = params.offset ? Integer.parseInt(params.offset) : 0;
 
-    def deleted_title_status =  RefdataValue.getByValueAndCategory('Deleted', RDConstants.TITLE_STATUS)
+    RefdataValue deleted_title_status =  RefdataValue.getByValueAndCategory('Deleted', RDConstants.TITLE_STATUS)
     def qry_params = [deleted_title_status]
 
-    def base_qry = " from TitleInstance as t where ( t.status = ? )"
+    String base_qry = " from TitleInstance as t where ( t.status = ? )"
 
       if (params.sort?.length() > 0) {
           base_qry += " order by " + params.sort
@@ -347,10 +348,10 @@ class DataManagerController extends AbstractDebugController {
         def paginate_after = params.paginate_after ?: ( (2*result.max)-1);
         result.offset = params.offset ? Integer.parseInt(params.offset) : 0;
 
-        def delStatus =  RefdataValue.getByValueAndCategory('Deleted', RDConstants.ORG_STATUS)
+        RefdataValue delStatus =  RefdataValue.getByValueAndCategory('Deleted', RDConstants.ORG_STATUS)
 
         def qry_params = [delStatus]
-        def query = " from Org as o where ( o.status = ? )"
+        String query = " from Org as o where ( o.status = ? )"
 
         if (params.sort?.length() > 0) {
             query += " order by " + params.sort

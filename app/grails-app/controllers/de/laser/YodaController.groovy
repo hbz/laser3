@@ -1,7 +1,10 @@
 package de.laser
 
 import com.k_int.kbplus.*
-import com.k_int.kbplus.auth.*
+import com.k_int.kbplus.auth.Role
+import com.k_int.kbplus.auth.User
+import com.k_int.kbplus.auth.UserOrg
+import com.k_int.kbplus.auth.UserRole
 import com.k_int.properties.PropertyDefinition
 import de.laser.domain.ActivityProfiler
 import de.laser.domain.SystemProfiler
@@ -13,12 +16,12 @@ import grails.converters.JSON
 import grails.plugin.springsecurity.annotation.Secured
 import grails.util.Holders
 import grails.web.Action
+import groovy.json.JsonOutput
 import groovy.xml.MarkupBuilder
 import org.hibernate.SessionFactory
 import org.quartz.JobKey
 import org.quartz.impl.matchers.GroupMatcher
 import org.springframework.transaction.TransactionStatus
-import groovy.json.JsonOutput
 import org.springframework.web.multipart.commons.CommonsMultipartFile
 
 import javax.servlet.ServletOutputStream
@@ -314,30 +317,68 @@ class YodaController {
 
         Map<String, Object> activity = [:]
 
-        List<Timestamp> dayDates = ActivityProfiler.executeQuery("select date_trunc('day', dateCreated) as day from ActivityProfiler group by date_trunc('day', dateCreated), dateCreated order by dateCreated desc")
-        dayDates.unique().each { it ->
+        // gathering data
+
+        List<Timestamp> dayDates = ActivityProfiler.executeQuery(
+                "select date_trunc('day', dateCreated) as day from ActivityProfiler group by date_trunc('day', dateCreated), dateCreated order by dateCreated desc"
+        )
+        dayDates.unique().take(30).each { it ->
             List<Timestamp, Timestamp, Timestamp, Integer, Integer, Double> slots = ActivityProfiler.executeQuery(
                     "select date_trunc('hour', dateCreated), min(dateCreated), max(dateCreated), min(userCount), max(userCount), avg(userCount) " +
                             "  from ActivityProfiler where date_trunc('day', dateCreated) = :day " +
                             " group by date_trunc('hour', dateCreated) order by min(dateCreated), max(dateCreated)",
                     [day: it])
 
-            String key = (DateUtil.getSDF_NoTime()).format(new Date(it.getTime()))
-            activity.put(key, [])
+            String dayKey = (DateUtil.getSDF_NoTime()).format(new Date(it.getTime()))
+            activity.put(dayKey, [])
 
             slots.each { hour ->
-                activity[key].add([
-                        (DateUtil.getSDF_OnlyTime()).format(new Date(hour[0].getTime())),
-                        (DateUtil.getSDF_OnlyTime()).format(new Date(hour[1].getTime())),
-                        (DateUtil.getSDF_OnlyTime()).format(new Date(hour[2].getTime())),
-                        hour[3],
-                        hour[4],
-                        hour[5]
+                activity[dayKey].add([
+                        (DateUtil.getSDF_OnlyTime()).format(new Date(hour[0].getTime())),   // time.start
+                        (DateUtil.getSDF_OnlyTime()).format(new Date(hour[1].getTime())),   // time.min
+                        (DateUtil.getSDF_OnlyTime()).format(new Date(hour[2].getTime())),   // time.max
+                        hour[3],    // user.min
+                        hour[4],    // user.max
+                        hour[5]     // user.avg
                 ])
             }
         }
 
-        result.activity = activity
+        // precalc
+
+        Map<String, Object> activityMatrix = [:]
+        activityMatrix.put('Ø', null)
+
+        List averages = (0..23).collect{ 0 }
+        List labels   = (0..23).collect{ "${it < 10 ? '0' + it : it}:00:00" }
+
+        activity.each{ dayKey, values ->
+            List series1 = (0..23).collect{ 0 }
+            List series2 = (0..23).collect{ 0 }
+
+            values.each { val ->
+                int indexOf = labels.findIndexOf{it == val[0]}
+                if (indexOf >= 0) {
+                    series1.putAt(indexOf, val[3])
+                    series2.putAt(indexOf, val[4]- val[3]) // stackBars: true
+
+                    averages[indexOf] = averages[indexOf] + val[5]
+                }
+            }
+            activityMatrix.put(dayKey, [series1, series2])
+        }
+
+        // averages
+
+        for(int i=0; i<averages.size(); i++) {
+            averages[i] = (averages[i]/activity.size())
+        }
+
+        activityMatrix.putAt('Ø', [(0..23).collect{ 0 }, averages])
+
+        result.labels = labels
+        result.activity = activityMatrix
+
         result
     }
 
@@ -376,6 +417,40 @@ class YodaController {
         result.contextStats = SystemProfiler.executeQuery(
                 "select sp.uri, max(sp.ms) as max, avg(sp.ms) as avg, ctx.id, count(ctx.id) as counter from SystemProfiler sp join sp.context as ctx where ctx is not null group by sp.uri, ctx.id"
         ).sort{it[2]}.reverse()
+
+        result
+    }
+
+    @Secured(['ROLE_YODA'])
+    def timelineProfiler() {
+        Map<String, Object> result = [:]
+
+        List<String> allUri = SystemProfiler.executeQuery('select distinct(uri) from SystemProfiler')
+
+        result.globalTimeline           = [:]
+        result.globalTimelineStartDate  = (new Date()).minus(30)
+        result.globalTimelineDates      = (30..0).collect{ (DateUtil.getSDF_NoTime()).format( (new Date()).minus(it) ) }
+
+        Map<String, Integer> ordered = [:]
+
+        allUri.each { uri ->
+            result.globalTimeline[uri] = (30..0).collect { 0 }
+
+            String sql = "select to_char(sp.dateCreated, 'dd.mm.yyyy'), count(*) from SystemProfiler sp where sp.uri = :uri and sp.dateCreated >= :dCheck group by to_char(sp.dateCreated, 'dd.mm.yyyy')"
+            List hits = SystemProfiler.executeQuery(sql, [uri: uri, dCheck: result.globalTimelineStartDate])
+
+            int count = 0
+            hits.each { hit ->
+                int indexOf = result.globalTimelineDates.findIndexOf { it == hit[0] }
+                if (indexOf >= 0) {
+                    result.globalTimeline[uri][indexOf] = hit[1]
+                    count = count + hit[1]
+                }
+            }
+
+            ordered[uri] = count
+        }
+        result.globalTimelineOrder = ordered.sort{ e,f -> f.value <=> e.value }
 
         result
     }
@@ -564,7 +639,7 @@ class YodaController {
     def appLogfile() {
         return // TODO
 
-        def f = new File("${Holders.config.log_location}")
+        File f = new File("${Holders.config.log_location}")
         return [file: "${f.canonicalPath}"]
     }
 

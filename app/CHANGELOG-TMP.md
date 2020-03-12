@@ -2,9 +2,37 @@
 
 **Ticket    Date    Branch      Author  Feature/Bug     Description/Keywords**
 
+2202    11.03.2020  rc1.2       David   Feature     Cherrypicked ERMS-2202 from hbz-dev and improved
+
+2239    10.03.2020  hbz-dev     David   Feature     Profiler: URL-abhängige Timeline implementieren
+
+2145    09.03.2020  hbz-dev     Moe     Feature     Überarbeitung des Lizenztyps
+
+2159    09.03.2020  hbz-dev     Moe     Feature     Mehrjahres Stati löschen auf normale Stati umstellen
+
+2235    06.03.2020  rc1.2       Andreas Bug         Teilnehmer verwalten: Vertragsverknüpfung erzeugt jetzt auch OrgRole-Einträge
+
+2235    06.03.2020  rc1.2       David   Bug         Meine Verträge: Teilnehmerverträge werden angezeigt
+
+2227    06.03.2020  hbz-dev     David   Bug         Merkmale Auswahl Lizenzebene 
+
+2234    05.03.2020  hbz-dev     Christian   Bug     Überarbeitung Statistikabruf
+
+1973    05.03.2020  hbz-dev     Anja    Feature     Überarbeitung des Einrichtungsprofils
+
+2228    04.03.2020  hbz-dev     Andreas Feature     Einbau der Flags für Datenfreigabe und dauerhaften Zugriff in verschiedene Ausgaben
+
+2119    04.03.2020  hbz-dev     Andreas Feature     Einbau des Flags für dauerhaften Zugriff
+
+2231    03.03.2020  rc1.2       David   Feature     Performance: /myInstitution/currentProviders
+
+2230    03.03.2020  rc1.2       David   Bug         "Teilnehmervertrag erstellen" kann bei fehlenden Teilnehmern nicht angelegt werden
+
 2224    02.03.2020  hbz-dev     Andreas Bug         Überprüfung zur Darstellung der Kostensichtbarkeit korrigiert
 
 2223    02.03.2020  hbz-dev     Andreas Feature     Lizenzbezug muss bei Kostenposten bestehen (ausgenommen Umfragekosten), Vorauswahl bei Kosnortien
+
+2215    28.02.2020  hbz-dev     David   Bug         DocContext wird nicht mehr erstellt (isShared, globannounce)
 
 2218    27.02.2020  hbz-dev     Andreas Feature     Menüpunkt "Einrichtung erstellen" aus "Meine Konsorten" entfernt
 
@@ -150,7 +178,7 @@
 
 --      27.01.2020  rc1.2       David   Bug         Bugfix: API /statistic
 
-2102    24.01.2020  hbz-dev     David   Feature     Refactoring: Übersetzungen für PropertyDefinitions
+2038    24.01.2020  hbz-dev     David   Feature     Refactoring: Übersetzungen für RefdataValue und RefdataCategory
 
 1961    24.01.2020  hbz-dev     Anja    Feature     Verknüpfungsauswahl bei Vertrag: Jetzt werden auch Subscriptons vom Status intended zur Auswahl angezeigt. 
 
@@ -255,6 +283,8 @@
 2202    08.01.2020  dev         Anja    Bug         Keine Erinnerungen (duedates) mehr für  Kollektivlizenzen und -Verträge 
 
 2023    08.01.2020  rc1.2       David   Bug         UserCaches blockieren Threads
+
+2018    08.01.2020  hbz-dev     David   Feature     Charts für den Aktivitätsprofiler
 
 2017    06.01.2020  rc1.2       David   Bug         Fehlermeldung bei Suche im Gasco-Monitor
 

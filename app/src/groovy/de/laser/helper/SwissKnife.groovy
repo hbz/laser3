@@ -2,11 +2,8 @@ package de.laser.helper
 
 import com.k_int.properties.PropertyDefinition
 import grails.util.Holders
-import groovy.util.logging.Log4j
 import org.apache.commons.logging.Log
 import org.apache.commons.logging.LogFactory
-import org.codehaus.groovy.grails.web.util.WebUtils
-import org.springframework.web.context.request.RequestContextHolder
 
 class SwissKnife {
 

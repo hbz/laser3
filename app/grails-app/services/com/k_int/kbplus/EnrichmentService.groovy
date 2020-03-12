@@ -56,7 +56,7 @@ class EnrichmentService implements ApplicationContextAware {
   }
 
   def addPackagesAddedInLastWeek(result) {
-    def last_week = new Date(System.currentTimeMillis() - (1000*60*60*24*7))
+    Date last_week = new Date(System.currentTimeMillis() - (1000*60*60*24*7))
     def packages_in_last_week = Package.executeQuery("select p from Package as p where p.dateCreated > ? order by p.dateCreated",[last_week])
     packages_in_last_week.each {
       result.packagesInLastWeek.add(it);
@@ -109,7 +109,7 @@ class EnrichmentService implements ApplicationContextAware {
 
           log.debug("Get ie ${ieid}");
 
-          def ie = IssueEntitlement.get(ieid);
+          IssueEntitlement ie = IssueEntitlement.get(ieid);
 
           if ( ( ie != null ) && ( ie.subscription != null ) && ( ie.tipp != null ) ) {
 

@@ -1,6 +1,5 @@
 package com.k_int.kbplus
 
-
 import com.k_int.kbplus.auth.Role
 import com.k_int.kbplus.auth.User
 import com.k_int.properties.PropertyDefinitionGroup
@@ -10,7 +9,9 @@ import de.laser.helper.DateUtil
 import de.laser.helper.RDConstants
 import de.laser.helper.RDStore
 import de.laser.helper.RefdataAnnotation
-import de.laser.interfaces.*
+import de.laser.interfaces.Permissions
+import de.laser.interfaces.ShareSupport
+import de.laser.interfaces.TemplateSupport
 import de.laser.traits.AuditableTrait
 import de.laser.traits.ShareableTrait
 import grails.util.Holders
@@ -26,7 +27,7 @@ class Subscription
 
     // AuditableTrait
     static auditable            = [ ignore: ['version', 'lastUpdated', 'pendingChanges'] ]
-    static controlledProperties = [ 'name', 'startDate', 'endDate', 'manualCancellationDate', 'status', 'type', 'form', 'resource', 'isPublicForApi', 'hasPerpetualAccess' ]
+    static controlledProperties = [ 'name', 'startDate', 'endDate', 'manualCancellationDate', 'status', 'type', 'kind', 'form', 'resource', 'isPublicForApi', 'hasPerpetualAccess' ]
 
     @Transient
     def grailsApplication
@@ -52,6 +53,9 @@ class Subscription
 
     @RefdataAnnotation(cat = RDConstants.SUBSCRIPTION_TYPE)
     RefdataValue type
+
+    @RefdataAnnotation(cat = RDConstants.SUBSCRIPTION_KIND)
+    RefdataValue kind
 
     @RefdataAnnotation(cat = RDConstants.SUBSCRIPTION_FORM)
     RefdataValue form
@@ -123,6 +127,7 @@ class Subscription
         globalUID   column:'sub_guid'
         status      column:'sub_status_rv_fk'
         type        column:'sub_type_rv_fk',        index: 'sub_type_idx'
+        kind        column:'sub_kind_rv_fk'
         owner       column:'sub_owner_license_fk',  index: 'sub_owner_idx'
         form        column:'sub_form_fk'
         resource    column:'sub_resource_fk'
@@ -159,6 +164,7 @@ class Subscription
         globalUID(nullable:true, blank:false, unique:true, maxSize:255)
         status(nullable:false, blank:false)
         type(nullable:true, blank:false)
+        kind(nullable:true, blank:false)
         owner(nullable:true, blank:false)
         form        (nullable:true, blank:false)
         resource    (nullable:true, blank:false)
@@ -804,7 +810,7 @@ class Subscription
   def hasPlatformWithUsageSupplierId() {
       boolean hasUsageSupplier = false
       packages.each { it ->
-          def hql="select count(distinct sp) from SubscriptionPackage sp "+
+          String hql="select count(distinct sp) from SubscriptionPackage sp "+
               "join sp.subscription.orgRelations as or "+
               "join sp.pkg.tipps as tipps "+
               "where sp.id=:sp_id "
@@ -818,7 +824,7 @@ class Subscription
   }
 
   def deduplicatedAccessPointsForOrgAndPlatform(org, platform) {
-      def hql = """
+      String hql = """
 select distinct oap from OrgAccessPoint oap 
     join oap.oapp as oapl
     join oapl.subPkg as subPkg

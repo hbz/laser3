@@ -1,6 +1,7 @@
 package com.k_int.kbplus
 
 import com.k_int.kbplus.abstract_domain.AbstractProperty
+import com.k_int.kbplus.auth.Role
 import com.k_int.kbplus.auth.User
 import com.k_int.properties.PropertyDefinition
 import com.k_int.properties.PropertyDefinitionGroup
@@ -10,22 +11,15 @@ import de.laser.DashboardDueDate
 import de.laser.domain.AbstractI10nOverride
 import de.laser.domain.AbstractI10nTranslatable
 import de.laser.domain.SystemProfiler
-import de.laser.helper.DateUtil
-import de.laser.helper.DebugAnnotation
-import de.laser.helper.DebugUtil
-import de.laser.helper.EhcacheWrapper
-import de.laser.helper.RDConstants
-import de.laser.helper.RDStore
-import de.laser.helper.SessionCacheWrapper
+import de.laser.helper.*
 import de.laser.interfaces.ShareSupport
 import grails.converters.JSON
 import grails.plugin.springsecurity.annotation.Secured
-import grails.util.Holders
 import org.codehaus.groovy.grails.orm.hibernate.cfg.GrailsHibernateUtil
+import org.springframework.web.servlet.LocaleResolver
 
 //import org.grails.orm.hibernate.cfg.GrailsHibernateUtil
 
-import org.springframework.web.servlet.LocaleResolver
 import org.springframework.web.servlet.support.RequestContextUtils
 
 import java.text.SimpleDateFormat
@@ -250,10 +244,10 @@ class AjaxController {
         else {
           if ( params.dt == 'date' ) {
             // log.debug("Special date processing, idf=${params.idf}");
-            def formatter = new java.text.SimpleDateFormat(params.idf)
+              SimpleDateFormat formatter = new SimpleDateFormat(params.idf)
             value = formatter.parse(params.value)
             if ( params.odf ) {
-              def of = new java.text.SimpleDateFormat(params.odf)
+                SimpleDateFormat of = new SimpleDateFormat(params.odf)
               result=of.format(value);
             }
             else {
@@ -304,7 +298,11 @@ class AjaxController {
       if ( params.value == '' ) {
         // Allow user to set a rel to null be calling set rel ''
         target[params.name] = null
-        target.save(flush:true);
+          if ( ! target.save()){
+              Map r = [status:"error", msg: message(code: 'default.save.error.general.message')]
+              render r as JSON
+              return
+          }
       }
       else {
         String[] value_components = params.value.split(":");
@@ -325,7 +323,11 @@ class AjaxController {
                 //}
             }
 
-            target.save();
+            if ( ! target.save()){
+                Map r = [status:"error", msg: message(code: 'default.save.error.general.message')]
+                render r as JSON
+                return
+            }
             if (target instanceof SurveyResult) {
 
                 Org org = contextService.getOrg()
@@ -424,7 +426,7 @@ class AjaxController {
     Map<String, Object> result = [:]
     result.response = false;
     if( params.id ) {
-      def p = Package.findByIdentifier(params.id)
+        Package p = Package.findByIdentifier(params.id)
       if ( !p ) {
         result.response = true
       }
@@ -1430,11 +1432,11 @@ class AjaxController {
 
         def ownobj              = genericOIDService.resolveOID(params.ownobj)
         def propDefGroup        = genericOIDService.resolveOID(params.propDefGroup)
-        def availPropDefGroups  = PropertyDefinitionGroup.getAvailableGroups(contextService.getOrg(), ownobj.class.name)
+        List<PropertyDefinitionGroup> availPropDefGroups  = PropertyDefinitionGroup.getAvailableGroups(contextService.getOrg(), ownobj.class.name)
 
         if (ownobj && propDefGroup) {
             if (params.isVisible in ['Yes', 'No']) {
-                def gb = new PropertyDefinitionGroupBinding(
+                PropertyDefinitionGroupBinding gb = new PropertyDefinitionGroupBinding(
                         propDefGroup: propDefGroup,
                         isVisible: (params.isVisible == 'Yes')
                 )
@@ -1467,7 +1469,7 @@ class AjaxController {
         def ownobj              = genericOIDService.resolveOID(params.ownobj)
         def propDefGroup        = genericOIDService.resolveOID(params.propDefGroup)
         def binding             = genericOIDService.resolveOID(params.propDefGroupBinding)
-        def availPropDefGroups  = PropertyDefinitionGroup.getAvailableGroups(contextService.getOrg(), ownobj.class.name)
+        List<PropertyDefinitionGroup> availPropDefGroups  = PropertyDefinitionGroup.getAvailableGroups(contextService.getOrg(), ownobj.class.name)
 
         if (ownobj && propDefGroup && binding) {
             binding.delete(flush:true)
@@ -1491,9 +1493,9 @@ class AjaxController {
       if(params.propIdent.length() > 0) {
         def error
         def newProp
-        def tenant = Org.get(params.tenantId)
+        Org tenant = Org.get(params.tenantId)
         def owner  = grailsApplication.getArtefact("Domain", params.ownerClass.replace("class ",""))?.getClazz()?.get(params.ownerId)
-        def type   = PropertyDefinition.get(params.propIdent.toLong())
+          PropertyDefinition type   = PropertyDefinition.get(params.propIdent.toLong())
 
         if (! type) { // new property via select2; tmp deactivated
           error = message(code:'propertyDefinition.private.deactivated')
@@ -2098,7 +2100,7 @@ class AjaxController {
     def toggleEditMode() {
         log.debug ('toggleEditMode()')
 
-        def user = contextService.getUser()
+        User user = contextService.getUser()
         def show = params.showEditMode
 
         if (show) {
@@ -2472,8 +2474,8 @@ class AjaxController {
 
     @Secured(['ROLE_USER'])
     def removeUserRole() {
-        def user = resolveOID2(params.user);
-        def role = resolveOID2(params.role);
+        User user = resolveOID2(params.user);
+        Role role = resolveOID2(params.role);
         if (user && role) {
             com.k_int.kbplus.auth.UserRole.remove(user,role,true);
         }
@@ -2528,7 +2530,7 @@ class AjaxController {
 
     @Secured(['ROLE_USER'])
     def TaskEdit() {
-        def contextOrg = contextService.getOrg()
+        Org contextOrg = contextService.getOrg()
         def result     = taskService.getPreconditionsWithoutTargets(contextOrg)
         result.params = params
         result.taskInstance = Task.get(params.id)
@@ -2539,7 +2541,7 @@ class AjaxController {
     @Secured(['ROLE_USER'])
     def TaskCreate() {
         long backendStart = System.currentTimeMillis()
-        def contextOrg = contextService.getOrg()
+        Org contextOrg = contextService.getOrg()
         def result     = taskService.getPreconditions(contextOrg)
         result.backendStart = backendStart
 

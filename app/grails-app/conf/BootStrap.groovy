@@ -47,7 +47,7 @@ class BootStrap {
         log.info("--------------------------------------------------------------------------------")
 
         if (grailsApplication.config.laserSystemId != null) {
-            def system_object = SystemObject.findBySysId(grailsApplication.config.laserSystemId) ?: new SystemObject(sysId: grailsApplication.config.laserSystemId).save(flush: true)
+            SystemObject system_object = SystemObject.findBySysId(grailsApplication.config.laserSystemId) ?: new SystemObject(sysId: grailsApplication.config.laserSystemId).save(flush: true)
         }
 
         SystemEvent.createEvent('BOOTSTRAP_STARTUP')
@@ -87,11 +87,11 @@ class BootStrap {
 
         // def auto_approve_memberships = Setting.findByName('AutoApproveMemberships') ?: new Setting(name: 'AutoApproveMemberships', tp: Setting.CONTENT_TYPE_BOOLEAN, defvalue: 'true', value: 'true').save()
 
-        def mailSent = Setting.findByName('MailSentDisabled') ?: new Setting(name: 'MailSentDisabled', tp: Setting.CONTENT_TYPE_BOOLEAN, defvalue: 'false', value: (grailsApplication.config.grails.mail.disabled ?: "false")).save()
+        Setting mailSent = Setting.findByName('MailSentDisabled') ?: new Setting(name: 'MailSentDisabled', tp: Setting.CONTENT_TYPE_BOOLEAN, defvalue: 'false', value: (grailsApplication.config.grails.mail.disabled ?: "false")).save()
 
         //def maintenance_mode = Setting.findByName('MaintenanceMode') ?: new Setting(name: 'MaintenanceMode', tp: Setting.CONTENT_TYPE_BOOLEAN, defvalue: 'false', value: 'false').save()
 
-        def systemMessage = SystemMessage.findByText('Das System wird in den nächsten Minuten aktualisiert. Bitte pflegen Sie keine Daten mehr ein!') ?: new SystemMessage(text: 'Das System wird in den nächsten Minuten aktualisiert. Bitte pflegen Sie keine Daten mehr ein!', showNow: false).save()
+        SystemMessage systemMessage = SystemMessage.findByText('Das System wird in den nächsten Minuten aktualisiert. Bitte pflegen Sie keine Daten mehr ein!') ?: new SystemMessage(text: 'Das System wird in den nächsten Minuten aktualisiert. Bitte pflegen Sie keine Daten mehr ein!', showNow: false).save()
 
         // SpringSecurityUtils.clientRegisterFilter( 'oracleSSOFilter', SecurityFilterPosition.PRE_AUTH_FILTER.order)
         // SpringSecurityUtils.clientRegisterFilter('securityContextPersistenceFilter', SecurityFilterPosition.PRE_AUTH_FILTER)
@@ -172,7 +172,8 @@ class BootStrap {
                     enabled: false
             ).save(failOnError: true)
 
-                def role = Role.findByAuthority('ROLE_USER')
+            Role role = Role.findByAuthority('ROLE_USER')
+
                 if (role.roleType != 'user') {
                     log.debug("  -> adding role: ${role}")
                     UserRole.create anonymousUser, role
@@ -201,7 +202,7 @@ class BootStrap {
                     ).save(failOnError: true)
 
                     su.roles.each { r ->
-                        def role = Role.findByAuthority(r)
+                        Role role = Role.findByAuthority(r)
                         if (role.roleType != 'user') {
                             log.debug("  -> adding role: ${role}")
                             UserRole.create user, role
@@ -271,8 +272,8 @@ class BootStrap {
 
         // Permissions
 
-        def edit_permission = Perm.findByCode('edit') ?: new Perm(code: 'edit').save(failOnError: true)
-        def view_permission = Perm.findByCode('view') ?: new Perm(code: 'view').save(failOnError: true)
+        Perm edit_permission = Perm.findByCode('edit') ?: new Perm(code: 'edit').save(failOnError: true)
+        Perm view_permission = Perm.findByCode('view') ?: new Perm(code: 'view').save(failOnError: true)
 
         // TODO: refactoring: partOf
 
@@ -703,10 +704,10 @@ class BootStrap {
     }
 
     def ensurePermGrant(role, perm) {
-        def existingPermGrant = PermGrant.findByRoleAndPerm(role,perm)
+        PermGrant existingPermGrant = PermGrant.findByRoleAndPerm(role,perm)
         if (! existingPermGrant) {
             log.debug("create new perm grant for ${role}, ${perm}")
-            def new_grant = new PermGrant(role:role, perm:perm).save()
+            PermGrant new_grant = new PermGrant(role:role, perm:perm).save()
         }
         else {
             log.debug("grant already exists ${role}, ${perm}")
@@ -741,7 +742,7 @@ class BootStrap {
             def token = rdv[0]
             def group = rdv[1]
 
-            def val = RefdataValue.getByValueAndCategory(token, RDConstants.ORGANISATIONAL_ROLE)
+            RefdataValue val = RefdataValue.getByValueAndCategory(token, RDConstants.ORGANISATIONAL_ROLE)
             if (group) {
                 val.setGroup(group)
             }

@@ -139,18 +139,26 @@
             </div>
         </div>
 
-        <div class="two fields">
+        <div class="three fields">
+
             <div class="field">
-
-
                 <fieldset id="subscritionType">
-                    <legend for="subscritionType">${message(code: 'myinst.currentSubscriptions.subscription_type')}</legend>
+                    <legend >${message(code: 'myinst.currentSubscriptions.subscription_type')}</legend>
                     <div class="inline fields la-filter-inline">
+                        <%
+                            List subTypes = RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_TYPE)
 
-                        <g:each in="${filterSubTypes}" var="subType">
+                            if(accessService.checkPermAffiliation("ORG_CONSORTIUM","INST_USER")) {
+                                subTypes -= RDStore.SUBSCRIPTION_TYPE_LOCAL
+                            }
+                            if(!accessService.checkPermAffiliation("ORG_CONSORTIUM","INST_USER")) {
+                                subTypes -= RDStore.SUBSCRIPTION_TYPE_ADMINISTRATIVE
+                            }
+                        %>
+                        <g:each in="${subTypes}" var="subType">
                             <div class="inline field">
                                 <div class="ui checkbox">
-                                    <label for="checkSubType-${subType.id}">${subType?.getI10n('value')}</label>
+                                    <label for="checkSubType-${subType.id}">${subType.getI10n('value')}</label>
                                     <input id="checkSubType-${subType.id}" name="subTypes" type="checkbox" value="${subType.id}"
                                         <g:if test="${params.list('subTypes').contains(subType.id.toString())}"> checked="" </g:if>
                                            tabindex="0">
@@ -160,8 +168,21 @@
                     </div>
                 </fieldset>
             </div>
-        </div>
-        <div class="two fields">
+            <div class="field">
+                <legend >${message(code: 'myinst.currentSubscriptions.subscription_kind')}</legend>
+                <select id="subKinds" name="subKinds" multiple="" class="ui search selection fluid dropdown">
+                    <option value="">${message(code: 'default.select.choose.label')}</option>
+
+                    <g:each in="${RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_KIND).sort{it.getI10n('value')}}" var="subKind">
+                        <option <%=(params.list('subKinds').contains(subKind.id.toString())) ? 'selected="selected"' : ''%>
+                        value="${subKind.id}" ">
+                        ${subKind.getI10n('value')}
+                        </option>
+                    </g:each>
+                </select>
+
+            </div>
+
             <div class="field">
                 <label>${message(code: 'myinst.currentSubscriptions.subscription.runTime')}</label>
                 <div class="inline fields la-filter-inline">
@@ -182,19 +203,52 @@
                 </div>
             </div>
 
+        </div>
+
+        <g:if test="${accessService.checkPerm("ORG_INST")}">
+            <div class="four fields">
+        </g:if>
+        <g:else>
+            <div class="three fields">
+        </g:else>
+        <div class="field">
+            <label>${message(code:'subscription.isPublicForApi.label')}</label>
+            <laser:select class="ui fluid dropdown" name="isPublicForApi"
+                          from="${RefdataCategory.getAllRefdataValues(RDConstants.Y_N)}"
+                          optionKey="id"
+                          optionValue="value"
+                          value="${params.isPublicForApi}"
+                          noSelection="${['' : message(code:'default.select.choose.label')]}"/>
+        </div>
+        <div class="field">
+            <label>${message(code:'subscription.hasPerpetualAccess.label')}</label>
+            <laser:select class="ui fluid dropdown" name="hasPerpetualAccess"
+                          from="${RefdataCategory.getAllRefdataValues(RDConstants.Y_N)}"
+                          optionKey="id"
+                          optionValue="value"
+                          value="${params.hasPerpetualAccess}"
+                          noSelection="${['' : message(code:'default.select.choose.label')]}"/>
+        </div>
+
+        <g:if test="${accessService.checkPerm("ORG_INST")}">
             <div class="field">
-                <div class="two fields">
+                <fieldset>
+                    <legend id="la-legend-searchDropdown">${message(code: 'gasco.filter.consortialAuthority')}</legend>
 
-                    <div class="field">
-                    </div>
-
-                    <div class="field la-field-right-aligned">
-                        <a href="${request.forwardURI}" class="ui reset primary button">${message(code:'default.button.reset.label')}</a>
-                        <input name="filterSet" value="true" type="hidden">
-                        <input type="submit" class="ui secondary button" value="${message(code:'default.button.filter.label')}">
-                    </div>
-                </div>
+                    <g:select from="${allConsortia}" id="consortial" class="ui fluid search selection dropdown"
+                              optionKey="${{ "com.k_int.kbplus.Org:" + it.id }}"
+                              optionValue="${{ it.getName() }}"
+                              name="consortia"
+                              noSelection="${['' : message(code:'default.select.choose.label')]}"
+                              value="${params.consortia}"/>
+                </fieldset>
             </div>
+        </g:if>
+        <div class="field la-field-right-aligned">
+            <a href="${request.forwardURI}" class="ui reset primary button">${message(code:'default.button.reset.label')}</a>
+            <input type="submit" class="ui secondary button" value="${message(code:'default.button.filter.label')}">
+        </div>
+
         </div>
     </g:form>
 </semui:filter>

@@ -5,7 +5,6 @@ import com.k_int.kbplus.Contact
 import com.k_int.kbplus.Org
 import com.k_int.kbplus.Person
 import com.k_int.kbplus.auth.User
-import de.laser.helper.RDStore
 import grails.plugin.springsecurity.SpringSecurityUtils
 import org.codehaus.groovy.syntax.Numbers
 
