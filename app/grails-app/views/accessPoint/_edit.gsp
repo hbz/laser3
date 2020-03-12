@@ -8,7 +8,7 @@
     <title><g:message code="default.edit.label" args="[entityName]" /></title>
     <g:javascript>
         $(function() {
-            $('body').attr('class', 'organisation_accessPoint_edit_'+accessPoint.accessMethod);
+            $('body').attr('class', 'organisation_accessPoint_edit_${accessPoint.accessMethod}');
         });
     </g:javascript>
 </head>
