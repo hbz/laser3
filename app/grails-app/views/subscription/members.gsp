@@ -104,10 +104,20 @@
                 <th>${message(code:'sidewide.number')}</th>
                 <th>${message(code:'default.sortname.label')}</th>
                 <th>${message(code:'subscriptionDetails.members.members')}</th>
-                <th>${message(code:'default.previous.label')}</th>
+                <th>
+                    <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="bottom center"
+                          data-content="${message(code: 'default.previous.label')}">
+                        <i class="arrow left icon"></i>
+                    </span>
+                </th>
                 <th>${message(code:'default.startDate.label')}</th>
                 <th>${message(code:'default.endDate.label')}</th>
-                <th>${message(code:'default.next.label')}</th>
+                <th>
+                    <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="bottom center"
+                          data-content="${message(code: 'default.next.label')}">
+                        <i class="arrow right icon"></i>
+                    </span>
+                </th>
                 <g:if test="${accessService.checkPerm('ORG_CONSORTIUM')}">
                     <th>${message(code: 'subscription.linktoLicense')}</th>
                 </g:if>
@@ -180,9 +190,6 @@
                         <g:if test="${navPrevSubscription}">
                             <g:link controller="subscription" action="show" id="${navPrevSubscription.id}"><i class="arrow left icon"></i></g:link>
                         </g:if>
-                        <g:else>
-                            <i class="arrow left icon disabled"></i>
-                        </g:else>
                     </td>
                     <td><g:formatDate formatName="default.date.format.notime" date="${sub.startDate}"/></td>
                     <td><g:formatDate formatName="default.date.format.notime" date="${sub.endDate}"/></td>
@@ -190,9 +197,6 @@
                         <g:if test="${navNextSubscription}">
                             <g:link controller="subscription" action="show" id="${navNextSubscription.id}"><i class="arrow right icon"></i></g:link>
                         </g:if>
-                        <g:else>
-                            <i class="arrow right icon disabled"></i>
-                        </g:else>
                     </td>
                     <g:if test="${accessService.checkPerm("ORG_CONSORTIUM")}">
                         <td class="center aligned">
