@@ -303,8 +303,8 @@ class OrganisationController extends AbstractDebugController {
         }
     }
     def createIdentifier(){
+        log.debug("OrganisationController::createIdentifier ${params}")
         Org org   = params.id? Org.get(params.id) : null
-        Identifier identifier = Identifier.get(params.identifierId)
 
         if (! org) {
             flash.message = message(code: 'default.not.found.message', args: [message(code: 'org.label'), params.id])
@@ -312,15 +312,16 @@ class OrganisationController extends AbstractDebugController {
             return
         }
 
-        render template: '/templates/identifier/modal_create_identifier', model: [orgInstance: org, identifier: identifier]
+        render template: '/templates/identifier/modal_create_identifier', model: [orgInstance: org]
     }
 
     def editIdentifier(){
+        log.debug("OrganisationController::editIdentifier ${params}")
         Identifier identifier = Identifier.get(params.identifier)
         Org org = identifier?.org
 
-        if (! org) {
-            flash.message = message(code: 'default.not.found.message', args: [message(code: 'default.search.identifier'), params.id])
+        if (! identifier) {
+            flash.message = message(code: 'default.not.found.message', args: [message(code: 'default.search.identifier'), params.identifier])
             redirect(url: request.getHeader('referer'))
             return
         }
@@ -332,13 +333,13 @@ class OrganisationController extends AbstractDebugController {
         log.debug("OrganisationController::processCreateIdentifier ${params}")
         Org org   = params.orgid ? Org.get(params.orgid) : null
         if ( ! (org && params.ns.id && params.value)){
-            flash.message = message(code: 'default.not.found.message', args: [message(code: 'identifier.namespace.label'), params.namespace])
+            flash.message = message(code: 'menu.admin.error')
             redirect(url: request.getHeader('referer'))
             return
         }
         IdentifierNamespace namespace   = IdentifierNamespace.get(params.ns.id)
         if (!namespace){
-            flash.message = message(code: 'default.not.found.message', args: [message(code: 'identifier.namespace.label'), params.namespace])
+            flash.message = message(code: 'default.not.found.message', args: [message(code: 'identifier.namespace.label'), params.ns.id])
             redirect(url: request.getHeader('referer'))
             return
         }
@@ -356,13 +357,13 @@ class OrganisationController extends AbstractDebugController {
         Org org   = params.orgid ? Org.get(params.orgid) : null
         Identifier identifier   = Identifier.get(params.identifierId)
         if ( ! (org && identifier)){
-            flash.message = message(code: 'default.not.found.message', args: [message(code: 'identifier.namespace.label'), params.namespace])
+            flash.message = message(code: 'default.not.found.message', args: [message(code: 'default.search.identifier'), params.identifierId])
             redirect(url: request.getHeader('referer'))
             return
         }
         IdentifierNamespace namespace   = IdentifierNamespace.get(params.ns.id)
         if (!namespace){
-            flash.message = message(code: 'default.not.found.message', args: [message(code: 'identifier.namespace.label'), params.namespace])
+            flash.message = message(code: 'default.not.found.message', args: [message(code: 'identifier.namespace.label'), params.ns.id])
             redirect(url: request.getHeader('referer'))
             return
         }
@@ -376,23 +377,24 @@ class OrganisationController extends AbstractDebugController {
     }
 
     def createCustomerIdentifier(){
+        log.debug("OrganisationController::createCustomerIdentifier ${params}")
         Org org   = Org.get(params.id)
-        Identifier identifier = Identifier.get(params.identifierId)
 
         if (! org) {
             flash.message = message(code: 'default.not.found.message', args: [message(code: 'org.label'), params.id])
-//            redirect action: 'list'
+            redirect(url: request.getHeader('referer'))
             return
         }
 
-        render template: '/templates/identifier/modal_create_customeridentifier', model: [orgInstance: org]
+        render template: '/templates/customerIdentifier/modal_create', model: [orgInstance: org]
     }
     def editCustomerIdentifier(){
+        log.debug("OrganisationController::editCustomerIdentifier ${params}")
         Identifier identifier = Identifier.get(params.customeridentifier)
         Org org = identifier?.org
 
         if (! org) {
-            flash.message = message(code: 'default.not.found.message', args: [message(code: 'default.search.identifier'), params.id])
+            flash.message = message(code: 'default.not.found.message', args: [message(code: 'org.customerIdentifier'), params.customeridentifier])
             redirect(url: request.getHeader('referer'))
             return
         }
