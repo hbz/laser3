@@ -211,7 +211,7 @@ class PlatformController extends AbstractDebugController {
         result.offset = params.offset ? Integer.parseInt(params.offset) : 0
 
         def qry_params = [platInstance: platformInstance]
-        def date_filter = params.mode == 'advanced' ? null : new Date()
+        Date date_filter = params.mode == 'advanced' ? null : new Date()
         def query = filterService.generateBasePackageQuery(params, qry_params, false, date_filter, "Platform")
         List<TitleInstancePackagePlatform> platformTipps = TitleInstancePackagePlatform.executeQuery("select tipp ${query.base_qry}",query.qry_params)
 
@@ -320,11 +320,11 @@ class PlatformController extends AbstractDebugController {
         def selectedInstitution = contextService.getOrg()
 
         def authorizedOrgs = contextService.getUser().getAuthorizedOrgs()
-        def hql = "select oapl from OrgAccessPointLink oapl join oapl.oap as ap "
+        String hql = "select oapl from OrgAccessPointLink oapl join oapl.oap as ap "
             hql += "where ap.org =:institution and oapl.active=true and oapl.platform.id=${platformInstance.id}"
         def results = OrgAccessPointLink.executeQuery(hql,[institution : selectedInstitution])
 
-        def notActiveAPLinkQuery = "select oap from OrgAccessPoint oap where oap.org =:institution "
+        String notActiveAPLinkQuery = "select oap from OrgAccessPoint oap where oap.org =:institution "
             notActiveAPLinkQuery += "and not exists ("
             notActiveAPLinkQuery += "select 1 from oap.oapp as oapl where oapl.oap=oap and oapl.active=true "
             notActiveAPLinkQuery += "and oapl.platform.id = ${platformInstance.id})"
@@ -402,7 +402,7 @@ class PlatformController extends AbstractDebugController {
         // delete marker all OrgAccessPointLinks for the given platform und SubscriptionPackage
         // The marker (OrgAccessPoint=null), which indicates that want to overwrite platform specific AccessPoint links,
         // gets deleted too
-        def hql = "delete from OrgAccessPointLink oapl where oapl.platform=:platform_id and oapl.subPkg =:subPkg and oapl.active=true"
+        String hql = "delete from OrgAccessPointLink oapl where oapl.platform=:platform_id and oapl.subPkg =:subPkg and oapl.active=true"
         def oapl = OrgAccessPointLink.executeUpdate(hql, [platform_id:platform, subPkg:subPkg])
 
         redirect(url: request.getHeader('referer'))

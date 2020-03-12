@@ -20,10 +20,10 @@ class SemanticUiIdentifierTagLib {
         def cssClass   = attrs.class ? " ${attrs.class}" : ""
         def buttonText = attrs.buttonText ? attrs.buttonText : message(code:'identifier.select.add')
 
-        def random            = (new Random()).nextInt(100000)
-        def formSelector      = "add-identifier-form-" + random
-        def namespaceSelector = "add-identifier-input-" + random
-        def identSelector     = "add-identifier-select-" + random
+        def random               = (new Random()).nextInt(100000)
+        String formSelector      = "add-identifier-form-" + random
+        String namespaceSelector = "add-identifier-input-" + random
+        String identSelector     = "add-identifier-select-" + random
 
         out << '<form id="' + formSelector + '" class="ui form' + cssClass + '" action="' + formUrl +'" method="post">'
         out <<   body()

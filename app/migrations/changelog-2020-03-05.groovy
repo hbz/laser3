@@ -124,4 +124,10 @@ databaseChangeLog = {
 	changeSet(author: "kloberd (generated)", id: "1583394967979-15") {
 		addForeignKeyConstraint(baseColumnNames: "osg_subject_group", baseTableName: "org_subject_group", baseTableSchemaName: "public", constraintName: "FK7F97BF9158CB3321", deferrable: "false", initiallyDeferred: "false", referencedColumnNames: "rdv_id", referencedTableName: "refdata_value", referencedTableSchemaName: "public", referencesUniqueColumn: "false")
 	}
+
+	changeSet(author: "kloberd (generated)", id: "1583394967979-16") {
+		addColumn(schemaName: "public", tableName: "system_announcement") {
+			column(name: "sa_status", type: "text")
+		}
+	}
 }

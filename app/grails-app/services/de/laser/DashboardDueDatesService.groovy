@@ -192,7 +192,7 @@ class DashboardDueDatesService {
     private void sendEmail(User user, Org org, List<DashboardDueDate> dashboardEntries) {
         def emailReceiver = user.getEmail()
         def currentServer = grailsApplication.config.getCurrentServer()
-        def subjectSystemPraefix = (currentServer == ContextService.SERVER_PROD)? "LAS:eR - " : (grailsApplication.config.laserSystemId + " - ")
+        String subjectSystemPraefix = (currentServer == ContextService.SERVER_PROD)? "LAS:eR - " : (grailsApplication.config.laserSystemId + " - ")
         String mailSubject = subjectSystemPraefix + messageSource.getMessage('email.subject.dueDates', null, locale) + " (" + org.name + ")"
         try {
             if (emailReceiver == null || emailReceiver.isEmpty()) {

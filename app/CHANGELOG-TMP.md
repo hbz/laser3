@@ -2,6 +2,8 @@
 
 **Ticket    Date    Branch      Author  Feature/Bug     Description/Keywords**
 
+2202    11.03.2020  rc1.2       David   Feature     Cherrypicked ERMS-2202 from hbz-dev and improved
+
 2239    10.03.2020  hbz-dev     David   Feature     Profiler: URL-abhängige Timeline implementieren
 
 2145    09.03.2020  hbz-dev     Moe     Feature     Überarbeitung des Lizenztyps
@@ -25,6 +27,8 @@
 2231    03.03.2020  rc1.2       David   Feature     Performance: /myInstitution/currentProviders
 
 2230    03.03.2020  rc1.2       David   Bug         "Teilnehmervertrag erstellen" kann bei fehlenden Teilnehmern nicht angelegt werden
+
+2215    28.02.2020  hbz-dev     David   Bug         DocContext wird nicht mehr erstellt (isShared, globannounce)
 
 2211    26.02.2020  hbz-dev     Andreas Feature     Bezeichnung Stammlizenz in Elternlizenz umgewandelt
 
@@ -164,7 +168,7 @@
 
 --      27.01.2020  rc1.2       David   Bug         Bugfix: API /statistic
 
-2102    24.01.2020  hbz-dev     David   Feature     Refactoring: Übersetzungen für PropertyDefinitions
+2038    24.01.2020  hbz-dev     David   Feature     Refactoring: Übersetzungen für RefdataValue und RefdataCategory
 
 1961    24.01.2020  hbz-dev     Anja    Feature     Verknüpfungsauswahl bei Vertrag: Jetzt werden auch Subscriptons vom Status intended zur Auswahl angezeigt. 
 
@@ -269,6 +273,8 @@
 2202    08.01.2020  dev         Anja    Bug         Keine Erinnerungen (duedates) mehr für  Kollektivlizenzen und -Verträge 
 
 2023    08.01.2020  rc1.2       David   Bug         UserCaches blockieren Threads
+
+2018    08.01.2020  hbz-dev     David   Feature     Charts für den Aktivitätsprofiler
 
 2017    06.01.2020  rc1.2       David   Bug         Fehlermeldung bei Suche im Gasco-Monitor
 

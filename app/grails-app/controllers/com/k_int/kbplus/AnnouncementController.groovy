@@ -30,7 +30,7 @@ class AnnouncementController extends AbstractDebugController {
             flash.message = message(code: 'announcement.created')
             RefdataValue announcement_type = RefdataValue.getByValueAndCategory('Announcement', RDConstants.DOCUMENT_TYPE)
 
-            def new_announcement = new Doc(title: params.subjectTxt,
+            new Doc(title: params.subjectTxt,
                     content: params.annTxt,
                     user: result.user,
                     type: announcement_type,

@@ -470,7 +470,7 @@ static hasMany = [  tipps:     TitleInstancePackagePlatform,
         }
         if (confirmed && pc_to_delete) {
             log.debug("Deleting Pending Changes: ${pc_to_delete}")
-            def del_pc_query = "delete from PendingChange where id in (:del_list) "
+            String del_pc_query = "delete from PendingChange where id in (:del_list) "
             PendingChange.executeUpdate(del_pc_query, [del_list: pc_to_delete])
         } else {
             return pc_to_delete.size()

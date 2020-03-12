@@ -452,7 +452,7 @@ class AccessPointController extends AbstractDebugController {
         oapl.oap = accessPoint
         if (params.platforms) {
             oapl.platform = Platform.get(params.platforms)
-            def hql = "select oap from OrgAccessPoint oap " +
+            String hql = "select oap from OrgAccessPoint oap " +
                 "join oap.oapp as oapl where oapl.active = true and oapl.platform.id =${accessPoint.id} and oapl.oap=:oap and oapl.subPkg is null order by LOWER(oap.name)"
             def existingActiveAP = OrgAccessPoint.executeQuery(hql, ['oap' : accessPoint])
 

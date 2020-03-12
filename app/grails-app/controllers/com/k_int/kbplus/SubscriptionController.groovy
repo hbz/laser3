@@ -246,7 +246,7 @@ class SubscriptionController extends AbstractDebugController {
         exportService.printDuration(verystarttime, "Querying")
 
         log.debug("subscriptionInstance returning... ${result.num_sub_rows} rows ");
-        def filename = "subscription_${escapeService.escapeString(result.subscriptionInstance.dropdownNamingConvention())}"
+        String filename = "subscription_${escapeService.escapeString(result.subscriptionInstance.dropdownNamingConvention())}"
 
 
         if (executorWrapperService.hasRunningProcess(result.subscriptionInstance)) {
@@ -630,10 +630,10 @@ class SubscriptionController extends AbstractDebugController {
     def createCompareList(sub, dateStr, params, result) {
         def returnVals = [:]
         SimpleDateFormat sdf = DateUtil.getSDF_NoTime()
-        def date = dateStr ? sdf.parse(dateStr) : new Date()
-        def subId = sub.substring(sub.indexOf(":") + 1)
+        Date date = dateStr ? sdf.parse(dateStr) : new Date()
+        String subId = sub.substring(sub.indexOf(":") + 1)
 
-        def subInst = Subscription.get(subId)
+        Subscription subInst = Subscription.get(subId)
         if (subInst.startDate > date || subInst.endDate < date) {
             def errorMsg = "${subInst.name} start date is: ${sdf.format(subInst.startDate)} and end date is: ${sdf.format(subInst.endDate)}. You have selected to compare it on date ${sdf.format(date)}."
             throw new IllegalArgumentException(errorMsg)
@@ -1113,7 +1113,7 @@ class SubscriptionController extends AbstractDebugController {
         result.subscriber = result.newSub.getSubscriber()
         result.editable = surveyService.isEditableIssueEntitlementsSurvey(result.institution, result.surveyConfig)
 
-        def filename = "${escapeService.escapeString(message(code:'renewEntitlementsWithSurvey.selectableTitles')+'_'+result.newSub.dropdownNamingConvention())}"
+        String filename = "${escapeService.escapeString(message(code:'renewEntitlementsWithSurvey.selectableTitles')+'_'+result.newSub.dropdownNamingConvention())}"
 
         if (params.exportKBart) {
             response.setHeader("Content-disposition", "attachment; filename=${filename}.tsv")
@@ -1202,7 +1202,7 @@ class SubscriptionController extends AbstractDebugController {
 
         result.ies = subscriptionService.getCurrentIssueEntitlements(result.surveyConfig.subscription?.getDerivedSubscriptionBySubscribers(result.institution))
 
-        def filename = "renewEntitlements_${escapeService.escapeString(result.subscriptionInstance.dropdownNamingConvention())}"
+        String filename = "renewEntitlements_${escapeService.escapeString(result.subscriptionInstance.dropdownNamingConvention())}"
 
         if (params.exportKBart) {
             response.setHeader("Content-disposition", "attachment; filename=${filename}.tsv")
@@ -2074,7 +2074,7 @@ class SubscriptionController extends AbstractDebugController {
                         }
 
                         if (existingProp){
-                            def customProp = SubscriptionCustomProperty.get(existingProp.id)
+                            SubscriptionCustomProperty customProp = SubscriptionCustomProperty.get(existingProp.id)
                             changeProperties++
                             def prop = setProperty(customProp, params.filterPropValue)
 
@@ -2293,7 +2293,7 @@ class SubscriptionController extends AbstractDebugController {
 
 
                         if (existingProp && !(existingProp.hasProperty('instanceOf') && existingProp.instanceOf && AuditConfig.getConfig(existingProp.instanceOf))){
-                            def customProp = SubscriptionCustomProperty.get(existingProp.id)
+                            SubscriptionCustomProperty customProp = SubscriptionCustomProperty.get(existingProp.id)
 
                             try {
                                 customProp?.owner = null
@@ -2803,7 +2803,7 @@ class SubscriptionController extends AbstractDebugController {
         def addTitlesCount = 0
         if (result.subscriptionInstance) {
             if(params.singleTitle) {
-                def ie = IssueEntitlement.get(params.singleTitle)
+                IssueEntitlement ie = IssueEntitlement.get(params.singleTitle)
                 def tipp = ie.tipp
                 try {
 
@@ -2827,7 +2827,7 @@ class SubscriptionController extends AbstractDebugController {
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_EDITOR") })
     def removeEntitlement() {
         log.debug("removeEntitlement....");
-        def ie = IssueEntitlement.get(params.ieid)
+        IssueEntitlement ie = IssueEntitlement.get(params.ieid)
         def deleted_ie = TIPP_STATUS_DELETED
         ie.status = deleted_ie;
 
@@ -2949,7 +2949,7 @@ class SubscriptionController extends AbstractDebugController {
 
         if(result.subscriptionInstance) {
             iesToAdd.each { ieID ->
-                def ie = IssueEntitlement.findById(ieID)
+                IssueEntitlement ie = IssueEntitlement.findById(ieID)
                 def tipp = ie.tipp
 
                 try {
@@ -3058,7 +3058,7 @@ class SubscriptionController extends AbstractDebugController {
         result.contextOrg = contextService.getOrg()
 
         if (params.deleteId) {
-            def dTask = Task.get(params.deleteId)
+            Task dTask = Task.get(params.deleteId)
             if (dTask && dTask.creator.id == result.user.id) {
                 try {
                     flash.message = message(code: 'default.deleted.message', args: [message(code: 'task.label'), dTask.title])
@@ -3302,9 +3302,9 @@ class SubscriptionController extends AbstractDebugController {
                     flash.message = message(code:'subscription.details.link.no_package_yet')
                     gri.save(flush: true)
                 }
-                def grt = GlobalRecordTracker.findByOwner(gri)
+                GlobalRecordTracker grt = GlobalRecordTracker.findByOwner(gri)
                 if (!grt) {
-                    def new_tracker_id = UUID.randomUUID().toString()
+                    String new_tracker_id = UUID.randomUUID().toString()
 
                     grt = new GlobalRecordTracker(
                             owner: gri,
@@ -3716,7 +3716,7 @@ class SubscriptionController extends AbstractDebugController {
 
             // tasks
 
-            def contextOrg = contextService.getOrg()
+            Org contextOrg = contextService.getOrg()
             result.tasks = taskService.getTasksByResponsiblesAndObject(result.user, contextOrg, result.subscriptionInstance)
             def preCon = taskService.getPreconditionsWithoutTargets(contextOrg)
             result << preCon
@@ -4382,7 +4382,7 @@ class SubscriptionController extends AbstractDebugController {
                             }
                             if (params.subscription.takePrivateProperties) {
                                 //privatProperties
-                                def contextOrg = contextService.getOrg()
+                                Org contextOrg = contextService.getOrg()
 
                                 baseSub.privateProperties.each { prop ->
                                     if (prop.type?.tenant?.id == contextOrg?.id) {
@@ -4407,7 +4407,7 @@ class SubscriptionController extends AbstractDebugController {
             result.navNextSubscription = links.nextLink
 
             // tasks
-            def contextOrg = contextService.getOrg()
+            Org contextOrg = contextService.getOrg()
             result.tasks = taskService.getTasksByResponsiblesAndObject(result.user, contextOrg, result.subscriptionInstance)
 
             result.contextOrg = contextOrg
@@ -5069,7 +5069,7 @@ class SubscriptionController extends AbstractDebugController {
         }
 
         // tasks
-        def contextOrg = contextService.getOrg()
+        Org contextOrg = contextService.getOrg()
         result.tasks = taskService.getTasksByResponsiblesAndObject(result.user, contextOrg, result.subscriptionInstance)
         def preCon = taskService.getPreconditionsWithoutTargets(contextOrg)
         result << preCon
@@ -5323,7 +5323,7 @@ class SubscriptionController extends AbstractDebugController {
                 }
                 if (params.subscription.copyPrivateProperties) {
                     //privatProperties
-                    def contextOrg = contextService.getOrg()
+                    Org contextOrg = contextService.getOrg()
 
                     baseSubscription.privateProperties.each { prop ->
                         if (prop.type?.tenant?.id == contextOrg?.id) {

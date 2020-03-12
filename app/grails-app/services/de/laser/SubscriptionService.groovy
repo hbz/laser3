@@ -595,7 +595,7 @@ class SubscriptionService {
         boolean isInstAdm = contextService.getUser().hasAffiliation("INST_ADM")
         def userId = contextService.user.id
         toDeleteTasks.each { deleteTaskId ->
-            def dTask = Task.get(deleteTaskId)
+            Task dTask = Task.get(deleteTaskId)
             if (dTask) {
                 if (dTask.creator.id == userId || isInstAdm) {
                     delete(dTask, flash)
@@ -730,6 +730,7 @@ class SubscriptionService {
                         Doc newDoc = new Doc()
                         InvokerHelper.setProperties(newDoc, dctx.owner.properties)
                         save(newDoc, flash)
+
                         DocContext newDocContext = new DocContext()
                         InvokerHelper.setProperties(newDocContext, dctx.properties)
                         newDocContext.subscription = targetSub
@@ -753,7 +754,7 @@ class SubscriptionService {
 
 
     boolean copyProperties(List<AbstractProperty> properties, Subscription targetSub, boolean isRenewSub, def flash, List auditProperties){
-        def contextOrg = contextService.getOrg()
+        Org contextOrg = contextService.getOrg()
         def targetProp
 
 

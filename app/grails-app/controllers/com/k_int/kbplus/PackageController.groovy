@@ -115,7 +115,7 @@ class PackageController extends AbstractDebugController {
         def paginate_after = params.paginate_after ?: ((2 * result.max) - 1)
         result.offset = params.offset ? Integer.parseInt(params.offset) : 0;
 
-        def deleted_package_status = RefdataValue.getByValueAndCategory('Deleted', RDConstants.PACKAGE_STATUS)
+        RefdataValue deleted_package_status = RefdataValue.getByValueAndCategory('Deleted', RDConstants.PACKAGE_STATUS)
         //def qry_params = [deleted_package_status]
         def qry_params = []
 
@@ -218,16 +218,16 @@ class PackageController extends AbstractDebugController {
 
         RefdataValue type = RefdataValue.getByValueAndCategory('Consortium', 'Combo Type')
 
-        def institutions_in_consortia_hql = "select c.fromOrg from Combo as c where c.type = ? and c.toOrg in ( select org_role.org from Package as p join p.orgs as org_role where org_role.roleType.value = 'Package Consortia' and p = ?) order by c.fromOrg.name"
+        String institutions_in_consortia_hql = "select c.fromOrg from Combo as c where c.type = ? and c.toOrg in ( select org_role.org from Package as p join p.orgs as org_role where org_role.roleType.value = 'Package Consortia' and p = ?) order by c.fromOrg.name"
         def consortiaInstitutions = Combo.executeQuery(institutions_in_consortia_hql, [type, packageInstance])
 
-        def package_consortia = "select org_role.org from Package as p join p.orgs as org_role where org_role.roleType.value = 'Package Consortia' and p = ?"
+        String package_consortia = "select org_role.org from Package as p join p.orgs as org_role where org_role.roleType.value = 'Package Consortia' and p = ?"
         def consortia = Package.executeQuery(package_consortia, [packageInstance]);
 
 
         def consortiaInstsWithStatus = [:]
 
-        def hql = "SELECT role.org FROM OrgRole as role WHERE role.org = ? AND (role.roleType.value = 'Subscriber') AND ( EXISTS ( select sp from role.sub.packages as sp where sp.pkg = ? ) )"
+        String hql = "SELECT role.org FROM OrgRole as role WHERE role.org = ? AND (role.roleType.value = 'Subscriber') AND ( EXISTS ( select sp from role.sub.packages as sp where sp.pkg = ? ) )"
         consortiaInstitutions.each { org ->
             log.debug("looking up all orgs based on consortia org ${org} and package ${packageInstance}");
             def queryParams = [org, packageInstance]
@@ -267,8 +267,8 @@ class PackageController extends AbstractDebugController {
         //Initialize default subscription values
         log.debug("Create slave with org ${org} and packageID ${packageId}")
 
-        def defaultSubIdentifier = java.util.UUID.randomUUID().toString()
-        def pkg_to_link = Package.get(packageId)
+        String defaultSubIdentifier = java.util.UUID.randomUUID().toString()
+        Package pkg_to_link = Package.get(packageId)
         log.debug("Sub start Date ${pkg_to_link.startDate} and end date ${pkg_to_link.endDate}")
         pkg_to_link.createSubscription("Subscription Taken", genSubName ?: "Slave subscription for ${pkg_to_link.name}", defaultSubIdentifier,
                 pkg_to_link.startDate, pkg_to_link.endDate, org, "Subscriber", true, true)
@@ -287,8 +287,8 @@ class PackageController extends AbstractDebugController {
                 def packageName = params.packageName
                 def identifier = params.identifier
 
-                def contentProvider = Org.findByName(providerName);
-                def existing_pkg = Package.findByIdentifier(identifier);
+                Org contentProvider = Org.findByName(providerName);
+                Package existing_pkg = Package.findByIdentifier(identifier);
 
                 if (contentProvider && existing_pkg == null) {
                     log.debug("Create new package, content provider = ${contentProvider}, identifier is ${identifier}");
@@ -337,7 +337,7 @@ class PackageController extends AbstractDebugController {
                 listA = createCompareList(params.pkgA, params.dateA, params, result)
                 listB = createCompareList(params.pkgB, params.dateB, params, result)
                 if (!params.countA) {
-                    def countHQL = "select count(elements(pkg.tipps)) from Package pkg where pkg.id = ?"
+                    String countHQL = "select count(elements(pkg.tipps)) from Package pkg where pkg.id = ?"
                     params.countA = Package.executeQuery(countHQL, [result.pkgInsts.get(0).id])
                     log.debug("countA is ${params.countA}")
                     params.countB = Package.executeQuery(countHQL, [result.pkgInsts.get(1).id])
@@ -413,7 +413,7 @@ class PackageController extends AbstractDebugController {
 
         } else {
             SimpleDateFormat sdf = DateUtil.getSDF_NoTime()
-            def currentDate = sdf?.format(new Date())
+            Date currentDate = sdf?.format(new Date())
             params.dateA = currentDate
             params.dateB = currentDate
             params.insrt = "Y"
@@ -438,10 +438,10 @@ class PackageController extends AbstractDebugController {
     private def createCompareList(pkg, dateStr, params, result) {
         def returnVals = [:]
         SimpleDateFormat sdf = DateUtil.getSDF_NoTime()
-        def date = dateStr ? sdf.parse(dateStr) : new Date()
+        Date date = dateStr ? sdf.parse(dateStr) : new Date()
         def packageId = pkg.substring(pkg.indexOf(":") + 1)
 
-        def packageInstance = Package.get(packageId)
+        Package packageInstance = Package.get(packageId)
 
         if (date < packageInstance.startDate) {
             throw new IllegalArgumentException(
@@ -482,7 +482,7 @@ class PackageController extends AbstractDebugController {
         }
 
         result.user = User.get(springSecurityService.principal.id)
-        def packageInstance = Package.get(params.id)
+        Package packageInstance = Package.get(params.id)
         if (!packageInstance) {
             flash.message = message(code: 'default.not.found.message', args: [message(code: 'package.label'), params.id])
             redirect action: 'list'
@@ -498,7 +498,7 @@ class PackageController extends AbstractDebugController {
         result.pkg_link_str = "${grailsApplication.config.grails.serverURL}/package/show/${params.id}"
 
         // tasks
-        def contextOrg = contextService.getOrg()
+        Org contextOrg = contextService.getOrg()
         result.tasks = taskService.getTasksByResponsiblesAndObject(User.get(springSecurityService.principal.id), contextOrg, packageInstance)
         def preCon = taskService.getPreconditionsWithoutTargets(contextOrg)
         result << preCon
@@ -534,7 +534,7 @@ class PackageController extends AbstractDebugController {
         def qry_params = [pkgInstance: packageInstance]
 
         SimpleDateFormat sdf = DateUtil.getSDF_NoTime()
-        def today = new Date()
+        Date today = new Date()
         if (!params.asAt) {
             if (packageInstance.startDate > today) {
                 params.asAt = sdf.format(packageInstance.startDate)
@@ -573,7 +573,7 @@ class PackageController extends AbstractDebugController {
             result.processingpc = true
         }
 
-        def filename = "${escapeService.escapeString(result.packageInstance.name)}_asAt_${date_filter ? sdf.format(date_filter) : sdf.format(today)}"
+        String filename = "${escapeService.escapeString(result.packageInstance.name)}_asAt_${date_filter ? sdf.format(date_filter) : sdf.format(today)}"
         withFormat {
             html result
             json {
@@ -606,7 +606,7 @@ class PackageController extends AbstractDebugController {
         result.user = User.get(springSecurityService.principal.id)
         result.editable = isEditable()
 
-        def packageInstance = Package.get(params.id)
+        Package packageInstance = Package.get(params.id)
         if (!packageInstance) {
             flash.message = message(code: 'default.not.found.message', args: [message(code: 'package.label'), params.id])
             redirect action: 'list'
@@ -629,7 +629,7 @@ class PackageController extends AbstractDebugController {
 
         // def base_qry = "from TitleInstancePackagePlatform as tipp where tipp.pkg = ? "
         def qry_params = [pkgInstance: packageInstance]
-        def date_filter = params.mode == 'advanced' ? null : new Date()
+        Date date_filter = params.mode == 'advanced' ? null : new Date()
 
         def query = filterService.generateBasePackageQuery(params, qry_params, showDeletedTipps, date_filter,"Package")
 
@@ -724,7 +724,7 @@ class PackageController extends AbstractDebugController {
 
     @Secured(['ROLE_ADMIN'])
     def uploadTitles() {
-        def pkg = Package.get(params.id)
+        Package pkg = Package.get(params.id)
         def upload_mime_type = request.getFile("titleFile")?.contentType
         log.debug("Uploaded content type: ${upload_mime_type}");
         def input_stream = request.getFile("titleFile")?.inputStream
@@ -869,8 +869,8 @@ class PackageController extends AbstractDebugController {
     @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_EDITOR") })
     def addToSub() {
-        def pkg = Package.get(params.id)
-        def sub = Subscription.get(params.subid)
+        Package pkg = Package.get(params.id)
+        Subscription sub = Subscription.get(params.subid)
         boolean add_entitlements = params.addEntitlements == 'true'
         GlobalRecordInfo gri = GlobalRecordInfo.findByUuid(pkg.gokbId)
         GlobalRecordTracker grt = GlobalRecordTracker.findByOwner(gri)
@@ -908,7 +908,7 @@ class PackageController extends AbstractDebugController {
         result.editable = isEditable()
 
         if (params.deleteId) {
-            def dTask = Task.get(params.deleteId)
+            Task dTask = Task.get(params.deleteId)
             if (dTask && dTask.creator.id == result.user.id) {
                 try {
                     flash.message = message(code: 'default.deleted.message', args: [message(code: 'task.label'), dTask.title])
@@ -937,7 +937,7 @@ class PackageController extends AbstractDebugController {
     @Secured(['ROLE_USER'])
     def packageBatchUpdate() {
 
-        def packageInstance = Package.get(params.id)
+        Package packageInstance = Package.get(params.id)
         boolean showDeletedTipps = false
 
         if (SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN, ROLE_PACKAGE_EDITOR')) {
@@ -1099,7 +1099,7 @@ class PackageController extends AbstractDebugController {
 
             switch (hl.className) {
                 case 'com.k_int.kbplus.Package':
-                    def package_object = Package.get(hl.persistedObjectId);
+                    Package package_object = Package.get(hl.persistedObjectId);
                     line_to_add = [link        : createLink(controller: 'package', action: 'show', id: hl.persistedObjectId),
                                    name        : package_object.toString(),
                                    lastUpdated : hl.lastUpdated,
@@ -1111,7 +1111,7 @@ class PackageController extends AbstractDebugController {
                     linetype = 'Package'
                     break;
                 case 'com.k_int.kbplus.TitleInstancePackagePlatform':
-                    def tipp_object = TitleInstancePackagePlatform.get(hl.persistedObjectId);
+                    TitleInstancePackagePlatform tipp_object = TitleInstancePackagePlatform.get(hl.persistedObjectId);
                     if (tipp_object != null) {
                         line_to_add = [link        : createLink(controller: 'tipp', action: 'show', id: hl.persistedObjectId),
                                        name        : tipp_object.title?.title + " / " + tipp_object.pkg?.name,
