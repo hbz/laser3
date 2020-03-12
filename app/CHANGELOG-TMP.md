@@ -1,6 +1,12 @@
 ## temporary change log
 
 **Ticket    Date    Branch      Author  Feature/Bug     Description/Keywords**
+    
+2203    12.03.2020  rc1.2       Moe     Bug         pick&choose nicht möglich
+
+2246    12.03.2020  rc1.2       Andreas Bug         Sichtüberprüfung bei Dokumenten inkl. Anmerkungen überprüft, die direkt an TN-Lizenzen eingehängt sind
+
+2243    12.03.2020  rc1.2       Andreas Bug         Bugfix: fehlerhaftes Prozessieren von Abhängigkeiten bei Vertragslöschung
 
 2185    11.03.2020  hbz-dev     Christian   Feature Zugangskonfigurationen: nur aktive Lizenzen anzeigen
 
