@@ -1,6 +1,8 @@
 ## temporary change log
 
 **Ticket    Date    Branch      Author  Feature/Bug     Description/Keywords**
+
+2186    12.03.2020  hbz-dev     Christian   Feature Zugangskonfiguration: Löschen grundsätzlich unterbinden, wenn Verknüpfungen vorliegen
     
 2203    12.03.2020  rc1.2       Moe     Bug         pick&choose nicht möglich
 
