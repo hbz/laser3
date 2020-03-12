@@ -207,6 +207,8 @@
 
 1941    09.12.2019  hbz-dev     David   Feature     Tabelle "Meine Konsorten" angepasst
 
+--      09.12.2019  hbz-dev     Daniel  Feature     Allgemeine Subscriptionmerkmale um "EZB Kollektionsdatenweitergabe an Drittsysteme erlaubt?" ergänzt 
+
 1935    06.12.2019  hbz-dev     Anja    Feature     GASCO-Monitor: Es werden Kontakte nur noch aus öffentichem Adressbuch angezeigt
 
 1546    06.12.2019  hbz-def     Anja    Bug         Merkmale zwischen Lizenzen kopieren: Löschmarkierungen sind jetzt korrekt.
@@ -290,5 +292,3 @@
 1867    12.11.2019  rc-1.1      David   Bug         Fehlende Merkmale bei verschiedenen API-Enpunkten (0.70)
 
 1837    06.11.2019  rc-1.1      David   Bug         Standard-Dashboard beim Einloggen setzen
-
-/       09.12.2019  hbz-dev     Daniel  Feature     Allgemeine Subscriptionmerkmale um "EZB Kollektionsdatenweitergabe an Drittsysteme erlaubt?" ergänzt 
