@@ -446,7 +446,7 @@
                 <h3><g:message code="subscription.propertiesMembers.subscription" args="${args.superOrgType}"/></h3>
 
                 <g:render template="/templates/documents/table"
-                          model="${[instance: parentSub, context: 'documents', redirect: 'documents', owntp: 'subscription']}"/>
+                          model="${[instance: parentSub, context: 'documents', redirect: 'subscriptionPropertiesMembers', owntp: 'subscription']}"/>
             </div>
 
             <div class="ui segment">
@@ -478,7 +478,7 @@
                             </g:if>
                             <td>
                                 <g:render template="/templates/documents/table"
-                                          model="${[instance: sub, context: 'documents', redirect: 'documents', owntp: 'subscription']}"/>
+                                          model="${[instance: sub, context: 'documents', redirect: 'subscriptionPropertiesMembers', owntp: 'subscription']}"/>
 
                             </td>
                             <td class="x">
@@ -498,7 +498,7 @@
             <div class="ui segment ">
                 <h3><g:message code="subscription.propertiesMembers.subscription" args="${args.superOrgType}"/></h3>
 
-                <g:render template="/templates/notes/table" model="${[instance: parentSub, redirect: 'notes']}"/>
+                <g:render template="/templates/notes/table" model="${[instance: parentSub, redirect: 'subscriptionPropertiesMembers']}"/>
             </div>
 
             <div class="ui segment">
@@ -530,7 +530,7 @@
                             </g:if>
                             <td>
                                 <g:render template="/templates/notes/table"
-                                          model="${[instance: sub, redirect: 'notes']}"/>
+                                          model="${[instance: sub, redirect: 'subscriptionPropertiesMembers']}"/>
 
                             </td>
                             <td class="x">

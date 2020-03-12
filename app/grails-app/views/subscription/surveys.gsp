@@ -64,14 +64,6 @@
                     ${(params.int('offset') ?: 0) + i + 1}
                 </td>
                 <td>
-                    <g:if test="${surveyConfig?.type == 'Subscription'}">
-                        <i class="icon clipboard outline la-list-icon"></i>
-                        ${surveyConfig?.subscription?.name}
-                    </g:if>
-                    <g:else>
-                        <i class="icon chart pie la-list-icon"></i>
-                        ${surveyConfig?.getConfigNameShort()}
-                    </g:else>
 
                     <div class="la-flexbox">
                         <g:if test="${surveyConfig?.subSurveyUseForTransfer}">
@@ -80,17 +72,7 @@
                                 <i class="yellow icon envelope large "></i>
                             </span>
                         </g:if>
-
-                        <i class="icon chart pie la-list-icon"></i>
-                        <g:if test="${surveyInfo?.isSubscriptionSurvey}">
-                            <g:link controller="subscription" action="show" id="${surveyConfig?.subscription?.id}"
-                                    class="ui ">
-                                ${surveyConfig?.getSurveyName()}
-                            </g:link>
-                        </g:if>
-                        <g:else>
                             ${surveyConfig?.getSurveyName()}
-                        </g:else>
                     </div>
                 </td>
                 <td>

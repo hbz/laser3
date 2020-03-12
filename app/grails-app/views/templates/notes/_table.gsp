@@ -13,7 +13,7 @@
         </tr>
         </thead>
         <tbody>
-        <g:each in="${instance.documents.sort{it.owner?.title}}" var="docctx">
+        <g:each in="${instance.documents.sort{it.owner?.title?.toLowerCase()}}" var="docctx">
             <g:if test="${docctx.owner.contentType == 0 && (docctx.status == null || docctx.status?.value != 'Deleted') && ((!docctx.sharedFrom && docctx.owner?.owner?.id == contextService.org.id) || docctx.sharedFrom)}">
                 <tr>
                     <%--<g:if test="${editable}"><td><input type="checkbox" name="_deleteflag.${docctx.id}" value="true"/></td></g:if> : REMOVED BULK --%>
@@ -32,7 +32,9 @@
                     </td>
                     <td class="x">
                         <g:if test="${docctx.sharedFrom}">
-                            [ Wird geteilt ]
+                            <span  class="la-popup-tooltip la-delay" data-content="${message(code:'property.share.tooltip.on')}">
+                                <i class="green alternate share icon"></i>
+                            </span>
                         </g:if>
 
                         <g:if test="${instance?.showUIShareButton()}">
@@ -59,7 +61,7 @@
                                 <i class="write icon"></i>
                             </a>
                             <g:link controller="${controllerName}" action="deleteDocuments" class="ui icon negative button"
-                                    params='[instanceId:"${instance.id}", deleteId:"${docctx.id}", redirectAction:"${redirect}"]'>
+                                    params='[instanceId:"${instance.id}", deleteId:"${docctx.id}", redirectAction:"${actionName}"]'>
                                 <i class="trash alternate icon"></i>
                             </g:link>
                         </g:if>
