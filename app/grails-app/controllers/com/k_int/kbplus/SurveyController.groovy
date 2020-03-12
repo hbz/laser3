@@ -176,11 +176,23 @@ class SurveyController {
             flash.error = g.message(code: "default.notAutorized.message")
             redirect(url: request.getHeader('referer'))
         }
-        def sdf = DateUtil.getSDF_NoTime()
-        def surveyInfo = new SurveyInfo(
+
+        SimpleDateFormat sdf = DateUtil.getSDF_NoTime()
+        Date startDate = params.startDate ? sdf.parse(params.startDate) : null
+        Date endDate = params.endDate ? sdf.parse(params.endDate) : null
+
+        if(startDate != null && endDate != null) {
+            if(startDate > endDate) {
+                flash.error = g.message(code: "createSurvey.create.fail.startDateAndEndDate")
+                redirect(action: 'createGeneralSurvey', params: params)
+                return
+            }
+        }
+
+        SurveyInfo surveyInfo = new SurveyInfo(
                 name: params.name,
-                startDate: params.startDate ? sdf.parse(params.startDate) : null,
-                endDate: params.endDate ? sdf.parse(params.endDate) : null,
+                startDate: startDate,
+                endDate: endDate,
                 type: RDStore.SURVEY_TYPE_INTEREST,
                 owner: contextService.getOrg(),
                 status: RDStore.SURVEY_IN_PROCESSING,
@@ -191,7 +203,8 @@ class SurveyController {
 
         if (!(surveyInfo.save(flush: true))) {
             flash.error = g.message(code: "createGeneralSurvey.create.fail")
-            redirect(url: request.getHeader('referer'))
+            redirect(action: 'createGeneralSurvey', params: params)
+            return
         }
 
         if (!SurveyConfig.findAllBySurveyInfo(surveyInfo)) {
@@ -204,12 +217,13 @@ class SurveyController {
             if(!(surveyConfig.save(flush: true))){
                 surveyInfo.delete(flush: true)
                 flash.error = g.message(code: "createGeneralSurvey.create.fail")
-                redirect(url: request.getHeader('referer'))
+                redirect(action: 'createGeneralSurvey', params: params)
+                return
             }
 
         }
 
-        flash.message = g.message(code: "createGeneralSurvey.create.successfull")
+        //flash.message = g.message(code: "createGeneralSurvey.create.successfull")
         redirect action: 'show', id: surveyInfo.id
 
     }
@@ -418,15 +432,25 @@ class SurveyController {
             flash.error = g.message(code: "default.notAutorized.message")
             redirect(url: request.getHeader('referer'))
         }
-        def sdf = DateUtil.getSDF_NoTime()
+        SimpleDateFormat sdf = DateUtil.getSDF_NoTime()
+        Date startDate = params.startDate ? sdf.parse(params.startDate) : null
+        Date endDate = params.endDate ? sdf.parse(params.endDate) : null
 
-        def subscription = Subscription.get(Long.parseLong(params.sub))
+        if(startDate != null && endDate != null) {
+            if(startDate > endDate) {
+                flash.error = g.message(code: "createSurvey.create.fail.startDateAndEndDate")
+                redirect(action: 'addSubtoSubscriptionSurvey', params: params)
+                return
+            }
+        }
+
+        Subscription subscription = Subscription.get(Long.parseLong(params.sub))
         boolean subSurveyUseForTransfer = SurveyConfig.findAllBySubscriptionAndSubSurveyUseForTransfer(subscription, true) ? false : (params.subSurveyUseForTransfer ? true : false)
 
-        def surveyInfo = new SurveyInfo(
+        SurveyInfo surveyInfo = new SurveyInfo(
                 name: params.name,
-                startDate: params.startDate ? sdf.parse(params.startDate) : null,
-                endDate: params.endDate ? sdf.parse(params.endDate) : null,
+                startDate: startDate,
+                endDate: endDate,
                 type: subSurveyUseForTransfer ? RDStore.SURVEY_TYPE_RENEWAL : RDStore.SURVEY_TYPE_INTEREST,
                 owner: contextService.getOrg(),
                 status: RDStore.SURVEY_IN_PROCESSING,
@@ -437,12 +461,11 @@ class SurveyController {
 
         if (!(surveyInfo.save(flush: true))) {
             flash.error = g.message(code: "createSubscriptionSurvey.create.fail")
-            redirect(url: request.getHeader('referer'))
+            redirect(action: 'addSubtoSubscriptionSurvey', params: params)
+            return
         }
 
-
-        def surveyConfig = subscription ? SurveyConfig.findAllBySubscriptionAndSurveyInfo(subscription, surveyInfo) : null
-        if (!surveyConfig && subscription) {
+        if (subscription && !SurveyConfig.findAllBySubscriptionAndSurveyInfo(subscription, surveyInfo)) {
             surveyConfig = new SurveyConfig(
                     subscription: subscription,
                     configOrder: surveyInfo?.surveyConfigs?.size() ? surveyInfo?.surveyConfigs?.size() + 1 : 1,
@@ -456,7 +479,7 @@ class SurveyController {
 
             //Wenn es eine Umfrage schon gibt, die als Übertrag dient. Dann ist es auch keine Lizenz Umfrage mit einem Teilnahme-Merkmal abfragt!
             if (subSurveyUseForTransfer) {
-                def configProperty = new SurveyConfigProperties(
+                SurveyConfigProperties configProperty = new SurveyConfigProperties(
                         surveyProperty: SurveyProperty.findByName('Participation'),
                         surveyConfig: surveyConfig)
 
@@ -469,10 +492,11 @@ class SurveyController {
         } else {
             surveyInfo.delete(flush: true)
             flash.error = g.message(code: "createSubscriptionSurvey.create.fail")
-            redirect(url: request.getHeader('referer'))
+            redirect(action: 'addSubtoSubscriptionSurvey', params: params)
+            return
         }
 
-        flash.message = g.message(code: "createSubscriptionSurvey.create.successfull")
+        //flash.message = g.message(code: "createSubscriptionSurvey.create.successfull")
         redirect action: 'show', id: surveyInfo.id
 
     }
@@ -492,12 +516,22 @@ class SurveyController {
             flash.error = g.message(code: "default.notAutorized.message")
             redirect(url: request.getHeader('referer'))
         }
-        def sdf = DateUtil.getSDF_NoTime()
+        SimpleDateFormat sdf = DateUtil.getSDF_NoTime()
+        Date startDate = params.startDate ? sdf.parse(params.startDate) : null
+        Date endDate = params.endDate ? sdf.parse(params.endDate) : null
 
-        def surveyInfo = new SurveyInfo(
+        if(startDate != null && endDate != null) {
+            if(startDate > endDate) {
+                flash.error = g.message(code: "createSurvey.create.fail.startDateAndEndDate")
+                redirect(action: 'addSubtoIssueEntitlementsSurvey', params: params)
+                return
+            }
+        }
+
+        SurveyInfo surveyInfo = new SurveyInfo(
                 name: params.name,
-                startDate: params.startDate ? sdf.parse(params.startDate) : null,
-                endDate: params.endDate ? sdf.parse(params.endDate) : null,
+                startDate: startDate,
+                endDate: endDate,
                 type: RefdataValue.getByValueAndCategory('selection', RDConstants.SURVEY_TYPE),
                 owner: contextService.getOrg(),
                 status: RDStore.SURVEY_IN_PROCESSING,
@@ -508,12 +542,12 @@ class SurveyController {
 
         if (!(surveyInfo.save(flush: true))) {
             flash.error = g.message(code: "createSubscriptionSurvey.create.fail")
-            redirect(url: request.getHeader('referer'))
+            redirect(action: 'addSubtoIssueEntitlementsSurvey', params: params)
+            return
         }
 
-        def subscription = Subscription.get(Long.parseLong(params.sub))
-        def surveyConfig = subscription ? SurveyConfig.findAllBySubscriptionAndSurveyInfo(subscription, surveyInfo) : null
-        if (!surveyConfig && subscription) {
+        Subscription subscription = Subscription.get(Long.parseLong(params.sub))
+        if (subscription && !SurveyConfig.findAllBySubscriptionAndSurveyInfo(subscription, surveyInfo)) {
             surveyConfig = new SurveyConfig(
                     subscription: subscription,
                     configOrder: surveyInfo?.surveyConfigs?.size() ? surveyInfo?.surveyConfigs?.size() + 1 : 1,
@@ -531,10 +565,11 @@ class SurveyController {
         } else {
             surveyInfo.delete(flush: true)
             flash.error = g.message(code: "createIssueEntitlementsSurvey.create.fail")
-            redirect(url: request.getHeader('referer'))
+            redirect(action: 'addSubtoIssueEntitlementsSurvey', params: params)
+            return
         }
 
-        flash.message = g.message(code: "createIssueEntitlementsSurvey.create.successfull")
+        //flash.message = g.message(code: "createIssueEntitlementsSurvey.create.successfull")
         redirect action: 'show', id: surveyInfo.id
 
     }

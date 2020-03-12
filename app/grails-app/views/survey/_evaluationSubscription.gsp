@@ -3,75 +3,39 @@
 
 <g:if test="${surveyConfig}">
 
-    <div class="la-inline-lists">
-        <div class="ui two stackable cards">
+    <div class="ui horizontal segments">
+        <div class="ui segment center aligned">
+            <b>${message(code: 'surveyConfig.orgs.label')}:</b>
+            <g:link controller="survey" action="surveyParticipants"
+                    id="${surveyConfig.surveyInfo.id}"
+                    params="[surveyConfigID: surveyConfig?.id]">
+                <div class="ui circular label">${surveyConfig?.orgs?.size()}</div>
+            </g:link>
+        </div>
 
-            <div class="ui card">
-                <div class="content">
-                    <dl>
-                        <dt class="control-label">${message(code: 'surveyConfig.type.label')}</dt>
-                        <dd>
-                            ${surveyConfig.getTypeInLocaleI10n()}
-
-                            <g:if test="${surveyConfig?.surveyProperty}">
-
-                                <strong>${message(code: 'default.type.label')}: ${surveyConfig?.surveyProperty?.getLocalizedType()}
-
-                                </strong>
-                            </g:if>
-
-                        </dd>
-
-                    </dl>
-                    <dl>
-                        <dt class="control-label">${message(code: 'surveyConfig.orgs.label')}</dt>
-                        <dd>
-                            <g:link controller="survey" action="surveyParticipants" id="${surveyInfo.id}"
-                                    params="[surveyConfigID: surveyConfig?.id]" class="ui icon">
-                                <div class="ui circular label">${surveyConfig?.orgs?.size() ?: 0}</div>
-                            </g:link>
-                        </dd>
-
-                    </dl>
-
-                    <dl>
-                        <dt class="control-label">${message(code: 'surveyConfig.documents.label')}</dt>
-                        <dd>
-                            <g:link controller="survey" action="surveyConfigDocs" id="${surveyInfo.id}"
-                                    params="[surveyConfigID: surveyConfig?.id]" class="ui icon">
-                                <div class="ui circular label">${surveyConfig?.getCurrentDocs()?.size()}</div>
-                            </g:link>
-                        </dd>
-
-                    </dl>
+        <div class="ui segment center aligned">
+            <b>${message(code: 'surveyConfig.subOrgsWithoutMultiYear.label')}:</b>
+            <g:link controller="subscription" action="members" id="${surveyConfig.subscription.id}"
+                    params="[subRunTime: true, filterSet: true]">
+                <div class="ui circular label">
+                    ${com.k_int.kbplus.Subscription.findAllByInstanceOfAndIsMultiYear(surveyConfig.subscription, false)?.size()}
                 </div>
-            </div>
+            </g:link>
+        </div>
 
-            <div class="ui card ">
-                <div class="content">
-                    <dl>
-                        <dt class="control-label">${message(code: 'surveyConfig.header.label')}</dt>
-                        <dd>
-                            ${surveyConfig?.header}
-                        </dd>
-
-                    </dl>
-                    <dl>
-                        <dt class="control-label">${message(code: 'surveyConfig.comment.label')}</dt>
-                        <dd>
-                            ${surveyConfig?.comment}
-                        </dd>
-
-                    </dl>
-
+        <div class="ui segment center aligned">
+            <b>${message(code: 'surveyConfig.subOrgsWithMultiYear.label')}:</b>
+            <g:link controller="subscription" action="members" id="${surveyConfig.subscription.id}"
+                    params="[subRunTimeMultiYear: true, filterSet: true]">
+                <div class="ui circular label">
+                    ${com.k_int.kbplus.Subscription.findAllByInstanceOfAndIsMultiYear(surveyConfig.subscription, true)?.size()}
                 </div>
-            </div>
-
+            </g:link>
         </div>
     </div>
+
 </g:if>
 
-<br>
 <semui:form>
     <h4 class="ui icon header la-clear-before la-noMargin-top">${message(code: 'surveyParticipants.label')} <semui:totalNumber
             total="${surveyResult?.groupBy { it?.participant.id }?.size()}"/></h4>

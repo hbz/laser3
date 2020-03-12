@@ -26,21 +26,21 @@
 
         <div class="field required ">
             <label>${message(code: 'surveyInfo.name.label')}</label>
-            <input type="text" name="name" placeholder="" value="${subscription?.name}" required />
+            <input type="text" name="name" placeholder="" value="${subscription?.name ?: params.name}" required />
         </div>
 
         <div class="two fields ">
             <semui:datepicker label="surveyInfo.startDate.label" id="startDate" name="startDate"
-                              value="${surveyInfo?.startDate}" required="" />
+                              value="${params.startDate}" required="" />
 
             <semui:datepicker label="surveyInfo.endDate.label" id="endDate" name="endDate"
-                              value="${surveyInfo?.endDate}" required="" />
+                              value="${params.endDate}" />
         </div>
 
         <div class="field ">
             <label>${message(code: 'surveyInfo.comment.label')}</label>
 
-            <textarea name="comment"></textarea>
+            <textarea name="comment">${params.comment}</textarea>
         </div>
 
         <input type="submit" class="ui button"

@@ -85,13 +85,6 @@
             <div class="ui card ">
                 <div class="content">
                     <dl>
-                        <dt class="control-label">${message(code: 'surveyConfig.header.label')}</dt>
-                        <dd>
-                            ${surveyConfig?.header}
-                        </dd>
-
-                    </dl>
-                    <dl>
                         <dt class="control-label">${message(code: 'surveyConfig.comment.label')}</dt>
                         <dd>
                             ${surveyConfig?.comment}
