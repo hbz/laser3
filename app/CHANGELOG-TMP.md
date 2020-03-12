@@ -2,7 +2,9 @@
 
 **Ticket    Date    Branch      Author  Feature/Bug     Description/Keywords**
 
-2236    12.03.2020  rc1.2       Andreas Bug         Bugfix: fehlerhaftes Prozessieren von Abhängigkeiten bei Vertragslöschung
+2246    12.03.2020  rc1.2       Andreas Bug         Sichtüberprüfung bei Dokumenten inkl. Anmerkungen überprüft, die direkt an TN-Lizenzen eingehängt sind
+
+2243    12.03.2020  rc1.2       Andreas Bug         Bugfix: fehlerhaftes Prozessieren von Abhängigkeiten bei Vertragslöschung
 
 2235    06.03.2020  rc1.2       Andreas Bug         Teilnehmer verwalten: Vertragsverknüpfung erzeugt jetzt auch OrgRole-Einträge
 

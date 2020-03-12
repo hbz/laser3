@@ -14,7 +14,7 @@
         </thead>
         <tbody>
         <g:each in="${instance.documents.sort{it.owner?.title}}" var="docctx">
-            <g:if test="${docctx.owner.contentType == 0 && (docctx.status == null || docctx.status?.value != 'Deleted')}">
+            <g:if test="${docctx.owner.contentType == 0 && (docctx.status == null || docctx.status?.value != 'Deleted') && ((!docctx.sharedFrom && docctx.owner?.owner?.id == contextService.org.id) || docctx.sharedFrom)}">
                 <tr>
                     <%--<g:if test="${editable}"><td><input type="checkbox" name="_deleteflag.${docctx.id}" value="true"/></td></g:if> : REMOVED BULK --%>
 

@@ -80,8 +80,9 @@
                         visible = true
                     }
                     else {
-                        if((parentAtChild && docctx.sharedFrom) || !parentAtChild)
+                        if((parentAtChild && docctx.sharedFrom) || !parentAtChild && docctx.owner?.owner?.id == contextService.org.id) {
                             visible = true
+                        }
                     }
                 %>
                 <g:if test="${(((docctx.owner?.contentType == 1) || (docctx.owner?.contentType == 3)) && visible && docctx.status != RDStore.DOC_DELETED)}">
