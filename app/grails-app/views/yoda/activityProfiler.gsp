@@ -52,7 +52,17 @@
                                     axisY: {
                                         onlyInteger: true
                                     }
-                                }, {});
+                                }).on('draw', function(data) {
+                                    if(data.type === 'bar') {
+                                        data.element.attr({
+                                            <g:if test="${index == 0}">
+                                                style: 'stroke-width: 26px'
+                                            </g:if><g:else>
+                                                style: 'stroke-width: 20px'
+                                            </g:else>
+                                        });
+                                    }
+                                });
                             })
                         </script>
                     </td>
@@ -62,12 +72,9 @@
     </table>
     <style>
         #ct-chart-0 .ct-series-b .ct-bar { stroke: #bb1600; }
-        #ct-chart-0 .ct-series-b .ct-slice-pie { fill: #bb1600; }
 
         .ct-series-a .ct-bar { stroke: #98b500; }
-        .ct-series-a .ct-slice-pie { fill: #98b500; }
         .ct-series-b .ct-bar { stroke: orange; }
-        .ct-series-b .ct-slice-pie { fill: orange; }
     </style>
 </body>
 </html>
