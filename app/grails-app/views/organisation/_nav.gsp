@@ -6,6 +6,7 @@
 
 <semui:subNav actionName="${actionName}">
     <semui:subNavItem controller="organisation" action="show" params="${[id: orgInstance.id]}" message="org.nav.details"/>
+    <semui:subNavItem controller="organisation" action="ids" params="${[id: orgInstance.id]}" message="org.nav.ids"/>
     <g:if test="${inContextOrg}">
         <semui:subNavItem controller="myInstitution" action="myPublicContacts" message="menu.institutions.publicContacts" />
     </g:if>

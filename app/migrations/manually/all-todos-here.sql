@@ -69,3 +69,8 @@ alter table cost_item drop column ci_include_in_subscr;
 --DELETE FROM refdata_value WHERE
 --        rdv_owner = (SELECT rdc_id FROM refdata_category as rdc WHERE rdc.rdc_description = 'subscription.status')
 --                           AND rdv_value = 'IntendedPerennial';
+
+-- 2020-03-12
+-- bugfix correct camelcase
+
+update refdata_category set rdc_description = 'subjectgroup' where rdc_description = 'subjectGroup';
