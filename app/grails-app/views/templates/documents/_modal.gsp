@@ -78,11 +78,10 @@
                 </dt>
                 <dd>
                     <%
-                        List notAvailable = [RefdataValue.getByValueAndCategory('ONIX-PL License', RDConstants.DOCUMENT_TYPE),
-                                             RefdataValue.getByValueAndCategory('Note', RDConstants.DOCUMENT_TYPE),
-                                             RefdataValue.getByValueAndCategory('Announcement', RDConstants.DOCUMENT_TYPE)
-                        ]
-                        List documentTypes = RefdataCategory.getAllRefdataValues(RDConstants.DOCUMENT_TYPE)-notAvailable
+                        List notAvailable = [RefdataValue.getByValueAndCategory('ONIX-PL License','Document Type'),
+                                             RefdataValue.getByValueAndCategory('Note','Document Type'),
+                                             RefdataValue.getByValueAndCategory('Announcement','Document Type')]
+                        List documentTypes = RefdataCategory.getAllRefdataValues("Document Type")-notAvailable
                     %>
                     <g:select from="${documentTypes}"
                               class="ui dropdown fluid"
