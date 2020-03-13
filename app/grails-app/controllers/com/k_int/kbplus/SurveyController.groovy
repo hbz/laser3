@@ -614,15 +614,15 @@ class SurveyController {
                     params.view = "subscr"
                 //cost items
                 //params.forExport = true
-                LinkedHashMap costItems = financeService.getCostItemsForSubscription(result.subscription, params, 10, 0)
+                LinkedHashMap costItems = financeService.getCostItemsForSubscription(params, result)
                 result.costItemSums = [:]
-                if (costItems.own.count > 0) {
+                if (costItems.own) {
                     result.costItemSums.ownCosts = costItems.own.sums
                 }
-                if (costItems.cons.count > 0) {
+                if (costItems.cons) {
                     result.costItemSums.consCosts = costItems.cons.sums
                 }
-                if (costItems.subscr.count > 0) {
+                if (costItems.subscr) {
                     result.costItemSums.subscrCosts = costItems.subscr.sums
                 }
             }
@@ -759,7 +759,7 @@ class SurveyController {
         if (!result.editable) {
             response.sendError(401); return
         }
-
+        result.putAll(financeService.setEditVars(result.institution))
         params.tab = params.tab ?: 'selectedSubParticipants'
 
         // new: filter preset
