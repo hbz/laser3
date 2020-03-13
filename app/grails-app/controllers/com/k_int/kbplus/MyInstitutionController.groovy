@@ -3716,14 +3716,14 @@ AND EXISTS (
                          ctx: contextService.getOrg(),
                          selectedRoleTypes: RDStore.PRS_FUNC_GENERAL_CONTACT_PRS])
 
-                List<String> generalContcats = []
+                List<String> generalContacts = []
                 if (persons){
-                    generalContcats = Contact.executeQuery("select c.content from Contact c where c.prs in (:persons) and c.contentType = :contentType",
+                    generalContacts = Contact.executeQuery("select c.content from Contact c where c.prs in (:persons) and c.contentType = :contentType",
                             [persons: persons, contentType: RDStore.CCT_EMAIL])
                 }
                 cell = row.createCell(cellnum++)
-                if(generalContcats)
-                    cell.setCellValue(generalContcats.join('; '))
+                if(generalContacts)
+                    cell.setCellValue(generalContacts.join('; '))
                 //subscription name
                 log.debug("insert subscription name")
                 cell = row.createCell(cellnum++)
