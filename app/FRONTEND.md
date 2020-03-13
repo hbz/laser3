@@ -56,7 +56,7 @@ data-confirm-term-how="concludeBinding":
 #### Use in Link
 
 ```
-<g:link role="button" class="ui icon negative button js-open-confirm-modal"
+<g:link class="ui icon negative button js-open-confirm-modal"
         data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.costItemElementConfiguration", args: [ciec.costItemElement.getI10n("value")])}"
         data-confirm-term-how="delete"
         controller="costConfiguration" action="deleteCostConfiguration"
@@ -72,7 +72,7 @@ data-confirm-term-how="concludeBinding":
 ```
 <g:form controller="person" action="_delete" data-confirm-id="${person?.id?.toString()+ '_form'}">
     <g:hiddenField name="id" value="${person?.id}" />
-        <g:link role="button" class="ui icon button" controller="person" action="show" id="${person?.id}">
+        <g:link class="ui icon button" controller="person" action="show" id="${person?.id}">
             <i class="write icon"></i>
         </g:link>
         <div class="ui icon negative button js-open-confirm-modal"

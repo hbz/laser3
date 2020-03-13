@@ -100,7 +100,7 @@
     <div class="ui segment">
         <h4>${message(code: 'subscription.propertiesMembers.deletePropertyInfo', args: args.memberType)}</h4>
 
-        <g:link role="button" class="ui button negative js-open-confirm-modal"
+        <g:link class="ui button negative js-open-confirm-modal"
                 data-confirm-tokenMsg="${message(code: 'subscription.propertiesMembers.deleteProperty.button.confirm')}"
                 data-confirm-term-how="ok" action="processDeletePropertiesMembers" id="${params.id}"
                 params="[filterPropDef: filterPropDef]">${message(code: 'subscription.propertiesMembers.deleteProperty.button', args: [filterPropDef?.getI10n('name')])}</g:link>

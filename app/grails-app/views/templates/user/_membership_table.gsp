@@ -48,7 +48,7 @@
 
                         %{--<g:if test="${tmplProfile}">
                             <td class="x">
-                            <g:link role="button" class="ui button" controller="profile" action="processCancelRequest" params="${[assoc:aff.id]}">${message(code:'default.button.revoke.label', default:'Revoke')}</g:link>
+                            <g:link class="ui button" controller="profile" action="processCancelRequest" params="${[assoc:aff.id]}">${message(code:'default.button.revoke.label', default:'Revoke')}</g:link>
                             </td>
                         </g:if>--}%
                         <g:if test="${tmplUserEdit}">

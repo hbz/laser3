@@ -88,7 +88,7 @@
           <g:hiddenField name="id" value="${titleInstancePackagePlatformInstance?.id}" />
           
           <div class="ui form-actions">
-            <g:link role="button" class="ui button" action="edit" id="${titleInstancePackagePlatformInstance?.id}">
+            <g:link class="ui button" action="edit" id="${titleInstancePackagePlatformInstance?.id}">
               <i class="write icon"></i>
               <g:message code="default.button.edit.label" />
             </g:link>

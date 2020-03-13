@@ -27,7 +27,7 @@
 
                 <g:set var="oid" value="${contact.class.name}:${contact.id}" />
 
-				<g:link role="button" class="ui mini icon negative button js-open-confirm-modal"
+				<g:link class="ui mini icon negative button js-open-confirm-modal"
                         data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.contactItems.addressbook")}"
                         data-confirm-term-how="delete"
                         controller="ajax" action="delete" params="[cmd: 'deleteContact', oid: oid]">

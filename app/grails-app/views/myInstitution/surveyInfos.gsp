@@ -262,7 +262,7 @@ ${surveyInfo.isSubscriptionSurvey ? message(code: 'subscriptionSurvey.label') : 
 
 
 <g:if test="${editable}">
-    <g:link role="button" class="ui button green js-open-confirm-modal"
+    <g:link class="ui button green js-open-confirm-modal"
             data-confirm-tokenMsg="${message(code: "confirm.dialog.concludeBinding.survey")}"
             data-confirm-term-how="concludeBinding"
             controller="myInstitution"

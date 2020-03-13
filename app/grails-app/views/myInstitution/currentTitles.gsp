@@ -270,7 +270,7 @@
                                             <g:else>${message(code: 'default.unknown')}</g:else>
 
                                             <g:if test="${platform?.name}">
-                                                <g:link role="button" class="ui icon mini  button la-js-dont-hide-button la-popup-tooltip la-delay"
+                                                <g:link class="ui icon mini  button la-js-dont-hide-button la-popup-tooltip la-delay"
                                                         data-content="${message(code: 'tipp.tooltip.changePlattform')}"
                                                         controller="platform" action="show"
                                                         id="${platform?.id}"><i

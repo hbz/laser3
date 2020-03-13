@@ -3,7 +3,7 @@
     <i  class="icon thumbtack la-js-editmode-icon"></i>
 </a>
 <h3 class="ui dividing header">Link funktioniert als Button ohne Tooltip</h3>
-<g:link role="button" aria-label="Das ist eine Beschreibung für den Accessibility Tree" controller="dev" action="frontend" params="" class="ui icon positive button">
+<g:link aria-label="Das ist eine Beschreibung für den Accessibility Tree" controller="dev" action="frontend" params="" class="ui icon positive button">
     <i aria-hidden="true" class="checkmark icon"></i>
 </g:link>
 

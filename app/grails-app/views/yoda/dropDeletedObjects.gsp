@@ -17,7 +17,7 @@
 
     <h3 class="ui header">Lizenzen - ${subscriptions.size()}</h3>
 
-    <g:link role="button" class="ui button red" controller="yoda" action="dropDeletedObjects" params="${[cmd:'subscription']}">Lösche die nächsten 10 Lizenzen</g:link>
+    <g:link class="ui button red" controller="yoda" action="dropDeletedObjects" params="${[cmd:'subscription']}">Lösche die nächsten 10 Lizenzen</g:link>
     <br/>
     <br/>
 
@@ -35,14 +35,14 @@
     </g:each>
 
     <br />
-    <g:link role="button" class="ui button red" controller="yoda" action="dropDeletedObjects" params="${[cmd:'subscription', option:'reverse']}">Lösche die letzten 10 Lizenzen</g:link>
+    <g:link class="ui button red" controller="yoda" action="dropDeletedObjects" params="${[cmd:'subscription', option:'reverse']}">Lösche die letzten 10 Lizenzen</g:link>
 
     <br />
     <br />
 
     <h3 class="ui header">Verträge - ${licenses.size()}</h3>
 
-    <g:link role="button" class="ui button red" controller="yoda" action="dropDeletedObjects" params="${[cmd:'license']}">Lösche die nächsten 10 Verträge</g:link>
+    <g:link class="ui button red" controller="yoda" action="dropDeletedObjects" params="${[cmd:'license']}">Lösche die nächsten 10 Verträge</g:link>
     <br />
     <br />
 
@@ -59,7 +59,7 @@
     </g:each>
 
     <br />
-    <g:link role="button" class="ui button red" controller="yoda" action="dropDeletedObjects" params="${[cmd:'license', option:'reverse']}">Lösche die letzten 10 Verträge</g:link>
+    <g:link class="ui button red" controller="yoda" action="dropDeletedObjects" params="${[cmd:'license', option:'reverse']}">Lösche die letzten 10 Verträge</g:link>
     <br />
     <br />
 

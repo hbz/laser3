@@ -52,7 +52,7 @@
               <td>${source.rectype==0?'Package':'Title'}</td>
               <td>${source.getNumberLocalPackages()}</td>
               <td>
-                <g:link role="button" class="ui button"
+                <g:link class="ui button"
                         controller="yoda"
                         onclick="return confirm('Deleting this package will remove all tracking info and unlink any local packages - Are you sure?')"
                         action="deleteGlobalSource"

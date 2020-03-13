@@ -275,7 +275,7 @@
                         <td class="x">
                             <g:if test="${editable && accessService.checkPermAffiliationX("ORG_INST,ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN")}">
 
-                                    <g:link role="button" class="ui icon positive button la-popup-tooltip la-delay"
+                                    <g:link class="ui icon positive button la-popup-tooltip la-delay"
                                             data-content="${message(code: 'survey.toggleSurveySub.add.label')}"
                                             controller="survey" action="addSubtoIssueEntitlementsSurvey"
                                             params="[sub: s.id]">

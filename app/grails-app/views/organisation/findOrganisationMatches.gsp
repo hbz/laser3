@@ -94,12 +94,12 @@
 										<td>
 										<%-- here: switch if in consortia or not --%>
 											<g:if test="${!members.get(organisationInstance.id).contains(institution.id)}">
-												<g:link role="button" class="ui icon positive button la-popup-tooltip la-delay" data-content="${message(code:'org.consortiaToggle.add.label')}" controller="organisation" action="toggleCombo" params="${params+[direction:'add', fromOrg:organisationInstance.id]}">
+												<g:link class="ui icon positive button la-popup-tooltip la-delay" data-content="${message(code:'org.consortiaToggle.add.label')}" controller="organisation" action="toggleCombo" params="${params+[direction:'add', fromOrg:organisationInstance.id]}">
 													<i class="plus icon"></i>
 												</g:link>
 											</g:if>
 											<g:elseif test="${members.get(organisationInstance.id).contains(institution.id)}">
-												<g:link role="button" class="ui icon negative button la-popup-tooltip la-delay js-open-confirm-modal"
+												<g:link class="ui icon negative button la-popup-tooltip la-delay js-open-confirm-modal"
 														data-confirm-tokenMsg="${message(code: "confirm.dialog.unlink.consortiaToggle", args: [organisationInstance.name])}"
 														data-confirm-term-how="unlink"
 														data-content="${message(code:'org.consortiaToggle.remove.label')}"
@@ -121,7 +121,7 @@
 												</span>
 											</g:if>
 											<g:else>
-												<g:link role="button" class="ui icon negative button la-popup-tooltip la-delay"
+												<g:link class="ui icon negative button la-popup-tooltip la-delay"
 														data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.department.institution", args: [organisationInstance.name.institution])}"
 														data-confirm-term-how="delete"
 														data-content="${message(code:'org.departmentRemoval.remove.label')}"

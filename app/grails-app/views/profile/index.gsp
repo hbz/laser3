@@ -17,7 +17,7 @@
 %{--<semui:controlButtons>
     <semui:actionsDropdown>
 
-        <g:link role="button" class="ui item js-open-confirm-modal la-popup-tooltip la-delay"
+        <g:link class="ui item js-open-confirm-modal la-popup-tooltip la-delay"
                 data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.user")}"
                 data-confirm-term-how="delete"
                 controller="profile"

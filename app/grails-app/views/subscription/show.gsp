@@ -213,7 +213,7 @@
                                                                         link: link
                                                               ]}" />
                                                     <g:if test="${editable}">
-                                                        <g:link role="button" class="ui negative icon button la-selectable-button js-open-confirm-modal"
+                                                        <g:link class="ui negative icon button la-selectable-button js-open-confirm-modal"
                                                                 data-confirm-tokenMsg="${message(code: "confirm.dialog.unlink.subscription.subscription")}"
                                                                 data-confirm-term-how="unlink"
                                                                 controller="ajax" action="delete" params='[cmd: "deleteLink", oid: "${link.class.name}:${link.id}"]'>

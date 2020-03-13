@@ -657,14 +657,14 @@ ${surveyInfo?.name}
 
 <div class="sixteen wide field" style="text-align: center;">
 <g:if test="${params.tab != 'privateProperties'}">
-    <g:link role="button" class="ui button" controller="survey" action="copyProperties"
+    <g:link class="ui button" controller="survey" action="copyProperties"
             params="[id: surveyInfo?.id, surveyConfigID: surveyConfig?.id, tab: ((params.tab == 'customProperties') ? 'privateProperties' : ((params.tab == 'surveyProperties') ? 'customProperties' : 'surveyProperties'))]">
         ${message(code: 'copySurveyCostItems.workFlowSteps.nextStep')}
     </g:link>
 </g:if>
 
 <g:if test="${params.tab == 'privateProperties'}">
-    <g:link role="button" class="ui button" controller="survey" action="copySurveyCostItems"
+    <g:link class="ui button" controller="survey" action="copySurveyCostItems"
             params="[id: surveyInfo?.id, surveyConfigID: surveyConfig?.id]">
         ${message(code: 'copySurveyCostItems.workFlowSteps.nextStep')}
     </g:link>

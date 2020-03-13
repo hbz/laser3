@@ -37,7 +37,7 @@
     </g:if>
 
     <br />
-    <g:link role="button" class="ui button"
+    <g:link class="ui button"
             controller="yoda" action="cacheInfo" params="[cmd: 'clearCache', type: 'session']">Cache leeren</g:link>
 </div>
 
@@ -107,7 +107,7 @@
                 </div>
             </dl>
 
-            <g:link role="button" class="ui button"
+            <g:link class="ui button"
                     controller="yoda" action="cacheInfo" params="[cmd: 'clearCache', cache: cacheName, type: 'ehcache']">Cache leeren</g:link>
 
         </div>
@@ -144,7 +144,7 @@
             </g:each>
         </ul>
 
-        <g:link role="button" class="ui button"
+        <g:link class="ui button"
                 controller="yoda" action="cacheInfo" params="[cmd: 'clearCache', cache: cacheName, type: 'cache']">Cache leeren</g:link>
 
     </div>

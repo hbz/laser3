@@ -53,7 +53,7 @@
     </table>
 
     <br />
-    <g:link role="button" class="ui button red" controller="yoda" action="migrateCollectiveSubscriptions" params="${[cmd:'migrate']}">Migriere Subscriber <%-- todo: IGNORED for 0.20 /Subscriber_Consortial --%> zu 'Subscription Collective'</g:link>
+    <g:link class="ui button red" controller="yoda" action="migrateCollectiveSubscriptions" params="${[cmd:'migrate']}">Migriere Subscriber <%-- todo: IGNORED for 0.20 /Subscriber_Consortial --%> zu 'Subscription Collective'</g:link>
 
 </body>
 </html>

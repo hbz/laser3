@@ -99,7 +99,7 @@
                     <g:form class="ui form">
                         <g:hiddenField name="id" value="${creatorInstance?.id}"/>
                         <div class="ui form-actions">
-                            %{-- <g:link role="button" class="ui button" action="edit" id="${creatorInstance?.id}">
+                            %{-- <g:link class="ui button" action="edit" id="${creatorInstance?.id}">
                                  <i class="write icon"></i>
                                  <g:message code="default.button.edit.label" />
                              </g:link>--}%

@@ -41,7 +41,7 @@
             <g:render template="nav" contextPath="." />
 
                 <sec:ifAnyGranted roles="ROLE_ADMIN">
-                    <g:link role="button" class="ui button" controller="announcement" action="index" params='[at:"Package Link: ${pkg_link_str}",as:"RE: Package ${packageInstance.name}"]'>${message(code:'package.show.announcement', default:'Mention this package in an announcement')}</g:link>
+                    <g:link class="ui button" controller="announcement" action="index" params='[at:"Package Link: ${pkg_link_str}",as:"RE: Package ${packageInstance.name}"]'>${message(code:'package.show.announcement', default:'Mention this package in an announcement')}</g:link>
                 </sec:ifAnyGranted>
 
             <g:if test="${forum_url != null}">

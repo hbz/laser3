@@ -51,7 +51,7 @@
                     <g:link controller="accessPoint" action="edit_${orgap.oap.accessMethod}"
                             id="${orgap.oap.id}">${orgap.oap.name} (${orgap.oap.accessMethod.getI10n('value')})</g:link>
                     <g:if test="${accessConfigEditable && !platform.usesPlatformAccessPoints(contextOrg, sp)}">
-                      <g:link role="button" class="ui mini negative icon button js-open-confirm-modal" controller="accessPoint"
+                      <g:link class="ui mini negative icon button js-open-confirm-modal" controller="accessPoint"
                               action="unlinkPlatform" id="${orgap.id}"
                               data-confirm-tokenMsg="${message(code: 'confirm.dialog.unlink.accessPoint.platform', args: [orgap.oap.name, orgap.platform.name])}"
                               data-confirm-term-how="unlink">
