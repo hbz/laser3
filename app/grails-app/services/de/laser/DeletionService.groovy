@@ -451,7 +451,7 @@ class DeletionService {
         List propDefGroupBindings   = PropertyDefinitionGroupBinding.findAllByOrg(org)
 
         List budgetCodes        = BudgetCode.findAllByOwner(org)
-        List costItems          = CostItem.findAllByOwner(org)
+        List costItems          = CostItem.findAllByOwner(org) //subject of discussion!
         List costItemsECs       = CostItemElementConfiguration.findAllByForOrganisation(org)
         List invoices           = Invoice.findAllByOwner(org)
         List orderings          = Order.findAllByOwner(org)

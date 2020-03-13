@@ -1800,6 +1800,7 @@ class SurveyController {
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_EDITOR") })
     def editSurveyCostItem() {
         def result = setResultGenericsAndCheckAccess()
+        result.putAll(financeService.setEditVars(result.institution))
         if (!result.editable) {
             response.sendError(401); return
         }
@@ -1832,6 +1833,7 @@ class SurveyController {
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_EDITOR") })
     def addForAllSurveyCostItem() {
         def result = setResultGenericsAndCheckAccess()
+        result.putAll(financeService.setEditVars(result.institution))
         if (!result.editable) {
             response.sendError(401); return
         }
@@ -2989,7 +2991,7 @@ class SurveyController {
                     try {
 
                         def surveyOrg = genericOIDService.resolveOID(it)
-                        if (!CostItem.findBySurveyOrg(surveyOrg)) {
+                        if (!CostItem.findBySurveyOrgAndCostItemStatusNotEqual(surveyOrg,RDStore.COST_ITEM_DELETED)) {
                             surveyOrgsDo << surveyOrg
                         }
                     } catch (Exception e) {
@@ -3173,7 +3175,7 @@ class SurveyController {
             newMap.oldSub = sub.getCalculatedPrevious()
 
             newMap.surveyOrg = SurveyOrg.findBySurveyConfigAndOrg(result.surveyConfig, org)
-            newMap.surveyCostItem =newMap.surveyOrg ? com.k_int.kbplus.CostItem.findBySurveyOrg(newMap.surveyOrg) : null
+            newMap.surveyCostItem =newMap.surveyOrg ? com.k_int.kbplus.CostItem.findBySurveyOrgAndCostItemStatusNotEqual(newMap.surveyOrg,RDStore.COST_ITEM_DELETED) : null
 
             result.participantsList << newMap
 
@@ -3205,7 +3207,7 @@ class SurveyController {
 
             def costItem = CostItem.get(costItemId)
             def participantSub = result.parentSuccessorSubscription?.getDerivedSubscriptionBySubscribers(costItem.surveyOrg.org)
-            def participantSubCostItem = CostItem.findAllBySubAndOwnerAndCostItemElement(participantSub, result.institution, costElement)
+            def participantSubCostItem = CostItem.findAllBySubAndOwnerAndCostItemElementAndCostItemStatusNotEqual(participantSub, result.institution, costElement, RDStore.COST_ITEM_DELETED)
             if(costItem && participantSub && !participantSubCostItem){
 
                 def properties = costItem.properties
@@ -3908,7 +3910,7 @@ class SurveyController {
 
                     def sub = result.surveyConfig.subscription.getDerivedSubscriptionBySubscribers(result?.participant)
 
-                    def surveyCostItem = CostItem.findBySurveyOrg(SurveyOrg.findBySurveyConfigAndOrg(result?.surveyConfig, result?.participant))
+                    def surveyCostItem = CostItem.findBySurveyOrgAndCostItemStatusNotEqual(SurveyOrg.findBySurveyConfigAndOrg(result?.surveyConfig, result?.participant),RDStore.COST_ITEM_DELETED)
 
                     row.add([field: result?.owner?.name ?: '', style: null])
                     row.add([field: result?.surveyConfig?.comment ?: '', style: null])
@@ -4045,7 +4047,7 @@ class SurveyController {
 
             }
 
-            def costItem = CostItem.findBySurveyOrg(SurveyOrg.findBySurveyConfigAndOrg(participantResult?.resultOfParticipation?.surveyConfig, participantResult?.participant))
+            def costItem = CostItem.findBySurveyOrgAndCostItemStatusNotEqual(SurveyOrg.findBySurveyConfigAndOrg(participantResult?.resultOfParticipation?.surveyConfig, participantResult?.participant),RDStore.COST_ITEM_DELETED)
 
             row.add([field: costItem?.costInBillingCurrency ? costItem?.costInBillingCurrency : "", style: null])
             row.add([field: costItem?.costInBillingCurrencyAfterTax ? costItem?.costInBillingCurrencyAfterTax : "", style: null])
@@ -4208,7 +4210,7 @@ class SurveyController {
 
             }
 
-            def costItem = CostItem.findBySurveyOrg(SurveyOrg.findBySurveyConfigAndOrg(participantResult?.resultOfParticipation?.surveyConfig, participantResult?.participant))
+            def costItem = CostItem.findBySurveyOrgAndCostItemStatusNotEqual(SurveyOrg.findBySurveyConfigAndOrg(participantResult?.resultOfParticipation?.surveyConfig, participantResult?.participant),RDStore.COST_ITEM_DELETED)
             row.add([field: costItem?.costInBillingCurrency ? costItem?.costInBillingCurrency : "", style: null])
             row.add([field: costItem?.costInBillingCurrencyAfterTax ? costItem?.costInBillingCurrencyAfterTax : "", style: null])
             row.add([field: costItem?.taxKey ? costItem?.taxKey?.taxRate+'%' : "", style: null])
@@ -4249,7 +4251,7 @@ class SurveyController {
 
             }
 
-            def costItem = CostItem.findBySurveyOrg(SurveyOrg.findBySurveyConfigAndOrg(participantResult?.resultOfParticipation?.surveyConfig, participantResult?.participant))
+            def costItem = CostItem.findBySurveyOrgAndCostItemStatusNotEqual(SurveyOrg.findBySurveyConfigAndOrg(participantResult?.resultOfParticipation?.surveyConfig, participantResult?.participant),RDStore.COST_ITEM_DELETED)
 
             row.add([field: costItem?.costInBillingCurrency ? costItem?.costInBillingCurrency : "", style: null])
             row.add([field: costItem?.costInBillingCurrencyAfterTax ? costItem?.costInBillingCurrencyAfterTax : "", style: null])
@@ -4298,7 +4300,7 @@ class SurveyController {
                     row.add([field: participant?.name ?: '', style: null])
 
                     row.add([field: result?.value[0]?.surveyConfig?.getConfigNameShort() ?: "", style: null])
-                    def surveyCostItem = CostItem.findBySurveyOrg(SurveyOrg.findBySurveyConfigAndOrg(result?.value[0]?.surveyConfig, participant))
+                    def surveyCostItem = CostItem.findBySurveyOrgAndCostItemStatusNotEqual(SurveyOrg.findBySurveyConfigAndOrg(result?.value[0]?.surveyConfig, participant),RDStore.COST_ITEM_DELETED)
 
                     row.add([field: surveyCostItem?.costInBillingCurrencyAfterTax ? surveyCostItem?.costInBillingCurrencyAfterTax : '', style: null])
 
@@ -4386,7 +4388,7 @@ class SurveyController {
             row.add([field: surveyConfig?.subscription?.getDerivedSubscriptionBySubscribers(surveyOrg?.org)?.name ?: '', style: null])
 
 
-            def costItem = CostItem.findBySurveyOrg(surveyOrg)
+            def costItem = CostItem.findBySurveyOrgAndCostItemStatusNotEqual(surveyOrg,RDStore.COST_ITEM_DELETED)
 
             if (!surveyOrg?.existsMultiYearTerm()) {
                 if (costItem) {

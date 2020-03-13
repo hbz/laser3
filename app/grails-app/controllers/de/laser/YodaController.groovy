@@ -890,7 +890,7 @@ class YodaController {
                 costItems = CostItem.getAll()
             }
             else{
-                costItems = CostItem.findAllByOwner(Org.get(owner))
+                costItems = CostItem.findAllByOwnerAndCostItemStatusNotEqual(Org.get(owner),RDStore.COST_ITEM_DELETED)
             }
 
             costItems.each {
