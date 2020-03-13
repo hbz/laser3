@@ -61,7 +61,14 @@
         <g:else>
             <semui:actionsDropdownItemDisabled controller="subscription" action="copySubscription" params="${[id: params.id]}" message="myinst.copySubscription" />
         </g:else>
-        <semui:actionsDropdownItem controller="subscription" action="copyElementsIntoSubscription" params="${[id: params.id]}" message="myinst.copyElementsIntoSubscription" />
+
+        <g:if test="${(accessService.checkPerm("ORG_INST") && !subscriptionInstance.instanceOf) || accessService.checkPerm("ORG_CONSORTIUM")}">
+            <semui:actionsDropdownItem controller="subscription" action="copyElementsIntoSubscription" params="${[id: params.id]}" message="myinst.copyElementsIntoSubscription" />
+        </g:if>
+
+        <g:if test="${accessService.checkPerm("ORG_INST") && subscriptionInstance.instanceOf}">
+            <semui:actionsDropdownItem controller="subscription" action="copyMyElements" params="${[id: params.id]}" message="myinst.copyMyElements" />
+        </g:if>
 
         <div class="divider"></div>
 

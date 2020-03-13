@@ -25,22 +25,22 @@
         <g:hiddenField name="sub" value="${subscription?.id}"/>
         <div class="field required ">
             <label>${message(code: 'surveyInfo.name.label')}</label>
-            <input type="text" name="name" placeholder="" value="${subscription?.name}" required />
+            <input type="text" name="name" placeholder="" value="${subscription?.name ?: params.name}" required />
         </div>
 
         <div class="two fields ">
             <semui:datepicker label="surveyInfo.startDate.label" id="startDate" name="startDate"
-                              value="${surveyInfo?.startDate}" required="" />
+                              value="${params.startDate}" required="" />
 
             <semui:datepicker label="surveyInfo.endDate.label" id="endDate" name="endDate"
-                              value="${surveyInfo?.endDate}" required="" />
+                              value="${params.endDate}" />
         </div>
 
         <g:if test="${!(com.k_int.kbplus.SurveyConfig.findAllBySubscriptionAndSubSurveyUseForTransfer(subscription, true))}">
             <div class="field">
                 <label>${message(code: 'surveyConfig.subSurveyUseForTransfer.label.info')}</label>
                 <div>
-                    <input type="checkbox" id="subSurveyUseForTransfer" name="subSurveyUseForTransfer" ${disableSubSurveyUseForTransfer} >
+                    <input type="checkbox" id="subSurveyUseForTransfer" name="subSurveyUseForTransfer"  ${params.subSurveyUseForTransfer? 'checked':''}>
                 </div>
             </div>
         </g:if>
@@ -48,14 +48,14 @@
         <div class="field">
             <label>${message(code: 'surveyInfo.isMandatory.label.info')}</label>
             <div>
-                <input type="checkbox" id="mandatory" name="mandatory" >
+                <input type="checkbox" id="mandatory" name="mandatory" ${params.mandatory? 'checked':''}>
             </div>
         </div>
 
         <div class="field ">
             <label>${message(code: 'surveyInfo.comment.label')}</label>
 
-            <textarea name="comment"></textarea>
+            <textarea name="comment">${params.comment}</textarea>
         </div>
 
         <input type="submit" class="ui button"

@@ -46,7 +46,7 @@
                     documentSet.addAll(orgDocumentService.getTargettedDocuments(instance))
                 }
             %>
-            <g:each in="${documentSet.sort{it?.owner?.title}}" var="docctx">
+            <g:each in="${documentSet.sort{it?.owner?.title?.toLowerCase()}}" var="docctx">
                 <%
                     boolean visible = false
                     boolean inOwnerOrg = false
@@ -155,7 +155,7 @@
                                     <g:link controller="${controllerName}" action="deleteDocuments" class="ui icon negative button js-open-confirm-modal"
                                             data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.document", args: [docctx.owner.title])}"
                                             data-confirm-term-how="delete"
-                                            params='[instanceId:"${instance.id}", deleteId:"${docctx.id}", redirectAction:"${redirect}"]'>
+                                            params='[instanceId:"${instance.id}", deleteId:"${docctx.id}", redirectAction:"${actionName}"]'>
                                         <i class="trash alternate icon"></i>
                                     </g:link>
                                 </g:if>

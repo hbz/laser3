@@ -38,8 +38,8 @@
                 <tr>
                     <td  name="subscription.takeDocs.source">
                         <b><i class="file outline icon"></i>&nbsp${message(code: 'subscription.takeDocs')}:</b><br />
-                        <g:each in="${sourceSubscription.documents.sort { it.owner?.title }}" var="docctx">
-                            <g:if test="${(((docctx.owner?.contentType == Doc.CONTENT_TYPE_DOCSTORE) || (docctx.owner?.contentType == Doc.CONTENT_TYPE_BLOB)) && (docctx.status?.value != 'Deleted'))}">
+                        <g:each in="${sourceSubscription.documents.sort { it.owner?.title?.toLowerCase()}}" var="docctx">
+                            <g:if test="${(((docctx.owner?.contentType == Doc.CONTENT_TYPE_DOCSTORE) || (docctx.owner?.contentType == Doc.CONTENT_TYPE_BLOB)) && (docctx.status?.value != 'Deleted') && docctx.owner?.owner?.id == contextService.org.id)}">
                                 <div data-id="${docctx.id}" class="la-element">
                                     <label>
                                         <g:link controller="docstore" id="${docctx.owner.uuid}">
@@ -78,8 +78,8 @@
                     %{--COPY:--}%
                     <td class="center aligned">
                         <br />
-                        <g:each in="${sourceSubscription.documents.sort { it.owner?.title }}" var="docctx">
-                            <g:if test="${(((docctx.owner?.contentType == Doc.CONTENT_TYPE_DOCSTORE) || (docctx.owner?.contentType == Doc.CONTENT_TYPE_BLOB)) && (docctx.status?.value != 'Deleted'))}">
+                        <g:each in="${sourceSubscription.documents.sort { it.owner?.title?.toLowerCase()}}" var="docctx">
+                            <g:if test="${(((docctx.owner?.contentType == Doc.CONTENT_TYPE_DOCSTORE) || (docctx.owner?.contentType == Doc.CONTENT_TYPE_BLOB)) && (docctx.status?.value != 'Deleted') && docctx.owner?.owner?.id == contextService.org.id)}">
                                 %{--<div class="ui checkbox">--}%
                                 <div class="ui checkbox la-toggle-radio la-replace">
                                     <g:checkBox name="subscription.takeDocIds" value="${docctx.id}" data-action="copy" checked="${true}" />
@@ -92,8 +92,8 @@
                         <b><i class="file outline icon"></i>&nbsp${message(code: 'subscription.takeDocs')}:</b><br />
                         <div>
                             <g:if test="${targetSubscription}">
-                                <g:each in="${targetSubscription?.documents.sort { it.owner?.title }}" var="docctx">
-                                    <g:if test="${(((docctx.owner?.contentType == Doc.CONTENT_TYPE_DOCSTORE) || (docctx.owner?.contentType == Doc.CONTENT_TYPE_BLOB)) && (docctx.status?.value != 'Deleted'))}">
+                                <g:each in="${targetSubscription?.documents.sort { it.owner?.title?.toLowerCase() }}" var="docctx">
+                                    <g:if test="${(((docctx.owner?.contentType == Doc.CONTENT_TYPE_DOCSTORE) || (docctx.owner?.contentType == Doc.CONTENT_TYPE_BLOB)) && (docctx.status?.value != 'Deleted') && docctx.owner?.owner?.id == contextService.org.id)}">
                                         <div data-id="${docctx.id}" class="la-element">
                                             <g:link controller="docstore" id="${docctx.owner.uuid}">
                                                 <g:if test="${docctx.owner?.title}">
@@ -132,8 +132,8 @@
                     %{--DELETE:--}%
                     <td>
                         <br />
-                        <g:each in="${targetSubscription?.documents?.sort { it.owner?.title }}" var="docctx">
-                            <g:if test="${(((docctx.owner?.contentType == Doc.CONTENT_TYPE_DOCSTORE) || (docctx.owner?.contentType == Doc.CONTENT_TYPE_BLOB)) && (docctx.status?.value != 'Deleted'))}">
+                        <g:each in="${targetSubscription?.documents?.sort { it.owner?.title?.toLowerCase() }}" var="docctx">
+                            <g:if test="${(((docctx.owner?.contentType == Doc.CONTENT_TYPE_DOCSTORE) || (docctx.owner?.contentType == Doc.CONTENT_TYPE_BLOB)) && (docctx.status?.value != 'Deleted') && docctx.owner?.owner?.id == contextService.org.id)}">
                                 %{--<div class="ui checkbox">--}%
                                 <div class="ui checkbox la-toggle-radio la-noChange">
                                     <g:checkBox name="subscription.deleteDocIds" value="${docctx?.id}" data-action="delete" checked="${false}"/>
@@ -148,8 +148,8 @@
                 <tr>
                     <td name="subscription.takeAnnouncements.source">
                         <b><i class="sticky note outline icon"></i>&nbsp${message(code: 'subscription.takeAnnouncements')}:</b><br />
-                        <g:each in="${sourceSubscription.documents.sort { it.owner?.title }}" var="docctx">
-                            <g:if test="${((docctx.owner?.contentType == Doc.CONTENT_TYPE_STRING) && !(docctx.domain) && (docctx.status?.value != 'Deleted'))}">
+                        <g:each in="${sourceSubscription.documents.sort { it.owner?.title?.toLowerCase() }}" var="docctx">
+                            <g:if test="${((docctx.owner?.contentType == Doc.CONTENT_TYPE_STRING) && !(docctx.domain) && (docctx.status?.value != 'Deleted') && docctx.owner?.owner?.id == contextService.org.id)}">
                                 <div data-id="${docctx.id}" class="la-element">
                                     <label>
                                         <g:if test="${docctx.owner.title}">
@@ -186,8 +186,8 @@
                     %{--COPY:--}%
                     <td class="center aligned">
                     <br />
-                        <g:each in="${sourceSubscription.documents.sort { it.owner?.title }}" var="docctx">
-                            <g:if test="${((docctx.owner?.contentType == Doc.CONTENT_TYPE_STRING) && !(docctx.domain) && (docctx.status?.value != 'Deleted'))}">
+                        <g:each in="${sourceSubscription.documents.sort { it.owner?.title?.toLowerCase() }}" var="docctx">
+                            <g:if test="${((docctx.owner?.contentType == Doc.CONTENT_TYPE_STRING) && !(docctx.domain) && (docctx.status?.value != 'Deleted') && docctx.owner?.owner?.id == contextService.org.id)}">
                                 %{--<div data-id="${docctx.id} " class="la-element">--}%
                                     %{--<div class="ui checkbox">--}%
                                 <div class="ui checkbox la-toggle-radio la-replace">
@@ -202,8 +202,8 @@
                         <b><i class="sticky note outline icon"></i>&nbsp${message(code: 'subscription.takeAnnouncements')}:</b><br />
                         <div>
                             <g:if test="${targetSubscription}">
-                                <g:each in="${targetSubscription?.documents.sort { it.owner?.title }}" var="docctx">
-                                    <g:if test="${((docctx.owner?.contentType == Doc.CONTENT_TYPE_STRING) && !(docctx.domain) && (docctx.status?.value != 'Deleted'))}">
+                                <g:each in="${targetSubscription?.documents.sort { it.owner?.title?.toLowerCase() }}" var="docctx">
+                                    <g:if test="${((docctx.owner?.contentType == Doc.CONTENT_TYPE_STRING) && !(docctx.domain) && (docctx.status?.value != 'Deleted') && docctx.owner?.owner?.id == contextService.org.id)}">
                                         <div data-id="${docctx.id}" class="la-element">
                                             <g:if test="${docctx.owner.title}">
                                                 <b>${docctx.owner.title}</b>
@@ -241,8 +241,8 @@
                     <br />
                         <div>
                             <g:if test="${targetSubscription}">
-                                <g:each in="${targetSubscription?.documents.sort { it.owner?.title }}" var="docctx">
-                                    <g:if test="${((docctx.owner?.contentType == Doc.CONTENT_TYPE_STRING) && !(docctx.domain) && (docctx.status?.value != 'Deleted'))}">
+                                <g:each in="${targetSubscription?.documents.sort { it.owner?.title?.toLowerCase() }}" var="docctx">
+                                    <g:if test="${((docctx.owner?.contentType == Doc.CONTENT_TYPE_STRING) && !(docctx.domain) && (docctx.status?.value != 'Deleted') && docctx.owner?.owner?.id == contextService.org.id)}">
                                         %{--<div class="ui checkbox">--}%
                                         <div class="ui checkbox la-toggle-radio la-noChange">
                                             <g:checkBox name="subscription.deleteAnnouncementIds" value="${docctx?.id}" data-action="delete"  checked="${false}"/>

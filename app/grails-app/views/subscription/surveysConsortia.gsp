@@ -67,7 +67,7 @@
                    value="${surveyConfig.pickAndChoose ? com.k_int.kbplus.SurveyOrg.findAllBySurveyConfigAndFinishDateIsNotNull(surveyConfig) : com.k_int.kbplus.SurveyResult.findAllBySurveyConfigAndFinishDateIsNotNull(surveyConfig)?.participant?.flatten()?.unique { a, b -> a.id <=> b.id }}"/>
 
             <g:set var="participantsTotal"
-                   value="${surveyConfig.pickAndChoose ?  com.k_int.kbplus.SurveyOrg.findAllBySurveyConfig(surveyConfig) : com.k_int.kbplus.SurveyResult.findAllBySurveyConfig(surveyConfig)?.participant?.flatten()?.unique { a, b -> a.id <=> b.id }}"/>
+                   value="${surveyConfig.pickAndChoose ? com.k_int.kbplus.SurveyOrg.findAllBySurveyConfig(surveyConfig) : com.k_int.kbplus.SurveyResult.findAllBySurveyConfig(surveyConfig)?.participant?.flatten()?.unique { a, b -> a.id <=> b.id }}"/>
 
             <tr>
                 <td class="center aligned">
@@ -81,7 +81,7 @@
                                 <i class="yellow icon envelope large "></i>
                             </span>
                         </g:if>
-                        <i class="icon chart pie la-list-icon"></i>
+
                         <g:link controller="survey" action="show" id="${surveyInfo?.id}" class="ui ">
                             ${surveyConfig?.getConfigNameShort()}
                         </g:link>
@@ -104,12 +104,12 @@
                 <td class="center aligned">
 
                     <g:if test="${surveyConfig && !surveyConfig.pickAndChoose}">
-                            <g:link controller="survey" action="show" id="${surveyInfo?.id}"
-                                    params="[surveyConfigID: surveyConfig?.id]" class="ui icon">
-                                <div class="ui circular ${surveyConfig?.configFinish ? "green" : ""} label">
-                                    ${surveyConfig?.surveyProperties?.size() ?: 0}
-                                </div>
-                            </g:link>
+                        <g:link controller="survey" action="show" id="${surveyInfo?.id}"
+                                params="[surveyConfigID: surveyConfig?.id]" class="ui icon">
+                            <div class="ui circular ${surveyConfig?.configFinish ? "green" : ""} label">
+                                ${surveyConfig?.surveyProperties?.size() ?: 0}
+                            </div>
+                        </g:link>
                     </g:if>
 
                 </td>
@@ -188,26 +188,14 @@
 
                 </td>
                 <td>
-                    <g:if test="${surveyConfig && !surveyConfig.pickAndChoose}">
-                        <span class="la-popup-tooltip la-delay"
-                              data-content="${message(code: 'surveyInfo.toSurveyInfos')}">
-                            <g:link controller="survey" action="surveyEvaluation" id="${surveyInfo?.id}"
-                                    params="[surveyConfigID: surveyConfig?.id]"
-                                    class="ui button icon">
-                                <i class="write icon"></i>
-                            </g:link>
-                        </span>
-                    </g:if>
-                    <g:if test="${surveyConfig && surveyConfig.pickAndChoose}">
-                        <span class="la-popup-tooltip la-delay"
-                              data-content="${message(code: 'surveyInfo.toSurveyInfos')}">
-                            <g:link controller="survey" action="show" id="${surveyInfo?.id}"
-                                    params="[surveyConfigID: surveyConfig?.id]"
-                                    class="ui button icon">
-                                <i class="write icon"></i>
-                            </g:link>
-                        </span>
-                    </g:if>
+                    <span class="la-popup-tooltip la-delay"
+                          data-content="${message(code: 'surveyInfo.toSurveyInfos')}">
+                        <g:link controller="survey" action="show" id="${surveyInfo?.id}"
+                                params="[surveyConfigID: surveyConfig?.id]"
+                                class="ui button icon">
+                            <i class="write icon"></i>
+                        </g:link>
+                    </span>
                 </td>
             </tr>
 
