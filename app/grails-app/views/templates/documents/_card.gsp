@@ -94,7 +94,7 @@
                                     <g:link controller="${controllerName}" action="deleteDocuments" class="ui icon mini negative button js-open-confirm-modal"
                                             data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.document", args: [docctx.owner.title])}"
                                             data-confirm-term-how="delete"
-                                            params='[instanceId:"${ownobj.id}", deleteId:"${docctx.id}", redirectAction:"show"]'>
+                                            params='[instanceId:"${ownobj.id}", deleteId:"${docctx.id}", redirectAction:"${actionName}"]'>
                                         <i class="trash alternate icon"></i>
                                     </g:link>
                                 </g:if>

@@ -4711,6 +4711,62 @@ class SubscriptionController extends AbstractDebugController {
         result
     }
 
+    @DebugAnnotation(perm = "ORG_INST", affil = "INST_EDITOR", specRole = "ROLE_ADMIN")
+    @Secured(closure = {
+        ctx.accessService.checkPermAffiliationX("ORG_INST", "INST_EDITOR", "ROLE_ADMIN")
+    })
+    def copyMyElements() {
+        def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
+        if (!result) {
+            response.sendError(401); return
+        }
+        flash.error = ""
+        flash.message = ""
+        if (params.sourceSubscriptionId == "null") params.remove("sourceSubscriptionId")
+        result.sourceSubscriptionId = params.sourceSubscriptionId ?: params.id
+        result.sourceSubscription = Subscription.get(Long.parseLong(params.sourceSubscriptionId ?: params.id))
+
+        if (params.targetSubscriptionId == "null") params.remove("targetSubscriptionId")
+        if (params.targetSubscriptionId) {
+            result.targetSubscriptionId = params.targetSubscriptionId
+            result.targetSubscription = Subscription.get(Long.parseLong(params.targetSubscriptionId))
+        }
+
+        result.allSubscriptions_readRights = subscriptionService.getMySubscriptionsWithMyElements_readRights()
+        result.allSubscriptions_writeRights = subscriptionService.getMySubscriptionsWithMyElements_writeRights()
+
+        switch (params.workFlowPart) {
+            case WORKFLOW_DOCS_ANNOUNCEMENT_TASKS:
+                result << copySubElements_DocsAnnouncementsTasks();
+                result << loadDataFor_DocsAnnouncementsTasks()
+
+                break;
+            case WORKFLOW_PROPERTIES:
+                result << copySubElements_Properties();
+                result << loadDataFor_Properties()
+
+                break;
+            case WORKFLOW_END:
+                result << copySubElements_Properties();
+                if (params.targetSubscriptionId){
+                    flash.error = ""
+                    flash.message = ""
+                    redirect controller: 'subscription', action: 'show', params: [id: params.targetSubscriptionId]
+                }
+                break;
+            default:
+                result << loadDataFor_DocsAnnouncementsTasks()
+                break;
+        }
+
+        if (params.targetSubscriptionId) {
+            result.targetSubscription = Subscription.get(Long.parseLong(params.targetSubscriptionId))
+        }
+        result.workFlowPart = params.workFlowPart ?: WORKFLOW_DOCS_ANNOUNCEMENT_TASKS
+        result.workFlowPartNext = params.workFlowPartNext ?: WORKFLOW_PROPERTIES
+        result
+    }
+
     private copySubElements_DatesOwnerRelations() {
         def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
         Subscription baseSub = Subscription.get(params.sourceSubscriptionId ?: params.id)

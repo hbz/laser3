@@ -87,6 +87,38 @@ class SubscriptionService {
         result
     }
 
+    List getMySubscriptionsWithMyElements_readRights(){
+        List result = []
+        List tmpQ
+
+        if(accessService.checkPerm("ORG_INST")) {
+
+            tmpQ = getSubscriptionsConsortialLicenseQuery()
+            result.addAll(Subscription.executeQuery("select s ${tmpQ[0]}", tmpQ[1]))
+
+            tmpQ = getSubscriptionsLocalLicenseQuery()
+            result.addAll(Subscription.executeQuery("select s ${tmpQ[0]}", tmpQ[1]))
+
+        }
+        result
+    }
+
+    List getMySubscriptionsWithMyElements_writeRights(){
+        List result = []
+        List tmpQ
+
+        if(accessService.checkPerm("ORG_INST")) {
+
+            tmpQ = getSubscriptionsConsortialLicenseQuery()
+            result.addAll(Subscription.executeQuery("select s ${tmpQ[0]}", tmpQ[1]))
+
+            tmpQ = getSubscriptionsLocalLicenseQuery()
+            result.addAll(Subscription.executeQuery("select s ${tmpQ[0]}", tmpQ[1]))
+        }
+
+        result
+    }
+
     //Konsortiallizenzen
     private List getSubscriptionsConsortiaQuery() {
         Map params = [:]
