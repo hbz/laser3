@@ -159,65 +159,25 @@
     <g:javascript>
         IdContoller =  {
             createIdentifier : function(id) {
-                $.ajax({
-                    url: '<g:createLink controller="organisation" action="createIdentifier"/>?id='+id,
-                    success: function(result){
-                        $("#dynamicModalContainer").empty();
-                        $("#modalCreateIdentifier").remove();
-
-                        $("#dynamicModalContainer").html(result);
-                        $("#dynamicModalContainer .ui.modal").modal({
-                            onVisible: function () {
-                                r2d2.initDynamicSemuiStuff('#modalCreateIdentifier');
-                                r2d2.initDynamicXEditableStuff('#modalCreateIdentifier');
-
-                                // ajaxPostFunc()
-                            }
-                        }).modal('show');
-                    }
-                });
+                var urlString = '<g:createLink controller="organisation" action="createIdentifier"/>?id='+id;
+                IdContoller._doAjax(urlString);
             },
             createCustomerIdentifier : function(id) {
-                $.ajax({
-                    url: '<g:createLink controller="organisation" action="createCustomerIdentifier"/>?id='+id,
-                    success: function(result){
-                        $("#dynamicModalContainer").empty();
-                        $("#modalCreateIdentifier").remove();
-
-                        $("#dynamicModalContainer").html(result);
-                        $("#dynamicModalContainer .ui.modal").modal({
-                            onVisible: function () {
-                                r2d2.initDynamicSemuiStuff('#modalCreateIdentifier');
-                                r2d2.initDynamicXEditableStuff('#modalCreateIdentifier');
-
-                                // ajaxPostFunc()
-                            }
-                        }).modal('show');
-                    }
-                });
+                var urlString = '<g:createLink controller="organisation" action="createCustomerIdentifier"/>?id='+id;
+                IdContoller._doAjax(urlString);
             },
             editIdentifier : function(identifier) {
-                $.ajax({
-                    url: '<g:createLink controller="organisation" action="editIdentifier"/>?identifier='+identifier,
-                    success: function(result){
-                        $("#dynamicModalContainer").empty();
-                        $("#modalCreateIdentifier").remove();
-
-                        $("#dynamicModalContainer").html(result);
-                        $("#dynamicModalContainer .ui.modal").modal({
-                            onVisible: function () {
-                                r2d2.initDynamicSemuiStuff('#modalCreateIdentifier');
-                                r2d2.initDynamicXEditableStuff('#modalCreateIdentifier');
-
-                                // ajaxPostFunc()
-                            }
-                        }).modal('show');
-                    }
-                });
+                var urlString = '<g:createLink controller="organisation" action="editIdentifier"/>?identifier='+identifier;
+                IdContoller._doAjax(urlString);
             },
             editCustomerIdentifier : function(customeridentifier) {
+                var urlString = '<g:createLink controller="organisation" action="editCustomerIdentifier"/>?customeridentifier='+customeridentifier;
+                IdContoller._doAjax(urlString);
+            },
+
+            _doAjax : function(url) {
                 $.ajax({
-                    url: '<g:createLink controller="organisation" action="editCustomerIdentifier"/>?customeridentifier='+customeridentifier,
+                    url: url,
                     success: function(result){
                         $("#dynamicModalContainer").empty();
                         $("#modalCreateCustomerIdentifier").remove();
