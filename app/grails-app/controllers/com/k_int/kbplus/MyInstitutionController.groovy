@@ -3563,18 +3563,18 @@ AND EXISTS (
         }
 
         if (params.containsKey('subKinds')) {
-            query += " and s.kind.id in (:subKinds) "
-            params.put('subKinds', params.list('subKinds').collect { Long.parseLong(it) })
+            query += " and subT.kind.id in (:subKinds) "
+            qarams.put('subKinds', params.list('subKinds').collect { Long.parseLong(it) })
         }
 
         if (params.isPublicForApi) {
-            query += "and s.isPublicForApi = :isPublicForApi "
-            params.put('isPublicForApi', (params.isPublicForApi == RDStore.YN_YES.id.toString()) ? true : false)
+            query += "and subT.isPublicForApi = :isPublicForApi "
+            qarams.put('isPublicForApi', (params.isPublicForApi == RDStore.YN_YES.id.toString()) ? true : false)
         }
 
         if (params.hasPerpetualAccess) {
-            query += "and s.hasPerpetualAccess = :hasPerpetualAccess "
-            params.put('hasPerpetualAccess', (params.hasPerpetualAccess == RDStore.YN_YES.id.toString()) ? true : false)
+            query += "and subT.hasPerpetualAccess = :hasPerpetualAccess "
+            qarams.put('hasPerpetualAccess', (params.hasPerpetualAccess == RDStore.YN_YES.id.toString()) ? true : false)
         }
 
         if (params.subRunTimeMultiYear || params.subRunTime) {
@@ -3602,6 +3602,12 @@ AND EXISTS (
         // log.debug( qarams )
 
         du.setBenchmark('costs')
+
+        String totalMembersQuery = query.replace("ci, subT, roleT.org", "roleT.org")
+
+        result.totalMembers    = CostItem.executeQuery(
+                totalMembersQuery, qarams
+        )
 
         List costs = CostItem.executeQuery(
                 query + " " + orderQuery, qarams
@@ -3671,7 +3677,7 @@ AND EXISTS (
             sheet.setAutobreaks(true)
             Row headerRow = sheet.createRow(0)
             headerRow.setHeightInPoints(16.75f)
-            List titles = [message(code:'sidewide.number'),message(code:'myinst.consortiaSubscriptions.member'),message(code:'myinst.consortiaSubscriptions.subscription'),message(code:'license.label'),
+            List titles = [message(code:'sidewide.number'),message(code:'myinst.consortiaSubscriptions.member'), message(code:'org.mainContact.label'),message(code:'myinst.consortiaSubscriptions.subscription'),message(code:'license.label'),
                            message(code:'myinst.consortiaSubscriptions.packages'),message(code:'myinst.consortiaSubscriptions.provider'),message(code:'myinst.consortiaSubscriptions.runningTimes'),
                            message(code:'subscription.isPublicForApi.label'),message(code:'subscription.hasPerpetualAccess.label'),
                            message(code:'financials.amountFinal'),"${message(code:'financials.isVisibleForSubscriber')} / ${message(code:'financials.costItemConfiguration')}"]
@@ -3703,6 +3709,21 @@ AND EXISTS (
                 if(subscr.sortname) subscrName += subscr.sortname
                 subscrName += "(${subscr.name})"
                 cell.setCellValue(subscrName)
+                //general Contcats
+                List<Person> persons = Person.executeQuery("select distinct p from Person as p inner join p.roleLinks pr where pr.org in (:orgs) " +
+                        "and ( (p.isPublic = false and p.tenant = :ctx) or (p.isPublic = true) ) and pr.functionType in (:selectedRoleTypes) ",
+                        [orgs: subscr,
+                         ctx: contextService.getOrg(),
+                         selectedRoleTypes: RDStore.PRS_FUNC_GENERAL_CONTACT_PRS])
+
+                List<String> generalContacts = []
+                if (persons){
+                    generalContacts = Contact.executeQuery("select c.content from Contact c where c.prs in (:persons) and c.contentType = :contentType",
+                            [persons: persons, contentType: RDStore.CCT_EMAIL])
+                }
+                cell = row.createCell(cellnum++)
+                if(generalContacts)
+                    cell.setCellValue(generalContacts.join('; '))
                 //subscription name
                 log.debug("insert subscription name")
                 cell = row.createCell(cellnum++)

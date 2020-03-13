@@ -34,7 +34,10 @@ alter table cost_item drop column ci_include_in_subscr;
 
 -- 2020-03-09
 -- ERMS-2145
+-- changesets in changelog-2020-03-09.groovy
 --alter table subscription add sub_kind_rv_fk bigint;
+
+-- changesets in changelog-2020-03-10.groovy
 --UPDATE subscription SET sub_kind_rv_fk = (SELECT rdv_id FROM refdata_value WHERE
 --rdv_owner = (SELECT rdc_id FROM refdata_category as rdc WHERE rdc.rdc_description = 'subscription.kind')
 --                                                                            AND rdv_value = 'Alliance Licence')
@@ -70,6 +73,7 @@ alter table cost_item drop column ci_include_in_subscr;
 
 -- 2020-03-09
 -- ERMS-2159
+-- changesets in changelog-2020-03-10.groovy
 --DELETE FROM refdata_value WHERE
 --        rdv_owner = (SELECT rdc_id FROM refdata_category as rdc WHERE rdc.rdc_description = 'subscription.status')
 --                           AND rdv_value = 'ExpiredPerennial';
