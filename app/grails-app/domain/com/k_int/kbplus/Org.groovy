@@ -4,6 +4,7 @@ package com.k_int.kbplus
 import com.k_int.kbplus.auth.Perm
 import com.k_int.kbplus.auth.PermGrant
 import com.k_int.kbplus.auth.Role
+import com.k_int.kbplus.auth.User
 import com.k_int.kbplus.auth.UserOrg
 import com.k_int.properties.PropertyDefinitionGroup
 import com.k_int.properties.PropertyDefinitionGroupBinding
@@ -408,6 +409,19 @@ class Org
             result = test.get(0)  // TODO refactoring: multiple occurrences
         }
         result
+    }
+
+    List<User> getAllValidInstAdmins() {
+        List<User> admins = User.executeQuery(
+                "select u from User u join u.affiliations uo where " +
+                        "uo.org = :org and uo.formalRole = :role and uo.status = :approved and u.enabled = true",
+                [
+                        org: this,
+                        role: Role.findByAuthority('INST_ADM'),
+                        approved: UserOrg.STATUS_APPROVED
+                ]
+        )
+        admins
     }
 
     List<Identifier> getIdentifiersByType(String idtype) {

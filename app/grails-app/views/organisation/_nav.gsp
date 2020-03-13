@@ -59,21 +59,20 @@
             <semui:securedSubNavItem controller="myInstitution" action="userList"
                                      message="org.nav.users" affiliation="INST_ADM" affiliationOrg="${orgInstance}"/>
         </g:if>
-        <g:elseif test="${accessService.checkForeignOrgComboPermAffiliationX([
+        <g:elseif test="${ accessService.checkForeignOrgComboPermAffiliation([
                 org: orgInstance,
                 comboPerm: "ORG_INST_COLLECTIVE, ORG_CONSORTIUM",
-                comboAffiliation: "INST_ADM",
-                specRoles: "ROLE_ORG_EDITOR, ROLE_ADMIN"
-        ])}">
+                comboAffiliation: "INST_ADM"
+        ]) && orgInstance.getAllValidInstAdmins().isEmpty() }">
             <semui:subNavItem controller="organisation" action="users" params="${[id: orgInstance.id]}" message="org.nav.users"/>
         </g:elseif>
-    <%--<g:else>
-        <semui:securedSubNavItem controller="organisation" action="users" params="${[id: orgInstance.id]}"
-                                 message="org.nav.users" affiliation="INST_ADM" affiliationOrg="${orgInstance}"/>
-    </g:else>
-    TODO: check ctx != foreign org--%>
-        <g:if test="${!departmentalView}">
+        <g:else>
+            <sec:ifAnyGranted roles="ROLE_ADMIN,ROLE_ORG_EDITOR">
+                <semui:subNavItem controller="organisation" action="users" params="${[id: orgInstance.id]}" message="org.nav.users"/>
+            </sec:ifAnyGranted>
+        </g:else>
 
+        <g:if test="${!departmentalView}">
             <g:if test="${inContextOrg}">
                 <semui:securedSubNavItem controller="organisation" action="settings" params="${[id: orgInstance.id]}"
                                          message="org.nav.options" affiliation="INST_ADM" affiliationOrg="${orgInstance}"/>
