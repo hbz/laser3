@@ -4,6 +4,7 @@
 
 -- yyyy-mm-dd
 -- <short description>
+-- changesets in changelog-yyyy-mm-dd.groovy
 
 -- 2019-12-06
 -- ERMS-1929
@@ -544,5 +545,5 @@ alter table cost_item drop column ci_include_in_subscr;
 
 -- 2020-03-12
 -- bugfix correct camelcase
-
-update refdata_category set rdc_description = 'subjectgroup' where rdc_description = 'subjectGroup';
+-- changesets in changelog-2020-03-13.groovy
+-- update refdata_category set rdc_description = 'subjectgroup' where rdc_description = 'subjectGroup';
