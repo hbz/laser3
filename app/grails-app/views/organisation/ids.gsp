@@ -71,21 +71,13 @@
         <div class="content">
             <% int tableIdentifierRowNr = 0 %>
             <table class="ui table la-table">
-                <colgroup>
-                    <col style="width:  30px;">
-                    <col style="width: 170px;">
-                    <col style="width: 236px;">
-                    <col style="width: 277px;">
-                    <col style="width: 332px;">
-                    <col style="width:  82px;">
-                </colgroup>
                 <thead>
                     <tr>
-                        <th>${message(code:'default.number')}</th>
-                        <th>${message(code:'identifier.namespace.label')}</th>
-                        <th>${message(code:'identifier')}</th>
-                        <th>${message(code:'default.notes.label')}</th>
-                        <th>${message(code:'default.aktions')}</th>
+                        <th class="one wide">${message(code:'default.number')}</th>
+                        <th class="five wide">${message(code:'identifier.namespace.label')}</th>
+                        <th class="four wide">${message(code:'identifier')}</th>
+                        <th class="four wide">${message(code:'default.notes.label')}</th>
+                        <th class="two wide">${message(code:'default.aktions')}</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -110,22 +102,14 @@
                     <% int tableCustomerRowNr = 0 %>
 
                     <table class="ui la-table table">
-                    <colgroup>
-                        <col style="width:  30px;">
-                        <col style="width: 170px;">
-                        <col style="width: 236px;">
-                        <col style="width: 277px;">
-                        <col style="width: 332px;">
-                        <col style="width:  82px;">
-                    </colgroup>
                         <thead>
                         <tr>
-                            <th>${message(code:'default.number')}</th>
-                            <th>${message(code:'default.provider.label')} : ${message(code:'platform.label')}</th>
-                            <th>${message(code:'org.customerIdentifier')}</th>
-                            <th>${message(code:'default.note.label')}</th>
+                            <th class="one wide">${message(code:'default.number')}</th>
+                            <th class="five wide">${message(code:'default.provider.label')} : ${message(code:'platform.label')}</th>
+                            <th class="four wide">${message(code:'org.customerIdentifier')}</th>
+                            <th class="four wide">${message(code:'default.note.label')}</th>
                             %{--<th>${message(code:'default.isPublic.label')}</th>--}%
-                            <th>${message(code:'default.aktions')}</th>
+                            <th class="two wide">${message(code:'default.aktions')}</th>
                         </tr>
                         </thead>
                         <tbody>
@@ -136,16 +120,23 @@
                                     <td>
                                         ${ci.getProvider()} : ${ci.platform}
                                     </td>
-                                        <td>${ci.value}</td>
-                                        <td>${ci.note}</td>
-                                        <td>
-                                            <g:if test="${editable}">
-                                                <button class="ui icon button" onclick="IdContoller.editCustomerIdentifier(${ci.id});"><i class="write icon"></i></button>
-                                                <g:link controller="organisation" action="deleteCustomerIdentifier" id="${orgInstance.id}"
-                                                        params="${[deleteCI:ci.class.name + ':' + ci.id]}"
-                                                        class="ui button icon red"><i class="trash alternate icon"></i></g:link>
-                                            </g:if>
-                                        </td>
+                                    <td>${ci.value}</td>
+                                    <td>${ci.note}</td>
+                                    <td>
+                                        <g:if test="${editable}">
+                                            <button class="ui icon button" onclick="IdContoller.editCustomerIdentifier(${ci.id});"><i class="write icon"></i></button>
+                                            <g:link controller="organisation"
+                                                    action="deleteCustomerIdentifier"
+                                                    id="${orgInstance.id}"
+                                                    params="${[deleteCI:ci.class.name + ':' + ci.id]}"
+                                                    class="ui button icon red js-open-confirm-modal"
+                                                    data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.customeridentifier", args: [""+ci.getProvider()+" : "+ci.platform+" "+ci.value])}"
+                                                    data-confirm-term-how="delete"
+                                            >
+                                                <i class="trash alternate icon"></i>
+                                            </g:link>
+                                        </g:if>
+                                    </td>
                                 </tr>
                             </g:if>
                         </g:each>
