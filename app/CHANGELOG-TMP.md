@@ -2,7 +2,9 @@
 
 **Ticket    Date    Branch      Author  Feature/Bug     Description/Keywords**
 
-2154    13.02.2020  hbz-dev     Anja    Feature     Identifikatoren und Kundennummern als eigenes Panel
+2248    13.03.2020  hbz-dev     Andreas Feature     Generische Ausgabe allgemeiner und privater Merkmale angelegt und für Lizenzen und Konsortenliste eingerichtet
+
+2154    13.03.2020  hbz-dev     Anja    Feature     Identifikatoren und Kundennummern als eigenes Panel
 
 2186    12.03.2020  hbz-dev     Christian   Feature Zugangskonfiguration: Löschen grundsätzlich unterbinden, wenn Verknüpfungen vorliegen
     
