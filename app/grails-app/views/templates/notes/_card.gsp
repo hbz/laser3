@@ -56,7 +56,7 @@
                             <%-- START First Button --%>
                             <g:if test="${!docctx.sharedFrom}">
                                 <g:link controller="${controllerName}" action="deleteDocuments" class="ui mini icon negative button"
-                                        params='[instanceId:"${ownobj.id}", deleteId:"${docctx.id}", redirectAction:"notes"]'>
+                                        params='[instanceId:"${ownobj.id}", deleteId:"${docctx.id}", redirectAction:"${actionName}"]'>
                                     <i class="trash alternate icon"></i>
                                 </g:link>
                             </g:if>
