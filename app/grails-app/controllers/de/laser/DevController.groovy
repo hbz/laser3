@@ -10,12 +10,6 @@ class DevController extends AbstractDebugController {
     def springSecurityService
 
     @Secured(['ROLE_ADMIN'])
-    def index() {
-        Map<String, Object> result = [:]
-        result
-    }
-
-    @Secured(['ROLE_ADMIN'])
     def frontend() {
         Map<String, Object> result = [test:123]
         result

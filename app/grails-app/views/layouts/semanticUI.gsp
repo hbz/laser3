@@ -343,7 +343,6 @@
                                 <i aria-hidden="true" class="dropdown icon"></i>
 
                                 <div class="menu">
-                                    <g:link class="item" role="menuitem" controller="dev" action="index">Barrierefreiheits-Tests</g:link>
                                     <g:link class="item" role="menuitem" controller="dev" action="frontend">Frontend</g:link>
                                 </div>
                             </div>
