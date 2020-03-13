@@ -31,6 +31,7 @@ class OrganisationController extends AbstractDebugController {
     def organisationService
     def deletionService
     def userService
+    def accessPointService
 
     static allowedMethods = [create: ['GET', 'POST'], edit: ['GET', 'POST'], delete: 'POST']
 
@@ -1339,7 +1340,6 @@ class OrganisationController extends AbstractDebugController {
             response.sendError(401)
             return
         }
-
         result.editable = accessService.checkMinUserOrgRole(result.user, result.orgInstance, 'INST_EDITOR') || SpringSecurityUtils.ifAllGranted('ROLE_ADMIN')
 
         if (! result.orgInstance) {
@@ -1348,7 +1348,7 @@ class OrganisationController extends AbstractDebugController {
             return
         }
 
-        def orgAccessPointList = OrgAccessPoint.findAllByOrg(result.orgInstance,  [sort: ["name": 'asc', "accessMethod" : 'asc']])
+        def orgAccessPointList = accessPointService.getOapListWithLinkCounts(result.orgInstance)
         result.orgAccessPointList = orgAccessPointList
 
         result
