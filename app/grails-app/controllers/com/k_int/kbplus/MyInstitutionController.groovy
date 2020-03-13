@@ -469,6 +469,7 @@ from License as l where (
                 row.add([field:license.licensor ? license.licensor.name : '',style:null])
                 row.add([field:license.startDate ? sdf.format(license.startDate) : '',style:null])
                 row.add([field:license.endDate ? sdf.format(license.endDate) : '',style:null])
+                //TODO [ticket=2248] for 1.4
                 List customProps = license.customProperties.collect { customProp ->
                     if(customProp.type.type == RefdataValue.toString() && customProp.refValue)
                         "${customProp.type.getI10n('name')}: ${customProp.refValue.getI10n('value')}"
@@ -919,6 +920,7 @@ join sub.orgRelations or_sub where
             asCons = true
             titles.addAll([g.message(code: 'subscription.memberCount.label'),g.message(code: 'subscription.memberCostItemsCount.label')])
         }
+        titles.addAll(exportService.loadPropListHeaders(PropertyDefinition.SUB_PROP,contextOrg))
         Map<Subscription,Set> providers = [:]
         Map<Subscription,Set> agencies = [:]
         Map<Subscription,Set> identifiers = [:]
@@ -996,6 +998,7 @@ join sub.orgRelations or_sub where
                         row.add([field: subscriptionMembers.get(sub.id) ?: 0, style: null])
                         row.add([field: costItemCounts.get(sub.id) ?: 0, style: null])
                     }
+                    row.addAll(exportService.processPropertyListValues(PropertyDefinition.SUB_PROP,contextOrg,format,sub))
                     subscriptionData.add(row)
                     break
                 case "csv":
@@ -1025,6 +1028,7 @@ join sub.orgRelations or_sub where
                         row.add(subscriptionMembers.get(sub.id) ?: 0)
                         row.add(costItemCounts.get(sub.id) ?: 0)
                     }
+                    row.addAll(exportService.processPropertyListValues(PropertyDefinition.SUB_PROP,contextOrg,format,sub))
                     subscriptionData.add(row)
                     break
             }

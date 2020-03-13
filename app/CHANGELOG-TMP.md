@@ -6,8 +6,12 @@
 
 2154    13.02.2020  hbz-dev     Anja    Feature     Identifikatoren und Kundennummern als eigenes Panel
 
+2248    13.03.2020  hbz-dev     Andreas Feature     Generische Ausgabe allgemeiner und privater Merkmale angelegt und für Lizenzen und Konsortenliste eingerichtet
+
 2186    12.03.2020  hbz-dev     Christian   Feature Zugangskonfiguration: Löschen grundsätzlich unterbinden, wenn Verknüpfungen vorliegen
     
+2241    12.03.2020  hbz-dev     Moe     Feature      private Objekte kopieren (Konsortiallizenz)
+
 2203    12.03.2020  rc1.2       Moe     Bug         pick&choose nicht möglich
 
 2246    12.03.2020  rc1.2       Andreas Bug         Sichtüberprüfung bei Dokumenten inkl. Anmerkungen überprüft, die direkt an TN-Lizenzen eingehängt sind
