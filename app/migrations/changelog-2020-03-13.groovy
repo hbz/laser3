@@ -15,4 +15,14 @@ databaseChangeLog = {
 			}
 		}
 	}
+
+	changeSet(author: "kloberd (modified)", id: "1584088132653-3") {
+		grailsChange {
+			change {
+				sql.execute("update refdata_category set rdc_description = 'subjectgroup' where rdc_description = 'subjectGroup';")
+			}
+			rollback {
+			}
+		}
+	}
 }
