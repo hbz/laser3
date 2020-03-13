@@ -4,8 +4,6 @@ import com.k_int.kbplus.Org
 import de.laser.ContextService
 import grails.util.Holders
 
-import javax.persistence.Transient
-
 class SystemProfiler {
 
     final static long THRESHOLD_MS = 1000
@@ -14,18 +12,18 @@ class SystemProfiler {
     String  params
     Org     context
     Integer ms
+    String  archive
 
     Date dateCreated
 
     static mapping = {
-        //table (name: 'debug_profiler')
-
         id          column:'sp_id'
         version     column:'sp_version'
         uri         column:'sp_uri',        index: 'sp_uri_idx'
         params      column:'sp_params',     type: 'text'
         context     column:'sp_context_fk'
         ms          column:'sp_ms'
+        archive     column:'sp_archive'
 
         dateCreated column:'sp_created'
     }
@@ -35,6 +33,17 @@ class SystemProfiler {
         params  (nullable:true,  blank:true)
         context (nullable:true,  blank:false)
         ms      (nullable:true,  blank:false)
+        archive (nullable:true,  blank:false)
+    }
+
+    static String getCurrentArchive() {
+        String av = Holders.grailsApplication.metadata['app.version']
+        List<String> avList = av.split("\\.")
+        if (avList.size() >= 2) {
+            return "${avList[0]}.${avList[1]}"
+        }
+
+        return av
     }
 
     // triggerd via AjaxController.notifyProfiler()
@@ -48,7 +57,8 @@ class SystemProfiler {
             (new SystemProfiler(
                     uri: actionUri,
                     context: contextService?.getOrg(),
-                    ms: delta
+                    ms: delta,
+                    archive: SystemProfiler.getCurrentArchive()
             )).save(flush: true)
         }
     }

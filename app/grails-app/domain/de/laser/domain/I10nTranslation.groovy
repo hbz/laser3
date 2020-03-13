@@ -159,8 +159,8 @@ class I10nTranslation {
         }
     }
 
+    @Deprecated
     static def refdataFindHelper(String referenceClass, String referenceField, String query, def locale) {
-
         List<I10nTranslation> matches = []
         def result = []
 

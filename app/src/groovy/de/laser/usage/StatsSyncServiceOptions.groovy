@@ -8,7 +8,7 @@ import groovy.util.logging.Log4j
 class StatsSyncServiceOptions {
 
     // Report specific options
-    def factType
+    RefdataValue factType
     String reportName
     String reportVersion
     String from
@@ -38,8 +38,8 @@ class StatsSyncServiceOptions {
         setStatsIdentifierType(identifier)
     }
 
-    void setStatsIdentifierType(identifier) {
-        def type = identifier.ns?.ns
+    void setStatsIdentifierType(Identifier identifier) {
+        String type = identifier.ns?.ns
         // ugly difference in type name
         if (type == 'zdb'){
             statsIdentifierType = 'zdbid'
@@ -53,7 +53,7 @@ class StatsSyncServiceOptions {
         if (! org_inst || ! supplier_inst){
             log.debug("Inst Org or Supplier Org not set in StatsSyncOptions::setQueryParams")
         }
-        def params = getQueryParams(org_inst, supplier_inst)
+        Map<String,String> params = getQueryParams(org_inst, supplier_inst)
         platform = params?.platform
         customer = params?.customer
         apiKey = params?.apiKey
@@ -64,7 +64,7 @@ class StatsSyncServiceOptions {
         [platform:platform, customer:customer, apiKey: apiKey, requestor:requestor]
     }
 
-    void setReportSpecificQueryParams(report) {
+    void setReportSpecificQueryParams(RefdataValue report) {
         def matcher = report.value =~ /^(.*).(\d)$/
         reportName = matcher[0][1]
         reportVersion = matcher[0][2]
@@ -79,12 +79,12 @@ class StatsSyncServiceOptions {
         ])
     }
 
-    LinkedHashMap getQueryParams(org_inst, supplier_inst) {
+    LinkedHashMap getQueryParams(Org org_inst, Platform supplier_inst) {
         PlatformCustomProperty platform = PlatformCustomProperty.executeQuery(
             "select pcp from PlatformCustomProperty pcp where pcp.owner = :supplier and pcp.type.name = 'NatStat Supplier ID'",[supplier:supplier_inst]).get(0)
-        def customer = org_inst.getIdentifierByType('wibid').value
-        def apiKey = OrgSettings.get(org_inst, OrgSettings.KEYS.NATSTAT_SERVER_API_KEY)?.getValue()
-        def requestor = OrgSettings.get(org_inst, OrgSettings.KEYS.NATSTAT_SERVER_REQUESTOR_ID)?.getValue()
+        String customer = org_inst.getIdentifierByType('wibid').value
+        String apiKey = OrgSettings.get(org_inst, OrgSettings.KEYS.NATSTAT_SERVER_API_KEY)?.getValue()
+        String requestor = OrgSettings.get(org_inst, OrgSettings.KEYS.NATSTAT_SERVER_REQUESTOR_ID)?.getValue()
         [platform:platform.stringValue, customer:customer, apiKey: apiKey, requestor:requestor]
     }
 

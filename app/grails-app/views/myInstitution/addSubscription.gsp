@@ -11,14 +11,14 @@
       <semui:crumb controller="myInstitution" action="addSubscription" text="${institution?.getDesignation()}" message="myinst.addSubscription.label" />
     </semui:breadcrumbs>
 
-    <h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon />${message(code:'myinst.addSubscription.label', default:'Add Subscripton')}</h1>
+    <h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon />${message(code:'myinst.addSubscription.label')}</h1>
 
     <g:render template="subsNav" contextPath="." />
 
       <div>
           <div class="la-float-right">
               <g:form action="addSubscription" controller="myInstitution" method="get" class="ui form">
-                  <label>${message(code:'default.search.text', default:'Search text')}</label>: <input type="text" name="q" placeholder="${message(code:'default.search.ph', default:'enter search term...')}"  value="${params.q}"  />
+                  <label>${message(code:'default.search.text', default:'Search text')}</label>: <input type="text" name="q" placeholder="${message(code:'default.search.ph')}"  value="${params.q}"  />
                   <label>${message(code:'default.valid_on.label', default:'Valid On')}</label>: <input name="validOn" type="text" value="${validOn}"/>
                   <input type="submit" class="ui button" value="${message(code:'default.button.filter.label', default:'Filter')}" />
               </g:form>
@@ -43,12 +43,12 @@
               
             <table class="ui sortable celled la-table table subscriptions-list">
                 <tr>
-                  <th>${message(code:'default.select.label', default:'Select')}</th>
+                  <th>${message(code:'default.select.label')}</th>
                   <g:sortableColumn params="${params}" property="p.name" title="${message(code:'default.name.label')}" />
-                  <th>${message(code:'consortium.plural', default:'Consortia')}</th>
+                  <th>${message(code:'consortium.plural')}</th>
                   <g:sortableColumn params="${params}" property="p.startDate" title="${message(code:'default.startDate.label')}" />
                   <g:sortableColumn params="${params}" property="p.endDate" title="${message(code:'default.endDate.label')}" />
-                  <th>${message(code:'tipp.platform', default:'Platform')}</th>
+                  <th>${message(code:'tipp.platform')}</th>
                   <th>${message(code:'license.label')}</th>
                 </tr>
                 <g:each in="${packages}" var="p">

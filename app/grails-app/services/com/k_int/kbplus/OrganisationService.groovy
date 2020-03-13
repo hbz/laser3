@@ -1,5 +1,6 @@
 package com.k_int.kbplus
 
+import com.k_int.kbplus.OrgSettings
 import com.k_int.kbplus.abstract_domain.AbstractProperty
 import com.k_int.kbplus.auth.Role
 import com.k_int.kbplus.auth.User
@@ -23,7 +24,6 @@ import java.nio.file.NoSuchFileException
 import java.nio.file.Path
 import java.nio.file.Paths
 import java.text.SimpleDateFormat
-import com.k_int.kbplus.OrgSettings
 
 @Transactional
 class OrganisationService {

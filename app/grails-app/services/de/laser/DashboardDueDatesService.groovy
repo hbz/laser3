@@ -4,13 +4,13 @@ import com.k_int.kbplus.Org
 import com.k_int.kbplus.Subscription
 import com.k_int.kbplus.UserSettings
 import com.k_int.kbplus.auth.User
+import de.laser.helper.SqlDateUtils
 import grails.plugin.mail.MailService
+import grails.util.Holders
 import org.codehaus.groovy.grails.commons.GrailsApplication
 
-import static de.laser.helper.RDStore.*
-import de.laser.helper.SqlDateUtils
 import static com.k_int.kbplus.UserSettings.DEFAULT_REMINDER_PERIOD
-import grails.util.Holders
+import static de.laser.helper.RDStore.*
 
 class DashboardDueDatesService {
 
@@ -192,7 +192,7 @@ class DashboardDueDatesService {
     private void sendEmail(User user, Org org, List<DashboardDueDate> dashboardEntries) {
         def emailReceiver = user.getEmail()
         def currentServer = grailsApplication.config.getCurrentServer()
-        def subjectSystemPraefix = (currentServer == ContextService.SERVER_PROD)? "LAS:eR - " : (grailsApplication.config.laserSystemId + " - ")
+        String subjectSystemPraefix = (currentServer == ContextService.SERVER_PROD)? "LAS:eR - " : (grailsApplication.config.laserSystemId + " - ")
         String mailSubject = subjectSystemPraefix + messageSource.getMessage('email.subject.dueDates', null, locale) + " (" + org.name + ")"
         try {
             if (emailReceiver == null || emailReceiver.isEmpty()) {

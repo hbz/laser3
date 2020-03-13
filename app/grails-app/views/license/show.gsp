@@ -65,7 +65,7 @@
             <div class="twelve wide column">
                 <semui:errors bean="${titleInstanceInstance}" />
 
-                <!--<h4 class="ui header">${message(code:'license.details.information', default:'Information')}</h4>-->
+                <!--<h4 class="ui header">${message(code:'license.details.information')}</h4>-->
 
                 <div class="la-inline-lists">
                     <div class="ui two stackable cards">
@@ -153,7 +153,7 @@
                                             <tr>
                                                 <th scope="row">
                                                     <g:if test="${i < 1}">
-                                                        ${message(code:'license.linkedSubscriptions', default:'Linked Subscriptions')}
+                                                        ${message(code:'license.linkedSubscriptions')}
                                                     </g:if>
                                                 </th>
                                                 <td>
@@ -181,7 +181,7 @@
                                 <dl>
                                     <dt class="control-label">${message(code:'default.subscription.label')}</dt>
                                     <dd>
-                                        ${message(code:'license.noLinkedSubscriptions', default:'No currently linked subscriptions.')}
+                                        ${message(code:'license.noLinkedSubscriptions')}
                                     </dd>
                                 </dl>
                             </g:else>
@@ -202,7 +202,7 @@
                                                     </div>
                                                 </div>
                                                 <div class="field">
-                                                    <input type="submit" class="ui button" value="${message(code:'default.button.link.label', default:'Link')}"/>
+                                                    <input type="submit" class="ui button" value="${message(code:'default.button.link.label')}"/>
                                                 </div>
                                             </div>
                                         </g:form>
@@ -228,7 +228,7 @@
                             <dl>
                                 <sec:ifAnyGranted roles="ROLE_ADMIN">
 
-                                    <dt class="control-label">${message(code:'license.ONIX-PL-License', default:'ONIX-PL License')}</dt>
+                                    <dt class="control-label">${message(code:'license.ONIX-PL-License')}</dt>
                                     <dd>
                                         <g:if test="${license.onixplLicense}">
                                             <g:link controller="onixplLicense" action="index" id="${license.onixplLicense?.id}">${license.onixplLicense.title}</g:link>

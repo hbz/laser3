@@ -34,7 +34,7 @@ class ContactController extends AbstractDebugController {
         	[contactInstance: new Contact(params)]
 			break
 		case 'POST':
-	        def contactInstance = new Contact(params)
+				Contact contactInstance = new Contact(params)
 	        if (! contactInstance.save(flush: true)) {
 				if (params.redirect) {
 					redirect(url: request.getHeader('referer'), params: params)
@@ -56,7 +56,7 @@ class ContactController extends AbstractDebugController {
 
     @Secured(['ROLE_USER'])
     def show() {
-        def contactInstance = Contact.get(params.id)
+		Contact contactInstance = Contact.get(params.id)
         if (! contactInstance) {
 			flash.message = message(code: 'default.not.found.message', args: [message(code: 'contact.label'), params.id])
             redirect action: 'list'
@@ -76,7 +76,7 @@ class ContactController extends AbstractDebugController {
 		redirect controller: 'contact', action: 'show', params: params
 		return // ----- deprecated
 
-        def contactInstance = Contact.get(params.id)
+		Contact contactInstance = Contact.get(params.id)
         if (! contactInstance) {
             flash.message = message(code: 'default.not.found.message', args: [message(code: 'contact.label'), params.id])
             redirect action: 'list'
@@ -119,7 +119,7 @@ class ContactController extends AbstractDebugController {
 	@DebugAnnotation(test='hasAffiliation("INST_EDITOR")')
 	@Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_EDITOR") })
     def delete() {
-        def contactInstance = Contact.get(params.id)
+		Contact contactInstance = Contact.get(params.id)
         if (! contactInstance) {
 			flash.message = message(code: 'default.not.found.message', args: [message(code: 'contact.label'), params.id])
             redirect action: 'list'

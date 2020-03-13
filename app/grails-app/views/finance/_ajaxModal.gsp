@@ -2,116 +2,73 @@
 <%@ page import="de.laser.helper.RDStore; de.laser.helper.RDConstants; com.k_int.kbplus.*;org.springframework.context.i18n.LocaleContextHolder; de.laser.interfaces.TemplateSupport" %>
 <laser:serviceInjection />
 
-<g:render template="vars" model="[org:contextService.getOrg()]"/><%-- setting vars --%>
-
-<g:set var="modalText" value="${message(code:'financials.addNewCost')}" />
-<g:set var="submitButtonLabel" value="${message(code:'default.button.create_new.label')}" />
-<g:set var="org" value="${contextService.getOrg()}" />
-
-<%
-    boolean fromConsortia = false
-    boolean fromCollective = false
-
-    if (costItem) {
-        if(mode && mode.equals("edit")) {
-            modalText = g.message(code: 'financials.editCost')
-            submitButtonLabel = g.message(code:'default.button.save.label')
-        }
-        else if(mode && mode.equals("copy")) {
-            modalText = costItem.sub?.instanceOf?.getAllSubscribers()//g.message(code: 'financials.costItem.copy.tooltip')
-            submitButtonLabel = g.message(code:'default.button.copy.label')
-            if(costItem.owner == costItem.sub?.getConsortia() && org != costItem.sub?.getConsortia()) {
-                fromConsortia = true
-            }
-            if(costItem.owner == costItem.sub?.getCollective() && org != costItem.sub?.getCollective()) {
-                fromCollective = true
-            }
-        }
-    }
-
-%>
-
 <semui:modal id="costItem_ajaxModal" text="${modalText}" msgSave="${submitButtonLabel}">
-    <g:if test="${costItem?.globalUID}">
-        <g:if test="${costItem?.isVisibleForSubscriber && tab == "cons"}">
+    <g:if test="${costItem}">
+        <g:if test="${editConf.showVisiblitySettings && costItem.isVisibleForSubscriber}">
             <div class="content la-twoSided-ribbon">
                 <div class="ui orange ribbon label">
-                    <strong>${message(code:'financials.isVisibleForSubscriber')}: ${costItem.sub?.getSubscriber()}</strong>
+                    <strong><g:message code="financials.isVisibleForSubscriber"/>: ${costItem.sub.getSubscriber()}</strong>
                 </div>
             </div>
         </g:if>
-        <g:elseif test="${fromConsortia}">
+        <g:elseif test="${copyCostsfromConsortia}">
             <div class="content la-twoSided-ribbon">
                 <div class="ui blue ribbon label">
-                    <strong>${message(code:'financials.transferConsortialCosts')}: </strong>
+                    <strong><g:message code="financials.transferConsortialCosts"/>: </strong>
                 </div>
             </div>
         </g:elseif>
-        <g:elseif test="${tab == "cons" && costItem.sub?.getSubscriber()}">
+        <g:elseif test="${subscription}">
             <div class="content la-twoSided-ribbon">
                 <div class="ui orange ribbon label">
-                    <strong>${costItem.sub?.getSubscriber().name} </strong>
+                    <strong>${subscription.getSubscriber().name}</strong>
                 </div>
             </div>
         </g:elseif>
-            <div class="content la-twoSided-ribbon">
-                <div class="ui orange right ribbon label">
-                    <strong>${message(code:'globalUID.label')}: ${costItem?.globalUID}</strong>
-                </div>
+        <div class="content la-twoSided-ribbon">
+            <div class="ui orange right ribbon label">
+                <strong><g:message code="globalUID.label"/>: ${costItem.globalUID}</strong>
             </div>
+        </div>
     </g:if>
     <g:form class="ui small form" id="editCost" url="${formUrl}">
-        <g:hiddenField name="showView" value="${tab}" />
-        <g:hiddenField name="shortcode" value="${contextService.getOrg()?.shortcode}" />
-        <g:if test="${costItem && (mode && mode.equals("edit"))}">
-            <g:hiddenField name="oldCostItem" value="${costItem.class.getName()}:${costItem.id}" />
+        <g:if test="${costItem}">
+            <g:hiddenField name="costItemId" value="${costItem.id}"/>
         </g:if>
-        <g:elseif test="${costItem && (mode && mode.equals("copy")) && fromConsortia}">
+        <g:if test="${copyCostsfromConsortia}">
             <g:hiddenField name="copyBase" value="${costItem.class.getName()}:${costItem.id}" />
-        </g:elseif>
-
-        <!--
-        Ctx.Sub: ${sub}
-        CI.Sub: ${costItem?.sub}
-        CI.SubPkg: ${costItem?.subPkg}
-        -->
-
+        </g:if>
         <div class="fields">
             <div class="nine wide field">
-                <%
-                    OrgRole consortialRole = sub?.orgRelations?.find{it.org.id == org.id && it.roleType.id in [RDStore.OR_SUBSCRIPTION_CONSORTIA.id,RDStore.OR_SUBSCRIPTION_COLLECTIVE.id]}
-                %>
-                <g:if test="${consortialRole && sub.getCalculatedType() != TemplateSupport.CALCULATED_TYPE_ADMINISTRATIVE && costItem?.sub != sub}">
+                <g:if test="${editConf.showVisibilitySettings}">
                     <div class="two fields la-fields-no-margin-button">
                         <div class="field">
-                            <label>${message(code:'financials.newCosts.costTitle')}</label>
-                            <input type="text" name="newCostTitle" id="newCostTitle" value="${costItem?.costTitle}" />
+                            <label><g:message code="financials.newCosts.costTitle"/></label>
+                            <input type="text" name="newCostTitle" value="${costItem?.costTitle}" />
                         </div><!-- .field -->
                         <div class="field">
-                            <label>${message(code:'financials.isVisibleForSubscriber')}</label>
-                            <g:set var="newIsVisibleForSubscriberValue" value="${costItem?.isVisibleForSubscriber ? RefdataValue.getByValueAndCategory('Yes', RDConstants.Y_N).id : RefdataValue.getByValueAndCategory('No', RDConstants.Y_N).id}" />
+                            <label><g:message code="financials.isVisibleForSubscriber"/></label>
+                            <g:set var="newIsVisibleForSubscriberValue" value="${costItem?.isVisibleForSubscriber ? RDStore.YN_YES.id : RDStore.YN_NO.id}" />
                             <laser:select name="newIsVisibleForSubscriber" class="ui dropdown"
                                       id="newIsVisibleForSubscriber"
-                                      from="${RefdataCategory.getAllRefdataValues(RDConstants.Y_N)}"
+                                      from="${yn}"
                                       optionKey="id"
                                       optionValue="value"
-                                      noSelection="${['':'']}"
                                       value="${newIsVisibleForSubscriberValue}" />
                         </div><!-- .field -->
                     </div>
                 </g:if>
                 <g:else>
                     <div class="field">
-                        <label>${message(code:'financials.newCosts.costTitle')}</label>
-                        <input type="text" name="newCostTitle" id="newCostTitle" value="${costItem?.costTitle}" />
+                        <label><g:message code="financials.newCosts.costTitle"/></label>
+                        <input type="text" name="newCostTitle" value="${costItem?.costTitle}" />
                     </div><!-- .field -->
                 </g:else>
-
                 <div class="two fields la-fields-no-margin-button">
                     <div class="field">
-                        <label>${message(code:'financials.budgetCode')}</label>
+                        <label><g:message code="financials.budgetCode"/></label>
                         <select name="newBudgetCodes" class="ui fluid search dropdown" multiple="multiple">
-                            <g:each in="${BudgetCode.findAllByOwner(contextService.getOrg())}" var="bc">
+                            <g:each in="${budgetCodes}" var="bc">
                                 <g:if test="${costItem?.getBudgetcodes()?.contains(bc)}">
                                     <option selected="selected" value="${bc.class.name}:${bc.id}">${bc.value}</option>
                                 </g:if>
@@ -120,43 +77,23 @@
                                 </g:else>
                             </g:each>
                         </select>
-                        <%--
-                        <input type="text" name="newBudgetCode" id="newBudgetCode" class="select2 la-full-width"
-                               placeholder="${CostItemGroup.findByCostItem(costItem)?.budgetCode?.value}"/>
-                               --%>
-
                     </div><!-- .field -->
-
                     <div class="field">
-                        <label>${message(code:'financials.referenceCodes')}</label>
-                        <input type="text" name="newReference" id="newCostItemReference" placeholder="" value="${costItem?.reference}"/>
+                        <label><g:message code="financials.referenceCodes"/></label>
+                        <input type="text" name="newReference" id="newCostItemReference" value="${costItem?.reference}"/>
                     </div><!-- .field -->
                 </div>
-
             </div>
-
             <div class="seven wide field">
-                <%--
-                    <div class="field">
-                        <label>${message(code:'financials.costItemCategory')}</label>
-                        <laser:select name="newCostItemCategory" title="${g.message(code: 'financials.addNew.costCategory')}" class="ui dropdown"
-                                      id="newCostItemCategory"
-                                      from="${costItemCategory}"
-                                      optionKey="id"
-                                      optionValue="value"
-                                      noSelection="${['':'']}"
-                                      value="${costItem?.costItemCategory?.id}" />
-                    </div><!-- .field -->
-                --%>
                 <div class="two fields la-fields-no-margin-button">
                     <div class="field">
-                        <label>${message(code:'financials.costItemElement')}</label>
-                        <g:if test="${costItemElement}">
+                        <label><g:message code="financials.costItemElement"/></label>
+                        <g:if test="${costItemElements}">
                             <laser:select name="newCostItemElement" class="ui dropdown"
-                                          from="${costItemElement}"
+                                          from="${costItemElements.collect{ ciec -> ciec.costItemElement }}"
                                           optionKey="id"
                                           optionValue="value"
-                                          noSelection="${['':'']}"
+                                          noSelection="${[null:message(code:'default.select.choose.label')]}"
                                           value="${costItem?.costItemElement?.id}" />
                         </g:if>
                         <g:else>
@@ -164,25 +101,15 @@
                         </g:else>
                     </div><!-- .field -->
                     <div class="field">
-                        <label>${message(code:'financials.costItemConfiguration')}</label>
-                        <%
-                            def ciec = [id:null,value:'financials.costItemConfiguration.notSet']
-                            if(costItem && !tab.equals("subscr")) {
-                                if(costItem.costItemElementConfiguration)
-                                    ciec = costItem.costItemElementConfiguration.class.name+":"+costItem.costItemElementConfiguration.id
-                                else if(!costItem.costItemElementConfiguration && costItem.costItemElement) {
-                                    def config = CostItemElementConfiguration.findByCostItemElementAndForOrganisation(costItem.costItemElement,contextService.getOrg())
-                                    if(config)
-                                        ciec = config.elementSign.class.name+":"+config.elementSign.id
-                                }
-                            }
-                        %>
-                        <g:select name="ciec" class="ui dropdown" from="${costItemElementConfigurations}"
-                        optionKey="id" optionValue="value" value="${ciec}"
-                        noSelection="${[null:'']}"/>
+                        <label><g:message code="financials.costItemConfiguration"/></label>
+                        <laser:select name="ciec" class="ui dropdown"
+                                      from="${costItemSigns}"
+                                      optionKey="id"
+                                      optionValue="value"
+                                      noSelection="${[null:message(code:'default.select.choose.label')]}"
+                                      value="${costItem?.costItemElementConfiguration?.id}"/>
                     </div>
                 </div>
-
                 <div class="field">
                     <label>${message(code:'default.status.label')}</label>
                     <laser:select name="newCostItemStatus" title="${g.message(code: 'financials.addNew.costState')}" class="ui dropdown"
@@ -190,7 +117,7 @@
                                   from="${costItemStatus}"
                                   optionKey="id"
                                   optionValue="value"
-                                  noSelection="${['':'']}"
+                                  noSelection="${[(RDStore.GENERIC_NULL_VALUE.id):message(code:'default.select.choose.label')]}"
                                   value="${costItem?.costItemStatus?.id}" />
                 </div><!-- .field -->
 
@@ -207,23 +134,23 @@
                         <input title="${g.message(code:'financials.addNew.BillingCurrency')}" type="text" class="calc" style="width:50%"
                                name="newCostInBillingCurrency" id="newCostInBillingCurrency"
                                placeholder="${g.message(code:'financials.invoice_total')}"
-                               value="<g:formatNumber number="${fromConsortia ? costItem?.costInBillingCurrencyAfterTax : costItem?.costInBillingCurrency}" minFractionDigits="2" maxFractionDigits="2" />"/>
+                               value="<g:formatNumber number="${copyCostsFromConsortia ? costItem?.costInBillingCurrencyAfterTax : costItem?.costInBillingCurrency}" minFractionDigits="2" maxFractionDigits="2" />"/>
 
-                        <div class="ui icon button la-popup-tooltip la-delay" id="costButton3" data-content="${g.message(code: 'financials.newCosts.buttonExplanation')}" data-position="top center" data-variation="tiny">
+                        <div class="ui icon button la-popup-tooltip la-delay" id="costButton3" data-content="${message(code: 'financials.newCosts.buttonExplanation')}" data-position="top center" data-variation="tiny">
                             <i class="calculator icon"></i>
                         </div>
 
-                        <g:select class="ui dropdown dk-width-auto" name="newCostCurrency" title="${g.message(code: 'financials.addNew.currencyType')}"
+                        <g:select class="ui dropdown dk-width-auto" name="newCostCurrency" title="${message(code: 'financials.addNew.currencyType')}"
                                   from="${currency}"
                                   optionKey="id"
-                                  optionValue="${{(it.text.split('-')).first()}}"
+                                  optionValue="${{it.text.contains('-') ? it.text.split('-').first() : it.text}}"
                                   value="${costItem?.billingCurrency?.id}" />
                     </div><!-- .field -->
                     <div class="field">
                         <label><g:message code="financials.newCosts.totalAmount"/></label>
                         <input title="${g.message(code:'financials.newCosts.totalAmount')}" type="text" readonly="readonly"
                                name="newCostInBillingCurrencyAfterTax" id="newCostInBillingCurrencyAfterTax"
-                               value="<g:formatNumber number="${fromConsortia ? 0.0 : costItem?.costInBillingCurrencyAfterTax}" minFractionDigits="2" maxFractionDigits="2" />" />
+                               value="<g:formatNumber number="${copyCostsFromConsortia ? 0.0 : costItem?.costInBillingCurrencyAfterTax}" minFractionDigits="2" maxFractionDigits="2" />" />
 
                     </div><!-- .field -->
                     <!-- TODO -->
@@ -247,24 +174,8 @@
                             <i class="calculator icon"></i>
                         </div>
                     </div><!-- .field -->
-                    <%--
-                    <div class="field">
-                        <label>${message(code:'financials.newCosts.controllable')}</label>
-                        <laser:select name="newCostTaxType" title="${g.message(code: 'financials.addNew.taxCategory')}" class="ui dropdown"
-                                      from="${taxType}"
-                                      optionKey="id"
-                                      optionValue="value"
-                                      noSelection="${['':'']}"
-                                      value="${costItem?.taxCode?.id}" />
-                    </div><!-- .field -->
-                    --%>
                     <div class="field">
                         <label>${message(code:'financials.newCosts.taxTypeAndRate')}</label>
-                        <%
-                            CostItem.TAX_TYPES taxKey
-                            if(costItem?.taxKey && tab != "subscr")
-                                taxKey = costItem.taxKey
-                        %>
                         <g:select class="ui dropdown calc" name="newTaxRate" title="TaxRate"
                               from="${CostItem.TAX_TYPES}"
                               optionKey="${{it.taxType.class.name+":"+it.taxType.id+"§"+it.taxRate}}"
@@ -320,13 +231,13 @@
                                value="${'com.k_int.kbplus.Subscription:' + costItem.sub.id}" />
                     </g:if>
                     <g:else>
-                        <g:if test="${sub}">
+                        <g:if test="${subscription}">
                             <input class="la-full-width"
                                    readonly='readonly'
-                                   value="${sub.getName()}" />
+                                   value="${subscription.getName()}" />
                             <input name="newSubscription" id="pickedSubscription"
                                    type="hidden"
-                                   value="${'com.k_int.kbplus.Subscription:' + sub.id}" />
+                                   value="${'com.k_int.kbplus.Subscription:'+subscription.id}" />
                         </g:if>
                         <g:else>
                             <div class="ui search selection dropdown newCISelect" id="newSubscription">
@@ -335,51 +246,26 @@
                                 <input type="text" class="search">
                                 <div class="default text">${message(code:'financials.newCosts.newLicence')}</div>
                             </div>
-                            <%--<input name="newSubscription" id="newSubscription" class="la-full-width"
-                                   data-subfilter=""
-                                   placeholder="${message(code:'financials.newCosts.newLicence')}" />--%>
                         </g:else>
                     </g:else>
                 </div><!-- .field -->
 
                 <div class="field">
-
-                    <g:if test="${(sub || (costItem && costItem.sub))}">
-                        <%
-                            def validSubChilds
-                            Subscription contextSub
-                            if(costItem && costItem.sub) contextSub = costItem.sub
-                            else if(sub) contextSub = sub
-                            if(tab == "cons" && contextSub.instanceOf) {
-                                //consortia member subscriptions
-                                validSubChilds = Subscription.findAllByInstanceOf(contextSub.instanceOf)
-                            }
-                            else if(tab in ["cons","coll","collAsSubscr"]){
-                                //department subscriptions
-                                validSubChilds = Subscription.findAllByInstanceOf(contextSub)
-                            }
-                            else if(tab == "subscr" && contextSub.getCollective()?.id == org.id) {
-                                //consortial member subscription for collective
-                                validSubChilds = Subscription.findAllByInstanceOf(contextSub)
-                            }
-                        %>
-
-                        <g:if test="${validSubChilds}">
-                            <label>${licenseeLabel}</label>
-                            <g:if test="${contextSub && contextSub.instanceOf()}">
-                                <input class="la-full-width" readonly="readonly" value="${modalText}" />
-                            </g:if>
-                            <g:else>
-                                <g:select name="newLicenseeTarget" id="newLicenseeTarget" class="ui dropdown search"
-                                          from="${[[id:'forConsortia', label:'Gilt für die Eltern'], [id:'forAllSubscribers', label:'Für alle '+licenseeTargetLabel]] + validSubChilds.sort{it.getSubscriber().sortname}}"
-                                          optionValue="${{it?.name ? it.getSubscriber().dropdownNamingConvention(org) : it.label}}"
-                                          optionKey="${{"com.k_int.kbplus.Subscription:" + it?.id}}"
-                                          noSelection="${['' : message(code:'default.select.choose.label')]}"
-                                          value="${'com.k_int.kbplus.Subscription:' + contextSub.id}"
-                                          onchange="onSubscriptionUpdate()"
-                                />
-                            </g:else>
+                    <g:if test="${validSubChilds}">
+                        <label>${licenseeLabel}</label>
+                        <g:if test="${contextSub && contextSub.instanceOf()}">
+                            <input class="la-full-width" readonly="readonly" value="${contextSub.getSubscriber().sortname}" />
                         </g:if>
+                        <g:else>
+                            <g:select name="newLicenseeTarget" id="newLicenseeTarget" class="ui dropdown search"
+                                      from="${validSubChilds}"
+                                      optionValue="${{it.name ? it.getSubscriber().dropdownNamingConvention(institution) : it.label}}"
+                                      optionKey="${{"com.k_int.kbplus.Subscription:" + it.id}}"
+                                      noSelection="${['' : message(code:'default.select.choose.label')]}"
+                                      value="${'com.k_int.kbplus.Subscription:' + costItem?.sub?.id}"
+                                      onchange="onSubscriptionUpdate()"
+                            />
+                        </g:else>
                     </g:if>
 
                 </div><!-- .field -->
@@ -390,7 +276,7 @@
                         <g:if test="${costItem?.sub}">
                             <g:select name="newPackage" id="newPackage" class="ui dropdown search"
                                       from="${[{}] + costItem?.sub?.packages}"
-                                      optionValue="${{it?.pkg?.name ?: 'Keine Verknüpfung'}}"
+                                      optionValue="${{it?.pkg?.name ?: message(code:'financials.newCosts.noPackageLink')}}"
                                       optionKey="${{"com.k_int.kbplus.SubscriptionPackage:" + it?.id}}"
                                       noSelection="${['' : message(code:'default.select.choose.label')]}"
                                       value="${'com.k_int.kbplus.SubscriptionPackage:' + costItem?.subPkg?.id}" />
@@ -471,15 +357,8 @@
             bc:   "#newCostInBillingCurrency"
         }*/
 
-        <%
-            def costItemElementConfigurations = "{"
-            StringJoiner sj = new StringJoiner(",")
-            orgConfigurations.each { orgConf ->
-                sj.add('"'+orgConf.id+'":"'+orgConf.value+'"')
-            }
-            costItemElementConfigurations += sj.toString()+"}"
-        %>
-            var costItemElementConfigurations = ${raw(costItemElementConfigurations)};
+            var costItemElementConfigurations = ${raw(orgConfigurations as String)};
+            console.log(costItemElementConfigurations);
             var selLinks = {
                 "newSubscription": "${createLink([controller:"ajax",action:"lookupSubscriptions"])}?query={query}",
                 "newPackage": "${createLink([controller:"ajax",action:"lookupSubscriptionPackages"])}?query={query}",
@@ -531,6 +410,7 @@
                 }
             });
             $("#newCostItemElement").change(function() {
+                console.log(costItemElementConfigurations[$(this).val()]);
                 if(typeof(costItemElementConfigurations[$(this).val()]) !== 'undefined')
                     $("[name='ciec']").dropdown('set selected',costItemElementConfigurations[$(this).val()]);
                 else
@@ -569,18 +449,41 @@
 
             costElems.on('change', function(){
                 checkValues();
+                if($("[name='newCostCurrency']").val() != 0) {
+                    $("#newCostCurrency").parent(".field").removeClass("error");
+                }
+                else {
+                    $("#newCostCurrency").parent(".field").addClass("error");
+                }
             });
 
             $("#editCost").submit(function(e){
                 e.preventDefault();
-                var valuesCorrect = checkValues();
-                if(valuesCorrect) {
-                    if($("#newSubscription").hasClass('error') || $("#newPackage").hasClass('error') || $("#newIE").hasClass('error'))
-                        alert("${message(code:'financials.newCosts.entitlementError')}");
-                    else $(this).unbind('submit').submit();
+                if($("[name='newCostCurrency']").val() != 0) {
+                    var valuesCorrect = checkValues();
+                    if(valuesCorrect) {
+                        $("#newCostCurrency").parent(".field").removeClass("error");
+                        if($("#newSubscription").hasClass('error') || $("#newPackage").hasClass('error') || $("#newIE").hasClass('error'))
+                            alert("${message(code:'financials.newCosts.entitlementError')}");
+                        else {
+                            if($("[name='newLicenseeTarget']").length > 0 && $("[name='newLicenseeTarget']").val() === '') {
+                                alert("${message(code:'financials.newCosts.noSubscriptionError')}") //continue here: a confirm if the consortial user wants really to attach cost items to the parent subscription
+                            }
+                            else {
+                                if($("[name='newLicenseeTarget").val().indexOf('forParent') > -1) {
+                                    if(confirm("${message(code:'financials.newCosts.confirmForParent')}")) $(this).unbind('submit').submit();
+                                }
+                                else $(this).unbind('submit').submit();
+                            }
+                        }
+                    }
+                    else {
+                        alert("${message(code:'financials.newCosts.calculationError')}");
+                    }
                 }
                 else {
-                    alert("${message(code:'financials.newCosts.calculationError')}");
+                    alert("${message(code:'financials.newCosts.noCurrencyPicked')}");
+                    $("#newCostCurrency").parent(".field").addClass("error");
                 }
             });
 

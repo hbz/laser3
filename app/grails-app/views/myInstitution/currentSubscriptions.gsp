@@ -178,75 +178,50 @@
 
         </div>
 
-        <div class="field">
-            <fieldset id="subscritionType">
-                    <legend >${message(code: 'myinst.currentSubscriptions.subscription_type')}</legend>
-                    <div class="inline fields la-filter-inline">
-                        <%
-                            List subTypes = RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_TYPE)
+        <div class="three fields">
 
-                            if(accessService.checkPermAffiliation("ORG_CONSORTIUM","INST_USER")) {
-                                subTypes -= RDStore.SUBSCRIPTION_TYPE_LOCAL
-                            }
-                            if(!accessService.checkPermAffiliation("ORG_CONSORTIUM","INST_USER")) {
-                                subTypes -= RDStore.SUBSCRIPTION_TYPE_ADMINISTRATIVE
-                            }
-                        %>
-                        <g:each in="${subTypes}" var="subType">
-                            <div class="inline field">
-                                <div class="ui checkbox">
-                                    <label for="checkSubType-${subType.id}">${subType.getI10n('value')}</label>
-                                    <input id="checkSubType-${subType.id}" name="subTypes" type="checkbox" value="${subType.id}"
-                                        <g:if test="${params.list('subTypes').contains(subType.id.toString())}"> checked="" </g:if>
-                                           tabindex="0">
-                                </div>
-                            </div>
-                        </g:each>
-                    </div>
-                </fieldset>
-        </div>
-
-        <g:if test="${accessService.checkPerm("ORG_INST")}">
-            <div class="four fields">
-        </g:if>
-        <g:else>
-            <div class="three fields">
-        </g:else>
             <div class="field">
-                <g:if test="${accessService.checkPerm("ORG_CONSORTIUM")}">
-                <%--
-                <g:if test="${params.orgRole == 'Subscriber'}">
-                    <input id="radioSubscriber" type="hidden" value="Subscriber" name="orgRole" tabindex="0" class="hidden">
-                </g:if>
-                <g:if test="${params.orgRole == 'Subscription Consortia'}">
-                    <input id="radioKonsortium" type="hidden" value="Subscription Consortia" name="orgRole" tabindex="0" class="hidden">
-                </g:if>
-                --%>
+                <fieldset id="subscritionType">
+                        <legend >${message(code: 'myinst.currentSubscriptions.subscription_type')}</legend>
+                        <div class="inline fields la-filter-inline">
+                            <%
+                                List subTypes = RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_TYPE)
 
-                <label>${message(code: 'myinst.currentSubscriptions.filter.filterForRole.label')}</label>
-
-                <div class="inline fields la-filter-inline">
-                    <div class="field">
-                        <div class="ui radio checkbox">
-                            <input id="radioSubscriber" type="radio" value="Subscriber" name="orgRole" tabindex="0" class="hidden"
-                                   <g:if test="${params.orgRole == 'Subscriber'}">checked=""</g:if>
-                                >
-                            <label for="radioSubscriber">
-                                <g:message code="subscription.details.consortiaMembers.label"/>
-                            </label>
+                                if(accessService.checkPermAffiliation("ORG_CONSORTIUM","INST_USER")) {
+                                    subTypes -= RDStore.SUBSCRIPTION_TYPE_LOCAL
+                                }
+                                if(!accessService.checkPermAffiliation("ORG_CONSORTIUM","INST_USER")) {
+                                    subTypes -= RDStore.SUBSCRIPTION_TYPE_ADMINISTRATIVE
+                                }
+                            %>
+                            <g:each in="${subTypes}" var="subType">
+                                <div class="inline field">
+                                    <div class="ui checkbox">
+                                        <label for="checkSubType-${subType.id}">${subType.getI10n('value')}</label>
+                                        <input id="checkSubType-${subType.id}" name="subTypes" type="checkbox" value="${subType.id}"
+                                            <g:if test="${params.list('subTypes').contains(subType.id.toString())}"> checked="" </g:if>
+                                               tabindex="0">
+                                    </div>
+                                </div>
+                            </g:each>
                         </div>
-                    </div>
-                    <div class="field">
-                        <div class="ui radio checkbox">
-                            <input id="radioKonsortium" type="radio" value="Subscription Consortia" name="orgRole" tabindex="0" class="hidden"
-                                   <g:if test="${params.orgRole == 'Subscription Consortia'}">checked=""</g:if>
-                            >
-                            <label for="radioKonsortium">${message(code: 'myinst.currentSubscriptions.filter.consortium.label')}</label>
-                        </div>
-                    </div>
-                </div>
-                </g:if>
+                    </fieldset>
             </div>
+            <div class="field">
+                <legend >${message(code: 'myinst.currentSubscriptions.subscription_kind')}</legend>
+                <select id="subKinds" name="subKinds" multiple="" class="ui search selection fluid dropdown">
+                    <option value="">${message(code: 'default.select.choose.label')}</option>
+
+                    <g:each in="${RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_KIND).sort{it.getI10n('value')}}" var="subKind">
+                        <option <%=(params.list('subKinds').contains(subKind.id.toString())) ? 'selected="selected"' : ''%>
+                        value="${subKind.id}" ">
+                        ${subKind.getI10n('value')}
+                        </option>
+                    </g:each>
+                </select>
+
+            </div>
+
             <div class="field">
                 <label>${message(code: 'myinst.currentSubscriptions.subscription.runTime')}</label>
                 <div class="inline fields la-filter-inline">
@@ -266,6 +241,34 @@
                     </div>
                 </div>
             </div>
+
+        </div>
+
+        <g:if test="${accessService.checkPerm("ORG_INST")}">
+            <div class="four fields">
+        </g:if>
+        <g:else>
+            <div class="three fields">
+        </g:else>
+            <div class="field">
+                <label>${message(code:'subscription.isPublicForApi.label')}</label>
+                <laser:select class="ui fluid dropdown" name="isPublicForApi"
+                              from="${RefdataCategory.getAllRefdataValues(RDConstants.Y_N)}"
+                              optionKey="id"
+                              optionValue="value"
+                              value="${params.isPublicForApi}"
+                              noSelection="${['' : message(code:'default.select.choose.label')]}"/>
+            </div>
+            <div class="field">
+                <label>${message(code:'subscription.hasPerpetualAccess.label')}</label>
+                <laser:select class="ui fluid dropdown" name="hasPerpetualAccess"
+                              from="${RefdataCategory.getAllRefdataValues(RDConstants.Y_N)}"
+                              optionKey="id"
+                              optionValue="value"
+                              value="${params.hasPerpetualAccess}"
+                              noSelection="${['' : message(code:'default.select.choose.label')]}"/>
+            </div>
+
             <g:if test="${accessService.checkPerm("ORG_INST")}">
             <div class="field">
                 <fieldset>
@@ -284,7 +287,6 @@
                 <a href="${request.forwardURI}" class="ui reset primary button">${message(code:'default.button.reset.label')}</a>
                 <input type="submit" class="ui secondary button" value="${message(code:'default.button.filter.label')}">
             </div>
-
 
         </div>
 
@@ -448,7 +450,12 @@
                     </td>
                     <td>
                         <g:link mapping="subfinance" controller="finance" action="index" params="${[sub:s.id]}">
-                            ${CostItem.findAllBySubInListAndOwner(Subscription.findAllByInstanceOf(s), institution)?.size()}
+                            <g:if test="${contextService.getOrg().getCustomerType() in ['ORG_CONSORTIUM', 'ORG_CONSORTIUM_SURVEY']}">
+                                ${CostItem.findAllBySubInListAndOwnerAndCostItemStatusNotEqual(Subscription.findAllByInstanceOf(s), institution, RDStore.COST_ITEM_DELETED)?.size()}
+                            </g:if>
+                            <g:elseif test="${contextService.getOrg().getCustomerType() == 'ORG_INST_COLLECTIVE'}">
+                                ${CostItem.findAllBySubInListAndOwnerAndCostItemStatusNotEqualAndIsVisibleForSubscriber(Subscription.findAllByInstanceOf(s), institution, RDStore.COST_ITEM_DELETED,true)?.size()}
+                            </g:elseif>
                         </g:link>
                     </td>
                 </g:if>

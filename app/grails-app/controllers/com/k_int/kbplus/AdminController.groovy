@@ -62,6 +62,8 @@ class AdminController extends AbstractDebugController {
     def systemAnnouncements() {
         Map<String, Object> result = [:]
 
+        result.mailDisabled = grailsApplication.config.grails.mail.disabled
+
         if (params.id) {
             SystemAnnouncement sa = SystemAnnouncement.get(params.long('id'))
 
@@ -70,7 +72,10 @@ class AdminController extends AbstractDebugController {
                     result.currentAnnouncement = sa
                 }
                 else if (params.cmd == 'publish') {
-                    if (sa.publish()) {
+                    if (result.mailDisabled) {
+                        flash.error = message(code: 'system.config.mail.disabled')
+                    }
+                    else if (sa.publish()) {
                         flash.message = message(code: 'announcement.published')
                     }
                     else {
@@ -96,6 +101,7 @@ class AdminController extends AbstractDebugController {
                 }
             }
         }
+        result.numberOfCurrentRecipients = SystemAnnouncement.getRecipients().size()
         result.announcements = SystemAnnouncement.list(sort: 'lastUpdated', order: 'desc')
         result
     }
@@ -192,7 +198,7 @@ class AdminController extends AbstractDebugController {
   // For those with changeType: CustomPropertyChange, change it to PropertyChange
   // on changeDoc add value propertyOID with the value of OID
     String theDate = "01/05/2014 00:00:00";
-    def summer_date = new Date().parse("d/M/yyyy H:m:s", theDate)
+    Date summer_date = new Date().parse("d/M/yyyy H:m:s", theDate)
     def criteria = PendingChange.createCriteria()
     def changes = criteria.list{
       isNotNull("license")
@@ -216,9 +222,10 @@ class AdminController extends AbstractDebugController {
 
   @Secured(['ROLE_ADMIN'])
   def actionAffiliationRequest() {
-    log.debug("actionMembershipRequest");
-    def req = UserOrg.get(params.req);
-    def user = User.get(springSecurityService.principal.id)
+      log.debug("actionMembershipRequest");
+      UserOrg req = UserOrg.get(params.req);
+      User user = User.get(springSecurityService.principal.id)
+
     if ( req != null ) {
       switch(params.act) {
         case 'approve':
@@ -254,8 +261,9 @@ class AdminController extends AbstractDebugController {
     result.offset = params.offset ? Integer.parseInt(params.offset) : 0;
 
     if(params.id){
-      def pkg = Package.get(params.id)
+        Package pkg = Package.get(params.id)
       def conflicts_list = []
+
       if(pkg.documents){
         def document_map = [:]
         document_map.name = "Documents"
@@ -311,7 +319,7 @@ class AdminController extends AbstractDebugController {
   @Secured(['ROLE_ADMIN'])
   def performPackageDelete(){
    if (request.method == 'POST'){
-      def pkg = Package.get(params.id)
+      Package pkg = Package.get(params.id)
       Package.withTransaction { status ->
         log.info("Deleting Package ")
         log.info("${pkg.id}::${pkg}")
@@ -350,8 +358,8 @@ class AdminController extends AbstractDebugController {
        switch (request.method) {
          case 'GET':
            if(usrMrgId && usrKeepId ){
-             def usrMrg = User.get(usrMrgId)
-             def usrKeep =  User.get(usrKeepId)
+               User usrMrg = User.get(usrMrgId)
+               User usrKeep =  User.get(usrKeepId)
              log.debug("Selected users : ${usrMrg}, ${usrKeep}");
              result.userRoles = usrMrg.getAuthorities()
              result.userAffiliations =  usrMrg.getAuthorizedAffiliations()
@@ -396,7 +404,7 @@ class AdminController extends AbstractDebugController {
        log.debug("Get all users");
        result.usersAll = User.list(sort:"display", order:"asc")
        log.debug("Get active users");
-       def activeHQL = " from User as usr where usr.enabled=true or usr.enabled=null order by display asc"
+       String activeHQL = " from User as usr where usr.enabled=true or usr.enabled=null order by display asc"
        result.usersActive = User.executeQuery(activeHQL)
     }
     catch ( Exception e ) {
@@ -427,8 +435,8 @@ class AdminController extends AbstractDebugController {
         def existing_affil_check = UserOrg.findByOrgAndUserAndFormalRole(affil.org,usrKeep,affil.formalRole);
 
         if ( existing_affil_check == null ) {
-          log.debug("No existing affiliation");
-          def newAffil = new UserOrg(org:affil.org,user:usrKeep,formalRole:affil.formalRole,status:affil.status)
+            log.debug("No existing affiliation");
+            UserOrg newAffil = new UserOrg(org:affil.org,user:usrKeep,formalRole:affil.formalRole,status:affil.status)
           if(!newAffil.save(flush:true,failOnError:true)){
             log.error("Probem saving user roles");
             newAffil.errors.each { e ->
@@ -537,7 +545,7 @@ class AdminController extends AbstractDebugController {
         Map<String, Object> result = [:]
 
         def dataSource = Holders.grailsApplication.mainContext.getBean('dataSource')
-        def sql = new Sql(dataSource)
+        Sql sql = new Sql(dataSource)
         result.statistic = sql.rows("select * from count_rows_for_all_tables('public')")
 
         result
@@ -642,8 +650,8 @@ class AdminController extends AbstractDebugController {
     result.error = []
 
     if(params.sourceTIPP && params.targetTI){
-      def ti = TitleInstance.get(params.long("targetTI"))
-      def tipp = TitleInstancePackagePlatform.get(params.long("sourceTIPP"))
+        TitleInstance ti = TitleInstance.get(params.long("targetTI"))
+        TitleInstancePackagePlatform tipp = TitleInstancePackagePlatform.get(params.long("sourceTIPP"))
       if(ti && tipp){
         tipp.title = ti
         try{
@@ -1191,7 +1199,7 @@ class AdminController extends AbstractDebugController {
       CSVReader r = new CSVReader( new InputStreamReader(input_stream, java.nio.charset.Charset.forName('UTF-8') ) )
       String[] nl;
       String[] cols;
-      def first = true
+      boolean first = true
       while ((nl = r.readNext()) != null) {
         if ( first ) {
           first = false; // Skip header
@@ -1202,10 +1210,12 @@ class AdminController extends AbstractDebugController {
         else {
           def title = null;
           def bindvars = []
-          // Set up base_query
-          def q = "Select distinct(t) from TitleInstance as t "
-          def joinclause = ''
-          def whereclause = ' where ';
+
+            // Set up base_query
+            String q = "Select distinct(t) from TitleInstance as t "
+            String joinclause = ''
+            String whereclause = ' where '
+
           def i = 0;
           def disjunction_ctr = 0;
           cols.each { cn ->

@@ -108,6 +108,11 @@
                                     <dd><semui:auditInfo auditable="[subscriptionInstance, 'type']"/></dd>
                                 </dl>
                                 <dl>
+                                    <dt class="control-label">${message(code: 'subscription.kind.label')}</dt>
+                                    <dd>${subscriptionInstance?.kind?.getI10n('value')}</dd>
+                                    <dd><semui:auditInfo auditable="[subscriptionInstance, 'kind']"/></dd>
+                                </dl>
+                                <dl>
                                     <dt class="control-label">${message(code: 'subscription.form.label')}</dt>
                                     <dd>${subscriptionInstance?.form?.getI10n('value')}</dd>
                                     <dd><semui:auditInfo auditable="[subscriptionInstance, 'form']"/></dd>

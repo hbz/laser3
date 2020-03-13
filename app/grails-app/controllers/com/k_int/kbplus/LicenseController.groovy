@@ -11,14 +11,14 @@ import de.laser.helper.DateUtil
 import de.laser.helper.DebugAnnotation
 import de.laser.helper.DebugUtil
 import de.laser.helper.RDStore
-
-import java.text.SimpleDateFormat
-
-import static de.laser.helper.RDStore.*
 import grails.converters.JSON
 import grails.plugin.springsecurity.annotation.Secured
 import org.codehaus.groovy.grails.plugins.orm.auditable.AuditLogEvent
 import org.codehaus.groovy.runtime.InvokerHelper
+
+import java.text.SimpleDateFormat
+
+import static de.laser.helper.RDStore.*
 
 @Mixin(com.k_int.kbplus.mixins.PendingChangeMixin)
 @Secured(['IS_AUTHENTICATED_FULLY'])
@@ -61,7 +61,7 @@ class LicenseController extends AbstractDebugController {
 
         def license_reference_str = result.license.reference ?: 'NO_LIC_REF_FOR_ID_' + params.id
 
-        def filename = "license_${escapeService.escapeString(license_reference_str)}"
+        String filename = "license_${escapeService.escapeString(license_reference_str)}"
         result.onixplLicense = result.license.onixplLicense;
 
         // ---- pendingChanges : start
@@ -338,26 +338,34 @@ class LicenseController extends AbstractDebugController {
                     members << Combo.executeQuery("select c.fromOrg from Combo as c where c.toOrg = ? and c.fromOrg = ?", [result.institution, fo])
                 }
 
-                members.each { cm ->
+                Map<String, Object> copyParams = [
+                        lic_name: "${result.license.reference}",
+                        isSlaved: params.isSlaved,
+                        asOrgType: orgType,
+                        copyStartEnd: true
+                ]
 
+                if (params.cmd == 'generate') {
+                    copyParams['lic_name'] = copyParams['lic_name'] + " (Teilnehmervertrag)"
+
+                    licenseCopy = institutionsService.copyLicense(
+                            result.license, copyParams, InstitutionsService.CUSTOM_PROPERTIES_ONLY_INHERITED)
+                }
+
+                members.each { cm ->
                     def postfix = (members.size() > 1) ? 'Teilnehmervertrag' : (cm.get(0).shortname ?: cm.get(0).name)
 
                     if (result.license) {
-                        def licenseParams = [
-                                lic_name: "${result.license.reference} (${postfix})",
-                                isSlaved: params.isSlaved,
-                                asOrgType: orgType,
-                                copyStartEnd: true
-                        ]
+                        copyParams['lic_name'] = copyParams['lic_name'] + " (${postfix})"
 
                         if (params.generateSlavedLics == 'explicit') {
                             licenseCopy = institutionsService.copyLicense(
-                                    result.license, licenseParams, InstitutionsService.CUSTOM_PROPERTIES_ONLY_INHERITED)
+                                    result.license, copyParams, InstitutionsService.CUSTOM_PROPERTIES_ONLY_INHERITED)
                             // licenseCopy.sortableReference = subLicense.sortableReference
                         }
                         else if (params.generateSlavedLics == 'shared' && ! licenseCopy) {
                             licenseCopy = institutionsService.copyLicense(
-                                    result.license, licenseParams, InstitutionsService.CUSTOM_PROPERTIES_ONLY_INHERITED)
+                                    result.license, copyParams, InstitutionsService.CUSTOM_PROPERTIES_ONLY_INHERITED)
                         }
                         else if (params.generateSlavedLics == 'reference' && ! licenseCopy) {
                             licenseCopy = genericOIDService.resolveOID(params.generateSlavedLicsReference)
@@ -385,10 +393,10 @@ class LicenseController extends AbstractDebugController {
 
     def subscriptions = null
     if(licenseInstitutions){
-      SimpleDateFormat sdf = DateUtil.getSDF_NoTime()
-      def date_restriction =  new Date(System.currentTimeMillis())
+        SimpleDateFormat sdf = DateUtil.getSDF_NoTime()
+        Date date_restriction =  new Date(System.currentTimeMillis())
 
-      def base_qry = """
+        String base_qry = """
 from Subscription as s where 
   ( ( exists ( select o from s.orgRelations as o where (o.roleType.value = 'Subscriber' or o.roleType.value = 'Subscriber_Consortial') and o.org in (:orgs) ) ) ) 
   AND (s.owner = null) 
@@ -401,13 +409,13 @@ from Subscription as s where
     return subscriptions
   }
 
-    @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
-    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
+    @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")')
+    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_EDITOR") })
   def linkToSubscription(){
     log.debug("linkToSubscription :: ${params}")
     if(params.subscription && params.license){
-      def sub = genericOIDService.resolveOID(params.subscription)
-      def owner = License.get(params.license)
+      Subscription sub = genericOIDService.resolveOID(params.subscription)
+      License owner = License.get(params.license)
         // owner.addToSubscriptions(sub) // GORM problem
         // owner.save()
         sub.setOwner(owner)
@@ -418,15 +426,15 @@ from Subscription as s where
 
   }
 
-    @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
-    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
+    @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")')
+    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_EDITOR") })
     def unlinkSubscription(){
         log.debug("unlinkSubscription :: ${params}")
         if(params.subscription && params.license){
             def sub = Subscription.get(params.subscription)
             if (sub.owner == License.get(params.license)) {
                 sub.owner = null
-                sub.save(flush:true)
+                sub.save()
             }
         }
         redirect controller:'license', action:'show', params: [id:params.license]
@@ -611,13 +619,13 @@ from Subscription as s where
     result.offset = params.offset ?: 0;
 
         // postgresql migration
-        def subQuery = 'select cast(lp.id as string) from LicenseCustomProperty as lp where lp.owner = :owner'
+        String subQuery = 'select cast(lp.id as string) from LicenseCustomProperty as lp where lp.owner = :owner'
         def subQueryResult = LicenseCustomProperty.executeQuery(subQuery, [owner: result.license])
 
         //def qry_params = [licClass:result.license.class.name, prop:LicenseCustomProperty.class.name,owner:result.license, licId:"${result.license.id}"]
         //result.historyLines = AuditLogEvent.executeQuery("select e from AuditLogEvent as e where (( className=:licClass and persistedObjectId=:licId ) or (className = :prop and persistedObjectId in (select lp.id from LicenseCustomProperty as lp where lp.owner=:owner))) order by e.dateCreated desc", qry_params, [max:result.max, offset:result.offset]);
 
-        def base_query = "select e from AuditLogEvent as e where ( (className=:licClass and persistedObjectId = cast(:licId as string))"
+        String base_query = "select e from AuditLogEvent as e where ( (className=:licClass and persistedObjectId = cast(:licId as string))"
         def query_params = [licClass:result.license.class.name, licId:"${result.license.id}"]
 
         // postgresql migration
@@ -703,7 +711,7 @@ from Subscription as s where
         }
 
         if (params.deleteId) {
-            def dTask = Task.get(params.deleteId)
+            Task dTask = Task.get(params.deleteId)
             if (dTask && dTask.creator.id == result.user.id) {
                 try {
                     flash.message = message(code: 'default.deleted.message', args: [message(code: 'task.label'), dTask.title])
@@ -903,7 +911,7 @@ from Subscription as s where
         }
         result.visibleOrgLinks.sort{ it.org.sortname }
 
-        def contextOrg = contextService.getOrg()
+        Org contextOrg = contextService.getOrg()
         result.tasks = taskService.getTasksByResponsiblesAndObject(result.user, contextOrg, result.license)
         def preCon = taskService.getPreconditionsWithoutTargets(contextOrg)
         result << preCon
@@ -923,13 +931,13 @@ from Subscription as s where
             response.sendError(401); return
         }
 
-        def baseLicense = com.k_int.kbplus.License.get(params.baseLicense)
+        License baseLicense = License.get(params.baseLicense)
 
         if (baseLicense) {
 
             def lic_name = params.lic_name ?: "Kopie von ${baseLicense.reference}"
 
-            def licenseInstance = new License(
+            License licenseInstance = new License(
                     reference: lic_name,
                     status: baseLicense.status,
                     type: baseLicense.type,
@@ -1033,7 +1041,7 @@ from Subscription as s where
                     if(params.license.copyCustomProperties) {
                         //customProperties
                         for (prop in baseLicense.customProperties) {
-                            def copiedProp = new LicenseCustomProperty(type: prop.type, owner: licenseInstance)
+                            LicenseCustomProperty copiedProp = new LicenseCustomProperty(type: prop.type, owner: licenseInstance)
                             copiedProp = prop.copyInto(copiedProp)
                             copiedProp.instanceOf = null
                             copiedProp.save(flush: true)
@@ -1042,12 +1050,12 @@ from Subscription as s where
                     }
                     if(params.license.copyPrivateProperties){
                         //privatProperties
-                        def contextOrg = contextService.getOrg()
+                        Org contextOrg = contextService.getOrg()
 
                         baseLicense.privateProperties.each { prop ->
                             if(prop.type?.tenant?.id == contextOrg?.id)
                             {
-                                def copiedProp = new LicensePrivateProperty(type: prop.type, owner: licenseInstance)
+                                LicensePrivateProperty copiedProp = new LicensePrivateProperty(type: prop.type, owner: licenseInstance)
                                 copiedProp = prop.copyInto(copiedProp)
                                 copiedProp.save(flush: true)
                                 //licenseInstance.addToPrivateProperties(copiedProp) // ERROR Hibernate: Found two representations of same collection

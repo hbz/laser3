@@ -162,6 +162,11 @@ ${message(code: 'survey.label')} -
                             <dd><semui:auditInfo auditable="[subscriptionInstance, 'type']"/></dd>
                         </dl>
                         <dl>
+                            <dt class="control-label">${message(code: 'subscription.kind.label')}</dt>
+                            <dd>${subscriptionInstance?.kind?.getI10n('value')}</dd>
+                            <dd><semui:auditInfo auditable="[subscriptionInstance, 'kind']"/></dd>
+                        </dl>
+                        <dl>
                             <dt class="control-label">${message(code: 'subscription.form.label')}</dt>
                             <dd>${subscriptionInstance?.form?.getI10n('value')}</dd>
                             <dd><semui:auditInfo auditable="[subscriptionInstance, 'form']"/></dd>
@@ -368,7 +373,7 @@ ${message(code: 'survey.label')} -
                     <div class="content">
 
                         <g:set var="costItemSurvey"
-                               value="${com.k_int.kbplus.CostItem.findBySurveyOrg(com.k_int.kbplus.SurveyOrg.findBySurveyConfigAndOrg(surveyConfig, institution))}"/>
+                               value="${com.k_int.kbplus.CostItem.findBySurveyOrgAndCostItemStatusNotEqual(com.k_int.kbplus.SurveyOrg.findBySurveyConfigAndOrg(surveyConfig, institution),RDStore.COST_ITEM_DELETED)}"/>
                         <g:set var="costItemsSub"
                                value="${subscriptionInstance?.costItems?.findAll {
                                    it?.costItemElement?.id == costItemSurvey?.costItemElement?.id

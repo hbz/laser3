@@ -41,6 +41,7 @@ class RDConstants {
     public static final String FACT_TYPE              = 'fact.type'
     public static final String FEDERAL_STATE          = 'federal.state'
     public static final String FUNDER_TYPE            = 'funder.type'
+    public static final String FUNDER_HSK_TYPE        = 'funder.hsk.type'
 
     public static final String GENDER                 = 'gender'
 
@@ -109,6 +110,10 @@ class RDConstants {
     public static final String PERSON_RESPONSIBILITY  = 'person.responsibility'
     public static final String PLATFORM_STATUS        = 'platform.status'
 
+    public static final String REGIONS_DE             = 'regions.de'
+    public static final String REGIONS_AT             = 'regions.at'
+    public static final String REGIONS_CH             = 'regions.ch'
+
     public static final String REMINDER_METHOD        = 'reminder.method'
     public static final String REMINDER_TRIGGER       = 'reminder.trigger'
     public static final String REMINDER_UNIT          = 'reminder.unit'
@@ -116,10 +121,12 @@ class RDConstants {
     public static final String SEMESTER               = 'semester'
     public static final String SHARE_CONFIGURATION    = 'share.configuration'
     public static final String SIM_USER_NUMBER        = 'sim.user.number'
+    public static final String SUBJECT_GROUP          = 'subjectgroup'
     public static final String SUBSCRIPTION_FORM      = 'subscription.form'
     public static final String SUBSCRIPTION_RESOURCE  = 'subscription.resource'
     public static final String SUBSCRIPTION_STATUS    = 'subscription.status'
     public static final String SUBSCRIPTION_TYPE      = 'subscription.type'
+    public static final String SUBSCRIPTION_KIND      = 'subscription.kind'
     public static final String SURVEY_STATUS          = 'survey.status'
     public static final String SURVEY_TYPE            = 'survey.type'
 

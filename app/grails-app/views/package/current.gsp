@@ -33,7 +33,7 @@
         <g:render template="nav"/>
 
             <sec:ifAnyGranted roles="ROLE_ADMIN">
-            <g:link role="button" class="ui button" controller="announcement" action="index" params='[at:"Package Link: ${pkg_link_str}",as:"RE: Package ${packageInstance.name}"]'>${message(code:'package.show.announcement', default:'Mention this package in an announcement')}</g:link>
+            <g:link class="ui button" controller="announcement" action="index" params='[at:"Package Link: ${pkg_link_str}",as:"RE: Package ${packageInstance.name}"]'>${message(code:'package.show.announcement')}</g:link>
             </sec:ifAnyGranted>
 
             <g:if test="${forum_url != null}">
@@ -53,8 +53,8 @@
         <div class="row">
             <div class="column">
                 ${message(code:'title.search.offset.text', args:[offset+1,lasttipp,num_tipp_rows])} -
-                <g:if test="${params.mode=='advanced'}">${message(code:'package.show.switchView.basic')} <g:link controller="package" action="current" params="${params+['mode':'basic']}">${message(code:'default.basic', default:'Basic')}</g:link></g:if>
-                    <g:else>${message(code:'package.show.switchView.advanced')} <g:link controller="package" action="current" params="${params+['mode':'advanced']}" button type="button" >${message(code:'default.advanced', default:'Advanced')}</g:link></g:else>
+                <g:if test="${params.mode=='advanced'}">${message(code:'package.show.switchView.basic')} <g:link controller="package" action="current" params="${params+['mode':'basic']}">${message(code:'default.basic')}</g:link></g:if>
+                    <g:else>${message(code:'package.show.switchView.advanced')} <g:link controller="package" action="current" params="${params+['mode':'advanced']}" type="button" >${message(code:'default.advanced')}</g:link></g:else>
             </div>
         </div>
         <div class="row">
@@ -177,7 +177,7 @@
 
       function confirmSubmit() {
         if ( $('#bulkOperationSelect').val() === 'remove' ) {
-          var agree=confirm("${message(code:'default.continue.confirm', default:'Are you sure you wish to continue?')}");
+          var agree=confirm("${message(code:'default.continue.confirm')}");
           if (agree)
             return true ;
           else

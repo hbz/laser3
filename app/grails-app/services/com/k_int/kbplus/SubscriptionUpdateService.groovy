@@ -49,16 +49,16 @@ class SubscriptionUpdateService extends AbstractLockableService {
                 }
             }
 
-            // INTENDED PERENNIAL -> CURRENT
+            // MultiYear Sub INTENDED -> CURRENT
 
             def intendedSubsIds2 = Subscription.where {
-                status == RDStore.SUBSCRIPTION_INTENDED_PERENNIAL && startDate < currentDate && (endDate != null && (instanceOf.endDate >= currentDate || endDate >= currentDate)) && isMultiYear == true
+                status == RDStore.SUBSCRIPTION_INTENDED && startDate < currentDate && (endDate != null && (instanceOf.endDate >= currentDate || endDate >= currentDate)) && isMultiYear == true
             }.collect{ it.id }
 
             log.info("Intended perennial subscriptions reached start date and are now running (${currentDate}): " + intendedSubsIds2)
 
             if (intendedSubsIds2) {
-                updatedObjs << ['intendedPerennialToCurrent' : intendedSubsIds2]
+                updatedObjs << ['MultiYear_intendedToCurrent' : intendedSubsIds2]
 
                 Subscription.executeUpdate(
                         'UPDATE Subscription sub SET sub.status =:status WHERE sub.id in (:ids)',
@@ -91,24 +91,24 @@ class SubscriptionUpdateService extends AbstractLockableService {
                 }
             }
 
-            // INTENDED PERENNIAL -> EXPIRED PERENNIAL
+            // MultiYear Sub INTENDED -> EXPIRED
 
             def intendedSubsIds4 = Subscription.where {
-                status == RDStore.SUBSCRIPTION_INTENDED_PERENNIAL && startDate < currentDate && (endDate != null && endDate < currentDate) && isMultiYear == true
+                status == RDStore.SUBSCRIPTION_INTENDED && startDate < currentDate && (endDate != null && endDate < currentDate) && isMultiYear == true
             }.collect{ it.id }
 
             log.info("Intended subscriptions reached start date and end date are now expired pernennial (${currentDate}): " + intendedSubsIds4)
 
             if (intendedSubsIds4) {
-                updatedObjs << ['intendedPerennialToExpiredPerennial' : intendedSubsIds4]
+                updatedObjs << ['MultiYear_intendedToExpired' : intendedSubsIds4]
 
                 Subscription.executeUpdate(
                         'UPDATE Subscription sub SET sub.status =:status WHERE sub.id in (:ids)',
-                        [status: RDStore.SUBSCRIPTION_EXPIRED_PERENNIAL, ids: intendedSubsIds4]
+                        [status: RDStore.SUBSCRIPTION_EXPIRED, ids: intendedSubsIds4]
                 )
 
                 intendedSubsIds4.each { id ->
-                    log.info('SubscriptionUpdateService UPDATE subscriptions WHERE ID ' + id + ' Status: ' + RDStore.SUBSCRIPTION_EXPIRED_PERENNIAL)
+                    log.info('SubscriptionUpdateService UPDATE subscriptions WHERE ID ' + id + ' Status: ' + RDStore.SUBSCRIPTION_EXPIRED)
                 }
             }
 
@@ -133,24 +133,24 @@ class SubscriptionUpdateService extends AbstractLockableService {
                 }
             }
 
-            // CURRENT PERENNIAL -> EXPIRED PERENNIAL
+            // MultiYear Sub CURRENT -> EXPIRED
 
             def currentSubsIds2 = Subscription.where {
                 status == RDStore.SUBSCRIPTION_CURRENT && startDate < currentDate && (endDate != null && (instanceOf.endDate < currentDate || endDate < currentDate)) && isMultiYear == true
             }.collect{ it.id }
 
-            log.info("Current subscriptions reached end date and are now expired pernennial (${currentDate}): " + currentSubsIds2)
+            log.info("Current subscriptions reached end date and are now expired (${currentDate}): " + currentSubsIds2)
 
             if (currentSubsIds2) {
-                updatedObjs << ['currentPerennialToExpiredPerennial' : currentSubsIds2]
+                updatedObjs << ['MultiYear_currentPerennialToExpired' : currentSubsIds2]
 
                 Subscription.executeUpdate(
                         'UPDATE Subscription sub SET sub.status =:status WHERE sub.id in (:ids)',
-                        [status: RDStore.SUBSCRIPTION_EXPIRED_PERENNIAL, ids: currentSubsIds2]
+                        [status: RDStore.SUBSCRIPTION_EXPIRED, ids: currentSubsIds2]
                 )
 
                 currentSubsIds2.each { id ->
-                    log.info('SubscriptionUpdateService UPDATE subscriptions WHERE ID ' + id + ' Status: ' + RDStore.SUBSCRIPTION_EXPIRED_PERENNIAL)
+                    log.info('SubscriptionUpdateService UPDATE subscriptions WHERE ID ' + id + ' Status: ' + RDStore.SUBSCRIPTION_EXPIRED)
                 }
             }
 

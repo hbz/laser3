@@ -149,28 +149,28 @@
                     <td class="x">
                         <g:if test="${editable}">
                             <g:if test="${fixedSubcription}">
-                                <g:link mapping="subfinanceEditCI" params='[sub:"${fixedSubscription?.id}", id:"${ci.id}", tab:"own"]' class="ui icon button trigger-modal">
+                                <g:link mapping="subfinanceEditCI" params='[sub:"${fixedSubscription?.id}", id:"${ci.id}", showView:"own"]' class="ui icon button trigger-modal">
                                     <i class="write icon"></i>
                                 </g:link>
                                 <span class="la-popup-tooltip la-delay" data-position="top right" data-content="${message(code:'financials.costItem.copy.tooltip')}">
-                                    <g:link mapping="subfinanceCopyCI" params='[sub:"${fixedSubscription?.id}", id:"${ci.id}", tab:"own"]' class="ui icon button trigger-modal">
+                                    <g:link mapping="subfinanceCopyCI" params='[sub:"${fixedSubscription?.id}", id:"${ci.id}", showView:"own"]' class="ui icon button trigger-modal">
                                         <i class="copy icon"></i>
                                     </g:link>
                                 </span>
                             </g:if>
                             <g:else>
-                                <g:link controller="finance" action="editCostItem" params='[sub:"${ci.sub?.id}", id:"${ci.id}", tab:"own"]' class="ui icon button trigger-modal">
+                                <g:link controller="finance" action="editCostItem" params='[sub:"${ci.sub?.id}", id:"${ci.id}", showView:"own"]' class="ui icon button trigger-modal">
                                     <i class="write icon"></i>
                                 </g:link>
                                 <span class="la-popup-tooltip la-delay" data-position="top right" data-content="${message(code:'financials.costItem.copy.tooltip')}">
-                                    <g:link controller="finance" action="copyCostItem" params='[sub:"${ci.sub?.id}", id:"${ci.id}", tab:"own"]' class="ui icon button trigger-modal">
+                                    <g:link controller="finance" action="copyCostItem" params='[sub:"${ci.sub?.id}", id:"${ci.id}", showView:"own"]' class="ui icon button trigger-modal">
                                         <i class="copy icon"></i>
                                     </g:link>
                                 </span>
                             </g:else>
                         </g:if>
                         <g:if test="${editable}">
-                            <g:link controller="finance" action="deleteCostItem" id="${ci.id}" params="[ tab:'own']" class="ui icon negative button js-open-confirm-modal"
+                            <g:link controller="finance" action="deleteCostItem" id="${ci.id}" params="[ showView:'own']" class="ui icon negative button js-open-confirm-modal"
                                         data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.costItem",args: [ci.costTitle])}"
                                         data-confirm-term-how="delete">
                                 <i class="trash alternate icon"></i>

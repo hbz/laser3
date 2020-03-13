@@ -119,7 +119,7 @@ class TaskController extends AbstractDebugController {
 	@DebugAnnotation(test='hasAffiliation("INST_EDITOR")')
 	@Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_EDITOR") })
     def edit() {
-        def contextOrg = contextService.getOrg()
+		Org contextOrg = contextService.getOrg()
         def result     = taskService.getPreconditionsWithoutTargets(contextOrg)
 
 		SimpleDateFormat sdf = DateUtil.getSDF_NoTime()
@@ -198,7 +198,7 @@ class TaskController extends AbstractDebugController {
 
 	@Secured(['permitAll']) // TODO
 	def ajaxEdit() {
-		def contextOrg = contextService.getOrg()
+		Org contextOrg = contextService.getOrg()
 		def result     = taskService.getPreconditionsWithoutTargets(contextOrg)
 		result.params = params
 		result.taskInstance = Task.get(params.id)

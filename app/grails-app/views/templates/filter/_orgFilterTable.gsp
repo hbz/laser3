@@ -589,7 +589,7 @@
                 <g:message code="surveyOrg.perennialTerm.available"/>
             </g:if>
             <g:else>
-                <g:each in="${com.k_int.kbplus.CostItem.findAllBySubAndOwner(orgSub, institution)}"
+                <g:each in="${com.k_int.kbplus.CostItem.findAllBySubAndOwnerAndCostItemStatusNotEqual(orgSub, institution, RDStore.COST_ITEM_DELETED)}"
                         var="costItem">
 
                     <g:if test="${costItem.costItemElement?.id?.toString() == selectedCostItemElement}">
@@ -620,7 +620,7 @@
                 <g:set var="surveyOrg"
                        value="${com.k_int.kbplus.SurveyOrg.findBySurveyConfigAndOrg(surveyConfig, org)}"/>
                 <g:set var="costItem" scope="request"
-                       value="${com.k_int.kbplus.CostItem.findBySurveyOrg(com.k_int.kbplus.SurveyOrg.findBySurveyConfigAndOrg(surveyConfig, org))}"/>
+                       value="${com.k_int.kbplus.CostItem.findBySurveyOrgAndCostItemStatusNotEqual(com.k_int.kbplus.SurveyOrg.findBySurveyConfigAndOrg(surveyConfig, org),RDStore.COST_ITEM_DELETED)}"/>
 
                     <g:if test="${costItem}">
 
@@ -654,7 +654,7 @@
 
             <td class="center aligned">
             <g:set var="costItem" scope="request"
-                   value="${com.k_int.kbplus.CostItem.findBySurveyOrg(com.k_int.kbplus.SurveyOrg.findBySurveyConfigAndOrg(surveyConfig, org))}"/>
+                   value="${com.k_int.kbplus.CostItem.findBySurveyOrgAndCostItemStatusNotEqual(com.k_int.kbplus.SurveyOrg.findBySurveyConfigAndOrg(surveyConfig, org),RDStore.COST_ITEM_DELETED)}"/>
             <g:if test="${costItem?.costDescription}">
 
                 <div class="ui icon la-popup-tooltip la-delay" data-content="${costItem?.costDescription}">

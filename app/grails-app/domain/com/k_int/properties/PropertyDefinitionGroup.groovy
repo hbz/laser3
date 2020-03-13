@@ -2,11 +2,9 @@ package com.k_int.properties
 
 import com.k_int.kbplus.GenericOIDService
 import com.k_int.kbplus.Org
-import com.k_int.kbplus.RefdataValue
 import de.laser.CacheService
 import de.laser.domain.I10nTranslation
 import de.laser.helper.EhcacheWrapper
-import de.laser.helper.RefdataAnnotation
 import grails.util.Holders
 import groovy.util.logging.Log4j
 import org.codehaus.groovy.grails.orm.hibernate.cfg.GrailsHibernateUtil
@@ -100,56 +98,33 @@ class PropertyDefinitionGroup {
         CacheService cacheService = (CacheService) Holders.grailsApplication.mainContext.getBean('cacheService')
         EhcacheWrapper cache
 
-        cache = cacheService.getTTL300Cache("PropertyDefinitionGroup/refdataFind/${params.desc}/pdgid/${currentObject.id}/${LocaleContextHolder.getLocale()}")
+        cache = cacheService.getTTL300Cache("PropertyDefinitionGroup/refdataFind/${currentObject.id}")
 
         if (! cache.get('propDefs')) {
-            def propDefs = currentObject.getPropertyDefinitions()
+            List<PropertyDefinition> propDefs = currentObject.getPropertyDefinitions()
 
-            List matches = I10nTranslation.refdataFindHelper(
-                    'com.k_int.properties.PropertyDefinition',
-                    'name',
-                    '',
-                    LocaleContextHolder.getLocale()
-            ).collect{ it.id }
-
+            List cacheContent = []
             propDefs.each { it ->
-                if (it.id in matches) {
-                    if (it.getDescr() == params.desc) {
-                        result.add([id: "${it.id}", text: "${it.getI10n('name')}"])
-                    }
-                }
+                cacheContent.add([id:"${it.id}", en:"${it.name_en}", de:"${it.name_de}"])
             }
-            cache.put('propDefs', result)
+            cache.put('propDefs', cacheContent)
         }
-        else {
-            log.debug ('reading from cache .. ')
-            cache.get('propDefs').each { it ->
-                if (params.q == '*' || it.text?.toLowerCase()?.contains(params.q?.toLowerCase())) {
-                    result.add(it)
-                }
+
+        cache.get('propDefs').each { it ->
+            switch (I10nTranslation.decodeLocale(LocaleContextHolder.getLocale().toString())) {
+                case 'en':
+                    if (params.q == '*' || it.en?.toLowerCase()?.contains(params.q?.toLowerCase())) {
+                        result.add([id:"${it.id}", text:"${it.en}"])
+                    }
+                    break
+                case 'de':
+                    if (params.q == '*' || it.de?.toLowerCase()?.contains(params.q?.toLowerCase())) {
+                        result.add([id:"${it.id}", text:"${it.de}"])
+                    }
+                    break
             }
         }
 
-        /*
-        def matches = I10nTranslation.refdataFindHelper(
-                'com.k_int.properties.PropertyDefinition',
-                'name',
-                params.q,
-                LocaleContextHolder.getLocale()
-        )?.collect{ it.id }
-
-        propDefs.each { it ->
-            if (it.id in matches) {
-                if (params.desc && params.desc != "*") {
-                    if (it.getDescr() == params.desc) {
-                        result.add([id: "${it.id}", text: "${it.getI10n('name')}"])
-                    }
-                } else {
-                    result.add([id: "${it.id}", text: "${it.getI10n('name')}"])
-                }
-            }
-        }
-        */
         result
     }
 }

@@ -1,20 +1,11 @@
 package de.laser
 
-import com.k_int.kbplus.License
-import com.k_int.kbplus.LicenseCustomProperty
-import com.k_int.kbplus.Org
-import com.k_int.kbplus.OrgCustomProperty
-import com.k_int.kbplus.Platform
-import com.k_int.kbplus.PlatformCustomProperty
-import com.k_int.kbplus.RefdataValue
-import com.k_int.kbplus.Subscription
-import com.k_int.kbplus.SubscriptionCustomProperty
+import com.k_int.kbplus.*
 import com.k_int.kbplus.abstract_domain.AbstractProperty
 import com.k_int.kbplus.abstract_domain.CustomProperty
 import com.k_int.properties.PropertyDefinition
 import com.k_int.properties.PropertyDefinitionGroupBinding
 import de.laser.helper.RDStore
-import org.grails.datastore.mapping.model.types.Custom
 
 class PropertyService {
 
