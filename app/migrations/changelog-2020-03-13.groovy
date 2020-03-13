@@ -5,4 +5,14 @@ databaseChangeLog = {
 			column(name: "sp_archive", type: "varchar(255)")
 		}
 	}
+
+	changeSet(author: "kloberd (modified)", id: "1584088132653-2") {
+		grailsChange {
+			change {
+				sql.execute("update system_profiler set sp_archive = '1.2' where sp_archive is null;")
+			}
+			rollback {
+			}
+		}
+	}
 }
