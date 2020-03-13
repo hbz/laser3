@@ -57,8 +57,8 @@
     <h2 class="ui dividing header">Modals</h2>
     <h3 class="ui dividing header">Confimation Modal</h3>
     <p class="la-clear-before">
-        <g:link controller="dev"
-                action="frontend"
+        <g:link controller="public"
+                action="wcagTest"
                 params=""
                 data-content="Hier kommt der Tooltip rein"
                 data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.function", args: ['Button auf der YODA/FRONTENDSEITE'])}"
