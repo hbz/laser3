@@ -2,6 +2,8 @@
 
 **Ticket    Date    Branch      Author  Feature/Bug     Description/Keywords**
 
+2240    13.03.2020   hbz-dev     Moe     Feature    Lizenzen pro Teilnehmer Erweiterung um Mailfunktion
+
 2154    13.02.2020  hbz-dev     Anja    Feature     Identifikatoren und Kundennummern als eigenes Panel
 
 2186    12.03.2020  hbz-dev     Christian   Feature Zugangskonfiguration: Löschen grundsätzlich unterbinden, wenn Verknüpfungen vorliegen
@@ -21,6 +23,8 @@
 2145    09.03.2020  hbz-dev     Moe     Feature     Überarbeitung des Lizenztyps
 
 2159    09.03.2020  hbz-dev     Moe     Feature     Mehrjahres Stati löschen auf normale Stati umstellen
+
+--      09.03.2020  hbz-dev     Moe     Feature     Merkmalesortierung nach Name   
 
 2235    06.03.2020  rc1.2       Andreas Bug         Teilnehmer verwalten: Vertragsverknüpfung erzeugt jetzt auch OrgRole-Einträge
 
