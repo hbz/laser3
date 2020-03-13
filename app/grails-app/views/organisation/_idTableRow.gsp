@@ -8,8 +8,8 @@
     <td>${id.note}</td>
     <td>
         <g:if test="${editable}">
-            <button class="ui icon button" onclick="editIdentifier(${id.id});"><i class="write icon"></i></button>
-            <g:link controller="ajax" action="deleteIdentifier" class="ui icon mini negative button"
+            <button class="ui icon button" onclick="IdContoller.editIdentifier(${id.id});"><i class="write icon"></i></button>
+            <g:link controller="ajax" action="deleteIdentifier" class="ui button icon red"
                     params='${[owner: "${orgInstance.class.name}:${orgInstance.id}", target: "${id.class.name}:${id.id}"]}'>
                 <i class="trash alternate icon"></i>
             </g:link>

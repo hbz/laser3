@@ -6,7 +6,7 @@
         <th>${message(code:'myinst.dash.due_dates.attribute.label')}</th>
         <th>${message(code:'default.date.label')}</th>
         <th>${message(code:'myinst.dash.due_dates.name.label')}</th>
-        <th>${message(code:'myinst.dash.due_dates.hide.label')}</th>
+        %{--<th>${message(code:'myinst.dash.due_dates.hide.label')}</th>--}%
         %{--<th>${message(code:'myinst.dash.due_dates.done.label')}</th>--}%
     </tr>
     </thead>
@@ -87,6 +87,7 @@
                         </g:else>
                     </div>
                 </td>
+            <g:if test="${false}">
                 <td>
                     <g:if test="${false}">
                         <laser:remoteLink class="ui icon  negative button  js-open-confirm-modal"
@@ -140,6 +141,7 @@
                     </g:else>
                     %{--<semui:xEditableBoolean owner="${dashDueDate}" field="isHidden" />--}%
                 </td>
+            </g:if>
                 %{--<td><semui:xEditableBoolean owner="${dashDueDate}" field="isDone" /></td>--}%
             </tr>
         </g:if>

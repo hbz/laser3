@@ -76,27 +76,27 @@ class OrganisationController extends AbstractDebugController {
         result.editable = result.editable || (inContextOrg && accessService.checkMinUserOrgRole(user, org, 'INST_ADM'))
         result.isComboRelated = isComboRelated
 
-		if (params.deleteCI) {
-			CustomerIdentifier ci = genericOIDService.resolveOID(params.deleteCI)
-			if (ci && ci.owner == org) {
-				ci.delete()
-			}
-		}
-        if (params.addCIPlatform) {
-            Platform plt = genericOIDService.resolveOID(params.addCIPlatform)
-            if (plt) {
-                CustomerIdentifier ci = new CustomerIdentifier(
-                        customer: org,
-                        platform: plt,
-                        value: params.addCIValue?.trim(),
-                        note: params.addCINote?.trim(),
-                        owner: contextService.getOrg(),
-                        isPublic: true,
-                        type: RefdataValue.getByValueAndCategory('Default', RDConstants.CUSTOMER_IDENTIFIER_TYPE)
-                )
-                ci.save()
-            }
-        }
+//		if (params.deleteCI) {
+//			CustomerIdentifier ci = genericOIDService.resolveOID(params.deleteCI)
+//			if (ci && ci.owner == org) {
+//				ci.delete()
+//			}
+//		}
+//        if (params.addCIPlatform) {
+//            Platform plt = genericOIDService.resolveOID(params.addCIPlatform)
+//            if (plt) {
+//                CustomerIdentifier ci = new CustomerIdentifier(
+//                        customer: org,
+//                        platform: plt,
+//                        value: params.addCIValue?.trim(),
+//                        note: params.addCINote?.trim(),
+//                        owner: contextService.getOrg(),
+//                        isPublic: true,
+//                        type: RefdataValue.getByValueAndCategory('Default', RDConstants.CUSTOMER_IDENTIFIER_TYPE)
+//                )
+//                ci.save()
+//            }
+//        }
 
         // adding default settings
         organisationService.initMandatorySettings(org)
@@ -150,7 +150,7 @@ class OrganisationController extends AbstractDebugController {
             result.customerIdentifier = CustomerIdentifier.findAllByCustomer(org)
         }
 
-        result.allPlatforms = Platform.executeQuery('select p from Platform p join p.org o where p.org is not null order by o.name, o.sortname, p.name')
+//        result.allPlatforms = Platform.executeQuery('select p from Platform p join p.org o where p.org is not null order by o.name, o.sortname, p.name')
         result
     }
 
@@ -313,7 +313,7 @@ class OrganisationController extends AbstractDebugController {
             return
         }
 
-        render template: '/templates/identifier/modal_create_identifier', model: [orgInstance: org]
+        render template: '/templates/identifier/modal_create', model: [orgInstance: org]
     }
 
     def editIdentifier(){
@@ -327,7 +327,7 @@ class OrganisationController extends AbstractDebugController {
             return
         }
 
-        render template: '/templates/identifier/modal_create_identifier', model: [orgInstance: org, identifier: identifier]
+        render template: '/templates/identifier/modal_create', model: [orgInstance: org, identifier: identifier]
     }
 
     def processCreateIdentifier(){
@@ -349,6 +349,35 @@ class OrganisationController extends AbstractDebugController {
         Identifier id = Identifier.construct([value: value, reference: org, namespace: namespace])
         id.note = note
         id.save()
+
+        redirect(url: request.getHeader('referer'))
+    }
+    def processCreateCustomerIdentifier(){
+        log.debug("OrganisationController::processCreateCustomerIdentifier ${params}")
+        Org org   = params.orgid ? Org.get(params.orgid) : null
+        if ( ! (org && params.addCIPlatform && params.value)){
+            flash.message = message(code: 'menu.admin.error')
+            redirect(url: request.getHeader('referer'))
+            return
+        }
+        Platform plt = Platform.get(params.addCIPlatform)
+        if (!plt){
+            flash.message = message(code: 'default.not.found.message', args: [message(code: 'default.provider.platform.label'), params.addCIPlatform])
+            redirect(url: request.getHeader('referer'))
+            return
+        }
+        if (plt) {
+            CustomerIdentifier ci = new CustomerIdentifier(
+                    customer: org,
+                    platform: plt,
+                    value: params.value.trim(),
+                    note: params.note?.trim(),
+                    owner: contextService.getOrg(),
+                    isPublic: true,
+                    type: RefdataValue.getByValueAndCategory('Default', RDConstants.CUSTOMER_IDENTIFIER_TYPE)
+            )
+            ci.save()
+        }
 
         redirect(url: request.getHeader('referer'))
     }
@@ -376,6 +405,30 @@ class OrganisationController extends AbstractDebugController {
 
         redirect(url: request.getHeader('referer'))
     }
+    def processEditCustomerIdentifier(){
+        log.debug("OrganisationController::processEditIdentifier ${params}")
+        Org org   = params.orgid ? Org.get(params.orgid) : null
+        CustomerIdentifier customeridentifier   = CustomerIdentifier.get(params.customeridentifier)
+        if ( ! (org && customeridentifier)){
+            flash.message = message(code: 'default.not.found.message', args: [message(code: 'default.search.identifier'), params.identifierId])
+            redirect(url: request.getHeader('referer'))
+            return
+        }
+        Platform plt = Platform.get(params.addCIPlatform)
+        if (!plt){
+            flash.message = message(code: 'default.not.found.message', args: [message(code: 'identifier.namespace.label'), params.ns.id])
+            redirect(url: request.getHeader('referer'))
+            return
+        }
+        customeridentifier.platform = plt
+        if (params.value) {
+            customeridentifier.value = params.value
+        }
+        customeridentifier.note = params.note?.trim()
+        customeridentifier.save()
+
+        redirect(url: request.getHeader('referer'))
+    }
 
     def createCustomerIdentifier(){
         log.debug("OrganisationController::createCustomerIdentifier ${params}")
@@ -386,21 +439,23 @@ class OrganisationController extends AbstractDebugController {
             redirect(url: request.getHeader('referer'))
             return
         }
+        List allPlatforms = Platform.executeQuery('select p from Platform p join p.org o where p.org is not null order by o.name, o.sortname, p.name')
 
-        render template: '/templates/customerIdentifier/modal_create', model: [orgInstance: org]
+        render template: '/templates/customerIdentifier/modal_create', model: [orgInstance: org, allPlatforms: allPlatforms]
     }
     def editCustomerIdentifier(){
         log.debug("OrganisationController::editCustomerIdentifier ${params}")
-        Identifier identifier = Identifier.get(params.customeridentifier)
-        Org org = identifier?.org
+        CustomerIdentifier customeridentifier = CustomerIdentifier.get(params.customeridentifier)
+        Org org = customeridentifier?.owner
 
-        if (! org) {
+        if (! customeridentifier) {
             flash.message = message(code: 'default.not.found.message', args: [message(code: 'org.customerIdentifier'), params.customeridentifier])
             redirect(url: request.getHeader('referer'))
             return
         }
+        List allPlatforms = Platform.executeQuery('select p from Platform p join p.org o where p.org is not null order by o.name, o.sortname, p.name')
 
-        render template: '/templates/customerIdentifier/modal_create', model: [orgInstance: org, customeridentifier: customeridentifier]
+        render template: '/templates/customerIdentifier/modal_create', model: [orgInstance: org, allPlatforms: allPlatforms, customeridentifier: customeridentifier]
     }
 
     @Secured(['ROLE_ADMIN','ROLE_ORG_EDITOR'])
@@ -787,12 +842,6 @@ class OrganisationController extends AbstractDebugController {
         //this is a flag to check whether the page has been called directly after creation
         result.fromCreate = params.fromCreate ? true : false
 
-        //def link_vals = RefdataCategory.getAllRefdataValues(RDConstants.ORGANISATIONAL_ROLE)
-        //def sorted_links = [:]
-        //def offsets = [:]
-
-        du.setBenchmark('orgRoles')
-
         du.setBenchmark('editable')
 
 
@@ -800,7 +849,7 @@ class OrganisationController extends AbstractDebugController {
         def orgType = OT_PROVIDER
 
         //IF ORG is a Provider
-        if(result.orgInstance.sector == orgSector || orgType?.id in result.orgInstance?.getallOrgTypeIds()) {
+        if(result.orgInstance?.sector == orgSector || orgType?.id in result.orgInstance?.getallOrgTypeIds()) {
             du.setBenchmark('editable2')
             result.editable = accessService.checkMinUserOrgRole(result.user, result.orgInstance, 'INST_EDITOR') ||
                     accessService.checkPermAffiliationX("ORG_INST,ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN,ROLE_ORG_EDITOR")
@@ -1040,6 +1089,38 @@ class OrganisationController extends AbstractDebugController {
         }
 
         render template: "/templates/documents/modal", model: result
+    }
+
+    @DebugAnnotation(perm="FAKE,ORG_BASIC_MEMBER,ORG_CONSORTIUM", affil="INST_ADM", specRole="ROLE_ADMIN,ROLE_ORG_EDITOR")
+    @Secured(closure = {
+        ctx.accessService.checkPermAffiliationX("FAKE,ORG_BASIC_MEMBER,ORG_CONSORTIUM", "INST_ADM", "ROLE_ADMIN,ROLE_ORG_EDITOR")
+    })
+    def deleteCustomerIdentifier() {
+        log.debug("deleteIdentifier ${params}");
+        CustomerIdentifier ci = genericOIDService.resolveOID(params.deleteCI)
+        if (ci && ci.owner == contextService.org) {
+            ci.delete()
+        }
+        redirect action: 'ids', id: contextService.org.id
+        return
+    }
+
+    @Secured(['ROLE_USER'])
+    def deleteIdentifier() {
+        log.debug("AjaxController::deleteIdentifier ${params}")
+        def owner = genericOIDService.resolveOID(params.owner)
+        def target = genericOIDService.resolveOID(params.target)
+
+        log.debug('owner: ' + owner)
+        log.debug('target: ' + target)
+
+        if (owner && target) {
+            if (target."${Identifier.getAttributeName(owner)}"?.id == owner.id) {
+                log.debug("Identifier deleted: ${params}")
+                target.delete()
+            }
+        }
+        redirect(url: request.getHeader('referer'))
     }
 
     @DebugAnnotation(test='hasAffiliation("INST_EDITOR")')
@@ -1441,7 +1522,7 @@ class OrganisationController extends AbstractDebugController {
         Map result = [user:user,institution:org,editable:accessService.checkMinUserOrgRole(user,org,'INST_EDITOR') || SpringSecurityUtils.ifAnyGranted('ROLE_ORG_EDITOR,ROLE_ADMIN'),inContextOrg:true,institutionalView:false,departmentalView:false]
         if(params.id) {
             result.orgInstance = Org.get(params.id)
-            result.inContextOrg = result.orgInstance.id == org.id
+            result.inContextOrg = result.orgInstance?.id == org.id
             //this is a flag to check whether the page has been called for a consortia or inner-organisation member
             Combo checkCombo = Combo.findByFromOrgAndToOrg(result.orgInstance,org)
             if(checkCombo) {
