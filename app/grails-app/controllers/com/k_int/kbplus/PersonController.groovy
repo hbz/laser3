@@ -28,7 +28,7 @@ class PersonController extends AbstractDebugController {
     @DebugAnnotation(test='hasAffiliation("INST_EDITOR")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_EDITOR") })
     def create() {
-        User userMemberships = User.get(springSecurityService.principal.id).authorizedOrgs
+        List userMemberships = User.get(springSecurityService.principal.id).authorizedOrgs
         
         switch (request.method) {
 		case 'GET':

@@ -48,51 +48,55 @@
     </g:if>
     <g:if test="${actionName == 'ids'}">
         <sec:ifAnyGranted roles="ROLE_ORG_EDITOR,ROLE_ADMIN">
-            <a class="item" onclick="createIdentifier(${orgInstance.id});">${message(code: 'identifier.create.new')}</a>
-            %{--<a class="item" onclick="createCustomerIdentifier(${orgInstance.id});">${message(code: 'org.customerIdentifier.create.new')}</a>--}%
+            <a class="item" onclick="IdContoller.createIdentifier(${orgInstance.id});">${message(code: 'identifier.create.new')}</a>
+            <a class="item" onclick="IdContoller.createCustomerIdentifier(${orgInstance.id});">${message(code: 'org.customerIdentifier.create.new')}</a>
         </sec:ifAnyGranted>
     </g:if>
 </semui:actionsDropdown>
 <g:if test="${editable || accessService.checkPermAffiliation('ORG_INST,ORG_CONSORTIUM','INST_EDITOR')}">
     <g:render template="/templates/documents/modal" model="${[ownobj: orgInstance, institution: contextService.org, owntp: 'org']}"/>
 </g:if>
-<g:javascript>
-        function createIdentifier(id) {
-            $.ajax({
-                url: '<g:createLink controller="organisation" action="createIdentifier" />?id='+id,
-                success: function(result){
-                    $("#dynamicModalContainer").empty();
-                    $("#modalCreateIdentifier").remove();
+%{--<g:if test="${actionName == 'ids'}">--}%
+    %{--<g:javascript>--}%
+        %{--IdContoller =  {--}%
+            %{--createIdentifier : function(id) {--}%
+                %{--$.ajax({--}%
+                    %{--url: '<g:createLink controller="organisation" action="createIdentifier"/>?id='+id,--}%
+                    %{--success: function(result){--}%
+                        %{--$("#dynamicModalContainer").empty();--}%
+                        %{--$("#modalCreateIdentifier").remove();--}%
 
-                    $("#dynamicModalContainer").html(result);
-                    $("#dynamicModalContainer .ui.modal").modal({
-                        onVisible: function () {
-                            r2d2.initDynamicSemuiStuff('#modalCreateIdentifier');
-                            r2d2.initDynamicXEditableStuff('#modalCreateIdentifier');
+                        %{--$("#dynamicModalContainer").html(result);--}%
+                        %{--$("#dynamicModalContainer .ui.modal").modal({--}%
+                            %{--onVisible: function () {--}%
+                                %{--r2d2.initDynamicSemuiStuff('#modalCreateIdentifier');--}%
+                                %{--r2d2.initDynamicXEditableStuff('#modalCreateIdentifier');--}%
 
-                            // ajaxPostFunc()
-                        }
-                    }).modal('show');
-                }
-            });
-        }
-        function createCustomerIdentifier(id) {
-            $.ajax({
-                url: '<g:createLink controller="organisation" action="createCustomerIdentifier" />?id='+id,
-                success: function(result){
-                    $("#dynamicModalContainer").empty();
-                    $("#modalCreateIdentifier").remove();
+                                %{--// ajaxPostFunc()--}%
+                            %{--}--}%
+                        %{--}).modal('show');--}%
+                    %{--}--}%
+                %{--});--}%
+            %{--},--}%
+            %{--createCustomerIdentifier : function(id) {--}%
+                %{--$.ajax({--}%
+                    %{--url: '<g:createLink controller="organisation" action="createCustomerIdentifier"/>?id='+id,--}%
+                    %{--success: function(result){--}%
+                        %{--$("#dynamicModalContainer").empty();--}%
+                        %{--$("#modalCreateIdentifier").remove();--}%
 
-                    $("#dynamicModalContainer").html(result);
-                    $("#dynamicModalContainer .ui.modal").modal({
-                        onVisible: function () {
-                            r2d2.initDynamicSemuiStuff('#modalCreateIdentifier');
-                            r2d2.initDynamicXEditableStuff('#modalCreateIdentifier');
+                        %{--$("#dynamicModalContainer").html(result);--}%
+                        %{--$("#dynamicModalContainer .ui.modal").modal({--}%
+                            %{--onVisible: function () {--}%
+                                %{--r2d2.initDynamicSemuiStuff('#modalCreateIdentifier');--}%
+                                %{--r2d2.initDynamicXEditableStuff('#modalCreateIdentifier');--}%
 
-                            // ajaxPostFunc()
-                        }
-                    }).modal('show');
-                }
-            });
-        }
-</g:javascript>
+                                %{--// ajaxPostFunc()--}%
+                            %{--}--}%
+                        %{--}).modal('show');--}%
+                    %{--}--}%
+                %{--});--}%
+            %{--}--}%
+        %{--}--}%
+    %{--</g:javascript>--}%
+%{--</g:if>--}%
