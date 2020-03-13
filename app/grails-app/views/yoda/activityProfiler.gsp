@@ -33,6 +33,10 @@
                         <script>
                             $(document).ready(function(){
 
+                                <g:if test="${index == 0}">
+                                    setTimeout( function(){ console.log(".."); window.dispatchEvent(new Event('resize')) }, 99);
+                                </g:if>
+
                                 var chartData = {
                                     labels: [
                                         <% println '"' + labels.collect{ it.length() ? it.substring(0,3) + '00' : it }.join('","') + '"' %>
@@ -71,7 +75,7 @@
         </tbody>
     </table>
     <style>
-        #ct-chart-0 .ct-series-b .ct-bar { stroke: #bb1600; }
+        #ct-chart-0 .ct-series-b .ct-bar { stroke: darkgreen; }
 
         .ct-series-a .ct-bar { stroke: #98b500; }
         .ct-series-b .ct-bar { stroke: orange; }
