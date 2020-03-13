@@ -88,6 +88,7 @@ package.status,Paketstatus,Package Status
 package.type,Package.Type,Package.Type
 package.content.type,Package Content Type,Package Content Type
 pending.change.status,PendingChangeStatus,PendingChangeStatus
+pending.change.configuration.setting,Änderungseinstellung,Pending Change Configuration Setting
 permissions,Berechtigungen,Permissions
 person.contact.type,Kontaktart,Person: Contact Type
 person.function,Funktion,Person Function

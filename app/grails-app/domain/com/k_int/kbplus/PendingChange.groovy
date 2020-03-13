@@ -47,6 +47,10 @@ class PendingChange {
     Date dateCreated
     Date lastUpdated
 
+    String targetProperty
+    String oldValue
+    String newValue
+
     @Deprecated
     String desc
 
@@ -67,6 +71,9 @@ class PendingChange {
             payloadChangeType column:'pc_change_type'
        payloadChangeTargetOid column:'pc_change_target_oid', index:'pending_change_pl_ct_oid_idx'
        payloadChangeDocOid    column:'pc_change_doc_oid', index:'pending_change_pl_cd_oid_idx'
+        targetProperty column: 'pc_target_property', type: 'text'
+        oldValue column: 'pc_old_value', type: 'text'
+        newValue column: 'pc_new_value', type: 'text'
             payload column:'pc_payload', type:'text'
            msgToken column:'pc_msg_token'
           msgParams column:'pc_msg_doc', type:'text'
@@ -83,24 +90,27 @@ class PendingChange {
     }
 
     static constraints = {
-        systemObject(nullable:true, blank:false);
-        subscription(nullable:true, blank:false);
-        license(nullable:true, blank:false);
-        payload(nullable:true, blank:false);
+        systemObject(nullable:true, blank:false)
+        subscription(nullable:true, blank:false)
+        license(nullable:true, blank:false)
+        payload(nullable:true, blank:false)
         msgToken(nullable:true, blank:false)
         msgParams(nullable:true, blank:false)
         pkg(nullable:true, blank:false)
         costItem(nullable:true, blank: false)
-        ts(nullable:true, blank:false);
-        owner(nullable:true, blank:false);
-        oid(nullable:true, blank:false);
+        ts(nullable:true, blank:false)
+        owner(nullable:true, blank:false)
+        oid(nullable:true, blank:false)
         payloadChangeType       (nullable:true, blank:true)
         payloadChangeTargetOid  (nullable:true, blank:false)
         payloadChangeDocOid     (nullable:true, blank:false)
-        desc(nullable:true, blank:false);
-        status(nullable:true, blank:false);
-        actionDate(nullable:true, blank:false);
-        user(nullable:true, blank:false);
+        targetProperty(nullable:true, blank:true) //backwards compatibility
+        oldValue(nullable:true, blank:true) //backwards compatibility
+        newValue(nullable:true, blank:true) //backwards compatibility
+        desc(nullable:true, blank:false)
+        status(nullable:true, blank:false)
+        actionDate(nullable:true, blank:false)
+        user(nullable:true, blank:false)
 
         // Nullable is true, because values are already in the database
         lastUpdated (nullable: true, blank: false)
