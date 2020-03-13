@@ -103,6 +103,7 @@
                             <g:if test="${orgInstance.url}">
                                 <semui:linkIcon href="${orgInstance.url}" />
                             </g:if>
+                            <br />&nbsp<br />&nbsp<br />
                         </dd>
                     </dl>
                     <dl>
@@ -263,15 +264,22 @@
                             </dl>
                             <dl>
                                 <dt>
-                                    <g:message code="org.regions.label" />
+                                    <g:message code="address.country.label" />
                                     <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
-                                          data-content="${message(code: 'org.regions.expl')}">
+                                          data-content="${message(code: 'org.country.expl')}">
                                         <i class="question circle icon"></i>
                                     </span>
                                 </dt>
                                 <dd>
                                     <semui:xEditableRefData id="country" owner="${orgInstance}" field="country" config="${RDConstants.COUNTRY}" />
                                 </dd>
+                                <dt>
+                                    <g:message code="org.regions.label" />
+                                    <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
+                                          data-content="${message(code: 'org.regions.expl')}">
+                                        <i class="question circle icon"></i>
+                                    </span>
+                                </dt>
                                 <dd>
                                     <semui:xEditableRefData id="regions_${de.laser.helper.RDStore.COUNTRY_DE.id}" owner="${orgInstance}" field="region" config="${RDConstants.REGIONS_DE}"/>
                                     <semui:xEditableRefData id="regions_${de.laser.helper.RDStore.COUNTRY_AT.id}" owner="${orgInstance}" field="region" config="${RDConstants.REGIONS_AT}"/>
@@ -329,8 +337,16 @@
                 <div class="ui card">
                     <div class="content">
                         <dl>
-                            <dt><g:message code="org.addresses.label" />
+                            %{--_____________________________________--}%
+                            <dt><g:message code="org.addresses.label" default="Addresses"/>
+
+                                <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
+                                      data-content="${message(code: 'adressFormModal.info')}">
+                                    <i class="question circle icon"></i>
+                                </span>
+
                             </dt>
+                            %{--_____________________________________--}%
                             <dd>
                                 <div class="ui divided middle aligned selection list la-flex-list">
                                     <g:each in="${orgInstance?.addresses?.sort { it.type?.getI10n('value') }}" var="a">
@@ -346,6 +362,46 @@
                                         </g:if>
                                     </g:each>
                                 </div>
+                                %{--____________________________--}%
+                                <g:if test="${((((orgInstance.id == contextService.getOrg().id) || Combo.findByFromOrgAndToOrgAndType(orgInstance,contextService.getOrg(),RDStore.COMBO_TYPE_DEPARTMENT)) && user.hasAffiliation('INST_EDITOR')) || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN'))}">
+
+                                    <div class="ui list">
+                                        <div class="item">
+                                            <input class="ui button" size="35"
+                                                   value="${message(code: 'default.add.label', args: [message(code: 'addressFormModalPostalAddress')])}"
+                                                   data-semui="modal"
+                                                   data-href="#addressFormModalPostalAddress"/>
+                                            <g:render template="/address/formModal"
+                                                      model="['orgId': orgInstance?.id, 'redirect': '.', modalId: 'addressFormModalPostalAddress', hideType: true]"/>
+
+                                            <input class="ui button" size="35"
+                                                   value="${message(code: 'default.add.label', args: [message(code: 'addressFormModalBillingAddress')])}"
+                                                   data-semui="modal"
+                                                   data-href="#addressFormModalBillingAddress"/>
+                                            <g:render template="/address/formModal"
+                                                      model="['orgId': orgInstance?.id, 'redirect': '.', modalId: 'addressFormModalBillingAddress', hideType: true]"/>
+                                        </div>
+
+                                        <div class="item">
+
+                                            <input class="ui button" size="35"
+                                                   value="${message(code: 'default.add.label', args: [message(code: 'addressFormModalLegalPatronAddress')])}"
+                                                   data-semui="modal"
+                                                   data-href="#addressFormModalLegalPatronAddress"/>
+                                            <g:render template="/address/formModal"
+                                                      model="['orgId': orgInstance?.id, 'redirect': '.', modalId: 'addressFormModalLegalPatronAddress', hideType: true]"/>
+
+                                            %{-- <input class="ui button" size="35"
+                                                    value="${message(code: 'default.add.label', args: [message(code: 'address.otherAddress')])}"
+                                                    data-semui="modal"
+                                                    data-href="#addressFormModal"/>
+                                             <g:render template="/address/formModal"
+                                                       model="['orgId': orgInstance?.id, 'redirect': '.']"/>--}%
+                                        </div>
+                                    </div>
+
+                                </g:if>
+                                %{--____________________________--}%
                             </dd>
                         </dl>
                         %{--ERMS:1236
@@ -404,6 +460,82 @@
 
                                 </g:each>
                             <%-- </div> --%>
+                                %{--_______________________________________--}%
+                                <g:if test="${(((orgInstance.id == contextService.getOrg().id || Combo.findByFromOrgAndToOrgAndType(orgInstance,contextService.getOrg(),RDStore.COMBO_TYPE_DEPARTMENT)) && user.hasAffiliation('INST_EDITOR')) || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN'))}">
+                                    <div class="ui list">
+                                        <div class="item">
+
+                                            <input class="ui button" size="35"
+                                                   value="${message(code: 'personFormModalGeneralContactPerson')}"
+                                                   data-semui="modal"
+                                                   data-href="#personFormModalGeneralContactPerson"/>
+
+                                            <g:render template="/person/formModal"
+                                                      model="[tenant                           : contextOrg,
+                                                              org                              : orgInstance,
+                                                              isPublic                         : true,
+                                                              presetFunctionType               : RefdataValue.getByValueAndCategory('General contact person', RDConstants.PERSON_FUNCTION),
+                                                              modalId                          : 'personFormModalGeneralContactPerson',
+                                                              tmplHideFunctions: true]"/>
+
+                                            <input class="ui button" size="35"
+                                                   value="${message(code: 'personFormModalResponsibleContact')}"
+                                                   data-semui="modal"
+                                                   data-href="#personFormModalResponsibleContact"/>
+
+                                            <g:render template="/person/formModal"
+                                                      model="[tenant                           : contextOrg,
+                                                              org                              : orgInstance,
+                                                              isPublic                         : true,
+                                                              presetFunctionType               : RefdataValue.getByValueAndCategory('Responsible Admin', RDConstants.PERSON_FUNCTION),
+                                                              modalId                          : 'personFormModalResponsibleContact',
+                                                              tmplHideFunctions: true]"/>
+
+                                        </div>
+
+                                        <div class="item">
+
+                                            <input class="ui button" size="35"
+                                                   value="${message(code: 'personFormModalBillingContact')}"
+                                                   data-semui="modal"
+                                                   data-href="#personFormModalBillingContact"/>
+
+                                            <g:render template="/person/formModal"
+                                                      model="[tenant                           : contextOrg,
+                                                              org                              : orgInstance,
+                                                              isPublic                         : true,
+                                                              presetFunctionType               : RefdataValue.getByValueAndCategory('Functional Contact Billing Adress', RDConstants.PERSON_FUNCTION),
+                                                              modalId                          : 'personFormModalBillingContact',
+                                                              tmplHideFunctions: true]"/>
+
+                                            <input class="ui button" size="35"
+                                                   value="${message(code: 'personFormModalTechnichalSupport')}"
+                                                   data-semui="modal"
+                                                   data-href="#personFormModalTechnichalSupport"/>
+
+                                            <g:render template="/person/formModal"
+                                                      model="[tenant                           : contextOrg,
+                                                              org                              : orgInstance,
+                                                              isPublic                         : true,
+                                                              presetFunctionType               : RefdataValue.getByValueAndCategory('Technichal Support', RDConstants.PERSON_FUNCTION),
+                                                              modalId                          : 'personFormModalTechnichalSupport',
+                                                              tmplHideFunctions: true]"/>
+
+                                            %{--<input class="ui button" size="35"
+                                                   value="${message(code: 'personFormModalOtherContact')}"
+                                                   data-semui="modal"
+                                                   data-href="#personFormModal"/>
+
+                                            <g:render template="/person/formModal"
+                                                      model="['tenant'            : contextOrg,
+                                                              'org'               : orgInstance,
+                                                              'isPublic'          : true,
+                                                              'presetFunctionType': RefdataValue.getByValueAndCategory('General contact person', RDConstants.PERSON_FUNCTION)]"/>--}%
+
+                                        </div>
+                                    </div>
+
+                                </g:if>                                %{--_______________________________________--}%
                             </dd>
                         </dl>
                     </div>

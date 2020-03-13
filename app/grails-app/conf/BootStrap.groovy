@@ -87,7 +87,11 @@ class BootStrap {
 
         // def auto_approve_memberships = Setting.findByName('AutoApproveMemberships') ?: new Setting(name: 'AutoApproveMemberships', tp: Setting.CONTENT_TYPE_BOOLEAN, defvalue: 'true', value: 'true').save()
 
-        Setting mailSent = Setting.findByName('MailSentDisabled') ?: new Setting(name: 'MailSentDisabled', tp: Setting.CONTENT_TYPE_BOOLEAN, defvalue: 'false', value: (grailsApplication.config.grails.mail.disabled ?: "false")).save()
+        Setting mailSent = Setting.findByName('MailSentDisabled')
+
+        if(mailSent){
+            mailSent.delete(flush: true)
+        }
 
         //def maintenance_mode = Setting.findByName('MaintenanceMode') ?: new Setting(name: 'MaintenanceMode', tp: Setting.CONTENT_TYPE_BOOLEAN, defvalue: 'false', value: 'false').save()
 

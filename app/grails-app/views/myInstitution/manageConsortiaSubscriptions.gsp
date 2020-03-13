@@ -49,6 +49,9 @@
         </semui:exportDropdownItem>
 
     </semui:exportDropdown>
+    <semui:actionsDropdown>
+        <semui:actionsDropdownItem data-semui="modal" href="#copyEmailaddresses_ajaxModal" message="menu.institutions.copy_emailaddresses.button"/>
+    </semui:actionsDropdown>
 </semui:controlButtons>
 
 <h1 class="ui left floated aligned icon header la-clear-before">
@@ -483,6 +486,8 @@
                 next="${message(code:'default.paginate.next')}"
                 prev="${message(code:'default.paginate.prev')}"
                 max="${max}" total="${countCostItems}" />
+
+<g:render template="../templates/copyEmailaddresses" model="[orgList: totalMembers]"/>
 
 </body>
 </html>

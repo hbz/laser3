@@ -157,7 +157,7 @@ ${message(code: 'survey.label')} -
                             <dd><semui:auditInfo auditable="[subscriptionInstance, 'status']"/></dd>
                         </dl>
                         <dl>
-                            <dt class="control-label">${message(code: 'default.type.label')}</dt>
+                            <dt class="control-label">${message(code: 'subscription.type.label')}</dt>
                             <dd>${subscriptionInstance?.type?.getI10n('value')}</dd>
                             <dd><semui:auditInfo auditable="[subscriptionInstance, 'type']"/></dd>
                         </dl>

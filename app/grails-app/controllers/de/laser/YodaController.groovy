@@ -881,16 +881,22 @@ class YodaController {
                 else
                     s.value = 'true'
             }
+            s.save(flush:true)
+        }
 
-            if (s.name == "MailSentDisabled") {
-                if (s.value == 'true')
+        redirect action:'settings'
+    }
+
+    @Secured(['ROLE_YODA'])
+    def toggleMailSent() {
+        Map<String, Object> result = [:]
+
+        if (params.mailSent) {
+                if (params.mailSent == 'true')
                     grailsApplication.config.grails.mail.disabled = false
                 else
                     grailsApplication.config.grails.mail.disabled = true
             }
-
-            s.save(flush:true)
-        }
 
         redirect action:'settings'
     }

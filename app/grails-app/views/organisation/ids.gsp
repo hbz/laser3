@@ -71,21 +71,13 @@
         <div class="content">
             <% int tableIdentifierRowNr = 0 %>
             <table class="ui table la-table">
-                <colgroup>
-                    <col style="width:  30px;">
-                    <col style="width: 170px;">
-                    <col style="width: 236px;">
-                    <col style="width: 277px;">
-                    <col style="width: 332px;">
-                    <col style="width:  82px;">
-                </colgroup>
                 <thead>
                     <tr>
-                        <th>${message(code:'default.number')}</th>
-                        <th>${message(code:'identifier.namespace.label')}</th>
-                        <th>${message(code:'identifier')}</th>
-                        <th>${message(code:'default.notes.label')}</th>
-                        <th>${message(code:'default.aktions')}</th>
+                        <th class="one wide">${message(code:'default.number')}</th>
+                        <th class="five wide">${message(code:'identifier.namespace.label')}</th>
+                        <th class="four wide">${message(code:'identifier')}</th>
+                        <th class="four wide">${message(code:'default.notes.label')}</th>
+                        <th class="two wide">${message(code:'default.aktions')}</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -102,95 +94,97 @@
 </g:if>
 
 %{--------------CUSTOMER IDENTIFIERS------------------------}%
-            %{--<div class="ui card">--}%
-                %{--<div class="content">--}%
-                    %{--<div class="header"><g:message code="org.customerIdentifier.plural"/></div>--}%
-                %{--</div>--}%
-                %{--<div class="content">--}%
-                    %{--<% int tableCustomerRowNr = 0 %>--}%
+            <div class="ui card">
+                <div class="content">
+                    <div class="header"><g:message code="org.customerIdentifier.plural"/></div>
+                </div>
+                <div class="content">
+                    <% int tableCustomerRowNr = 0 %>
 
-                    %{--<table class="ui la-table table">--}%
-                        %{--<thead>--}%
-                        %{--<tr>--}%
-                            %{--<th>${message(code:'default.number')}</th>--}%
-                            %{--<th>${message(code:'default.provider.label')} : ${message(code:'platform.label')}</th>--}%
-                            %{--<th>${message(code:'org.customerIdentifier')}</th>--}%
-                            %{--<th>${message(code:'default.note.label')}</th>--}%
+                    <table class="ui la-table table">
+                        <thead>
+                        <tr>
+                            <th class="one wide">${message(code:'default.number')}</th>
+                            <th class="five wide">${message(code:'default.provider.label')} : ${message(code:'platform.label')}</th>
+                            <th class="four wide">${message(code:'org.customerIdentifier')}</th>
+                            <th class="four wide">${message(code:'default.note.label')}</th>
                             %{--<th>${message(code:'default.isPublic.label')}</th>--}%
-                            %{--<th>${message(code:'default.aktions')}</th>--}%
-                        %{--</tr>--}%
-                        %{--</thead>--}%
-                        %{--<tbody>--}%
-                        %{--<g:each in="${customerIdentifier}" var="ci">--}%
-                            %{--<g:if test="${ci.isPublic || (ci.owner.id == contextService.getOrg().id) || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN,ROLE_ORG_EDITOR')}">--}%
-                                %{--<tr>--}%
-                                    %{--<td>${++tableCustomerRowNr}</td>--}%
-                                    %{--<td>--}%
-                                        %{--${ci.getProvider()} : ${ci.platform}--}%
-                                    %{--</td>--}%
-                                        %{--<td>${ci.value}</td>--}%
-                                        %{--<td>${ci.note}</td>--}%
-                                        %{--<td>--}%
-                                            %{--<g:if test="${editable}">--}%
-                                                %{--TODO: EDIT/Delete--}%
-                                                %{--<g:link class="ui icon button" controller="person" action="show" id="${person?.id}" onclick="editCustomerIdentifier(${orgInstance.id},${ci});">--}%
-                                                    %{--<i class="write icon"></i>--}%
-                                                %{--</g:link>--}%
-                                                %{--<g:link controller="organisation" action="settings" id="${orgInstance.id}"--}%
-                                                        %{--params="${[deleteCI:ci.class.name + ':' + ci.id]}"--}%
-                                                        %{--class="ui button icon red"><i class="trash alternate icon"></i></g:link>--}%
-                                            %{--</g:if>--}%
-                                        %{--</td>--}%
-                                %{--</tr>--}%
-                            %{--</g:if>--}%
-                        %{--</g:each>--}%
-                        %{--</tbody>--}%
-                %{--</table>--}%
-                %{--</div>--}%
-            %{--</div>--}%
+                            <th class="two wide">${message(code:'default.aktions')}</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <g:each in="${customerIdentifier}" var="ci">
+                            <g:if test="${ci.isPublic || (ci.owner.id == contextService.getOrg().id) || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN,ROLE_ORG_EDITOR')}">
+                                <tr>
+                                    <td>${++tableCustomerRowNr}</td>
+                                    <td>
+                                        ${ci.getProvider()} : ${ci.platform}
+                                    </td>
+                                    <td>${ci.value}</td>
+                                    <td>${ci.note}</td>
+                                    <td>
+                                        <g:if test="${editable}">
+                                            <button class="ui icon button" onclick="IdContoller.editCustomerIdentifier(${ci.id});"><i class="write icon"></i></button>
+                                            <g:link controller="organisation"
+                                                    action="deleteCustomerIdentifier"
+                                                    id="${orgInstance.id}"
+                                                    params="${[deleteCI:ci.class.name + ':' + ci.id]}"
+                                                    class="ui button icon red js-open-confirm-modal"
+                                                    data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.customeridentifier", args: [""+ci.getProvider()+" : "+ci.platform+" "+ci.value])}"
+                                                    data-confirm-term-how="delete"
+                                            >
+                                                <i class="trash alternate icon"></i>
+                                            </g:link>
+                                        </g:if>
+                                    </td>
+                                </tr>
+                            </g:if>
+                        </g:each>
+                        </tbody>
+                </table>
+                </div>
+            </div>
 </body>
 </html>
-<g:javascript>
-        // function editIdentifier(identifier) {
-        //     alert('yipee:'+identifier);
-        // }
-        function editIdentifier(identifier) {
-            $.ajax({
-                url: '<g:createLink controller="organisation" action="editIdentifier" />?identifier='+identifier,
-                success: function(result){
-                    $("#dynamicModalContainer").empty();
-                    $("#modalCreateIdentifier").remove();
+<g:if test="${actionName == 'ids'}">
+    <g:javascript>
+        IdContoller =  {
+            createIdentifier : function(id) {
+                var urlString = '<g:createLink controller="organisation" action="createIdentifier"/>?id='+id;
+                IdContoller._doAjax(urlString);
+            },
+            createCustomerIdentifier : function(id) {
+                var urlString = '<g:createLink controller="organisation" action="createCustomerIdentifier"/>?id='+id;
+                IdContoller._doAjax(urlString);
+            },
+            editIdentifier : function(identifier) {
+                var urlString = '<g:createLink controller="organisation" action="editIdentifier"/>?identifier='+identifier;
+                IdContoller._doAjax(urlString);
+            },
+            editCustomerIdentifier : function(customeridentifier) {
+                var urlString = '<g:createLink controller="organisation" action="editCustomerIdentifier"/>?customeridentifier='+customeridentifier;
+                IdContoller._doAjax(urlString);
+            },
 
-                    $("#dynamicModalContainer").html(result);
-                    $("#dynamicModalContainer .ui.modal").modal({
-                        onVisible: function () {
-                            r2d2.initDynamicSemuiStuff('#modalCreateIdentifier');
-                            r2d2.initDynamicXEditableStuff('#modalCreateIdentifier');
+            _doAjax : function(url) {
+                $.ajax({
+                    url: url,
+                    success: function(result){
+                        $("#dynamicModalContainer").empty();
+                        $("#modalCreateCustomerIdentifier").remove();
 
-                            // ajaxPostFunc()
-                        }
-                    }).modal('show');
-                }
-            });
+                        $("#dynamicModalContainer").html(result);
+                        $("#dynamicModalContainer .ui.modal").modal({
+                            onVisible: function () {
+                                r2d2.initDynamicSemuiStuff('#modalCreateCustomerIdentifier');
+                                r2d2.initDynamicXEditableStuff('#modalCreateCustomerIdentifier');
+
+                                // ajaxPostFunc()
+                            }
+                        }).modal('show');
+                    }
+                });
+            }
         }
-        function editCustomerIdentifier(id, customerIdentifier) {
-            $.ajax({
-                url: '<g:createLink controller="organisation" action="editCustomerIdentifier" />?id='+id,
-                success: function(result){
-                    $("#dynamicModalContainer").empty();
-                    $("#modalCreateCustomerIdentifier").remove();
-
-                    $("#dynamicModalContainer").html(result);
-                    $("#dynamicModalContainer .ui.modal").modal({
-                        onVisible: function () {
-                            r2d2.initDynamicSemuiStuff('#modalCreateCustomerIdentifier');
-                            r2d2.initDynamicXEditableStuff('#modalCreateCustomerIdentifier');
-
-                            // ajaxPostFunc()
-                        }
-                    }).modal('show');
-                }
-            });
-        }
-</g:javascript>
-
+    </g:javascript>
+</g:if>
