@@ -106,7 +106,7 @@ class DeletionService {
                         List changeList = DocContext.findAllBySharedFrom(tmp)
                         changeList.each { tmp2 ->
                             tmp2.sharedFrom = null
-                            tmp2.save()
+                            tmp2.save(flush:true)
                         }
                     }
                     // org roles
@@ -114,7 +114,7 @@ class DeletionService {
                         List changeList = OrgRole.findAllBySharedFrom(tmp)
                         changeList.each { tmp2 ->
                             tmp2.sharedFrom = null
-                            tmp2.save()
+                            tmp2.save(flush:true)
                         }
                     }
                     // custom properties
@@ -122,18 +122,18 @@ class DeletionService {
                         List changeList = LicenseCustomProperty.findAllByInstanceOf(tmp)
                         changeList.each { tmp2 ->
                             tmp2.instanceOf = null
-                            tmp2.save()
+                            tmp2.save(flush:true)
                         }
                     }
                     // packages
                     packages.each{ tmp ->
                         tmp.license = null
-                        tmp.save()
+                        tmp.save(flush:true)
                     }
                     // subscription
                     subs.each{ tmp ->
                         tmp.owner = null
-                        tmp.save()
+                        tmp.save(flush:true)
                     }
 
                     // ----- delete foreign objects
@@ -184,20 +184,21 @@ class DeletionService {
                     lic.customProperties.clear()
                     customProps.each { tmp -> // incomprehensible fix
                         tmp.owner = null
-                        tmp.save()
+                        tmp.save(flush:true)
                     }
                     customProps.each { tmp -> tmp.delete() }
 
                     lic.delete()
-                    status.flush()
 
                     result.status = RESULT_SUCCESS
                 }
                 catch (Exception e) {
                     println 'error while deleting license ' + lic.id + ' .. rollback'
                     println e.message
+                    e.printStackTrace()
                     status.setRollbackOnly()
                     result.status = RESULT_ERROR
+                    result.license = lic //needed for redirection
                 }
             }
         }
@@ -447,7 +448,7 @@ class DeletionService {
         List propDefGroupBindings   = PropertyDefinitionGroupBinding.findAllByOrg(org)
 
         List budgetCodes        = BudgetCode.findAllByOwner(org)
-        List costItems          = CostItem.findAllByOwner(org)
+        List costItems          = CostItem.findAllByOwner(org) //subject of discussion!
         List costItemsECs       = CostItemElementConfiguration.findAllByForOrganisation(org)
         List invoices           = Invoice.findAllByOwner(org)
         List orderings          = Order.findAllByOwner(org)

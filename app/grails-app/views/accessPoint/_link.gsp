@@ -61,27 +61,7 @@
         </span>
     </h5>
     <g:if test="${linkedPlatformSubscriptionPackages}">
-        <table class="ui celled la-table table compact">
-            <thead>
-            <tr>
-                <th>${message(code: "accessPoint.subscription.label")}</th>
-                <th>${message(code: "accessPoint.package.label")}</th>
-                <g:sortableColumn property="platform" title="${message(code: "platform.label")}"/>
-            </tr>
-            </thead>
-            <tbody>
-            <g:each in="${linkedPlatformSubscriptionPackages}" var="linkedPlatformSubscriptionPackage">
-                <tr>
-                    <td><g:link controller="subscription" action="show"
-                                id="${linkedPlatformSubscriptionPackage[1].subscription.id}">${linkedPlatformSubscriptionPackage[1].subscription.name}</g:link></td>
-                    <td><g:link controller="package" action="show"
-                                id="${linkedPlatformSubscriptionPackage[1].pkg.id}">${linkedPlatformSubscriptionPackage[1].pkg.name}</g:link></td>
-                    <td><g:link controller="platform" action="show"
-                                id="${linkedPlatformSubscriptionPackage[0].id}">${linkedPlatformSubscriptionPackage[0].name}</g:link></td>
-                </tr>
-            </g:each>
-            </tbody>
-        </table>
+        <g:render template="linked_subs_wrapper"/>
     </g:if>
     <g:else>
         <p>${message(code: "accessPoint.info.noCustomLink")}</p>

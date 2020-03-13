@@ -394,28 +394,33 @@ class YodaController {
         result.globalMatrix = [:]
         result.globalMatrixSteps = [0, 2000, 4000, 8000, 12000, 20000, 30000, 45000, 60000]
 
+        result.archive = params.archive ?: SystemProfiler.getCurrentArchive()
+        result.allArchives = SystemProfiler.executeQuery('select distinct(archive) from SystemProfiler').collect{ it }
+
         List<String> allUri = SystemProfiler.executeQuery('select distinct(uri) from SystemProfiler')
 
         allUri.each { uri ->
             result.globalMatrix["${uri}"] = [:]
             result.globalMatrixSteps.eachWithIndex { step, i ->
-                String sql = 'select count(sp.uri) from SystemProfiler sp where sp.uri =:uri and sp.ms > :currStep'
-                Map sqlParams = [uri: uri, currStep: step]
+                String sql = 'select count(sp.uri) from SystemProfiler sp where sp.archive = :arc and sp.uri =:uri and sp.ms > :currStep'
+                Map sqlParams = [uri: uri, currStep: step, arc: result.archive]
 
                 if (i < result.globalMatrixSteps.size() - 1) {
                     sql += ' and sp.ms < :nextStep'
-                    sqlParams = [uri: uri, currStep: step, nextStep: result.globalMatrixSteps[i+1]]
+                    sqlParams = [uri: uri, currStep: step, nextStep: result.globalMatrixSteps[i+1], arc: result.archive]
                 }
                 result.globalMatrix["${uri}"]["${step}"] = SystemProfiler.executeQuery(sql, sqlParams).get(0)
             }
         }
 
         result.globalStats = SystemProfiler.executeQuery(
-                "select sp.uri, max(sp.ms) as max, avg(sp.ms) as avg, count(sp.ms) as counter from SystemProfiler sp group by sp.uri"
+                "select sp.uri, max(sp.ms) as max, avg(sp.ms) as avg, count(sp.ms) as counter from SystemProfiler sp where sp.archive = :arc group by sp.uri",
+                [arc: result.archive]
         ).sort{it[2]}.reverse()
 
         result.contextStats = SystemProfiler.executeQuery(
-                "select sp.uri, max(sp.ms) as max, avg(sp.ms) as avg, ctx.id, count(ctx.id) as counter from SystemProfiler sp join sp.context as ctx where ctx is not null group by sp.uri, ctx.id"
+                "select sp.uri, max(sp.ms) as max, avg(sp.ms) as avg, ctx.id, count(ctx.id) as counter from SystemProfiler sp join sp.context as ctx where sp.archive = :arc and ctx is not null group by sp.uri, ctx.id",
+                [arc: result.archive]
         ).sort{it[2]}.reverse()
 
         result
@@ -904,7 +909,7 @@ class YodaController {
                 costItems = CostItem.getAll()
             }
             else{
-                costItems = CostItem.findAllByOwner(Org.get(owner))
+                costItems = CostItem.findAllByOwnerAndCostItemStatusNotEqual(Org.get(owner),RDStore.COST_ITEM_DELETED)
             }
 
             costItems.each {

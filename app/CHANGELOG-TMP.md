@@ -2,6 +2,16 @@
 
 **Ticket    Date    Branch      Author  Feature/Bug     Description/Keywords**
 
+2186    12.03.2020  hbz-dev     Christian   Feature Zugangskonfiguration: Löschen grundsätzlich unterbinden, wenn Verknüpfungen vorliegen
+    
+2203    12.03.2020  rc1.2       Moe     Bug         pick&choose nicht möglich
+
+2246    12.03.2020  rc1.2       Andreas Bug         Sichtüberprüfung bei Dokumenten inkl. Anmerkungen überprüft, die direkt an TN-Lizenzen eingehängt sind
+
+2243    12.03.2020  rc1.2       Andreas Bug         Bugfix: fehlerhaftes Prozessieren von Abhängigkeiten bei Vertragslöschung
+
+2185    11.03.2020  hbz-dev     Christian   Feature Zugangskonfigurationen: nur aktive Lizenzen anzeigen
+
 2202    11.03.2020  rc1.2       David   Feature     Cherrypicked ERMS-2202 from hbz-dev and improved
 
 2239    10.03.2020  hbz-dev     David   Feature     Profiler: URL-abhängige Timeline implementieren
@@ -28,7 +38,17 @@
 
 2230    03.03.2020  rc1.2       David   Bug         "Teilnehmervertrag erstellen" kann bei fehlenden Teilnehmern nicht angelegt werden
 
+2224    02.03.2020  hbz-dev     Andreas Bug         Überprüfung zur Darstellung der Kostensichtbarkeit korrigiert
+
+2223    02.03.2020  hbz-dev     Andreas Feature     Lizenzbezug muss bei Kostenposten bestehen (ausgenommen Umfragekosten), Vorauswahl bei Kosnortien
+
 2215    28.02.2020  hbz-dev     David   Bug         DocContext wird nicht mehr erstellt (isShared, globannounce)
+
+2218    27.02.2020  hbz-dev     Andreas Feature     Menüpunkt "Einrichtung erstellen" aus "Meine Konsorten" entfernt
+
+2216    27.02.2020  hbz-dev     Andreas Feature     Aufhebung der Vorbelegung der Währung auf EUR bei Kosteneingabe
+
+2107    27.02.2020  hbz-dev     Andreas Bug         Löschroutine bei Kostenposten von hartes Löschen auf Löschmarkierung umgestellt
 
 2211    26.02.2020  hbz-dev     Andreas Feature     Bezeichnung Stammlizenz in Elternlizenz umgewandelt
 

@@ -4,6 +4,7 @@
 
 -- yyyy-mm-dd
 -- <short description>
+-- changesets in changelog-yyyy-mm-dd.groovy
 
 -----------------------------------------------------------------------------------------------------------------------
 
@@ -18,6 +19,12 @@ update survey_info set surin_is_mandatory = true where surin_is_mandatory is nul
 -- changesets in changelog-2020-02-19.groovy
 
 -- ALTER TABLE subscription ADD COLUMN sub_has_perpetual_access boolean NOT NULL DEFAULT false;
+
+-- 2020-02-27
+-- ERMS-2107
+
+update cost_item set ci_status_rv_fk = (select rdv_id from refdata_value where rdv_value = 'generic.null.value') where ci_status_rv_fk is null;
+ALTER TABLE public.cost_item ALTER COLUMN ci_status_rv_fk SET NOT NULL;
 
 -- 2020-03-02
 -- missing statement
@@ -72,5 +79,5 @@ alter table cost_item drop column ci_include_in_subscr;
 
 -- 2020-03-12
 -- bugfix correct camelcase
-
-update refdata_category set rdc_description = 'subjectgroup' where rdc_description = 'subjectGroup';
+-- changesets in changelog-2020-03-13.groovy
+-- update refdata_category set rdc_description = 'subjectgroup' where rdc_description = 'subjectGroup';

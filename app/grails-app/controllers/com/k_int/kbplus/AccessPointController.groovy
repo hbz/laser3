@@ -3,6 +3,7 @@ package com.k_int.kbplus
 import com.k_int.kbplus.auth.User
 import de.laser.controller.AbstractDebugController
 import de.laser.helper.RDConstants
+import de.laser.helper.RDStore
 import de.uni_freiburg.ub.IpRange
 import grails.plugin.springsecurity.annotation.Secured
 import groovy.json.JsonOutput
@@ -17,7 +18,7 @@ class AccessPointController extends AbstractDebugController {
     def orgTypeService
 
 
-    static allowedMethods = [create: ['GET', 'POST'], delete: ['GET', 'POST']]
+    static allowedMethods = [create: ['GET', 'POST'], delete: ['GET', 'POST'], dynamicSubscriptionList: ['POST']]
 
 
     @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
@@ -133,6 +134,27 @@ class AccessPointController extends AbstractDebugController {
         return resultList
     }
 
+    @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
+    def dynamicSubscriptionList() {
+        List currentSubIds = orgTypeService.getCurrentSubscriptionIds(contextService.getOrg())
+        OrgAccessPoint orgAccessPoint = OrgAccessPoint.get(params.id)
+        String qry = """
+            Select p, sp, s from Platform p
+            JOIN p.oapp as oapl
+            JOIN oapl.subPkg as sp
+            JOIN sp.subscription as s
+            WHERE oapl.active=true and oapl.oap=${orgAccessPoint.id}
+            AND s.id in (:currentSubIds)
+            AND EXISTS (SELECT 1 FROM OrgAccessPointLink ioapl 
+                where ioapl.subPkg=oapl.subPkg and ioapl.platform=p and ioapl.oap is null)
+"""
+        if (params.checked == "true"){
+            qry += " AND s.status = ${RDStore.SUBSCRIPTION_CURRENT.id}"
+        }
+
+        ArrayList linkedPlatformSubscriptionPackages = Platform.executeQuery(qry, [currentSubIds: currentSubIds])
+        return render(template: "linked_subs_table", model: [linkedPlatformSubscriptionPackages: linkedPlatformSubscriptionPackages, params:params])
+    }
 
     @Secured(closure = {
         ctx.accessService.checkPermAffiliationX("ORG_BASIC_MEMBER,ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN")
@@ -319,16 +341,23 @@ class AccessPointController extends AbstractDebugController {
     @Secured(closure = { ctx.accessService.checkPermAffiliation('ORG_BASIC_MEMBER','INST_EDITOR') || (ctx.accessService.checkPermAffiliation('ORG_CONSORTIUM','INST_EDITOR') && OrgAccessPoint.get(request.getRequestURI().split('/').last()).org == ctx.contextService.getOrg())
     })
     def delete() {
-        def accessPoint = OrgAccessPoint.get(params.id)
-
-        Org org = accessPoint.org;
-        def orgId = org.id;
-
+        OrgAccessPoint accessPoint = OrgAccessPoint.get(params.id)
         if (!accessPoint) {
             flash.message = message(code: 'default.not.found.message', args: [message(code: 'address.label'), params.id])
-            redirect action: 'list'
+            redirect(url: request.getHeader("referer"))
             return
         }
+
+        Org org = accessPoint.org;
+        Long oapPlatformLinkCount = OrgAccessPointLink.countByActiveAndOapAndSubPkgIsNull(true, accessPoint)
+        Long oapSubscriptionLinkCount = OrgAccessPointLink.countByActiveAndOapAndSubPkgIsNotNull(true, accessPoint)
+
+        if ( oapPlatformLinkCount != 0 || oapSubscriptionLinkCount != 0){
+            flash.message = message(code: 'accessPoint.list.deleteDisabledInfo', args: [oapPlatformLinkCount, oapSubscriptionLinkCount])
+            redirect(url: request.getHeader("referer"))
+            return
+        }
+        def orgId = org.id;
 
         try {
             accessPoint.delete(flush: true)
@@ -404,17 +433,19 @@ class AccessPointController extends AbstractDebugController {
             ArrayList linkedSubs = Subscription.executeQuery(qry2, [currentSubIds: currentSubIds])
             it['linkedSubs'] = linkedSubs
         }
-        String linkedSubscriptionsQuery = "select new map(sp as subPkg,oapl as oapl) from OrgAccessPointLink oapl join oapl.subPkg as sp where oapl.active = true and oapl.oap=${orgAccessPoint.id}"
 
         String qry3 = """
-            Select p, sp from Platform p
+            Select p, sp, s from Platform p
             JOIN p.oapp as oapl
             JOIN oapl.subPkg as sp
-            WHERE oapl.active=true and oapl.oap=${orgAccessPoint.id} 
+            JOIN sp.subscription as s
+            WHERE oapl.active=true and oapl.oap=${orgAccessPoint.id}
+            AND s.id in (:currentSubIds) 
             AND EXISTS (SELECT 1 FROM OrgAccessPointLink ioapl 
                 where ioapl.subPkg=oapl.subPkg and ioapl.platform=p and ioapl.oap is null)
+            AND s.status = ${RDStore.SUBSCRIPTION_CURRENT.id}    
 """
-        ArrayList linkedPlatformSubscriptionPackages = Platform.executeQuery(qry3)
+        ArrayList linkedPlatformSubscriptionPackages = Platform.executeQuery(qry3, [currentSubIds: currentSubIds])
 
         return [
              accessPoint           : orgAccessPoint, accessPointDataList: accessPointDataList, orgId: orgId,
@@ -426,7 +457,8 @@ class AccessPointController extends AbstractDebugController {
              ipv6Ranges            : ipv6Ranges, ipv6Format: ipv6Format,
              autofocus             : autofocus,
              orgInstance           : orgAccessPoint.org,
-             inContextOrg          : orgId == contextService.org.id
+             inContextOrg          : orgId == contextService.org.id,
+             activeSubsOnly        : true,
         ]
     }
 

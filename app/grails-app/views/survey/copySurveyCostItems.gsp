@@ -282,7 +282,7 @@ ${surveyInfo?.name}
 
                 <tr class="">
                     <td>
-                        <g:if test="${participant.surveyCostItem && !com.k_int.kbplus.CostItem.findAllBySubAndOwnerAndCostItemElement(participant.newSub, institution, costElement)}">
+                        <g:if test="${participant.surveyCostItem && !com.k_int.kbplus.CostItem.findAllBySubAndOwnerAndCostItemElementAndCostItemStatusNotEqual(participant.newSub, institution, costElement, RDStore.COST_ITEM_DELETED)}">
                             <g:checkBox name="selectedSurveyCostItem" value="${participant.surveyCostItem.id}" checked="false"/>
                         </g:if>
                     </td>
@@ -317,7 +317,7 @@ ${surveyInfo?.name}
                     </td>
                     <td>
                         <g:if test="${participant.oldSub}">
-                            <g:each in="${com.k_int.kbplus.CostItem.findAllBySubAndOwnerAndCostItemElement(participant.oldSub, institution, costElement)}"
+                            <g:each in="${com.k_int.kbplus.CostItem.findAllBySubAndOwnerAndCostItemElementAndCostItemStatusNotEqual(participant.oldSub, institution, costElement, RDStore.COST_ITEM_DELETED)}"
                                     var="costItemParticipantSub">
 
                                 ${costItemParticipantSub.costItemElement?.getI10n('value')}<br>
@@ -373,7 +373,7 @@ ${surveyInfo?.name}
 
                     <td>
                         <g:if test="${participant.newSub}">
-                            <g:each in="${com.k_int.kbplus.CostItem.findAllBySubAndOwnerAndCostItemElement(participant.newSub, institution, costElement)}"
+                            <g:each in="${com.k_int.kbplus.CostItem.findAllBySubAndOwnerAndCostItemElementAndCostItemStatusNotEqual(participant.newSub, institution, costElement, RDStore.COST_ITEM_DELETED)}"
                                     var="costItemParticipantSuccessorSub">
 
                                 ${costItemParticipantSuccessorSub.costItemElement?.getI10n('value')}<br>
