@@ -586,7 +586,7 @@ class YodaService {
                         RefdataValue currTippStatus = refdatas[gokbTIPP.status.text()]
                         Map<String,Object> tippDetails = [issueEntitlements: IssueEntitlement.findAllByTippAndStatusNotEqual(delTIPP,RDStore.TIPP_STATUS_DELETED), action: 'updateStatus', status: currTippStatus]
                         //storing key is needed in order to prevent LazyInitializationException when executing cleanup
-                        result[delTIPP.class.name+':'+delTIPP.id] = tippDetails
+                        result[delTIPP.globalUID] = tippDetails
                         deletedWithGOKbRecord << result
                     }
                 }
@@ -656,10 +656,10 @@ class YodaService {
             //hook up pending changes
             Locale locale = LocaleContextHolder.locale
             String defaultAcceptChange = messageSource.getMessage('default.accept.change.ie',null,locale)
-            List<IssueEntitlement> iesToNotify = IssueEntitlement.executeQuery('select ie from IssueEntitlement ie where ie.tipp.globalUID in :tippKeys',[tippKeys:tippsToUpdate])
-            if(iesToNotify) {
-                tippsToUpdate.each { tippKey ->
-                    TitleInstancePackagePlatform tipp = genericOIDService.resolveOID(tippKey)
+            tippsToUpdate.each { tippKey ->
+                List<IssueEntitlement> iesToNotify = IssueEntitlement.executeQuery('select ie from IssueEntitlement ie where ie.tipp.globalUID = :tippKey',[tippKey:tippKey])
+                if(iesToNotify) {
+                    TitleInstancePackagePlatform tipp = TitleInstancePackagePlatform.findByGlobalUID(tippKey)
                     String titleLink = grailsLinkGenerator.link(controller: 'title', action: 'show', id: tipp.title.id)
                     String pkgLink = grailsLinkGenerator.link(controller: 'package', action: 'show', id: tipp.pkg.id)
                     iesToNotify.each { IssueEntitlement ie ->
@@ -670,12 +670,12 @@ class YodaService {
                         changeDesc = messageSource.getMessage('pendingChange.message_TP02',args,locale)
                         changeMap.changeTarget = "${ie.class.name}:${ie.id}"
                         changeMap.changeType = PendingChangeService.EVENT_PROPERTY_CHANGE
-                        changeMap.changeDoc = [prop: 'status', fieldType: RefdataValue.class.name, refdataCategory: RefdataCategory.TIPP_STATUS, 'new': status, 'old': ie.status]
+                        changeMap.changeDoc = [prop: 'status', fieldType: RefdataValue.class.name, refdataCategory: RDConstants.TIPP_STATUS, 'new': status, 'old': ie.status]
                         changeNotificationService.registerPendingChange(PendingChange.PROP_SUBSCRIPTION,ie.subscription,ie.subscription.getSubscriber(),changeMap,null,null,changeDesc)
                     }
                 }
+                else println("no issue entitlements depending!")
             }
-            else println("no issue entitlements depending!")
         }
         Set<TitleInstancePackagePlatform> tippsToDelete = TitleInstancePackagePlatform.findAllByGokbIdInListAndIdNotInList(result.duplicateTIPPKeys,result.excludes)
         //this is correct; only the duplicates should be deleted!

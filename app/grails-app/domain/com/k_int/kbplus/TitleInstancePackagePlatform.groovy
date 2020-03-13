@@ -1,8 +1,6 @@
 package com.k_int.kbplus
 
-import com.k_int.ClassUtils
 import de.laser.domain.AbstractBaseDomain
-import de.laser.domain.IssueEntitlementCoverage
 import de.laser.domain.TIPPCoverage
 import de.laser.helper.RDConstants
 import de.laser.helper.RDStore
