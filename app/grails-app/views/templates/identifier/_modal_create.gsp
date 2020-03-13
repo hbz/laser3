@@ -15,7 +15,12 @@
             <label for="namespace">${message(code: 'identifier.namespace.label')}:</label>
 
             <g:select id="namespace" name="ns.id"
-                      from="${com.k_int.kbplus.IdentifierNamespace.list(sort: 'ns')}" optionKey="id" required="" optionValue="ns" value="${identifier?.ns}" class="ui search dropdown"/>
+                      from="${com.k_int.kbplus.IdentifierNamespace.list(sort: 'ns')}"
+                      optionKey="id"
+                      required=""
+                      optionValue="ns"
+                      value="${identifier?.ns?.id}"
+                      class="ui search dropdown"/>
         </div>
 
         <div class="field fieldcontain">
