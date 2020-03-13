@@ -69,12 +69,12 @@ class OrganisationController extends AbstractDebugController {
 
         Map result = [
                 user:           user,
-                orgInstance:    org,
-                editable:   	SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN,ROLE_ORG_EDITOR'),
-                inContextOrg:   inContextOrg
+                orgInstance:    org//,
+//                editable:   	SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN,ROLE_ORG_EDITOR'),
+//                inContextOrg:   inContextOrg
         ]
-        result.editable = result.editable || (inContextOrg && accessService.checkMinUserOrgRole(user, org, 'INST_ADM'))
-        result.isComboRelated = isComboRelated
+//        result.editable = result.editable || (inContextOrg && accessService.checkMinUserOrgRole(user, org, 'INST_ADM'))
+//        result.isComboRelated = isComboRelated
 
 //		if (params.deleteCI) {
 //			CustomerIdentifier ci = genericOIDService.resolveOID(params.deleteCI)
@@ -880,9 +880,6 @@ class OrganisationController extends AbstractDebugController {
         return
       }
 
-        du.setBenchmark('properties')
-
-
         List bm = du.stopBenchmark()
         result.benchMark = bm
 
@@ -981,27 +978,27 @@ class OrganisationController extends AbstractDebugController {
         result.editable = result.editable || (inContextOrg && accessService.checkMinUserOrgRole(user, org, 'INST_ADM'))
         result.isComboRelated = isComboRelated
 
-        if (params.deleteCI) {
-            CustomerIdentifier ci = genericOIDService.resolveOID(params.deleteCI)
-            if (ci && ci.owner == org) {
-                ci.delete()
-            }
-        }
-        if (params.addCIPlatform) {
-            Platform plt = genericOIDService.resolveOID(params.addCIPlatform)
-            if (plt) {
-                CustomerIdentifier ci = new CustomerIdentifier(
-                        customer: org,
-                        platform: plt,
-                        value: params.addCIValue?.trim(),
-                        note: params.addCINote?.trim(),
-                        owner: contextService.getOrg(),
-                        isPublic: true,
-                        type: RefdataValue.getByValueAndCategory('Default', RDConstants.CUSTOMER_IDENTIFIER_TYPE)
-                )
-                ci.save()
-            }
-        }
+//        if (params.deleteCI) {
+//            CustomerIdentifier ci = genericOIDService.resolveOID(params.deleteCI)
+//            if (ci && ci.owner == org) {
+//                ci.delete()
+//            }
+//        }
+//        if (params.addCIPlatform) {
+//            Platform plt = genericOIDService.resolveOID(params.addCIPlatform)
+//            if (plt) {
+//                CustomerIdentifier ci = new CustomerIdentifier(
+//                        customer: org,
+//                        platform: plt,
+//                        value: params.addCIValue?.trim(),
+//                        note: params.addCINote?.trim(),
+//                        owner: contextService.getOrg(),
+//                        isPublic: true,
+//                        type: RefdataValue.getByValueAndCategory('Default', RDConstants.CUSTOMER_IDENTIFIER_TYPE)
+//                )
+//                ci.save()
+//            }
+//        }
 
         // adding default settings
         organisationService.initMandatorySettings(org)
@@ -1181,19 +1178,24 @@ class OrganisationController extends AbstractDebugController {
         result.user = User.get(springSecurityService.principal.id)
         Org orgInstance = Org.get(params.id)
 
-        result.editable = SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN') || instAdmService.hasInstAdmPivileges(result.user, orgInstance, [COMBO_TYPE_DEPARTMENT, COMBO_TYPE_CONSORTIUM])
-
-        // forbidden access
-        if (! result.editable && orgInstance.id != contextService.getOrg().id) {
-            redirect controller: 'organisation', action: 'show', id: orgInstance.id
-
-        }
-
-          if (!orgInstance) {
+        if (! orgInstance) {
             flash.message = message(code: 'default.not.found.message', args: [message(code: 'org.label'), params.id])
             redirect action: 'list'
             return
-          }
+        }
+
+        result.editable = SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN') || accessService.checkMinUserOrgRole(result.user, orgInstance, 'INST_ADM')
+
+        if (! result.editable) {
+            boolean instAdminExists = orgInstance.getAllValidInstAdmins().size() > 0
+            boolean comboCheck = instAdmService.hasInstAdmPivileges(result.user, orgInstance, [COMBO_TYPE_DEPARTMENT, COMBO_TYPE_CONSORTIUM])
+
+            result.editable = comboCheck && ! instAdminExists
+        }
+
+        if (! result.editable) {
+            redirect controller: 'organisation', action: 'show', id: orgInstance.id
+        }
 
         result.pendingRequests = UserOrg.findAllByStatusAndOrg(UserOrg.STATUS_PENDING, orgInstance, [sort:'dateRequested', order:'desc'])
         result.orgInstance = orgInstance
