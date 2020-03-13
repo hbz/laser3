@@ -3,6 +3,7 @@ package com.k_int.kbplus
 
 import de.laser.domain.I10nTranslation
 import de.laser.helper.DateUtil
+import de.laser.helper.RDStore
 import grails.util.Holders
 import org.codehaus.groovy.grails.web.json.JSONElement
 import org.springframework.context.i18n.LocaleContextHolder
@@ -291,7 +292,7 @@ class SurveyConfig {
 
     List<CostItem> getSurveyConfigCostItems(){
 
-        return CostItem.findAllBySurveyOrgInList(this.orgs)
+        return CostItem.findAllBySurveyOrgInListAndCostItemStatusNotEqual(this.orgs, RDStore.COST_ITEM_DELETED)
 
     }
 
