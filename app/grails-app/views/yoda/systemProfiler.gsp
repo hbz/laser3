@@ -13,14 +13,24 @@
 <br>
     <h2 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon />${message(code:'menu.yoda.systemProfiler')}</h2>
 
+    <div class="ui la-float-right">
+        <g:select name="archive" id="archive" class="ui dropdown"
+                  from="${allArchives}" optionKey="${{it.toString()}}" optionValue="${{it.toString()}}" value="${archive}"/>
+        <script>
+            $('#archive').on('change', function() {
+                var selection = $(this).val()
+                var link = "${g.createLink(absolute: true, controller: 'yoda', action: 'systemProfiler')}?archive=" + selection
+                window.location.href = link
+            })
+        </script>
+    </div>
+
     <div class="ui secondary pointing tabular menu">
         <a data-tab="first" class="item active">Global</a>
         <a data-tab="second" class="item">Kontextbezogen</a>
     </div>
 
     <div data-tab="first" class="ui bottom attached tab segment active" style="border-top: 1px solid #d4d4d5;">
-
-        <br />
 
         <table class="ui celled la-table la-table-small table" id="globalTable">
             <thead>
@@ -77,7 +87,6 @@
     </div>
     <div data-tab="second" class="ui bottom attached tab segment" style="border-top: 1px solid #d4d4d5;">
 
-        <br />
         <g:select id="filterTable" name="filterTable" class="ui dropdown search"
                   from="${contextStats.collect{com.k_int.kbplus.Org.get(it[3])}.unique()}"
                   optionKey="id" optionValue="${{it.sortname + ' (' + it.shortname + ')'}}"

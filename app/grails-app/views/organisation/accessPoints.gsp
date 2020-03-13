@@ -65,7 +65,8 @@
                 </tr>
                 </thead>
                 <tbody>
-                    <g:each in="${orgAccessPointList}" var="accessPoint">
+                    <g:each in="${orgAccessPointList}" var="accessPointListItem">
+                        <g:set var="accessPoint" value="${accessPointListItem.oap}"/>
                         <tr>
                         <td class="la-main-object" >
                         <g:link controller="accessPoint" action="edit_${accessPoint.accessMethod.value.toLowerCase()}" id="${accessPoint.id}">
@@ -93,11 +94,22 @@
                             </td>
                             <g:if test="${accessService.checkPermAffiliation('ORG_BASIC_MEMBER','INST_EDITOR') || (accessService.checkPermAffiliation('ORG_CONSORTIUM','INST_EDITOR') && inContextOrg)}">
                                 <td class="center aligned">
-                                <g:link action="delete" controller="accessPoint" id="${accessPoint?.id}" class="ui negative icon button js-open-confirm-modal"
-                                        data-confirm-tokenMsg="${message(code: 'confirm.dialog.delete.accessPoint', args: [accessPoint.name])}"
-                                        data-confirm-term-how="delete">
-                                    <i class="trash alternate icon"></i>
-                                </g:link>
+                                    <g:if test="${accessPointListItem['platformLinkCount'] == 0 && accessPointListItem['subscriptionLinkCount'] == 0}">
+                                        <g:link action="delete" controller="accessPoint" id="${accessPoint?.id}"
+                                                class="ui negative icon button js-open-confirm-modal"
+                                                data-confirm-tokenMsg="${message(code: 'confirm.dialog.delete.accessPoint', args: [accessPoint.name])}"
+                                                data-confirm-term-how="delete">
+                                            <i class="trash alternate icon"></i>
+                                        </g:link>
+                                    </g:if>
+                                    <g:else>
+                                        <div data-tooltip="${message(code: 'accessPoint.list.deleteDisabledInfo', args: [accessPointListItem['platformLinkCount'], accessPointListItem['subscriptionLinkCount']])}" data-position="bottom center">
+                                        <div class="ui icon button disabled">
+                                            <i class="trash alternate icon"></i>
+                                        </div>
+                                        </div>
+                                    </g:else>
+
                                 </td>
                             </g:if>
                         </tr>
