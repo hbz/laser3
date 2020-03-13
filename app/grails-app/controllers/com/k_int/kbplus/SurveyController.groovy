@@ -3923,7 +3923,7 @@ class SurveyController {
                        g.message(code: 'license.label'),
                        g.message(code: 'subscription.packages.label'),
                        g.message(code: 'default.status.label'),
-                       g.message(code: 'default.type.label'),
+                       g.message(code: 'subscription.type.label'),
                        g.message(code: 'subscription.kind.label'),
                        g.message(code: 'subscription.form.label'),
                        g.message(code: 'subscription.resource.label'),

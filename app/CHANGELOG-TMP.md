@@ -2,6 +2,8 @@
 
 **Ticket    Date    Branch      Author  Feature/Bug     Description/Keywords**
 
+2254    13.03.2020  hbz-dev     Moe     Feature     Lizenztyp und Lizenzart umbenennen
+
 2240    13.03.2020   hbz-dev     Moe     Feature    Lizenzen pro Teilnehmer Erweiterung um Mailfunktion
 
 2154    13.02.2020  hbz-dev     Anja    Feature     Identifikatoren und Kundennummern als eigenes Panel
