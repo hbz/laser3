@@ -1181,19 +1181,24 @@ class OrganisationController extends AbstractDebugController {
         result.user = User.get(springSecurityService.principal.id)
         Org orgInstance = Org.get(params.id)
 
-        result.editable = SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN') || instAdmService.hasInstAdmPivileges(result.user, orgInstance, [COMBO_TYPE_DEPARTMENT, COMBO_TYPE_CONSORTIUM])
-
-        // forbidden access
-        if (! result.editable && orgInstance.id != contextService.getOrg().id) {
-            redirect controller: 'organisation', action: 'show', id: orgInstance.id
-
-        }
-
-          if (!orgInstance) {
+        if (! orgInstance) {
             flash.message = message(code: 'default.not.found.message', args: [message(code: 'org.label'), params.id])
             redirect action: 'list'
             return
-          }
+        }
+
+        result.editable = SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN') || accessService.checkMinUserOrgRole(result.user, orgInstance, 'INST_ADM')
+
+        if (! result.editable) {
+            boolean instAdminExists = orgInstance.getAllValidInstAdmins().size() > 0
+            boolean comboCheck = instAdmService.hasInstAdmPivileges(result.user, orgInstance, [COMBO_TYPE_DEPARTMENT, COMBO_TYPE_CONSORTIUM])
+
+            result.editable = comboCheck && ! instAdminExists
+        }
+
+        if (! result.editable) {
+            redirect controller: 'organisation', action: 'show', id: orgInstance.id
+        }
 
         result.pendingRequests = UserOrg.findAllByStatusAndOrg(UserOrg.STATUS_PENDING, orgInstance, [sort:'dateRequested', order:'desc'])
         result.orgInstance = orgInstance

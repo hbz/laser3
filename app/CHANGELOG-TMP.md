@@ -2,6 +2,8 @@
 
 **Ticket    Date    Branch      Author  Feature/Bug     Description/Keywords**
 
+2116    11.03.2020  hbz-dev     David   Feature     Nutzerverwaltung sperren für Konsortialstellen, sobald INST_ADMIN existiert
+
 2154    13.02.2020  hbz-dev     Anja    Feature     Identifikatoren und Kundennummern als eigenes Panel
 
 2186    12.03.2020  hbz-dev     Christian   Feature Zugangskonfiguration: Löschen grundsätzlich unterbinden, wenn Verknüpfungen vorliegen
