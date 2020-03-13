@@ -69,12 +69,12 @@ class OrganisationController extends AbstractDebugController {
 
         Map result = [
                 user:           user,
-                orgInstance:    org,
-                editable:   	SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN,ROLE_ORG_EDITOR'),
-                inContextOrg:   inContextOrg
+                orgInstance:    org//,
+//                editable:   	SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN,ROLE_ORG_EDITOR'),
+//                inContextOrg:   inContextOrg
         ]
-        result.editable = result.editable || (inContextOrg && accessService.checkMinUserOrgRole(user, org, 'INST_ADM'))
-        result.isComboRelated = isComboRelated
+//        result.editable = result.editable || (inContextOrg && accessService.checkMinUserOrgRole(user, org, 'INST_ADM'))
+//        result.isComboRelated = isComboRelated
 
 //		if (params.deleteCI) {
 //			CustomerIdentifier ci = genericOIDService.resolveOID(params.deleteCI)
@@ -880,9 +880,6 @@ class OrganisationController extends AbstractDebugController {
         return
       }
 
-        du.setBenchmark('properties')
-
-
         List bm = du.stopBenchmark()
         result.benchMark = bm
 
@@ -981,27 +978,27 @@ class OrganisationController extends AbstractDebugController {
         result.editable = result.editable || (inContextOrg && accessService.checkMinUserOrgRole(user, org, 'INST_ADM'))
         result.isComboRelated = isComboRelated
 
-        if (params.deleteCI) {
-            CustomerIdentifier ci = genericOIDService.resolveOID(params.deleteCI)
-            if (ci && ci.owner == org) {
-                ci.delete()
-            }
-        }
-        if (params.addCIPlatform) {
-            Platform plt = genericOIDService.resolveOID(params.addCIPlatform)
-            if (plt) {
-                CustomerIdentifier ci = new CustomerIdentifier(
-                        customer: org,
-                        platform: plt,
-                        value: params.addCIValue?.trim(),
-                        note: params.addCINote?.trim(),
-                        owner: contextService.getOrg(),
-                        isPublic: true,
-                        type: RefdataValue.getByValueAndCategory('Default', RDConstants.CUSTOMER_IDENTIFIER_TYPE)
-                )
-                ci.save()
-            }
-        }
+//        if (params.deleteCI) {
+//            CustomerIdentifier ci = genericOIDService.resolveOID(params.deleteCI)
+//            if (ci && ci.owner == org) {
+//                ci.delete()
+//            }
+//        }
+//        if (params.addCIPlatform) {
+//            Platform plt = genericOIDService.resolveOID(params.addCIPlatform)
+//            if (plt) {
+//                CustomerIdentifier ci = new CustomerIdentifier(
+//                        customer: org,
+//                        platform: plt,
+//                        value: params.addCIValue?.trim(),
+//                        note: params.addCINote?.trim(),
+//                        owner: contextService.getOrg(),
+//                        isPublic: true,
+//                        type: RefdataValue.getByValueAndCategory('Default', RDConstants.CUSTOMER_IDENTIFIER_TYPE)
+//                )
+//                ci.save()
+//            }
+//        }
 
         // adding default settings
         organisationService.initMandatorySettings(org)
