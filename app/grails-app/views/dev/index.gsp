@@ -12,26 +12,22 @@
     <div id="modalCreateTask">
         <h1 class="ui dividing  header">Komponenten zur Überprüfung der Barrierefreiheit</h1>
 
-        <h2 class="ui dividing  header">Einfache Datentabelle</h2>
-        <g:render template="simpleTable" />
+        <h2 class="ui dividing  header">Hauptnavigation</h2>
+        <g:render template="mainNavigation" />
 
         <h2 class="ui dividing header">Brotkrumennavigation</h2>
         <semui:breadcrumbs>
             <semui:crumb message="myinst.currentSubscriptions.label" class="active" />
         </semui:breadcrumbs>
 
-
-        <h2 class="ui dividing  header">Hauptnavigation</h2>
-        <g:render template="mainNavigation" />
-
         <h2 class="ui dividing header">Buttons</h2>
         <g:render template="button" />
 
+        <h2 class="ui dividing  header">Einfache Datentabelle</h2>
+        <g:render template="simpleTable" />
+
         <h2 class="ui dividing  header">Formulare</h2>
         <g:render template="form" />
-
-
-
 
 
     <h2 class="ui dividing header">Icons</h2>
