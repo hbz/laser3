@@ -496,10 +496,10 @@ class License
     }
 
     Map<String, Object> getCalculatedPropDefGroups(Org contextOrg) {
-        Map<String, Object> result = [ 'global':[], 'local':[], 'member':[], 'orphanedProperties':[]]
+        Map<String, Object> result = [ 'sorted':[], 'global':[], 'local':[], 'member':[], 'orphanedProperties':[]]
 
         // ALL type depending groups without checking tenants or bindings
-        List<PropertyDefinitionGroup> groups = PropertyDefinitionGroup.findAllByOwnerType(License.class.name)
+        List<PropertyDefinitionGroup> groups = PropertyDefinitionGroup.findAllByOwnerType(License.class.name, [sort:'name', order:'asc'])
         groups.each{ it ->
 
             // cons_members
@@ -509,21 +509,25 @@ class License
                 // global groups
                 if (it.tenant == null) {
                     if (binding) {
-                        result.member << [it, binding]
+                        result.member << [it, binding] // TODO: remove
+                        result.sorted << ['member', it, binding]
                     } else {
-                        result.global << it
+                        result.global << it // TODO: remove
+                        result.sorted << ['global', it, null]
                     }
                 }
                 // consortium @ member; getting group by tenant and instanceOf.binding
                 if (it.tenant?.id == contextOrg?.id) {
                     if (binding) {
-                        result.member << [it, binding]
+                        result.member << [it, binding] // TODO: remove
+                        result.sorted << ['member', it, binding]
                     }
                 }
                 // licensee consortial; getting group by consortia and instanceOf.binding
                 else if (it.tenant?.id == this.instanceOf.getLicensingConsortium()?.id) {
                     if (binding) {
-                        result.member << [it, binding]
+                        result.member << [it, binding] // TODO: remove
+                        result.sorted << ['member', it, binding]
                     }
                 }
             }
@@ -533,9 +537,11 @@ class License
 
                 if (it.tenant == null || it.tenant?.id == contextOrg?.id) {
                     if (binding) {
-                        result.local << [it, binding]
+                        result.local << [it, binding] // TODO: remove
+                        result.sorted << ['local', it, binding]
                     } else {
-                        result.global << it
+                        result.global << it // TODO: remove
+                        result.sorted << ['global', it, null]
                     }
                 }
             }
