@@ -1,6 +1,40 @@
 <%@ page import="com.k_int.kbplus.Subscription" %>
-
+<div class="ui stackable grid">
+    <div class="twelve wide column">
 <g:if test="${controllerName == 'survey' && actionName == 'show'}">
+
+    <div class="ui horizontal segments">
+        <div class="ui segment center aligned">
+            <b>${message(code: 'surveyConfig.orgs.label')}:</b>
+            <g:link controller="survey" action="surveyParticipants"
+                    id="${surveyConfig.surveyInfo.id}"
+                    params="[surveyConfigID: surveyConfig?.id]">
+                <div class="ui circular label">${surveyConfig?.orgs?.size()}</div>
+            </g:link>
+        </div>
+
+        <div class="ui segment center aligned">
+            <b>${message(code: 'surveyConfig.subOrgsWithoutMultiYear.label')}:</b>
+            <g:link controller="subscription" action="members" id="${subscriptionInstance.id}"
+                    params="[subRunTime: true, filterSet: true]">
+                <div class="ui circular label">
+                    ${com.k_int.kbplus.Subscription.findAllByInstanceOfAndIsMultiYear(subscriptionInstance, false)?.size()}
+                </div>
+            </g:link>
+        </div>
+
+        <div class="ui segment center aligned">
+            <b>${message(code: 'surveyConfig.subOrgsWithMultiYear.label')}:</b>
+            <g:link controller="subscription" action="members" id="${subscriptionInstance.id}"
+                    params="[subRunTimeMultiYear: true, filterSet: true]">
+                <div class="ui circular label">
+                    ${com.k_int.kbplus.Subscription.findAllByInstanceOfAndIsMultiYear(subscriptionInstance, true)?.size()}
+                </div>
+            </g:link>
+        </div>
+    </div>
+
+
     <div class="ui card ">
         <div class="content">
             <dl>
@@ -29,17 +63,6 @@
             <dl>
                 <dt class="control-label">
                     <div class="ui icon la-popup-tooltip la-delay"
-                         data-content="${message(code: "surveyConfig.header.comment")}">
-                        ${message(code: 'surveyConfig.header.label')}
-                        <i class="question small circular inverted icon"></i>
-                    </div>
-                </dt>
-                <dd><semui:xEditable owner="${surveyConfig}" field="header"/></dd>
-
-            </dl>
-            <dl>
-                <dt class="control-label">
-                    <div class="ui icon la-popup-tooltip la-delay"
                          data-content="${message(code: "surveyConfig.comment.comment")}">
                         ${message(code: 'surveyConfig.comment.label')}
                         <i class="question small circular inverted icon"></i>
@@ -60,14 +83,30 @@
 
             </dl>
 
+            <g:if test="${subscriptionInstance}">
+                <div class="field" style="text-align: left;">
+                    <button id="subscription-info-toggle"
+                            class="ui button">Lizenzinformationen anzeigen</button>
+                    <script>
+                        $('#subscription-info-toggle').on('click', function () {
+                            $('#subscription-info').toggleClass('hidden')
+                            if ($('#subscription-info').hasClass('hidden')) {
+                                $(this).text('Lizenzinformationen anzeigen')
+                            } else {
+                                $(this).text('Lizenzinformationen ausblenden')
+                            }
+                        })
+                    </script>
+                </div>
+            </g:if>
+
         </div>
     </div>
 </g:if>
 
 
-<div class="ui stackable grid">
-    <div class="twelve wide column">
-        <div class="la-inline-lists">
+
+        <div id="subscription-info" class="la-inline-lists hidden">
 
             <div class="ui card">
                 <div class="content">
@@ -103,7 +142,7 @@
                                     <dd><semui:auditInfo auditable="[subscriptionInstance, 'status']"/></dd>
                                 </dl>
                                 <dl>
-                                    <dt class="control-label">${message(code: 'default.type.label')}</dt>
+                                    <dt class="control-label">${message(code: 'subscription.type.label')}</dt>
                                     <dd>${subscriptionInstance?.type?.getI10n('value')}</dd>
                                     <dd><semui:auditInfo auditable="[subscriptionInstance, 'type']"/></dd>
                                 </dl>
@@ -232,6 +271,116 @@
                             </div>
                         </div>
 
+
+                        <div class="ui card la-time-card">
+
+                            <div class="content">
+                                <div class="header"><g:message code="surveyConfigsInfo.costItems"/></div>
+                            </div>
+
+                            <div class="content">
+
+                                <g:set var="surveyOrg"
+                                       value="${com.k_int.kbplus.SurveyOrg.findBySurveyConfigAndOrg(surveyConfig, institution)}"/>
+                                <g:set var="costItemSurvey"
+                                       value="${surveyOrg ? com.k_int.kbplus.CostItem.findBySurveyOrg(surveyOrg) : null}"/>
+                                <g:set var="costItemsSub"
+                                       value="${subscriptionInstance?.costItems?.findAll {
+                                           it?.costItemElement?.id == costItemSurvey?.costItemElement?.id
+                                       }}"/>
+
+                                <%
+                                    // ERMS-1521 HOTFIX
+                                    if (!costItemsSub) {
+                                        costItemsSub = subscriptionInstance?.costItems.findAll {
+                                            it.costItemElement?.id == com.k_int.kbplus.RefdataValue.getByValueAndCategory('price: consortial price', de.laser.helper.RDConstants.COST_ITEM_ELEMENT)?.id
+                                        }
+                                    }
+                                %>
+
+                                <table class="ui celled la-table-small la-table-inCard table">
+                                    <thead>
+                                    <tr>
+                                        <th>
+                                            <g:message code="surveyConfigsInfo.oldPrice"/>
+                                        </th>
+                                        <th>
+                                            <g:message code="surveyConfigsInfo.newPrice"/>
+                                        </th>
+                                        <th>Diff.</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody class="top aligned">
+                                    <tr>
+                                        <td>
+                                            <g:if test="${costItemsSub}">
+                                                <g:each in="${costItemsSub}" var="costItemSub">
+                                                    ${costItemSub?.costItemElement?.getI10n('value')}
+                                                    <b><g:formatNumber
+                                                            number="${costItemSub?.costInBillingCurrency}"
+                                                            minFractionDigits="2" maxFractionDigits="2"
+                                                            type="number"/></b>
+
+                                                    ${(costItemSub?.billingCurrency?.getI10n('value').split('-')).first()}
+
+                                                    <g:set var="oldCostItem"
+                                                           value="${costItemSub.costInBillingCurrency ?: 0.0}"/>
+
+                                                    <g:if test="${costItemSub?.startDate || costItemSub?.endDate}">
+                                                        <br>(${formatDate(date: costItemSub?.startDate, format: message(code: 'default.date.format.notime'))} - ${formatDate(date: costItemSub?.endDate, format: message(code: 'default.date.format.notime'))})
+                                                    </g:if>
+                                                    <br>
+
+                                                </g:each>
+                                            </g:if>
+                                        </td>
+                                        <td>
+                                            <g:if test="${costItemSurvey}">
+                                                ${costItemSurvey?.costItemElement?.getI10n('value')}
+                                                <b><g:formatNumber
+                                                        number="${costItemSurvey?.costInBillingCurrency}"
+                                                        minFractionDigits="2" maxFractionDigits="2" type="number"/></b>
+
+                                                ${(costItemSurvey?.billingCurrency?.getI10n('value').split('-')).first()}
+
+                                                <g:set var="newCostItem"
+                                                       value="${costItemSurvey.costInBillingCurrency ?: 0.0}"/>
+
+                                                <g:if test="${costItemSurvey?.startDate || costItemSurvey?.endDate}">
+                                                    <br>(${formatDate(date: costItemSurvey?.startDate, format: message(code: 'default.date.format.notime'))} - ${formatDate(date: costItemSurvey?.endDate, format: message(code: 'default.date.format.notime'))})
+                                                </g:if>
+
+                                                <g:if test="${costItemSurvey?.costDescription}">
+                                                    <br>
+
+                                                    <div class="ui icon la-popup-tooltip la-delay"
+                                                         data-position="right center"
+                                                         data-variation="tiny"
+                                                         data-content="${costItemSurvey?.costDescription}">
+                                                        <i class="question small circular inverted icon"></i>
+                                                    </div>
+                                                </g:if>
+
+                                            </g:if>
+                                        </td>
+                                        <td>
+                                            <g:if test="${oldCostItem && newCostItem}">
+                                                <b><g:formatNumber
+                                                        number="${(newCostItem - oldCostItem)}"
+                                                        minFractionDigits="2" maxFractionDigits="2" type="number"/>
+                                                    <br>
+                                                    (<g:formatNumber
+                                                            number="${((newCostItem - oldCostItem) / oldCostItem) * 100}"
+                                                            minFractionDigits="2"
+                                                            maxFractionDigits="2" type="number"/>%)</b>
+                                            </g:if>
+                                        </td>
+                                    </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
                         <br>
                         <g:set var="derivedPropDefGroups"
                                value="${subscriptionInstance?.owner?.getCalculatedPropDefGroups(contextService.getOrg())}"/>
@@ -239,6 +388,21 @@
                         <div class="ui form">
                             <div class="two fields">
                                 <div class="eight wide field" style="text-align: left;">
+                                    <button id="subscription-properties-toggle"
+                                            class="ui button">Lizenzmerkmale anzeigen</button>
+                                    <script>
+                                        $('#subscription-properties-toggle').on('click', function () {
+                                            $('#subscription-properties').toggleClass('hidden')
+                                            if ($('#subscription-properties').hasClass('hidden')) {
+                                                $(this).text('Lizenzmerkmale anzeigen')
+                                            } else {
+                                                $(this).text('Lizenzmerkmale ausblenden')
+                                            }
+                                        })
+                                    </script>
+                                </div>
+
+                                <div class="eight wide field" style="text-align: right;">
                                     <g:if test="${derivedPropDefGroups?.global || derivedPropDefGroups?.local || derivedPropDefGroups?.member || derivedPropDefGroups?.fallback}">
 
                                         <button id="derived-license-properties-toggle"
@@ -257,177 +421,36 @@
                                     </g:if>
                                 </div>
 
-                                <div class="eight wide field" style="text-align: right;">
-                                    <button id="subscription-properties-toggle"
-                                            class="ui button">Lizenzmerkmale anzeigen</button>
-                                    <script>
-                                        $('#subscription-properties-toggle').on('click', function () {
-                                            $('#subscription-properties').toggleClass('hidden')
-                                            if ($('#subscription-properties').hasClass('hidden')) {
-                                                $(this).text('Lizenzmerkmale anzeigen')
-                                            } else {
-                                                $(this).text('Lizenzmerkmale ausblenden')
-                                            }
-                                        })
-                                    </script>
-                                </div>
                             </div>
+
+
+
+                            <g:set var="oldEditable" value="${editable}"/>
+                            <div id="subscription-properties" class="hidden" style="margin: 1em 0">
+                                <g:set var="editable" value="${false}" scope="request"/>
+                                <g:set var="editable" value="${false}" scope="page"/>
+                                <g:render template="/subscription/properties" model="${[
+                                        subscriptionInstance: subscriptionInstance,
+                                        authorizedOrgs      : authorizedOrgs
+                                ]}"/>
+
+                            </div>
+
+                            <g:if test="${derivedPropDefGroups?.global || derivedPropDefGroups?.local || derivedPropDefGroups?.member || derivedPropDefGroups?.fallback}">
+                                <div id="derived-license-properties" class="hidden" style="margin: 1em 0">
+
+                                    <g:render template="/subscription/licProp" model="${[
+                                            license             : subscriptionInstance?.owner,
+                                            derivedPropDefGroups: derivedPropDefGroups
+                                    ]}"/>
+                                </div>
+                            </g:if>
+                            <g:set var="editable" value="${oldEditable ?: false}" scope="page"/>
+                            <g:set var="editable" value="${oldEditable ?: false}" scope="request"/>
                         </div>
 
                     </div>
                 </g:if>
-            </div>
-
-            <g:if test="${derivedPropDefGroups?.global || derivedPropDefGroups?.local || derivedPropDefGroups?.member || derivedPropDefGroups?.fallback}">
-                <div id="derived-license-properties" class="hidden" style="margin: 1em 0">
-
-                    <g:render template="/subscription/licProp" model="${[
-                            license             : subscriptionInstance?.owner,
-                            derivedPropDefGroups: derivedPropDefGroups
-                    ]}"/>
-                </div>
-            </g:if>
-
-            <g:set var="oldEditable" value="${editable}"/>
-            <div id="subscription-properties" class="hidden" style="margin: 1em 0">
-                <g:set var="editable" value="${false}" scope="request"/>
-                <g:set var="editable" value="${false}" scope="page"/>
-                <g:render template="/subscription/properties" model="${[
-                        subscriptionInstance: subscriptionInstance,
-                        authorizedOrgs      : authorizedOrgs
-                ]}"/>
-
-                <g:set var="editable" value="${oldEditable ?: false}" scope="page"/>
-                <g:set var="editable" value="${oldEditable ?: false}" scope="request"/>
-
-            </div>
-
-            <g:if test="${controllerName == 'survey' && actionName == 'show'}">
-
-                <div class="ui card">
-                    <div class="content">
-
-                        <dl>
-                            <dt class="control-label">${message(code: 'surveyConfig.orgs.label')}</dt>
-                            <dd>
-                                <g:link controller="survey" action="surveyParticipants"
-                                        id="${surveyConfig.surveyInfo.id}"
-                                        params="[surveyConfigID: surveyConfig?.id]" class="ui icon"><div
-                                        class="ui circular label">${surveyConfig?.orgs?.size()}</div></g:link>
-                            </dd>
-                        </dl>
-                        <dl>
-                            <dt class="control-label">${message(code: 'surveyConfig.subOrgs.label')}</dt>
-                            <dd>
-                                <div class="ui circular label">
-                                    ${com.k_int.kbplus.Subscription.findAllByInstanceOf(subscriptionInstance)?.size()}
-                                </div>
-                            </dd>
-                        </dl>
-                    </div>
-                </div>
-            </g:if>
-
-            <div class="ui card la-time-card">
-
-                <div class="content">
-                    <div class="header"><g:message code="surveyConfigsInfo.costItems"/></div>
-                </div>
-
-                <div class="content">
-
-                    <g:set var="costItemSurvey"
-                           value="${com.k_int.kbplus.CostItem.findBySurveyOrg(com.k_int.kbplus.SurveyOrg.findBySurveyConfigAndOrg(surveyConfig, institution))}"/>
-                    <g:set var="costItemsSub"
-                           value="${subscriptionInstance?.costItems?.findAll {
-                               it?.costItemElement?.id == costItemSurvey?.costItemElement?.id
-                           }}"/>
-
-                    <%
-                        // ERMS-1521 HOTFIX
-                        if (!costItemsSub) {
-                            costItemsSub = subscriptionInstance?.costItems.findAll {
-                                it.costItemElement?.id == com.k_int.kbplus.RefdataValue.getByValueAndCategory('price: consortial price', de.laser.helper.RDConstants.COST_ITEM_ELEMENT)?.id
-                            }
-                        }
-                    %>
-
-                    <table class="ui celled la-table-small la-table-inCard table">
-                        <thead>
-                        <tr>
-                            <th>
-                                <g:message code="surveyConfigsInfo.oldPrice"/>
-                            </th>
-                            <th>
-                                <g:message code="surveyConfigsInfo.newPrice"/>
-                            </th>
-                            <th>Diff.</th>
-                        </tr>
-                        </thead>
-                        <tbody class="top aligned">
-                        <tr>
-                            <td>
-                                <g:if test="${costItemsSub}">
-                                    <g:each in="${costItemsSub}" var="costItemSub">
-                                        ${costItemSub?.costItemElement?.getI10n('value')}
-                                        <b><g:formatNumber
-                                                number="${costItemSub?.costInBillingCurrency}"
-                                                minFractionDigits="2" maxFractionDigits="2" type="number"/></b>
-
-                                        ${(costItemSub?.billingCurrency?.getI10n('value').split('-')).first()}
-
-                                        <g:set var="oldCostItem" value="${costItemSub.costInBillingCurrency ?: 0.0}"/>
-
-                                        <g:if test="${costItemSub?.startDate || costItemSub?.endDate}">
-                                            <br>(${formatDate(date: costItemSub?.startDate, format: message(code: 'default.date.format.notime'))} - ${formatDate(date: costItemSub?.endDate, format: message(code: 'default.date.format.notime'))})
-                                        </g:if>
-                                        <br>
-
-                                    </g:each>
-                                </g:if>
-                            </td>
-                            <td>
-                                <g:if test="${costItemSurvey}">
-                                    ${costItemSurvey?.costItemElement?.getI10n('value')}
-                                    <b><g:formatNumber
-                                            number="${costItemSurvey?.costInBillingCurrency}"
-                                            minFractionDigits="2" maxFractionDigits="2" type="number"/></b>
-
-                                    ${(costItemSurvey?.billingCurrency?.getI10n('value').split('-')).first()}
-
-                                    <g:set var="newCostItem" value="${costItemSurvey.costInBillingCurrency ?: 0.0}"/>
-
-                                    <g:if test="${costItemSurvey?.startDate || costItemSurvey?.endDate}">
-                                        <br>(${formatDate(date: costItemSurvey?.startDate, format: message(code: 'default.date.format.notime'))} - ${formatDate(date: costItemSurvey?.endDate, format: message(code: 'default.date.format.notime'))})
-                                    </g:if>
-
-                                    <g:if test="${costItemSurvey?.costDescription}">
-                                        <br>
-
-                                        <div class="ui icon la-popup-tooltip la-delay" data-position="right center"
-                                             data-variation="tiny"
-                                             data-content="${costItemSurvey?.costDescription}">
-                                            <i class="question small circular inverted icon"></i>
-                                        </div>
-                                    </g:if>
-
-                                </g:if>
-                            </td>
-                            <td>
-                                <g:if test="${oldCostItem && newCostItem}">
-                                    <b><g:formatNumber
-                                            number="${(newCostItem - oldCostItem)}"
-                                            minFractionDigits="2" maxFractionDigits="2" type="number"/>
-                                        <br>
-                                        (<g:formatNumber number="${((newCostItem - oldCostItem) / oldCostItem) * 100}"
-                                                         minFractionDigits="2"
-                                                         maxFractionDigits="2" type="number"/>%)</b>
-                                </g:if>
-                            </td>
-                        </tr>
-                        </tbody>
-                    </table>
-                </div>
             </div>
 
         </div>

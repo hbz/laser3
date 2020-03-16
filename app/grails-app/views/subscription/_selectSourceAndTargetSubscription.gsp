@@ -4,7 +4,7 @@
         params.remove('sourceSubscriptionId')
         params.remove('targetSubscriptionId')
     } %>
-    <g:form action="copyElementsIntoSubscription" controller="subscription" id="${params.id}"
+    <g:form action="${actionName}" controller="${controllerName}" id="${params.id}"
             params="${params << [workFlowPart: workFlowPart]}"
             method="post" class="ui form newLicence"  onsubmit="enableSubmit();">
         <div class="fields" style="justify-content: flex-end;">

@@ -1,5 +1,8 @@
 package com.k_int.kbplus
 
+import com.k_int.kbplus.abstract_domain.CustomProperty
+import com.k_int.kbplus.abstract_domain.PrivateProperty
+import com.k_int.properties.PropertyDefinition
 import org.apache.poi.POIXMLProperties
 import org.apache.poi.ss.usermodel.Cell
 import org.apache.poi.ss.usermodel.FillPatternType
@@ -147,6 +150,90 @@ class ExportService {
 		}
         output
     }
+
+	/**
+	 * Retrieves for the given property definition type and organisation of list of headers, containing property definition names. Includes custom and privare properties
+	 * @param propDefConst - a {@link PropertyDefinition} constant which property definition type should be loaded
+	 * @param contextOrg - the context {@link Org}
+	 * @return a {@link List} of headers
+	 */
+	List<String> loadPropListHeaders(String propDefConst, Org contextOrg) {
+		List<PropertyDefinition> propList = []
+		List<String> titles = []
+		if(propDefConst == PropertyDefinition.ORG_PROP)
+			propList.addAll(PropertyDefinition.findAllPublicAndPrivateOrgProp(contextOrg))
+		else {
+			propList.addAll(PropertyDefinition.findAllPublicAndPrivateProp([propDefConst],contextOrg))
+		}
+		propList.sort { a, b -> a.name.compareToIgnoreCase b.name}
+		propList.each {
+			titles.add(it.name)
+		}
+		titles
+	}
+
+	/**
+	 *
+	 * @param propDefConst
+	 * @param contextOrg
+	 * @param format
+	 * @return a {@link List} or a {@link List} of {@link Map}s for the export sheet containing the value
+	 */
+	List processPropertyListValues(String propDefConst,Org contextOrg, String format, def target) {
+		List cells = []
+		PropertyDefinition.findAllPublicAndPrivateProp([propDefConst],contextOrg).each { pd ->
+			def value = ''
+			target.customProperties.each{ CustomProperty prop ->
+				if(prop.type.descr == pd.descr && prop.type == pd && prop.value) {
+					if(prop.type.type == Integer.toString()){
+						value = prop.intValue.toString()
+					}
+					else if (prop.type.type == String.toString()){
+						value = prop.stringValue ?: ''
+					}
+					else if (prop.type.type == BigDecimal.toString()){
+						value = prop.decValue.toString()
+					}
+					else if (prop.type.type == Date.toString()){
+						value = prop.dateValue.toString()
+					}
+					else if (prop.type.type == RefdataValue.toString()) {
+						value = prop.refValue?.getI10n('value') ?: ''
+					}
+				}
+			}
+			target.privateProperties.each{ PrivateProperty prop ->
+				if(prop.type.descr == pd.descr && prop.type == pd && prop.value) {
+					if(prop.type.type == Integer.toString()){
+						value = prop.intValue.toString()
+					}
+					else if (prop.type.type == String.toString()){
+						value = prop.stringValue ?: ''
+					}
+					else if (prop.type.type == BigDecimal.toString()){
+						value = prop.decValue.toString()
+					}
+					else if (prop.type.type == Date.toString()){
+						value = prop.dateValue.toString()
+					}
+					else if (prop.type.type == RefdataValue.toString()) {
+						value = prop.refValue?.getI10n('value') ?: ''
+					}
+				}
+			}
+			def cell
+			switch(format) {
+				case "xls":
+				case "xlsx": cell = [field: value, style: null]
+					break
+				case "csv": cell = value.replaceAll(',',';')
+					break
+			}
+			if(cell)
+				cells.add(cell)
+		}
+		cells
+	}
 
 	/* *************
 	 * legacy CSV Exports
