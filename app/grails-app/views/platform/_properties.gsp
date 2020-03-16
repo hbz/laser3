@@ -13,15 +13,14 @@
         ownobj: platform,
         availPropDefGroups: availPropDefGroups
     ]}" />
+
 </semui:modal>
 
 <div class="ui card la-dl-no-table la-js-hideable">
-<g:set var="allPropDefGroups" value="${platform.getCalculatedPropDefGroups(contextService.getOrg())}" />
 
+    <g:set var="allPropDefGroups" value="${platform.getCalculatedPropDefGroups(contextService.getOrg())}" />
 
 <%-- orphaned properties --%>
-
-<g:if test="${true}"><%-- todo: restrict? --%>
 
     <%--<div class="ui card la-dl-no-table la-js-hideable">--%>
     <div class="content">
@@ -50,6 +49,5 @@
         });
     </r:script>
 
-</g:if>
 </div><!-- .card -->
 <!-- _properties -->
