@@ -398,7 +398,7 @@ class Org
         }
 
         // storing properties without groups
-        result.orphanedProperties = propertyService.getOrphanedProperties(this, result.global, result.local, [])
+        result.orphanedProperties = propertyService.getOrphanedProperties(this, result.sorted)
 
         result
     }

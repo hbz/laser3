@@ -691,7 +691,7 @@ class Subscription
         }
 
         // storing properties without groups
-        result.orphanedProperties = propertyService.getOrphanedProperties(this, result.global, result.local, result.member)
+        result.orphanedProperties = propertyService.getOrphanedProperties(this, result.sorted)
 
         result
     }
