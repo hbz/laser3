@@ -53,7 +53,8 @@
                     break
             }
         }
-        else visible = true
+        else if(it.owner.owner?.id == contextService.org.id || it.sharedFrom)
+            visible = true
         if ((it.sharedFrom || inTargetOrg) && visible) {
             sharedItems << it
         }
@@ -64,7 +65,7 @@
     //println "EDITABLE: ${editable}"
     //println "EDITABLE2: ${editable2}"
 %>
-<g:if test="${accessService.checkPerm("ORG_INST,ORG_CONSORTIUM") && !parentAtChild}">
+<g:if test="${accessService.checkPerm("ORG_INST,ORG_CONSORTIUM")}">
     <semui:card message="${documentMessage}" class="documents la-js-hideable ${css_class}" href="#modalCreateDocument" editable="${editable || editable2}">
         <g:each in="${baseItems}" var="docctx">
             <g:if test="${(( (docctx.owner?.contentType==1) || ( docctx.owner?.contentType==3) ) && ( docctx.status?.value!='Deleted'))}">

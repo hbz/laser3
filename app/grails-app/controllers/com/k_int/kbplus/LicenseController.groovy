@@ -421,13 +421,13 @@ from Subscription as s where
     return subscriptions
   }
 
-    @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
-    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
+    @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")')
+    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_EDITOR") })
   def linkToSubscription(){
     log.debug("linkToSubscription :: ${params}")
     if(params.subscription && params.license){
-      def sub = genericOIDService.resolveOID(params.subscription)
-      def owner = License.get(params.license)
+      Subscription sub = genericOIDService.resolveOID(params.subscription)
+      License owner = License.get(params.license)
         // owner.addToSubscriptions(sub) // GORM problem
         // owner.save()
         sub.setOwner(owner)
@@ -438,15 +438,15 @@ from Subscription as s where
 
   }
 
-    @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
-    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
+    @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")')
+    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_EDITOR") })
     def unlinkSubscription(){
         log.debug("unlinkSubscription :: ${params}")
         if(params.subscription && params.license){
             def sub = Subscription.get(params.subscription)
             if (sub.owner == License.get(params.license)) {
                 sub.owner = null
-                sub.save(flush:true)
+                sub.save()
             }
         }
         redirect controller:'license', action:'show', params: [id:params.license]

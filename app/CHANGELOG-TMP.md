@@ -1,6 +1,18 @@
 ## temporary change log
 
 **Ticket    Date    Branch      Author  Feature/Bug     Description/Keywords**
+    
+2203    12.03.2020  rc1.2       Moe     Bug         pick&choose nicht möglich
+
+2246    12.03.2020  rc1.2       Andreas Bug         Sichtüberprüfung bei Dokumenten inkl. Anmerkungen überprüft, die direkt an TN-Lizenzen eingehängt sind
+
+2243    12.03.2020  rc1.2       Andreas Bug         Bugfix: fehlerhaftes Prozessieren von Abhängigkeiten bei Vertragslöschung
+
+2202    11.03.2020  rc1.2       David   Feature     Cherrypicked ERMS-2202 from hbz-dev and improved
+
+2235    06.03.2020  rc1.2       Andreas Bug         Teilnehmer verwalten: Vertragsverknüpfung erzeugt jetzt auch OrgRole-Einträge
+
+2235    06.03.2020  rc1.2       David   Bug         Meine Verträge: Teilnehmerverträge werden angezeigt
 
 2231    03.03.2020  rc1.2       David   Feature     Performance: /myInstitution/currentProviders
 
@@ -200,6 +212,8 @@
 
 1941    09.12.2019  hbz-dev     David   Feature     Tabelle "Meine Konsorten" angepasst
 
+--      09.12.2019  hbz-dev     Daniel  Feature     Allgemeine Subscriptionmerkmale um "EZB Kollektionsdatenweitergabe an Drittsysteme erlaubt?" ergänzt 
+
 1935    06.12.2019  hbz-dev     Anja    Feature     GASCO-Monitor: Es werden Kontakte nur noch aus öffentichem Adressbuch angezeigt
 
 1546    06.12.2019  hbz-def     Anja    Bug         Merkmale zwischen Lizenzen kopieren: Löschmarkierungen sind jetzt korrekt.
@@ -283,5 +297,3 @@
 1867    12.11.2019  rc-1.1      David   Bug         Fehlende Merkmale bei verschiedenen API-Enpunkten (0.70)
 
 1837    06.11.2019  rc-1.1      David   Bug         Standard-Dashboard beim Einloggen setzen
-
-/       09.12.2019  hbz-dev     Daniel  Feature     Allgemeine Subscriptionmerkmale um "EZB Kollektionsdatenweitergabe an Drittsysteme erlaubt?" ergänzt 

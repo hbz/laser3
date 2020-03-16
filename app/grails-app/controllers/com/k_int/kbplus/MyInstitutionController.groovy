@@ -7,6 +7,8 @@ import com.k_int.properties.PropertyDefinition
 import com.k_int.properties.PropertyDefinitionGroup
 import com.k_int.properties.PropertyDefinitionGroupItem
 import de.laser.DashboardDueDate
+import de.laser.SystemAnnouncement
+
 //import de.laser.TaskService //unused for quite a long time
 import de.laser.controller.AbstractDebugController
 import de.laser.helper.*
@@ -378,6 +380,7 @@ from License as l where (
     exists ( select o from l.orgLinks as o where ( 
             ( o.roleType = :roleTypeC 
                 AND o.org = :lic_org 
+                AND l.instanceOf is null
                 AND NOT exists (
                     select o2 from l.orgLinks as o2 where o2.roleType = :roleTypeL
                 )
@@ -2383,18 +2386,20 @@ AND EXISTS (
 
         // announcements
 
-        def dcCheck = (new Date()).minus(periodInDays)
+//        def dcCheck = (new Date()).minus(periodInDays)
+//
+//        result.recentAnnouncements = Doc.executeQuery(
+//                "select d from Doc d where d.type.value = :type and d.dateCreated >= :dcCheck",
+//                [type: 'system.announcement', dcCheck: dcCheck],
+//                [max: result.max, offset: result.announcementOffset, sort: 'dateCreated', order: 'asc']
+//        )
+//        result.recentAnnouncementsCount = Doc.executeQuery(
+//                "select d from Doc d where d.type.value = :type and d.dateCreated >= :dcCheck",
+//                [type: 'system.announcement', dcCheck: dcCheck]).size()
 
-        /*
-        result.recentAnnouncements = Doc.executeQuery(
-                "select d from Doc d where d.type.value = :type and d.dateCreated >= :dcCheck",
-                [type: 'Announcement', dcCheck: dcCheck],
-                [max: result.max,offset: result.announcementOffset, sort: 'dateCreated', order: 'asc']
-        )
-        result.recentAnnouncementsCount = Doc.executeQuery(
-                "select d from Doc d where d.type.value = :type and d.dateCreated >= :dcCheck",
-                [type: 'Announcement', dcCheck: dcCheck]).size()
-        */
+        // systemAnnouncements
+
+        result.systemAnnouncements = SystemAnnouncement.getPublished(periodInDays)
 
         // tasks
 
