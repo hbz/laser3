@@ -1520,11 +1520,10 @@ class SubscriptionController extends AbstractDebugController {
         if (params.license_All) {
             License lic = License.get(params.license_All)
             validSubChilds.each { subChild ->
-                Subscription sub = Subscription.get(subChild.id)
-                sub.owner = lic
+                subChild.owner = lic
 
-                if (sub.save()) {
-                    OrgRole licenseeRole = new OrgRole(org:sub.getSubscriber(),lic:lic,roleType:licenseeRoleType)
+                if (subChild.save()) {
+                    OrgRole licenseeRole = new OrgRole(org:subChild.getSubscriber(),lic:lic,roleType:licenseeRoleType)
                     if(licenseeRole.save())
                         changeAccepted << "${subChild.name} (${message(code:'subscription.linkInstance.label')} ${subChild.getSubscriber().sortname})"
                 }
@@ -1539,11 +1538,9 @@ class SubscriptionController extends AbstractDebugController {
                 if (params."license_${subChild.id}") {
                     License newLicense = License.get(params."license_${subChild.id}")
                     if (subChild.owner != newLicense) {
-                        def sub = Subscription.get(subChild.id)
-                        sub.owner = newLicense
-
-                        if (sub.save()) {
-                            OrgRole licenseeRole = new OrgRole(org:sub.getSubscriber(),lic:newLicense,roleType:licenseeRoleType)
+                        subChild.owner = newLicense
+                        if (subChild.save()) {
+                            OrgRole licenseeRole = new OrgRole(org:subChild.getSubscriber(),lic:newLicense,roleType:licenseeRoleType)
                             if(licenseeRole.save())
                                 changeAccepted << "${subChild.name} (${message(code:'subscription.linkInstance.label')} ${subChild.getSubscriber().sortname})"
                         }
