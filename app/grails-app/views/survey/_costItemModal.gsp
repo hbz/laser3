@@ -45,54 +45,41 @@
                 </div><!-- .field -->
 
             </div>
-
             <div class="seven wide field">
-
                 <div class="two fields la-fields-no-margin-button">
                     <div class="field">
-                        <label>${message(code: 'financials.costItemElement')}</label>
-                        <g:if test="${costItemElement}">
+                        <label><g:message code="financials.costItemElement"/></label>
+                        <g:if test="${costItemElements}">
                             <laser:select name="newCostItemElement" class="ui dropdown"
-                                          from="${costItemElement}"
+                                          from="${costItemElements.collect{ ciec -> ciec.costItemElement }}"
                                           optionKey="id"
                                           optionValue="value"
-                                          noSelection="${['': '']}"
-                                          value="${costItem?.costItemElement?.id}"/>
+                                          noSelection="${[null:message(code:'default.select.choose.label')]}"
+                                          value="${costItem?.costItemElement?.id}" />
                         </g:if>
                         <g:else>
-                            ${message(code: 'financials.costItemElement.noneDefined')}
+                            ${message(code:'financials.costItemElement.noneDefined')}
                         </g:else>
                     </div><!-- .field -->
                     <div class="field">
-                        <label>${message(code: 'financials.costItemConfiguration')}</label>
-                        <%
-                            def ciec = [id: null, value: 'financials.costItemConfiguration.notSet']
-                            if (costItem && !tab.equals("subscr")) {
-                                if (costItem.costItemElementConfiguration)
-                                    ciec = costItem.costItemElementConfiguration.class.name + ":" + costItem.costItemElementConfiguration.id
-                                else if (!costItem.costItemElementConfiguration && costItem.costItemElement) {
-                                    def config = CostItemElementConfiguration.findByCostItemElementAndForOrganisation(costItem.costItemElement, contextService.getOrg())
-                                    if (config)
-                                        ciec = config.elementSign.class.name + ":" + config.elementSign.id
-                                }
-                            }
-                        %>
-                        <g:select name="ciec" class="ui dropdown" from="${costItemElementConfigurations}"
-                                  optionKey="id" optionValue="value" value="${ciec}"
-                                  noSelection="${[null: message(code: 'financials.costItemConfiguration.notSet')]}"/>
+                        <label><g:message code="financials.costItemConfiguration"/></label>
+                        <laser:select name="ciec" class="ui dropdown"
+                                      from="${costItemSigns}"
+                                      optionKey="id"
+                                      optionValue="value"
+                                      noSelection="${[null:message(code:'default.select.choose.label')]}"
+                                      value="${costItem?.costItemElementConfiguration?.id}"/>
                     </div>
                 </div>
-
                 <div class="field">
-                    <label>${message(code: 'default.status.label')}</label>
-                    <laser:select name="newCostItemStatus" title="${g.message(code: 'financials.addNew.costState')}"
-                                  class="ui dropdown"
+                    <label>${message(code:'default.status.label')}</label>
+                    <laser:select name="newCostItemStatus" title="${g.message(code: 'financials.addNew.costState')}" class="ui dropdown"
                                   id="newCostItemStatus"
                                   from="${costItemStatus}"
                                   optionKey="id"
                                   optionValue="value"
-                                  noSelection="${[(RDStore.GENERIC_NULL_VALUE.id): '']}"
-                                  value="${costItem?.costItemStatus?.id}"/>
+                                  noSelection="${[(RDStore.GENERIC_NULL_VALUE.id):message(code:'default.select.choose.label')]}"
+                                  value="${costItem?.costItemStatus?.id}" />
                 </div><!-- .field -->
 
             </div> <!-- 2/2 field -->
@@ -104,97 +91,83 @@
 
                 <div class="two fields">
                     <div class="field">
-                        <label>${message(code: 'financials.invoice_total')}</label>
-                        <input title="${g.message(code: 'financials.addNew.BillingCurrency')}" type="text" class="calc"
-                               style="width:50%"
+                        <label>${message(code:'financials.invoice_total')}</label>
+                        <input title="${g.message(code:'financials.addNew.BillingCurrency')}" type="text" class="calc" style="width:50%"
                                name="newCostInBillingCurrency" id="newCostInBillingCurrency"
                                placeholder="${g.message(code: 'financials.invoice_total')}"
                                value="<g:formatNumber
                                        number="${costItem?.costInBillingCurrency}"
                                        minFractionDigits="2" maxFractionDigits="2"/>"/>
 
-                        <div class="ui icon button la-popup-tooltip la-delay" id="costButton3"
-                             data-content="${g.message(code: 'financials.newCosts.buttonExplanation')}"
-                             data-position="top center" data-variation="tiny">
+                        <div class="ui icon button la-popup-tooltip la-delay" id="costButton3" data-content="${message(code: 'financials.newCosts.buttonExplanation')}" data-position="top center" data-variation="tiny">
                             <i class="calculator icon"></i>
                         </div>
 
-                        <g:select class="ui dropdown dk-width-auto" name="newCostCurrency"
-                                  title="${g.message(code: 'financials.addNew.currencyType')}"
+                        <g:select class="ui dropdown dk-width-auto" name="newCostCurrency" title="${message(code: 'financials.addNew.currencyType')}"
                                   from="${currency}"
                                   optionKey="id"
                                   optionValue="${{it.text.contains('-') ? it.text.split('-').first() : it.text}}"
-                                  value="${costItem?.billingCurrency?.id}"/>
+                                  value="${costItem?.billingCurrency?.id}" />
                     </div><!-- .field -->
                     <div class="field">
-                        <label><g:message code="financials.newCosts.billingSum"/></label>
-                        <input title="<g:message code="financials.newCosts.billingSum"/>" type="text" readonly="readonly"
+                        <label><g:message code="financials.newCosts.totalAmount"/></label>
+                        <input title="${g.message(code:'financials.newCosts.totalAmount')}" type="text" readonly="readonly"
                                name="newCostInBillingCurrencyAfterTax" id="newCostInBillingCurrencyAfterTax"
                                value="<g:formatNumber
                                        number="${costItem?.costInBillingCurrencyAfterTax}"
                                        minFractionDigits="2" maxFractionDigits="2"/>"/>
 
                     </div><!-- .field -->
-                <!-- TODO -->
+                    <!-- TODO -->
                     <style>
-                    .dk-width-auto {
-                        width: auto !important;
-                        min-width: auto !important;
-                    }
+                        .dk-width-auto {
+                            width: auto !important;
+                            min-width: auto !important;
+                        }
                     </style>
                 </div>
 
                 <div class="two fields">
                     <div class="field la-exchange-rate">
-                        <label>${g.message(code: 'financials.newCosts.exchangeRate')}</label>
-                        <input title="${g.message(code: 'financials.addNew.currencyRate')}" type="number" class="calc"
+                        <label>${g.message(code:'financials.newCosts.exchangeRate')}</label>
+                        <input title="${g.message(code:'financials.addNew.currencyRate')}" type="number" class="calc"
                                name="newCostCurrencyRate" id="newCostCurrencyRate"
-                               placeholder="${g.message(code: 'financials.newCosts.exchangeRate')}"
-                               value="${costItem ? costItem.currencyRate : 1.0}" step="0.000000001"/>
+                               placeholder="${g.message(code:'financials.newCosts.exchangeRate')}"
+                               value="${costItem ? costItem.currencyRate : 1.0}" step="0.000000001" />
 
-                        <div class="ui icon button la-popup-tooltip la-delay" id="costButton2"
-                             data-content="${g.message(code: 'financials.newCosts.buttonExplanation')}"
-                             data-position="top center" data-variation="tiny">
+                        <div class="ui icon button la-popup-tooltip la-delay" id="costButton2" data-content="${g.message(code: 'financials.newCosts.buttonExplanation')}" data-position="top center" data-variation="tiny">
                             <i class="calculator icon"></i>
                         </div>
                     </div><!-- .field -->
-
                     <div class="field">
-                        <label>${message(code: 'financials.newCosts.taxTypeAndRate')}</label>
-                        <%
-                            CostItem.TAX_TYPES taxKey
-                            if (costItem?.taxKey && tab != "subscr")
-                                taxKey = costItem.taxKey
-                        %>
+                        <label>${message(code:'financials.newCosts.taxTypeAndRate')}</label>
                         <g:select class="ui dropdown calc" name="newTaxRate" title="TaxRate"
-                                  from="${CostItem.TAX_TYPES}"
-                                  optionKey="${{ it.taxType.class.name + ":" + it.taxType.id + "§" + it.taxRate }}"
-                                  optionValue="${{ it.taxType.getI10n("value") + " (" + it.taxRate + "%)" }}"
-                                  value="${taxKey?.taxType?.class?.name}:${taxKey?.taxType?.id}§${taxKey?.taxRate}"
-                                  noSelection="${['null§0': '']}"/>
+                              from="${CostItem.TAX_TYPES}"
+                              optionKey="${{it.taxType.class.name+":"+it.taxType.id+"§"+it.taxRate}}"
+                              optionValue="${{it.display ? it.taxType.getI10n("value")+" ("+it.taxRate+"%)" : it.taxType.getI10n("value")}}"
+                              value="${taxKey?.taxType?.class?.name}:${taxKey?.taxType?.id}§${taxKey?.taxRate}"
+                              noSelection="${['null§0':'']}"/>
 
                     </div><!-- .field -->
                 </div>
 
                 <div class="two fields">
                     <div class="field">
-                        <label>${g.message(code: 'financials.newCosts.value')}</label>
-                        <input title="${g.message(code: 'financials.addNew.LocalCurrency')}" type="text" class="calc"
+                        <label><g:message code="financials.newCosts.valueInLocalCurrency" args="${[RDStore.CURRENCY_EUR.value]}"/></label><%-- TODO once we may configure local currency as OrgSetting, this arg has to be replaced! --%>
+                        <input title="<g:message code="financials.newCosts.valueInLocalCurrency" args="${[RDStore.CURRENCY_EUR.value]}"/>" type="text" class="calc"
                                name="newCostInLocalCurrency" id="newCostInLocalCurrency"
                                placeholder="${message(code: 'financials.newCosts.value')}"
                                value="<g:formatNumber
                                        number="${costItem?.costInLocalCurrency}"
                                        minFractionDigits="2" maxFractionDigits="2"/>"/>
 
-                        <div class="ui icon button la-popup-tooltip la-delay" id="costButton1"
-                             data-content="${g.message(code: 'financials.newCosts.buttonExplanation')}"
-                             data-position="top center" data-variation="tiny">
+                        <div class="ui icon button la-popup-tooltip la-delay" id="costButton1" data-content="${g.message(code: 'financials.newCosts.buttonExplanation')}" data-position="top center" data-variation="tiny">
                             <i class="calculator icon"></i>
                         </div>
                     </div><!-- .field -->
                     <div class="field">
-                        <label><g:message code="financials.newCosts.finalSum"/></label>
-                        <input title="<g:message code="financials.newCosts.finalSum"/>" type="text" readonly="readonly"
+                        <label><g:message code="financials.newCosts.finalSumInLocalCurrency" args="${[RDStore.CURRENCY_EUR.value]}"/></label><%-- TODO once we may configure local currency as OrgSetting, this arg has to be replaced! --%>
+                        <input title="<g:message code="financials.newCosts.finalSumInLocalCurrency" args="${[RDStore.CURRENCY_EUR.value]}"/>" type="text" readonly="readonly"
                                name="newCostInLocalCurrencyAfterTax" id="newCostInLocalCurrencyAfterTax"
                                value="<g:formatNumber
                                        number="${costItem?.costInLocalCurrencyAfterTax}"
@@ -204,9 +177,10 @@
 
                 <div class="field">
                     <div class="ui checkbox">
-                        <label>Finalen Preis runden</label>
+                        <label><g:message code="financials.newCosts.finalSumRounded"/></label>
                         <input name="newFinalCostRounding" class="hidden calc" type="checkbox"
-                            <g:if test="${costItem?.finalCostRounding}">checked="checked"</g:if>/>
+                               <g:if test="${costItem?.finalCostRounding}"> checked="checked" </g:if>
+                        />
                     </div>
                 </div><!-- .field -->
 
@@ -236,16 +210,8 @@
 
     <script>
 
-        <%
-            def costItemElementConfigurations = "{"
-            StringJoiner sj = new StringJoiner(",")
-            orgConfigurations.each { orgConf ->
-                sj.add('"'+orgConf.id+'":"'+orgConf.value+'"')
-            }
-            costItemElementConfigurations += sj.toString()+"}"
-        %>
-        var costItemElementConfigurations = ${raw(costItemElementConfigurations)};
-
+        var costItemElementConfigurations = ${raw(orgConfigurations as String)};
+        console.log(costItemElementConfigurations);
         var eurVal = "${RefdataValue.getByValueAndCategory('EUR','Currency').id}";
 
         $("#newCostInBillingCurrency").change(function(){
@@ -364,9 +330,9 @@
             $("#costButton1").click();
         });
 
-
         function checkValues() {
-            if (convertDouble($("#newCostInBillingCurrency").val()) * $("#newCostCurrencyRate").val() !== convertDouble($("#newCostInLocalCurrency").val())) {
+            if ( (convertDouble($("#newCostInBillingCurrency").val()) * $("#newCostCurrencyRate").val()).toFixed(2) !== convertDouble($("#newCostInLocalCurrency").val()).toFixed(2) ) {
+                console.log("inserted values are: "+convertDouble($("#newCostInBillingCurrency").val())+" * "+$("#newCostCurrencyRate").val()+" = "+convertDouble($("#newCostInLocalCurrency").val()).toFixed(2)+", correct would be: "+(convertDouble($("#newCostInBillingCurrency").val()) * $("#newCostCurrencyRate").val()).toFixed(2));
                 costElems.parent('.field').addClass('error');
                 return false;
             }
@@ -377,24 +343,30 @@
         }
 
         function convertDouble(input) {
-            console.log("input: " + input + ", typeof: " + typeof(input))
+            //console.log("input: "+input+", typeof: "+typeof(input));
             var output;
             //determine locale from server
-            var locale = "${LocaleContextHolder.getLocale()}";
-            if (typeof(input) === 'number') {
+            var userLang = "${contextService.user.getSettingsValue(UserSettings.KEYS.LANGUAGE,null)}";
+            //console.log(userLang);
+            if(typeof(input) === 'number') {
                 output = input.toFixed(2);
-                if (locale.indexOf("de") > -1)
-                    output = output.replace(".", ",");
+                if(userLang !== 'en')
+                    output = output.replace(".",",");
             }
-            else if (typeof(input) === 'string') {
+            else if(typeof(input) === 'string') {
                 output = 0.0;
-                if (input.match(/(\d{1-3}\.?)*\d+(,\d{2})?/g))
-                    output = parseFloat(input.replace(/\./g, "").replace(/,/g, "."));
-                else if (input.match(/(\d{1-3},?)*\d+(\.\d{2})?/g)) {
-                    output = parseFloat(input.replace(/,/g, ""));
+                if(userLang === 'en') {
+                    output = parseFloat(input);
                 }
-                else console.log("Please check over regex!");
-                console.log("string input parsed, output is: " + output);
+                else {
+                    if(input.match(/(\d{1-3}\.?)*\d+(,\d{2})?/g))
+                        output = parseFloat(input.replace(/\./g,"").replace(/,/g,"."));
+                    else if(input.match(/(\d{1-3},?)*\d+(\.\d{2})?/g)) {
+                        output = parseFloat(input.replace(/,/g, ""));
+                    }
+                    else console.log("Please check over regex!");
+                }
+                //console.log("string input parsed, output is: "+output);
             }
             return output;
         }

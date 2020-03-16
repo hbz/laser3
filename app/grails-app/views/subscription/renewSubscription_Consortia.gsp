@@ -33,7 +33,7 @@
 
     <div>
         <hr/>
-        ${message(code: 'myinst.renewalUpload.noupload.note', args: [institution?.name])}<br/>
+
         <table class="ui celled la-table table">
             <tbody>
             <input type="hidden" name="subscription.old_subid" value="${permissionInfo?.sub_id}"/>
@@ -110,6 +110,22 @@
                 </td>
             </tr>
             <tr>
+                <th>${message(code: 'subscription.kind.label')}</th>
+                <td>
+                    <g:select from="${com.k_int.kbplus.RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_KIND)}" class="ui dropdown"
+                              optionKey="id"
+                              optionValue="${{ it.getI10n('value') }}"
+                              name="subKind"
+                              value="${permissionInfo?.sub_kind}"
+                    />
+                </td>
+                <td class="center aligned">
+                    <div class="ui checkbox">
+                        <input type="checkbox" name="auditList" value="kind" ${AuditConfig.getConfig(subscription, 'kind') ? 'checked': ''} />
+                    </div>
+                </td>
+            </tr>
+            <tr>
                 <th>${message(code: 'subscription.form.label')}</th>
                 <td>
                     <g:set var="rdcSubForm" value="${com.k_int.kbplus.RefdataCategory.getByDesc(RDConstants.SUBSCRIPTION_FORM)}"/>
@@ -129,7 +145,6 @@
             <tr>
                 <th>${message(code: 'subscription.resource.label')}</th>
                 <td>
-                    <g:set var="rdcSubResource" value="${com.k_int.kbplus.RefdataCategory.getByDesc(RDConstants.SUBSCRIPTION_RESOURCE)}"/>
                     <g:select from="${com.k_int.kbplus.RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_RESOURCE)}" class="ui dropdown"
                               optionKey="id"
                               optionValue="${{ it.getI10n('value') }}"
@@ -140,6 +155,38 @@
                 <td class="center aligned">
                     <div class="ui checkbox">
                         <input type="checkbox" name="auditList" value="resource" ${AuditConfig.getConfig(subscription, 'resource') ? 'checked': ''} />
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <th>${message(code: 'subscription.isPublicForApi.label')}</th>
+                <td>
+                    <g:select from="${com.k_int.kbplus.RefdataCategory.getAllRefdataValues(RDConstants.Y_N)}" class="ui dropdown"
+                              optionKey="id"
+                              optionValue="${{ it.getI10n('value') }}"
+                              name="subIsPublicForApi"
+                              value="${permissionInfo?.sub_isPublicForApi}"
+                    />
+                </td>
+                <td class="center aligned">
+                    <div class="ui checkbox">
+                        <input type="checkbox" name="auditList" value="resource" ${AuditConfig.getConfig(subscription, 'isPublicForApi') ? 'checked': ''} />
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <th>${message(code: 'subscription.hasPerpetualAccess.label')}</th>
+                <td>
+                    <g:select from="${com.k_int.kbplus.RefdataCategory.getAllRefdataValues(RDConstants.Y_N)}" class="ui dropdown"
+                              optionKey="id"
+                              optionValue="${{ it.getI10n('value') }}"
+                              name="subHasPerpetualAccess"
+                              value="${permissionInfo?.sub_hasPerpetualAccess}"
+                    />
+                </td>
+                <td class="center aligned">
+                    <div class="ui checkbox">
+                        <input type="checkbox" name="auditList" value="resource" ${AuditConfig.getConfig(subscription, 'hasPerpetualAccess') ? 'checked': ''} />
                     </div>
                 </td>
             </tr>

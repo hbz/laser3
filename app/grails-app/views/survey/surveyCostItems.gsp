@@ -1,4 +1,4 @@
-<%@ page import="com.k_int.kbplus.RefdataCategory;com.k_int.kbplus.SurveyProperty;com.k_int.kbplus.SurveyConfig; com.k_int.kbplus.CostItem" %>
+<%@ page import="com.k_int.kbplus.RefdataCategory;com.k_int.kbplus.SurveyProperty;com.k_int.kbplus.SurveyConfig; com.k_int.kbplus.CostItem; com.k_int.kbplus.RefdataValue; org.springframework.context.i18n.LocaleContextHolder;" %>
 <laser:serviceInjection/>
 
 <!doctype html>
@@ -137,10 +137,10 @@
             </semui:filter>
 
 
-            <g:form action="surveyCostItems" method="post" class="ui form"
+            <g:form action="processSurveyCostItemsBulk" method="post" class="ui form"
                     params="[id: surveyInfo.id, surveyConfigID: params.surveyConfigID, tab: 'selectedSubParticipants']">
 
-                <h4>${message(code: 'surveyCostItems.label')}</h4>
+                <h3>${message(code: 'surveyCostItems.bulkOption')}:</h3>
 
                 <div class="fields">
                     <fieldset class="sixteen wide field la-modal-fieldset-margin-right la-account-currency">
@@ -149,31 +149,33 @@
                         <div class="two fields">
                             <div class="field">
                                 <label>${message(code: 'financials.invoice_total')}</label>
-                                <input title="${g.message(code: 'financials.addNew.BillingCurrency')}" type="text" class="calc"
+                                <input title="${g.message(code: 'financials.addNew.BillingCurrency')}" type="text"
+                                       class="calc"
                                        style="width:50%"
-                                       name="newCostInBillingCurrency" id="newCostInBillingCurrency"
+                                       name="newCostInBillingCurrency2" id="newCostInBillingCurrency2"
                                        placeholder="${g.message(code: 'financials.invoice_total')}"
                                        value="<g:formatNumber
                                                number="${costItem?.costInBillingCurrency}"
                                                minFractionDigits="2" maxFractionDigits="2"/>"/>
 
-                                <div class="ui icon button la-popup-tooltip la-delay" id="costButton3"
+                                <div class="ui icon button la-popup-tooltip la-delay" id="costButton32"
                                      data-content="${g.message(code: 'financials.newCosts.buttonExplanation')}"
                                      data-position="top center" data-variation="tiny">
                                     <i class="calculator icon"></i>
                                 </div>
 
-                                <g:select class="ui dropdown dk-width-auto" name="newCostCurrency"
+                                <g:select class="ui dropdown dk-width-auto" name="newCostCurrency2"
                                           title="${g.message(code: 'financials.addNew.currencyType')}"
                                           from="${currency}"
                                           optionKey="id"
-                                          optionValue="${{it.text.contains('-') ? it.text.split('-').first() : it.text}}"
+                                          optionValue="${{ it.text.contains('-') ? it.text.split('-').first() : it.text }}"
                                           value="${costItem?.billingCurrency?.id}"/>
                             </div><!-- .field -->
                             <div class="field">
                                 <label><g:message code="financials.newCosts.billingSum"/></label>
-                                <input title="<g:message code="financials.newCosts.billingSum"/>" type="text" readonly="readonly"
-                                       name="newCostInBillingCurrencyAfterTax" id="newCostInBillingCurrencyAfterTax"
+                                <input title="<g:message code="financials.newCosts.billingSum"/>" type="text"
+                                       readonly="readonly"
+                                       name="newCostInBillingCurrencyAfterTax2" id="newCostInBillingCurrencyAfterTax2"
                                        value="<g:formatNumber
                                                number="${costItem?.costInBillingCurrencyAfterTax}"
                                                minFractionDigits="2" maxFractionDigits="2"/>"/>
@@ -191,12 +193,13 @@
                         <div class="two fields">
                             <div class="field la-exchange-rate">
                                 <label>${g.message(code: 'financials.newCosts.exchangeRate')}</label>
-                                <input title="${g.message(code: 'financials.addNew.currencyRate')}" type="number" class="calc"
-                                       name="newCostCurrencyRate" id="newCostCurrencyRate"
+                                <input title="${g.message(code: 'financials.addNew.currencyRate')}" type="number"
+                                       class="calc"
+                                       name="newCostCurrencyRate2" id="newCostCurrencyRate2"
                                        placeholder="${g.message(code: 'financials.newCosts.exchangeRate')}"
                                        value="${costItem ? costItem.currencyRate : 1.0}" step="0.000000001"/>
 
-                                <div class="ui icon button la-popup-tooltip la-delay" id="costButton2"
+                                <div class="ui icon button la-popup-tooltip la-delay" id="costButton22"
                                      data-content="${g.message(code: 'financials.newCosts.buttonExplanation')}"
                                      data-position="top center" data-variation="tiny">
                                     <i class="calculator icon"></i>
@@ -210,7 +213,7 @@
                                     if (costItem?.taxKey && tab != "subscr")
                                         taxKey = costItem.taxKey
                                 %>
-                                <g:select class="ui dropdown calc" name="newTaxRate" title="TaxRate"
+                                <g:select class="ui dropdown calc" name="newTaxRate2" title="TaxRate"
                                           from="${CostItem.TAX_TYPES}"
                                           optionKey="${{ it.taxType.class.name + ":" + it.taxType.id + "§" + it.taxRate }}"
                                           optionValue="${{ it.taxType.getI10n("value") + " (" + it.taxRate + "%)" }}"
@@ -223,14 +226,15 @@
                         <div class="two fields">
                             <div class="field">
                                 <label>${g.message(code: 'financials.newCosts.value')}</label>
-                                <input title="${g.message(code: 'financials.addNew.LocalCurrency')}" type="text" class="calc"
-                                       name="newCostInLocalCurrency" id="newCostInLocalCurrency"
+                                <input title="${g.message(code: 'financials.addNew.LocalCurrency')}" type="text"
+                                       class="calc"
+                                       name="newCostInLocalCurrency2" id="newCostInLocalCurrency2"
                                        placeholder="${message(code: 'financials.newCosts.value')}"
                                        value="<g:formatNumber
                                                number="${costItem?.costInLocalCurrency}"
                                                minFractionDigits="2" maxFractionDigits="2"/>"/>
 
-                                <div class="ui icon button la-popup-tooltip la-delay" id="costButton1"
+                                <div class="ui icon button la-popup-tooltip la-delay" id="costButton12"
                                      data-content="${g.message(code: 'financials.newCosts.buttonExplanation')}"
                                      data-position="top center" data-variation="tiny">
                                     <i class="calculator icon"></i>
@@ -238,8 +242,9 @@
                             </div><!-- .field -->
                             <div class="field">
                                 <label><g:message code="financials.newCosts.finalSum"/></label>
-                                <input title="<g:message code="financials.newCosts.finalSum"/>" type="text" readonly="readonly"
-                                       name="newCostInLocalCurrencyAfterTax" id="newCostInLocalCurrencyAfterTax"
+                                <input title="<g:message code="financials.newCosts.finalSum"/>" type="text"
+                                       readonly="readonly"
+                                       name="newCostInLocalCurrencyAfterTax2" id="newCostInLocalCurrencyAfterTax2"
                                        value="<g:formatNumber
                                                number="${costItem?.costInLocalCurrencyAfterTax}"
                                                minFractionDigits="2" maxFractionDigits="2"/>"/>
@@ -249,7 +254,7 @@
                         <div class="field">
                             <div class="ui checkbox">
                                 <label>Finalen Preis runden</label>
-                                <input name="newFinalCostRounding" class="hidden calc" type="checkbox"
+                                <input name="newFinalCostRounding2" class="hidden calc" type="checkbox"
                                        <g:if test="${costItem?.finalCostRounding}">checked="checked"</g:if>/>
                             </div>
                         </div><!-- .field -->
@@ -264,17 +269,6 @@
                     </div>
 
                     <div class="eight wide field" style="text-align: right;">
-                        <div class="ui buttons">
-                            <button class="ui button negative"
-                                    type="submit" name="processOption"
-                                    value="unlinkwithoutIE">${message(code: 'subscription.linkPackagesMembers.unlinkInfo.onlyPackage')}</button>
-
-                            <div class="or"></div>
-                            <button class="ui button negative "
-                                    type="submit" name="processOption"
-                                    value="unlinkwithIE">${message(code: 'subscription.linkPackagesMembers.unlinkInfo.withIE')}</button>
-                        </div>
-
                     </div>
                 </div>
 
@@ -297,10 +291,10 @@
                     <br>
 
                     <g:render template="/templates/filter/orgFilterTable"
-                              model="[orgList       : surveyParticipantsHasAccess,
+                              model="[orgList         : surveyParticipantsHasAccess,
                                       tmplShowCheckbox: true,
-                                      tmplConfigShow: ['lineNumber', 'sortname', 'name', 'surveySubInfoStartEndDate', 'surveySubCostItem', 'surveyCostItem'],
-                                      tableID       : 'costTable'
+                                      tmplConfigShow  : ['lineNumber', 'sortname', 'name', 'surveySubInfoStartEndDate', 'surveySubCostItem', 'surveyCostItem'],
+                                      tableID         : 'costTable'
                               ]"/>
 
                 </div>
@@ -340,35 +334,168 @@
 
                 <div class="four wide column">
 
-                %{--<button type="button" class="ui icon button right floated"
-                        data-href="#modalCostItemAllSub"><i class="plus icon"></i></button>
+        %{--<button type="button" class="ui icon button right floated"
+                data-href="#modalCostItemAllSub"><i class="plus icon"></i></button>
 
 
-                <g:render template="/survey/costItemModal"
-                          model="[modalID: 'modalCostItemAllSub', setting: 'bulkForAll']"/>--}%
+        <g:render template="/survey/costItemModal"
+                  model="[modalID: 'modalCostItemAllSub', setting: 'bulkForAll']"/>--}%
 
-                    <g:link onclick="addForAllSurveyCostItem([${(selectedParticipants?.id)?.join(',')}])"
-                            class="ui icon button right floated trigger-modal">
-                        <i class="plus icon"></i>
-                    </g:link>
+            <g:link onclick="addForAllSurveyCostItem([${(selectedParticipants?.id)?.join(',')}])"
+                    class="ui icon button right floated trigger-modal">
+                <i class="plus icon"></i>
+            </g:link>
+            </div>
+
+            <br>
+            <br>
+
+            <semui:filter>
+                <g:form action="surveyCostItems" method="post" class="ui form"
+                        params="[id: surveyInfo.id, surveyConfigID: params.surveyConfigID, tab: 'selectedParticipants']">
+                    <g:render template="/templates/filter/orgFilter"
+                              model="[
+                                      tmplConfigShow      : [['name', 'libraryType'], ['federalState', 'libraryNetwork', 'property'], ['customerType']],
+                                      tmplConfigFormFilter: true,
+                                      useNewLayouter      : true
+                              ]"/>
+                </g:form>
+            </semui:filter>
+
+            <g:form action="processSurveyCostItemsBulk" method="post" class="ui form"
+                    params="[id: surveyInfo.id, surveyConfigID: params.surveyConfigID, tab: 'selectedSubParticipants']">
+
+                <h3>${message(code: 'surveyCostItems.bulkOption')}:</h3>
+
+                <div class="fields">
+                    <fieldset class="sixteen wide field la-modal-fieldset-margin-right la-account-currency">
+                        <label>${g.message(code: 'financials.newCosts.amount')}</label>
+
+                        <div class="two fields">
+                            <div class="field">
+                                <label>${message(code: 'financials.invoice_total')}</label>
+                                <input title="${g.message(code: 'financials.addNew.BillingCurrency')}" type="text"
+                                       class="calc"
+                                       style="width:50%"
+                                       name="newCostInBillingCurrency2" id="newCostInBillingCurrency2"
+                                       placeholder="${g.message(code: 'financials.invoice_total')}"
+                                       value="<g:formatNumber
+                                               number="${costItem?.costInBillingCurrency}"
+                                               minFractionDigits="2" maxFractionDigits="2"/>"/>
+
+                                <div class="ui icon button la-popup-tooltip la-delay" id="costButton32"
+                                     data-content="${g.message(code: 'financials.newCosts.buttonExplanation')}"
+                                     data-position="top center" data-variation="tiny">
+                                    <i class="calculator icon"></i>
+                                </div>
+
+                                <g:select class="ui dropdown dk-width-auto" name="newCostCurrency2"
+                                          title="${g.message(code: 'financials.addNew.currencyType')}"
+                                          from="${currency}"
+                                          optionKey="id"
+                                          optionValue="${{ it.text.contains('-') ? it.text.split('-').first() : it.text }}"
+                                          value="${costItem?.billingCurrency?.id}"/>
+                            </div><!-- .field -->
+                            <div class="field">
+                                <label><g:message code="financials.newCosts.billingSum"/></label>
+                                <input title="<g:message code="financials.newCosts.billingSum"/>" type="text"
+                                       readonly="readonly"
+                                       name="newCostInBillingCurrencyAfterTax2" id="newCostInBillingCurrencyAfterTax2"
+                                       value="<g:formatNumber
+                                               number="${costItem?.costInBillingCurrencyAfterTax}"
+                                               minFractionDigits="2" maxFractionDigits="2"/>"/>
+
+                            </div><!-- .field -->
+                        <!-- TODO -->
+                            <style>
+                            .dk-width-auto {
+                                width: auto !important;
+                                min-width: auto !important;
+                            }
+                            </style>
+                        </div>
+
+                        <div class="two fields">
+                            <div class="field la-exchange-rate">
+                                <label>${g.message(code: 'financials.newCosts.exchangeRate')}</label>
+                                <input title="${g.message(code: 'financials.addNew.currencyRate')}" type="number"
+                                       class="calc"
+                                       name="newCostCurrencyRate2" id="newCostCurrencyRate2"
+                                       placeholder="${g.message(code: 'financials.newCosts.exchangeRate')}"
+                                       value="${costItem ? costItem.currencyRate : 1.0}" step="0.000000001"/>
+
+                                <div class="ui icon button la-popup-tooltip la-delay" id="costButton22"
+                                     data-content="${g.message(code: 'financials.newCosts.buttonExplanation')}"
+                                     data-position="top center" data-variation="tiny">
+                                    <i class="calculator icon"></i>
+                                </div>
+                            </div><!-- .field -->
+
+                            <div class="field">
+                                <label>${message(code: 'financials.newCosts.taxTypeAndRate')}</label>
+                                <%
+                                    CostItem.TAX_TYPES taxKey
+                                    if (costItem?.taxKey && tab != "subscr")
+                                        taxKey = costItem.taxKey
+                                %>
+                                <g:select class="ui dropdown calc" name="newTaxRate2" title="TaxRate"
+                                          from="${CostItem.TAX_TYPES}"
+                                          optionKey="${{ it.taxType.class.name + ":" + it.taxType.id + "§" + it.taxRate }}"
+                                          optionValue="${{ it.taxType.getI10n("value") + " (" + it.taxRate + "%)" }}"
+                                          value="${taxKey?.taxType?.class?.name}:${taxKey?.taxType?.id}§${taxKey?.taxRate}"
+                                          noSelection="${['null§0': '']}"/>
+
+                            </div><!-- .field -->
+                        </div>
+
+                        <div class="two fields">
+                            <div class="field">
+                                <label>${g.message(code: 'financials.newCosts.value')}</label>
+                                <input title="${g.message(code: 'financials.addNew.LocalCurrency')}" type="text"
+                                       class="calc"
+                                       name="newCostInLocalCurrency2" id="newCostInLocalCurrency2"
+                                       placeholder="${message(code: 'financials.newCosts.value')}"
+                                       value="<g:formatNumber
+                                               number="${costItem?.costInLocalCurrency}"
+                                               minFractionDigits="2" maxFractionDigits="2"/>"/>
+
+                                <div class="ui icon button la-popup-tooltip la-delay" id="costButton12"
+                                     data-content="${g.message(code: 'financials.newCosts.buttonExplanation')}"
+                                     data-position="top center" data-variation="tiny">
+                                    <i class="calculator icon"></i>
+                                </div>
+                            </div><!-- .field -->
+                            <div class="field">
+                                <label><g:message code="financials.newCosts.finalSum"/></label>
+                                <input title="<g:message code="financials.newCosts.finalSum"/>" type="text"
+                                       readonly="readonly"
+                                       name="newCostInLocalCurrencyAfterTax2" id="newCostInLocalCurrencyAfterTax2"
+                                       value="<g:formatNumber
+                                               number="${costItem?.costInLocalCurrencyAfterTax}"
+                                               minFractionDigits="2" maxFractionDigits="2"/>"/>
+                            </div><!-- .field -->
+                        </div>
+
+                        <div class="field">
+                            <div class="ui checkbox">
+                                <label>Finalen Preis runden</label>
+                                <input name="newFinalCostRounding2" class="hidden calc" type="checkbox"
+                                       <g:if test="${costItem?.finalCostRounding}">checked="checked"</g:if>/>
+                            </div>
+                        </div><!-- .field -->
+
+                    </fieldset> <!-- 1/2 field |  .la-account-currency -->
+
+                </div><!-- three fields -->
+
+                <div class="two fields">
+                    <div class="eight wide field" style="text-align: left;">
+                        <button class="ui button" type="submit">${message(code: 'default.button.save_changes')}</button>
+                    </div>
+
+                    <div class="eight wide field" style="text-align: right;">
+                    </div>
                 </div>
-
-                <br>
-                <br>
-
-                <semui:filter>
-                    <g:form action="surveyCostItems" method="post" class="ui form"
-                            params="[id: surveyInfo.id, surveyConfigID: params.surveyConfigID, tab: 'selectedParticipants']">
-                        <g:render template="/templates/filter/orgFilter"
-                                  model="[
-                                          tmplConfigShow      : [['name', 'libraryType'], ['federalState', 'libraryNetwork', 'property'], ['customerType']],
-                                          tmplConfigFormFilter: true,
-                                          useNewLayouter      : true
-                                  ]"/>
-                    </g:form>
-                </semui:filter>
-
-
 
                 <h3><g:message code="surveyParticipants.hasAccess"/></h3>
 
@@ -387,11 +514,11 @@
                 </div>
 
 
-                <%--<g:link action="copyEmailaddresses" params='[orgList: surveyParticipantsHasAccess]'
-                        data-targetId="copyEmailaddresses_ajaxModal5"
-                        class="ui icon button trigger-modal">
-                    <i class="write icon"></i>
-                </g:link>--%>
+            <%--<g:link action="copyEmailaddresses" params='[orgList: surveyParticipantsHasAccess]'
+                    data-targetId="copyEmailaddresses_ajaxModal5"
+                    class="ui icon button trigger-modal">
+                <i class="write icon"></i>
+            </g:link>--%>
 
                 <br>
                 <br>
@@ -423,12 +550,14 @@
                 <br>
 
                 <g:render template="/templates/filter/orgFilterTable"
-                          model="[orgList       : surveyParticipantsHasNotAccess,
-                                  tmplConfigShow: ['lineNumber', 'sortname', 'name', 'surveyCostItem'],
-                                  tableID       : 'costTable'
+                          model="[orgList         : surveyParticipantsHasNotAccess,
+                                  tmplShowCheckbox: true,
+                                  tmplConfigShow  : ['lineNumber', 'sortname', 'name', 'surveyCostItem'],
+                                  tableID         : 'costTable'
                           ]"/>
 
-            </div>
+                </div>
+            </g:form>
 
         </g:if>
 
@@ -504,61 +633,53 @@ function addForAllSurveyCostItem(orgsIDs) {
 
 <script>
 
-    <%
-            def costItemElementConfigurations = "{"
-            StringJoiner sj = new StringJoiner(",")
-            orgConfigurations.each { orgConf ->
-                sj.add('"'+orgConf.id+'":"'+orgConf.value+'"')
-            }
-            costItemElementConfigurations += sj.toString()+"}"
-        %>
-    var costItemElementConfigurations = ${raw(costItemElementConfigurations)};
+    var costItemElementConfigurations = ${raw(orgConfigurations as String)};
 
     var eurVal = "${RefdataValue.getByValueAndCategory('EUR','Currency').id}";
 
-    $("#newCostInBillingCurrency").change(function(){
+    $("#newCostInBillingCurrency2").change(function () {
         var currencyEUR = ${RefdataValue.getByValueAndCategory('EUR','Currency').id};
-        if($("#newCostCurrency").val() == currencyEUR) {
-            $("#costButton1").click();
+        if ($("#newCostCurrency2").val() == currencyEUR) {
+            $("#costButton12").click();
         }
     });
 
-    $("#costButton1").click(function () {
-        if (!isError("#newCostInBillingCurrency") && !isError("#newCostCurrencyRate")) {
+    $("#costButton12").click(function () {
+        if (!isError("#newCostInBillingCurrency2") && !isError("#newCostCurrencyRate2")) {
             var input = $(this).siblings("input");
             input.transition('glow');
-            var parsedBillingCurrency = convertDouble($("#newCostInBillingCurrency").val());
-            input.val(convertDouble(parsedBillingCurrency * $("#newCostCurrencyRate").val()));
+            var parsedBillingCurrency = convertDouble($("#newCostInBillingCurrency2").val());
+            input.val(convertDouble(parsedBillingCurrency * $("#newCostCurrencyRate2").val()));
 
             $(".la-account-currency").find(".field").removeClass("error");
             calcTaxResults()
         }
     });
-    $("#costButton2").click(function () {
-        if (!isError("#newCostInLocalCurrency") && !isError("#newCostInBillingCurrency")) {
+    $("#costButton22").click(function () {
+        if (!isError("#newCostInLocalCurrency2") && !isError("#newCostInBillingCurrency2")) {
             var input = $(this).siblings("input");
             input.transition('glow');
-            var parsedLocalCurrency = convertDouble($("#newCostInLocalCurrency").val());
-            var parsedBillingCurrency = convertDouble($("#newCostInBillingCurrency").val());
+            var parsedLocalCurrency = convertDouble($("#newCostInLocalCurrency2").val());
+            var parsedBillingCurrency = convertDouble($("#newCostInBillingCurrency2").val());
             input.val((parsedLocalCurrency / parsedBillingCurrency));
 
             $(".la-account-currency").find(".field").removeClass("error");
             calcTaxResults()
         }
     });
-    $("#costButton3").click(function () {
-        if (!isError("#newCostInLocalCurrency") && !isError("#newCostCurrencyRate")) {
+    $("#costButton32").click(function () {
+        if (!isError("#newCostInLocalCurrency2") && !isError("#newCostCurrencyRate2")) {
             var input = $(this).siblings("input");
             input.transition('glow');
-            var parsedLocalCurrency = convertDouble($("#newCostInLocalCurrency").val());
-            input.val(convertDouble(parsedLocalCurrency / $("#newCostCurrencyRate").val()));
+            var parsedLocalCurrency = convertDouble($("#newCostInLocalCurrency2").val());
+            input.val(convertDouble(parsedLocalCurrency / $("#newCostCurrencyRate2").val()));
 
             $(".la-account-currency").find(".field").removeClass("error");
             calcTaxResults()
         }
     });
-    $("#newCostItemElement").change(function () {
-        if (typeof(costItemElementConfigurations[$(this).val()]) !== 'undefined')
+    $("#newCostItemElement2").change(function () {
+        if (typeof (costItemElementConfigurations[$(this).val()]) !== 'undefined')
             $("[name='ciec']").dropdown('set selected', costItemElementConfigurations[$(this).val()]);
         else
             $("[name='ciec']").dropdown('set selected', 'null');
@@ -577,91 +698,85 @@ function addForAllSurveyCostItem(orgsIDs) {
     });
 
     var calcTaxResults = function () {
-        var roundF = $('*[name=newFinalCostRounding]').prop('checked');
-        console.log($("*[name=newTaxRate]").val());
-        var taxF = 1.0 + (0.01 * $("*[name=newTaxRate]").val().split("§")[1]);
+        var roundF = $('*[name=newFinalCostRounding2]').prop('checked');
+        console.log($("*[name=newTaxRate2]").val());
+        var taxF = 1.0 + (0.01 * $("*[name=newTaxRate2]").val().split("§")[1]);
 
-        var parsedBillingCurrency = convertDouble($("#newCostInBillingCurrency").val());
-        var parsedLocalCurrency = convertDouble($("#newCostInLocalCurrency").val());
+        var parsedBillingCurrency = convertDouble($("#newCostInBillingCurrency2").val());
+        var parsedLocalCurrency = convertDouble($("#newCostInLocalCurrency2").val());
 
-        $('#newCostInBillingCurrencyAfterTax').val(
+        $('#newCostInBillingCurrencyAfterTax2').val(
             roundF ? Math.round(parsedBillingCurrency * taxF) : convertDouble(parsedBillingCurrency * taxF)
         );
-        $('#newCostInLocalCurrencyAfterTax').val(
+        $('#newCostInLocalCurrencyAfterTax2').val(
             roundF ? Math.round(parsedLocalCurrency * taxF) : convertDouble(parsedLocalCurrency * taxF)
         );
     };
 
-    var costElems = $("#newCostInLocalCurrency, #newCostCurrencyRate, #newCostInBillingCurrency");
+    var costElems = $("#newCostInLocalCurrency2, #newCostCurrencyRate2, #newCostInBillingCurrency2");
 
     costElems.on('change', function () {
         checkValues();
-        if($("[name='newCostCurrency']").val() != 0) {
-            $("#newCostCurrency").parent(".field").removeClass("error");
-        }
-        else {
-            $("#newCostCurrency").parent(".field").addClass("error");
+        if ($("[name='newCostCurrency2']").val() != 0) {
+            $("#newCostCurrency2").parent(".field").removeClass("error");
+        } else {
+            $("#newCostCurrency2").parent(".field").addClass("error");
         }
     });
 
-    $("form").submit(function(e){
+    $("form").submit(function (e) {
         e.preventDefault();
-        if($("[name='newCostCurrency']").val() != 0) {
+        if ($("[name='newCostCurrency2']").val() != 0) {
             var valuesCorrect = checkValues();
-            if(valuesCorrect) {
-                $("#newCostCurrency").parent(".field").removeClass("error");
-                if($("#newSubscription").hasClass('error') || $("#newPackage").hasClass('error') || $("#newIE").hasClass('error'))
+            if (valuesCorrect) {
+                $("#newCostCurrency2").parent(".field").removeClass("error");
+                if ($("#newSubscription").hasClass('error') || $("#newPackage").hasClass('error') || $("#newIE").hasClass('error'))
                     alert("${message(code:'financials.newCosts.entitlementError')}");
                 else $(this).unbind('submit').submit();
-            }
-            else {
+            } else {
                 alert("${message(code:'financials.newCosts.calculationError')}");
             }
-        }
-        else {
+        } else {
             alert("${message(code:'financials.newCosts.noCurrencyPicked')}");
-            $("#newCostCurrency").parent(".field").addClass("error");
+            $("#newCostCurrency2").parent(".field").addClass("error");
         }
     });
 
-    $("#newCostCurrency").change(function () {
+    $("#newCostCurrency2").change(function () {
         //console.log("event listener succeeded, picked value is: "+$(this).val());
         if ($(this).val() === eurVal)
-            $("#newCostCurrencyRate").val(1.0);
-        else $("#newCostCurrencyRate").val(0.0);
-        $("#costButton1").click();
+            $("#newCostCurrencyRate2").val(1.0);
+        else $("#newCostCurrencyRate2").val(0.0);
+        $("#costButton12").click();
     });
 
 
     function checkValues() {
-        if (convertDouble($("#newCostInBillingCurrency").val()) * $("#newCostCurrencyRate").val() !== convertDouble($("#newCostInLocalCurrency").val())) {
+        if (convertDouble($("#newCostInBillingCurrency2").val()) * $("#newCostCurrencyRate2").val() !== convertDouble($("#newCostInLocalCurrency2").val())) {
             costElems.parent('.field').addClass('error');
             return false;
-        }
-        else {
+        } else {
             costElems.parent('.field').removeClass('error');
             return true;
         }
     }
 
     function convertDouble(input) {
-        console.log("input: " + input + ", typeof: " + typeof(input))
+        console.log("input: " + input + ", typeof: " + typeof (input))
         var output;
         //determine locale from server
         var locale = "${LocaleContextHolder.getLocale()}";
-        if (typeof(input) === 'number') {
+        if (typeof (input) === 'number') {
             output = input.toFixed(2);
             if (locale.indexOf("de") > -1)
                 output = output.replace(".", ",");
-        }
-        else if (typeof(input) === 'string') {
+        } else if (typeof (input) === 'string') {
             output = 0.0;
             if (input.match(/(\d{1-3}\.?)*\d+(,\d{2})?/g))
                 output = parseFloat(input.replace(/\./g, "").replace(/,/g, "."));
             else if (input.match(/(\d{1-3},?)*\d+(\.\d{2})?/g)) {
                 output = parseFloat(input.replace(/,/g, ""));
-            }
-            else console.log("Please check over regex!");
+            } else console.log("Please check over regex!");
             console.log("string input parsed, output is: " + output);
         }
         return output;
