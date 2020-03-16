@@ -170,19 +170,22 @@ class Platform extends AbstractBaseDomain {
   }
 
   Map<String, Object> getCalculatedPropDefGroups(Org contextOrg) {
-    Map<String, Object> result = [ 'global':[], 'local':[], 'orphanedProperties':[] ]
+    Map<String, Object> result = [ 'sorted':[], 'global':[], 'local':[], 'orphanedProperties':[] ]
 
     // ALL type depending groups without checking tenants or bindings
-    List<PropertyDefinitionGroup> groups = PropertyDefinitionGroup.findAllByOwnerType(Platform.class.name)
+    List<PropertyDefinitionGroup> groups = PropertyDefinitionGroup.findAllByOwnerType(Platform.class.name, [sort:'name', order:'asc'])
     groups.each{ it ->
 
       PropertyDefinitionGroupBinding binding = PropertyDefinitionGroupBinding.findByPropDefGroupAndOrg(it, this)
 
       if (it.tenant == null || it.tenant?.id == contextOrg?.id) {
         if (binding) {
-          result.local << [it, binding]
-        } else {
-          result.global << it
+          result.local << [it, binding] // TODO: remove
+          result.sorted << ['local', it, binding]
+        }
+        else {
+          result.global << it // TODO: remove
+          result.sorted << ['global', it, null]
         }
       }
     }
