@@ -38,13 +38,16 @@ class PendingChangeConfiguration {
     }
 
     static PendingChangeConfiguration construct(Map<String,Object> configMap) throws CreationException {
-        PendingChangeConfiguration pcc = new PendingChangeConfiguration()
         if(configMap.subscriptionPackage instanceof SubscriptionPackage) {
-            pcc.subscriptionPackage = (SubscriptionPackage) configMap.subscriptionPackage
+            PendingChangeConfiguration pcc = findBySubscriptionPackage((SubscriptionPackage) configMap.subscriptionPackage)
+            if(!pcc)
+                pcc =  new PendingChangeConfiguration(subscriptionPackage: (SubscriptionPackage) configMap.subscriptionPackage)
             pcc.settingKey = configMap.settingKey
             pcc.settingValue = configMap.settingValue
             pcc.withNotification = configMap.withNotification
-            pcc
+            if(pcc.save())
+                pcc
+            else throw new CreationException("Error on saving pending change configuration: ${pcc.errors}")
         }
         else {
             throw new CreationException("Invalid subscription package object given: ${configMap.subscriptionPackage}")

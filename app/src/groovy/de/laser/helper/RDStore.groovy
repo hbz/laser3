@@ -91,7 +91,9 @@ class RDStore {
 
     static final PENDING_CHANGE_STATUS      = getRefdataValue('Pending', RDConstants.PENDING_CHANGE_STATUS)
 
+    static final PENDING_CHANGE_CONFIG_ACCEPT = getRefdataValue('Accept', RDConstants.PENDING_CHANGE_CONFIG_SETTING)
     static final PENDING_CHANGE_CONFIG_PROMPT = getRefdataValue('Prompt', RDConstants.PENDING_CHANGE_CONFIG_SETTING)
+    static final PENDING_CHANGE_CONFIG_REJECT = getRefdataValue('Reject', RDConstants.PENDING_CHANGE_CONFIG_SETTING)
 
     static final PERM_PERM_EXPL             = getRefdataValue('Permitted (explicit)', RDConstants.PERMISSIONS)
     static final PERM_PERM_INTERP           = getRefdataValue('Permitted (interpreted)',RDConstants.PERMISSIONS)

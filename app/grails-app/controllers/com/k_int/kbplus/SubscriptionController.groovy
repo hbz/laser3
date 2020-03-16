@@ -7,7 +7,9 @@ import de.laser.AuditConfig
 import de.laser.DeletionService
 import de.laser.controller.AbstractDebugController
 import de.laser.domain.IssueEntitlementCoverage
+import de.laser.domain.PendingChangeConfiguration
 import de.laser.domain.PriceItem
+import de.laser.exceptions.CreationException
 import de.laser.exceptions.EntitlementCreationException
 import de.laser.helper.*
 import de.laser.interfaces.ShareSupport
@@ -3405,6 +3407,69 @@ class SubscriptionController extends AbstractDebugController {
 
         def result = sw.toString();
         result;
+    }
+
+    @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")')
+    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_EDITOR") })
+    def setupPendingChangeConfiguration() {
+        Map<String, Object> result = setResultGenericsAndCheckAccess(accessService.CHECK_VIEW_AND_EDIT)
+        if(!result) {
+            response.sendError(403)
+            return
+        }
+        //log.debug("Received params: ${params}")
+        /*
+        [subscriptionPackage:com.k_int.kbplus.SubscriptionPackage : 10,
+        newTitle_setting:1207,
+        newTitle_auditable:on,
+        titleUpdated_setting:1205,
+        titleUpdated_auditable:on,
+        titleDeleted_setting:1206,
+        titleDeleted_auditable:on,
+        newCoverage_setting:1205,
+        newCoverage_auditable:on,
+        coverageUpdated_setting:1205,
+        coverageUpdated_auditable:on,
+        coverageDeleted_setting:1205,
+        coverageDeleted_auditable:on,
+        packageProp_notification:on,
+        packageProp_auditable:on,
+        id:11]
+         */
+        SubscriptionPackage subscriptionPackage = SubscriptionPackage.get(params.subscriptionPackage)
+        PendingChangeConfiguration.settingKeys.each { String settingKey ->
+            Map<String,Object> configMap = [subscriptionPackage:subscriptionPackage]
+            boolean auditable = false
+            params.keySet().findAll { k -> k.contains(settingKey) }.each { key ->
+                List<String> settingData = key.split('/_/')
+                RefdataValue settingValue
+                boolean withNotification = false
+                switch(settingData[1]) {
+                    case 'setting': settingValue = RefdataValue.get(params[key])
+                        break
+                    case 'notification': withNotification = params[key] != null
+                        break
+                    case 'auditable': auditable = params[key] != null
+                        break
+                }
+                configMap.settingValue = settingValue
+                configMap.withNotification = withNotification
+            }
+            try {
+                PendingChangeConfiguration pcc = PendingChangeConfiguration.construct(configMap)
+                boolean hasConfig = AuditConfig.getConfig(subscriptionPackage.subscription,settingKey) != null
+                if(auditable && !hasConfig) {
+                    AuditConfig.addConfig(subscriptionPackage.subscription,settingKey)
+                }
+                else if(!auditable && hasConfig) {
+                    AuditConfig.removeConfig(subscriptionPackage.subscription,settingKey)
+                }
+            }
+            catch (CreationException e) {
+                flash.error = e.message
+            }
+        }
+        redirect(action:'show', params:[id:params.id])
     }
 
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")')

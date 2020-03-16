@@ -1,7 +1,10 @@
 package com.k_int.kbplus
 
 import com.k_int.kbplus.auth.User
+import de.laser.AuditConfig
+import de.laser.domain.PendingChangeConfiguration
 import de.laser.helper.RDConstants
+import de.laser.helper.RDStore
 import de.laser.interfaces.AbstractLockableService
 import grails.converters.JSON
 import org.codehaus.groovy.grails.web.json.JSONElement
@@ -248,6 +251,11 @@ class ChangeNotificationService extends AbstractLockableService {
     }
 
     //def registerPendingChange(prop, target, desc, objowner, changeMap) << legacy
+    @Deprecated
+    /**
+     * This method registers pending changes and is going to be kept because of backwards compatibility.
+     * Is going to be replaced by PendingChangeFactory ({@link PendingChange}.construct())
+     */
     PendingChange registerPendingChange(String prop, def target, def objowner, def changeMap, String msgToken, def msgParams, String legacyDesc) {
         log.debug("Register pending change ${prop} ${target.class.name}:${target.id}")
 
@@ -314,6 +322,44 @@ class ChangeNotificationService extends AbstractLockableService {
                 log.error("Problem saving pending change: ${new_pending_change.errors}")
             }
             return null
+        }
+    }
+
+    def determinePendingChangeBehavior(Map<String,Object> args, String changeType, SubscriptionPackage subscriptionPackage) {
+        /*
+            decision tree:
+            is there a configuration map directly for the subscription?
+                case one: if so: process as defined there
+            - if not: is there a configuration map for the parent subscription?
+                case two: if so: process as defined there
+            - if neither: check if consortial subscription
+                if so: case three - auto reject (because it is matter of survey)
+                if not: case four - treat as prompt
+         */
+        PendingChangeConfiguration.settingKeys.each { String settingKey ->
+            RefdataValue settingValue
+            PendingChangeConfiguration directConf = subscriptionPackage.pendingChangeConfig.find { PendingChangeConfiguration pcc -> pcc.settingKey == settingKey}
+            if(directConf) {
+                //case one
+                settingValue = directConf.settingValue
+            }
+            else if(AuditConfig.getConfig(subscriptionPackage.subscription.instanceOf,settingKey)) {
+                //case two
+                SubscriptionPackage parentSP = SubscriptionPackage.findBySubscriptionAndPkg(subscriptionPackage.subscription.instanceOf, subscriptionPackage.pkg)
+                settingValue = parentSP.pendingChangeConfig.find { PendingChangeConfiguration pcc -> pcc.settingKey == settingKey }.settingValue
+            }
+            if((settingValue == null && !subscriptionPackage.subscription.instanceOf) || settingValue == RDStore.PENDING_CHANGE_CONFIG_PROMPT) {
+                //case four, then fallback or explicitly set as such
+                PendingChange.construct()
+            }
+            else if(settingValue == RDStore.PENDING_CHANGE_CONFIG_ACCEPT) {
+
+            }
+            /*
+                else we have case three - a child subscription with no inherited settings ->
+                according to Micha as of March 16th, 2020, this means de facto that the holding manipulation should take place in a survey and
+                with that, the behavior can only be auto reject because the members need their current holding data as measurement for survey evaluation
+            */
         }
     }
 

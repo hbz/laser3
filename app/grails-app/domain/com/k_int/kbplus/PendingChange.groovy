@@ -1,7 +1,9 @@
 package com.k_int.kbplus
 
 import com.k_int.kbplus.auth.User
+import de.laser.exceptions.CreationException
 import de.laser.helper.RDConstants
+import de.laser.helper.RDStore
 import de.laser.helper.RefdataAnnotation
 import grails.converters.JSON
 import org.codehaus.groovy.grails.web.json.JSONElement
@@ -29,6 +31,7 @@ class PendingChange {
     Subscription subscription
     License license
     SystemObject systemObject
+    @Deprecated
     Package pkg
     CostItem costItem
     Date ts
@@ -104,9 +107,9 @@ class PendingChange {
         payloadChangeType       (nullable:true, blank:true)
         payloadChangeTargetOid  (nullable:true, blank:false)
         payloadChangeDocOid     (nullable:true, blank:false)
-        targetProperty(nullable:true, blank:true) //backwards compatibility
-        oldValue(nullable:true, blank:true) //backwards compatibility
-        newValue(nullable:true, blank:true) //backwards compatibility
+        targetProperty(nullable:true, blank:true) //nullable due to backwards compatibility
+        oldValue(nullable:true, blank:true) //nullable due to backwards compatibility
+        newValue(nullable:true, blank:true) //nullable due to backwards compatibility
         desc(nullable:true, blank:false)
         status(nullable:true, blank:false)
         actionDate(nullable:true, blank:false)
@@ -115,6 +118,50 @@ class PendingChange {
         // Nullable is true, because values are already in the database
         lastUpdated (nullable: true, blank: false)
         dateCreated (nullable: true, blank: false)
+    }
+
+    /**
+     * Factory method which should replace the legacy method ${@link ChangeNotificationService}.registerPendingChange().
+     * @param configMap
+     * @return
+     * @throws CreationException
+     */
+    static PendingChange construct(Map<String,Object> configMap) throws CreationException {
+        if((configMap.target instanceof Subscription || configMap.target instanceof License || configMap.target instanceof CostItem) && configMap.prop) {
+            Set<PendingChange> pcCheck = executeQuery('select pc from PendingChange pc where :target in (subscription,license,costItem) and targetProperty = :prop',[target:configMap.target,prop:configMap.prop])
+            PendingChange pc
+            if(pcCheck)
+                pc = pcCheck[0]
+            else {
+                pc = new PendingChange(targetProperty: configMap.prop)
+                if(configMap.target instanceof Subscription)
+                    pc.subscription = (Subscription) configMap.target
+                else if(configMap.target instanceof License)
+                    pc.license = (License) configMap.target
+                else if(configMap.target instanceof CostItem)
+                    pc.costItem = (CostItem) configMap.target
+            }
+            pc.newValue = configMap.newValue
+            pc.oldValue = configMap.oldValue
+            pc.status = RDStore.PENDING_CHANGE_STATUS
+            pc
+        }
+        else throw new CreationException("Pending changes need a target and a targeted property! Check if configMap.target and configMap.prop are correctly set!")
+    }
+
+    /*
+        continue here: apply pending change, make documentation of what it is going to replace and do not forget to implement everywhere where this is called the alternative of rejecting it.
+        In every case, the PC needs to be deleted afterwards!
+        I also need the following arguments, taken for case new tipp added:
+        Map<String,Object> args = [pkgLink: pkgLink,
+                                                   pkgName: target.pkg.name,
+                                                   titleLink: titleLink,
+                                                   titleName: target.title.title,
+                                                   platformLink: platformLink,
+                                                   platformName: target.platform.name]
+     */
+    boolean acceptPendingChange() {
+
     }
 
     def workaroundForDatamigrate() {

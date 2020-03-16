@@ -3,6 +3,7 @@ package com.k_int.kbplus
 import de.laser.EscapeService
 import de.laser.SystemEvent
 import de.laser.domain.IssueEntitlementCoverage
+import de.laser.domain.PendingChangeConfiguration
 import de.laser.domain.TIPPCoverage
 import de.laser.exceptions.SyncException
 import de.laser.helper.DateUtil
@@ -34,7 +35,6 @@ class GlobalSourceSyncService extends AbstractLockableService {
 
     SessionFactory sessionFactory
     ExecutorService executorService
-    EscapeService escapeService
     ChangeNotificationService changeNotificationService
     LinkGenerator grailsLinkGenerator
     MessageSource messageSource
@@ -849,16 +849,13 @@ class GlobalSourceSyncService extends AbstractLockableService {
                 if(notify.event == 'add') {
                     Set<IssueEntitlement> ieConcerned = IssueEntitlement.executeQuery('select ie from IssueEntitlement ie where ie.tipp.pkg = :pkg',[pkg:target.pkg])
                     ieConcerned.each { ie ->
-                        /*
-                            to implement here:
-                            - get PendingChangeConfigurationMap (if exists, otherwise, treat as prompt!)
-                            - if prompt: do as already implemented
-                            - else if accept: do not register pending change but generate notification that a change has been applied, apply change
-                         */
-                        Object[] args = [pkgLink,target.pkg.name,titleLink,target.title.title,platformLink,target.platform.name,defaultAcceptChange]
-                        String changeDesc = messageSource.getMessage('pendingChange.message_TP01',args,locale)
-                        Map<String,Object> changeMap = [changeType:PendingChangeService.EVENT_TIPP_ADD,changeDoc:target]
-                        changeNotificationService.registerPendingChange(PendingChange.PROP_SUBSCRIPTION,ie.subscription,ie.subscription.getSubscriber(),changeMap,null,null,changeDesc)
+                        Map<String,Object> args = [pkgLink: pkgLink,
+                                                   pkgName: target.pkg.name,
+                                                   titleLink: titleLink,
+                                                   titleName: target.title.title,
+                                                   platformLink: platformLink,
+                                                   platformName: target.platform.name]
+                        changeNotificationService.determinePendingChangeBehavior(args,PendingChangeService.EVENT_TIPP_ADD,SubscriptionPackage.findBySubscriptionAndPkg(ie.subscription,target.pkg))
                     }
                 }
                 else {
@@ -870,7 +867,6 @@ class GlobalSourceSyncService extends AbstractLockableService {
                             - if prompt: do as already implemented
                             - else if accept: do not register pending change but generate notification that a change has been applied, apply change
                          */
-
                         String changeDesc = ""
                         Map<String,Object> changeMap = [:]
                         switch(notify.event) {
@@ -922,7 +918,8 @@ class GlobalSourceSyncService extends AbstractLockableService {
                                 changeMap.subId = ie.subscription.id
                                 break
                         }
-                        changeNotificationService.registerPendingChange(PendingChange.PROP_SUBSCRIPTION,ie.subscription,ie.subscription.getSubscriber(),changeMap,null,null,changeDesc)
+                        changeNotificationService.determinePendingChangeBehavior(args,SubscriptionPackage.findBySubscriptionAndPkg(ie.subscription,target.pkg))
+                        //changeNotificationService.registerPendingChange(PendingChange.PROP_SUBSCRIPTION,ie.subscription,ie.subscription.getSubscriber(),changeMap,null,null,changeDesc)
                     }
                 }
             }
