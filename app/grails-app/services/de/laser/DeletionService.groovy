@@ -779,7 +779,14 @@ class DeletionService {
         println "processing package #${pkg.id}"
         Package.withTransaction { status ->
             try {
-                if(!pkg.name) {
+                //to be absolutely sure ...
+                List<Subscription> subsConcerned = Subscription.executeQuery("select ie.subscription from IssueEntitlement ie join ie.tipp tipp where tipp.pkg = :pkg and tipp.pkg.name != '' and ie.status != :deleted",[pkg:pkg,deleted: RDStore.TIPP_STATUS_DELETED])
+                if(subsConcerned) {
+                    println "issue entitlements detected on package to be deleted: ${subsConcerned} .. rollback"
+                    status.setRollbackOnly()
+                    return false
+                }
+                else {
                     //deleting IECoverages and IssueEntitlements marked deleted or where package data has disappeared
                     List<Long> iesConcerned = IssueEntitlement.executeQuery("select ie.id from IssueEntitlement ie join ie.tipp tipp where tipp.pkg = :pkg and (ie.status = :deleted or tipp.pkg.name = '')",[pkg:pkg,deleted: RDStore.TIPP_STATUS_DELETED])
                     IssueEntitlementCoverage.executeUpdate("delete from IssueEntitlementCoverage ic where ic.issueEntitlement.id in :toDelete",[toDelete:iesConcerned])
@@ -805,15 +812,6 @@ class DeletionService {
                     pkg.delete()
                     status.flush()
                     return true
-                }
-                else {
-                    //to be absolutely sure ...
-                    List<Subscription> subsConcerned = Subscription.executeQuery('select ie.subscription from IssueEntitlement ie join ie.tipp tipp where tipp.pkg = :pkg and ie.status != :deleted',[pkg:pkg,deleted: RDStore.TIPP_STATUS_DELETED])
-                    if(subsConcerned) {
-                        println "issue entitlements detected on package to be deleted: ${subsConcerned} .. rollback"
-                        status.setRollbackOnly()
-                        return false
-                    }
                 }
             }
             catch(Exception e) {

@@ -145,7 +145,8 @@ class YodaService {
     Map<String,Object> checkTitleData(duplicateRows) {
         GlobalRecordSource grs = GlobalRecordSource.findAll().get(0)
         globalSourceSyncService.setSource(grs)
-        List<String> missingTitles = [], titlesWithoutTIPPs = [], considered = []
+        Set<String> missingTitles = []
+        List<String> titlesWithoutTIPPs = [], considered = []
         List<Map<String,String>> mergingTitles = [], remappingTitles = [], tippMergers = []
         Map<String,List<TitleInstance>> nextPhase = [:]
         Map<String,GPathResult> oaiRecords = [:]
@@ -157,9 +158,10 @@ class YodaService {
                 GPathResult oaiRecord = oaiRecords.get(titleA.gokbId)
                 if(!oaiRecord) {
                     oaiRecord = globalSourceSyncService.fetchRecord(grs.uri,'titles',[verb:'GetRecord',metadataPrefix:grs.fullPrefix,identifier:titleA.gokbId])
-                    oaiRecords.put(titleA.gokbId,oaiRecord)
+                    if(oaiRecord)
+                        oaiRecords.put(titleA.gokbId,oaiRecord)
                 }
-                if(oaiRecord.record.metadata.gokb.title) {
+                if(oaiRecord && oaiRecord.record.metadata.gokb.title) {
                     titleB = oaiRecord.record.metadata.gokb.title
                     println("processing record for #${ctr} (${grailsLinkGenerator.link(controller:'title',action:'show',id:titleA.id)}), we crossed it already: ${crossed}, GOKb record name is ${titleB.name.text()}")
                     if(titleA.title != titleB.name.text()) {
@@ -170,9 +172,10 @@ class YodaService {
                             GPathResult packageOAI = oaiRecords.get(referenceTIPP.pkg.gokbId)
                             if(!packageOAI) {
                                 packageOAI = globalSourceSyncService.fetchRecord(grs.uri,'packages',[verb:'GetRecord',metadataPrefix:grs.fullPrefix,identifier:referenceTIPP.pkg.gokbId])
-                                oaiRecords.put(referenceTIPP.pkg.gokbId,packageOAI)
+                                if(packageOAI)
+                                    oaiRecords.put(referenceTIPP.pkg.gokbId,packageOAI)
                             }
-                            if(packageOAI.record.metadata.gokb.package) {
+                            if(packageOAI && packageOAI.record.metadata.gokb.package) {
                                 GPathResult referenceGOKbTIPP = packageOAI.record.metadata.gokb.package.TIPPs.TIPP.find { tipp ->
                                     tipp.@uuid.text() == referenceTIPP.gokbId
                                 }
@@ -204,10 +207,12 @@ class YodaService {
                                 }
                                 else {
                                     println("package lacks GOKb ID")
+                                    missingTitles << titleA.gokbId
                                 }
                             }
                             else {
-                                println("package lacks title, probably ")
+                                println("package lacks title, probably")
+                                missingTitles << titleA.gokbId
                             }
                         }
                         else {
@@ -227,12 +232,13 @@ class YodaService {
                                     println("attempt get with link ${grs.uri}?verb=GetRecord&metadataPrefix=${grs.fullPrefix}&identifier=${titleCandidate.gokbId} ...")
                                     if(!candidateRecord) {
                                         candidateRecord = globalSourceSyncService.fetchRecord(grs.uri,'titles',[verb:'GetRecord',metadataPrefix:grs.fullPrefix,identifier:titleCandidate.gokbId])
-                                        oaiRecords.put(titleCandidate.gokbId,candidateRecord)
+                                        if(candidateRecord)
+                                            oaiRecords.put(titleCandidate.gokbId,candidateRecord)
                                     }
-                                    if(candidateRecord.record.header.status == 'deleted') {
+                                    if(candidateRecord && candidateRecord.record.header.status == 'deleted') {
                                         println("TitleInstance in GOKb is marked as deleted!")
                                     }
-                                    else if(candidateRecord.record.metadata.gokb.title.size() > 0) {
+                                    else if(candidateRecord && candidateRecord.record.metadata.gokb.title.size() > 0) {
                                         GPathResult gokbTitleHistory = candidateRecord.record.metadata.gokb.title.history
                                         guessedTitle = gokbTitleHistory.historyEvent.'**'.find { thep ->
                                             thep.title.text() == titleA.title
@@ -323,7 +329,7 @@ class YodaService {
                 }
                 else {
                     println("UUID ${titleA.gokbId} does not exist in GOKb, mark everything dependent as deleted!")
-                    missingTitles << titleA.globalUID
+                    missingTitles << titleA.gokbId
                 }
             }
         }
@@ -336,6 +342,19 @@ class YodaService {
         toDelete.addAll(TitleInstance.findAllByGokbIdIsNull())
         TitleInstance.withTransaction { TransactionStatus status ->
             try {
+                result.missingTitles.each { entry ->
+                    TitleInstance mergeTarget = TitleInstance.findByGokbId(entry) //take first
+                    Set<TitleInstance> others = TitleInstance.findAllByGokbIdAndGlobalUIDNotEqual(entry,mergeTarget.globalUID)
+                    TitleInstancePackagePlatform.executeUpdate('update TitleInstancePackagePlatform tipp set tipp.title = :to where tipp.title in :from',[to:mergeTarget,from:others])
+                    Fact.executeUpdate('update Fact f set f.relatedTitle = :to where f.relatedTitle in :from',[to:mergeTarget, from:others])
+                    Identifier.executeUpdate('update Identifier id set id.ti = :to where id.ti in :from',[to:mergeTarget,from:others])
+                    //TitleInstitutionProvider.executeUpdate('update TitleInstitutionProvider tip set tip.title = :to where tip.title in :from',[to:mergeTarget,from:others])
+                    OrgRole.executeUpdate('update OrgRole oo set oo.title = :to where oo.title in :from',[to:mergeTarget, from:others])
+                    TitleHistoryEventParticipant.executeUpdate('update TitleHistoryEventParticipant thep set thep.participant = :to where thep.participant in :from',[to:mergeTarget, from:others])
+                    PersonRole.executeUpdate('update PersonRole pr set pr.title = :to where pr.title in :from',[to:mergeTarget, from:others])
+                    CreatorTitle.executeUpdate('update CreatorTitle ct set ct.title = :to where ct.title in :from',[to:mergeTarget, from:others])
+                    toDelete.addAll(others)
+                }
                 result.remappingTitles.each { entry ->
                     TitleInstance.executeUpdate('update TitleInstance ti set ti.gokbId = :to where ti.globalUID = :from',[from:entry.target,to:entry.to])
                 }

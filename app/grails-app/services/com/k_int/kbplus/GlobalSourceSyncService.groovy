@@ -936,7 +936,11 @@ class GlobalSourceSyncService extends AbstractLockableService {
             HTTPBuilder http = new HTTPBuilder(url)
             GPathResult record = (GPathResult) http.get(path:object,query:queryParams,contentType:'xml') { resp, xml ->
                 GPathResult response = new XmlSlurper().parseText(xml.text)
-                if(response[queryParams.verb] && response[queryParams.verb] instanceof GPathResult) {
+                if(response.error && response.error.@code == 'idDoesNotExist') {
+                    log.error(response.error)
+                    null
+                }
+                else if(response[queryParams.verb] && response[queryParams.verb] instanceof GPathResult) {
                     response[queryParams.verb]
                 }
                 else {

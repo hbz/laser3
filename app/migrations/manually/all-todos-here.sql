@@ -482,7 +482,7 @@ update survey_info set surin_is_mandatory = true where surin_is_mandatory is nul
 
 -- 2020-02-19
 -- ERMS-2119
--- changesets in changelog-2020-02-19.groovy
+-- changesets in changelog-2020-03-17.groovy
 
 -- ALTER TABLE subscription ADD COLUMN sub_has_perpetual_access boolean NOT NULL DEFAULT false;
 

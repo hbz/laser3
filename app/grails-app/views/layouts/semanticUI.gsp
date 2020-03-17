@@ -428,8 +428,6 @@
                                     <g:link class="item" role="menuitem" controller="yoda" action="cacheInfo">${message(code:'menu.yoda.cacheInfo')}</g:link>
                                     <g:link class="item" role="menuitem" controller="yoda" action="systemProfiler">${message(code:'menu.yoda.systemProfiler')}</g:link>
                                     <g:link class="item" role="menuitem" controller="yoda" action="activityProfiler">${message(code:'menu.yoda.activityProfiler')}</g:link>
-                                    <g:link class="item" role="menuitem" controller="yoda" action="quartzInfo">${message(code:'menu.yoda.quartzInfo')}</g:link>
-                                    <g:link class="item" role="menuitem" controller="yoda" action="cacheInfo">${message(code:'menu.yoda.cacheInfo')}</g:link>
 
                                     <g:link class="item" role="menuitem" controller="yoda" action="appSecurity">${message(code:'menu.yoda.security')}</g:link>
                                     <g:link class="item" role="menuitem" controller="yoda" action="userMatrix">${message(code:'menu.yoda.userMatrix')}</g:link>
