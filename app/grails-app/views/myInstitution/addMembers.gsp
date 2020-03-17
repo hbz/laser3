@@ -15,7 +15,7 @@
         <semui:crumb message="menu.institutions.add_consortia_members" class="active" />
     </semui:breadcrumbs>
 
-    <semui:controlButtons>
+    <%--<semui:controlButtons>
         <semui:exportDropdown>
             <g:if test="${filterSet}">
                 <semui:exportDropdownItem>
@@ -45,9 +45,9 @@
             </g:else>
         </semui:exportDropdown>
         <g:render template="actions" />
-    </semui:controlButtons>
+    </semui:controlButtons>--%>
     
-    <h1 class="ui left floated aligned icon header la-clear-before"><semui:headerIcon />${message(code: 'menu.institutions.add_consortia_members')}</h1>
+    <h1 class="ui left aligned icon header la-clear-before"><semui:headerIcon />${message(code: 'menu.institutions.add_consortia_members')}</h1>
 
     <semui:messages data="${flash}" />
 
@@ -67,7 +67,6 @@
 
         <g:render template="/templates/filter/orgFilterTable"
                   model="[orgList: availableOrgs,
-                          tmplDisableOrgIds: memberIds,
                           tmplShowCheckbox: true,
                           tmplConfigShow: ['sortname', 'name', 'wibid', 'isil', 'federalState', 'libraryNetwork', 'libraryType']
                   ]"/>
