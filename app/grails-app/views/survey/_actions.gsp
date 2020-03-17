@@ -32,7 +32,7 @@
                                            tooltip="${message(code: "openSurveyNow.button.info2")}"/>
                 <div class="ui divider"></div>
             </g:if>
-            <g:else>
+            <g:if test="${surveyInfo && !surveyInfo.checkOpenSurvey() && (surveyInfo.status?.id == de.laser.helper.RDStore.SURVEY_IN_PROCESSING?.id)}">
                 <semui:actionsDropdownItemDisabled controller="survey" action="processOpenSurvey"
                                                    params="[id: params.id]"
                                                    message="openSurvey.button"
@@ -43,7 +43,7 @@
                                                    message="openSurveyNow.button"
                                                    tooltip="${message(code: "openSurveyNow.button.info")}"/>
                 <div class="ui divider"></div>
-            </g:else>
+            </g:if>
 
             <g:if test="${surveyInfo && surveyInfo.status?.id == de.laser.helper.RDStore.SURVEY_SURVEY_STARTED?.id}">
                 <semui:actionsDropdownItem controller="survey" action="processEndSurvey" params="[id: params.id]"
@@ -77,7 +77,7 @@
 
             </g:if>
 
-            <g:if test="${!surveyConfig?.pickAndChoose}">
+            <g:if test="${!surveyConfig?.pickAndChoose && (surveyInfo.status?.id == de.laser.helper.RDStore.SURVEY_IN_PROCESSING?.id)}">
                 <semui:actionsDropdownItem controller="survey" action="allSurveyProperties" params="[id: params.id]"
                                            message="survey.SurveyProp.all"/>
 

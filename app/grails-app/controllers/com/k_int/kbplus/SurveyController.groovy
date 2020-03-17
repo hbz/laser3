@@ -1733,12 +1733,12 @@ class SurveyController {
 
         if (result.editable) {
 
-            result.surveyInfo.status = RDStore.SURVEY_SURVEY_COMPLETED
+            result.surveyInfo.status = RDStore.SURVEY_IN_EVALUATION
             result.surveyInfo.save(flush: true)
             flash.message = g.message(code: "endSurvey.successfully")
         }
 
-        redirect action: 'show', id: params.id
+        redirect action: 'renewalWithSurvey', params:[surveyConfigID: surveyConfig?.id, id: surveyInfo?.id]
 
     }
 
@@ -2035,7 +2035,8 @@ class SurveyController {
         } else {
             flash.error = g.message(code: 'survey.change.fail')
         }
-        redirect(url: request.getHeader('referer'))
+
+        redirect action: 'renewalWithSurvey', params:[surveyConfigID: surveyConfig?.id, id: surveyInfo?.id]
 
     }
 
@@ -2078,6 +2079,26 @@ class SurveyController {
             flash.message = g.message(code: 'survey.change.successfull')
         } else {
             flash.error = g.message(code: 'survey.change.fail')
+        }
+
+        redirect(url: request.getHeader('referer'))
+
+    }
+
+    @DebugAnnotation(perm = "ORG_CONSORTIUM_SURVEY", affil = "INST_EDITOR", specRole = "ROLE_ADMIN")
+    @Secured(closure = {
+        ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM_SURVEY", "INST_EDITOR", "ROLE_ADMIN")
+    })
+    def setSurveyConfigComment() {
+        def result = setResultGenericsAndCheckAccess()
+        if (!result.editable) {
+            response.sendError(401); return
+        }
+
+        result.surveyConfig.comment = params.comment
+
+        if (!result.surveyConfig.save(flush: true)) {
+            flash.error = g.message(code: 'default.save.error.general.message')
         }
 
         redirect(url: request.getHeader('referer'))
@@ -4556,7 +4577,7 @@ class SurveyController {
         result.institution = contextService.getOrg()
         result.user = User.get(springSecurityService.principal.id)
         result.surveyInfo = SurveyInfo.get(params.id)
-        result.surveyConfig = SurveyConfig.get(params.surveyConfigID) ?: result.surveyInfo?.surveyConfigs[0]
+        result.surveyConfig = SurveyConfig.get(params.surveyConfigID as Long? params.surveyConfigID: Long.parseLong(params.surveyConfigID)) ?: result.surveyInfo?.surveyConfigs[0]
         result.surveyWithManyConfigs = (result.surveyInfo?.surveyConfigs?.size() > 1)
 
         result.editable = result.surveyInfo?.isEditable() ?: false
