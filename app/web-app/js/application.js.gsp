@@ -661,4 +661,5 @@ $(document).ready(function() {
     bb8.go();
     tooltip.go();
     a11yMenu.go();
+    a11yIcon.go();
 })

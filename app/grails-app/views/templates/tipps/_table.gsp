@@ -31,7 +31,7 @@
                                 id="${tipp.title.id}">${tipp.title.title}</g:link></strong>
 
                 <g:if test="${tipp.hostPlatformURL}">
-                    <a class="ui icon tiny blue button la-js-dont-hide-button la-popup-tooltip la-delay"
+                    <a role="button" class="ui icon tiny blue button la-js-dont-hide-button la-popup-tooltip la-delay"
                     <%-- data-content="${message(code: 'tipp.tooltip.callUrl')}" --%>
                        data-content="${tipp?.platform.name}"
                        href="${tipp.hostPlatformURL.contains('http') ? tipp.hostPlatformURL : 'http://' + tipp.hostPlatformURL}"
@@ -142,7 +142,7 @@
                     <g:each in="${com.k_int.kbplus.ApiSource.findAllByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true)}"
                             var="gokbAPI">
                         <g:if test="${tipp?.gokbId}">
-                            <a class="ui icon tiny blue button la-js-dont-hide-button la-popup-tooltip la-delay"
+                            <a role="button" class="ui icon tiny blue button la-js-dont-hide-button la-popup-tooltip la-delay"
                                data-content="${message(code: 'gokb')}"
                                href="${gokbAPI.editUrl ? gokbAPI.editUrl + '/gokb/resource/show/' + tipp?.gokbId : '#'}"
                                target="_blank"><i class="la-gokb  icon"></i>

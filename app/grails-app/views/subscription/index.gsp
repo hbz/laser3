@@ -237,7 +237,7 @@
                                             action="show"><strong>${ie.tipp?.title.title}</strong>
                                     </g:link>
                                     <g:if test="${ie.tipp?.hostPlatformURL}">
-                                        <a class="ui icon tiny blue button la-js-dont-hide-button la-popup-tooltip la-delay"
+                                        <a role="button" class="ui icon tiny blue button la-js-dont-hide-button la-popup-tooltip la-delay"
                                         <%-- data-content="${message(code: 'tipp.tooltip.callUrl')}" --%>
                                            data-content="${ie.tipp?.platform.name}"
 

@@ -97,6 +97,7 @@ modules = {
         resource url:'js/submodules/tooltip.js.gsp'
         resource url:'js/submodules/bb8.js.gsp'
         resource url:'js/submodules/a11y/collections/menu.js.gsp'
+        resource url:'js/submodules/a11y/elements/icon.js.gsp'
     }
 
     swaggerApi {
