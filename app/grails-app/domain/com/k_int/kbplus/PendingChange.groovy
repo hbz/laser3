@@ -128,22 +128,18 @@ class PendingChange {
      */
     static PendingChange construct(Map<String,Object> configMap) throws CreationException {
         if((configMap.target instanceof Subscription || configMap.target instanceof License || configMap.target instanceof CostItem) && configMap.prop) {
-            Set<PendingChange> pcCheck = executeQuery('select pc from PendingChange pc where :target in (subscription,license,costItem) and targetProperty = :prop',[target:configMap.target,prop:configMap.prop])
-            PendingChange pc
-            if(pcCheck)
-                pc = pcCheck[0]
-            else {
-                pc = new PendingChange(targetProperty: configMap.prop)
-                if(configMap.target instanceof Subscription)
-                    pc.subscription = (Subscription) configMap.target
-                else if(configMap.target instanceof License)
-                    pc.license = (License) configMap.target
-                else if(configMap.target instanceof CostItem)
-                    pc.costItem = (CostItem) configMap.target
-            }
+            executeUpdate('update PendingChange pc set status = :superseded where :target in (subscription,license,costItem) and targetProperty = :prop',[superseded:RDStore.PENDING_CHANGE_SUPERSEDED,target:configMap.target,prop:configMap.prop])
+            PendingChange pc = new PendingChange(targetProperty: configMap.prop)
+            if(configMap.target instanceof Subscription)
+                pc.subscription = (Subscription) configMap.target
+            else if(configMap.target instanceof License)
+                pc.license = (License) configMap.target
+            else if(configMap.target instanceof CostItem)
+                pc.costItem = (CostItem) configMap.target
+            pc.msgToken = configMap.msgToken
             pc.newValue = configMap.newValue
-            pc.oldValue = configMap.oldValue
-            pc.status = RDStore.PENDING_CHANGE_STATUS
+            pc.oldValue = configMap.oldValue //must be imperatively the IssueEntitlement's current value!
+            pc.status = configMap.status
             pc
         }
         else throw new CreationException("Pending changes need a target and a targeted property! Check if configMap.target and configMap.prop are correctly set!")
@@ -152,7 +148,7 @@ class PendingChange {
     /*
         continue here: apply pending change, make documentation of what it is going to replace and do not forget to implement everywhere where this is called the alternative of rejecting it.
         In every case, the PC needs to be deleted afterwards!
-        I also need the following arguments, taken for case new tipp added:
+        I also need the following arguments, taken for case new tipp added - but that only for frontend display in changes tab @ dashboard!
         Map<String,Object> args = [pkgLink: pkgLink,
                                                    pkgName: target.pkg.name,
                                                    titleLink: titleLink,
@@ -160,8 +156,20 @@ class PendingChange {
                                                    platformLink: platformLink,
                                                    platformName: target.platform.name]
      */
-    boolean acceptPendingChange() {
-
+    boolean accept() {
+        /*
+            the message tokens:
+            pendingChange.message_TP02 (titleUpdated)
+            pendingChange.message_TP03 (titleDeleted)
+            pendingChange.message_TC01 (newCoverage)
+            pendingChange.message_TC02 (coverageUpdated)
+            pendingChange.message_TC03 (coverageDeleted)
+         */
+        switch(msgToken) {
+            //pendingChange.message_TP01 (newTitle)
+            case 'pendingChange.message_TP01':
+                break
+        }
     }
 
     def workaroundForDatamigrate() {

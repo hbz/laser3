@@ -325,7 +325,7 @@ class ChangeNotificationService extends AbstractLockableService {
         }
     }
 
-    def determinePendingChangeBehavior(Map<String,Object> args, String changeType, SubscriptionPackage subscriptionPackage) {
+    def determinePendingChangeBehavior(Map<String,Object> args, String msgToken, SubscriptionPackage subscriptionPackage) {
         /*
             decision tree:
             is there a configuration map directly for the subscription?
@@ -350,10 +350,11 @@ class ChangeNotificationService extends AbstractLockableService {
             }
             if((settingValue == null && !subscriptionPackage.subscription.instanceOf) || settingValue == RDStore.PENDING_CHANGE_CONFIG_PROMPT) {
                 //case four, then fallback or explicitly set as such
-                PendingChange.construct()
+                PendingChange.construct([target:args.subscription,newValue:args.target,msgToken:msgToken,status:RDStore.PENDING_CHANGE_PENDING])
             }
             else if(settingValue == RDStore.PENDING_CHANGE_CONFIG_ACCEPT) {
-
+                //set up announcement
+                PendingChange.construct([target:args.subscription,newValue:args.target,msgToken:msgToken,status:RDStore.PENDING_CHANGE_ACCEPTED])
             }
             /*
                 else we have case three - a child subscription with no inherited settings ->

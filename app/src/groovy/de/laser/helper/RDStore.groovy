@@ -89,7 +89,9 @@ class RDStore {
     static final PACKAGE_STATUS_DELETED         = getRefdataValue('Deleted', RDConstants.PACKAGE_STATUS)
     static final PLATFORM_STATUS_DELETED        = getRefdataValue('Deleted', RDConstants.PLATFORM_STATUS)
 
-    static final PENDING_CHANGE_STATUS      = getRefdataValue('Pending', RDConstants.PENDING_CHANGE_STATUS)
+    static final PENDING_CHANGE_PENDING = getRefdataValue('Pending', RDConstants.PENDING_CHANGE_STATUS)
+    static final PENDING_CHANGE_ACCEPTED = getRefdataValue('Accepted', RDConstants.PENDING_CHANGE_STATUS)
+    static final PENDING_CHANGE_SUPERSEDED = getRefdataValue('Superseded', RDConstants.PENDING_CHANGE_STATUS)
 
     static final PENDING_CHANGE_CONFIG_ACCEPT = getRefdataValue('Accept', RDConstants.PENDING_CHANGE_CONFIG_SETTING)
     static final PENDING_CHANGE_CONFIG_PROMPT = getRefdataValue('Prompt', RDConstants.PENDING_CHANGE_CONFIG_SETTING)

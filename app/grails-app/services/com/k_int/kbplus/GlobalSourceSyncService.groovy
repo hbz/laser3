@@ -849,13 +849,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
                 if(notify.event == 'add') {
                     Set<IssueEntitlement> ieConcerned = IssueEntitlement.executeQuery('select ie from IssueEntitlement ie where ie.tipp.pkg = :pkg',[pkg:target.pkg])
                     ieConcerned.each { ie ->
-                        Map<String,Object> args = [pkgLink: pkgLink,
-                                                   pkgName: target.pkg.name,
-                                                   titleLink: titleLink,
-                                                   titleName: target.title.title,
-                                                   platformLink: platformLink,
-                                                   platformName: target.platform.name]
-                        changeNotificationService.determinePendingChangeBehavior(args,PendingChangeService.EVENT_TIPP_ADD,SubscriptionPackage.findBySubscriptionAndPkg(ie.subscription,target.pkg))
+                        changeNotificationService.determinePendingChangeBehavior([subscription:ie.subscription,tippToAdd:target],'pendingChange.message_TP01',SubscriptionPackage.findBySubscriptionAndPkg(ie.subscription,target.pkg))
                     }
                 }
                 else {
@@ -878,6 +872,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
                                             case 'updated':
                                                 IssueEntitlementCoverage ieCov = (IssueEntitlementCoverage) tippCov.findEquivalent(ie.coverages)
                                                 String propLabel = messageSource.getMessage("tipp.${covDiff.prop}",null, locale)
+                                                //covDiff.oldValue must be ieCov[covDiff.prop]
                                                 Object[] args = [titleLink,tippCov.tipp.title.title,pkgLink,tippCov.tipp.pkg.name,propLabel,covDiff.oldValue,covDiff.newValue,defaultAcceptChange]
                                                 changeDesc = messageSource.getMessage('pendingChange.message_TC01',args,locale)
                                                 changeMap.changeTarget = "${ieCov.class.name}:${ieCov.id}"
@@ -903,6 +898,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
                                     }
                                 }
                                 else {
+                                    //diff.old must be ie[prop]!
                                     Object[] args = [titleLink,target.title.title,pkgLink,target.pkg.name,messageSource.getMessage("tipp.${diff.prop}",null,locale),diff.old,diff.new,defaultAcceptChange]
                                     changeDesc = messageSource.getMessage('pendingChange.message_TP02',args,locale)
                                     changeMap.changeTarget = "${ie.class.name}:${ie.id}"
