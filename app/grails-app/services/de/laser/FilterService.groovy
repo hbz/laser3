@@ -84,7 +84,7 @@ class FilterService {
              queryParams << [constraint_orgIds : params.constraint_orgIds]
         }
 
-        String defaultOrder = " order by " + (params.sort ?: " LOWER(o.name)") + " " + (params.order ?: "asc")
+        String defaultOrder = " order by " + (params.sort ?: " LOWER(o.sortname)") + " " + (params.order ?: "asc")
 
         if (query.size() > 0) {
             result.query = "from Org o where " + query.join(" and ") + defaultOrder
