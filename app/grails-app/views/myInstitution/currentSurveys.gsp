@@ -51,7 +51,51 @@
 
         </div>
 
-        <div class="four fields">
+        <div class="three fields">
+
+            <div class="field">
+                <label>${message(code: 'surveyInfo.owner.label')}</label>
+                <g:select class="ui dropdown" name="owner"
+                              from="${com.k_int.kbplus.SurveyInfo.getAll()?.owner.unique { a, b -> a.id <=> b.id }}"
+                              optionKey="id"
+                              optionValue="name"
+                              value="${params.owner}"
+                              noSelection="${['': message(code: 'default.select.choose.label')]}"/>
+            </div>
+
+            <div class="field">
+                <label>${message(code: 'menu.my.providers')}</label>
+                <select id="filterPvd" name="filterPvd" multiple="" class="ui search selection fluid dropdown">
+                    <option value="">${message(code: 'default.select.choose.label')}</option>
+
+                    <g:each in="${providers.sort { it.name }}" var="provider">
+                        <option <%=(params.list('filterPvd').contains(provider.id.toString())) ? 'selected="selected"' : ''%>
+                        value="${provider.id}" ">
+                        ${provider.name}
+                        </option>
+                    </g:each>
+                </select>
+
+            </div>
+
+            <div class="field">
+                <label>${message(code: 'menu.my.subscriptions')}</label>
+                <select id="filterSub" name="filterSub" multiple="" class="ui search selection fluid dropdown">
+                    <option value="">${message(code: 'default.select.choose.label')}</option>
+
+                    <g:each in="${subscriptions.sort { it }}" var="sub">
+                        <option <%=(params.list('filterSub').contains(sub)) ? 'selected="selected"' : ''%>
+                        value="${sub}" ">
+                        ${sub}
+                        </option>
+                    </g:each>
+                </select>
+
+            </div>
+
+        </div>
+
+        <div class="two fields">
 
             <div class="field">
                 <label>${message(code: 'surveyInfo.type.label')}</label>
@@ -64,13 +108,36 @@
             </div>
 
             <div class="field">
-                <label>${message(code: 'surveyInfo.owner.label')}</label>
-                <g:select class="ui dropdown" name="owner"
-                              from="${com.k_int.kbplus.SurveyInfo.getAll()?.owner.unique { a, b -> a.id <=> b.id }}"
-                              optionKey="id"
-                              optionValue="name"
-                              value="${params.owner}"
-                              noSelection="${['': message(code: 'default.select.choose.label')]}"/>
+                <label>${message(code: 'surveyInfo.options')}</label>
+
+                <div class="inline fields la-filter-inline">
+                    <div class="inline field">
+                        <div class="ui checkbox">
+                            <label for="checkMandatory">${message(code: 'surveyInfo.isMandatory.label')}</label>
+                            <input id="checkMandatory" name="mandatory" type="checkbox"
+                                   <g:if test="${params.mandatory}">checked=""</g:if>
+                                   tabindex="0">
+                        </div>
+                    </div>
+
+                    <div class="inline field">
+                        <div class="ui checkbox">
+                            <label for="checkNoMandatory">${message(code: 'surveyInfo.isNotMandatory.label')}</label>
+                            <input id="checkNoMandatory" name="noMandatory" type="checkbox"
+                                   <g:if test="${params.noMandatory}">checked=""</g:if>
+                                   tabindex="0">
+                        </div>
+                    </div>
+
+                    <div class="inline field">
+                        <div class="ui checkbox">
+                            <label for="checkSubSurveyUseForTransfer">${message(code: 'surveyConfig.subSurveyUseForTransfer.label')}</label>
+                            <input id="checkSubSurveyUseForTransfer" name="checkSubSurveyUseForTransfer" type="checkbox"
+                                   <g:if test="${params.checkSubSurveyUseForTransfer}">checked=""</g:if>
+                                   tabindex="0">
+                        </div>
+                    </div>
+                </div>
             </div>
 
         </div>

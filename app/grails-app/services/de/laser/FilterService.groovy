@@ -343,9 +343,21 @@ class FilterService {
             params.filterSet = true
         }
 
-        if(params.mandatory) {
-            query << "surInfo.isMandatory = :mandatory"
-            queryParams << [mandatory: true]
+        if (params.mandatory || params.noMandatory) {
+
+            if (params.mandatory && !params.noMandatory) {
+                query << "surInfo.isMandatory = :mandatory"
+                queryParams << [mandatory: true]
+            }else if (!params.mandatory && params.noMandatory){
+                query << "surInfo.isMandatory = :mandatory"
+                queryParams << [mandatory: false]
+            }
+            params.filterSet = true
+        }
+
+        if(params.checkSubSurveyUseForTransfer) {
+            query << "surConfig.subSurveyUseForTransfer = :checkSubSurveyUseForTransfer"
+            queryParams << [checkSubSurveyUseForTransfer: true]
             params.filterSet = true
         }
 
@@ -540,6 +552,36 @@ class FilterService {
         if(params.owner) {
             query << "surInfo.owner = :owner"
             queryParams << [owner: params.owner instanceof Org ?: Org.get(params.owner) ]
+        }
+
+        if (params.mandatory || params.noMandatory) {
+
+            if (params.mandatory && !params.noMandatory) {
+                query << "surInfo.isMandatory = :mandatory"
+                queryParams << [mandatory: true]
+            }else if (!params.mandatory && params.noMandatory){
+                query << "surInfo.isMandatory = :mandatory"
+                queryParams << [mandatory: false]
+            }
+            params.filterSet = true
+        }
+
+        if(params.checkSubSurveyUseForTransfer) {
+            query << "surConfig.subSurveyUseForTransfer = :checkSubSurveyUseForTransfer"
+            queryParams << [checkSubSurveyUseForTransfer: true]
+            params.filterSet = true
+        }
+
+        if (params.list('filterSub')) {
+            query << " surConfig.subscription.name in (:subs) "
+            queryParams << [subs : params.list('filterSub')]
+            params.filterSet = true
+        }
+
+        if (params.filterPvd != "" && params.list('filterPvd')) {
+            query << "exists (select orgRole from OrgRole orgRole where orgRole.sub = surConfig.subscription and orgRole.org.id in (:filterPvd))"
+            queryParams << [filterPvd : params.list('filterPvd').collect { Long.parseLong(it) }]
+            params.filterSet = true
         }
 
         if (params.currentDate) {

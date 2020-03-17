@@ -2714,6 +2714,13 @@ AND EXISTS (
 
         params.tab = params.tab ?: 'new'
 
+        List orgIds = orgTypeService.getCurrentOrgIdsOfProvidersAndAgencies( contextService.org )
+
+        result.providers = Org.findAllByIdInList(orgIds).sort { it?.name }
+
+        result.subscriptions = Subscription.executeQuery("select DISTINCT s.name from Subscription as s where ( exists ( select o from s.orgRelations as o where ( o.roleType = :roleType AND o.org = :activeInst ) ) ) " +
+                " AND s.instanceOf is not null order by s.name asc ", ['roleType': RDStore.OR_SUBSCRIBER_CONS, 'activeInst': result.institution])
+
         SimpleDateFormat sdFormat = DateUtil.getSDF_NoTime()
 
         def fsq = filterService.getParticipantSurveyQuery_New(params, sdFormat, result.institution)
