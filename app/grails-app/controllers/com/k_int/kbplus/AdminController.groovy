@@ -714,7 +714,7 @@ class AdminController extends AbstractDebugController {
             try {
                 yodaService.executeTiCleanup(result)
                 sessionCache.remove("AdminController/titleRemap/result")
-                redirect(controller:'package',action: 'index')
+                redirect(controller:'title',action: 'index')
             }
             catch (CleanupException e) {
                 log.error("failure on merging titles ... rollback!")
