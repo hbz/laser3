@@ -24,80 +24,51 @@
 
     <% List<String> hiddenPropertiesMessages = [] %>
 
-<g:each in="${allPropDefGroups.global}" var="propDefGroup">
-    <%-- check visibility --%>
-    <g:if test="${propDefGroup.isVisible}">
+    <g:each in="${allPropDefGroups.sorted}" var="entry">
+        <%
+            String cat                             = entry[0]
+            PropertyDefinitionGroup pdg            = entry[1]
+            PropertyDefinitionGroupBinding binding = entry[2]
 
-        <g:render template="/templates/properties/groupWrapper" model="${[
-                propDefGroup: propDefGroup,
-                propDefGroupBinding: null,
-                prop_desc: PropertyDefinition.SUB_PROP,
-                ownobj: subscriptionInstance,
-                custom_props_div: "grouped_custom_props_div_${propDefGroup.id}"
-        ]}"/>
-    </g:if>
-    <g:else>
-        <g:set var="numberOfProperties" value="${propDefGroup.getCurrentProperties(subscriptionInstance)}" />
-        <g:if test="${numberOfProperties.size() > 0}">
-           <%
-               hiddenPropertiesMessages << "${message(code:'propertyDefinitionGroup.info.existingItems', args: [propDefGroup.name, numberOfProperties.size()])}"
-           %>
-        </g:if>
-    </g:else>
-</g:each>
+            boolean isVisible = false
 
-<g:each in="${allPropDefGroups.local}" var="propDefInfo">
-    <%-- check binding visibility --%>
-    <g:if test="${propDefInfo[1]?.isVisible}">
+            if (cat == 'global') {
+                isVisible = pdg.isVisible
+            }
+            else if (cat == 'local') {
+                isVisible = binding.isVisible
+            }
+            else if (cat == 'member') {
+                isVisible = binding.isVisible && binding.isVisibleForConsortiaMembers
+            }
+        %>
 
-        <g:render template="/templates/properties/groupWrapper" model="${[
-                propDefGroup: propDefInfo[0],
-                propDefGroupBinding: propDefInfo[1],
-                prop_desc: PropertyDefinition.SUB_PROP,
-                ownobj: subscriptionInstance,
-                custom_props_div: "grouped_custom_props_div_${propDefInfo[0].id}"
-        ]}"/>
-    </g:if>
-    <g:else>
-        <g:set var="numberOfProperties" value="${propDefInfo[0].getCurrentProperties(subscriptionInstance)}" />
-        <g:if test="${numberOfProperties.size() > 0}">
-            <%
-                hiddenPropertiesMessages << "${message(code:'propertyDefinitionGroup.info.existingItems', args: [propDefInfo[0].name, numberOfProperties.size()])}"
-            %>
-        </g:if>
-    </g:else>
-</g:each>
-
-<g:each in="${allPropDefGroups.member}" var="propDefInfo">
-    <%-- check binding visibility --%>
-    <g:if test="${propDefInfo[1]?.isVisible}">
-        <%-- check member visibility --%>
-        <g:if test="${propDefInfo[1]?.isVisibleForConsortiaMembers}">
+        <g:if test="${isVisible}">
 
             <g:render template="/templates/properties/groupWrapper" model="${[
-                    propDefGroup: propDefInfo[0],
-                    propDefGroupBinding: propDefInfo[1],
+                    propDefGroup: pdg,
+                    propDefGroupBinding: binding,
                     prop_desc: PropertyDefinition.SUB_PROP,
                     ownobj: subscriptionInstance,
-                    custom_props_div: "grouped_custom_props_div_${propDefInfo[0].id}"
+                    custom_props_div: "grouped_custom_props_div_${pdg.id}"
             ]}"/>
         </g:if>
-    </g:if>
-    <g:else>
-        <g:set var="numberOfProperties" value="${propDefInfo[0].getCurrentProperties(subscriptionInstance)}" />
-        <g:if test="${numberOfProperties.size() > 0}">
-            <%
-                hiddenPropertiesMessages << "${message(code:'propertyDefinitionGroup.info.existingItems', args: [propDefInfo[0].name, numberOfProperties.size()])}"
-            %>
-        </g:if>
-    </g:else>
-</g:each>
+        <g:else>
+            <g:set var="numberOfProperties" value="${pdg.getCurrentProperties(subscriptionInstance)}" />
 
-<g:if test="${hiddenPropertiesMessages.size() > 0}">
-    <div class="content">
-        <semui:msg class="info" header="" text="${hiddenPropertiesMessages.join('<br/>')}" />
-    </div>
-</g:if>
+            <g:if test="${numberOfProperties.size() > 0}">
+                <%
+                    hiddenPropertiesMessages << "${message(code:'propertyDefinitionGroup.info.existingItems', args: [pdg.name, numberOfProperties.size()])}"
+                %>
+            </g:if>
+        </g:else>
+    </g:each>
+
+    <g:if test="${hiddenPropertiesMessages.size() > 0}">
+        <div class="content">
+            <semui:msg class="info" header="" text="${hiddenPropertiesMessages.join('<br/>')}" />
+        </div>
+    </g:if>
 
 <%-- orphaned properties --%>
 

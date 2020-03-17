@@ -796,6 +796,17 @@ body .ui.inverted::-webkit-scrollbar-thumb:hover {
 }
 
 /*******************************
+        SCRREN READER
+*******************************/
+
+@media speech {
+  .sortable a:after {
+    display: none;
+    visibility: hidden;
+  }
+}
+
+/*******************************
         Sticky Footer
         see
         https://philipwalton.github.io/solved-by-flexbox/demos/sticky-footer/

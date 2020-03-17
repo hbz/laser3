@@ -1,6 +1,6 @@
 <%@ page import="com.k_int.kbplus.Org" %>
 <g:if test="${editmode}">
-    <a class="ui button" data-semui="modal" href="#${tmplModalID}">${tmplButtonText}</a>
+    <a role="button" class="ui button" data-semui="modal" href="#${tmplModalID}">${tmplButtonText}</a>
 </g:if>
 
 <semui:modal id="${tmplModalID}" text="${tmplText}"  isEditModal="isEditModal">

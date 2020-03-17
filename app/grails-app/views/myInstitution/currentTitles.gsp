@@ -242,7 +242,7 @@
                                 <g:each in="${ti?.tipps?.unique { a, b -> a?.platform?.id <=> b?.platform?.id }.sort { it?.platform?.name }}" var="tipp">
 
                                         <g:if test="${tipp?.hostPlatformURL}">
-                                            <a class="ui icon mini blue button la-js-dont-hide-button la-popup-tooltip la-delay"
+                                            <a role="button" class="ui icon mini blue button la-js-dont-hide-button la-popup-tooltip la-delay"
                                                data-content="${message(code: 'tipp.tooltip.callUrl')}"
                                                href="${tipp?.hostPlatformURL.contains('http') ? tipp?.hostPlatformURL : 'http://' + tipp?.hostPlatformURL}"
                                                target="_blank"><i class="share square icon"></i></a>
@@ -277,7 +277,7 @@
                                                         class="pencil alternate icon"></i></g:link>
                                             </g:if>
                                             <g:if test="${platform?.primaryUrl}">
-                                                <a class="ui icon mini blue button la-js-dont-hide-button la-popup-tooltip la-delay"
+                                                <a role="button" class="ui icon mini blue button la-js-dont-hide-button la-popup-tooltip la-delay"
                                                    data-content="${message(code: 'tipp.tooltip.callUrl')}"
                                                    href="${platform?.primaryUrl?.contains('http') ? platform?.primaryUrl : 'http://' + platform?.primaryUrl}"
                                                    target="_blank"><i class="share square icon"></i></a>

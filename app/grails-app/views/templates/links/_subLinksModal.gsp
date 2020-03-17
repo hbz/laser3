@@ -1,6 +1,6 @@
 <%@ page import="com.k_int.kbplus.*;de.laser.helper.RDStore;de.laser.interfaces.TemplateSupport" %>
 <g:if test="${editmode}">
-    <a class="ui button ${tmplCss}" data-semui="modal" href="#${tmplModalID}">
+    <a role="button" class="ui button ${tmplCss}" data-semui="modal" href="#${tmplModalID}">
         <g:if test="${tmplIcon}">
             <i class="${tmplIcon} icon"></i>
         </g:if>

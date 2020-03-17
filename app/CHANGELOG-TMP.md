@@ -2,9 +2,13 @@
 
 **Ticket    Date    Branch      Author  Feature/Bug     Description/Keywords**
 
+2218    17.03.2020  hbz-dev     Andreas Bug         Abfrage von Teilnehmer korrigiert, Bezeichnungen angepasst, obsoletes Menü entfernt
+
+2255    16.03.2020  hbz-dev     David   Feature     Sortierung von Merkmalsgruppen alphabetisch 
+
 2254    13.03.2020  hbz-dev     Moe     Feature     Lizenztyp und Lizenzart umbenennen
 
-2240    13.03.2020   hbz-dev    Moe     Feature     Lizenzen pro Teilnehmer Erweiterung um Mailfunktion
+2240    13.03.2020  hbz-dev     Moe     Feature     Lizenzen pro Teilnehmer Erweiterung um Mailfunktion
 
 2116    11.03.2020  hbz-dev     David   Feature     Nutzerverwaltung sperren für Konsortialstellen, sobald INST_ADMIN existiert
 
