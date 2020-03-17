@@ -639,10 +639,10 @@ class Subscription
     }
 
     Map<String, Object> getCalculatedPropDefGroups(Org contextOrg) {
-        def result = [ 'global':[], 'local':[], 'member':[], 'orphanedProperties':[]]
+        def result = [ 'sorted':[], 'global':[], 'local':[], 'member':[], 'orphanedProperties':[]]
 
         // ALL type depending groups without checking tenants or bindings
-        List<PropertyDefinitionGroup> groups = PropertyDefinitionGroup.findAllByOwnerType(Subscription.class.name)
+        List<PropertyDefinitionGroup> groups = PropertyDefinitionGroup.findAllByOwnerType(Subscription.class.name, [sort:'name', order:'asc'])
         groups.each{ it ->
 
             // cons_members
@@ -652,21 +652,25 @@ class Subscription
                 // global groups
                 if (it.tenant == null) {
                     if (binding) {
-                        result.member << [it, binding]
+                        result.member << [it, binding] // TODO: remove
+                        result.sorted << ['member', it, binding]
                     } else {
-                        result.global << it
+                        result.global << it // TODO: remove
+                        result.sorted << ['global', it, null]
                     }
                 }
                 // consortium @ member; getting group by tenant and instanceOf.binding
                 if (it.tenant?.id == contextOrg?.id) {
                     if (binding) {
-                        result.member << [it, binding]
+                        result.member << [it, binding] // TODO: remove
+                        result.sorted << ['member', it, binding]
                     }
                 }
                 // subscriber consortial; getting group by consortia and instanceOf.binding
                 else if (it.tenant?.id == this.instanceOf.getConsortia()?.id) {
                     if (binding) {
-                        result.member << [it, binding]
+                        result.member << [it, binding] // TODO: remove
+                        result.sorted << ['member', it, binding]
                     }
                 }
             }
@@ -676,16 +680,18 @@ class Subscription
 
                 if (it.tenant == null || it.tenant?.id == contextOrg?.id) {
                     if (binding) {
-                        result.local << [it, binding]
+                        result.local << [it, binding] // TODO: remove
+                        result.sorted << ['local', it, binding]
                     } else {
-                        result.global << it
+                        result.global << it // TODO: remove
+                        result.sorted << ['global', it, null]
                     }
                 }
             }
         }
 
         // storing properties without groups
-        result.orphanedProperties = propertyService.getOrphanedProperties(this, result.global, result.local, result.member)
+        result.orphanedProperties = propertyService.getOrphanedProperties(this, result.sorted)
 
         result
     }

@@ -182,10 +182,10 @@ class DeletionService {
 
                     // custom properties
                     lic.customProperties.clear()
-                    customProps.each { tmp -> // incomprehensible fix
+                    /*customProps.each { tmp -> // incomprehensible fix
                         tmp.owner = null
-                        tmp.save(flush:true)
-                    }
+                        tmp.save()
+                    }*/
                     customProps.each { tmp -> tmp.delete() }
 
                     lic.delete()

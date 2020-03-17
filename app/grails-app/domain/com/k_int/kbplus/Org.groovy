@@ -378,25 +378,27 @@ class Org
     }
 
     Map<String, Object> getCalculatedPropDefGroups(Org contextOrg) {
-        Map<String, Object> result = [ 'global':[], 'local':[], 'orphanedProperties':[] ]
+        Map<String, Object> result = [ 'sorted':[], 'global':[], 'local':[], 'orphanedProperties':[] ]
 
         // ALL type depending groups without checking tenants or bindings
-        List<PropertyDefinitionGroup> groups = PropertyDefinitionGroup.findAllByOwnerType(Org.class.name)
+        List<PropertyDefinitionGroup> groups = PropertyDefinitionGroup.findAllByOwnerType(Org.class.name, [sort:'name', order:'asc'])
         groups.each{ it ->
 
             PropertyDefinitionGroupBinding binding = PropertyDefinitionGroupBinding.findByPropDefGroupAndOrg(it, this)
 
             if (it.tenant == null || it.tenant?.id == contextOrg?.id) {
                 if (binding) {
-                    result.local << [it, binding]
+                    result.local << [it, binding] // TODO: remove
+                    result.sorted << ['local', it, binding]
                 } else {
-                    result.global << it
+                    result.global << it // TODO: remove
+                    result.sorted << ['global', it, null]
                 }
             }
         }
 
         // storing properties without groups
-        result.orphanedProperties = propertyService.getOrphanedProperties(this, result.global, result.local, [])
+        result.orphanedProperties = propertyService.getOrphanedProperties(this, result.sorted)
 
         result
     }

@@ -42,7 +42,15 @@
     }
 
 }
-
+/*******************************
+        SCRREN READER
+*******************************/
+@media speech {
+    .sortable a:after {
+        display: none;
+        visibility: hidden;
+    }
+}
 /*******************************
         Sticky Footer
         see

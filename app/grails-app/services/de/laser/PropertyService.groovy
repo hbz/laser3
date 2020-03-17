@@ -172,18 +172,12 @@ class PropertyService {
         count
     }
 
-    List<CustomProperty> getOrphanedProperties(Object obj,
-                                               List<PropertyDefinitionGroupBinding> globals,
-                                               List<PropertyDefinitionGroupBinding> locals,
-                                               List<PropertyDefinitionGroupBinding> members) {
+    List<CustomProperty> getOrphanedProperties(Object obj, List<List> sorted) {
 
         List<CustomProperty> result = []
-
         List orphanedIds = obj.customProperties.collect{ it.id }
 
-        globals.each{ gl -> orphanedIds.removeAll(gl.getCurrentProperties(obj).id) }
-        locals.each{  lc -> orphanedIds.removeAll(lc[0].getCurrentProperties(obj).id) }
-        members.each{  m -> orphanedIds.removeAll(m[0].getCurrentProperties(obj).id) }
+        sorted.each{ entry -> orphanedIds.removeAll(entry[1].getCurrentProperties(obj).id)}
 
         switch (obj.class.simpleName) {
 
