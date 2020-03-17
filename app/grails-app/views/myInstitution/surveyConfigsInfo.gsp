@@ -320,7 +320,7 @@ ${message(code: 'survey.label')} -
 
 
 
-            <g:if test="${surveyConfig?.type == 'Subscription'}">
+            <g:if test="${surveyConfig?.type == 'Subscription' && surveyConfig.subSurveyUseForTransfer}">
                 <div class="ui card ">
                     <div class="content">
 

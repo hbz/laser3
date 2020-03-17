@@ -63,7 +63,7 @@ ${surveyInfo?.name}
                     <i class="exchange icon"></i>${message(code: 'surveyInfo.transferMembers')}
                 </div>
         </div>
-
+        &nbsp;&nbsp;
         <g:if test="${transferWorkflow && transferWorkflow.transferMembers == 'true'}">
             <g:link controller="survey" action="surveyTransferConfig"
                     params="[id: surveyInfo?.id, surveyConfigID: surveyConfig?.id, transferMembers: false]">
@@ -94,7 +94,7 @@ ${surveyInfo?.name}
                 <i class="tags icon"></i>${message(code: 'properties')}
             </div>
         </div>
-
+        &nbsp;&nbsp;
         <g:if test="${transferWorkflow && transferWorkflow.transferSurveyProperties == 'true'}">
             <g:link controller="survey" action="surveyTransferConfig"
                     params="[id: surveyInfo?.id, surveyConfigID: surveyConfig?.id, transferSurveyProperties: false]">
@@ -123,7 +123,7 @@ ${surveyInfo?.name}
                 <i class="tags icon"></i>${message(code: 'properties')}
             </div>
         </div>
-
+        &nbsp;&nbsp;
         <g:if test="${transferWorkflow && transferWorkflow.transferCustomProperties == 'true'}">
             <g:link controller="survey" action="surveyTransferConfig"
                     params="[id: surveyInfo?.id, surveyConfigID: surveyConfig?.id, transferCustomProperties: false]">
@@ -153,7 +153,7 @@ ${surveyInfo?.name}
                 <i class="tags icon"></i>${message(code: 'properties')}
             </div>
         </div>
-
+        &nbsp;&nbsp;
         <g:if test="${transferWorkflow && transferWorkflow.transferPrivateProperties == 'true'}">
             <g:link controller="survey" action="surveyTransferConfig"
                     params="[id: surveyInfo?.id, surveyConfigID: surveyConfig?.id, transferPrivateProperties: false]">
@@ -183,7 +183,7 @@ ${surveyInfo?.name}
                 <i class="money bill alternate outline icon"></i>${message(code: 'copySurveyCostItems.surveyCostItem')}
             </div>
         </div>
-
+        &nbsp;&nbsp;
         <g:if test="${transferWorkflow && transferWorkflow.transferSurveyCostItems == 'true'}">
             <g:link controller="survey" action="surveyTransferConfig"
                     params="[id: surveyInfo?.id, surveyConfigID: surveyConfig?.id, transferSurveyCostItems: false]">
