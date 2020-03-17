@@ -4435,6 +4435,8 @@ class SubscriptionController extends AbstractDebugController {
             def sub_type = params.subType
             def sub_form = params.subForm
             def sub_resource = params.subResource
+            def sub_hasPerpetualAccess = params.subHasPerpetualAccess
+            def sub_isPublicForApi = params.subIsPublicForApi
             def old_subOID = params.subscription.old_subid
             def new_subname = params.subscription.name
             def manualCancellationDate = null
@@ -4453,7 +4455,9 @@ class SubscriptionController extends AbstractDebugController {
                     status: sub_status,
                     resource: sub_resource,
                     form: sub_form,
-                    administrative: baseSub.administrative
+                    administrative: baseSub.administrative,
+                    hasPerpetualAccess: sub_hasPerpetualAccess,
+                    isPublicForApi: sub_isPublicForApi
             )
 
             if (!newSub.save(flush: true)) {
@@ -4534,7 +4538,10 @@ class SubscriptionController extends AbstractDebugController {
                                  sub_status   : RDStore.SUBSCRIPTION_INTENDED.id.toString(),
                                  sub_type     : subscription.type?.id.toString(),
                                  sub_form     : subscription.form?.id.toString(),
-                                 sub_resource : subscription.resource?.id.toString()
+                                 sub_resource : subscription.resource?.id.toString(),
+                                 sub_kind     : subscription.kind?.id.toString(),
+                                 sub_isPublicForApi : subscription.isPublicForApi ? RDStore.YN_YES.id.toString() : RDStore.YN_NO.id.toString(),
+                                 sub_hasPerpetualAccess : subscription.hasPerpetualAccess ? RDStore.YN_YES.id.toString() : RDStore.YN_NO.id.toString()
                                 ]
 
         result.subscription = subscription

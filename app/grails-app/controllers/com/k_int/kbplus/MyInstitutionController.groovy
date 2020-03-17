@@ -3266,7 +3266,7 @@ AND EXISTS (
                 Map map = [
                         toOrg: result.institution,
                         fromOrg: Org.findById( Long.parseLong(soId)),
-                        type: RefdataValue.getByValueAndCategory(result.comboType,'Combo Type')
+                        type: RefdataValue.getByValueAndCategory(result.comboType,RDConstants.COMBO_TYPE)
                 ]
                 if (! Combo.findWhere(map)) {
                     Combo cmb = new Combo(map)
@@ -3277,17 +3277,11 @@ AND EXISTS (
             redirect action: 'manageMembers'
         }
         result.filterSet = params.filterSet ? true : false
-        def fsq = filterService.getOrgQuery(params)
-        result.availableOrgs = Org.executeQuery(fsq.query, fsq.queryParams, params)
-
-            result.memberIds = []
-            Combo.findAllWhere(
-                    toOrg: result.institution,
-                    type:    RefdataValue.getByValueAndCategory(result.comboType,'Combo Type')
-            ).each { cmb ->
-                result.memberIds << cmb.fromOrg.id
-            }
-
+        Map<String,Object> fsq = filterService.getOrgQuery(params)
+        List<Org> availableOrgs = Org.executeQuery(fsq.query, fsq.queryParams, params)
+        Set<Org> currentMembers = Org.executeQuery('select c.fromOrg from Combo c where c.toOrg = :current and c.type = :comboType',[current:result.institution,comboType:RefdataValue.getByValueAndCategory(result.comboType,RDConstants.COMBO_TYPE)])
+        result.availableOrgs = availableOrgs-currentMembers
+        /*
         SimpleDateFormat sdf = DateUtil.getSDF_NoTimeNoPoint()
 
         def tableHeader
@@ -3310,7 +3304,6 @@ AND EXISTS (
         else {
             withFormat {
                 html {
-                    result
                 }
                 csv {
                     response.setHeader("Content-disposition", "attachment; filename=\"${filename}.csv\"")
@@ -3323,7 +3316,8 @@ AND EXISTS (
                     out.close()
                 }
             }
-        }
+        }*/
+        result
     }
 
     @DebugAnnotation(perm="ORG_INST_COLLECTIVE,ORG_CONSORTIUM", affil="INST_USER", specRole="ROLE_ADMIN,ROLE_ORG_EDITOR")

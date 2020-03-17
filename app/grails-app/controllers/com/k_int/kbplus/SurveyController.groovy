@@ -614,15 +614,15 @@ class SurveyController {
                     params.view = "subscr"
                 //cost items
                 //params.forExport = true
-                LinkedHashMap costItems = financeService.getCostItemsForSubscription(result.subscription, params, 10, 0)
+                LinkedHashMap costItems = financeService.getCostItemsForSubscription(params, result)
                 result.costItemSums = [:]
-                if (costItems.own.count > 0) {
+                if (costItems.own) {
                     result.costItemSums.ownCosts = costItems.own.sums
                 }
-                if (costItems.cons.count > 0) {
+                if (costItems.cons) {
                     result.costItemSums.consCosts = costItems.cons.sums
                 }
-                if (costItems.subscr.count > 0) {
+                if (costItems.subscr) {
                     result.costItemSums.subscrCosts = costItems.subscr.sums
                 }
             }
@@ -759,6 +759,14 @@ class SurveyController {
         if (!result.editable) {
             response.sendError(401); return
         }
+        result.putAll(financeService.setEditVars(result.institution))
+
+        Map<Long,Object> orgConfigurations = [:]
+        result.costItemElements.each { oc ->
+            orgConfigurations.put(oc.costItemElement.id,oc.elementSign.id)
+        }
+
+        result.orgConfigurations = orgConfigurations as JSON
 
         params.tab = params.tab ?: 'selectedSubParticipants'
 
@@ -800,6 +808,83 @@ class SurveyController {
         }
         result
 
+    }
+
+    @DebugAnnotation(perm = "ORG_CONSORTIUM_SURVEY", affil = "INST_EDITOR", specRole = "ROLE_ADMIN")
+    @Secured(closure = {
+        ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM_SURVEY", "INST_EDITOR", "ROLE_ADMIN")
+    })
+    def processSurveyCostItemsBulk() {
+        def result = setResultGenericsAndCheckAccess()
+        if (!result.editable) {
+            response.sendError(401); return
+        }
+
+        result.putAll(financeService.setEditVars(result.institution))
+        List selectedMembers = params.list("selectedOrgs")
+
+        if(selectedMembers) {
+
+            def billing_currency = null
+            if (params.long('newCostCurrency2')) //GBP,etc
+            {
+                billing_currency = RefdataValue.get(params.newCostCurrency2)
+            }
+
+
+            NumberFormat format = NumberFormat.getInstance(LocaleContextHolder.getLocale())
+            def cost_billing_currency = params.newCostInBillingCurrency2 ? format.parse(params.newCostInBillingCurrency2).doubleValue() : null //0.00
+            def cost_currency_rate = params.newCostCurrencyRate2 ? params.double('newCostCurrencyRate2', 1.00) : null //1.00
+            def cost_local_currency = params.newCostInLocalCurrency2 ? format.parse(params.newCostInLocalCurrency2).doubleValue() : null //0.00
+
+            def tax_key = null
+            if (!params.newTaxRate2.contains("null")) {
+                String[] newTaxRate = params.newTaxRate2.split("§")
+                RefdataValue taxType = genericOIDService.resolveOID(newTaxRate[0])
+                int taxRate = Integer.parseInt(newTaxRate[1])
+                switch (taxType.id) {
+                    case RefdataValue.getByValueAndCategory("taxable", RDConstants.TAX_TYPE).id:
+                        switch (taxRate) {
+                            case 7: tax_key = CostItem.TAX_TYPES.TAXABLE_7
+                                break
+                            case 19: tax_key = CostItem.TAX_TYPES.TAXABLE_19
+                                break
+                        }
+                        break
+                    case RefdataValue.getByValueAndCategory("taxable tax-exempt", RDConstants.TAX_TYPE).id:
+                        tax_key = CostItem.TAX_TYPES.TAX_EXEMPT
+                        break
+                    case RefdataValue.getByValueAndCategory("not taxable", RDConstants.TAX_TYPE).id:
+                        tax_key = CostItem.TAX_TYPES.TAX_NOT_TAXABLE
+                        break
+                    case RefdataValue.getByValueAndCategory("not applicable", RDConstants.TAX_TYPE).id:
+                        tax_key = CostItem.TAX_TYPES.TAX_NOT_APPLICABLE
+                        break
+                    case RefdataValue.getByValueAndCategory("reverse charge", RDConstants.TAX_TYPE).id:
+                        tax_key = CostItem.TAX_TYPES.TAX_REVERSE_CHARGE
+                        break
+                }
+            }
+
+            selectedMembers.each { id ->
+                SurveyOrg surveyOrg = SurveyOrg.findByOrgAndSurveyConfig(Org.get(Long.parseLong(id)), result.surveyConfig)
+                CostItem surveyCostItem = CostItem.findBySurveyOrgAndCostItemStatusNotEqual(surveyOrg, RDStore.COST_ITEM_DELETED)
+                if(surveyCostItem){
+                    surveyCostItem.billingCurrency = billing_currency ?: surveyCostItem.billingCurrency //Not specified default to GDP
+                    surveyCostItem.costInBillingCurrency = cost_billing_currency ?: surveyCostItem.costInBillingCurrency
+                    surveyCostItem.costInLocalCurrency = cost_local_currency ?: surveyCostItem.costInLocalCurrency
+
+                    surveyCostItem.finalCostRounding = params.newFinalCostRounding2 ? true : false
+
+                    surveyCostItem.currencyRate = cost_currency_rate ?: surveyCostItem.currencyRate
+                    surveyCostItem.taxKey = tax_key ?: surveyCostItem.taxKey
+
+                    surveyCostItem.save()
+                }
+            }
+        }
+
+        redirect(url: request.getHeader('referer'))
     }
 
     @DebugAnnotation(perm = "ORG_CONSORTIUM_SURVEY", affil = "INST_EDITOR", specRole = "ROLE_ADMIN")
@@ -1648,12 +1733,12 @@ class SurveyController {
 
         if (result.editable) {
 
-            result.surveyInfo.status = RDStore.SURVEY_SURVEY_COMPLETED
+            result.surveyInfo.status = RDStore.SURVEY_IN_EVALUATION
             result.surveyInfo.save(flush: true)
             flash.message = g.message(code: "endSurvey.successfully")
         }
 
-        redirect action: 'show', id: params.id
+        redirect action: 'renewalWithSurvey', params:[surveyConfigID: surveyConfig?.id, id: surveyInfo?.id]
 
     }
 
@@ -1841,26 +1926,21 @@ class SurveyController {
         }
         result.costItem = CostItem.findById(params.costItem)
 
-        def costItemElementConfigurations = []
-        def orgConfigurations = []
 
-        List<RefdataValue> ciecs = RefdataCategory.getAllRefdataValues(RDConstants.COST_CONFIGURATION)
-        ciecs.each { ciec ->
-            costItemElementConfigurations.add([id: ciec.class.name + ":" + ciec.id, value: ciec.getI10n('value')])
-        }
-        def orgConf = CostItemElementConfiguration.findAllByForOrganisation(contextService.org)
-        orgConf.each { oc ->
-            orgConfigurations.add([id: oc.costItemElement.id, value: oc.elementSign.class.name + ":" + oc.elementSign.id])
+        Map<Long,Object> orgConfigurations = [:]
+        result.costItemElements.each { oc ->
+            orgConfigurations.put(oc.costItemElement.id,oc.elementSign.id)
         }
 
-        result.costItemElementConfigurations = costItemElementConfigurations
-        result.orgConfigurations = orgConfigurations
+        result.orgConfigurations = orgConfigurations as JSON
         //result.selectedCostItemElement = params.selectedCostItemElement ?: RefdataValue.getByValueAndCategory('price: consortial price', 'CostItemElement').id.toString()
 
         result.participant = Org.get(params.participant)
         result.surveyOrg = SurveyOrg.findBySurveyConfigAndOrg(result.surveyConfig, result.participant)
 
+
         result.mode = result.costItem ? "edit" : ""
+        result.taxKey = result.costItem ? result.costItem.taxKey : null
         render(template: "/survey/costItemModal", model: result)
     }
 
@@ -1868,25 +1948,18 @@ class SurveyController {
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_EDITOR") })
     def addForAllSurveyCostItem() {
         def result = setResultGenericsAndCheckAccess()
-        result.putAll(financeService.setEditVars(result.institution))
         if (!result.editable) {
             response.sendError(401); return
         }
 
-        def costItemElementConfigurations = []
-        def orgConfigurations = []
+        result.putAll(financeService.setEditVars(result.institution))
 
-        List<RefdataValue> ciecs = RefdataCategory.getAllRefdataValues(RDConstants.COST_CONFIGURATION)
-        ciecs.each { ciec ->
-            costItemElementConfigurations.add([id: ciec.class.name + ":" + ciec.id, value: ciec.getI10n('value')])
-        }
-        def orgConf = CostItemElementConfiguration.findAllByForOrganisation(contextService.org)
-        orgConf.each { oc ->
-            orgConfigurations.add([id: oc.costItemElement.id, value: oc.elementSign.class.name + ":" + oc.elementSign.id])
+        Map<Long,Object> orgConfigurations = [:]
+        result.costItemElements.each { oc ->
+            orgConfigurations.put(oc.costItemElement.id,oc.elementSign.id)
         }
 
-        result.costItemElementConfigurations = costItemElementConfigurations
-        result.orgConfigurations = orgConfigurations
+        result.orgConfigurations = orgConfigurations as JSON
         //result.selectedCostItemElement = params.selectedCostItemElement ?: RefdataValue.getByValueAndCategory('price: consortial price', 'CostItemElement').id.toString()
 
         result.setting = 'bulkForAll'
@@ -1962,7 +2035,8 @@ class SurveyController {
         } else {
             flash.error = g.message(code: 'survey.change.fail')
         }
-        redirect(url: request.getHeader('referer'))
+
+        redirect action: 'renewalWithSurvey', params:[surveyConfigID: surveyConfig?.id, id: surveyInfo?.id]
 
     }
 
@@ -2005,6 +2079,26 @@ class SurveyController {
             flash.message = g.message(code: 'survey.change.successfull')
         } else {
             flash.error = g.message(code: 'survey.change.fail')
+        }
+
+        redirect(url: request.getHeader('referer'))
+
+    }
+
+    @DebugAnnotation(perm = "ORG_CONSORTIUM_SURVEY", affil = "INST_EDITOR", specRole = "ROLE_ADMIN")
+    @Secured(closure = {
+        ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM_SURVEY", "INST_EDITOR", "ROLE_ADMIN")
+    })
+    def setSurveyConfigComment() {
+        def result = setResultGenericsAndCheckAccess()
+        if (!result.editable) {
+            response.sendError(401); return
+        }
+
+        result.surveyConfig.comment = params.comment
+
+        if (!result.surveyConfig.save(flush: true)) {
+            flash.error = g.message(code: 'default.save.error.general.message')
         }
 
         redirect(url: request.getHeader('referer'))
@@ -2349,7 +2443,11 @@ class SurveyController {
                                  sub_status   : RDStore.SUBSCRIPTION_INTENDED.id.toString(),
                                  sub_type     : subscription.type?.id.toString(),
                                  sub_form     : subscription.form?.id.toString(),
-                                 sub_resource : subscription.resource?.id.toString()
+                                 sub_resource : subscription.resource?.id.toString(),
+                                 sub_kind     : subscription.kind?.id.toString(),
+                                 sub_isPublicForApi : subscription.isPublicForApi ? RDStore.YN_YES.id.toString() : RDStore.YN_NO.id.toString(),
+                                 sub_hasPerpetualAccess : subscription.hasPerpetualAccess ? RDStore.YN_YES.id.toString() : RDStore.YN_NO.id.toString()
+
         ]
 
         result.subscription = subscription
@@ -2380,6 +2478,8 @@ class SurveyController {
             def sub_kind = params.subKind
             def sub_form = params.subForm
             def sub_resource = params.subResource
+            def sub_hasPerpetualAccess = params.subHasPerpetualAccess
+            def sub_isPublicForApi = params.subIsPublicForApi
             def old_subOID = params.subscription.old_subid
             def new_subname = params.subscription.name
             def manualCancellationDate = null
@@ -2399,7 +2499,8 @@ class SurveyController {
                     status: sub_status,
                     resource: sub_resource,
                     form: sub_form,
-                    hasPerpetualAccess: baseSub?.hasPerpetualAccess
+                    hasPerpetualAccess: sub_hasPerpetualAccess,
+                    isPublicForApi: sub_isPublicForApi
             )
 
             if (!newSub.save(flush: true)) {
@@ -2871,6 +2972,7 @@ class SurveyController {
         if (!result.editable) {
             response.sendError(401); return
         }
+        result.putAll(financeService.setEditVars(result.institution))
 
         /*   def surveyInfo = SurveyInfo.findByIdAndOwner(params.id, result.institution) ?: null
 
@@ -2921,6 +3023,7 @@ class SurveyController {
 
         Map<String, Object> result = [:]
         def newCostItem = null
+        result.putAll(financeService.setEditVars(contextService.getOrg()))
 
         try {
             log.debug("SurveyController::newCostItem() ${params}");
@@ -4473,7 +4576,7 @@ class SurveyController {
         result.institution = contextService.getOrg()
         result.user = User.get(springSecurityService.principal.id)
         result.surveyInfo = SurveyInfo.get(params.id)
-        result.surveyConfig = SurveyConfig.get(params.surveyConfigID) ?: result.surveyInfo?.surveyConfigs[0]
+        result.surveyConfig = SurveyConfig.get(params.surveyConfigID as Long? params.surveyConfigID: Long.parseLong(params.surveyConfigID)) ?: result.surveyInfo?.surveyConfigs[0]
         result.surveyWithManyConfigs = (result.surveyInfo?.surveyConfigs?.size() > 1)
 
         result.editable = result.surveyInfo?.isEditable() ?: false

@@ -46,6 +46,9 @@ class PublicController {
     def index() {
     }
     @Secured(['permitAll'])
+    def wcagTest() {
+    }
+    @Secured(['permitAll'])
     def gasco() {
         Map<String, Object> result = [:]
 

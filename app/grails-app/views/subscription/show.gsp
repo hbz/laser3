@@ -289,7 +289,7 @@
 
                             <g:if test="${OrgRole.findAllByOrg(contextOrg)}">
                                 <div class="ui la-vertical buttons">
-                                    <a class="ui button" data-semui="modal" href="#prsLinksModal">
+                                    <a role="button" class="ui button" data-semui="modal" href="#prsLinksModal">
                                         ${message(code: 'default.add.label', args: [message(code: 'person.label')])}
                                     </a>
                                 </div>
