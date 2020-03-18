@@ -752,7 +752,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
         Set<Map<String, Object>> result = []
 
         if (tippa.hostPlatformURL != tippb.hostPlatformURL) {
-            result.add([prop: 'hostPlatformURL', new: tippb.hostPlatformURL, old: tippa.hostPlatformURL])
+            result.add([prop: 'hostPlatformURL', newValue: tippb.hostPlatformURL, oldValue: tippa.hostPlatformURL])
         }
 
         // This is the boss enemy when refactoring coverage statements ... works so far, is going to be kept
@@ -764,15 +764,15 @@ class GlobalSourceSyncService extends AbstractLockableService {
         }
 
         if (tippa.accessStartDate != tippb.accessStartDate) {
-            result.add([prop: 'accessStartDate', new: tippb.accessStartDate, old: tippa.accessStartDate])
+            result.add([prop: 'accessStartDate', newValue: tippb.accessStartDate, oldValue: tippa.accessStartDate])
         }
 
         if (tippa.accessEndDate != tippb.accessEndDate) {
-            result.add([prop: 'accessEndDate', new: tippb.accessEndDate, old: tippa.accessEndDate])
+            result.add([prop: 'accessEndDate', newValue: tippb.accessEndDate, oldValue: tippa.accessEndDate])
         }
 
         if(tippa.status != RefdataValue.getByValueAndCategory(tippb.status,RDConstants.TIPP_STATUS)) {
-            result.add([prop: 'status', fieldType: RefdataValue.class.name, refdataCategory: RDConstants.TIPP_STATUS, new: tippb.status, old: tippa.status])
+            result.add([prop: 'status', fieldType: RefdataValue.class.name, refdataCategory: RDConstants.TIPP_STATUS, newValue: tippb.status, oldValue: tippa.status])
         }
 
         result
@@ -849,20 +849,14 @@ class GlobalSourceSyncService extends AbstractLockableService {
                 if(notify.event == 'add') {
                     Set<IssueEntitlement> ieConcerned = IssueEntitlement.executeQuery('select ie from IssueEntitlement ie where ie.tipp.pkg = :pkg',[pkg:target.pkg])
                     ieConcerned.each { ie ->
-                        changeNotificationService.determinePendingChangeBehavior([subscription:ie.subscription,tippToAdd:target],'pendingChange.message_TP01',SubscriptionPackage.findBySubscriptionAndPkg(ie.subscription,target.pkg))
+                        changeNotificationService.determinePendingChangeBehavior([target:ie.subscription,oid:"${target.class.name}:${target.id}"],'pendingChange.message_TP01',SubscriptionPackage.findBySubscriptionAndPkg(ie.subscription,target.pkg))
                     }
                 }
                 else {
                     Set<IssueEntitlement> ieConcerned = IssueEntitlement.executeQuery('select ie from IssueEntitlement ie where ie.tipp = :tipp',[tipp:target])
                     ieConcerned.each { ie ->
-                        /*
-                            to implement here:
-                            - get PendingChangeConfigurationMap (if exists, otherwise, treat as prompt!)
-                            - if prompt: do as already implemented
-                            - else if accept: do not register pending change but generate notification that a change has been applied, apply change
-                         */
                         String changeDesc = ""
-                        Map<String,Object> changeMap = [:]
+                        Map<String,Object> changeMap = [target:ie.subscription]
                         switch(notify.event) {
                             case 'update': notify.diffs.each { diff ->
                                 if(diff.prop == 'coverage') {
@@ -871,50 +865,39 @@ class GlobalSourceSyncService extends AbstractLockableService {
                                         switch(covDiff.event) {
                                             case 'updated':
                                                 IssueEntitlementCoverage ieCov = (IssueEntitlementCoverage) tippCov.findEquivalent(ie.coverages)
-                                                String propLabel = messageSource.getMessage("tipp.${covDiff.prop}",null, locale)
-                                                //covDiff.oldValue must be ieCov[covDiff.prop]
-                                                Object[] args = [titleLink,tippCov.tipp.title.title,pkgLink,tippCov.tipp.pkg.name,propLabel,covDiff.oldValue,covDiff.newValue,defaultAcceptChange]
-                                                changeDesc = messageSource.getMessage('pendingChange.message_TC01',args,locale)
-                                                changeMap.changeTarget = "${ieCov.class.name}:${ieCov.id}"
-                                                changeMap.changeType = PendingChangeService.EVENT_COVERAGE_UPDATE
-                                                changeMap.changeDoc = covDiff
+                                                changeDesc = 'pendingChange.message_TC01'
+                                                changeMap.oid = "${ieCov.class.name}:${ieCov.id}"
+                                                changeMap.prop = covDiff.prop
+                                                changeMap.oldValue = ieCov[covDiff.prop]
+                                                changeMap.newValue = covDiff.newValue
                                                 break
                                             case 'added':
-                                                Object[] args = [titleLink,tippCov.tipp.title.title,pkgLink,tippCov.tipp.pkg.name,tippCov.startDate,tippCov.startVolume,tippCov.startIssue,tippCov.endDate,tippCov.endVolume,tippCov.endIssue,tippCov.coverageDepth,tippCov.coverageNote,tippCov.embargo,defaultAcceptChange]
-                                                changeDesc = messageSource.getMessage('pendingChange.message_TC02',args,locale)
-                                                changeMap.changeTarget = "${ie.class.name}:${ie.id}"
-                                                changeMap.changeType = PendingChangeService.EVENT_COVERAGE_ADD
-                                                changeMap.changeDoc = tippCov
+                                                changeDesc = 'pendingChange.message_TC02'
+                                                changeMap.oid = "${tippCov.class.name}:${tippCov.id}"
                                                 break
                                             case 'deleted':
                                                 IssueEntitlementCoverage ieCov = (IssueEntitlementCoverage) tippCov.findEquivalent(ie.coverages)
-                                                Object[] args = [titleLink,tippCov.tipp.title.title,pkgLink,tippCov.tipp.pkg.name,ieCov.startDate?.format(messageSource.getMessage('default.date.format.notime',null,locale)),ieCov.startVolume,ieCov.startIssue,ieCov.endDate?.format(messageSource.getMessage('default.date.format.notime',null,locale)),ieCov.endVolume,ieCov.endIssue,defaultAcceptChange]
-                                                changeDesc = messageSource.getMessage('pendingChange.message_TC03',args,locale)
-                                                changeMap.changeTarget = "${ieCov.class.name}:${ieCov.id}"
-                                                changeMap.changeType = PendingChangeService.EVENT_COVERAGE_DELETE
-                                                changeMap.changeDoc = covDiff
+                                                changeDesc = 'pendingChange.message_TC03'
+                                                changeMap.oid = "${ieCov.class.name}:${ieCov.id}"
                                                 break
                                         }
                                     }
                                 }
                                 else {
-                                    //diff.old must be ie[prop]!
-                                    Object[] args = [titleLink,target.title.title,pkgLink,target.pkg.name,messageSource.getMessage("tipp.${diff.prop}",null,locale),diff.old,diff.new,defaultAcceptChange]
-                                    changeDesc = messageSource.getMessage('pendingChange.message_TP02',args,locale)
-                                    changeMap.changeTarget = "${ie.class.name}:${ie.id}"
-                                    changeMap.changeType = PendingChangeService.EVENT_PROPERTY_CHANGE
-                                    changeMap.changeDoc = diff
+                                    changeDesc = 'pendingChange.message_TP02'
+                                    changeMap.oid = "${ie.class.name}:${ie.id}"
+                                    changeMap.prop = diff.prop
+                                    changeMap.oldValue = ie[diff.prop]
+                                    changeMap.newValue = diff.newValue
                                 }
                             }
                                 break
-                            case 'delete': Object[] args = [target.title.title,defaultAcceptChange]
-                                changeDesc = messageSource.getMessage('pendingChange.message_TP03',args,locale)
-                                changeMap.changeType = PendingChangeService.EVENT_TIPP_DELETE
-                                changeMap.tippId = "${target.class.name}:${target.id}"
-                                changeMap.subId = ie.subscription.id
+                            case 'delete':
+                                changeDesc = 'pendingChange.message_TP03'
+                                changeMap.oid = "${target.class.name}:${target.id}"
                                 break
                         }
-                        changeNotificationService.determinePendingChangeBehavior(args,SubscriptionPackage.findBySubscriptionAndPkg(ie.subscription,target.pkg))
+                        changeNotificationService.determinePendingChangeBehavior(changeMap,changeDesc,SubscriptionPackage.findBySubscriptionAndPkg(ie.subscription,target.pkg))
                         //changeNotificationService.registerPendingChange(PendingChange.PROP_SUBSCRIPTION,ie.subscription,ie.subscription.getSubscriber(),changeMap,null,null,changeDesc)
                     }
                 }

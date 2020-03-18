@@ -1,6 +1,9 @@
 package com.k_int.kbplus
 
 import com.k_int.kbplus.auth.User
+import de.laser.domain.IssueEntitlementCoverage
+import de.laser.domain.TIPPCoverage
+import de.laser.exceptions.ChangeAcceptException
 import de.laser.exceptions.CreationException
 import de.laser.helper.RDConstants
 import de.laser.helper.RDStore
@@ -137,39 +140,104 @@ class PendingChange {
             else if(configMap.target instanceof CostItem)
                 pc.costItem = (CostItem) configMap.target
             pc.msgToken = configMap.msgToken
+            pc.targetProperty = configMap.prop
             pc.newValue = configMap.newValue
-            pc.oldValue = configMap.oldValue //must be imperatively the IssueEntitlement's current value!
+            pc.oldValue = configMap.oldValue //must be imperatively the IssueEntitlement's current value if it is a titleUpdated event!
+            pc.oid = configMap.oid
             pc.status = configMap.status
             pc
         }
         else throw new CreationException("Pending changes need a target and a targeted property! Check if configMap.target and configMap.prop are correctly set!")
     }
 
-    /*
-        continue here: apply pending change, make documentation of what it is going to replace and do not forget to implement everywhere where this is called the alternative of rejecting it.
-        In every case, the PC needs to be deleted afterwards!
-        I also need the following arguments, taken for case new tipp added - but that only for frontend display in changes tab @ dashboard!
-        Map<String,Object> args = [pkgLink: pkgLink,
-                                                   pkgName: target.pkg.name,
-                                                   titleLink: titleLink,
-                                                   titleName: target.title.title,
-                                                   platformLink: platformLink,
-                                                   platformName: target.platform.name]
-     */
-    boolean accept() {
-        /*
-            the message tokens:
-            pendingChange.message_TP02 (titleUpdated)
-            pendingChange.message_TP03 (titleDeleted)
-            pendingChange.message_TC01 (newCoverage)
-            pendingChange.message_TC02 (coverageUpdated)
-            pendingChange.message_TC03 (coverageDeleted)
-         */
+    boolean accept() throws ChangeAcceptException {
+        boolean done = false
+        def target = genericOIDService.resolveOID(oid)
         switch(msgToken) {
             //pendingChange.message_TP01 (newTitle)
             case 'pendingChange.message_TP01':
+                if(target instanceof TitleInstancePackagePlatform) {
+                    IssueEntitlement newTitle = IssueEntitlement.construct([subscription:subscription,tipp:(TitleInstancePackagePlatform) target])
+                    if(newTitle.save()) {
+                        done = true
+                    }
+                    else throw new ChangeAcceptException("problems when creating new entitlement - pending change not accepted: ${newTitle.errors}")
+                }
+                else throw new ChangeAcceptException("no instance of TitleInstancePackagePlatform stored: ${oid}! Pending change is void!")
+                break
+            //pendingChange.message_TP02 (titleUpdated)
+            case 'pendingChange.message_TP02':
+                if(target instanceof IssueEntitlement) {
+                    IssueEntitlement targetTitle = (IssueEntitlement) target
+                    targetTitle[targetProperty] = newValue
+                    if(targetTitle.save()) {
+                        done = true
+                    }
+                    else throw new ChangeAcceptException("problems when updating entitlement - pending change not accepted: ${targetTitle.errors}")
+                }
+                else throw new ChangeAcceptException("no instance of IssueEntitlement stored: ${oid}! Pending change is void!")
+                break
+            //pendingChange.message_TP03 (titleDeleted)
+            case 'pendingChange.message_TP03':
+                if(target instanceof IssueEntitlement) {
+                    IssueEntitlement targetTitle = (IssueEntitlement) target
+                    targetTitle.status = RDStore.TIPP_STATUS_DELETED
+                    if(targetTitle.save()) {
+                        done = true
+                    }
+                    else throw new ChangeAcceptException("problems when deleting entitlement - pending change not accepted: ${targetTitle.errors}")
+                }
+                else throw new ChangeAcceptException("no instance of IssueEntitlement stored: ${oid}! Pending change is void!")
+                break
+            //pendingChange.message_TC01 (coverageUpdated)
+            case 'pendingChange.message_TC01':
+                if(target instanceof IssueEntitlementCoverage) {
+                    IssueEntitlementCoverage targetCov = (IssueEntitlementCoverage) target
+                    targetCov[targetProperty] = newValue
+                    if(targetCov.save())
+                        done = true
+                    else throw new ChangeAcceptException("problems when updating coverage statement - pending change not accepted: ${targetCov.errors}")
+                }
+                else throw new ChangeAcceptException("no instance of IssueEntitlementCoverage stored: ${oid}! Pending change is void!")
+                break
+            //pendingChange.message_TC02 (newCoverage)
+            case 'pendingChange.message_TC02':
+                if(target instanceof TIPPCoverage) {
+                    TIPPCoverage tippCoverage = (TIPPCoverage) target
+                    IssueEntitlement owner = IssueEntitlement.findBySubscriptionAndTipp(subscription,tippCoverage.tipp)
+                    IssueEntitlementCoverage ieCov = IssueEntitlementCoverage.construct([issueEntitlement:owner])
+                    if(ieCov.save())
+                        done = true
+                    else throw new ChangeAcceptException("problems when creating new entitlement - pending change not accepted: ${ieCov.errors}")
+                }
+                else throw new ChangeAcceptException("no instance of TIPPCoverage stored: ${oid}! Pending change is void!")
+                break
+            //pendingChange.message_TC03 (coverageDeleted)
+            case 'pendingChange.message_TC03':
+                if(target instanceof IssueEntitlementCoverage) {
+                    IssueEntitlementCoverage targetCov = (IssueEntitlementCoverage) target
+                    if(targetCov.delete())
+                        done = true
+                    else throw new ChangeAcceptException("problems when deleting coverage statement - pending change not accepted: ${targetCov.errors}")
+                }
+                else throw new ChangeAcceptException("no instance of IssueEntitlementCoverage stored: ${oid}! Pending change is void!")
                 break
         }
+        if(done) {
+            status = RDStore.PENDING_CHANGE_ACCEPTED
+            if(!save()) {
+                throw new ChangeAcceptException("problems when submitting new pending change status: ${errors}")
+            }
+        }
+        done
+    }
+
+    boolean reject() {
+        status = RDStore.PENDING_CHANGE_REJECTED
+        if(!save()) {
+            throw new ChangeAcceptException("problems when submitting new pending change status: ${errors}")
+        }
+        true
     }
 
     def workaroundForDatamigrate() {

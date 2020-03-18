@@ -2,6 +2,7 @@ package com.k_int.kbplus
 
 import com.k_int.kbplus.auth.User
 import de.laser.controller.AbstractDebugController
+import de.laser.helper.DebugAnnotation
 import de.laser.helper.RDConstants
 import grails.plugin.springsecurity.annotation.Secured
 
@@ -14,21 +15,26 @@ class PendingChangeController extends AbstractDebugController {
     def contextService
     def springSecurityService
 
-    @Secured(['ROLE_USER'])
+    @DebugAnnotation(test='hasAffiliation("INST_EDITOR")')
+    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_EDITOR") })
     def accept() {
-        log.debug("Accept");
+        log.debug("Accept")
+        //distinct between legacy accept and new accept!
         pendingChangeService.performAccept(PendingChange.get(params.long('id')), User.get(springSecurityService.principal.id))
         redirect(url: request.getHeader('referer'))
     }
 
-    @Secured(['ROLE_USER'])
+    @DebugAnnotation(test='hasAffiliation("INST_EDITOR")')
+    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_EDITOR") })
     def reject() {
         log.debug("Reject")
+        //distinct between legacy reject and new reject!
         pendingChangeService.performReject(Long.parseLong(params.id), User.get(springSecurityService.principal.id))
         redirect(url: request.getHeader('referer'))
     }
 
-    @Secured(['ROLE_USER'])
+    @DebugAnnotation(test='hasAffiliation("INST_EDITOR")')
+    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_EDITOR") })
     def acceptAll() {
         log.debug("acceptAll - ${params}")
         def owner = genericOIDService.resolveOID(params.OID)
@@ -48,7 +54,8 @@ class PendingChangeController extends AbstractDebugController {
         redirect(url: request.getHeader('referer'))
     }
 
-    @Secured(['ROLE_USER'])
+    @DebugAnnotation(test='hasAffiliation("INST_EDITOR")')
+    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_EDITOR") })
     def rejectAll() {
         log.debug("rejectAll ${params}")
         def owner = genericOIDService.resolveOID(params.OID)

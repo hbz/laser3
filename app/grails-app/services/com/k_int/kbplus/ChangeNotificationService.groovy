@@ -350,11 +350,11 @@ class ChangeNotificationService extends AbstractLockableService {
             }
             if((settingValue == null && !subscriptionPackage.subscription.instanceOf) || settingValue == RDStore.PENDING_CHANGE_CONFIG_PROMPT) {
                 //case four, then fallback or explicitly set as such
-                PendingChange.construct([target:args.subscription,newValue:args.target,msgToken:msgToken,status:RDStore.PENDING_CHANGE_PENDING])
+                PendingChange.construct([target:args.target,oid:args.oid,newValue:args.newValue,oldValue:args.oldValue,prop:args.prop,msgToken:msgToken,status:RDStore.PENDING_CHANGE_PENDING])
             }
             else if(settingValue == RDStore.PENDING_CHANGE_CONFIG_ACCEPT) {
                 //set up announcement
-                PendingChange.construct([target:args.subscription,newValue:args.target,msgToken:msgToken,status:RDStore.PENDING_CHANGE_ACCEPTED])
+                PendingChange.construct([target:args.target,oid:args.oid,newValue:args.newValue,oldValue:args.oldValue,prop:args.prop,msgToken:msgToken,status:RDStore.PENDING_CHANGE_ACCEPTED])
             }
             /*
                 else we have case three - a child subscription with no inherited settings ->

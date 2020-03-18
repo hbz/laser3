@@ -7,12 +7,11 @@ import com.k_int.kbplus.GenericOIDService
 import com.k_int.kbplus.OrgAccessPointLink
 import com.k_int.kbplus.OrgRole
 import com.k_int.kbplus.Package
-import com.k_int.kbplus.PendingChange
-import com.k_int.kbplus.PendingChangeService
 import com.k_int.kbplus.PersonRole
 import com.k_int.kbplus.Platform
 import com.k_int.kbplus.RefdataCategory
 import com.k_int.kbplus.RefdataValue
+import com.k_int.kbplus.SubscriptionPackage
 import com.k_int.kbplus.TitleHistoryEventParticipant
 import com.k_int.kbplus.TitleInstance
 import com.k_int.kbplus.GlobalRecordSource
@@ -692,24 +691,16 @@ class YodaService {
             println("updating ${tippsToUpdate} to status ${status}")
             TitleInstancePackagePlatform.executeUpdate('update TitleInstancePackagePlatform tipp set tipp.status = :status where tipp.globalUID in :tippsToUpdate',[status:status,tippsToUpdate:tippsToUpdate])
             //hook up pending changes
-            Locale locale = LocaleContextHolder.locale
-            String defaultAcceptChange = messageSource.getMessage('default.accept.change.ie',null,locale)
             tippsToUpdate.each { tippKey ->
                 List<IssueEntitlement> iesToNotify = IssueEntitlement.executeQuery('select ie from IssueEntitlement ie where ie.tipp.globalUID = :tippKey',[tippKey:tippKey])
                 if(iesToNotify) {
                     TitleInstancePackagePlatform tipp = TitleInstancePackagePlatform.findByGlobalUID(tippKey)
-                    String titleLink = grailsLinkGenerator.link(controller: 'title', action: 'show', id: tipp.title.id)
-                    String pkgLink = grailsLinkGenerator.link(controller: 'package', action: 'show', id: tipp.pkg.id)
                     iesToNotify.each { IssueEntitlement ie ->
                         println("notifying subscription ${ie.subscription}")
-                        String changeDesc = ""
-                        Map<String, Object> changeMap = [:]
-                        Object[] args = [titleLink,tipp.title.title,pkgLink,tipp.pkg.name,messageSource.getMessage("tipp.status",null,locale),ie.status,status,defaultAcceptChange]
-                        changeDesc = messageSource.getMessage('pendingChange.message_TP02',args,locale)
-                        changeMap.changeTarget = "${ie.class.name}:${ie.id}"
-                        changeMap.changeType = PendingChangeService.EVENT_PROPERTY_CHANGE
-                        changeMap.changeDoc = [prop: 'status', fieldType: RefdataValue.class.name, refdataCategory: RDConstants.TIPP_STATUS, 'new': status, 'old': ie.status]
-                        changeNotificationService.registerPendingChange(PendingChange.PROP_SUBSCRIPTION,ie.subscription,ie.subscription.getSubscriber(),changeMap,null,null,changeDesc)
+                        Map<String, Object> changeMap = [oid:"${ie.class.name}:${ie.id}",prop:'status',newValue:status,oldValue:ie.status]
+                        String changeDesc = 'pendingChange.message_TP02'
+                        changeNotificationService.determinePendingChangeBehavior(changeMap,changeDesc,SubscriptionPackage.findBySubscriptionAndPkg(ie.subscription,tipp.pkg))
+                        //changeNotificationService.registerPendingChange(PendingChange.PROP_SUBSCRIPTION,ie.subscription,ie.subscription.getSubscriber(),changeMap,null,null,changeDesc)
                     }
                 }
                 else println("no issue entitlements depending!")

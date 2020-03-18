@@ -62,9 +62,10 @@ databaseChangeLog = {
         grailsChange {
             change {
                 sql.execute("""
-                insert into refdata_category (rdc_version,rdc_description,rdc_is_hard_data) values (0,'pending.change.configuration.setting',true);
-                insert into refdata_value (rdv_version,rdv_owner,rdv_is_hard_data,rdv_value) values (0,(select rdc_id from refdata_category where rdc_description = 'pending.change.configuration.setting'),true,'Accept'),
-                (0,(select rdc_id from refdata_category where rdc_description = 'pending.change.configuration.setting'),true,'Prompt'),(0,(select rdc_id from refdata_category where rdc_description = 'pending.change.configuration.setting'),true,'Reject');
+                insert into refdata_category (rdc_version,rdc_description,rdc_is_hard_data) values (0,'pending.change.configuration.setting',false);
+                insert into refdata_value (rdv_version,rdv_owner,rdv_is_hard_data,rdv_value) values (0,(select rdc_id from refdata_category where rdc_description = 'pending.change.configuration.setting'),false,'Accept'),
+                (0,(select rdc_id from refdata_category where rdc_description = 'pending.change.configuration.setting'),false,'Prompt'),(0,(select rdc_id from refdata_category where rdc_description = 'pending.change.configuration.setting'),false,'Reject'),
+                (0,(select rdc_id from refdata_category where rdc_description = 'pending.change.status'),false,'Superseded');
                 """)
             }
         }

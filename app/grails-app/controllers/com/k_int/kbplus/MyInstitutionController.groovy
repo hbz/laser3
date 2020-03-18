@@ -47,7 +47,7 @@ class MyInstitutionController extends AbstractDebugController {
     def springSecurityService
     def userService
     def genericOIDService
-    def instAdmService
+    PendingChangeService pendingChangeService
     def exportService
     def escapeService
     def institutionsService
@@ -2337,24 +2337,13 @@ AND EXISTS (
             break
         }
 
-        // changes
-
         def periodInDays = contextService.getUser().getSettingsValue(UserSettings.KEYS.DASHBOARD_ITEMS_TIME_WINDOW, 14)
 
-        getTodoForInst(result, periodInDays)
+        // changes
 
-        // announcements
+        Map<String,Object> pendingChangeConfigMap = [contextOrg:result.institution,periodInDays:periodInDays,max:result.max,offset:0,pending:true,notifications:true]
 
-//        def dcCheck = (new Date()).minus(periodInDays)
-//
-//        result.recentAnnouncements = Doc.executeQuery(
-//                "select d from Doc d where d.type.value = :type and d.dateCreated >= :dcCheck",
-//                [type: 'system.announcement', dcCheck: dcCheck],
-//                [max: result.max, offset: result.announcementOffset, sort: 'dateCreated', order: 'asc']
-//        )
-//        result.recentAnnouncementsCount = Doc.executeQuery(
-//                "select d from Doc d where d.type.value = :type and d.dateCreated >= :dcCheck",
-//                [type: 'system.announcement', dcCheck: dcCheck]).size()
+        result.putAll(pendingChangeService.getChanges(pendingChangeConfigMap))
 
         // systemAnnouncements
 
@@ -2420,60 +2409,13 @@ AND EXISTS (
         render template: '/templates/tasks/modal_create', model: result
     }
 
-    private getTodoForInst(result, Integer periodInDays){
-
-        result.changes = []
-
-        def tsCheck = (new Date()).minus(periodInDays)
-
-        def baseParams = [owner: result.institution, tsCheck: tsCheck, stats: ['Accepted']]
-
-        String baseQuery1 = "select distinct sub, count(sub.id) from PendingChange as pc join pc.subscription as sub where pc.owner = :owner and pc.ts >= :tsCheck " +
-                " and pc.subscription is not NULL and pc.status.value in (:stats) group by sub.id"
-
-        def result1 = PendingChange.executeQuery(
-                baseQuery1,
-                baseParams,
-                [max: result.max, offset: result.offset]
-        )
-        result.changes.addAll(result1)
-
-        String baseQuery2 = "select distinct lic, count(lic.id) from PendingChange as pc join pc.license as lic where pc.owner = :owner and pc.ts >= :tsCheck" +
-                " and pc.license is not NULL and pc.status.value in (:stats) group by lic.id"
-
-        def result2 = PendingChange.executeQuery(
-                baseQuery2,
-                baseParams,
-                [max: result.max, offset: result.offset]
-        )
-
-
-        result.changes.addAll(result2)
-
-        List<PendingChange> result3 = PendingChange.executeQuery("select pc from PendingChange pc join pc.costItem ci where pc.owner = :owner and pc.ts >= :tsCheck and pc.costItem is not null",[owner:result.institution,tsCheck:tsCheck],[max:result.max,offset:result.offset])
-
-        //println result.changes
-        result3.each { row ->
-            result.changes.add([row,1])
-        }
-    }
-
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
     def changes() {
         def result = setResultGenerics()
 
-        if (! accessService.checkUserIsMember(result.user, result.institution)) {
-            flash.error = "You do not have permission to view ${result.institution.name}. Please request access on the profile page"
-            response.sendError(401)
-            return;
-        }
-
         result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeTMP()
         result.offset = params.offset ? Integer.parseInt(params.offset) : 0
-
-        result.itemsTimeWindow = 365
-        getTodoForInst(result, result.itemsTimeWindow)
 
         result
     }

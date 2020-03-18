@@ -37,7 +37,7 @@
                 <div class="column">
                     <div class="ui divided relaxed list">
                         <div class="item">
-                            <g:link controller="myInstitution" action="changes">${message(code: 'myinst.todo.label')}</g:link>
+                            <g:link controller="myInstitution" action="changes">${message(code: 'myinst.pendingChanges.label')}</g:link>
                         </div>
                         <semui:securedMainNavItem specRole="ROLE_ADMIN" controller="myInstitution" action="announcements" message="announcement.plural" />
                         <%--<div class="item">
@@ -78,16 +78,15 @@
             ${message(code:'myinst.dash.due_dates.label')}
         </a>
 
-        <a class="${US_DASHBOARD_TAB.getValue().value == 'Changes' || US_DASHBOARD_TAB.getValue() == 'Changes' ? 'active item':'item'}" data-tab="changes">
+        <a class="${US_DASHBOARD_TAB.getValue().value == 'PendingChanges' || US_DASHBOARD_TAB.getValue() == 'PendingChanges' ? 'active item':'item'}" data-tab="pendingchanges">
             <i class="history icon large"></i>
-            <%
-                def countChanges = 0
-                changes?.collect { c ->
-                    countChanges += c[1]
-                }
-            %>
-            ${countChanges}
-            ${message(code:'myinst.todo.label')}
+            ${pendingCount}
+            ${message(code:'myinst.pendingChanges.label')}
+        </a>
+        <a class="${US_DASHBOARD_TAB.getValue().value == 'AcceptedChanges' || US_DASHBOARD_TAB.getValue() == 'AcceptedChanges' ? 'active item':'item'}" data-tab="acceptedchanges">
+            <i class="bullhorn icon large"></i>
+            ${notificationsCount}
+            ${message(code:'myinst.acceptedChanges.label')}
         </a>
 
         <g:if test="${accessService.checkPerm('ORG_INST,ORG_CONSORTIUM')}">
@@ -133,78 +132,49 @@
             </div>
         </div>
 
-        <div class="ui bottom attached tab ${US_DASHBOARD_TAB.getValue().value == 'Changes' || US_DASHBOARD_TAB.getValue() == 'Changes' ? 'active':''}" data-tab="changes">
-            <g:if test="${editable}">
-                <div class="la-float-right">
-                    <g:link action="changes" class="ui button">${message(code:'myinst.todo.submit.label', default:'View To Do List')}</g:link>
-                </div>
-            </g:if>
-
-            <g:message code="profile.dashboardItemsTimeWindow"
-                       default="You see events from the last {0} days."
-                       args="${user.getSettingsValue(UserSettings.KEYS.DASHBOARD_ITEMS_TIME_WINDOW, 14)}" />
-
-            <br />
-
+        <div class="ui bottom attached tab ${US_DASHBOARD_TAB.getValue().value == 'PendingChanges' || US_DASHBOARD_TAB.getValue() == 'PendingChanges' ? 'active':''}" data-tab="pendingchanges">
+            <div class="la-float-right">
+                <g:link action="changes" class="ui button"><g:message code="myinst.changes.submit.label"/></g:link>
+            </div>
             <div class="ui relaxed list" style="clear:both;padding-top:1rem;">
-                <g:each in="${changes}" var="changeSet">
-                    <g:set var="change" value="${changeSet[0]}" />
+                <g:each in="${pending}" var="change">
+                    <g:set var="row" value="${pendingChangeService.printRow(change)}" />
+                    <g:set var="event" value="${row.eventData}"/>
                     <div class="item">
 
-                       <div class="ui internally celled grid">
-                           <div class="row">
-                               <div class="three wide column">
-                                   <a class="ui green circular label">${changeSet[1]}</a>
+                        <div class="ui internally celled grid">
+                            <div class="row">
+                                <div class="one wide column">
+                                    ${row.eventIcon}
                                 </div><!-- .column -->
-                                <div class="thirteen wide column">
+                                <div class="one wide column">
+                                    ${row.instanceIcon}
+                                </div><!-- .column -->
+                                <div class="twelve wide column">
 
-                                <g:if test="${change instanceof Subscription}">
-                                    <strong>${message(code:'subscription')}</strong>
-                                    <br />
-                                    <g:link controller="subscription" action="changes" id="${change.id}">${change.toString()}</g:link>
-                                </g:if>
-                                <g:if test="${change instanceof License}">
-                                    <strong>${message(code:'license.label')}</strong>
-                                    <br />
-                                    <g:link controller="license" action="changes" id="${change.id}">${change.toString()}</g:link>
-                                </g:if>
-                               <g:if test="${change instanceof PendingChange && change.costItem}">
-                                   <strong>${message(code:'financials.costItem')}</strong>
-                                   <br>
-                                   ${raw(change.desc)}
-                                   <g:link class="ui green button" controller="finance" action="acknowledgeChange" id="${change.id}"><g:message code="pendingChange.acknowledge"/></g:link>
-                               </g:if>
-                           </div><!-- .column -->
-                           </div><!-- .row -->
-                       </div><!-- .grid -->
+                                    <g:if test="${change.msgToken == 'pendingChange.message_TP01'}">
+                                        <g:link controller="package" action="show" id="${event.pkg.id}" params="${[filter:${event.title.name}]}">${event.pkg.name}: ${event.title.name} (${event.platform.name})</g:link>
+                                    </g:if>
+                                    <g:elseif test="${change.msgToken == 'pendingChange.message_TP02'}">
+
+                                    </g:elseif>
+                                </div><!-- .column -->
+                                <div class="two wide column">
+                                    <g:link class="ui positive button" controller="pendingChange" action="accept" id="${change.id}"><g:message code="default.button.accept.label"/></g:link>
+                                    <div class="or"><g:message code="default.or"/></div>
+                                    <g:link class="ui negative button" controller="pendingChange" action="reject" id="${change.id}"><g:message code="default.button.reject.label"/></g:link>
+                                </div><!-- .column -->
+                            </div>
+                            </div><!-- .row -->
+                        </div><!-- .grid -->
 
                     </div>
-                    <%--
-                    <div class="item">
-                        <div class="icon">
-                            <i class="alarm outline icon"></i>
-                            <div class="ui yellow circular label">${change.num_changes}</div>
-                        </div>
-                        <div class="message">
-                            <p>
-                                <g:if test="${change.item_with_changes instanceof com.k_int.kbplus.Subscription}">
-                                    <g:link controller="subscription" action="changes" id="${change.item_with_changes.id}">${change.item_with_changes.toString()}</g:link>
-                                </g:if>
-                                <g:else>
-                                    <g:link controller="license" action="changes" id="${change.item_with_changes.id}">${change.item_with_changes.toString()}</g:link>
-                                </g:else>
-                            </p>
-                            <p>
-                                ${message(code:'myinst.change_from', default:'Changes between')}
-                                <g:formatDate date="${change.earliest}" formatName="default.date.format"/>
-                                ${message(code:'myinst.change_to', default:'and')}
-                                <g:formatDate date="${change.latest}" formatName="default.date.format"/>
-                            </p>
-                        </div>
-                    </div>
-                    --%>
                 </g:each>
             </div>
+        </div>
+
+        <div class="ui bottom attached tab ${US_DASHBOARD_TAB.getValue().value == 'AcceptedChanges'}" data-tab="acceptedchanges">
+
         </div>
 
         <div class="ui bottom attached tab ${US_DASHBOARD_TAB.getValue().value=='Announcements' || US_DASHBOARD_TAB.getValue() == 'Announcements' ? 'active':''}" data-tab="news">

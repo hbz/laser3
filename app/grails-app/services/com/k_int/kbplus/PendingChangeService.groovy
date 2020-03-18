@@ -4,15 +4,19 @@ import com.k_int.kbplus.auth.User
 import com.k_int.properties.PropertyDefinition
 import de.laser.SubscriptionService
 import de.laser.domain.IssueEntitlementCoverage
+import de.laser.domain.TIPPCoverage
 import de.laser.helper.RDConstants
 import de.laser.helper.RDStore
 import de.laser.interfaces.AbstractLockableService
 import grails.converters.JSON
 import org.codehaus.groovy.grails.web.binding.DataBindingUtils
 import org.codehaus.groovy.grails.web.json.JSONElement
+import org.codehaus.groovy.grails.web.mapping.LinkGenerator
+import org.springframework.context.MessageSource
 import org.springframework.transaction.TransactionStatus
 
 import java.text.SimpleDateFormat
+import java.time.Duration
 
 class PendingChangeService extends AbstractLockableService {
 
@@ -20,6 +24,8 @@ class PendingChangeService extends AbstractLockableService {
     def grailsApplication
     def springSecurityService
     SubscriptionService subscriptionService
+    LinkGenerator grailsLinkGenerator
+    MessageSource messageSource
 
     final static EVENT_OBJECT_NEW = 'New Object'
     final static EVENT_OBJECT_UPDATE = 'Update Object'
@@ -55,6 +61,7 @@ class PendingChangeService extends AbstractLockableService {
         }
     }
 
+    @Deprecated
     boolean performAccept(PendingChange pendingChange, User user) {
 
         log.debug('performAccept(): ' + pendingChange + ', ' + user)
@@ -300,6 +307,7 @@ class PendingChangeService extends AbstractLockableService {
         }
     }
 
+    @Deprecated
     void performReject(Long pcId, User user) {
         PendingChange.withNewTransaction { TransactionStatus status ->
             PendingChange change = PendingChange.get(pcId)
@@ -410,6 +418,114 @@ class PendingChangeService extends AbstractLockableService {
                 }
             }
         }
+    }
+
+    Map<String,Object> getChanges(LinkedHashMap<String, Object> configMap) {
+        Set<PendingChange> pendingChanges = [], acceptedChanges = []
+        int pendingCount = 0, notificationsCount = 0
+        String queryString = "select pc from PendingChange pc where pc.owner = :contextOrg"
+        List query = []
+        Map<String,Object> queryParams = [owner:configMap.institution]
+        if(configMap.periodInDays) {
+            query << "pc.ts > :time"
+            queryParams.time = new Date(System.currentTimeMillis() - Duration.ofDays(configMap.periodInDays).toMillis())
+        }
+        if(query)
+            queryString += query.join(" and ")
+        String pendingQuery = "${queryString} and pc.status = :pending", acceptedQuery = "${queryString} and pc.status = :accepted"
+        Map<String,RefdataValue> pendingFilterParams = [pending:RDStore.PENDING_CHANGE_PENDING], acceptedFilterParams = [accepted:RDStore.PENDING_CHANGE_ACCEPTED]
+        if(configMap.pending) {
+            List<PendingChange> result = PendingChange.executeQuery(pendingQuery,queryParams+pendingFilterParams)
+            if(configMap.offset && configMap.max)
+                result = result.drop(configMap.offset).take(configMap.max)
+            pendingCount = result.size()
+            pendingChanges.addAll(result)
+        }
+        if(configMap.notifications) {
+            List<PendingChange> result = PendingChange.executeQuery(acceptedQuery,queryParams+acceptedFilterParams)
+            if(configMap.offset && configMap.max)
+                result = result.drop(configMap.offset).take(configMap.max)
+            notificationsCount = result.size()
+            acceptedChanges.addAll(result)
+        }
+        [pending:pendingChanges,pendingCount:pendingCount,notifications:acceptedChanges,notificationsCount:notificationsCount]
+    }
+
+    /*
+        I also need the following arguments - but that only for frontend display in changes tab @ dashboard!
+        Object[] args = [titleLink,tippCov.tipp.title.title,pkgLink,tippCov.tipp.pkg.name,tippCov.startDate,tippCov.startVolume,tippCov.startIssue,tippCov.endDate,tippCov.endVolume,tippCov.endIssue,tippCov.coverageDepth,tippCov.coverageNote,tippCov.embargo] (newCoverage)
+        Object[] args = [titleLink,tippCov.tipp.title.title,pkgLink,tippCov.tipp.pkg.name,propLabel,ieCov[covDiff.prop],covDiff.newValue,defaultAcceptChange] (coverageUpdated)
+        Object[] args = [titleLink,tippCov.tipp.title.title,pkgLink,tippCov.tipp.pkg.name,ieCov.startDate?.format(messageSource.getMessage('default.date.format.notime',null,locale)),ieCov.startVolume,ieCov.startIssue,ieCov.endDate?.format(messageSource.getMessage('default.date.format.notime',null,locale)),ieCov.endVolume,ieCov.endIssue] (coverageDeleted)
+     */
+    Map<String,Object> printRow(PendingChange change) {
+        String eventIcon, instanceIcon, eventString
+        Object[] eventData = []
+        if(change.oid instanceof IssueEntitlement){
+            IssueEntitlement target = (IssueEntitlement) genericOIDService.resolveOID(change.oid)
+            eventData[0] = grailsLinkGenerator.link(controller: 'subscription', action: 'index', id: target.subscription.id, params: [filter: target.tipp.title.title,pkgfilter: target.tipp.pkg])
+            eventData[1] = "${target.tipp.pkg.name}: ${target.tipp.title.title}"
+        }
+        else if(change.oid instanceof TitleInstancePackagePlatform) {
+            TitleInstancePackagePlatform target = (TitleInstancePackagePlatform) genericOIDService.resolveOID(change.oid)
+            eventData[0] = grailsLinkGenerator.link(controller: 'package', action: 'current', id: target.pkg.id, params: [filter:target.title.title])
+            eventData[1] = target.pkg.name
+            eventData[2] = grailsLinkGenerator.link(controller: 'title', action: 'show', id: target.title.id)
+            eventData[3] = target.title.title
+            eventData[4] = grailsLinkGenerator.link(controller: 'platform', action: 'show', id: target.platform.id)
+            eventData[5] = target.platform.name
+        }
+        else if(change.oid instanceof IssueEntitlementCoverage) {
+            IssueEntitlementCoverage target = (IssueEntitlementCoverage) genericOIDService.resolveOID(change.oid)
+            IssueEntitlement ie = target.issueEntitlement
+            eventData[0] = grailsLinkGenerator.link(controller: 'subscription', action: 'index', id: ie.subscription.id, params: [filter: ie.tipp.title.title,pkgfilter: ie.tipp.pkg])
+        }
+        else if(change.oid instanceof TIPPCoverage) {
+            TIPPCoverage target = (TIPPCoverage) genericOIDService.resolveOID(change.oid)
+            eventData = [pkg:target.tipp.pkg,title:target.tipp.title,platform:target.tipp.platform,coverage:target]
+        }
+        Locale locale = Locale.getDefault()
+        switch(change.msgToken) {
+        //pendingChange.message_TP01 (newTitle)
+            case 'pendingChange.message_TP01':
+                eventIcon = '<i class="green plus icon"></i>'
+                instanceIcon = '<i class="book icon"></i>'
+                break
+        //pendingChange.message_TP02 (titleUpdated)
+            case 'pendingChange.message_TP02':
+                eventIcon = '<i class="yellow circle outline icon"></i>'
+                instanceIcon = '<i class="book icon"></i>'
+                eventData[2] = messageSource.getMessage("tipp.${change.targetProperty}",null,locale)
+                eventData[3] = change.oldValue
+                if(change.targetProperty in ['hostPlatformURL'])
+                    eventData[4] = "<a href='${change.newValue}'>${change.newValue}</a>"
+                else eventData[4] = change.newValue
+                break
+        //pendingChange.message_TP03 (titleDeleted)
+            case 'pendingChange.message_TP03':
+                eventIcon = '<i class="red minus icon"></i>'
+                instanceIcon = '<i class="book icon"></i>'
+                break
+        //pendingChange.message_TC01 (coverageUpdated)
+            case 'pendingChange.message_TC01':
+                eventIcon = '<i class="yellow circle outline icon"></i>'
+                instanceIcon = '<i class="file alternate icon"></i>'
+                eventData.prop = change.targetProperty
+                eventData.oldValue = change.oldValue
+                eventData.newValue = change.newValue
+                break
+        //pendingChange.message_TC02 (newCoverage)
+            case 'pendingChange.message_TC02':
+                eventIcon = '<i class="green plus icon"></i>'
+                instanceIcon = '<i class="file alternate icon"></i>'
+                break
+        //pendingChange.message_TC03 (coverageDeleted)
+            case 'pendingChange.message_TC03':
+                eventIcon = '<i class="red minus icon"></i>'
+                instanceIcon = '<i class="file alternate icon"></i>'
+                break
+        }
+        eventString = messageSource.getMessage(change.msgToken,eventData,locale)
+        [instanceIcon:instanceIcon,eventIcon:eventIcon,eventString:eventString]
     }
 
 }

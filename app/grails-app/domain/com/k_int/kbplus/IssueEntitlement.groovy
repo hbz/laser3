@@ -3,6 +3,8 @@ package com.k_int.kbplus
 import de.laser.domain.AbstractBaseDomain
 import de.laser.domain.IssueEntitlementCoverage
 import de.laser.domain.PriceItem
+import de.laser.exceptions.CreationException
+import de.laser.exceptions.EntitlementCreationException
 import de.laser.helper.RDConstants
 import de.laser.helper.RefdataAnnotation
 
@@ -122,6 +124,17 @@ class IssueEntitlement extends AbstractBaseDomain implements Comparable {
     // Nullable is true, because values are already in the database
     lastUpdated (nullable: true, blank: false)
     dateCreated (nullable: true, blank: false)
+  }
+
+  static IssueEntitlement construct(Map<String,Object> configMap) throws EntitlementCreationException {
+    if(configMap.subscription instanceof Subscription && configMap.tipp instanceof TitleInstancePackagePlatform) {
+      IssueEntitlement ie = findBySubscriptionAndTipp(configMap.subscription,configMap.tipp)
+      if(!ie) {
+        ie = new IssueEntitlement(subscription: configMap.subscription,tipp: configMap.tipp)
+      }
+      ie
+    }
+    else throw new EntitlementCreationException("Issue entitlement creation attempt without valid subscription and TIPP references! This is not allowed!")
   }
 
   void afterDelete() {
