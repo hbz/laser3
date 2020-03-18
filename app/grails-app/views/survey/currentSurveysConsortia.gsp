@@ -46,14 +46,22 @@
 
 
             <div class="field fieldcontain">
-                <semui:datepicker label="surveyInfo.startDate.label" id="startDate" name="startDate"
-                                  placeholder="filter.placeholder" value="${params.startDate}"/>
+                <semui:datepicker label="default.valid_on.label" id="validOn" name="validOn" placeholder="filter.placeholder" value="${validOn}" />
             </div>
 
+            <div class="field">
+                <label>${message(code: 'surveyInfo.status.label')}</label>
+                <select id="filterStatus" name="filterStatus" multiple="" class="ui search selection fluid dropdown">
+                    <option value="">${message(code: 'default.select.choose.label')}</option>
 
-            <div class="field fieldcontain">
-                <semui:datepicker label="surveyInfo.endDate.label" id="endDate" name="endDate"
-                                  placeholder="filter.placeholder" value="${params.endDate}"/>
+                    <g:each in="${RefdataCategory.getAllRefdataValues(de.laser.helper.RDConstants.SURVEY_STATUS)}"
+                            var="status">
+                        <option <%=(params.list('filterStatus').contains(status.id.toString())) ? 'selected="selected"' : ''%>
+                                value="${status.id}" title="${status.getI10n('value')}">
+                            ${status.getI10n('value')}
+                        </option>
+                    </g:each>
+                </select>
             </div>
 
         </div>
@@ -95,21 +103,6 @@
         <div class="two fields">
 
             <div class="field">
-                <label>${message(code: 'surveyInfo.status.label')}</label>
-                <select id="filterStatus" name="filterStatus" multiple="" class="ui search selection fluid dropdown">
-                    <option value="">${message(code: 'default.select.choose.label')}</option>
-
-                    <g:each in="${RefdataCategory.getAllRefdataValues(de.laser.helper.RDConstants.SURVEY_STATUS)}"
-                            var="status">
-                        <option <%=(params.list('filterStatus').contains(status.id.toString())) ? 'selected="selected"' : ''%>
-                                value="${status.id}" title="${status.getI10n('value')}">
-                            ${status.getI10n('value')}
-                        </option>
-                    </g:each>
-                </select>
-            </div>
-
-            <div class="field">
                 <label>${message(code: 'surveyInfo.type.label')}</label>
                 <laser:select class="ui dropdown" name="type"
                               from="${RefdataCategory.getAllRefdataValues(de.laser.helper.RDConstants.SURVEY_TYPE)}"
@@ -118,10 +111,6 @@
                               value="${params.type}"
                               noSelection="${['': message(code: 'default.select.choose.label')]}"/>
             </div>
-
-        </div>
-
-        <div class="two fields">
 
             <div class="field">
                 <label>${message(code: 'surveyInfo.options')}</label>

@@ -868,9 +868,21 @@ class SurveyController {
                 SurveyOrg surveyOrg = SurveyOrg.findByOrgAndSurveyConfig(Org.get(Long.parseLong(id)), result.surveyConfig)
                 CostItem surveyCostItem = CostItem.findBySurveyOrgAndCostItemStatusNotEqual(surveyOrg, RDStore.COST_ITEM_DELETED)
                 if(surveyCostItem){
-                    surveyCostItem.billingCurrency = billing_currency ?: surveyCostItem.billingCurrency //Not specified default to GDP
-                    surveyCostItem.costInBillingCurrency = cost_billing_currency ?: surveyCostItem.costInBillingCurrency
-                    surveyCostItem.costInLocalCurrency = cost_local_currency ?: surveyCostItem.costInLocalCurrency
+
+                    if(params.percentOnOldPrice){
+
+
+
+                        surveyCostItem.billingCurrency = billing_currency ?: surveyCostItem.billingCurrency
+                        //Not specified default to GDP
+                        surveyCostItem.costInBillingCurrency = cost_billing_currency ?: surveyCostItem.costInBillingCurrency
+                        surveyCostItem.costInLocalCurrency = cost_local_currency ?: surveyCostItem.costInLocalCurrency
+                    }else {
+                        surveyCostItem.billingCurrency = billing_currency ?: surveyCostItem.billingCurrency
+                        //Not specified default to GDP
+                        surveyCostItem.costInBillingCurrency = cost_billing_currency ?: surveyCostItem.costInBillingCurrency
+                        surveyCostItem.costInLocalCurrency = cost_local_currency ?: surveyCostItem.costInLocalCurrency
+                    }
 
                     surveyCostItem.finalCostRounding = params.newFinalCostRounding2 ? true : false
 
