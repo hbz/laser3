@@ -99,7 +99,7 @@
                     <dl>
                         <dt><g:message code="org.url.label"/></dt>
                         <dd>
-                            <semui:xEditable owner="${orgInstance}" type="url" field="url" overwriteEditable="${true}" class="la-overflow la-ellipsis" />
+                            <semui:xEditable owner="${orgInstance}" type="url" field="url" class="la-overflow la-ellipsis" />
                             <g:if test="${orgInstance.url}">
                                 <semui:linkIcon href="${orgInstance.url}" />
                             </g:if>
@@ -128,7 +128,7 @@
                                 </span>
                             </dt>
                             <dd>
-                                <semui:xEditable owner="${orgInstance}" type="url" field="urlGov" overwriteEditable="${true}" class="la-overflow la-ellipsis" />
+                                <semui:xEditable owner="${orgInstance}" type="url" field="urlGov" class="la-overflow la-ellipsis" />
                                 <g:if test="${orgInstance.urlGov}">
                                     <semui:linkIcon href="${orgInstance.urlGov}" />
                                 </g:if>
@@ -219,10 +219,10 @@
                                         def subjectGroups = RefdataCategory.getAllRefdataValues(RDConstants.SUBJECT_GROUP)
                                     %>
                                     <g:render template="orgSubjectGroupAsList"
-                                              model="${[org: orgInstance, orgSubjectGroups: orgInstance.subjectGroup, availableSubjectGroups: subjectGroups, editable: true]}"/>
+                                              model="${[org: orgInstance, orgSubjectGroups: orgInstance.subjectGroup, availableSubjectGroups: subjectGroups, editable: editable]}"/>
 
                                     <g:render template="orgSubjectGroupModal"
-                                              model="${[org: orgInstance, availableSubjectGroups: subjectGroups, editable: true]}"/>
+                                              model="${[org: orgInstance, availableSubjectGroups: subjectGroups, editable: editable]}"/>
                                 </dd>
                             </dl>
                             <dl>
@@ -272,6 +272,7 @@
                                 </dt>
                                 <dd>
                                     <semui:xEditableRefData id="country" owner="${orgInstance}" field="country" config="${RDConstants.COUNTRY}" />
+                                    &nbsp
                                 </dd>
                                 <dt>
                                     <g:message code="org.regions.label" />
@@ -338,14 +339,7 @@
                     <div class="content">
                         <dl>
                             %{--_____________________________________--}%
-                            <dt><g:message code="org.addresses.label" default="Addresses"/>
-
-                                <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
-                                      data-content="${message(code: 'adressFormModal.info')}">
-                                    <i class="question circle icon"></i>
-                                </span>
-
-                            </dt>
+                            <dt><g:message code="org.addresses.label" default="Addresses"/></dt>
                             %{--_____________________________________--}%
                             <dd>
                                 <div class="ui divided middle aligned selection list la-flex-list">

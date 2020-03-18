@@ -6,7 +6,7 @@
 <html>
 <head>
     <meta name="layout" content="semanticUI">
-    <g:set var="allOrgTypeIds" value="${orgInstance.getallOrgTypeIds()}" />
+    %{--<g:set var="allOrgTypeIds" value="${orgInstance.getallOrgTypeIds()}" />--}%
     <g:set var="isGrantedOrgRoleAdminOrOrgEditor" value="${SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN,ROLE_ORG_EDITOR')}" />
 
     %{--<g:if test="${RDStore.OT_PROVIDER.id in allOrgTypeIds}">--}%
@@ -114,7 +114,7 @@
                         </thead>
                         <tbody>
                         <g:each in="${customerIdentifier}" var="ci">
-                            <g:if test="${ci.isPublic || (ci.owner.id == contextService.getOrg().id) || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN,ROLE_ORG_EDITOR')}">
+                            <g:if test="${ci.isPublic || (ci.owner.id == contextService.getOrg().id) || isGrantedOrgRoleAdminOrOrgEditor}">
                                 <tr>
                                     <td>${++tableCustomerRowNr}</td>
                                     <td>
