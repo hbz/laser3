@@ -31,6 +31,7 @@ class IdentifierNamespace {
     String ns
     String nsType
     String family
+    String urlPrefix
     String validationRegex
 
     String name_de
@@ -50,12 +51,13 @@ class IdentifierNamespace {
         ns              column:'idns_ns'
         nsType          column:'idns_type'
         family          column:'idns_family'
+        urlPrefix       column:'idns_url_prefix'
         validationRegex column:'idns_val_regex'
 
         name_de         column:'idns_name_de'
         name_en         column:'idns_name_en'
-        description_de  column:'idns_description_de'
-        description_en  column:'idns_description_en'
+        description_de  column:'idns_description_de',   type: 'text'
+        description_en  column:'idns_description_en',   type: 'text'
 
         isHidden        column:'idns_is_hidden'
         isUnique        column:'idns_is_unique'
@@ -68,6 +70,7 @@ class IdentifierNamespace {
         ns              (nullable:false, blank:false) // TODO: constraint
         nsType          (nullable:true, blank:false)
         family          (nullable:true, blank:false)
+        urlPrefix       (nullable:true, blank:false)
         validationRegex (nullable:true, blank:false)
 
         name_de         (nullable:true, blank:false)
