@@ -161,6 +161,22 @@ class Identifier {
         name
     }
 
+    String getURL() {
+        if (ns.urlPrefix) {
+            if (ns.urlPrefix.endsWith('=')) {
+                return "${ns.urlPrefix}${value}"
+            }
+            else if (ns.urlPrefix.endsWith('/')) {
+                return "${ns.urlPrefix}${value}"
+            }
+            else {
+                return "${ns.urlPrefix}/${value}"
+            }
+        }
+        null
+    }
+
+
   def beforeUpdate() {
     value = value?.trim()
       // TODO [ticket=1789]
