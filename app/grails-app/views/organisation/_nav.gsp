@@ -3,10 +3,21 @@
 <laser:serviceInjection/>
 
 <g:set var="departmentalView" value="${orgInstance.isDepartment()}" />
+<g:set var="checkForeignOrgComboPermAffiliationX" value="${accessService.checkForeignOrgComboPermAffiliationX([
+        org: orgInstance,
+        affiliation: "INST_USER",
+        comboPerm: "ORG_CONSORTIUM",
+        comboAffiliation: "INST_EDITOR",
+        specRoles: "ROLE_ORG_EDITOR,ROLE_ADMIN"])}" />
 
 <semui:subNav actionName="${actionName}">
     <semui:subNavItem controller="organisation" action="show" params="${[id: orgInstance.id]}" message="org.nav.details"/>
-    <semui:subNavItem controller="organisation" action="ids" params="${[id: orgInstance.id]}" message="org.nav.ids"/>
+    <g:if test="${checkForeignOrgComboPermAffiliationX}">
+        <semui:subNavItem controller="organisation" action="ids" params="${[id: orgInstance.id]}" message="org.nav.ids"/>
+    </g:if>
+    <g:else>
+        <semui:subNavItem message="org.nav.ids" disabled="disabled" />
+    </g:else>
     <g:if test="${inContextOrg}">
         <semui:subNavItem controller="myInstitution" action="myPublicContacts" message="menu.institutions.publicContacts" />
     </g:if>
@@ -19,7 +30,6 @@
                 comboPerm: "ORG_CONSORTIUM",
                 comboAffiliation: "INST_EDITOR",
                 specRoles: "ROLE_ORG_EDITOR,ROLE_ADMIN"])}">
-
                 <semui:subNavItem controller="organisation" action="readerNumber" params="${[id: orgInstance.id]}"
                           message="menu.institutions.readerNumbers"/>
         </g:if>
