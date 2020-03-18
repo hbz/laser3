@@ -1,6 +1,5 @@
 package com.k_int.kbplus
 
-
 import de.laser.helper.FactoryResult
 import org.apache.commons.logging.Log
 import org.apache.commons.logging.LogFactory
@@ -177,6 +176,22 @@ class Identifier {
 
         name
     }
+
+    String getURL() {
+        if (ns.urlPrefix) {
+            if (ns.urlPrefix.endsWith('=')) {
+                return "${ns.urlPrefix}${value}"
+            }
+            else if (ns.urlPrefix.endsWith('/')) {
+                return "${ns.urlPrefix}${value}"
+            }
+            else {
+                return "${ns.urlPrefix}/${value}"
+            }
+        }
+        null
+    }
+
 
   def beforeUpdate() {
     value = value?.trim()

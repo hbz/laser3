@@ -83,8 +83,6 @@ class SurveyController {
         params.offset = result.offset
         params.filterStatus = params.filterStatus ?: (params.filterStatus == "" ? "" : [RDStore.SURVEY_SURVEY_STARTED.id.toString(), RDStore.SURVEY_READY.id.toString(), RDStore.SURVEY_IN_PROCESSING.id.toString()])
 
-        result.providers = orgTypeService.getCurrentOrgsOfProvidersAndAgencies( contextService.org )
-
         List orgIds = orgTypeService.getCurrentOrgIdsOfProvidersAndAgencies( contextService.org )
 
         result.providers = Org.findAllByIdInList(orgIds).sort { it?.name }
@@ -466,7 +464,7 @@ class SurveyController {
         }
 
         if (subscription && !SurveyConfig.findAllBySubscriptionAndSurveyInfo(subscription, surveyInfo)) {
-            surveyConfig = new SurveyConfig(
+            SurveyConfig surveyConfig = new SurveyConfig(
                     subscription: subscription,
                     configOrder: surveyInfo?.surveyConfigs?.size() ? surveyInfo?.surveyConfigs?.size() + 1 : 1,
                     type: 'Subscription',
@@ -548,7 +546,7 @@ class SurveyController {
 
         Subscription subscription = Subscription.get(Long.parseLong(params.sub))
         if (subscription && !SurveyConfig.findAllBySubscriptionAndSurveyInfo(subscription, surveyInfo)) {
-            surveyConfig = new SurveyConfig(
+            SurveyConfig surveyConfig = new SurveyConfig(
                     subscription: subscription,
                     configOrder: surveyInfo?.surveyConfigs?.size() ? surveyInfo?.surveyConfigs?.size() + 1 : 1,
                     type: 'IssueEntitlementsSurvey',
@@ -4576,7 +4574,7 @@ class SurveyController {
         result.institution = contextService.getOrg()
         result.user = User.get(springSecurityService.principal.id)
         result.surveyInfo = SurveyInfo.get(params.id)
-        result.surveyConfig = SurveyConfig.get(params.surveyConfigID as Long? params.surveyConfigID: Long.parseLong(params.surveyConfigID)) ?: result.surveyInfo?.surveyConfigs[0]
+        result.surveyConfig = params.surveyConfigID ? SurveyConfig.get(params.surveyConfigID as Long ? params.surveyConfigID: Long.parseLong(params.surveyConfigID)) : result.surveyInfo?.surveyConfigs[0]
         result.surveyWithManyConfigs = (result.surveyInfo?.surveyConfigs?.size() > 1)
 
         result.editable = result.surveyInfo?.isEditable() ?: false
