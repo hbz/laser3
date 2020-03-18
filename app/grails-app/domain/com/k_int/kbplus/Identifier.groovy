@@ -1,6 +1,5 @@
 package com.k_int.kbplus
 
-
 import de.laser.helper.FactoryResult
 import org.apache.commons.logging.Log
 import org.apache.commons.logging.LogFactory

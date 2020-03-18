@@ -30,33 +30,53 @@ class IdentifierNamespace {
 
     String ns
     String nsType
-    Boolean isHidden = false
-    String validationRegex
     String family
+    String validationRegex
+
+    String name_de
+    String name_en
+    String description_de
+    String description_en
+
+    Boolean isHidden = false
     Boolean isUnique = false
 
     Date dateCreated
     Date lastUpdated
 
     static mapping = {
-        id          column:'idns_id'
-        ns          column:'idns_ns'
-        nsType      column:'idns_type'
-        isHidden    column:'idns_is_hidden'
-        isUnique    column:'idns_is_unique'
+        id              column:'idns_id'
+
+        ns              column:'idns_ns'
+        nsType          column:'idns_type'
+        family          column:'idns_family'
         validationRegex column:'idns_val_regex'
-        family      column:'idns_family'
+
+        name_de         column:'idns_name_de'
+        name_en         column:'idns_name_en'
+        description_de  column:'idns_description_de'
+        description_en  column:'idns_description_en'
+
+        isHidden        column:'idns_is_hidden'
+        isUnique        column:'idns_is_unique'
 
         lastUpdated column: 'idns_last_updated'
         dateCreated column: 'idns_date_created'
     }
 
     static constraints = {
-        nsType          nullable:true, blank:false
-        isHidden        nullable:false, blank:false
-        validationRegex nullable:true, blank:false
-        family          nullable:true, blank:false
-        isUnique        nullable:false, blank:false
+        ns              (nullable:false, blank:false) // TODO: constraint
+        nsType          (nullable:true, blank:false)
+        family          (nullable:true, blank:false)
+        validationRegex (nullable:true, blank:false)
+
+        name_de         (nullable:true, blank:false)
+        name_en         (nullable:true, blank:false)
+        description_de  (nullable:true, blank:false)
+        description_en  (nullable:true, blank:false)
+
+        isUnique        (nullable:false, blank:false)
+        isHidden        (nullable:false, blank:false)
 
         // Nullable is true, because values are already in the database
         lastUpdated (nullable: true, blank: false)
