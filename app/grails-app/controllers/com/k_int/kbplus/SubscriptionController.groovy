@@ -3130,23 +3130,24 @@ class SubscriptionController extends AbstractDebugController {
         result
     }
 
+    @Deprecated
     @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_EDITOR") })
     def launchRenewalsProcess() {
         def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW_AND_EDIT)
 
-        def shopping_basket = UserFolder.findByUserAndShortcode(result.user, 'RenewalsBasket') ?: new UserFolder(user: result.user, shortcode: 'RenewalsBasket').save(flush: true);
-
-        log.debug("Clear basket....");
-        shopping_basket.items?.clear();
-        shopping_basket.save(flush: true)
-
-        def oid = "com.k_int.kbplus.Subscription:${params.id}"
-        shopping_basket.addIfNotPresent(oid)
-        Subscription.get(params.id).packages.each {
-            oid = "com.k_int.kbplus.Package:${it.pkg.id}"
-            shopping_basket.addIfNotPresent(oid)
-        }
+//        def shopping_basket = UserFolder.findByUserAndShortcode(result.user, 'RenewalsBasket') ?: new UserFolder(user: result.user, shortcode: 'RenewalsBasket').save(flush: true);
+//
+//        log.debug("Clear basket....");
+//        shopping_basket.items?.clear();
+//        shopping_basket.save(flush: true)
+//
+//        def oid = "com.k_int.kbplus.Subscription:${params.id}"
+//        shopping_basket.addIfNotPresent(oid)
+//        Subscription.get(params.id).packages.each {
+//            oid = "com.k_int.kbplus.Package:${it.pkg.id}"
+//            shopping_basket.addIfNotPresent(oid)
+//        }
 
         redirect controller: 'myInstitution', action: 'renewalsSearch'
     }
