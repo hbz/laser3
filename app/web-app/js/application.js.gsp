@@ -186,8 +186,8 @@ r2d2 = {
         console.log("r2d2.initGlobalXEditableStuff()");
 
         $.fn.editable.defaults.mode = 'inline'
-        $.fn.editableform.buttons = '<button type="submit" class="ui icon button editable-submit"><i aria-hidden="true" class="check icon"></i></button>' +
-            '<button type="button" class="ui icon button editable-cancel"><i aria-hidden="true" class="times icon"></i></button>'
+        $.fn.editableform.buttons = '<button aria-label="${message(code:'xEditable.button.ok')}" type="submit" class="ui icon button editable-submit"><i aria-hidden="true" class="check icon"></i></button>' +
+            '<button aria-label="${message(code:'xEditable.button.cancel')}" type="button" class="ui icon button editable-cancel"><i aria-hidden="true" class="times icon"></i></button>'
         $.fn.editableform.template =
             '<form class="ui form editableform">' +
             '	<div class="control-group">' +

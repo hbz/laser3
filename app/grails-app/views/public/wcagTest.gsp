@@ -65,6 +65,9 @@
         <h2 class="ui dividing header">9. Paginierung</h2>
         <g:render template="templatesWCAGTest/pagination" />
 
+        <h2 class="ui dividing header">10. X-Editable</h2>
+        <g:render template="templatesWCAGTest/xeditable" />
+
 
     </div>
 </body>
