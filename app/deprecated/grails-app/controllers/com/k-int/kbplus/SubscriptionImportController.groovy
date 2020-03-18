@@ -30,6 +30,7 @@ class SubscriptionImportController extends AbstractDebugController {
     new SimpleDateFormat('yyyy')
   ];
 
+  @Deprecated
   @Secured(['ROLE_USER'])
   def generateImportWorksheet() { 
 
@@ -91,26 +92,26 @@ class SubscriptionImportController extends AbstractDebugController {
 
     result.user = springSecurityService.getCurrentUser()
 
-    def shopping_basket = UserFolder.findByUserAndShortcode(result.user,'SubBasket') ?: new UserFolder(user:result.user, shortcode:'SubBasket').save();
+//    def shopping_basket = UserFolder.findByUserAndShortcode(result.user,'SubBasket') ?: new UserFolder(user:result.user, shortcode:'SubBasket').save();
+//
+//    if ( params.addBtn ) {
+//      com.k_int.kbplus.SubscriptionImportController.log.debug("Add item ${params.addBtn} to basket");
+//      def oid = "com.k_int.kbplus.Package:${params.addBtn}"
+//      shopping_basket.addIfNotPresent(oid)
+//      shopping_basket.save(flush:true);
+//    }
+//    else if ( params.clearBasket=='yes' ) {
+//      com.k_int.kbplus.SubscriptionImportController.log.debug("Clear basket....");
+//      shopping_basket.items?.clear();
+//      shopping_basket.save(flush:true)
+//    }
+//    else if ( params.generate=='yes' ) {
+//      com.k_int.kbplus.SubscriptionImportController.log.debug("Generate");
+//      generate(materialiseFolder(shopping_basket.items), inst)
+//      return
+//    }
 
-    if ( params.addBtn ) {
-      com.k_int.kbplus.SubscriptionImportController.log.debug("Add item ${params.addBtn} to basket");
-      def oid = "com.k_int.kbplus.Package:${params.addBtn}"
-      shopping_basket.addIfNotPresent(oid)
-      shopping_basket.save(flush:true);
-    }
-    else if ( params.clearBasket=='yes' ) {
-      com.k_int.kbplus.SubscriptionImportController.log.debug("Clear basket....");
-      shopping_basket.items?.clear();
-      shopping_basket.save(flush:true)
-    }
-    else if ( params.generate=='yes' ) {
-      com.k_int.kbplus.SubscriptionImportController.log.debug("Generate");
-      generate(materialiseFolder(shopping_basket.items), inst)
-      return
-    }
-
-    result.basket = materialiseFolder(shopping_basket.items)
+//    result.basket = materialiseFolder(shopping_basket.items)
     if (fq) { //filtered query
       params.tempFQ = fq
     }
