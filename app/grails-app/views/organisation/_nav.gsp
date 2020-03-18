@@ -24,12 +24,7 @@
 
     <g:if test="${orgInstance.sector != RDStore.O_SECTOR_PUBLISHER && !departmentalView}">
 
-        <g:if test="${accessService.checkForeignOrgComboPermAffiliationX([
-                org: orgInstance,
-                affiliation: "INST_USER",
-                comboPerm: "ORG_CONSORTIUM",
-                comboAffiliation: "INST_EDITOR",
-                specRoles: "ROLE_ORG_EDITOR,ROLE_ADMIN"])}">
+        <g:if test="${checkForeignOrgComboPermAffiliationX}">
                 <semui:subNavItem controller="organisation" action="readerNumber" params="${[id: orgInstance.id]}"
                           message="menu.institutions.readerNumbers"/>
         </g:if>
