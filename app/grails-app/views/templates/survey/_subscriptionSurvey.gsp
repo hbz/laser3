@@ -1,90 +1,138 @@
 <%@ page import="com.k_int.kbplus.Subscription" %>
 <div class="ui stackable grid">
     <div class="twelve wide column">
-<g:if test="${controllerName == 'survey' && actionName == 'show'}">
+        <g:if test="${controllerName == 'survey' && actionName == 'show'}">
 
-    <div class="ui horizontal segments">
-        <div class="ui segment center aligned">
-            <b>${message(code: 'surveyConfig.orgs.label')}:</b>
-            <g:link controller="survey" action="surveyParticipants"
-                    id="${surveyConfig.surveyInfo.id}"
-                    params="[surveyConfigID: surveyConfig?.id]">
-                <div class="ui circular label">${surveyConfig?.orgs?.size()}</div>
-            </g:link>
-        </div>
-
-        <div class="ui segment center aligned">
-            <b>${message(code: 'surveyConfig.subOrgsWithoutMultiYear.label')}:</b>
-            <g:link controller="subscription" action="members" id="${subscriptionInstance.id}"
-                    params="[subRunTime: true, filterSet: true]">
-                <div class="ui circular label">
-                    ${com.k_int.kbplus.Subscription.findAllByInstanceOfAndIsMultiYear(subscriptionInstance, false)?.size()}
+            <div class="ui horizontal segments">
+                <div class="ui segment center aligned">
+                    <b>${message(code: 'surveyConfig.orgs.label')}:</b>
+                    <g:link controller="survey" action="surveyParticipants"
+                            id="${surveyConfig.surveyInfo.id}"
+                            params="[surveyConfigID: surveyConfig?.id]">
+                        <div class="ui circular label">${surveyConfig?.orgs?.size()}</div>
+                    </g:link>
                 </div>
-            </g:link>
-        </div>
 
-        <div class="ui segment center aligned">
-            <b>${message(code: 'surveyConfig.subOrgsWithMultiYear.label')}:</b>
-            <g:link controller="subscription" action="members" id="${subscriptionInstance.id}"
-                    params="[subRunTimeMultiYear: true, filterSet: true]">
-                <div class="ui circular label">
-                    ${com.k_int.kbplus.Subscription.findAllByInstanceOfAndIsMultiYear(subscriptionInstance, true)?.size()}
+                <div class="ui segment center aligned">
+                    <b>${message(code: 'surveyConfig.subOrgsWithoutMultiYear.label')}:</b>
+                    <g:link controller="subscription" action="members" id="${subscriptionInstance.id}"
+                            params="[subRunTime: true, filterSet: true]">
+                        <div class="ui circular label">
+                            ${com.k_int.kbplus.Subscription.findAllByInstanceOfAndIsMultiYear(subscriptionInstance, false)?.size()}
+                        </div>
+                    </g:link>
                 </div>
-            </g:link>
-        </div>
-    </div>
 
+                <div class="ui segment center aligned">
+                    <b>${message(code: 'surveyConfig.subOrgsWithMultiYear.label')}:</b>
+                    <g:link controller="subscription" action="members" id="${subscriptionInstance.id}"
+                            params="[subRunTimeMultiYear: true, filterSet: true]">
+                        <div class="ui circular label">
+                            ${com.k_int.kbplus.Subscription.findAllByInstanceOfAndIsMultiYear(subscriptionInstance, true)?.size()}
+                        </div>
+                    </g:link>
+                </div>
+            </div>
+        </g:if>
 
-    <div class="ui card ">
-        <div class="content">
-            <dl>
-                <dt class="control-label">
-                    <div class="ui icon la-popup-tooltip la-delay"
-                         data-content="${message(code: "surveyConfig.scheduledStartDate.comment")}">
-                        ${message(code: 'surveyConfig.scheduledStartDate.label')}
-                        <i class="question small circular inverted icon"></i>
+        <div class="ui card ">
+            <div class="content">
+                <g:if test="${contextOrg?.id == surveyConfig.surveyInfo.owner.id}">
+                    <g:if test="${surveyConfig.subSurveyUseForTransfer}">
+                        <dl>
+                            <dt class="control-label">
+                                <div class="ui icon la-popup-tooltip la-delay"
+                                     data-content="${message(code: "surveyConfig.scheduledStartDate.comment")}">
+                                    ${message(code: 'surveyConfig.scheduledStartDate.label')}
+                                    <i class="question small circular inverted icon"></i>
+                                </div>
+                            </dt>
+                            <dd><semui:xEditable owner="${surveyConfig}" field="scheduledStartDate" type="date"
+                                                 overwriteEditable="${contextOrg?.id == surveyConfig.surveyInfo.owner.id}"/>
+                            </dd>
+                        </dl>
+                        <dl>
+                            <dt class="control-label">
+                                <div class="ui icon la-popup-tooltip la-delay"
+                                     data-content="${message(code: "surveyConfig.scheduledEndDate.comment")}">
+                                    ${message(code: 'surveyConfig.scheduledEndDate.label')}
+                                    <i class="question small circular inverted icon"></i>
+                                </div>
+                            </dt>
+                            <dd><semui:xEditable owner="${surveyConfig}" field="scheduledEndDate" type="date"/></dd>
+
+                        </dl>
+                    </g:if>
+                    <dl>
+                        <dt class="control-label">
+                            <div class="ui icon la-popup-tooltip la-delay"
+                                 data-content="${message(code: "surveyConfig.internalComment.comment")}">
+                                ${message(code: 'surveyConfig.internalComment.label')}
+                                <i class="question small circular inverted icon"></i>
+                            </div>
+                        </dt>
+                        <dd><semui:xEditable owner="${surveyConfig}" field="internalComment" type="textarea"/></dd>
+
+                    </dl>
+
+                    <br>
+
+                    <div class="ui form">
+                        <g:form action="setSurveyConfigComment" controller="survey" method="post"
+                                params="[surveyConfigID: surveyConfig?.id, id: surveyInfo?.id]">
+                            <div class="field">
+                                <label><div class="ui icon la-popup-tooltip la-delay"
+                                            data-content="${message(code: "surveyConfig.comment.comment")}">
+                                    ${message(code: 'surveyConfig.comment.label')}
+                                    <i class="question small circular inverted icon"></i>
+                                </div></label>
+                                <textarea name="comment" rows="15">${surveyConfig?.comment}</textarea>
+                            </div>
+
+                            <div class="left aligned">
+                                <button type="submit"
+                                        class="ui button">${message(code: 'default.button.save_changes')}</button>
+                            </div>
+                        </g:form>
                     </div>
-                </dt>
-                <dd><semui:xEditable owner="${surveyConfig}" field="scheduledStartDate"
-                                     type="date"/></dd>
 
-            </dl>
-            <dl>
-                <dt class="control-label">
-                    <div class="ui icon la-popup-tooltip la-delay"
-                         data-content="${message(code: "surveyConfig.scheduledEndDate.comment")}">
-                        ${message(code: 'surveyConfig.scheduledEndDate.label')}
-                        <i class="question small circular inverted icon"></i>
+                </g:if>
+                <g:else>
+                    <g:if test="${surveyConfig.subSurveyUseForTransfer}">
+                        <dl>
+                            <dt class="control-label">
+                                ${message(code: 'surveyConfig.scheduledStartDate.label')}
+                            </dt>
+                            <dd><semui:xEditable owner="${surveyConfig}" field="scheduledStartDate" type="date"
+                                                 overwriteEditable="${false}"/>
+                            </dd>
+                        </dl>
+                        <dl>
+                            <dt class="control-label">
+                                ${message(code: 'surveyConfig.scheduledEndDate.label')}
+                            </dt>
+                            <dd><semui:xEditable owner="${surveyConfig}" field="scheduledEndDate" type="date"
+                                                 overwriteEditable="${false}"/></dd>
+
+                        </dl>
+                    </g:if>
+
+                    <div class="field">
+                        <label>
+                            <g:message code="surveyConfigsInfo.comment"/>
+                        </label>
+                        <g:if test="${surveyConfig?.comment}">
+                            <textarea readonly="readonly" rows="15">${surveyConfig?.comment}</textarea>
+                        </g:if>
+                        <g:else>
+                            <g:message code="surveyConfigsInfo.comment.noComment"/>
+                        </g:else>
                     </div>
-                </dt>
-                <dd><semui:xEditable owner="${surveyConfig}" field="scheduledEndDate" type="date"/></dd>
+                </g:else>
 
-            </dl>
-            <dl>
-                <dt class="control-label">
-                    <div class="ui icon la-popup-tooltip la-delay"
-                         data-content="${message(code: "surveyConfig.comment.comment")}">
-                        ${message(code: 'surveyConfig.comment.label')}
-                        <i class="question small circular inverted icon"></i>
-                    </div>
-                </dt>
-                <dd><semui:xEditable owner="${surveyConfig}" field="comment" type="textarea"/></dd>
+                <br>
 
-            </dl>
-            <dl>
-                <dt class="control-label">
-                    <div class="ui icon la-popup-tooltip la-delay"
-                         data-content="${message(code: "surveyConfig.internalComment.comment")}">
-                        ${message(code: 'surveyConfig.internalComment.label')}
-                        <i class="question small circular inverted icon"></i>
-                    </div>
-                </dt>
-                <dd><semui:xEditable owner="${surveyConfig}" field="internalComment" type="textarea"/></dd>
-
-            </dl>
-
-            <g:if test="${subscriptionInstance}">
-                <div class="field" style="text-align: left;">
+                <div class="field" style="text-align: right;">
                     <button id="subscription-info-toggle"
                             class="ui button">Lizenzinformationen anzeigen</button>
                     <script>
@@ -98,12 +146,9 @@
                         })
                     </script>
                 </div>
-            </g:if>
 
+            </div>
         </div>
-    </div>
-</g:if>
-
 
 
         <div id="subscription-info" class="la-inline-lists hidden">
@@ -197,38 +242,6 @@
                                                 ${id.ns.ns}: <div class="detail">${id.value}</div>
                                             </span>
                                         </g:each>
-                                    </dd>
-                                </dl>
-                                <dl>
-                                    <dt class="control-label">
-                                        <div class="ui icon la-popup-tooltip la-delay"
-                                             data-content="${message(code: "surveyConfig.scheduledStartDate.comment")}">
-                                            ${message(code: 'surveyConfig.scheduledStartDate.label')}
-                                        </div>
-                                    </dt>
-                                    <dd><g:formatDate format="${message(code: 'default.date.format.notime')}"
-                                                      date="${surveyConfig?.scheduledStartDate}"/></dd>
-                                </dl>
-                                <dl>
-                                    <dt class="control-label">
-                                        <div class="ui icon la-popup-tooltip la-delay"
-                                             data-content="${message(code: "surveyConfig.scheduledEndDate.comment")}">
-                                            ${message(code: 'surveyConfig.scheduledEndDate.label')}
-                                        </div>
-                                    </dt>
-                                    <dd><g:formatDate format="${message(code: 'default.date.format.notime')}"
-                                                      date="${surveyConfig?.scheduledEndDate}"/></dd>
-                                </dl>
-                                <dl>
-                                    <dt class="control-label">
-                                        <g:message code="surveyConfigsInfo.comment"/>
-                                    </dt>
-                                    <dd>
-                                        <g:if test="${surveyConfig?.comment}">
-                                            ${surveyConfig?.comment}
-                                        </g:if><g:else>
-                                            <g:message code="surveyConfigsInfo.comment.noComment"/>
-                                        </g:else>
                                     </dd>
                                 </dl>
                             </div>

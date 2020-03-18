@@ -295,7 +295,7 @@ ${surveyInfo.name}
 
 
 
-            <g:if test="${surveyConfig?.type == 'Subscription' && !gascoView}">
+            <g:if test="${surveyConfig?.type == 'Subscription' && !gascoView && surveyConfig.subSurveyUseForTransfer}">
                 <div class="ui card ">
                     <div class="content">
 

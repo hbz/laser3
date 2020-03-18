@@ -1561,11 +1561,10 @@ class SubscriptionController extends AbstractDebugController {
         if (params.license_All) {
             License lic = License.get(params.license_All)
             validSubChilds.each { subChild ->
-                Subscription sub = Subscription.get(subChild.id)
-                sub.owner = lic
+                subChild.owner = lic
 
-                if (sub.save()) {
-                    OrgRole licenseeRole = new OrgRole(org:sub.getSubscriber(),lic:lic,roleType:licenseeRoleType)
+                if (subChild.save()) {
+                    OrgRole licenseeRole = new OrgRole(org:subChild.getSubscriber(),lic:lic,roleType:licenseeRoleType)
                     if(licenseeRole.save())
                         changeAccepted << "${subChild.name} (${message(code:'subscription.linkInstance.label')} ${subChild.getSubscriber().sortname})"
                 }
@@ -1584,11 +1583,9 @@ class SubscriptionController extends AbstractDebugController {
                 if (params."license_${subChild.id}") {
                     License newLicense = License.get(params."license_${subChild.id}")
                     if (subChild.owner != newLicense) {
-                        def sub = Subscription.get(subChild.id)
-                        sub.owner = newLicense
-
-                        if (sub.save()) {
-                            OrgRole licenseeRole = new OrgRole(org:sub.getSubscriber(),lic:newLicense,roleType:licenseeRoleType)
+                        subChild.owner = newLicense
+                        if (subChild.save()) {
+                            OrgRole licenseeRole = new OrgRole(org:subChild.getSubscriber(),lic:newLicense,roleType:licenseeRoleType)
                             if(licenseeRole.save())
                                 changeAccepted << "${subChild.name} (${message(code:'subscription.linkInstance.label')} ${subChild.getSubscriber().sortname})"
                         }
@@ -3133,23 +3130,24 @@ class SubscriptionController extends AbstractDebugController {
         result
     }
 
+    @Deprecated
     @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_EDITOR") })
     def launchRenewalsProcess() {
         def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW_AND_EDIT)
 
-        def shopping_basket = UserFolder.findByUserAndShortcode(result.user, 'RenewalsBasket') ?: new UserFolder(user: result.user, shortcode: 'RenewalsBasket').save(flush: true);
-
-        log.debug("Clear basket....");
-        shopping_basket.items?.clear();
-        shopping_basket.save(flush: true)
-
-        def oid = "com.k_int.kbplus.Subscription:${params.id}"
-        shopping_basket.addIfNotPresent(oid)
-        Subscription.get(params.id).packages.each {
-            oid = "com.k_int.kbplus.Package:${it.pkg.id}"
-            shopping_basket.addIfNotPresent(oid)
-        }
+//        def shopping_basket = UserFolder.findByUserAndShortcode(result.user, 'RenewalsBasket') ?: new UserFolder(user: result.user, shortcode: 'RenewalsBasket').save(flush: true);
+//
+//        log.debug("Clear basket....");
+//        shopping_basket.items?.clear();
+//        shopping_basket.save(flush: true)
+//
+//        def oid = "com.k_int.kbplus.Subscription:${params.id}"
+//        shopping_basket.addIfNotPresent(oid)
+//        Subscription.get(params.id).packages.each {
+//            oid = "com.k_int.kbplus.Package:${it.pkg.id}"
+//            shopping_basket.addIfNotPresent(oid)
+//        }
 
         redirect controller: 'myInstitution', action: 'renewalsSearch'
     }
@@ -4463,6 +4461,8 @@ class SubscriptionController extends AbstractDebugController {
             def sub_type = params.subType
             def sub_form = params.subForm
             def sub_resource = params.subResource
+            def sub_hasPerpetualAccess = params.subHasPerpetualAccess
+            def sub_isPublicForApi = params.subIsPublicForApi
             def old_subOID = params.subscription.old_subid
             def new_subname = params.subscription.name
             def manualCancellationDate = null
@@ -4481,7 +4481,9 @@ class SubscriptionController extends AbstractDebugController {
                     status: sub_status,
                     resource: sub_resource,
                     form: sub_form,
-                    administrative: baseSub.administrative
+                    administrative: baseSub.administrative,
+                    hasPerpetualAccess: sub_hasPerpetualAccess,
+                    isPublicForApi: sub_isPublicForApi
             )
 
             if (!newSub.save(flush: true)) {
@@ -4562,7 +4564,10 @@ class SubscriptionController extends AbstractDebugController {
                                  sub_status   : RDStore.SUBSCRIPTION_INTENDED.id.toString(),
                                  sub_type     : subscription.type?.id.toString(),
                                  sub_form     : subscription.form?.id.toString(),
-                                 sub_resource : subscription.resource?.id.toString()
+                                 sub_resource : subscription.resource?.id.toString(),
+                                 sub_kind     : subscription.kind?.id.toString(),
+                                 sub_isPublicForApi : subscription.isPublicForApi ? RDStore.YN_YES.id.toString() : RDStore.YN_NO.id.toString(),
+                                 sub_hasPerpetualAccess : subscription.hasPerpetualAccess ? RDStore.YN_YES.id.toString() : RDStore.YN_NO.id.toString()
                                 ]
 
         result.subscription = subscription
