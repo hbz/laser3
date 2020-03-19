@@ -22,6 +22,11 @@ r2d2 = {
                     }
                 }
             },
+            onShow: function() {
+                $('.ui.popup.calendar .table .link').attr( {
+                    'role' : 'button'
+                });
+            },
             firstDayOfWeek: 1,
             monthFirst: false,
             formatter: {

@@ -65,11 +65,10 @@
 </div>
 
 <h3 class="ui dividing header">3.5. Button, der Inhalte ein- und ausblendet</h3>
-
-<g:render template="../templates/filter/javascript" />
-<g:render template="templatesWCAGTest/toggle" />
-
-
+<section aria-label="Filter">
+    <g:render template="../templates/filter/javascript" />
+    <g:render template="templatesWCAGTest/toggle" />
+</section>
 
 
 %{--<h3 class="ui dividing header">Toggle-Button in einer Beschreibungsliste</h3>

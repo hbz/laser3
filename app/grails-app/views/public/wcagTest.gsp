@@ -71,6 +71,9 @@
         <h2 class="ui dividing header">11. Registernavigation</h2>
         <g:render template="templatesWCAGTest/tabnavigation" />
 
+        <h2 class="ui dividing header">12. Datepicker</h2>
+        <g:render template="templatesWCAGTest/datepicker" />
+
 
     </div>
 </body>
