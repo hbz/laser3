@@ -363,7 +363,7 @@
                                                     </td>
                                                     <g:if test="${accessService.checkPermAffiliation('ORG_CONSORTIUM','INST_EDITOR')}">
                                                         <td>
-                                                            <g:checkBox name="${settingKey}_auditable" checked="${subscriptionPackage.getPendingChangeConfig(settingKey) ? auditService.getAuditConfig(subscriptionPackage.getPendingChangeConfig(settingKey),settingKey) : false}"/>
+                                                            <g:checkBox name="${settingKey}_auditable" checked="${subscriptionPackage.getPendingChangeConfig(settingKey) ? auditService.getAuditConfig(subscriptionInstance,settingKey) : false}"/>
                                                         </td>
                                                     </g:if>
                                                 </tr>

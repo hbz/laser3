@@ -3436,23 +3436,22 @@ class SubscriptionController extends AbstractDebugController {
          */
         SubscriptionPackage subscriptionPackage = SubscriptionPackage.get(params.subscriptionPackage)
         PendingChangeConfiguration.settingKeys.each { String settingKey ->
-            Map<String,Object> configMap = [subscriptionPackage:subscriptionPackage]
+            Map<String,Object> configMap = [subscriptionPackage:subscriptionPackage,settingKey:settingKey]
             boolean auditable = false
-            params.keySet().findAll { k -> k.contains(settingKey) }.each { key ->
-                List<String> settingData = key.split('/_/')
-                RefdataValue settingValue
-                boolean withNotification = false
-                switch(settingData[1]) {
-                    case 'setting': settingValue = RefdataValue.get(params[key])
-                        break
-                    case 'notification': withNotification = params[key] != null
-                        break
-                    case 'auditable': auditable = params[key] != null
-                        break
-                }
-                configMap.settingValue = settingValue
-                configMap.withNotification = withNotification
+            String key = params.keySet().find { k -> k.contains(settingKey) }
+            List<String> settingData = key.split('_')
+            RefdataValue settingValue
+            boolean withNotification = false
+            switch(settingData[1]) {
+                case 'setting': settingValue = RefdataValue.get(params[key])
+                    break
+                case 'notification': withNotification = params[key] != null
+                    break
+                case 'auditable': auditable = params[key] != null
+                    break
             }
+            configMap.settingValue = settingValue
+            configMap.withNotification = withNotification
             try {
                 PendingChangeConfiguration pcc = PendingChangeConfiguration.construct(configMap)
                 boolean hasConfig = AuditConfig.getConfig(subscriptionPackage.subscription,settingKey) != null
@@ -3661,7 +3660,8 @@ class SubscriptionController extends AbstractDebugController {
         } else {
 
             def pending_change_pending_status = RefdataValue.getByValueAndCategory('Pending', RDConstants.PENDING_CHANGE_STATUS)
-            List<PendingChange> pendingChanges = PendingChange.executeQuery("select pc from PendingChange as pc where subscription=? and ( pc.status is null or pc.status = ? ) order by pc.ts desc", [result.subscription, pending_change_pending_status])
+            //pc.msgParams null check is the legacy check; new pending changes should NOT be displayed here but on dashboard and only there!
+            List<PendingChange> pendingChanges = PendingChange.executeQuery("select pc from PendingChange as pc where subscription=? and ( pc.status is null or pc.status = ? ) and pc.msgParams is not null order by pc.ts desc", [result.subscription, pending_change_pending_status])
 
             log.debug("pc result is ${result.pendingChanges}")
 

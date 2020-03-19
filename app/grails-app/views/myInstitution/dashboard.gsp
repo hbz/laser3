@@ -7,7 +7,7 @@
         <meta name="layout" content="semanticUI"/>
         <title>${message(code:'laser')} : ${message(code:'menu.institutions.dash')}</title>
     </head>
-    <body>
+    <div>
 
         <laser:serviceInjection />
 
@@ -136,45 +136,78 @@
             <div class="la-float-right">
                 <g:link action="changes" class="ui button"><g:message code="myinst.changes.submit.label"/></g:link>
             </div>
-            <div class="ui relaxed list" style="clear:both;padding-top:1rem;">
+            <div class="ui internally celled grid">
+                <div class="row">
+                    <div class="one wide column">
+                        <g:message code="profile.dashboard.changes.eventtype"/>
+                    </div><!-- .column -->
+                    <div class="one wide column">
+                        <g:message code="profile.dashboard.changes.objecttype"/>
+                    </div><!-- .column -->
+                    <div class="eleven wide column">
+                        <g:message code="profile.dashboard.changes.event"/>
+                    </div><!-- .column -->
+                    <div class="three wide column">
+                        <g:message code="profile.dashboard.changes.action"/>
+                    </div><!-- .column -->
+                </div>
                 <g:each in="${pending}" var="change">
                     <g:set var="row" value="${pendingChangeService.printRow(change)}" />
                     <g:set var="event" value="${row.eventData}"/>
-                    <div class="item">
-
-                        <div class="ui internally celled grid">
-                            <div class="row">
-                                <div class="one wide column">
-                                    ${row.eventIcon}
-                                </div><!-- .column -->
-                                <div class="one wide column">
-                                    ${row.instanceIcon}
-                                </div><!-- .column -->
-                                <div class="twelve wide column">
-
-                                    <g:if test="${change.msgToken == 'pendingChange.message_TP01'}">
-                                        <g:link controller="package" action="show" id="${event.pkg.id}" params="${[filter:${event.title.name}]}">${event.pkg.name}: ${event.title.name} (${event.platform.name})</g:link>
-                                    </g:if>
-                                    <g:elseif test="${change.msgToken == 'pendingChange.message_TP02'}">
-
-                                    </g:elseif>
-                                </div><!-- .column -->
-                                <div class="two wide column">
-                                    <g:link class="ui positive button" controller="pendingChange" action="accept" id="${change.id}"><g:message code="default.button.accept.label"/></g:link>
-                                    <div class="or"><g:message code="default.or"/></div>
-                                    <g:link class="ui negative button" controller="pendingChange" action="reject" id="${change.id}"><g:message code="default.button.reject.label"/></g:link>
-                                </div><!-- .column -->
+                    <div class="row">
+                        <div class="one wide column">
+                            ${raw(row.eventIcon)}
+                        </div><!-- .column -->
+                        <div class="one wide column">
+                            ${raw(row.instanceIcon)}
+                        </div><!-- .column -->
+                        <div class="eleven wide column">
+                            ${raw(row.eventString)}
+                        </div><!-- .column -->
+                        <div class="three wide column">
+                            <div class="ui buttons">
+                                <g:link class="ui positive button" controller="pendingChange" action="accept" id="${change.id}"><g:message code="default.button.accept.label"/></g:link>
+                                <div class="or"><g:message code="default.or"/></div>
+                                <g:link class="ui negative button" controller="pendingChange" action="reject" id="${change.id}"><g:message code="default.button.reject.label"/></g:link>
                             </div>
-                            </div><!-- .row -->
-                        </div><!-- .grid -->
-
-                    </div>
+                        </div><!-- .column -->
+                    </div><!-- .row -->
                 </g:each>
-            </div>
+            </div><!-- .grid -->
         </div>
 
         <div class="ui bottom attached tab ${US_DASHBOARD_TAB.getValue().value == 'AcceptedChanges'}" data-tab="acceptedchanges">
-
+            <div class="la-float-right">
+                <g:link action="changes" class="ui button"><g:message code="myinst.changes.submit.label"/></g:link>
+            </div>
+            <div class="ui internally celled grid">
+                <div class="row">
+                    <div class="one wide column">
+                        <g:message code="profile.dashboard.changes.eventtype"/>
+                    </div><!-- .column -->
+                    <div class="one wide column">
+                        <g:message code="profile.dashboard.changes.objecttype"/>
+                    </div><!-- .column -->
+                    <div class="fourteen wide column">
+                        <g:message code="profile.dashboard.changes.event"/>
+                    </div><!-- .column -->
+                </div>
+                <g:each in="${notifications}" var="change">
+                    <g:set var="row" value="${pendingChangeService.printRow(change)}" />
+                    <g:set var="event" value="${row.eventData}"/>
+                    <div class="row">
+                        <div class="one wide column">
+                            ${raw(row.eventIcon)}
+                        </div><!-- .column -->
+                        <div class="one wide column">
+                            ${raw(row.instanceIcon)}
+                        </div><!-- .column -->
+                        <div class="fourteen wide column">
+                            ${raw(row.eventString)}
+                        </div><!-- .column -->
+                    </div><!-- .row -->
+                </g:each>
+            </div><!-- .grid -->
         </div>
 
         <div class="ui bottom attached tab ${US_DASHBOARD_TAB.getValue().value=='Announcements' || US_DASHBOARD_TAB.getValue() == 'Announcements' ? 'active':''}" data-tab="news">

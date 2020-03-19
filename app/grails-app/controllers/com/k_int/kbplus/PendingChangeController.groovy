@@ -20,7 +20,11 @@ class PendingChangeController extends AbstractDebugController {
     def accept() {
         log.debug("Accept")
         //distinct between legacy accept and new accept!
-        pendingChangeService.performAccept(PendingChange.get(params.long('id')), User.get(springSecurityService.principal.id))
+        PendingChange pc = PendingChange.get(params.long('id'))
+        if(pc.msgParams)
+            pendingChangeService.performAccept(pc, User.get(springSecurityService.principal.id))
+        else if(pc.targetProperty)
+            pc.accept()
         redirect(url: request.getHeader('referer'))
     }
 
@@ -29,7 +33,11 @@ class PendingChangeController extends AbstractDebugController {
     def reject() {
         log.debug("Reject")
         //distinct between legacy reject and new reject!
-        pendingChangeService.performReject(Long.parseLong(params.id), User.get(springSecurityService.principal.id))
+        PendingChange pc = PendingChange.get(Long.parseLong(params.id))
+        if(pc.msgParams)
+            pendingChangeService.performReject(pc, User.get(springSecurityService.principal.id))
+        else if(pc.targetProperty)
+            pc.reject()
         redirect(url: request.getHeader('referer'))
     }
 
@@ -71,7 +79,7 @@ class PendingChangeController extends AbstractDebugController {
         User user = User.get(springSecurityService.principal.id)
         executorWrapperService.processClosure({
             pendingChanges.each { pc ->
-                pendingChangeService.performReject(pc, user)
+                pendingChangeService.performReject(PendingChange.get(pc), user)
             }
         }, owner)
 

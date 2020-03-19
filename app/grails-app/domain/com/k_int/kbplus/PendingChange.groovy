@@ -145,7 +145,11 @@ class PendingChange {
             pc.oldValue = configMap.oldValue //must be imperatively the IssueEntitlement's current value if it is a titleUpdated event!
             pc.oid = configMap.oid
             pc.status = configMap.status
-            pc
+            pc.ts = new Date()
+            pc.owner = configMap.owner
+            if(pc.save())
+                pc
+            else throw new CreationException("Error on hooking up pending change: ${pc.errors}")
         }
         else throw new CreationException("Pending changes need a target and a targeted property! Check if configMap.target and configMap.prop are correctly set!")
     }

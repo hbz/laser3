@@ -15,6 +15,7 @@ import org.codehaus.groovy.grails.web.mapping.LinkGenerator
 import org.springframework.context.MessageSource
 import org.springframework.transaction.TransactionStatus
 
+import java.text.DateFormat
 import java.text.SimpleDateFormat
 import java.time.Duration
 
@@ -308,10 +309,8 @@ class PendingChangeService extends AbstractLockableService {
     }
 
     @Deprecated
-    void performReject(Long pcId, User user) {
+    void performReject(PendingChange change, User user) {
         PendingChange.withNewTransaction { TransactionStatus status ->
-            PendingChange change = PendingChange.get(pcId)
-
             if (change) {
                 change.license?.pendingChanges?.remove(change)
                 change.license?.save()
@@ -423,9 +422,9 @@ class PendingChangeService extends AbstractLockableService {
     Map<String,Object> getChanges(LinkedHashMap<String, Object> configMap) {
         Set<PendingChange> pendingChanges = [], acceptedChanges = []
         int pendingCount = 0, notificationsCount = 0
-        String queryString = "select pc from PendingChange pc where pc.owner = :contextOrg"
+        String queryString = "select pc from PendingChange pc where pc.owner = :contextOrg and "
         List query = []
-        Map<String,Object> queryParams = [owner:configMap.institution]
+        Map<String,Object> queryParams = [contextOrg:configMap.contextOrg]
         if(configMap.periodInDays) {
             query << "pc.ts > :time"
             queryParams.time = new Date(System.currentTimeMillis() - Duration.ofDays(configMap.periodInDays).toMillis())
@@ -451,80 +450,100 @@ class PendingChangeService extends AbstractLockableService {
         [pending:pendingChanges,pendingCount:pendingCount,notifications:acceptedChanges,notificationsCount:notificationsCount]
     }
 
-    /*
-        I also need the following arguments - but that only for frontend display in changes tab @ dashboard!
-        Object[] args = [titleLink,tippCov.tipp.title.title,pkgLink,tippCov.tipp.pkg.name,tippCov.startDate,tippCov.startVolume,tippCov.startIssue,tippCov.endDate,tippCov.endVolume,tippCov.endIssue,tippCov.coverageDepth,tippCov.coverageNote,tippCov.embargo] (newCoverage)
-        Object[] args = [titleLink,tippCov.tipp.title.title,pkgLink,tippCov.tipp.pkg.name,propLabel,ieCov[covDiff.prop],covDiff.newValue,defaultAcceptChange] (coverageUpdated)
-        Object[] args = [titleLink,tippCov.tipp.title.title,pkgLink,tippCov.tipp.pkg.name,ieCov.startDate?.format(messageSource.getMessage('default.date.format.notime',null,locale)),ieCov.startVolume,ieCov.startIssue,ieCov.endDate?.format(messageSource.getMessage('default.date.format.notime',null,locale)),ieCov.endVolume,ieCov.endIssue] (coverageDeleted)
-     */
     Map<String,Object> printRow(PendingChange change) {
-        String eventIcon, instanceIcon, eventString
-        Object[] eventData = []
-        if(change.oid instanceof IssueEntitlement){
+        String eventIcon, instanceIcon, eventString, pkgLink, pkgName, titleLink, titleName, platformName, platformLink, holdingLink, coverageString
+        Object[] eventData
+        Locale locale = Locale.getDefault()
+        SimpleDateFormat sdf = new SimpleDateFormat(messageSource.getMessage('default.date.format.notime',null,locale))
+        if(change.oid.contains(IssueEntitlement.class.name)){
             IssueEntitlement target = (IssueEntitlement) genericOIDService.resolveOID(change.oid)
-            eventData[0] = grailsLinkGenerator.link(controller: 'subscription', action: 'index', id: target.subscription.id, params: [filter: target.tipp.title.title,pkgfilter: target.tipp.pkg])
-            eventData[1] = "${target.tipp.pkg.name}: ${target.tipp.title.title}"
+            holdingLink = grailsLinkGenerator.link(controller: 'subscription', action: 'index', id: target.subscription.id, params: [filter: target.tipp.title.title,pkgfilter: target.tipp.pkg])
+            pkgName = target.tipp.pkg.name
+            titleName = target.tipp.title.title
         }
-        else if(change.oid instanceof TitleInstancePackagePlatform) {
+        else if(change.oid.contains(TitleInstancePackagePlatform.class.name)) {
             TitleInstancePackagePlatform target = (TitleInstancePackagePlatform) genericOIDService.resolveOID(change.oid)
-            eventData[0] = grailsLinkGenerator.link(controller: 'package', action: 'current', id: target.pkg.id, params: [filter:target.title.title])
-            eventData[1] = target.pkg.name
-            eventData[2] = grailsLinkGenerator.link(controller: 'title', action: 'show', id: target.title.id)
-            eventData[3] = target.title.title
-            eventData[4] = grailsLinkGenerator.link(controller: 'platform', action: 'show', id: target.platform.id)
-            eventData[5] = target.platform.name
+            pkgLink = grailsLinkGenerator.link(controller: 'package', action: 'current', id: target.pkg.id, params: [filter:target.title.title])
+            pkgName = target.pkg.name
+            titleLink = grailsLinkGenerator.link(controller: 'title', action: 'show', id: target.title.id)
+            titleName = target.title.title
+            platformLink = grailsLinkGenerator.link(controller: 'platform', action: 'show', id: target.platform.id)
+            platformName = target.platform.name
         }
-        else if(change.oid instanceof IssueEntitlementCoverage) {
+        else if(change.oid.contains(IssueEntitlementCoverage.class.name)) {
             IssueEntitlementCoverage target = (IssueEntitlementCoverage) genericOIDService.resolveOID(change.oid)
             IssueEntitlement ie = target.issueEntitlement
-            eventData[0] = grailsLinkGenerator.link(controller: 'subscription', action: 'index', id: ie.subscription.id, params: [filter: ie.tipp.title.title,pkgfilter: ie.tipp.pkg])
+            String volume = messageSource.getMessage('tipp.volume',null,locale)
+            String issue = messageSource.getMessage('tipp.issue',null,locale)
+            holdingLink = grailsLinkGenerator.link(controller: 'subscription', action: 'index', id: ie.subscription.id, params: [filter: ie.tipp.title.title,pkgfilter: ie.tipp.pkg.id])
+            titleName = ie.tipp.title.title
+            coverageString = "${sdf.format(target.startDate)} (${volume} ${target.startVolume}, ${issue} ${target.startIssue}) – ${sdf.format(target.endDate)} (${volume} ${target.endVolume}, ${issue} ${target.endIssue})"
         }
-        else if(change.oid instanceof TIPPCoverage) {
+        else if(change.oid.contains(TIPPCoverage.class.name)) {
             TIPPCoverage target = (TIPPCoverage) genericOIDService.resolveOID(change.oid)
-            eventData = [pkg:target.tipp.pkg,title:target.tipp.title,platform:target.tipp.platform,coverage:target]
+            pkgName = target.tipp.pkg.name
+            titleName = target.tipp.title.title
+            platformName = target.tipp.platform.name
+            String volume = messageSource.getMessage('tipp.volume',null,locale)
+            String issue = messageSource.getMessage('tipp.issue',null,locale)
+            coverageString = "${sdf.format(target.startDate)} (${volume} ${target.startVolume}, ${issue} ${target.startIssue}) – ${sdf.format(target.endDate)} (${volume} ${target.endVolume}, ${issue} ${target.endIssue})"
         }
-        Locale locale = Locale.getDefault()
         switch(change.msgToken) {
         //pendingChange.message_TP01 (newTitle)
             case 'pendingChange.message_TP01':
                 eventIcon = '<i class="green plus icon"></i>'
                 instanceIcon = '<i class="book icon"></i>'
+                if(pkgLink && pkgName && titleLink && titleName && platformLink && platformName)
+                    eventData = [pkgLink,pkgName,titleLink,titleName,platformLink,platformName]
+                else eventString = messageSource.getMessage('pendingChange.invalidParameter',null,locale)
                 break
         //pendingChange.message_TP02 (titleUpdated)
             case 'pendingChange.message_TP02':
                 eventIcon = '<i class="yellow circle outline icon"></i>'
                 instanceIcon = '<i class="book icon"></i>'
-                eventData[2] = messageSource.getMessage("tipp.${change.targetProperty}",null,locale)
-                eventData[3] = change.oldValue
-                if(change.targetProperty in ['hostPlatformURL'])
-                    eventData[4] = "<a href='${change.newValue}'>${change.newValue}</a>"
-                else eventData[4] = change.newValue
+                if(pkgLink && pkgName) {
+                    eventData = [pkgLink,pkgName,change.targetProperty,change.oldValue]
+                    if(change.targetProperty in ['hostPlatformURL'])
+                        eventData << "<a href='${change.newValue}'>${change.newValue}</a>"
+                    else eventData << change.newValue
+                }
+                else eventString = messageSource.getMessage('pendingChange.invalidParameter',null,locale)
                 break
         //pendingChange.message_TP03 (titleDeleted)
             case 'pendingChange.message_TP03':
                 eventIcon = '<i class="red minus icon"></i>'
                 instanceIcon = '<i class="book icon"></i>'
+                if(pkgName && titleName && holdingLink)
+                    eventData = [pkgName,titleName,holdingLink]
+                else eventString = messageSource.getMessage('pendingChange.invalidParameter',null,locale)
                 break
         //pendingChange.message_TC01 (coverageUpdated)
             case 'pendingChange.message_TC01':
                 eventIcon = '<i class="yellow circle outline icon"></i>'
                 instanceIcon = '<i class="file alternate icon"></i>'
-                eventData.prop = change.targetProperty
-                eventData.oldValue = change.oldValue
-                eventData.newValue = change.newValue
+                if(holdingLink && coverageString && titleName)
+                    eventData = [holdingLink,titleName,coverageString,change.targetProperty,change.oldValue,change.newValue]
+                else eventString = messageSource.getMessage('pendingChange.invalidParameter',null,locale)
                 break
         //pendingChange.message_TC02 (newCoverage)
             case 'pendingChange.message_TC02':
                 eventIcon = '<i class="green plus icon"></i>'
                 instanceIcon = '<i class="file alternate icon"></i>'
+                if(holdingLink && coverageString)
+                    eventData = [coverageString,holdingLink]
+                else eventString = messageSource.getMessage('pendingChange.invalidParameter',null,locale)
                 break
         //pendingChange.message_TC03 (coverageDeleted)
             case 'pendingChange.message_TC03':
                 eventIcon = '<i class="red minus icon"></i>'
                 instanceIcon = '<i class="file alternate icon"></i>'
+                if(holdingLink && coverageString)
+                    eventData = [coverageString,holdingLink]
+                else eventString = messageSource.getMessage('pendingChange.invalidParameter',null,locale)
                 break
         }
-        eventString = messageSource.getMessage(change.msgToken,eventData,locale)
+        if(eventString == null)
+            eventString = messageSource.getMessage(change.msgToken,eventData,locale)
         [instanceIcon:instanceIcon,eventIcon:eventIcon,eventString:eventString]
     }
 

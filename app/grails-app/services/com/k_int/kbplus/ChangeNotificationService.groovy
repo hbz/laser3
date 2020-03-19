@@ -2,6 +2,7 @@ package com.k_int.kbplus
 
 import com.k_int.kbplus.auth.User
 import de.laser.AuditConfig
+import de.laser.ContextService
 import de.laser.domain.PendingChangeConfiguration
 import de.laser.helper.RDConstants
 import de.laser.helper.RDStore
@@ -16,7 +17,7 @@ class ChangeNotificationService extends AbstractLockableService {
     def executorService
     def genericOIDService
     def sessionFactory
-    //def cacheService
+    ContextService contextService
 
     // N,B, This is critical for this service as it's called from domain object OnChange handlers
     static transactional = false
@@ -336,6 +337,7 @@ class ChangeNotificationService extends AbstractLockableService {
                 if so: case three - auto reject (because it is matter of survey)
                 if not: case four - treat as prompt
          */
+        Org contextOrg = contextService.getOrg()
         PendingChangeConfiguration.settingKeys.each { String settingKey ->
             RefdataValue settingValue
             PendingChangeConfiguration directConf = subscriptionPackage.pendingChangeConfig.find { PendingChangeConfiguration pcc -> pcc.settingKey == settingKey}
@@ -350,11 +352,11 @@ class ChangeNotificationService extends AbstractLockableService {
             }
             if((settingValue == null && !subscriptionPackage.subscription.instanceOf) || settingValue == RDStore.PENDING_CHANGE_CONFIG_PROMPT) {
                 //case four, then fallback or explicitly set as such
-                PendingChange.construct([target:args.target,oid:args.oid,newValue:args.newValue,oldValue:args.oldValue,prop:args.prop,msgToken:msgToken,status:RDStore.PENDING_CHANGE_PENDING])
+                PendingChange.construct([target:args.target,oid:args.oid,newValue:args.newValue,oldValue:args.oldValue,prop:args.prop,msgToken:msgToken,status:RDStore.PENDING_CHANGE_PENDING,owner:contextOrg])
             }
             else if(settingValue == RDStore.PENDING_CHANGE_CONFIG_ACCEPT) {
                 //set up announcement
-                PendingChange.construct([target:args.target,oid:args.oid,newValue:args.newValue,oldValue:args.oldValue,prop:args.prop,msgToken:msgToken,status:RDStore.PENDING_CHANGE_ACCEPTED])
+                PendingChange.construct([target:args.target,oid:args.oid,newValue:args.newValue,oldValue:args.oldValue,prop:args.prop,msgToken:msgToken,status:RDStore.PENDING_CHANGE_ACCEPTED,owner:contextOrg])
             }
             /*
                 else we have case three - a child subscription with no inherited settings ->

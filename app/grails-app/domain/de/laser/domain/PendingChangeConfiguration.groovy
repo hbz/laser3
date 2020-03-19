@@ -34,15 +34,14 @@ class PendingChangeConfiguration {
     }
 
     static constraints = {
-
+        settingValue(nullable:true,blank:false)
     }
 
     static PendingChangeConfiguration construct(Map<String,Object> configMap) throws CreationException {
         if(configMap.subscriptionPackage instanceof SubscriptionPackage) {
-            PendingChangeConfiguration pcc = findBySubscriptionPackage((SubscriptionPackage) configMap.subscriptionPackage)
+            PendingChangeConfiguration pcc = findBySubscriptionPackageAndSettingKey((SubscriptionPackage) configMap.subscriptionPackage,configMap.settingKey)
             if(!pcc)
-                pcc =  new PendingChangeConfiguration(subscriptionPackage: (SubscriptionPackage) configMap.subscriptionPackage)
-            pcc.settingKey = configMap.settingKey
+                pcc =  new PendingChangeConfiguration(subscriptionPackage: (SubscriptionPackage) configMap.subscriptionPackage,settingKey: configMap.settingKey)
             pcc.settingValue = configMap.settingValue
             pcc.withNotification = configMap.withNotification
             if(pcc.save())

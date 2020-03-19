@@ -382,13 +382,13 @@ class GlobalSourceSyncService extends AbstractLockableService {
                 updatedTIPP.coverages << [
                         startDate: cov.'@startDate'.text() ? DateUtil.parseDateGeneric(cov.'@startDate'.text()) : null,
                         endDate: cov.'@endDate'.text() ? DateUtil.parseDateGeneric(cov.'@endDate'.text()) : null,
-                        startVolume: cov.'@startVolume'.text() ?: '',
-                        endVolume: cov.'@endVolume'.text() ?: '',
-                        startIssue: cov.'@startIssue'.text() ?: '',
-                        endIssue: cov.'@endIssue'.text() ?: '',
-                        coverageDepth: cov.'@coverageDepth'.text() ?: '',
-                        coverageNote: cov.'@coverageNote'.text() ?: '',
-                        embargo: cov.'@embargo'.text() ?: ''
+                        startVolume: cov.'@startVolume'.text() ?: null,
+                        endVolume: cov.'@endVolume'.text() ?: null,
+                        startIssue: cov.'@startIssue'.text() ?: null,
+                        endIssue: cov.'@endIssue'.text() ?: null,
+                        coverageDepth: cov.'@coverageDepth'.text() ?: null,
+                        coverageNote: cov.'@coverageNote'.text() ?: null,
+                        embargo: cov.'@embargo'.text() ?: null
                 ]
             }
             updatedTIPP.coverages = updatedTIPP.coverages.toSorted { a, b -> a.startDate <=> b.startDate }
@@ -804,7 +804,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
                     covDiffs << covDiff
             }
             for(int i = covListB.size();i < covListA.size();i++) {
-                covDiffs << [event: 'deleted', target: covListA[i]]
+                covDiffs << [event: 'delete', target: covListA[i]]
             }
         }
         else if(covListA.size() < covListB.size()) {
@@ -828,7 +828,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
                             coverageNote: covB.coverageNote,
                             tipp: tippA
                     )
-                    covDiffs << [event: 'added', target: newStatement]
+                    covDiffs << [event: 'add', target: newStatement]
                 }
             }
         }
@@ -837,15 +837,10 @@ class GlobalSourceSyncService extends AbstractLockableService {
 
     void notifyDependencies(List<List<Map<String,Object>>> tippsToNotify) {
         //if everything went well, we should have here the list of tipps to notify ...
-        Locale locale = LocaleContextHolder.locale
-        String defaultAcceptChange = messageSource.getMessage('default.accept.change.ie',null,locale)
         tippsToNotify.each { entry ->
             entry.each { notify ->
                 log.debug(notify)
                 TitleInstancePackagePlatform target = (TitleInstancePackagePlatform) notify.target
-                String titleLink = grailsLinkGenerator.link(controller: 'title', action: 'show', id: target.title.id)
-                String pkgLink = grailsLinkGenerator.link(controller: 'package', action: 'show', id: target.pkg.id)
-                String platformLink = grailsLinkGenerator.link(controller: 'platform', action: 'show', id: target.platform.id)
                 if(notify.event == 'add') {
                     Set<IssueEntitlement> ieConcerned = IssueEntitlement.executeQuery('select ie from IssueEntitlement ie where ie.tipp.pkg = :pkg',[pkg:target.pkg])
                     ieConcerned.each { ie ->
@@ -863,7 +858,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
                                     diff.covDiffs.each { covDiff ->
                                         TIPPCoverage tippCov = (TIPPCoverage) covDiff.target
                                         switch(covDiff.event) {
-                                            case 'updated':
+                                            case 'update':
                                                 IssueEntitlementCoverage ieCov = (IssueEntitlementCoverage) tippCov.findEquivalent(ie.coverages)
                                                 changeDesc = 'pendingChange.message_TC01'
                                                 changeMap.oid = "${ieCov.class.name}:${ieCov.id}"
@@ -875,7 +870,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
                                                 changeDesc = 'pendingChange.message_TC02'
                                                 changeMap.oid = "${tippCov.class.name}:${tippCov.id}"
                                                 break
-                                            case 'deleted':
+                                            case 'delete':
                                                 IssueEntitlementCoverage ieCov = (IssueEntitlementCoverage) tippCov.findEquivalent(ie.coverages)
                                                 changeDesc = 'pendingChange.message_TC03'
                                                 changeMap.oid = "${ieCov.class.name}:${ieCov.id}"

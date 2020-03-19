@@ -29,6 +29,7 @@ class PackageController extends AbstractDebugController {
     def exportService
     def institutionsService
     ExecutorService executorService
+    ExecutorWrapperService executorWrapperService
     def accessService
     def contextService
     def taskService
@@ -36,8 +37,6 @@ class PackageController extends AbstractDebugController {
     def docstoreService
     def GOKbService
     def globalSourceSyncService
-    def dataloadService
-    def escapeService
     def filterService
 
     static allowedMethods = [create: ['GET', 'POST'], edit: ['GET', 'POST'], delete: 'POST']
