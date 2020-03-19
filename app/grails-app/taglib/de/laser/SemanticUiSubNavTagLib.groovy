@@ -21,7 +21,7 @@ class SemanticUiSubNavTagLib {
 
     def subNav = { attrs, body ->
 
-        out << '<nav class="ui secondary pointing  stackable  menu la-clear-before" role="menubar">'
+        out << '<nav class="ui secondary pointing  stackable  menu la-clear-before" role="Tablist">'
         out <<   body()
         out << '</nav>'
     }
@@ -63,7 +63,8 @@ class SemanticUiSubNavTagLib {
                     class: aClass,
                     controller: attrs.controller,
                     action: attrs.action,
-                    params: attrs.params
+                    params: attrs.params,
+                    role: "Tab"
             )
         }
         else {
