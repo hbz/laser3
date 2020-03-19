@@ -832,8 +832,8 @@ class SurveyController {
 
             NumberFormat format = NumberFormat.getInstance(LocaleContextHolder.getLocale())
             def cost_billing_currency = params.newCostInBillingCurrency2 ? format.parse(params.newCostInBillingCurrency2).doubleValue() : null //0.00
-            def cost_currency_rate = params.newCostCurrencyRate2 ? params.double('newCostCurrencyRate2', 1.00) : null //1.00
-            def cost_local_currency = params.newCostInLocalCurrency2 ? format.parse(params.newCostInLocalCurrency2).doubleValue() : null //0.00
+            //def cost_currency_rate = params.newCostCurrencyRate2 ? params.double('newCostCurrencyRate2', 1.00) : null //1.00
+            //def cost_local_currency = params.newCostInLocalCurrency2 ? format.parse(params.newCostInLocalCurrency2).doubleValue() : null //0.00
 
             def tax_key = null
             if (!params.newTaxRate2.contains("null")) {
@@ -870,23 +870,23 @@ class SurveyController {
                 if(surveyCostItem){
 
                     if(params.percentOnOldPrice){
-
-
-
-                        surveyCostItem.billingCurrency = billing_currency ?: surveyCostItem.billingCurrency
-                        //Not specified default to GDP
-                        surveyCostItem.costInBillingCurrency = cost_billing_currency ?: surveyCostItem.costInBillingCurrency
-                        surveyCostItem.costInLocalCurrency = cost_local_currency ?: surveyCostItem.costInLocalCurrency
-                    }else {
-                        surveyCostItem.billingCurrency = billing_currency ?: surveyCostItem.billingCurrency
-                        //Not specified default to GDP
-                        surveyCostItem.costInBillingCurrency = cost_billing_currency ?: surveyCostItem.costInBillingCurrency
-                        surveyCostItem.costInLocalCurrency = cost_local_currency ?: surveyCostItem.costInLocalCurrency
+                        Double percentOnOldPrice = params.double('percentOnOldPrice', 0.00)
+                        Subscription orgSub = result.surveyConfig.subscription.getDerivedSubscriptionBySubscribers(Org.get(Long.parseLong(id)))
+                        CostItem costItem = CostItem.findBySubAndOwnerAndCostItemStatusNotEqualAndCostItemElement(orgSub, contextService.getOrg(), RDStore.COST_ITEM_DELETED, RDStore.COST_ITEM_ELEMENT_CONSORTIAL_PRICE)
+                        surveyCostItem.costInBillingCurrency = costItem ? costItem.costInBillingCurrency*(1+(percentOnOldPrice/100)) : surveyCostItem.costInBillingCurrency
                     }
+                    else
+                    {
+                        surveyCostItem.costInBillingCurrency = cost_billing_currency ?: surveyCostItem.costInBillingCurrency
+                    }
+
+                    surveyCostItem.billingCurrency = billing_currency ?: surveyCostItem.billingCurrency
+                    //Not specified default to GDP
+                    //surveyCostItem.costInLocalCurrency = cost_local_currency ?: surveyCostItem.costInLocalCurrency
 
                     surveyCostItem.finalCostRounding = params.newFinalCostRounding2 ? true : false
 
-                    surveyCostItem.currencyRate = cost_currency_rate ?: surveyCostItem.currencyRate
+                    //surveyCostItem.currencyRate = cost_currency_rate ?: surveyCostItem.currencyRate
                     surveyCostItem.taxKey = tax_key ?: surveyCostItem.taxKey
 
                     surveyCostItem.save()
@@ -3081,11 +3081,11 @@ class SurveyController {
 
             NumberFormat format = NumberFormat.getInstance(LocaleContextHolder.getLocale())
             def cost_billing_currency = params.newCostInBillingCurrency ? format.parse(params.newCostInBillingCurrency).doubleValue() : 0.00
-            def cost_currency_rate = params.newCostCurrencyRate ? params.double('newCostCurrencyRate', 1.00) : 1.00
-            def cost_local_currency = params.newCostInLocalCurrency ? format.parse(params.newCostInLocalCurrency).doubleValue() : 0.00
+            //def cost_currency_rate = params.newCostCurrencyRate ? params.double('newCostCurrencyRate', 1.00) : 1.00
+            //def cost_local_currency = params.newCostInLocalCurrency ? format.parse(params.newCostInLocalCurrency).doubleValue() : 0.00
 
             def cost_billing_currency_after_tax = params.newCostInBillingCurrencyAfterTax ? format.parse(params.newCostInBillingCurrencyAfterTax).doubleValue() : cost_billing_currency
-            def cost_local_currency_after_tax = params.newCostInLocalCurrencyAfterTax ? format.parse(params.newCostInLocalCurrencyAfterTax).doubleValue() : cost_local_currency
+            //def cost_local_currency_after_tax = params.newCostInLocalCurrencyAfterTax ? format.parse(params.newCostInLocalCurrencyAfterTax).doubleValue() : cost_local_currency
             //moved to TAX_TYPES
             //def new_tax_rate                      = params.newTaxRate ? params.int( 'newTaxRate' ) : 0
             def tax_key = null
@@ -3179,12 +3179,12 @@ class SurveyController {
                     //newCostItem.taxCode = cost_tax_type -> to taxKey
                     newCostItem.costTitle = params.newCostTitle ?: null
                     newCostItem.costInBillingCurrency = cost_billing_currency as Double
-                    newCostItem.costInLocalCurrency = cost_local_currency as Double
+                    //newCostItem.costInLocalCurrency = cost_local_currency as Double
 
                     newCostItem.finalCostRounding = params.newFinalCostRounding ? true : false
                     newCostItem.costInBillingCurrencyAfterTax = cost_billing_currency_after_tax as Double
-                    newCostItem.costInLocalCurrencyAfterTax = cost_local_currency_after_tax as Double
-                    newCostItem.currencyRate = cost_currency_rate as Double
+                    //newCostItem.costInLocalCurrencyAfterTax = cost_local_currency_after_tax as Double
+                    //newCostItem.currencyRate = cost_currency_rate as Double
                     //newCostItem.taxRate = new_tax_rate as Integer -> to taxKey
                     newCostItem.taxKey = tax_key
                     newCostItem.costItemElementConfiguration = cost_item_element_configuration

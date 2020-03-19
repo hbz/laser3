@@ -1514,43 +1514,6 @@ class AdminController extends AbstractDebugController {
   @Secured(['ROLE_ADMIN'])
   def manageSurveyPropertyDefinitions() {
 
-    if (params.cmd == 'deletePropertyDefinition') {
-      def pd = genericOIDService.resolveOID(params.pd)
-
-      if (pd) {
-        if (! pd.isHardData) {
-          try {
-            pd.delete(flush:true)
-            flash.message = "${params.pd} wurde gelöscht."
-          }
-          catch(Exception e) {
-            flash.error = "${params.pd} konnte nicht gelöscht werden."
-          }
-        }
-      }
-    }
-    else if (params.cmd == 'replacePropertyDefinition') {
-      if (SpringSecurityUtils.ifAnyGranted('ROLE_YODA')) {
-        def pdFrom = genericOIDService.resolveOID(params.xcgPdFrom)
-        def pdTo = genericOIDService.resolveOID(params.xcgPdTo)
-
-        if (pdFrom && pdTo && (pdFrom.tenant?.id == pdTo.tenant?.id)) {
-
-          try {
-            def count = propertyService.replacePropertyDefinitions(pdFrom, pdTo)
-
-            flash.message = "${count} Vorkommen von ${params.xcgPdFrom} wurden durch ${params.xcgPdTo} ersetzt."
-          }
-          catch (Exception e) {
-            log.error(e)
-            flash.error = "${params.xcgPdFrom} konnte nicht durch ${params.xcgPdTo} ersetzt werden."
-          }
-
-        }
-      } else {
-        flash.error = "Keine ausreichenden Rechte!"
-      }
-    }
 
     def propDefs = []
     SurveyProperty.findAllByOwnerIsNull().each { it ->
@@ -1558,13 +1521,58 @@ class AdminController extends AbstractDebugController {
 
     }
 
+  def subscriptionPropDefs = PropertyDefinition.findAllByDescrAndTenant(PropertyDefinition.SUB_PROP, null, [sort: 'name']) // NO private properties!
+
+    subscriptionPropDefs.sort { a, b -> a.getI10n('name').compareToIgnoreCase b.getI10n('name') }
+
     propDefs.sort { a, b -> a.getI10n('name').compareToIgnoreCase b.getI10n('name') }
 
     render view: 'manageSurveyPropertyDefinitions', model: [
             editable    : true,
-            surveyPropertyDefinitions: propDefs
+            surveyPropertyDefinitions: propDefs,
+            subscriptionPropDefs: subscriptionPropDefs
     ]
   }
+
+    @Secured(['ROLE_ADMIN'])
+    def addSurveyProperty() {
+
+
+        SurveyProperty surveyProperty = SurveyProperty.findWhere(
+                name: params.name,
+                type: params.type,
+                owner: result.institution,
+        )
+
+        if ((!surveyProperty) && params.name && params.type) {
+            def rdc
+            if (params.refdatacategory) {
+                rdc = RefdataCategory.findById(Long.parseLong(params.refdatacategory))
+            }
+            surveyProperty = SurveyProperty.loc(
+                    params.name,
+                    params.type,
+                    rdc,
+                    params.expl,
+                    params.comment,
+                    params.introduction,
+                    result.institution
+            )
+
+            if (surveyProperty.save(flush: true)) {
+                flash.message = message(code: 'surveyProperty.create.successfully', args: [surveyProperty.name])
+            } else {
+                flash.error = message(code: 'surveyProperty.create.fail')
+            }
+        } else if (surveyProperty) {
+            flash.error = message(code: 'surveyProperty.create.exist')
+        } else {
+            flash.error = message(code: 'surveyProperty.create.fail')
+        }
+
+        redirect(url: request.getHeader('referer'))
+
+    }
 
     @Secured(['ROLE_ADMIN'])
     def managePropertyGroups() {

@@ -23,7 +23,7 @@
 %>
 
 <semui:modal id="${modalID ?: 'modalSurveyCostItem'}" text="${modalText + (surveyOrg?.surveyConfig?.subscription ? ' ('+ surveyOrg?.surveyConfig?.subscription+ ')' : '')}" msgSave="${submitButtonLabel}">
-    <g:form class="ui small form" id="editCost" action="newSurveyCostItem">
+    <g:form class="ui small form" name="editCost" action="newSurveyCostItem">
 
         <g:hiddenField name="shortcode" value="${contextService.getOrg()?.shortcode}"/>
         <g:if test="${setting == 'bulkForAll'}">
@@ -130,14 +130,11 @@
                 <div class="two fields">
                     <div class="field la-exchange-rate">
                         <label>${g.message(code:'financials.newCosts.exchangeRate')}</label>
-                        <input title="${g.message(code:'financials.addNew.currencyRate')}" type="number" class="calc"
+                        <input title="${g.message(code:'financials.addNew.currencyRate')}" type="number" class="disabled"
                                name="newCostCurrencyRate" id="newCostCurrencyRate"
                                placeholder="${g.message(code:'financials.newCosts.exchangeRate')}"
-                               value="${costItem ? costItem.currencyRate : 1.0}" step="0.000000001" />
+                               value="${costItem ? costItem.currencyRate : 1.0}" step="0.000000001" readonly="readonly"/>
 
-                        <div class="ui icon button la-popup-tooltip la-delay" id="costButton2" data-content="${g.message(code: 'financials.newCosts.buttonExplanation')}" data-position="top center" data-variation="tiny">
-                            <i class="calculator icon"></i>
-                        </div>
                     </div><!-- .field -->
                     <div class="field">
                         <label>${message(code:'financials.newCosts.taxTypeAndRate')}</label>
@@ -154,16 +151,13 @@
                 <div class="two fields">
                     <div class="field">
                         <label><g:message code="financials.newCosts.valueInLocalCurrency" args="${[RDStore.CURRENCY_EUR.value]}"/></label><%-- TODO once we may configure local currency as OrgSetting, this arg has to be replaced! --%>
-                        <input title="<g:message code="financials.newCosts.valueInLocalCurrency" args="${[RDStore.CURRENCY_EUR.value]}"/>" type="text" class="calc"
+                        <input title="<g:message code="financials.newCosts.valueInLocalCurrency" args="${[RDStore.CURRENCY_EUR.value]}"/>" type="text" class="disabled"
                                name="newCostInLocalCurrency" id="newCostInLocalCurrency"
                                placeholder="${message(code: 'financials.newCosts.value')}"
                                value="<g:formatNumber
                                        number="${costItem?.costInLocalCurrency}"
-                                       minFractionDigits="2" maxFractionDigits="2"/>"/>
+                                       minFractionDigits="2" maxFractionDigits="2"/>" readonly="readonly"/>
 
-                        <div class="ui icon button la-popup-tooltip la-delay" id="costButton1" data-content="${g.message(code: 'financials.newCosts.buttonExplanation')}" data-position="top center" data-variation="tiny">
-                            <i class="calculator icon"></i>
-                        </div>
                     </div><!-- .field -->
                     <div class="field">
                         <label><g:message code="financials.newCosts.finalSumInLocalCurrency" args="${[RDStore.CURRENCY_EUR.value]}"/></label><%-- TODO once we may configure local currency as OrgSetting, this arg has to be replaced! --%>
@@ -302,7 +296,7 @@
             }
         });
 
-        $("form").submit(function(e){
+        $("#editCost").submit(function(e){
             e.preventDefault();
             if($("[name='newCostCurrency']").val() != 0) {
                 var valuesCorrect = checkValues();

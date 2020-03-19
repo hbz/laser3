@@ -12,6 +12,7 @@
     <semui:crumb message="menu.admin.manageI10n" class="active"/>
 </semui:breadcrumbs>
 <br>
+
 <h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon/><g:message
         code="menu.admin.manageSurveyPropertyDefinitions"/></h1>
 
@@ -65,14 +66,16 @@
                 <td class="center aligned">
 
                     <g:if test="${property.isHardData}">
-                        <span data-position="top left"  class="la-popup-tooltip la-delay" data-content="${message(code: 'default.hardData.tooltip')}">
+                        <span data-position="top left" class="la-popup-tooltip la-delay"
+                              data-content="${message(code: 'default.hardData.tooltip')}">
                             <i class="check circle icon green"></i>
                         </span>
                     </g:if>
 
                     <g:if test="${usedPdList?.contains(property.id)}">
                         <span data-position="top left"
-                               class="la-popup-tooltip la-delay" data-content="${message(code: 'default.dataIsUsed.tooltip', args: [property.id])}">
+                              class="la-popup-tooltip la-delay"
+                              data-content="${message(code: 'default.dataIsUsed.tooltip', args: [property.id])}">
                             <i class="info circle icon blue"></i>
                         </span>
                     </g:if>
@@ -152,7 +155,8 @@
                                    value="${refdataValues + refdataValue?.getI10n('value')}"/>
                         </g:each>
 
-                        <span data-position="top right"  class="la-popup-tooltip la-delay" data-content="${refdataValues.join('/')}">
+                        <span data-position="top right" class="la-popup-tooltip la-delay"
+                              data-content="${refdataValues.join('/')}">
                             <small>
                                 ${com.k_int.kbplus.SurveyProperty.getLocalizedValue(property?.type)}
                             </small>
@@ -173,45 +177,58 @@
     <div class=" content">
 
         <g:form class="ui form" action="addSurveyProperty" params="[surveyInfo: surveyInfo?.id]">
-
-            <div class="field required">
-                <label class="property-label"><g:message code="surveyProperty.name"/></label>
-                <input type="text" name="name" required=""/>
-            </div>
-
-            <div class="two fields required">
-
-                <div class="field five wide">
-                    <label class="property-label"><g:message code="default.type.label"/></label>
-                    <g:select class="ui dropdown"
-                              from="${SurveyProperty.validTypes.entrySet()}"
-                              optionKey="key" optionValue="${{ SurveyProperty.getLocalizedValue(it.key) }}"
-                              name="type"
-                              id="cust_prop_modal_select"
-                              noSelection="${['': message(code: 'default.select.choose.label')]}" required=""/>
+            <div class="ui basic segment">
+                <div class="field required">
+                    <label class="property-label"><g:message code="surveyProperty.name"/></label>
+                    <input type="text" name="name" required=""/>
                 </div>
 
-                <div class="field six wide hide" id="cust_prop_ref_data_name">
-                    <label class="property-label"><g:message code="refdataCategory.label"/></label>
-                    <input type="hidden" name="refdatacategory" id="cust_prop_refdatacatsearch"/>
+                <div class="two fields required">
+
+                    <div class="field five wide">
+                        <label class="property-label"><g:message code="default.type.label"/></label>
+                        <g:select class="ui dropdown"
+                                  from="${SurveyProperty.validTypes.entrySet()}"
+                                  optionKey="key" optionValue="${{ SurveyProperty.getLocalizedValue(it.key) }}"
+                                  name="type"
+                                  id="cust_prop_modal_select"
+                                  noSelection="${['': message(code: 'default.select.choose.label')]}" required=""/>
+                    </div>
+
+                    <div class="field six wide hide" id="cust_prop_ref_data_name">
+                        <label class="property-label"><g:message code="refdataCategory.label"/></label>
+                        <input type="hidden" name="refdatacategory" id="cust_prop_refdatacatsearch"/>
+                    </div>
+
                 </div>
 
-            </div>
+                <div class="three fields">
+                    <div class="field six wide">
+                        <label class="property-label">${message(code: 'surveyProperty.expl.label')}</label>
+                        <textarea name="expl" class="ui textarea"></textarea>
+                    </div>
 
-            <div class="three fields">
-                <div class="field six wide">
-                    <label class="property-label">${message(code: 'surveyProperty.expl.label')}</label>
-                    <textarea name="expl" class="ui textarea"></textarea>
+                    <div class="field six wide">
+                        <label class="property-label">${message(code: 'surveyProperty.introduction.label')}</label>
+                        <textarea name="introduction" class="ui textarea"></textarea>
+                    </div>
+
+                    <div class="field six wide">
+                        <label class="property-label">${message(code: 'surveyProperty.comment.label')}</label>
+                        <textarea name="comment" class="ui textarea"></textarea>
+                    </div>
+
                 </div>
 
-                <div class="field six wide">
-                    <label class="property-label">${message(code: 'surveyProperty.introduction.label')}</label>
-                    <textarea name="introduction" class="ui textarea"></textarea>
-                </div>
+                <div class="ui horizontal divider"><g:message code="search.advancedSearch.option.OR"/></div>
 
-                <div class="field six wide">
-                    <label class="property-label">${message(code: 'surveyProperty.comment.label')}</label>
-                    <textarea name="comment" class="ui textarea"></textarea>
+                <div class="field ">
+                    <label class="property-label">${message(code: 'surveyProperty.create.fromSubProperty')}</label>
+                    <laser:select class="ui dropdown" name="fromSubProperty"
+                                  from="${subscriptionPropDefs}"
+                                  optionKey="id"
+                                  optionValue="name"
+                                  noSelection="${['': ${g.message(code: 'default.select.choose.label')}]}"/>
                 </div>
 
             </div>

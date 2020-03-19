@@ -64,6 +64,7 @@ class RDStore {
 
     static final COST_ITEM_ACTUAL           = getRefdataValue('Actual', RDConstants.COST_ITEM_STATUS)
     static final COST_ITEM_DELETED          = getRefdataValue('Deleted', RDConstants.COST_ITEM_STATUS)
+    static final COST_ITEM_ELEMENT_CONSORTIAL_PRICE          = getRefdataValue('price: consortial price', RDConstants.COST_ITEM_ELEMENT)
 
     static final CURRENCY_EUR               = getRefdataValue('EUR', RDConstants.CURRENCY)
 

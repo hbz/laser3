@@ -108,7 +108,7 @@
 
                 <g:link onclick="addForAllSurveyCostItem([${(selectedSubParticipants?.id)}])"
                         class="ui icon button right floated trigger-modal">
-                    <i class="plus icon"></i>
+                    <g:message code="surveyCostItems.createInitialCostItem"/>
                 </g:link>
             </div>
 
@@ -131,7 +131,10 @@
             <g:form action="processSurveyCostItemsBulk" name="surveyCostItemsBulk" method="post" class="ui form"
                     params="[id: surveyInfo.id, surveyConfigID: params.surveyConfigID, tab: 'selectedSubParticipants']">
 
-                <h3>${message(code: 'surveyCostItems.bulkOption.label')}:</h3>
+                <h3><span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center" data-content="${message(code: 'surveyCostItems.bulkOption.info')}">
+                    ${message(code: 'surveyCostItems.bulkOption.label')}
+                        <i class="question circle icon"></i>
+                    </span>:</h3>
 
                 <div class="ui basic segment">
                     <div class="fields">
@@ -187,16 +190,12 @@
                                 <div class="field la-exchange-rate">
                                     <label>${g.message(code: 'financials.newCosts.exchangeRate')}</label>
                                     <input title="${g.message(code: 'financials.addNew.currencyRate')}" type="number"
-                                           class="calc"
+                                           class="disabled"
                                            name="newCostCurrencyRate2" id="newCostCurrencyRate2"
                                            placeholder="${g.message(code: 'financials.newCosts.exchangeRate')}"
-                                           value="${costItem ? costItem.currencyRate : 1.0}" step="0.000000001"/>
+                                           value="${costItem ? costItem.currencyRate : 1.0}" step="0.000000001" readonly="readonly"/>
 
-                                    <div class="ui icon button la-popup-tooltip la-delay" id="costButton22"
-                                         data-content="${g.message(code: 'financials.newCosts.buttonExplanation')}"
-                                         data-position="top center" data-variation="tiny">
-                                        <i class="calculator icon"></i>
-                                    </div>
+
                                 </div><!-- .field -->
 
                                 <div class="field">
@@ -220,18 +219,13 @@
                                 <div class="field">
                                     <label>${g.message(code: 'financials.newCosts.value')}</label>
                                     <input title="${g.message(code: 'financials.addNew.LocalCurrency')}" type="text"
-                                           class="calc"
+                                           class="disabled"
                                            name="newCostInLocalCurrency2" id="newCostInLocalCurrency2"
                                            placeholder="${message(code: 'financials.newCosts.value')}"
                                            value="<g:formatNumber
                                                    number="${costItem?.costInLocalCurrency}"
-                                                   minFractionDigits="2" maxFractionDigits="2"/>"/>
+                                                   minFractionDigits="2" maxFractionDigits="2"/>" readonly="readonly"/>
 
-                                    <div class="ui icon button la-popup-tooltip la-delay" id="costButton12"
-                                         data-content="${g.message(code: 'financials.newCosts.buttonExplanation')}"
-                                         data-position="top center" data-variation="tiny">
-                                        <i class="calculator icon"></i>
-                                    </div>
                                 </div><!-- .field -->
                                 <div class="field">
                                     <label><g:message code="financials.newCosts.finalSum"/></label>
@@ -260,13 +254,16 @@
                     <div class="fields">
                         <fieldset class="sixteen wide field la-modal-fieldset-margin-right la-account-currency">
                             <div class="field center aligned">
+
                                 <label>${message(code: 'surveyCostItems.bulkOption.percentOnOldPrice')}</label>
+                                <div class="ui right labeled input">
                                 <input type="number"
                                        style="width:50%"
                                        name="percentOnOldPrice"
                                        placeholder="${g.message(code: 'surveyCostItems.bulkOption.percentOnOldPrice')}"
                                        value="${0.0}" step="0.01"/>
-
+                                <div class="ui basic label">%</div>
+                                </div>
                             </div>
                         </fieldset>
                     </div>
