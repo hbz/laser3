@@ -838,8 +838,8 @@ class AjaxController {
     }
 
     @Secured(['ROLE_USER'])
-    def lookupProviders() {
-        render controlledListService.getProviders(params) as JSON
+    def lookupProvidersAgencies() {
+        render controlledListService.getProvidersAgencies(params) as JSON
     }
 
   @Secured(['ROLE_USER'])
