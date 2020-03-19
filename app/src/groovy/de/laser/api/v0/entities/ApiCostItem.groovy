@@ -117,15 +117,15 @@ class ApiCostItem {
         result.costTitle           = costItem.costTitle
         result.costDescription     = costItem.costDescription
         result.currencyRate        = costItem.currencyRate
-        result.dateCreated         = costItem.dateCreated
-        result.datePaid            = costItem.datePaid
-        result.endDate             = costItem.endDate
+        result.dateCreated         = ApiToolkit.formatInternalDate(costItem.dateCreated)
+        result.datePaid            = ApiToolkit.formatInternalDate(costItem.datePaid)
+        result.endDate             = ApiToolkit.formatInternalDate(costItem.endDate)
         result.finalCostRounding   = costItem.finalCostRounding
-        result.invoiceDate         = costItem.invoiceDate
-        result.lastUpdated         = costItem.lastUpdated
+        result.invoiceDate         = ApiToolkit.formatInternalDate(costItem.invoiceDate)
+        result.lastUpdated         = ApiToolkit.formatInternalDate(costItem.lastUpdated)
 
         result.reference           = costItem.reference
-        result.startDate           = costItem.startDate
+        result.startDate           = ApiToolkit.formatInternalDate(costItem.startDate)
         result.taxRate             = costItem.taxKey?.taxRate ?: ((costItem.taxKey?.taxRate == 0) ? costItem.taxKey?.taxRate : costItem.taxRate)
 
         // erms-888

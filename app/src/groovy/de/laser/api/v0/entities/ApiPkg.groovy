@@ -73,21 +73,20 @@ class ApiPkg {
 
 		result.globalUID        	= pkg.globalUID
 		result.gokbId           	= pkg.gokbId
-		//result.impId            	= pkg.impId
 		result.name             	= pkg.name
 		result.sortName         	= pkg.sortName
 
 		result.autoAccept       	= pkg.autoAccept ? 'Yes' : 'No'
 		result.cancellationAllowances = pkg.cancellationAllowances
-		result.dateCreated      	= pkg.dateCreated
-		result.endDate          	= pkg.endDate
+		result.dateCreated      	= ApiToolkit.formatInternalDate(pkg.dateCreated)
+		result.endDate          	= ApiToolkit.formatInternalDate(pkg.endDate)
 		//result.forumId          	= pkg.forumId
 		//result.identifier       = pkg.identifier - TODO refactoring legacy
 
-		result.lastUpdated      	= pkg.lastUpdated
+		result.lastUpdated      	= ApiToolkit.formatInternalDate(pkg.lastUpdated)
 		result.vendorURL        	= pkg.vendorURL
-		result.startDate        	= pkg.startDate
-		result.listVerifiedDate      = pkg.listVerifiedDate
+		result.startDate        	= ApiToolkit.formatInternalDate(pkg.startDate)
+		result.listVerifiedDate     = ApiToolkit.formatInternalDate(pkg.listVerifiedDate)
 
 		// RefdataValues
 

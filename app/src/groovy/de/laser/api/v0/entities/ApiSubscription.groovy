@@ -118,15 +118,15 @@ class ApiSubscription {
 
 		result.globalUID            	= sub.globalUID
 		result.cancellationAllowances 	= sub.cancellationAllowances
-		result.dateCreated          	= sub.dateCreated
-		result.endDate              	= sub.endDate
+		result.dateCreated          	= ApiToolkit.formatInternalDate(sub.dateCreated)
+		result.endDate              	= ApiToolkit.formatInternalDate(sub.endDate)
 		//result.identifier           	= sub.identifier // TODO: refactor legacy
-		result.lastUpdated          	= sub.lastUpdated
-		result.manualCancellationDate 	= sub.manualCancellationDate
-		result.manualRenewalDate    	= sub.manualRenewalDate
+		result.lastUpdated          	= ApiToolkit.formatInternalDate(sub.lastUpdated)
+		result.manualCancellationDate 	= ApiToolkit.formatInternalDate(sub.manualCancellationDate)
+		result.manualRenewalDate    	= ApiToolkit.formatInternalDate(sub.manualRenewalDate)
 		result.name                 	= sub.name
 		result.noticePeriod         	= sub.noticePeriod
-		result.startDate            	= sub.startDate
+		result.startDate            	= ApiToolkit.formatInternalDate(sub.startDate)
 
 		// erms-888
 		result.calculatedType       = sub.getCalculatedType()
@@ -140,8 +140,8 @@ class ApiSubscription {
 		result.status       = sub.status?.value
 		result.type         = sub.type?.value
 		result.kind         = sub.kind?.value
-		result.isPublicForApi = sub.isPublicForApi ? 'Yes' : 'No'
-		result.hasPerpetualAccess = sub.hasPerpetualAccess ? 'Yes' : 'No'
+		result.isPublicForApi 		= sub.isPublicForApi ? 'Yes' : 'No'
+		result.hasPerpetualAccess 	= sub.hasPerpetualAccess ? 'Yes' : 'No'
 
 		// References
 

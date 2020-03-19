@@ -107,7 +107,7 @@ class ApiDoc {
             result.mimeType     = doc.mimeType
             result.title        = doc.title
             result.uuid         = doc.uuid
-            result.lastUpdated  = doc.lastUpdated
+            result.lastUpdated  = ApiToolkit.formatInternalDate(doc.lastUpdated)
 
             // RefdataValues
             result.type     = doc.type?.value
