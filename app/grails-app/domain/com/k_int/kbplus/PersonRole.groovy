@@ -98,7 +98,7 @@ class PersonRole implements Comparable<PersonRole>{
     }
 
     static List<RefdataValue> getAllRefdataValues(String category) {
-        RefdataCategory.getAllRefdataValues(category).sort {it.getI10n("value")}
+        RefdataCategory.getAllRefdataValues(category)//.sort {it.getI10n("value")}
     }
 
     /*

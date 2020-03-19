@@ -1,4 +1,4 @@
-<%@ page import="com.k_int.kbplus.OrgSubjectGroup; com.k_int.kbplus.RefdataValue; de.laser.helper.RDStore; de.laser.helper.RDConstants; com.k_int.kbplus.PersonRole; com.k_int.kbplus.Org; com.k_int.kbplus.RefdataCategory; com.k_int.properties.PropertyDefinition; com.k_int.properties.PropertyDefinitionGroup; com.k_int.kbplus.OrgSettings" %>
+<%@ page import="com.k_int.kbplus.Person; com.k_int.kbplus.OrgSubjectGroup; com.k_int.kbplus.RefdataValue; de.laser.helper.RDStore; de.laser.helper.RDConstants; com.k_int.kbplus.PersonRole; com.k_int.kbplus.Org; com.k_int.kbplus.RefdataCategory; com.k_int.properties.PropertyDefinition; com.k_int.properties.PropertyDefinitionGroup; com.k_int.kbplus.OrgSettings" %>
 <%@ page import="com.k_int.kbplus.Combo;grails.plugin.springsecurity.SpringSecurityUtils" %>
 <laser:serviceInjection/>
 
@@ -285,26 +285,8 @@
                                     <semui:xEditableRefData id="regions_${de.laser.helper.RDStore.COUNTRY_DE.id}" owner="${orgInstance}" field="region" config="${RDConstants.REGIONS_DE}"/>
                                     <semui:xEditableRefData id="regions_${de.laser.helper.RDStore.COUNTRY_AT.id}" owner="${orgInstance}" field="region" config="${RDConstants.REGIONS_AT}"/>
                                     <semui:xEditableRefData id="regions_${de.laser.helper.RDStore.COUNTRY_CH.id}" owner="${orgInstance}" field="region" config="${RDConstants.REGIONS_CH}"/>
-                                    %{--<g:fieldError bean="${orgInstance}" field="region" />--}%
-                                    %{--<g:select class="ui search dropdown" name="region"--}%
-                                              %{--from="${Org.REGION.values()}"--}%
-                                              %{--optionValue="${{((com.k_int.kbplus.RefdataValue)it.region).value_de}}"--}%
-                                              %{--value="${orgInstance?.region}"--}%
-                                              %{--noSelection="${['null§0':'']}"/>--}%
                                 </dd>
                             </dl>
-                            %{--<dl>--}%
-                                %{--<dt>--}%
-                                    %{--<g:message code="org.country.label" />--}%
-                                    %{--<span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"--}%
-                                          %{--data-content="${message(code: 'org.country.expl')}">--}%
-                                        %{--<i class="question circle icon"></i>--}%
-                                    %{--</span>--}%
-                                %{--</dt>--}%
-                                %{--<dd>--}%
-                                    %{--<semui:xEditableRefData owner="${orgInstance}" field="country" config="${RDConstants.COUNTRY}"/>--}%
-                                %{--</dd>--}%
-                            %{--</dl>--}%
                         </div>
                 </div><!-- .card -->
             </g:if>
@@ -431,27 +413,53 @@
                             <dd>
 
                             <%-- <div class="ui divided middle aligned selection list la-flex-list"> --%>
-                                <g:each in="${PersonRole.executeQuery("select distinct(prs) from PersonRole pr join pr.prs prs join pr.org oo where oo = :org and prs.isPublic = true", [org: orgInstance])}" var="prs">
-                                    <%
-
-                                    %>
-                                    <g:render template="/templates/cpa/person_full_details" model="${[
-                                            person              : prs,
-                                            personContext       : orgInstance,
-                                            tmplShowDeleteButton    : true,
-                                            tmplShowAddPersonRoles  : true,
-                                            tmplShowAddContacts     : true,
-                                            tmplShowAddAddresses    : true,
-                                            tmplShowFunctions       : true,
-                                            tmplShowPositions       : true,
-                                            tmplShowResponsiblities : true,
-                                            tmplConfigShow      : ['E-Mail', 'Mail', 'Url', 'Phone', 'Fax', 'address'],
-                                            controller          : 'organisation',
-                                            action              : 'show',
-                                            id                  : orgInstance.id,
-                                            editable            : ((orgInstance.id == contextService.getOrg().id && user.hasAffiliation('INST_EDITOR')) || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN'))
-                                    ]}"/>
-
+                                <%
+                                    List<PersonRole> allPRs = PersonRole.executeQuery("select distinct(pr) from PersonRole pr join pr.prs prs join pr.org oo where oo = :org and prs.isPublic = true", [org: orgInstance])
+                                    Map<RefdataValue, List<PersonRole>> allPRMap = [:]
+                                    Set<RefdataValue> usedRDV = []
+                                    allPRs.each{
+                                        if (it.functionType) {
+                                            List l = allPRMap.get(it.functionType)?: []
+                                            l.add(it)
+                                            allPRMap.put(it.functionType, l)
+                                            usedRDV.add(it.functionType)
+                                        }
+                                        if (it.positionType) {
+                                            List l = allPRMap.get(it.positionType)?: []
+                                            l.add(it)
+                                            allPRMap.put(it.positionType, l)
+                                            usedRDV.add(it.positionType)
+                                        }
+                                        if (it.responsibilityType) {
+                                            List l = allPRMap.get(it.responsibilityType)?: []
+                                            l.add(it)
+                                            allPRMap.put(it.responsibilityType, l)
+                                            usedRDV.add(it.responsibilityType)
+                                        }
+                                    }
+                                %>
+                                <g:each in="${usedRDV}" var="rdv">
+                                    <h3>${rdv.getI10n('value')}</h3>
+                                    <g:each in="${allPRMap.get(rdv)}" var="pr">
+                                        %{--Workaround wg NPE bei CacheEntry.getValue--}%
+                                        <% com.k_int.kbplus.Person prs = PersonRole.get(pr.id).prs%>
+                                        <g:render template="/templates/cpa/person_full_details" model="${[
+                                                person              : prs,
+                                                personContext       : orgInstance,
+                                                tmplShowDeleteButton    : true,
+                                                tmplShowAddPersonRoles  : true,
+                                                tmplShowAddContacts     : true,
+                                                tmplShowAddAddresses    : true,
+                                                tmplShowFunctions       : false,
+                                                tmplShowPositions       : false,
+                                                tmplShowResponsiblities : true,
+                                                tmplConfigShow      : ['E-Mail', 'Mail', 'Url', 'Phone', 'Fax', 'address'],
+                                                controller          : 'organisation',
+                                                action              : 'show',
+                                                id                  : orgInstance.id,
+                                                editable            : ((orgInstance.id == contextService.getOrg().id && user.hasAffiliation('INST_EDITOR')) || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN'))
+                                        ]}"/>
+                                    </g:each>
                                 </g:each>
                             <%-- </div> --%>
                                 %{--_______________________________________--}%
