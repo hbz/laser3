@@ -3,6 +3,8 @@
 **Ticket    Date    Branch      Author  Feature/Bug     Description/Keywords**
 
 
+2271    19.03.2020  hbz-dev     David   Feature     API: Datumsangaben konvertieren
+
 2257    19.03.2020  hbz-dev     Andreas Feature     zweite Sortierung der Finanzdaten nach Anbietername eingefügt, Lieferanten werden im Filter und im Export ausgegeben
 
 2228    19.03.2020  hbz-dev     Andreas Bug         Bugfixes vom Kommentar desselben Tages

@@ -1,8 +1,10 @@
 package com.k_int.kbplus
 
+import de.laser.domain.AbstractI10nOverride
+
 import javax.persistence.Transient
 
-class IdentifierNamespace {
+class IdentifierNamespace extends AbstractI10nOverride {
 
     @Transient
     public static final NS_ORGANISATION = "com.k_int.kbplus.Org"

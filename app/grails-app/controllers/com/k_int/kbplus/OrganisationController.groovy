@@ -880,8 +880,7 @@ class OrganisationController extends AbstractDebugController {
         return
       }
 
-        List bm = du.stopBenchmark()
-        result.benchMark = bm
+        du.setBenchmark('create Identifiers if necessary')
 
         // TODO: experimental asynchronous task
         //waitAll(task_orgRoles, task_properties)
@@ -938,21 +937,8 @@ class OrganisationController extends AbstractDebugController {
                 result.orgInstance.refresh()
         }
 
-//        if (result.orgInstance.createdBy) {
-//			result.createdByOrgGeneralContacts = PersonRole.executeQuery(
-//					"select distinct(prs) from PersonRole pr join pr.prs prs join pr.org oo " +
-//							"where oo = :org and pr.functionType = :ft and prs.isPublic = true",
-//					[org: result.orgInstance.createdBy, ft: RDStore.PRS_FUNC_GENERAL_CONTACT_PRS]
-//			)
-//        }
-//		if (result.orgInstance.legallyObligedBy) {
-//			result.legallyObligedByOrgGeneralContacts = PersonRole.executeQuery(
-//					"select distinct(prs) from PersonRole pr join pr.prs prs join pr.org oo " +
-//							"where oo = :org and pr.functionType = :ft and prs.isPublic = true",
-//					[org: result.orgInstance.legallyObligedBy, ft: RDStore.PRS_FUNC_GENERAL_CONTACT_PRS]
-//			)
-//		}
 //------------------------orgSettings --------------------
+        du.setBenchmark('orgsettings')
         Boolean inContextOrg = contextService.getOrg().id == org.id
         Boolean isComboRelated = Combo.findByFromOrgAndToOrg(org, contextService.getOrg())
 
@@ -965,40 +951,12 @@ class OrganisationController extends AbstractDebugController {
             redirect controller: 'organisation', action: 'show', id: org.id
         }
 
-//        Map result = [
-//                user:           user,
-//                orgInstance:    org,
-//                editable:   	SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN,ROLE_ORG_EDITOR'),
-//                inContextOrg:   inContextOrg
-//        ]
         result.user = user
         result.orgInstance = org
         result.editable = SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN,ROLE_ORG_EDITOR')
         result.inContextOrg = inContextOrg
         result.editable = result.editable || (inContextOrg && accessService.checkMinUserOrgRole(user, org, 'INST_ADM'))
         result.isComboRelated = isComboRelated
-
-//        if (params.deleteCI) {
-//            CustomerIdentifier ci = genericOIDService.resolveOID(params.deleteCI)
-//            if (ci && ci.owner == org) {
-//                ci.delete()
-//            }
-//        }
-//        if (params.addCIPlatform) {
-//            Platform plt = genericOIDService.resolveOID(params.addCIPlatform)
-//            if (plt) {
-//                CustomerIdentifier ci = new CustomerIdentifier(
-//                        customer: org,
-//                        platform: plt,
-//                        value: params.addCIValue?.trim(),
-//                        note: params.addCINote?.trim(),
-//                        owner: contextService.getOrg(),
-//                        isPublic: true,
-//                        type: RefdataValue.getByValueAndCategory('Default', RDConstants.CUSTOMER_IDENTIFIER_TYPE)
-//                )
-//                ci.save()
-//            }
-//        }
 
         // adding default settings
         organisationService.initMandatorySettings(org)
@@ -1051,8 +1009,11 @@ class OrganisationController extends AbstractDebugController {
             log.debug( 'settings for combo related org: consortia or collective')
             result.customerIdentifier = CustomerIdentifier.findAllByCustomer(org)
         }
+        du.setBenchmark('allPlatforms')
 
         result.allPlatforms = Platform.executeQuery('select p from Platform p join p.org o where p.org is not null order by o.name, o.sortname, p.name')
+        List bm = du.stopBenchmark()
+        result.benchMark = bm
 
         result
     }
