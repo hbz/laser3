@@ -199,6 +199,12 @@ class FinanceService {
                     result.cons = [count:consortialCostRows.size()]
                     if(consortialCostRows) {
                         List<CostItem> consortialCostItems = consortialCostRows.collect { row -> row[0] }
+                        //very ugly ... any ways to achieve this more elegantly are greatly appreciated!!
+                        if(configMap.sortConfig.consSort == 'sortname') {
+                            consortialCostItems = consortialCostItems.sort{ ciA, ciB ->
+                                ciA.sub?.orgRelations?.find{ oo -> oo.roleType in [OR_SUBSCRIBER_CONS,OR_SUBSCRIBER_CONS_HIDDEN]}?.org?.sortname <=> ciB.sub?.orgRelations?.find{ oo -> oo.roleType in [OR_SUBSCRIBER_CONS,OR_SUBSCRIBER_CONS_HIDDEN]}?.org?.sortname ?:
+                                        ciA.sub?.orgRelations?.find { oo -> oo.roleType in [OR_AGENCY,OR_PROVIDER]}?.org?.name <=> ciB.sub?.orgRelations?.find{ oo -> oo.roleType in [OR_AGENCY,OR_PROVIDER]}?.org?.name}
+                        }
                         result.cons.costItems = consortialCostItems.drop(configMap.offsets.consOffset).take(configMap.max)
                         result.cons.sums = calculateResults(consortialCostItems)
                     }
@@ -1123,6 +1129,9 @@ class FinanceService {
                             result.editConf.showVisibilitySettings = true
                             result.showConsortiaFunctions = true
                             result.sortConfig.consSort = 'ci.costTitle'
+                            result.subMemberLabel = messageSource.getMessage('consortium.subscriber',null,Locale.getDefault())
+                            result.subMembers = Subscription.executeQuery('select s, oo.org.sortname as sortname from Subscription s join s.orgRelations oo where s = :parent and oo.roleType in :subscrRoles order by sortname asc',[parent:result.subscription,subscrRoles:[OR_SUBSCRIBER_CONS,OR_SUBSCRIBER_CONS_HIDDEN]]).collect { row -> row[0]}
+                            result.editConf.showVisibilitySettings = true
                         }
                     }
                     //case one: parent subscription
