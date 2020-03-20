@@ -2,6 +2,15 @@
 
 **Ticket    Date    Branch      Author  Feature/Bug     Description/Keywords**
 
+
+2257    19.03.2020  hbz-dev     Andreas Feature     zweite Sortierung der Finanzdaten nach Anbietername eingefügt, Lieferanten werden im Filter und im Export ausgegeben
+
+2228    19.03.2020  hbz-dev     Andreas Bug         Bugfixes vom Kommentar desselben Tages
+
+2262    18.03.2020  hbz-dev     David   Feature     Erweiterungen der Klasse Namespace
+
+2161    18.03.2020  hbz-dev     David   Feature     Legacy "UserFolder"-Konstrukt entfernen
+
 2218    17.03.2020  hbz-dev     Andreas Bug         Abfrage von Teilnehmer korrigiert, Bezeichnungen angepasst, obsoletes Menü entfernt
 
 2255    16.03.2020  hbz-dev     David   Feature     Sortierung von Merkmalsgruppen alphabetisch 
