@@ -1678,7 +1678,9 @@ class AjaxController {
 
                     if (! params.keep) {
                         members.each { m ->
-                            m.setProperty(prop, null)
+                            if(m[prop] instanceof Boolean)
+                                m.setProperty(prop, false)
+                            else m.setProperty(prop, null)
                             m.save(flush: true)
                         }
                     }
