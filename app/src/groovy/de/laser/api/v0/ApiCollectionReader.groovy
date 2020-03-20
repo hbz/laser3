@@ -28,7 +28,7 @@ class ApiCollectionReader {
             tmp.name            = it.name
             tmp.additionFirst   = it.additionFirst
             tmp.additionSecond  = it.additionSecond
-            tmp.lastUpdated     = it.lastUpdated
+            tmp.lastUpdated     = ApiToolkit.formatInternalDate(it.lastUpdated)
 
             // RefdataValues
             tmp.state       = it.state?.value
@@ -51,7 +51,7 @@ class ApiCollectionReader {
             Map<String, Object> tmp = [:]
 
             tmp.content         = it.content
-            tmp.lastUpdated     = it.lastUpdated
+            tmp.lastUpdated     = ApiToolkit.formatInternalDate(it.lastUpdated)
 
             // RefdataValues
             tmp.category        = it.contentType?.value
@@ -91,13 +91,13 @@ class ApiCollectionReader {
             tmp.costInBillingCurrencyAfterTax   = it.getCostInBillingCurrencyAfterTax()
 
             tmp.calculatedType      = it.getCalculatedType()
-            tmp.datePaid            = it.datePaid
-            tmp.invoiceDate         = it.invoiceDate
+            tmp.datePaid            = ApiToolkit.formatInternalDate(it.datePaid)
+            tmp.invoiceDate         = ApiToolkit.formatInternalDate(it.invoiceDate)
             tmp.financialYear       = it.financialYear
-            tmp.startDate           = it.startDate
-            tmp.endDate             = it.endDate
-            tmp.dateCreated         = it.dateCreated
-            tmp.lastUpdated         = it.lastUpdated
+            tmp.startDate           = ApiToolkit.formatInternalDate(it.startDate)
+            tmp.endDate             = ApiToolkit.formatInternalDate(it.endDate)
+            tmp.dateCreated         = ApiToolkit.formatInternalDate(it.dateCreated)
+            tmp.lastUpdated         = ApiToolkit.formatInternalDate(it.lastUpdated)
             tmp.taxRate             = it.taxKey?.taxRate
 
             // RefdataValues
@@ -167,7 +167,14 @@ class ApiCollectionReader {
             tmp.name            = it.type?.name     // com.k_int.kbplus.PropertyDefinition.String
             tmp.description     = it.type?.descr    // com.k_int.kbplus.PropertyDefinition.String
             //tmp.explanation     = it.type?.expl     // com.k_int.kbplus.PropertyDefinition.String
-            tmp.value           = (it.stringValue ?: (it.intValue ?: (it.decValue ?: (it.refValue?.value ?: (it.urlValue ?: (it.dateValue ?: null)))))) // RefdataValue
+
+            if (it.dateValue) {
+                tmp.value   = ApiToolkit.formatInternalDate(it.dateValue)
+            }
+            else {
+                tmp.value   = (it.stringValue ?: (it.intValue ?: (it.decValue ?: (it.refValue?.value ?: (it.urlValue ?: null))))) // RefdataValue
+
+            }
 
             if (it.type.type == RefdataValue.toString()) {
                 tmp.refdataCategory = it.type.refdataCategory
@@ -305,8 +312,8 @@ class ApiCollectionReader {
         list.each { it ->   // com.k_int.kbplus.OrgRole
             Map<String, Object> tmp = [:]
 
-            tmp.endDate     = it.endDate
-            tmp.startDate   = it.startDate
+            tmp.endDate     = ApiToolkit.formatInternalDate(it.endDate)
+            tmp.startDate   = ApiToolkit.formatInternalDate(it.startDate)
 
             // RefdataValues
             tmp.roleType    = it.roleType?.value
@@ -345,7 +352,7 @@ class ApiCollectionReader {
             result.middleName      = prs.middle_name
             result.lastName        = prs.last_name
             result.title           = prs.title
-            result.lastUpdated     = prs.lastUpdated
+            result.lastUpdated     = ApiToolkit.formatInternalDate(prs.lastUpdated)
 
             // RefdataValues
             result.gender          = prs.gender?.value
@@ -388,8 +395,17 @@ class ApiCollectionReader {
             tmp.description     = it.type.descr    // com.k_int.kbplus.PropertyDefinition.String
             //tmp.explanation     = it.type?.expl     // com.k_int.kbplus.PropertyDefinition.String
             //tmp.tenant          = ApiStubReader.resolveOrganisationStub(it.tenant, context) // com.k_int.kbplus.Org
-            tmp.value           = (it.stringValue ?: (it.intValue ?: (it.decValue ?: (it.refValue?.value ?: (it.urlValue ?: (it.dateValue ?: null)))))) // RefdataValue
             tmp.note            = it.note
+
+            if (it.dateValue) {
+                tmp.value   = ApiToolkit.formatInternalDate(it.dateValue)
+            }
+            else {
+                tmp.value   = (it.stringValue ?: (it.intValue ?: (it.decValue ?: (it.refValue?.value ?: (it.urlValue ?: null))))) // RefdataValue
+            }
+
+            tmp.dateCreated = ApiToolkit.formatInternalDate(it.dateCreated)
+            tmp.lastUpdated = ApiToolkit.formatInternalDate(it.lastUpdated)
 
             if (it instanceof LicensePrivateProperty) {
                 tmp.paragraph = it.paragraph
@@ -445,8 +461,8 @@ class ApiCollectionReader {
                 }
 
                 Map<String, Object> role    = [:] // com.k_int.kbplus.PersonRole
-                role.startDate              = it.start_date
-                role.endDate                = it.end_date
+                role.startDate              = ApiToolkit.formatInternalDate(it.start_date)
+                role.endDate                = ApiToolkit.formatInternalDate(it.end_date)
 
                 // RefdataValues
                 role.functionType           = it.functionType?.value
@@ -512,24 +528,10 @@ class ApiCollectionReader {
         }
 
         result.globalUID        = tipp.globalUID
-        //result.accessStartDate  = tipp.accessStartDate     // duplicate information in IE
-        //result.accessEndDate    = tipp.accessEndDate       // duplicate information in IE
-        //result.coreStatusStart  = tipp.coreStatusStart     // duplicate information in IE
-        //result.coreStatusEnd    = tipp.coreStatusEnd       // duplicate information in IE
-        //result.coverageDepth    = tipp.coverageDepth       // duplicate information in IE
-        //result.coverageNote     = tipp.coverageNote        // duplicate information in IE
-        //result.embargo          = tipp.embargo             // duplicate information in IE
-        //result.endDate          = tipp.endDate             // duplicate information in IE
-        //result.endVolume        = tipp.endVolume           // duplicate information in IE
-        //result.endIssue         = tipp.endIssue            // duplicate information in IE
         result.hostPlatformURL  = tipp.hostPlatformURL
-        //result.impId            = tipp.impId
         result.gokbId           = tipp.gokbId
-        result.lastUpdated      = tipp.lastUpdated
+        result.lastUpdated      = ApiToolkit.formatInternalDate(tipp.lastUpdated)
         //result.rectype          = tipp.rectype    // legacy; not needed ?
-        //result.startDate        = tipp.startDate           // duplicate information in IE
-        //result.startIssue       = tipp.startIssue          // duplicate information in IE
-        //result.startVolume      = tipp.startVolume          // duplicate information in IE
 
         // RefdataValues
         result.status           = tipp.status?.value
