@@ -2,7 +2,7 @@
 
     <semui:subNav actionName="${actionName}" >
         <semui:subNavItem controller="public" action="wcagTest"  message="Übersicht"  />
-        <semui:subNavItem controller="public"  action="wcagTest" message="Zeiter Menüpunkt (läd andere Seite, gleiches Untermenü erscheint wieder)" />
+        <semui:subNavItem controller="public"  action="wcagTest" message="Zweiter Menüpunkt (läd andere Seite, gleiches Untermenü erscheint wieder)" />
     </semui:subNav>
     <section aria-label="Übersicht" role="Tabpanel">
 
