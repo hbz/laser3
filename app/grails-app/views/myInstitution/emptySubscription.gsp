@@ -53,6 +53,8 @@
                     <%
                         List subscriptionTypes = RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_TYPE)
                         subscriptionTypes-=RDStore.SUBSCRIPTION_TYPE_LOCAL
+                        if(institution.globalUID != com.k_int.kbplus.Org.findByName('LAS:eR Backoffice').globalUID)
+                            subscriptionTypes-=RDStore.SUBSCRIPTION_TYPE_ADMINISTRATIVE
                     %>
                     <div class="field">
                         <label>${message(code:'myinst.emptySubscription.create_as')}</label>

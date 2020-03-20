@@ -107,7 +107,7 @@
                             <dl>
                                 <dt class="control-label">${message(code: 'subscription.type.label')}</dt>
                                 <dd>
-                                    %{--<%-- TODO: subscribers may not edit type, but admins and yoda --%>
+                                    %{--
                                     <%
                                         //does not work for some reason, proceed to IDs
                                         Set<Long> subscriberIDs = []
