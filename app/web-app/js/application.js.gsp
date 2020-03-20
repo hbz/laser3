@@ -628,6 +628,18 @@ r2d2 = {
                         },
                         onDeny : function() {
                             $('#js-confirmation-content-term').html('')
+                        },
+                        onShow : function() {
+                            //$(this).find('.ui.deny.button').focus();
+                            //$('#globalJumpMark').attr('tabIndex','-1');
+                            //$(this).find('.ui.deny.button').attr('tabIndex','-1');
+                            // $(this).find('.ui.deny.button').focus();
+                            $(this).focus();
+                           // $(this).find('.ui.deny.button').attr('tabIndex','-1');
+
+
+
+
                         }
                     })
                     .modal('show')
