@@ -1,6 +1,14 @@
 <tr>
     <td>${tableRowNr}</td>
-    <td>${id?.ns?.ns}</td>
+    <td>
+        ${id.ns.getI10n('name') ?: id.ns.ns}
+
+        <g:if test="${id.ns.getI10n('description')}">
+            <span data-position="top left" class="la-popup-tooltip la-delay" data-content="${id.ns.getI10n('description')}">
+                <i class="question circle icon"></i>
+            </span>
+        </g:if>
+    </td>
     <td>
         ${id.value}
         <g:if test="${id.getURL()}">
